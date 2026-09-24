@@ -507,7 +507,7 @@ public class ZmsApiMailSteps {
         // Use the system messenger account by default (same password as other system users).
         String username = TestPropertiesHelper.getPropertyAsString("zmsapiMailUserName", true, "_system_messenger");
         String password = TestPropertiesHelper.getPropertyAsString("zmsapiMailUserPassword", true, "vorschau");
-        AccountCheckout.checkout(username);
+        username = AccountCheckout.assignMessengerLogin(username);
 
         Response loginResponse = given()
             .baseUri(TestConfig.getBaseUri())

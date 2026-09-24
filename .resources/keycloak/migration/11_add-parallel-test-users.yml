@@ -1,0 +1,201 @@
+id: add spare logins for parallel ATAF runs
+author: ZMS Development
+realm: zms
+changes:
+  # UI superuser pool is ataf + 2 (dataproviderthreadcount 2 + 1).
+  - addUser:
+      name: ataf_2
+      lastName: Test
+      firstName: Ataf
+      enabled: true
+      emailVerified: true
+      email: ataf_2@localhost
+  - updateUserPassword:
+      name: ataf_2
+      password: "vorschau"
+  - assignRole:
+      user: ataf_2
+      role: user
+      clientId: zms
+
+  - addUser:
+      name: ataf_3
+      lastName: Test
+      firstName: Ataf
+      enabled: true
+      emailVerified: true
+      email: ataf_3@localhost
+  - updateUserPassword:
+      name: ataf_3
+      password: "vorschau"
+  - assignRole:
+      user: ataf_3
+      role: user
+      clientId: zms
+
+  # API workstation pool is agent_queue + 4 (dataproviderthreadcount 4 + 1).
+  - addUser:
+      name: agent_queue_2
+      lastName: Queue
+      firstName: Agent
+      enabled: true
+      emailVerified: true
+      email: agent_queue_2@localhost
+  - updateUserPassword:
+      name: agent_queue_2
+      password: "vorschau"
+  - assignRole:
+      user: agent_queue_2
+      role: user
+      clientId: zms
+
+  - addUser:
+      name: agent_queue_3
+      lastName: Queue
+      firstName: Agent
+      enabled: true
+      emailVerified: true
+      email: agent_queue_3@localhost
+  - updateUserPassword:
+      name: agent_queue_3
+      password: "vorschau"
+  - assignRole:
+      user: agent_queue_3
+      role: user
+      clientId: zms
+
+  - addUser:
+      name: agent_queue_4
+      lastName: Queue
+      firstName: Agent
+      enabled: true
+      emailVerified: true
+      email: agent_queue_4@localhost
+  - updateUserPassword:
+      name: agent_queue_4
+      password: "vorschau"
+  - assignRole:
+      user: agent_queue_4
+      role: user
+      clientId: zms
+
+  - addUser:
+      name: agent_queue_5
+      lastName: Queue
+      firstName: Agent
+      enabled: true
+      emailVerified: true
+      email: agent_queue_5@localhost
+  - updateUserPassword:
+      name: agent_queue_5
+      password: "vorschau"
+  - assignRole:
+      user: agent_queue_5
+      role: user
+      clientId: zms
+
+  # Mail login posts the raw id (no @keycloak). Pool is 5 for the API thread count + 1.
+  - addUser:
+      name: _system_messenger_2
+      lastName: Messenger
+      firstName: System
+      enabled: true
+      emailVerified: true
+      email: _system_messenger_2@localhost
+  - updateUserPassword:
+      name: _system_messenger_2
+      password: "vorschau"
+  - assignRole:
+      user: _system_messenger_2
+      role: user
+      clientId: zms
+
+  - addUser:
+      name: _system_messenger_3
+      lastName: Messenger
+      firstName: System
+      enabled: true
+      emailVerified: true
+      email: _system_messenger_3@localhost
+  - updateUserPassword:
+      name: _system_messenger_3
+      password: "vorschau"
+  - assignRole:
+      user: _system_messenger_3
+      role: user
+      clientId: zms
+
+  - addUser:
+      name: _system_messenger_4
+      lastName: Messenger
+      firstName: System
+      enabled: true
+      emailVerified: true
+      email: _system_messenger_4@localhost
+  - updateUserPassword:
+      name: _system_messenger_4
+      password: "vorschau"
+  - assignRole:
+      user: _system_messenger_4
+      role: user
+      clientId: zms
+
+  - addUser:
+      name: _system_messenger_5
+      lastName: Messenger
+      firstName: System
+      enabled: true
+      emailVerified: true
+      email: _system_messenger_5@localhost
+  - updateUserPassword:
+      name: _system_messenger_5
+      password: "vorschau"
+  - assignRole:
+      user: _system_messenger_5
+      role: user
+      clientId: zms
+
+  # Citizen tokens do not replace each other, but appointments are loaded by external user id.
+  - addUser:
+      name: citizen_2
+      lastName: User
+      firstName: Citizen
+      enabled: true
+      emailVerified: true
+      email: citizen_2@example.com
+  - updateUserPassword:
+      name: citizen_2
+      password: "vorschau"
+
+  - addUser:
+      name: citizen_3
+      lastName: User
+      firstName: Citizen
+      enabled: true
+      emailVerified: true
+      email: citizen_3@example.com
+  - updateUserPassword:
+      name: citizen_3
+      password: "vorschau"
+
+  - addUser:
+      name: citizen_4
+      lastName: User
+      firstName: Citizen
+      enabled: true
+      emailVerified: true
+      email: citizen_4@example.com
+  - updateUserPassword:
+      name: citizen_4
+      password: "vorschau"
+
+  - addUser:
+      name: citizen_5
+      lastName: User
+      firstName: Citizen
+      enabled: true
+      emailVerified: true
+      email: citizen_5@example.com
+  - updateUserPassword:
+      name: citizen_5
+      password: "vorschau"

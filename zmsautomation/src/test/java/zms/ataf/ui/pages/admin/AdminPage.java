@@ -53,7 +53,9 @@ public class AdminPage extends BasePage {
     public void clickOnLoginButton() throws Exception {
         final StringBuilder clearUserName = new StringBuilder();
         AuthenticationHelper.getUserName().access(clearUserName::append);
-        AccountCheckout.checkoutWorkstation(clearUserName.toString());
+        String assigned = AccountCheckout.assignWorkstationLogin(clearUserName.toString());
+        clearUserName.setLength(0);
+        clearUserName.append(assigned);
         if (isAlreadyLoggedIn()) {
             ScenarioLogManager.getLogger().info("Already logged in, skipping SSO login.");
             return;
@@ -116,6 +118,7 @@ public class AdminPage extends BasePage {
     public void enterWorkstation(String workstation) {
         CONTEXT.set();
         ScenarioLogManager.getLogger().info("Trying to enter workstation \"" + workstation + "\"");
+        workstation = AccountCheckout.queueDesk(workstation);
         enterTextInWebElement(DEFAULT_EXPLICIT_WAIT_TIME, workstation, "workstation", LocatorType.NAME);
         TestDataHelper.setTestData("workstation", workstation);
     }

@@ -49,6 +49,31 @@ public class AccountCheckoutTest {
     }
 
     @Test
+    public void defaultWorkstationLoginTakesAFreePoolMember() throws Exception {
+        String first = AccountCheckout.assignWorkstationLogin("agent_queue");
+        AtomicBoolean same = new AtomicBoolean(true);
+        Thread other = new Thread(() -> {
+            String second = AccountCheckout.assignWorkstationLogin("agent_queue");
+            same.set(first.equals(second));
+            AccountCheckout.releaseAll();
+        });
+        other.start();
+        other.join(2000);
+        Assert.assertFalse(other.isAlive());
+        Assert.assertFalse(same.get());
+        Assert.assertEquals(AccountCheckout.queueDesk("13"), "13");
+    }
+
+    @Test
+    public void spareSuperuserGetsItsOwnQueueDesk() {
+        AccountCheckout.assignWorkstationLogin("ataf");
+        AccountCheckout.releaseAll();
+        String spare = AccountCheckout.assignWorkstationLogin("ataf_2");
+        Assert.assertEquals(spare, "ataf_2");
+        Assert.assertEquals(AccountCheckout.queueDesk("13"), "113");
+    }
+
+    @Test
     public void workstationLoginNameSharesTheOidcAccount() {
         Assert.assertEquals(AccountCheckout.workstationAccountId("ataf"), "ataf@keycloak");
         Assert.assertEquals(AccountCheckout.workstationAccountId("ataf@keycloak"), "ataf@keycloak");

@@ -80,7 +80,9 @@ public class StatisticsPage extends BasePage {
         try {
             AuthenticationHelper.getUserName().access(clearUserName::append);
             AuthenticationHelper.getUserPassword().access(clearPassword::append);
-            AccountCheckout.checkoutWorkstation(clearUserName.toString());
+            String assigned = AccountCheckout.assignWorkstationLogin(clearUserName.toString());
+            clearUserName.setLength(0);
+            clearUserName.append(assigned);
             WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
             wait.until(ExpectedConditions.presenceOfElementLocated(By.id("username")));
             if ("chrome".equals(
