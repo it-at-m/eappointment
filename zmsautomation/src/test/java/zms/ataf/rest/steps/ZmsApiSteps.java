@@ -241,17 +241,24 @@ public class ZmsApiSteps {
             CommonApiSteps.setResponse(response);
             if (response.getStatusCode() == 200) {
                 reserved = parseDataNode(response);
-                if (reserved != null) {
-                    break;
-                }
+                Assertions.assertThat(reserved)
+                    .as("POST /process/status/reserved/ returned 200 without data: %s",
+                        truncate(response.asString(), 1000))
+                    .isNotNull();
+                break;
             }
-            if (i < freeList.size() - 1) {
+            boolean slotTaken = response.getStatusCode() == 404
+                && response.asString().contains("Failed to reserve process. Maybe someone was faster.");
+            if (slotTaken && i < freeList.size() - 1) {
                 ScenarioLogManager.getLogger().info(
                     "Intern slot for scope {} was reserved or booked (status {}); trying the next free process",
                     scopeId,
                     response.getStatusCode());
                 continue;
             }
+            throw new IllegalStateException(
+                "POST /process/status/reserved/ failed with " + response.getStatusCode() + ": "
+                    + truncate(response.asString(), 1000));
         }
         Assertions.assertThat(reserved)
             .as("POST /process/status/reserved/ for scope %d", scopeId)

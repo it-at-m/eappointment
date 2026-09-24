@@ -2960,7 +2960,7 @@ public class CitizenViewPage extends BasePage {
             if (existing != null && processId == (existing.getProcessId() == null ? -1 : existing.getProcessId())) {
                 return;
             }
-            ThinnedProcess p = existing != null ? existing : new ThinnedProcess();
+            ThinnedProcess p = new ThinnedProcess();
             p.setProcessId(processId);
             zms.ataf.rest.steps.CitizenApiSteps.setBookingProcess(p);
             ScenarioLogManager.getLogger()

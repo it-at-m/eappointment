@@ -575,9 +575,10 @@ public class CounterProcessingStationPage extends AdminPage {
         AtomicBoolean validationErrorsVisible = new AtomicBoolean(false);
         Set<String> skippedTimes = new HashSet<>();
         final int maxBookingAttempts = 6;
+        boolean bookingAttempted = false;
     
         for (int attempt = 1; attempt <= maxBookingAttempts; attempt++) {
-            if (attempt > 1) {
+            if (attempt > 1 && bookingAttempted) {
                 String previousTime = TestDataHelper.getTestData("new_appointment_time");
                 if (previousTime != null && !previousTime.isBlank()) {
                     skippedTimes.add(previousTime);
@@ -595,9 +596,11 @@ public class CounterProcessingStationPage extends AdminPage {
                     )
             );
     
+            bookingAttempted = false;
             try {
                 ((JavascriptExecutor) DRIVER).executeScript("arguments[0].scrollIntoView({block:'center'});", bookButton);
                 ((JavascriptExecutor) DRIVER).executeScript("arguments[0].click();", bookButton);
+                bookingAttempted = true;
             } catch (StaleElementReferenceException | ElementClickInterceptedException | TimeoutException e) {
                 ScenarioLogManager.getLogger().warn(
                         "Book click did not complete (attempt " + attempt + "/" + maxBookingAttempts + ").");
