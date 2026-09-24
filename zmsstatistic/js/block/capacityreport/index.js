@@ -23,11 +23,13 @@ class View extends BaseView {
         this.autoRefreshController = new AutoRefresh(this);
 
         this.bindEvents();
-        this.chartController.initSparseTimelineFromDom();
         this.tableController.initSettingsFromDom();
         this.tableController.initDataFromDom();
-        this.chartController.initFromDom();
+        this.chartController.initSparseTimelineFromDom();
         this.chartController.initChannelFromDom();
+        this.chartController.initGranularityFromDom();
+        this.chartController.initValueModeFromDom();
+        this.chartController.initFromDom();
         this.chartController.syncChannelSelect();
         this.tableController.syncHeaders();
         this.tableController.render();

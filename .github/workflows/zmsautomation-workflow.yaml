@@ -336,7 +336,24 @@ jobs:
 
           docker compose -f docker-compose.yaml down -v --remove-orphans || true
           docker compose -f docker-compose.yaml up -d \
-            web db citizenview refarch-gateway keycloak init-keycloak
+            web db citizenview refarch-gateway keycloak init-keycloak \
+            captcha-db captchaservice
+
+          captcha_ready=""
+          for _ in {1..60}; do
+            if curl -fsS http://127.0.0.1:39146/actuator/health >/dev/null 2>&1; then
+              echo "captchaservice is healthy."
+              captcha_ready=1
+              break
+            fi
+            sleep 2
+          done
+          if [ -z "${captcha_ready}" ]; then
+            echo "captchaservice did not become healthy in time."
+            docker logs zms-captchaservice || true
+            docker logs zms-captcha-db || true
+            exit 1
+          fi
 
           exit_code=""
           for _ in {1..60}; do
@@ -781,6 +798,8 @@ jobs:
             zms-keycloak
             zms-refarch-gateway
             zms-init-keycloak
+            zms-captchaservice
+            zms-captcha-db
           )
 
           for c in "${containers[@]}"; do
