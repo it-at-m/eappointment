@@ -40,7 +40,7 @@ class ProcessValidator
         return $delegatedProcess;
     }
 
-    public function validateId(Unvalidated $unvalid, callable $setter, callable $isRequiredCallback = null): self
+    public function validateId(Unvalidated $unvalid, callable $setter, ?callable $isRequiredCallback = null): self
     {
         $valid = $unvalid->isNumber(
             "Eine gültige Vorgangsnummer ist in der Regel eine sechsstellige Nummer wie '123456'"
@@ -56,7 +56,7 @@ class ProcessValidator
         return $this;
     }
 
-    public function validateAuthKey(Unvalidated $unvalid, callable $setter, callable $isRequiredCallback = null): self
+    public function validateAuthKey(Unvalidated $unvalid, callable $setter, ?callable $isRequiredCallback = null): self
     {
         $trimmed = trim((string) $unvalid->getUnvalidated());
         $valid = (new Unvalidated($trimmed, $unvalid->getName()))->isString();
@@ -77,7 +77,7 @@ class ProcessValidator
         return $this;
     }
 
-    public function validateMail(Unvalidated $unvalid, callable $setter, callable $isRequiredCallback = null): self
+    public function validateMail(Unvalidated $unvalid, callable $setter, ?callable $isRequiredCallback = null): self
     {
         $valid = $unvalid->isString();
         $length = strlen((string)$valid->getUnvalidated());

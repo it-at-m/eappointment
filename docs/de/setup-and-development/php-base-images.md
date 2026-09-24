@@ -17,8 +17,8 @@ Basierend auf [`.github/workflows/zmsbase-build-images.yaml`](https://github.com
 
 Die Rollenaufteilung:
 
-- Lokale Images (`8.3-local-*`, `8.4-local-*`) sind für lokale Entwicklung und `zmsautomation` gedacht. Devcontainer nutzt standardmäßig `8.3-local-*` über `ZMS_PHP_BASE_TAG`.
-- Nicht-lokale Images (`8.3-*`, `8.4-*` ohne `-local`) sind für produktionsnahe/laufzeitorientierte Umgebungen gedacht.
+- Lokale Images (`8.3-local-*`, `8.4-local-*`) sind für lokale Entwicklung und `zmsautomation` gedacht. Devcontainer nutzt standardmäßig `8.4-local-*` über `ZMS_PHP_BASE_TAG`.
+- Nicht-lokale Images (`8.3-*`, `8.4-*` ohne `-local`) sind für produktionsnahe/laufzeitorientierte Umgebungen gedacht. Modul-Images und CI nutzen `8.4-base` und `8.4-dev`. `8.3-*` bleibt veröffentlicht.
 
 Diese duale lokale Architektur unterstützt die Entwicklung auf macOS Apple Silicon und anderen Nicht-amd64-Umgebungen und bietet zugleich linux/amd64-Kompatibilität.
 

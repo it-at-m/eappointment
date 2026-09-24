@@ -4,7 +4,7 @@ services:
   # Fallback default is amd64 for plain `docker compose` without that step.
   web:
     container_name: zms-web
-    image: ghcr.io/it-at-m/eappointment/zmsbase:${ZMS_PHP_BASE_TAG:-8.3-local-amd64}
+    image: ghcr.io/it-at-m/eappointment/zmsbase:${ZMS_PHP_BASE_TAG:-8.4-local-amd64}
     volumes:
       - ..:/var/www/html:cached,z
       - ./php/xdebug.ini:/usr/local/etc/php/conf.d/99-xdebug.ini:ro,z
