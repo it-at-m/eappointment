@@ -2,7 +2,7 @@ id: add spare logins for parallel ATAF runs
 author: ZMS Development
 realm: zms
 changes:
-  # UI superuser pool is ataf + 2 (dataproviderthreadcount 2 + 1).
+  # UI superuser pool is ataf + 4 (dataproviderthreadcount 4 + 1).
   - addUser:
       name: ataf_2
       lastName: Test
@@ -33,7 +33,37 @@ changes:
       role: user
       clientId: zms
 
-  # API workstation pool is agent_queue + 4 (dataproviderthreadcount 4 + 1).
+  - addUser:
+      name: ataf_4
+      lastName: Test
+      firstName: Ataf
+      enabled: true
+      emailVerified: true
+      email: ataf_4@localhost
+  - updateUserPassword:
+      name: ataf_4
+      password: "vorschau"
+  - assignRole:
+      user: ataf_4
+      role: user
+      clientId: zms
+
+  - addUser:
+      name: ataf_5
+      lastName: Test
+      firstName: Ataf
+      enabled: true
+      emailVerified: true
+      email: ataf_5@localhost
+  - updateUserPassword:
+      name: ataf_5
+      password: "vorschau"
+  - assignRole:
+      user: ataf_5
+      role: user
+      clientId: zms
+
+  # API workstation pool is agent_queue + 8 (dataproviderthreadcount 8 + 1).
   - addUser:
       name: agent_queue_2
       lastName: Queue
@@ -94,7 +124,67 @@ changes:
       role: user
       clientId: zms
 
-  # Mail login posts the raw id (no @keycloak). Pool is 5 for the API thread count + 1.
+  - addUser:
+      name: agent_queue_6
+      lastName: Queue
+      firstName: Agent
+      enabled: true
+      emailVerified: true
+      email: agent_queue_6@localhost
+  - updateUserPassword:
+      name: agent_queue_6
+      password: "vorschau"
+  - assignRole:
+      user: agent_queue_6
+      role: user
+      clientId: zms
+
+  - addUser:
+      name: agent_queue_7
+      lastName: Queue
+      firstName: Agent
+      enabled: true
+      emailVerified: true
+      email: agent_queue_7@localhost
+  - updateUserPassword:
+      name: agent_queue_7
+      password: "vorschau"
+  - assignRole:
+      user: agent_queue_7
+      role: user
+      clientId: zms
+
+  - addUser:
+      name: agent_queue_8
+      lastName: Queue
+      firstName: Agent
+      enabled: true
+      emailVerified: true
+      email: agent_queue_8@localhost
+  - updateUserPassword:
+      name: agent_queue_8
+      password: "vorschau"
+  - assignRole:
+      user: agent_queue_8
+      role: user
+      clientId: zms
+
+  - addUser:
+      name: agent_queue_9
+      lastName: Queue
+      firstName: Agent
+      enabled: true
+      emailVerified: true
+      email: agent_queue_9@localhost
+  - updateUserPassword:
+      name: agent_queue_9
+      password: "vorschau"
+  - assignRole:
+      user: agent_queue_9
+      role: user
+      clientId: zms
+
+  # Mail login posts the raw id (no @keycloak). Pool is 9 for the API thread count + 1.
   - addUser:
       name: _system_messenger_2
       lastName: Messenger
@@ -155,6 +245,66 @@ changes:
       role: user
       clientId: zms
 
+  - addUser:
+      name: _system_messenger_6
+      lastName: Messenger
+      firstName: System
+      enabled: true
+      emailVerified: true
+      email: _system_messenger_6@localhost
+  - updateUserPassword:
+      name: _system_messenger_6
+      password: "vorschau"
+  - assignRole:
+      user: _system_messenger_6
+      role: user
+      clientId: zms
+
+  - addUser:
+      name: _system_messenger_7
+      lastName: Messenger
+      firstName: System
+      enabled: true
+      emailVerified: true
+      email: _system_messenger_7@localhost
+  - updateUserPassword:
+      name: _system_messenger_7
+      password: "vorschau"
+  - assignRole:
+      user: _system_messenger_7
+      role: user
+      clientId: zms
+
+  - addUser:
+      name: _system_messenger_8
+      lastName: Messenger
+      firstName: System
+      enabled: true
+      emailVerified: true
+      email: _system_messenger_8@localhost
+  - updateUserPassword:
+      name: _system_messenger_8
+      password: "vorschau"
+  - assignRole:
+      user: _system_messenger_8
+      role: user
+      clientId: zms
+
+  - addUser:
+      name: _system_messenger_9
+      lastName: Messenger
+      firstName: System
+      enabled: true
+      emailVerified: true
+      email: _system_messenger_9@localhost
+  - updateUserPassword:
+      name: _system_messenger_9
+      password: "vorschau"
+  - assignRole:
+      user: _system_messenger_9
+      role: user
+      clientId: zms
+
   # Citizen tokens do not replace each other, but appointments are loaded by external user id.
   - addUser:
       name: citizen_2
@@ -198,4 +348,48 @@ changes:
       email: citizen_5@example.com
   - updateUserPassword:
       name: citizen_5
+      password: "vorschau"
+
+  - addUser:
+      name: citizen_6
+      lastName: User
+      firstName: Citizen
+      enabled: true
+      emailVerified: true
+      email: citizen_6@example.com
+  - updateUserPassword:
+      name: citizen_6
+      password: "vorschau"
+
+  - addUser:
+      name: citizen_7
+      lastName: User
+      firstName: Citizen
+      enabled: true
+      emailVerified: true
+      email: citizen_7@example.com
+  - updateUserPassword:
+      name: citizen_7
+      password: "vorschau"
+
+  - addUser:
+      name: citizen_8
+      lastName: User
+      firstName: Citizen
+      enabled: true
+      emailVerified: true
+      email: citizen_8@example.com
+  - updateUserPassword:
+      name: citizen_8
+      password: "vorschau"
+
+  - addUser:
+      name: citizen_9
+      lastName: User
+      firstName: Citizen
+      enabled: true
+      emailVerified: true
+      email: citizen_9@example.com
+  - updateUserPassword:
+      name: citizen_9
       password: "vorschau"

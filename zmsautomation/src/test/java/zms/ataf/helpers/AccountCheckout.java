@@ -18,23 +18,44 @@ public final class AccountCheckout {
     private static final ConcurrentHashMap<String, ReentrantLock> LOCKS = new ConcurrentHashMap<>();
     private static final ThreadLocal<LinkedHashSet<String>> HELD = ThreadLocal.withInitial(LinkedHashSet::new);
 
-    /** UI default {@code ataf}. Two threads plus one spare. */
-    private static final List<String> SUPERUSERS = List.of("ataf", "ataf_2", "ataf_3");
+    /** UI default {@code ataf}. Four threads plus one spare. */
+    private static final List<String> SUPERUSERS = List.of("ataf", "ataf_2", "ataf_3", "ataf_4", "ataf_5");
 
-    /** API default {@code agent_queue}. Four threads plus one spare. */
+    /** API default {@code agent_queue}. Eight threads plus one spare. */
     private static final List<String> WORKSTATIONS = List.of(
-            "agent_queue", "agent_queue_2", "agent_queue_3", "agent_queue_4", "agent_queue_5");
+            "agent_queue",
+            "agent_queue_2",
+            "agent_queue_3",
+            "agent_queue_4",
+            "agent_queue_5",
+            "agent_queue_6",
+            "agent_queue_7",
+            "agent_queue_8",
+            "agent_queue_9");
 
-    /** Mail login id is the raw nutzer name. Four API threads plus one spare. */
+    /** Mail login id is the raw nutzer name. Eight API threads plus one spare. */
     private static final List<String> MESSENGERS = List.of(
             "_system_messenger",
             "_system_messenger_2",
             "_system_messenger_3",
             "_system_messenger_4",
-            "_system_messenger_5");
+            "_system_messenger_5",
+            "_system_messenger_6",
+            "_system_messenger_7",
+            "_system_messenger_8",
+            "_system_messenger_9");
 
-    /** Citizen bookings are keyed by the Keycloak username. Four API threads plus one spare. */
-    private static final List<String> CITIZENS = List.of("citizen", "citizen_2", "citizen_3", "citizen_4", "citizen_5");
+    /** Citizen bookings are keyed by the Keycloak username. Eight API threads plus one spare. */
+    private static final List<String> CITIZENS = List.of(
+            "citizen",
+            "citizen_2",
+            "citizen_3",
+            "citizen_4",
+            "citizen_5",
+            "citizen_6",
+            "citizen_7",
+            "citizen_8",
+            "citizen_9");
 
     private AccountCheckout() {
     }

@@ -7,7 +7,7 @@ import zms.ataf.data.TestData;
  * TestNG runner for UI-only Cucumber tests (Selenium/ATAF web).
  * Glue and feature paths are set via Surefire system properties in the ataf-ui profile.
  * Scenarios in this JVM run together, one browser per thread. Surefire
- * {@code dataproviderthreadcount} on the ataf-ui profile sets how many (default 2).
+ * {@code dataproviderthreadcount} on the ataf-ui profile sets how many (default 4).
  * {@code -Ddataproviderthreadcount=1} runs one browser at a time.
  * Each GitHub module shard is its own JVM.
  */
