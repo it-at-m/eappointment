@@ -27,6 +27,7 @@ import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import zms.ataf.helpers.BerlinTime;
 import zms.ataf.helpers.CitizenKeycloakTokenHelper;
+import zms.ataf.helpers.RandomNameHelper;
 import zms.ataf.rest.dto.common.ApiResponse;
 import zms.ataf.rest.dto.zmscitizenapi.AvailableAppointmentsResponse;
 import zms.ataf.rest.dto.zmscitizenapi.AvailableCalendarResponse;
@@ -59,7 +60,6 @@ public class CitizenApiSteps {
     private String citizenAccessToken;
 
     private static final String CONTACT_FAMILY_NAME = "ATAF Test User";
-    private static final String CONTACT_EMAIL = "ataf-citizenapi@example.com";
 
     private int parseIntOrFail(String value, String label) {
         try {
@@ -588,22 +588,22 @@ public class CitizenApiSteps {
 
     @When("I update the appointment with contact details and customTextfield {string}")
     public void iUpdateTheAppointmentWithContactDetailsAndCustomTextfield(String customTextfield) {
-        postAppointmentUpdate(CONTACT_FAMILY_NAME, CONTACT_EMAIL, customTextfield != null ? customTextfield : "", true, false);
+        postAppointmentUpdate(CONTACT_FAMILY_NAME, scenarioContactEmail(), customTextfield != null ? customTextfield : "", true, false);
     }
 
     @When("I update the appointment with contact details and customTextfield {string} as the logged-in citizen")
     public void iUpdateTheAppointmentWithContactDetailsAndCustomTextfieldAsTheLoggedInCitizen(String customTextfield) {
-        postAppointmentUpdate(CONTACT_FAMILY_NAME, CONTACT_EMAIL, customTextfield != null ? customTextfield : "", true, true);
+        postAppointmentUpdate(CONTACT_FAMILY_NAME, scenarioContactEmail(), customTextfield != null ? customTextfield : "", true, true);
     }
 
     @When("I update the appointment with contact details without custom text")
     public void iUpdateTheAppointmentWithContactDetailsWithoutCustomText() {
-        postAppointmentUpdate(CONTACT_FAMILY_NAME, CONTACT_EMAIL, "", true, false);
+        postAppointmentUpdate(CONTACT_FAMILY_NAME, scenarioContactEmail(), "", true, false);
     }
 
     @When("I attempt to update the appointment changing familyName to {string}")
     public void iAttemptToUpdateTheAppointmentChangingFamilyNameTo(String familyName) {
-        postAppointmentUpdate(familyName, CONTACT_EMAIL, "", false, false);
+        postAppointmentUpdate(familyName, scenarioContactEmail(), "", false, false);
     }
 
     @When("I attempt to update the appointment with email {string}")
@@ -1416,6 +1416,15 @@ public class CitizenApiSteps {
             appointmentUrl = null;
             contactEmail = null;
         }
+    }
+
+    /** One mailinator address per scenario, same generator the citizen view Kontakt step uses. */
+    private static String scenarioContactEmail() {
+        if (booking().contactEmail == null || booking().contactEmail.isBlank()) {
+            String fullName = RandomNameHelper.generateRandomName();
+            setBookingContactEmail(RandomNameHelper.getEmailConformName(fullName) + "@mailinator.com");
+        }
+        return booking().contactEmail;
     }
 
     private static final ThreadLocal<BookingContext> BOOKING = ThreadLocal.withInitial(BookingContext::new);
