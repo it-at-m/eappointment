@@ -57,7 +57,7 @@ The `zmsautomation-test` script handles database setup, migrations, and test exe
 
 The ATAF library version defaults to `<ataf.version>` in `pom.xml`. Override with `-Dataf.version=…` for another published `de.muenchen.ataf` release.
 
-Use `-Pataf-api` and/or `-Pataf-ui` to select the test layer. Each profile runs its own Cucumber runner (`ApiTestRunner` / `UiTestRunner`). When a Jira tag exists on both API and UI features, pass the profile for the layer you want — the script adds `not @web` / `not @rest` to the tag filter automatically.
+Use `-Pataf-api` and/or `-Pataf-ui` to select the test layer. Each profile runs its own Cucumber runner (`ApiTestRunner` / `UiTestRunner`). Passing both runs the API suite, then the UI suite, so each runner keeps its own feature path.
 
 The script will:
 1. Backup the database
