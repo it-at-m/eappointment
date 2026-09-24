@@ -387,22 +387,19 @@ jobs:
             set -euo pipefail
             apt-get update
 
-            # Pin for reproducibility. apt-cache show can still list a version the
-            # mirror no longer ships (image lists / just-replaced security .deb).
-            # Simulate install so we fall back before apt exit 100.
+            # ATAF 0.3.4 ships Selenium 4.46, which speaks Chrome DevTools protocol
+            # 148-150. Do not fall back to Debian security's newer Chromium: ChromeDriver
+            # then times out with "Timed out receiving message from renderer".
+            # Same pin as zmsbase/php83-local and zmsbase/php84-local.
             CHROMIUM_APT_VERSION="150.0.7871.181-1~deb13u1"
             if ! apt-get install -s -y --allow-downgrades \
               "chromium-common=${CHROMIUM_APT_VERSION}" \
               "chromium=${CHROMIUM_APT_VERSION}" \
               "chromium-driver=${CHROMIUM_APT_VERSION}" \
               >/dev/null 2>&1; then
-              CHROMIUM_APT_VERSION="$(apt-cache policy chromium 2>/dev/null | grep "^  Candidate:" | head -1 | sed "s/^  Candidate: //" | tr -d " ")"
-              echo "Pinned Chromium unavailable; using mirror candidate ${CHROMIUM_APT_VERSION}"
-              if [[ -z "${CHROMIUM_APT_VERSION}" || "${CHROMIUM_APT_VERSION}" == "(none)" ]]; then
-                echo "No installable Chromium candidate after apt-get update."
-                apt-cache policy chromium || true
-                exit 1
-              fi
+              echo "Pinned Chromium ${CHROMIUM_APT_VERSION} is not installable."
+              apt-cache policy chromium || true
+              exit 1
             fi
             apt-get install -y --no-install-recommends --allow-downgrades \
               curl wget unzip ca-certificates gnupg \
@@ -414,6 +411,7 @@ jobs:
               "chromium=${CHROMIUM_APT_VERSION}" \
               "chromium-driver=${CHROMIUM_APT_VERSION}" \
               ;
+            apt-mark hold chromium chromium-driver chromium-common
             dpkg-query -W -f="chromium=%Version\n" chromium chromium-driver
             chromedriver --version
 
