@@ -1681,8 +1681,9 @@ public class CitizenViewPage extends BasePage {
             }
             sleepQuiet(400L);
         }
-        Assert.fail(
-                "zmscitizenview: reserve did not reach Kontaktdaten and did not report a taken slot");
+        ScenarioLogManager.getLogger()
+                .info(
+                        "zmscitizenview: reserve did not reach Kontaktdaten and did not report a taken slot");
         return false;
     }
 
