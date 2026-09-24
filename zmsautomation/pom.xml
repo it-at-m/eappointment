@@ -247,6 +247,13 @@
                 <cucumber.glue>zms.ataf.steps,zms.ataf.rest.steps,zms.ataf.hooks,ataf.rest.steps</cucumber.glue>
                 <cucumber.filter.tags>not @ignore</cucumber.filter.tags>
               </systemPropertyVariables>
+              <!-- GH-3281: scenarios of one module job run together. No browser, so more threads than UI. -->
+              <properties>
+                <property>
+                  <name>dataproviderthreadcount</name>
+                  <value>4</value>
+                </property>
+              </properties>
             </configuration>
           </plugin>
         </plugins>
@@ -336,6 +343,13 @@
                 <cucumber.glue>zms.ataf.steps,zms.ataf.rest.steps,zms.ataf.ui.steps,zms.ataf.hooks,ataf.rest.steps,ataf.web.steps</cucumber.glue>
                 <cucumber.filter.tags>not @ignore</cucumber.filter.tags>
               </systemPropertyVariables>
+              <!-- GH-3281: one browser per thread. Two Chromes fit the runner; queue tests still share one desk. -->
+              <properties>
+                <property>
+                  <name>dataproviderthreadcount</name>
+                  <value>2</value>
+                </property>
+              </properties>
             </configuration>
           </plugin>
         </plugins>

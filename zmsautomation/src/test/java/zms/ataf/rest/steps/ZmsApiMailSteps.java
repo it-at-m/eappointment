@@ -30,7 +30,7 @@ import zms.ataf.rest.dto.zmscitizenapi.ThinnedProcess;
  */
 public class ZmsApiMailSteps {
 
-    private static String cachedXAuthKey;
+    private static final ThreadLocal<String> CACHED_X_AUTH_KEY = new ThreadLocal<>();
     private String lastCancellationMailHtml;
 
     @When("I fetch the preconfirmation mail for the current process")
@@ -437,6 +437,7 @@ public class ZmsApiMailSteps {
     }
 
     private String getOrLoginXAuthKey() {
+        String cachedXAuthKey = CACHED_X_AUTH_KEY.get();
         if (cachedXAuthKey != null && !cachedXAuthKey.isBlank()) {
             return cachedXAuthKey;
         }
@@ -481,7 +482,7 @@ public class ZmsApiMailSteps {
             if (key == null || key.isBlank()) {
                 throw new IllegalStateException("Login succeeded but response did not contain data.authkey");
             }
-            cachedXAuthKey = key;
+            CACHED_X_AUTH_KEY.set(key);
             return key;
         } catch (Exception e) {
             throw new IllegalStateException("Failed to parse /workstation/login/ response for authkey", e);
