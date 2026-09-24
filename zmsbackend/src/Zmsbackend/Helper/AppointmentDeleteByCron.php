@@ -28,6 +28,7 @@ class AppointmentDeleteByCron
         "missed",
         'parked',
         "processing",
+        "pending",
     ];
 
     protected $archivelist = [
@@ -77,11 +78,8 @@ class AppointmentDeleteByCron
         $this->loopCount = $loopCount;
     }
 
-    public function startProcessing(bool $commit, bool $pending = false): void
+    public function startProcessing(bool $commit): void
     {
-        if ($pending) {
-            $this->statuslist[] = "pending";
-        }
         $this->count = array_fill_keys($this->statuslist, 0);
         $this->deleteBlockedProcesses($commit);
         $this->deleteExpiredProcesses($commit);

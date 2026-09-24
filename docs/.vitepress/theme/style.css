@@ -317,6 +317,36 @@ footer.VPFooter {
   background: color-mix(in srgb, #ffb74d 22%, var(--vp-c-bg));
 }
 
+.vp-doc .story-layer--citizenapi {
+  background: color-mix(in srgb, #5e35b1 8%, var(--vp-c-bg));
+  border-color: color-mix(in srgb, #5e35b1 40%, var(--vp-c-divider));
+  border-left: 4px solid #5e35b1;
+}
+
+.vp-doc .story-layer--citizenapi > h2 {
+  color: #311b92;
+}
+
+.vp-doc .story-layer--citizenapi .story-layer__label {
+  color: #311b92;
+  background: color-mix(in srgb, #5e35b1 16%, var(--vp-c-bg));
+}
+
+.dark .vp-doc .story-layer--citizenapi {
+  background: color-mix(in srgb, #b39ddb 12%, var(--vp-c-bg));
+  border-color: color-mix(in srgb, #b39ddb 40%, var(--vp-c-divider));
+  border-left-color: #b39ddb;
+}
+
+.dark .vp-doc .story-layer--citizenapi > h2 {
+  color: #d1c4e9;
+}
+
+.dark .vp-doc .story-layer--citizenapi .story-layer__label {
+  color: #ede7f6;
+  background: color-mix(in srgb, #b39ddb 22%, var(--vp-c-bg));
+}
+
 /* Cucumber feature accordion: keep VP heading styles from inflating the row */
 .vp-doc .cucumber-feature {
   margin: 0 0 0.5rem;

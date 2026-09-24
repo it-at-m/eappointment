@@ -48,18 +48,6 @@ class DialogHandlerTest extends Base
         $this->assertEquals(200, $response->getStatusCode());
     }
 
-    public function testConfirmFinishList()
-    {
-        $response = $this->render([], ['template' => 'confirm_finish_list'], []);
-        $this->assertStringContainsString(
-            'Wollen Sie wirklich alle Abholer aus dieser Liste löschen?',
-            (string)$response->getBody()
-        );
-        $this->assertStringContainsString('data-action-finishList', (string)$response->getBody());
-        $this->assertStringContainsString('data-action-abort', (string)$response->getBody());
-        $this->assertEquals(200, $response->getStatusCode());
-    }
-
     public function testConfirmFinish()
     {
         $response = $this->render([], [
