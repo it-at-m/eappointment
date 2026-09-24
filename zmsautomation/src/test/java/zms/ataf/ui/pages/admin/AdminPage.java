@@ -111,6 +111,7 @@ public class AdminPage extends BasePage {
     public void selectLocation(String location) {
         CONTEXT.set();
         ScenarioLogManager.getLogger().info("Trying to select location \"" + location + "\"");
+        AccountCheckout.checkout("scope:" + location);
         selectDropDownListValueByVisibleText(DEFAULT_EXPLICIT_WAIT_TIME, "scope", LocatorType.NAME, location);
         TestDataHelper.setTestData("location", location);
     }
