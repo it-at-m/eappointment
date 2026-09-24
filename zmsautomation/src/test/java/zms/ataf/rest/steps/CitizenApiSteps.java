@@ -215,10 +215,32 @@ public class CitizenApiSteps {
 
     @Then("the available calendar should include appointments for offices {string}")
     public void theAvailableCalendarShouldIncludeAppointmentsForOffices(String officeIdsCsv) {
-        Assertions.assertThat(lastAvailableCalendarResponse)
-            .as("Request available days first")
-            .isNotNull();
-        int[] officeIds = parseOfficeIdsCsv(officeIdsCsv).stream().mapToInt(id -> id.intValue()).toArray();
+        int[] officeIds = parseOfficeIdsCsv(officeIdsCsv).stream().mapToInt(Integer::intValue).toArray();
+        for (int attempt = 1; attempt <= 8; attempt++) {
+            Assertions.assertThat(lastAvailableCalendarResponse)
+                .as("Request available days first")
+                .isNotNull();
+            if (lastAvailableCalendarResponse.hasAppointmentsForAllOffices(officeIds)) {
+                return;
+            }
+            if (attempt == 8 || cachedCalendarOfficeIds == null) {
+                break;
+            }
+            ScenarioLogManager.getLogger().info(String.format(
+                "Citizen API calendar is missing an office bucket for %s; requesting it again (%d/8)",
+                officeIdsCsv,
+                attempt));
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException interrupted) {
+                Thread.currentThread().interrupt();
+                break;
+            }
+            lastAvailableCalendarResponse = fetchAvailableCalendar(
+                parseOfficeIdsCsv(cachedCalendarOfficeIds),
+                lastServiceId,
+                lastServiceCount);
+        }
         Assertions.assertThat(lastAvailableCalendarResponse.hasAppointmentsForAllOffices(officeIds))
             .as(
                 "Expected available-calendar to include appointment buckets for offices %s (shared booking)",
@@ -350,7 +372,8 @@ public class CitizenApiSteps {
         if (lastAvailableAppointmentsResponse == null) {
             throw new IllegalStateException("Request available appointments first (for date, office, service).");
         }
-        List<Long> timestamps = lastAvailableAppointmentsResponse.futureAppointmentTimestamps();
+        List<Long> timestamps = new ArrayList<>(
+            lastAvailableAppointmentsResponse.futureAppointmentTimestamps());
         if (timestamps.isEmpty()) {
             ScenarioLogManager.getLogger().error("No appointment timestamps found in lastAvailableAppointmentsResponse "
                 + "for officeId=" + lastOfficeId + ", serviceId=" + lastServiceId);
@@ -371,7 +394,9 @@ public class CitizenApiSteps {
                 "Citizen API rebooking reserve using source processId=%d", sourceProcessId
             ));
         }
-        for (int i = 0; i < timestamps.size(); i++) {
+        int refetches = 0;
+        int sameSlotAttempts = 0;
+        for (int i = 0; i < timestamps.size(); ) {
             Long timestamp = timestamps.get(i);
             ReserveAppointmentRequest body = new ReserveAppointmentRequest();
             body.setTimestamp(timestamp);
@@ -400,14 +425,40 @@ public class CitizenApiSteps {
             if (response.getStatusCode() == 200) {
                 break;
             }
+            if (reserveBody.contains("unknownError") && sameSlotAttempts < 2) {
+                sameSlotAttempts++;
+                ScenarioLogManager.getLogger().info(String.format(
+                    "Citizen API slot timestamp=%d returned unknownError; retrying the same slot (%d/2)",
+                    timestamp,
+                    sameSlotAttempts
+                ));
+                continue;
+            }
+            sameSlotAttempts = 0;
             if (slotNoLongerAvailable(response) && i < timestamps.size() - 1) {
                 ScenarioLogManager.getLogger().info(String.format(
                     "Citizen API slot timestamp=%d is reserved or booked; trying the next available slot",
                     timestamp
                 ));
+                i++;
                 continue;
             }
+            if (slotNoLongerAvailable(response) && refetches < 3) {
+                refetches++;
+                int added = appendFreshTimestamps(timestamps);
+                ScenarioLogManager.getLogger().info(String.format(
+                    "Citizen API slot timestamp=%d was the last known slot; refetched %d new timestamp(s) (%d/3)",
+                    timestamp,
+                    added,
+                    refetches
+                ));
+                if (added > 0) {
+                    i++;
+                    continue;
+                }
+            }
             response.then().statusCode(200);
+            i++;
         }
         response.then().statusCode(200);
 
@@ -439,6 +490,34 @@ public class CitizenApiSteps {
         if (lastReserveProcess != null) {
             setLastReserveProcess(lastReserveProcess);
         }
+    }
+
+    /** Ask the calendar again and append timestamps this scenario has not tried yet. */
+    private int appendFreshTimestamps(List<Long> timestamps) {
+        AvailableCalendarResponse calendar =
+            fetchAvailableCalendar(List.of(lastOfficeId), lastServiceId, lastServiceCount);
+        if (calendar == null || calendar.getAvailableDays() == null) {
+            return 0;
+        }
+        long minFuture = System.currentTimeMillis() / 1000 + 60;
+        int added = 0;
+        for (AvailableCalendarResponse.CalendarDay day : calendar.getAvailableDays()) {
+            if (day == null || day.getOffices() == null) {
+                continue;
+            }
+            for (AvailableCalendarResponse.OfficeSlot office : day.getOffices()) {
+                if (office == null || !office.matchesOfficeId(lastOfficeId) || office.getAppointments() == null) {
+                    continue;
+                }
+                for (Long ts : office.getAppointments()) {
+                    if (ts != null && ts > minFuture && !timestamps.contains(ts)) {
+                        timestamps.add(ts);
+                        added++;
+                    }
+                }
+            }
+        }
+        return added;
     }
 
     /** Parallel scenarios share the calendar, so the first slot can already be reserved. */
