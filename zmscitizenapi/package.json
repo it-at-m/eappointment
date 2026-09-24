@@ -27,7 +27,7 @@
     "brace-expansion": "5.0.12"
   },
   "devDependencies": {
-    "@apidevtools/swagger-parser": "^13.0.0",
+    "@apidevtools/swagger-parser": "^13.1.0",
     "@redocly/cli": "^2.52.1",
     "fast-xml-parser": "^5.11.0",
     "js-yaml": "^5.2.2",
