@@ -10,8 +10,6 @@ namespace BO\Zmsbackend\Process\Api;
 use BO\Slim\Render;
 use BO\Mellon\Validator;
 use BO\Zmsbackend\Process\Service\ProcessStatusArchived as Query;
-use BO\Zmsbackend\Process\Service\Process;
-use BO\Zmsbackend\Workstation\Service\Workstation;
 use BO\Zmsbackend\ProcessSearchHistory\Service\ProcessSearchHistory as HistoryService;
 
 /**
@@ -39,18 +37,7 @@ class ProcessFinished extends \BO\Zmsbackend\Api\BaseController
 
         \BO\Zmsbackend\Connection\Select::getWriteConnection();
         $query = new Query();
-        if ('pending' == $process['status']) {
-            $process = $query->updateEntity(
-                $process,
-                \App::$now,
-                0,
-                $process['status'],
-                $workstation->getUseraccount()
-            );
-            (new \BO\Zmsbackend\Workstation\Service\Workstation())->writeRemovedProcess($workstation);
-        } else {
-            $query->writeEntityFinished($process, \App::$now, false, $workstation->getUseraccount(), HistoryService::STATUS_COMPLETED);
-        }
+        $query->writeEntityFinished($process, \App::$now, false, $workstation->getUseraccount(), HistoryService::STATUS_COMPLETED);
 
         if ($survey) {
             $this->writeSurveyMail($process);
@@ -78,7 +65,7 @@ class ProcessFinished extends \BO\Zmsbackend\Api\BaseController
     {
         $hasValidId = (
             $process->hasId() &&
-            ('pending' == $process['status'] || 'finished' == $process['status'])
+            'finished' == $process['status']
         );
         if (! $hasValidId) {
             throw new \BO\Zmsbackend\Process\Exception\ProcessInvalid();

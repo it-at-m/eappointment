@@ -1,15 +1,20 @@
 import { mount } from "@vue/test-utils";
 import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 import { nextTick, ref } from "vue";
+
+import ServiceFinder from "@/components/Appointment/ServiceFinder.vue";
 import {
   VARIANT_ID_LARGE_CLIENT,
   VARIANT_ID_PRESENCE,
   VARIANT_ID_SMALL_CLIENT,
   VARIANT_ID_TELEPHONE,
-  VARIANT_ID_VIDEO
+  VARIANT_ID_VIDEO,
 } from "@/utils/Constants";
+import { trackAppointmentEvent } from "@/utils/trackAppointmentEvent";
 
-import ServiceFinder from "@/components/Appointment/ServiceFinder.vue";
+vi.mock("@/utils/trackAppointmentEvent", () => ({
+  trackAppointmentEvent: vi.fn(),
+}));
 
 interface ServiceImpl {
   id: string;
@@ -75,33 +80,36 @@ describe("ServiceFinder", () => {
       serviceId: "1",
       slots: 1,
       public: true,
-      maxQuantity: 4
+      maxQuantity: 4,
     },
     {
       officeId: "1",
       serviceId: "2",
       slots: 1,
       public: true,
-      maxQuantity: 4
+      maxQuantity: 4,
     },
     {
       officeId: "2",
       serviceId: "3",
       slots: 1,
       public: true,
-      maxQuantity: 4
-    }
+      maxQuantity: 4,
+    },
   ];
 
   beforeAll(() => {
-    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
-      status: 200,
-      json: async () => ({
-        services: mockServices,
-        offices: mockOffices,
-        relations: mockRelations
-      }),
-    }));
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({
+        status: 200,
+        json: async () => ({
+          services: mockServices,
+          offices: mockOffices,
+          relations: mockRelations,
+        }),
+      })
+    );
   });
 
   afterAll(() => {
@@ -164,8 +172,17 @@ describe("ServiceFinder", () => {
           MucSelect: {
             name: "MucSelect",
             template: '<div class="muc-select-stub"></div>',
-            props: ['id', 'items', 'label', 'hint', 'multiple', 'noItemFoundMessage', 'itemTitle', 'modelValue'],
-            emits: ['update:modelValue'],
+            props: [
+              "id",
+              "items",
+              "label",
+              "hint",
+              "multiple",
+              "noItemFoundMessage",
+              "itemTitle",
+              "modelValue",
+            ],
+            emits: ["update:modelValue"],
           },
         },
       },
@@ -199,7 +216,9 @@ describe("ServiceFinder", () => {
       const wrapper = createWrapper(null);
       await nextTick();
 
-      const gewerbeService = mockServices.find(s => s.name.includes("Gewerbe")) as ServiceImpl;
+      const gewerbeService = mockServices.find((s) =>
+        s.name.includes("Gewerbe")
+      ) as ServiceImpl;
       expect(gewerbeService).toBeDefined();
 
       wrapper.vm.service = gewerbeService;
@@ -218,9 +237,11 @@ describe("ServiceFinder", () => {
       const select = wrapper.findComponent({ name: "MucSelect" });
       expect(select.exists()).toBe(true);
 
-      const items: any[] = select.props("items") as any[] || [];
+      const items: any[] = (select.props("items") as any[]) || [];
 
-      const visibleServices = items.filter((s: any) => s.showOnStartPage === true);
+      const visibleServices = items.filter(
+        (s: any) => s.showOnStartPage === true
+      );
       expect(visibleServices).toHaveLength(3);
 
       const visibleIds = visibleServices.map((s: any) => s.id);
@@ -235,14 +256,16 @@ describe("ServiceFinder", () => {
       const nonExistentService = {
         id: "non-existent",
         name: "NonExistentService",
-        maxQuantity: 1
+        maxQuantity: 1,
       };
 
       wrapper.vm.service = nonExistentService;
       await nextTick();
 
       expect(wrapper.vm.service).toStrictEqual(nonExistentService);
-      expect(wrapper.vm.services.filter(s => s.name.includes("NonExistentService"))).toHaveLength(0);
+      expect(
+        wrapper.vm.services.filter((s) => s.name.includes("NonExistentService"))
+      ).toHaveLength(0);
     });
 
     it("should select service when clicked", async () => {
@@ -286,7 +309,7 @@ describe("ServiceFinder", () => {
       const wrapper = createWrapper(makeService(0));
       await nextTick();
       const buttons = wrapper.findAll(".m-button-group button");
-      const nextButton = buttons.find(b => b.text().includes("next"));
+      const nextButton = buttons.find((b) => b.text().includes("next"));
       await nextButton.trigger("click");
       expect(wrapper.emitted("next")).toBeTruthy();
     });
@@ -295,21 +318,24 @@ describe("ServiceFinder", () => {
       const wrapper = createWrapper(null);
       await nextTick();
       const buttons = wrapper.findAll(".m-button-group button");
-      const nextButton = buttons.find(b => b.text().includes("next"));
+      const nextButton = buttons.find((b) => b.text().includes("next"));
       expect(nextButton).toBeUndefined();
     });
   });
 
   describe("Invalid Jump-in Link Detection", () => {
     it("should emit invalidJumpinLink when preselected service is not found", async () => {
-      vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
-        status: 200,
-        json: async () => ({
-          services: mockServices,
-          relations: [],
-          offices: []
-        }),
-      }));
+      vi.stubGlobal(
+        "fetch",
+        vi.fn().mockResolvedValue({
+          status: 200,
+          json: async () => ({
+            services: mockServices,
+            relations: [],
+            offices: [],
+          }),
+        })
+      );
 
       const wrapper = mount(ServiceFinder, {
         props: {
@@ -342,20 +368,23 @@ describe("ServiceFinder", () => {
       });
 
       await nextTick();
-      await new Promise(resolve => setTimeout(resolve, 0));
+      await new Promise((resolve) => setTimeout(resolve, 0));
 
       expect(wrapper.emitted("invalidJumpinLink")).toBeTruthy();
     });
 
     it("should emit invalidJumpinLink when API returns empty services for preselected ID", async () => {
-      vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
-        status: 200,
-        json: async () => ({
-          services: [],
-          relations: [],
-          offices: []
-        }),
-      }));
+      vi.stubGlobal(
+        "fetch",
+        vi.fn().mockResolvedValue({
+          status: 200,
+          json: async () => ({
+            services: [],
+            relations: [],
+            offices: [],
+          }),
+        })
+      );
 
       const wrapper = mount(ServiceFinder, {
         props: {
@@ -388,20 +417,23 @@ describe("ServiceFinder", () => {
       });
 
       await nextTick();
-      await new Promise(resolve => setTimeout(resolve, 0));
+      await new Promise((resolve) => setTimeout(resolve, 0));
 
       expect(wrapper.emitted("invalidJumpinLink")).toBeTruthy();
     });
 
     it("should not emit invalidJumpinLink when preselected service is found", async () => {
-      vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
-        status: 200,
-        json: async () => ({
-          services: mockServices,
-          relations: [],
-          offices: []
-        }),
-      }));
+      vi.stubGlobal(
+        "fetch",
+        vi.fn().mockResolvedValue({
+          status: 200,
+          json: async () => ({
+            services: mockServices,
+            relations: [],
+            offices: [],
+          }),
+        })
+      );
 
       const wrapper = mount(ServiceFinder, {
         props: {
@@ -434,7 +466,7 @@ describe("ServiceFinder", () => {
       });
 
       await nextTick();
-      await new Promise(resolve => setTimeout(resolve, 0));
+      await new Promise((resolve) => setTimeout(resolve, 0));
 
       expect(wrapper.emitted("invalidJumpinLink")).toBeFalsy();
     });
@@ -501,7 +533,9 @@ describe("ServiceFinder", () => {
         .find("button")
         .trigger("click");
       await nextTick();
-      expect(wrapper.find(".m-button-group--secondary").text()).toBe("showLessServices");
+      expect(wrapper.find(".m-button-group--secondary").text()).toBe(
+        "showLessServices"
+      );
       await wrapper
         .find(".m-button-group--secondary")
         .find("button")
@@ -517,172 +551,195 @@ describe("ServiceFinder", () => {
 
   describe("Invalid Office ID (Location) Detection", () => {
     it("should emit invalidJumpinLink when preselected office ID is not found", async () => {
-      vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
-        status: 200,
-        json: async () => ({
-          services: mockServices,
-          offices: mockOffices,
-          relations: mockRelations
+      vi.stubGlobal(
+        "fetch",
+        vi.fn().mockResolvedValue({
+          status: 200,
+          json: async () => ({
+            services: mockServices,
+            offices: mockOffices,
+            relations: mockRelations,
+          }),
         })
-      }));
+      );
 
       const wrapper = createWrapper(null, {
         preselectedServiceId: "1",
-        preselectedOfficeId: "999999"
+        preselectedOfficeId: "999999",
       });
 
       await nextTick();
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await new Promise((resolve) => setTimeout(resolve, 100));
 
       expect(wrapper.emitted("invalidJumpinLink")).toBeTruthy();
       expect(wrapper.emitted("invalidJumpinLink")).toHaveLength(2);
     });
 
     it("should emit invalidJumpinLink when both service and office IDs are invalid", async () => {
-      vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
-        status: 200,
-        json: async () => ({
-          services: mockServices,
-          offices: mockOffices,
-          relations: mockRelations
+      vi.stubGlobal(
+        "fetch",
+        vi.fn().mockResolvedValue({
+          status: 200,
+          json: async () => ({
+            services: mockServices,
+            offices: mockOffices,
+            relations: mockRelations,
+          }),
         })
-      }));
+      );
 
       const wrapper = createWrapper(null, {
         preselectedServiceId: "000000000000",
-        preselectedOfficeId: "000000000000"
+        preselectedOfficeId: "000000000000",
       });
 
       await nextTick();
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await new Promise((resolve) => setTimeout(resolve, 100));
 
       expect(wrapper.emitted("invalidJumpinLink")).toBeTruthy();
       expect(wrapper.emitted("invalidJumpinLink")).toHaveLength(3);
     });
 
     it("should emit invalidJumpinLink when API returns empty offices array with preselected office", async () => {
-      vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
-        status: 200,
-        json: async () => ({
-          services: mockServices,
-          offices: [],
-          relations: []
+      vi.stubGlobal(
+        "fetch",
+        vi.fn().mockResolvedValue({
+          status: 200,
+          json: async () => ({
+            services: mockServices,
+            offices: [],
+            relations: [],
+          }),
         })
-      }));
+      );
 
       const wrapper = createWrapper(null, {
         preselectedServiceId: "1",
-        preselectedOfficeId: "1"
+        preselectedOfficeId: "1",
       });
 
       await nextTick();
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await new Promise((resolve) => setTimeout(resolve, 100));
 
       expect(wrapper.emitted("invalidJumpinLink")).toBeTruthy();
       expect(wrapper.emitted("invalidJumpinLink")).toHaveLength(2);
     });
 
     it("should NOT emit invalidJumpinLink when both service and office IDs are valid and have a relation", async () => {
-      vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
-        status: 200,
-        json: async () => ({
-          services: mockServices,
-          offices: mockOffices,
-          relations: mockRelations
+      vi.stubGlobal(
+        "fetch",
+        vi.fn().mockResolvedValue({
+          status: 200,
+          json: async () => ({
+            services: mockServices,
+            offices: mockOffices,
+            relations: mockRelations,
+          }),
         })
-      }));
+      );
 
       const wrapper = createWrapper(null, {
         preselectedServiceId: "1",
-        preselectedOfficeId: "1"
+        preselectedOfficeId: "1",
       });
 
       await nextTick();
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await new Promise((resolve) => setTimeout(resolve, 100));
 
       expect(wrapper.emitted("invalidJumpinLink")).toBeFalsy();
     });
 
     it("should NOT emit invalidJumpinLink when no preselected IDs are provided", async () => {
-      vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
-        status: 200,
-        json: async () => ({
-          services: mockServices,
-          offices: mockOffices,
-          relations: mockRelations
+      vi.stubGlobal(
+        "fetch",
+        vi.fn().mockResolvedValue({
+          status: 200,
+          json: async () => ({
+            services: mockServices,
+            offices: mockOffices,
+            relations: mockRelations,
+          }),
         })
-      }));
+      );
 
-      const wrapper = createWrapper(null, {
-      });
+      const wrapper = createWrapper(null, {});
 
       await nextTick();
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await new Promise((resolve) => setTimeout(resolve, 100));
 
       expect(wrapper.emitted("invalidJumpinLink")).toBeFalsy();
     });
 
     it("should emit invalidJumpinLink when office ID is invalid but service ID is valid", async () => {
-      vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
-        status: 200,
-        json: async () => ({
-          services: mockServices,
-          offices: mockOffices,
-          relations: mockRelations
+      vi.stubGlobal(
+        "fetch",
+        vi.fn().mockResolvedValue({
+          status: 200,
+          json: async () => ({
+            services: mockServices,
+            offices: mockOffices,
+            relations: mockRelations,
+          }),
         })
-      }));
+      );
 
       const wrapper = createWrapper(null, {
         preselectedServiceId: "1",
-        preselectedOfficeId: "nonexistent-office-id"
+        preselectedOfficeId: "nonexistent-office-id",
       });
 
       await nextTick();
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await new Promise((resolve) => setTimeout(resolve, 100));
 
       expect(wrapper.emitted("invalidJumpinLink")).toBeTruthy();
       expect(wrapper.emitted("invalidJumpinLink")).toHaveLength(2);
     });
 
     it("should emit invalidJumpinLink when valid service and office IDs don't work together (no relation)", async () => {
-      vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
-        status: 200,
-        json: async () => ({
-          services: [],
-          offices: [],
-          relations: []
+      vi.stubGlobal(
+        "fetch",
+        vi.fn().mockResolvedValue({
+          status: 200,
+          json: async () => ({
+            services: [],
+            offices: [],
+            relations: [],
+          }),
         })
-      }));
+      );
 
       const wrapper = createWrapper(null, {
         preselectedServiceId: "1",
-        preselectedOfficeId: "2"
+        preselectedOfficeId: "2",
       });
 
       await nextTick();
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await new Promise((resolve) => setTimeout(resolve, 100));
 
       expect(wrapper.emitted("invalidJumpinLink")).toBeTruthy();
       expect(wrapper.emitted("invalidJumpinLink")).toHaveLength(3);
     });
 
     it("should emit invalidJumpinLink when service is not available at any office", async () => {
-      vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
-        status: 200,
-        json: async () => ({
-          services: [],
-          offices: mockOffices,
-          relations: []
+      vi.stubGlobal(
+        "fetch",
+        vi.fn().mockResolvedValue({
+          status: 200,
+          json: async () => ({
+            services: [],
+            offices: mockOffices,
+            relations: [],
+          }),
         })
-      }));
+      );
 
       const wrapper = createWrapper(null, {
         preselectedServiceId: "4",
-        preselectedOfficeId: "1"
+        preselectedOfficeId: "1",
       });
 
       await nextTick();
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await new Promise((resolve) => setTimeout(resolve, 100));
 
       expect(wrapper.emitted("invalidJumpinLink")).toBeTruthy();
       expect(wrapper.emitted("invalidJumpinLink")).toHaveLength(2);
@@ -691,150 +748,171 @@ describe("ServiceFinder", () => {
 
   describe("Valid Partial Jump-in Links", () => {
     it("should NOT emit invalidJumpinLink when only valid serviceId is provided", async () => {
-      vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
-        status: 200,
-        json: async () => ({
-          services: mockServices,
-          offices: mockOffices,
-          relations: mockRelations
+      vi.stubGlobal(
+        "fetch",
+        vi.fn().mockResolvedValue({
+          status: 200,
+          json: async () => ({
+            services: mockServices,
+            offices: mockOffices,
+            relations: mockRelations,
+          }),
         })
-      }));
+      );
 
       const wrapper = createWrapper(null, {
         preselectedServiceId: "1",
-        preselectedOfficeId: undefined
+        preselectedOfficeId: undefined,
       });
 
       await nextTick();
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await new Promise((resolve) => setTimeout(resolve, 100));
 
       expect(wrapper.emitted("invalidJumpinLink")).toBeFalsy();
     });
 
     it("should NOT emit invalidJumpinLink when only valid officeId is provided", async () => {
-      vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
-        status: 200,
-        json: async () => ({
-          services: mockServices,
-          offices: mockOffices,
-          relations: mockRelations
+      vi.stubGlobal(
+        "fetch",
+        vi.fn().mockResolvedValue({
+          status: 200,
+          json: async () => ({
+            services: mockServices,
+            offices: mockOffices,
+            relations: mockRelations,
+          }),
         })
-      }));
+      );
 
       const wrapper = createWrapper(null, {
         preselectedServiceId: undefined,
-        preselectedOfficeId: "1"
+        preselectedOfficeId: "1",
       });
 
       await nextTick();
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await new Promise((resolve) => setTimeout(resolve, 100));
 
       expect(wrapper.emitted("invalidJumpinLink")).toBeFalsy();
     });
 
     it("should emit invalidJumpinLink when only invalid serviceId is provided", async () => {
-      vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
-        status: 200,
-        json: async () => ({
-          services: mockServices,
-          offices: mockOffices,
-          relations: mockRelations
+      vi.stubGlobal(
+        "fetch",
+        vi.fn().mockResolvedValue({
+          status: 200,
+          json: async () => ({
+            services: mockServices,
+            offices: mockOffices,
+            relations: mockRelations,
+          }),
         })
-      }));
+      );
 
       const wrapper = createWrapper(null, {
         preselectedServiceId: "999999",
-        preselectedOfficeId: undefined
+        preselectedOfficeId: undefined,
       });
 
       await nextTick();
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await new Promise((resolve) => setTimeout(resolve, 100));
 
       expect(wrapper.emitted("invalidJumpinLink")).toBeTruthy();
       expect(wrapper.emitted("invalidJumpinLink")).toHaveLength(1);
     });
 
     it("should emit invalidJumpinLink when only invalid officeId is provided", async () => {
-      vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
-        status: 200,
-        json: async () => ({
-          services: mockServices,
-          offices: mockOffices,
-          relations: mockRelations
+      vi.stubGlobal(
+        "fetch",
+        vi.fn().mockResolvedValue({
+          status: 200,
+          json: async () => ({
+            services: mockServices,
+            offices: mockOffices,
+            relations: mockRelations,
+          }),
         })
-      }));
+      );
 
       const wrapper = createWrapper(null, {
         preselectedServiceId: undefined,
-        preselectedOfficeId: "999999"
+        preselectedOfficeId: "999999",
       });
 
       await nextTick();
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await new Promise((resolve) => setTimeout(resolve, 100));
 
       expect(wrapper.emitted("invalidJumpinLink")).toBeTruthy();
       expect(wrapper.emitted("invalidJumpinLink")).toHaveLength(1);
     });
 
     it("should NOT emit invalidJumpinLink when API returns filtered results for valid serviceId only", async () => {
-      vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
-        status: 200,
-        json: async () => ({
-          services: [mockServices[0]],
-          offices: [mockOffices[0]],
-          relations: [mockRelations[0]]
+      vi.stubGlobal(
+        "fetch",
+        vi.fn().mockResolvedValue({
+          status: 200,
+          json: async () => ({
+            services: [mockServices[0]],
+            offices: [mockOffices[0]],
+            relations: [mockRelations[0]],
+          }),
         })
-      }));
+      );
 
       const wrapper = createWrapper(null, {
         preselectedServiceId: "1",
-        preselectedOfficeId: undefined
+        preselectedOfficeId: undefined,
       });
 
       await nextTick();
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await new Promise((resolve) => setTimeout(resolve, 100));
 
       expect(wrapper.emitted("invalidJumpinLink")).toBeFalsy();
     });
 
     it("should NOT emit invalidJumpinLink when API returns filtered results for valid officeId only", async () => {
-      vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
-        status: 200,
-        json: async () => ({
-          services: [mockServices[0], mockServices[1]],
-          offices: [mockOffices[0]],
-          relations: [mockRelations[0], mockRelations[1]]
+      vi.stubGlobal(
+        "fetch",
+        vi.fn().mockResolvedValue({
+          status: 200,
+          json: async () => ({
+            services: [mockServices[0], mockServices[1]],
+            offices: [mockOffices[0]],
+            relations: [mockRelations[0], mockRelations[1]],
+          }),
         })
-      }));
+      );
 
       const wrapper = createWrapper(null, {
         preselectedServiceId: undefined,
-        preselectedOfficeId: "1"
+        preselectedOfficeId: "1",
       });
 
       await nextTick();
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await new Promise((resolve) => setTimeout(resolve, 100));
 
       expect(wrapper.emitted("invalidJumpinLink")).toBeFalsy();
     });
 
     it("should emit invalidJumpinLink when both serviceId and officeId are null strings", async () => {
-      vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
-        status: 200,
-        json: async () => ({
-          services: mockServices,
-          offices: mockOffices,
-          relations: mockRelations
+      vi.stubGlobal(
+        "fetch",
+        vi.fn().mockResolvedValue({
+          status: 200,
+          json: async () => ({
+            services: mockServices,
+            offices: mockOffices,
+            relations: mockRelations,
+          }),
         })
-      }));
+      );
 
       const wrapper = createWrapper(null, {
         preselectedServiceId: "null",
-        preselectedOfficeId: "null"
+        preselectedOfficeId: "null",
       });
 
       await nextTick();
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await new Promise((resolve) => setTimeout(resolve, 100));
 
       expect(wrapper.emitted("invalidJumpinLink")).toBeTruthy();
       expect(wrapper.emitted("invalidJumpinLink")).toHaveLength(3);
@@ -1068,10 +1146,13 @@ describe("ServiceFinder", () => {
     });
 
     it("should show subservices only for presence variant and hide them for telephone variant", async () => {
-      vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
-        status: 200,
-        json: async () => ({ services: [], offices: [], relations: [] }),
-      }));
+      vi.stubGlobal(
+        "fetch",
+        vi.fn().mockResolvedValue({
+          status: 200,
+          json: async () => ({ services: [], offices: [], relations: [] }),
+        })
+      );
 
       const baseService = makeServiceVariant({
         id: "10",
@@ -1110,6 +1191,53 @@ describe("ServiceFinder", () => {
       await nextTick();
 
       expect(wrapper.vm.showSubservices).toBeFalsy();
+    });
+  });
+
+  describe("appointment tracking", () => {
+    beforeEach(() => {
+      vi.mocked(trackAppointmentEvent).mockReset();
+      vi.stubGlobal(
+        "fetch",
+        vi.fn().mockResolvedValue({
+          status: 200,
+          json: async () => ({
+            services: mockServices,
+            offices: mockOffices,
+            relations: mockRelations,
+          }),
+        })
+      );
+    });
+
+    it("tracks service_finder when opening without a preselected service", async () => {
+      createWrapper(null);
+      await nextTick();
+
+      expect(trackAppointmentEvent).toHaveBeenCalledWith({
+        object: "service_finder",
+        action: "view",
+      });
+      expect(trackAppointmentEvent).not.toHaveBeenCalledWith({
+        object: "service_combination",
+        action: "view",
+      });
+    });
+
+    it("tracks only service_combination for a valid jump-in service link", async () => {
+      createWrapper(null, { preselectedServiceId: "1" });
+      await nextTick();
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
+      expect(trackAppointmentEvent).not.toHaveBeenCalledWith({
+        object: "service_finder",
+        action: "view",
+      });
+      expect(trackAppointmentEvent).toHaveBeenCalledTimes(1);
+      expect(trackAppointmentEvent).toHaveBeenCalledWith({
+        object: "service_combination",
+        action: "view",
+      });
     });
   });
 });

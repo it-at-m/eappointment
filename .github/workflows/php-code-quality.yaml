@@ -10,7 +10,7 @@ jobs:
   module-code-quality:
     runs-on: ubuntu-latest
     container:
-      image: "ghcr.io/it-at-m/eappointment/zmsbase:${{ matrix.php_version }}-dev@sha256:cdf964fa2e02d11b1309f1006d0d71d0afef6a550d5722c7634860e5c594d4cb"
+      image: "ghcr.io/it-at-m/eappointment/zmsbase:${{ matrix.php_version }}-dev@sha256:39fa5ce4b22791e56d4c7d723190301748f2df7839dc1d79470a2c44008ff1fa"
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -41,26 +41,26 @@ jobs:
       matrix:
         include:
           - module: mellon
-            php_version: "8.3"
+            php_version: "8.4"
           - module: zmsadmin
-            php_version: "8.3"
+            php_version: "8.4"
           - module: zmsbackend
-            php_version: "8.3"
+            php_version: "8.4"
           - module: zmscalldisplay
-            php_version: "8.3"
+            php_version: "8.4"
           - module: zmscitizenapi
-            php_version: "8.3"
+            php_version: "8.4"
           - module: zmsclient
-            php_version: "8.3"
+            php_version: "8.4"
           - module: zmsdldb
-            php_version: "8.3"
+            php_version: "8.4"
           - module: zmsentities
-            php_version: "8.3"
+            php_version: "8.4"
           - module: zmsmessaging
-            php_version: "8.3"
+            php_version: "8.4"
           - module: zmsslim
-            php_version: "8.3"
+            php_version: "8.4"
           - module: zmsstatistic
-            php_version: "8.3"
+            php_version: "8.4"
           - module: zmsticketprinter
-            php_version: "8.3"
+            php_version: "8.4"

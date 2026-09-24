@@ -168,7 +168,7 @@ class Http
      *
      * @return Result
      */
-    public function readGetResult($relativeUrl, array $getParameters = null, string|null $xToken = null)
+    public function readGetResult($relativeUrl, ?array $getParameters = null, string|null $xToken = null)
     {
         $uri = $this->uri->withPath($this->http_baseurl . $relativeUrl);
         if (null !== $getParameters) {
@@ -188,7 +188,7 @@ class Http
      *
      * @param mixed $entity JSON-encodable payload (entity or collection)
      */
-    public function readPostResult(string $relativeUrl, $entity, array $getParameters = null): Result
+    public function readPostResult(string $relativeUrl, $entity, ?array $getParameters = null): Result
     {
         $uri = $this->uri->withPath($this->http_baseurl . $relativeUrl);
         if (null !== $getParameters) {
@@ -210,7 +210,7 @@ class Http
      *
      * @return Result
      */
-    public function readDeleteResult($relativeUrl, array $getParameters = null)
+    public function readDeleteResult($relativeUrl, ?array $getParameters = null)
     {
         $uri = $this->uri->withPath($this->http_baseurl . $relativeUrl);
         if (null !== $getParameters) {

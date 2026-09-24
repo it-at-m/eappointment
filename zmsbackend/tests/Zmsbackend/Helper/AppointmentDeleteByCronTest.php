@@ -46,7 +46,7 @@ class AppointmentDeleteByCronTest extends \BO\Zmsbackend\Tests\Service\Base
         $helper = new AppointmentDeleteByCron(0, $now, false); // verbose
         $helper->setLimit(10);
         $helper->setLoopCount(5);
-        $helper->startProcessing(false, false);
+        $helper->startProcessing(false);
         $this->assertGreaterThan(0, $helper->getCount()['preconfirmed']);
     }
 
@@ -59,11 +59,11 @@ class AppointmentDeleteByCronTest extends \BO\Zmsbackend\Tests\Service\Base
         $helper->setLoopCount(500);
         $expiredCount = count((new Query())->readExpiredProcessListByStatus($cutoff, 'preconfirmed', 10000));
         $this->assertGreaterThan(0, $expiredCount);
-        $helper->startProcessing(false, false);
+        $helper->startProcessing(false);
         $this->assertEquals($expiredCount, $helper->getCount()['preconfirmed']);
         $this->assertEquals($expiredCount, count((new Query())->readExpiredProcessListByStatus($cutoff, 'preconfirmed', 10000)));
 
-        $helper->startProcessing(true, false);
+        $helper->startProcessing(true);
         $this->assertEquals(0, count((new Query())->readExpiredProcessListByStatus($cutoff, 'preconfirmed', 10000)));
     }
 
@@ -86,7 +86,7 @@ class AppointmentDeleteByCronTest extends \BO\Zmsbackend\Tests\Service\Base
         );
         $helper->setLimit(10000);
         $helper->setLoopCount(500);
-        $helper->startProcessing(true, false);
+        $helper->startProcessing(true);
 
         $this->assertTrue($this->processExists(990111));
     }
@@ -119,6 +119,7 @@ class AppointmentDeleteByCronTest extends \BO\Zmsbackend\Tests\Service\Base
         foreach ([
             self::PROCESS_PROCESSING,
             self::PROCESS_PARKED,
+            self::PROCESS_PENDING,
         ] as $processId) {
             $this->assertHistoryStatus(
                 $processId,
@@ -129,30 +130,6 @@ class AppointmentDeleteByCronTest extends \BO\Zmsbackend\Tests\Service\Base
                 $this->processExists($processId)
             );
         }
-    }
-
-    public function testPendingIsOnlyArchivedWhenEnabled(): void
-    {
-        $this->runCleanup(false);
-
-        $this->assertNoHistory(
-            self::PROCESS_PENDING
-        );
-
-        $this->assertTrue(
-            $this->processExists(self::PROCESS_PENDING)
-        );
-
-        $this->runCleanup(true);
-
-        $this->assertHistoryStatus(
-            self::PROCESS_PENDING,
-            HistoryService::STATUS_COMPLETED
-        );
-
-        $this->assertFalse(
-            $this->processExists(self::PROCESS_PENDING)
-        );
     }
 
     public function testCleanupDoesNotWriteHistoryForNonArchivedStatuses(): void
@@ -172,7 +149,7 @@ class AppointmentDeleteByCronTest extends \BO\Zmsbackend\Tests\Service\Base
         }
     }
 
-    private function runCleanup(bool $pending = false): void
+    private function runCleanup(): void
     {
         $helper = new AppointmentDeleteByCron(
             0,
@@ -183,10 +160,7 @@ class AppointmentDeleteByCronTest extends \BO\Zmsbackend\Tests\Service\Base
         $helper->setLimit(10000);
         $helper->setLoopCount(500);
 
-        $helper->startProcessing(
-            true,
-            $pending
-        );
+        $helper->startProcessing(true);
     }
 
     private function assertHistoryStatus(

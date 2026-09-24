@@ -20,6 +20,10 @@ import {
 import de from "@/utils/de-DE.json";
 // beforeEach is already imported from vitest on line 2
 import { nowUnixSeconds } from "@/utils/timestampInPast";
+import {
+  trackAppointmentEvent,
+  trackAppointmentScreenFromView,
+} from "@/utils/trackAppointmentEvent";
 
 globalThis.scrollTo = vi.fn();
 
@@ -45,6 +49,13 @@ vi.mock("@/utils/auth", () => ({
   })),
 }));
 
+vi.mock("@/utils/trackAppointmentEvent", () => ({
+  trackAppointmentEvent: vi.fn(),
+  trackAppointmentScreenFromView: vi.fn(),
+  trackWidgetView: vi.fn(),
+  bookingFlow: (isRebooking: boolean) => (isRebooking ? "rebooking" : "new"),
+}));
+
 describe("AppointmentView", () => {
   beforeAll(() => {
     vi.stubGlobal(
@@ -66,6 +77,8 @@ describe("AppointmentView", () => {
 
   beforeEach(() => {
     vi.mocked(ZMSAppointmentAPI.fetchAppointment).mockReset();
+    vi.mocked(trackAppointmentEvent).mockReset();
+    vi.mocked(trackAppointmentScreenFromView).mockReset();
   });
 
   const mockBaseUrl = "https://www.muenchen.de";
@@ -466,6 +479,75 @@ describe("AppointmentView", () => {
       wrapper.vm.currentView = 0; // Simulate stepper navigation
       await nextTick();
       expect(wrapper.find('[data-test="service-finder"]').exists()).toBe(true);
+    });
+  });
+
+  describe("appointment tracking", () => {
+    it("tracks appointment_selection when the view changes to Termin", async () => {
+      const wrapper = createWrapper({ appointmentHash: undefined });
+      vi.mocked(trackAppointmentScreenFromView).mockClear();
+
+      wrapper.vm.currentView = 1;
+      await nextTick();
+
+      expect(trackAppointmentScreenFromView).toHaveBeenCalledWith(1);
+    });
+
+    it("tracks preconfirmed after a successful preconfirm", async () => {
+      const wrapper = createWrapper();
+      wrapper.vm.appointment = {
+        processId: "p1",
+        authKey: "k1",
+      } as any;
+      vi.mocked(ZMSAppointmentAPI.preconfirmAppointment).mockResolvedValueOnce({
+        processId: "p1",
+      } as any);
+
+      await wrapper.vm.nextBookAppointment();
+      await nextTick();
+
+      expect(trackAppointmentEvent).toHaveBeenCalledWith({
+        object: "preconfirmed",
+        action: "success",
+        flow: "new",
+      });
+    });
+
+    it("tracks cancelled after a successful cancel", async () => {
+      const wrapper = createWrapper();
+      wrapper.vm.appointment = {
+        processId: "p1",
+        authKey: "k1",
+      } as any;
+      vi.mocked(ZMSAppointmentAPI.cancelAppointment).mockResolvedValueOnce({
+        processId: "p1",
+      } as any);
+
+      await wrapper.vm.nextCancelAppointment();
+      await nextTick();
+
+      expect(trackAppointmentEvent).toHaveBeenCalledWith({
+        object: "cancelled",
+        action: "success",
+        flow: "new",
+      });
+    });
+
+    it("tracks confirmed after a successful confirm", async () => {
+      const wrapper = createWrapper();
+      vi.mocked(ZMSAppointmentAPI.confirmAppointment).mockResolvedValueOnce({
+        processId: "p1",
+        status: "confirmed",
+      } as any);
+
+      await wrapper.vm.nextConfirmAppointment({ id: "p1", authKey: "k1" });
+      await nextTick();
+
+      expect(trackAppointmentEvent).toHaveBeenCalledWith({
+        object: "confirmed",
+        action: "success",
+        flow: "new",
+      });
     });
   });
 

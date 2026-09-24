@@ -675,7 +675,7 @@ class Process extends Schema\Entity
         return $arrivalDateTime;
     }
 
-    public function setArrivalTime(\DateTimeInterface $dateTime = null): static
+    public function setArrivalTime(?\DateTimeInterface $dateTime = null): static
     {
         $this->queue['arrivalTime'] = ($dateTime) ? $dateTime->getTimestamp() : 0;
         return $this;
