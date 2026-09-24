@@ -225,23 +225,25 @@ public class CitizenApiSteps {
             if (lastAvailableCalendarResponse.hasAppointmentsForAllOffices(officeIds)) {
                 return;
             }
-            if (attempt == 8 || cachedCalendarOfficeIds == null) {
+            if (cachedCalendarOfficeIds == null) {
                 break;
             }
-            ScenarioLogManager.getLogger().info(String.format(
-                "Citizen API calendar is missing an office bucket for %s; requesting it again (%d/8)",
-                officeIdsCsv,
-                attempt));
-            try {
-                Thread.sleep(2000);
-            } catch (InterruptedException interrupted) {
-                Thread.currentThread().interrupt();
-                break;
+            if (attempt < 8) {
+                ScenarioLogManager.getLogger().info(String.format(
+                    "Citizen API calendar is missing an office bucket for %s; requesting it again (%d/8)",
+                    officeIdsCsv,
+                    attempt));
+                try {
+                    Thread.sleep(2000);
+                } catch (InterruptedException interrupted) {
+                    Thread.currentThread().interrupt();
+                    break;
+                }
+                lastAvailableCalendarResponse = fetchAvailableCalendar(
+                    parseOfficeIdsCsv(cachedCalendarOfficeIds),
+                    lastServiceId,
+                    lastServiceCount);
             }
-            lastAvailableCalendarResponse = fetchAvailableCalendar(
-                parseOfficeIdsCsv(cachedCalendarOfficeIds),
-                lastServiceId,
-                lastServiceCount);
         }
         Assertions.assertThat(lastAvailableCalendarResponse.hasAppointmentsForAllOffices(officeIds))
             .as(
