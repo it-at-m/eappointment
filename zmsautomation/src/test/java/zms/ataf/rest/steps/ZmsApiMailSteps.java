@@ -27,8 +27,8 @@ import zms.ataf.rest.dto.zmscitizenapi.ThinnedProcess;
  * Steps for zmsapi GET /mails/ (superuser X-Authkey) to fetch preconfirmation mail
  * and extract processId/authKey for the confirm-appointment step.
  * Shared by zmscitizenapi (process from reserve/preconfirm response) and zmscitizenview.
- * When process is set: finds mail by process id. When process is null (citizenview only):
- * uses most recent mail from GET /mails/ with process id so confirm step can proceed.
+ * Finds the mail whose process id is the current booking. When the page has not stored a
+ * process id yet, the contact email entered for this scenario selects that process.
  */
 public class ZmsApiMailSteps {
 
@@ -43,57 +43,57 @@ public class ZmsApiMailSteps {
     @When("I fetch the preconfirmation mail for the current process")
     public void iFetchThePreconfirmationMailForTheCurrentProcess() {
         String authKey = getOrLoginXAuthKey();
-        ScenarioLogManager.getLogger().info("zmsapi: fetching preconfirmation mail from GET /mails/");
-        Response response = given()
-            .baseUri(TestConfig.getBaseUri())
-            .header("X-Authkey", authKey)
-            .queryParam("limit", 500)
-        .when()
-            .get("/mails/");
-        CommonApiSteps.setResponse(response);
-        int status = response.getStatusCode();
-        ScenarioLogManager.getLogger().info("zmsapi: GET /mails/ status={} bodySize={}", status, response.getBody().asString().length());
-        if (status != 200) {
-            return;
-        }
-        List<MailListItem> mails = parseMailList(response);
         ThinnedProcess booking = CitizenApiSteps.getBookingProcess();
+        Integer processId = booking != null ? booking.getProcessId() : null;
+        String contactEmail = CitizenApiSteps.getBookingContactEmail();
+        ScenarioLogManager.getLogger().info(
+            "zmsapi: fetching preconfirmation mail from GET /mails/ for process {} email {}",
+            processId,
+            contactEmail);
+        Response response = null;
+        List<MailListItem> mails = List.of();
         MailListItem match = null;
-        if (booking != null) {
-            Integer processId = booking.getProcessId();
-            ScenarioLogManager.getLogger().info("zmsapi: looking for newest mail (max id) matching process {}", processId);
-            for (MailListItem mail : mails) {
-                MailProcessRef proc = mail.process();
-                if (proc != null && processId.equals(proc.id())) {
-                    if (match == null || (mail.id() != null && (match.id() == null || mail.id() > match.id()))) {
-                        match = mail;
-                    }
+        for (int attempt = 1; attempt <= 6 && (match == null || match.process() == null); attempt++) {
+            if (attempt > 1) {
+                try {
+                    Thread.sleep(2000L);
+                } catch (InterruptedException interrupted) {
+                    Thread.currentThread().interrupt();
+                    throw new IllegalStateException("Interrupted while waiting for preconfirmation mail", interrupted);
                 }
             }
-        }
-        // Citizenview (booking == null) has no process context yet; in that case we can only fall back
-        // to the newest mail that has a process/auth reference so confirm deep links can be extracted.
-        // If booking is known but the expected mail is not there yet, we must NOT pick a mail from a different process.
-        if (booking == null && !mails.isEmpty()) {
-            ScenarioLogManager.getLogger().info("zmsapi: no booking process (citizenview fallback); using newest mail (max id) with process id");
-            for (MailListItem mail : mails) {
-                MailProcessRef proc = mail.process();
-                if (proc != null && proc.id() != null && proc.authKey() != null && !proc.authKey().isBlank()) {
-                    if (match == null || (mail.id() != null && (match.id() == null || mail.id() > match.id()))) {
-                        match = mail;
-                    }
-                }
+            response = given()
+                .baseUri(TestConfig.getBaseUri())
+                .header("X-Authkey", authKey)
+                .queryParam("limit", 500)
+            .when()
+                .get("/mails/");
+            CommonApiSteps.setResponse(response);
+            int status = response.getStatusCode();
+            ScenarioLogManager.getLogger().info("zmsapi: GET /mails/ status={} bodySize={}", status, response.getBody().asString().length());
+            if (status != 200) {
+                return;
+            }
+            String body = response.asString();
+            mails = parseMailList(response);
+            if (processId != null) {
+                ScenarioLogManager.getLogger().info("zmsapi: looking for mail matching process {}", processId);
+                match = newestMailForProcess(mails, processId);
+            } else if (contactEmail != null && !contactEmail.isBlank()) {
+                ScenarioLogManager.getLogger().info("zmsapi: looking for mail whose body contains {}", contactEmail);
+                match = newestMailContaining(body, mails, contactEmail);
             }
         }
         if (match == null || match.process() == null) {
             throw new IllegalStateException(
-                "Preconfirmation mail not found. Ensure preconfirm was called and mail is sent (GET /mails/ returned " + mails.size() + " mail(s)).");
+                "Preconfirmation mail not found for process " + processId + " email " + contactEmail
+                    + " (GET /mails/ returned " + mails.size() + " mail(s)).");
         }
         String confirmProcessId = String.valueOf(match.process().id());
         String confirmAuthKey = match.process().authKey();
         CitizenApiSteps.setBookingConfirmCredentials(confirmProcessId, confirmAuthKey != null ? confirmAuthKey : "");
-        if (booking == null) {
-            ThinnedProcess p = new ThinnedProcess();
+        if (booking == null || booking.getProcessId() == null || booking.getAuthKey() == null || booking.getAuthKey().isBlank()) {
+            ThinnedProcess p = booking != null ? booking : new ThinnedProcess();
             p.setProcessId(match.process().id());
             p.setAuthKey(confirmAuthKey);
             CitizenApiSteps.setBookingProcess(p);
@@ -104,6 +104,60 @@ public class ZmsApiMailSteps {
             ScenarioLogManager.getLogger().info("zmsapi: confirm URL extracted from mail body for process {}", match.process().id());
         }
         ScenarioLogManager.getLogger().info("zmsapi: preconfirmation mail found for process {}, confirm credentials set for deep link", match.process().id());
+    }
+
+    private static MailListItem newestMailForProcess(List<MailListItem> mails, Integer processId) {
+        MailListItem match = null;
+        for (MailListItem mail : mails) {
+            MailProcessRef proc = mail.process();
+            if (proc != null && processId.equals(proc.id())
+                    && (match == null || (mail.id() != null && (match.id() == null || mail.id() > match.id())))) {
+                match = mail;
+            }
+        }
+        return match;
+    }
+
+    /** Mail whose HTML contains this scenario's contact address, so a parallel booking is not selected. */
+    private static MailListItem newestMailContaining(String responseBody, List<MailListItem> mails, String contactEmail) {
+        try {
+            JsonNode data = new ObjectMapper().readTree(responseBody).path("data");
+            if (!data.isArray()) {
+                return null;
+            }
+            String needle = contactEmail.toLowerCase();
+            MailListItem match = null;
+            for (JsonNode mail : data) {
+                if (!mailHtmlContains(mail, needle)) {
+                    continue;
+                }
+                int id = mail.path("id").asInt(-1);
+                for (MailListItem item : mails) {
+                    if (item.id() != null && item.id() == id && item.process() != null && item.process().id() != null
+                            && (match == null || match.id() == null || item.id() > match.id())) {
+                        match = item;
+                    }
+                }
+            }
+            return match;
+        } catch (Exception e) {
+            ScenarioLogManager.getLogger().debug("zmsapi: could not match mail by contact email", e);
+            return null;
+        }
+    }
+
+    private static boolean mailHtmlContains(JsonNode mail, String needleLower) {
+        JsonNode multipart = mail.path("multipart");
+        if (!multipart.isArray()) {
+            return false;
+        }
+        for (JsonNode part : multipart) {
+            String content = part.path("content").asText("");
+            if (content.toLowerCase().contains(needleLower)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

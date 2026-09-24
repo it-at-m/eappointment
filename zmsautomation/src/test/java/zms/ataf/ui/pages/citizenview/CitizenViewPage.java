@@ -1825,6 +1825,7 @@ public class CitizenViewPage extends BasePage {
         }
         String[] parts = RandomNameHelper.splitFullNameIntoFirstAndLast(fullName);
         String email = RandomNameHelper.getEmailConformName(fullName) + "@mailinator.com";
+        zms.ataf.rest.steps.CitizenApiSteps.setBookingContactEmail(email);
         ScenarioLogManager.getLogger()
                 .info(
                         "zmscitizenview: Kontakt — Vorname={} Nachname={} E-Mail={}",
@@ -2029,6 +2030,7 @@ public class CitizenViewPage extends BasePage {
     /** Preconfirm page: after communication checkbox, primary "Termin reservieren" button leads to activation (“Aktivieren Sie Ihren Termin.”). */
     public void continueFromPreconfirmStep() {
         CONTEXT.set();
+        captureBookingProcessForCleanup();
         ScenarioLogManager.getLogger().info("zmscitizenview: preconfirm → Termin reservieren (activation callout)");
         waitForAndClickButtonContaining(DE_RESERVE, DEFAULT_EXPLICIT_WAIT_TIME);
         waitWithThreeWindows(() -> shadowDomContainsText(ACTIVATION_CALLOUT_HEADING), "Activation callout");
@@ -2241,6 +2243,11 @@ public class CitizenViewPage extends BasePage {
                                 .executeScript(
                                         "return localStorage.getItem('" + LOCALSTORAGE_APPOINTMENT_KEY + "');");
         if (json == null || json.isBlank()) {
+            captureBookingProcessForCleanup();
+            ThinnedProcess captured = zms.ataf.rest.steps.CitizenApiSteps.getBookingProcess();
+            if (captured != null && captured.getProcessId() != null) {
+                return captured;
+            }
             ScenarioLogManager.getLogger().info("zmscitizenview: localStorage lhm-appointment-data not available; ensure continueFromPreconfirmStep captured process from confirm link on page");
             return null;
         }
@@ -2831,7 +2838,43 @@ public class CitizenViewPage extends BasePage {
         if (trySetBookingProcessFromSessionAuthHash()) {
             return;
         }
-        trySetBookingProcessFromCurrentReservedHash();
+        if (trySetBookingProcessFromCurrentReservedHash()) {
+            return;
+        }
+        trySetBookingProcessIdFromDom();
+    }
+
+    /** Summary nodes are {@code process-{id}-displayNumber-*}. The id is enough to match GET /mails/. */
+    private void trySetBookingProcessIdFromDom() {
+        CONTEXT.set();
+        String script =
+                "function walk(root){if(!root)return null;"
+                        + "if(root.id){var m=String(root.id).match(/^process-(\\d+)-/);if(m)return m[1];}"
+                        + "if(root.shadowRoot){var s=walk(root.shadowRoot);if(s)return s;}"
+                        + "var c=root.children;if(c)for(var i=0;i<c.length;i++){var f=walk(c[i]);if(f)return f;}"
+                        + "return null;}"
+                        + "return walk(document.body);";
+        Object raw = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script);
+        if (raw == null) {
+            return;
+        }
+        try {
+            int processId = Integer.parseInt(String.valueOf(raw));
+            if (processId <= 0) {
+                return;
+            }
+            ThinnedProcess existing = zms.ataf.rest.steps.CitizenApiSteps.getBookingProcess();
+            if (existing != null && processId == (existing.getProcessId() == null ? -1 : existing.getProcessId())) {
+                return;
+            }
+            ThinnedProcess p = existing != null ? existing : new ThinnedProcess();
+            p.setProcessId(processId);
+            zms.ataf.rest.steps.CitizenApiSteps.setBookingProcess(p);
+            ScenarioLogManager.getLogger()
+                    .info("zmscitizenview: captured booking processId={} from summary DOM", processId);
+        } catch (NumberFormatException e) {
+            ScenarioLogManager.getLogger().debug("zmscitizenview: summary process id was not numeric", e);
+        }
     }
 
     private boolean trySetBookingProcessFromSessionAuthHash() {
