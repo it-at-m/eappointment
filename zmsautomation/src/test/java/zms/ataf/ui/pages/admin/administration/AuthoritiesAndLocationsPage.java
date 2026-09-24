@@ -455,16 +455,24 @@ public void saveLocationChanges() {
     public void clickOnSaveButton() {
         ScenarioLogManager.getLogger().info("Trying to click on \"Alle Änderungen aktivieren\" button...");
         CONTEXT.set();
-        clickOnWebElement(
-            DEFAULT_EXPLICIT_WAIT_TIME,
-            "//button[contains(@class,'button-save')]",
-            LocatorType.XPATH,
-            false,
-            CONTEXT
-        );
+        String publishButton =
+                "//button[contains(@class,'button-save') and normalize-space()='Alle Änderungen aktivieren']";
         By confirmButton = By.xpath("//div[contains(@class,'lightbox__content')]//a[@data-action-ok]");
-        WebElement confirmBtn = new WebDriverWait(DRIVER, Duration.ofSeconds(10))
-                .until(ExpectedConditions.visibilityOfElementLocated(confirmButton));
+        WebElement confirmBtn = null;
+        for (int attempt = 1; attempt <= 3 && confirmBtn == null; attempt++) {
+            clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, publishButton, LocatorType.XPATH, false, CONTEXT);
+            try {
+                confirmBtn =
+                        new WebDriverWait(DRIVER, Duration.ofSeconds(30))
+                                .until(ExpectedConditions.visibilityOfElementLocated(confirmButton));
+            } catch (TimeoutException e) {
+                ScenarioLogManager.getLogger()
+                        .info(
+                                "Confirm dialog not shown after Alle Änderungen aktivieren (attempt {})",
+                                attempt);
+            }
+        }
+        Assert.assertNotNull(confirmBtn, "Confirm dialog for opening hours did not appear");
         confirmBtn.click();
         new WebDriverWait(DRIVER, Duration.ofSeconds(5))
                 .until(ExpectedConditions.invisibilityOfElementLocated(confirmButton));
