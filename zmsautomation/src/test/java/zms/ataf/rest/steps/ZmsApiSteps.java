@@ -398,6 +398,7 @@ public class ZmsApiSteps {
 
     @Given("Spontankunden opening hours exist for scope {int} from {string} to {string}")
     public void spontankundenOpeningHoursExistForScope(int scopeId, String from, String to) {
+        AccountCheckout.checkout("scope:" + scopeId + ":spontankunden");
         if (findOpeningHoursIds(scopeId, "ATAF-ZMSKVR-167").isEmpty()) {
             createSpontankundenOpeningHours(scopeId, from, to);
         }
@@ -405,6 +406,7 @@ public class ZmsApiSteps {
 
     @When("I delete Spontankunden opening hours for scope {int} with the X-AuthKey")
     public void iDeleteSpontankundenOpeningHoursForScope(int scopeId) {
+        AccountCheckout.checkout("scope:" + scopeId + ":spontankunden");
         String authKey = getOrLoginXAuthKey();
         java.util.List<Integer> ids = findOpeningHoursIds(scopeId, null);
         Assertions.assertThat(ids)
