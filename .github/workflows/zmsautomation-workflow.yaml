@@ -388,8 +388,8 @@ jobs:
             apt-get update
 
             # ATAF 0.3.4 ships Selenium 4.46, which speaks Chrome DevTools protocol
-            # 148-150. Do not fall back to Debian security's newer Chromium: ChromeDriver
-            # then times out with "Timed out receiving message from renderer".
+            # 148-150. Do not fall back to the newer Debian security Chromium.
+            # ChromeDriver then times out with "Timed out receiving message from renderer".
             # Same pin as zmsbase/php83-local and zmsbase/php84-local.
             CHROMIUM_APT_VERSION="150.0.7871.181-1~deb13u1"
             if ! apt-get install -s -y --allow-downgrades \
