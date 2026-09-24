@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-09-24T07:45:34.023Z",
+  "publishedAt": "2026-09-24T16:37:43.371Z",
   "branches": [
     {
       "name": "next",
@@ -120,6 +120,12 @@
       "slug": "feature-zmskvr-343-unify-secuess-callout-for-appointments",
       "runId": "35701334093",
       "runStartedAt": "2026-09-22T07:46:54Z"
+    },
+    {
+      "name": "fix-zms-pin-chromium-for-selenium",
+      "slug": "fix-zms-pin-chromium-for-selenium",
+      "runId": "36015297603",
+      "runStartedAt": "2026-09-24T14:47:00Z"
     },
     {
       "name": "fix-zmsclient-psalm-alerts",
