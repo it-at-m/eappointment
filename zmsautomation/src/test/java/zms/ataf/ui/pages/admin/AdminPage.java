@@ -22,6 +22,7 @@ import ataf.core.logging.ScenarioLogManager;
 import ataf.core.properties.DefaultValues;
 import ataf.web.model.LocatorType;
 import ataf.web.pages.BasePage;
+import zms.ataf.helpers.AccountCheckout;
 
 
 public class AdminPage extends BasePage {
@@ -50,6 +51,9 @@ public class AdminPage extends BasePage {
     }
 
     public void clickOnLoginButton() throws Exception {
+        final StringBuilder clearUserName = new StringBuilder();
+        AuthenticationHelper.getUserName().access(clearUserName::append);
+        AccountCheckout.checkoutWorkstation(clearUserName.toString());
         if (isAlreadyLoggedIn()) {
             ScenarioLogManager.getLogger().info("Already logged in, skipping SSO login.");
             return;
@@ -58,11 +62,9 @@ public class AdminPage extends BasePage {
         clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "//button[@type='submit' and @value='keycloak']", LocatorType.XPATH, false);
         ScenarioLogManager.getLogger().info("SSO-Login page detected!");
 
-        final StringBuilder clearUserName = new StringBuilder();
         final StringBuilder clearPassword = new StringBuilder();
         Exception exception = null;
         try {
-            AuthenticationHelper.getUserName().access(clearUserName::append);
             AuthenticationHelper.getUserPassword().access(clearPassword::append);
             // Wait for Keycloak login form (local and ssodev both use id="username")
             WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
