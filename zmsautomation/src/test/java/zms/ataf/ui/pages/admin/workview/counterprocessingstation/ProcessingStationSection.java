@@ -30,6 +30,35 @@ public class ProcessingStationSection extends CounterProcessingStationPage {
         super(driver, adminPageContext);
     }
 
+    /**
+     * Marks every customer already waiting at this Standort as not appeared.
+     * A later "Aufruf nächster Kunde" then reaches the customers this scenario just added.
+     */
+    public void dismissCustomersAlreadyWaiting() {
+        ScenarioLogManager.getLogger().info("Dismissing customers already waiting at this Standort...");
+        final String emptyMessage =
+                "//h2[contains(., 'Aktuell gibt es keine wartenden Kunden')]"
+                        + " | //div[contains(@class,'message__body') and contains(., 'Vielen Dank für die fleißigen Aufrufe.')]";
+        final String precall =
+                "//button[text()='Ja, Kunden jetzt aufrufen' and contains(@class, 'client-precall_button-success')]";
+        final String called = "//button[contains(@class,'client-called_button-success')]";
+        for (int i = 0; i < 8; i++) {
+            callNextCustomer();
+            if (isWebElementVisible(5, emptyMessage, LocatorType.XPATH, false, CONTEXT)) {
+                ScenarioLogManager.getLogger().info("No further customers were waiting.");
+                return;
+            }
+            if (isWebElementVisible(5, precall, LocatorType.XPATH, false, CONTEXT)) {
+                clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, precall, LocatorType.XPATH, false, CONTEXT);
+            }
+            if (!isWebElementVisible(15, called, LocatorType.XPATH, false, CONTEXT)) {
+                ScenarioLogManager.getLogger().info("Next call did not open a customer; leaving the queue as it is.");
+                return;
+            }
+            clickOnNoCustomerDidNotAppear();
+        }
+    }
+
     public void callNextCustomer() {
         ScenarioLogManager.getLogger().info("Trying to click on \"Aufruf nächster Kunde\" button...");
         CONTEXT.set();
