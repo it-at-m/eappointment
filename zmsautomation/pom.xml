@@ -228,7 +228,7 @@
       <id>ataf-api</id>
       <properties>
         <!-- GH-3281: parallel scenarios in this JVM. -Ddataproviderthreadcount overrides this. -->
-        <dataproviderthreadcount>8</dataproviderthreadcount>
+        <dataproviderthreadcount>128</dataproviderthreadcount>
       </properties>
       <build>
         <plugins>
@@ -327,7 +327,7 @@
       <id>ataf-ui</id>
       <properties>
         <!-- GH-3281: one browser per thread. -Ddataproviderthreadcount overrides this. -->
-        <dataproviderthreadcount>8</dataproviderthreadcount>
+        <dataproviderthreadcount>32</dataproviderthreadcount>
       </properties>
       <build>
         <plugins>

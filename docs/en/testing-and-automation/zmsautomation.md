@@ -31,7 +31,9 @@ This module contains API and UI tests for ZMS using [ATAF](https://it-at-m.githu
 
 ### Using the Test Script (recommended)
 
-The `zmsautomation-test` script handles database setup, migrations, and test execution. Scenarios inside one Maven run execute together: 8 at a time for `-Pataf-api`, 8 browsers at a time for `-Pataf-ui`. Pass `-Ddataproviderthreadcount=1` to run one scenario at a time.
+The `zmsautomation-test` script handles database setup, migrations, and test execution. Scenarios inside one Maven run execute together: 128 at a time for `-Pataf-api`, 32 browsers at a time for `-Pataf-ui`. Pass `-Ddataproviderthreadcount=1` to run one scenario at a time.
+
+Each log line starts with the worker thread in brackets, for example `[29]`. TestNG reuses that thread for the next scenario, so lines with the same number belong to one scenario until that thread logs `Starting scenario`. Scroll up to the latest `Starting scenario` line with that number to see which test those lines belong to.
 
 ```bash
 # Run all [ATAF](https://it-at-m.github.io/agile-test-automation-framework/) tests (API + UI)
@@ -54,7 +56,7 @@ The `zmsautomation-test` script handles database setup, migrations, and test exe
 # Optional: pin a different ATAF Maven version (default: ataf.version in pom.xml)
 ./zmsautomation/zmsautomation-test -Pataf-api -Pataf-ui -Dataf.version=0.3.3
 
-# One scenario at a time (default is 4 API threads or 2 UI browsers)
+# One scenario at a time (default is 128 API threads or 32 UI browsers)
 ./zmsautomation/zmsautomation-test -Pataf-ui -Ddataproviderthreadcount=1
 ```
 

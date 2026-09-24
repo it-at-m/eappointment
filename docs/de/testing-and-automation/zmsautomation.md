@@ -31,7 +31,9 @@ Dieses Modul enthält API- und UI-Tests für ZMS auf Basis von [ATAF](https://it
 
 ### Mit dem Test-Skript (empfohlen)
 
-Das Skript `zmsautomation-test` kümmert sich um Datenbank-Setup, Migrationen und Testausführung. Szenarien in einem Maven-Lauf laufen parallel: 8 gleichzeitig bei `-Pataf-api`, 8 Browser gleichzeitig bei `-Pataf-ui`. Mit `-Ddataproviderthreadcount=1` läuft ein Szenario nach dem anderen.
+Das Skript `zmsautomation-test` kümmert sich um Datenbank-Setup, Migrationen und Testausführung. Szenarien in einem Maven-Lauf laufen parallel: 128 gleichzeitig bei `-Pataf-api`, 32 Browser gleichzeitig bei `-Pataf-ui`. Mit `-Ddataproviderthreadcount=1` läuft ein Szenario nach dem anderen.
+
+Jede Logzeile beginnt mit dem Worker-Thread in eckigen Klammern, zum Beispiel `[29]`. TestNG verwendet denselben Thread für das nächste Szenario. Zeilen mit derselben Nummer gehören zu einem Szenario, bis dieser Thread `Starting scenario` protokolliert. Die letzte `Starting scenario`-Zeile mit dieser Nummer nennt den zugehörigen Test.
 
 ```bash
 # alle [ATAF](https://it-at-m.github.io/agile-test-automation-framework/)-Tests ausführen (API + UI)
@@ -54,7 +56,7 @@ Das Skript `zmsautomation-test` kümmert sich um Datenbank-Setup, Migrationen un
 # optional: andere ATAF-Maven-Version festlegen (Standard: ataf.version in pom.xml)
 ./zmsautomation/zmsautomation-test -Pataf-api -Pataf-ui -Dataf.version=0.3.3
 
-# ein Szenario nach dem anderen (Standard: 4 API-Threads oder 2 UI-Browser)
+# ein Szenario nach dem anderen (Standard: 128 API-Threads oder 32 UI-Browser)
 ./zmsautomation/zmsautomation-test -Pataf-ui -Ddataproviderthreadcount=1
 ```
 
