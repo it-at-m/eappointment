@@ -22,6 +22,7 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import io.restassured.response.Response;
+import zms.ataf.helpers.AccountCheckout;
 import zms.ataf.helpers.BerlinTime;
 import zms.ataf.rest.dto.common.ApiResponse;
 import zms.ataf.rest.dto.zmsapi.StatusResponse;
@@ -677,7 +678,7 @@ public class ZmsApiSteps {
             String password = scenarioLoginPassword != null && !scenarioLoginPassword.isBlank()
                 ? scenarioLoginPassword
                 : defaultWorkstationPassword();
-            return new String[] { resolveWorkstationUsername(scenarioLoginUsername), password };
+            return credentials(resolveWorkstationUsername(scenarioLoginUsername), password);
         }
 
         String username = TestPropertiesHelper.getPropertyAsString("zmsapiUserName", true);
@@ -687,7 +688,12 @@ public class ZmsApiSteps {
                 "Set testautomation.zmsapiUserName and testautomation.zmsapiUserPassword in testautomation.properties, "
                     + "or use 'Given the ZMS API workstation user is \"<role>\"' in the scenario");
         }
-        return new String[] { resolveWorkstationUsername(username), password };
+        return credentials(resolveWorkstationUsername(username), password);
+    }
+
+    private String[] credentials(String username, String password) {
+        AccountCheckout.checkoutWorkstation(username);
+        return new String[] { username, password };
     }
 
     private String defaultWorkstationPassword() {

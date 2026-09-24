@@ -13,9 +13,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import ataf.core.helpers.TestPropertiesHelper;
 import ataf.core.logging.ScenarioLogManager;
 import config.TestConfig;
+import io.cucumber.java.Before;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import io.restassured.response.Response;
+import zms.ataf.helpers.AccountCheckout;
 import zms.ataf.rest.dto.common.ApiResponse;
 import zms.ataf.rest.dto.zmsapi.MailListItem;
 import zms.ataf.rest.dto.zmsapi.MailProcessRef;
@@ -32,6 +34,11 @@ public class ZmsApiMailSteps {
 
     private static final ThreadLocal<String> CACHED_X_AUTH_KEY = new ThreadLocal<>();
     private String lastCancellationMailHtml;
+
+    @Before
+    public void clearMailAuthKey() {
+        CACHED_X_AUTH_KEY.remove();
+    }
 
     @When("I fetch the preconfirmation mail for the current process")
     public void iFetchThePreconfirmationMailForTheCurrentProcess() {
@@ -446,6 +453,7 @@ public class ZmsApiMailSteps {
         // Use the system messenger account by default (same password as other system users).
         String username = TestPropertiesHelper.getPropertyAsString("zmsapiMailUserName", true, "_system_messenger");
         String password = TestPropertiesHelper.getPropertyAsString("zmsapiMailUserPassword", true, "vorschau");
+        AccountCheckout.checkout(username);
 
         Response loginResponse = given()
             .baseUri(TestConfig.getBaseUri())

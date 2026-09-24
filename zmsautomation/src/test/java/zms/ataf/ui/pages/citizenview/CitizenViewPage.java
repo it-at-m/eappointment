@@ -25,6 +25,7 @@ import ataf.core.logging.ScenarioLogManager;
 import ataf.web.model.LocatorType;
 import ataf.web.pages.BasePage;
 import ataf.web.utils.DriverUtil;
+import zms.ataf.helpers.AccountCheckout;
 import zms.ataf.helpers.RandomNameHelper;
 import zms.ataf.rest.dto.zmscitizenapi.ThinnedProcess;
 
@@ -2591,6 +2592,7 @@ public class CitizenViewPage extends BasePage {
                 TestPropertiesHelper.getPropertyAsString("citizenUserName", true, "citizen");
         String password =
                 TestPropertiesHelper.getPropertyAsString("citizenUserPassword", true, "vorschau");
+        AccountCheckout.checkout(username);
         completeKeycloakLoginForm(username, password);
 
         waitWithThreeWindows(
