@@ -122,12 +122,6 @@ button.link  {
     background-color:       $white;
 }
 
-.button-pickupcall {
- @extend
-        .btn,
-        .btn--success;
-}
-
 .button-callnextclient {
     @extend
         .btn;
