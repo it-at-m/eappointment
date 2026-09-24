@@ -170,19 +170,32 @@ public void saveLocationChanges() {
     );
 
     WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(60));
-    WebElement save = null;
-    for (By by : saveLocators) {
+    boolean clicked = false;
+    for (int attempt = 1; attempt <= 3 && !clicked; attempt++) {
+        WebElement save = null;
+        for (By by : saveLocators) {
+            try {
+                save = wait.until(ExpectedConditions.elementToBeClickable(by));
+                break;
+            } catch (TimeoutException ignored) {}
+        }
+        if (save == null) {
+            Assert.fail("Could not find an enabled 'Speichern' button.");
+            return;
+        }
         try {
-            save = wait.until(ExpectedConditions.elementToBeClickable(by));
-            break;
-        } catch (TimeoutException ignored) {}
+            scrollToCenterByVisibleElement(save);
+            ((JavascriptExecutor) DRIVER).executeScript("arguments[0].click();", save);
+            clicked = true;
+        } catch (StaleElementReferenceException | TimeoutException e) {
+            ScenarioLogManager.getLogger().warn(
+                    "Speichern click was not answered (attempt " + attempt + "/3).");
+        }
     }
-    if (save == null) {
-        Assert.fail("Could not find an enabled 'Speichern' button.");
+    if (!clicked) {
+        Assert.fail("Speichern click was not answered.");
         return;
     }
-    scrollToCenterByVisibleElement(save);
-    save.click();
 
     CONTEXT.waitForSpinners();
 
