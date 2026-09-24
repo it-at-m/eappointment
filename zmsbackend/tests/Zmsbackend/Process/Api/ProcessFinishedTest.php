@@ -46,17 +46,12 @@ class ProcessFinishedTest extends \BO\Zmsbackend\Tests\Api\Base
 
         $process = json_decode($this->readFixture("GetProcess_10068.json"));
         $process->status = 'pending';
-        $response = $this->render([], [
+
+        $this->expectException('\BO\Zmsbackend\Process\Exception\ProcessInvalid');
+        $this->expectExceptionCode(400);
+        $this->render([], [
             '__body' => json_encode($process)
         ], []);
-
-        $this->assertStringContainsString('"status":"pending"', (string)$response->getBody());
-        $this->assertTrue(200 == $response->getStatusCode());
-
-        $entity = (new \BO\Zmsbackend\Process\Service\Process)->readEntity($process->id, new \BO\Zmsbackend\Helper\NoAuth);
-        $this->assertEquals('pending', $entity->status);
-
-        $this->assertSame(0, $this->countHistoryEntries((int) $process->id));
     }
 
     public function testUnvalidCredentials()
