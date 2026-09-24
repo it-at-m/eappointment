@@ -39,13 +39,16 @@ public class AccountCheckoutTest {
     @Test
     public void differentAccountsDoNotBlockEachOther() throws Exception {
         AccountCheckout.checkout("ataf@keycloak");
+        AtomicBoolean acquired = new AtomicBoolean(false);
         Thread other = new Thread(() -> {
             AccountCheckout.checkout("_system_messenger");
+            acquired.set(true);
             AccountCheckout.releaseAll();
         });
         other.start();
         other.join(2000);
         Assert.assertFalse(other.isAlive());
+        Assert.assertTrue(acquired.get());
     }
 
     @Test
