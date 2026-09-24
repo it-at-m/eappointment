@@ -595,12 +595,13 @@ public class CounterProcessingStationPage extends AdminPage {
                     )
             );
     
-            ((JavascriptExecutor) DRIVER).executeScript("arguments[0].scrollIntoView({block:'center'});", bookButton);
-    
-            if (attempt == 1) {
-                bookButton.click();
-            } else {
+            try {
+                ((JavascriptExecutor) DRIVER).executeScript("arguments[0].scrollIntoView({block:'center'});", bookButton);
                 ((JavascriptExecutor) DRIVER).executeScript("arguments[0].click();", bookButton);
+            } catch (StaleElementReferenceException | ElementClickInterceptedException | TimeoutException e) {
+                ScenarioLogManager.getLogger().warn(
+                        "Book click did not complete (attempt " + attempt + "/" + maxBookingAttempts + ").");
+                continue;
             }
     
             CONTEXT.waitForSpinners();
