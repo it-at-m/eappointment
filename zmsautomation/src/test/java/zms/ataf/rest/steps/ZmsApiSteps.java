@@ -4,7 +4,6 @@ import static io.restassured.RestAssured.given;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.Locale;
 
 import org.assertj.core.api.Assertions;
@@ -533,7 +532,7 @@ public class ZmsApiSteps {
         availability.put("startDate", startEpoch);
         availability.put("endDate", startEpoch);
         availability.put("startTime", normalizeClock(from));
-        availability.put("endTime", openingEndStillAhead(to));
+        availability.put("endTime", normalizeClock(to));
         ObjectNode scope = MAPPER.createObjectNode();
         scope.put("id", scopeId);
         availability.set("scope", scope);
@@ -611,21 +610,6 @@ public class ZmsApiSteps {
 
     private static String normalizeClock(String time) {
         return time != null && time.length() == 5 ? time + ":00" : time;
-    }
-
-    /** The API rejects an end that is already past. Keep the scope open until 23:55 the same evening. */
-    private static String openingEndStillAhead(String to) {
-        String clock = normalizeClock(to);
-        LocalTime end = LocalTime.parse(clock);
-        LocalTime now = LocalTime.now(BerlinTime.ZONE);
-        if (end.isAfter(now)) {
-            return clock;
-        }
-        ScenarioLogManager.getLogger().info(
-            "Spontankunden end {} is already past {}; using 23:55 the same evening",
-            clock,
-            now);
-        return "23:55:00";
     }
 
     private String apiBaseUri() {
