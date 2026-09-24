@@ -44,10 +44,11 @@ function validateWeekdays(data) {
         return errorList;
     }
 
-    // Check if date range is valid
-    const startDate = moment.unix(data.startDate);
-    const endDate = moment.unix(data.endDate);
-    if (startDate > endDate) {
+    // Compare calendar days. The stored timestamps can carry a clock time
+    // (the page "now", or the time picker), which must not drop the end day.
+    const startDate = moment.unix(data.startDate).startOf('day');
+    const endDate = moment.unix(data.endDate).startOf('day');
+    if (startDate.isAfter(endDate, 'day')) {
         return errorList;
     }
     
