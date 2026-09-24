@@ -2669,7 +2669,7 @@ public class CitizenViewPage extends BasePage {
                 TestPropertiesHelper.getPropertyAsString("citizenUserName", true, "citizen");
         String password =
                 TestPropertiesHelper.getPropertyAsString("citizenUserPassword", true, "vorschau");
-        AccountCheckout.checkout(username);
+        username = AccountCheckout.assignCitizenLogin(username);
         completeKeycloakLoginForm(username, password);
 
         waitWithThreeWindows(

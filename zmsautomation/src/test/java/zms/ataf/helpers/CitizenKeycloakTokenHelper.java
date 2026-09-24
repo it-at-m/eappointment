@@ -27,7 +27,7 @@ public final class CitizenKeycloakTokenHelper {
         if (password == null || password.isBlank()) {
             password = "vorschau";
         }
-        AccountCheckout.checkout(username);
+        username = AccountCheckout.assignCitizenLogin(username);
 
         ScenarioLogManager.getLogger().info(
             "Citizen Keycloak password grant at {} as user {}",

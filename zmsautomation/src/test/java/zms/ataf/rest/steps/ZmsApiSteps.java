@@ -174,7 +174,7 @@ public class ZmsApiSteps {
 
         JsonNode workstation = parseDataNode(getResponse);
         if (workstation instanceof ObjectNode objectNode) {
-            objectNode.put("name", counter);
+            objectNode.put("name", AccountCheckout.workstationCounter(counter));
             JsonNode scopeNode = objectNode.path("scope");
             if (scopeNode instanceof ObjectNode scopeObject) {
                 scopeObject.put("id", scopeId);
@@ -708,8 +708,8 @@ public class ZmsApiSteps {
     }
 
     private String[] credentials(String username, String password) {
-        AccountCheckout.checkoutWorkstation(username);
-        return new String[] { username, password };
+        String login = AccountCheckout.assignWorkstationLogin(username);
+        return new String[] { resolveWorkstationUsername(login), password };
     }
 
     private String defaultWorkstationPassword() {
