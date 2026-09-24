@@ -244,8 +244,11 @@ export default class ReportRefresh {
             $board.replaceWith($newBoard);
             this.view.tableController.initSettingsFromDom();
             this.view.tableController.initDataFromDom();
-            this.view.chartController.initFromDom();
+            this.view.chartController.initSparseTimelineFromDom();
             this.view.chartController.initChannelFromDom();
+            this.view.chartController.initGranularityFromDom();
+            this.view.chartController.initValueModeFromDom();
+            this.view.chartController.initFromDom();
             this.view.chartController.syncChannelSelect();
             this.view.tableController.syncHeaders();
             this.view.tableController.render();

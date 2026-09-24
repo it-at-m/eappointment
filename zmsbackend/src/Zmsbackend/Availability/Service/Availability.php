@@ -74,8 +74,8 @@ class Availability extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfa
     public function readList(
         $scopeId,
         int $resolveReferences = 0,
-        \DateTimeInterface $startDate = null,
-        \DateTimeInterface $endDate = null
+        ?\DateTimeInterface $startDate = null,
+        ?\DateTimeInterface $endDate = null
     ) {
         $scope = new \BO\Zmsentities\Scope(['id' => $scopeId]);
         if (1 <= $resolveReferences) {
@@ -114,8 +114,8 @@ class Availability extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfa
     public function readAvailabilityListByScope(
         \BO\Zmsentities\Scope $scope,
         int $resolveReferences = 0,
-        \DateTimeImmutable $startDate = null,
-        \DateTimeImmutable $endDate = null
+        ?\DateTimeImmutable $startDate = null,
+        ?\DateTimeImmutable $endDate = null
     ): Collection {
         $collection = new Collection();
         $query = new \BO\Zmsbackend\Availability\Repository\Availability(\BO\Zmsbackend\Query\Base::SELECT);

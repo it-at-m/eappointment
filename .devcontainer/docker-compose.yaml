@@ -4,7 +4,7 @@ services:
   # Fallback default is amd64 for plain `docker compose` without that step.
   web:
     container_name: zms-web
-    image: ghcr.io/it-at-m/eappointment/zmsbase:${ZMS_PHP_BASE_TAG:-8.3-local-amd64}
+    image: ghcr.io/it-at-m/eappointment/zmsbase:${ZMS_PHP_BASE_TAG:-8.4-local-amd64}
     volumes:
       - ..:/var/www/html:cached,z
       - ./php/xdebug.ini:/usr/local/etc/php/conf.d/99-xdebug.ini:ro,z
@@ -15,6 +15,7 @@ services:
     depends_on:
       - db
       - keycloak
+      - captchaservice
     networks:
       - default
 
@@ -95,8 +96,46 @@ services:
     depends_on:
       - db
 
+  # CaptchaService local profile (site loadtest/loadtest, cost 1). Image is amd64-only;
+  # Apple Silicon emulates it, same as init-keycloak-jar.
+  captcha-db:
+    image: postgres:17.7-alpine3.21@sha256:5bcb5623bb6999b2f7fbd2109f0bfc1f144d138b52ca35ede95d644d93585c2f
+    container_name: zms-captcha-db
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d postgres -U admin"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    volumes:
+      - captcha-db-data:/var/lib/postgresql/data
+    networks:
+      - default
+    restart: unless-stopped
+
+  captchaservice:
+    image: ghcr.io/it-at-m/captchaservice/backend:2.1.0@sha256:fcb1d20101aa7437ab90beb6c4d5c655a3a043a4ae59e6ff32224c2f2759964f
+    platform: linux/amd64
+    container_name: zms-captchaservice
+    environment:
+      SPRING_PROFILES_ACTIVE: local,no-security
+      SPRING_DATASOURCE_URL: jdbc:postgresql://captcha-db:5432/postgres
+      SPRING_DATASOURCE_USERNAME: admin
+      SPRING_DATASOURCE_PASSWORD: admin
+    ports:
+      - "39146:39146"
+    depends_on:
+      captcha-db:
+        condition: service_healthy
+    networks:
+      - default
+    restart: unless-stopped
+
   refarch-gateway:
-    image: ghcr.io/it-at-m/refarch/refarch-gateway:1.10.0
+    image: ghcr.io/it-at-m/refarch/refarch-gateway:1.10.0@sha256:d74e6a31e2fe255989008fbf9a8d5e024bc01f418acf8c1852558e6925db9764
     container_name: zms-refarch-gateway
     ports:
       - "8084:8080"
@@ -194,5 +233,6 @@ services:
 
 volumes:
   db-data:
+  captcha-db-data:
   citizenview-node-modules:
   keycloakmigration-jar:
