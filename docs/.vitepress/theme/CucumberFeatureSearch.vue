@@ -85,12 +85,15 @@ const catalogLoading = computed(
     cucumberUsesRemoteCatalog() && cucumberCatalogLoadState.value === "loading"
 );
 
-const total = computed(() => cucumberCatalogEntries().length);
+const scenarioTotal = (entries) =>
+  entries.reduce((sum, entry) => sum + (Number(entry.scenarioCount) || 0), 0);
 
-const matchCount = computed(
-  () =>
+const total = computed(() => scenarioTotal(cucumberCatalogEntries()));
+
+const matchCount = computed(() =>
+  scenarioTotal(
     cucumberCatalogEntries().filter((entry) => cucumberFeatureVisible(entry))
-      .length
+  )
 );
 
 const countLabel = computed(() => {

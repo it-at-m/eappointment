@@ -74,9 +74,15 @@ const listFeatureFilesRecursive = (dir) => {
 
 const emptyCategoryNode = () => ({ files: [], submodules: new Map() });
 
+const scenarioTotal = (items) =>
+  items.reduce((sum, item) => sum + (item.scenarioCount || 0), 0);
+
 const categoryNodeCount = (node) =>
-  node.files.length +
-  [...node.submodules.values()].reduce((sum, items) => sum + items.length, 0);
+  scenarioTotal(node.files) +
+  [...node.submodules.values()].reduce(
+    (sum, items) => sum + scenarioTotal(items),
+    0
+  );
 
 const countedHeading = (level, count, title) =>
   `${"#".repeat(level)} (${count}) ${title}`;
@@ -168,7 +174,14 @@ const collectCucumberFeatures = () => {
       category,
       submodule: submodule || "",
     };
-    return { abs: file, rel, id, category, submodule: submodule || "" };
+    return {
+      abs: file,
+      rel,
+      id,
+      category,
+      submodule: submodule || "",
+      scenarioCount: parsed.scenarioCount,
+    };
   };
 
   for (const testType of listSubdirs(FEATURES_ROOT)) {
@@ -208,7 +221,7 @@ const collectCucumberFeatures = () => {
             module,
             category,
             submodule,
-            count: items.length,
+            count: scenarioTotal(items),
           });
         }
       }
@@ -227,7 +240,7 @@ const collectCucumberFeatures = () => {
         module,
         category: "",
         submodule: "",
-        count: rootNode.files.length,
+        count: scenarioTotal(rootNode.files),
       });
     }
   }
@@ -237,7 +250,11 @@ const collectCucumberFeatures = () => {
 
 const renderCucumberDocFor = (locale, catalog) => {
   const t = cucumberStrings[locale];
-  const { featureFiles, grouped } = catalog;
+  const { featureFiles, grouped, meta } = catalog;
+  const testTotal = Object.values(meta).reduce(
+    (sum, entry) => sum + (entry.scenarioCount || 0),
+    0
+  );
 
   const lines = [
     "---",
@@ -272,7 +289,7 @@ const renderCucumberDocFor = (locale, catalog) => {
     "",
   ];
 
-  lines.push(countedHeading(2, featureFiles.length, t.total));
+  lines.push(countedHeading(2, testTotal, t.total));
   lines.push("");
 
   if (!featureFiles.length) {
@@ -347,7 +364,7 @@ const renderCucumberDocFor = (locale, catalog) => {
             ([a], [b]) => a.localeCompare(b)
           );
           for (const [submodule, items] of sortedSubmodules) {
-            lines.push(countedHeading(5, items.length, submodule));
+            lines.push(countedHeading(5, scenarioTotal(items), submodule));
             lines.push("");
             for (const item of items) {
               renderFeatureRow(item);
@@ -356,7 +373,11 @@ const renderCucumberDocFor = (locale, catalog) => {
         }
         if (uncategorized.files.length) {
           lines.push(
-            countedHeading(4, uncategorized.files.length, t.uncategorized)
+            countedHeading(
+              4,
+              scenarioTotal(uncategorized.files),
+              t.uncategorized
+            )
           );
           lines.push("");
           for (const item of uncategorized.files) {

@@ -254,7 +254,10 @@ export const collectCucumberJsonFiles = (rootDir) => {
       const full = path.join(dir, entry.name);
       if (entry.isDirectory()) {
         walk(full);
-      } else if (entry.isFile() && entry.name === "cucumber.json") {
+      } else if (
+        entry.isFile() &&
+        (entry.name === "cucumber.json" || entry.name === "cucumber-api.json")
+      ) {
         files.push(full);
       }
     }
