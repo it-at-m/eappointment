@@ -713,9 +713,11 @@ jobs:
           name: zmsautomation-ataf-reports-${{ github.run_id }}-${{ github.run_attempt }}-${{ steps.tags.outputs.branch_slug }}-${{ matrix.shard }}-${{ matrix.browser }}
           path: |
             zmsautomation/target/cucumber.json
+            zmsautomation/target/cucumber-api.json
             branch-meta.json
             zmsautomation/target/site/cucumber-pretty/**
             zmsautomation/target/surefire-reports/**
+            zmsautomation/target/surefire-reports-api/**
             zmsautomation/target/screenshots/**
           if-no-files-found: warn
           overwrite: true
@@ -733,9 +735,11 @@ jobs:
           name: zmsautomation-ataf-reports-${{ github.run_id }}-${{ github.run_attempt }}-${{ steps.tags.outputs.branch_slug }}-${{ matrix.shard }}-${{ matrix.browser }}
           path: |
             zmsautomation/target/cucumber.json
+            zmsautomation/target/cucumber-api.json
             branch-meta.json
             zmsautomation/target/site/cucumber-pretty/**
             zmsautomation/target/surefire-reports/**
+            zmsautomation/target/surefire-reports-api/**
             zmsautomation/target/screenshots/**
           if-no-files-found: warn
           overwrite: true
@@ -753,9 +757,11 @@ jobs:
           name: zmsautomation-ataf-reports-${{ github.run_id }}-${{ github.run_attempt }}-${{ steps.tags.outputs.branch_slug }}-${{ matrix.shard }}-${{ matrix.browser }}
           path: |
             zmsautomation/target/cucumber.json
+            zmsautomation/target/cucumber-api.json
             branch-meta.json
             zmsautomation/target/site/cucumber-pretty/**
             zmsautomation/target/surefire-reports/**
+            zmsautomation/target/surefire-reports-api/**
             zmsautomation/target/screenshots/**
           if-no-files-found: warn
           overwrite: true
@@ -772,9 +778,11 @@ jobs:
           name: zmsautomation-ataf-reports-${{ github.run_id }}-${{ github.run_attempt }}-${{ steps.tags.outputs.branch_slug }}-${{ matrix.shard }}-${{ matrix.browser }}
           path: |
             zmsautomation/target/cucumber.json
+            zmsautomation/target/cucumber-api.json
             branch-meta.json
             zmsautomation/target/site/cucumber-pretty/**
             zmsautomation/target/surefire-reports/**
+            zmsautomation/target/surefire-reports-api/**
             zmsautomation/target/screenshots/**
           if-no-files-found: warn
           overwrite: true
