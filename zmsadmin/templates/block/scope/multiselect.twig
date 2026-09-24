@@ -1,0 +1,126 @@
+{% from 'element/helper/form.twig' import errormessage %}
+
+{% set selectId = scopeSelectId %}
+{% set toggleId =
+    scopeSelectToggleId|default(selectId ~ '-toggle-all')
+%}
+{% set helpId =
+    scopeSelectHelpId|default('help_' ~ selectId)
+%}
+{% set selectedValues =
+    scopeSelectSelectedValues|default([])
+%}
+{% set errors =
+    scopeSelectErrors|default([])
+%}
+{% set description =
+    scopeSelectDescription|default('')
+%}
+{% set isRequired =
+    scopeSelectRequired|default(false)
+%}
+{% set selectSize =
+    scopeSelectSize|default(8)
+%}
+{% set accessKey =
+    scopeSelectAccessKey|default(false)
+%}
+{% set additionalClass =
+    scopeSelectClass|default('')
+%}
+
+{% set describedBy = [] %}
+
+{% if description %}
+    {% set describedBy = describedBy|merge([helpId]) %}
+{% endif %}
+
+{% if errors %}
+    {% set describedBy =
+        describedBy|merge(['error_' ~ selectId])
+    %}
+{% endif %}
+
+<fieldset
+    id="{{ selectId }}-scope-multiselect"
+    class="scope-multiselect {{ additionalClass }}"
+    data-scope-multiselect
+>
+    <div class="header">
+        <label for="{{ selectId }}">
+            {{ scopeSelectLabel }}
+        </label>
+
+        <button
+            type="button"
+            id="{{ toggleId }}"
+            class="btn-icon"
+            aria-label="Alle auswählen"
+            title="Alle Standorte auswählen"
+            data-scope-multiselect-toggle
+        >
+            <i
+                class="fas fa-check-double"
+                aria-hidden="true"
+            ></i>
+        </button>
+    </div>
+
+    <div class="form-group{% if errors %} has-error is-invalid{% endif %}">
+        <div class="controls">
+            <div class="formelements">
+                <select
+                    id="{{ selectId }}"
+                    name="{{ scopeSelectName }}"
+                    class="form-control"
+                    multiple="multiple"
+                    size="{{ selectSize }}"
+                    data-scope-multiselect-select
+                    {% if accessKey %}
+                        accesskey="{{ accessKey }}"
+                    {% endif %}
+                    {% if isRequired %}
+                        required
+                        aria-required="true"
+                    {% endif %}
+                    {% if describedBy|length > 0 %}
+                        aria-describedby="{{ describedBy|join(' ') }}"
+                    {% endif %}
+                >
+                    {% for scopeGroup in scopeSelectOptions %}
+                        <optgroup label="{{ scopeGroup.name }}">
+                            {% for scopeOption in scopeGroup.options %}
+                                <option
+                                    value="{{ scopeOption.value }}"
+                                    title="{{ scopeOption.name }}"
+                                    {% if
+                                        scopeOption.selected|default(false)
+                                        or scopeOption.value
+                                            in selectedValues
+                                    %}
+                                        selected="selected"
+                                    {% endif %}
+                                >
+                                    {{ scopeOption.name }}
+                                </option>
+                            {% endfor %}
+                        </optgroup>
+                    {% endfor %}
+                </select>
+
+                {% if description %}
+                    <p
+                        id="{{ helpId }}"
+                        class="formgroup__help"
+                    >
+                        {{ description|raw }}
+                    </p>
+                {% endif %}
+            </div>
+
+            {% if errors %}
+                {{ errormessage(errors, selectId) }}
+            {% endif %}
+        </div>
+    </div>
+</fieldset>

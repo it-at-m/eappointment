@@ -30,6 +30,15 @@ export function readJsonPayload($root, scriptSelector, fallbackDomAttributeName,
     return jsonPayload;
 }
 
+export function readPairedJsonPayload($root, sparseArgs, fullArgs) {
+    const sparse = readJsonPayload($root, ...sparseArgs);
+    const full = readJsonPayload($root, ...fullArgs);
+    if (sparse && full) {
+        return { sparse, full };
+    }
+    return null;
+}
+
 export function getRowValue(row, info) {
     if (row == null || info == null) {
         return undefined;

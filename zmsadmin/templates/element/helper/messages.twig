@@ -72,6 +72,15 @@
         {{ block('success_end') }}
     	{% endblock %}
 
+		{% block mailtemplates_copied %}
+            {% set successTitle = "Kopieren erfolgreich" %}
+            {% set copiedScopeCount = copiedCount|default(0) %}
+
+            {{ block('success_start') }}
+                Das E-Mail-Template wurde {{ timeString }} erfolgreich
+                auf {{ copiedScopeCount }} Dienstleister übertragen.
+            {{ block('success_end') }}
+        {% endblock %}
 
 		{% block cluster_deleted %}
     	{{ block('success_start') }}
@@ -238,7 +247,7 @@
     	{% endblock %}
 
 		{% block process_reserved %}
-			{% set successTitle = "Termin erfolgreich eingetragen" %}
+			{% set successTitle = "Termin wurde erfolgreich eingetragen" %}
 			{{ block('success_start') }}
 				<div class="board__body">
 					<dl id="copy-content">
@@ -251,9 +260,10 @@
 				 <div class="form-actions">
 					<div class="right">
 						<button type="button" class="button btn button-submit button-callback" data-callback="onCopyButton" id="copy-popup-content" title="Inhalt kopieren"><i class="fas fa-copy" aria-hidden="true"></i></button>
-						<button type="button" class="button btn button-submit button-ok">Ok</button>
-						<button type="button" class="button btn button-submit button-callback" data-callback="onPrintWaitingNumber" name="printWaitingNumber" data-id={{ selectedprocess.id }} autofocus accesskey="u">{% if selectedprocess.displayNumber < 10000 %} Wartenummer{% else %} Vorgangsnummer{% endif %} drucken</button>
-						<button type="button" class="button btn button-submit button-callback" data-callback="onEditProcess" name="editProcess" data-id={{ selectedprocess.id }}>Termin erneut bearbeiten</button>
+						<button type="button" class="button btn button-submit button-callback" data-callback="onEditProcess" name="editProcess" data-id="{{selectedprocess.id }}" data-scope-id="{{ selectedprocess.scope.id }}">Termin bearbeiten</button>
+						<button type="button" class="button btn button-submit button-callback" data-callback="onPrintWaitingNumber" name="printWaitingNumber" data-id="{{ selectedprocess.id }}" autofocus accesskey="u">Wartenummer drucken</button>
+						<button type="button" class="button btn button-submit button-ok" accesskey="q">Schließen</button>
+						
 					</div>
 				</div>
 	        {{ block('success_end') }}
@@ -300,7 +310,7 @@
     	{% endblock %}
 
 		{% block process_queued %}
-			{% set successTitle = "Wartenummer wurde hinzugefügt" %}
+			{% set successTitle = "Spontankunde wurde erfolgreich eingetragen" %}
 			{{ block('success_start') }}
 				<div class="board__body">
 					<dl id="copy-content">
@@ -312,9 +322,10 @@
 				</div>
 				<div class="form-actions">
 					<div class="right">
-						<button type="button" class="btn button button-submit button-callback" data-callback="onCopyButton" id="copy-popup-content" title="Inhalt kopieren"><i class="fas fa-copy" aria-hidden="true"></i></button>
-		                <button type="button" class="btn button button-submit button-ok" accesskey="q">Schließen</button>
-		                <button type="button" class="btn button button-submit button-callback" data-callback="onPrintWaitingNumber" name="printWaitingNumber" data-id={{ selectedprocess.id }} accesskey="u">Wartenummer drucken</button>
+						<button type="button" class="button btn button-submit button-callback" data-callback="onCopyButton" id="copy-popup-content" title="Inhalt kopieren"><i class="fas fa-copy" aria-hidden="true"></i></button>
+						<button type="button" class="button btn button-submit button-callback" data-callback="onEditProcess" name="editProcess" data-id="{{ selectedprocess.id }}" data-scope-id="{{ selectedprocess.scope.id }}">Termin bearbeiten</button>
+		                <button type="button" class="button btn button-submit button-callback" data-callback="onPrintWaitingNumber" name="printWaitingNumber" data-id="{{ selectedprocess.id }}" accesskey="u">Wartenummer drucken</button>
+						<button type="button" class="button btn button-submit button-ok" accesskey="q">Schließen</button>
 		            </div>
 		        </div>
 	        {{ block('success_end') }}

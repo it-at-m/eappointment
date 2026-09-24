@@ -105,7 +105,11 @@ public class AdminSteps {
         case "Termin ändern":
             COUNTER_PROCESSING_STATION_PAGE.clickOnChangeAppointmentButton();
             break;
+        case "Termin bearbeiten":
+            COUNTER_PROCESSING_STATION_PAGE.clickOnEditProcessButton();
+            break;
         case "Vorgangsnummer drucken":
+        case "Wartenummer drucken":
             COUNTER_PROCESSING_STATION_PAGE.clickOnPrintAppointmentNumberButton();
             break;
         case "Schließen":
@@ -506,6 +510,16 @@ public class AdminSteps {
         //COUNTER_PROCESSING_STATION_PAGE.checkQueueElementsVisibleWithoutSMS();
     }
 
+    @Dann("wird das Bearbeitungsformular für den Spontankunden angezeigt.")
+    public void wird_das_bearbeitungsformular_fuer_den_spontankunden_angezeigt() {
+        COUNTER_PROCESSING_STATION_PAGE.checkProcessEditFormIsVisible();
+    }
+
+    @Dann("wird das Bearbeitungsformular für den Terminkunden angezeigt.")
+    public void wird_das_bearbeitungsformular_fuer_den_terminkunden_angezeigt() {
+        COUNTER_PROCESSING_STATION_PAGE.checkAppointmentEditFormIsVisible();
+    }
+
     @Wenn("Sie einen Spontankunden für die Dienstleistung {string} buchen.")
     public void wenn_sie_einen_spontan_kunden_fuer_die_dienstleistung_buchen(String dienstleistung) {
         List<String> services = Arrays.asList(dienstleistung.split(",\\s*"));
@@ -607,7 +621,7 @@ public class AdminSteps {
     
             // Dialog bestätigen
             try {
-                wenn_sie_im_zeitmanagementsystem_auf_die_schaltflaeche_string_klicken("Ok");
+                wenn_sie_im_zeitmanagementsystem_auf_die_schaltflaeche_string_klicken("Schließen");
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
@@ -678,7 +692,7 @@ public class AdminSteps {
     public void es_erscheint_ein_popup_fenster_und_der_termin_ist_auch_in_der_warteschlange_sichtbar(String popUpName) {
         Assert.assertTrue(ADMIN_PAGE.isPopUpVisible(popUpName), String.format("Popup '%s' is not visible!", popUpName));
         try {
-            wenn_sie_im_zeitmanagementsystem_auf_die_schaltflaeche_string_klicken("Ok");
+            wenn_sie_im_zeitmanagementsystem_auf_die_schaltflaeche_string_klicken("Schließen");
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

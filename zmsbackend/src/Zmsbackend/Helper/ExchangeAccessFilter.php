@@ -26,11 +26,19 @@ class ExchangeAccessFilter
 
     protected static $organisationList = null;
 
+    /** @var array<string, true>|null */
+    protected static $allowedScopeIds = null;
+
+    /** @var array<string, true>|null */
+    protected static $allowedDepartmentIds = null;
+
     public function __construct($exchangeEntity, $workstation)
     {
         static::$exchangeEntity = $exchangeEntity;
         static::$workstation = $workstation;
-        static::$organisationList = $this->getOrganisationListByDepartments();
+        static::$organisationList = null;
+        static::$allowedScopeIds = null;
+        static::$allowedDepartmentIds = null;
     }
 
     /**
@@ -40,6 +48,10 @@ class ExchangeAccessFilter
     public function getFilteredEntity()
     {
         static::$filteredEntity = clone static::$exchangeEntity;
+        if (static::$workstation->getUseraccount()->isSuperUser()) {
+            return static::$filteredEntity;
+        }
+
         foreach (static::$exchangeEntity->dictionary as $entry) {
             if ($entry['reference'] && isset(static::$filterList[$entry['reference']])) {
                 $filterMethod = self::$filterList[$entry['reference']];
@@ -79,10 +91,12 @@ class ExchangeAccessFilter
      */
     protected static function getFilteredEntityByScope($entityId, $filteredKey): void
     {
-        if (static::$workstation->getUseraccount()->hasPermissions(['scope'])) {
-            if (! static::$workstation->getScopeListFromAssignedDepartments()->hasEntity($entityId)) {
-                unset(static::$filteredEntity->data[$filteredKey]);
-            }
+        if (! static::$workstation->getUseraccount()->hasPermissions(['scope'])) {
+            return;
+        }
+
+        if (! isset(static::allowedScopeIds()[(string) $entityId])) {
+            unset(static::$filteredEntity->data[$filteredKey]);
         }
     }
 
@@ -91,10 +105,12 @@ class ExchangeAccessFilter
      */
     protected static function getFilteredEntityByDepartment($entityId, $filteredKey): void
     {
-        if (static::$workstation->getUseraccount()->hasPermissions(['department'])) {
-            if (! static::$workstation->getDepartmentList()->hasEntity($entityId)) {
-                unset(static::$filteredEntity->data[$filteredKey]);
-            }
+        if (! static::$workstation->getUseraccount()->hasPermissions(['department'])) {
+            return;
+        }
+
+        if (! isset(static::allowedDepartmentIds()[(string) $entityId])) {
+            unset(static::$filteredEntity->data[$filteredKey]);
         }
     }
 
@@ -103,11 +119,47 @@ class ExchangeAccessFilter
      */
     protected static function getFilteredEntityByOrganisation($entityId, $filteredKey): void
     {
-        if (static::$workstation->getUseraccount()->hasPermissions(['organisation'])) {
-            if (! static::$organisationList->hasEntity($entityId)) {
-                unset(static::$filteredEntity->data[$filteredKey]);
+        if (! static::$workstation->getUseraccount()->hasPermissions(['organisation'])) {
+            return;
+        }
+
+        if (static::$organisationList === null) {
+            static::$organisationList = static::getOrganisationListByDepartments();
+        }
+
+        if (! static::$organisationList->hasEntity($entityId)) {
+            unset(static::$filteredEntity->data[$filteredKey]);
+        }
+    }
+
+    /**
+     * @return array<string, true>
+     */
+    protected static function allowedScopeIds(): array
+    {
+        if (static::$allowedScopeIds === null) {
+            static::$allowedScopeIds = [];
+            foreach (static::$workstation->getScopeListFromAssignedDepartments() as $scope) {
+                static::$allowedScopeIds[(string) $scope->id] = true;
             }
         }
+
+        return static::$allowedScopeIds;
+    }
+
+    /**
+     * @return array<string, true>
+     */
+    protected static function allowedDepartmentIds(): array
+    {
+        if (static::$allowedDepartmentIds === null) {
+            static::$allowedDepartmentIds = [];
+            foreach (static::$workstation->getDepartmentList() as $department) {
+                static::$allowedDepartmentIds[(string) $department->id] = true;
+            }
+        }
+
+        return static::$allowedDepartmentIds;
     }
 
     protected static function getOrganisationListByDepartments(): \BO\Zmsentities\Collection\OrganisationList

@@ -9,8 +9,8 @@ class ExchangeCapacityscope extends \BO\Zmsbackend\Base
 {
     public function readEntity(
         $subjectid,
-        \DateTimeInterface $datestart = null,
-        \DateTimeInterface $dateend = null,
+        ?\DateTimeInterface $datestart = null,
+        ?\DateTimeInterface $dateend = null,
         $period = 'day'
     ): Exchange {
         if (trim((string) $subjectid) === '') {
@@ -51,35 +51,84 @@ class ExchangeCapacityscope extends \BO\Zmsbackend\Base
         $entity['visualization']['ylabelMinutesPublic'] = ["bookedminutes_public", "plannedminutes_public"];
         $entity['visualization']['allowCapacityChannel'] = true;
 
-        $query = $this->resolveMetricsQuery($period, $unfiltered);
-
-        foreach ($subjectIdList as $scopeId) {
-            $parameters = ['scopeid' => $scopeId];
-            if (!$unfiltered) {
-                $parameters['datestart'] = $datestart->format('Y-m-d');
-                $parameters['dateend'] = $dateend->format('Y-m-d');
-            }
-
-            $raw = $this->fetchAll($query, $parameters);
-            foreach ($raw as $entry) {
-                $entity->addDataSet(array_values($entry));
-            }
+        $scopeIds = $this->normalizeScopeIds($subjectIdList);
+        if ($scopeIds === []) {
+            throw new \InvalidArgumentException('Subject ID cannot be empty');
         }
+
+        $dateStart = $unfiltered ? null : $datestart;
+        $dateEnd = $unfiltered ? null : $dateend;
+        $parameters = [];
+        $query = ExchangeCapacityscopeQuery::buildCapacityMetricsQuery(
+            $scopeIds,
+            $dateStart,
+            $dateEnd,
+            $period,
+            $parameters
+        );
+        foreach ($this->fetchAll($query, $parameters) as $entry) {
+            $entity->addDataSet(array_values($entry));
+        }
+
+        $entity['visualization']['scopeSlotTimes'] = $this->readScopeSlotTimes(
+            $scopeIds,
+            $dateStart,
+            $dateEnd
+        );
 
         return $entity;
     }
 
-    private function resolveMetricsQuery(string $period, bool $unfiltered): string
+    /**
+     * @param array<int, int> $scopeIds
+     * @return array<int, array{id: string, name: string, slotTimeInMinutes: int}>
+     */
+    private function readScopeSlotTimes(
+        array $scopeIds,
+        ?\DateTimeInterface $dateStart,
+        ?\DateTimeInterface $dateEnd
+    ): array {
+        $parameters = [];
+        $query = ExchangeCapacityscopeQuery::buildScopeSlotTimeQuery(
+            $scopeIds,
+            $dateStart,
+            $dateEnd,
+            $parameters
+        );
+        $slotTimes = [];
+        foreach ($this->fetchAll($query, $parameters) as $entry) {
+            $scopeId = (string) ($entry['subjectid'] ?? '');
+            $minutes = (int) ($entry['slotminutes'] ?? 0);
+            if ($scopeId === '' || $minutes <= 0 || isset($slotTimes[$scopeId])) {
+                continue;
+            }
+            $name = trim((string) ($entry['scopename'] ?? ''));
+            $slotTimes[$scopeId] = [
+                'id' => $scopeId,
+                'name' => $name !== '' ? $name : 'Standort ' . $scopeId,
+                'slotTimeInMinutes' => $minutes,
+            ];
+        }
+
+        return array_values($slotTimes);
+    }
+
+    /**
+     * @param array<int, string> $subjectIdList
+     * @return array<int, int>
+     */
+    private function normalizeScopeIds(array $subjectIdList): array
     {
-        if ($unfiltered) {
-            return ExchangeCapacityscopeQuery::QUERY_CAPACITY_METRICS_BY_DAY_ALL_DATES;
+        $scopeIds = [];
+        foreach ($subjectIdList as $scopeId) {
+            $scopeId = trim($scopeId);
+            if (preg_match('/^\d+$/', $scopeId) !== 1) {
+                continue;
+            }
+            $scopeIds[] = (int) $scopeId;
         }
 
-        if ($period === 'hour') {
-            return ExchangeCapacityscopeQuery::QUERY_CAPACITY_METRICS_BY_HOUR_IN_DATE_RANGE;
-        }
-
-        return ExchangeCapacityscopeQuery::QUERY_CAPACITY_METRICS_BY_DAY_IN_DATE_RANGE;
+        return array_values(array_unique($scopeIds));
     }
 
     public function readSubjectList(): Exchange
