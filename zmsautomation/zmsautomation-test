@@ -735,7 +735,9 @@ fi
 
 # Clear old surefire reports and cucumber reports
 rm -rf "$PROJECT_ROOT/zmsautomation/target/surefire-reports" 2>/dev/null || true
+rm -rf "$PROJECT_ROOT/zmsautomation/target/surefire-reports-api" 2>/dev/null || true
 rm -rf "$PROJECT_ROOT/zmsautomation/target/cucumber.json" 2>/dev/null || true
+rm -rf "$PROJECT_ROOT/zmsautomation/target/cucumber-api.json" 2>/dev/null || true
 rm -rf "$PROJECT_ROOT/zmsautomation/target/site/cucumber-pretty" 2>/dev/null || true
 
 TEST_EXIT=0
@@ -844,7 +846,6 @@ invoke_maven_suite() {
   while (( attempt <= max_attempts )); do
     attempt_log="$PROJECT_ROOT/zmsautomation/target/maven-test-${suite_name}-attempt-${attempt}.log"
     info "Starting ${suite_name} Maven test attempt ${attempt}/${max_attempts}"
-    set +e
     mvn -B -DtrimStackTrace=false \
       "${PLATFORM_ARGS[@]}" \
       -DBASE_URI="$BASE_URI" \
@@ -860,7 +861,6 @@ invoke_maven_suite() {
       -Dsso.password="$SSO_PASSWORD" \
       test "$@" 2>&1 | tee "$attempt_log"
     suite_exit=${PIPESTATUS[0]}
-    set -e
 
     if [[ $suite_exit -eq 0 ]]; then
       return 0
@@ -891,31 +891,25 @@ if [[ "${ZMS_BROWSER:-chrome}" == "edge" ]]; then
 fi
 if [[ "$RUN_SPLIT_SUITES" == true ]]; then
   info "Running API tests and UI tests as separate Maven calls"
-  set +e
+  API_EXIT=0
   invoke_maven_suite "api" 1 \
     "${ATAF_MAVEN_ARGS[@]+"${ATAF_MAVEN_ARGS[@]}"}" \
     -Pataf-api \
-    -Dcucumber.features=src/test/resources/features/rest
-  API_EXIT=$?
-  set -e
+    -Dcucumber.features=src/test/resources/features/rest || API_EXIT=$?
   archive_suite_reports "api"
-  set +e
+  UI_EXIT=0
   invoke_maven_suite "ui" "$MAX_UI_RETRIES" \
     "${ATAF_MAVEN_ARGS[@]+"${ATAF_MAVEN_ARGS[@]}"}" \
     -Pataf-ui \
-    -Dcucumber.features=src/test/resources/features/ui
-  UI_EXIT=$?
-  set -e
+    -Dcucumber.features=src/test/resources/features/ui || UI_EXIT=$?
   TEST_EXIT=0
   if [[ $API_EXIT -ne 0 || $UI_EXIT -ne 0 ]]; then
     TEST_EXIT=1
   fi
 else
-  set +e
+  TEST_EXIT=0
   invoke_maven_suite "tests" "$MAX_UI_RETRIES" \
-    "${ATAF_MAVEN_ARGS[@]+"${ATAF_MAVEN_ARGS[@]}"}"
-  TEST_EXIT=$?
-  set -e
+    "${ATAF_MAVEN_ARGS[@]+"${ATAF_MAVEN_ARGS[@]}"}" || TEST_EXIT=$?
 fi
 
 # 12. Test Results
