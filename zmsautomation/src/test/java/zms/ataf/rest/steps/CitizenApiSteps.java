@@ -59,8 +59,6 @@ public class CitizenApiSteps {
     private String rebookingSourceAuthKey;
     private String citizenAccessToken;
 
-    private static final String CONTACT_FAMILY_NAME = "ATAF Test User";
-
     private int parseIntOrFail(String value, String label) {
         try {
             return Integer.parseInt(value);
@@ -588,17 +586,17 @@ public class CitizenApiSteps {
 
     @When("I update the appointment with contact details and customTextfield {string}")
     public void iUpdateTheAppointmentWithContactDetailsAndCustomTextfield(String customTextfield) {
-        postAppointmentUpdate(CONTACT_FAMILY_NAME, scenarioContactEmail(), customTextfield != null ? customTextfield : "", true, false);
+        postAppointmentUpdate(scenarioContactFamilyName(), scenarioContactEmail(), customTextfield != null ? customTextfield : "", true, false);
     }
 
     @When("I update the appointment with contact details and customTextfield {string} as the logged-in citizen")
     public void iUpdateTheAppointmentWithContactDetailsAndCustomTextfieldAsTheLoggedInCitizen(String customTextfield) {
-        postAppointmentUpdate(CONTACT_FAMILY_NAME, scenarioContactEmail(), customTextfield != null ? customTextfield : "", true, true);
+        postAppointmentUpdate(scenarioContactFamilyName(), scenarioContactEmail(), customTextfield != null ? customTextfield : "", true, true);
     }
 
     @When("I update the appointment with contact details without custom text")
     public void iUpdateTheAppointmentWithContactDetailsWithoutCustomText() {
-        postAppointmentUpdate(CONTACT_FAMILY_NAME, scenarioContactEmail(), "", true, false);
+        postAppointmentUpdate(scenarioContactFamilyName(), scenarioContactEmail(), "", true, false);
     }
 
     @When("I attempt to update the appointment changing familyName to {string}")
@@ -608,7 +606,7 @@ public class CitizenApiSteps {
 
     @When("I attempt to update the appointment with email {string}")
     public void iAttemptToUpdateTheAppointmentWithEmail(String email) {
-        postAppointmentUpdate(CONTACT_FAMILY_NAME, email, "", false, false);
+        postAppointmentUpdate(scenarioContactFamilyName(), email, "", false, false);
     }
 
     @When("I attempt to confirm the reserved appointment")
@@ -786,6 +784,13 @@ public class CitizenApiSteps {
         Assertions.assertThat(contactValue(currentAppointmentProcess().getFamilyName()))
             .as("appointment familyName")
             .isEqualTo(expected);
+    }
+
+    @Then("the appointment familyName should be the generated contact name")
+    public void theAppointmentFamilyNameShouldBeTheGeneratedContactName() {
+        Assertions.assertThat(contactValue(currentAppointmentProcess().getFamilyName()))
+            .as("appointment familyName")
+            .isEqualTo(scenarioContactFamilyName());
     }
 
     @Then("the appointment customTextfield should be {string}")
@@ -1406,6 +1411,7 @@ public class CitizenApiSteps {
         private String confirmAuthKey;
         private String confirmUrl;
         private String appointmentUrl;
+        private String contactFamilyName;
         private String contactEmail;
 
         private void clear() {
@@ -1414,16 +1420,36 @@ public class CitizenApiSteps {
             confirmAuthKey = null;
             confirmUrl = null;
             appointmentUrl = null;
+            contactFamilyName = null;
             contactEmail = null;
         }
     }
 
-    /** One mailinator address per scenario, same generator the citizen view Kontakt step uses. */
-    private static String scenarioContactEmail() {
-        if (booking().contactEmail == null || booking().contactEmail.isBlank()) {
-            String fullName = RandomNameHelper.generateRandomName();
+    /**
+     * One generated name per scenario. Nachname is the family name, and the mailinator
+     * address is that same full name, as on the citizen view Kontakt step.
+     */
+    private static void ensureScenarioContact() {
+        BookingContext context = booking();
+        if (context.contactFamilyName != null && !context.contactFamilyName.isBlank()) {
+            return;
+        }
+        String fullName = RandomNameHelper.generateRandomName();
+        String[] parts = RandomNameHelper.splitFullNameIntoFirstAndLast(fullName);
+        context.contactFamilyName = parts[1];
+        if (context.contactEmail == null || context.contactEmail.isBlank()) {
             setBookingContactEmail(RandomNameHelper.getEmailConformName(fullName) + "@mailinator.com");
         }
+    }
+
+    private static String scenarioContactFamilyName() {
+        ensureScenarioContact();
+        return booking().contactFamilyName;
+    }
+
+    /** One mailinator address per scenario, same generator the citizen view Kontakt step uses. */
+    private static String scenarioContactEmail() {
+        ensureScenarioContact();
         return booking().contactEmail;
     }
 
