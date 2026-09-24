@@ -2,7 +2,7 @@ id: add spare logins for parallel ATAF runs
 author: ZMS Development
 realm: zms
 changes:
-  # UI superuser pool is ataf + 4 (dataproviderthreadcount 4 + 1).
+  # UI superuser pool is ataf + 8 (dataproviderthreadcount 8 + 1).
   - addUser:
       name: ataf_2
       lastName: Test
@@ -60,6 +60,66 @@ changes:
       password: "vorschau"
   - assignRole:
       user: ataf_5
+      role: user
+      clientId: zms
+
+  - addUser:
+      name: ataf_6
+      lastName: Test
+      firstName: Ataf
+      enabled: true
+      emailVerified: true
+      email: ataf_6@localhost
+  - updateUserPassword:
+      name: ataf_6
+      password: "vorschau"
+  - assignRole:
+      user: ataf_6
+      role: user
+      clientId: zms
+
+  - addUser:
+      name: ataf_7
+      lastName: Test
+      firstName: Ataf
+      enabled: true
+      emailVerified: true
+      email: ataf_7@localhost
+  - updateUserPassword:
+      name: ataf_7
+      password: "vorschau"
+  - assignRole:
+      user: ataf_7
+      role: user
+      clientId: zms
+
+  - addUser:
+      name: ataf_8
+      lastName: Test
+      firstName: Ataf
+      enabled: true
+      emailVerified: true
+      email: ataf_8@localhost
+  - updateUserPassword:
+      name: ataf_8
+      password: "vorschau"
+  - assignRole:
+      user: ataf_8
+      role: user
+      clientId: zms
+
+  - addUser:
+      name: ataf_9
+      lastName: Test
+      firstName: Ataf
+      enabled: true
+      emailVerified: true
+      email: ataf_9@localhost
+  - updateUserPassword:
+      name: ataf_9
+      password: "vorschau"
+  - assignRole:
+      user: ataf_9
       role: user
       clientId: zms
 
