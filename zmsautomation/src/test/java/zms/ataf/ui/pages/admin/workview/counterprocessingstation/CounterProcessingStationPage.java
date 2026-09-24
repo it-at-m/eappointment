@@ -5,7 +5,9 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.Locale;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
@@ -426,6 +428,10 @@ public class CounterProcessingStationPage extends AdminPage {
     }
 
     public void selectTimeInNewAppointmentDropDownList(String time) {
+        selectTimeInNewAppointmentDropDownList(time, Set.of());
+    }
+
+    public void selectTimeInNewAppointmentDropDownList(String time, Set<String> excludedTimes) {
         ScenarioLogManager.getLogger().info("Trying to select time \"" + time + "\" in new appointment drop down list...");
         Pattern timeSlotPattern = Pattern.compile("([0-9][0-9]:[0-9][0-9]) \\(noch ([0-9]) frei\\)");
         WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
@@ -445,7 +451,10 @@ public class CounterProcessingStationPage extends AdminPage {
                     case "<nächste>":
                         List<WebElement> bookableTimeSlots = options.stream()
                                 .filter(option -> !option.getText().contains("Spontankunde"))
-                                .filter(option -> timeSlotPattern.matcher(option.getText()).find())
+                                .filter(option -> {
+                                    Matcher matcher = timeSlotPattern.matcher(option.getText());
+                                    return matcher.find() && !excludedTimes.contains(matcher.group(1));
+                                })
                                 .collect(Collectors.toList());
                         if (bookableTimeSlots.isEmpty()) {
                             return false;
@@ -564,13 +573,20 @@ public class CounterProcessingStationPage extends AdminPage {
         WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME * 2L));
         AtomicReference<String> newAppointmentNumber = new AtomicReference<>("");
         AtomicBoolean validationErrorsVisible = new AtomicBoolean(false);
-        final int maxBookingAttempts = 3;
+        Set<String> skippedTimes = new HashSet<>();
+        final int maxBookingAttempts = 6;
     
         for (int attempt = 1; attempt <= maxBookingAttempts; attempt++) {
             if (attempt > 1) {
+                String previousTime = TestDataHelper.getTestData("new_appointment_time");
+                if (previousTime != null && !previousTime.isBlank()) {
+                    skippedTimes.add(previousTime);
+                }
                 ScenarioLogManager.getLogger().warn(
-                        "Retrying \"book appointment\" click (attempt " + attempt + "/" + maxBookingAttempts + ")...");
+                        "Slot \"" + previousTime + "\" was not booked; trying the next available slot (attempt "
+                                + attempt + "/" + maxBookingAttempts + ")...");
                 CONTEXT.waitForSpinners();
+                selectTimeInNewAppointmentDropDownList("<nächste>", skippedTimes);
             }
     
             WebElement bookButton = wait.until(

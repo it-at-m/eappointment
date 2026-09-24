@@ -210,36 +210,52 @@ public class ZmsApiSteps {
             int scopeId, String serviceName, String amendment) {
         String authKey = getOrLoginXAuthKey();
         JsonNode request = findScopeRequestByName(scopeId, serviceName, authKey);
-        JsonNode freeProcess = fetchFirstFreeProcess(scopeId, request, authKey);
-        ObjectNode process = freeProcess.deepCopy();
-
+        JsonNode freeList = fetchFreeProcesses(scopeId, request, authKey);
         String familyName = TestPropertiesHelper.getPropertyAsString("zmsapiAppointmentFamilyName", true, "Terminkunde");
         String email = TestPropertiesHelper.getPropertyAsString("zmsapiAppointmentEmail", true, "terminkunde@example.com");
-        process.put("amendment", amendment);
-        process.set("requests", MAPPER.createArrayNode().add(request.deepCopy()));
 
-        ObjectNode client = MAPPER.createObjectNode();
-        client.put("familyName", familyName);
-        client.put("email", email);
-        client.put("surveyAccepted", 1);
-        ArrayNode clients = MAPPER.createArrayNode();
-        clients.add(client);
-        process.set("clients", clients);
+        JsonNode reserved = null;
+        for (int i = 0; i < freeList.size(); i++) {
+            ObjectNode process = freeList.get(i).deepCopy();
+            process.put("amendment", amendment);
+            process.set("requests", MAPPER.createArrayNode().add(request.deepCopy()));
 
-        response = given()
-            .baseUri(baseUri != null ? baseUri : TestConfig.getBaseUri())
-            .header("X-AuthKey", authKey)
-            .contentType("application/json")
-            .queryParam("slotType", "intern")
-            .queryParam("clientkey", "")
-            .queryParam("slotsRequired", 0)
-            .body(toJson(process))
-        .when()
-            .post("/process/status/reserved/");
-        CommonApiSteps.setResponse(response);
+            ObjectNode client = MAPPER.createObjectNode();
+            client.put("familyName", familyName);
+            client.put("email", email);
+            client.put("surveyAccepted", 1);
+            ArrayNode clients = MAPPER.createArrayNode();
+            clients.add(client);
+            process.set("clients", clients);
 
-        JsonNode reserved = parseDataNode(response);
-        Assertions.assertThat(reserved).isNotNull();
+            response = given()
+                .baseUri(baseUri != null ? baseUri : TestConfig.getBaseUri())
+                .header("X-AuthKey", authKey)
+                .contentType("application/json")
+                .queryParam("slotType", "intern")
+                .queryParam("clientkey", "")
+                .queryParam("slotsRequired", 0)
+                .body(toJson(process))
+            .when()
+                .post("/process/status/reserved/");
+            CommonApiSteps.setResponse(response);
+            if (response.getStatusCode() == 200) {
+                reserved = parseDataNode(response);
+                if (reserved != null) {
+                    break;
+                }
+            }
+            if (i < freeList.size() - 1) {
+                ScenarioLogManager.getLogger().info(
+                    "Intern slot for scope {} was reserved or booked (status {}); trying the next free process",
+                    scopeId,
+                    response.getStatusCode());
+                continue;
+            }
+        }
+        Assertions.assertThat(reserved)
+            .as("POST /process/status/reserved/ for scope %d", scopeId)
+            .isNotNull();
 
         response = given()
             .baseUri(baseUri != null ? baseUri : TestConfig.getBaseUri())
@@ -743,7 +759,7 @@ public class ZmsApiSteps {
         return requests.get(0);
     }
 
-    private JsonNode fetchFirstFreeProcess(int scopeId, JsonNode request, String authKey) {
+    private JsonNode fetchFreeProcesses(int scopeId, JsonNode request, String authKey) {
         LocalDate today = BerlinTime.today();
         ObjectNode calendar = MAPPER.createObjectNode();
         ObjectNode firstDay = MAPPER.createObjectNode();
@@ -778,7 +794,7 @@ public class ZmsApiSteps {
             .as("POST /process/status/free/ for scope %d on %s", scopeId, today)
             .isNotNull()
             .isNotEmpty();
-        return freeList.get(0);
+        return freeList;
     }
 
     private JsonNode refreshAssignedProcessFromWorkstation(String authKey) {

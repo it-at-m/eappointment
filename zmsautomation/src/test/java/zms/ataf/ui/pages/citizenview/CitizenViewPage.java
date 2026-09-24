@@ -1369,10 +1369,15 @@ public class CitizenViewPage extends BasePage {
                 + " if(!node||!node.id)return null;"
                 + " var m=node.id.match(/-timeslot-(\\d+)$/);"
                 + " return m?parseInt(m[1],10):null;}"
+                + "var skipArg=(arguments.length>1&&arguments[1]!=null)?String(arguments[1]):String(window.__zmsCitizenViewSkippedSlots||'');"
+                + "window.__zmsCitizenViewSkippedSlots=skipArg;"
+                + "var skip={};"
+                + "skipArg.split(',').forEach(function(s){if(s)skip[s]=1;});"
+                + "function skipped(ts){return ts!==null&&skip[String(ts)];}"
                 + "var target=null;"
                 + "for(var j=0;j<slots.length;j++){"
                 + " var ts=slotTs(slots[j]);"
-                + " if(ts!==null&&ts>=minTs){target=slots[j];break;}"
+                + " if(ts!==null&&ts>=minTs&&!skipped(ts)){target=slots[j];break;}"
                 + "}"
                 + "if(!target){"
                 + " var nowSec=Math.floor(Date.now()/1000);"
@@ -1380,13 +1385,14 @@ public class CitizenViewPage extends BasePage {
                 + " var best=null,bestTs=-1;"
                 + " for(var k=0;k<slots.length;k++){"
                 + "  var ts2=slotTs(slots[k]);"
-                + "  if(ts2!==null&&ts2>=minSafe&&ts2>bestTs){best=slots[k];bestTs=ts2;}"
+                + "  if(ts2!==null&&ts2>=minSafe&&!skipped(ts2)&&ts2>bestTs){best=slots[k];bestTs=ts2;}"
                 + " }"
                 + " target=best;"
                 + "}"
                 + "if(!target){"
-                + " var idx = slots.length>2?2:(slots.length>1?1:0);"
-                + " target = slots[idx];"
+                + " for(var n=0;n<slots.length;n++){"
+                + "  if(!skipped(slotTs(slots[n]))){target=slots[n];break;}"
+                + " }"
                 + "}"
                 + "function highlightSlot(node){"
                 + " if(!node)return;"
@@ -1446,18 +1452,23 @@ public class CitizenViewPage extends BasePage {
      * from the Ort display id. Retries with Später when no matching slot is in the current hour/day-part.
      */
     public void highlightPreferredTimeslotForOffice(int officeId) {
+        highlightPreferredTimeslotForOffice(officeId, "");
+    }
+
+    private void highlightPreferredTimeslotForOffice(int officeId, String skippedTimestamps) {
         CONTEXT.set();
         String scrollSlotHighlight = buildScrollSlotHighlightScript();
         ScenarioLogManager.getLogger().info(
-                "zmscitizenview: highlight preferred slot (≥60min ahead; else ≥5min; else 3rd/2nd/1st) office {}",
-                officeId);
+                "zmscitizenview: highlight preferred slot (≥60min ahead; else ≥5min; else next free) office {} skip [{}]",
+                officeId,
+                skippedTimestamps);
         boolean highlighted = false;
         for (int attempt = 1; attempt <= 8 && !highlighted; attempt++) {
             try {
                 highlighted =
                         Boolean.TRUE.equals(
                                 ((JavascriptExecutor) DriverUtil.getDriver())
-                                        .executeScript(scrollSlotHighlight, officeId));
+                                        .executeScript(scrollSlotHighlight, officeId, skippedTimestamps));
             } catch (Exception e) {
                 ScenarioLogManager.getLogger()
                         .warn("zmscitizenview: highlight script attempt {} failed: {}", attempt, e.toString());
@@ -1627,12 +1638,71 @@ public class CitizenViewPage extends BasePage {
      */
     public void assertCalloutAndReserveAfterSlotSelection(int officeId) {
         CONTEXT.set();
-        assertSelectedAppointmentCalloutShowsProvider(officeId);
-        ScenarioLogManager.getLogger()
-                .info("zmscitizenview: Weiter after slot callout → reserve appointment (then Kontakt form)");
-        clickWeiter();
-        waitForReserveToSettle();
-        trySetBookingProcessFromPage();
+        Set<Long> skipped = new HashSet<>();
+        for (int attempt = 1; attempt <= 8; attempt++) {
+            if (attempt > 1) {
+                String skippedTimestamps =
+                        skipped.stream().map(String::valueOf).reduce((a, b) -> a + "," + b).orElse("");
+                highlightPreferredTimeslotForOffice(officeId, skippedTimestamps);
+                clickHighlightedTimeslotSelection();
+            }
+            assertSelectedAppointmentCalloutShowsProvider(officeId);
+            long timestamp = readStoredSlotTimestamp();
+            ScenarioLogManager.getLogger()
+                    .info(
+                            "zmscitizenview: Weiter after slot callout → reserve appointment (then Kontakt form) timestamp={}",
+                            timestamp);
+            clickWeiter();
+            if (reserveReachedContactForm()) {
+                waitForReserveToSettle();
+                trySetBookingProcessFromPage();
+                return;
+            }
+            if (timestamp > 0) {
+                skipped.add(timestamp);
+            }
+            ScenarioLogManager.getLogger()
+                    .info(
+                            "zmscitizenview: slot timestamp={} is reserved or booked; trying the next available slot",
+                            timestamp);
+        }
+        Assert.fail("zmscitizenview: no free slot remained for office " + officeId);
+    }
+
+    private boolean reserveReachedContactForm() {
+        long deadline = System.currentTimeMillis() + 30_000L;
+        while (System.currentTimeMillis() < deadline) {
+            if (shadowDomContainsText("Kontaktdaten") || shadowDomContainsText("Termin verschieben")) {
+                return true;
+            }
+            if (shadowDomContainsText("Ihr gewählter Termin ist nicht mehr verfügbar.")
+                    || shadowDomContainsText("Ein unbekannter Fehler ist aufgetreten.")) {
+                return false;
+            }
+            sleepQuiet(400L);
+        }
+        Assert.fail(
+                "zmscitizenview: reserve did not reach Kontaktdaten and did not report a taken slot");
+        return false;
+    }
+
+    private long readStoredSlotTimestamp() {
+        Object slotId =
+                ((JavascriptExecutor) DriverUtil.getDriver())
+                        .executeScript("return window.__zmsCitizenViewSlotId || '';");
+        if (slotId == null) {
+            return 0L;
+        }
+        String id = String.valueOf(slotId);
+        int marker = id.lastIndexOf("-timeslot-");
+        if (marker < 0) {
+            return 0L;
+        }
+        try {
+            return Long.parseLong(id.substring(marker + "-timeslot-".length()));
+        } catch (NumberFormatException e) {
+            return 0L;
+        }
     }
 
     /**
