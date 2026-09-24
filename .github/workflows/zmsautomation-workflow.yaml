@@ -1,7 +1,7 @@
 name: ⚙️ zmsautomation
 run-name: >-
   ${{
-    github.event_name == 'schedule' && 'zmsautomation | ⏰ scheduled | UI × chrome+firefox, API once | main + next'
+    github.event_name == 'schedule' && 'zmsautomation | ⏰ scheduled | UI × chrome+firefox, API once | next'
     || (github.event_name == 'workflow_dispatch' && inputs.run_main_next_matrix
         && format(
              'zmsautomation | ▶️ manual | full shard matrix | UI × chrome+firefox, API once | main + next{0}',
@@ -145,8 +145,13 @@ jobs:
           }
 
           FULL_MATRIX=false
-          if [[ "${{ github.event_name }}" == "schedule" ]] || [[ "${{ inputs.run_main_next_matrix }}" == "true" ]]; then
+          # Nightly cron only needs next. main stays available on the manual matrix input.
+          MATRIX_BRANCHES='["next"]'
+          if [[ "${{ github.event_name }}" == "schedule" ]]; then
             FULL_MATRIX=true
+          elif [[ "${{ inputs.run_main_next_matrix }}" == "true" ]]; then
+            FULL_MATRIX=true
+            MATRIX_BRANCHES='["main","next"]'
           fi
 
           if [[ "$FULL_MATRIX" == true ]]; then
@@ -157,11 +162,12 @@ jobs:
               --arg ticketprinter "$(append_not_ignore '@zmsticketprinter')" \
               --arg zmsapi "$(append_not_ignore '@zmsapi')" \
               --arg zmscitizenapi "$(append_not_ignore '@zmscitizenapi')" \
+              --argjson branches "$MATRIX_BRANCHES" \
               '
               {
                 include: (
                   [
-                    ["main", "next"][] as $branch
+                    $branches[] as $branch
                     | [
                         {shard: "zmsadmin", test_layer: "ui", tag_filter: $admin},
                         {shard: "zmscitizenview", test_layer: "ui", tag_filter: $citizenview},
@@ -172,7 +178,7 @@ jobs:
                     | $shard + {branch: $branch, browser: $browser, use_custom_tags: false}
                   ]
                   + [
-                    ["main", "next"][] as $branch
+                    $branches[] as $branch
                     | [
                         {shard: "zmsapi", test_layer: "api", tag_filter: $zmsapi},
                         {shard: "zmscitizenapi", test_layer: "api", tag_filter: $zmscitizenapi}
