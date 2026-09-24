@@ -180,14 +180,26 @@ public class CitizenViewPage extends BasePage {
         ScenarioLogManager.getLogger().info("Service Finder is visible on the start page.");
     }
 
-    /** True if substring appears anywhere in document + shadow DOM text. */
+    /**
+     * True if substring appears anywhere in document + shadow DOM text.
+     * Also walks slotted nodes and same-origin frames, and folds whitespace, so a painted
+     * callout such as "Sie sind angemeldet." matches even when its text is split across nodes.
+     */
     public boolean shadowDomContainsText(String substring) {
         CONTEXT.set();
         String esc = substring.replace("\\", "\\\\").replace("'", "\\'");
         String script =
-                "var sub='" + esc + "';function walk(n){var s='';if(!n)return s;if(n.nodeType===3)return n.nodeValue||'';"
-                        + "if(n.shadowRoot)s+=walk(n.shadowRoot);var c=n.childNodes;if(c)for(var i=0;i<c.length;i++)s+=walk(c[i]);return s;}"
-                        + "return walk(document.body).indexOf(sub)>=0;";
+                "var sub='" + esc + "'.replace(/\\s+/g,' ').trim();"
+                        + "function walk(n){var s='';if(!n)return s;if(n.nodeType===3)return n.nodeValue||'';"
+                        + "if(n.shadowRoot)s+=' '+walk(n.shadowRoot);"
+                        + "if(n.assignedNodes){var a=n.assignedNodes({flatten:true});"
+                        + "for(var j=0;j<a.length;j++)s+=' '+walk(a[j]);}"
+                        + "var c=n.childNodes;if(c)for(var i=0;i<c.length;i++)s+=' '+walk(c[i]);"
+                        + "if(n.nodeType===1){var tag=n.tagName;"
+                        + "if(tag==='INPUT'||tag==='TEXTAREA')s+=' '+(n.value||'');"
+                        + "if(n.contentDocument){try{s+=' '+walk(n.contentDocument.body);}catch(e){}}}"
+                        + "return s;}"
+                        + "return walk(document.documentElement).replace(/\\s+/g,' ').indexOf(sub)>=0;";
         Object o = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script);
         return Boolean.TRUE.equals(o);
     }
