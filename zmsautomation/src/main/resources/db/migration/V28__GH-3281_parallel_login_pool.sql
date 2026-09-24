@@ -4,12 +4,12 @@
 -- whose hash is the one shipped in .resources/zms.sql.
 --
 -- Pools (including the existing user):
---   superuser  ataf, ataf_2 .. ataf_5          UI threads 4 + 1
+--   superuser  ataf, ataf_2 .. ataf_9          UI threads 8 + 1
 --   workstation agent_queue .. agent_queue_9 API threads 8 + 1
 --   messenger  _system_messenger .. _9       API threads 8 + 1
 --
 -- Queue and customer-call type a counter. The spare superusers sit on a different
--- counter: the feature number plus 100 times the pool index (ataf_2 -> +100, ataf_5 -> +400).
+-- counter: the feature number plus 100 times the pool index (ataf_2 -> +100, ataf_9 -> +800).
 -- Arbeitsplatznr records that home desk.
 
 INSERT IGNORE INTO `nutzer`
@@ -19,6 +19,10 @@ VALUES
   (5141, 'ataf_3@keycloak', '$2y$10$9VlaB0aah3ypD5pXQCRyventPO5drQlOP.gqUk0BA5Iclfo2YTCoW', '', '', 90, 0, 0, '', 0, '102', '0000-00-00', 0, 0, '0', '0', '', CURRENT_TIMESTAMP, NULL),
   (5150, 'ataf_4@keycloak', '$2y$10$9VlaB0aah3ypD5pXQCRyventPO5drQlOP.gqUk0BA5Iclfo2YTCoW', '', '', 90, 0, 0, '', 0, '103', '0000-00-00', 0, 0, '0', '0', '', CURRENT_TIMESTAMP, NULL),
   (5151, 'ataf_5@keycloak', '$2y$10$9VlaB0aah3ypD5pXQCRyventPO5drQlOP.gqUk0BA5Iclfo2YTCoW', '', '', 90, 0, 0, '', 0, '104', '0000-00-00', 0, 0, '0', '0', '', CURRENT_TIMESTAMP, NULL),
+  (5160, 'ataf_6@keycloak', '$2y$10$9VlaB0aah3ypD5pXQCRyventPO5drQlOP.gqUk0BA5Iclfo2YTCoW', '', '', 90, 0, 0, '', 0, '105', '0000-00-00', 0, 0, '0', '0', '', CURRENT_TIMESTAMP, NULL),
+  (5161, 'ataf_7@keycloak', '$2y$10$9VlaB0aah3ypD5pXQCRyventPO5drQlOP.gqUk0BA5Iclfo2YTCoW', '', '', 90, 0, 0, '', 0, '106', '0000-00-00', 0, 0, '0', '0', '', CURRENT_TIMESTAMP, NULL),
+  (5162, 'ataf_8@keycloak', '$2y$10$9VlaB0aah3ypD5pXQCRyventPO5drQlOP.gqUk0BA5Iclfo2YTCoW', '', '', 90, 0, 0, '', 0, '107', '0000-00-00', 0, 0, '0', '0', '', CURRENT_TIMESTAMP, NULL),
+  (5163, 'ataf_9@keycloak', '$2y$10$9VlaB0aah3ypD5pXQCRyventPO5drQlOP.gqUk0BA5Iclfo2YTCoW', '', '', 90, 0, 0, '', 0, '108', '0000-00-00', 0, 0, '0', '0', '', CURRENT_TIMESTAMP, NULL),
   (5142, 'agent_queue_2@keycloak', '$2y$10$9VlaB0aah3ypD5pXQCRyventPO5drQlOP.gqUk0BA5Iclfo2YTCoW', '', '', 1, 0, 40, '', 0, '', '0000-00-00', 0, 0, '0', '0', '', CURRENT_TIMESTAMP, NULL),
   (5143, 'agent_queue_3@keycloak', '$2y$10$9VlaB0aah3ypD5pXQCRyventPO5drQlOP.gqUk0BA5Iclfo2YTCoW', '', '', 1, 0, 40, '', 0, '', '0000-00-00', 0, 0, '0', '0', '', CURRENT_TIMESTAMP, NULL),
   (5144, 'agent_queue_4@keycloak', '$2y$10$9VlaB0aah3ypD5pXQCRyventPO5drQlOP.gqUk0BA5Iclfo2YTCoW', '', '', 1, 0, 40, '', 0, '', '0000-00-00', 0, 0, '0', '0', '', CURRENT_TIMESTAMP, NULL),
@@ -42,6 +46,10 @@ VALUES
   (5141, 0),
   (5150, 0),
   (5151, 0),
+  (5160, 0),
+  (5161, 0),
+  (5162, 0),
+  (5163, 0),
   (5142, 40),
   (5143, 40),
   (5144, 40),

@@ -29,7 +29,7 @@ This module contains **API and UI tests** for ZMS using the ATAF (Test Automatio
 
 ### Using the Test Script (Recommended for City Laptop)
 
-The `zmsautomation-test` script handles database setup, migrations, and test execution. Scenarios inside one Maven run execute together: 8 at a time for `-Pataf-api`, 4 browsers at a time for `-Pataf-ui`. Pass `-Ddataproviderthreadcount=1` to run one scenario at a time. A GitHub module shard is its own run, so modules do not share that JVM.
+The `zmsautomation-test` script handles database setup, migrations, and test execution. Scenarios inside one Maven run execute together: 8 at a time for `-Pataf-api`, 8 browsers at a time for `-Pataf-ui`. Pass `-Ddataproviderthreadcount=1` to run one scenario at a time. A GitHub module shard is its own run, so modules do not share that JVM.
 
 ```bash
 # Run all ATAF tests (API + UI)

@@ -31,7 +31,7 @@ Dieses Modul enthält API- und UI-Tests für ZMS auf Basis von [ATAF](https://it
 
 ### Mit dem Test-Skript (empfohlen)
 
-Das Skript `zmsautomation-test` kümmert sich um Datenbank-Setup, Migrationen und Testausführung. Szenarien in einem Maven-Lauf laufen parallel: 8 gleichzeitig bei `-Pataf-api`, 4 Browser gleichzeitig bei `-Pataf-ui`. Mit `-Ddataproviderthreadcount=1` läuft ein Szenario nach dem anderen.
+Das Skript `zmsautomation-test` kümmert sich um Datenbank-Setup, Migrationen und Testausführung. Szenarien in einem Maven-Lauf laufen parallel: 8 gleichzeitig bei `-Pataf-api`, 8 Browser gleichzeitig bei `-Pataf-ui`. Mit `-Ddataproviderthreadcount=1` läuft ein Szenario nach dem anderen.
 
 ```bash
 # alle [ATAF](https://it-at-m.github.io/agile-test-automation-framework/)-Tests ausführen (API + UI)

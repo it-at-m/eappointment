@@ -18,8 +18,9 @@ public final class AccountCheckout {
     private static final ConcurrentHashMap<String, ReentrantLock> LOCKS = new ConcurrentHashMap<>();
     private static final ThreadLocal<LinkedHashSet<String>> HELD = ThreadLocal.withInitial(LinkedHashSet::new);
 
-    /** UI default {@code ataf}. Four threads plus one spare. */
-    private static final List<String> SUPERUSERS = List.of("ataf", "ataf_2", "ataf_3", "ataf_4", "ataf_5");
+    /** UI default {@code ataf}. Eight threads plus one spare. */
+    private static final List<String> SUPERUSERS = List.of(
+            "ataf", "ataf_2", "ataf_3", "ataf_4", "ataf_5", "ataf_6", "ataf_7", "ataf_8", "ataf_9");
 
     /** API default {@code agent_queue}. Eight threads plus one spare. */
     private static final List<String> WORKSTATIONS = List.of(
