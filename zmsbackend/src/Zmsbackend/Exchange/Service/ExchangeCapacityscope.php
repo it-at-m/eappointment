@@ -9,8 +9,8 @@ class ExchangeCapacityscope extends \BO\Zmsbackend\Base
 {
     public function readEntity(
         $subjectid,
-        \DateTimeInterface $datestart = null,
-        \DateTimeInterface $dateend = null,
+        ?\DateTimeInterface $datestart = null,
+        ?\DateTimeInterface $dateend = null,
         $period = 'day'
     ): Exchange {
         if (trim((string) $subjectid) === '') {
