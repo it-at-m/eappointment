@@ -48,7 +48,7 @@ final class PhpErrorHandler
         return match ($severity) {
             E_ERROR, E_CORE_ERROR, E_COMPILE_ERROR, E_PARSE, E_USER_ERROR => Logger::ERROR,
             E_WARNING, E_CORE_WARNING, E_COMPILE_WARNING, E_USER_WARNING => Logger::WARNING,
-            E_NOTICE, E_USER_NOTICE, E_STRICT, E_DEPRECATED, E_USER_DEPRECATED => Logger::NOTICE,
+            E_NOTICE, E_USER_NOTICE, E_DEPRECATED, E_USER_DEPRECATED => Logger::NOTICE,
             default => Logger::WARNING,
         };
     }
