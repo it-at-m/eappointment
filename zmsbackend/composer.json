@@ -22,13 +22,13 @@
             "php-http/discovery": true
         },
         "platform": {
-            "php": "8.3.0"
+            "php": "8.4.0"
         }
     },
     "minimum-stability": "dev",
     "prefer-stable": true,
     "require": {
-        "php": ">=8.3",
+        "php": ">=8.4",
         "ext-mbstring": ">=0",
         "ext-intl": "*",
         "ext-json": ">=1.0",
@@ -43,7 +43,7 @@
         "psr/simple-cache": "^3.0",
         "monolog/monolog": "^2.0",
         "league/climate": "^3.2",
-        "aura/sql": "^5",
+        "aura/sql": "^6",
         "roave/security-advisories": "dev-latest"
     },
     "require-dev": {

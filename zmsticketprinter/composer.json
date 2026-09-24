@@ -29,7 +29,7 @@
         "roave/security-advisories": "dev-latest"
     },
     "require": {
-        "php": ">=8.3",
+        "php": ">=8.4",
         "eappointment/mellon": "@dev",
         "eappointment/zmsentities": "@dev",
         "eappointment/zmsslim": "@dev",
