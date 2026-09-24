@@ -18,12 +18,11 @@ Dieses Modul enthält API- und UI-Tests für ZMS auf Basis von [ATAF](https://it
 - `src/test/java/zms/ataf/`
   - `zms/ataf/rest/steps/` – REST-Step-Definitionen (REST Assured)
   - `zms/ataf/ui/steps/` – UI-Step-Definitionen (Selenium/[ATAF](https://it-at-m.github.io/agile-test-automation-framework/) web)
-  - `zms/ataf/ui/pages/**` – Page-Objects für Admin, Statistik, Buergeransicht, Mailinator
+  - `zms/ataf/ui/pages/**` – Page-Objects für Admin, Statistik, zmscitizenview, Mailinator
 - `src/test/resources/features/` – Cucumber-Feature-Dateien
   - `rest/zmsapi/` - ZMS REST API features (legacy folder/tag name; targets `zmsbackend` at `/terminvereinbarung/api/2`)
   - `rest/zmscitizenapi/` – Features der Citizen-REST-API
   - `ui/zmsadmin/` – Admin-UI-Features
-  - `ui/buergeransicht/` – veraltete Buergeransicht-UI-Features aus `it-at-m/eappointment-buergeransicht` (nicht für `zmscitizenview` verwendet)
   - `ui/zmsstatistic/` – Statistik-UI-Features
   - `ui/zmscitizenview/` – CitizenView-UI (Service Finder + vollständige Buchung E2E)
 - `src/main/resources/db/migration/` – Flyway-Datenbankmigrationen
@@ -115,7 +114,6 @@ mvn test -Pataf-ui
 # optionaler Filter:
 # mvn test -Pataf-ui -Dcucumber.filter.tags="@web"
 # mvn test -Pataf-ui -Dcucumber.filter.tags="@zmsadmin"
-# mvn test -Pataf-ui -Dcucumber.filter.tags="@buergeransicht"
 # mvn test -Pataf-ui -Dcucumber.filter.tags="@zmsstatistic"
 # mvn test -Pataf-ui -Dcucumber.filter.tags="@zmscitizenview"
 ```
@@ -240,7 +238,6 @@ cd zmsautomation && mvn test
 - UI-Tags:
   - `@web`
   - `@zmsadmin`
-  - `@buergeransicht` (veraltet; nicht für `zmscitizenview` verwendet)
   - `@zmsstatistic`
   - `@zmscitizenview`
   - `@jumpin`
@@ -265,7 +262,6 @@ cd zmsautomation && mvn test
 ### UI-Features (`src/test/resources/features/ui/`)
 
 - `ui/zmsadmin/` – Admin-UI-Features
-- `ui/buergeransicht/` – veraltete Buergeransicht-Features aus `it-at-m/eappointment-buergeransicht` (nicht für `zmscitizenview` verwendet)
 - `ui/zmscitizenview/` – Buchungs-UI-Features von CitizenView
 - `ui/zmsstatistic/` – Statistik-UI-Features
 
