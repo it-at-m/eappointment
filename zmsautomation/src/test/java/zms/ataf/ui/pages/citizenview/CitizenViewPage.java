@@ -1607,43 +1607,58 @@ public class CitizenViewPage extends BasePage {
 
     /** Step 3b: click the slot stored by {@link #highlightPreferredTimeslotForOffice(int)}. */
     public void clickHighlightedTimeslotSelection() {
+        Assert.assertTrue(
+                clickHighlightedTimeslotSelectionOrGiveUp(),
+                "zmscitizenview: timeslot selection did not register in Vue after click");
+    }
+
+    /**
+     * Clicks the stored slot. Returns false when the slot is gone, so the reserve loop can skip it
+     * and try the next timestamp instead of failing the 15s re-highlight wait.
+     */
+    private boolean clickHighlightedTimeslotSelectionOrGiveUp() {
         CONTEXT.set();
         ScenarioLogManager.getLogger().info("zmscitizenview: click highlighted timeslot");
         JavascriptExecutor js = (JavascriptExecutor) DriverUtil.getDriver();
         int officeId = resolveStoredSlotOfficeId(js);
-        Assert.assertTrue(
-                officeId > 0,
-                "zmscitizenview: highlight step must run first (missing window.__zmsCitizenViewSlotOfficeId)");
+        if (officeId <= 0) {
+            ScenarioLogManager.getLogger()
+                    .warn("zmscitizenview: highlight step must run first (missing window.__zmsCitizenViewSlotOfficeId)");
+            return false;
+        }
 
         boolean selected = false;
         for (int attempt = 1; attempt <= 3 && !selected; attempt++) {
             if (attempt > 1) {
                 ScenarioLogManager.getLogger()
                         .warn("zmscitizenview: slot selection not registered; retry click attempt {}", attempt);
-                Boolean highlighted =
-                        (Boolean)
-                                new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(15))
-                                        .until(
-                                                d ->
-                                                        Boolean.TRUE.equals(
-                                                                ((JavascriptExecutor) d)
-                                                                        .executeScript(
-                                                                                buildScrollSlotHighlightScript(),
-                                                                                officeId)));
-                Assert.assertTrue(
-                        Boolean.TRUE.equals(highlighted),
-                        "zmscitizenview: could not re-highlight timeslot on retry");
+                try {
+                    new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(15))
+                            .until(
+                                    d ->
+                                            Boolean.TRUE.equals(
+                                                    ((JavascriptExecutor) d)
+                                                            .executeScript(buildScrollSlotHighlightScript(), officeId)));
+                } catch (TimeoutException e) {
+                    ScenarioLogManager.getLogger()
+                            .info(
+                                    "zmscitizenview: re-highlight found no slot for office {}; trying the next available slot",
+                                    officeId);
+                    return false;
+                }
                 sleepQuiet(250L);
             }
-            Assert.assertTrue(
-                    performStoredTimeslotClick(js),
-                    "zmscitizenview: could not click highlighted timeslot (attempt " + attempt + ")");
+            if (!performStoredTimeslotClick(js)) {
+                ScenarioLogManager.getLogger()
+                        .info("zmscitizenview: could not click highlighted timeslot (attempt {})", attempt);
+                return false;
+            }
             selected = waitForSlotSelectionVisible(officeId, attempt == 1 ? 12 : 20);
         }
-        Assert.assertTrue(
-                selected,
-                "zmscitizenview: timeslot selection did not register in Vue after click (office " + officeId + ")");
-        sleepQuiet(400L);
+        if (selected) {
+            sleepQuiet(400L);
+        }
+        return selected;
     }
 
     private static int resolveStoredSlotOfficeId(JavascriptExecutor js) {
@@ -1748,7 +1763,17 @@ public class CitizenViewPage extends BasePage {
                 String skippedTimestamps =
                         skipped.stream().map(String::valueOf).reduce((a, b) -> a + "," + b).orElse("");
                 highlightPreferredTimeslotForOffice(officeId, skippedTimestamps);
-                clickHighlightedTimeslotSelection();
+                if (!clickHighlightedTimeslotSelectionOrGiveUp()) {
+                    long missed = readStoredSlotTimestamp();
+                    if (missed > 0) {
+                        skipped.add(missed);
+                    }
+                    ScenarioLogManager.getLogger()
+                            .info(
+                                    "zmscitizenview: slot timestamp={} could not be selected; trying the next available slot",
+                                    missed);
+                    continue;
+                }
             }
             assertSelectedAppointmentCalloutShowsProvider(officeId);
             long timestamp = readStoredSlotTimestamp();
