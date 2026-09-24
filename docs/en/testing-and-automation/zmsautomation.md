@@ -18,12 +18,11 @@ This module contains API and UI tests for ZMS using [ATAF](https://it-at-m.githu
 - `src/test/java/zms/ataf/`
   - `zms/ataf/rest/steps/` - REST step definitions (REST Assured)
   - `zms/ataf/ui/steps/` - UI step definitions (Selenium/[ATAF](https://it-at-m.github.io/agile-test-automation-framework/) web)
-  - `zms/ataf/ui/pages/**` - page objects for Admin, Statistik, Buergeransicht, Mailinator
+  - `zms/ataf/ui/pages/**` - page objects for Admin, Statistik, zmscitizenview, Mailinator
 - `src/test/resources/features/` - Cucumber feature files
   - `rest/zmsapi/` - ZMS REST API features (legacy folder/tag name; targets `zmsbackend` at `/terminvereinbarung/api/2`)
   - `rest/zmscitizenapi/` - Citizen REST API features
   - `ui/zmsadmin/` - Admin UI features
-  - `ui/buergeransicht/` - deprecated legacy citizen frontend UI features from `it-at-m/eappointment-buergeransicht` (not used for `zmscitizenview`)
   - `ui/zmsstatistic/` - Statistik UI features
   - `ui/zmscitizenview/` - CitizenView UI (Service Finder + full booking E2E)
 - `src/main/resources/db/migration/` - Flyway database migrations
@@ -115,7 +114,6 @@ mvn test -Pataf-ui
 # optionally filter:
 # mvn test -Pataf-ui -Dcucumber.filter.tags="@web"
 # mvn test -Pataf-ui -Dcucumber.filter.tags="@zmsadmin"
-# mvn test -Pataf-ui -Dcucumber.filter.tags="@buergeransicht"
 # mvn test -Pataf-ui -Dcucumber.filter.tags="@zmsstatistic"
 # mvn test -Pataf-ui -Dcucumber.filter.tags="@zmscitizenview"
 ```
@@ -240,7 +238,6 @@ cd zmsautomation && mvn test
 - UI tags:
   - `@web`
   - `@zmsadmin`
-  - `@buergeransicht` (deprecated legacy frontend; not used for `zmscitizenview`)
   - `@zmsstatistic`
   - `@zmscitizenview`
   - `@jumpin`
@@ -265,7 +262,6 @@ cd zmsautomation && mvn test
 ### UI Features (`src/test/resources/features/ui/`)
 
 - `ui/zmsadmin/` - Admin UI features
-- `ui/buergeransicht/` - deprecated legacy Buergeransicht features from `it-at-m/eappointment-buergeransicht` (not used for `zmscitizenview`)
 - `ui/zmscitizenview/` - CitizenView booking UI features
 - `ui/zmsstatistic/` - Statistik UI features
 
