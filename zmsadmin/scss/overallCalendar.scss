@@ -95,6 +95,28 @@ $day-h: 2.2rem;
   min-width: 0;
 }
 
+.overall-calendar-scope-header:hover,
+.overall-calendar-scope-header:focus-within {
+  filter: brightness(0.9);
+
+  .overall-calendar-scope-name {
+    display: none;
+  }
+
+  .overall-calendar-scope-icon {
+    display: inline-block;
+  }
+}
+
+.overall-calendar-scope-header a:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+.overall-calendar-scope-icon {
+  display: none;
+}
+
 .overall-calendar-seat {
   display: flex;
   align-items: center;
