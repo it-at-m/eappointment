@@ -352,44 +352,65 @@ public class CitizenApiSteps {
         if (lastAvailableAppointmentsResponse == null) {
             throw new IllegalStateException("Request available appointments first (for date, office, service).");
         }
-        Long timestamp = lastAvailableAppointmentsResponse.getFirstFutureAppointmentTimestamp();
-        if (timestamp == null) {
+        List<Long> timestamps = lastAvailableAppointmentsResponse.futureAppointmentTimestamps();
+        if (timestamps.isEmpty()) {
             ScenarioLogManager.getLogger().error("No appointment timestamps found in lastAvailableAppointmentsResponse "
                 + "for officeId=" + lastOfficeId + ", serviceId=" + lastServiceId);
             throw new IllegalStateException("No appointment timestamps in last response.");
         }
-        ReserveAppointmentRequest body = new ReserveAppointmentRequest();
-        body.setTimestamp(timestamp);
-        body.setOfficeId(lastOfficeId);
-        body.setServiceId(List.of(lastServiceId));
-        body.setServiceCount(List.of(lastServiceCount));
+        Integer sourceProcessId = null;
+        String sourceAuthKey = null;
         if (useCurrentAppointmentAsSource) {
             ThinnedProcess source = lastReserveProcess != null ? lastReserveProcess : getBookingProcess();
             if (source == null || source.getProcessId() == null || source.getAuthKey() == null) {
                 throw new IllegalStateException("Confirm an appointment first to use it as rebooking source.");
             }
-            rebookingSourceProcessId = source.getProcessId();
-            rebookingSourceAuthKey = source.getAuthKey();
-            body.setSourceProcessId(source.getProcessId());
-            body.setSourceAuthKey(source.getAuthKey());
+            sourceProcessId = source.getProcessId();
+            sourceAuthKey = source.getAuthKey();
+            rebookingSourceProcessId = sourceProcessId;
+            rebookingSourceAuthKey = sourceAuthKey;
             ScenarioLogManager.getLogger().info(String.format(
-                "Citizen API rebooking reserve using source processId=%d", source.getProcessId()
+                "Citizen API rebooking reserve using source processId=%d", sourceProcessId
             ));
         }
-        response = given()
-            .baseUri(baseUri != null ? baseUri : TestConfig.getCitizenApiBaseUri())
-            .contentType("application/json")
-            .body(body)
-        .when()
-            .post("/reserve-appointment/");
-        CommonApiSteps.setResponse(response);
+        for (int i = 0; i < timestamps.size(); i++) {
+            Long timestamp = timestamps.get(i);
+            ReserveAppointmentRequest body = new ReserveAppointmentRequest();
+            body.setTimestamp(timestamp);
+            body.setOfficeId(lastOfficeId);
+            body.setServiceId(List.of(lastServiceId));
+            body.setServiceCount(List.of(lastServiceCount));
+            if (useCurrentAppointmentAsSource) {
+                body.setSourceProcessId(sourceProcessId);
+                body.setSourceAuthKey(sourceAuthKey);
+            }
+            response = given()
+                .baseUri(baseUri != null ? baseUri : TestConfig.getCitizenApiBaseUri())
+                .contentType("application/json")
+                .body(body)
+            .when()
+                .post("/reserve-appointment/");
+            CommonApiSteps.setResponse(response);
 
-        String reserveBody = response.asString();
-        ScenarioLogManager.getLogger().info(String.format(
-            "Citizen API /reserve-appointment/ status=%d body=%s",
-            response.getStatusCode(),
-            reserveBody.length() > 1250 ? reserveBody.substring(0, 1250) + "..." : reserveBody
-        ));
+            String reserveBody = response.asString();
+            ScenarioLogManager.getLogger().info(String.format(
+                "Citizen API /reserve-appointment/ timestamp=%d status=%d body=%s",
+                timestamp,
+                response.getStatusCode(),
+                reserveBody.length() > 1250 ? reserveBody.substring(0, 1250) + "..." : reserveBody
+            ));
+            if (response.getStatusCode() == 200) {
+                break;
+            }
+            if (slotNoLongerAvailable(response) && i < timestamps.size() - 1) {
+                ScenarioLogManager.getLogger().info(String.format(
+                    "Citizen API slot timestamp=%d is reserved or booked; trying the next available slot",
+                    timestamp
+                ));
+                continue;
+            }
+            response.then().statusCode(200);
+        }
         response.then().statusCode(200);
 
         // Reserve endpoint may return plain ThinnedProcess or an ApiResponse-wrapped payload
@@ -420,6 +441,12 @@ public class CitizenApiSteps {
         if (lastReserveProcess != null) {
             setLastReserveProcess(lastReserveProcess);
         }
+    }
+
+    /** Parallel scenarios share the calendar, so the first slot can already be reserved. */
+    private static boolean slotNoLongerAvailable(Response reserveResponse) {
+        String body = reserveResponse.asString();
+        return body.contains("appointmentNotAvailable") || body.contains("unknownError");
     }
 
     @When("I preconfirm the appointment")
