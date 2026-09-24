@@ -18,8 +18,11 @@ resolve_ataf_maven_profiles() {
       for profile in "${profile_list[@]}"; do
         profile="${profile#"${profile%%[![:space:]]*}"}"
         profile="${profile%"${profile##*[![:space:]]}"}"
-        [[ "$profile" == "ataf-api" ]] && HAS_ATAF_API=true
-        [[ "$profile" == "ataf-ui" ]] && HAS_ATAF_UI=true
+        if [[ "$profile" == "ataf-api" ]]; then
+          HAS_ATAF_API=true
+        elif [[ "$profile" == "ataf-ui" ]]; then
+          HAS_ATAF_UI=true
+        fi
       done
     fi
   done
@@ -246,7 +249,7 @@ enable_citizenview_secure_context() {
     return 0
   fi
   cat >"$CHROMIUM_SECURE_CONTEXT_DROPIN" <<EOF
-export CHROMIUM_FLAGS="\$CHROMIUM_FLAGS --unsafely-treat-insecure-origin-as-secure=${origin} --disable-dev-shm-usage --disable-gpu"
+export CHROMIUM_FLAGS="\$CHROMIUM_FLAGS --unsafely-treat-insecure-origin-as-secure=${origin}"
 EOF
   info "Chromium will treat ${origin} as a secure context (Altcha)"
 }
