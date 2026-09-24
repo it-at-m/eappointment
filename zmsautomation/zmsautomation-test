@@ -18,8 +18,11 @@ resolve_ataf_maven_profiles() {
       for profile in "${profile_list[@]}"; do
         profile="${profile#"${profile%%[![:space:]]*}"}"
         profile="${profile%"${profile##*[![:space:]]}"}"
-        [[ "$profile" == "ataf-api" ]] && HAS_ATAF_API=true
-        [[ "$profile" == "ataf-ui" ]] && HAS_ATAF_UI=true
+        if [[ "$profile" == "ataf-api" ]]; then
+          HAS_ATAF_API=true
+        elif [[ "$profile" == "ataf-ui" ]]; then
+          HAS_ATAF_UI=true
+        fi
       done
     fi
   done
@@ -249,6 +252,43 @@ enable_citizenview_secure_context() {
 export CHROMIUM_FLAGS="\$CHROMIUM_FLAGS --unsafely-treat-insecure-origin-as-secure=${origin}"
 EOF
   info "Chromium will treat ${origin} as a secure context (Altcha)"
+}
+
+# ATAF 0.3.4 ships Selenium 4.46, which speaks CDP 148-150. A newer Chromium
+# (153 in this container) makes ChromeDriver report
+# "Timed out receiving message from renderer" on the first navigation.
+# Same pin as .github/workflows/zmsautomation-workflow.yaml.
+CHROMIUM_CDP_MAJOR=150
+CHROMIUM_APT_PIN="150.0.7871.181-1~deb13u1"
+ensure_chromium_matches_selenium() {
+  [[ "${ZMS_BROWSER:-chrome}" == "chrome" ]] || return 0
+  local current="" major=""
+  if command -v chromium >/dev/null 2>&1; then
+    current="$(chromium --version 2>/dev/null | awk '{print $2}' || true)"
+  fi
+  major="${current%%.*}"
+  if [[ "$major" == "$CHROMIUM_CDP_MAJOR" ]]; then
+    info "Chromium ${current} matches Selenium CDP ${CHROMIUM_CDP_MAJOR}"
+    return 0
+  fi
+  if ! command -v apt-get >/dev/null 2>&1; then
+    warn "Chromium ${current:-missing} is not CDP ${CHROMIUM_CDP_MAJOR}, and apt-get is unavailable"
+    return 0
+  fi
+  info "Chromium ${current:-missing} is not CDP ${CHROMIUM_CDP_MAJOR}; installing ${CHROMIUM_APT_PIN}"
+  apt-get update
+  if ! apt-get install -s -y --allow-downgrades \
+      "chromium-common=${CHROMIUM_APT_PIN}" \
+      "chromium=${CHROMIUM_APT_PIN}" \
+      "chromium-driver=${CHROMIUM_APT_PIN}" >/dev/null 2>&1; then
+    warn "Pinned Chromium ${CHROMIUM_APT_PIN} is not installable. UI tests need Chromium ${CHROMIUM_CDP_MAJOR}."
+    return 0
+  fi
+  apt-get install -y --no-install-recommends --allow-downgrades \
+    "chromium-common=${CHROMIUM_APT_PIN}" \
+    "chromium=${CHROMIUM_APT_PIN}" \
+    "chromium-driver=${CHROMIUM_APT_PIN}"
+  apt-mark hold chromium chromium-driver chromium-common
 }
 
 disable_citizenview_secure_context() {
@@ -615,6 +655,7 @@ fi
 if [[ "$RUN_UI_TESTS" == true ]]; then
 section "10. Browser Setup"
 info "Setting up browsers and Xvfb for UI tests..."
+ensure_chromium_matches_selenium
 
 # Ensure DISPLAY is set
 export DISPLAY="${DISPLAY:-:0}"
@@ -697,7 +738,9 @@ fi
 
 # Clear old surefire reports and cucumber reports
 rm -rf "$PROJECT_ROOT/zmsautomation/target/surefire-reports" 2>/dev/null || true
+rm -rf "$PROJECT_ROOT/zmsautomation/target/surefire-reports-api" 2>/dev/null || true
 rm -rf "$PROJECT_ROOT/zmsautomation/target/cucumber.json" 2>/dev/null || true
+rm -rf "$PROJECT_ROOT/zmsautomation/target/cucumber-api.json" 2>/dev/null || true
 rm -rf "$PROJECT_ROOT/zmsautomation/target/site/cucumber-pretty" 2>/dev/null || true
 
 TEST_EXIT=0
@@ -705,9 +748,11 @@ cd "$PROJECT_ROOT/zmsautomation"
 
 # API vs UI is selected by -Pataf-api / -Pataf-ui (feature paths in pom.xml).
 # Optional -Dcucumber.filter.tags narrows within that layer. @ignore is excluded by default.
+# One Maven process has a single cucumber.features value, so both profiles run as two calls.
 ATAF_MAVEN_ARGS=()
 HAS_TAG_FILTER=false
 HAS_CUCUMBER_FEATURES=false
+RUN_SPLIT_SUITES=false
 for arg in "${MAVEN_ARGS[@]+"${MAVEN_ARGS[@]}"}"; do
   if [[ "$arg" == -Dcucumber.filter.tags=* ]]; then
     HAS_TAG_FILTER=true
@@ -721,7 +766,20 @@ for arg in "${MAVEN_ARGS[@]+"${MAVEN_ARGS[@]}"}"; do
     HAS_CUCUMBER_FEATURES=true
     ATAF_MAVEN_ARGS+=("$arg")
   elif [[ "$arg" == -P* ]]; then
-    ATAF_MAVEN_ARGS+=("$arg")
+    profiles="${arg#-P}"
+    kept=""
+    IFS=',' read -r -a profile_list <<< "$profiles"
+    for profile in "${profile_list[@]}"; do
+      profile="${profile#"${profile%%[![:space:]]*}"}"
+      profile="${profile%"${profile##*[![:space:]]}"}"
+      if [[ "$profile" == "ataf-api" || "$profile" == "ataf-ui" ]]; then
+        continue
+      fi
+      kept="${kept:+$kept,}$profile"
+    done
+    if [[ -n "$kept" ]]; then
+      ATAF_MAVEN_ARGS+=("-P${kept}")
+    fi
   else
     ATAF_MAVEN_ARGS+=("$arg")
   fi
@@ -731,13 +789,16 @@ if [[ "$HAS_TAG_FILTER" != true ]]; then
 fi
 # ATAF reads cucumber.properties before profile overrides apply; pass feature paths via -D.
 if [[ "$HAS_CUCUMBER_FEATURES" != true ]]; then
-  if [[ "$HAS_ATAF_API" == true && "$HAS_ATAF_UI" != true ]]; then
-    ATAF_MAVEN_ARGS+=("-Dcucumber.features=src/test/resources/features/rest")
-  elif [[ "$HAS_ATAF_UI" == true && "$HAS_ATAF_API" != true ]]; then
-    ATAF_MAVEN_ARGS+=("-Dcucumber.features=src/test/resources/features/ui")
-  elif [[ "$HAS_ATAF_API" == true && "$HAS_ATAF_UI" == true ]]; then
-    ATAF_MAVEN_ARGS+=("-Dcucumber.features=src/test/resources/features")
+  if [[ "$HAS_ATAF_API" == true && "$HAS_ATAF_UI" == true ]]; then
+    RUN_SPLIT_SUITES=true
+  elif [[ "$HAS_ATAF_API" == true ]]; then
+    ATAF_MAVEN_ARGS+=("-Pataf-api" "-Dcucumber.features=src/test/resources/features/rest")
+  elif [[ "$HAS_ATAF_UI" == true ]]; then
+    ATAF_MAVEN_ARGS+=("-Pataf-ui" "-Dcucumber.features=src/test/resources/features/ui")
   fi
+else
+  [[ "$HAS_ATAF_API" == true ]] && ATAF_MAVEN_ARGS+=("-Pataf-api")
+  [[ "$HAS_ATAF_UI" == true ]] && ATAF_MAVEN_ARGS+=("-Pataf-ui")
 fi
 
 # SSO credentials for UI tests (default: ataf/vorschau for local Keycloak, override via SSO_USER/SSO_PASSWORD env vars)
@@ -764,7 +825,60 @@ if [[ "$RUN_UI_TESTS" == true ]] && (( MAX_UI_RETRIES < 4 )); then
   MAX_UI_RETRIES=4
 fi
 
-attempt=1
+archive_suite_reports() {
+  local name="$1"
+  local reports="$PROJECT_ROOT/zmsautomation/target/surefire-reports"
+  local dest="$PROJECT_ROOT/zmsautomation/target/surefire-reports-${name}"
+  rm -rf "$dest"
+  if [[ -d "$reports" ]]; then
+    mv "$reports" "$dest"
+  fi
+  if [[ -f "$PROJECT_ROOT/zmsautomation/target/cucumber.json" ]]; then
+    mv "$PROJECT_ROOT/zmsautomation/target/cucumber.json" \
+      "$PROJECT_ROOT/zmsautomation/target/cucumber-${name}.json"
+  fi
+}
+
+invoke_maven_suite() {
+  local suite_name="$1"
+  local max_attempts="$2"
+  shift 2
+  local attempt=1
+  local suite_exit=0
+  local attempt_log
+  while (( attempt <= max_attempts )); do
+    attempt_log="$PROJECT_ROOT/zmsautomation/target/maven-test-${suite_name}-attempt-${attempt}.log"
+    info "Starting ${suite_name} Maven test attempt ${attempt}/${max_attempts}"
+    mvn -B -DtrimStackTrace=false \
+      "${PLATFORM_ARGS[@]}" \
+      -DBASE_URI="$BASE_URI" \
+      -DCITIZEN_API_BASE_URI="$CITIZEN_API_BASE_URI" \
+      -DZMS_CONFIG_SECURE_TOKEN="$ZMS_CONFIG_SECURE_TOKEN" \
+      -Dbrowser="${ZMS_BROWSER:-chrome}" \
+      -Dtestautomation.browser="${ZMS_BROWSER:-chrome}" \
+      -Dwebdriver.gecko.driver="${WEBDRIVER_GECKO_DRIVER:-/usr/local/bin/geckodriver}" \
+      -Dwebdriver.chrome.driver="${WEBDRIVER_CHROME_DRIVER:-/usr/bin/chromedriver}" \
+      -Dwebdriver.edge.driver="${WEBDRIVER_EDGE_DRIVER:-/usr/local/bin/msedgedriver}" \
+      -DSCREENSHOT_EVERY_STEP="${SCREENSHOT_EVERY_STEP}" \
+      -Dsso.username="$SSO_USER" \
+      -Dsso.password="$SSO_PASSWORD" \
+      test "$@" 2>&1 | tee "$attempt_log"
+    suite_exit=${PIPESTATUS[0]}
+
+    if [[ $suite_exit -eq 0 ]]; then
+      return 0
+    fi
+    if (( attempt < max_attempts )) && is_webdriver_bootstrap_failure "$attempt_log"; then
+      warn "Detected WebDriver bootstrap failure on ${suite_name} attempt ${attempt}; retrying in ${RETRY_DELAY_SECONDS}s"
+      sleep "$RETRY_DELAY_SECONDS"
+      attempt=$((attempt + 1))
+      continue
+    fi
+    return "$suite_exit"
+  done
+  return "$suite_exit"
+}
+
 PLATFORM_ARGS=()
 if [[ "${ZMS_BROWSER:-chrome}" == "edge" ]]; then
   EDGE_PLATFORM="${TESTAUTOMATION_PLATFORM_NAME:-linux}"
@@ -778,58 +892,88 @@ if [[ "${ZMS_BROWSER:-chrome}" == "edge" ]]; then
   )
   info "For Edge runs, forcing Selenium platform to ${EDGE_PLATFORM}"
 fi
-while (( attempt <= MAX_UI_RETRIES )); do
-  attempt_log="$PROJECT_ROOT/zmsautomation/target/maven-test-attempt-${attempt}.log"
-  info "Starting Maven test attempt ${attempt}/${MAX_UI_RETRIES}"
-  set +e
-  mvn -B -DtrimStackTrace=false \
-    "${PLATFORM_ARGS[@]}" \
-    -DBASE_URI="$BASE_URI" \
-    -DCITIZEN_API_BASE_URI="$CITIZEN_API_BASE_URI" \
-    -DZMS_CONFIG_SECURE_TOKEN="$ZMS_CONFIG_SECURE_TOKEN" \
-    -Dbrowser="${ZMS_BROWSER:-chrome}" \
-    -Dtestautomation.browser="${ZMS_BROWSER:-chrome}" \
-    -Dwebdriver.gecko.driver="${WEBDRIVER_GECKO_DRIVER:-/usr/local/bin/geckodriver}" \
-    -Dwebdriver.chrome.driver="${WEBDRIVER_CHROME_DRIVER:-/usr/bin/chromedriver}" \
-    -Dwebdriver.edge.driver="${WEBDRIVER_EDGE_DRIVER:-/usr/local/bin/msedgedriver}" \
-    -DSCREENSHOT_EVERY_STEP="${SCREENSHOT_EVERY_STEP}" \
-    -Dsso.username="$SSO_USER" \
-    -Dsso.password="$SSO_PASSWORD" \
-    test "${ATAF_MAVEN_ARGS[@]+"${ATAF_MAVEN_ARGS[@]}"}" 2>&1 | tee "$attempt_log"
-  TEST_EXIT=${PIPESTATUS[0]}
-  set -e
-
-  if [[ $TEST_EXIT -eq 0 ]]; then
-    break
+if [[ "$RUN_SPLIT_SUITES" == true ]]; then
+  info "Running API tests and UI tests as separate Maven calls"
+  API_EXIT=0
+  invoke_maven_suite "api" 1 \
+    "${ATAF_MAVEN_ARGS[@]+"${ATAF_MAVEN_ARGS[@]}"}" \
+    -Pataf-api \
+    -Dcucumber.features=src/test/resources/features/rest || API_EXIT=$?
+  archive_suite_reports "api"
+  UI_EXIT=0
+  invoke_maven_suite "ui" "$MAX_UI_RETRIES" \
+    "${ATAF_MAVEN_ARGS[@]+"${ATAF_MAVEN_ARGS[@]}"}" \
+    -Pataf-ui \
+    -Dcucumber.features=src/test/resources/features/ui || UI_EXIT=$?
+  TEST_EXIT=0
+  if [[ $API_EXIT -ne 0 || $UI_EXIT -ne 0 ]]; then
+    TEST_EXIT=1
   fi
-
-  if (( attempt < MAX_UI_RETRIES )) && is_webdriver_bootstrap_failure "$attempt_log"; then
-    warn "Detected WebDriver bootstrap failure on attempt ${attempt}; retrying in ${RETRY_DELAY_SECONDS}s"
-    sleep "$RETRY_DELAY_SECONDS"
-    attempt=$((attempt + 1))
-    continue
-  fi
-
-  break
-done
+else
+  TEST_EXIT=0
+  invoke_maven_suite "tests" "$MAX_UI_RETRIES" \
+    "${ATAF_MAVEN_ARGS[@]+"${ATAF_MAVEN_ARGS[@]}"}" || TEST_EXIT=$?
+fi
 
 # 12. Test Results
 section "12. Test Results"
-info "Collecting surefire reports..."
-if [[ -d "$PROJECT_ROOT/zmsautomation/target/surefire-reports" ]]; then
-  ls -la "$PROJECT_ROOT/zmsautomation/target/surefire-reports"
-  for f in "$PROJECT_ROOT/zmsautomation/target/surefire-reports"/*.txt; do
+print_surefire_dir() {
+  local dir="$1"
+  local label="$2"
+  if [[ ! -d "$dir" ]]; then
+    return 0
+  fi
+  info "${label}: ${dir}"
+  ls -la "$dir"
+  local f
+  for f in "$dir"/*.txt; do
     if [[ -f "$f" ]]; then
       echo "==== $f ===="
       cat "$f"
       echo
     fi
   done
-else
+}
+
+print_combined_result() {
+  local tests=0 failures=0 errors=0 skipped=0
+  local found=false
+  local dir f line t fai err sk
+  for dir in \
+    "$PROJECT_ROOT/zmsautomation/target/surefire-reports-api" \
+    "$PROJECT_ROOT/zmsautomation/target/surefire-reports"
+  do
+    [[ -d "$dir" ]] || continue
+    for f in "$dir"/*.txt; do
+      [[ -f "$f" ]] || continue
+      line="$(grep -m1 '^Tests run:' "$f" || true)"
+      [[ -n "$line" ]] || continue
+      found=true
+      read -r t fai err sk <<<"$(printf '%s' "$line" | sed -E 's/Tests run: ([0-9]+), Failures: ([0-9]+), Errors: ([0-9]+), Skipped: ([0-9]+).*/\1 \2 \3 \4/')"
+      tests=$((tests + t))
+      failures=$((failures + fai))
+      errors=$((errors + err))
+      skipped=$((skipped + sk))
+    done
+  done
+  if [[ "$found" == true ]]; then
+    info "Combined result: Tests run: ${tests}, Failures: ${failures}, Errors: ${errors}, Skipped: ${skipped}"
+  fi
+}
+
+info "Collecting surefire reports..."
+print_surefire_dir "$PROJECT_ROOT/zmsautomation/target/surefire-reports-api" "API"
+print_surefire_dir "$PROJECT_ROOT/zmsautomation/target/surefire-reports" "UI"
+print_combined_result
+if [[ ! -d "$PROJECT_ROOT/zmsautomation/target/surefire-reports" \
+  && ! -d "$PROJECT_ROOT/zmsautomation/target/surefire-reports-api" ]]; then
   info "No surefire-reports found"
 fi
 
 info "Cucumber reports available at:"
+if [[ -f "$PROJECT_ROOT/zmsautomation/target/cucumber-api.json" ]]; then
+  info "  - API JSON: $PROJECT_ROOT/zmsautomation/target/cucumber-api.json"
+fi
 info "  - JSON: $PROJECT_ROOT/zmsautomation/target/cucumber.json"
 info "  - HTML: $PROJECT_ROOT/zmsautomation/target/site/cucumber-pretty/index.html"
 
