@@ -21,7 +21,6 @@ abstract class Base extends TestCase
         \BO\Zmsbackend\Connection\Select::setProfiling();
         \BO\Zmsbackend\Connection\Select::setQueryCache(false);
         \BO\Zmsbackend\Connection\Select::getWriteConnection();
-        \BO\Zmsbackend\Connection\Select::setTransaction(false);
 
         $className = explode('\\', static::class);
         $testName = end($className) . '/' . $this->name();
