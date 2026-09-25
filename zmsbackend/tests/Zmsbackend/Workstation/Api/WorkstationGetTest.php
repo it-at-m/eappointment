@@ -32,8 +32,11 @@ class WorkstationGetTest extends \BO\Zmsbackend\Tests\Api\Base
 
     public function testReadWorkstationByXAuthKey()
     {
-        $workstation = (new \BO\Zmsbackend\Workstation\Service\Workstation)
-            ->writeEntityLoginByName(static::$loginName, md5(static::$password), \App::getNow(), (new \DateTime())->setTimestamp(time() + \App::SESSION_DURATION), 1);
+        $account = (new Useraccount())->getExample();
+        $account->id = 'xauth' . substr(hash('sha256', $this->name()), 0, 12);
+        $account = (new \BO\Zmsbackend\Useraccount\Service\Useraccount())->writeEntity($account);
+        $workstation = (new \BO\Zmsbackend\Workstation\Service\Workstation())
+            ->writeEntityLoginByName($account->id, $account->password, \App::getNow(), (new \DateTime())->setTimestamp(time() + \App::SESSION_DURATION), 1);
         $sessionId = $workstation->authkey;
         $response = $this->render([], [
             '__header' => [
@@ -42,7 +45,7 @@ class WorkstationGetTest extends \BO\Zmsbackend\Tests\Api\Base
             'resolveReferences' => 0
         ], []);
         $this->assertStringContainsString('workstation.json', (string)$response->getBody());
-        $this->assertStringContainsString(static::$loginName, (string)$response->getBody());
+        $this->assertStringContainsString($account->id, (string)$response->getBody());
     }
 
     public function testReadWorkstationByBasicAuth()
