@@ -2862,12 +2862,11 @@ public class CitizenViewPage extends BasePage {
         completeKeycloakLoginForm(username, password);
 
         waitWithThreeWindows(
-                () -> shadowDomContainsText("Sie sind angemeldet")
-                        || shadowDomContainsText("Kontaktdaten"),
-                "Citizen view after Keycloak Bürger-Login");
+                () -> shadowDomContainsText("Sie sind angemeldet"),
+                "Logged-in callout after Keycloak Bürger-Login");
         Assert.assertTrue(
-                shadowDomContainsText("Sie sind angemeldet.") || shadowDomContainsText("Kontaktdaten"),
-                "Expected return to Kontakt form after Bürger-Login (logged-in callout or Kontaktdaten).");
+                shadowDomContainsText("Sie sind angemeldet."),
+                "Expected 'Sie sind angemeldet.' after Bürger-Login. Kontakt was still showing Anmelden.");
         ScenarioLogManager.getLogger().info("zmscitizenview: Bürger-Login completed");
         trySetBookingProcessFromPage();
     }
