@@ -18,6 +18,15 @@ class AppointmentConfirmControllerTest extends ControllerTestCase
         if (\App::$cache) {
             \App::$cache->clear();
         }
+
+        putenv('CAPTCHA_TOKEN_SECRET=FAKE_TOKEN_SECRET_THAT_IS_SUFFICIENTLY_LONG');
+        \App::initialize();
+    }
+
+    public function tearDown(): void
+    {
+        putenv('CAPTCHA_TOKEN_SECRET=');
+        parent::tearDown();
     }
 
     public function testRendering()
