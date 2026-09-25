@@ -29,10 +29,12 @@ SET @rounded_end :=
   LEAST(@desired_end, '23:55:00');
 
 -- If the capped end is not after the rounded start (e.g. late night / 24:00:00 start),
--- use the next calendar day with appointment window 00:05–03:05 (still capped at 23:55).
+-- or less than 3 hours remain today, use the next calendar day with appointment
+-- window 00:05–03:05 (still capped at 23:55). A short same-day window leaves the
+-- shared 10489/10313237 calendar with a single timestamp on one office.
 SET @start_sec := TIME_TO_SEC(@rounded_start);
 SET @end_sec := TIME_TO_SEC(@rounded_end);
-SET @use_next_day := (@end_sec <= @start_sec);
+SET @use_next_day := (@end_sec <= @start_sec) OR ((@end_sec - @start_sec) < 3 * 3600);
 
 SET @appt_start := IF(@use_next_day, '00:05:00', @rounded_start);
 SET @appt_end :=

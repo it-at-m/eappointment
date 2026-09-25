@@ -20,7 +20,6 @@ This module contains **API and UI tests** for ZMS using the ATAF (Test Automatio
   - `rest/zmsapi/` - ZMS REST API features (legacy folder/tag name; targets `zmsbackend` at `/terminvereinbarung/api/2`). Categories use frontend subfolders (`booking/zmsadmin/`, `booking/zmsticketprinter/`, …) because zmsbackend is shared by the admin, ticketprinter, calldisplay and statistic frontends.  
   - `rest/zmscitizenapi/` - Citizen REST API features  
   - `ui/zmsadmin/` - Admin UI features  
-  - `ui/buergeransicht/` - Archived Vue2 Bürgeransicht feature files (`@ignore`; no step definitions)  
   - `ui/zmsstatistic/` - Statistik UI features  
   - `ui/zmscitizenview/` - Citizen view UI (Service Finder + full booking E2E)  
   - `ui/zmsticketprinter/` - Ticketprinter / kiosk UI features (`booking/`, …)  
@@ -30,7 +29,9 @@ This module contains **API and UI tests** for ZMS using the ATAF (Test Automatio
 
 ### Using the Test Script (Recommended for City Laptop)
 
-The `zmsautomation-test` script handles database setup, migrations, and test execution:
+The `zmsautomation-test` script handles database setup, migrations, and test execution. Scenarios inside one Maven run execute together: 32 at a time for `-Pataf-api`, 16 browsers at a time for `-Pataf-ui`. Pass `-Ddataproviderthreadcount=1` to run one scenario at a time. A GitHub module shard is its own run, so modules do not share that JVM.
+
+Each log line starts with the worker thread in brackets, for example `[29]`. TestNG reuses that thread for the next scenario, so lines with the same number belong to one scenario until that thread logs `Starting scenario`. Scroll up to the latest `Starting scenario` line with that number to see which test those lines belong to.
 
 ```bash
 # Run all ATAF tests (API + UI)
@@ -53,6 +54,9 @@ The `zmsautomation-test` script handles database setup, migrations, and test exe
 
 # Optional: pin a different ATAF Maven version (default: ataf.version in pom.xml)
 ./zmsautomation/zmsautomation-test -Pataf-api -Pataf-ui -Dataf.version=0.3.3
+
+# One scenario at a time (default is 32 API threads or 16 UI browsers)
+./zmsautomation/zmsautomation-test -Pataf-ui -Ddataproviderthreadcount=1
 ```
 
 The ATAF library version defaults to `<ataf.version>` in `pom.xml`. Override with `-Dataf.version=…` for another published `de.muenchen.ataf` release.
@@ -192,7 +196,6 @@ The ATAF tests automatically run Flyway migrations before executing tests. The m
 - **UI tags**
   - `@web` - All web UI tests
   - `@zmsadmin` - Admin UI features (`features/ui/zmsadmin/**`)
-  - `@buergeransicht` - Archived Vue2 Bürgeransicht features (`features/ui/buergeransicht/**`; `@ignore`, no glue)
   - `@zmsstatistic` - Statistik UI features (`features/ui/zmsstatistic/**`)
   - `@zmscitizenview` - Citizen view webcomponent UI (`features/ui/zmscitizenview/**`)
   - `@zmsticketprinter` - Ticketprinter / kiosk UI (`features/ui/zmsticketprinter/**`) and matching zmsbackend REST (`rest/zmsapi/**/zmsticketprinter/`)
@@ -234,9 +237,6 @@ Additional REST features (availability, offices-and-services, etc.) may be added
 
 #### Admin UI (`ui/zmsadmin/`)
 - Cucumber features for the Admin web UI (Terminadministration, Behörden & Standorte, Workview, etc.)
-
-#### Archived Bürgeransicht UI (`ui/buergeransicht/`)
-- Feature files for the retired Vue2 eappointment Bürgeransicht frontend. They remain as reference only (`@ignore`); page objects and step definitions have been removed.
 
 #### zmscitizenview UI (`ui/zmscitizenview/`)
 - `dldb-special-cases/zmskvr-1124_booking_ruppertstrasse_pass_calendar_jumpin_links.feature` - zmscitizenview Ruppertstraße UI booking (Kalenderansicht); Ort = checkbox list or single-provider teaser; slot wait until **MucSpinner** (`.m-spinner-container`) cleared after day load + timeslot in DOM; `#provider-*` on reserve, preconfirm, confirm

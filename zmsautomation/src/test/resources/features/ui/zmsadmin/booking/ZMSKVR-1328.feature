@@ -6,7 +6,7 @@ Funktionalität: Der Sachbearbeiter führt den Tresen-Vorgang für Terminkunden 
         Wenn Sie zur Webseite der Administration navigieren.
         Dann sollten Sie sich am Start des Zeitmanagementsystem befinden.
         Wenn Sie im Zeitmanagementsystem auf die Schaltfläche "Anmelden" klicken.
-        Und Sie für "Standort" den Wert "Bürgerbüro Forstenrieder Allee (KVR-II/234)" auswählen.
+        Und Sie für "Standort" den Wert "Bürgerbüro Leonrodstraße (KVR-II/232)" auswählen.
         Und Sie in Feld "Platz-Nr. oder Tresen" den Text "4" eingeben.
         Und Sie im Zeitmanagementsystem auf die Schaltfläche "Auswahl bestätigen" klicken.
         Dann wird die Seite Sachbearbeiterplatz angezeigt.

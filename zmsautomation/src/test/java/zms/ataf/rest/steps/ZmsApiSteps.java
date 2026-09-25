@@ -22,6 +22,7 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import io.restassured.response.Response;
+import zms.ataf.helpers.AccountCheckout;
 import zms.ataf.helpers.BerlinTime;
 import zms.ataf.rest.dto.common.ApiResponse;
 import zms.ataf.rest.dto.zmsapi.StatusResponse;
@@ -173,7 +174,7 @@ public class ZmsApiSteps {
 
         JsonNode workstation = parseDataNode(getResponse);
         if (workstation instanceof ObjectNode objectNode) {
-            objectNode.put("name", counter);
+            objectNode.put("name", AccountCheckout.workstationCounter(counter));
             JsonNode scopeNode = objectNode.path("scope");
             if (scopeNode instanceof ObjectNode scopeObject) {
                 scopeObject.put("id", scopeId);
@@ -209,36 +210,59 @@ public class ZmsApiSteps {
             int scopeId, String serviceName, String amendment) {
         String authKey = getOrLoginXAuthKey();
         JsonNode request = findScopeRequestByName(scopeId, serviceName, authKey);
-        JsonNode freeProcess = fetchFirstFreeProcess(scopeId, request, authKey);
-        ObjectNode process = freeProcess.deepCopy();
-
+        JsonNode freeList = fetchFreeProcesses(scopeId, request, authKey);
         String familyName = TestPropertiesHelper.getPropertyAsString("zmsapiAppointmentFamilyName", true, "Terminkunde");
         String email = TestPropertiesHelper.getPropertyAsString("zmsapiAppointmentEmail", true, "terminkunde@example.com");
-        process.put("amendment", amendment);
-        process.set("requests", MAPPER.createArrayNode().add(request.deepCopy()));
 
-        ObjectNode client = MAPPER.createObjectNode();
-        client.put("familyName", familyName);
-        client.put("email", email);
-        client.put("surveyAccepted", 1);
-        ArrayNode clients = MAPPER.createArrayNode();
-        clients.add(client);
-        process.set("clients", clients);
+        JsonNode reserved = null;
+        for (int i = 0; i < freeList.size(); i++) {
+            ObjectNode process = freeList.get(i).deepCopy();
+            process.put("amendment", amendment);
+            process.set("requests", MAPPER.createArrayNode().add(request.deepCopy()));
 
-        response = given()
-            .baseUri(baseUri != null ? baseUri : TestConfig.getBaseUri())
-            .header("X-AuthKey", authKey)
-            .contentType("application/json")
-            .queryParam("slotType", "intern")
-            .queryParam("clientkey", "")
-            .queryParam("slotsRequired", 0)
-            .body(toJson(process))
-        .when()
-            .post("/process/status/reserved/");
-        CommonApiSteps.setResponse(response);
+            ObjectNode client = MAPPER.createObjectNode();
+            client.put("familyName", familyName);
+            client.put("email", email);
+            client.put("surveyAccepted", 1);
+            ArrayNode clients = MAPPER.createArrayNode();
+            clients.add(client);
+            process.set("clients", clients);
 
-        JsonNode reserved = parseDataNode(response);
-        Assertions.assertThat(reserved).isNotNull();
+            response = given()
+                .baseUri(baseUri != null ? baseUri : TestConfig.getBaseUri())
+                .header("X-AuthKey", authKey)
+                .contentType("application/json")
+                .queryParam("slotType", "intern")
+                .queryParam("clientkey", "")
+                .queryParam("slotsRequired", 0)
+                .body(toJson(process))
+            .when()
+                .post("/process/status/reserved/");
+            CommonApiSteps.setResponse(response);
+            if (response.getStatusCode() == 200) {
+                reserved = parseDataNode(response);
+                Assertions.assertThat(reserved)
+                    .as("POST /process/status/reserved/ returned 200 without data: %s",
+                        truncate(response.asString(), 1000))
+                    .isNotNull();
+                break;
+            }
+            boolean slotTaken = response.getStatusCode() == 404
+                && response.asString().contains("Failed to reserve process. Maybe someone was faster.");
+            if (slotTaken && i < freeList.size() - 1) {
+                ScenarioLogManager.getLogger().info(
+                    "Intern slot for scope {} was reserved or booked (status {}); trying the next free process",
+                    scopeId,
+                    response.getStatusCode());
+                continue;
+            }
+            throw new IllegalStateException(
+                "POST /process/status/reserved/ failed with " + response.getStatusCode() + ": "
+                    + truncate(response.asString(), 1000));
+        }
+        Assertions.assertThat(reserved)
+            .as("POST /process/status/reserved/ for scope %d", scopeId)
+            .isNotNull();
 
         response = given()
             .baseUri(baseUri != null ? baseUri : TestConfig.getBaseUri())
@@ -381,6 +405,7 @@ public class ZmsApiSteps {
 
     @Given("Spontankunden opening hours exist for scope {int} from {string} to {string}")
     public void spontankundenOpeningHoursExistForScope(int scopeId, String from, String to) {
+        AccountCheckout.checkout("scope:" + scopeId + ":spontankunden");
         if (findOpeningHoursIds(scopeId, "ATAF-ZMSKVR-167").isEmpty()) {
             createSpontankundenOpeningHours(scopeId, from, to);
         }
@@ -388,6 +413,7 @@ public class ZmsApiSteps {
 
     @When("I delete Spontankunden opening hours for scope {int} with the X-AuthKey")
     public void iDeleteSpontankundenOpeningHoursForScope(int scopeId) {
+        AccountCheckout.checkout("scope:" + scopeId + ":spontankunden");
         String authKey = getOrLoginXAuthKey();
         java.util.List<Integer> ids = findOpeningHoursIds(scopeId, null);
         Assertions.assertThat(ids)
@@ -677,7 +703,7 @@ public class ZmsApiSteps {
             String password = scenarioLoginPassword != null && !scenarioLoginPassword.isBlank()
                 ? scenarioLoginPassword
                 : defaultWorkstationPassword();
-            return new String[] { resolveWorkstationUsername(scenarioLoginUsername), password };
+            return credentials(resolveWorkstationUsername(scenarioLoginUsername), password);
         }
 
         String username = TestPropertiesHelper.getPropertyAsString("zmsapiUserName", true);
@@ -687,7 +713,12 @@ public class ZmsApiSteps {
                 "Set testautomation.zmsapiUserName and testautomation.zmsapiUserPassword in testautomation.properties, "
                     + "or use 'Given the ZMS API workstation user is \"<role>\"' in the scenario");
         }
-        return new String[] { resolveWorkstationUsername(username), password };
+        return credentials(resolveWorkstationUsername(username), password);
+    }
+
+    private String[] credentials(String username, String password) {
+        String login = AccountCheckout.assignWorkstationLogin(username);
+        return new String[] { resolveWorkstationUsername(login), password };
     }
 
     private String defaultWorkstationPassword() {
@@ -737,7 +768,7 @@ public class ZmsApiSteps {
         return requests.get(0);
     }
 
-    private JsonNode fetchFirstFreeProcess(int scopeId, JsonNode request, String authKey) {
+    private JsonNode fetchFreeProcesses(int scopeId, JsonNode request, String authKey) {
         LocalDate today = BerlinTime.today();
         ObjectNode calendar = MAPPER.createObjectNode();
         ObjectNode firstDay = MAPPER.createObjectNode();
@@ -772,7 +803,7 @@ public class ZmsApiSteps {
             .as("POST /process/status/free/ for scope %d on %s", scopeId, today)
             .isNotNull()
             .isNotEmpty();
-        return freeList.get(0);
+        return freeList;
     }
 
     private JsonNode refreshAssignedProcessFromWorkstation(String authKey) {

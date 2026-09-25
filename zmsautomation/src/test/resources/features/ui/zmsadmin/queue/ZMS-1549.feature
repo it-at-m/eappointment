@@ -5,7 +5,7 @@ Funktionalität: Spontankunden lassen sich am Tresen ebenso wie Terminkunden in 
 	Szenario: Test-Tresen-Kund*in hinzufügen
 		Wenn Sie zur Webseite der Administration navigieren.
 		Und  Sie im Zeitmanagementsystem auf die Schaltfläche "Anmelden" klicken.
-		Und  Sie für "Standort" den Wert "Gewerbeamt (KVR-III/21) Meldungen" auswählen.
+		Und  Sie für "Standort" den Wert "Bürgerbüro Orleansplatz (KVR-II/231)" auswählen.
 		Und  Sie im Zeitmanagementsystem auf die Schaltfläche "Auswahl bestätigen" klicken.
 		Dann wird die Seite Tresen geöffnet.
 		Wenn Sie einen Spontankunden für die Dienstleistung "<beliebig>" buchen.

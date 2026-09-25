@@ -18,12 +18,11 @@ Dieses Modul enthält API- und UI-Tests für ZMS auf Basis von [ATAF](https://it
 - `src/test/java/zms/ataf/`
   - `zms/ataf/rest/steps/` – REST-Step-Definitionen (REST Assured)
   - `zms/ataf/ui/steps/` – UI-Step-Definitionen (Selenium/[ATAF](https://it-at-m.github.io/agile-test-automation-framework/) web)
-  - `zms/ataf/ui/pages/**` – Page-Objects für Admin, Statistik, Buergeransicht, Mailinator
+  - `zms/ataf/ui/pages/**` – Page-Objects für Admin, Statistik, zmscitizenview, Mailinator
 - `src/test/resources/features/` – Cucumber-Feature-Dateien
   - `rest/zmsapi/` - ZMS REST API features (legacy folder/tag name; targets `zmsbackend` at `/terminvereinbarung/api/2`)
   - `rest/zmscitizenapi/` – Features der Citizen-REST-API
   - `ui/zmsadmin/` – Admin-UI-Features
-  - `ui/buergeransicht/` – veraltete Buergeransicht-UI-Features aus `it-at-m/eappointment-buergeransicht` (nicht für `zmscitizenview` verwendet)
   - `ui/zmsstatistic/` – Statistik-UI-Features
   - `ui/zmscitizenview/` – CitizenView-UI (Service Finder + vollständige Buchung E2E)
 - `src/main/resources/db/migration/` – Flyway-Datenbankmigrationen
@@ -32,7 +31,9 @@ Dieses Modul enthält API- und UI-Tests für ZMS auf Basis von [ATAF](https://it
 
 ### Mit dem Test-Skript (empfohlen)
 
-Das Skript `zmsautomation-test` kümmert sich um Datenbank-Setup, Migrationen und Testausführung.
+Das Skript `zmsautomation-test` kümmert sich um Datenbank-Setup, Migrationen und Testausführung. Szenarien in einem Maven-Lauf laufen parallel: 32 gleichzeitig bei `-Pataf-api`, 16 Browser gleichzeitig bei `-Pataf-ui`. Mit `-Ddataproviderthreadcount=1` läuft ein Szenario nach dem anderen. Wie diese Parallelität entstanden ist, einschließlich der Login-Pools und der Wettläufe, die sie sichtbar gemacht hat, steht in [Wie wir zmsautomation parallelisiert haben](./how-we-parallelized-zmsautomation.md).
+
+Jede Logzeile beginnt mit dem Worker-Thread in eckigen Klammern, zum Beispiel `[29]`. TestNG verwendet denselben Thread für das nächste Szenario. Zeilen mit derselben Nummer gehören zu einem Szenario, bis dieser Thread `Starting scenario` protokolliert. Die letzte `Starting scenario`-Zeile mit dieser Nummer nennt den zugehörigen Test.
 
 ```bash
 # alle [ATAF](https://it-at-m.github.io/agile-test-automation-framework/)-Tests ausführen (API + UI)
@@ -54,6 +55,9 @@ Das Skript `zmsautomation-test` kümmert sich um Datenbank-Setup, Migrationen un
 
 # optional: andere ATAF-Maven-Version festlegen (Standard: ataf.version in pom.xml)
 ./zmsautomation/zmsautomation-test -Pataf-api -Pataf-ui -Dataf.version=0.3.3
+
+# ein Szenario nach dem anderen (Standard: 32 API-Threads oder 16 UI-Browser)
+./zmsautomation/zmsautomation-test -Pataf-ui -Ddataproviderthreadcount=1
 ```
 
 Die ATAF-Bibliotheksversion kommt standardmäßig aus `<ataf.version>` in `zmsautomation/pom.xml`. Mit `-Dataf.version=…` kannst du eine andere veröffentlichte `de.muenchen.ataf`-Version verwenden.
@@ -115,7 +119,6 @@ mvn test -Pataf-ui
 # optionaler Filter:
 # mvn test -Pataf-ui -Dcucumber.filter.tags="@web"
 # mvn test -Pataf-ui -Dcucumber.filter.tags="@zmsadmin"
-# mvn test -Pataf-ui -Dcucumber.filter.tags="@buergeransicht"
 # mvn test -Pataf-ui -Dcucumber.filter.tags="@zmsstatistic"
 # mvn test -Pataf-ui -Dcucumber.filter.tags="@zmscitizenview"
 ```
@@ -240,7 +243,6 @@ cd zmsautomation && mvn test
 - UI-Tags:
   - `@web`
   - `@zmsadmin`
-  - `@buergeransicht` (veraltet; nicht für `zmscitizenview` verwendet)
   - `@zmsstatistic`
   - `@zmscitizenview`
   - `@jumpin`
@@ -265,7 +267,6 @@ cd zmsautomation && mvn test
 ### UI-Features (`src/test/resources/features/ui/`)
 
 - `ui/zmsadmin/` – Admin-UI-Features
-- `ui/buergeransicht/` – veraltete Buergeransicht-Features aus `it-at-m/eappointment-buergeransicht` (nicht für `zmscitizenview` verwendet)
 - `ui/zmscitizenview/` – Buchungs-UI-Features von CitizenView
 - `ui/zmsstatistic/` – Statistik-UI-Features
 
@@ -275,9 +276,10 @@ GitHub-Actions-Workflow: [`.github/workflows/zmsautomation-workflow.yaml`](https
 
 Manuelle Läufe (`workflow_dispatch`) bieten die üblichen Modul-/Browser-/Tag-Eingaben sowie:
 
-| Eingabe        | Zweck                                                                                                                                                                                                                                          |
-| -------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `ataf_version` | Optionale ATAF-Maven-Version (`de.muenchen.ataf:core\|rest\|web`). Leer lassen, um `ataf.version` aus `zmsautomation/pom.xml` des ausgecheckten Branches zu nutzen. Wenn gesetzt, übergibt der Job `-Dataf.version=…` an `zmsautomation-test`. |
+| Eingabe            | Zweck                                                                                                                                                                                                                                          |
+| ------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ataf_version`     | Optionale ATAF-Maven-Version (`de.muenchen.ataf:core\|rest\|web`). Leer lassen, um `ataf.version` aus `zmsautomation/pom.xml` des ausgecheckten Branches zu nutzen. Wenn gesetzt, übergibt der Job `-Dataf.version=…` an `zmsautomation-test`. |
+| `serial_scenarios` | Szenarien nicht parallel ausführen. Wenn angehakt, übergibt jeder Job `-Ddataproviderthreadcount=1`. Standardmäßig aus, auch im nächtlichen Lauf.                                                                                              |
 
 Geplante Nightly-Läufe nutzen immer die POM-Version (kein Override). Die Version muss auf Maven Central existieren.
 
