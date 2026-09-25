@@ -1,18 +1,20 @@
 name: ⚙️ zmsautomation
 run-name: >-
   ${{
-    github.event_name == 'schedule' && 'zmsautomation | ⏰ scheduled | UI × chrome+firefox, API once | main + next'
+    github.event_name == 'schedule' && 'zmsautomation | ⏰ scheduled | UI × chrome+firefox, API once | next'
     || (github.event_name == 'workflow_dispatch' && inputs.run_main_next_matrix
         && format(
-             'zmsautomation | ▶️ manual | full shard matrix | UI × chrome+firefox, API once | main + next{0}',
-             inputs.ataf_version != '' && format(' | ATAF {0}', inputs.ataf_version) || ''
+             'zmsautomation | ▶️ manual | full shard matrix | UI × chrome+firefox, API once | main + next{0}{1}',
+             inputs.ataf_version != '' && format(' | ATAF {0}', inputs.ataf_version) || '',
+             inputs.serial_scenarios && ' | serial scenarios' || ''
            ))
     || format(
-         'zmsautomation | ▶️ manual | {0} | {1}{2}{3}',
+         'zmsautomation | ▶️ manual | {0} | {1}{2}{3}{4}',
          github.ref_name,
          inputs.browser == 'firefox' && '🦊 firefox' || (inputs.browser == 'edge' && '🪟 edge' || '🌐 chrome'),
          inputs.cucumber_tag_expressions != '' && format(' | {0}', inputs.cucumber_tag_expressions) || (inputs.use_custom_tags && ' | custom tags' || ''),
-         inputs.ataf_version != '' && format(' | ATAF {0}', inputs.ataf_version) || ''
+         inputs.ataf_version != '' && format(' | ATAF {0}', inputs.ataf_version) || '',
+         inputs.serial_scenarios && ' | serial scenarios' || ''
        )
   }}
 
@@ -32,6 +34,14 @@ on:
           Run the full suite in one sequential job instead of parallel module shards.
           Default (disabled): all checked modules below run in parallel on the branch
           selected via "Use workflow from" above.
+        required: true
+        type: boolean
+        default: false
+      serial_scenarios:
+        description: |
+          Don't run scenarios in parallel.
+          Each job uses one Cucumber thread instead of the profile default
+          (32 API threads, 16 UI browsers).
         required: true
         type: boolean
         default: false
@@ -145,8 +155,13 @@ jobs:
           }
 
           FULL_MATRIX=false
-          if [[ "${{ github.event_name }}" == "schedule" ]] || [[ "${{ inputs.run_main_next_matrix }}" == "true" ]]; then
+          # Nightly cron only needs next. main stays available on the manual matrix input.
+          MATRIX_BRANCHES='["next"]'
+          if [[ "${{ github.event_name }}" == "schedule" ]]; then
             FULL_MATRIX=true
+          elif [[ "${{ inputs.run_main_next_matrix }}" == "true" ]]; then
+            FULL_MATRIX=true
+            MATRIX_BRANCHES='["main","next"]'
           fi
 
           if [[ "$FULL_MATRIX" == true ]]; then
@@ -157,11 +172,12 @@ jobs:
               --arg ticketprinter "$(append_not_ignore '@zmsticketprinter')" \
               --arg zmsapi "$(append_not_ignore '@zmsapi')" \
               --arg zmscitizenapi "$(append_not_ignore '@zmscitizenapi')" \
+              --argjson branches "$MATRIX_BRANCHES" \
               '
               {
                 include: (
                   [
-                    ["main", "next"][] as $branch
+                    $branches[] as $branch
                     | [
                         {shard: "zmsadmin", test_layer: "ui", tag_filter: $admin},
                         {shard: "zmscitizenview", test_layer: "ui", tag_filter: $citizenview},
@@ -172,7 +188,7 @@ jobs:
                     | $shard + {branch: $branch, browser: $browser, use_custom_tags: false}
                   ]
                   + [
-                    ["main", "next"][] as $branch
+                    $branches[] as $branch
                     | [
                         {shard: "zmsapi", test_layer: "api", tag_filter: $zmsapi},
                         {shard: "zmscitizenapi", test_layer: "api", tag_filter: $zmscitizenapi}
@@ -573,6 +589,7 @@ jobs:
           CUSTOM_TAG_INPUT: ${{ inputs.cucumber_tag_expressions }}
           SCREENSHOT: ${{ github.event_name == 'workflow_dispatch' && inputs.per_step_screenshots || 'false' }}
           ATAF_VERSION: ${{ github.event_name == 'workflow_dispatch' && inputs.ataf_version || '' }}
+          SERIAL_SCENARIOS: ${{ github.event_name == 'workflow_dispatch' && inputs.serial_scenarios || 'false' }}
         run: |
           set -euo pipefail
 
@@ -597,6 +614,11 @@ jobs:
             echo "Using ATAF version override: ${ATAF_VERSION}"
           else
             echo "Using ATAF version from zmsautomation/pom.xml (ataf.version)"
+          fi
+
+          if [[ "$SERIAL_SCENARIOS" == "true" ]]; then
+            EXTRA_MVN_ARGS+=("-Ddataproviderthreadcount=1")
+            echo "Scenarios run one at a time (dataproviderthreadcount=1)"
           fi
 
           append_not_ignore() {

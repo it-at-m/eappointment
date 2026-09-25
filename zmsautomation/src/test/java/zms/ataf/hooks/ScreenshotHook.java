@@ -33,7 +33,6 @@ public class ScreenshotHook {
         "zmsadmin",
         "zmscitizenview",
         "zmsstatistic",
-        "buergeransicht",
         "zmsticketprinter",
         "zmscalldisplay");
 

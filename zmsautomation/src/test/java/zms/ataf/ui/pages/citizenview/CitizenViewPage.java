@@ -25,6 +25,7 @@ import ataf.core.logging.ScenarioLogManager;
 import ataf.web.model.LocatorType;
 import ataf.web.pages.BasePage;
 import ataf.web.utils.DriverUtil;
+import zms.ataf.helpers.AccountCheckout;
 import zms.ataf.helpers.RandomNameHelper;
 import zms.ataf.rest.dto.zmscitizenapi.ThinnedProcess;
 
@@ -188,14 +189,26 @@ public class CitizenViewPage extends BasePage {
         ScenarioLogManager.getLogger().info("Service Finder is visible on the start page.");
     }
 
-    /** True if substring appears anywhere in document + shadow DOM text. */
+    /**
+     * True if substring appears anywhere in document + shadow DOM text.
+     * Also walks slotted nodes and same-origin frames, and folds whitespace, so a painted
+     * callout such as "Sie sind angemeldet." matches even when its text is split across nodes.
+     */
     public boolean shadowDomContainsText(String substring) {
         CONTEXT.set();
         String esc = substring.replace("\\", "\\\\").replace("'", "\\'");
         String script =
-                "var sub='" + esc + "';function walk(n){var s='';if(!n)return s;if(n.nodeType===3)return n.nodeValue||'';"
-                        + "if(n.shadowRoot)s+=walk(n.shadowRoot);var c=n.childNodes;if(c)for(var i=0;i<c.length;i++)s+=walk(c[i]);return s;}"
-                        + "return walk(document.body).indexOf(sub)>=0;";
+                "var sub='" + esc + "'.replace(/\\s+/g,' ').trim();"
+                        + "function walk(n){var s='';if(!n)return s;if(n.nodeType===3)return n.nodeValue||'';"
+                        + "if(n.shadowRoot)s+=' '+walk(n.shadowRoot);"
+                        + "if(n.assignedNodes){var a=n.assignedNodes({flatten:true});"
+                        + "for(var j=0;j<a.length;j++)s+=' '+walk(a[j]);}"
+                        + "var c=n.childNodes;if(c)for(var i=0;i<c.length;i++)s+=' '+walk(c[i]);"
+                        + "if(n.nodeType===1){var tag=n.tagName;"
+                        + "if(tag==='INPUT'||tag==='TEXTAREA')s+=' '+(n.value||'');"
+                        + "if(n.contentDocument){try{s+=' '+walk(n.contentDocument.body);}catch(e){}}}"
+                        + "return s;}"
+                        + "return walk(document.documentElement).replace(/\\s+/g,' ').indexOf(sub)>=0;";
         Object o = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script);
         return Boolean.TRUE.equals(o);
     }
@@ -541,6 +554,7 @@ public class CitizenViewPage extends BasePage {
         for (int officeId : officeIds) {
             remaining.add(officeId);
         }
+        int dayMoves = 0;
         for (int attempt = 1; attempt <= 10 && !remaining.isEmpty(); attempt++) {
             Set<Integer> foundThisPass = new HashSet<>();
             for (int officeId : remaining) {
@@ -559,16 +573,20 @@ public class CitizenViewPage extends BasePage {
                             "zmscitizenview: still missing timeslots for providers {} (attempt {}); try Später",
                             remaining,
                             attempt);
-            if (!clickCitizenViewLaterOnceIfAvailable()) {
+            if (clickCitizenViewLaterOnceIfAvailable()) {
+                sleepQuiet(1200L);
+                try {
+                    waitUntilAppointmentSlotsReady(Math.min(45, slotBookingWaitTimeoutSeconds()));
+                } catch (Exception e) {
+                    ScenarioLogManager.getLogger()
+                            .warn("zmscitizenview slot wait after Später (assert providers): {}", e.toString());
+                }
+                continue;
+            }
+            if (dayMoves >= 3 || !openNextCalendarDayAndWaitForSlots()) {
                 break;
             }
-            sleepQuiet(1200L);
-            try {
-                waitUntilAppointmentSlotsReady(Math.min(45, slotBookingWaitTimeoutSeconds()));
-            } catch (Exception e) {
-                ScenarioLogManager.getLogger()
-                        .warn("zmscitizenview slot wait after Später (assert providers): {}", e.toString());
-            }
+            dayMoves++;
         }
         Assert.assertTrue(
                 remaining.isEmpty(),
@@ -1343,6 +1361,86 @@ public class CitizenViewPage extends BasePage {
         return Boolean.TRUE.equals(clicked);
     }
 
+    /**
+     * Opens the next bookable day on the citizen calendar. Später only moves within the open day,
+     * so an empty evening grid uses the calendar's next-day control instead.
+     */
+    private boolean openNextCalendarDayAndWaitForSlots() {
+        if (!clickNextBookableCalendarDay()) {
+            return false;
+        }
+        sleepQuiet(1200L);
+        try {
+            waitUntilAppointmentSlotsReady(Math.min(45, slotBookingWaitTimeoutSeconds()));
+        } catch (Exception e) {
+            ScenarioLogManager.getLogger()
+                    .warn("zmscitizenview slot wait after next calendar day: {}", e.toString());
+        }
+        return true;
+    }
+
+    private boolean clickNextBookableCalendarDay() {
+        CONTEXT.set();
+        String script =
+                "function walk(root, visit){"
+                        + "if(!root||!root.querySelectorAll)return false;"
+                        + "var nodes=root.querySelectorAll('*');"
+                        + "for(var i=0;i<nodes.length;i++){"
+                        + "if(visit(nodes[i]))return true;"
+                        + "if(nodes[i].shadowRoot&&walk(nodes[i].shadowRoot,visit))return true;"
+                        + "}"
+                        + "return false;"
+                        + "}"
+                        + "function enabled(btn){"
+                        + "return btn&&!btn.disabled&&btn.getAttribute('aria-disabled')!=='true';"
+                        + "}"
+                        + "var wrap=null;"
+                        + "walk(document,function(el){"
+                        + "if(el.matches&&el.matches('.muc-calendar-wrap')){wrap=el;return true;}"
+                        + "return false;"
+                        + "});"
+                        + "if(!wrap)return false;"
+                        + "var clicked=false;"
+                        + "walk(wrap,function(el){"
+                        + "if(clicked||el.tagName!=='BUTTON'||!enabled(el))return false;"
+                        + "var useEl=el.querySelector('use');"
+                        + "var href=(useEl&&(useEl.getAttribute('href')||useEl.getAttribute('xlink:href')))||'';"
+                        + "if(href.indexOf('chevron-right')<0)return false;"
+                        + "el.click();"
+                        + "clicked=true;"
+                        + "return true;"
+                        + "});"
+                        + "if(clicked)return true;"
+                        + "var buttons=[];"
+                        + "walk(wrap,function(el){"
+                        + "if(el.tagName==='BUTTON')buttons.push(el);"
+                        + "return false;"
+                        + "});"
+                        + "var selected=-1;"
+                        + "for(var i=0;i<buttons.length;i++){"
+                        + "var b=buttons[i];"
+                        + "var marked=b.getAttribute('aria-pressed')==='true'||b.getAttribute('aria-selected')==='true'"
+                        + "||b.className.indexOf('selected')>=0;"
+                        + "if(marked)selected=i;"
+                        + "}"
+                        + "if(selected<0)return false;"
+                        + "for(var j=selected+1;j<buttons.length;j++){"
+                        + "var day=buttons[j];"
+                        + "if(!enabled(day))continue;"
+                        + "var label=(day.textContent||'').replace(/\\s+/g,' ').trim();"
+                        + "if(!/^\\d{1,2}$/.test(label))continue;"
+                        + "day.click();"
+                        + "return true;"
+                        + "}"
+                        + "return false;";
+        Object clicked = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script);
+        if (Boolean.TRUE.equals(clicked)) {
+            ScenarioLogManager.getLogger()
+                    .info("zmscitizenview: opened the next calendar day");
+        }
+        return Boolean.TRUE.equals(clicked);
+    }
+
     /** Wait until slot buttons exist and MucSpinner cleared (calendar day / office fetch). */
     public void waitUntilAppointmentSlotsReady(int maxSeconds) {
         CONTEXT.set();
@@ -1380,10 +1478,16 @@ public class CitizenViewPage extends BasePage {
     public void waitUntilSlotsReadyForBooking() {
         CONTEXT.set();
         int timeout = slotBookingWaitTimeoutSeconds();
-        try {
-            waitUntilAppointmentSlotsReady(timeout);
-        } catch (Exception e) {
-            ScenarioLogManager.getLogger().warn("zmscitizenview slot wait: {}", e.toString());
+        for (int day = 0; day < 4; day++) {
+            try {
+                waitUntilAppointmentSlotsReady(day == 0 ? timeout : Math.min(45, timeout));
+                break;
+            } catch (Exception e) {
+                ScenarioLogManager.getLogger().warn("zmscitizenview slot wait: {}", e.toString());
+                if (deepTimeslotClickablePresent() || !openNextCalendarDayAndWaitForSlots()) {
+                    break;
+                }
+            }
         }
         scrollTimeSlotGridIntoViewForScreenshots();
     }
@@ -1450,10 +1554,15 @@ public class CitizenViewPage extends BasePage {
                 + " if(!node||!node.id)return null;"
                 + " var m=node.id.match(/-timeslot-(\\d+)$/);"
                 + " return m?parseInt(m[1],10):null;}"
+                + "var skipArg=(arguments.length>1&&arguments[1]!=null)?String(arguments[1]):String(window.__zmsCitizenViewSkippedSlots||'');"
+                + "window.__zmsCitizenViewSkippedSlots=skipArg;"
+                + "var skip={};"
+                + "skipArg.split(',').forEach(function(s){if(s)skip[s]=1;});"
+                + "function skipped(ts){return ts!==null&&skip[String(ts)];}"
                 + "var target=null;"
                 + "for(var j=0;j<slots.length;j++){"
                 + " var ts=slotTs(slots[j]);"
-                + " if(ts!==null&&ts>=minTs){target=slots[j];break;}"
+                + " if(ts!==null&&ts>=minTs&&!skipped(ts)){target=slots[j];break;}"
                 + "}"
                 + "if(!target){"
                 + " var nowSec=Math.floor(Date.now()/1000);"
@@ -1461,13 +1570,14 @@ public class CitizenViewPage extends BasePage {
                 + " var best=null,bestTs=-1;"
                 + " for(var k=0;k<slots.length;k++){"
                 + "  var ts2=slotTs(slots[k]);"
-                + "  if(ts2!==null&&ts2>=minSafe&&ts2>bestTs){best=slots[k];bestTs=ts2;}"
+                + "  if(ts2!==null&&ts2>=minSafe&&!skipped(ts2)&&ts2>bestTs){best=slots[k];bestTs=ts2;}"
                 + " }"
                 + " target=best;"
                 + "}"
                 + "if(!target){"
-                + " var idx = slots.length>2?2:(slots.length>1?1:0);"
-                + " target = slots[idx];"
+                + " for(var n=0;n<slots.length;n++){"
+                + "  if(!skipped(slotTs(slots[n]))){target=slots[n];break;}"
+                + " }"
                 + "}"
                 + "function highlightSlot(node){"
                 + " if(!node)return;"
@@ -1527,18 +1637,31 @@ public class CitizenViewPage extends BasePage {
      * from the Ort display id. Retries with Später when no matching slot is in the current hour/day-part.
      */
     public void highlightPreferredTimeslotForOffice(int officeId) {
+        Assert.assertTrue(
+                highlightPreferredTimeslotForOfficeOrAbsent(officeId, ""),
+                "zmscitizenview: could not find/highlight timeslot for provider " + officeId
+                        + " (shared booking uses data-provider-id / provider-{id}-timeslot-*)");
+    }
+
+    /** @return false when the current calendar view has no highlightable slot for this office */
+    private boolean highlightPreferredTimeslotForOfficeOrAbsent(int officeId, String skippedTimestamps) {
         CONTEXT.set();
         String scrollSlotHighlight = buildScrollSlotHighlightScript();
         ScenarioLogManager.getLogger().info(
-                "zmscitizenview: highlight preferred slot (≥60min ahead; else ≥5min; else 3rd/2nd/1st) office {}",
-                officeId);
+                "zmscitizenview: highlight preferred slot (≥60min ahead; else ≥5min; else next free) office {} skip [{}]",
+                officeId,
+                skippedTimestamps);
         boolean highlighted = false;
+        int dayMoves = 0;
         for (int attempt = 1; attempt <= 8 && !highlighted; attempt++) {
+            if (contactStepReached()) {
+                return false;
+            }
             try {
                 highlighted =
                         Boolean.TRUE.equals(
                                 ((JavascriptExecutor) DriverUtil.getDriver())
-                                        .executeScript(scrollSlotHighlight, officeId));
+                                        .executeScript(scrollSlotHighlight, officeId, skippedTimestamps));
             } catch (Exception e) {
                 ScenarioLogManager.getLogger()
                         .warn("zmscitizenview: highlight script attempt {} failed: {}", attempt, e.toString());
@@ -1551,65 +1674,84 @@ public class CitizenViewPage extends BasePage {
                             "zmscitizenview: no timeslot for provider {} in current view (attempt {}); try Später",
                             officeId,
                             attempt);
-            if (!clickCitizenViewLaterOnceIfAvailable()) {
+            if (clickCitizenViewLaterOnceIfAvailable()) {
+                sleepQuiet(1200L);
+                try {
+                    waitUntilAppointmentSlotsReady(Math.min(45, slotBookingWaitTimeoutSeconds()));
+                } catch (Exception e) {
+                    ScenarioLogManager.getLogger()
+                            .warn("zmscitizenview slot wait after Später (highlight): {}", e.toString());
+                }
+                continue;
+            }
+            if (dayMoves >= 3 || !openNextCalendarDayAndWaitForSlots()) {
                 break;
             }
-            sleepQuiet(1200L);
-            try {
-                waitUntilAppointmentSlotsReady(Math.min(45, slotBookingWaitTimeoutSeconds()));
-            } catch (Exception e) {
-                ScenarioLogManager.getLogger()
-                        .warn("zmscitizenview slot wait after Später (highlight): {}", e.toString());
-            }
+            dayMoves++;
         }
-        Assert.assertTrue(
-                highlighted,
-                "zmscitizenview: could not find/highlight timeslot for provider " + officeId
-                        + " (shared booking uses data-provider-id / provider-{id}-timeslot-*)");
+        if (!highlighted) {
+            return false;
+        }
         sleepQuiet(200L);
         scrollTimeSlotGridIntoViewForScreenshots();
         sleepQuiet(250L);
+        return true;
     }
 
     /** Step 3b: click the slot stored by {@link #highlightPreferredTimeslotForOffice(int)}. */
     public void clickHighlightedTimeslotSelection() {
+        Assert.assertTrue(
+                clickHighlightedTimeslotSelectionOrGiveUp(),
+                "zmscitizenview: timeslot selection did not register in Vue after click");
+    }
+
+    /**
+     * Clicks the stored slot. Returns false when the slot is gone, so the reserve loop can skip it
+     * and try the next timestamp instead of failing the 15s re-highlight wait.
+     */
+    private boolean clickHighlightedTimeslotSelectionOrGiveUp() {
         CONTEXT.set();
         ScenarioLogManager.getLogger().info("zmscitizenview: click highlighted timeslot");
         JavascriptExecutor js = (JavascriptExecutor) DriverUtil.getDriver();
         int officeId = resolveStoredSlotOfficeId(js);
-        Assert.assertTrue(
-                officeId > 0,
-                "zmscitizenview: highlight step must run first (missing window.__zmsCitizenViewSlotOfficeId)");
+        if (officeId <= 0) {
+            ScenarioLogManager.getLogger()
+                    .warn("zmscitizenview: highlight step must run first (missing window.__zmsCitizenViewSlotOfficeId)");
+            return false;
+        }
 
         boolean selected = false;
         for (int attempt = 1; attempt <= 3 && !selected; attempt++) {
             if (attempt > 1) {
                 ScenarioLogManager.getLogger()
                         .warn("zmscitizenview: slot selection not registered; retry click attempt {}", attempt);
-                Boolean highlighted =
-                        (Boolean)
-                                new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(15))
-                                        .until(
-                                                d ->
-                                                        Boolean.TRUE.equals(
-                                                                ((JavascriptExecutor) d)
-                                                                        .executeScript(
-                                                                                buildScrollSlotHighlightScript(),
-                                                                                officeId)));
-                Assert.assertTrue(
-                        Boolean.TRUE.equals(highlighted),
-                        "zmscitizenview: could not re-highlight timeslot on retry");
+                try {
+                    new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(15))
+                            .until(
+                                    d ->
+                                            Boolean.TRUE.equals(
+                                                    ((JavascriptExecutor) d)
+                                                            .executeScript(buildScrollSlotHighlightScript(), officeId)));
+                } catch (TimeoutException e) {
+                    ScenarioLogManager.getLogger()
+                            .info(
+                                    "zmscitizenview: re-highlight found no slot for office {}; trying the next available slot",
+                                    officeId);
+                    return false;
+                }
                 sleepQuiet(250L);
             }
-            Assert.assertTrue(
-                    performStoredTimeslotClick(js),
-                    "zmscitizenview: could not click highlighted timeslot (attempt " + attempt + ")");
+            if (!performStoredTimeslotClick(js)) {
+                ScenarioLogManager.getLogger()
+                        .info("zmscitizenview: could not click highlighted timeslot (attempt {})", attempt);
+                return false;
+            }
             selected = waitForSlotSelectionVisible(officeId, attempt == 1 ? 12 : 20);
         }
-        Assert.assertTrue(
-                selected,
-                "zmscitizenview: timeslot selection did not register in Vue after click (office " + officeId + ")");
-        sleepQuiet(400L);
+        if (selected) {
+            sleepQuiet(400L);
+        }
+        return selected;
     }
 
     private static int resolveStoredSlotOfficeId(JavascriptExecutor js) {
@@ -1708,12 +1850,114 @@ public class CitizenViewPage extends BasePage {
      */
     public void assertCalloutAndReserveAfterSlotSelection(int officeId) {
         CONTEXT.set();
-        assertSelectedAppointmentCalloutShowsProvider(officeId);
-        ScenarioLogManager.getLogger()
-                .info("zmscitizenview: Weiter after slot callout → reserve appointment (then Kontakt form)");
-        clickWeiter();
+        Set<Long> skipped = new HashSet<>();
+        for (int attempt = 1; attempt <= 8; attempt++) {
+            if (contactStepReached()) {
+                finishReserveOnContactStep();
+                return;
+            }
+            if (attempt > 1) {
+                String skippedTimestamps =
+                        skipped.stream().map(String::valueOf).reduce((a, b) -> a + "," + b).orElse("");
+                if (!highlightPreferredTimeslotForOfficeOrAbsent(officeId, skippedTimestamps)) {
+                    if (contactStepReached()) {
+                        finishReserveOnContactStep();
+                        return;
+                    }
+                    Assert.fail(
+                            "zmscitizenview: could not find/highlight timeslot for provider " + officeId
+                                    + " (shared booking uses data-provider-id / provider-{id}-timeslot-*)");
+                }
+                if (!clickHighlightedTimeslotSelectionOrGiveUp()) {
+                    long missed = readStoredSlotTimestamp();
+                    if (missed > 0) {
+                        skipped.add(missed);
+                    }
+                    ScenarioLogManager.getLogger()
+                            .info(
+                                    "zmscitizenview: slot timestamp={} could not be selected; trying the next available slot",
+                                    missed);
+                    continue;
+                }
+            }
+            if (!assertSelectedAppointmentCalloutShowsProvider(officeId)) {
+                finishReserveOnContactStep();
+                return;
+            }
+            long timestamp = readStoredSlotTimestamp();
+            ScenarioLogManager.getLogger()
+                    .info(
+                            "zmscitizenview: Weiter after slot callout → reserve appointment (then Kontakt form) timestamp={}",
+                            timestamp);
+            clickWeiter();
+            if (reserveReachedContactForm()) {
+                finishReserveOnContactStep();
+                return;
+            }
+            if (timestamp > 0) {
+                skipped.add(timestamp);
+            }
+            ScenarioLogManager.getLogger()
+                    .info(
+                            "zmscitizenview: slot timestamp={} is reserved or booked; trying the next available slot",
+                            timestamp);
+        }
+        Assert.fail("zmscitizenview: no free slot remained for office " + officeId);
+    }
+
+    /**
+     * Kontakt step is up: heading, voluntary-login box, or the Vorname field.
+     * A slow reserve paints this page without a taken-slot error.
+     */
+    private boolean contactStepReached() {
+        return shadowDomContainsText("Kontaktdaten")
+                || shadowDomContainsText("Freiwillige Anmeldung")
+                || deepElementExists("#firstname");
+    }
+
+    private void finishReserveOnContactStep() {
         waitForReserveToSettle();
         trySetBookingProcessFromPage();
+    }
+
+    private boolean reserveReachedContactForm() {
+        long deadline = System.currentTimeMillis() + 30_000L;
+        while (System.currentTimeMillis() < deadline) {
+            if (contactStepReached() || shadowDomContainsText("Termin verschieben")) {
+                return true;
+            }
+            if (shadowDomContainsText("Ihr gewählter Termin ist nicht mehr verfügbar.")
+                    || shadowDomContainsText("Ein unbekannter Fehler ist aufgetreten.")) {
+                return false;
+            }
+            sleepQuiet(400L);
+        }
+        if (contactStepReached()) {
+            return true;
+        }
+        ScenarioLogManager.getLogger()
+                .info(
+                        "zmscitizenview: reserve did not reach Kontaktdaten and did not report a taken slot");
+        return false;
+    }
+
+    private long readStoredSlotTimestamp() {
+        Object slotId =
+                ((JavascriptExecutor) DriverUtil.getDriver())
+                        .executeScript("return window.__zmsCitizenViewSlotId || '';");
+        if (slotId == null) {
+            return 0L;
+        }
+        String id = String.valueOf(slotId);
+        int marker = id.lastIndexOf("-timeslot-");
+        if (marker < 0) {
+            return 0L;
+        }
+        try {
+            return Long.parseLong(id.substring(marker + "-timeslot-".length()));
+        } catch (NumberFormatException e) {
+            return 0L;
+        }
     }
 
     /**
@@ -1750,15 +1994,30 @@ public class CitizenViewPage extends BasePage {
         ScenarioLogManager.getLogger().info("zmscitizenview: reserve settle delay done");
     }
 
-    /** Info callout after slot pick: selected-appointment header + {@code #provider-{officeId}}. */
-    public void assertSelectedAppointmentCalloutShowsProvider(int officeId) {
+    /**
+     * Info callout after slot pick: selected-appointment header + {@code #provider-{officeId}}.
+     *
+     * @return false when the Kontakt step is already showing, so the caller must not click Weiter again
+     */
+    public boolean assertSelectedAppointmentCalloutShowsProvider(int officeId) {
         CONTEXT.set();
         String providerSelector = "#provider-" + officeId;
         waitWithThreeWindows(
-                () -> (shadowDomContainsText("Ausgewählter Termin")
-                                || shadowDomContainsText("Selected Appointment"))
-                        && deepElementExists(providerSelector),
+                () -> contactStepReached()
+                        || ((shadowDomContainsText("Ausgewählter Termin")
+                                        || shadowDomContainsText("Selected Appointment"))
+                                && deepElementExists(providerSelector)),
                 "Selected appointment callout for office " + officeId);
+        if (contactStepReached()
+                && !((shadowDomContainsText("Ausgewählter Termin")
+                                || shadowDomContainsText("Selected Appointment"))
+                        && deepElementExists(providerSelector))) {
+            ScenarioLogManager.getLogger()
+                    .info(
+                            "zmscitizenview: Kontakt step visible for office {}; slot callout wait stopped",
+                            officeId);
+            return false;
+        }
         new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
                 .until(
                         d ->
@@ -1776,6 +2035,7 @@ public class CitizenViewPage extends BasePage {
                 .info(
                         "zmscitizenview: callout OK — Ausgewählter Termin includes provider {} (Bürgerbüro Ruppertstraße)",
                         officeId);
+        return true;
     }
 
     /** Fixed test phone; never random (avoid real subscriber numbers). */
@@ -1836,6 +2096,7 @@ public class CitizenViewPage extends BasePage {
         }
         String[] parts = RandomNameHelper.splitFullNameIntoFirstAndLast(fullName);
         String email = RandomNameHelper.getEmailConformName(fullName) + "@mailinator.com";
+        zms.ataf.rest.steps.CitizenApiSteps.setBookingContactEmail(email);
         ScenarioLogManager.getLogger()
                 .info(
                         "zmscitizenview: Kontakt — Vorname={} Nachname={} E-Mail={}",
@@ -2040,6 +2301,7 @@ public class CitizenViewPage extends BasePage {
     /** Preconfirm page: after communication checkbox, primary "Termin reservieren" button leads to activation (“Aktivieren Sie Ihren Termin.”). */
     public void continueFromPreconfirmStep() {
         CONTEXT.set();
+        captureBookingProcessForCleanup();
         ScenarioLogManager.getLogger().info("zmscitizenview: preconfirm → Termin reservieren (activation callout)");
         waitForAndClickButtonContaining(DE_RESERVE, DEFAULT_EXPLICIT_WAIT_TIME);
         waitWithThreeWindows(() -> shadowDomContainsText(ACTIVATION_CALLOUT_HEADING), "Activation callout");
@@ -2252,6 +2514,11 @@ public class CitizenViewPage extends BasePage {
                                 .executeScript(
                                         "return localStorage.getItem('" + LOCALSTORAGE_APPOINTMENT_KEY + "');");
         if (json == null || json.isBlank()) {
+            captureBookingProcessForCleanup();
+            ThinnedProcess captured = zms.ataf.rest.steps.CitizenApiSteps.getBookingProcess();
+            if (captured != null && captured.getProcessId() != null) {
+                return captured;
+            }
             ScenarioLogManager.getLogger().info("zmscitizenview: localStorage lhm-appointment-data not available; ensure continueFromPreconfirmStep captured process from confirm link on page");
             return null;
         }
@@ -2673,15 +2940,15 @@ public class CitizenViewPage extends BasePage {
                 TestPropertiesHelper.getPropertyAsString("citizenUserName", true, "citizen");
         String password =
                 TestPropertiesHelper.getPropertyAsString("citizenUserPassword", true, "vorschau");
+        username = AccountCheckout.assignCitizenLogin(username);
         completeKeycloakLoginForm(username, password);
 
         waitWithThreeWindows(
-                () -> shadowDomContainsText("Sie sind angemeldet")
-                        || shadowDomContainsText("Kontaktdaten"),
-                "Citizen view after Keycloak Bürger-Login");
+                () -> shadowDomContainsText("Sie sind angemeldet"),
+                "Logged-in callout after Keycloak Bürger-Login");
         Assert.assertTrue(
-                shadowDomContainsText("Sie sind angemeldet.") || shadowDomContainsText("Kontaktdaten"),
-                "Expected return to Kontakt form after Bürger-Login (logged-in callout or Kontaktdaten).");
+                shadowDomContainsText("Sie sind angemeldet."),
+                "Expected 'Sie sind angemeldet.' after Bürger-Login. Kontakt was still showing Anmelden.");
         ScenarioLogManager.getLogger().info("zmscitizenview: Bürger-Login completed");
         trySetBookingProcessFromPage();
     }
@@ -2935,7 +3202,43 @@ public class CitizenViewPage extends BasePage {
         if (trySetBookingProcessFromSessionAuthHash()) {
             return;
         }
-        trySetBookingProcessFromCurrentReservedHash();
+        if (trySetBookingProcessFromCurrentReservedHash()) {
+            return;
+        }
+        trySetBookingProcessIdFromDom();
+    }
+
+    /** Summary nodes are {@code process-{id}-displayNumber-*}. The id is enough to match GET /mails/. */
+    private void trySetBookingProcessIdFromDom() {
+        CONTEXT.set();
+        String script =
+                "function walk(root){if(!root)return null;"
+                        + "if(root.id){var m=String(root.id).match(/^process-(\\d+)-/);if(m)return m[1];}"
+                        + "if(root.shadowRoot){var s=walk(root.shadowRoot);if(s)return s;}"
+                        + "var c=root.children;if(c)for(var i=0;i<c.length;i++){var f=walk(c[i]);if(f)return f;}"
+                        + "return null;}"
+                        + "return walk(document.body);";
+        Object raw = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script);
+        if (raw == null) {
+            return;
+        }
+        try {
+            int processId = Integer.parseInt(String.valueOf(raw));
+            if (processId <= 0) {
+                return;
+            }
+            ThinnedProcess existing = zms.ataf.rest.steps.CitizenApiSteps.getBookingProcess();
+            if (existing != null && processId == (existing.getProcessId() == null ? -1 : existing.getProcessId())) {
+                return;
+            }
+            ThinnedProcess p = new ThinnedProcess();
+            p.setProcessId(processId);
+            zms.ataf.rest.steps.CitizenApiSteps.setBookingProcess(p);
+            ScenarioLogManager.getLogger()
+                    .info("zmscitizenview: captured booking processId={} from summary DOM", processId);
+        } catch (NumberFormatException e) {
+            ScenarioLogManager.getLogger().debug("zmscitizenview: summary process id was not numeric", e);
+        }
     }
 
     private boolean trySetBookingProcessFromSessionAuthHash() {

@@ -11,31 +11,31 @@ import io.restassured.response.Response;
 public class CommonApiSteps {
     
     /**
-     * Shared response holder - populated by step classes that make API calls.
-     * This allows common steps to work across different API step classes.
+     * Response for this scenario's thread. Other step classes on the same thread
+     * publish into it so the status-code step can read the last call.
      */
-    private static Response sharedResponse;
+    private static final ThreadLocal<Response> SHARED_RESPONSE = new ThreadLocal<>();
     
     /**
      * Reset shared state before each scenario to prevent state leakage.
      */
     @Before
     public void resetSharedState() {
-        sharedResponse = null;
+        SHARED_RESPONSE.remove();
     }
     
     /**
      * Set the shared response (called by other step classes after making API calls).
      */
     public static void setResponse(Response response) {
-        sharedResponse = response;
+        SHARED_RESPONSE.set(response);
     }
     
     /**
      * Get the shared response.
      */
     public static Response getResponse() {
-        return sharedResponse;
+        return SHARED_RESPONSE.get();
     }
     
     /**
@@ -44,6 +44,7 @@ public class CommonApiSteps {
      */
     @Then("the response status code should be {int}")
     public void theResponseStatusCodeShouldBe(int statusCode) {
+        Response sharedResponse = getResponse();
         if (sharedResponse == null) {
             throw new IllegalStateException("No response available. Make sure an API call was made before checking status code.");
         }

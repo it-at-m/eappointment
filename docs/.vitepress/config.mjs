@@ -268,6 +268,8 @@ const renderCucumberDocFor = (locale, catalog) => {
     "",
     "<CucumberWorkflowStatus />",
     "",
+    "<CucumberCountMatrix />",
+    "",
     t.accordionHint,
     "",
     `## ${t.patternHeading}`,
@@ -511,6 +513,7 @@ const sidebarLabels = {
     unitTesting: "Unit Testing in ZMS",
     unitCoverage: "Unit Test Coverage",
     zmsautomation: "zmsautomation Documentation",
+    howWeParallelized: "How We Parallelized zmsautomation",
     cucumberCurrent: "Current Cucumber Tests",
     operations: "Operations",
     cicd: "CI/CD",
@@ -565,6 +568,7 @@ const sidebarLabels = {
     unitTesting: "Unit-Tests in ZMS",
     unitCoverage: "Unit-Test-Abdeckung",
     zmsautomation: "zmsautomation-Dokumentation",
+    howWeParallelized: "Wie wir zmsautomation parallelisiert haben",
     cucumberCurrent: "Aktuelle Cucumber-Tests",
     operations: "Betrieb",
     cicd: "CI/CD",
@@ -720,6 +724,10 @@ const buildSidebar = (prefix, lang) => {
         {
           text: t.zmsautomation,
           link: `${prefix}/testing-and-automation/zmsautomation`,
+        },
+        {
+          text: t.howWeParallelized,
+          link: `${prefix}/testing-and-automation/how-we-parallelized-zmsautomation`,
         },
         {
           text: t.cucumberCurrent,
