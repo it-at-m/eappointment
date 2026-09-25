@@ -68,7 +68,7 @@ jobs:
           # Run all modules with coverage
           echo "Running tests WITH coverage for ${{ matrix.module }}"
           php -dmemory_limit=-1 ./vendor/bin/paratest -c phpunit.xml \
-            --processes=16 \
+            --processes=32 \
             --coverage-html coverage/html \
             --coverage-clover coverage/clover.xml \
             --log-junit coverage/junit.xml \
@@ -169,7 +169,7 @@ jobs:
           mkdir -p coverage
           php -dzend_extension=xdebug.so -dxdebug.mode=coverage -dmemory_limit=2G -dopcache.enable=1 -dopcache.memory_consumption=128 \
             ./vendor/bin/paratest -c phpunit.xml \
-            --processes=4 \
+            --processes=32 \
             --passthru-php="'-d' 'zend_extension=xdebug.so' '-d' 'xdebug.mode=coverage' '-d' 'memory_limit=2G' '-d' 'opcache.enable=1' '-d' 'opcache.memory_consumption=128'" \
             --coverage-html coverage/html \
             --coverage-clover coverage/clover.xml \
@@ -220,7 +220,7 @@ jobs:
           echo "Running tests WITH coverage for zmsclient"
           docker compose exec -T test php -dmemory_limit=-1 \
             ./vendor/bin/paratest \
-            --processes=16 \
+            --processes=32 \
             --coverage-html coverage/html \
             --coverage-clover coverage/clover.xml \
             --log-junit coverage/junit.xml \
