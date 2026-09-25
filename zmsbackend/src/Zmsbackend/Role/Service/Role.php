@@ -68,7 +68,10 @@ class Role extends \BO\Zmsbackend\Base
             ]
         );
         $this->writeItem($query);
-        $newId = (int) $this->getWriter()->lastInsertId();
+        $newId = (int) $this->fetchValue(
+            'SELECT `id` FROM `role` WHERE `name` = ?',
+            [$role['name']]
+        );
 
         foreach ($permissions as $permission) {
             $link = new \BO\Zmsbackend\Role\Repository\RolePermission(\BO\Zmsbackend\Query\Base::INSERT);
