@@ -576,6 +576,7 @@ public class CounterProcessingStationPage extends AdminPage {
         Set<String> skippedTimes = new HashSet<>();
         final int maxBookingAttempts = 6;
         boolean bookingAttempted = false;
+        fillCustomTextfieldsForSpontaneousCustomerIfNeeded();
     
         for (int attempt = 1; attempt <= maxBookingAttempts; attempt++) {
             if (attempt > 1 && bookingAttempted) {
@@ -616,7 +617,9 @@ public class CounterProcessingStationPage extends AdminPage {
                     List<WebElement> errorElements = driver.findElements(By.xpath(
                             "//li[@data-key='familyName'] | " +
                             "//li[@data-key='email'] | " +
-                            "//li[@data-key='requests']"
+                            "//li[@data-key='requests'] | " +
+                            "//li[@data-key='customTextfield'] | " +
+                            "//li[@data-key='customTextfield2']"
                     ));
     
                     if (!errorElements.isEmpty()) {
@@ -639,6 +642,13 @@ public class CounterProcessingStationPage extends AdminPage {
                                 TestDataHelper.setTestData(
                                         "Fehler-Dienstleistung",
                                         "Fehler: Es muss mindestens eine Dienstleistung ausgewählt werden!"
+                                );
+                                break;
+                            case "customTextfield":
+                            case "customTextfield2":
+                                TestDataHelper.setTestData(
+                                        "Fehler-Bemerkung",
+                                        "Fehler: Die zusätzliche Bemerkung fehlt."
                                 );
                                 break;
                             default:
