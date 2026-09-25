@@ -450,6 +450,11 @@ public class AdminSteps {
         AUTHORITIES_AND_LOCATIONS_PAGE.deleteOpeningHoursOfType(TestDataHelper.transformTestData(type));
     }
 
+    @Wenn("die bereits wartenden Kunden als nicht erschienen abgeschlossen werden.")
+    public void die_bereits_wartenden_kunden_als_nicht_erschienen_abgeschlossen_werden() {
+        PROCESSING_STATION_SECTION.dismissCustomersAlreadyWaiting();
+    }
+
     @Wenn("Der Sachbearbeiter den wartenden Kunden aufruft.")
     public void wenn_der_sachbearbeiter_den_wartenden_kunden_aufruft() {
         PROCESSING_STATION_SECTION.callNextCustomer();

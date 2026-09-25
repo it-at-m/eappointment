@@ -226,6 +226,10 @@
     <!-- Runner-specific profiles for API/UI execution -->
     <profile>
       <id>ataf-api</id>
+      <properties>
+        <!-- GH-3281: parallel scenarios in this JVM. -Ddataproviderthreadcount overrides this. -->
+        <dataproviderthreadcount>32</dataproviderthreadcount>
+      </properties>
       <build>
         <plugins>
           <plugin>
@@ -247,6 +251,12 @@
                 <cucumber.glue>zms.ataf.steps,zms.ataf.rest.steps,zms.ataf.hooks,ataf.rest.steps</cucumber.glue>
                 <cucumber.filter.tags>not @ignore</cucumber.filter.tags>
               </systemPropertyVariables>
+              <properties>
+                <property>
+                  <name>dataproviderthreadcount</name>
+                  <value>${dataproviderthreadcount}</value>
+                </property>
+              </properties>
             </configuration>
           </plugin>
         </plugins>
@@ -315,6 +325,10 @@
 
     <profile>
       <id>ataf-ui</id>
+      <properties>
+        <!-- GH-3281: one browser per thread. -Ddataproviderthreadcount overrides this. -->
+        <dataproviderthreadcount>16</dataproviderthreadcount>
+      </properties>
       <build>
         <plugins>
           <plugin>
@@ -336,6 +350,12 @@
                 <cucumber.glue>zms.ataf.steps,zms.ataf.rest.steps,zms.ataf.ui.steps,zms.ataf.hooks,ataf.rest.steps,ataf.web.steps</cucumber.glue>
                 <cucumber.filter.tags>not @ignore</cucumber.filter.tags>
               </systemPropertyVariables>
+              <properties>
+                <property>
+                  <name>dataproviderthreadcount</name>
+                  <value>${dataproviderthreadcount}</value>
+                </property>
+              </properties>
             </configuration>
           </plugin>
         </plugins>
