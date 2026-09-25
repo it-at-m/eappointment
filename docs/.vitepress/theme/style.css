@@ -360,3 +360,20 @@ footer.VPFooter {
   font-weight: 600;
   line-height: 1.4;
 }
+
+.vp-doc .duration-compare {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem 2rem;
+  align-items: start;
+}
+
+.vp-doc .duration-compare h3 {
+  margin-top: 0;
+}
+
+@media (max-width: 768px) {
+  .vp-doc .duration-compare {
+    grid-template-columns: 1fr;
+  }
+}
