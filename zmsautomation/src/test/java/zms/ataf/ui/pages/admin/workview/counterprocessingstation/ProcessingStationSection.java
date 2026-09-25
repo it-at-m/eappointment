@@ -18,6 +18,7 @@ import ataf.core.helpers.TestPropertiesHelper;
 import ataf.core.logging.ScenarioLogManager;
 import ataf.core.properties.DefaultValues;
 import ataf.web.model.LocatorType;
+import zms.ataf.helpers.AccountCheckout;
 import zms.ataf.ui.pages.admin.AdminPageContext;
 
 /**
@@ -27,6 +28,41 @@ public class ProcessingStationSection extends CounterProcessingStationPage {
 
     public ProcessingStationSection(RemoteWebDriver driver, AdminPageContext adminPageContext) {
         super(driver, adminPageContext);
+    }
+
+    /**
+     * Marks every customer already waiting at this Standort as not appeared.
+     * A later "Aufruf nächster Kunde" then reaches the customers this scenario just added.
+     */
+    public void dismissCustomersAlreadyWaiting() {
+        ScenarioLogManager.getLogger().info("Dismissing customers already waiting at this Standort...");
+        final String emptyMessage =
+                "//h2[contains(., 'Aktuell gibt es keine wartenden Kunden')]"
+                        + " | //div[contains(@class,'message__body') and contains(., 'Vielen Dank für die fleißigen Aufrufe.')]";
+        final String precall =
+                "//button[text()='Ja, Kunden jetzt aufrufen' and contains(@class, 'client-precall_button-success')]";
+        final String called = "//button[contains(@class,'client-called_button-success')]";
+        for (int i = 0; i < 8; i++) {
+            callNextCustomer();
+            if (isWebElementVisible(5, emptyMessage, LocatorType.XPATH, false, CONTEXT)) {
+                ScenarioLogManager.getLogger().info("No further customers were waiting.");
+                return;
+            }
+            if (isWebElementVisible(5, precall, LocatorType.XPATH, false, CONTEXT)) {
+                clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, precall, LocatorType.XPATH, false, CONTEXT);
+            }
+            if (!isWebElementVisible(15, called, LocatorType.XPATH, false, CONTEXT)) {
+                ScenarioLogManager.getLogger().info("Next call did not open a customer; leaving the queue as it is.");
+                return;
+            }
+            clickOnNoCustomerDidNotAppear();
+        }
+        CONTEXT.set();
+        int stillWaiting = DRIVER.findElements(By.cssSelector("#table-queued-appointments tbody tr")).size();
+        Assert.assertEquals(
+                stillWaiting,
+                0,
+                "Customers were still waiting after dismissing eight of them.");
     }
 
     public void callNextCustomer() {
@@ -317,6 +353,7 @@ public class ProcessingStationSection extends CounterProcessingStationPage {
 
     public void selectLocationForAppointmentForwarding(String location) {
         ScenarioLogManager.getLogger().info("Trying to select location for appointment forwarding...");
+        AccountCheckout.checkout("scope:" + location);
         String xpath = "//select[@name='location']";
         WebElement competentBody = findElementByLocatorType(xpath, LocatorType.XPATH, true);
         Assert.assertNotNull(competentBody, "Location dropdown element not found!");

@@ -29,7 +29,7 @@ public class CitizenViewSteps {
     }
 
     /** Capture credentials while the browser is still open, before {@link zms.ataf.rest.steps.CitizenApiSteps} After-cancel. */
-    @After(order = 10001)
+    @After(value = "@zmscitizenview", order = 10001)
     public void captureBookingProcessBeforeCleanup() {
         try {
             page.captureBookingProcessForCleanup();

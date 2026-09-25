@@ -55,9 +55,11 @@ SET @desired_end :=
 SET @rounded_end :=
   LEAST(@desired_end, '23:55:00');
 
+-- A same-day window shorter than 3 hours leaves shared booking with one timestamp
+-- on one peer. Roll Ausbildung onto the next day together with V19.
 SET @start_sec := TIME_TO_SEC(@rounded_start);
 SET @end_sec := TIME_TO_SEC(@rounded_end);
-SET @use_next_day := (@end_sec <= @start_sec);
+SET @use_next_day := (@end_sec <= @start_sec) OR ((@end_sec - @start_sec) < 3 * 3600);
 
 SET @appt_start := IF(@use_next_day, '00:05:00', @rounded_start);
 SET @appt_end :=

@@ -45,19 +45,19 @@ Feature: ZMSKVR-833 / ZMSKVR-1025 Rebooking onto a Bürgerbüro that requires cu
     And the appointment status should be "reserved"
     And the appointment should be at office 10489
     And I fetch the appointment for the current process
-    Then the appointment familyName should be "ATAF Test User"
+    Then the appointment familyName should be the generated contact name
     And the appointment customTextfield should be ""
     When I attempt to update the appointment changing familyName to "Hacker Name"
     Then the response status code should be 400
     And the response errors should include errorCode "familyNameCannotBeChanged"
     And I fetch the appointment for the current process
-    Then the appointment familyName should be "ATAF Test User"
+    Then the appointment familyName should be the generated contact name
     And the appointment customTextfield should be ""
     When I update the appointment with contact details and customTextfield "ATAF Pflichtfeld"
     Then the update endpoint response should include a thinned booking process with processId, authKey, officeId, and serviceId
     And the appointment status should be "reserved"
     And the appointment should be at office 10489
-    And the appointment familyName should be "ATAF Test User"
+    And the appointment familyName should be the generated contact name
     And the appointment customTextfield should be "ATAF Pflichtfeld"
     When I cancel the appointment
     And I cancel the rebooking source appointment

@@ -10,6 +10,7 @@ Funktionalität: Ein aufgerufener Termin kann geparkt werden, damit er den Ablau
 		Und  Sie in Feld "Platz-Nr. oder Tresen" den Text "13" eingeben.
 		Und  Sie im Zeitmanagementsystem auf die Schaltfläche "Auswahl bestätigen" klicken.
 		Dann wird die Seite Sachbearbeiterplatz angezeigt.
+		Wenn die bereits wartenden Kunden als nicht erschienen abgeschlossen werden.
 		Gegeben seien Sie einen Spontankunden für die Dienstleistung buchen:
 			| Dienstleistung       						| Termin name    |	Kunde	|
 			| Abholung Personalausweis, Reisepass oder eID-Karte 	| Termin1        |	Kunde1	|

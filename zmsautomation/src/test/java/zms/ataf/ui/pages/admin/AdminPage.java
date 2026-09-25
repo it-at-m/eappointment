@@ -22,6 +22,7 @@ import ataf.core.logging.ScenarioLogManager;
 import ataf.core.properties.DefaultValues;
 import ataf.web.model.LocatorType;
 import ataf.web.pages.BasePage;
+import zms.ataf.helpers.AccountCheckout;
 
 
 public class AdminPage extends BasePage {
@@ -50,6 +51,11 @@ public class AdminPage extends BasePage {
     }
 
     public void clickOnLoginButton() throws Exception {
+        final StringBuilder clearUserName = new StringBuilder();
+        AuthenticationHelper.getUserName().access(clearUserName::append);
+        String assigned = AccountCheckout.assignWorkstationLogin(clearUserName.toString());
+        clearUserName.setLength(0);
+        clearUserName.append(assigned);
         if (isAlreadyLoggedIn()) {
             ScenarioLogManager.getLogger().info("Already logged in, skipping SSO login.");
             return;
@@ -58,11 +64,9 @@ public class AdminPage extends BasePage {
         clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "//button[@type='submit' and @value='keycloak']", LocatorType.XPATH, false);
         ScenarioLogManager.getLogger().info("SSO-Login page detected!");
 
-        final StringBuilder clearUserName = new StringBuilder();
         final StringBuilder clearPassword = new StringBuilder();
         Exception exception = null;
         try {
-            AuthenticationHelper.getUserName().access(clearUserName::append);
             AuthenticationHelper.getUserPassword().access(clearPassword::append);
             // Wait for Keycloak login form (local and ssodev both use id="username")
             WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
@@ -107,6 +111,7 @@ public class AdminPage extends BasePage {
     public void selectLocation(String location) {
         CONTEXT.set();
         ScenarioLogManager.getLogger().info("Trying to select location \"" + location + "\"");
+        AccountCheckout.checkout("scope:" + location);
         selectDropDownListValueByVisibleText(DEFAULT_EXPLICIT_WAIT_TIME, "scope", LocatorType.NAME, location);
         TestDataHelper.setTestData("location", location);
     }
@@ -114,6 +119,7 @@ public class AdminPage extends BasePage {
     public void enterWorkstation(String workstation) {
         CONTEXT.set();
         ScenarioLogManager.getLogger().info("Trying to enter workstation \"" + workstation + "\"");
+        workstation = AccountCheckout.queueDesk(workstation);
         enterTextInWebElement(DEFAULT_EXPLICIT_WAIT_TIME, workstation, "workstation", LocatorType.NAME);
         TestDataHelper.setTestData("workstation", workstation);
     }

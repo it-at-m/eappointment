@@ -9,3 +9,4 @@ includes:
   - path: 08_add-role-test-users.yml
   - path: 09_add-citizen-client.yml
   - path: 10_add-citizen-token-mappers.yml
+  - path: 11_add-parallel-test-users.yml
