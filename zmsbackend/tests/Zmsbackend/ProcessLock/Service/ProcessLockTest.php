@@ -48,6 +48,19 @@ class ProcessLockTest extends \BO\Zmsbackend\Tests\Service\Base
         parent::tearDown();
     }
 
+    /**
+     * Another worker can turn the waited lock into a deadlock. Both mean the write was blocked.
+     */
+    private function assertBlocked(callable $write): void
+    {
+        try {
+            $write();
+            $this->fail('The locked write completed');
+        } catch (\BO\Zmsbackend\Exception\Pdo\LockTimeout | \BO\Zmsbackend\Exception\Pdo\DeadLockFound $blocked) {
+            $this->assertNotEmpty($blocked->getMessage());
+        }
+    }
+
     public function writeDBLock()
     {
         $statement = $this->pdo
@@ -59,32 +72,33 @@ class ProcessLockTest extends \BO\Zmsbackend\Tests\Service\Base
 
     public function testDBIsLockedByNewProcess()
     {
-        $this->expectException('\BO\Zmsbackend\Exception\Pdo\LockTimeout');
         $this->writeDBLock();
         $now = static::$now;
         $scope = (new \BO\Zmsbackend\Scope\Service\Scope())->readEntity(141, 0, true);
         $query = new \BO\Zmsbackend\Process\Service\ProcessStatusQueued();
-        $query->writeNewFromTicketprinter($scope, $now);
+        $this->assertBlocked(function () use ($query, $scope, $now) {
+            $query->writeNewFromTicketprinter($scope, $now);
+        });
     }
 
     public function testDBIsLockedByUpdateProcess()
     {
-        $this->expectException('\BO\Zmsbackend\Exception\Pdo\LockTimeout');
         $this->writeDBLock();
         $now = static::$now;
         $query = new \BO\Zmsbackend\Process\Service\ProcessStatusFree();
         $input = \BO\Zmsbackend\Tests\Process\Service\ProcessTest::getTestProcessEntity();
         $input->queue['callTime'] = 0;
-        $process = $query->writeEntityReserved($input, $now);
-        $process->amendment = 'Test amendment';
-        $process->clients[] = new \BO\Zmsentities\Client(['familyName' => 'Unbekannt']);
-        $process->queue['lastCallTime'] = 1459511700;
-        $process = $query->updateEntity($process, $now);
+        $this->assertBlocked(function () use ($query, $input, $now) {
+            $process = $query->writeEntityReserved($input, $now);
+            $process->amendment = 'Test amendment';
+            $process->clients[] = new \BO\Zmsentities\Client(['familyName' => 'Unbekannt']);
+            $process->queue['lastCallTime'] = 1459511700;
+            $query->updateEntity($process, $now);
+        });
     }
 
     public function testConcurrentOnSameSlot()
     {
-        $this->expectException('\BO\Zmsbackend\Exception\Pdo\LockTimeout');
         $now = static::$now;
         $statement = $this->pdo
             ->prepare(
@@ -97,6 +111,8 @@ class ProcessLockTest extends \BO\Zmsbackend\Tests\Service\Base
         $process = \BO\Zmsbackend\Tests\Process\Service\ProcessTest::getTestProcessEntity();
         $process->getFirstAppointment()->date = 1464343200;// 2016-05-27 12:00:00 (1 slot free)
         $query = new \BO\Zmsbackend\Process\Service\ProcessStatusFree();
-        $query->writeEntityReserved($process, $now, 'public', 1);
+        $this->assertBlocked(function () use ($query, $process, $now) {
+            $query->writeEntityReserved($process, $now, 'public', 1);
+        });
     }
 }

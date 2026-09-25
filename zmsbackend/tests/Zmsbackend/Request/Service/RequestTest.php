@@ -87,10 +87,11 @@ class RequestTest extends \BO\Zmsbackend\Tests\Service\Base
         $query = new Query();
         $repository = (new \BO\Zmsdldb\FileAccess())->loadFromPath(\BO\Zmsbackend\Source\Zmsdldb::$importPath);
         $importInput = $repository->fromService()->fetchId(120335);
+        $importInput['id'] = 990335;
         $importInput['group'] = 'test';
         $entity = $query->writeImportEntity($importInput, 'dldb'); //return written entity by true
         $this->assertEquals('dldb', $entity->getSource());
-        $this->assertEquals(120335, $entity->getId());
+        $this->assertEquals(990335, $entity->getId());
         $this->assertEquals('test', $entity->group);
     }
 }

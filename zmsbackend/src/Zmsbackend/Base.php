@@ -95,27 +95,33 @@ abstract class Base
 
     protected static function pdoExceptionHandler(\Closure $pdoFunction, $parameters = [])
     {
-        try {
-            $statement = $pdoFunction($parameters);
-        } catch (\PDOException $pdoException) {
-            if (stripos($pdoException->getMessage(), 'Lock wait timeout') !== false) {
-                throw new \BO\Zmsbackend\Exception\Pdo\LockTimeout();
+        $attempts = 0;
+        while (true) {
+            try {
+                return $pdoFunction($parameters);
+            } catch (\PDOException $pdoException) {
+                $attempts++;
+                if ($attempts < 3 && stripos($pdoException->getMessage(), 'Deadlock found') !== false) {
+                    continue;
+                }
+                if (stripos($pdoException->getMessage(), 'Lock wait timeout') !== false) {
+                    throw new \BO\Zmsbackend\Exception\Pdo\LockTimeout();
+                }
+                //@codeCoverageIgnoreStart
+                if (stripos($pdoException->getMessage(), 'Deadlock found') !== false) {
+                    throw new \BO\Zmsbackend\Exception\Pdo\DeadLockFound();
+                }
+                //@codeCoverageIgnoreEnd
+                $message = "SQL: "
+                    . " Err: "
+                    . $pdoException->getMessage()
+                    //. " || Statement: "
+                    //.$statement->queryString
+                    //." || Parameters=". var_export($parameters, true)
+                    ;
+                throw new \BO\Zmsbackend\Exception\Pdo\PDOFailed($message, 0, $pdoException);
             }
-            //@codeCoverageIgnoreStart
-            if (stripos($pdoException->getMessage(), 'Deadlock found') !== false) {
-                throw new \BO\Zmsbackend\Exception\Pdo\DeadLockFound();
-            }
-            //@codeCoverageIgnoreEnd
-            $message = "SQL: "
-                . " Err: "
-                . $pdoException->getMessage()
-                //. " || Statement: "
-                //.$statement->queryString
-                //." || Parameters=". var_export($parameters, true)
-                ;
-            throw new \BO\Zmsbackend\Exception\Pdo\PDOFailed($message, 0, $pdoException);
         }
-        return $statement;
     }
 
     public function fetchStatement(Query\Base $query)
