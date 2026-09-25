@@ -21,6 +21,7 @@
         "phpmd/phpmd": "^2.13",
         "squizlabs/php_codesniffer": "*",
         "phpunit/phpunit": "^11",
+        "brianium/paratest": "^7.8",
         "phpspec/prophecy-phpunit": "^2.4",
         "roave/security-advisories": "dev-latest"
     },
