@@ -64,8 +64,8 @@ Funktionalität: Spontankunden können am Ticketdrucker eine Wartenummer ziehen,
 		Und Sie im Zeitmanagementsystem auf die Schaltfläche "Alle Änderungen aktivieren" klicken.
 		Wenn Sie die Ticketausgabe mit der Buttonliste "s999,s142" öffnen.
 		Dann sollte die Ticketausgabe keine Fehlerseite anzeigen.
-		Und sollte die Schaltfläche "Wartenummer für Bürgerbüro Riesenfeldstraße (KVR-II/233 " auf der Ticketausgabe sichtbar sein.
-		Wenn Sie auf der Ticketausgabe auf die Schaltfläche "Wartenummer für Bürgerbüro Riesenfeldstraße (KVR-II/233 " klicken.
+		Und sollte die Schaltfläche "Wartenummer für Bürgerbüro Riesenfeldstraße (KVR-II/233" auf der Ticketausgabe sichtbar sein.
+		Wenn Sie auf der Ticketausgabe auf die Schaltfläche "Wartenummer für Bürgerbüro Riesenfeldstraße (KVR-II/233" klicken.
 		Dann sollte Ihnen eine Wartenummer angezeigt werden.
 
 	@web @zmsticketprinter @booking @abholung @ZMSKVR-167 @automatisiert @executeLocally
