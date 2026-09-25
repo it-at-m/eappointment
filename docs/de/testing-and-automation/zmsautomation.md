@@ -31,7 +31,7 @@ Dieses Modul enthält API- und UI-Tests für ZMS auf Basis von [ATAF](https://it
 
 ### Mit dem Test-Skript (empfohlen)
 
-Das Skript `zmsautomation-test` kümmert sich um Datenbank-Setup, Migrationen und Testausführung. Szenarien in einem Maven-Lauf laufen parallel: 32 gleichzeitig bei `-Pataf-api`, 8 Browser gleichzeitig bei `-Pataf-ui`. Mit `-Ddataproviderthreadcount=1` läuft ein Szenario nach dem anderen. Wie diese Parallelität entstanden ist, einschließlich der Login-Pools und der Wettläufe, die sie sichtbar gemacht hat, steht in [Wie wir zmsautomation parallelisiert haben](./how-we-parallelized-zmsautomation.md).
+Das Skript `zmsautomation-test` kümmert sich um Datenbank-Setup, Migrationen und Testausführung. Szenarien in einem Maven-Lauf laufen parallel: 32 gleichzeitig bei `-Pataf-api`, 16 Browser gleichzeitig bei `-Pataf-ui`. Mit `-Ddataproviderthreadcount=1` läuft ein Szenario nach dem anderen. Wie diese Parallelität entstanden ist, einschließlich der Login-Pools und der Wettläufe, die sie sichtbar gemacht hat, steht in [Wie wir zmsautomation parallelisiert haben](./how-we-parallelized-zmsautomation.md).
 
 Jede Logzeile beginnt mit dem Worker-Thread in eckigen Klammern, zum Beispiel `[29]`. TestNG verwendet denselben Thread für das nächste Szenario. Zeilen mit derselben Nummer gehören zu einem Szenario, bis dieser Thread `Starting scenario` protokolliert. Die letzte `Starting scenario`-Zeile mit dieser Nummer nennt den zugehörigen Test.
 
@@ -56,7 +56,7 @@ Jede Logzeile beginnt mit dem Worker-Thread in eckigen Klammern, zum Beispiel `[
 # optional: andere ATAF-Maven-Version festlegen (Standard: ataf.version in pom.xml)
 ./zmsautomation/zmsautomation-test -Pataf-api -Pataf-ui -Dataf.version=0.3.3
 
-# ein Szenario nach dem anderen (Standard: 32 API-Threads oder 8 UI-Browser)
+# ein Szenario nach dem anderen (Standard: 32 API-Threads oder 16 UI-Browser)
 ./zmsautomation/zmsautomation-test -Pataf-ui -Ddataproviderthreadcount=1
 ```
 

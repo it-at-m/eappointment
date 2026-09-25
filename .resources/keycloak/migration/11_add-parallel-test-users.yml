@@ -2,7 +2,7 @@ id: add spare logins for parallel ATAF runs
 author: ZMS Development
 realm: zms
 changes:
-  # UI superuser pool is ataf + 8 (dataproviderthreadcount 8 + 1).
+  # UI superuser pool is ataf + 16 (dataproviderthreadcount 16 + 1).
   - addUser:
       name: ataf_2
       lastName: Test
@@ -120,6 +120,126 @@ changes:
       password: "vorschau"
   - assignRole:
       user: ataf_9
+      role: user
+      clientId: zms
+
+  - addUser:
+      name: ataf_10
+      lastName: Test
+      firstName: Ataf
+      enabled: true
+      emailVerified: true
+      email: ataf_10@localhost
+  - updateUserPassword:
+      name: ataf_10
+      password: "vorschau"
+  - assignRole:
+      user: ataf_10
+      role: user
+      clientId: zms
+
+  - addUser:
+      name: ataf_11
+      lastName: Test
+      firstName: Ataf
+      enabled: true
+      emailVerified: true
+      email: ataf_11@localhost
+  - updateUserPassword:
+      name: ataf_11
+      password: "vorschau"
+  - assignRole:
+      user: ataf_11
+      role: user
+      clientId: zms
+
+  - addUser:
+      name: ataf_12
+      lastName: Test
+      firstName: Ataf
+      enabled: true
+      emailVerified: true
+      email: ataf_12@localhost
+  - updateUserPassword:
+      name: ataf_12
+      password: "vorschau"
+  - assignRole:
+      user: ataf_12
+      role: user
+      clientId: zms
+
+  - addUser:
+      name: ataf_13
+      lastName: Test
+      firstName: Ataf
+      enabled: true
+      emailVerified: true
+      email: ataf_13@localhost
+  - updateUserPassword:
+      name: ataf_13
+      password: "vorschau"
+  - assignRole:
+      user: ataf_13
+      role: user
+      clientId: zms
+
+  - addUser:
+      name: ataf_14
+      lastName: Test
+      firstName: Ataf
+      enabled: true
+      emailVerified: true
+      email: ataf_14@localhost
+  - updateUserPassword:
+      name: ataf_14
+      password: "vorschau"
+  - assignRole:
+      user: ataf_14
+      role: user
+      clientId: zms
+
+  - addUser:
+      name: ataf_15
+      lastName: Test
+      firstName: Ataf
+      enabled: true
+      emailVerified: true
+      email: ataf_15@localhost
+  - updateUserPassword:
+      name: ataf_15
+      password: "vorschau"
+  - assignRole:
+      user: ataf_15
+      role: user
+      clientId: zms
+
+  - addUser:
+      name: ataf_16
+      lastName: Test
+      firstName: Ataf
+      enabled: true
+      emailVerified: true
+      email: ataf_16@localhost
+  - updateUserPassword:
+      name: ataf_16
+      password: "vorschau"
+  - assignRole:
+      user: ataf_16
+      role: user
+      clientId: zms
+
+  - addUser:
+      name: ataf_17
+      lastName: Test
+      firstName: Ataf
+      enabled: true
+      emailVerified: true
+      email: ataf_17@localhost
+  - updateUserPassword:
+      name: ataf_17
+      password: "vorschau"
+  - assignRole:
+      user: ataf_17
       role: user
       clientId: zms
 
