@@ -65,8 +65,18 @@ class ProcessLockTest extends \BO\Zmsbackend\Tests\Service\Base
     {
         $statement = $this->pdo
             ->prepare("SELECT * FROM process_sequence  WHERE processId > 100000 AND processId < 102000 FOR UPDATE");
-        $statement
-            ->execute();
+        $attempts = 0;
+        while (true) {
+            try {
+                $statement->execute();
+                break;
+            } catch (\PDOException $deadlock) {
+                $attempts++;
+                if ($attempts >= 3 || stripos($deadlock->getMessage(), 'Deadlock found') === false) {
+                    throw $deadlock;
+                }
+            }
+        }
         $statement->fetchAll();
     }
 

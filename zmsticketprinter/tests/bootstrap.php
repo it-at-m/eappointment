@@ -9,6 +9,10 @@ putenv('ZMS_CONFIG_SECURE_TOKEN=secure-token');
 
 $testToken = getenv('TEST_TOKEN');
 if (is_string($testToken) && $testToken !== '') {
+    $cacheDir = dirname(__DIR__) . '/cache/paratest-' . $testToken;
+    if (!is_dir($cacheDir)) {
+        mkdir($cacheDir, 0777, true);
+    }
     putenv('ZMS_TICKETPRINTER_TWIG_CACHE=/cache/paratest-' . $testToken . '/');
 }
 
