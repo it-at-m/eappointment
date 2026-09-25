@@ -11,7 +11,7 @@ class ApikeyUpdateTest extends \BO\Zmsbackend\Tests\Api\Base
 
     public function testRendering()
     {
-        $example = ExampleApikey::create(static::class);
+        $example = ExampleApikey::create(static::class . '::' . $this->name());
         $input = json_encode($example);
         $response = $this->render([], [
             '__body' => $input
@@ -23,7 +23,7 @@ class ApikeyUpdateTest extends \BO\Zmsbackend\Tests\Api\Base
 
     public function testUpdateExistingApikey()
     {
-        $input = ExampleApikey::create(static::class);
+        $input = ExampleApikey::create(static::class . '::' . $this->name());
         $entity = (new Query())->writeEntity($input);
 
         $response = $this->render([], [
@@ -36,7 +36,7 @@ class ApikeyUpdateTest extends \BO\Zmsbackend\Tests\Api\Base
 
     public function testClientkey()
     {
-        $example = ExampleApikey::create(static::class);
+        $example = ExampleApikey::create(static::class . '::' . $this->name());
         $input = json_encode($example);
         $response = $this->render([], [
             '__body' => $input,
@@ -51,7 +51,7 @@ class ApikeyUpdateTest extends \BO\Zmsbackend\Tests\Api\Base
     {
         $this->expectException('BO\Zmsbackend\Process\Exception\ApiclientInvalid');
         $this->expectExceptionCode(403);
-        $input = json_encode(ExampleApikey::create(static::class));
+        $input = json_encode(ExampleApikey::create(static::class . '::' . $this->name()));
         $response = $this->render([], [
             '__body' => $input,
             'clientkey' => '8pnaRHkUBYJqz9i9NPDEeZq6mUDMyRHE',
@@ -62,7 +62,7 @@ class ApikeyUpdateTest extends \BO\Zmsbackend\Tests\Api\Base
     {
         $this->expectException('BO\Zmsbackend\Process\Exception\ApiclientInvalid');
         $this->expectExceptionCode(403);
-        $input = json_encode(ExampleApikey::create(static::class));
+        $input = json_encode(ExampleApikey::create(static::class . '::' . $this->name()));
         $response = $this->render([], [
             '__body' => $input,
             'clientkey' => '_invalid',

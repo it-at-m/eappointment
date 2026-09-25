@@ -5,7 +5,7 @@ namespace BO\Zmsbackend\Tests;
 use BO\Zmsentities\Apikey as Entity;
 
 /**
- * The schema example key is one primary key. Parallel workers each insert it.
+ * The schema example key is one primary key. Pass a distinct owner per test method.
  */
 final class ExampleApikey
 {

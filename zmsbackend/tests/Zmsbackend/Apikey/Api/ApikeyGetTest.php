@@ -11,7 +11,7 @@ class ApikeyGetTest extends \BO\Zmsbackend\Tests\Api\Base
 
     public function testRendering()
     {
-        $input = ExampleApikey::create(static::class);
+        $input = ExampleApikey::create(static::class . '::' . $this->name());
         (new Query())->writeEntity($input);
 
         $response = $this->render(['key' => $input->key], [], []);
@@ -23,6 +23,6 @@ class ApikeyGetTest extends \BO\Zmsbackend\Tests\Api\Base
     public function testNotFound()
     {
         $this->expectException('BO\Zmsbackend\Apikey\Exception\ApiKeyNotFound');
-        $this->render(['key' => 'wMdVa5Nu1seuCRSJxhKl2M3yw8zqaAilPH2Xc2IZs'], [], []);
+        $this->render(['key' => 'missing-apikey-key'], [], []);
     }
 }
