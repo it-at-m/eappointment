@@ -60,6 +60,8 @@ Die Standardnamen nehmen ein freies Mitglied aus einem Pool. Der Pool ist die Th
 
 Ein ausdrücklich anderer Name bleibt an diesem Namen hängen und wartet darauf. Die Ersatzbenutzer stehen in der bestehenden Keycloak-Migration `.resources/keycloak/migration/11_add-parallel-test-users.yml` und in Flyway `V28__GH-3281_parallel_login_pool.sql`. Bürger gibt es nur in Keycloak. Der Mail-Login sendet die rohe ID `_system_messenger`. Das ist eine andere `nutzer`-Zeile als `_system_messenger@keycloak`.
 
+Der Pool besteht heute aus Kopien derselben Rollen: Superuser, Arbeitsplatz, Messenger und Bürger. Eine spätere Suite kann einen Pool von Benutzern in verschiedenen Rollen brauchen, genauso bemessen, sobald zwei Szenarien gleichzeitig zwei verschiedene Berechtigungen halten müssen.
+
 Aufruf- und Warteschlangen-Szenarien tippen einen Schalter. Ein Ersatz-Superuser addiert das `100`-fache seines Pool-Index auf diesen Schalter. `ataf` behält die Nummer aus dem Feature, `ataf_2` sitzt 100 höher. Die Warteliste selbst gehört zum Standort. Ein anderer Platz teilt die Schlange nicht.
 
 Jede Sperre ist ein Schlüssel, der bis zum Ende des Szenarios gehalten wird. Der `@After`-Hook gibt ihn frei. Ein zweites Szenario, das denselben Schlüssel verlangt, wartet. Die Anmeldung sperrt den Kontonamen. Das Betreten eines Standorts, das Öffnen seiner Öffnungszeiten oder das Weiterleiten eines Termins dorthin sperrt `scope:` plus den Standortnamen. Anlegen oder Löschen von Spontankunden-Öffnungszeiten sperrt `scope:` plus die Scope-ID plus `:spontankunden`. Das ist ein anderer Schlüssel als der Standortname.
@@ -129,3 +131,38 @@ Lokal übergibst du die Property. Sie gewinnt gegen den Profil-Standard:
 ```
 
 In GitHub Actions hakst du beim manuellen Lauf **Don't run scenarios in parallel** an. Ein Lauf, der schon gestartet ist, behält die Threadzahl, mit der er begonnen hat.
+
+## Was die Läufe zeigen
+
+Parallele Läufe und das Entfernen des fehlerhaften Hooks haben die Zeit zusammengedrückt. Der Hook ist `CitizenViewSteps.captureBookingProcessBeforeCleanup`. Er lief nach jedem UI-Szenario und wartete bis zu drei Minuten auf ein Bürgeransicht-Fenster, auch in Modulen, die dieses Fenster nie öffnen. Er läuft jetzt nur noch für `@zmscitizenview`. Die linke Tabelle ist der [nächtliche Lauf auf `next`](https://github.com/it-at-m/eappointment/actions/runs/36100716568), ein Szenario nach dem anderen. Die rechte Tabelle ist der [letzte Lauf dieses Branches](https://github.com/it-at-m/eappointment/actions/runs/36124810974). Die Zeiten sind der Chrome-Job, auf die nächste Minute gerundet. Firefox in jener Nacht lag innerhalb von etwa zwei Minuten bei Chrome.
+
+<div class="duration-compare">
+<div>
+<h3>Vorher</h3>
+<table>
+<thead><tr><th>Shard</th><th>Schicht</th><th>Typische Dauer</th></tr></thead>
+<tbody>
+<tr><td>zmsadmin</td><td>UI</td><td>1 h 50 min</td></tr>
+<tr><td>zmscitizenview</td><td>UI</td><td>31 min</td></tr>
+<tr><td>zmsstatistic</td><td>UI</td><td>10 min</td></tr>
+<tr><td>zmsticketprinter</td><td>UI</td><td>11 min</td></tr>
+<tr><td>zmsapi</td><td>API</td><td>7 min</td></tr>
+<tr><td>zmscitizenapi</td><td>API</td><td>18 min</td></tr>
+</tbody>
+</table>
+</div>
+<div>
+<h3>Nachher</h3>
+<table>
+<thead><tr><th>Shard</th><th>Schicht</th><th>Typische Dauer</th></tr></thead>
+<tbody>
+<tr><td>zmsadmin</td><td>UI</td><td>16 min</td></tr>
+<tr><td>zmscitizenview</td><td>UI</td><td>12 min</td></tr>
+<tr><td>zmsstatistic</td><td>UI</td><td>8 min</td></tr>
+<tr><td>zmsticketprinter</td><td>UI</td><td>4 min</td></tr>
+<tr><td>zmsapi</td><td>API</td><td>7 min</td></tr>
+<tr><td>zmscitizenapi</td><td>API</td><td>9 min</td></tr>
+</tbody>
+</table>
+</div>
+</div>

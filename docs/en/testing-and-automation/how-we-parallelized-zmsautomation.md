@@ -60,6 +60,8 @@ The default names take a free member of a pool. The pool is the thread count plu
 
 An explicit other name stays pinned to that name and waits for it. The spare users live in the existing Keycloak migration `.resources/keycloak/migration/11_add-parallel-test-users.yml` and in Flyway `V28__GH-3281_parallel_login_pool.sql`. Citizens are Keycloak users only. Mail login posts the raw id `_system_messenger`, which is a different `nutzer` row from `_system_messenger@keycloak`.
 
+The pool today is copies of the same roles: superuser, workstation, messenger, and citizen. A later suite may need a pool of users in different roles, sized the same way, once two scenarios have to hold two different permissions at once.
+
 Queue and customer-call scenarios type a counter. A spare superuser adds `100` times its pool index to that counter, so `ataf` keeps the counter written in the feature and `ataf_2` sits 100 higher. The waiting list itself is per Standort, so a different desk does not split the queue.
 
 Every lock is one key held until the scenario ends. The `@After` hook unlocks it. A second scenario that asks for the same key waits. Login locks the account name. Entering a Standort, opening its Öffnungszeiten, or forwarding an appointment there locks `scope:` plus that location name. Creating or deleting Spontankunden opening hours locks `scope:` plus the scope id plus `:spontankunden`, which is a different key from the location name.
@@ -129,3 +131,38 @@ Locally, pass the property. It wins over the profile default:
 ```
 
 In GitHub Actions, check **Don't run scenarios in parallel** on the manual run. A run that has already started keeps the thread count it started with.
+
+## What the runs show
+
+Parallel runs and removing the faulty hook compressed the time. That hook is `CitizenViewSteps.captureBookingProcessBeforeCleanup`. It ran after every UI scenario and waited up to three minutes for a Bürgeransicht window, including in modules that never open that window. It now runs only for `@zmscitizenview`. The left table is the [nightly run on `next`](https://github.com/it-at-m/eappointment/actions/runs/36100716568), one scenario at a time. The right table is the [latest run of this branch](https://github.com/it-at-m/eappointment/actions/runs/36124810974). Durations are the Chrome job, rounded to the nearest minute. Firefox on that night finished within about two minutes of Chrome.
+
+<div class="duration-compare">
+<div>
+<h3>Before</h3>
+<table>
+<thead><tr><th>Shard</th><th>Layer</th><th>Typical duration</th></tr></thead>
+<tbody>
+<tr><td>zmsadmin</td><td>UI</td><td>1 h 50 min</td></tr>
+<tr><td>zmscitizenview</td><td>UI</td><td>31 min</td></tr>
+<tr><td>zmsstatistic</td><td>UI</td><td>10 min</td></tr>
+<tr><td>zmsticketprinter</td><td>UI</td><td>11 min</td></tr>
+<tr><td>zmsapi</td><td>API</td><td>7 min</td></tr>
+<tr><td>zmscitizenapi</td><td>API</td><td>18 min</td></tr>
+</tbody>
+</table>
+</div>
+<div>
+<h3>After</h3>
+<table>
+<thead><tr><th>Shard</th><th>Layer</th><th>Typical duration</th></tr></thead>
+<tbody>
+<tr><td>zmsadmin</td><td>UI</td><td>16 min</td></tr>
+<tr><td>zmscitizenview</td><td>UI</td><td>12 min</td></tr>
+<tr><td>zmsstatistic</td><td>UI</td><td>8 min</td></tr>
+<tr><td>zmsticketprinter</td><td>UI</td><td>4 min</td></tr>
+<tr><td>zmsapi</td><td>API</td><td>7 min</td></tr>
+<tr><td>zmscitizenapi</td><td>API</td><td>9 min</td></tr>
+</tbody>
+</table>
+</div>
+</div>
