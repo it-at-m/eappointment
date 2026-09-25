@@ -19,6 +19,12 @@
       "matchPackageNames": ["org.apache.maven.plugins:maven-surefire-plugin"],
       "matchFileNames": ["zmsautomation/pom.xml"],
       "allowedVersions": "<3.6.0"
+    },
+    {
+      "description": "In-range npm overrides must bump package.json. A lockfile-only update runs `npm install pkg@version`, which npm rejects with EOVERRIDE when that spec differs from the override.",
+      "matchManagers": ["npm"],
+      "matchDepTypes": ["overrides"],
+      "rangeStrategy": "bump"
     }
   ]
 }
