@@ -134,7 +134,7 @@ In GitHub Actions, check **Don't run scenarios in parallel** on the manual run. 
 
 ## What the runs show
 
-Parallel runs and removing the faulty hook compressed the time. That hook is `CitizenViewSteps.captureBookingProcessBeforeCleanup`. It ran after every UI scenario and waited up to three minutes for a Bürgeransicht window, including in modules that never open that window. It now runs only for `@zmscitizenview`. The left table is the [nightly run on `next`](https://github.com/it-at-m/eappointment/actions/runs/36100716568), one scenario at a time. The right table is the [latest run of this branch](https://github.com/it-at-m/eappointment/actions/runs/36124810974). Durations are the Chrome job, rounded to the nearest minute. Firefox on that night finished within about two minutes of Chrome.
+Parallel runs and removing the faulty hook compressed the time. That hook is `CitizenViewSteps.captureBookingProcessBeforeCleanup`. It ran after every UI scenario and waited up to three minutes for a Bürgeransicht window, including in modules that never open that window. It now runs only for `@zmscitizenview`. The left table is the nightly run on `next`, one scenario at a time. The right table is the latest run of this branch. Durations are the Chrome job, rounded to the nearest minute. Firefox on that night finished within about two minutes of Chrome.
 
 <div class="duration-compare">
 <div>
@@ -160,7 +160,7 @@ Parallel runs and removing the faulty hook compressed the time. That hook is `Ci
 <tr><td>zmscitizenview</td><td>UI</td><td>12 min</td></tr>
 <tr><td>zmsstatistic</td><td>UI</td><td>8 min</td></tr>
 <tr><td>zmsticketprinter</td><td>UI</td><td>4 min</td></tr>
-<tr><td>zmsapi</td><td>API</td><td>7 min</td></tr>
+<tr><td>zmsapi</td><td>API</td><td>6 min</td></tr>
 <tr><td>zmscitizenapi</td><td>API</td><td>9 min</td></tr>
 </tbody>
 </table>

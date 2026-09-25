@@ -134,7 +134,7 @@ In GitHub Actions hakst du beim manuellen Lauf **Don't run scenarios in parallel
 
 ## Was die Läufe zeigen
 
-Parallele Läufe und das Entfernen des fehlerhaften Hooks haben die Zeit zusammengedrückt. Der Hook ist `CitizenViewSteps.captureBookingProcessBeforeCleanup`. Er lief nach jedem UI-Szenario und wartete bis zu drei Minuten auf ein Bürgeransicht-Fenster, auch in Modulen, die dieses Fenster nie öffnen. Er läuft jetzt nur noch für `@zmscitizenview`. Die linke Tabelle ist der [nächtliche Lauf auf `next`](https://github.com/it-at-m/eappointment/actions/runs/36100716568), ein Szenario nach dem anderen. Die rechte Tabelle ist der [letzte Lauf dieses Branches](https://github.com/it-at-m/eappointment/actions/runs/36124810974). Die Zeiten sind der Chrome-Job, auf die nächste Minute gerundet. Firefox in jener Nacht lag innerhalb von etwa zwei Minuten bei Chrome.
+Parallele Läufe und das Entfernen des fehlerhaften Hooks haben die Zeit zusammengedrückt. Der Hook ist `CitizenViewSteps.captureBookingProcessBeforeCleanup`. Er lief nach jedem UI-Szenario und wartete bis zu drei Minuten auf ein Bürgeransicht-Fenster, auch in Modulen, die dieses Fenster nie öffnen. Er läuft jetzt nur noch für `@zmscitizenview`. Die linke Tabelle ist der nächtliche Lauf auf `next`, ein Szenario nach dem anderen. Die rechte Tabelle ist der letzte Lauf dieses Branches. Die Zeiten sind der Chrome-Job, auf die nächste Minute gerundet. Firefox in jener Nacht lag innerhalb von etwa zwei Minuten bei Chrome.
 
 <div class="duration-compare">
 <div>
@@ -160,7 +160,7 @@ Parallele Läufe und das Entfernen des fehlerhaften Hooks haben die Zeit zusamme
 <tr><td>zmscitizenview</td><td>UI</td><td>12 min</td></tr>
 <tr><td>zmsstatistic</td><td>UI</td><td>8 min</td></tr>
 <tr><td>zmsticketprinter</td><td>UI</td><td>4 min</td></tr>
-<tr><td>zmsapi</td><td>API</td><td>7 min</td></tr>
+<tr><td>zmsapi</td><td>API</td><td>6 min</td></tr>
 <tr><td>zmscitizenapi</td><td>API</td><td>9 min</td></tr>
 </tbody>
 </table>
