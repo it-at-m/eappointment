@@ -1555,10 +1555,14 @@ public class CitizenViewPage extends BasePage {
      * from the Ort display id. Retries with Später when no matching slot is in the current hour/day-part.
      */
     public void highlightPreferredTimeslotForOffice(int officeId) {
-        highlightPreferredTimeslotForOffice(officeId, "");
+        Assert.assertTrue(
+                highlightPreferredTimeslotForOfficeOrAbsent(officeId, ""),
+                "zmscitizenview: could not find/highlight timeslot for provider " + officeId
+                        + " (shared booking uses data-provider-id / provider-{id}-timeslot-*)");
     }
 
-    private void highlightPreferredTimeslotForOffice(int officeId, String skippedTimestamps) {
+    /** @return false when the current calendar view has no highlightable slot for this office */
+    private boolean highlightPreferredTimeslotForOfficeOrAbsent(int officeId, String skippedTimestamps) {
         CONTEXT.set();
         String scrollSlotHighlight = buildScrollSlotHighlightScript();
         ScenarioLogManager.getLogger().info(
@@ -1568,6 +1572,9 @@ public class CitizenViewPage extends BasePage {
         boolean highlighted = false;
         int dayMoves = 0;
         for (int attempt = 1; attempt <= 8 && !highlighted; attempt++) {
+            if (contactStepReached()) {
+                return false;
+            }
             try {
                 highlighted =
                         Boolean.TRUE.equals(
@@ -1600,13 +1607,13 @@ public class CitizenViewPage extends BasePage {
             }
             dayMoves++;
         }
-        Assert.assertTrue(
-                highlighted,
-                "zmscitizenview: could not find/highlight timeslot for provider " + officeId
-                        + " (shared booking uses data-provider-id / provider-{id}-timeslot-*)");
+        if (!highlighted) {
+            return false;
+        }
         sleepQuiet(200L);
         scrollTimeSlotGridIntoViewForScreenshots();
         sleepQuiet(250L);
+        return true;
     }
 
     /** Step 3b: click the slot stored by {@link #highlightPreferredTimeslotForOffice(int)}. */
@@ -1763,10 +1770,22 @@ public class CitizenViewPage extends BasePage {
         CONTEXT.set();
         Set<Long> skipped = new HashSet<>();
         for (int attempt = 1; attempt <= 8; attempt++) {
+            if (contactStepReached()) {
+                finishReserveOnContactStep();
+                return;
+            }
             if (attempt > 1) {
                 String skippedTimestamps =
                         skipped.stream().map(String::valueOf).reduce((a, b) -> a + "," + b).orElse("");
-                highlightPreferredTimeslotForOffice(officeId, skippedTimestamps);
+                if (!highlightPreferredTimeslotForOfficeOrAbsent(officeId, skippedTimestamps)) {
+                    if (contactStepReached()) {
+                        finishReserveOnContactStep();
+                        return;
+                    }
+                    Assert.fail(
+                            "zmscitizenview: could not find/highlight timeslot for provider " + officeId
+                                    + " (shared booking uses data-provider-id / provider-{id}-timeslot-*)");
+                }
                 if (!clickHighlightedTimeslotSelectionOrGiveUp()) {
                     long missed = readStoredSlotTimestamp();
                     if (missed > 0) {
@@ -1779,7 +1798,10 @@ public class CitizenViewPage extends BasePage {
                     continue;
                 }
             }
-            assertSelectedAppointmentCalloutShowsProvider(officeId);
+            if (!assertSelectedAppointmentCalloutShowsProvider(officeId)) {
+                finishReserveOnContactStep();
+                return;
+            }
             long timestamp = readStoredSlotTimestamp();
             ScenarioLogManager.getLogger()
                     .info(
@@ -1787,8 +1809,7 @@ public class CitizenViewPage extends BasePage {
                             timestamp);
             clickWeiter();
             if (reserveReachedContactForm()) {
-                waitForReserveToSettle();
-                trySetBookingProcessFromPage();
+                finishReserveOnContactStep();
                 return;
             }
             if (timestamp > 0) {
@@ -1802,10 +1823,25 @@ public class CitizenViewPage extends BasePage {
         Assert.fail("zmscitizenview: no free slot remained for office " + officeId);
     }
 
+    /**
+     * Kontakt step is up: heading, voluntary-login box, or the Vorname field.
+     * A slow reserve paints this page without a taken-slot error.
+     */
+    private boolean contactStepReached() {
+        return shadowDomContainsText("Kontaktdaten")
+                || shadowDomContainsText("Freiwillige Anmeldung")
+                || deepElementExists("#firstname");
+    }
+
+    private void finishReserveOnContactStep() {
+        waitForReserveToSettle();
+        trySetBookingProcessFromPage();
+    }
+
     private boolean reserveReachedContactForm() {
         long deadline = System.currentTimeMillis() + 30_000L;
         while (System.currentTimeMillis() < deadline) {
-            if (shadowDomContainsText("Kontaktdaten") || shadowDomContainsText("Termin verschieben")) {
+            if (contactStepReached() || shadowDomContainsText("Termin verschieben")) {
                 return true;
             }
             if (shadowDomContainsText("Ihr gewählter Termin ist nicht mehr verfügbar.")
@@ -1813,6 +1849,9 @@ public class CitizenViewPage extends BasePage {
                 return false;
             }
             sleepQuiet(400L);
+        }
+        if (contactStepReached()) {
+            return true;
         }
         ScenarioLogManager.getLogger()
                 .info(
@@ -1873,15 +1912,30 @@ public class CitizenViewPage extends BasePage {
         ScenarioLogManager.getLogger().info("zmscitizenview: reserve settle delay done");
     }
 
-    /** Info callout after slot pick: selected-appointment header + {@code #provider-{officeId}}. */
-    public void assertSelectedAppointmentCalloutShowsProvider(int officeId) {
+    /**
+     * Info callout after slot pick: selected-appointment header + {@code #provider-{officeId}}.
+     *
+     * @return false when the Kontakt step is already showing, so the caller must not click Weiter again
+     */
+    public boolean assertSelectedAppointmentCalloutShowsProvider(int officeId) {
         CONTEXT.set();
         String providerSelector = "#provider-" + officeId;
         waitWithThreeWindows(
-                () -> (shadowDomContainsText("Ausgewählter Termin")
-                                || shadowDomContainsText("Selected Appointment"))
-                        && deepElementExists(providerSelector),
+                () -> contactStepReached()
+                        || ((shadowDomContainsText("Ausgewählter Termin")
+                                        || shadowDomContainsText("Selected Appointment"))
+                                && deepElementExists(providerSelector)),
                 "Selected appointment callout for office " + officeId);
+        if (contactStepReached()
+                && !((shadowDomContainsText("Ausgewählter Termin")
+                                || shadowDomContainsText("Selected Appointment"))
+                        && deepElementExists(providerSelector))) {
+            ScenarioLogManager.getLogger()
+                    .info(
+                            "zmscitizenview: Kontakt step visible for office {}; slot callout wait stopped",
+                            officeId);
+            return false;
+        }
         new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
                 .until(
                         d ->
@@ -1899,6 +1953,7 @@ public class CitizenViewPage extends BasePage {
                 .info(
                         "zmscitizenview: callout OK — Ausgewählter Termin includes provider {} (Bürgerbüro Ruppertstraße)",
                         officeId);
+        return true;
     }
 
     /** Fixed test phone; never random (avoid real subscriber numbers). */
