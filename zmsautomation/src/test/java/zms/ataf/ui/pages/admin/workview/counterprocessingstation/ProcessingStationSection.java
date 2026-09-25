@@ -57,6 +57,12 @@ public class ProcessingStationSection extends CounterProcessingStationPage {
             }
             clickOnNoCustomerDidNotAppear();
         }
+        CONTEXT.set();
+        int stillWaiting = DRIVER.findElements(By.cssSelector("#table-queued-appointments tbody tr")).size();
+        Assert.assertEquals(
+                stillWaiting,
+                0,
+                "Customers were still waiting after dismissing eight of them.");
     }
 
     public void callNextCustomer() {
