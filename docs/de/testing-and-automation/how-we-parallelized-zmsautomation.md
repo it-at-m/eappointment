@@ -60,7 +60,20 @@ Die Standardnamen nehmen ein freies Mitglied aus einem Pool. Der Pool ist die Th
 
 Ein ausdrücklich anderer Name bleibt an diesem Namen hängen und wartet darauf. Die Ersatzbenutzer stehen in der bestehenden Keycloak-Migration `.resources/keycloak/migration/11_add-parallel-test-users.yml` und in Flyway `V28__GH-3281_parallel_login_pool.sql`. Bürger gibt es nur in Keycloak. Der Mail-Login sendet die rohe ID `_system_messenger`. Das ist eine andere `nutzer`-Zeile als `_system_messenger@keycloak`.
 
-Aufruf- und Warteschlangen-Szenarien tippen einen Schalter. Ein Ersatz-Superuser addiert das `100`-fache seines Pool-Index auf diesen Schalter. `ataf` behält die Nummer aus dem Feature, `ataf_2` sitzt 100 höher. Die Warteliste selbst gehört zum Standort. Ein anderer Platz teilt die Schlange nicht. Beim Betreten eines Standorts wird zusätzlich `scope:` plus dieser Standort gesperrt. Das nächste Szenario für denselben Standort startet erst nach der Freigabe.
+Aufruf- und Warteschlangen-Szenarien tippen einen Schalter. Ein Ersatz-Superuser addiert das `100`-fache seines Pool-Index auf diesen Schalter. `ataf` behält die Nummer aus dem Feature, `ataf_2` sitzt 100 höher. Die Warteliste selbst gehört zum Standort. Ein anderer Platz teilt die Schlange nicht.
+
+Jede Sperre ist ein Schlüssel, der bis zum Ende des Szenarios gehalten wird. Der `@After`-Hook gibt ihn frei. Ein zweites Szenario, das denselben Schlüssel verlangt, wartet. Die Anmeldung sperrt den Kontonamen. Das Betreten eines Standorts, das Öffnen seiner Öffnungszeiten oder das Weiterleiten eines Termins dorthin sperrt `scope:` plus den Standortnamen. Anlegen oder Löschen von Spontankunden-Öffnungszeiten sperrt `scope:` plus die Scope-ID plus `:spontankunden`. Das ist ein anderer Schlüssel als der Standortname.
+
+Die Sperre ist `AccountCheckout` in `zmsautomation/src/test/java/zms/ataf/helpers/AccountCheckout.java`. `AccountCheckoutHook` gibt jeden Schlüssel frei, den das Szenario hält. Den Standort-Schlüssel nehmen `AdminPage.selectLocation`, `AuthoritiesAndLocationsPage.clickOnOpeningHoursEntryBy` und `ProcessingStationSection.selectLocationForAppointmentForwarding`. Den Spontankunden-Schlüssel nimmt `ZmsApiSteps`, wenn diese Öffnungszeiten angelegt oder gelöscht werden.
+
+```mermaid
+flowchart LR
+  account["Kontoname"] --> hold[Gehalten bis zum Szenario-Ende]
+  scope["scope: Standort"] --> hold
+  api["scope:id:spontankunden"] --> hold
+  hold --> release[After-Hook gibt frei]
+  hold --> next[Gleicher Schlüssel wartet]
+```
 
 ## Hunderte oder tausende Szenarien
 

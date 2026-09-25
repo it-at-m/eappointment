@@ -60,7 +60,20 @@ The default names take a free member of a pool. The pool is the thread count plu
 
 An explicit other name stays pinned to that name and waits for it. The spare users live in the existing Keycloak migration `.resources/keycloak/migration/11_add-parallel-test-users.yml` and in Flyway `V28__GH-3281_parallel_login_pool.sql`. Citizens are Keycloak users only. Mail login posts the raw id `_system_messenger`, which is a different `nutzer` row from `_system_messenger@keycloak`.
 
-Queue and customer-call scenarios type a counter. A spare superuser adds `100` times its pool index to that counter, so `ataf` keeps the counter written in the feature and `ataf_2` sits 100 higher. The waiting list itself is per Standort, so a different desk does not split the queue. Entering a location also checks out `scope:` plus that Standort, and the next scenario for the same location starts only after the lock is released.
+Queue and customer-call scenarios type a counter. A spare superuser adds `100` times its pool index to that counter, so `ataf` keeps the counter written in the feature and `ataf_2` sits 100 higher. The waiting list itself is per Standort, so a different desk does not split the queue.
+
+Every lock is one key held until the scenario ends. The `@After` hook unlocks it. A second scenario that asks for the same key waits. Login locks the account name. Entering a Standort, opening its Öffnungszeiten, or forwarding an appointment there locks `scope:` plus that location name. Creating or deleting Spontankunden opening hours locks `scope:` plus the scope id plus `:spontankunden`, which is a different key from the location name.
+
+The lock is `AccountCheckout` in `zmsautomation/src/test/java/zms/ataf/helpers/AccountCheckout.java`. `AccountCheckoutHook` releases every key the scenario holds. The Standort key is taken in `AdminPage.selectLocation`, `AuthoritiesAndLocationsPage.clickOnOpeningHoursEntryBy`, and `ProcessingStationSection.selectLocationForAppointmentForwarding`. The Spontankunden key is taken in `ZmsApiSteps` when those opening hours are created or deleted.
+
+```mermaid
+flowchart LR
+  account["Account name"] --> hold[Held until the scenario ends]
+  scope["scope: Standort"] --> hold
+  api["scope:id:spontankunden"] --> hold
+  hold --> release[After hook unlocks it]
+  hold --> next[Same key waits]
+```
 
 ## Hundreds or thousands of scenarios
 
