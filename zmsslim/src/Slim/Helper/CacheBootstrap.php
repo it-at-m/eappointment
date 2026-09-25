@@ -32,7 +32,13 @@ final class CacheBootstrap
     {
         self::validateDirectory($cacheDir);
 
-        $psr6 = new FilesystemAdapter(namespace: '', defaultLifetime: $ttl, directory: $cacheDir);
+        $namespace = '';
+        $testToken = getenv('TEST_TOKEN');
+        if (is_string($testToken) && $testToken !== '') {
+            $namespace = 'paratest_' . $testToken;
+        }
+
+        $psr6 = new FilesystemAdapter(namespace: $namespace, defaultLifetime: $ttl, directory: $cacheDir);
         $cache = new Psr16Cache($psr6);
         LoggerService::$cache = $cache;
 
