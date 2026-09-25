@@ -41,7 +41,7 @@ on:
         description: |
           Don't run scenarios in parallel.
           Each job uses one Cucumber thread instead of the profile default
-          (32 API threads, 8 UI browsers).
+          (32 API threads, 16 UI browsers).
         required: true
         type: boolean
         default: false

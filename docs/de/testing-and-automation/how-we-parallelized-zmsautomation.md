@@ -2,9 +2,9 @@
 
 25. September 2026
 
-Szenarien in einem Modul-Job laufen jetzt gleichzeitig. Ein API-Job führt 32 Szenarien auf einmal aus. Ein UI-Job startet 8 Browser auf einmal. Befehle und das Log-Format stehen in der [zmsautomation-Dokumentation](./zmsautomation.md).
+Szenarien in einem Modul-Job laufen jetzt gleichzeitig. Ein API-Job führt 32 Szenarien auf einmal aus. Ein UI-Job startet 16 Browser auf einmal. Befehle und das Log-Format stehen in der [zmsautomation-Dokumentation](./zmsautomation.md).
 
-Ein voller UI-Lauf dauerte früher über eine Stunde, weil ein Browser jedes Szenario nacheinander abgearbeitet hat. Acht Browser verkürzen denselben Lauf deutlich. Der parallele Lauf liegt auch näher an den Schaltern: mehrere Personen buchen, rufen den nächsten Kunden auf und melden sich gleichzeitig an. Ein Lauf Schritt für Schritt trifft diese Kollisionen nie. Er bleibt grün, während Kalender, Warteschlange und Anmeldung sich schon in die Quere kommen.
+Ein voller UI-Lauf dauerte früher über eine Stunde, weil ein Browser jedes Szenario nacheinander abgearbeitet hat. Sechzehn Browser verkürzen denselben Lauf deutlich. Der parallele Lauf liegt auch näher an den Schaltern: mehrere Personen buchen, rufen den nächsten Kunden auf und melden sich gleichzeitig an. Ein Lauf Schritt für Schritt trifft diese Kollisionen nie. Er bleibt grün, während Kalender, Warteschlange und Anmeldung sich schon in die Quere kommen.
 
 ```mermaid
 flowchart LR
@@ -12,25 +12,25 @@ flowchart LR
     direction LR
     q1[Szenario 1] --> q2[Szenario 2] --> q3["… über eine Stunde"]
   end
-  subgraph parallelRun ["Acht Browser"]
+  subgraph parallelRun ["Sechzehn Browser"]
     direction LR
-    p1[1] --- p2[2] --- p3[8]
+    p1[1] --- p2[2] --- p3[16]
   end
 ```
 
 ## ATAF konnte das bereits
 
-[ATAF](https://it-at-m.github.io/agile-test-automation-framework/) 0.3.4 liefert `ParallelTestNGRunner`. `ApiTestRunner` und `UiTestRunner` erweitern diese Klasse. Cucumber-Szenarien sind TestNG-Datenzeilen, und Surefires `dataproviderthreadcount` legt fest, wie viele davon gleichzeitig starten. Das Profil `ataf-api` setzt 32. Das Profil `ataf-ui` setzt 8. Ein `-Ddataproviderthreadcount` auf der Kommandozeile ersetzt den Profilwert. Fehlt die Property, gilt der TestNG-Standard 10.
+[ATAF](https://it-at-m.github.io/agile-test-automation-framework/) 0.3.4 liefert `ParallelTestNGRunner`. `ApiTestRunner` und `UiTestRunner` erweitern diese Klasse. Cucumber-Szenarien sind TestNG-Datenzeilen, und Surefires `dataproviderthreadcount` legt fest, wie viele davon gleichzeitig starten. Das Profil `ataf-api` setzt 32. Das Profil `ataf-ui` setzt 16. Ein `-Ddataproviderthreadcount` auf der Kommandozeile ersetzt den Profilwert. Fehlt die Property, gilt der TestNG-Standard 10.
 
 ATAF wurde dafür nicht geforkt. Die Arbeit bestand darin, die ZMS-Szenarien für eine gemeinsame JVM tauglich zu machen.
 
-Ein lokaler UI-Befehl ist eine JVM über alle UI-Module, weiter auf 8 Browser begrenzt. In GitHub Actions ist jeder Modul-Shard eine eigene JVM mit derselben Grenze. Die Job-Parallelität des Workflows ist ein eigener Schalter: sie legt fest, wie viele Modul-Stacks gleichzeitig laufen, und jeder Stack nutzt weiterhin die Cucumber-Threadzahl von oben. `-Pataf-api` und `-Pataf-ui` sind zwei Maven-Läufe nacheinander.
+Ein lokaler UI-Befehl ist eine JVM über alle UI-Module, weiter auf 16 Browser begrenzt. In GitHub Actions ist jeder Modul-Shard eine eigene JVM mit derselben Grenze. Die Job-Parallelität des Workflows ist ein eigener Schalter: sie legt fest, wie viele Modul-Stacks gleichzeitig laufen, und jeder Stack nutzt weiterhin die Cucumber-Threadzahl von oben. `-Pataf-api` und `-Pataf-ui` sind zwei Maven-Läufe nacheinander.
 
 ```mermaid
 flowchart LR
   run[Manuell oder nächtlich] --> modules[Ein Job pro Modul] --> jvm[Eine JVM]
   jvm --> api["API-Runner<br/>32 Szenarien"]
-  jvm --> ui["UI-Runner<br/>8 Browser"]
+  jvm --> ui["UI-Runner<br/>16 Browser"]
 ```
 
 ## Eine Anmeldung ließ sich nicht teilen
@@ -53,7 +53,7 @@ Die Standardnamen nehmen ein freies Mitglied aus einem Pool. Der Pool ist die Th
 
 | Pool         | Konten                             | Ausgelegt für  |
 | ------------ | ---------------------------------- | -------------- |
-| Superuser    | `ataf` bis `ataf_9`                | 8 UI-Browser   |
+| Superuser    | `ataf` bis `ataf_17`               | 16 UI-Browser  |
 | Arbeitsplatz | `agent_queue` bis `agent_queue_33` | 32 API-Threads |
 | Messenger    | `_system_messenger` bis `_33`      | 32 API-Threads |
 | Bürger       | `citizen` bis `citizen_33`         | 32 API-Threads |
@@ -64,13 +64,13 @@ Aufruf- und Warteschlangen-Szenarien tippen einen Schalter. Ein Ersatz-Superuser
 
 ## Hunderte oder tausende Szenarien
 
-Die Suite kann auf dieselben 32 API-Threads und 8 Browser auf hunderte oder tausende Szenarien wachsen. Ein Szenario wartet auf einen freien Worker und nimmt beim Login ein freies Konto. Der Pool deckt die Threads ab, die wirklich laufen, plus einen Ersatz. Er wächst nicht mit der Zahl der Szenarien. Die Laufzeit folgt der Szenarienzahl geteilt durch die Anzahl, die gleichzeitig läuft. Ein Browser machte daraus die Summe aller Szenarien, und der UI-Lauf lag damit schon über einer Stunde.
+Die Suite kann auf dieselben 32 API-Threads und 16 Browser auf hunderte oder tausende Szenarien wachsen. Ein Szenario wartet auf einen freien Worker und nimmt beim Login ein freies Konto. Der Pool deckt die Threads ab, die wirklich laufen, plus einen Ersatz. Er wächst nicht mit der Zahl der Szenarien. Die Laufzeit folgt der Szenarienzahl geteilt durch die Anzahl, die gleichzeitig läuft. Ein Browser machte daraus die Summe aller Szenarien, und der UI-Lauf lag damit schon über einer Stunde.
 
 Wie viele gleichzeitig laufen, ist ein eigener Schritt: `dataproviderthreadcount` setzen und die zusätzlichen Benutzer in denselben Keycloak- und Flyway-Dateien ergänzen.
 
 ```mermaid
 flowchart LR
-  many["Hunderte oder tausende Szenarien"] --> queue[Auf einen Worker warten] --> workers["32 API oder 8 UI"] --> login[Ein freies Konto] --> spare["Threads plus eins"]
+  many["Hunderte oder tausende Szenarien"] --> queue[Auf einen Worker warten] --> workers["32 API oder 16 UI"] --> login[Ein freies Konto] --> spare["Threads plus eins"]
 ```
 
 ## Weitere Wettläufe
@@ -102,7 +102,7 @@ Logzeilen dieser Threads stehen durcheinander. Jede Zeile beginnt mit dem Worker
 
 ## Die Workflow-Option
 
-Der manuelle Lauf von [`.github/workflows/zmsautomation-workflow.yaml`](https://github.com/it-at-m/eappointment/blob/next/.github/workflows/zmsautomation-workflow.yaml) hat die Checkbox **Don't run scenarios in parallel** (`serial_scenarios`). Sie ist standardmäßig aus. Ist sie an, hängt jeder Job `-Ddataproviderthreadcount=1` an, und der Laufname endet mit `| serial scenarios`. Der nächtliche Zeitplan lässt die Eingabe leer, deshalb bleibt der Nachtlauf bei 32 API-Threads und 8 UI-Browsern.
+Der manuelle Lauf von [`.github/workflows/zmsautomation-workflow.yaml`](https://github.com/it-at-m/eappointment/blob/next/.github/workflows/zmsautomation-workflow.yaml) hat die Checkbox **Don't run scenarios in parallel** (`serial_scenarios`). Sie ist standardmäßig aus. Ist sie an, hängt jeder Job `-Ddataproviderthreadcount=1` an, und der Laufname endet mit `| serial scenarios`. Der nächtliche Zeitplan lässt die Eingabe leer, deshalb bleibt der Nachtlauf bei 32 API-Threads und 16 UI-Browsern.
 
 **Run the full suite in one sequential job** (`run_all_in_one_job`) ist ein anderer Schalter. Er legt die angehakten Module in einen Job. Er ändert nicht, wie viele Szenarien dieser Job gleichzeitig ausführt.
 
