@@ -33,6 +33,7 @@ class UserAccountTest extends \BO\Zmsbackend\Tests\Service\Base
         $this->dateTime = new \DateTimeImmutable("2016-04-01 11:55");
         $query = new Query();
         $input = $this->getTestEntity();
+        $input->id = $input->id . substr(hash('sha256', $this->name()), 0, 8);
         $userAccount = $query->writeEntity($input, 2);
         $this->assertEntity("\\BO\\Zmsentities\\Useraccount", $userAccount);
 
