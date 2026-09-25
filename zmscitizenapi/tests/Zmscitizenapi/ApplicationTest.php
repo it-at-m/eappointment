@@ -213,7 +213,12 @@ class ApplicationTest extends TestCase
         putenv('ALTCHA_CAPTCHA_SITE_SECRET');
         putenv('ALTCHA_CAPTCHA_ENDPOINT_CHALLENGE');
         putenv('ALTCHA_CAPTCHA_ENDPOINT_VERIFY');
-        putenv('CACHE_DIR');
+        $testToken = getenv('TEST_TOKEN');
+        if (is_string($testToken) && $testToken !== '') {
+            putenv('CACHE_DIR=' . sys_get_temp_dir() . '/zmscitizenapi-paratest-' . $testToken);
+        } else {
+            putenv('CACHE_DIR');
+        }
         putenv('SOURCE_CACHE_TTL');
         putenv('RATE_LIMIT_MAX_REQUESTS');
         putenv('RATE_LIMIT_CACHE_TTL');

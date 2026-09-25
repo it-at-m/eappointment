@@ -10,6 +10,12 @@ set_error_handler(function ($errno, $errstr, $errfile, $errline) {
     throw new ErrorException($errstr, 0, $errno, $errfile, $errline);
 });
 
+$testToken = getenv('TEST_TOKEN');
+if (is_string($testToken) && $testToken !== '') {
+    $workerCacheDir = sys_get_temp_dir() . '/zmscitizenapi-paratest-' . $testToken;
+    putenv('CACHE_DIR=' . $workerCacheDir);
+}
+
 require(dirname(dirname(__DIR__)) . '/bootstrap.php');
 
 App::$now = new DateTimeImmutable('2016-04-01 11:55:00', new DateTimeZone('Europe/Berlin'));
