@@ -4,7 +4,7 @@ namespace BO\Zmsbackend\Tests\Apikey\Service;
 
 use \BO\Zmsbackend\Apikey\Service\Apikey as Query;
 use \BO\Zmsbackend\Apiquota\Service\Apiquota as QuotaQuery;
-use \BO\Zmsentities\Apikey as Entity;
+use \BO\Zmsbackend\Tests\ExampleApikey;
 
 class ApikeyTest extends \BO\Zmsbackend\Tests\Service\Base
 {
@@ -12,15 +12,15 @@ class ApikeyTest extends \BO\Zmsbackend\Tests\Service\Base
     {
         $input = $this->getTestEntity();
         $query = new Query();
-        $query->deleteEntity('wMdVa5Nu1seuCRSJxhKl2M3yw8zqaAilPH2Xc2IZs');
+        $query->deleteEntity($input->key);
         $entity = $query->writeEntity($input);
         $this->assertEntity("\\BO\\Zmsentities\\Apikey", $entity);
 
         $entity->updateQuota(0);
-        $entity = $query->updateEntity('wMdVa5Nu1seuCRSJxhKl2M3yw8zqaAilPH2Xc2IZs', $entity);
+        $entity = $query->updateEntity($input->key, $entity);
         $this->assertEquals(100, $entity->quota[0]['requests']);
-        $query->deleteEntity('wMdVa5Nu1seuCRSJxhKl2M3yw8zqaAilPH2Xc2IZs');
-        $this->assertFalse($query->readEntity('wMdVa5Nu1seuCRSJxhKl2M3yw8zqaAilPH2Xc2IZs')->hasId());
+        $query->deleteEntity($input->key);
+        $this->assertFalse($query->readEntity($input->key)->hasId());
     }
 
     public function testQuota()
@@ -29,17 +29,17 @@ class ApikeyTest extends \BO\Zmsbackend\Tests\Service\Base
         $input = $this->getTestEntity();
         $entity = $query->writeEntity($input);
 
-        $quotaRequests = $query->readQuota('wMdVa5Nu1seuCRSJxhKl2M3yw8zqaAilPH2Xc2IZs', '/calendar/')['requests'];
+        $quotaRequests = $query->readQuota($input->key, '/calendar/')['requests'];
         $this->assertEquals(99, $quotaRequests);
 
-        $query->writeQuota('wMdVa5Nu1seuCRSJxhKl2M3yw8zqaAilPH2Xc2IZs', '/process/free/', 'hour', 3);
-        $entity = $query->readEntity('wMdVa5Nu1seuCRSJxhKl2M3yw8zqaAilPH2Xc2IZs');
+        $query->writeQuota($input->key, '/process/free/', 'hour', 3);
+        $entity = $query->readEntity($input->key);
         $this->assertEquals(2, count($entity->quota));
 
         $newQuotaPos = $entity->getQuotaPositionByRoute('/process/free/');
         $entity->updateQuota($newQuotaPos);
-        $query->updateQuota('wMdVa5Nu1seuCRSJxhKl2M3yw8zqaAilPH2Xc2IZs', $entity);
-        $entity = $query->readEntity('wMdVa5Nu1seuCRSJxhKl2M3yw8zqaAilPH2Xc2IZs');
+        $query->updateQuota($input->key, $entity);
+        $entity = $query->readEntity($input->key);
         $this->assertEquals(4, $entity->quota[$newQuotaPos]['requests']);
     }
 
@@ -53,12 +53,12 @@ class ApikeyTest extends \BO\Zmsbackend\Tests\Service\Base
         $this->assertTrue($now->getTimestamp() === ($expiredQuota[0]['ts'] + 3600)); //expired 1 hour
 
         $query->writeDeletedQuota($entity->quota[0]['quotaid']);
-        $entity = $query->readEntity('wMdVa5Nu1seuCRSJxhKl2M3yw8zqaAilPH2Xc2IZs');
+        $entity = $query->readEntity($input->key);
         $this->assertEquals(0, count($entity->quota));
     }
 
     protected function getTestEntity()
     {
-        return (new Entity())->createExample();
+        return ExampleApikey::create(static::class);
     }
 }

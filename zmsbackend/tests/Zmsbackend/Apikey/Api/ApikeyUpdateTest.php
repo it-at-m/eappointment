@@ -2,9 +2,8 @@
 
 namespace BO\Zmsbackend\Tests\Apikey\Api;
 
-use \BO\Zmsentities\Apikey as Entity;
-
 use \BO\Zmsbackend\Apikey\Service\Apikey as Query;
+use \BO\Zmsbackend\Tests\ExampleApikey;
 
 class ApikeyUpdateTest extends \BO\Zmsbackend\Tests\Api\Base
 {
@@ -12,37 +11,39 @@ class ApikeyUpdateTest extends \BO\Zmsbackend\Tests\Api\Base
 
     public function testRendering()
     {
-        $input = json_encode((new Entity)->createExample());
+        $example = ExampleApikey::create(static::class);
+        $input = json_encode($example);
         $response = $this->render([], [
             '__body' => $input
         ], []);
         $this->assertStringContainsString('apikey.json', (string)$response->getBody());
-        $this->assertStringContainsString('wMdVa5Nu1seuCRSJxhKl2M3yw8zqaAilPH2Xc2IZs', (string)$response->getBody());
+        $this->assertStringContainsString($example->key, (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 
     public function testUpdateExistingApikey()
     {
-        $input = (new Entity)->createExample();
+        $input = ExampleApikey::create(static::class);
         $entity = (new Query())->writeEntity($input);
 
         $response = $this->render([], [
             '__body' => (string) $entity
         ], []);
         $this->assertStringContainsString('apikey.json', (string)$response->getBody());
-        $this->assertStringContainsString('wMdVa5Nu1seuCRSJxhKl2M3yw8zqaAilPH2Xc2IZs', (string)$response->getBody());
+        $this->assertStringContainsString($input->key, (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 
     public function testClientkey()
     {
-        $input = json_encode((new Entity)->createExample());
+        $example = ExampleApikey::create(static::class);
+        $input = json_encode($example);
         $response = $this->render([], [
             '__body' => $input,
             'clientkey' => 'default',
         ], []);
         $this->assertStringContainsString('apikey.json', (string)$response->getBody());
-        $this->assertStringContainsString('wMdVa5Nu1seuCRSJxhKl2M3yw8zqaAilPH2Xc2IZs', (string)$response->getBody());
+        $this->assertStringContainsString($example->key, (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
     }
 
@@ -50,7 +51,7 @@ class ApikeyUpdateTest extends \BO\Zmsbackend\Tests\Api\Base
     {
         $this->expectException('BO\Zmsbackend\Process\Exception\ApiclientInvalid');
         $this->expectExceptionCode(403);
-        $input = json_encode((new Entity)->createExample());
+        $input = json_encode(ExampleApikey::create(static::class));
         $response = $this->render([], [
             '__body' => $input,
             'clientkey' => '8pnaRHkUBYJqz9i9NPDEeZq6mUDMyRHE',
@@ -61,7 +62,7 @@ class ApikeyUpdateTest extends \BO\Zmsbackend\Tests\Api\Base
     {
         $this->expectException('BO\Zmsbackend\Process\Exception\ApiclientInvalid');
         $this->expectExceptionCode(403);
-        $input = json_encode((new Entity)->createExample());
+        $input = json_encode(ExampleApikey::create(static::class));
         $response = $this->render([], [
             '__body' => $input,
             'clientkey' => '_invalid',
