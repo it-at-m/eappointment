@@ -364,17 +364,9 @@ public void saveLocationChanges() {
     public void enterClosingDate(String date) {
         CONTEXT.set();
         ScenarioLogManager.getLogger().info("Trying to enter closing date \"" + date + "\"");
-        WebElement closingDateTextField = findElementByLocatorType("//input[@id='AvDatesEnd']", LocatorType.XPATH, true);
-        moveToElementAction(closingDateTextField);
-        Keys selectAllMod = selectAllModifierKey();
-        new Actions(DRIVER)
-                .click(closingDateTextField)
-                .keyDown(selectAllMod)
-                .sendKeys("a")
-                .keyUp(selectAllMod)
-                .sendKeys(Keys.BACK_SPACE)
-                .sendKeys(date)
-                .perform();
+        // react-datepicker uses strictParsing, so character-by-character typing snaps back to the
+        // selected day before "dd.MM.yyyy" is complete. Set the full value in one step, as for the times.
+        setInputValue(findVisibleInputById("AvDatesEnd"), date);
     }
 
     private WebElement findVisibleInputById(String id) {
@@ -392,8 +384,11 @@ public void saveLocationChanges() {
     }
 
     private void enterTimeDirectly(String inputId, String time) {
-        WebElement timeTextField = findVisibleInputById(inputId);
-        moveToElementAction(timeTextField);
+        setInputValue(findVisibleInputById(inputId), time);
+    }
+
+    private void setInputValue(WebElement field, String value) {
+        moveToElementAction(field);
         ((JavascriptExecutor) DRIVER).executeScript(
                 "var el=arguments[0], val=arguments[1];"
                         + "el.focus();"
@@ -402,8 +397,8 @@ public void saveLocationChanges() {
                         + "el.dispatchEvent(new Event('input',{bubbles:true}));"
                         + "el.dispatchEvent(new Event('change',{bubbles:true}));"
                         + "el.dispatchEvent(new Event('blur',{bubbles:true}));",
-                timeTextField,
-                time);
+                field,
+                value);
     }
 
     public void selectOverallAvailableCounters(String numberOfCounters) {
