@@ -297,6 +297,67 @@ describe("AppointmentView", () => {
       );
     });
 
+    it("returns to the service step and keeps the selected services", async () => {
+      const wrapper = createWrapper({ appointmentHash: undefined });
+      wrapper.vm.currentView = 3;
+      wrapper.vm.captchaToken = "expired-token";
+      wrapper.vm.reservationStartMs = Date.now();
+      wrapper.vm.selectedServiceMap = new Map([["service1", 2]]);
+      await nextTick();
+
+      wrapper.vm.restartBookingToServices();
+      await nextTick();
+
+      expect(wrapper.vm.currentView).toBe(0);
+      expect(wrapper.vm.captchaToken).toBeUndefined();
+      expect(wrapper.vm.reservationStartMs).toBeNull();
+      expect(wrapper.vm.selectedServiceMap.get("service1")).toBe(2);
+      expect(wrapper.find('[data-test="service-finder"]').exists()).toBe(true);
+    });
+
+    it("restarts a reschedule at the clean appointment start", async () => {
+      const originalLocation = window.location;
+      delete (window as any).location;
+      (window as any).location = {
+        href: "http://localhost:8082/#/appointment/abc",
+        origin: "http://localhost:8082",
+        pathname: "/",
+      };
+
+      const wrapper = createWrapper({ appointmentHash: "abc" });
+      wrapper.vm.currentView = 1;
+      wrapper.vm.isRebooking = true;
+      await nextTick();
+
+      wrapper.vm.restartBookingToServices();
+
+      expect(window.location.href).toBe("http://localhost:8082/");
+      expect(wrapper.vm.currentView).toBe(1);
+
+      (window as any).location = originalLocation;
+    });
+
+    it("offers restart booking when the reservation is no longer reserved", async () => {
+      const wrapper = createWrapper({ appointmentHash: undefined });
+      wrapper.vm.currentView = 3;
+      wrapper.vm.currentContext = "preconfirm";
+      wrapper.vm.captchaToken = "expired-token";
+      wrapper.vm.reservationStartMs = Date.now();
+      wrapper.vm.errorStates.errorStateMap.apiErrorProcessNotReservedAnymore.value = true;
+      await nextTick();
+
+      const callout = wrapper.find('[data-test="muc-callout"]');
+      expect(callout.text()).toContain(
+        de.apiErrorProcessNotReservedAnymoreText
+      );
+      expect(callout.text()).toContain(de.restartBooking);
+
+      await callout.find('[data-test="muc-button"]').trigger("click");
+      expect(wrapper.vm.currentView).toBe(0);
+      expect(wrapper.vm.captchaToken).toBeUndefined();
+      expect(wrapper.vm.reservationStartMs).toBeNull();
+    });
+
     it("shows customer info after calendar selection", async () => {
       const wrapper = createWrapper({ appointmentHash: undefined });
       wrapper.vm.currentView = 2;

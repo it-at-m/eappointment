@@ -39,6 +39,15 @@ public class CitizenViewPage extends BasePage {
     public static final String LOCALSTORAGE_APPOINTMENT_KEY = "lhm-appointment-data";
 
     private static final String DE_WEITER = "Weiter";
+    private static final String DE_CAPTCHA_LABEL = "Ich bin kein Bot";
+    private static final String DE_BACK = "Zurück";
+    private static final String DE_RESTART_BOOKING = "Buchung neu starten";
+    private static final String DE_SESSION_TIMEOUT_HEADER = "Ihre Sitzung ist abgelaufen.";
+    private static final String DE_SESSION_TIMEOUT_TEXT =
+            "Seit Ihrer Bot-Überprüfung ist zu viel Zeit vergangen. Bitte starten Sie erneut mit der Terminbuchung, um die Prüfung zu aktualisieren.";
+    private static final String DE_RESERVATION_EXPIRED_HEADER = "Ihr Termin kann nicht mehr reserviert werden.";
+    private static final String DE_RESERVATION_EXPIRED_TEXT =
+            "Leider ist die Zeit für die Reservierung Ihres Termins abgelaufen. Bitte vereinbaren Sie den Termin erneut.";
     private static final String DE_RESERVE = "Termin reservieren";
     private static final String ALREADY_ACTIVATED_BANNER_MARKER =
             "Sie haben Ihren Termin bereits aktiviert.";
@@ -772,6 +781,79 @@ public class CitizenViewPage extends BasePage {
                         + "return walkClick(document.body);";
         Object o = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script);
         return Boolean.TRUE.equals(o);
+    }
+
+    /** True when a visible button's own text is exactly {@code label}, ignoring stepper "Zurück zu Schritt". */
+    private boolean visibleButtonTextEquals(String label) {
+        CONTEXT.set();
+        String esc = label.replace("\\", "\\\\").replace("'", "\\'");
+        String script =
+                "var label='" + esc + "';"
+                        + "function visible(el){if(!el||!el.getBoundingClientRect)return false;"
+                        + "var r=el.getBoundingClientRect();if(r.width<=0||r.height<=0)return false;"
+                        + "var st=window.getComputedStyle(el);return st.visibility!=='hidden'&&st.display!=='none'&&st.opacity!=='0';}"
+                        + "function walk(n){if(!n)return false;if(n.shadowRoot&&walk(n.shadowRoot))return true;"
+                        + "var tag=(n.tagName||'').toUpperCase();"
+                        + "if(tag==='BUTTON'||tag==='A'||tag==='MUC-BUTTON'){"
+                        + "var t=(n.innerText||n.textContent||'').trim();"
+                        + "if(t===label&&visible(n))return true;}"
+                        + "var c=n.children;if(c)for(var i=0;i<c.length;i++)if(walk(c[i]))return true;return false;}"
+                        + "return walk(document.body);";
+        Object o = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script);
+        return Boolean.TRUE.equals(o);
+    }
+
+    private boolean enabledVisibleButtonContains(String label) {
+        CONTEXT.set();
+        String esc = label.replace("\\", "\\\\").replace("'", "\\'");
+        String script =
+                "var label='" + esc + "';"
+                        + "function visible(el){if(!el||!el.getBoundingClientRect)return false;"
+                        + "var r=el.getBoundingClientRect();if(r.width<=0||r.height<=0)return false;"
+                        + "var st=window.getComputedStyle(el);return st.visibility!=='hidden'&&st.display!=='none'&&st.opacity!=='0';}"
+                        + "function walk(n){if(!n)return false;if(n.shadowRoot&&walk(n.shadowRoot))return true;"
+                        + "var tag=(n.tagName||'').toUpperCase();"
+                        + "if(tag==='BUTTON'||tag==='A'||tag==='MUC-BUTTON'){"
+                        + "var t=(n.innerText||n.textContent||'').trim();"
+                        + "if(t.indexOf('Zurück zu Schritt')<0&&t.indexOf(label)>=0&&visible(n)"
+                        + "&&!n.disabled&&!(n.hasAttribute&&n.hasAttribute('disabled'))"
+                        + "&&n.getAttribute&&n.getAttribute('aria-disabled')!=='true')return true;}"
+                        + "var c=n.children;if(c)for(var i=0;i<c.length;i++)if(walk(c[i]))return true;return false;}"
+                        + "return walk(document.body);";
+        Object o = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script);
+        return Boolean.TRUE.equals(o);
+    }
+
+    /**
+     * Quantity shown beside a selected service. The patternlab counter is a Vue component, so the DOM has the number
+     * and the service name as text (or an input value) inside the appointment shadow root, not a muc-counter tag.
+     */
+    private String counterValueBeside(String serviceName) {
+        CONTEXT.set();
+        String esc = serviceName.replace("\\", "\\\\").replace("'", "\\'");
+        String script =
+                "var name='" + esc + "';"
+                        + "function flat(n){var parts=[];"
+                        + "function rec(node){if(!node)return;"
+                        + "if(node.nodeType===3){parts.push(node.nodeValue||'');return;}"
+                        + "var tag=(node.tagName||'').toUpperCase();"
+                        + "if((tag==='INPUT'||tag==='TEXTAREA')&&node.value!=null)parts.push(' '+node.value+' ');"
+                        + "if(node.shadowRoot)rec(node.shadowRoot);"
+                        + "var c=node.childNodes;if(c)for(var i=0;i<c.length;i++)rec(c[i]);}"
+                        + "rec(n);return parts.join(' ');}"
+                        + "function walk(n, acc){if(!n||n.nodeType===3)return;"
+                        + "if(n.shadowRoot)walk(n.shadowRoot, acc);"
+                        + "var t=flat(n);if(t.indexOf(name)>=0)acc.push(t);"
+                        + "var c=n.children;if(c)for(var i=0;i<c.length;i++)walk(c[i], acc);}"
+                        + "var found=[];walk(document.body, found);"
+                        + "var best=null;var bestLen=1e15;"
+                        + "for(var i=0;i<found.length;i++){"
+                        + "var t=found[i];var rest=t.split(name).join(' ');"
+                        + "var m=rest.match(/\\b(\\d+)\\b/);"
+                        + "if(!m)continue;if(t.length<bestLen){bestLen=t.length;best=m[1];}}"
+                        + "return best;";
+        Object o = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script);
+        return o == null ? null : String.valueOf(o);
     }
 
     public void clickWeiter() {
@@ -2967,6 +3049,100 @@ public class CitizenViewPage extends BasePage {
         Assert.assertFalse(
                 shadowDomContainsText(CANCEL_RESCHEDULE_BUTTON),
                 "Reserved hash resume must not show Verschieben abbrechen (rebooking).");
+    }
+
+    public void assertCaptchaSessionCalloutVisible() {
+        CONTEXT.set();
+        waitUntilShadowContains(DE_SESSION_TIMEOUT_HEADER, DEFAULT_EXPLICIT_WAIT_TIME);
+        Assert.assertTrue(
+                shadowDomContainsText(DE_SESSION_TIMEOUT_TEXT),
+                "Captcha session callout text missing.");
+        Assert.assertTrue(
+                shadowDomContainsText(DE_RESTART_BOOKING),
+                "Captcha session callout must offer Buchung neu starten.");
+    }
+
+    public void assertReservationExpiredCalloutVisible() {
+        CONTEXT.set();
+        waitUntilShadowContains(DE_RESERVATION_EXPIRED_HEADER, DEFAULT_EXPLICIT_WAIT_TIME);
+        Assert.assertTrue(
+                shadowDomContainsText(DE_RESERVATION_EXPIRED_TEXT),
+                "Reservation expired callout text missing.");
+        Assert.assertTrue(
+                shadowDomContainsText(DE_RESTART_BOOKING),
+                "Reservation expired callout must offer Buchung neu starten.");
+    }
+
+    public void clickRestartBooking() {
+        waitForAndClickButtonContaining(DE_RESTART_BOOKING, DEFAULT_EXPLICIT_WAIT_TIME);
+    }
+
+    public void assertBackButtonNotVisible() {
+        CONTEXT.set();
+        Assert.assertFalse(
+                visibleButtonTextEquals(DE_BACK),
+                "Zurück must be hidden while the restart callout is showing.");
+    }
+
+    public void assertBackButtonVisible() {
+        CONTEXT.set();
+        Assert.assertTrue(visibleButtonTextEquals(DE_BACK), "Zurück should be visible.");
+    }
+
+    /**
+     * The load-error line is what Leistung shows until captcha details return and the widget mounts.
+     * Weiter stays disabled until Altcha then finishes.
+     */
+    public void waitUntilCaptchaCheckFinished(int widgetTimeoutSeconds, int solveTimeoutSeconds) {
+        CONTEXT.set();
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: waiting up to {}s for the captcha widget to load", widgetTimeoutSeconds);
+        waitUntilShadowContains(DE_CAPTCHA_LABEL, widgetTimeoutSeconds);
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: click captcha checkbox, then wait up to {}s for Weiter", solveTimeoutSeconds);
+        new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(solveTimeoutSeconds))
+                .pollingEvery(Duration.ofSeconds(1))
+                .until(driver -> {
+                    clickCaptchaCheckboxIfUnchecked();
+                    return enabledVisibleButtonContains(DE_WEITER);
+                });
+    }
+
+    /** Altcha starts only after the checkbox is clicked. Repeated clicks are skipped once it is checked. */
+    private boolean clickCaptchaCheckboxIfUnchecked() {
+        CONTEXT.set();
+        String script =
+                "function walk(n, fn){if(!n)return false;if(fn(n))return true;"
+                        + "if(n.shadowRoot&&walk(n.shadowRoot, fn))return true;"
+                        + "var c=n.children;if(c)for(var i=0;i<c.length;i++)if(walk(c[i], fn))return true;return false;}"
+                        + "var clicked=false;"
+                        + "walk(document.body, function(n){"
+                        + "if(!n.querySelectorAll)return false;"
+                        + "var text=(n.textContent||'');"
+                        + "if(text.indexOf('Ich bin kein Bot')<0)return false;"
+                        + "var inputs=n.querySelectorAll('input[type=checkbox]');"
+                        + "for(var i=0;i<inputs.length;i++){"
+                        + "var input=inputs[i];"
+                        + "if(input.checked){clicked=true;return true;}"
+                        + "input.click();clicked=true;return true;}"
+                        + "return false;});"
+                        + "return clicked;";
+        Object o = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script);
+        return Boolean.TRUE.equals(o);
+    }
+
+    public void assertSelectedServiceQuantity(String serviceName, int quantity) {
+        CONTEXT.set();
+        waitUntilShadowContains(serviceName, DEFAULT_EXPLICIT_WAIT_TIME);
+        Assert.assertTrue(shadowDomContainsText(serviceName), "Expected selected service " + serviceName);
+        new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .pollingEvery(Duration.ofMillis(500))
+                .until(driver -> counterValueBeside(serviceName) != null);
+        String counter = counterValueBeside(serviceName);
+        Assert.assertEquals(
+                counter,
+                String.valueOf(quantity),
+                "Expected quantity " + quantity + " for " + serviceName + " but the counter was " + counter);
     }
 
     public void assertElectronicCommunicationCheckboxVisible() {

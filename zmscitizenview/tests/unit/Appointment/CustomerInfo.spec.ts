@@ -386,13 +386,19 @@ describe("CustomerInfo", () => {
       const wrapper = createWrapper();
       await nextTick();
 
-      expect(wrapper.html()).toContain("apiErrorSessionTimeoutHeader");
-      expect(wrapper.html()).toContain("apiErrorSessionTimeoutText");
+      expect(wrapper.html()).toContain(
+        "apiErrorProcessNotReservedAnymoreHeader"
+      );
+      expect(wrapper.html()).toContain("apiErrorProcessNotReservedAnymoreText");
+      expect(wrapper.text()).toContain("restartBooking");
 
-      // form and next-button sre not displayed
+      // form, back, and next are not displayed
       expect(wrapper.find(".m-form").exists()).toBe(false);
       const buttons = wrapper.findAll(".m-button-group .muc-button");
-      expect(buttons.length).toBe(1); // only back-button
+      expect(buttons.length).toBe(1);
+      expect(wrapper.text()).not.toContain("back");
+      wrapper.vm.restartBooking();
+      expect(wrapper.emitted("restartBooking")).toHaveLength(1);
     });
   });
 

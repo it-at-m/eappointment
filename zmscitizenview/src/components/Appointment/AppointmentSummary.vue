@@ -1,13 +1,25 @@
 <template>
-  <div
-    v-if="isExpired"
-    :id="`process-${appointment?.processId}-displayNumber-${appointment?.displayNumber}`"
-  >
+  <div v-if="isExpired">
     <muc-callout type="error">
+      <template #header>{{
+        t("apiErrorProcessNotReservedAnymoreHeader")
+      }}</template>
       <template #content>
-        <p>{{ t("apiErrorSessionTimeoutText") }}</p>
+        <p>{{ t("apiErrorProcessNotReservedAnymoreText") }}</p>
       </template>
-      <template #header>{{ t("apiErrorSessionTimeoutHeader") }}</template>
+      <template #buttons>
+        <div
+          class="m-button-group"
+          style="margin-top: 1rem"
+        >
+          <muc-button
+            icon="arrow-right"
+            @click="restartBooking"
+          >
+            <template #default>{{ t("restartBooking") }}</template>
+          </muc-button>
+        </div>
+      </template>
     </muc-callout>
   </div>
   <div
@@ -336,7 +348,7 @@
     </muc-button>
   </div>
   <div
-    v-if="!rebookOrCancelDialog && !isRebooking"
+    v-if="!isExpired && !rebookOrCancelDialog && !isRebooking"
     class="m-button-group"
   >
     <muc-button
@@ -406,6 +418,7 @@ const emit =
         | "cancelAppointment"
         | "cancelReschedule"
         | "rescheduleAppointment"
+        | "restartBooking"
     ) => void
   >();
 
@@ -476,6 +489,7 @@ const validForm = computed(
 
 const bookAppointment = () => emit("bookAppointment");
 const previousStep = () => emit("back");
+const restartBooking = () => emit("restartBooking");
 const cancelAppointment = () => emit("cancelAppointment");
 const cancelReschedule = () => emit("cancelReschedule");
 const rescheduleAppointment = () => emit("rescheduleAppointment");

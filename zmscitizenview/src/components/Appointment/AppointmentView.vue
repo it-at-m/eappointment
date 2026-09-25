@@ -131,6 +131,7 @@
                 @cancel-reschedule="nextCancelReschedule"
                 @clearBookingError="clearBookingError"
                 @next="nextReserveAppointment"
+                @restart-booking="restartBookingToServices"
               />
             </div>
             <div v-if="currentView === 2">
@@ -146,6 +147,7 @@
                 @back="decreaseCurrentView"
                 @next="nextUpdateAppointment"
                 @login="requestLogin"
+                @restart-booking="restartBookingToServices"
               />
             </div>
             <div v-if="currentView === 3">
@@ -161,6 +163,7 @@
                 :t="t"
                 @back="decreaseCurrentView"
                 @book-appointment="nextBookAppointment"
+                @restart-booking="restartBookingToServices"
                 @cancel-appointment="nextCancelAppointment"
                 @cancel-reschedule="nextCancelReschedule"
                 @reschedule-appointment="nextRescheduleAppointment"
@@ -188,6 +191,18 @@
                 >
                   <template #content>
                     <p>{{ t(apiErrorTranslation.textKey) }}</p>
+                    <div
+                      v-if="canRestartFromError"
+                      class="m-button-group"
+                      style="margin-top: 1rem"
+                    >
+                      <muc-button
+                        icon="arrow-right"
+                        @click="restartBookingToServices"
+                      >
+                        <template #default>{{ t("restartBooking") }}</template>
+                      </muc-button>
+                    </div>
                   </template>
 
                   <template #header>
@@ -201,6 +216,18 @@
                 >
                   <template #content>
                     <p>{{ t(apiErrorTranslation.textKey) }}</p>
+                    <div
+                      v-if="canRestartFromError"
+                      class="m-button-group"
+                      style="margin-top: 1rem"
+                    >
+                      <muc-button
+                        icon="arrow-right"
+                        @click="restartBookingToServices"
+                      >
+                        <template #default>{{ t("restartBooking") }}</template>
+                      </muc-button>
+                    </div>
                   </template>
 
                   <template #header>
@@ -652,6 +679,17 @@ const apiErrorTranslation = computed<ApiErrorTranslation>(() => {
   );
 });
 
+const canRestartFromError = computed(() =>
+  [
+    "apiErrorSessionTimeoutText",
+    "apiErrorProcessNotReservedAnymoreText",
+    "apiErrorCaptchaExpiredText",
+    "apiErrorCaptchaInvalidText",
+    "apiErrorCaptchaMissingText",
+    "altcha.invalidCaptchaText",
+  ].includes(apiErrorTranslation.value.textKey)
+);
+
 type StepperInstance = ComponentPublicInstance | HTMLElement | null;
 const stepperRef = ref<StepperInstance>(null);
 
@@ -755,6 +793,18 @@ const increaseCurrentView = () => currentView.value++;
 const decreaseCurrentView = (): void => {
   clearAllErrors();
   currentView.value--;
+};
+
+const restartBookingToServices = (): void => {
+  clearAllErrors();
+  // A reschedule or confirmed-appointment link cannot show Leistung at view 0.
+  if (isRebooking.value || isExistingAppointmentDeepLink.value) {
+    redirectToAppointmentStart();
+    return;
+  }
+  captchaToken.value = undefined;
+  reservationStartMs.value = null;
+  currentView.value = 0;
 };
 
 /**

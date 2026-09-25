@@ -2,9 +2,22 @@
   <div v-if="isExpired">
     <muc-callout type="error">
       <template #content>
-        <p>{{ t("apiErrorSessionTimeoutText") }}</p>
+        <p>{{ t("apiErrorProcessNotReservedAnymoreText") }}</p>
+        <div
+          class="m-button-group"
+          style="margin-top: 1rem"
+        >
+          <muc-button
+            icon="arrow-right"
+            @click="restartBooking"
+          >
+            <template #default>{{ t("restartBooking") }}</template>
+          </muc-button>
+        </div>
       </template>
-      <template #header>{{ t("apiErrorSessionTimeoutHeader") }}</template>
+      <template #header>{{
+        t("apiErrorProcessNotReservedAnymoreHeader")
+      }}</template>
     </muc-callout>
   </div>
   <div
@@ -194,7 +207,10 @@
       />
     </fieldset>
   </form>
-  <div class="m-button-group">
+  <div
+    v-if="!isExpired"
+    class="m-button-group"
+  >
     <muc-button
       icon="arrow-left"
       icon-shown-left
@@ -270,7 +286,8 @@ const props = defineProps<{
   t: (key: string, params?: Record<string, unknown>) => string;
 }>();
 
-const emit = defineEmits<(e: "next" | "back" | "login") => void>();
+const emit =
+  defineEmits<(e: "next" | "back" | "login" | "restartBooking") => void>();
 
 const { customerData } = inject<CustomerDataProvider>(
   "customerData"
@@ -486,6 +503,7 @@ const nextStep = () => {
   }
 };
 const previousStep = () => emit("back");
+const restartBooking = () => emit("restartBooking");
 </script>
 
 <style lang="scss" scoped>
