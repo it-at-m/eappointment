@@ -59,6 +59,6 @@ class ApikeyTest extends \BO\Zmsbackend\Tests\Service\Base
 
     protected function getTestEntity()
     {
-        return ExampleApikey::create(static::class);
+        return ExampleApikey::create(static::class . '::' . $this->name());
     }
 }

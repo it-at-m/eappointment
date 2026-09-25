@@ -27,7 +27,7 @@ class ScopeListByRequestTest extends \BO\Zmsbackend\Tests\Api\Base
     // get extended scope list data if x-api-key exists
     public function testXApiKey()
     {
-        $entity = \BO\Zmsbackend\Tests\ExampleApikey::create(static::class);
+        $entity = \BO\Zmsbackend\Tests\ExampleApikey::create(static::class . '::' . $this->name());
         $xApiKey = (new \BO\Zmsbackend\Apikey\Service\Apikey())->writeEntity($entity);
 
         $response = $this->render(['source' => 'dldb', 'id' => 120335], [

@@ -11,7 +11,7 @@ class ApikeyDeleteTest extends \BO\Zmsbackend\Tests\Api\Base
 
     public function testRendering()
     {
-        $input = ExampleApikey::create(static::class);
+        $input = ExampleApikey::create(static::class . '::' . $this->name());
         (new Query())->writeEntity($input);
         $response = $this->render(['key' => $input->key], [], []);
         $this->assertStringContainsString('apikey.json', (string)$response->getBody());
