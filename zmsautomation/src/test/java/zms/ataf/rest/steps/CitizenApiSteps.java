@@ -44,6 +44,8 @@ public class CitizenApiSteps {
     private String baseUri;
     private AvailableCalendarResponse lastAvailableCalendarResponse;
     private String cachedCalendarOfficeIds;
+    private List<Integer> cachedCalendarServiceIds;
+    private List<Integer> cachedCalendarServiceCounts;
     private Integer cachedCalendarServiceId;
     private Integer cachedCalendarServiceCount;
     private AvailableAppointmentsResponse lastAvailableAppointmentsResponse;
@@ -75,6 +77,8 @@ public class CitizenApiSteps {
         lastReserveProcess = null;
         lastAvailableCalendarResponse = null;
         cachedCalendarOfficeIds = null;
+        cachedCalendarServiceIds = null;
+        cachedCalendarServiceCounts = null;
         cachedCalendarServiceId = null;
         cachedCalendarServiceCount = null;
         lastAvailableAppointmentsResponse = null;
@@ -225,7 +229,9 @@ public class CitizenApiSteps {
             if (lastAvailableCalendarResponse.hasAppointmentsForAllOffices(officeIds)) {
                 return;
             }
-            if (cachedCalendarOfficeIds == null) {
+            if (cachedCalendarOfficeIds == null
+                    || cachedCalendarServiceIds == null
+                    || cachedCalendarServiceCounts == null) {
                 break;
             }
             if (attempt < 8) {
@@ -241,8 +247,8 @@ public class CitizenApiSteps {
                 }
                 lastAvailableCalendarResponse = fetchAvailableCalendar(
                     parseOfficeIdsCsv(cachedCalendarOfficeIds),
-                    lastServiceId,
-                    lastServiceCount);
+                    cachedCalendarServiceIds,
+                    cachedCalendarServiceCounts);
             }
         }
         Assertions.assertThat(lastAvailableCalendarResponse.hasAppointmentsForAllOffices(officeIds))
@@ -407,6 +413,7 @@ public class CitizenApiSteps {
         }
         int refetches = 0;
         int sameSlotAttempts = 0;
+        Response reserveResponse = null;
         for (int i = 0; i < timestamps.size(); ) {
             Long timestamp = timestamps.get(i);
             ReserveAppointmentRequest body = new ReserveAppointmentRequest();
@@ -418,13 +425,14 @@ public class CitizenApiSteps {
                 body.setSourceProcessId(sourceProcessId);
                 body.setSourceAuthKey(sourceAuthKey);
             }
-            response = given()
+            reserveResponse = given()
                 .baseUri(baseUri != null ? baseUri : TestConfig.getCitizenApiBaseUri())
                 .contentType("application/json")
                 .body(body)
             .when()
                 .post("/reserve-appointment/");
-            CommonApiSteps.setResponse(response);
+            response = reserveResponse;
+            CommonApiSteps.setResponse(reserveResponse);
 
             String reserveBody = response.asString();
             ScenarioLogManager.getLogger().info(String.format(
@@ -475,9 +483,13 @@ public class CitizenApiSteps {
                     }
                 }
             }
+            response = reserveResponse;
+            CommonApiSteps.setResponse(reserveResponse);
             response.then().statusCode(200);
             i++;
         }
+        response = reserveResponse;
+        CommonApiSteps.setResponse(reserveResponse);
         response.then().statusCode(200);
 
         // Reserve endpoint may return plain ThinnedProcess or an ApiResponse-wrapped payload
@@ -1458,10 +1470,14 @@ public class CitizenApiSteps {
                 calendar = parseDataResponse(response, AvailableCalendarResponse.class);
             }
             cachedCalendarOfficeIds = officeIdsParam;
+            cachedCalendarServiceIds = List.copyOf(serviceIds);
+            cachedCalendarServiceCounts = List.copyOf(serviceCounts);
             cachedCalendarServiceId = serviceIds.get(0);
             cachedCalendarServiceCount = serviceCounts.get(0);
         } else {
             cachedCalendarOfficeIds = null;
+            cachedCalendarServiceIds = null;
+            cachedCalendarServiceCounts = null;
             cachedCalendarServiceId = null;
             cachedCalendarServiceCount = null;
         }
