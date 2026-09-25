@@ -115,6 +115,18 @@ flowchart LR
 
 Log lines from those threads are interleaved. Each line starts with the worker in brackets, for example `[29]`. Lines with the same number belong to one scenario until that thread logs `Starting scenario`.
 
+Here `[29]` is the button list and `[30]` is the closed kiosk. The lines are in the order they were written.
+
+```text
+[29] 13:47:48 INFO  Hook:140 - >>>>>>>Start of test scenario: [AUT] Buttonliste gibt eine Wartenummer aus>>>>>>>
+[30] 13:47:48 INFO  Hook:140 - >>>>>>>Start of test scenario: [AUT] Geschlossener Standort zeigt keinen Kiosk>>>>>>>
+
+...
+
+[30] 13:49:13 INFO  Hook:187 - <<<<<<<End of test scenario: [AUT] Geschlossener Standort zeigt keinen Kiosk<<<<<<<
+[29] 13:49:18 INFO  Hook:187 - <<<<<<<End of test scenario: [AUT] Buttonliste gibt eine Wartenummer aus<<<<<<<
+```
+
 ## The workflow option
 
 The manual run of [`.github/workflows/zmsautomation-workflow.yaml`](https://github.com/it-at-m/eappointment/blob/next/.github/workflows/zmsautomation-workflow.yaml) has a checkbox **Don't run scenarios in parallel** (`serial_scenarios`). It is off by default. When it is on, every job adds `-Ddataproviderthreadcount=1` and the run name ends with `| serial scenarios`. The nightly schedule leaves the input empty, so the night run stays at 32 API threads and 16 UI browsers.
