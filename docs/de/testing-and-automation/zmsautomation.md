@@ -31,7 +31,7 @@ Dieses Modul enthält API- und UI-Tests für ZMS auf Basis von [ATAF](https://it
 
 ### Mit dem Test-Skript (empfohlen)
 
-Das Skript `zmsautomation-test` kümmert sich um Datenbank-Setup, Migrationen und Testausführung. Szenarien in einem Maven-Lauf laufen parallel: 32 gleichzeitig bei `-Pataf-api`, 8 Browser gleichzeitig bei `-Pataf-ui`. Mit `-Ddataproviderthreadcount=1` läuft ein Szenario nach dem anderen.
+Das Skript `zmsautomation-test` kümmert sich um Datenbank-Setup, Migrationen und Testausführung. Szenarien in einem Maven-Lauf laufen parallel: 32 gleichzeitig bei `-Pataf-api`, 8 Browser gleichzeitig bei `-Pataf-ui`. Mit `-Ddataproviderthreadcount=1` läuft ein Szenario nach dem anderen. Wie diese Parallelität entstanden ist, einschließlich der Login-Pools und der Wettläufe, die sie sichtbar gemacht hat, steht in [Wie wir zmsautomation parallelisiert haben](./how-we-parallelized-zmsautomation.md).
 
 Jede Logzeile beginnt mit dem Worker-Thread in eckigen Klammern, zum Beispiel `[29]`. TestNG verwendet denselben Thread für das nächste Szenario. Zeilen mit derselben Nummer gehören zu einem Szenario, bis dieser Thread `Starting scenario` protokolliert. Die letzte `Starting scenario`-Zeile mit dieser Nummer nennt den zugehörigen Test.
 
@@ -276,9 +276,10 @@ GitHub-Actions-Workflow: [`.github/workflows/zmsautomation-workflow.yaml`](https
 
 Manuelle Läufe (`workflow_dispatch`) bieten die üblichen Modul-/Browser-/Tag-Eingaben sowie:
 
-| Eingabe        | Zweck                                                                                                                                                                                                                                          |
-| -------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `ataf_version` | Optionale ATAF-Maven-Version (`de.muenchen.ataf:core\|rest\|web`). Leer lassen, um `ataf.version` aus `zmsautomation/pom.xml` des ausgecheckten Branches zu nutzen. Wenn gesetzt, übergibt der Job `-Dataf.version=…` an `zmsautomation-test`. |
+| Eingabe            | Zweck                                                                                                                                                                                                                                          |
+| ------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ataf_version`     | Optionale ATAF-Maven-Version (`de.muenchen.ataf:core\|rest\|web`). Leer lassen, um `ataf.version` aus `zmsautomation/pom.xml` des ausgecheckten Branches zu nutzen. Wenn gesetzt, übergibt der Job `-Dataf.version=…` an `zmsautomation-test`. |
+| `serial_scenarios` | Szenarien nicht parallel ausführen. Wenn angehakt, übergibt jeder Job `-Ddataproviderthreadcount=1`. Standardmäßig aus, auch im nächtlichen Lauf.                                                                                              |
 
 Geplante Nightly-Läufe nutzen immer die POM-Version (kein Override). Die Version muss auf Maven Central existieren.
 
