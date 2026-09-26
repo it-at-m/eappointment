@@ -53,7 +53,7 @@ DATA_DIR="$MODULE_DIR/data"
 TEST_DB="zmsbackend_test"
 DB_PORT="${MYSQL_PORT##*:}"  # Extract port from "tcp://host:port" or just "port"
 
-PROCESSES=32
+PROCESSES=1
 PASSTHROUGH=()
 while [[ $# -gt 0 ]]; do
   case "$1" in
