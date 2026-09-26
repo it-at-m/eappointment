@@ -197,11 +197,11 @@
         },
         {
             "name": "eappointment/mellon",
-            "version": "dev-chore/phpunit-13",
+            "version": "dev-next",
             "dist": {
                 "type": "path",
                 "url": "../mellon",
-                "reference": "f0dfc11f4524f1c96006def66f591206fa4b072c"
+                "reference": "006740d0f10399d996bc140ea409e1f84a8e5d72"
             },
             "require": {
                 "ext-json": ">=0",
@@ -247,11 +247,11 @@
         },
         {
             "name": "eappointment/zmsentities",
-            "version": "dev-chore/phpunit-13",
+            "version": "dev-next",
             "dist": {
                 "type": "path",
                 "url": "../zmsentities",
-                "reference": "f0dfc11f4524f1c96006def66f591206fa4b072c"
+                "reference": "f63d74acce91b666d07a6158a04dc0d34d690d31"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -305,11 +305,11 @@
         },
         {
             "name": "eappointment/zmsslim",
-            "version": "dev-chore/phpunit-13",
+            "version": "dev-next",
             "dist": {
                 "type": "path",
                 "url": "../zmsslim",
-                "reference": "f0dfc11f4524f1c96006def66f591206fa4b072c"
+                "reference": "e12c74806073cd8e930fc80daeff3e2b1339e0fb"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -5655,16 +5655,16 @@
         },
         {
             "name": "twig/twig",
-            "version": "v3.29.0",
+            "version": "v3.30.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/twigphp/Twig.git",
-                "reference": "45a3c6e9224c3377a39c7b150bb29d5d97d2c75d"
+                "reference": "8c737079b726af72ff8ef3c595be9f6a810ea1ef"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/twigphp/Twig/zipball/45a3c6e9224c3377a39c7b150bb29d5d97d2c75d",
-                "reference": "45a3c6e9224c3377a39c7b150bb29d5d97d2c75d",
+                "url": "https://api.github.com/repos/twigphp/Twig/zipball/8c737079b726af72ff8ef3c595be9f6a810ea1ef",
+                "reference": "8c737079b726af72ff8ef3c595be9f6a810ea1ef",
                 "shasum": ""
             },
             "require": {
@@ -5719,7 +5719,7 @@
             ],
             "support": {
                 "issues": "https://github.com/twigphp/Twig/issues",
-                "source": "https://github.com/twigphp/Twig/tree/v3.29.0"
+                "source": "https://github.com/twigphp/Twig/tree/v3.30.0"
             },
             "funding": [
                 {
@@ -5731,7 +5731,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-09-18T09:10:14+00:00"
+            "time": "2026-09-25T13:20:01+00:00"
         }
     ],
     "packages-dev": [
