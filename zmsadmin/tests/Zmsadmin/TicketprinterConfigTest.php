@@ -10,6 +10,7 @@ class TicketprinterConfigTest extends Base
 
     protected $classname = "TicketprinterConfig";
 
+    #[\Override]
     public function testRendering()
     {
         $this->setApiCalls(

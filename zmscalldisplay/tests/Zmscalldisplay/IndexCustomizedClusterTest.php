@@ -11,6 +11,7 @@ class IndexCustomizedClusterTest extends Base
 
     protected $parameters = [ ];
 
+    #[\Override]
     protected function getApiCalls(): array
     {
         return [
@@ -22,6 +23,7 @@ class IndexCustomizedClusterTest extends Base
         ];
     }
 
+    #[\Override]
     public function testRendering()
     {
         $response = $this->render([ ], [

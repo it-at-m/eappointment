@@ -22,7 +22,7 @@
             "php-http/discovery": true
         },
         "platform": {
-            "php": "8.4.0"
+            "php": "8.4.3"
         }
     },
     "minimum-stability": "dev",
@@ -39,21 +39,21 @@
         "eappointment/zmsclient": "@dev",
         "eappointment/zmsdldb": "@dev",
         "eappointment/zmsentities": "@dev",
-        "symfony/cache": "^6.0",
+        "symfony/cache": "^8.0",
         "psr/simple-cache": "^3.0",
-        "monolog/monolog": "^2.0",
+        "monolog/monolog": "^3.0",
         "league/climate": "^3.2",
         "aura/sql": "^6",
         "roave/security-advisories": "dev-latest"
     },
     "require-dev": {
-        "vimeo/psalm": "6.5.0",
+        "vimeo/psalm": "6.18.1",
         "aronduby/dump": "*",
         "phpmd/phpmd": "@stable",
         "squizlabs/php_codesniffer": "*",
         "mockery/mockery": "^1.0.0",
-        "phpunit/phpunit": "^11",
-        "brianium/paratest": "^7.8",
+        "phpunit/phpunit": "^13",
+        "brianium/paratest": "^7.24",
         "roave/security-advisories": "dev-latest"
     },
     "scripts": {

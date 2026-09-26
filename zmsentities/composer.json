@@ -8,6 +8,11 @@
             "email": "mathias.fischer@berlinonline.de"
         }
     ],
+    "config": {
+        "platform": {
+            "php": "8.4.3"
+        }
+    },
     "require": {
         "php": ">=8.4",
         "ext-curl": ">=0",
@@ -17,10 +22,10 @@
         "eappointment/mellon": "@dev",
         "twig/twig": "3.*",
         "league/html-to-markdown": "^5.0",
-        "giggsey/libphonenumber-for-php": "^8.13.55",
+        "giggsey/libphonenumber-for-php": "^9.0.0",
         "twig/intl-extra": "^3.4",
-        "symfony/translation": "^5.4",
-        "symfony/twig-bridge": "^5.4",
+        "symfony/translation": "^8.0",
+        "symfony/twig-bridge": "^8.0",
         "opis/json-schema": "^2.4",
         "roave/security-advisories": "dev-latest"
     },
@@ -43,9 +48,9 @@
         }
     },
     "require-dev": {
-        "vimeo/psalm": "6.5.0",
-        "phpunit/phpunit": "^11",
-        "brianium/paratest": "^7.8",
+        "vimeo/psalm": "6.18.1",
+        "phpunit/phpunit": "^13",
+        "brianium/paratest": "^7.24",
         "phpmd/phpmd": "@stable",
         "squizlabs/php_codesniffer": "*",
         "roave/security-advisories": "dev-latest"

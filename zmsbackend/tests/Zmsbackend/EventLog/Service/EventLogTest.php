@@ -36,10 +36,6 @@ class EventLogTest extends \BO\Zmsbackend\Tests\Service\Base
         $this->testDeleteOutdated();
     }
 
-    /**
-     * @depends testWriteEntity
-     * @return void
-     */
     private function testReadByNameAndRef(int $id): void
     {
         $eventLogRepo  = new EventLogRepository();

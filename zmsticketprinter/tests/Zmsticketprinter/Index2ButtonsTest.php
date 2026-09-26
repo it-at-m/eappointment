@@ -10,6 +10,7 @@ class Index2ButtonsTest extends Base
 
     protected $parameters = [ ];
 
+    #[\Override]
     protected function getApiCalls(): array
     {
         return [
@@ -37,6 +38,7 @@ class Index2ButtonsTest extends Base
         ];
     }
 
+    #[\Override]
     public function testRendering()
     {
         $response = $this->render([ ], [

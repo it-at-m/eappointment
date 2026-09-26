@@ -14,6 +14,7 @@ class ProcessLockTest extends \BO\Zmsbackend\Tests\Service\Base
     protected $pdo = null;
     protected static $pdoList = [];
 
+    #[\Override]
     public function setUp(): void
     {
         parent::setUp();
@@ -39,6 +40,7 @@ class ProcessLockTest extends \BO\Zmsbackend\Tests\Service\Base
         return $pdo;
     }
 
+    #[\Override]
     public function tearDown(): void
     {
         foreach (static::$pdoList as $pdo) {

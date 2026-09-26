@@ -10,6 +10,7 @@ class ProcessUpdateTest extends \BO\Zmsbackend\Tests\Api\Base
 
     const string AUTHKEY = '1c56';
 
+    #[\Override]
     public function testRendering()
     {
         $process = json_decode($this->readFixture("GetProcess_10029.json"), 1);

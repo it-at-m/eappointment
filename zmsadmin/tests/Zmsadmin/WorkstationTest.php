@@ -10,6 +10,7 @@ class WorkstationTest extends Base
 
     protected $classname = "Workstation";
 
+    #[\Override]
     public function testRendering()
     {
         $this->setApiCalls(

@@ -6,6 +6,7 @@ class WorkstationListByClusterTest extends \BO\Zmsbackend\Tests\Api\Base
 {
     protected $classname = "WorkstationListByCluster";
 
+    #[\Override]
     public function testRendering()
     {
         $this->setWorkstation();

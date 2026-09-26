@@ -14,17 +14,20 @@
     "config": {
         "allow-plugins": {
             "php-http/discovery": true
+        },
+        "platform": {
+            "php": "8.4.3"
         }
     },
     "require": {
         "php": ">=8.4",
         "phpmailer/phpmailer": "^7.0",
-        "monolog/monolog": "^2.0",
+        "monolog/monolog": "^3.0",
         "eappointment/mellon": "@dev",
         "eappointment/zmsclient": "@dev",
         "eappointment/zmsentities": "@dev",
         "eappointment/zmsslim": "@dev",
-        "giggsey/libphonenumber-for-php": "^8.13.55",
+        "giggsey/libphonenumber-for-php": "^9.0.0",
         "react/event-loop": "^1.5",
         "react/promise": "^3.2",
         "react/http": "^1.10",
@@ -38,9 +41,9 @@
         }
     },
     "require-dev": {
-        "vimeo/psalm": "6.5.0",
-        "phpunit/phpunit": "^11",
-        "brianium/paratest": "^7.8",
+        "vimeo/psalm": "6.18.1",
+        "phpunit/phpunit": "^13",
+        "brianium/paratest": "^7.24",
         "phpspec/prophecy-phpunit": "^2.4",
         "phpmd/phpmd": "^2.3",
         "squizlabs/php_codesniffer": "^4.0",

@@ -10,6 +10,7 @@ class WorkstationProcessRedirectTest extends Base
 
     protected $classname = "WorkstationProcessRedirect";
 
+    #[\Override]
     public function testRendering()
     {
         $this->setApiCalls(

@@ -6,6 +6,7 @@ class OwnerByOrganisationTest extends \BO\Zmsbackend\Tests\Api\Base
 {
     protected $classname = "OwnerByOrganisation";
 
+    #[\Override]
     public function testRendering()
     {
         $this->setWorkstation();

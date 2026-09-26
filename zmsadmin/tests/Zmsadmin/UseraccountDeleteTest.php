@@ -14,6 +14,7 @@ class UseraccountDeleteTest extends Base
 
     protected $classname = "UseraccountDelete";
 
+    #[\Override]
     public function testRendering()
     {
         $this->setApiCalls(

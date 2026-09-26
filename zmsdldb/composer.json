@@ -13,15 +13,15 @@
             "php-http/discovery": true
         },
         "platform": {
-            "php": "8.4.0"
+            "php": "8.4.3"
         }
     },
     "require-dev": {
-        "vimeo/psalm": "6.5.0",
+        "vimeo/psalm": "6.18.1",
         "phpmd/phpmd": "@stable",
         "squizlabs/php_codesniffer": "*",
-        "phpunit/phpunit": "^11",
-        "brianium/paratest": "^7.8",
+        "phpunit/phpunit": "^13",
+        "brianium/paratest": "^7.24",
         "seld/jsonlint": "*",
         "roave/security-advisories": "dev-latest"
     },
@@ -39,7 +39,7 @@
         "eappointment/zmsbackend": "@dev",
         "eappointment/zmsslim": "@dev",
         "eappointment/zmsclient": "@dev",
-        "symfony/cache": "^6.0",
+        "symfony/cache": "^8.0",
         "psr/simple-cache": "^3.0",
         "roave/security-advisories": "dev-latest"
     },
