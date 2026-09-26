@@ -16,7 +16,7 @@
             "php-http/discovery": true
         },
         "platform": {
-            "php": "8.4.1"
+            "php": "8.4.3"
         }
     },
     "require": {
@@ -41,8 +41,8 @@
         }
     },
     "require-dev": {
-        "vimeo/psalm": "6.5.0",
-        "phpunit/phpunit": "^11",
+        "vimeo/psalm": "6.18.1",
+        "phpunit/phpunit": "^13",
         "phpspec/prophecy-phpunit": "^2.4",
         "phpmd/phpmd": "^2.3",
         "squizlabs/php_codesniffer": "^4.0",

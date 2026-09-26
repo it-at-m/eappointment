@@ -4,12 +4,12 @@ declare(strict_types=1);
 namespace BO\Zmscitizenapi\Tests;
 
 use BO\Zmscitizenapi\Application;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
-/**
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
- */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState(false)]
 class ApplicationTest extends TestCase
 {
     private string $tempDir;

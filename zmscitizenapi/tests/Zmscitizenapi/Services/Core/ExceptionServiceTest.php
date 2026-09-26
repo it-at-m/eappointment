@@ -5,6 +5,7 @@ namespace BO\Zmscitizenapi\Tests\Services\Core;
 
 use BO\Zmscitizenapi\Utils\ErrorMessages;
 use BO\Zmscitizenapi\Services\Core\ExceptionService;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class MockException extends \Exception
@@ -20,9 +21,7 @@ class MockException extends \Exception
 
 class ExceptionServiceTest extends TestCase
 {
-    /**
-     * @dataProvider processExceptionProvider
-     */
+    #[DataProvider('processExceptionProvider')]
     public function testProcessExceptions(string $template, string $errorKey): void
     {
         $exception = new MockException('Test message', 0, $template);
@@ -98,9 +97,7 @@ class ExceptionServiceTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider calendarExceptionProvider
-     */
+    #[DataProvider('calendarExceptionProvider')]
     public function testCalendarExceptions(string $template, string $errorKey): void
     {
         $exception = new MockException('Test message', 0, $template);
@@ -136,9 +133,7 @@ class ExceptionServiceTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider entityExceptionProvider
-     */
+    #[DataProvider('entityExceptionProvider')]
     public function testEntityExceptions(string $template, string $errorKey): void
     {
         $exception = new MockException('Test message', 0, $template);
