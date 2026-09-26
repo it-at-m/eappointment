@@ -6,6 +6,7 @@ class ProcessConfirmTest extends \BO\Zmsbackend\Tests\Api\Base
 {
     protected $classname = "ProcessConfirm";
 
+    #[\Override]
     public function testRendering()
     {
         $processList = new \BO\Zmsentities\Collection\ProcessList(

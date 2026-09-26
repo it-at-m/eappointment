@@ -8,6 +8,7 @@ class MailTemplatesCopyTest extends Base
 {
     protected $classname = 'MailTemplatesCopy';
 
+    #[\Override]
     public function testRendering(): void
     {
         $this->setApiCalls($this->getApiCallsForPage());

@@ -11,6 +11,7 @@ class ConfigUpdateTest extends \BO\Zmsbackend\Tests\Api\Base
 {
     protected $classname = "ConfigUpdate";
 
+    #[\Override]
     public function testRendering()
     {
         $response = $this->render([], [

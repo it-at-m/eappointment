@@ -8,6 +8,7 @@ class OrganisationByScopeTest extends \BO\Zmsbackend\Tests\Api\Base
 {
     protected $classname = "OrganisationByScope";
 
+    #[\Override]
     public function testRendering()
     {
         $this->setWorkstation();

@@ -14,6 +14,7 @@ class WorkstationProcessTest extends Base
 
     protected $classname = "WorkstationProcess";
 
+    #[\Override]
     public function testRendering()
     {
         $date = (new DateTime())->format('Y-m-d');

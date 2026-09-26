@@ -10,6 +10,7 @@ class RoutingTest extends Base
 {
     protected $classname = "Get";
 
+    #[\Override]
     public function testRendering()
     {
         \BO\Slim\Bootstrap::loadRouting(\App::APP_PATH . '/Slim/routing.php');

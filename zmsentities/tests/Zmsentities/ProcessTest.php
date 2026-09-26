@@ -470,6 +470,7 @@ class ProcessTest extends EntityCommonTests
         $this->assertEquals('00:00', $process->getFirstAppointment()->getStartTime()->format('H:i'));
     }
 
+    #[\Override]
     public function testLessData()
     {
         $collection = new $this->collectionclass();

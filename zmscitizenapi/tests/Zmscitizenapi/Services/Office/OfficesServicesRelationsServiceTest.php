@@ -19,6 +19,7 @@ class OfficesServicesRelationsServiceTest extends TestCase
 {
     private OfficesServicesRelationsService $service;
 
+    #[\Override]
     protected function setUp(): void
     {
         parent::setUp();

@@ -31,6 +31,7 @@ abstract class Base extends \BO\Slim\PhpUnit\Base
 
     protected array $apiCalls = array();
 
+    #[\Override]
     public function setUp(): void
     {
         \App::$http = $this->getApiMockup();
@@ -41,6 +42,7 @@ abstract class Base extends \BO\Slim\PhpUnit\Base
         }
     }
 
+    #[\Override]
     public function tearDown(): void
     {
     }

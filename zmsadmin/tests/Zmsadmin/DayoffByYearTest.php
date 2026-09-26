@@ -10,6 +10,7 @@ class DayoffByYearTest extends Base
 
     protected $classname = "DayoffByYear";
 
+    #[\Override]
     public function testRendering()
     {
         $this->setApiCalls(

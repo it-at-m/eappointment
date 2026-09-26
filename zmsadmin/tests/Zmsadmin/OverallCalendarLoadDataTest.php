@@ -8,6 +8,7 @@ class OverallCalendarLoadDataTest extends Base
     protected $parameters = [];
     protected $classname = "OverallCalendarLoadData";
 
+    #[\Override]
     public function testRendering()
     {
         $_SERVER['HTTP_AUTHORIZATION'] = 'Bearer validtoken';

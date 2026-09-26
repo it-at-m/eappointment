@@ -6,6 +6,7 @@ class RoleAddTest extends \BO\Zmsbackend\Tests\Api\Base
 {
     protected $classname = "RoleAdd";
 
+    #[\Override]
     public function testRendering()
     {
         $this->setWorkstation()->getUseraccount()->setPermissions('superuser');

@@ -8,6 +8,7 @@ class AvailabilityConflictsTest extends Base
 
     protected $classname = "\BO\Zmsadmin\Helper\AvailabilityConflicts";
 
+    #[\Override]
     public function testRendering()
     {
         $response = $this->render([], [

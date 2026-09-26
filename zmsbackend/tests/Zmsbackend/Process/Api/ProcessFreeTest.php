@@ -6,6 +6,7 @@ class ProcessFreeTest extends \BO\Zmsbackend\Tests\Api\Base
 {
     protected $classname = "ProcessFree";
 
+    #[\Override]
     public function testRendering()
     {
         $response = $this->render([], [
