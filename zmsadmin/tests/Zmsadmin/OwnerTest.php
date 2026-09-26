@@ -12,6 +12,7 @@ class OwnerTest extends Base
 
     protected $classname = "Owner";
 
+    #[\Override]
     public function testRendering()
     {
         $this->setApiCalls(

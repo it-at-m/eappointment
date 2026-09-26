@@ -8,6 +8,7 @@ class RoutingTest extends Base
 {
     protected $classname = "Index";
 
+    #[\Override]
     public function testRendering()
     {
         $this->assertEmpty(\BO\Slim\Bootstrap::loadRouting(\App::APP_PATH . '/routing.php'));

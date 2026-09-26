@@ -10,6 +10,7 @@ class ReportClientOrganisationTest extends Base
 
     protected $parameters = [ ];
 
+    #[\Override]
     public function testRendering()
     {
         $this->setApiCalls(

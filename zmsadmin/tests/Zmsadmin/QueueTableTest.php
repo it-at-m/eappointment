@@ -13,6 +13,7 @@ class QueueTableTest extends Base
 
     protected $classname = "QueueTable";
 
+    #[\Override]
     public function testRendering()
     {
         $this->setApiCalls(

@@ -10,6 +10,7 @@ class SourceIndexTest extends Base
 
     protected $classname = "SourceIndex";
 
+    #[\Override]
     public function testRendering()
     {
         $this->setApiCalls(

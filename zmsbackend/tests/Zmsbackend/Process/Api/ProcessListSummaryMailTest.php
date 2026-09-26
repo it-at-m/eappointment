@@ -8,6 +8,7 @@ class ProcessListSummaryMailTest extends \BO\Zmsbackend\Tests\Api\Base
 {
     protected $classname = "ProcessListSummaryMail";
 
+    #[\Override]
     public function setUp(): void
     {
         parent::setUp();
@@ -17,6 +18,7 @@ class ProcessListSummaryMailTest extends \BO\Zmsbackend\Tests\Api\Base
         }
     }
 
+    #[\Override]
     public function testRendering()
     {
         $entity = (new \BO\Zmsbackend\Process\Service\Process)->readEntity(10118, new \BO\Zmsbackend\Helper\NoAuth);

@@ -21,6 +21,7 @@ class ScopeGetTest extends \BO\Zmsbackend\Tests\Api\Base
         $this->assertTrue(200 == $response->getStatusCode());
     }
 
+    #[\Override]
     public function testRendering()
     {
         $department = (new \BO\Zmsentities\Department());

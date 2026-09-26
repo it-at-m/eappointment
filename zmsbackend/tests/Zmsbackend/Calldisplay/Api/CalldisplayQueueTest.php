@@ -6,6 +6,7 @@ class CalldisplayQueueTest extends \BO\Zmsbackend\Tests\Api\Base
 {
     protected $classname = "CalldisplayQueue";
 
+    #[\Override]
     public function testRendering()
     {
         $response = $this->render([], [

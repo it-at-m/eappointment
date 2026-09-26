@@ -14,6 +14,7 @@ use Monolog\LogRecord;
  */
 class JsonLogFormatter extends JsonFormatter
 {
+    #[\Override]
     public function format(LogRecord $record): string
     {
         $normalized = [

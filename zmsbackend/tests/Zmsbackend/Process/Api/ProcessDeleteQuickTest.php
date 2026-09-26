@@ -13,6 +13,7 @@ class ProcessDeleteQuickTest extends \BO\Zmsbackend\Tests\Api\Base
 
     protected $authKey = '';
 
+    #[\Override]
     public function testRendering()
     {
         $this->setWorkstation(123, 'testuser', 167)

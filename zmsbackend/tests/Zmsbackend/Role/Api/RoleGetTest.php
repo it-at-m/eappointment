@@ -9,6 +9,7 @@ class RoleGetTest extends \BO\Zmsbackend\Tests\Api\Base
 {
     protected $classname = "RoleGet";
 
+    #[\Override]
     public function testRendering()
     {
         $this->setWorkstation()->getUseraccount()->setPermissions('superuser');

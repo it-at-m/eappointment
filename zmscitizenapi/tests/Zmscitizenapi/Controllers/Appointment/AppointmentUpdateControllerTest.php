@@ -10,6 +10,7 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
 
     protected $classname = "\BO\Zmscitizenapi\Controllers\Appointment\AppointmentUpdateController";
 
+    #[\Override]
     public function setUp(): void
     {
         parent::setUp();
@@ -21,6 +22,7 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
         }
     }
 
+    #[\Override]
     public function testRendering()
     {
         $this->setApiCalls(

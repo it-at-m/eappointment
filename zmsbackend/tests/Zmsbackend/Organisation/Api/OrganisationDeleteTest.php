@@ -6,6 +6,7 @@ class OrganisationDeleteTest extends \BO\Zmsbackend\Tests\Api\Base
 {
     protected $classname = "OrganisationDelete";
 
+    #[\Override]
     public function testRendering()
     {
         $this->setWorkstation()->getUseraccount()->setPermissions('superuser');

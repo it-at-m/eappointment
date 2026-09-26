@@ -8,6 +8,7 @@ class AvailabilityListByScopeTest extends \BO\Zmsbackend\Tests\Api\Base
 
     const int SCOPE_ID = 141;
     
+    #[\Override]
     public function testRendering()
     {
         $department = (new \BO\Zmsentities\Department());

@@ -10,6 +10,7 @@ class WorkstationOAuthTest extends \BO\Zmsbackend\Tests\Api\Base
 
     public static $authKey = 'vorschau';
 
+    #[\Override]
     public function setUp(): void
     {
         parent::setUp();
@@ -22,6 +23,7 @@ class WorkstationOAuthTest extends \BO\Zmsbackend\Tests\Api\Base
         }
     }
 
+    #[\Override]
     public function testRendering()
     {
         $response = $this->render(

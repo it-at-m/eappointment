@@ -11,6 +11,7 @@ use Slim\Psr7\Uri;
 
 class TemplateUrlsTest extends TestCase
 {
+    #[\Override]
     protected function tearDown(): void
     {
         \App::$includeUrl = null;

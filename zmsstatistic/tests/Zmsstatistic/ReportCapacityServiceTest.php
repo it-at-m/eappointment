@@ -9,6 +9,7 @@ class ReportCapacityServiceTest extends \PHPUnit\Framework\TestCase
 {
     private ReportCapacityService $service;
 
+    #[\Override]
     protected function setUp(): void
     {
         $this->service = new ReportCapacityService();

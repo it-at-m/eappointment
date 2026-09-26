@@ -14,6 +14,7 @@ class UseraccountByDepartmentTest extends Base
 
     protected $classname = "UseraccountListByDepartment";
 
+    #[\Override]
     public function testRendering()
     {
         $this->setApiCalls(

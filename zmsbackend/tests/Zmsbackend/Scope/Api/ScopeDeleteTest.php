@@ -6,6 +6,7 @@ class ScopeDeleteTest extends \BO\Zmsbackend\Tests\Api\Base
 {
     protected $classname = "ScopeDelete";
 
+    #[\Override]
     public function testRendering()
     {
         $department = (new \BO\Zmsentities\Department());

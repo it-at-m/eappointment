@@ -9,6 +9,7 @@ use PHPUnit\Framework\TestCase;
 
 class ClientIpTest extends TestCase
 {
+    #[\Override]
     protected function tearDown(): void
     {
         unset($_SERVER['HTTP_X_FORWARDED_FOR'], $_SERVER['REMOTE_ADDR']);

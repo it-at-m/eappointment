@@ -6,6 +6,7 @@ class ProviderGetTest extends \BO\Zmsbackend\Tests\Api\Base
 {
     protected $classname = "ProviderGet";
 
+    #[\Override]
     public function testRendering()
     {
         $response = $this->render(['source' => 'dldb', 'id' => 122217, 'displayName' => 'B\u00fcrgeramt Heerstra\u00dfe'], [], []); //Heerstraße

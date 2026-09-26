@@ -10,6 +10,7 @@ class ApikeyUpdateTest extends \BO\Zmsbackend\Tests\Api\Base
 {
     protected $classname = "ApikeyUpdate";
 
+    #[\Override]
     public function testRendering()
     {
         $input = json_encode((new Entity)->createExample());

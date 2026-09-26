@@ -10,6 +10,7 @@ class DialogHandlerTest extends Base
 
     protected $classname = "\BO\Zmsticketprinter\Helper\DialogHandler";
 
+    #[\Override]
     public function testRendering()
     {
         $response = $this->render([], $this->parameters, []);

@@ -11,6 +11,7 @@ class AppointmentPreconfirmServiceTest extends MiddlewareTestCase
     private AppointmentPreconfirmService $service;
     private \ReflectionClass $reflector;
 
+    #[\Override]
     protected function setUp(): void
     {
         parent::setUp();
@@ -18,6 +19,7 @@ class AppointmentPreconfirmServiceTest extends MiddlewareTestCase
         $this->reflector = new \ReflectionClass(AppointmentPreconfirmService::class);
     }
 
+    #[\Override]
     protected function tearDown(): void
     {
         parent::tearDown();

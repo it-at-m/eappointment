@@ -13,6 +13,7 @@ class ClusterDeleteTest extends Base
 
     protected $classname = "ClusterDelete";
 
+    #[\Override]
     public function testRendering()
     {
         $this->setApiCalls(

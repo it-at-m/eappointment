@@ -14,6 +14,7 @@ class CaptchaServiceTest extends TestCase
 {
     private CaptchaService $captchaService;
 
+    #[\Override]
     protected function setUp(): void
     {
         parent::setUp();

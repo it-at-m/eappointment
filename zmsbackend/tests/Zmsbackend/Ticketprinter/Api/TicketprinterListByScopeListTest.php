@@ -6,6 +6,7 @@ class TicketprinterListByScopeListTest extends \BO\Zmsbackend\Tests\Api\Base
 {
     protected $classname = "TicketprinterListByScopeList";
 
+    #[\Override]
     public function testRendering()
     {
         $this->setWorkstation();

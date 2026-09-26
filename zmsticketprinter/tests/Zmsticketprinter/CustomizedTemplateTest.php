@@ -10,6 +10,7 @@ class CustomizedTemplateTest extends Base
 
     protected $parameters = [ ];
 
+    #[\Override]
     protected function getApiCalls(): array
     {
         return [
@@ -42,6 +43,7 @@ class CustomizedTemplateTest extends Base
         ];
     }
 
+    #[\Override]
     public function testRendering()
     {
         $response = $this->render([

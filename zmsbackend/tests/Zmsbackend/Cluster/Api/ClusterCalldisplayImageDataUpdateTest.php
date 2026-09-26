@@ -13,6 +13,7 @@ class ClusterCalldisplayImageDataUpdateTest extends \BO\Zmsbackend\Tests\Api\Bas
 
     const int CLUSTER_ID = 109;
 
+    #[\Override]
     public function testRendering()
     {
         $this->setWorkstation()->getUserAccount()->setPermissions('calldisplay');

@@ -46,6 +46,7 @@ class AvailabilityListUpdateTest extends Base
 
     protected $classname = "AvailabilityListUpdate";
 
+    #[\Override]
     public function testRendering()
     {
         $this->setApiCalls(

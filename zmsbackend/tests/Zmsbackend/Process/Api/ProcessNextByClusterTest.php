@@ -8,6 +8,7 @@ class ProcessNextByClusterTest extends \BO\Zmsbackend\Tests\Api\Base
 {
     protected $classname = "ProcessNextByCluster";
 
+    #[\Override]
     public function testRendering()
     {
         $this->setWorkstation()
