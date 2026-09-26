@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "29328f6f60337fa40c56fe31486b8149",
+    "content-hash": "2ddafe7738f5dc653c0886e8e874e3b0",
     "packages": [
         {
             "name": "aronduby/dump",
@@ -197,16 +197,16 @@
         },
         {
             "name": "eappointment/mellon",
-            "version": "dev-main",
+            "version": "dev-chore/psr-http-message-2",
             "dist": {
                 "type": "path",
                 "url": "../mellon",
-                "reference": "56a96a21f59476386e0604378dfbf249baedc26e"
+                "reference": "8e3b5a63bbfe80dd8f289c434ffb1a0a3fc20d14"
             },
             "require": {
                 "ext-json": ">=0",
                 "ext-pcre": ">=0",
-                "php": ">=8.3",
+                "php": ">=8.4",
                 "roave/security-advisories": "dev-latest"
             },
             "require-dev": {
@@ -247,11 +247,11 @@
         },
         {
             "name": "eappointment/zmsentities",
-            "version": "dev-main",
+            "version": "dev-chore/psr-http-message-2",
             "dist": {
                 "type": "path",
                 "url": "../zmsentities",
-                "reference": "3b064145bcaa7f64c4a42eea05d1beca82f736c9"
+                "reference": "8e3b5a63bbfe80dd8f289c434ffb1a0a3fc20d14"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -262,7 +262,7 @@
                 "giggsey/libphonenumber-for-php": "^8.13.55",
                 "league/html-to-markdown": "^5.0",
                 "opis/json-schema": "^2.4",
-                "php": ">=8.3",
+                "php": ">=8.4",
                 "roave/security-advisories": "dev-latest",
                 "symfony/translation": "^5.4",
                 "symfony/twig-bridge": "^5.4",
@@ -305,11 +305,11 @@
         },
         {
             "name": "eappointment/zmsslim",
-            "version": "dev-main",
+            "version": "dev-chore/psr-http-message-2",
             "dist": {
                 "type": "path",
                 "url": "../zmsslim",
-                "reference": "f66bbe7d3b52216df2e5e28a42c859fd1f06995c"
+                "reference": "8e3b5a63bbfe80dd8f289c434ffb1a0a3fc20d14"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -318,7 +318,7 @@
                 "ezyang/htmlpurifier": "^4.18",
                 "league/commonmark": "^2.7",
                 "monolog/monolog": "^2.0",
-                "php": ">=8.3",
+                "php": ">=8.4",
                 "psr/simple-cache": "^3.0",
                 "roave/security-advisories": "dev-latest",
                 "slim/http-cache": "1.*",
@@ -2448,16 +2448,16 @@
         },
         {
             "name": "psr/http-message",
-            "version": "1.1",
+            "version": "2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-fig/http-message.git",
-                "reference": "cb6ce4845ce34a8ad9e68117c10ee90a29919eba"
+                "reference": "402d35bcb92c70c026d1a6a9883f06b2ead23d71"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-fig/http-message/zipball/cb6ce4845ce34a8ad9e68117c10ee90a29919eba",
-                "reference": "cb6ce4845ce34a8ad9e68117c10ee90a29919eba",
+                "url": "https://api.github.com/repos/php-fig/http-message/zipball/402d35bcb92c70c026d1a6a9883f06b2ead23d71",
+                "reference": "402d35bcb92c70c026d1a6a9883f06b2ead23d71",
                 "shasum": ""
             },
             "require": {
@@ -2466,7 +2466,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.1.x-dev"
+                    "dev-master": "2.0.x-dev"
                 }
             },
             "autoload": {
@@ -2481,7 +2481,7 @@
             "authors": [
                 {
                     "name": "PHP-FIG",
-                    "homepage": "http://www.php-fig.org/"
+                    "homepage": "https://www.php-fig.org/"
                 }
             ],
             "description": "Common interface for HTTP messages",
@@ -2495,9 +2495,9 @@
                 "response"
             ],
             "support": {
-                "source": "https://github.com/php-fig/http-message/tree/1.1"
+                "source": "https://github.com/php-fig/http-message/tree/2.0"
             },
-            "time": "2023-04-04T09:50:52+00:00"
+            "time": "2023-04-04T09:54:51+00:00"
         },
         {
             "name": "psr/http-server-handler",
@@ -10622,5 +10622,8 @@
         "ext-pcre": ">=0"
     },
     "platform-dev": {},
+    "platform-overrides": {
+        "php": "8.4.1"
+    },
     "plugin-api-version": "2.9.0"
 }
