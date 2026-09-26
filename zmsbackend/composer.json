@@ -41,7 +41,7 @@
         "eappointment/zmsentities": "@dev",
         "symfony/cache": "^6.0",
         "psr/simple-cache": "^3.0",
-        "monolog/monolog": "^2.0",
+        "monolog/monolog": "^3.0",
         "league/climate": "^3.2",
         "aura/sql": "^6",
         "roave/security-advisories": "dev-latest"
