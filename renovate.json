@@ -13,7 +13,7 @@
   "schedule": ["* 0-4 * * *"],
 
   "constraints": {
-    "php": "8.4.*"
+    "php": "8.5.*"
   },
 
   "packageRules": [
