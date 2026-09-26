@@ -53,6 +53,29 @@ DATA_DIR="$MODULE_DIR/data"
 TEST_DB="zmsbackend_test"
 DB_PORT="${MYSQL_PORT##*:}"  # Extract port from "tcp://host:port" or just "port"
 
+PROCESSES=32
+PASSTHROUGH=()
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --processes)
+      PROCESSES="${2:?--processes requires a number}"
+      shift 2
+      ;;
+    --processes=*)
+      PROCESSES="${1#*=}"
+      shift
+      ;;
+    *)
+      PASSTHROUGH+=("$1")
+      shift
+      ;;
+  esac
+done
+if [[ ! "$PROCESSES" =~ ^[1-9][0-9]*$ ]]; then
+  echo "[ERROR] --processes must be a positive integer, got: $PROCESSES" >&2
+  exit 1
+fi
+
 # Cleanup function to clear zmsbackend/data folder (preserve .gitignore)
 cleanup_data_folder() {
   if [ -d "$DATA_DIR" ]; then
@@ -121,8 +144,17 @@ cd "$MODULE_DIR"
 php -r 'require "vendor/autoload.php"; exit(class_exists("BO\\Zmsbackend\\Application")?0:42);' \
   || (composer install --no-progress --prefer-dist && composer dump-autoload -o)
 
+if [[ ! -x vendor/bin/paratest ]]; then
+  composer install --no-progress --prefer-dist
+fi
+
+paratest_args=(--processes="$PROCESSES" --no-coverage)
+if [[ ${#PASSTHROUGH[@]} -gt 0 ]]; then
+  paratest_args+=("${PASSTHROUGH[@]}")
+fi
+
 php -d date.timezone="UTC" -d memory_limit="${PHP_MEMORY_LIMIT:-1G}" \
-  vendor/bin/phpunit --no-coverage "$@"
+  vendor/bin/paratest "${paratest_args[@]}"
 
 # 6. Final Cache Clearing
 section "6. Final Cache Clearing"
