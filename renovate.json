@@ -13,7 +13,7 @@
   "schedule": ["* 0-4 * * *"],
 
   "constraints": {
-    "php": "^8.4"
+    "php": "8.4.*"
   },
 
   "packageRules": [
@@ -29,6 +29,11 @@
       "matchManagers": ["npm"],
       "matchDepTypes": ["overrides"],
       "rangeStrategy": "bump"
+    },
+    {
+      "description": "Composer lockfile updates must be allowed to move locked transitive packages, such as sebastian/diff when PHPUnit is bumped.",
+      "matchManagers": ["composer"],
+      "postUpdateOptions": ["composerWithAll"]
     }
   ]
 }
