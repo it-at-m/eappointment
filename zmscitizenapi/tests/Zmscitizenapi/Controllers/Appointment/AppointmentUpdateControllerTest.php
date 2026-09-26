@@ -81,7 +81,7 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
                     'lat'=> null,
                     'lon'=> null,
                     'name'=> '',
-                    'displayame'=> '',
+                    'displayName'=> null,
                     'source'=> 'dldb'
                 ],
                 "shortName" => '',
@@ -100,7 +100,7 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
                 "infoForAllAppointments" => null,
                 "slotsPerAppointment" => null,
                 "appointmentsPerMail" => null,
-                "whitelistedMails" => null,
+                "whitelistedMails" => '',
                 "reservationDuration" => null,
                 "activationDuration" => null,
                 "hint" => null
