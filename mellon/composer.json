@@ -8,6 +8,11 @@
             "email": "mathias.fischer@berlinonline.de"
         }
     ],
+    "config": {
+        "platform": {
+            "php": "8.4.1"
+        }
+    },
     "require-dev": {
         "vimeo/psalm": "6.5.0",
         "phpmd/phpmd": "^2.8.0",
