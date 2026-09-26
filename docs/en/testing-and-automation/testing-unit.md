@@ -26,7 +26,7 @@ podman exec -it zms-web bash -lc 'export XDEBUG_MODE=off; cd zmsadmin && ./vendo
 
 Swap `zmsadmin` for the module you need. Use `export XDEBUG_MODE=off;` before `cd`. `XDEBUG_MODE=off cd zmsadmin && ./vendor/bin/phpunit` only applies the variable to `cd`, so PHPUnit still runs with the debugger enabled.
 
-CI runs the same suites with ParaTest, sixty-four processes at a time (`./vendor/bin/paratest --processes=64`). `./zmsbackend/zmsbackend-test` imports fixtures and then runs one process. Pass `--processes` to raise the count. `./vendor/bin/phpunit` stays the sequential command, including `--filter`.
+CI runs the same suites with ParaTest, sixty-four processes at a time (`./vendor/bin/paratest --processes=64`). `zmsbackend` uses four processes on the shared `zmsbo` database. `./zmsbackend/zmsbackend-test` imports fixtures and then runs one process. Pass `--processes` to raise the count. `./vendor/bin/phpunit` stays the sequential command, including `--filter`.
 
 A local parallel run, with Xdebug off:
 
