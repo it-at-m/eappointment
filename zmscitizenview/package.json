@@ -59,7 +59,6 @@
     "@tootallnate/once": "^3.0.1",
     "tmp": "^0.2.7",
     "ws": "^8.22.0",
-    "js-yaml": "^5.2.2",
     "undici": "^8.11.2",
     "morgan": "^1.12.1",
     "immutable": "^5.1.9",
