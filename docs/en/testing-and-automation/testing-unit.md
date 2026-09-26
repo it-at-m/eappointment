@@ -32,10 +32,13 @@ Useful flags for `./vendor/bin/phpunit`:
 --display-warnings
 --display-deprecations
 --display-notices
+--display-phpunit-notices
 --display-errors
 --display-failures
 --debug
 ```
+
+PHPUnit 13 prints `N` in the progress line for a PHPUnit notice. In this repository that is usually a mock created with no expectations. `N` does not fail the run. CI does not pass `--fail-on-phpunit-notice`. Use `--display-phpunit-notices` to print the notice text. `--display-notices` is only for PHP notices raised by the test.
 
 ### Special Cases (zmsbackend & zmsclient)
 
