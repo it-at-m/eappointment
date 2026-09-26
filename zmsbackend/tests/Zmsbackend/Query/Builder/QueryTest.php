@@ -7,9 +7,34 @@ use PHPUnit\Framework\TestCase;
 
 class QueryTest extends TestCase
 {
+    private function newQuery(): \BO\Zmsbackend\Query\Builder\Query
+    {
+        return new class extends \BO\Zmsbackend\Query\Builder\Query {
+            public function sql()
+            {
+                return '';
+            }
+
+            public function params()
+            {
+                return [];
+            }
+
+            public function reset()
+            {
+                return $this;
+            }
+
+            public function allTablesReferenced()
+            {
+                return [];
+            }
+        };
+    }
+
     public function testGettingSettingDialect()
     {
-        $query = $this->getMockForAbstractClass('BO\\Zmsbackend\\Query\\Builder\\Query', []);
+        $query = $this->newQuery();
         $this->assertInstanceOf('BO\\Zmsbackend\\Query\\Builder\\Dialect\\ANSI', $query->dialect());
 
         $dialect = new MySQL();
@@ -22,7 +47,7 @@ class QueryTest extends TestCase
     public function testNoFlags()
     {
         /* @var     \BO\Zmsbackend\Query\Builder\Query   $query  */
-        $query = $this->getMockForAbstractClass('BO\\Zmsbackend\\Query\\Builder\\Query', []);
+        $query = $this->newQuery();
         $this->assertEquals([], $query->flags());
         $this->assertEquals(null, $query->flag('unknown'));
     }
@@ -30,8 +55,8 @@ class QueryTest extends TestCase
     public function testGetSetFlag()
     {
         /* @var     \BO\Zmsbackend\Query\Builder\Query   $query  */
-        $query = $this->getMockForAbstractClass('BO\\Zmsbackend\\Query\\Builder\\Query', []);
-        $dummyQuery = $this->getMockForAbstractClass('BO\\Zmsbackend\\Query\\Builder\\Query', []);
+        $query = $this->newQuery();
+        $dummyQuery = $this->newQuery();
 
         $this->assertEquals($query, $query->flag('ttl', 30));
         $this->assertEquals($query, $query->flag('model', 'User'));
@@ -47,8 +72,8 @@ class QueryTest extends TestCase
     public function testGetSetFlags()
     {
         /* @var     \BO\Zmsbackend\Query\Builder\Query   $query  */
-        $query = $this->getMockForAbstractClass('BO\\Zmsbackend\\Query\\Builder\\Query', []);
-        $dummyQuery = $this->getMockForAbstractClass('BO\\Zmsbackend\\Query\\Builder\\Query', []);
+        $query = $this->newQuery();
+        $dummyQuery = $this->newQuery();
 
         $flags = [
             'ttl'     => 30,
@@ -64,7 +89,7 @@ class QueryTest extends TestCase
     public function testDeleteFlag()
     {
         /* @var     \BO\Zmsbackend\Query\Builder\Query $query */
-        $query = $this->getMockForAbstractClass('BO\\Zmsbackend\\Query\\Builder\\Query', []);
+        $query = $this->newQuery();
         $query->flag('ttl', 30);
         $this->assertEquals(30, $query->flag('ttl'));
 
@@ -75,7 +100,7 @@ class QueryTest extends TestCase
     public function testGetSetQueryBase()
     {
         /* @var     \BO\Zmsbackend\Query\Builder\Query    $q  */
-        $q = $this->getMockForAbstractClass('BO\\Zmsbackend\\Query\\Builder\\Query');
+        $q = $this->newQuery();
         $this->assertNull($q->queryBaseStatement());
 
         $this->assertEquals($q, $q->queryBaseStatement('SELECT DISTINCT'));
