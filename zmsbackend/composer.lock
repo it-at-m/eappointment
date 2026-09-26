@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "40649c0de70c004114e201c847de23f4",
+    "content-hash": "7a41f503522e86e08c7c8a81463d8c3a",
     "packages": [
         {
             "name": "aronduby/dump",
@@ -255,16 +255,16 @@
         },
         {
             "name": "eappointment/mellon",
-            "version": "dev-main",
+            "version": "dev-chore/psr-http-message-2",
             "dist": {
                 "type": "path",
                 "url": "../mellon",
-                "reference": "56a96a21f59476386e0604378dfbf249baedc26e"
+                "reference": "8e3b5a63bbfe80dd8f289c434ffb1a0a3fc20d14"
             },
             "require": {
                 "ext-json": ">=0",
                 "ext-pcre": ">=0",
-                "php": ">=8.3",
+                "php": ">=8.4",
                 "roave/security-advisories": "dev-latest"
             },
             "require-dev": {
@@ -305,11 +305,11 @@
         },
         {
             "name": "eappointment/zmsclient",
-            "version": "dev-main",
+            "version": "dev-chore/psr-http-message-2",
             "dist": {
                 "type": "path",
                 "url": "../zmsclient",
-                "reference": "468bbb43e2ae3d8a87ae5906d57e527632ee47c7"
+                "reference": "6a607d3638256cbe90501e718f60effc612a8670"
             },
             "require": {
                 "aronduby/dump": "^0.9",
@@ -320,9 +320,9 @@
                 "ext-json": ">=1.0",
                 "ext-mbstring": ">=0",
                 "ext-pcre": ">=0",
-                "php": ">=8.3",
+                "php": ">=8.4",
                 "php-http/curl-client": "^2.2",
-                "psr/http-message": "^1.0",
+                "psr/http-message": "^2.0",
                 "roave/security-advisories": "dev-latest",
                 "slim/psr7": "^1.5",
                 "tracy/tracy": "^2.9",
@@ -365,11 +365,11 @@
         },
         {
             "name": "eappointment/zmsdldb",
-            "version": "dev-main",
+            "version": "dev-chore/psr-http-message-2",
             "dist": {
                 "type": "path",
                 "url": "../zmsdldb",
-                "reference": "cabec25b438a9251d6dd432d2cc18779d5d5f671"
+                "reference": "8e3b5a63bbfe80dd8f289c434ffb1a0a3fc20d14"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -382,7 +382,7 @@
                 "ext-mbstring": ">=0",
                 "ext-pcre": ">=0",
                 "nategood/httpful": "1.*",
-                "php": ">=8.3",
+                "php": ">=8.4",
                 "psr/simple-cache": "^3.0",
                 "roave/security-advisories": "dev-latest",
                 "symfony/cache": "^6.0",
@@ -443,11 +443,11 @@
         },
         {
             "name": "eappointment/zmsentities",
-            "version": "dev-main",
+            "version": "dev-chore/psr-http-message-2",
             "dist": {
                 "type": "path",
                 "url": "../zmsentities",
-                "reference": "3b064145bcaa7f64c4a42eea05d1beca82f736c9"
+                "reference": "8e3b5a63bbfe80dd8f289c434ffb1a0a3fc20d14"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -458,7 +458,7 @@
                 "giggsey/libphonenumber-for-php": "^8.13.55",
                 "league/html-to-markdown": "^5.0",
                 "opis/json-schema": "^2.4",
-                "php": ">=8.3",
+                "php": ">=8.4",
                 "roave/security-advisories": "dev-latest",
                 "symfony/translation": "^5.4",
                 "symfony/twig-bridge": "^5.4",
@@ -501,11 +501,11 @@
         },
         {
             "name": "eappointment/zmsslim",
-            "version": "dev-main",
+            "version": "dev-chore/psr-http-message-2",
             "dist": {
                 "type": "path",
                 "url": "../zmsslim",
-                "reference": "f66bbe7d3b52216df2e5e28a42c859fd1f06995c"
+                "reference": "8e3b5a63bbfe80dd8f289c434ffb1a0a3fc20d14"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -514,7 +514,7 @@
                 "ezyang/htmlpurifier": "^4.18",
                 "league/commonmark": "^2.7",
                 "monolog/monolog": "^2.0",
-                "php": ">=8.3",
+                "php": ">=8.4",
                 "psr/simple-cache": "^3.0",
                 "roave/security-advisories": "dev-latest",
                 "slim/http-cache": "1.*",
@@ -2766,16 +2766,16 @@
         },
         {
             "name": "psr/http-message",
-            "version": "1.1",
+            "version": "2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-fig/http-message.git",
-                "reference": "cb6ce4845ce34a8ad9e68117c10ee90a29919eba"
+                "reference": "402d35bcb92c70c026d1a6a9883f06b2ead23d71"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-fig/http-message/zipball/cb6ce4845ce34a8ad9e68117c10ee90a29919eba",
-                "reference": "cb6ce4845ce34a8ad9e68117c10ee90a29919eba",
+                "url": "https://api.github.com/repos/php-fig/http-message/zipball/402d35bcb92c70c026d1a6a9883f06b2ead23d71",
+                "reference": "402d35bcb92c70c026d1a6a9883f06b2ead23d71",
                 "shasum": ""
             },
             "require": {
@@ -2784,7 +2784,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.1.x-dev"
+                    "dev-master": "2.0.x-dev"
                 }
             },
             "autoload": {
@@ -2799,7 +2799,7 @@
             "authors": [
                 {
                     "name": "PHP-FIG",
-                    "homepage": "http://www.php-fig.org/"
+                    "homepage": "https://www.php-fig.org/"
                 }
             ],
             "description": "Common interface for HTTP messages",
@@ -2813,9 +2813,9 @@
                 "response"
             ],
             "support": {
-                "source": "https://github.com/php-fig/http-message/tree/1.1"
+                "source": "https://github.com/php-fig/http-message/tree/2.0"
             },
-            "time": "2023-04-04T09:50:52+00:00"
+            "time": "2023-04-04T09:54:51+00:00"
         },
         {
             "name": "psr/http-server-handler",
@@ -11010,7 +11010,7 @@
     },
     "platform-dev": {},
     "platform-overrides": {
-        "php": "8.4.0"
+        "php": "8.4.1"
     },
     "plugin-api-version": "2.9.0"
 }

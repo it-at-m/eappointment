@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a294ba2241157a5d8ef9e558a68d1c73",
+    "content-hash": "03afeb0a05930803c3518dade9d388a6",
     "packages": [
         {
             "name": "aronduby/dump",
@@ -197,11 +197,11 @@
         },
         {
             "name": "eappointment/mellon",
-            "version": "dev-main",
+            "version": "dev-chore/psr-http-message-2",
             "dist": {
                 "type": "path",
                 "url": "../mellon",
-                "reference": "34e768b501be9d3ce256144e4fdd0220e0d204f2"
+                "reference": "8e3b5a63bbfe80dd8f289c434ffb1a0a3fc20d14"
             },
             "require": {
                 "ext-json": ">=0",
@@ -247,11 +247,11 @@
         },
         {
             "name": "eappointment/zmsclient",
-            "version": "dev-main",
+            "version": "dev-chore/psr-http-message-2",
             "dist": {
                 "type": "path",
                 "url": "../zmsclient",
-                "reference": "841c7f4c2be6c13156ab46c89e47503604b445a5"
+                "reference": "6a607d3638256cbe90501e718f60effc612a8670"
             },
             "require": {
                 "aronduby/dump": "^0.9",
@@ -264,7 +264,7 @@
                 "ext-pcre": ">=0",
                 "php": ">=8.4",
                 "php-http/curl-client": "^2.2",
-                "psr/http-message": "^1.0",
+                "psr/http-message": "^2.0",
                 "roave/security-advisories": "dev-latest",
                 "slim/psr7": "^1.5",
                 "tracy/tracy": "^2.9",
@@ -307,11 +307,11 @@
         },
         {
             "name": "eappointment/zmsentities",
-            "version": "dev-main",
+            "version": "dev-chore/psr-http-message-2",
             "dist": {
                 "type": "path",
                 "url": "../zmsentities",
-                "reference": "db4622fc63dec4476a5288e5a4ca8dc744b7d4b7"
+                "reference": "8e3b5a63bbfe80dd8f289c434ffb1a0a3fc20d14"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -365,11 +365,11 @@
         },
         {
             "name": "eappointment/zmsslim",
-            "version": "dev-main",
+            "version": "dev-chore/psr-http-message-2",
             "dist": {
                 "type": "path",
                 "url": "../zmsslim",
-                "reference": "db88c966dfe58747b0002c391c7c37d32bfdc856"
+                "reference": "8e3b5a63bbfe80dd8f289c434ffb1a0a3fc20d14"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -2518,16 +2518,16 @@
         },
         {
             "name": "psr/http-message",
-            "version": "1.1",
+            "version": "2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-fig/http-message.git",
-                "reference": "cb6ce4845ce34a8ad9e68117c10ee90a29919eba"
+                "reference": "402d35bcb92c70c026d1a6a9883f06b2ead23d71"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-fig/http-message/zipball/cb6ce4845ce34a8ad9e68117c10ee90a29919eba",
-                "reference": "cb6ce4845ce34a8ad9e68117c10ee90a29919eba",
+                "url": "https://api.github.com/repos/php-fig/http-message/zipball/402d35bcb92c70c026d1a6a9883f06b2ead23d71",
+                "reference": "402d35bcb92c70c026d1a6a9883f06b2ead23d71",
                 "shasum": ""
             },
             "require": {
@@ -2536,7 +2536,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.1.x-dev"
+                    "dev-master": "2.0.x-dev"
                 }
             },
             "autoload": {
@@ -2551,7 +2551,7 @@
             "authors": [
                 {
                     "name": "PHP-FIG",
-                    "homepage": "http://www.php-fig.org/"
+                    "homepage": "https://www.php-fig.org/"
                 }
             ],
             "description": "Common interface for HTTP messages",
@@ -2565,9 +2565,9 @@
                 "response"
             ],
             "support": {
-                "source": "https://github.com/php-fig/http-message/tree/1.1"
+                "source": "https://github.com/php-fig/http-message/tree/2.0"
             },
-            "time": "2023-04-04T09:50:52+00:00"
+            "time": "2023-04-04T09:54:51+00:00"
         },
         {
             "name": "psr/http-server-handler",
@@ -10689,5 +10689,8 @@
         "php": ">=8.4"
     },
     "platform-dev": {},
+    "platform-overrides": {
+        "php": "8.4.1"
+    },
     "plugin-api-version": "2.9.0"
 }
