@@ -15,6 +15,7 @@ class UseraccountEditTest extends Base
 
     protected $classname = "UseraccountEdit";
 
+    #[\Override]
     public function testRendering()
     {
         $this->setApiCalls(

@@ -12,6 +12,7 @@ class ScopeEmergencyRespondTest extends Base
 
     protected $classname = "ScopeEmergencyResponse";
 
+    #[\Override]
     public function testRendering()
     {
         $this->setApiCalls(

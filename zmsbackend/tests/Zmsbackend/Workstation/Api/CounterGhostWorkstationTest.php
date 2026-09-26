@@ -6,6 +6,7 @@ class CounterGhostWorkstationTest extends \BO\Zmsbackend\Tests\Api\Base
 {
     protected $classname = "CounterGhostWorkstation";
 
+    #[\Override]
     public function testRendering()
     {
         $workstation = $this->setWorkstation();

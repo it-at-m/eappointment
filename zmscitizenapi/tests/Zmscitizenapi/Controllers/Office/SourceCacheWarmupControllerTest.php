@@ -13,6 +13,7 @@ class SourceCacheWarmupControllerTest extends ControllerTestCase
 
     private bool $hadWarmupToken = false;
 
+    #[\Override]
     public function setUp(): void
     {
         parent::setUp();
@@ -27,6 +28,7 @@ class SourceCacheWarmupControllerTest extends ControllerTestCase
         putenv('SOURCE_CACHE_WARMUP_TOKEN=test-warmup-token');
     }
 
+    #[\Override]
     public function tearDown(): void
     {
         if ($this->hadWarmupToken) {
@@ -37,6 +39,7 @@ class SourceCacheWarmupControllerTest extends ControllerTestCase
         parent::tearDown();
     }
 
+    #[\Override]
     public function testRendering()
     {
         // Inherited Slim base expects 200; warmup requires a token header.

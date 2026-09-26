@@ -10,6 +10,7 @@ use PHPUnit\Framework\TestCase;
 
 class ModuleLoggerInitializerTest extends TestCase
 {
+    #[\Override]
     protected function tearDown(): void
     {
         putenv('ZMS_ADMIN_LOGGER_MAX_REQUESTS');

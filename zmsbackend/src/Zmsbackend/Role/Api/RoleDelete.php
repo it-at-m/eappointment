@@ -12,6 +12,7 @@ class RoleDelete extends \BO\Zmsbackend\Api\BaseController
     /**
      * @return ResponseInterface
      */
+    #[\Override]
     public function readResponse(
         RequestInterface $request,
         ResponseInterface $response,

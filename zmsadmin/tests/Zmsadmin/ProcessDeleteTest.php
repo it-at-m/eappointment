@@ -14,6 +14,7 @@ class ProcessDeleteTest extends Base
 
     protected $classname = "ProcessDelete";
 
+    #[\Override]
     public function testRendering()
     {
         $this->setApiCalls(

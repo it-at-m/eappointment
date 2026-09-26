@@ -17,6 +17,7 @@ class MailTest extends Base
 
     protected $classname = "Mail";
 
+    #[\Override]
     public function testRendering()
     {
         $this->setApiCalls(

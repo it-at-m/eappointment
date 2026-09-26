@@ -6,6 +6,7 @@ class StatusGetTest extends \BO\Zmsbackend\Tests\Api\Base
 {
     protected $classname = "StatusGet";
 
+    #[\Override]
     public function testRendering()
     {
         $response = $this->render([], [

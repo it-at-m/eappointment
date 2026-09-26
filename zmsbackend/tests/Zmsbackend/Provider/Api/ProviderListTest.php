@@ -6,6 +6,7 @@ class ProviderListTest extends \BO\Zmsbackend\Tests\Api\Base
 {
     protected $classname = "ProviderList";
 
+    #[\Override]
     public function testRendering()
     {
         $response = $this->render(['source' => 'unittest'], ['isAssigned' => true], []);

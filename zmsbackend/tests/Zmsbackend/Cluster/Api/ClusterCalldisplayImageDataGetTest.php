@@ -13,6 +13,7 @@ class ClusterCalldisplayImageDataGetTest extends \BO\Zmsbackend\Tests\Api\Base
 
     const int CLUSTER_ID = 109;
 
+    #[\Override]
     public function testRendering()
     {
         $this->setWorkstation();

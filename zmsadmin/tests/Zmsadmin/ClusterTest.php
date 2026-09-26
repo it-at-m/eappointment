@@ -13,6 +13,7 @@ class ClusterTest extends Base
 
     protected $classname = "Cluster";
 
+    #[\Override]
     public function testRendering()
     {
         $this->setApiCalls(

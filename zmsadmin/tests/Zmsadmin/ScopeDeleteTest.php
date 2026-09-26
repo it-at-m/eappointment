@@ -12,6 +12,7 @@ class ScopeDeleteTest extends Base
 
     protected $classname = "ScopeDelete";
 
+    #[\Override]
     public function testRendering()
     {
         $this->setApiCalls(

@@ -42,6 +42,7 @@ class TestLogger extends LoggerService
      * @param array<string, mixed> $context Additional context data
      * @throws \RuntimeException When test case is not initialized
      */
+    #[\Override]
     public static function logInfo(string $message, array $context = []): void
     {
         if (self::$testCase === null) {
@@ -64,6 +65,7 @@ class TestLogger extends LoggerService
         }
     }
 
+    #[\Override]
     public static function logError(
         \Throwable $exception,
         ?RequestInterface $request = null,

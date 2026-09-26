@@ -4,6 +4,7 @@ namespace BO\Zmsmessaging\Tests;
 
 class DeleteFromQueueTest extends Base
 {
+    #[\Override]
     protected function getApiCalls(): mixed
     {
         return [

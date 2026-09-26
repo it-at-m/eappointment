@@ -9,6 +9,7 @@ class RoleDeleteTest extends \BO\Zmsbackend\Tests\Api\Base
 {
     protected $classname = "RoleDelete";
 
+    #[\Override]
     public function testRendering()
     {
         $this->setWorkstation()->getUseraccount()->setPermissions('superuser');

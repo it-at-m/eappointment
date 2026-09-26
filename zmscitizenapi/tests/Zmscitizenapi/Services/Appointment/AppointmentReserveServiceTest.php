@@ -11,6 +11,7 @@ class AppointmentReserveServiceTest extends MiddlewareTestCase
     private AppointmentReserveService $service;
     private \ReflectionClass $reflector;
 
+    #[\Override]
     protected function setUp(): void
     {
         parent::setUp();
@@ -19,6 +20,7 @@ class AppointmentReserveServiceTest extends MiddlewareTestCase
         \App::$CAPTCHA_ENABLED = false;
     }
 
+    #[\Override]
     protected function tearDown(): void
     {
         \App::$CAPTCHA_ENABLED = false;

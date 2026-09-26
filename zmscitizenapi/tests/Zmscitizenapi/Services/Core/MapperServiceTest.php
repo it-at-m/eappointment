@@ -26,6 +26,7 @@ class MapperServiceTest extends TestCase
 {
     private $originalFacade;
 
+    #[\Override]
     protected function setUp(): void
     {
         parent::setUp();
@@ -35,6 +36,7 @@ class MapperServiceTest extends TestCase
         }
     }
 
+    #[\Override]
     protected function tearDown(): void
     {
         parent::tearDown();

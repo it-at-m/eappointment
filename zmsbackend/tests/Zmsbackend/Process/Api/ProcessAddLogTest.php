@@ -10,6 +10,7 @@ class ProcessAddLogTest extends \BO\Zmsbackend\Tests\Api\Base
 
     const int PROCESS_ID = 10030;
 
+    #[\Override]
     public function testRendering()
     {
         $this->setWorkstation()->getUseraccount()->setPermissions('superuser');

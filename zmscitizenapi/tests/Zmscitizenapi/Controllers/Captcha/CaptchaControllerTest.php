@@ -8,6 +8,7 @@ class CaptchaControllerTest extends ControllerTestCase
 {
     protected $classname = "\BO\Zmscitizenapi\Controllers\Captcha\CaptchaController";
 
+    #[\Override]
     public function setUp(): void
     {
         parent::setUp();
@@ -26,6 +27,7 @@ class CaptchaControllerTest extends ControllerTestCase
         \App::initialize();
     }
 
+    #[\Override]
     public function tearDown(): void
     {
         putenv('ALTCHA_CAPTCHA_SITE_KEY=');

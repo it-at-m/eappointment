@@ -6,6 +6,7 @@ class WorkstationListByScopeTest extends \BO\Zmsbackend\Tests\Api\Base
 {
     protected $classname = "WorkstationListByScope";
 
+    #[\Override]
     public function testRendering()
     {
         $this->setWorkstation();

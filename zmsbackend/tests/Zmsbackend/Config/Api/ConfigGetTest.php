@@ -8,6 +8,7 @@ class ConfigGetTest extends \BO\Zmsbackend\Tests\Api\Base
 {
     protected $classname = "ConfigGet";
 
+    #[\Override]
     public function testRendering()
     {
         $response = $this->render([], [

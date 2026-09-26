@@ -8,6 +8,7 @@ class ProcessListByScopeAndStatusTest extends \BO\Zmsbackend\Tests\Api\Base
 {
     protected $classname = "ProcessListByScopeAndStatus";
 
+    #[\Override]
     public function testRendering()
     {
         $this->setWorkstation();

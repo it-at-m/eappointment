@@ -14,6 +14,7 @@ class ApplicationTest extends TestCase
 {
     private string $tempDir;
 
+    #[\Override]
     protected function setUp(): void
     {
         parent::setUp();
@@ -185,6 +186,7 @@ class ApplicationTest extends TestCase
         $this->assertEquals(Application::DEFAULT_PLACEHOLDER_EMAIL, Application::getPlaceholderEmail());
     }
 
+    #[\Override]
     protected function tearDown(): void
     {
         parent::tearDown();
