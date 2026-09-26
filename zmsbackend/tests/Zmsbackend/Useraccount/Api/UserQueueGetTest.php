@@ -6,6 +6,7 @@ class UserQueueGetTest extends \BO\Zmsbackend\Tests\Api\Base
 {
     protected $classname = 'UserQueue';
 
+    #[\Override]
     public function testRendering()
     {
         $this->setWorkstation()->getUseraccount()->setPermissions('openqueue');

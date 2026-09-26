@@ -6,6 +6,7 @@ class OrganisationGetTest extends \BO\Zmsbackend\Tests\Api\Base
 {
     protected $classname = "OrganisationGet";
 
+    #[\Override]
     public function testRendering()
     {
         $this->setWorkstation()->getUseraccount()->setPermissions('department');

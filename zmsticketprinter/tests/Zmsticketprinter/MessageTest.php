@@ -10,6 +10,7 @@ class MessageTest extends Base
 
     protected $parameters = [ ];
 
+    #[\Override]
     protected function getApiCalls(): array
     {
         return [
@@ -32,6 +33,7 @@ class MessageTest extends Base
         ];
     }
 
+    #[\Override]
     public function testRendering()
     {
         $response = $this->render([

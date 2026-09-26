@@ -10,6 +10,7 @@ class DayoffTest extends Base
 
     protected $classname = "Dayoff";
 
+    #[\Override]
     public function testRendering()
     {
         $this->setApiCalls(

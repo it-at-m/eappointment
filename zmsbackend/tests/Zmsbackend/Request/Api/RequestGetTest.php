@@ -6,6 +6,7 @@ class RequestGetTest extends \BO\Zmsbackend\Tests\Api\Base
 {
     protected $classname = "RequestGet";
 
+    #[\Override]
     public function testRendering()
     {
         $response = $this->render(['source' => 'dldb', 'id' => 120335], [], []);

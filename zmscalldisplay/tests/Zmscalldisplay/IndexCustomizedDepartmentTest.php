@@ -10,6 +10,7 @@ class IndexCustomizedDepartmentTest extends Base
 
     protected $parameters = [ ];
 
+    #[\Override]
     protected function getApiCalls(): array
     {
         return [
@@ -21,6 +22,7 @@ class IndexCustomizedDepartmentTest extends Base
         ];
     }
 
+    #[\Override]
     public function testRendering()
     {
         $response = $this->render([ ], [

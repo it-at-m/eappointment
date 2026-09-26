@@ -13,6 +13,7 @@ class ScopeAvailabilityMonthTest extends Base
 
     protected $classname = "ScopeAvailabilityMonth";
 
+    #[\Override]
     public function testRendering()
     {
         $startDate = new \DateTimeImmutable('2016-04-01');

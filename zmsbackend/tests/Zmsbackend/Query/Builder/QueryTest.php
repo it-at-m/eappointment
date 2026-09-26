@@ -10,21 +10,25 @@ class QueryTest extends TestCase
     private function newQuery(): \BO\Zmsbackend\Query\Builder\Query
     {
         return new class extends \BO\Zmsbackend\Query\Builder\Query {
+            #[\Override]
             public function sql()
             {
                 return '';
             }
 
+            #[\Override]
             public function params()
             {
                 return [];
             }
 
+            #[\Override]
             public function reset()
             {
                 return $this;
             }
 
+            #[\Override]
             public function allTablesReferenced()
             {
                 return [];

@@ -9,6 +9,7 @@ class RoleUpdateTest extends \BO\Zmsbackend\Tests\Api\Base
 {
     protected $classname = "RoleUpdate";
 
+    #[\Override]
     public function testRendering()
     {
         $this->setWorkstation()->getUseraccount()->setPermissions('superuser');

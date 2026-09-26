@@ -12,6 +12,7 @@ class WorkstationProcessNextTest extends Base
 
     protected $classname = "WorkstationProcessNext";
 
+    #[\Override]
     public function testRendering()
     {
         \App::$now = new \DateTimeImmutable('2016-04-01 08:55:00', new \DateTimeZone('Europe/Berlin'));

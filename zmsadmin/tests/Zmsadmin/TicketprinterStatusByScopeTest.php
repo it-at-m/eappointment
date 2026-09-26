@@ -16,6 +16,7 @@ class TicketprinterStatusByScopeTest extends Base
 
     protected $classname = "TicketprinterStatusByScope";
 
+    #[\Override]
     public function testRendering()
     {
         $this->setApiCalls(

@@ -6,6 +6,7 @@ class CalldisplayGetTest extends \BO\Zmsbackend\Tests\Api\Base
 {
     protected $classname = "CalldisplayGet";
 
+    #[\Override]
     public function testRendering()
     {
         $this->setWorkstation();

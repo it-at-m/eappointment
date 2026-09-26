@@ -9,6 +9,7 @@ class AppointmentByIdControllerTest extends ControllerTestCase
 {
     protected $classname = "\BO\Zmscitizenapi\Controllers\Appointment\AppointmentByIdController";
 
+    #[\Override]
     public function setUp(): void
     {
         parent::setUp();
@@ -28,6 +29,7 @@ class AppointmentByIdControllerTest extends ControllerTestCase
         \App::initialize();
     }
 
+    #[\Override]
     public function tearDown(): void
     {
         putenv('ALTCHA_CAPTCHA_SITE_KEY=');
@@ -39,6 +41,7 @@ class AppointmentByIdControllerTest extends ControllerTestCase
         parent::tearDown();
     }
 
+    #[\Override]
     public function testRendering()
     {
         $this->setApiCalls(
