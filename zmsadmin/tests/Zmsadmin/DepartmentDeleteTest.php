@@ -12,6 +12,7 @@ class DepartmentDeleteTest extends Base
 
     protected $classname = "DepartmentDelete";
 
+    #[\Override]
     public function testRendering()
     {
         $this->setApiCalls(

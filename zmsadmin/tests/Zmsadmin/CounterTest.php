@@ -10,6 +10,7 @@ class CounterTest extends Base
 
     protected $classname = "Counter";
 
+    #[\Override]
     public function testRendering()
     {
         $this->setApiCalls(

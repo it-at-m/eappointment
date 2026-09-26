@@ -16,6 +16,7 @@ class RateLimitingMiddlewareTest extends MiddlewareTestCase
     private RateLimitingMiddleware $middleware;
     private CacheInterface|MockObject $cache;
 
+    #[\Override]
     protected function setUp(): void
     {
         parent::setUp();
@@ -28,6 +29,7 @@ class RateLimitingMiddlewareTest extends MiddlewareTestCase
         $this->middleware = new RateLimitingMiddleware($this->cache, $this->logger);
     }
 
+    #[\Override]
     protected function tearDown(): void
     {
         if (\App::$cache) {

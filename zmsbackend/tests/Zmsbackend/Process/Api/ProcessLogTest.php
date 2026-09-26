@@ -12,6 +12,7 @@ class ProcessLogTest extends \BO\Zmsbackend\Tests\Api\Base
 
     const string AUTHKEY = '1c56';
 
+    #[\Override]
     public function testRendering()
     {
         (new \BO\Zmsbackend\Tests\Process\Api\ProcessUpdateTest('dummyTest'))->testRendering();

@@ -10,6 +10,7 @@ class SourceListTest extends \BO\Zmsbackend\Tests\Api\Base
 
     const string SOURCE = 'dldb';
 
+    #[\Override]
     public function testRendering()
     {
         $response = $this->render([], [], []);

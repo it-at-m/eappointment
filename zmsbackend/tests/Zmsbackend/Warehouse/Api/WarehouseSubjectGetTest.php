@@ -8,6 +8,7 @@ class WarehouseSubjectGetTest extends \BO\Zmsbackend\Tests\Api\Base
 {
     protected $classname = "WarehouseSubjectGet";
 
+    #[\Override]
     public function testRendering()
     {
         $workstation = $this->setWorkstation(138, 'berlinonline', 141);

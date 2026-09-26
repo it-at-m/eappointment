@@ -10,6 +10,7 @@ class HealthcheckTest extends Base
 
     protected $classname = "Healthcheck";
 
+    #[\Override]
     public function testRendering()
     {
         $this->setApiCalls(

@@ -10,6 +10,7 @@ class SourceGetTest extends \BO\Zmsbackend\Tests\Api\Base
 
     const string SOURCE = 'unittest';
 
+    #[\Override]
     public function testRendering()
     {
         $response = $this->render(['source' => self::SOURCE], [], []);

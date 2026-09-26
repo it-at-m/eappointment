@@ -12,6 +12,10 @@
   "timezone": "Europe/Berlin",
   "schedule": ["* 0-4 * * *"],
 
+  "constraints": {
+    "php": "8.5.*"
+  },
+
   "packageRules": [
     {
       "description": "Surefire 3.6.0 dropped surefire-testng; Cucumber TestNG then discovers 0 scenarios.",
@@ -25,6 +29,11 @@
       "matchManagers": ["npm"],
       "matchDepTypes": ["overrides"],
       "rangeStrategy": "bump"
+    },
+    {
+      "description": "Composer lockfile updates must be allowed to move locked transitive packages, such as sebastian/diff when PHPUnit is bumped.",
+      "matchManagers": ["composer"],
+      "postUpdateOptions": ["composerWithAll"]
     }
   ]
 }

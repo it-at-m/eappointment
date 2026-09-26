@@ -9,6 +9,7 @@ class ApikeyGetTest extends \BO\Zmsbackend\Tests\Api\Base
 {
     protected $classname = "ApikeyGet";
 
+    #[\Override]
     public function testRendering()
     {
         $input = ExampleApikey::create(static::class . '::' . $this->name());

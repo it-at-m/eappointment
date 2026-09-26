@@ -26,6 +26,7 @@ class ZmsApiClientServiceTest extends TestCase
     private $cacheMock;
     private $source;
 
+    #[\Override]
     protected function setUp(): void
     {
         parent::setUp();
@@ -46,6 +47,7 @@ class ZmsApiClientServiceTest extends TestCase
         $this->source->requests = new RequestList();
     }
 
+    #[\Override]
     protected function tearDown(): void
     {
         parent::tearDown();

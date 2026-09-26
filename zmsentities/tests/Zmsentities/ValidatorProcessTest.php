@@ -277,6 +277,22 @@ class ValidatorProcessTest extends Base
         $this->assertFalse($collectionStatus['telephone']['failed']);
     }
 
+    public function testPhoneNumberMissingIsNotParsed()
+    {
+        $process = new Process();
+        $process->scope = (new \BO\Zmsentities\Scope())->getExample();
+        $delegatedProcess = new \BO\Zmsentities\Helper\Delegate($process);
+        $processValidator = new ProcessValidator($process);
+
+        $processValidator->validateTelephone(
+            (new Validator([]))->getParameter('telephone'),
+            $delegatedProcess->setter('telephone')
+        );
+
+        $collectionStatus = $processValidator->getCollection()->getStatus();
+        $this->assertFalse($collectionStatus['telephone']['failed']);
+    }
+
     public function testPhoneNumberUnvalidLength()
     {
         $parsedNumber = '+491234567891012';

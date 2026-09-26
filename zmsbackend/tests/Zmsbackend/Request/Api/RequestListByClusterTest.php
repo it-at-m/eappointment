@@ -6,6 +6,7 @@ class RequestListByClusterTest extends \BO\Zmsbackend\Tests\Api\Base
 {
     protected $classname = "RequestListByCluster";
 
+    #[\Override]
     public function testRendering()
     {
         $response = $this->render(['id' => 110], [], []);

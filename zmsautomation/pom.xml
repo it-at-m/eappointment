@@ -19,9 +19,9 @@
     <!-- Surefire 3.6.0 dropped surefire-testng and runs TestNG via JUnit Platform, so Cucumber's
          scenarios DataProvider runs before @BeforeClass and discovers 0 tests. Stay on 3.5.x. -->
     <surefire.version>3.5.6</surefire.version>
-    <cucumber.version>7.34.9</cucumber.version>
+    <cucumber.version>8.0.2</cucumber.version>
     <testng.version>7.12.0</testng.version>
-    <flyway.version>13.7.0</flyway.version>
+    <flyway.version>13.8.0</flyway.version>
     <log4j.version>2.26.1</log4j.version>
     <lombok.version>1.18.48</lombok.version>
     <!-- Local ATAF: cd ../agile-test-automation-framework && mvn clean install -DskipTests -->
@@ -84,7 +84,7 @@
       <plugin>
         <groupId>com.diffplug.spotless</groupId>
         <artifactId>spotless-maven-plugin</artifactId>
-        <version>3.10.2</version>
+        <version>3.10.3</version>
         <configuration>
           <java>
             <includes>

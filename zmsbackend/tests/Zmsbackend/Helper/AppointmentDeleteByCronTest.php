@@ -22,6 +22,7 @@ class AppointmentDeleteByCronTest extends \BO\Zmsbackend\Tests\Service\Base
     private const PROCESS_DELETED = 990109;
     private const PROCESS_BLOCKED = 990110;
 
+    #[\Override]
     public function setUp(): void
     {
         $mockLogger = $this->createMock(LoggerInterface::class);

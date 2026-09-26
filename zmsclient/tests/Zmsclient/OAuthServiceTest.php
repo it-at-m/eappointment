@@ -15,6 +15,7 @@ class OAuthServiceTest extends TestCase
     protected $oauthService;
     protected $configMock;
 
+    #[\Override]
     protected function setUp(): void
     {
         $this->httpMock = $this->createMock(Http::class);

@@ -8,6 +8,7 @@ class ClusterDeleteTest extends \BO\Zmsbackend\Tests\Api\Base
 {
     protected $classname = "ClusterDelete";
 
+    #[\Override]
     public function testRendering()
     {
         $this->setWorkstation()->getUseraccount()->setPermissions('cluster');

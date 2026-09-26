@@ -10,6 +10,7 @@ class ProcessSearchTest extends \BO\Zmsbackend\Tests\Api\Base
 
     const int SCOPE_ID = 141;
 
+    #[\Override]
     public function setUp(): void
     {
         parent::setUp();
@@ -32,6 +33,7 @@ class ProcessSearchTest extends \BO\Zmsbackend\Tests\Api\Base
             ->setValue(null, null);
     }
 
+    #[\Override]
     public function testRendering()
     {
         $department = (new \BO\Zmsentities\Department());

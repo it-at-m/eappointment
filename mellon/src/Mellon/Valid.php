@@ -221,6 +221,7 @@ class Valid extends \BO\Mellon\Parameter
      *
      * @return Mixed
      */
+    #[\Override]
     public function getValue()
     {
         if ($this->hasFailed() || !$this->validated) {

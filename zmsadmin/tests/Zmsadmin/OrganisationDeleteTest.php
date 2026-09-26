@@ -12,6 +12,7 @@ class OrganisationDeleteTest extends Base
 
     protected $classname = "OrganisationDelete";
 
+    #[\Override]
     public function testRendering()
     {
         $this->setApiCalls(

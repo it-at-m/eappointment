@@ -2,7 +2,6 @@
 <phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.5/phpunit.xsd" backupGlobals="false" bootstrap="tests/bootstrap.php" colors="true" stopOnFailure="false" processIsolation="true" cacheDirectory=".phpunit.cache" backupStaticProperties="false" requireCoverageMetadata="false">
   <php>
     <ini name="error_reporting" value="-1"/>
-    <ini name="xdebug.mode" value="coverage"/>
     <env name="XDEBUG_MODE" value="coverage"/>
   </php>
   <coverage>

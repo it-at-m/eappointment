@@ -35,6 +35,7 @@ class TestLogger extends LoggerService
         self::$expectedLogs[] = ['error', $exception];
     }
 
+    #[\Override]
     public static function logInfo(string $message, array $context = []): void
     {
         if (self::$testCase === null) {
@@ -57,6 +58,7 @@ class TestLogger extends LoggerService
         }
     }
 
+    #[\Override]
     public static function logError(
         \Throwable $exception,
         ?RequestInterface $request = null,
@@ -84,10 +86,12 @@ class TestLogger extends LoggerService
         }
     }
 
+    #[\Override]
     public static function logRequest(ServerRequestInterface $request, ResponseInterface $response): void
     {
     }
 
+    #[\Override]
     public static function logWarning(string $message, array $context = []): void
     {
     }

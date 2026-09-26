@@ -6,6 +6,7 @@ class AvailabilitySlotsUpdateTest extends \BO\Zmsbackend\Tests\Api\Base
 {
     protected $classname = "AvailabilitySlotsUpdate";
 
+    #[\Override]
     public function testRendering()
     {
         $this->setWorkstation() ->getUseraccount() ->setPermissions('availability');

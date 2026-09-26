@@ -16,6 +16,7 @@ class FilterTest extends Base
 
     protected $sessionData = [ ];
 
+    #[\Override]
     public function testRendering()
     {
         $filter = new TwigFilter('stripslashes', function ($string) {

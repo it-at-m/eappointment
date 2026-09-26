@@ -14,6 +14,7 @@ class RequestLoggingMiddlewareTest extends MiddlewareTestCase
 {
     private RequestLoggingMiddleware $middleware;
 
+    #[\Override]
     protected function setUp(): void
     {
         parent::setUp();

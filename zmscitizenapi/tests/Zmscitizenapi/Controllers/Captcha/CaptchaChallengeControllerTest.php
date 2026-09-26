@@ -13,6 +13,7 @@ class CaptchaChallengeControllerTest extends ControllerTestCase
 {
     protected $classname = "\BO\Zmscitizenapi\Controllers\Captcha\CaptchaChallengeController";
 
+    #[\Override]
     public function setUp(): void
     {
         parent::setUp();
@@ -31,6 +32,7 @@ class CaptchaChallengeControllerTest extends ControllerTestCase
         \App::initialize();
     }
 
+    #[\Override]
     public function tearDown(): void
     {
         putenv('ALTCHA_CAPTCHA_SITE_KEY=');
@@ -58,6 +60,7 @@ class CaptchaChallengeControllerTest extends ControllerTestCase
                 $this->httpClient = $client;
             }
 
+            #[\Override]
             public function createChallenge(): array
             {
                 return parent::createChallenge();
@@ -83,6 +86,7 @@ class CaptchaChallengeControllerTest extends ControllerTestCase
                 $this->httpClient = $client;
             }
 
+            #[\Override]
             public function createChallenge(): array
             {
                 return parent::createChallenge();
@@ -110,6 +114,7 @@ class CaptchaChallengeControllerTest extends ControllerTestCase
                 $this->httpClient = $client;
             }
 
+            #[\Override]
             public function createChallenge(): array
             {
                 return parent::createChallenge();
@@ -140,6 +145,7 @@ class CaptchaChallengeControllerTest extends ControllerTestCase
                 $this->httpClient = $client;
             }
 
+            #[\Override]
             public function createChallenge(): array
             {
                 return parent::createChallenge();

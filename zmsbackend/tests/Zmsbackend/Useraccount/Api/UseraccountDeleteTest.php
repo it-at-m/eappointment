@@ -8,6 +8,7 @@ class UseraccountDeleteTest extends \BO\Zmsbackend\Tests\Api\Base
 {
     protected $classname = "UseraccountDelete";
 
+    #[\Override]
     public function testRendering()
     {
         $this->setWorkstation()->getUseraccount()->setPermissions('useraccount');

@@ -12,6 +12,7 @@ class OwnerDeleteTest extends Base
 
     protected $classname = "OwnerDelete";
 
+    #[\Override]
     public function testRendering()
     {
         $this->setApiCalls(

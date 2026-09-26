@@ -6,6 +6,7 @@ class DepartmentAddScopeTest extends \BO\Zmsbackend\Tests\Api\Base
 {
     protected $classname = "DepartmentAddScope";
 
+    #[\Override]
     public function testRendering()
     {
         $this->setWorkstation()->getUseraccount()->setPermissions('scope', 'department')

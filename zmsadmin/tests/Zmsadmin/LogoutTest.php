@@ -10,6 +10,7 @@ class LogoutTest extends Base
 
     protected $classname = "Logout";
 
+    #[\Override]
     public function testRendering()
     {
         $this->setApiCalls(

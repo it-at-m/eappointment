@@ -6,6 +6,7 @@ class PermissionListGetTest extends \BO\Zmsbackend\Tests\Api\Base
 {
     protected $classname = "PermissionListGet";
 
+    #[\Override]
     public function testRendering()
     {
         $this->setWorkstation()->getUseraccount()->setPermissions('superuser');

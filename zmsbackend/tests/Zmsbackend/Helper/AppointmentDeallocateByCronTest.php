@@ -10,6 +10,7 @@ use Psr\Log\LoggerInterface;
 
 class AppointmentDeallocateByCronTest extends \BO\Zmsbackend\Tests\Service\Base
 {
+    #[\Override]
     public function setUp(): void
     {
         $mockLogger = $this->createMock(LoggerInterface::class);

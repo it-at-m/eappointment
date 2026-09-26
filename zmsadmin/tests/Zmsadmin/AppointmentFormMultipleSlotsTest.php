@@ -10,6 +10,7 @@ class AppointmentFormMultipleSlotsTest extends Base
 
     protected $classname = "AppointmentForm";
 
+    #[\Override]
     public function testRendering()
     {
         $this->setApiCalls(

@@ -6,6 +6,7 @@ class OrganisationHashTest extends \BO\Zmsbackend\Tests\Api\Base
 {
     protected $classname = "OrganisationHash";
 
+    #[\Override]
     public function testRendering()
     {
         $response = $this->render(['id' => 54], [], []); //Pankow
