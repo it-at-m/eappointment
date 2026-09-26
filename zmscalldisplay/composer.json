@@ -16,14 +16,14 @@
             "php-http/discovery": true
         },
         "platform": {
-            "php": "8.4.1"
+            "php": "8.4.3"
         }
     },
     "require-dev": {
-        "vimeo/psalm": "6.5.0",
+        "vimeo/psalm": "6.18.1",
         "phpmd/phpmd": "^2.13",
         "squizlabs/php_codesniffer": "*",
-        "phpunit/phpunit": "^11",
+        "phpunit/phpunit": "^13",
         "phpspec/prophecy-phpunit": "^2.4",
         "roave/security-advisories": "dev-latest"
     },
