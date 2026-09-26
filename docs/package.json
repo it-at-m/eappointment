@@ -29,7 +29,7 @@
     "esbuild": "^0.28.1",
     "dompurify": "^3.4.15",
     "postcss": "^8.5.23",
-    "nanoid": "^6.0.0",
+    "nanoid": "^6.0.1",
     "lodash-es": "^4.18.0"
   }
 }
