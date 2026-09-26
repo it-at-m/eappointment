@@ -99,7 +99,7 @@ services:
   # CaptchaService local profile (site loadtest/loadtest, cost 1). Image is amd64-only;
   # Apple Silicon emulates it, same as init-keycloak-jar.
   captcha-db:
-    image: postgres:17.7-alpine3.21@sha256:5bcb5623bb6999b2f7fbd2109f0bfc1f144d138b52ca35ede95d644d93585c2f
+    image: postgres:18.1-alpine3.21@sha256:44d837eb4c2ed263474a95f0cc24745413c50924df60dd73ed6c4c3e36b84259
     container_name: zms-captcha-db
     environment:
       POSTGRES_DB: postgres
