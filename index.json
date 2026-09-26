@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-09-26T06:14:09.221Z",
+  "publishedAt": "2026-09-26T11:15:30.123Z",
   "branches": [
     {
       "name": "next",
@@ -54,6 +54,12 @@
       "slug": "chore-zmskvr-690-php-84-upgrade",
       "runId": "35670044907",
       "runStartedAt": "2026-09-22T00:00:02Z"
+    },
+    {
+      "name": "chore/psr-http-message-2",
+      "slug": "chore-psr-http-message-2",
+      "runId": "36237216020",
+      "runStartedAt": "2026-09-26T10:54:57Z"
     },
     {
       "name": "cursor/psalm-missing-param-type-low-risk",
