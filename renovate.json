@@ -12,6 +12,10 @@
   "timezone": "Europe/Berlin",
   "schedule": ["* 0-4 * * *"],
 
+  "constraints": {
+    "php": "^8.4"
+  },
+
   "packageRules": [
     {
       "description": "Surefire 3.6.0 dropped surefire-testng; Cucumber TestNG then discovers 0 scenarios.",
