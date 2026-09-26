@@ -3,6 +3,7 @@
 namespace BO\Slim;
 
 use App;
+use BO\Slim\Formatter\JsonLogFormatter;
 use Monolog\Formatter\JsonFormatter;
 use Monolog\Handler\FormattableHandlerInterface;
 use Monolog\Handler\StreamHandler;
@@ -179,28 +180,7 @@ class Bootstrap
         // Cron/CLI: stdout so Kubernetes/CAP collectors parse JSON; web: stderr
         $stream = PHP_SAPI === 'cli' ? 'php://stdout' : 'php://stderr';
         $handler = new StreamHandler($stream, $level);
-
-        $formatter = new JsonFormatter();
-
-        // Add processor to format time_local first
-        App::$log->pushProcessor(function (array $record) {
-            return array(
-                'time_local' => (new \DateTime())->format('Y-m-d\TH:i:sP'),
-                'client_ip' => $_SERVER['REMOTE_ADDR'] ?? '',
-                'remote_addr' => $_SERVER['HTTP_X_FORWARDED_FOR'] ?? $_SERVER['REMOTE_ADDR'] ?? '',
-                'remote_user' => '',
-                'application' => defined('\\App::IDENTIFIER') ? App::IDENTIFIER : 'zms',
-                'module' => defined('\\App::MODULE_NAME') ? App::MODULE_NAME : 'zmsslim',
-                'cron' => static::isCronLogging(),
-                'cron_name' => static::getCronLogName(),
-                'message' => $record['message'],
-                'level' => $record['level_name'],
-                'context' => $record['context'],
-                'extra' => $record['extra']
-            );
-        });
-
-        $handler->setFormatter($formatter);
+        $handler->setFormatter(new JsonLogFormatter());
         App::$log->pushHandler($handler);
 
         App::$log = App::$log;
