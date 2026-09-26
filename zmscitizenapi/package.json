@@ -16,7 +16,7 @@
   "// overrides.brace-expansion": "Force 5.0.8 for CVE-2026-14257 (DoS via unbounded expansion length); no 1.x/2.x backport.",
   "overrides": {
     "handlebars": "^4.7.9",
-    "dompurify": "^3.4.12",
+    "dompurify": "^3.4.16",
     "fast-uri": "^4.1.4",
     "fast-xml-builder": "^1.1.7",
     "postcss": "^8.5.10",
