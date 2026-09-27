@@ -25,6 +25,13 @@
       "allowedVersions": "<3.6.0"
     },
     {
+      "description": "Cucumber 8 removed GlueDiscoverySelectorResolver. ATAF 0.3.4 still uses the Cucumber 7 TestNG runner. See GH-3465.",
+      "matchManagers": ["maven"],
+      "matchPackageNames": ["io.cucumber:cucumber-java", "io.cucumber:cucumber-testng"],
+      "matchFileNames": ["zmsautomation/pom.xml"],
+      "allowedVersions": "<8.0.0"
+    },
+    {
       "description": "In-range npm overrides must bump package.json. A lockfile-only update runs `npm install pkg@version`, which npm rejects with EOVERRIDE when that spec differs from the override.",
       "matchManagers": ["npm"],
       "matchDepTypes": ["overrides"],
