@@ -11,10 +11,13 @@ Funktionalität: Solange die Weiterleitung offen ist, bleiben die Kundenaktionen
 		Und Sie in Feld "Platz-Nr. oder Tresen" den Text "4" eingeben.
 		Und Sie im Zeitmanagementsystem auf die Schaltfläche "Auswahl bestätigen" klicken.
 		Dann wird die Seite Sachbearbeiterplatz angezeigt.
-		Wenn Sie einen Terminkunden mit der Dienstleistung "Führungszeugnis", Uhrzeit, name, gültige E-Mail-Adresse und die Anmerkung "WeiterleitenParken" buchen.
-		Dann Es erscheint ein Pop-Up-Fenster "Termin wurde erfolgreich eingetragen" und der Termin ist auch in der Warteschlange sichtbar.
-		Wenn Der Sachbearbeiter den Terminkunden mit der Anmerkung "WeiterleitenParken" aufruft.
-		Dann wird der wartende Kunde aufgerufen.
+		# Scope 154 opening hours roll to the next day after about 21:00, so today has no Terminkunde slots.
+		# A Spontankunde reaches the same processing buttons without a slot.
+		Gegeben seien Sie einen Spontankunden für die Dienstleistung buchen:
+			| Dienstleistung  | Termin name | Kunde  |
+			| Führungszeugnis | Termin1     | Kunde1 |
+		Wenn Der Sachbearbeiter "<TestData.Termin1>" aus der Warteliste aufruft.
+		Dann wird der wartende Kunde "<TestData.Termin1>" aufgerufen.
 		Wenn Sie im Zeitmanagementsystem auf die Schaltfläche "Ja, Kunde erschienen" klicken.
 		Dann sind die Kundenaktionen Fertig stellen, Weiterleiten, Parken und Abbrechen anklickbar.
 		Wenn Sie die Weiterleitung öffnen.
@@ -25,4 +28,4 @@ Funktionalität: Solange die Weiterleitung offen ist, bleiben die Kundenaktionen
 		Dann ist das Terminerstellungsformular sichtbar.
 		Und sind die Kundenaktionen Fertig stellen, Weiterleiten, Parken und Abbrechen anklickbar.
 		Wenn Sie im Zeitmanagementsystem auf die Schaltfläche "Fertig stellen" klicken.
-		Dann Sollte der Kunde "<TestData.new_appointment_customer_name>" unter abgeschlossene Termine erscheinen.
+		Dann Sollte der Kunde "<TestData.Kunde1>" unter abgeschlossene Termine erscheinen.
