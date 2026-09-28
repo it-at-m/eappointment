@@ -2,6 +2,10 @@ name: 📱 Frontend Build zmscitizenview
 
 on:
   push:
+  # Rebuild without a commit. In Actions, choose the branch under "Use workflow from",
+  # the same way as the zmsautomation workflow.
+  # next and feature branches install the npm "beta" dist-tag; main and tags keep the pin.
+  workflow_dispatch:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref == 'refs/heads/next' && github.ref || github.run_id }}
