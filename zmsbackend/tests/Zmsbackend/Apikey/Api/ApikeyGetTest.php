@@ -10,6 +10,7 @@ class ApikeyGetTest extends \BO\Zmsbackend\Tests\Api\Base
 {
     protected $classname = "ApikeyGet";
 
+    #[\Override]
     public function testRendering()
     {
         $input = (new Entity)->createExample();

@@ -99,7 +99,7 @@ services:
   # CaptchaService local profile (site loadtest/loadtest, cost 1). Image is amd64-only;
   # Apple Silicon emulates it, same as init-keycloak-jar.
   captcha-db:
-    image: postgres:17.7-alpine3.21@sha256:5bcb5623bb6999b2f7fbd2109f0bfc1f144d138b52ca35ede95d644d93585c2f
+    image: postgres:18.1-alpine3.21@sha256:44d837eb4c2ed263474a95f0cc24745413c50924df60dd73ed6c4c3e36b84259
     container_name: zms-captcha-db
     environment:
       POSTGRES_DB: postgres
@@ -202,7 +202,7 @@ services:
     restart: "no"
 
   init-keycloak:
-    image: eclipse-temurin:25-jre-alpine@sha256:2ca9adf44f5c29d28ecd26cf92d75cc0c66b7f32bfd839a4439e363a8b428af8
+    image: eclipse-temurin:25-jre-alpine@sha256:3c0a9084927a221ccd1d007fcaf614465672c0af37aaa834c5184483afe56d61
     container_name: zms-init-keycloak
     # Jar volume is :ro. keycloakmigration Log4j writes logs/logfile.log under cwd,
     # so run from /tmp (entrypoint.sh uses java -jar keycloakmigration.jar).

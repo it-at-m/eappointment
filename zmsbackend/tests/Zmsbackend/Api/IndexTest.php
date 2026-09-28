@@ -6,6 +6,7 @@ class IndexTest extends Base
 {
     protected $classname = "Index";
 
+    #[\Override]
     public function testRendering()
     {
         $response = $this->render([], [], []);

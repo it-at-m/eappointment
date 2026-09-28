@@ -6,6 +6,7 @@ class UseraccountListByRoleAndDepartmentsTest extends \BO\Zmsbackend\Tests\Api\B
 {
     protected $classname = 'UseraccountListByRoleAndDepartments';
 
+    #[\Override]
     public function testRendering()
     {
         $this->setWorkstation()->getUseraccount()->setPermissions('superuser', 'useraccount');

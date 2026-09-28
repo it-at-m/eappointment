@@ -6,6 +6,7 @@ class OrganisationByDepartmentTest extends \BO\Zmsbackend\Tests\Api\Base
 {
     protected $classname = "OrganisationByDepartment";
 
+    #[\Override]
     public function testRendering()
     {
         $this->setWorkstation();

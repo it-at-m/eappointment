@@ -12,6 +12,7 @@ class UseraccountTest extends Base
 
     protected $classname = "UseraccountList";
 
+    #[\Override]
     public function testRendering()
     {
         $this->setApiCalls(

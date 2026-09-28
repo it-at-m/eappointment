@@ -12,6 +12,7 @@ class ProfileTest extends Base
 
     protected $classname = "Profile";
 
+    #[\Override]
     public function testRendering(): ResponseInterface
     {
         $this->setApiCalls(

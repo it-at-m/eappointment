@@ -427,6 +427,19 @@ public class CounterProcessingStationPage extends AdminPage {
         TestDataHelper.setTestData("new_appointment_date", date);
     }
 
+    /**
+     * Firefox applies {@code selectByValue} without the {@code change} event jQuery uses to load
+     * {@code button.process-reserve}. Without that event the form stays on Spontankunden hinzufügen.
+     */
+    private void fireProcessTimeChange(WebElement select) {
+        ((JavascriptExecutor) DRIVER).executeScript(
+                "var select = arguments[0];"
+                        + "select.dispatchEvent(new Event('change', {bubbles: true}));"
+                        + "var jq = window.jQuery || window.$;"
+                        + "if (jq) { jq(select).trigger('change'); }",
+                select);
+    }
+
     public void selectTimeInNewAppointmentDropDownList(String time) {
         selectTimeInNewAppointmentDropDownList(time, Set.of());
     }
@@ -469,6 +482,7 @@ public class CounterProcessingStationPage extends AdminPage {
                         Matcher timeSlotMatcher = timeSlotPattern.matcher(webElement.getText());
                         timeSlotMatcher.find();
                         newAppointmentTimeDropDownListSelections.selectByValue(webElement.getAttribute("value"));
+                        fireProcessTimeChange(newAppointmentTimeDropDownList);
                         ScenarioLogManager.getLogger().info("Time \"" + timeSlotMatcher.group(1) + "\" selected!");
                         TestDataHelper.setTestData("new_appointment_time", timeSlotMatcher.group(1));
                         break;
@@ -476,6 +490,7 @@ public class CounterProcessingStationPage extends AdminPage {
                         for (WebElement webElementInList : options) {
                             if (webElementInList.getText().contains(time)) {
                                 newAppointmentTimeDropDownListSelections.selectByValue(time.replaceFirst(":", "-"));
+                                fireProcessTimeChange(newAppointmentTimeDropDownList);
                                 break;
                             }
                         }
@@ -485,13 +500,18 @@ public class CounterProcessingStationPage extends AdminPage {
                     // shifting focus away from the dropdown
                     clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "h2.board__heading", LocatorType.CSSSELECTOR, false);
                     // on false it will retry
-                    if (findElementByLocatorType(APPOINTMENT_TIME_LOCATOR_ID, LocatorType.ID, true).getAttribute("value")
-                            .equals(TestDataHelper.getTestData("new_appointment_time").replaceFirst(":", "-"))) {
-                        return true;
-                    } else {
+                    String expectedTime = TestDataHelper.getTestData("new_appointment_time").replaceFirst(":", "-");
+                    if (!findElementByLocatorType(APPOINTMENT_TIME_LOCATOR_ID, LocatorType.ID, true).getAttribute("value")
+                            .equals(expectedTime)) {
                         ScenarioLogManager.getLogger().warn("Time not selected! Retrying...");
                         return false;
                     }
+                    if (DRIVER.findElements(By.cssSelector("button.process-reserve")).isEmpty()) {
+                        ScenarioLogManager.getLogger().warn(
+                                "Time \"" + expectedTime + "\" is set, Termin buchen is not in the form yet. Retrying...");
+                        return false;
+                    }
+                    return true;
                 } else {
                     return false;
                 }

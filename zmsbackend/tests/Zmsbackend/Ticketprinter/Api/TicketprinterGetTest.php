@@ -6,6 +6,7 @@ class TicketprinterGetTest extends \BO\Zmsbackend\Tests\Api\Base
 {
     protected $classname = "TicketprinterGet";
 
+    #[\Override]
     public function testRendering()
     {
         $response = $this->render(['hash' => '71abcdefghijklmnopqrstuvwxyz'], [], []);

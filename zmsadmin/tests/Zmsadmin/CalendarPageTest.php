@@ -13,6 +13,7 @@ class CalendarPageTest extends Base
 
     protected $classname = "CalendarPage";
 
+    #[\Override]
     public function testRendering()
     {
         $this->setApiCalls(

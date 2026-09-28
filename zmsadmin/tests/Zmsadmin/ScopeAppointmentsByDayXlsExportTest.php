@@ -15,6 +15,7 @@ class ScopeAppointmentsByDayXlsExportTest extends Base
 
     protected $classname = "ScopeAppointmentsByDayXlsExport";
 
+    #[\Override]
     public function testRendering()
     {
         $this->setApiCalls(

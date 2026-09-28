@@ -15,6 +15,7 @@ use \BO\Zmsbackend\ProcessSearchHistory\Service\ProcessSearchHistory as HistoryS
 class ProcessSearchTest extends \BO\Zmsbackend\Tests\Service\Base
 {
 
+    #[\Override]
     public function setUp(): void
     {
         parent::setUp();

@@ -147,14 +147,19 @@ class ProcessValidator
     public function validateTelephone(Unvalidated $unvalid, callable $setter): self
     {
         $valid = $unvalid->isString();
-        $length = strlen((string)$valid->getValue());
+        $rawTelephone = $valid->getValue();
+        $length = strlen((string)$rawTelephone);
+        $telephone = $rawTelephone;
 
-        try {
-            $phoneNumberUtil = \libphonenumber\PhoneNumberUtil::getInstance();
-            $phoneNumberObject = $phoneNumberUtil->parse($valid->getValue(), 'DE');
-            $telephone = '+' . (string) $phoneNumberObject->getCountryCode() . (string) $phoneNumberObject->getNationalNumber();
-        } catch (\Exception $exception) {
-            $telephone = $valid->getValue();
+        if (is_string($rawTelephone) && $rawTelephone !== '') {
+            try {
+                $phoneNumberUtil = \libphonenumber\PhoneNumberUtil::getInstance();
+                $phoneNumberObject = $phoneNumberUtil->parse($rawTelephone, 'DE');
+                $telephone = '+' . (string) $phoneNumberObject->getCountryCode()
+                    . (string) $phoneNumberObject->getNationalNumber();
+            } catch (\Exception $exception) {
+                $telephone = $rawTelephone;
+            }
         }
         $valid = (new \BO\Mellon\Unvalidated($telephone, 'telephone'))->isString();
 

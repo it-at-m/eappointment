@@ -12,6 +12,7 @@ class MailTemplatesCopyTest extends \BO\Zmsbackend\Tests\Api\Base
 {
     protected $classname = 'MailTemplatesCopy';
 
+    #[\Override]
     public function testRendering(): void
     {
         $sourceTemplateId = $this->insertSourceCustomization(

@@ -38,6 +38,7 @@ class OverallCalendarReadTest extends \BO\Zmsbackend\Tests\Api\Base
         $this->assertIsArray($json['data']['days']);
     }
 
+    #[\Override]
     public function testRendering(): void
     {
         $this->initializeSuperUserWorkstation();

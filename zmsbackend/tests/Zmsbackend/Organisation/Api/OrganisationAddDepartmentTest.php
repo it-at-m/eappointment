@@ -6,6 +6,7 @@ class OrganisationAddDepartmentTest extends \BO\Zmsbackend\Tests\Api\Base
 {
     protected $classname = "OrganisationAddDepartment";
 
+    #[\Override]
     public function testRendering()
     {
         $this->setWorkstation()->getUseraccount()->setPermissions('department')

@@ -43,6 +43,7 @@ class OverallCalendarClosureLoadDataTest extends Base
     }
 
 
+    #[\Override]
     public function testRendering()
     {
         $_SERVER['HTTP_AUTHORIZATION'] = 'Bearer validtoken';

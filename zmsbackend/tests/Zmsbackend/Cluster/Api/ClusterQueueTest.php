@@ -8,6 +8,7 @@ class ClusterQueueTest extends \BO\Zmsbackend\Tests\Api\Base
 {
     protected $classname = "ClusterQueue";
 
+    #[\Override]
     public function testRendering()
     {
         $this->setWorkstation()

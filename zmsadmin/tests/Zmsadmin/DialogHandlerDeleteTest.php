@@ -8,6 +8,7 @@ class DialogHandlerDeleteTest extends Base
 
     protected $classname = "\BO\Zmsadmin\Helper\DialogHandler";
 
+    #[\Override]
     public function testRendering()
     {
         $process = json_decode($this->readFixture("GET_process_100044_57c2.json"), 1);

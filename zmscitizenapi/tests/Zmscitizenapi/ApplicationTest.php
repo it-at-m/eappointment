@@ -4,16 +4,17 @@ declare(strict_types=1);
 namespace BO\Zmscitizenapi\Tests;
 
 use BO\Zmscitizenapi\Application;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
-/**
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
- */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState(false)]
 class ApplicationTest extends TestCase
 {
     private string $tempDir;
 
+    #[\Override]
     protected function setUp(): void
     {
         parent::setUp();
@@ -185,6 +186,7 @@ class ApplicationTest extends TestCase
         $this->assertEquals(Application::DEFAULT_PLACEHOLDER_EMAIL, Application::getPlaceholderEmail());
     }
 
+    #[\Override]
     protected function tearDown(): void
     {
         parent::tearDown();

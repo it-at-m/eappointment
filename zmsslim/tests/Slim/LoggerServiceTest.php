@@ -17,6 +17,7 @@ class LoggerServiceTest extends TestCase
 {
     private CacheInterface $cache;
 
+    #[\Override]
     protected function setUp(): void
     {
         parent::setUp();
@@ -35,6 +36,7 @@ class LoggerServiceTest extends TestCase
         ]);
     }
 
+    #[\Override]
     protected function tearDown(): void
     {
         LoggerService::$cache = null;

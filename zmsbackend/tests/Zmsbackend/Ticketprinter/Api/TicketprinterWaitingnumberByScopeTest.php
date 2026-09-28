@@ -6,6 +6,7 @@ class TicketprinterWaitingnumberByScopeTest extends \BO\Zmsbackend\Tests\Api\Bas
 {
     protected $classname = "TicketprinterWaitingnumberByScope";
 
+    #[\Override]
     public function testRendering()
     {
         //Schöneberg with test scope ghostWorkstationCount of 3

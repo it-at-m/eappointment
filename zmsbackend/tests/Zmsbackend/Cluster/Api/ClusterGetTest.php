@@ -8,6 +8,7 @@ class ClusterGetTest extends \BO\Zmsbackend\Tests\Api\Base
 {
     protected $classname = "ClusterGet";
 
+    #[\Override]
     public function testRendering()
     {
         $this->setWorkstation();

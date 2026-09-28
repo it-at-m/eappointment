@@ -12,6 +12,7 @@ use BO\Zmsclient\Psr7\Uri;
 class ApiMockTest extends \BO\Zmsclient\PhpUnit\Base
 {
 
+    #[\Override]
     public function testRendering()
     {
         $this->setApiCalls(

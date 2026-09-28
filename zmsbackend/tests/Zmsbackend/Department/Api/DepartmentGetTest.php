@@ -9,6 +9,7 @@ class DepartmentGetTest extends \BO\Zmsbackend\Tests\Api\Base
 {
     protected $classname = "DepartmentGet";
 
+    #[\Override]
     public function testRendering()
     {
         $this->setWorkstation();

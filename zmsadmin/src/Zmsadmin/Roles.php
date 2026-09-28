@@ -14,6 +14,7 @@ class Roles extends BaseController
      *
      * @return ResponseInterface
      */
+    #[\Override]
     public function readResponse(
         RequestInterface $request,
         ResponseInterface $response,

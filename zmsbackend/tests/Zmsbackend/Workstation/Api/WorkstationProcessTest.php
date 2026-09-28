@@ -16,12 +16,14 @@ class WorkstationProcessTest extends \BO\Zmsbackend\Tests\Api\Base
 
     const int SCOPE_ID = 143;
 
+    #[\Override]
     public function tearDown(): void
     {
         \App::$now = new \DateTimeImmutable('2016-04-01 11:55:00', new \DateTimeZone('Europe/Berlin'));
         parent::tearDown();
     }
 
+    #[\Override]
     public function testRendering()
     {
         $this->setWorkstation();

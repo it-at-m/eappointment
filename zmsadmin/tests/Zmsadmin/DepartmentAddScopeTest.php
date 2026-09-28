@@ -12,6 +12,7 @@ class DepartmentAddScopeTest extends Base
 
     protected $classname = "DepartmentAddScope";
 
+    #[\Override]
     public function testRendering()
     {
         $this->setApiCalls(

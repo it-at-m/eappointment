@@ -12,6 +12,7 @@ use Slim\Psr7\Response;
 
 class IpFilterMiddlewareTest extends MiddlewareTestCase
 {
+    #[\Override]
     protected function setUp(): void
     {
         parent::setUp();
@@ -24,6 +25,7 @@ class IpFilterMiddlewareTest extends MiddlewareTestCase
         $_SERVER = [];
     }
 
+    #[\Override]
     protected function tearDown(): void
     {
         putenv('IP_BLACKLIST');

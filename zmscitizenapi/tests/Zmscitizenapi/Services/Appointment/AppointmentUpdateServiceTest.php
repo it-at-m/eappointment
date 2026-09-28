@@ -13,6 +13,7 @@ class AppointmentUpdateServiceTest extends TestCase
     private AppointmentUpdateService $service;
     private \ReflectionClass $reflector;
 
+    #[\Override]
     protected function setUp(): void
     {
         parent::setUp();
