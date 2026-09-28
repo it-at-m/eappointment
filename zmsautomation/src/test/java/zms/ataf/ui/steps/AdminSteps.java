@@ -1,6 +1,8 @@
 package zms.ataf.ui.steps;
 
+import java.time.DayOfWeek;
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
@@ -172,8 +174,8 @@ public class AdminSteps {
     @Wenn("Sie in Feld {string} den Text {string} eingeben.")
     public void wenn_sie_in_feld_string_den_text_string_eingeben(String field, String text) {
         text = TestDataHelper.transformTestData(text);
-        if ("Datum bis".equals(field) && "<heute+14_tage>".equals(text)) {
-            text = BerlinTime.today().plusDays(14).format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
+        if ("Datum bis".equals(field)) {
+            text = resolveClosingDate(text);
         }
         switch (field) {
         case "Platz-Nr. oder Tresen":
@@ -276,6 +278,33 @@ public class AdminSteps {
     @Wenn("Sie {string} unter Wochentage selektieren.")
     public void wenn_sie_string_unter_wochentage_selektieren(String weekDay) {
         AUTHORITIES_AND_LOCATIONS_PAGE.selectWeekDay(TestDataHelper.transformTestData(weekDay));
+    }
+
+    @Und("Sie die Wochentage Samstag und Sonntag der aktuellen Woche selektieren.")
+    public void und_sie_die_wochentage_samstag_und_sonntag_der_aktuellen_woche_selektieren() {
+        AUTHORITIES_AND_LOCATIONS_PAGE.selectWeekendDaysOfCurrentWeek();
+    }
+
+    @Dann("sollte keine Fehlermeldung zu nicht vorkommenden Wochentagen angezeigt werden.")
+    public void dann_sollte_keine_fehlermeldung_zu_nicht_vorkommenden_wochentagen_angezeigt_werden() {
+        AUTHORITIES_AND_LOCATIONS_PAGE.assertNoMissingWeekdayError();
+    }
+
+    @Dann("die Schaltfläche {string} sollte zum Speichern der Öffnungszeiten aktiv sein.")
+    public void dann_die_schaltflaeche_sollte_zum_speichern_der_oeffnungszeiten_aktiv_sein(String button) {
+        AUTHORITIES_AND_LOCATIONS_PAGE.assertOpeningHoursSaveButtonEnabled(TestDataHelper.transformTestData(button));
+    }
+
+    private String resolveClosingDate(String text) {
+        DateTimeFormatter format = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+        LocalDate today = BerlinTime.today();
+        if ("<heute+14_tage>".equals(text)) {
+            return today.plusDays(14).format(format);
+        }
+        if ("<sonntag_dieser_woche>".equals(text)) {
+            return today.with(DayOfWeek.SUNDAY).format(format);
+        }
+        return text;
     }
 
     @Wenn("Sie für Terminarbeitsplätze unter {string} die Anzahl {int} auswählen.")
