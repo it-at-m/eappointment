@@ -1,7 +1,7 @@
 -- Flyway migration: Opening hours for zmsadmin scopes that no longer share a Standort (GH-3281)
 --
 -- CURDATE()/CURTIME() follow zms-db TZ=Europe/Berlin (same calendar day as zms-web).
--- Same window as V19: rest of today until 23:55, next day only when no 5-minute slot fits.
+-- Same window as V19: rest of today until 23:55, or the whole next day when under three hours remain.
 --
 -- Terminkunden features moved off a shared Standort. Each scope already offers the
 -- service the feature books:
@@ -16,7 +16,7 @@ SET @rounded_start :=
 
 SET @start_sec := TIME_TO_SEC(@rounded_start);
 SET @end_sec := TIME_TO_SEC(@latest_end);
-SET @use_next_day := (@start_sec >= 24 * 3600) OR (@end_sec <= @start_sec);
+SET @use_next_day := (@start_sec >= 24 * 3600) OR (@end_sec <= @start_sec) OR ((@end_sec - @start_sec) < 3 * 3600);
 
 SET @appt_start := IF(@use_next_day, '00:05:00', @rounded_start);
 SET @appt_end := @latest_end;

@@ -443,6 +443,18 @@ public class CounterProcessingStationPage extends AdminPage {
         return true;
     }
 
+    public boolean hasBookAppointmentButton() {
+        List<WebElement> buttons = DRIVER.findElements(By.cssSelector("button.process-reserve"));
+        return !buttons.isEmpty() && buttons.get(0).isDisplayed();
+    }
+
+    public void selectWalkInCustomer() {
+        WebElement select = findElementByLocatorType(APPOINTMENT_TIME_LOCATOR_ID, LocatorType.ID, true);
+        Assert.assertTrue(selectWalkInOption(new Select(select), select), "Spontankunde is not in the time list.");
+        new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(ExpectedConditions.elementToBeClickable(By.cssSelector("button.process-queue")));
+    }
+
     /**
      * Firefox applies {@code selectByValue} without the {@code change} event jQuery uses to load
      * {@code button.process-reserve}. Without that event the form stays on Spontankunden hinzufügen.
