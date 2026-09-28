@@ -1,5 +1,5 @@
 <template>
-  <div v-if="isExpired">
+  <div v-if="isReservationExpired">
     <muc-callout type="error">
       <template #content>
         <p>{{ t("apiErrorProcessNotReservedAnymoreText") }}</p>
@@ -21,7 +21,7 @@
     </muc-callout>
   </div>
   <div
-    v-if="showLoginOption && !isExpired"
+    v-if="showLoginOption && !isReservationExpired"
     class="login-option-block"
     :class="{ 'login-option-block--with-error': showLoginErrorBanner }"
   >
@@ -80,7 +80,7 @@
     </muc-banner>
   </div>
   <h2
-    v-if="!isExpired"
+    v-if="!isReservationExpired"
     class="m-component-form__title"
     :class="{
       'm-component-form__title--after-login-error': showLoginErrorBanner,
@@ -89,7 +89,7 @@
     {{ t("contactDetails") }}
   </h2>
   <form
-    v-if="!isExpired"
+    v-if="!isReservationExpired"
     ref="contactForm"
     class="m-form m-form--default"
   >
@@ -208,7 +208,7 @@
     </fieldset>
   </form>
   <div
-    v-if="!isExpired"
+    v-if="!isReservationExpired"
     class="m-button-group"
   >
     <muc-button
@@ -220,7 +220,7 @@
       <template #default>{{ t("back") }}</template>
     </muc-button>
     <muc-button
-      v-if="!isExpired"
+      v-if="!isReservationExpired"
       :disabled="loadingStates.isUpdatingAppointment.value"
       :icon="'arrow-right'"
       @click="nextStep"
@@ -331,10 +331,10 @@ const loadingStates = inject("loadingStates", {
   isCancelingAppointment: Ref<boolean>;
 };
 
-const { isExpired } = useReservationTimer();
+const { isReservationExpired } = useReservationTimer();
 
 const showLoginErrorBanner = computed(
-  () => Boolean(props.loginFailed) && !isExpired.value
+  () => Boolean(props.loginFailed) && !isReservationExpired.value
 );
 
 const showErrorMessage = ref<boolean>(false);
