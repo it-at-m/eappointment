@@ -587,7 +587,7 @@ jobs:
           MATRIX_TAG_FILTER: ${{ matrix.tag_filter }}
           MATRIX_USE_CUSTOM_TAGS: ${{ matrix.use_custom_tags }}
           CUSTOM_TAG_INPUT: ${{ inputs.cucumber_tag_expressions }}
-          SCREENSHOT: ${{ github.event_name == 'workflow_dispatch' && inputs.per_step_screenshots || 'false' }}
+          SCREENSHOT: ${{ github.event_name == 'schedule' && 'true' || (github.event_name == 'workflow_dispatch' && inputs.per_step_screenshots || 'false') }}
           ATAF_VERSION: ${{ github.event_name == 'workflow_dispatch' && inputs.ataf_version || '' }}
           SERIAL_SCENARIOS: ${{ github.event_name == 'workflow_dispatch' && inputs.serial_scenarios || 'false' }}
         run: |

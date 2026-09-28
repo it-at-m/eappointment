@@ -281,7 +281,7 @@ Manuelle Läufe (`workflow_dispatch`) bieten die üblichen Modul-/Browser-/Tag-E
 | `ataf_version`     | Optionale ATAF-Maven-Version (`de.muenchen.ataf:core\|rest\|web`). Leer lassen, um `ataf.version` aus `zmsautomation/pom.xml` des ausgecheckten Branches zu nutzen. Wenn gesetzt, übergibt der Job `-Dataf.version=…` an `zmsautomation-test`. |
 | `serial_scenarios` | Szenarien nicht parallel ausführen. Wenn angehakt, übergibt jeder Job `-Ddataproviderthreadcount=1`. Standardmäßig aus, auch im nächtlichen Lauf.                                                                                              |
 
-Geplante Nightly-Läufe nutzen immer die POM-Version (kein Override). Die Version muss auf Maven Central existieren.
+Geplante Nightly-Läufe nutzen immer die POM-Version (kein Override) und machen nach jedem Schritt einen Screenshot. Die Version muss auf Maven Central existieren. Ein manueller Lauf macht diese Screenshots nur, wenn „per-step screenshots“ angehakt ist.
 
 ## zmsautomation in Safari unter macOS außerhalb des Containers
 
