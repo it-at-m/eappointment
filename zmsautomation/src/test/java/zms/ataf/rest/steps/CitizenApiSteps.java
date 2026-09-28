@@ -540,6 +540,9 @@ public class CitizenApiSteps {
         response = reserveResponse;
         CommonApiSteps.setResponse(reserveResponse);
         if (!expectSuccess) {
+            if (response.getStatusCode() == 200) {
+                rememberReservationForCleanup(response);
+            }
             return;
         }
         response.then().statusCode(200);
@@ -571,6 +574,31 @@ public class CitizenApiSteps {
         lastReserveProcess = reserved;
         if (lastReserveProcess != null) {
             setLastReserveProcess(lastReserveProcess);
+        }
+    }
+
+    /**
+     * A failed reserve attempt can still return 200 and hold a slot. Keep that process so
+     * {@link #cancelLeftoverAppointmentQuietly()} can cancel it, without changing the feature's assertions.
+     */
+    private void rememberReservationForCleanup(Response reserveResponse) {
+        try {
+            ThinnedProcess reserved = null;
+            try {
+                reserved = reserveResponse.as(ThinnedProcess.class);
+            } catch (Exception ignored) {
+                reserved = null;
+            }
+            if (reserved == null || reserved.getProcessId() == null || reserved.getAuthKey() == null) {
+                reserved = parseDataResponse(reserveResponse, ThinnedProcess.class);
+            }
+            if (reserved != null && reserved.getProcessId() != null && reserved.getAuthKey() != null) {
+                setLastReserveProcess(reserved);
+            }
+        } catch (Exception e) {
+            ScenarioLogManager.getLogger().warn(
+                "Could not store an unexpected successful reservation for cleanup: " + e
+            );
         }
     }
 
