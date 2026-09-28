@@ -29,22 +29,6 @@ class WorkstationProcessNextTest extends Base
                 ],
                 [
                     'function' => 'readGetResult',
-                    'url' => '/scope/141/process/2016-04-01/',
-                    'parameters' => [
-                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getProcess()
-                    ],
-                    'response' => $this->readFixture("GET_processList_141_20160401.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/scope/141/process/2016-04-01/',
-                    'parameters' => [
-                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getProcess()
-                    ],
-                    'response' => $this->readFixture("GET_processList_141_20160401.json")
-                ],
-                [
-                    'function' => 'readGetResult',
                     'url' => '/scope/141/queue/next/',
                     'parameters' => ['exclude' => ''],
                     'response' => $this->readFixture("GET_process_82252_12a2.json")
@@ -61,7 +45,7 @@ class WorkstationProcessNextTest extends Base
         $this->assertEquals(302, $response->getStatusCode());
     }
 
-    public function testQueueFuture()
+    public function testNextProcessReturnedByBackendIsCalled()
     {
         \App::$now = new \DateTimeImmutable('2016-04-01 07:55:00', new \DateTimeZone('Europe/Berlin'));
         $this->setApiCalls(
@@ -77,22 +61,6 @@ class WorkstationProcessNextTest extends Base
                 ],
                 [
                     'function' => 'readGetResult',
-                    'url' => '/scope/141/process/2016-04-01/',
-                    'parameters' => [
-                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getProcess()
-                    ],
-                    'response' => $this->readFixture("GET_processList_141_20160401.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/scope/141/process/2016-04-01/',
-                    'parameters' => [
-                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getProcess()
-                    ],
-                    'response' => $this->readFixture("GET_processList_141_20160401.json")
-                ],
-                [
-                    'function' => 'readGetResult',
                     'url' => '/scope/141/queue/next/',
                     'parameters' => ['exclude' => ''],
                     'response' => $this->readFixture("GET_process_82252_12a2.json")
@@ -105,11 +73,8 @@ class WorkstationProcessNextTest extends Base
             ]
         );
         $response = $this->render($this->arguments, $this->parameters, []);
-        $this->assertStringContainsString(
-            'Aktuell gibt es keine wartenden Kunden',
-            (string)$response->getBody()
-        );
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertRedirect($response,'/workstation/process/82252/called/?exclude=');
+        $this->assertEquals(302, $response->getStatusCode());
     }
 
     public function testQueueEmpty()
@@ -125,22 +90,6 @@ class WorkstationProcessNextTest extends Base
                         'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getWorkstation()
                     ],
                     'response' => $this->readFixture("GET_Workstation_Resolved2.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/scope/141/process/2016-04-01/',
-                    'parameters' => [
-                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getProcess()
-                    ],
-                    'response' => $this->readFixture("GET_processList_fake_entry.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/scope/141/process/2016-04-01/',
-                    'parameters' => [
-                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getProcess()
-                    ],
-                    'response' => $this->readFixture("GET_processList_fake_entry.json")
                 ],
                 [
                     'function' => 'readGetResult',
@@ -180,22 +129,6 @@ class WorkstationProcessNextTest extends Base
                 ],
                 [
                     'function' => 'readGetResult',
-                    'url' => '/cluster/109/process/2016-04-01/',
-                    'parameters' => [
-                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getProcess()
-                    ],
-                    'response' => $this->readFixture("GET_processList_141_20160401.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/cluster/109/process/2016-04-01/',
-                    'parameters' => [
-                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getProcess()
-                    ],
-                    'response' => $this->readFixture("GET_processList_141_20160401.json")
-                ],
-                [
-                    'function' => 'readGetResult',
                     'url' => '/cluster/109/queue/next/',
                     'parameters' => ['exclude' => '999999','allowClusterWideCall' => false],
                     'response' => $this->readFixture("GET_process_82252_12a2.json")
@@ -225,22 +158,6 @@ class WorkstationProcessNextTest extends Base
                         'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getWorkstation()
                     ],
                     'response' => $this->readFixture("GET_Workstation_Resolved2.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/scope/141/process/2016-04-01/',
-                    'parameters' => [
-                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getProcess()
-                    ],
-                    'response' => $this->readFixture("GET_processList_141_20160401.json")
-                ],
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/scope/141/process/2016-04-01/',
-                    'parameters' => [
-                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getProcess()
-                    ],
-                    'response' => $this->readFixture("GET_processList_141_20160401.json")
                 ],
                 [
                     'function' => 'readGetResult',
