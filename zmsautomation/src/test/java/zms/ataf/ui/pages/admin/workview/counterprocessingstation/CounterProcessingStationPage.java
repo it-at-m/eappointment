@@ -428,6 +428,22 @@ public class CounterProcessingStationPage extends AdminPage {
     }
 
     /**
+     * Today's time list always offers Spontankunde ({@code 00-00}) even when no appointment slot is left.
+     */
+    private boolean selectWalkInOption(Select timeList, WebElement select) {
+        boolean hasWalkIn = timeList.getOptions().stream().anyMatch(option -> option.getText().contains("Spontankunde"));
+        if (!hasWalkIn) {
+            return false;
+        }
+        timeList.selectByValue("00-00");
+        fireProcessTimeChange(select);
+        TestDataHelper.setTestData("new_appointment_time", "00:00");
+        TestDataHelper.setTestData("appointment_booked_as_walk_in", "true");
+        ScenarioLogManager.getLogger().info("No appointment slot left; selected Spontankunde.");
+        return true;
+    }
+
+    /**
      * Firefox applies {@code selectByValue} without the {@code change} event jQuery uses to load
      * {@code button.process-reserve}. Without that event the form stays on Spontankunden hinzufügen.
      */
@@ -441,10 +457,15 @@ public class CounterProcessingStationPage extends AdminPage {
     }
 
     public void selectTimeInNewAppointmentDropDownList(String time) {
-        selectTimeInNewAppointmentDropDownList(time, Set.of());
+        selectTimeInNewAppointmentDropDownList(time, Set.of(), false);
     }
 
     public void selectTimeInNewAppointmentDropDownList(String time, Set<String> excludedTimes) {
+        selectTimeInNewAppointmentDropDownList(time, excludedTimes, false);
+    }
+
+    public void selectTimeInNewAppointmentDropDownList(String time, Set<String> excludedTimes, boolean fallBackToWalkIn) {
+        TestDataHelper.setTestData("appointment_booked_as_walk_in", "false");
         ScenarioLogManager.getLogger().info("Trying to select time \"" + time + "\" in new appointment drop down list...");
         Pattern timeSlotPattern = Pattern.compile("([0-9][0-9]:[0-9][0-9]) \\(noch ([0-9]) frei\\)");
         WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
@@ -453,6 +474,7 @@ public class CounterProcessingStationPage extends AdminPage {
         wait.withMessage("Could not locate any time slot elements in time!");
         try {
             wait.until((ExpectedCondition<Boolean>) waitDriver -> {
+                TestDataHelper.setTestData("appointment_booked_as_walk_in", "false");
                 CONTEXT.waitForSpinners();
                 WebElement newAppointmentTimeDropDownList = findElementByLocatorType(APPOINTMENT_TIME_LOCATOR_ID, LocatorType.ID, true);
                 scrollToCenterByVisibleElement(newAppointmentTimeDropDownList);
@@ -470,6 +492,9 @@ public class CounterProcessingStationPage extends AdminPage {
                                 })
                                 .collect(Collectors.toList());
                         if (bookableTimeSlots.isEmpty()) {
+                            if (fallBackToWalkIn && selectWalkInOption(newAppointmentTimeDropDownListSelections, newAppointmentTimeDropDownList)) {
+                                break;
+                            }
                             return false;
                         }
                         WebElement webElement;
@@ -506,9 +531,11 @@ public class CounterProcessingStationPage extends AdminPage {
                         ScenarioLogManager.getLogger().warn("Time not selected! Retrying...");
                         return false;
                     }
-                    if (DRIVER.findElements(By.cssSelector("button.process-reserve")).isEmpty()) {
+                    boolean bookedAsWalkIn = "true".equals(TestDataHelper.getTestData("appointment_booked_as_walk_in"));
+                    String submitButton = bookedAsWalkIn ? "button.process-queue" : "button.process-reserve";
+                    if (DRIVER.findElements(By.cssSelector(submitButton)).isEmpty()) {
                         ScenarioLogManager.getLogger().warn(
-                                "Time \"" + expectedTime + "\" is set, Termin buchen is not in the form yet. Retrying...");
+                                "Time \"" + expectedTime + "\" is set, the booking button is not in the form yet. Retrying...");
                         return false;
                     }
                     return true;
