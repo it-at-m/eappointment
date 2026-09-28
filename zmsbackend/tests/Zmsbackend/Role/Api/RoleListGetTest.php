@@ -6,6 +6,7 @@ class RoleListGetTest extends \BO\Zmsbackend\Tests\Api\Base
 {
     protected $classname = "RoleListGet";
 
+    #[\Override]
     public function testRendering()
     {
         $this->setWorkstation()->getUseraccount()->setPermissions('useraccount');

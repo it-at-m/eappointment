@@ -15,6 +15,7 @@ class ProcessQueueTest extends Base
 
     protected $classname = "ProcessQueue";
 
+    #[\Override]
     public function testRendering()
     {
         $this->setApiCalls(

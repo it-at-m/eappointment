@@ -8,6 +8,7 @@ class OrganisationByClusterTest extends \BO\Zmsbackend\Tests\Api\Base
 {
     protected $classname = "OrganisationByCluster";
 
+    #[\Override]
     public function testRendering()
     {
         $this->setWorkstation()

@@ -15,6 +15,7 @@ class UseraccountListByRoleTest extends Base
 
     protected $classname = 'UseraccountListByRole';
 
+    #[\Override]
     public function testRendering()
     {
         $this->setApiCalls(

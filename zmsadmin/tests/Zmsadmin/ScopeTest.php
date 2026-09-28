@@ -12,6 +12,7 @@ class ScopeTest extends Base
 
     protected $classname = "Scope";
 
+    #[\Override]
     public function testRendering()
     {
         $this->setApiCalls(

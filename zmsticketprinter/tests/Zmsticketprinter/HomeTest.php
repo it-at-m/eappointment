@@ -11,6 +11,7 @@ class HomeTest extends Base
 
     protected $parameters = [ ];
 
+    #[\Override]
     public function testRendering()
     {
         $request = static::createBasicRequest('GET', '/');

@@ -6,6 +6,7 @@ class ProcessReserveTest extends \BO\Zmsbackend\Tests\Api\Base
 {
     protected $classname = "ProcessReserve";
 
+    #[\Override]
     public function testRendering()
     {
         $processList = new \BO\Zmsentities\Collection\ProcessList(

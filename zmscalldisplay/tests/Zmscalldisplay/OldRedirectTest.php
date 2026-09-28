@@ -11,6 +11,7 @@ class OldRedirectTest extends Base
 
     protected $parameters = [ ];
 
+    #[\Override]
     public function testRendering()
     {
         $response = $this->render([ ], [

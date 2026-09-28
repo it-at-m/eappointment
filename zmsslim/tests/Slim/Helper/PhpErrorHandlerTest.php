@@ -15,6 +15,7 @@ class PhpErrorHandlerTest extends TestCase
     private TestHandler $logHandler;
     private int $previousErrorReporting;
 
+    #[\Override]
     protected function setUp(): void
     {
         parent::setUp();
@@ -25,6 +26,7 @@ class PhpErrorHandlerTest extends TestCase
         \App::$log->pushHandler($this->logHandler);
     }
 
+    #[\Override]
     protected function tearDown(): void
     {
         error_reporting($this->previousErrorReporting);

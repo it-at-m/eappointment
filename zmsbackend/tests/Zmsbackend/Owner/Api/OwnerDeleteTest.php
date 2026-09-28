@@ -6,6 +6,7 @@ class OwnerDeleteTest extends \BO\Zmsbackend\Tests\Api\Base
 {
     protected $classname = "OwnerDelete";
 
+    #[\Override]
     public function testRendering()
     {
         $this->setWorkstation()->getUseraccount()->setPermissions('jurisdiction', 'superuser');

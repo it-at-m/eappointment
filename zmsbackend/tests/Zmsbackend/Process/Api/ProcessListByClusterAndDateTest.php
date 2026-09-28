@@ -10,6 +10,7 @@ class ProcessListByClusterAndDateTest extends \BO\Zmsbackend\Tests\Api\Base
 {
     protected $classname = "ProcessListByClusterAndDate";
 
+    #[\Override]
     public function setUp(): void
     {
         parent::setUp();
@@ -17,6 +18,7 @@ class ProcessListByClusterAndDateTest extends \BO\Zmsbackend\Tests\Api\Base
         \App::$cache = null;
     }
 
+    #[\Override]
     public function testRendering()
     {
         $this->setWorkstation()

@@ -14,6 +14,7 @@ class GetTest extends Base
 
     protected $sessionData = [ ];
 
+    #[\Override]
     public function testRendering()
     {
         $response = $this->render($this->arguments, $this->parameters, $this->sessionData);

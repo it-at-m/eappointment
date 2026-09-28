@@ -13,6 +13,7 @@ class CacheBootstrapTest extends TestCase
 {
     private string $tempDir;
 
+    #[\Override]
     protected function setUp(): void
     {
         parent::setUp();
@@ -21,6 +22,7 @@ class CacheBootstrapTest extends TestCase
         putenv('SOURCE_CACHE_TTL');
     }
 
+    #[\Override]
     protected function tearDown(): void
     {
         putenv('CACHE_DIR');

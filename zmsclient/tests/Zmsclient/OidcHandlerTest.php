@@ -24,6 +24,7 @@ class OidcHandlerTest extends TestCase
 
     private $originalLog;
 
+    #[\Override]
     protected function setUp(): void
     {
         $this->originalCookies = $_COOKIE ?? [];
@@ -36,6 +37,7 @@ class OidcHandlerTest extends TestCase
         $this->handler = new OidcHandler($this->httpMock);
     }
 
+    #[\Override]
     protected function tearDown(): void
     {
         $_COOKIE = $this->originalCookies;
