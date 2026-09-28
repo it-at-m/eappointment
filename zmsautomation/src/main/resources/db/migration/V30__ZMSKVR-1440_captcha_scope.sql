@@ -81,7 +81,7 @@ INSERT IGNORE INTO `oeffnungszeit`
   `updateTimestamp`
 )
 VALUES
-  (136210, 74, @range_start, @range_end,
+  (136213, 74, @range_start, @range_end,
    1, 0, 127,
    '00:00:00', @appt_start,
    '00:00:00', @appt_end,
