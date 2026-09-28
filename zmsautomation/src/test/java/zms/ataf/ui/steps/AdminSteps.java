@@ -760,6 +760,41 @@ public class AdminSteps {
         PROCESSING_STATION_SECTION.submitForwardAppointment();
     }
 
+    @Dann("sind die Kundenaktionen Fertig stellen, Weiterleiten, Parken und Abbrechen anklickbar.")
+    public void sind_die_kundenaktionen_anklickbar() {
+        PROCESSING_STATION_SECTION.assertCustomerActionsEnabled();
+    }
+
+    @Dann("sind die Kundenaktionen Fertig stellen, Weiterleiten, Parken und Abbrechen gesperrt.")
+    public void sind_die_kundenaktionen_gesperrt() {
+        PROCESSING_STATION_SECTION.assertCustomerActionsDisabled();
+    }
+
+    @Wenn("Sie die Weiterleitung öffnen.")
+    public void sie_die_weiterleitung_oeffnen() {
+        PROCESSING_STATION_SECTION.clickOnForwardAppointment();
+    }
+
+    @Dann("ist das Weiterleitungsformular sichtbar.")
+    public void ist_das_weiterleitungsformular_sichtbar() {
+        PROCESSING_STATION_SECTION.assertForwardingFormVisible();
+    }
+
+    @Dann("ist die blaue Schaltfläche Abbrechen der Weiterleitung sichtbar.")
+    public void ist_die_blaue_schaltflaeche_abbrechen_der_weiterleitung_sichtbar() {
+        PROCESSING_STATION_SECTION.assertCancelForwardingButtonBlue();
+    }
+
+    @Wenn("Sie die Weiterleitung abbrechen.")
+    public void sie_die_weiterleitung_abbrechen() {
+        PROCESSING_STATION_SECTION.clickCancelForwarding();
+    }
+
+    @Dann("ist das Terminerstellungsformular sichtbar.")
+    public void ist_das_terminerstellungsformular_sichtbar() {
+        PROCESSING_STATION_SECTION.assertAppointmentFormVisible();
+    }
+
     @Dann("erscheint der Termin {string} unter geparkte Termine.")
     public void erscheint_der_termin_unter_geparkte_termine(String termin) {
         PROCESSING_STATION_SECTION.isCustomerVisibleInParkingTable(TestDataHelper.transformTestData(termin));
