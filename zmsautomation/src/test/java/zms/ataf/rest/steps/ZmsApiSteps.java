@@ -4,6 +4,8 @@ import static io.restassured.RestAssured.given;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 
 import org.assertj.core.api.Assertions;
@@ -17,6 +19,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import ataf.core.helpers.TestPropertiesHelper;
 import ataf.core.logging.ScenarioLogManager;
 import config.TestConfig;
+import io.cucumber.java.After;
 import io.cucumber.java.Before;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
@@ -38,6 +41,7 @@ public class ZmsApiSteps {
     private String scenarioLoginPassword;
     private JsonNode lastProcess;
     private String ticketprinterHash;
+    private Integer createdAvailabilityId;
 
     @Before
     public void resetProcessContext() {
@@ -46,6 +50,25 @@ public class ZmsApiSteps {
         scenarioLoginUsername = null;
         scenarioLoginPassword = null;
         ticketprinterHash = null;
+        createdAvailabilityId = null;
+    }
+
+    @After
+    public void deleteOpeningHoursLeftByTheScenario() {
+        Integer id = createdAvailabilityId;
+        createdAvailabilityId = null;
+        if (id == null) {
+            return;
+        }
+        try {
+            given()
+                .baseUri(apiBaseUri())
+                .header("X-AuthKey", getOrLoginXAuthKey())
+            .when()
+                .delete("/availability/" + id + "/");
+        } catch (RuntimeException e) {
+            ScenarioLogManager.getLogger().warn("Could not delete opening hours {}: {}", id, e.getMessage());
+        }
     }
     
     @Given("the ZMS API is available")
@@ -411,6 +434,85 @@ public class ZmsApiSteps {
         }
     }
 
+    @When("I create opening hours for scope {int} through Sunday of the current week with the X-AuthKey")
+    public void iCreateOpeningHoursThroughSundayOfTheCurrentWeek(int scopeId) {
+        AccountCheckout.checkout("scope:" + scopeId + ":zmskvr-1672");
+        String authKey = getOrLoginXAuthKey();
+        LocalDate today = BerlinTime.today();
+        LocalDate sunday = today.with(DayOfWeek.SUNDAY);
+        long startEpoch = today.atTime(BerlinTime.now()).atZone(BerlinTime.ZONE).toEpochSecond();
+        long endEpoch = sunday.atStartOfDay(BerlinTime.ZONE).toEpochSecond();
+        String endTime = closingTimeOn(sunday);
+
+        ObjectNode weekday = MAPPER.createObjectNode();
+        for (DayOfWeek day : DayOfWeek.values()) {
+            boolean selected = day == DayOfWeek.SUNDAY
+                    || (day == DayOfWeek.SATURDAY && today.getDayOfWeek() != DayOfWeek.SUNDAY);
+            weekday.put(day.name().toLowerCase(Locale.ROOT), selected ? 1 : 0);
+        }
+
+        ObjectNode availability = MAPPER.createObjectNode();
+        availability.put("type", "openinghours");
+        availability.put("kind", "default");
+        availability.put("description", "ATAF-ZMSKVR-1672");
+        availability.put("startDate", startEpoch);
+        availability.put("endDate", endEpoch);
+        availability.put("startTime", "08:00:00");
+        availability.put("endTime", endTime);
+        availability.put("slotTimeInMinutes", 10);
+        ObjectNode scope = MAPPER.createObjectNode();
+        scope.put("id", scopeId);
+        availability.set("scope", scope);
+        availability.set("weekday", weekday);
+        ObjectNode workstationCount = MAPPER.createObjectNode();
+        workstationCount.put("intern", 0);
+        workstationCount.put("public", 0);
+        availability.set("workstationCount", workstationCount);
+
+        ObjectNode body = MAPPER.createObjectNode();
+        body.set("availabilityList", MAPPER.createArrayNode().add(availability));
+        body.put("selectedDate", today.toString());
+
+        response = given()
+            .baseUri(apiBaseUri())
+            .header("X-AuthKey", authKey)
+            .contentType("application/json")
+            .body(toJson(body))
+        .when()
+            .post("/availability/");
+        CommonApiSteps.setResponse(response);
+        if (response.getStatusCode() == 200) {
+            ArrayNode created = parseDataArray(response);
+            if (created != null && !created.isEmpty() && created.get(0).path("id").asInt() > 0) {
+                createdAvailabilityId = created.get(0).path("id").asInt();
+            }
+        }
+    }
+
+    @Then("the response should not report a missing weekday")
+    public void theResponseShouldNotReportAMissingWeekday() {
+        String body = response.asString();
+        Assertions.assertThat(body).doesNotContain("invalidWeekday");
+        Assertions.assertThat(body).doesNotContain("kommen im gewählten Zeitraum nicht vor");
+    }
+
+    @When("I delete the opening hours created for the current week with the X-AuthKey")
+    public void iDeleteTheOpeningHoursCreatedForTheCurrentWeek() {
+        Assertions.assertThat(createdAvailabilityId)
+            .as("opening hours id from POST /availability/")
+            .isNotNull();
+        int id = createdAvailabilityId;
+        response = given()
+            .baseUri(apiBaseUri())
+            .header("X-AuthKey", getOrLoginXAuthKey())
+        .when()
+            .delete("/availability/" + id + "/");
+        CommonApiSteps.setResponse(response);
+        if (response.getStatusCode() == 200) {
+            createdAvailabilityId = null;
+        }
+    }
+
     @When("I delete Spontankunden opening hours for scope {int} with the X-AuthKey")
     public void iDeleteSpontankundenOpeningHoursForScope(int scopeId) {
         AccountCheckout.checkout("scope:" + scopeId + ":spontankunden");
@@ -613,6 +715,25 @@ public class ZmsApiSteps {
             }
         }
         return null;
+    }
+
+    /**
+     * 17:00 while Sunday is still ahead. On a Sunday evening the end clock has to stay after now,
+     * on a 10-minute grid so it divides by slotTimeInMinutes.
+     */
+    private static String closingTimeOn(LocalDate endDay) {
+        LocalTime end = LocalTime.of(17, 0);
+        if (!endDay.isAfter(BerlinTime.today())) {
+            LocalTime now = BerlinTime.now().withSecond(0).withNano(0);
+            if (!end.isAfter(now)) {
+                int roundedMinute = ((now.getMinute() / 10) + 1) * 10;
+                end = now.withMinute(0).plusMinutes(roundedMinute + 10L);
+                if (!end.isAfter(now) || end.isAfter(LocalTime.of(23, 50))) {
+                    end = LocalTime.of(23, 50);
+                }
+            }
+        }
+        return end.format(DateTimeFormatter.ofPattern("HH:mm:ss"));
     }
 
     private static String normalizeClock(String time) {
