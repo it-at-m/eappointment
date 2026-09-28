@@ -1,5 +1,5 @@
 <template>
-  <div v-if="isExpired">
+  <div v-if="isReservationExpired">
     <muc-callout type="error">
       <template #header>{{
         t("apiErrorProcessNotReservedAnymoreHeader")
@@ -23,7 +23,7 @@
     </muc-callout>
   </div>
   <div
-    v-if="!isExpired"
+    v-if="!isReservationExpired"
     class="m-component"
     :id="`process-${appointment?.processId}-displayNumber-${appointment?.displayNumber}`"
   >
@@ -306,7 +306,7 @@
     </div>
   </div>
   <div
-    v-if="!isExpired && rebookOrCancelDialog"
+    v-if="!isReservationExpired && rebookOrCancelDialog"
     class="m-button-group"
   >
     <muc-button
@@ -327,7 +327,7 @@
     </muc-button>
   </div>
   <div
-    v-if="!isExpired && isRebooking"
+    v-if="!isReservationExpired && isRebooking"
     class="m-button-group"
   >
     <muc-button
@@ -348,7 +348,7 @@
     </muc-button>
   </div>
   <div
-    v-if="!isExpired && !rebookOrCancelDialog && !isRebooking"
+    v-if="!isReservationExpired && !rebookOrCancelDialog && !isRebooking"
     class="m-button-group"
   >
     <muc-button
@@ -360,7 +360,7 @@
       <template #default>{{ t("back") }}</template>
     </muc-button>
     <muc-button
-      v-if="!isExpired"
+      v-if="!isReservationExpired"
       :disabled="!validForm || loadingStates.isBookingAppointment.value"
       :icon="'check'"
       @click="bookAppointment"
@@ -450,7 +450,7 @@ const { serviceLinkId } = inject<ServiceLinkProvider>(
   "serviceLinkProvider"
 ) as ServiceLinkProvider;
 
-const { isExpired } = useReservationTimer();
+const { isReservationExpired } = useReservationTimer();
 
 const electronicCommunication = ref<boolean>(false);
 
