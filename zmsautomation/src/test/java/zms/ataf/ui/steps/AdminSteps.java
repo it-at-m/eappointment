@@ -9,6 +9,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Supplier;
 
 import org.openqa.selenium.By;
@@ -670,10 +671,23 @@ public class AdminSteps {
         COUNTER_PROCESSING_STATION_PAGE.isCustomerVisibleInQueue(TestDataHelper.getTestData("new_waiting_number"), true);
     }
 
+    private void selectCounterAppointmentTimeOrWalkIn() {
+        COUNTER_PROCESSING_STATION_PAGE.selectTimeInNewAppointmentDropDownList("<beliebig>", Set.of(), true);
+    }
+
+    private void confirmCounterAppointmentBooking() {
+        if ("true".equals(TestDataHelper.getTestData("appointment_booked_as_walk_in"))) {
+            String waitingNumber = COUNTER_PROCESSING_STATION_PAGE.clickOnAddSpontaneousCustomer();
+            TestDataHelper.setTestData("new_appointment_number", waitingNumber);
+            return;
+        }
+        COUNTER_PROCESSING_STATION_PAGE.clickOnBookAppointmentButton(true);
+    }
+
     @Wenn("Sie einen Terminkunden mit ausgewählter Dienstleistung, Uhrzeit, name und gültige E-Mail-Adresse buchen.")
     public void wenn_sie_einen_terminkunden_mit_ausgewaehlter_dienstleistung_uhrzeit_name_und_gueltige_email_adresse_buchen() {
         wenn_sie_im_zeitmanagementsystem_unter_terminvereinbarung_neu_die_dienstleistung_string_auswaehlen("<beliebig>");
-        COUNTER_PROCESSING_STATION_PAGE.selectTimeInNewAppointmentDropDownList("<beliebig>");
+        selectCounterAppointmentTimeOrWalkIn();
         
         // ✅ UPDATED: Use RandomNameHelper instead of RandomNameGenerator
         String randomName = RandomNameHelper.generateRandomName();
@@ -683,14 +697,14 @@ public class AdminSteps {
         String emailSafeName = randomName.replaceAll("[^a-zA-Z0-9]", "").toLowerCase();
         COUNTER_PROCESSING_STATION_PAGE.enterEmailInNewAppointmentTextField(emailSafeName + "@mailinator.com");
         
-        COUNTER_PROCESSING_STATION_PAGE.clickOnBookAppointmentButton(true);
+        confirmCounterAppointmentBooking();
     }
 
     @Wenn("Sie einen Terminkunden mit der Dienstleistung {string}, Uhrzeit, name und gültige E-Mail-Adresse buchen.")
     public void wenn_sie_einen_terminkunden_mit_der_dienstleistung_uhrzeit_name_und_gueltige_email_adresse_buchen(String dienstleistungen) {
         List<String> services = Arrays.asList(dienstleistungen.split(",\\s*"));
         services.forEach(this::wenn_sie_im_zeitmanagementsystem_unter_terminvereinbarung_neu_die_dienstleistung_string_auswaehlen);
-        COUNTER_PROCESSING_STATION_PAGE.selectTimeInNewAppointmentDropDownList("<beliebig>");
+        selectCounterAppointmentTimeOrWalkIn();
         
         // ✅ UPDATED: Use RandomNameHelper instead of RandomNameGenerator
         String randomName = RandomNameHelper.generateRandomName();
@@ -700,7 +714,7 @@ public class AdminSteps {
         String emailSafeName = randomName.replaceAll("[^a-zA-Z0-9]", "").toLowerCase();
         COUNTER_PROCESSING_STATION_PAGE.enterEmailInNewAppointmentTextField(emailSafeName + "@mailinator.com");
         
-        COUNTER_PROCESSING_STATION_PAGE.clickOnBookAppointmentButton(true);
+        confirmCounterAppointmentBooking();
     }
 
     @Wenn("Sie einen Terminkunden mit der Dienstleistung {string}, Uhrzeit, name, gültige E-Mail-Adresse und die Anmerkung {string} buchen.")
@@ -708,7 +722,7 @@ public class AdminSteps {
             String anmerkung) {
         List<String> services = Arrays.asList(dienstleistungen.split(",\\s*"));
         services.forEach(this::wenn_sie_im_zeitmanagementsystem_unter_terminvereinbarung_neu_die_dienstleistung_string_auswaehlen);
-        COUNTER_PROCESSING_STATION_PAGE.selectTimeInNewAppointmentDropDownList("<beliebig>");
+        selectCounterAppointmentTimeOrWalkIn();
         
         // ✅ UPDATED: Use RandomNameHelper instead of RandomNameGenerator
         String randomName = RandomNameHelper.generateRandomName();
@@ -719,18 +733,23 @@ public class AdminSteps {
         COUNTER_PROCESSING_STATION_PAGE.enterEmailInNewAppointmentTextField(emailSafeName + "@mailinator.com");
         
         COUNTER_PROCESSING_STATION_PAGE.enterNoteInNewAppointmentTextField(anmerkung);
-        COUNTER_PROCESSING_STATION_PAGE.clickOnBookAppointmentButton(true);
+        confirmCounterAppointmentBooking();
     }
 
     @Dann("Es erscheint ein Pop-Up-Fenster {string} und der Termin ist auch in der Warteschlange sichtbar.")
     public void es_erscheint_ein_popup_fenster_und_der_termin_ist_auch_in_der_warteschlange_sichtbar(String popUpName) {
-        Assert.assertTrue(ADMIN_PAGE.isPopUpVisible(popUpName), String.format("Popup '%s' is not visible!", popUpName));
+        boolean bookedAsWalkIn = "true".equals(TestDataHelper.getTestData("appointment_booked_as_walk_in"));
+        String visiblePopup = bookedAsWalkIn ? "Spontankunde wurde erfolgreich eingetragen" : popUpName;
+        Assert.assertTrue(ADMIN_PAGE.isPopUpVisible(visiblePopup), String.format("Popup '%s' is not visible!", visiblePopup));
         try {
             wenn_sie_im_zeitmanagementsystem_auf_die_schaltflaeche_string_klicken("Schließen");
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        COUNTER_PROCESSING_STATION_PAGE.isCustomerVisibleInQueue(TestDataHelper.getTestData("new_appointment_number"), false);
+        String queueNumber = bookedAsWalkIn
+                ? TestDataHelper.getTestData("new_waiting_number")
+                : TestDataHelper.getTestData("new_appointment_number");
+        COUNTER_PROCESSING_STATION_PAGE.isCustomerVisibleInQueue(queueNumber, bookedAsWalkIn);
 
     }
 

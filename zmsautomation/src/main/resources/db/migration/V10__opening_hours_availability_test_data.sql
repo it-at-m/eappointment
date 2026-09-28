@@ -5,27 +5,20 @@
 -- Ruppertstraße Standorte 160, 181, 172, 184 (offices 10489 / 10502) live in
 -- V19__ZMSKVR-1124_zmscitizenapi_opening_hours_for_ruppertstasse.sql — not duplicated here.
 
--- round current time to next 5 minute slot
+-- 5-minute Zeitschlitz. Stay on today from the next slot until 23:55, the latest
+-- end at which that slot still fits. The next day (00:05–23:55) is used only when
+-- the rounded start is 23:55 or 24:00:00 and no complete slot remains.
+SET @slot_seconds := 300;
+SET @latest_end := '23:55:00';
 SET @rounded_start :=
-  SEC_TO_TIME(CEILING(TIME_TO_SEC(CURTIME()) / 300) * 300);
+  SEC_TO_TIME(CEILING(TIME_TO_SEC(CURTIME()) / @slot_seconds) * @slot_seconds);
 
--- desired end = +6 hours
-SET @desired_end :=
-  ADDTIME(@rounded_start, '06:00:00');
-
--- latest allowed end so slots still fit
-SET @rounded_end :=
-  LEAST(@desired_end, '23:55:00');
-
--- If the capped end is not after the rounded start (e.g. late night / 24:00:00 start),
--- use the next calendar day with appointment window 00:05–03:05 (still capped at 23:55).
 SET @start_sec := TIME_TO_SEC(@rounded_start);
-SET @end_sec := TIME_TO_SEC(@rounded_end);
-SET @use_next_day := (@end_sec <= @start_sec);
+SET @end_sec := TIME_TO_SEC(@latest_end);
+SET @use_next_day := (@start_sec >= 24 * 3600) OR (@end_sec <= @start_sec);
 
 SET @appt_start := IF(@use_next_day, '00:05:00', @rounded_start);
-SET @appt_end :=
-  IF(@use_next_day, LEAST(ADDTIME('00:05:00', '03:00:00'), '23:55:00'), @rounded_end);
+SET @appt_end := @latest_end;
 
 SET @range_start := IF(@use_next_day, DATE_ADD(CURDATE(), INTERVAL 1 DAY), CURDATE());
 SET @range_end :=
