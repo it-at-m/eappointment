@@ -26,6 +26,8 @@ class QueueList extends Base implements \BO\Zmsentities\Helper\NoSanitize
 
     public const int DEFAULT_PRIORITY_WITH_APPOINTMENT = 2;
 
+    public const int RECALL_COOLDOWN_SECONDS = 300;
+
     protected mixed $processTimeAverage = null;
 
     protected mixed $workstationCount = null;
@@ -269,14 +271,34 @@ class QueueList extends Base implements \BO\Zmsentities\Helper\NoSanitize
             ;
         $next = array_shift($queueList);
         $currentTime = $dateTime->getTimestamp();
+
         while ($next) {
-            if (
-                ! in_array($next->number, $excludeNumbers) &&
-                (0 == $next->lastCallTime || ($next->lastCallTime + (5 * 60)) <= $currentTime)
-            ) {
-                return $next->getProcess();
+            if (in_array($next->number, $excludeNumbers, true)) {
+                $next = array_shift($queueList);
+                continue;
             }
-            $next = array_shift($queueList);
+            if (
+                0 != $next->lastCallTime
+                && ($next->lastCallTime + self::RECALL_COOLDOWN_SECONDS) > $currentTime
+            ) {
+                $next = array_shift($queueList);
+                continue;
+            }
+
+            $process = $next->getProcess();
+
+            if (! $process) {
+                $next = array_shift($queueList);
+                continue;
+            }
+            if (
+                $next->withAppointment
+                && $process->getFirstAppointment()->date > $currentTime
+            ) {
+                $next = array_shift($queueList);
+                continue;
+            }
+            return $process;
         }
         return null;
     }
