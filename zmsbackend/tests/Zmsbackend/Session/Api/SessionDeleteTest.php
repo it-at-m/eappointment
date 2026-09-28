@@ -10,6 +10,7 @@ class SessionDeleteTest extends \BO\Zmsbackend\Tests\Api\Base
 
     const string SESSION_NAME = 'unittest';
 
+    #[\Override]
     public function testRendering()
     {
         (new \BO\Zmsbackend\Tests\Session\Api\SessionUpdateTest('dummyTest'))->testRendering();

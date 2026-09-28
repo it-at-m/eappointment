@@ -8,6 +8,7 @@ class WarehousePeriodGetTest extends \BO\Zmsbackend\Tests\Api\Base
 {
     protected $classname = "WarehousePeriodGet";
 
+    #[\Override]
     public function testRendering()
     {
         $workstation = $this->setWorkstation();

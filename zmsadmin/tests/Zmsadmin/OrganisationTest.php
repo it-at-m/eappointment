@@ -12,6 +12,7 @@ class OrganisationTest extends Base
 
     protected $classname = "Organisation";
 
+    #[\Override]
     public function testRendering()
     {
         $this->setApiCalls(

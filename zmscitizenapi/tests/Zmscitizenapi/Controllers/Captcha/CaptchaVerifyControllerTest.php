@@ -13,6 +13,7 @@ class CaptchaVerifyControllerTest extends ControllerTestCase
 {
     protected $classname = "\BO\Zmscitizenapi\Controllers\Captcha\CaptchaVerifyController";
 
+    #[\Override]
     public function setUp(): void
     {
         parent::setUp();
@@ -32,6 +33,7 @@ class CaptchaVerifyControllerTest extends ControllerTestCase
         \App::initialize();
     }
 
+    #[\Override]
     public function tearDown(): void
     {
         putenv('ALTCHA_CAPTCHA_SITE_KEY=');
@@ -48,6 +50,7 @@ class CaptchaVerifyControllerTest extends ControllerTestCase
         return base64_encode($this->readFixture('POST_captcha_verify_payload.json'));
     }
 
+    #[\Override]
     public function testRendering()
     {
         $parameters = [
@@ -83,6 +86,7 @@ class CaptchaVerifyControllerTest extends ControllerTestCase
                 $this->httpClient = $client;
             }
 
+            #[\Override]
             public function verifySolution(?string $payload): array
             {
                 return parent::verifySolution($payload);
@@ -115,6 +119,7 @@ class CaptchaVerifyControllerTest extends ControllerTestCase
                 $this->httpClient = $client;
             }
 
+            #[\Override]
             public function verifySolution(?string $payload): array
             {
                 return parent::verifySolution($payload);
@@ -144,6 +149,7 @@ class CaptchaVerifyControllerTest extends ControllerTestCase
                 $this->httpClient = $client;
             }
 
+            #[\Override]
             public function verifySolution(?string $payload): array
             {
                 return parent::verifySolution($payload);
@@ -171,6 +177,7 @@ class CaptchaVerifyControllerTest extends ControllerTestCase
                 $this->httpClient = $client;
             }
 
+            #[\Override]
             public function verifySolution(?string $payload): array
             {
                 return parent::verifySolution($payload);
@@ -198,6 +205,7 @@ class CaptchaVerifyControllerTest extends ControllerTestCase
                 $this->httpClient = $client;
             }
 
+            #[\Override]
             public function verifySolution(?string $payload): array
             {
                 return parent::verifySolution($payload);
@@ -231,6 +239,7 @@ class CaptchaVerifyControllerTest extends ControllerTestCase
                 $this->httpClient = $client;
             }
 
+            #[\Override]
             public function verifySolution(?string $payload): array
             {
                 return parent::verifySolution($payload);
@@ -262,6 +271,7 @@ class CaptchaVerifyControllerTest extends ControllerTestCase
                 $this->httpClient = $client;
             }
 
+            #[\Override]
             public function verifySolution(?string $payload): array
             {
                 return parent::verifySolution($payload);

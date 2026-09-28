@@ -808,8 +808,15 @@ SSO_PASSWORD="${SSO_PASSWORD:-vorschau}"
 is_webdriver_bootstrap_failure() {
   local log_file="$1"
   [[ -f "$log_file" ]] || return 1
-  grep -E -q \
-    "SessionNotCreatedException|Connection error \(POST http://localhost:4444/wd/hub/session\)|No WebDriver instance for thread|java\.net\.ConnectException" \
+  # -a -q stops at the first short stack trace. A later Firefox newSession
+  # line carries a multi-megabyte profile and can make grep give up first.
+  grep -a -F -q \
+    -e 'UnreachableBrowserException' \
+    -e 'SessionNotCreatedException' \
+    -e 'Session is already started' \
+    -e 'No WebDriver instance for thread' \
+    -e 'Connection error (POST http://localhost:4444/wd/hub/session)' \
+    -e 'java.net.ConnectException' \
     "$log_file"
 }
 
@@ -870,6 +877,9 @@ invoke_maven_suite() {
     fi
     if (( attempt < max_attempts )) && is_webdriver_bootstrap_failure "$attempt_log"; then
       warn "Detected WebDriver bootstrap failure on ${suite_name} attempt ${attempt}; retrying in ${RETRY_DELAY_SECONDS}s"
+      pkill -x geckodriver >/dev/null 2>&1 || true
+      pkill -x firefox >/dev/null 2>&1 || true
+      pkill -x firefox-esr >/dev/null 2>&1 || true
       sleep "$RETRY_DELAY_SECONDS"
       attempt=$((attempt + 1))
       continue

@@ -34,6 +34,7 @@ class Unvalidated extends \BO\Mellon\Parameter
      *
      * @return mixed
      */
+    #[\Override]
     public function getValue()
     {
         throw new Exception("parameters should validate first");

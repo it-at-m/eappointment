@@ -10,6 +10,7 @@ class WorkstationPasswordTest extends \BO\Zmsbackend\Tests\Api\Base
 
     public static $authKey = 'vorschau';
 
+    #[\Override]
     public function setUp(): void
     {
         parent::setUp();
@@ -17,6 +18,7 @@ class WorkstationPasswordTest extends \BO\Zmsbackend\Tests\Api\Base
         static::$authKey = (! \App::DEBUG) ? static::$authKey : 'vorschau';
     }
 
+    #[\Override]
     public function testRendering()
     {
         $this->setWorkstation(138, static::$loginName, 143, static::$authKey);

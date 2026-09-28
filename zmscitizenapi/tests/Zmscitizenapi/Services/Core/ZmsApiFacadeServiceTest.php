@@ -26,6 +26,7 @@ class ZmsApiFacadeServiceTest extends TestCase
     private $httpMock;
     private $cacheMock;
 
+    #[\Override]
     protected function setUp(): void
     {
         parent::setUp();
@@ -44,6 +45,7 @@ class ZmsApiFacadeServiceTest extends TestCase
         \App::$cache = $this->cacheMock;
     }
 
+    #[\Override]
     protected function tearDown(): void
     {
         parent::tearDown();

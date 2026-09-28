@@ -21,6 +21,7 @@ class ProcessListByScopeAndDateTest extends \BO\Zmsbackend\Tests\Api\Base
         ]));
     }
 
+    #[\Override]
     public function testRendering()
     {
         $this->setWorkstationWithScopeAccess();

@@ -6,6 +6,7 @@ class UseraccountGetTest extends \BO\Zmsbackend\Tests\Api\Base
 {
     protected $classname = "UseraccountGet";
 
+    #[\Override]
     public function testRendering()
     {
         $this->setWorkstation()->getUseraccount()->setPermissions('useraccount');

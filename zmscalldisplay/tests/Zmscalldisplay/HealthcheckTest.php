@@ -11,6 +11,7 @@ class HealthcheckTest extends Base
 
     protected $parameters = [];
 
+    #[\Override]
     protected function getApiCalls(): array
     {
         return [
@@ -23,6 +24,7 @@ class HealthcheckTest extends Base
         ];
     }
 
+    #[\Override]
     public function testRendering()
     {
         $response = $this->render([ ], [ ], [ ]);

@@ -13,6 +13,7 @@ class OrganisationUpdateTest extends \BO\Zmsbackend\Tests\Api\Base
 
     const int SCOPE_ID = 143;
 
+    #[\Override]
     public function testRendering()
     {
         $this->setWorkstation()->getUseraccount()->setPermissions('organisation')

@@ -43,6 +43,7 @@ class WorkstationProcessRemoveTest extends \BO\Zmsbackend\Tests\Api\Base
         $this->assertTrue($process->getWasMissed());
     }
 
+    #[\Override]
     public function testRendering()
     {
         $this->setWorkstation();
