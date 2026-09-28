@@ -35,9 +35,9 @@ INSERT INTO `preferences` (`entity`, `id`, `groupName`, `name`, `value`, `update
 ('scope', 377, 'ticketprinter', 'buttonName', 'Gewerbeamt Varianten', NOW()),
 ('scope', 377, 'workstation', 'emergencyRefreshInterval', '5', NOW());
 
--- 5-minute Zeitschlitz. Stay on today from the next slot until 23:55, the latest
--- end at which that slot still fits. The next day (00:05–23:55) is used only when
--- the rounded start is 23:55 or 24:00:00 and no complete slot remains.
+-- 5-minute Zeitschlitz. Stay on today until 23:55 while at least three hours
+-- remain. A shorter stub is not enough for a bookable appointment, so the next
+-- day is opened for the whole day, 00:05–23:55.
 SET @slot_seconds := 300;
 SET @latest_end := '23:55:00';
 SET @rounded_start :=
@@ -45,7 +45,7 @@ SET @rounded_start :=
 
 SET @start_sec := TIME_TO_SEC(@rounded_start);
 SET @end_sec := TIME_TO_SEC(@latest_end);
-SET @use_next_day := (@start_sec >= 24 * 3600) OR (@end_sec <= @start_sec);
+SET @use_next_day := (@start_sec >= 24 * 3600) OR (@end_sec <= @start_sec) OR ((@end_sec - @start_sec) < 3 * 3600);
 
 SET @appt_start := IF(@use_next_day, '00:05:00', @rounded_start);
 SET @appt_end := @latest_end;

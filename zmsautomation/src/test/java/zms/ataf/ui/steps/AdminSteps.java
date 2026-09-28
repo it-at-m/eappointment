@@ -676,12 +676,16 @@ public class AdminSteps {
     }
 
     private void confirmCounterAppointmentBooking() {
-        if ("true".equals(TestDataHelper.getTestData("appointment_booked_as_walk_in"))) {
-            String waitingNumber = COUNTER_PROCESSING_STATION_PAGE.clickOnAddSpontaneousCustomer();
-            TestDataHelper.setTestData("new_appointment_number", waitingNumber);
+        if (!"true".equals(TestDataHelper.getTestData("appointment_booked_as_walk_in"))
+                && COUNTER_PROCESSING_STATION_PAGE.hasBookAppointmentButton()) {
+            COUNTER_PROCESSING_STATION_PAGE.clickOnBookAppointmentButton(true);
             return;
         }
-        COUNTER_PROCESSING_STATION_PAGE.clickOnBookAppointmentButton(true);
+        if (!"true".equals(TestDataHelper.getTestData("appointment_booked_as_walk_in"))) {
+            COUNTER_PROCESSING_STATION_PAGE.selectWalkInCustomer();
+        }
+        String waitingNumber = COUNTER_PROCESSING_STATION_PAGE.clickOnAddSpontaneousCustomer();
+        TestDataHelper.setTestData("new_appointment_number", waitingNumber);
     }
 
     @Wenn("Sie einen Terminkunden mit ausgewählter Dienstleistung, Uhrzeit, name und gültige E-Mail-Adresse buchen.")

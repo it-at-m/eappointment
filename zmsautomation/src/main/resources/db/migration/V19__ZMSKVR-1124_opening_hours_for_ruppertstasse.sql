@@ -16,10 +16,9 @@
 --  - 184 -> officeId 10502 (WB03 Pass, KVR-II/221)
 --  - 342 -> officeId 10502 (Serviceschalter Pass, KVR-II/221)
 
--- 5-minute Zeitschlitz. Stay on today from the next slot until 23:55, the latest
--- end at which that slot still fits. The next day (00:05–23:55) is used only when
--- the rounded start is 23:55 or 24:00:00 and no complete slot remains. Keeping the
--- rest of today gives the shared 10489/10313237 calendars the same multi-slot window.
+-- 5-minute Zeitschlitz. Stay on today until 23:55 while at least three hours
+-- remain, so 10489 and 10313237 still share a multi-slot window. A shorter stub
+-- leaves one timestamp on one office, so the next day is opened 00:05–23:55.
 SET @slot_seconds := 300;
 SET @latest_end := '23:55:00';
 SET @rounded_start :=
@@ -27,7 +26,7 @@ SET @rounded_start :=
 
 SET @start_sec := TIME_TO_SEC(@rounded_start);
 SET @end_sec := TIME_TO_SEC(@latest_end);
-SET @use_next_day := (@start_sec >= 24 * 3600) OR (@end_sec <= @start_sec);
+SET @use_next_day := (@start_sec >= 24 * 3600) OR (@end_sec <= @start_sec) OR ((@end_sec - @start_sec) < 3 * 3600);
 
 SET @appt_start := IF(@use_next_day, '00:05:00', @rounded_start);
 SET @appt_end := @latest_end;
