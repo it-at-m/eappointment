@@ -1,0 +1,46 @@
+{
+  "branch": "test-zmskvr-1411-zmskvr-1672-opening-hours-sunday",
+  "branchSlug": "test-zmskvr-1411-zmskvr-1672-opening-hours-sunday",
+  "runId": "36478331157",
+  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36478331157",
+  "runStartedAt": "2026-09-28T20:19:07Z",
+  "publishedAt": "2026-09-28T20:29:22.164Z",
+  "features": {
+    "feature-rest-zmsapi-opening-hours-zmskvr-1672-zmskvr-1411-opening-hours-including-sunday": {
+      "status": "passed",
+      "shard": "custom",
+      "browser": "chrome",
+      "rel": "rest/zmsapi/opening-hours/zmskvr-1672_zmskvr-1411_opening_hours_including_sunday.feature",
+      "runId": "36478331157",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36478331157",
+      "runStartedAt": "2026-09-28T20:19:07Z",
+      "browsers": {
+        "chrome": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "36478331157",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36478331157",
+          "runStartedAt": "2026-09-28T20:19:07Z"
+        }
+      }
+    },
+    "feature-ui-zmsadmin-opening-hours-zmskvr-1672-zmskvr-1411-opening-hours-including-sunday": {
+      "status": "passed",
+      "shard": "custom",
+      "browser": "chrome",
+      "rel": "ui/zmsadmin/opening-hours/zmskvr-1672_zmskvr-1411_opening_hours_including_sunday.feature",
+      "runId": "36478331157",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36478331157",
+      "runStartedAt": "2026-09-28T20:19:07Z",
+      "browsers": {
+        "chrome": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "36478331157",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36478331157",
+          "runStartedAt": "2026-09-28T20:19:07Z"
+        }
+      }
+    }
+  }
+}

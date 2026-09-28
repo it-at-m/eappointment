@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-09-28T10:07:34.200Z",
+  "publishedAt": "2026-09-28T20:29:22.164Z",
   "branches": [
     {
       "name": "next",
@@ -216,6 +216,12 @@
       "slug": "renovate-next-ghcr.io-it-at-m-refarch-refarch-gateway-1.x",
       "runId": "34037729850",
       "runStartedAt": "2026-09-06T13:58:56Z"
+    },
+    {
+      "name": "test-zmskvr-1411-zmskvr-1672-opening-hours-sunday",
+      "slug": "test-zmskvr-1411-zmskvr-1672-opening-hours-sunday",
+      "runId": "36478331157",
+      "runStartedAt": "2026-09-28T20:19:07Z"
     },
     {
       "name": "test-zmskvr-1630-zmskvr-1030-reserved-hash-resume",
