@@ -14,6 +14,7 @@ class SecurityHeadersMiddlewareTest extends MiddlewareTestCase
 {
     private SecurityHeadersMiddleware $middleware;
 
+    #[\Override]
     protected function setUp(): void
     {
         parent::setUp();

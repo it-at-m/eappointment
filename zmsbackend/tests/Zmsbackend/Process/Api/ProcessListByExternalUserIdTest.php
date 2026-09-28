@@ -29,6 +29,7 @@ class ProcessListByExternalUserIdTest extends \BO\Zmsbackend\Tests\Api\Base
         (new \BO\Zmsbackend\Process\Service\Process())->updateEntity($process, \App::$now, 1);
     }
 
+    #[\Override]
     public function testRendering()
     {
         $this->setWorkstation();

@@ -12,6 +12,7 @@ class WorkstationProcessWaitingnumberTest extends \BO\Zmsbackend\Tests\Api\Base
 
     const string AUTHKEY = '29ed';
 
+    #[\Override]
     public function testRendering()
     {
         $workstation = $this->setWorkstation();

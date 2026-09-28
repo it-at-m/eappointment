@@ -18,6 +18,7 @@ class ProcessSaveTest extends Base
 
     protected $classname = "ProcessSave";
 
+    #[\Override]
     public function testRendering()
     {
         $startDate = new \DateTimeImmutable('2016-04-01');

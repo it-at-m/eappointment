@@ -6,6 +6,7 @@ class MailGetTest extends \BO\Zmsbackend\Tests\Api\Base
 {
     protected $classname = "MailGet";
 
+    #[\Override]
     public function testRendering()
     {
         $jsonString = (string)(new MailAddTest('dummyTest'))->testRendering()->getBody();

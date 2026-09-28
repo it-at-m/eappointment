@@ -6,6 +6,7 @@ class ScopeListByRequestTest extends \BO\Zmsbackend\Tests\Api\Base
 {
     protected $classname = "ScopeListByRequest";
 
+    #[\Override]
     public function testRendering()
     {
         $this->setWorkstation();

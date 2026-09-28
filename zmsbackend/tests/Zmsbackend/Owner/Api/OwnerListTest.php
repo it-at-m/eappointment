@@ -8,6 +8,7 @@ class OwnerListTest extends \BO\Zmsbackend\Tests\Api\Base
 {
     protected $classname = "OwnerList";
 
+    #[\Override]
     public function testRendering()
     {
         $this->setWorkstation()->getUseraccount()->setPermissions('superuser');

@@ -14,6 +14,7 @@ class RequestSanitizerMiddlewareTest extends MiddlewareTestCase
 {
     private RequestSanitizerMiddleware $middleware;
 
+    #[\Override]
     protected function setUp(): void
     {
         parent::setUp();

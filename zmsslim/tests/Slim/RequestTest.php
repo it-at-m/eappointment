@@ -10,6 +10,7 @@ use Slim\Psr7\Uri;
 class RequestTest extends Base
 {
 
+    #[\Override]
     public function testRendering()
     {
         $request = $this->getRequest('GET', '/unittest/123/', $this->sessionData);

@@ -13,6 +13,7 @@ class ProcessDeleteTest extends \BO\Zmsbackend\Tests\Api\Base
 
     protected $authKey = '';
 
+    #[\Override]
     public function testRendering()
     {
         $entity = (new \BO\Zmsbackend\Process\Service\Process)->readEntity(10029, new \BO\Zmsbackend\Helper\NoAuth);

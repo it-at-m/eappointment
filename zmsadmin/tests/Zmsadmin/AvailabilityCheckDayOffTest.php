@@ -8,6 +8,7 @@ class AvailabilityCheckDayOffTest extends Base
 
     protected $classname = "\BO\Zmsadmin\Helper\AvailabilityCheckDayOff";
 
+    #[\Override]
     public function testRendering()
     {
         $response = $this->render([], [

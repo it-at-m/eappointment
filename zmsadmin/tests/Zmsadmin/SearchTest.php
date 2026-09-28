@@ -12,6 +12,7 @@ class SearchTest extends Base
 
     protected $classname = "Search";
 
+    #[\Override]
     public function testRendering()
     {
         $this->setApiCalls(

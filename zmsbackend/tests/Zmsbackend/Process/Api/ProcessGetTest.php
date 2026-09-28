@@ -6,6 +6,7 @@ class ProcessGetTest extends \BO\Zmsbackend\Tests\Api\Base
 {
     protected $classname = "ProcessGet";
 
+    #[\Override]
     public function testRendering()
     {
         $response = $this->render(['id' => 10030, 'authKey' => '1c56'], [], []);

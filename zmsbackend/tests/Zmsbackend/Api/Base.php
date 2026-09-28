@@ -14,6 +14,7 @@ abstract class Base extends \BO\Slim\PhpUnit\Base
 {
     protected $namespace = '';
 
+    #[\Override]
     public function setUp(): void
     {
         $ref = new \ReflectionClass(static::class);
@@ -23,6 +24,7 @@ abstract class Base extends \BO\Slim\PhpUnit\Base
         \BO\Zmsbackend\Connection\Select::setProfiling();
     }
 
+    #[\Override]
     public function tearDown(): void
     {
         User::$workstation = null;
@@ -78,6 +80,7 @@ abstract class Base extends \BO\Slim\PhpUnit\Base
         return $department;
     }
 
+    #[\Override]
     protected function getControllerIdentifier(): string
     {
         if ($this->namespace === '') {

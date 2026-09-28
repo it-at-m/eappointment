@@ -10,6 +10,7 @@ class ChangelogTest extends Base
 
     protected $classname = "Changelog";
 
+    #[\Override]
     public function testRendering()
     {
         $this->setApiCalls(

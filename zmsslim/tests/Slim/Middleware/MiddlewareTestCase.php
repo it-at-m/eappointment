@@ -17,6 +17,7 @@ abstract class MiddlewareTestCase extends TestCase
     protected TestLogger $logger;
     protected ResponseFactory $responseFactory;
 
+    #[\Override]
     protected function setUp(): void
     {
         parent::setUp();
@@ -25,6 +26,7 @@ abstract class MiddlewareTestCase extends TestCase
         $this->responseFactory = new ResponseFactory();
     }
 
+    #[\Override]
     protected function tearDown(): void
     {
         TestLogger::verifyNoMoreLogs();

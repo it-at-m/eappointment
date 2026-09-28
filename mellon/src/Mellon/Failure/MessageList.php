@@ -12,6 +12,7 @@ namespace BO\Mellon\Failure;
  */
 class MessageList extends \ArrayObject
 {
+    #[\Override]
     public function offsetSet(mixed $key, mixed $value): void
     {
         parent::offsetSet($key, $value);

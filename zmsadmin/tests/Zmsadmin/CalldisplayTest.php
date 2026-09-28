@@ -10,6 +10,7 @@ class CalldisplayTest extends Base
 
     protected $classname = "Calldisplay";
 
+    #[\Override]
     public function testRendering()
     {
         $this->setApiCalls(

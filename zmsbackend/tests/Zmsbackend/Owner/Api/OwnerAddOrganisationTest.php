@@ -6,6 +6,7 @@ class OwnerAddOrganisationTest extends \BO\Zmsbackend\Tests\Api\Base
 {
     protected $classname = "OwnerAddOrganisation";
 
+    #[\Override]
     public function testRendering()
     {
         $this->setWorkstation()->getUseraccount()->setPermissions('organisation')

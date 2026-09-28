@@ -10,6 +10,7 @@ class ProcessByScopeTest extends Base
 
     protected $parameters = [ ];
 
+    #[\Override]
     protected function getApiCalls(): array
     {
         return [
@@ -47,6 +48,7 @@ class ProcessByScopeTest extends Base
         ];
     }
 
+    #[\Override]
     public function testRendering()
     {
         $response = $this->render([], [

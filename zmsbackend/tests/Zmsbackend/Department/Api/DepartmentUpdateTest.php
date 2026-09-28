@@ -8,6 +8,7 @@ class DepartmentUpdateTest extends \BO\Zmsbackend\Tests\Api\Base
 {
     protected $classname = "DepartmentUpdate";
 
+    #[\Override]
     public function testRendering()
     {
         $this->setWorkstation()->getUseraccount()->setPermissions('department')

@@ -24,6 +24,7 @@ class DayoffUpdateTest extends \BO\Zmsbackend\Tests\Api\Base
         ], []);
     }
 
+    #[\Override]
     public function testRendering()
     {
         $this->setWorkstation()->getUseraccount()->setPermissions('dayoff');

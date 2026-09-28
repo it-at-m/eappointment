@@ -10,6 +10,7 @@ class AvailabilityDeleteTest extends \BO\Zmsbackend\Tests\Api\Base
 {
     protected $classname = "AvailabilityDelete";
 
+    #[\Override]
     public function testRendering()
     {
         $input = (new Entity)->createExample();

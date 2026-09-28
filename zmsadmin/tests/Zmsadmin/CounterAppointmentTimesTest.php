@@ -12,6 +12,7 @@ class CounterAppointmentTimesTest extends Base
 
     protected $classname = "CounterAppointmentTimes";
 
+    #[\Override]
     public function testRendering()
     {
         $this->setApiCalls(

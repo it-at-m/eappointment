@@ -8,6 +8,7 @@ class UseraccountAddTest extends \BO\Zmsbackend\Tests\Api\Base
 {
     protected $classname = "UseraccountAdd";
 
+    #[\Override]
     public function testRendering()
     {
         $this->setWorkstation()->getUseraccount()->setPermissions('useraccount');

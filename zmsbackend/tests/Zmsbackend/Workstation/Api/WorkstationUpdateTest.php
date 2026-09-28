@@ -89,6 +89,7 @@ class WorkstationUpdateTest extends \BO\Zmsbackend\Tests\Api\Base
         ], []);
     }
 
+    #[\Override]
     public function testRendering()
     {
         $workstation = $this->setWorkstation();

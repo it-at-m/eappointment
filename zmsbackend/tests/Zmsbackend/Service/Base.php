@@ -14,6 +14,7 @@ abstract class Base extends TestCase
     public static $requestRelationCount = 2532;
     public static $requestCount = 308;
 
+    #[\Override]
     public function setUp(): void
     {
         static::$now = new \DateTimeImmutable('2016-04-01 11:55:00');
@@ -28,6 +29,7 @@ abstract class Base extends TestCase
         Db::executeTestData($testName, 'setup');
     }
 
+    #[\Override]
     public function tearDown(): void
     {
         \BO\Zmsbackend\Scope\Service\Scope::$cache = [];

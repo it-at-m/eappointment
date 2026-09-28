@@ -12,6 +12,7 @@ class RolesTest extends Base
 
     protected $classname = 'Roles';
 
+    #[\Override]
     public function testRendering()
     {
         $this->setApiCalls(

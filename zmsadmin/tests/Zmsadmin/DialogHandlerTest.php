@@ -10,6 +10,7 @@ class DialogHandlerTest extends Base
 
     protected $classname = "\BO\Zmsadmin\Helper\DialogHandler";
 
+    #[\Override]
     public function testRendering()
     {
         $this->setApiCalls(

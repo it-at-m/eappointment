@@ -20,6 +20,7 @@ class AvailabilityClosureReadTest extends \BO\Zmsbackend\Tests\Api\Base
      * Override des ggf. geerbten testRendering(),
      * damit Rechte gesetzt sind und wir eine valide Anfrage machen.
      */
+    #[\Override]
     public function testRendering()
     {
         $this->auth();

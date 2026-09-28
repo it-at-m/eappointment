@@ -8,6 +8,7 @@ class ConflictListByScopeTest extends \BO\Zmsbackend\Tests\Api\Base
 {
     protected $classname = "ConflictListByScope";
 
+    #[\Override]
     public function testRendering()
     {
         $this->setWorkstation()

@@ -8,6 +8,7 @@ class DepartmentByScopeIdTest extends \BO\Zmsbackend\Tests\Api\Base
 {
     protected $classname = "DepartmentByScopeId";
 
+    #[\Override]
     public function testRendering()
     {
         $this->setWorkstation();
