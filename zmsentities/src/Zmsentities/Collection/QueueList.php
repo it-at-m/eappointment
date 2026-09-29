@@ -277,6 +277,26 @@ class QueueList extends Base implements \BO\Zmsentities\Helper\NoSanitize
                 $next = array_shift($queueList);
                 continue;
             }
+            $process = $next->getProcess();
+
+            if (! $process) {
+                $next = array_shift($queueList);
+                continue;
+            }
+
+            $timeoutTime = isset($process->timeoutTime)
+            ? strtotime((string) $process->timeoutTime)
+            : false;
+
+            if (
+                $process->queue->callCount > 0
+                && $timeoutTime !== false
+                && ($timeoutTime + self::RECALL_COOLDOWN_SECONDS) > $currentTime
+            ) {
+                $next = array_shift($queueList);
+                continue;
+            }
+
             if (
                 0 != $next->lastCallTime
                 && ($next->lastCallTime + self::RECALL_COOLDOWN_SECONDS) > $currentTime
@@ -285,12 +305,6 @@ class QueueList extends Base implements \BO\Zmsentities\Helper\NoSanitize
                 continue;
             }
 
-            $process = $next->getProcess();
-
-            if (! $process) {
-                $next = array_shift($queueList);
-                continue;
-            }
             if (
                 $next->withAppointment
                 && $process->getFirstAppointment()->date > $currentTime
@@ -298,6 +312,7 @@ class QueueList extends Base implements \BO\Zmsentities\Helper\NoSanitize
                 $next = array_shift($queueList);
                 continue;
             }
+
             return $process;
         }
         return null;
