@@ -40,6 +40,7 @@ import zms.ataf.helpers.RandomNameHelper;
 import zms.ataf.ui.pages.admin.AdminPage;
 import zms.ataf.ui.pages.admin.AdminPageContext;
 import zms.ataf.ui.pages.admin.administration.AuthoritiesAndLocationsPage;
+import zms.ataf.ui.pages.admin.search.CustomerSearchPage;
 import zms.ataf.ui.pages.admin.workview.counterprocessingstation.CounterProcessingStationPage;
 import zms.ataf.ui.pages.admin.workview.counterprocessingstation.CounterSection;
 import zms.ataf.ui.pages.admin.workview.counterprocessingstation.ProcessingStationSection;
@@ -52,10 +53,12 @@ public class AdminSteps {
     private final AuthoritiesAndLocationsPage AUTHORITIES_AND_LOCATIONS_PAGE;
 
     private final ProcessingStationSection PROCESSING_STATION_SECTION;
+    private final CustomerSearchPage CUSTOMER_SEARCH_PAGE;
 
     public AdminSteps() {
         ADMIN_PAGE = new AdminPage(DriverUtil.getDriver());
         COUNTER_PROCESSING_STATION_PAGE = new CounterProcessingStationPage(DriverUtil.getDriver(), ADMIN_PAGE.getContext());
+        CUSTOMER_SEARCH_PAGE = new CustomerSearchPage(DriverUtil.getDriver(), ADMIN_PAGE.getContext());
         AUTHORITIES_AND_LOCATIONS_PAGE = new AuthoritiesAndLocationsPage(DriverUtil.getDriver(), ADMIN_PAGE.getContext());
         PROCESSING_STATION_SECTION = new ProcessingStationSection(DriverUtil.getDriver(), ADMIN_PAGE.getContext());
         COUNTER_SECTION = new CounterSection(DriverUtil.getDriver(), ADMIN_PAGE.getContext());
@@ -385,6 +388,47 @@ public class AdminSteps {
     @Wenn("Sie im " + AdminPageContext.NAME + " den Termin mit der Nummer {string} löschen.")
     public void wenn_sie_im_zeitmanagementsystem_den_termin_mit_der_nummer_loeschen(String appointmentNumber) {
         COUNTER_PROCESSING_STATION_PAGE.clickOnDeleteAppointmentLink(TestDataHelper.transformTestData(appointmentNumber));
+    }
+
+    @Wenn("Sie einen Terminkunden mit der Dienstleistung {string} und dem Namen {string} buchen.")
+    public void sie_einen_terminkunden_mit_der_dienstleistung_und_dem_namen_buchen(String service, String name) {
+        wenn_sie_im_zeitmanagementsystem_unter_terminvereinbarung_neu_die_dienstleistung_string_auswaehlen(service);
+        selectCounterAppointmentTimeOrWalkIn();
+        wenn_sie_im_zeitmanagementsystem_unter_terminvereinbarung_neu_den_namen_string_eingeben(name);
+        wenn_sie_im_zeitmanagementsystem_unter_terminvereinbarung_neu_die_email_adresse_string_eingeben("<mailinator>");
+        bookNamedAppointmentOrWalkIn(TestDataHelper.getTestData("customer_name"), TestDataHelper.getTestData("customer_email"));
+    }
+
+    @Wenn("Sie den gerade gebuchten Termin von {string} in der Warteschlange löschen.")
+    public void sie_den_gerade_gebuchten_termin_in_der_warteschlange_loeschen(String familyName) {
+        COUNTER_PROCESSING_STATION_PAGE.deleteQueuedAppointmentByFamilyName(TestDataHelper.transformTestData(familyName));
+    }
+
+    @Wenn("Sie in der Kundensuche nach {string} suchen.")
+    public void sie_in_der_kundensuche_nach_suchen(String query) {
+        CUSTOMER_SEARCH_PAGE.search(TestDataHelper.transformTestData(query));
+    }
+
+    @Dann("zeigt die Kundensuche für {string} den Status {string} mit Buchungs- und Stornierungszeit.")
+    public void zeigt_die_kundensuche_den_status_mit_zeiten(String familyName, String statusLabel) {
+        CUSTOMER_SEARCH_PAGE.assertCancelledStatus(
+                TestDataHelper.transformTestData(familyName),
+                TestDataHelper.transformTestData(statusLabel));
+    }
+
+    private void bookNamedAppointmentOrWalkIn(String name, String email) {
+        if (!"true".equals(TestDataHelper.getTestData("appointment_booked_as_walk_in"))
+                && COUNTER_PROCESSING_STATION_PAGE.hasBookAppointmentButton()) {
+            COUNTER_PROCESSING_STATION_PAGE.clickOnBookAppointmentButton(true);
+            return;
+        }
+        if (!"true".equals(TestDataHelper.getTestData("appointment_booked_as_walk_in"))) {
+            COUNTER_PROCESSING_STATION_PAGE.selectWalkInCustomer();
+            COUNTER_PROCESSING_STATION_PAGE.enterNameInNewAppointmentTextField(name);
+            COUNTER_PROCESSING_STATION_PAGE.enterEmailInNewAppointmentTextField(email);
+        }
+        String waitingNumber = COUNTER_PROCESSING_STATION_PAGE.clickOnAddSpontaneousCustomer();
+        TestDataHelper.setTestData("new_appointment_number", waitingNumber);
     }
 
     @Wenn("Sie im " + AdminPageContext.NAME + " unter Termin erstellen das Datum {string} eingeben.")

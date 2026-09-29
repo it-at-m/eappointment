@@ -393,6 +393,26 @@ public class CounterProcessingStationPage extends AdminPage {
         AppointmentCountHelper.incrementAppointmentCanceledCount();
     }
 
+    /**
+     * Deletes the queue row for a customer just booked in this scenario.
+     * The trash icon uses the internal process id, which is not the number shown as Termin-Nr.
+     */
+    public void deleteQueuedAppointmentByFamilyName(String familyName) {
+        CONTEXT.set();
+        ScenarioLogManager.getLogger().info("Deleting queued appointment for {}", familyName);
+        String deleteLink = "//tr[td[contains(.,'" + familyName + "')]]//a[contains(@class,'process-delete')]";
+        clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, deleteLink, LocatorType.XPATH, false, CONTEXT);
+        WebElement messageTitleElement = findElementByLocatorType("section.board.dialog h2.board__heading", LocatorType.CSSSELECTOR, false);
+        Assert.assertTrue(
+                messageTitleElement.getText().contains("Eintrag löschen"),
+                "Delete confirmation did not open for " + familyName);
+        clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "a.button.button--destructive.button-ok", LocatorType.CSSSELECTOR, false, CONTEXT);
+        messageTitleElement = findElementByLocatorType("h2.message__heading.title", LocatorType.CSSSELECTOR, false);
+        Assert.assertEquals(messageTitleElement.getText(), "Vorgang gelöscht",
+                "Deleting the appointment for " + familyName + " did not succeed.");
+        clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "button.button-ok", LocatorType.CSSSELECTOR, false);
+    }
+
     public void enterDateInNewAppointmentTextField(String date) {
         ScenarioLogManager.getLogger().info("Trying to enter date \"" + date + "\" in new appointment text field...");
 
