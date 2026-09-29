@@ -399,6 +399,10 @@ public class CounterProcessingStationPage extends AdminPage {
      */
     public void deleteQueuedAppointmentByFamilyName(String familyName) {
         CONTEXT.set();
+        if ("true".equals(TestDataHelper.getTestData("appointment_booked_as_walk_in"))) {
+            showSpontaneousCustomers(true);
+            CONTEXT.waitForSpinners();
+        }
         ScenarioLogManager.getLogger().info("Deleting queued appointment for {}", familyName);
         String deleteLink = "//table[@id='table-queued-appointments']//tr["
                 + "td[contains(@class,'callnextclient') and normalize-space(.)='" + familyName + "']]"
