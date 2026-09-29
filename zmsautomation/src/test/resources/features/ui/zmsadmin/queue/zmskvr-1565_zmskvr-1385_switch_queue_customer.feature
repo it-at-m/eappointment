@@ -1,7 +1,7 @@
 #language: de
 Funktionalität: Während der Bearbeitung kann der Sachbearbeiter zu einem anderen Warteschlangen-Kunden wechseln, ohne den laufenden Vorgang zu verlieren.
 
-	@web @zmsadmin @queue @clerk @ZMSKVR-1385 @automatisiert @executeLocally
+	@web @zmsadmin @queue @clerk @ZMSKVR-1385 @ZMSKVR-1565 @automatisiert @executeLocally
 	Szenario: [AUT] Im Status aufgerufen bleibt der aktuelle Vorgang mit Fehlermeldung bestehen
 		Wenn Sie zur Webseite der Administration navigieren.
 		Und  Sie im Zeitmanagementsystem auf die Schaltfläche "Anmelden" klicken.
@@ -22,7 +22,7 @@ Funktionalität: Während der Bearbeitung kann der Sachbearbeiter zu einem ander
 		Und  ist die Schaltfläche "Ja, Kunde erschienen" sichtbar.
 
 
-	@web @zmsadmin @queue @clerk @ZMSKVR-1385 @automatisiert @executeLocally
+	@web @zmsadmin @queue @clerk @ZMSKVR-1385 @ZMSKVR-1565 @automatisiert @executeLocally
 	Szenario: [AUT] Option 2 - Zurück zum aktuellen Vorgang lässt Bearbeitungszeit unverändert
 		Wenn Sie zur Webseite der Administration navigieren.
 		Und  Sie im Zeitmanagementsystem auf die Schaltfläche "Anmelden" klicken.
@@ -48,7 +48,7 @@ Funktionalität: Während der Bearbeitung kann der Sachbearbeiter zu einem ander
 		Dann Die Bearbeitungszeit-H:mm:ss für "<TestData.Kunde1>" sollte zwischen "00:00:30" und "00:02:00" liegen.
 
 
-	@web @zmsadmin @queue @clerk @ZMSKVR-1385 @automatisiert @executeLocally
+	@web @zmsadmin @queue @clerk @ZMSKVR-1385 @ZMSKVR-1565 @automatisiert @executeLocally
 	Szenario: [AUT] Option 1 - Aktuellen Termin fertig stellen und ausgewählten Kunden aufrufen
 		Wenn Sie zur Webseite der Administration navigieren.
 		Und  Sie im Zeitmanagementsystem auf die Schaltfläche "Anmelden" klicken.
