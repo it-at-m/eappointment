@@ -62,7 +62,7 @@ An explicit other name stays pinned to that name and waits for it. The accounts 
 
 The pool today is copies of the same kind of account: superuser, the `agent_queue` role, messenger, and citizen. A later suite may need a pool of users in different roles, sized the same way, once two scenarios have to hold two different permissions at once.
 
-Queue and customer-call scenarios type a counter. `ataf_superuser_1` keeps the counter written in the feature. A later superuser adds `100` times its pool index, so `ataf_superuser_2` sits 100 higher. The waiting list itself is per Standort, so a different desk does not split the queue.
+Queue and citizen-call scenarios type a counter. `ataf_superuser_1` keeps the counter written in the feature. A later superuser adds `100` times its pool index, so `ataf_superuser_2` sits 100 higher. The waiting list itself is per Standort, so a different desk does not split the queue.
 
 Every lock is one key held until the scenario ends. The `@After` hook unlocks it. A second scenario that asks for the same key waits. Login locks the account name. Entering a Standort, opening its Öffnungszeiten, or forwarding an appointment there locks `scope:` plus that location name. Creating or deleting Spontankunden opening hours locks `scope:` plus the scope id plus `:spontankunden`, which is a different key from the location name.
 
