@@ -1,4 +1,4 @@
--- ZMSKVR-833 / ZMSKVR-1025: rebooking from Ausbildung (optional remarks) onto Haupt (required remarks).
+-- ZMSKVR-833 / ZMSKVR-1025 / ZMSKVR-1648: rebooking from Ausbildung (optional remarks) onto Haupt (required remarks).
 --
 -- V24 cloned Pass WB04 onto Ausbildung 372 and left standort.custom_text_field_required=1.
 -- First booking then fills Bemerkung as Pflichtfeld; rebooking onto Haupt 160 skips Kontakt.
