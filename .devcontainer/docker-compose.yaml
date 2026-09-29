@@ -4,7 +4,7 @@ services:
   # Fallback default is amd64 for plain `docker compose` without that step.
   web:
     container_name: zms-web
-    image: ghcr.io/it-at-m/eappointment/zmsbase:${ZMS_PHP_BASE_TAG:-8.3-local-amd64}
+    image: ghcr.io/it-at-m/eappointment/zmsbase:${ZMS_PHP_BASE_TAG:-8.4-local-amd64}
     volumes:
       - ..:/var/www/html:cached,z
       - ./php/xdebug.ini:/usr/local/etc/php/conf.d/99-xdebug.ini:ro,z
@@ -15,6 +15,7 @@ services:
     depends_on:
       - db
       - keycloak
+      - captchaservice
     networks:
       - default
 
@@ -95,8 +96,46 @@ services:
     depends_on:
       - db
 
+  # CaptchaService local profile (site loadtest/loadtest, cost 1). Image is amd64-only;
+  # Apple Silicon emulates it, same as init-keycloak-jar.
+  captcha-db:
+    image: postgres:18.1-alpine3.21@sha256:44d837eb4c2ed263474a95f0cc24745413c50924df60dd73ed6c4c3e36b84259
+    container_name: zms-captcha-db
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d postgres -U admin"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    volumes:
+      - captcha-db-data:/var/lib/postgresql/data
+    networks:
+      - default
+    restart: unless-stopped
+
+  captchaservice:
+    image: ghcr.io/it-at-m/captchaservice/backend:2.1.0@sha256:fcb1d20101aa7437ab90beb6c4d5c655a3a043a4ae59e6ff32224c2f2759964f
+    platform: linux/amd64
+    container_name: zms-captchaservice
+    environment:
+      SPRING_PROFILES_ACTIVE: local,no-security
+      SPRING_DATASOURCE_URL: jdbc:postgresql://captcha-db:5432/postgres
+      SPRING_DATASOURCE_USERNAME: admin
+      SPRING_DATASOURCE_PASSWORD: admin
+    ports:
+      - "39146:39146"
+    depends_on:
+      captcha-db:
+        condition: service_healthy
+    networks:
+      - default
+    restart: unless-stopped
+
   refarch-gateway:
-    image: ghcr.io/it-at-m/refarch/refarch-gateway:1.10.0
+    image: ghcr.io/it-at-m/refarch/refarch-gateway:1.10.0@sha256:d74e6a31e2fe255989008fbf9a8d5e024bc01f418acf8c1852558e6925db9764
     container_name: zms-refarch-gateway
     ports:
       - "8084:8080"
@@ -108,7 +147,7 @@ services:
     restart: unless-stopped
 
   keycloak:
-    image: quay.io/keycloak/keycloak:26.7.3@sha256:ff4257d0d64efbe99ed1ddfaf07765cc3c36dc7518bf8324d41961327f441c54
+    image: quay.io/keycloak/keycloak:26.7.4@sha256:82a77884f3af238beab1e7afd63b5f530e1b5c0590bd7aa60b40a40463e29b2c
     container_name: zms-keycloak
     hostname: keycloak
     command:
@@ -150,7 +189,7 @@ services:
 
   # 0.2.131 JAR is Java 24; upstream image still ships a 23 JRE.
   init-keycloak-jar:
-    image: klg71/keycloakmigration:0.2.131@sha256:a311cce3b961062000e6e9ef08ecb5712f3ea81859beeee8cd0c836fe8e4f2cf
+    image: klg71/keycloakmigration:0.3.1@sha256:9ddc34b452c29d00506bf4e935123a6bd354561ba87b84b2c3c760a13794d173
     # Image is amd64-only. Apple Silicon (arm64) still works: Podman emulates this
     # one-shot `cp`. Java itself runs natively on Temurin below.
     platform: linux/amd64
@@ -163,7 +202,7 @@ services:
     restart: "no"
 
   init-keycloak:
-    image: eclipse-temurin:25-jre-alpine@sha256:3137541deb3cac6626b5d9a4a2187bc0d6a34312f858bd2c67dd01e732e6b682
+    image: eclipse-temurin:25-jre-alpine@sha256:3c0a9084927a221ccd1d007fcaf614465672c0af37aaa834c5184483afe56d61
     container_name: zms-init-keycloak
     # Jar volume is :ro. keycloakmigration Log4j writes logs/logfile.log under cwd,
     # so run from /tmp (entrypoint.sh uses java -jar keycloakmigration.jar).
@@ -194,5 +233,6 @@ services:
 
 volumes:
   db-data:
+  captcha-db-data:
   citizenview-node-modules:
   keycloakmigration-jar:

@@ -10,6 +10,7 @@ class ProviderHandlerTest extends Base
 
     protected $classname = "\BO\Zmsadmin\Helper\ProviderHandler";
 
+    #[\Override]
     public function testRendering()
     {
         $this->setApiCalls(

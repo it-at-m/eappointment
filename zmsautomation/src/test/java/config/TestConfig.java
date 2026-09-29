@@ -86,6 +86,23 @@ public final class TestConfig {
     }
 
     /**
+     * Keycloak token endpoint for the citizen {@code dbs-fragments} public client.
+     * Default: {@code http://{SSO_HOST}:8080/auth/realms/zms/protocol/openid-connect/token}
+     * with {@code SSO_HOST=keycloak} (devcontainer Docker DNS).
+     */
+    public static String getKeycloakTokenUri() {
+        return getConfigValue(
+            "KEYCLOAK_TOKEN_URI",
+            "KEYCLOAK_TOKEN_URI",
+            "http://" + getSsoHost() + ":8080/auth/realms/zms/protocol/openid-connect/token"
+        );
+    }
+
+    private static String getSsoHost() {
+        return getConfigValue("SSO_HOST", "SSO_HOST", "keycloak");
+    }
+
+    /**
      * Secure token for endpoints that accept {@code X-Token}
      * (e.g. {@code GET /status/}, config API). Matches {@code ZMS_CONFIG_SECURE_TOKEN}.
      * Default: {@code hash} (local ddev / devcontainer).

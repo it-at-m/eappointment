@@ -21,8 +21,13 @@ class AppointmentPreconfirmService
         }
 
         $reservedProcess = $this->getReservedProcess($clientData->processId, $clientData->authKey, $authenticatedUser);
-        if (is_array($reservedProcess) && !empty($reservedProcess['errors'])) {
+        if (is_array($reservedProcess)) {
             return $reservedProcess;
+        }
+
+        $preconfirmErrors = ValidationService::validateAppointmentPreconfirm($reservedProcess);
+        if ($preconfirmErrors['errors'] !== []) {
+            return $preconfirmErrors;
         }
 
         // Todo: check if the email template preconfirmed exists for the scope before submitting and sending

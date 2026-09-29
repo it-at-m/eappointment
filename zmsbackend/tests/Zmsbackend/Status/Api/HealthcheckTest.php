@@ -6,6 +6,7 @@ class HealthcheckTest extends \BO\Zmsbackend\Tests\Api\Base
 {
     protected $classname = "Healthcheck";
 
+    #[\Override]
     public function testRendering()
     {
         $response = $this->render([ ], [ ], [ ]);

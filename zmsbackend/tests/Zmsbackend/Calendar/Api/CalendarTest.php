@@ -6,6 +6,7 @@ class CalendarTest extends \BO\Zmsbackend\Tests\Api\Base
 {
     protected $classname = "CalendarGet";
 
+    #[\Override]
     public function testRendering()
     {
         $response = $this->render([], [

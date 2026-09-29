@@ -9,7 +9,6 @@ namespace BO\Zmsbackend\Workstation\Api;
 
 use BO\Slim\Render;
 use BO\Mellon\Validator;
-use BO\Zmsbackend\Workstation\Service\Workstation;
 use BO\Zmsbackend\Process\Service\Process as Query;
 use BO\Zmsentities\Process;
 
@@ -19,6 +18,7 @@ class WorkstationProcessRemove extends \BO\Zmsbackend\Api\BaseController
      * @SuppressWarnings(Param)
      * @return \Psr\Http\Message\ResponseInterface
      */
+    #[\Override]
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
         \Psr\Http\Message\ResponseInterface $response,

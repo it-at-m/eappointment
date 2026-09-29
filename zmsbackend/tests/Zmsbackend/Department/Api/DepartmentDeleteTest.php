@@ -8,6 +8,7 @@ class DepartmentDeleteTest extends \BO\Zmsbackend\Tests\Api\Base
 {
     protected $classname = "DepartmentDelete";
 
+    #[\Override]
     public function testRendering()
     {
         $this->setWorkstation()->getUseraccount()->setPermissions('department')

@@ -10,6 +10,7 @@ class OverallCalendarTest extends Base
     protected $parameters = [];
     protected $classname = "OverallCalendar";
 
+    #[\Override]
     public function testRendering()
     {
         $this->setApiCalls(

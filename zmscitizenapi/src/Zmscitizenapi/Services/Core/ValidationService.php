@@ -259,7 +259,7 @@ class ValidationService
 
     public static function isFilledEmail(?string $email): bool
     {
-        return self::isFilledContactValue($email) && !self::isPlaceholderReserveEmail($email);
+        return self::isFilledContactValue($email) && !self::isPlaceholderEmail($email);
     }
 
     /**
@@ -359,13 +359,14 @@ class ValidationService
 
     private static function validateEmailField(?string $email, ?ThinnedScope $scope, array &$errors): void
     {
+        if (self::isPlaceholderEmail($email)) {
+            $errors[] = self::getError('invalidEmail');
+            return;
+        }
+
         if (
             $scope && $scope->emailRequired
-            && (
-                $email === ""
-                || self::isPlaceholderReserveEmail($email)
-                || !self::isValidEmail($email)
-            )
+            && ($email === "" || !self::isValidEmail($email))
         ) {
             $errors[] = self::getError('invalidEmail');
         }
@@ -539,15 +540,10 @@ class ValidationService
         return !empty($timestamp) && is_numeric($timestamp) && $timestamp > time();
     }
 
-    private static function isPlaceholderReserveEmail(?string $email): bool
-    {
-        return is_string($email) && strcasecmp($email, 'test@muenchen.de') === 0;
-    }
-
     private static function isValidEmail(?string $email): bool
     {
         return !empty($email)
-            && !self::isPlaceholderReserveEmail($email)
+            && !self::isPlaceholderEmail($email)
             && preg_match(self::EMAIL_PATTERN, $email) === 1;
     }
 
@@ -561,6 +557,101 @@ class ValidationService
         return !empty($familyName) && is_string($familyName) && strlen(trim($familyName)) > 0;
     }
 
+    public static function isPlaceholderEmail(?string $email): bool
+    {
+        if ($email === null || trim($email) === '') {
+            return false;
+        }
+
+        return strcasecmp(trim($email), \App::getPlaceholderEmail()) === 0;
+    }
+
+    private static function isMissingClientContactData(ThinnedProcess $process): bool
+    {
+        return self::isPlaceholderEmail($process->email)
+            || !self::isValidFamilyName($process->familyName)
+            || !self::isValidEmail($process->email);
+    }
+
+    public static function validateAppointmentReservedStatus(?ThinnedProcess $process): array
+    {
+        if ($process === null || $process->status !== 'reserved') {
+            return ['errors' => [self::getError('processNotReservedAnymore')]];
+        }
+
+        return ['errors' => []];
+    }
+
+    public static function validateAppointmentPreconfirm(ThinnedProcess $process): array
+    {
+        $reservedErrors = self::validateAppointmentReservedStatus($process);
+        if ($reservedErrors['errors'] !== []) {
+            return $reservedErrors;
+        }
+
+        if (self::isMissingClientContactData($process)) {
+            return ['errors' => [self::getError('placeholderEmailNotAllowed')]];
+        }
+
+        return ['errors' => []];
+    }
+
+    public static function validateAppointmentConfirm(
+        ThinnedProcess $process,
+        mixed $externalUserId,
+        ?ThinnedProcess $sourceProcess = null
+    ): array {
+        if (self::isMissingClientContactData($process)) {
+            return ['errors' => [self::getError('placeholderEmailNotAllowed')]];
+        }
+
+        if ($process->status === 'preconfirmed') {
+            return ['errors' => []];
+        }
+
+        $hasExternalUserId = is_string($externalUserId) && trim($externalUserId) !== '';
+        if ($process->status === 'reserved' && $hasExternalUserId) {
+            return ['errors' => []];
+        }
+
+        if ($process->status === 'reserved' && self::isConfirmedRebookingSource($process, $sourceProcess)) {
+            return ['errors' => []];
+        }
+
+        return ['errors' => [self::getError('processNotPreconfirmedAnymore')]];
+    }
+
+    /**
+     * Guest rebooking may skip email activation only when the original appointment
+     * is already confirmed, proven with processId + authKey, and has the same
+     * permitted contact data as the reserved process.
+     */
+    private static function isConfirmedRebookingSource(
+        ThinnedProcess $process,
+        ?ThinnedProcess $sourceProcess
+    ): bool {
+        if (!$sourceProcess instanceof ThinnedProcess) {
+            return false;
+        }
+        if ($sourceProcess->processId === null || $sourceProcess->processId === $process->processId) {
+            return false;
+        }
+        if ($sourceProcess->status !== Process::STATUS_CONFIRMED) {
+            return false;
+        }
+        if (self::isMissingClientContactData($sourceProcess)) {
+            return false;
+        }
+
+        return self::validateUnchangedStoredContact(
+            $sourceProcess,
+            $process->familyName,
+            $process->email,
+            $process->telephone,
+            $process->customTextfield,
+            $process->customTextfield2
+        )['errors'] === [];
+    }
 
     private static function isValidOfficeId(?int $officeId): bool
     {

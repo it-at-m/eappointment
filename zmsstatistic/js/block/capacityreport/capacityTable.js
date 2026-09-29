@@ -26,6 +26,8 @@ export default class CapacityTable {
         }
 
         this.view.tableIsHourly = $table.attr('data-table-is-hourly') === '1';
+        this.view.tableLabelDate = $table.attr('data-label-date') || 'Datum';
+        this.view.tableLabelDatetime = $table.attr('data-label-datetime') || 'Zeitpunkt';
         this.view.tableLabelSummary = $table.attr('data-label-summary') || 'Gesamt';
         this.view.tableLabelEmpty = $table.attr('data-label-empty') || 'Es wurden keine Daten gefunden';
     }
@@ -53,8 +55,25 @@ export default class CapacityTable {
             return;
         }
 
+        this.view.dailyTableDataSparse = sparseData;
+        this.view.dailyTableDataFull = fullData;
         this.view.tableDataSparse = sparseData;
         this.view.tableDataFull = fullData;
+
+        const hourlySparseData = readJsonPayload(
+            this.view.$main,
+            'script.report-board--table-data-sparse-hourly',
+            'data-table-sparse-hourly',
+            'table-sparse-hourly'
+        );
+        const hourlyFullData = readJsonPayload(
+            this.view.$main,
+            'script.report-board--table-data-full-hourly',
+            'data-table-full-hourly',
+            'table-full-hourly'
+        );
+        this.view.hourlyTableDataSparse = hourlySparseData || null;
+        this.view.hourlyTableDataFull = hourlyFullData || null;
     }
 
     getActiveRows() {
@@ -74,6 +93,9 @@ export default class CapacityTable {
         }
 
         const supportsMinutes = this.supportsMinutesChartMode();
+        $table.find('.report-board--capacity-date').text(
+            this.view.tableIsHourly ? this.view.tableLabelDatetime : this.view.tableLabelDate
+        );
         $table.find('.report-board--capacity-planned').text(
             getCapacityTableHeaderLabel(
                 'planned',

@@ -6,11 +6,13 @@ class WorkstationProcessGetTest extends \BO\Zmsbackend\Tests\Api\Base
 {
     protected $classname = "WorkstationProcessGet";
 
+    #[\Override]
     public function setUp(): void
     {
         parent::setUp();
     }
 
+    #[\Override]
     public function tearDown(): void
     {
         // Reset to test bootstrap default
@@ -18,6 +20,7 @@ class WorkstationProcessGetTest extends \BO\Zmsbackend\Tests\Api\Base
         parent::tearDown();
     }
 
+    #[\Override]
     public function testRendering()
     {
         \App::$now = new \DateTimeImmutable('2016-05-16 10:45:00', new \DateTimeZone('Europe/Berlin'));

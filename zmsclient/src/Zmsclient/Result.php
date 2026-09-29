@@ -42,7 +42,7 @@ class Result
      */
     public function __construct(
         ResponseInterface $response,
-        RequestInterface $request = null
+        ?RequestInterface $request = null
     ) {
         $this->request = $request;
         $this->response = $response;

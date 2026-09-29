@@ -6,6 +6,7 @@ import java.time.Duration;
 import java.util.List;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.RemoteWebDriver;
@@ -21,6 +22,7 @@ import ataf.core.logging.ScenarioLogManager;
 import ataf.core.properties.DefaultValues;
 import ataf.web.model.LocatorType;
 import ataf.web.pages.BasePage;
+import zms.ataf.helpers.AccountCheckout;
 
 
 public class AdminPage extends BasePage {
@@ -49,15 +51,22 @@ public class AdminPage extends BasePage {
     }
 
     public void clickOnLoginButton() throws Exception {
+        final StringBuilder clearUserName = new StringBuilder();
+        AuthenticationHelper.getUserName().access(clearUserName::append);
+        String assigned = AccountCheckout.assignWorkstationLogin(clearUserName.toString());
+        clearUserName.setLength(0);
+        clearUserName.append(assigned);
+        if (isAlreadyLoggedIn()) {
+            ScenarioLogManager.getLogger().info("Already logged in, skipping SSO login.");
+            return;
+        }
         ScenarioLogManager.getLogger().info("Trying to click on \"Login\" button...");
         clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "//button[@type='submit' and @value='keycloak']", LocatorType.XPATH, false);
         ScenarioLogManager.getLogger().info("SSO-Login page detected!");
 
-        final StringBuilder clearUserName = new StringBuilder();
         final StringBuilder clearPassword = new StringBuilder();
         Exception exception = null;
         try {
-            AuthenticationHelper.getUserName().access(clearUserName::append);
             AuthenticationHelper.getUserPassword().access(clearPassword::append);
             // Wait for Keycloak login form (local and ssodev both use id="username")
             WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
@@ -76,7 +85,11 @@ public class AdminPage extends BasePage {
             enterTextInWebElement(DEFAULT_EXPLICIT_WAIT_TIME, clearPassword.toString(), "password", LocatorType.ID);
 
             ScenarioLogManager.getLogger().info("Trying to click on \"Login\" button...");
-            clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "kc-login", LocatorType.ID, false);
+            WebElement kcLogin = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                    .until(ExpectedConditions.elementToBeClickable(By.id("kc-login")));
+            ((JavascriptExecutor) DRIVER).executeScript("arguments[0].click();", kcLogin);
+            new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                    .until(ExpectedConditions.presenceOfElementLocated(By.name("scope")));
             ScenarioLogManager.getLogger().info("SSO login submitted successfully.");
         } catch (Exception e) {
             ScenarioLogManager.getLogger().error(e.getMessage(), e);
@@ -90,9 +103,15 @@ public class AdminPage extends BasePage {
         }
     }
 
+    private boolean isAlreadyLoggedIn() {
+        return isWebElementVisible(2, "//*[contains(text(),'Sie sind bereits angemeldet')]", LocatorType.XPATH, false)
+                || isWebElementVisible(1, HEADER_CHANGE_SELECTION_LOCATOR, LocatorType.CSSSELECTOR, false);
+    }
+
     public void selectLocation(String location) {
         CONTEXT.set();
         ScenarioLogManager.getLogger().info("Trying to select location \"" + location + "\"");
+        AccountCheckout.checkout("scope:" + location);
         selectDropDownListValueByVisibleText(DEFAULT_EXPLICIT_WAIT_TIME, "scope", LocatorType.NAME, location);
         TestDataHelper.setTestData("location", location);
     }
@@ -100,6 +119,7 @@ public class AdminPage extends BasePage {
     public void enterWorkstation(String workstation) {
         CONTEXT.set();
         ScenarioLogManager.getLogger().info("Trying to enter workstation \"" + workstation + "\"");
+        workstation = AccountCheckout.queueDesk(workstation);
         enterTextInWebElement(DEFAULT_EXPLICIT_WAIT_TIME, workstation, "workstation", LocatorType.NAME);
         TestDataHelper.setTestData("workstation", workstation);
     }

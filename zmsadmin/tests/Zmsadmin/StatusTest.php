@@ -7,6 +7,7 @@ class StatusTest extends Base
     protected $arguments = [];
     protected $parameters = [];
 
+    #[\Override]
     public function testRendering()
     {
         $this->setApiCalls(

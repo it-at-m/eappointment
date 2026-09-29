@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { deepMerge, makeNestedObj, getFieldList } from '../../lib/utils'
-import { getEntity } from '../../lib/schema'
+import { emptyProvider } from '../../block/source/emptyProvider'
 import SourceSelectView from '../../block/scope/sourceSelectForm'
 import SourceReadView from '../../block/scope/sourceReadForm'
 import $ from "jquery"
@@ -30,9 +30,7 @@ class ScopeView extends Component {
             method: 'GET'
         }).done((success) => {
             this.changeHandler(field, success)
-            getEntity('provider').then((entity) => {
-                this.changeHandler('provider', entity)
-            })
+            this.changeHandler('provider', emptyProvider())
         }).fail((err) => {
             if (err.status === 404) {
                 console.log('404 error, ignored')

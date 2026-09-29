@@ -27,8 +27,8 @@
     }
 
     .board.dialog {
-      background: $color-blue-light;
-      border: 1px solid $color-blue-light;
+      background: $color-blue-dark;
+      border: 1px solid $color-blue-dark;
       padding: 1px;
       .header {
         padding:1em 1.125em 0;
@@ -53,8 +53,8 @@
     }
 
     .dialog.message--info, .dialog.message-info {
-      background: $color-blue-light;
-      border: 1px solid $color-blue-light;
+      background: $color-blue-dark;
+      border: 1px solid $color-blue-dark;
       padding: 1px;
       .message__heading, .title {
         padding:1em 1.125em 0;

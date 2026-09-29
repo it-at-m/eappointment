@@ -155,6 +155,7 @@ class CalendarTest extends EntityCommonTests
         }
     }
 
+    #[\Override]
     public function testLessData()
     {
         $entity = $this->getExample();

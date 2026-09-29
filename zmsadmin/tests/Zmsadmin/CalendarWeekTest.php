@@ -13,6 +13,7 @@ class CalendarWeekTest extends Base
 
     protected $classname = "CalendarWeek";
 
+    #[\Override]
     public function testRendering()
     {
         $this->setApiCalls(

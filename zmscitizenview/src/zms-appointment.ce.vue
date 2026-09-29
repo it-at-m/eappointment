@@ -34,6 +34,7 @@ import { useI18n } from "vue-i18n";
 import AppointmentView from "@/components/Appointment/AppointmentView.vue";
 import BuildInfoBadge from "@/components/Common/BuildInfoBadge.vue";
 import { sanitizeHtml } from "@/utils/sanitizeHtml";
+import { trackWidgetView } from "@/utils/trackAppointmentEvent";
 import { useGlobalState } from "./utils/useGlobalState";
 
 // Props
@@ -141,6 +142,7 @@ const onPageShow = (event: PageTransitionEvent) => {
 syncRouteFromHash();
 
 onMounted(() => {
+  trackWidgetView("appointment");
   // Re-sync after mount for Safari timing and when iOS reuses an existing tab
   syncRouteFromHash();
 

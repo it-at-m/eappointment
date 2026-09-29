@@ -34,7 +34,7 @@ class Provider extends \BO\Zmsbackend\Base
     }
 
     /** @psalm-api */
-    public function readEntityById($providerId, $resolveReferences = 0, $disableCache = false)
+    public function readEntityById($providerId, int $resolveReferences = 0, bool $disableCache = false)
     {
         $cacheKey = "provider-byid-$providerId-$resolveReferences";
 

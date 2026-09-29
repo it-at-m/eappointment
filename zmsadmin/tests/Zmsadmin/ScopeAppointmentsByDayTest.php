@@ -13,6 +13,7 @@ class ScopeAppointmentsByDayTest extends Base
 
     protected $classname = "ScopeAppointmentsByDay";
 
+    #[\Override]
     public function testRendering()
     {
         $this->setApiCalls(

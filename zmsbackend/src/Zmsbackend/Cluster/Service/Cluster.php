@@ -18,7 +18,7 @@ class Cluster extends \BO\Zmsbackend\Base
      * @param false|int|string $itemId
      *
      */
-    public function readEntity(string|int|false $itemId, int $resolveReferences = 0, $disableCache = false)
+    public function readEntity(string|int|false $itemId, int $resolveReferences = 0, bool $disableCache = false)
     {
         $cacheKey = "cluster-$itemId-$resolveReferences";
 
@@ -55,15 +55,15 @@ class Cluster extends \BO\Zmsbackend\Base
     #[\Override]
     public function readResolvedReferences(
         \BO\Zmsentities\Schema\Entity $entity,
-        $resolveReferences,
-        $disableCache = false
+        int $resolveReferences,
+        bool $disableCache = false
     ) {
         $entity['scopes'] = (new \BO\Zmsbackend\Scope\Service\Scope())->readByClusterId($entity->id, $resolveReferences, $disableCache);
 
         return $entity;
     }
 
-    public function readEntityWithOpenedScopeStatus($itemId, \DateTimeInterface $now, $resolveReferences = 0)
+    public function readEntityWithOpenedScopeStatus($itemId, \DateTimeInterface $now, int $resolveReferences = 0)
     {
         $entity = $this->readEntity($itemId, $resolveReferences);
         foreach ($entity->scopes as $scope) {
@@ -72,7 +72,7 @@ class Cluster extends \BO\Zmsbackend\Base
         return $entity;
     }
 
-    public function readList($resolveReferences = 0): Collection
+    public function readList(int $resolveReferences = 0): Collection
     {
         $clusterList = new Collection();
         $query = new \BO\Zmsbackend\Cluster\Repository\Cluster(\BO\Zmsbackend\Query\Base::SELECT);
@@ -106,7 +106,7 @@ class Cluster extends \BO\Zmsbackend\Base
         return $entity;
     }
 
-    public function readByDepartmentId($departmentId, $resolveReferences = 0, $disableCache = false): Collection
+    public function readByDepartmentId($departmentId, int $resolveReferences = 0, bool $disableCache = false): Collection
     {
         $clusterList = new Collection();
         $query = new \BO\Zmsbackend\Cluster\Repository\Cluster(\BO\Zmsbackend\Query\Base::SELECT);
@@ -196,7 +196,7 @@ class Cluster extends \BO\Zmsbackend\Base
         return $preferedScope;
     }
 
-    public function readWithScopeWorkstationCount($clusterId, $dateTime, $resolveReferences = 0)
+    public function readWithScopeWorkstationCount($clusterId, $dateTime, int $resolveReferences = 0)
     {
         $scopeQuery = new \BO\Zmsbackend\Scope\Service\Scope();
         $scopeList = new \BO\Zmsentities\Collection\ScopeList();

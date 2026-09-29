@@ -1,3 +1,5 @@
+import settings from '../../settings'
+
 let calendarCache = [];
 let calendarMeta = null;
 let lastUpdateAfter = null;
@@ -247,7 +249,7 @@ async function fetchIncrementalUpdate() {
 function loadHideEmptyDaysPreference() {
     try {
         return localStorage.getItem(HIDE_EMPTY_DAYS_STORAGE_KEY) === '1';
-    } catch (error) {
+    } catch {
         return false;
     }
 }
@@ -255,7 +257,7 @@ function loadHideEmptyDaysPreference() {
 function saveHideEmptyDaysPreference(enabled) {
     try {
         localStorage.setItem(HIDE_EMPTY_DAYS_STORAGE_KEY, enabled ? '1' : '0');
-    } catch (error) {
+    } catch {
         // Ignore quota / private-mode errors; preference is optional.
     }
 }
@@ -294,6 +296,7 @@ function renderCalendar() {
     renderMultiDayCalendar(getVisibleDays(calendarCache));
 }
 
+// eslint-disable-next-line complexity
 function mergeDelta(deltaDays, deletedProcessIds = []) {
     if (Array.isArray(deletedProcessIds) && deletedProcessIds.length) {
         const deletedIds = new Set(deletedProcessIds.map(Number));
@@ -401,6 +404,7 @@ function sortCalendarCache() {
     }
 }
 
+// eslint-disable-next-line complexity
 function renderMultiDayCalendar(days) {
     const container = document.getElementById('overall-calendar');
 
@@ -504,7 +508,7 @@ function renderMultiDayCalendar(days) {
     });
 
     let columnCursor = 3, totalRows = allTimes.length + 2;
-    days.forEach((day, dayIndex) => {
+    days.forEach((day) => {
         const daySpan = day.scopes.reduce((totalColumns, scope, scopeIndex) => {
             const laneCount = getLanes(day.date, scope.id);
             const hasNextScope = scopeIndex < day.scopes.length - 1;
@@ -541,19 +545,33 @@ function renderMultiDayCalendar(days) {
 
     columnCursor = 3;
 
-    days.forEach((day, dayIndex) => {
+    days.forEach((day) => {
         const dateIso = day.date;
         day.scopes.forEach((scope, scopeIndex) => {
             const meta = calendarMeta.scopes?.[scope.id] || {};
             const lanes = getLanes(day.date, scope.id);
             const headerCell = addCell({
-                text: meta.shortName || meta.name || `Scope ${scope.id}`,
                 className: 'overall-calendar-head overall-calendar-scope-header overall-calendar-stick-top',
                 row: 2, col: columnCursor, colSpan: lanes
             });
             headerCell.style.background = SCOPE_COLORS[scope.id];
             headerCell.title = meta.shortName || meta.name || `Scope ${scope.id}`;
             if (isScopeClosed(dateIso, scope.id)) headerCell.classList.add('is-closed');
+
+            const nameElement = document.createElement('span');
+            nameElement.textContent = meta.shortName || meta.name || `Scope ${scope.id}`;
+            nameElement.className = 'overall-calendar-scope-name';
+            headerCell.appendChild(nameElement);
+            const linkElement = document.createElement('a');
+            linkElement.title = 'Öffnungszeiten bearbeiten';
+            linkElement.href = `${settings.includeUrl}/scope/${scope.id}/availability/day/${dateIso}/`;
+            linkElement.target = '_blank';
+            linkElement.rel = 'noopener';
+            headerCell.appendChild(linkElement);
+
+            const iconElement = document.createElement('i');
+            iconElement.className = 'overall-calendar-scope-icon far fa-clock';
+            linkElement.appendChild(iconElement);
 
             columnCursor += lanes;
             if (scopeIndex < day.scopes.length - 1) {
@@ -604,9 +622,10 @@ function renderMultiDayCalendar(days) {
         }
 
         let column = 3;
-        days.forEach((day, dayIndex) => {
+        days.forEach((day) => {
             const dateIso = day.date;
 
+            // eslint-disable-next-line complexity
             day.scopes.forEach((scope, scopeIndex) => {
                 const lanes = getLanes(day.date, scope.id);
                 const eventsIndexKey = `${day.date}_${scope.id}`;

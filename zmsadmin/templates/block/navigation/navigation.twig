@@ -192,6 +192,16 @@
                     <li class="nav__link{{ menuActive == 'mailtemplates'? ' active' }}">
                         <a {{ menuActive == 'mailtemplates'? ' aria-current="page"' }} href="{{ urlGet('mailtemplates', {}, {}) }}">Mail Templates</a>
                     </li>
+                    <li class="nav__link{{ menuActive == 'mailtemplatesCopy' ? ' active' }}">
+                        <a
+                            {% if menuActive == 'mailtemplatesCopy' %}
+                                aria-current="page"
+                            {% endif %}
+                            href="{{ urlGet('mailtemplatesCopy', {}, {}) }}"
+                        >
+                            Mail Templates kopieren
+                        </a>
+                    </li>
                 {% endif %}
                 {% if permissions.config %}
                     <li class="nav__link{{ menuActive == 'configinfo'? ' active' }}">
