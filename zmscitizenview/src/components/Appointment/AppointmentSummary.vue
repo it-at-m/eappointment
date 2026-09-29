@@ -220,7 +220,7 @@
               <h3>{{ t("termsOfUse") }}</h3>
             </div>
             <div class="m-content">
-              <h4 class="smaller-front-size">{{ t("privacyLabel") }}</h4>
+              <h4 class="m-checkbox-group__heading">{{ t("privacyLabel") }}</h4>
             </div>
             <div class="m-content">
               <p
@@ -238,7 +238,7 @@
               />
             </div>
             <div class="m-content">
-              <h4 class="smaller-front-size">
+              <h4 class="m-checkbox-group__heading">
                 {{ t("communicationCheckboxLabel") }}
               </h4>
             </div>
@@ -263,7 +263,7 @@
             </div>
             <template v-if="isVideoVariant">
               <div class="m-content">
-                <h4 class="smaller-front-size">
+                <h4 class="m-checkbox-group__heading">
                   {{ t("termsOfUseForVideoConsultationLabel") }}
                 </h4>
               </div>
