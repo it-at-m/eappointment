@@ -1,9 +1,5 @@
 <template>
-  <div
-    :role="props.type === 'error' ? 'alert' : 'status'"
-    :aria-live="props.type === 'error' ? 'assertive' : 'polite'"
-    aria-atomic="true"
-  >
+  <div v-bind="regionAttributes">
     <muc-callout :type="props.type">
       <template #header>
         {{ header }}
@@ -20,18 +16,42 @@
 import type { CalloutType } from "@/utils/callout";
 
 import { MucCallout } from "@muenchen/muc-patternlab-vue";
-import { withDefaults } from "vue";
+import { computed, withDefaults } from "vue";
 
 const props = withDefaults(
   defineProps<{
     message: string;
     header: string;
     type?: CalloutType;
+    /**
+     * When false, the caller owns the live region. Used where the region must
+     * already be mounted before this message appears.
+     */
+    live?: boolean;
   }>(),
   {
     type: "error",
+    live: true,
   }
 );
+
+const regionAttributes = computed(() => {
+  if (!props.live) {
+    return {};
+  }
+  if (props.type === "error") {
+    return {
+      role: "alert",
+      "aria-live": "assertive",
+      "aria-atomic": "true",
+    };
+  }
+  return {
+    role: "status",
+    "aria-live": "polite",
+    "aria-atomic": "true",
+  };
+});
 
 defineSlots<{
   default(): unknown;
