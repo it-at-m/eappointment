@@ -1,26 +1,26 @@
 {
   "branch": "test-zmskvr-1618-zmskvr-1650-customer-search-cancelled",
   "branchSlug": "test-zmskvr-1618-zmskvr-1650-customer-search-cancelled",
-  "runId": "36619955351",
-  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36619955351",
-  "runStartedAt": "2026-09-29T19:32:22Z",
-  "publishedAt": "2026-09-29T19:50:50.591Z",
+  "runId": "36620940586",
+  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36620940586",
+  "runStartedAt": "2026-09-29T19:40:43Z",
+  "publishedAt": "2026-09-29T19:55:46.939Z",
   "features": {
     "feature-ui-zmsadmin-citizen-search-zmskvr-1650-zmskvr-1618-cancelled-status": {
       "status": "failed",
-      "shard": "zmsadmin",
+      "shard": "custom",
       "browser": "chrome",
       "rel": "ui/zmsadmin/citizen-search/zmskvr-1650_zmskvr-1618_cancelled_status.feature",
-      "runId": "36619955351",
-      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36619955351",
-      "runStartedAt": "2026-09-29T19:32:22Z",
+      "runId": "36620940586",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36620940586",
+      "runStartedAt": "2026-09-29T19:40:43Z",
       "browsers": {
         "chrome": {
           "status": "failed",
-          "shard": "zmsadmin",
-          "runId": "36619955351",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36619955351",
-          "runStartedAt": "2026-09-29T19:32:22Z"
+          "shard": "custom",
+          "runId": "36620940586",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36620940586",
+          "runStartedAt": "2026-09-29T19:40:43Z"
         }
       }
     },
