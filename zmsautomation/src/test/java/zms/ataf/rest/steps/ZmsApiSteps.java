@@ -321,10 +321,13 @@ public class ZmsApiSteps {
                 break;
             }
         }
-        Assertions.assertThat(match)
-            .as("search hit %s with status %s. Body=%s",
-                familyName, appointmentStatus, truncate(response.asString(), 1500))
-            .isNotNull();
+        if (match == null) {
+            throw new AssertionError(String.format(
+                "search hit %s with status %s. Body=%s",
+                familyName,
+                appointmentStatus,
+                truncate(response.asString(), 1500)));
+        }
         long start = BerlinTime.today().atStartOfDay(java.time.ZoneId.of("Europe/Berlin")).toEpochSecond();
         long end = start + 86_400L;
         long booked = match.path("createTimestamp").asLong();
