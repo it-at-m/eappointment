@@ -400,7 +400,9 @@ public class CounterProcessingStationPage extends AdminPage {
     public void deleteQueuedAppointmentByFamilyName(String familyName) {
         CONTEXT.set();
         ScenarioLogManager.getLogger().info("Deleting queued appointment for {}", familyName);
-        String deleteLink = "//tr[td[contains(.,'" + familyName + "')]]//a[contains(@class,'process-delete')]";
+        String deleteLink = "//table[@id='table-queued-appointments']//tr["
+                + "td[contains(@class,'callnextclient') and normalize-space(.)='" + familyName + "']]"
+                + "//a[contains(@class,'process-delete')]";
         clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, deleteLink, LocatorType.XPATH, false, CONTEXT);
         WebElement messageTitleElement = findElementByLocatorType("section.board.dialog h2.board__heading", LocatorType.CSSSELECTOR, false);
         Assert.assertTrue(
