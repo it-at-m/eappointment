@@ -1833,6 +1833,23 @@ public class CitizenViewPage extends BasePage {
                 || deepElementExists("#firstname");
     }
 
+    private boolean selectedAppointmentCalloutVisible() {
+        return shadowDomContainsText("Ausgewählter Termin") || shadowDomContainsText("Selected Appointment");
+    }
+
+    /**
+     * Firefox can land on Kontaktdaten before the callout assert. A leftover callout node must not fail the
+     * scenario; the caller continues on the contact form and must not click Weiter again.
+     */
+    private boolean stopBecauseContactStepIsVisible(int officeId) {
+        if (!contactStepReached()) {
+            return false;
+        }
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: Kontakt step visible for office {}; slot callout wait stopped", officeId);
+        return true;
+    }
+
     private void finishReserveOnContactStep() {
         waitForReserveToSettle();
         trySetBookingProcessFromPage();
@@ -1922,33 +1939,29 @@ public class CitizenViewPage extends BasePage {
         String providerSelector = "#provider-" + officeId;
         waitWithThreeWindows(
                 () -> contactStepReached()
-                        || ((shadowDomContainsText("Ausgewählter Termin")
-                                        || shadowDomContainsText("Selected Appointment"))
-                                && deepElementExists(providerSelector)),
+                        || (selectedAppointmentCalloutVisible() && deepElementExists(providerSelector)),
                 "Selected appointment callout for office " + officeId);
-        if (contactStepReached()
-                && !((shadowDomContainsText("Ausgewählter Termin")
-                                || shadowDomContainsText("Selected Appointment"))
-                        && deepElementExists(providerSelector))) {
-            ScenarioLogManager.getLogger()
-                    .info(
-                            "zmscitizenview: Kontakt step visible for office {}; slot callout wait stopped",
-                            officeId);
+        if (stopBecauseContactStepIsVisible(officeId)) {
             return false;
         }
         new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
                 .until(
                         d ->
-                                (shadowDomContainsText("Ausgewählter Termin")
-                                                || shadowDomContainsText("Selected Appointment"))
-                                        && deepElementExists(providerSelector));
+                                contactStepReached()
+                                        || (selectedAppointmentCalloutVisible()
+                                                && deepElementExists(providerSelector)));
+        if (stopBecauseContactStepIsVisible(officeId)) {
+            return false;
+        }
         Assert.assertTrue(
-                shadowDomContainsText("Ausgewählter Termin")
-                        || shadowDomContainsText("Selected Appointment"),
+                selectedAppointmentCalloutVisible(),
                 "Selected-appointment callout header missing after slot click");
-        Assert.assertTrue(
-                deepElementExists(providerSelector),
-                "Expected #provider-" + officeId + " in selected-appointment callout");
+        if (!deepElementExists(providerSelector)) {
+            if (stopBecauseContactStepIsVisible(officeId)) {
+                return false;
+            }
+            Assert.fail("Expected #provider-" + officeId + " in selected-appointment callout");
+        }
         ScenarioLogManager.getLogger()
                 .info(
                         "zmscitizenview: callout OK — Ausgewählter Termin includes provider {} (Bürgerbüro Ruppertstraße)",
