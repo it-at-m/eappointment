@@ -459,9 +459,12 @@ public class CounterProcessingStationPage extends AdminPage {
         DateTimeFormatter monthYear = DateTimeFormatter.ofPattern("MMMM yyyy", Locale.GERMAN);
         String targetMonth = target.format(monthYear);
         DateTimeFormatter shownMonth = DateTimeFormatter.ofPattern("d MMMM yyyy", Locale.GERMAN);
+        String shown = "";
+        boolean reachedMonth = false;
         for (int step = 0; step < 14; step++) {
-            String shown = DRIVER.findElement(monthHeader).getText().replace('\u00a0', ' ').trim();
+            shown = DRIVER.findElement(monthHeader).getText().replace('\u00a0', ' ').trim();
             if (shown.equalsIgnoreCase(targetMonth)) {
+                reachedMonth = true;
                 break;
             }
             LocalDate shownDate = LocalDate.parse("1 " + shown, shownMonth);
@@ -469,9 +472,9 @@ public class CounterProcessingStationPage extends AdminPage {
                     ? ".react-datepicker__navigation--next"
                     : ".react-datepicker__navigation--previous";
             DRIVER.findElement(By.cssSelector(navigation)).click();
-            if (step == 13) {
-                Assert.fail("Appointment calendar did not reach " + targetMonth + ". It still shows " + shown + ".");
-            }
+        }
+        if (!reachedMonth) {
+            Assert.fail("Appointment calendar did not reach " + targetMonth + ". It still shows " + shown + ".");
         }
 
         String dayText = Integer.toString(target.getDayOfMonth());
