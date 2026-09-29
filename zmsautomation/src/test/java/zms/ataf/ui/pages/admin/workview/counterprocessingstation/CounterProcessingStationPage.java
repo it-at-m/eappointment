@@ -23,7 +23,6 @@ import org.openqa.selenium.Keys;
 import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -441,17 +440,48 @@ public class CounterProcessingStationPage extends AdminPage {
                 .contains("an diesem Tag sind keine Termine möglich") && count <= TestPropertiesHelper.getPropertyAsInteger(
                 "numberOfRetries", true, 3) * 3);
 
-        //TODO remove NullPointerException workaround after fix https://jira.muenchen.de/browse/ZMS-1891
-        WebElement newAppointmentDateTextField = findElementByLocatorType("process_date", LocatorType.ID, true);
-        new Actions(DRIVER)
-                .sendKeys(newAppointmentDateTextField, Keys.BACK_SPACE, Keys.BACK_SPACE, Keys.BACK_SPACE, Keys.BACK_SPACE, Keys.BACK_SPACE, Keys.BACK_SPACE,
-                        Keys.BACK_SPACE, Keys.BACK_SPACE)
-                .sendKeys(newAppointmentDateTextField, date)
-                .perform();
-        CONTEXT.waitForSpinners();
-        Assert.assertEquals(findElementByLocatorType("process_date", LocatorType.ID, true).getAttribute("value"), date,
-                "Entering date \"" + date + "\" in new appointment text field has failed...");
+        // process_date is a React datepicker. Typing focuses it, the calendar opens, and the
+        // keystrokes move the month (the popup can land on an unrelated month) without changing the value.
+        chooseDateInAppointmentPicker(dateDesired, date);
         TestDataHelper.setTestData("new_appointment_date", date);
+    }
+
+    private void chooseDateInAppointmentPicker(LocalDate target, String date) {
+        WebElement dateField = findElementByLocatorType("process_date", LocatorType.ID, true);
+        dateField.sendKeys(Keys.ESCAPE);
+        WebElement opener = findElementByLocatorType("#appointment-datepicker a.calendar-placement", LocatorType.CSSSELECTOR, true);
+        ((JavascriptExecutor) DRIVER).executeScript("arguments[0].click();", opener);
+
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        By monthHeader = By.cssSelector(".react-datepicker__current-month");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(monthHeader));
+
+        DateTimeFormatter monthYear = DateTimeFormatter.ofPattern("MMMM yyyy", Locale.GERMAN);
+        String targetMonth = target.format(monthYear);
+        DateTimeFormatter shownMonth = DateTimeFormatter.ofPattern("d MMMM yyyy", Locale.GERMAN);
+        for (int step = 0; step < 14; step++) {
+            String shown = DRIVER.findElement(monthHeader).getText().replace('\u00a0', ' ').trim();
+            if (shown.equalsIgnoreCase(targetMonth)) {
+                break;
+            }
+            LocalDate shownDate = LocalDate.parse("1 " + shown, shownMonth);
+            String navigation = shownDate.isBefore(target.withDayOfMonth(1))
+                    ? ".react-datepicker__navigation--next"
+                    : ".react-datepicker__navigation--previous";
+            DRIVER.findElement(By.cssSelector(navigation)).click();
+            if (step == 13) {
+                Assert.fail("Appointment calendar did not reach " + targetMonth + ". It still shows " + shown + ".");
+            }
+        }
+
+        String dayText = Integer.toString(target.getDayOfMonth());
+        By day = By.xpath("//div[contains(@class,'react-datepicker__day')"
+                + " and not(contains(@class,'outside-month'))"
+                + " and not(contains(@class,'disabled'))"
+                + " and normalize-space(.)='" + dayText + "']");
+        wait.until(ExpectedConditions.elementToBeClickable(day)).click();
+        wait.until(ExpectedConditions.attributeToBe(By.id("process_date"), "value", date));
+        CONTEXT.waitForSpinners();
     }
 
     /**
