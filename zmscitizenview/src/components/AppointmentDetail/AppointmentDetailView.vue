@@ -1,16 +1,23 @@
 <template>
   <!-- Maintenance Page -->
   <div
-    v-if="isInMaintenanceModeComputed"
-    class="container"
+    role="status"
+    aria-live="polite"
+    aria-atomic="true"
   >
-    <div class="m-component__grid">
-      <div class="m-component__column">
-        <error-alert
-          :message="t('maintenancePageText')"
-          :header="t('maintenancePageHeader')"
-          type="warning"
-        />
+    <div
+      v-if="isInMaintenanceModeComputed"
+      class="container"
+    >
+      <div class="m-component__grid">
+        <div class="m-component__column">
+          <error-alert
+            :message="t('maintenancePageText')"
+            :header="t('maintenancePageHeader')"
+            type="warning"
+            :live="false"
+          />
+        </div>
       </div>
     </div>
   </div>

@@ -71,8 +71,8 @@ public class AccountCheckoutTest {
     public void spareSuperuserGetsItsOwnQueueDesk() {
         AccountCheckout.assignWorkstationLogin("ataf");
         AccountCheckout.releaseAll();
-        String spare = AccountCheckout.assignWorkstationLogin("ataf_2");
-        Assert.assertEquals(spare, "ataf_2");
+        String spare = AccountCheckout.assignWorkstationLogin("ataf_superuser_2");
+        Assert.assertEquals(spare, "ataf_superuser_2");
         Assert.assertEquals(AccountCheckout.queueDesk("13"), "113");
     }
 

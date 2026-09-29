@@ -1915,6 +1915,23 @@ public class CitizenViewPage extends BasePage {
                 || deepElementExists("#firstname");
     }
 
+    private boolean selectedAppointmentCalloutVisible() {
+        return shadowDomContainsText("Ausgewählter Termin") || shadowDomContainsText("Selected Appointment");
+    }
+
+    /**
+     * Firefox can land on Kontaktdaten before the callout assert. A leftover callout node must not fail the
+     * scenario; the caller continues on the contact form and must not click Weiter again.
+     */
+    private boolean stopBecauseContactStepIsVisible(int officeId) {
+        if (!contactStepReached()) {
+            return false;
+        }
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: Kontakt step visible for office {}; slot callout wait stopped", officeId);
+        return true;
+    }
+
     private void finishReserveOnContactStep() {
         waitForReserveToSettle();
         trySetBookingProcessFromPage();
@@ -2004,33 +2021,29 @@ public class CitizenViewPage extends BasePage {
         String providerSelector = "#provider-" + officeId;
         waitWithThreeWindows(
                 () -> contactStepReached()
-                        || ((shadowDomContainsText("Ausgewählter Termin")
-                                        || shadowDomContainsText("Selected Appointment"))
-                                && deepElementExists(providerSelector)),
+                        || (selectedAppointmentCalloutVisible() && deepElementExists(providerSelector)),
                 "Selected appointment callout for office " + officeId);
-        if (contactStepReached()
-                && !((shadowDomContainsText("Ausgewählter Termin")
-                                || shadowDomContainsText("Selected Appointment"))
-                        && deepElementExists(providerSelector))) {
-            ScenarioLogManager.getLogger()
-                    .info(
-                            "zmscitizenview: Kontakt step visible for office {}; slot callout wait stopped",
-                            officeId);
+        if (stopBecauseContactStepIsVisible(officeId)) {
             return false;
         }
         new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
                 .until(
                         d ->
-                                (shadowDomContainsText("Ausgewählter Termin")
-                                                || shadowDomContainsText("Selected Appointment"))
-                                        && deepElementExists(providerSelector));
+                                contactStepReached()
+                                        || (selectedAppointmentCalloutVisible()
+                                                && deepElementExists(providerSelector)));
+        if (stopBecauseContactStepIsVisible(officeId)) {
+            return false;
+        }
         Assert.assertTrue(
-                shadowDomContainsText("Ausgewählter Termin")
-                        || shadowDomContainsText("Selected Appointment"),
+                selectedAppointmentCalloutVisible(),
                 "Selected-appointment callout header missing after slot click");
-        Assert.assertTrue(
-                deepElementExists(providerSelector),
-                "Expected #provider-" + officeId + " in selected-appointment callout");
+        if (!deepElementExists(providerSelector)) {
+            if (stopBecauseContactStepIsVisible(officeId)) {
+                return false;
+            }
+            Assert.fail("Expected #provider-" + officeId + " in selected-appointment callout");
+        }
         ScenarioLogManager.getLogger()
                 .info(
                         "zmscitizenview: callout OK — Ausgewählter Termin includes provider {} (Bürgerbüro Ruppertstraße)",
@@ -2198,7 +2211,7 @@ public class CitizenViewPage extends BasePage {
                 "E-Mail should be locked on rebooking Kontakt when already filled.");
     }
 
-    /** ZMSKVR-833 / ZMSKVR-1025: empty required custom text stays editable. */
+    /** ZMSKVR-833 / ZMSKVR-1025 / ZMSKVR-1648: empty required custom text stays editable. */
     public void assertRequiredCustomTextFieldEditableOnContactForm() {
         CONTEXT.set();
         Assert.assertTrue(
@@ -2459,6 +2472,28 @@ public class CitizenViewPage extends BasePage {
         Assert.assertTrue(
                 shadowDomContainsText(CANCEL_RESCHEDULE_BUTTON),
                 "Cancel reschedule button (Verschieben abbrechen) not found after rebooking slot selection.");
+    }
+
+    /**
+     * ZMSKVR-1631 / ZMSKVR-1651: Verschieben abbrechen from the Termin step returns to the existing
+     * appointment, where both Termin verschieben and Termin absagen are offered again.
+     */
+    public void assertRescheduleOrCancelActionsVisible() {
+        CONTEXT.set();
+        ScenarioLogManager.getLogger()
+                .info(
+                        "zmscitizenview: waiting for reschedule and cancel actions ({} / Termin absagen)",
+                        RESCHEDULE_APPOINTMENT_BUTTON);
+        waitWithThreeWindows(
+                () -> shadowDomContainsText(RESCHEDULE_APPOINTMENT_BUTTON)
+                        && shadowDomContainsText("Termin absagen"),
+                "Reschedule or cancel actions");
+        Assert.assertTrue(
+                shadowDomContainsText(RESCHEDULE_APPOINTMENT_BUTTON),
+                "Termin verschieben not visible after returning from the Termin step.");
+        Assert.assertTrue(
+                shadowDomContainsText("Termin absagen"),
+                "Termin absagen not visible after returning from the Termin step.");
     }
 
     /** ZMSKVR-1500: abort reschedule and return to appointment overview. */

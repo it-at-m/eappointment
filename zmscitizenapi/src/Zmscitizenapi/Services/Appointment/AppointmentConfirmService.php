@@ -29,7 +29,7 @@ class AppointmentConfirmService
         }
 
         $sourceProcess = $this->loadSourceProcessForRebooking($clientData);
-        if (is_array($sourceProcess) && !empty($sourceProcess['errors'])) {
+        if (is_array($sourceProcess) && ($sourceProcess['errors'] ?? []) !== []) {
             return $sourceProcess;
         }
 
