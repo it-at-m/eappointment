@@ -465,12 +465,15 @@ public class ZmsApiSteps {
             .isEqualTo(200);
         JsonNode queued = parseDataNode(response);
         Assertions.assertThat(queued).isNotNull();
-        given()
+        Response deleted = given()
             .baseUri(baseUri != null ? baseUri : TestConfig.getBaseUri())
             .header("X-AuthKey", authKey)
             .queryParam("initiator", "admin")
         .when()
             .delete("/process/" + futureId + "/");
+        Assertions.assertThat(deleted.getStatusCode())
+            .as("DELETE /process/%d/ body=%s", futureId, truncate(deleted.asString(), 1000))
+            .isEqualTo(200);
         rememberProcess(queued);
     }
 
