@@ -115,7 +115,7 @@ class QueueListTest extends EntityCommonTests
         $appointmentProcess->id = 111111;
         $appointmentProcess->status = 'queued';
         $appointmentProcess->queue->withAppointment = true;
-        $appointmentProcess->number = 111111;
+        $appointmentProcess->queue->number = 111111;
         $appointmentProcess->queue->arrivalTime = $now->modify('-10 minutes')->getTimestamp();
         $appointmentProcess->queue->lastCallTime = $now->modify('-2 minutes')->getTimestamp();
         $appointmentProcess->queue->callCount = 1;
@@ -126,7 +126,7 @@ class QueueListTest extends EntityCommonTests
         $spontaneousProcess->id = 222222;
         $spontaneousProcess->status = 'queued';
         $spontaneousProcess->queue->withAppointment = false;
-        $spontaneousProcess->number = 222222;
+        $spontaneousProcess->queue->number = 222222;
         $spontaneousProcess->queue->arrivalTime = $now->modify('-5 minutes')->getTimestamp();
         $spontaneousProcess->queue->lastCallTime = 0;
 
@@ -149,7 +149,7 @@ class QueueListTest extends EntityCommonTests
         $appointmentProcess->id = 111111;
         $appointmentProcess->status = 'queued';
         $appointmentProcess->queue->withAppointment = true;
-        $appointmentProcess->number = 111111;
+        $appointmentProcess->queue->number = 111111;
         $appointmentProcess->queue->arrivalTime = $now->modify('-10 minutes')->getTimestamp();
         $appointmentProcess->queue->lastCallTime = 0;
         $appointmentProcess->queue->callCount = 1;
