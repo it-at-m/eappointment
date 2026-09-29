@@ -544,6 +544,9 @@ public class AdminSteps {
 
     @Wenn("Der Sachbearbeiter {string} aus der Warteliste aufruft.")
     public void wenn_der_sachbearbeiter_den_kunden_mit_der_nummer_aus_der_warteliste_aufruft(String nummer) {
+        if ("true".equals(TestDataHelper.getTestData("appointment_booked_as_walk_in"))) {
+            COUNTER_PROCESSING_STATION_PAGE.showSpontaneousCustomers(true);
+        }
         PROCESSING_STATION_SECTION.callCustomerFromQueueWithNumber(TestDataHelper.transformTestData(nummer));
     }
 
@@ -655,8 +658,8 @@ public class AdminSteps {
             // Dienstleistung auswählen
             wenn_sie_im_zeitmanagementsystem_unter_terminvereinbarung_neu_die_dienstleistung_string_auswaehlen(dienstleistung);
     
-            // Zeitslot wählen
-            COUNTER_PROCESSING_STATION_PAGE.selectTimeInNewAppointmentDropDownList("<nächste>");
+            // Zeitslot wählen. Ohne Termin heute wird ein Spontankunde gebucht, der noch aufgerufen werden kann.
+            COUNTER_PROCESSING_STATION_PAGE.selectTimeInNewAppointmentDropDownList("<nächste>", java.util.Set.of(), true);
     
             // Name + E-Mail setzen (RandomNameHelper)
             String randomName = RandomNameHelper.generateRandomName();
@@ -665,6 +668,18 @@ public class AdminSteps {
     
             String emailSafeName = randomName.replaceAll("[^a-zA-Z0-9]", "").toLowerCase();
             COUNTER_PROCESSING_STATION_PAGE.enterEmailInNewAppointmentTextField(emailSafeName + "@mailinator.com");
+
+            if ("true".equals(TestDataHelper.getTestData("appointment_booked_as_walk_in"))) {
+                String waitingNumber = COUNTER_PROCESSING_STATION_PAGE.clickOnAddSpontaneousCustomer();
+                TestDataHelper.setTestData(terminName, waitingNumber.replaceAll("\\D+", ""));
+                try {
+                    wenn_sie_im_zeitmanagementsystem_auf_die_schaltflaeche_string_klicken("Schließen");
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+                COUNTER_PROCESSING_STATION_PAGE.isCustomerVisibleInQueue(waitingNumber, true);
+                continue;
+            }
     
             // Buchen
             COUNTER_PROCESSING_STATION_PAGE.clickOnBookAppointmentButton(false);
