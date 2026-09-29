@@ -51,18 +51,18 @@ flowchart LR
 
 Die Standardnamen nehmen ein freies Mitglied aus einem Pool. Der Pool ist die Threadzahl plus ein Ersatz, damit ein Szenario sein Logout beenden kann, während das nächste schon ein Konto braucht:
 
-| Pool         | Konten                             | Ausgelegt für  |
-| ------------ | ---------------------------------- | -------------- |
-| Superuser    | `ataf` bis `ataf_17`               | 16 UI-Browser  |
-| Arbeitsplatz | `agent_queue` bis `agent_queue_33` | 32 API-Threads |
-| Messenger    | `_system_messenger` bis `_33`      | 32 API-Threads |
-| Bürger       | `citizen` bis `citizen_33`         | 32 API-Threads |
+| Pool                | Was die Konten sind                                                                                                                                                                 | Namen                                                      | Ausgelegt für  |
+| ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------- | -------------- |
+| Superuser           | Nutzer mit Berechtigung 90. Ein Feature, das `ataf` sagt, nimmt ein freies Konto                                                                                                    | `ataf_superuser_1` bis `ataf_superuser_17`                 | 16 UI-Browser  |
+| Rolle `agent_queue` | Nutzer mit der Rolle Sachbearbeitung (Standard). Das ist eine Rolle, kein Arbeitsplatz und keine einzelne Berechtigung. Ein Feature, das `agent_queue` sagt, nimmt ein freies Konto | `ataf_agent_queue_1` bis `ataf_agent_queue_33`             | 32 API-Threads |
+| Messenger           | Mail-Nutzer. Ein Feature, das `_system_messenger` sagt, nimmt ein freies Konto                                                                                                      | `ataf__system_messenger_1` bis `ataf__system_messenger_33` | 32 API-Threads |
+| Bürger              | Keycloak-Benutzer. Ein Feature, das `citizen` sagt, nimmt ein freies Konto                                                                                                          | `ataf_citizen_1` bis `ataf_citizen_33`                     | 32 API-Threads |
 
-Ein ausdrücklich anderer Name bleibt an diesem Namen hängen und wartet darauf. Die Ersatzbenutzer stehen in der bestehenden Keycloak-Migration `.resources/keycloak/migration/11_add-parallel-test-users.yml` und in Flyway `V28__GH-3281_parallel_login_pool.sql`. Bürger gibt es nur in Keycloak. Der Mail-Login sendet die rohe ID `_system_messenger`. Das ist eine andere `nutzer`-Zeile als `_system_messenger@keycloak`.
+Ein ausdrücklich anderer Name bleibt an diesem Namen hängen und wartet darauf. Die Konten stehen in `.resources/keycloak/migration/11_add-parallel-test-users.yml`. Flyway `V28` hat die ersten Ersatzzeilen angelegt; `V30__GH-3281_rename_parallel_login_pool.sql` benennt sie auf die `ataf_`-Namen um. Bürger gibt es nur in Keycloak. Der Mail-Login sendet die rohe ID `ataf__system_messenger_*`. Die ursprüngliche Zeile `_system_messenger` bleibt in der Datenbank und wird vom Pool nicht mehr benutzt.
 
-Der Pool besteht heute aus Kopien derselben Rollen: Superuser, Arbeitsplatz, Messenger und Bürger. Eine spätere Suite kann einen Pool von Benutzern in verschiedenen Rollen brauchen, genauso bemessen, sobald zwei Szenarien gleichzeitig zwei verschiedene Berechtigungen halten müssen.
+Der Pool besteht heute aus Kopien derselben Art von Konto: Superuser, die Rolle `agent_queue`, Messenger und Bürger. Eine spätere Suite kann einen Pool von Benutzern in verschiedenen Rollen brauchen, genauso bemessen, sobald zwei Szenarien gleichzeitig zwei verschiedene Berechtigungen halten müssen.
 
-Aufruf- und Warteschlangen-Szenarien tippen einen Schalter. Ein Ersatz-Superuser addiert das `100`-fache seines Pool-Index auf diesen Schalter. `ataf` behält die Nummer aus dem Feature, `ataf_2` sitzt 100 höher. Die Warteliste selbst gehört zum Standort. Ein anderer Platz teilt die Schlange nicht.
+Aufruf- und Warteschlangen-Szenarien tippen einen Schalter. `ataf_superuser_1` behält die Nummer aus dem Feature. Ein späterer Superuser addiert das `100`-fache seines Pool-Index, `ataf_superuser_2` sitzt also 100 höher. Die Warteliste selbst gehört zum Standort. Ein anderer Platz teilt die Schlange nicht.
 
 Jede Sperre ist ein Schlüssel, der bis zum Ende des Szenarios gehalten wird. Der `@After`-Hook gibt ihn frei. Ein zweites Szenario, das denselben Schlüssel verlangt, wartet. Die Anmeldung sperrt den Kontonamen. Das Betreten eines Standorts, das Öffnen seiner Öffnungszeiten oder das Weiterleiten eines Termins dorthin sperrt `scope:` plus den Standortnamen. Anlegen oder Löschen von Spontankunden-Öffnungszeiten sperrt `scope:` plus die Scope-ID plus `:spontankunden`. Das ist ein anderer Schlüssel als der Standortname.
 
