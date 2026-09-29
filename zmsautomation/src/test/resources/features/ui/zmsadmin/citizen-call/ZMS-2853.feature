@@ -1,7 +1,7 @@
 #language: de
 Funktionalität: Direkt nach dem Aufruf zeigt das System dem Sachbearbeiter die Kundeninformationen auf dem Platz.
 
-	@web @zmsadmin @customer-call @clerk @ZMS-2853 @ZMS-1499 @ZMS-3162 @executeLocally
+	@web @zmsadmin @citizen-call @clerk @ZMS-2853 @ZMS-1499 @ZMS-3162 @executeLocally
 	Szenario: [AUT] Kundeninformation direkt nach Aufruf anzeigen
 		Wenn Sie zur Webseite der Administration navigieren.
 		Dann sollten Sie sich am Start des Zeitmanagementsystem befinden.

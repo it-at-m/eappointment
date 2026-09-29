@@ -1,7 +1,7 @@
 #language: de
 Funktionalität: Das Controlling kann die Kundenstatistik in der Statistik-Oberfläche öffnen und prüfen.
 
-	@web @zmsstatistic @customers @controlling @ZMS-1558 @ZMS-1738 @ZMS-1557 @E2E @automatisiert @executeLocally
+	@web @zmsstatistic @citizen-stats @controlling @ZMS-1558 @ZMS-1738 @ZMS-1557 @E2E @automatisiert @executeLocally
 	Szenario: Kundenstatistik
 		Wenn Sie zur Webseite der Statistik navigieren.
 		Und  Sie in der Statistik auf die Schaltfläche "Anmelden" klicken.
