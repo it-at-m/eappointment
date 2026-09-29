@@ -2129,7 +2129,7 @@ public class CitizenViewPage extends BasePage {
                 "E-Mail should be locked on rebooking Kontakt when already filled.");
     }
 
-    /** ZMSKVR-833 / ZMSKVR-1025: empty required custom text stays editable. */
+    /** ZMSKVR-833 / ZMSKVR-1025 / ZMSKVR-1648: empty required custom text stays editable. */
     public void assertRequiredCustomTextFieldEditableOnContactForm() {
         CONTEXT.set();
         Assert.assertTrue(
