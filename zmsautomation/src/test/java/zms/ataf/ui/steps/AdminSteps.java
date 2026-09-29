@@ -1173,6 +1173,40 @@ public class AdminSteps {
         PROCESSING_STATION_SECTION.completeStatisticsFinishIfPresent();
     }
 
+    @Dann("wird die Schaltfläche {string} in der Statistik angezeigt.")
+    public void wird_die_schaltflaeche_in_der_statistik_angezeigt(String label) {
+        PROCESSING_STATION_SECTION.assertStatisticToggleLabel(label);
+    }
+
+    @Wenn("Sie in der Statistik auf {string} klicken.")
+    public void sie_in_der_statistik_auf_klicken(String label) {
+        if ("Bearbeitung abschließen".equals(label)) {
+            PROCESSING_STATION_SECTION.submitStatisticsFinish();
+            return;
+        }
+        PROCESSING_STATION_SECTION.clickStatisticToggle(label);
+    }
+
+    @Dann("ist die Dienstleistung {string} unter Dienstleistungen Erfassen sichtbar.")
+    public void ist_die_dienstleistung_unter_dienstleistungen_erfassen_sichtbar(String service) {
+        PROCESSING_STATION_SECTION.assertScopeStatisticServiceVisible(service);
+    }
+
+    @Dann("ist die Dienstleistung {string} unter Weitere Dienstleistungen sichtbar.")
+    public void ist_die_dienstleistung_unter_weitere_dienstleistungen_sichtbar(String service) {
+        PROCESSING_STATION_SECTION.assertAdditionalStatisticServiceDisplayed(service, true);
+    }
+
+    @Dann("ist die Dienstleistung {string} unter Weitere Dienstleistungen nicht sichtbar.")
+    public void ist_die_dienstleistung_unter_weitere_dienstleistungen_nicht_sichtbar(String service) {
+        PROCESSING_STATION_SECTION.assertAdditionalStatisticServiceDisplayed(service, false);
+    }
+
+    @Wenn("Sie die Anzahl der Dienstleistung {string} unter Weitere Dienstleistungen um {int} erhöhen.")
+    public void sie_die_anzahl_der_dienstleistung_unter_weitere_dienstleistungen_erhoehen(String service, int times) {
+        PROCESSING_STATION_SECTION.increaseAdditionalStatisticService(service, times);
+    }
+
     @Wenn("Sie unter der Standortkonfiguration auf die Schaltfläche {string} klicken.")
     public void wenn_sie_unter_der_standortkonfiguration_auf_die_schaltflaeche_klicken(String button) {
         button = TestDataHelper.transformTestData(button);
