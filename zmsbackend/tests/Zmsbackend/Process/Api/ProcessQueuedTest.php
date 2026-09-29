@@ -6,6 +6,7 @@ class ProcessQueuedTest extends \BO\Zmsbackend\Tests\Api\Base
 {
     protected $classname = "ProcessQueued";
 
+    #[\Override]
     public function testRendering()
     {
         $workstation = $this->setWorkstation(138, 'berlinonline', 141);

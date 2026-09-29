@@ -9,9 +9,6 @@ namespace BO\Zmsbackend\Workstation\Api;
 
 use BO\Slim\Render;
 use BO\Mellon\Validator;
-use BO\Zmsbackend\Log\Service\Log;
-use BO\Zmsbackend\Workstation\Service\Workstation;
-use BO\Zmsbackend\Useraccount\Service\Useraccount;
 
 /**
  * @SuppressWarnings(Coupling)
@@ -46,7 +43,7 @@ class WorkstationLogin extends \BO\Zmsbackend\Api\BaseController
         return $response;
     }
 
-    public static function getLoggedInWorkstation(\Psr\Http\Message\RequestInterface $request, \BO\Zmsentities\Useraccount $entity, $resolveReferences)
+    public static function getLoggedInWorkstation(\Psr\Http\Message\RequestInterface $request, \BO\Zmsentities\Useraccount $entity, int $resolveReferences)
     {
         \BO\Zmsbackend\Helper\UserAuth::testUseraccountExists($entity->getId());
         $useraccount = \BO\Zmsbackend\Helper\UserAuth::getVerifiedUseraccount($entity);

@@ -114,7 +114,7 @@ export const getDataAttributes = (element) => {
 export const tryJson = (input) => {
     try {
         return JSON.parse(input)
-    } catch (e) {
+    } catch {
         return input
     }
 }

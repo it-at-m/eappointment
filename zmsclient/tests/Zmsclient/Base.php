@@ -16,11 +16,13 @@ abstract class Base extends TestCase
     /** @var Http|null */
     protected static $http_client = null;
 
+    #[\Override]
     public function setUp(): void
     {
         $this->createHttpClient();
     }
 
+    #[\Override]
     public function tearDown(): void
     {
         $this->writeTestLogout();

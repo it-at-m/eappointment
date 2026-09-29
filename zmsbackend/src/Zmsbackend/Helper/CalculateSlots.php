@@ -13,7 +13,7 @@ class CalculateSlots
 
     protected $logList = [];
 
-    public function __construct($verbose = false)
+    public function __construct(bool $verbose = false)
     {
         $this->verbose = $verbose;
         $this->startTime = microtime(true);
@@ -73,7 +73,7 @@ class CalculateSlots
         return $updateTimestamp;
     }
 
-    public function writeMaintenanceQueries($daily = false)
+    public function writeMaintenanceQueries(bool $daily = false)
     {
         $sqlList = (new \BO\Zmsbackend\Config\Service\Config())->readProperty('status__calculateSlotsMaintenanceSQL');
         if ($sqlList) {
@@ -92,7 +92,7 @@ class CalculateSlots
     }
 
 
-    public function writeCalculations(\DateTimeInterface $now, $daily = false): bool
+    public function writeCalculations(\DateTimeInterface $now, bool $daily = false): bool
     {
         \BO\Zmsbackend\Connection\Select::setTransaction();
         \BO\Zmsbackend\Connection\Select::getWriteConnection();

@@ -32,6 +32,10 @@ class WorkstationProcessRedirect extends BaseController
         $input = $request->getParsedBody();
 
         if ($request->getMethod() === 'POST') {
+            if (empty($workstation->process) || !$workstation->process->hasId()) {
+                return Render::redirect('workstation', [], []);
+            }
+
             $validator = $request->getAttribute('validator');
             $selectedLocation = $validator->getParameter('location')->isNumber()->getValue();
 

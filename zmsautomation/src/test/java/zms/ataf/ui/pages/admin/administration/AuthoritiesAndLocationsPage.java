@@ -1,5 +1,6 @@
 package zms.ataf.ui.pages.admin.administration;
 
+import java.time.DayOfWeek;
 import java.time.Duration;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -11,6 +12,7 @@ import java.util.regex.Pattern;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
+import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
@@ -23,6 +25,7 @@ import org.testng.Assert;
 import ataf.core.helpers.TestDataHelper;
 import ataf.core.logging.ScenarioLogManager;
 import ataf.web.model.LocatorType;
+import zms.ataf.helpers.AccountCheckout;
 import zms.ataf.helpers.BerlinTime;
 import zms.ataf.helpers.RandomNameHelper;
 import zms.ataf.ui.pages.admin.AdminPage;
@@ -169,19 +172,32 @@ public void saveLocationChanges() {
     );
 
     WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(60));
-    WebElement save = null;
-    for (By by : saveLocators) {
+    boolean clicked = false;
+    for (int attempt = 1; attempt <= 3 && !clicked; attempt++) {
+        WebElement save = null;
+        for (By by : saveLocators) {
+            try {
+                save = wait.until(ExpectedConditions.elementToBeClickable(by));
+                break;
+            } catch (TimeoutException ignored) {}
+        }
+        if (save == null) {
+            Assert.fail("Could not find an enabled 'Speichern' button.");
+            return;
+        }
         try {
-            save = wait.until(ExpectedConditions.elementToBeClickable(by));
-            break;
-        } catch (TimeoutException ignored) {}
+            scrollToCenterByVisibleElement(save);
+            ((JavascriptExecutor) DRIVER).executeScript("arguments[0].click();", save);
+            clicked = true;
+        } catch (StaleElementReferenceException | TimeoutException e) {
+            ScenarioLogManager.getLogger().warn(
+                    "Speichern click was not answered (attempt " + attempt + "/3).");
+        }
     }
-    if (save == null) {
-        Assert.fail("Could not find an enabled 'Speichern' button.");
+    if (!clicked) {
+        Assert.fail("Speichern click was not answered.");
         return;
     }
-    scrollToCenterByVisibleElement(save);
-    save.click();
 
     CONTEXT.waitForSpinners();
 
@@ -222,6 +238,7 @@ public void saveLocationChanges() {
 
     public void clickOnOpeningHoursEntryBy(String location) {
         ScenarioLogManager.getLogger().info("Trying to click on opening hours by location \"" + location + "\"");
+        AccountCheckout.checkout("scope:" + location);
         clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "//a[contains(text(),'" + location + "')]/../a[text()='Öffnungszeiten']", LocatorType.XPATH, false,
                 CONTEXT);
     }
@@ -285,13 +302,31 @@ public void saveLocationChanges() {
     public void selectOpeningHoursType(String type) {
         CONTEXT.set();
         ScenarioLogManager.getLogger().info("Trying to select opening hours type \"" + type + "\"");
-        selectDropDownListValueByVisibleText(DEFAULT_EXPLICIT_WAIT_TIME, "//select[@id='AvDayType']", LocatorType.XPATH, type);
+        selectInOpenedAccordion("AvDayType", type);
     }
 
     public void selectSeries(String series) {
         CONTEXT.set();
         ScenarioLogManager.getLogger().info("Trying to select series \"" + series + "\"");
-        selectDropDownListValueByVisibleText(DEFAULT_EXPLICIT_WAIT_TIME, "//select[@id='AvDaySeries']", LocatorType.XPATH, series);
+        selectInOpenedAccordion("AvDaySeries", series);
+    }
+
+    /**
+     * Several accordions reuse the same select ids ({@code AvDayType}, {@code AvDaySeries}).
+     * Always target the expanded panel so we do not rewrite an existing Terminkunden row.
+     */
+    private void selectInOpenedAccordion(String selectId, String visibleText) {
+        String xpath = "(//div[contains(@class,'accordion__panel') and contains(@class,'opened')]"
+                + "//select[@id='" + selectId + "'])[last()]";
+        WebElement selectEl = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(ExpectedConditions.elementToBeClickable(By.xpath(xpath)));
+        Select select = new Select(selectEl);
+        String current = select.getFirstSelectedOption().getText().trim();
+        if (current.equals(visibleText)) {
+            ScenarioLogManager.getLogger().info("Select #" + selectId + " is already \"" + visibleText + "\"");
+            return;
+        }
+        select.selectByVisibleText(visibleText);
     }
 
     public void selectWeekDay(String weekDay) {
@@ -330,20 +365,49 @@ public void saveLocationChanges() {
     public void enterClosingDate(String date) {
         CONTEXT.set();
         ScenarioLogManager.getLogger().info("Trying to enter closing date \"" + date + "\"");
-        WebElement closingDateTextField = findElementByLocatorType("//input[@id='AvDatesEnd']", LocatorType.XPATH, true);
-        moveToElementAction(closingDateTextField);
-        Keys selectAllMod = selectAllModifierKey();
-        new Actions(DRIVER)
-                .click(closingDateTextField)
-                .keyDown(selectAllMod)
-                .sendKeys("a")
-                .keyUp(selectAllMod)
-                .sendKeys(Keys.BACK_SPACE)
-                .sendKeys(date)
-                .perform();
+        // react-datepicker uses strictParsing, so character-by-character typing snaps back to the
+        // selected day before "dd.MM.yyyy" is complete. Set the full value in one step, as for the times.
+        setInputValue(findVisibleInputById("AvDatesEnd"), date);
+    }
+
+    /**
+     * Selects Saturday and Sunday when they still fall in the range from today through Sunday.
+     * The start date cannot move before the opened day, so a run on Sunday only selects Sunday.
+     */
+    public void selectWeekendDaysOfCurrentWeek() {
+        if (BerlinTime.today().getDayOfWeek() != DayOfWeek.SUNDAY) {
+            selectWeekDay("Samstag");
+        }
+        selectWeekDay("Sonntag");
+    }
+
+    public void assertNoMissingWeekdayError() {
+        CONTEXT.set();
+        By error = By.xpath("//*[contains(@class,'message--error')]"
+                + "[contains(., 'kommen im gewählten Zeitraum nicht vor')]");
+        try {
+            new WebDriverWait(DRIVER, Duration.ofSeconds(5))
+                    .until(ExpectedConditions.invisibilityOfElementLocated(error));
+        } catch (TimeoutException e) {
+            Assert.fail("Weekday range error is still shown: " + DRIVER.findElement(error).getText(), e);
+        }
+    }
+
+    public void assertOpeningHoursSaveButtonEnabled(String buttonLabel) {
+        CONTEXT.set();
+        By save = By.xpath("//button[contains(@class,'button-save') and normalize-space()='" + buttonLabel + "']");
+        WebElement button = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(ExpectedConditions.presenceOfElementLocated(save));
+        Assert.assertTrue(button.isEnabled(), "\"" + buttonLabel + "\" is disabled");
     }
 
     private WebElement findVisibleInputById(String id) {
+        String inOpenedAccordion = "(//div[contains(@class,'accordion__panel') and contains(@class,'opened')]"
+                + "//input[@id='" + id + "'])[last()]";
+        List<WebElement> opened = DRIVER.findElements(By.xpath(inOpenedAccordion));
+        if (!opened.isEmpty() && opened.get(0).isDisplayed()) {
+            return opened.get(0);
+        }
         return DRIVER.findElements(By.id(id)).stream()
                 .filter(element -> element.isDisplayed())
                 .filter(element -> element.getRect().getHeight() > 0 && element.getRect().getWidth() > 0)
@@ -352,8 +416,11 @@ public void saveLocationChanges() {
     }
 
     private void enterTimeDirectly(String inputId, String time) {
-        WebElement timeTextField = findVisibleInputById(inputId);
-        moveToElementAction(timeTextField);
+        setInputValue(findVisibleInputById(inputId), time);
+    }
+
+    private void setInputValue(WebElement field, String value) {
+        moveToElementAction(field);
         ((JavascriptExecutor) DRIVER).executeScript(
                 "var el=arguments[0], val=arguments[1];"
                         + "el.focus();"
@@ -362,8 +429,8 @@ public void saveLocationChanges() {
                         + "el.dispatchEvent(new Event('input',{bubbles:true}));"
                         + "el.dispatchEvent(new Event('change',{bubbles:true}));"
                         + "el.dispatchEvent(new Event('blur',{bubbles:true}));",
-                timeTextField,
-                time);
+                field,
+                value);
     }
 
     public void selectOverallAvailableCounters(String numberOfCounters) {
@@ -415,16 +482,24 @@ public void saveLocationChanges() {
     public void clickOnSaveButton() {
         ScenarioLogManager.getLogger().info("Trying to click on \"Alle Änderungen aktivieren\" button...");
         CONTEXT.set();
-        clickOnWebElement(
-            DEFAULT_EXPLICIT_WAIT_TIME,
-            "//button[contains(@class,'button-save')]",
-            LocatorType.XPATH,
-            false,
-            CONTEXT
-        );
+        String publishButton =
+                "//button[contains(@class,'button-save') and normalize-space()='Alle Änderungen aktivieren']";
         By confirmButton = By.xpath("//div[contains(@class,'lightbox__content')]//a[@data-action-ok]");
-        WebElement confirmBtn = new WebDriverWait(DRIVER, Duration.ofSeconds(10))
-                .until(ExpectedConditions.visibilityOfElementLocated(confirmButton));
+        WebElement confirmBtn = null;
+        for (int attempt = 1; attempt <= 3 && confirmBtn == null; attempt++) {
+            clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, publishButton, LocatorType.XPATH, false, CONTEXT);
+            try {
+                confirmBtn =
+                        new WebDriverWait(DRIVER, Duration.ofSeconds(30))
+                                .until(ExpectedConditions.visibilityOfElementLocated(confirmButton));
+            } catch (TimeoutException e) {
+                ScenarioLogManager.getLogger()
+                        .info(
+                                "Confirm dialog not shown after Alle Änderungen aktivieren (attempt {})",
+                                attempt);
+            }
+        }
+        Assert.assertNotNull(confirmBtn, "Confirm dialog for opening hours did not appear");
         confirmBtn.click();
         new WebDriverWait(DRIVER, Duration.ofSeconds(5))
                 .until(ExpectedConditions.invisibilityOfElementLocated(confirmButton));
@@ -453,6 +528,48 @@ public void saveLocationChanges() {
         CONTEXT.set();
         String trashXpath = "//table[contains(@class,'table--base')]//tr[.//td[contains(., '" + note + "')]]//a[.//i[contains(@class,'fa-trash-alt')]]";
         clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, trashXpath, LocatorType.XPATH, false);
+        confirmOpeningHoursDeleteLightbox();
+    }
+
+    /**
+     * Deletes every saved opening-hours row whose Typ column matches {@code type}
+     * (e.g. {@code Spontankunden}). The lightbox DELETE is persisted immediately.
+     */
+    public void deleteOpeningHoursOfType(String type) {
+        CONTEXT.set();
+        CONTEXT.waitForSpinners();
+        ScenarioLogManager.getLogger().info("Trying to delete opening hours of type \"" + type + "\"...");
+        By trash = By.xpath("//table[contains(@class,'table--base')]//tr[td[normalize-space()='" + type
+                + "']]//a[.//i[contains(@class,'fa-trash-alt')]]");
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        try {
+            wait.until(ExpectedConditions.elementToBeClickable(trash));
+        } catch (TimeoutException e) {
+            Assert.fail("No opening-hours row of type \"" + type + "\" to delete", e);
+        }
+        int deleted = 0;
+        while (true) {
+            List<WebElement> icons = DRIVER.findElements(trash);
+            if (icons.isEmpty()) {
+                break;
+            }
+            int remaining = icons.size();
+            wait.until(ExpectedConditions.elementToBeClickable(trash)).click();
+            confirmOpeningHoursDeleteLightbox();
+            CONTEXT.waitForSpinners();
+            wait.until(driver -> {
+                try {
+                    return driver.findElements(trash).size() < remaining;
+                } catch (StaleElementReferenceException e) {
+                    return false;
+                }
+            });
+            deleted++;
+        }
+        Assert.assertTrue(deleted > 0, "No opening-hours row of type \"" + type + "\" to delete");
+    }
+
+    private void confirmOpeningHoursDeleteLightbox() {
         By confirmButton = By.xpath("//div[contains(@class,'lightbox__content')]//a[@data-action-ok]");
         WebElement confirmBtn = new WebDriverWait(DRIVER, Duration.ofSeconds(10))
                 .until(ExpectedConditions.visibilityOfElementLocated(confirmButton));

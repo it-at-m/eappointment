@@ -2,6 +2,7 @@ import DefaultTheme from "vitepress/theme";
 
 import BerlinChangelogEmbed from "./BerlinChangelogEmbed.vue";
 import ChangelogEmbed from "./ChangelogEmbed.vue";
+import CucumberCountMatrix from "./CucumberCountMatrix.vue";
 import CucumberFeatureGroup from "./CucumberFeatureGroup.vue";
 import CucumberFeatureRow from "./CucumberFeatureRow.vue";
 import CucumberFeatureSearch from "./CucumberFeatureSearch.vue";
@@ -14,6 +15,8 @@ import LogInventory from "./LogInventory.vue";
 import ThinnedProcessCodeExplorerTarget from "./ThinnedProcessCodeExplorerTarget.vue";
 import ThinnedProcessCodeExplorerToday from "./ThinnedProcessCodeExplorerToday.vue";
 
+import "@fortawesome/fontawesome-free/css/fontawesome.css";
+import "@fortawesome/fontawesome-free/css/brands.css";
 import "./style.css";
 
 export default {
@@ -42,6 +45,7 @@ export default {
       ThinnedProcessCodeExplorerToday
     );
     ctx.app.component("LogInventory", LogInventory);
+    ctx.app.component("CucumberCountMatrix", CucumberCountMatrix);
     ctx.app.component("CucumberFeatureGroup", CucumberFeatureGroup);
     ctx.app.component("CucumberFeatureRow", CucumberFeatureRow);
     ctx.app.component("CucumberFeatureSearch", CucumberFeatureSearch);

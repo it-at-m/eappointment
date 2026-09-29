@@ -46,7 +46,7 @@ class ProcessStatusQueued extends Process
      *
      * @return string authKey
      */
-    public function readByQueueNumberAndScope($queueNumber, $scopeId, $resolveReferences = 0, $queueLimit = 10000)
+    public function readByQueueNumberAndScope(int $queueNumber, $scopeId, int $resolveReferences = 0, int $queueLimit = 10000)
     {
         $query = new \BO\Zmsbackend\Process\Repository\Process(\BO\Zmsbackend\Query\Base::SELECT);
         $query

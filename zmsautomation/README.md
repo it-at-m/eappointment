@@ -17,19 +17,21 @@ This module contains **API and UI tests** for ZMS using the ATAF (Test Automatio
   - `zms/ataf/ui/steps/` - UI step definitions (Selenium/ATAF web)  
   - `zms/ataf/ui/pages/**` - Page objects for Admin, Statistik, zmscitizenview, Mailinator  
 - `src/test/resources/features/` - Cucumber feature files  
-  - `rest/zmsapi/` - ZMS REST API features (legacy folder/tag name; targets `zmsbackend` at `/terminvereinbarung/api/2`)  
+  - `rest/zmsapi/` - ZMS REST API features (legacy folder/tag name; targets `zmsbackend` at `/terminvereinbarung/api/2`). Categories use frontend subfolders (`booking/zmsadmin/`, `booking/zmsticketprinter/`, …) because zmsbackend is shared by the admin, ticketprinter, calldisplay and statistic frontends.  
   - `rest/zmscitizenapi/` - Citizen REST API features  
   - `ui/zmsadmin/` - Admin UI features  
-  - `ui/buergeransicht/` - Archived Vue2 Bürgeransicht feature files (`@ignore`; no step definitions)  
   - `ui/zmsstatistic/` - Statistik UI features  
   - `ui/zmscitizenview/` - Citizen view UI (Service Finder + full booking E2E)  
+  - `ui/zmsticketprinter/` - Ticketprinter / kiosk UI features (`booking/`, …)  
 - `src/main/resources/db/migration/` - Flyway database migrations
 
 ## Running Tests
 
 ### Using the Test Script (Recommended for City Laptop)
 
-The `zmsautomation-test` script handles database setup, migrations, and test execution:
+The `zmsautomation-test` script handles database setup, migrations, and test execution. Scenarios inside one Maven run execute together: 32 at a time for `-Pataf-api`, 16 browsers at a time for `-Pataf-ui`. Pass `-Ddataproviderthreadcount=1` to run one scenario at a time. A GitHub module shard is its own run, so modules do not share that JVM.
+
+Each log line starts with the worker thread in brackets, for example `[29]`. TestNG reuses that thread for the next scenario, so lines with the same number belong to one scenario until that thread logs `Starting scenario`. Scroll up to the latest `Starting scenario` line with that number to see which test those lines belong to.
 
 ```bash
 # Run all ATAF tests (API + UI)
@@ -43,18 +45,23 @@ The `zmsautomation-test` script handles database setup, migrations, and test exe
 
 # Filter by tag (pass the Maven profile for the layer you want)
 ./zmsautomation/zmsautomation-test -Pataf-ui -Dcucumber.filter.tags="@ZMSKVR-1328"
+./zmsautomation/zmsautomation-test -Pataf-ui -Dcucumber.filter.tags="@ZMSKVR-167"
 ./zmsautomation/zmsautomation-test -Pataf-api -Dcucumber.filter.tags="@ZMSKVR-1328"
+./zmsautomation/zmsautomation-test -Pataf-api -Dcucumber.filter.tags="@ZMSKVR-167"
 
 # Run specific API feature file
 ./zmsautomation/zmsautomation-test -Pataf-api -Dcucumber.features="src/test/resources/features/rest/zmsapi/status.feature"
 
 # Optional: pin a different ATAF Maven version (default: ataf.version in pom.xml)
 ./zmsautomation/zmsautomation-test -Pataf-api -Pataf-ui -Dataf.version=0.3.3
+
+# One scenario at a time (default is 32 API threads or 16 UI browsers)
+./zmsautomation/zmsautomation-test -Pataf-ui -Ddataproviderthreadcount=1
 ```
 
 The ATAF library version defaults to `<ataf.version>` in `pom.xml`. Override with `-Dataf.version=…` for another published `de.muenchen.ataf` release.
 
-Use `-Pataf-api` and/or `-Pataf-ui` to select the test layer. Each profile runs its own Cucumber runner (`ApiTestRunner` / `UiTestRunner`). When a Jira tag exists on both API and UI features, pass the profile for the layer you want — the script adds `not @web` / `not @rest` to the tag filter automatically.
+Use `-Pataf-api` and/or `-Pataf-ui` to select the test layer. Each profile runs its own Cucumber runner (`ApiTestRunner` / `UiTestRunner`). Passing both runs the API suite, then the UI suite, so each runner keeps its own feature path.
 
 The script will:
 1. Backup the database
@@ -116,6 +123,7 @@ mvn test -Pataf-ui
 # mvn test -Pataf-ui -Dcucumber.filter.tags="@zmsadmin"
 # mvn test -Pataf-ui -Dcucumber.filter.tags="@zmsstatistic"
 # mvn test -Pataf-ui -Dcucumber.filter.tags="@zmscitizenview"
+# mvn test -Pataf-ui -Dcucumber.filter.tags="@zmsticketprinter"
 ```
 
 ### macOS host (CLI)
@@ -139,6 +147,7 @@ Required environment variables for ATAF tests:
 - `CITIZEN_API_BASE_URI` - Citizen API base (default: `http://web/terminvereinbarung/api/citizen`) — **direct** to zms-web. REST steps use this; **refarch-gateway is not used** for those pings.
 - `ZMS_CONFIG_SECURE_TOKEN` - Token for `X-Token` on protected API calls such as `GET /status/` (default: `hash`, same as local `.env`). Required for zmsbackend health checks after ZMSKVR-1349.
 - `ADMIN_BASE_URI` / `STATISTIC_BASE_URI` - Defaults use `http://localhost/terminvereinbarung/.../` (typical when tests run inside the `web` container).
+- `TICKETPRINTER_BASE_URI` - Ticketprinter / kiosk base (default: `http://localhost/terminvereinbarung/ticketprinter/`).
 - `CITIZEN_VIEW_BASE_URI` / `CITIZENVIEW_PORT` - CitizenView / Vite dev server (defaults: port `8082`, base `http://citizenview:8082/`). Override if your stack uses another port (e.g. prebuilt nginx image on `8080`).
 - `REFARCH_GATEWAY_OFFICES_URL` - Optional override for the extra health ping that hits the gateway (default: `http://refarch-gateway:8080/buergeransicht/api/citizen/offices-and-services/`). Same URL path the browser uses; produces lines in gateway logs.
 - `SKIP_REFARCH_GATEWAY_HEALTH=1` - Skip gateway ping (e.g. no refarch-gateway container).
@@ -187,9 +196,12 @@ The ATAF tests automatically run Flyway migrations before executing tests. The m
 - **UI tags**
   - `@web` - All web UI tests
   - `@zmsadmin` - Admin UI features (`features/ui/zmsadmin/**`)
-  - `@buergeransicht` - Archived Vue2 Bürgeransicht features (`features/ui/buergeransicht/**`; `@ignore`, no glue)
   - `@zmsstatistic` - Statistik UI features (`features/ui/zmsstatistic/**`)
   - `@zmscitizenview` - Citizen view webcomponent UI (`features/ui/zmscitizenview/**`)
+  - `@zmsticketprinter` - Ticketprinter / kiosk UI (`features/ui/zmsticketprinter/**`) and matching zmsbackend REST (`rest/zmsapi/**/zmsticketprinter/`)
+  - `@booking` - Booking / waiting-number flows (UI: `zmsadmin/booking`, `zmscitizenview/booking`, `zmsticketprinter/booking`; REST: `rest/zmsapi/booking/{frontend}/`, `rest/zmscitizenapi/booking/`)
+  - `@rebooking` - Umbuchung / Weiterleiten (UI: `zmscitizenview/rebooking`, `zmsadmin/rebooking`; REST: `rest/zmscitizenapi/rebooking/`)
+  - `@citizen-login` - Bürger-Login (DBS) actor for logged-in citizen scenarios
   - `@jumpin` - Booking scenarios that open jump-in URL (combination step first)
   - `@ruppertstrasse` - Ruppertstraße Passkalender (10502) style flows
   - `@passkalender` - Passkalender 10502 (three Pass services only); invalid jump-in if non-Pass + 10502
@@ -207,10 +219,15 @@ The ATAF tests automatically run Flyway migrations before executing tests. The m
 ### API Features (`src/test/resources/features/rest/`)
 
 #### REST API (`rest/zmsapi/`, served by `zmsbackend`)
-- `status.feature` - Status endpoint tests (converted from `StatusEndpointTest`)
+- `status.feature` / `workstation-login.feature` - health and login
+- `booking/zmsadmin/ZMSKVR-1049.feature` - intern counter booking of a Mandanten variant missing from `provider.data.services`
+- `booking/zmsticketprinter/ZMSKVR-167.feature` - Orleansplatz KP Abholung (scope 127): Spontankunden hours, `POST /ticketprinter/` (`s127` and `s999,s127`), waiting numbers, then disabled buttons after hours are deleted
+- `customer-call/zmsadmin/ZMSKVR-1328.feature` - book, call and finish a scheduled appointment at the counter
 
 #### Citizen API (`rest/zmscitizenapi/`)
-- `zmskvr-1124_booking_ruppertstrasse_pass_calendar_jumpin_links_citizenapi.feature` - Ruppertstraße Citizen API booking (10502 / 10489 / 10492, jump-in)
+- `dldb-special-cases/zmskvr-1124_booking_ruppertstrasse_pass_calendar_jumpin_links_citizenapi.feature` - Ruppertstraße Citizen API booking (10502 / 10489 / 10492, jump-in)
+- `booking/zmskvr-955_zmskvr-965_logged_in_booking_no_activation_citizenapi.feature` - logged-in confirm without preconfirm / activation mail
+- `rebooking/zmskvr-353_rebooking_no_activation_citizenapi.feature` - guest rebooking confirm with original process, no second activation
 
 Additional REST features (availability, offices-and-services, etc.) may be added over time; this list reflects files currently present under `features/rest/`.
 
@@ -219,18 +236,20 @@ Additional REST features (availability, offices-and-services, etc.) may be added
 #### Admin UI (`ui/zmsadmin/`)
 - Cucumber features for the Admin web UI (Terminadministration, Behörden & Standorte, Workview, etc.)
 
-#### Archived Bürgeransicht UI (`ui/buergeransicht/`)
-- Feature files for the retired Vue2 eappointment Bürgeransicht frontend. They remain as reference only (`@ignore`); page objects and step definitions have been removed.
-
 #### zmscitizenview UI (`ui/zmscitizenview/`)
-- `zmskvr-1124_booking_ruppertstrasse_pass_calendar_jumpin_links.feature` - zmscitizenview Ruppertstraße UI booking (Kalenderansicht); Ort = checkbox list or single-provider teaser; slot wait until **MucSpinner** (`.m-spinner-container`) cleared after day load + timeslot in DOM; `#provider-*` on reserve, preconfirm, confirm
+- `dldb-special-cases/zmskvr-1124_booking_ruppertstrasse_pass_calendar_jumpin_links.feature` - zmscitizenview Ruppertstraße UI booking (Kalenderansicht); Ort = checkbox list or single-provider teaser; slot wait until **MucSpinner** (`.m-spinner-container`) cleared after day load + timeslot in DOM; `#provider-*` on reserve, preconfirm, confirm
+- `booking/zmskvr-955_zmskvr-965_logged_in_booking_no_activation.feature` - Bürger-Login booking skips activation and shows the confirmation callout
+- `rebooking/zmskvr-353_rebooking_no_activation.feature` - guest Umbuchung confirms immediately without a second activation
 
 #### Statistik UI (`ui/zmsstatistic/`)
 - Features for the Statistik web UI (Dienstleistungsstatistik, Kundenstatistik, CSV export, etc.)
 
+#### Ticketprinter UI (`ui/zmsticketprinter/booking/`)
+- `ZMSKVR-167.feature` - one local Chrome session for Orleansplatz KP Abholung (scope 127): Spontankunden hours, Standort (`s127`), Dienstleistung (`r127-10295182`), mixed button list (`s999,s127` skips the missing scope), then delete hours so the kiosk shows closed
+
 ## CI/CD
 
-GitHub Actions: `.github/workflows/zmsautomation-workflow.yaml` checks out the repo, copies `.devcontainer/.env.template` → `.env`, pulls **prebuilt PHP module images** from GHCR (`zmsadmin`, `zmsbackend`, …), starts a subset of `.devcontainer/docker-compose.yaml` (`web`, `db`, `citizenview`, `refarch-gateway`, `keycloak`, `init-keycloak`; no phpMyAdmin), installs Java/Maven/browsers into `zms-web`, injects `zmslayout` plus module trees from those images (layout symlinks in `zmsadmin`/`zmsstatistic` need `/var/www/html/zmslayout`), then runs `zmsautomation/zmsautomation-test` inside `zms-web` via `docker exec`. **CitizenView** is the same Node + Vite dev service as in the devcontainer (`npm install` + dev server on port **8082**), not a separate prebuilt CitizenView image.
+GitHub Actions: `.github/workflows/zmsautomation-workflow.yaml` checks out the repo, copies `.devcontainer/.env.template` → `.env`, pulls **prebuilt PHP module images** from GHCR (`zmsadmin`, `zmsbackend`, …), starts a subset of `.devcontainer/docker-compose.yaml` (`web`, `db`, `citizenview`, `refarch-gateway`, `keycloak`, `init-keycloak`, `captcha-db`, `captchaservice`; no phpMyAdmin) and waits until CaptchaService answers on port 39146, installs Java/Maven/browsers into `zms-web`, injects `zmslayout` plus module trees from those images (layout symlinks in `zmsadmin`/`zmsstatistic` need `/var/www/html/zmslayout`), then runs `zmsautomation/zmsautomation-test` inside `zms-web` via `docker exec`. **CitizenView** is the same Node + Vite dev service as in the devcontainer (`npm install` + dev server on port **8082**), not a separate prebuilt CitizenView image.
 
 Manual `workflow_dispatch` runs accept an optional **`ataf_version`** input. Leave it empty to use `ataf.version` from this module’s `pom.xml` on the checked-out branch; set it (e.g. `0.3.3`) to pass `-Dataf.version=…` into `zmsautomation-test`. Scheduled nightly runs always use the POM version. The version must exist on Maven Central as `de.muenchen.ataf:{core,rest,web}`.
 

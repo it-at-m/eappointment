@@ -118,7 +118,7 @@
 #}
 
 
-{% macro inputfield(args, fieldId, description) %}
+{% macro inputfield(args, fieldId = null, description = null) %}
     {% import _self as self %}
     <input
         type="{{ args.type|default('text') }}"
@@ -147,7 +147,7 @@
 {% endmacro %}
 
 
-{% macro filefield(args, fieldId, description) %}
+{% macro filefield(args, fieldId = null, description = null) %}
 {% if args.file.type == 'image' and args.file.data %}
     <img alt="{{ args.file.alt }}" width="60" src="data:image/{{ args.file.data.mime }};base64,{{ args.file.data.content }}" class="thumbnail" />
 {% endif %}
@@ -189,7 +189,7 @@
     >
 {% endmacro %}
 
-{% macro datepickerfield(args, fieldId, description) %}
+{% macro datepickerfield(args, fieldId = null, description = null) %}
     <div class="add-date-picker">
         <input
             type="text"
@@ -217,7 +217,7 @@
 {% endmacro %}
 
 
-{% macro selectfield(args, fieldId, description) %}
+{% macro selectfield(args, fieldId = null, description = null) %}
     {% import _self as self %}
 	<select
         name="{{ args.name }}"
@@ -328,7 +328,7 @@
     </div>
 {% endmacro %}
 
-{% macro textareafield(args, fieldId, description) %}
+{% macro textareafield(args, fieldId = null, description = null) %}
     <textarea
         tabindex="{{ args.tabindex|default(0)}}"
         class="form-control {% if args.class %}{{ args.class }} {% endif %} maxchars"
@@ -405,7 +405,7 @@
     </div>
 {% endmacro %}
 
-{% macro counterfield(args, fieldId) %}
+{% macro counterfield(args, fieldId = null) %}
         <div class="form-input-counter">
             <label for="counter_{{ fieldId }}">{{ args.label -}}</label>
             <div class="input-counter">
@@ -466,7 +466,7 @@
 {% endmacro %}
 
 
-{% macro groupdescription(description, fieldId) %}
+{% macro groupdescription(description, fieldId = null) %}
         <p class="formgroup__help" {{ fieldId? ('id="help_' ~ fieldId ~ '"')|raw }}>
             {{ description | raw }}
         </p>

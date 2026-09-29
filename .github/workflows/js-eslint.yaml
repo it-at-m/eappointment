@@ -1,0 +1,39 @@
+name: 🔍 JS ESLint
+
+on:
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  module-eslint:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        module:
+          - zmsadmin
+          - zmscalldisplay
+          - zmsstatistic
+          - zmsticketprinter
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: "24"
+          cache: npm
+          cache-dependency-path: ${{ matrix.module }}/package-lock.json
+
+      - name: Install dependencies
+        working-directory: ${{ matrix.module }}
+        run: npm ci
+
+      - name: ESLint
+        working-directory: ${{ matrix.module }}
+        run: npm run lint

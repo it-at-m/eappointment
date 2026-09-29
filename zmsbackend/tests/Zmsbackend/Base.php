@@ -14,12 +14,14 @@ abstract class Base extends \BO\Slim\PhpUnit\Base
 {
     protected $namespace = '\\BO\\Zmsbackend\\Api\\';
 
+    #[\Override]
     public function setUp(): void
     {
         \BO\Zmsbackend\Connection\Select::setTransaction();
         \BO\Zmsbackend\Connection\Select::setProfiling();
     }
 
+    #[\Override]
     public function tearDown(): void
     {
         User::$workstation = null;

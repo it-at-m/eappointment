@@ -10,6 +10,7 @@ class AvailabilityGetTest extends \BO\Zmsbackend\Tests\Api\Base
 {
     protected $classname = "AvailabilityGet";
 
+    #[\Override]
     public function testRendering()
     {
         $input = (new Entity)->createExample();

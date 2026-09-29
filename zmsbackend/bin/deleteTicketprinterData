@@ -2,8 +2,8 @@
 <?php
 require_once(__DIR__."/script_bootstrap.php");
 
-$verbose = preg_grep('#^--?v(erbose)?$#', $argv);
-$commit = preg_grep('#^--commit$#', $argv);
+$verbose = (bool) preg_grep('#^--?v(erbose)?$#', $argv);
+$commit = (bool) preg_grep('#^--commit$#', $argv);
 
 $job = new \BO\Zmsbackend\Helper\TicketprinterDeleteByCron($verbose);
 

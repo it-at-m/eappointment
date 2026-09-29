@@ -1,20 +1,17 @@
 -- Flyway migration: Ausbildung scope for Ruppertstraße (ZMSKVR-1046)
 --
--- Adds a local test Standort for DLDB OfficeID 10503
--- "Bürgerbüro Ruppertstraße (Ausbildung)" under Behörde 58
+-- Adds a local test Standort for DLDB OfficeID 10313237
+-- "Bürgerbüro Ruppertstraße (KVR-II/2252)" under Behörde 58
 -- (Bürgerbüro Ruppertstraße), mirroring Pass scope 172.
 --
 -- Email for Behörde 58 already exists in V7__standort_email_address_test_data.
 -- CURDATE()/CURTIME() follow zms-db TZ=Europe/Berlin (same calendar day as zms-web).
---
--- TODO ZMSKVR-1046: Update later with prod ids (StandortID / scope, InfoDienstleisterID /
--- officeId, OeffnungszeitID) once the real Ausbildung office and scope exist on prod.
 
 -- ---------------------------------------------------------------------------
 -- Standort (scope)
 -- ---------------------------------------------------------------------------
 INSERT INTO `standort` (`StandortID`, `BehoerdenID`, `InfoDienstleisterID`, `Hinweis`, `Bezeichnung`, `Adresse`, `Stadtplanlink`, `Bearbeitungszeit`, `Kennung`, `Termine_ab`, `Termine_bis`, `smswarteschlange`, `smswmsbestaetigung`, `smsbenachrichtigungsfrist`, `smsbenachrichtigungstext`, `smsbestaetigungstext`, `wartenrsperre`, `wartenrhinweis`, `notruffunktion`, `notrufausgeloest`, `notrufinitiierung`, `notrufantwort`, `emailPflichtfeld`, `anmerkungPflichtfeld`, `anmerkungLabel`, `telefonPflichtfeld`, `standortinfozeile`, `standortkuerzel`, `aufrufanzeigetext`, `reservierungsdauer`, `anzahlwiederaufruf`, `startwartenr`, `endwartenr`, `letztewartenr`, `wartenrdatum`, `mehrfachtermine`, `schreibschutz`, `ohnestatistik`, `smskioskangebotsfrist`, `emailstandortadmin`, `wartenummernkontingent`, `vergebenewartenummern`, `kundenbefragung`, `kundenbef_label`, `kundenbef_emailtext`, `telefonaktiviert`, `virtuellesachbearbeiterzahl`, `datumvirtuellesachbearbeiterzahl`, `smsnachtrag`, `loeschdauer`, `updateTimestamp`, `source`, `custom_text_field_label`, `custom_text_field_active`, `custom_text_field_required`, `admin_mail_on_appointment`, `admin_mail_on_deleted`, `admin_mail_on_updated`, `admin_mail_on_mail_sent`, `appointments_per_mail`, `whitelisted_mails`, `slots_per_appointment`, `info_for_appointment`, `aktivierungsdauer`, `captcha_activated_required`, `email_confirmation_activated`, `custom_text_field2_label`, `custom_text_field2_active`, `custom_text_field2_required`, `info_for_all_appointments`, `last_display_number`, `max_display_number`, `display_number_prefix`) VALUES
-(372, 58, 10503, 'Eingang B - EG - Wartebereich 04', 'Bürgerbüro Ruppertstraße (Ausbildung)', 'Ruppertstraße 19', '', '00:12:00', 0, 0, 42, 0, 0, 10, '', '', 0, '', 1, 0, NULL, NULL, 1, 0, '', 0, 'Bürgerbüro Ruppertstraße (Ausbildung)', 'Ausbildung', 'Herzlich Willkommen', 15, 3, 1, 999, 1, '2025-11-17', 1, 1, 1, 0, '', 999, 1, 0, '', '', 1, -1, '2025-11-17', 0, 5, NOW(), 'dldb', 'Zusätzliche Bemerkungen', 1, 1, 0, 0, 0, 0, 3, '', 0, 'Hinweis zum Passfoto: Für Ausweisdokumente benötigen wir ein digitales, zertifiziertes Passfoto. Es muss in einem zertifizierten Fotostudio oder Drogeriemarkt aufgenommen werden. Wir rufen das Foto über einen Code ab. Alternativ können Sie im Bürgerbüro gegen Gebühr ein Foto-Terminal nutzen. Diese Foto-Terminals sind jedoch nicht für Fotos von Babys und Kindern unter 6 Jahren geeignet.\r\n\r\n', 30, 0, 0, '', 1, 0, 'Hinweis zur Terminvergabe: Von Montag bis Freitag schalten wir jeweils zwischen 7 und 8 Uhr tagesaktuelle Termine frei. \r\nTermine für die kommende Woche folgen zwischen 9 und 11 Uhr. Langfristige Termine (in 6 Wochen beziehungsweise 42 Tagen) \r\nwerden über Nacht freigeschaltet. Schauen Sie an allen Bürgerbüro-Standorten nach freien Terminen.', 0, 9999, '');
+(372, 58, 10313237, 'Eingang B - EG - Wartebereich 04', 'Bürgerbüro Ruppertstraße (Ausbildung)', 'Ruppertstraße 19', '', '00:12:00', 0, 0, 42, 0, 0, 10, '', '', 0, '', 1, 0, NULL, NULL, 1, 0, '', 0, 'Bürgerbüro Ruppertstraße (Ausbildung)', 'Ausbildung', 'Herzlich Willkommen', 15, 3, 1, 999, 1, '2025-11-17', 1, 1, 1, 0, '', 999, 1, 0, '', '', 1, -1, '2025-11-17', 0, 5, NOW(), 'dldb', 'Zusätzliche Bemerkungen', 1, 1, 0, 0, 0, 0, 3, '', 0, 'Hinweis zum Passfoto: Für Ausweisdokumente benötigen wir ein digitales, zertifiziertes Passfoto. Es muss in einem zertifizierten Fotostudio oder Drogeriemarkt aufgenommen werden. Wir rufen das Foto über einen Code ab. Alternativ können Sie im Bürgerbüro gegen Gebühr ein Foto-Terminal nutzen. Diese Foto-Terminals sind jedoch nicht für Fotos von Babys und Kindern unter 6 Jahren geeignet.\r\n\r\n', 30, 0, 0, '', 1, 0, 'Hinweis zur Terminvergabe: Von Montag bis Freitag schalten wir jeweils zwischen 7 und 8 Uhr tagesaktuelle Termine frei. \r\nTermine für die kommende Woche folgen zwischen 9 und 11 Uhr. Langfristige Termine (in 6 Wochen beziehungsweise 42 Tagen) \r\nwerden über Nacht freigeschaltet. Schauen Sie an allen Bürgerbüro-Standorten nach freien Terminen.', 0, 9999, '');
 
 -- ---------------------------------------------------------------------------
 -- Preferences (cloned from scope 172 / Pass WB04)
@@ -49,22 +46,18 @@ INSERT INTO `preferences` (`entity`, `id`, `groupName`, `name`, `value`, `update
 -- ---------------------------------------------------------------------------
 -- Opening hours (same pattern as V19__ZMSKVR-1124_opening_hours_for_ruppertstasse)
 -- ---------------------------------------------------------------------------
+-- Same window as V19: rest of today until 23:55, or the whole next day when under three hours remain.
+SET @slot_seconds := 300;
+SET @latest_end := '23:55:00';
 SET @rounded_start :=
-  SEC_TO_TIME(CEILING(TIME_TO_SEC(CURTIME()) / 300) * 300);
-
-SET @desired_end :=
-  ADDTIME(@rounded_start, '06:00:00');
-
-SET @rounded_end :=
-  LEAST(@desired_end, '23:55:00');
+  SEC_TO_TIME(CEILING(TIME_TO_SEC(CURTIME()) / @slot_seconds) * @slot_seconds);
 
 SET @start_sec := TIME_TO_SEC(@rounded_start);
-SET @end_sec := TIME_TO_SEC(@rounded_end);
-SET @use_next_day := (@end_sec <= @start_sec);
+SET @end_sec := TIME_TO_SEC(@latest_end);
+SET @use_next_day := (@start_sec >= 24 * 3600) OR (@end_sec <= @start_sec) OR ((@end_sec - @start_sec) < 3 * 3600);
 
 SET @appt_start := IF(@use_next_day, '00:05:00', @rounded_start);
-SET @appt_end :=
-  IF(@use_next_day, LEAST(ADDTIME('00:05:00', '03:00:00'), '23:55:00'), @rounded_end);
+SET @appt_end := @latest_end;
 
 SET @range_start := IF(@use_next_day, DATE_ADD(CURDATE(), INTERVAL 1 DAY), CURDATE());
 SET @range_end :=
@@ -94,7 +87,7 @@ INSERT IGNORE INTO `oeffnungszeit`
   `updateTimestamp`
 )
 VALUES
-  -- Bürgerbüro Ruppertstraße (Ausbildung) – officeId 10503
+  -- Bürgerbüro Ruppertstraße (KVR-II/2252) – officeId 10313237
   (136206, 372, @range_start, @range_end,
    1, 0, 127,
    '00:00:00', @appt_start,

@@ -18,6 +18,7 @@ class RequestHandlerMock implements RequestHandlerInterface
 {
     private $request;
 
+    #[\Override]
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
         $this->request = $request;

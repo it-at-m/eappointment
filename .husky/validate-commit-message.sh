@@ -20,7 +20,7 @@ validate_commit_message() {
   #   feat(ZMS-1): summary
   #   feat(ZMS-1 ZMS-2): summary
   #   feat(ZMS-1 ZMS-2): fix(GH-1 ZMS-3): summary
-  valid_types="feat|fix|clean|chore|docs"
+  valid_types="feat|fix|clean|chore|docs|test"
   valid_projects="ZMS|ZMSKVR|MPDZBS|MUXDBS|GH"
   ref="($valid_projects)(-[0-9]+)?"
   scope="$ref( $ref)*"
@@ -40,7 +40,7 @@ validate_commit_message() {
   echo "  type(PROJECT-1 PROJECT-2): commit message"
   echo "  type(PROJECT-1 PROJECT-2): type(PROJECT-3): commit message"
   echo ""
-  echo "Valid types: feat, fix, clean, chore, docs"
+  echo "Valid types: feat, fix, clean, chore, docs, test"
   echo "Valid projects: ZMS, ZMSKVR, MPDZBS, MUXDBS, GH (must be uppercase)"
   echo "Ticket number is optional (e.g., PROJECT-123 or just PROJECT)"
   echo "Multiple tickets/projects may be space-separated in one scope"

@@ -4,7 +4,7 @@ import { pathToFileURL } from "node:url";
 
 const FEATURES_MARKER = "src/test/resources/features/";
 const ARTIFACT_SHARDS =
-  "zmsadmin|zmscitizenview|zmsstatistic|zmsapi|zmscitizenapi|custom";
+  "zmsadmin|zmscitizenview|zmsstatistic|zmsticketprinter|zmsapi|zmscitizenapi|custom";
 const ARTIFACT_BROWSERS = "chrome|firefox|edge";
 const ARTIFACT_DIR = new RegExp(
   `^zmsautomation-ataf-reports-\\d+-\\d+-(.+)-(${ARTIFACT_SHARDS})-(${ARTIFACT_BROWSERS})$`,
@@ -145,25 +145,96 @@ export const findArtifactMetaFromPath = (filePath) => {
   };
 };
 
-const mergeFeature = (existing, incoming) => {
-  if (!existing) {
-    return incoming;
+const browserResult = (feature) => ({
+  status: feature.status,
+  shard: feature.shard || "",
+  runId: feature.runId || "",
+  runUrl: feature.runUrl || "",
+  runStartedAt: feature.runStartedAt || "",
+});
+
+export const browsersFromFeature = (feature) => {
+  const out = {};
+  if (feature?.browsers && typeof feature.browsers === "object") {
+    for (const [name, info] of Object.entries(feature.browsers)) {
+      if (!name || !info || typeof info !== "object") {
+        continue;
+      }
+      out[name] = browserResult({
+        ...info,
+        status: info.status || feature.status,
+      });
+    }
   }
-  const failed = existing.status === "failed" || incoming.status === "failed";
-  let status = incoming.status || existing.status;
+  if (!Object.keys(out).length && feature?.browser) {
+    out[feature.browser] = browserResult(feature);
+  }
+  return out;
+};
+
+export const aggregateBrowserStatuses = (statuses) => {
+  const list = [...statuses].filter(Boolean);
+  if (!list.length) {
+    return "";
+  }
+  if (list.some((status) => status === "failed")) {
+    return "failed";
+  }
+  if (list.every((status) => status === "passed")) {
+    return "passed";
+  }
+  return "skipped";
+};
+
+const preferredBrowser = (browsers) => {
+  const names = Object.keys(browsers);
+  if (!names.length) {
+    return "";
+  }
+  return names.sort(
+    (a, b) => (BROWSER_RANK[b] || 0) - (BROWSER_RANK[a] || 0)
+  )[0];
+};
+
+const mergeStatus = (existing, incoming) => {
+  const failed = existing === "failed" || incoming === "failed";
   if (failed) {
-    status = "failed";
-  } else if (existing.status === "passed" || incoming.status === "passed") {
-    status = "passed";
+    return "failed";
   }
-  const existingRank = BROWSER_RANK[existing.browser] || 0;
-  const incomingRank = BROWSER_RANK[incoming.browser] || 0;
-  const preferIncoming = incomingRank >= existingRank;
+  if (existing === "passed" || incoming === "passed") {
+    return "passed";
+  }
+  return incoming || existing || "";
+};
+
+export const mergeFeature = (existing, incoming) => {
+  if (!existing) {
+    const browsers = browsersFromFeature(incoming);
+    const browser = preferredBrowser(browsers) || incoming.browser || "";
+    return {
+      ...incoming,
+      browser,
+      browsers,
+    };
+  }
+  const browsers = {
+    ...browsersFromFeature(existing),
+    ...browsersFromFeature(incoming),
+  };
+  const status = Object.keys(browsers).length
+    ? aggregateBrowserStatuses(
+        Object.values(browsers).map((item) => item.status)
+      )
+    : mergeStatus(existing.status, incoming.status);
+  const browser =
+    preferredBrowser(browsers) || incoming.browser || existing.browser || "";
+  const chosen = browsers[browser] || {};
   return {
     status,
-    shard: preferIncoming ? incoming.shard : existing.shard,
-    browser: preferIncoming ? incoming.browser : existing.browser,
-    rel: incoming.rel || existing.rel,
+    shard: chosen.shard || incoming.shard || existing.shard || "",
+    browser,
+    browsers,
+    rel: incoming.rel || existing.rel || "",
     runId: incoming.runId || existing.runId || "",
     runUrl: incoming.runUrl || existing.runUrl || "",
     runStartedAt: incoming.runStartedAt || existing.runStartedAt || "",
@@ -183,7 +254,10 @@ export const collectCucumberJsonFiles = (rootDir) => {
       const full = path.join(dir, entry.name);
       if (entry.isDirectory()) {
         walk(full);
-      } else if (entry.isFile() && entry.name === "cucumber.json") {
+      } else if (
+        entry.isFile() &&
+        (entry.name === "cucumber.json" || entry.name === "cucumber-api.json")
+      ) {
         files.push(full);
       }
     }

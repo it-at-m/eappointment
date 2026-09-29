@@ -356,7 +356,7 @@ class ProcessStatusFree extends Process
         ];
     }
 
-    public function readReservedProcesses($resolveReferences = 2): Collection
+    public function readReservedProcesses(int $resolveReferences = 2): Collection
     {
         $processList = new Collection();
         $query = new \BO\Zmsbackend\Process\Repository\Process(\BO\Zmsbackend\Query\Base::SELECT);

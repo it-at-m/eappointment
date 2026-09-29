@@ -14,8 +14,8 @@ Usage: {$argv[0]} minutes [--verbose] --commit
 EOS;
 
 $defaultTimeInterval = preg_grep('#^\d+$#', $argv);
-$verbose = preg_grep('#^--?v(erbose)?$#', $argv);
-$commit = preg_grep('#^--commit$#', $argv);
+$verbose = (bool) preg_grep('#^--?v(erbose)?$#', $argv);
+$commit = (bool) preg_grep('#^--commit$#', $argv);
 
 $now = new \DateTimeImmutable();
 if (class_exists('\App') && isset(\App::$now)) {

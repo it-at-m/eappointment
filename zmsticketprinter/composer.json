@@ -18,24 +18,27 @@
     "config": {
         "allow-plugins": {
             "php-http/discovery": true
+        },
+        "platform": {
+            "php": "8.4.3"
         }
     },
     "require-dev": {
-        "vimeo/psalm": "6.5.0",
+        "vimeo/psalm": "6.18.1",
         "phpmd/phpmd": "@stable",
         "squizlabs/php_codesniffer": "*",
-        "phpunit/phpunit": "^11",
+        "phpunit/phpunit": "^13",
         "phpspec/prophecy-phpunit": "^2.4",
         "roave/security-advisories": "dev-latest"
     },
     "require": {
-        "php": ">=8.3",
+        "php": ">=8.4",
         "eappointment/mellon": "@dev",
         "eappointment/zmsentities": "@dev",
         "eappointment/zmsslim": "@dev",
         "eappointment/zmsclient": "@dev",
         "ext-json": ">=1.0",
-        "monolog/monolog": "^2.0",
+        "monolog/monolog": "^3.0",
         "twig/twig": "3.*",
         "twig/intl-extra": "^3.4",
         "roave/security-advisories": "dev-latest"

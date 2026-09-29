@@ -6,6 +6,7 @@ class MailDeleteTest extends \BO\Zmsbackend\Tests\Api\Base
 {
     protected $classname = "MailDelete";
 
+    #[\Override]
     public function testRendering()
     {
         $jsonString = (string)(new \BO\Zmsbackend\Tests\Mail\Api\MailAddTest('dummyTest'))->testRendering()->getBody();

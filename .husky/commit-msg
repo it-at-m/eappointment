@@ -28,20 +28,60 @@ if ! (cd docs && npm run format:check); then
 fi
 printf "${GREEN}✓ Docs formatting OK.${NC}\n"
 
-# Skip PHP checks when this commit touches no PHP modules (e.g. zmscitizenview-only).
 staged_files=$(git diff --cached --name-only --diff-filter=ACMR)
-php_relevant=$(echo "$staged_files" | grep -E '^(zmsbackend|zmsapi|zmsadmin|zmscitizenapi|zmsslim|zmsclient|zmsentities|zmsdldb|zmsmessaging|zmsstatistic|zmscalldisplay|zmsticketprinter|zmsbase)/|\.php$' || true)
+js_modules="zmsadmin zmscalldisplay zmsstatistic zmsticketprinter"
+js_to_lint=""
+for module in $js_modules; do
+  if echo "$staged_files" | grep -E "^${module}/(js/|eslint\\.config\\.|package(-lock)?\\.json)" >/dev/null; then
+    js_to_lint="$js_to_lint $module"
+  fi
+done
+# Skip PHP unless a PHP source file (or PHPMD rules) changed — JS-only files in those modules must not wait on phpcs/phpmd.
+php_relevant=$(echo "$staged_files" | grep -E '\.php$|phpmd\.rules\.xml$' || true)
+
+container_engine=""
+ensure_container_engine() {
+  if [ -n "$container_engine" ]; then
+    return
+  fi
+  if command -v podman >/dev/null 2>&1 && podman ps --format "{{.Names}}" | grep -q "^zms-web$"; then
+    container_engine="podman"
+  elif command -v docker >/dev/null 2>&1 && docker ps --format "{{.Names}}" | grep -q "^zms-web$"; then
+    container_engine="docker"
+  fi
+}
+
+if [ -n "$js_to_lint" ]; then
+  ensure_container_engine
+  echo "Running frontend ESLint..."
+  for module in $js_to_lint; do
+    echo "  $module"
+    if [ -n "$container_engine" ]; then
+      if ! $container_engine exec zms-web bash -lc "cd $module && npm run lint"; then
+        printf "${RED}✗ ESLint failed in $module. Please fix the errors before committing.${NC}\n"
+        echo "  $container_engine exec -it zms-web bash -lc \"cd $module && npm run fix\""
+        exit 1
+      fi
+    else
+      if ! (cd "$module" && npm run lint); then
+        printf "${RED}✗ ESLint failed in $module. Please fix the errors before committing.${NC}\n"
+        echo "  podman exec -it zms-web bash -lc \"cd $module && npm run fix\""
+        echo "  (or: cd $module && npm run fix — run npm install first if dependencies are missing.)"
+        exit 1
+      fi
+    fi
+  done
+  printf "${GREEN}✓ Frontend ESLint OK.${NC}\n"
+else
+  printf "${YELLOW}⚠ No admin/statistic/calldisplay/ticketprinter JS changes staged. Skipping ESLint.${NC}\n"
+fi
+
 if [ -z "$php_relevant" ]; then
-  printf "${YELLOW}⚠ No PHP module changes staged. Skipping PHP code style and PHPMD checks.${NC}\n"
+  printf "${YELLOW}⚠ No PHP source changes staged. Skipping PHP code style and PHPMD checks.${NC}\n"
   exit 0
 fi
 
-container_engine=""
-if command -v podman >/dev/null 2>&1 && podman ps --format "{{.Names}}" | grep -q "^zms-web$"; then
-  container_engine="podman"
-elif command -v docker >/dev/null 2>&1 && docker ps --format "{{.Names}}" | grep -q "^zms-web$"; then
-  container_engine="docker"
-fi
+ensure_container_engine
 
 if [ -n "$container_engine" ]; then
   echo "Running PHP code style check..."

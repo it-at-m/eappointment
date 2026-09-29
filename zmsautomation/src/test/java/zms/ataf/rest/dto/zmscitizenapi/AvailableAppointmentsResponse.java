@@ -1,5 +1,6 @@
 package zms.ataf.rest.dto.zmscitizenapi;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -66,6 +67,38 @@ public class AvailableAppointmentsResponse {
             }
         }
         return getFirstAppointmentTimestamp();
+    }
+
+    /** Future slots in calendar order, so a taken one can be skipped for the next. */
+    public List<Long> futureAppointmentTimestamps() {
+        long minFuture = System.currentTimeMillis() / 1000 + 60;
+        List<Long> timestamps = new ArrayList<>();
+        if (appointmentTimestamps != null) {
+            for (Long ts : appointmentTimestamps) {
+                if (ts != null && ts > minFuture) {
+                    timestamps.add(ts);
+                }
+            }
+        }
+        if (offices != null) {
+            for (OfficeAppointments office : offices) {
+                if (office.getAppointments() == null) {
+                    continue;
+                }
+                for (Long ts : office.getAppointments()) {
+                    if (ts != null && ts > minFuture) {
+                        timestamps.add(ts);
+                    }
+                }
+            }
+        }
+        if (timestamps.isEmpty()) {
+            Long fallback = getFirstAppointmentTimestamp();
+            if (fallback != null) {
+                timestamps.add(fallback);
+            }
+        }
+        return timestamps;
     }
 
     @Data

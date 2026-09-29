@@ -52,25 +52,50 @@ flowchart TD
 
   apiDone --> frontendFork
 
-  subgraph clientsLayer ["Above the API — which client path?"]
+  subgraph clientsLayer ["Above the API — which path?"]
     direction TB
     frontendFork{"Legacy frontend modules<br/>or citizen stack?"}
     frontendFork -->|Legacy| legacyMods["zmsadmin · zmsstatistic<br/>zmsticketprinter · zmscalldisplay<br/>zmsmessaging"]
-    frontendFork -->|Citizen| citizenStack["zmscitizenapi → zmscitizenview"]
+    frontendFork -->|Citizen| citizenApiQ
   end
 
-  legacyMods --> laterClients[Client details<br/>— covered in later steps]
-  citizenStack --> laterClients
+  legacyMods --> laterLegacy[Legacy module details<br/>— covered in later steps]
+
+  subgraph citizenApiLayer ["Citizen API — zmscitizenapi, still a backend"]
+    direction TB
+    citizenApiQ{"Do we need to change<br/><code>zmscitizenapi</code>?"}
+    citizenApiQ -->|No| citizenViewLater
+    citizenApiQ -->|Yes| buildsOn["Calls <code>zmsbackend</code><br/>via ZmsApiClientService<br/>no direct database access"]
+    buildsOn --> citizenSchema{"New or changed citizen<br/>schema and model?"}
+    citizenSchema -->|Yes| schemaFiles["Schema in<br/><code>zmsentities/schema/citizenapi/</code><br/>model in <code>Models/</code>"]
+    citizenSchema -->|No| servicesQ
+    schemaFiles --> servicesQ{"Change how we call the backend,<br/>map entities, or validate?"}
+    servicesQ -->|Yes| services["Client, facade, mapper,<br/>domain service, validation"]
+    servicesQ -->|No| errorsQ
+    services --> errorsQ{"Failure the UI must show<br/>as a callout?"}
+    errorsQ -->|Yes| errorCatalog["<code>ErrorMessages</code>:<br/>errorCode, message,<br/>status, errorType"]
+    errorsQ -->|No| controllers
+    errorCatalog --> controllers["Controller returns the model<br/>or an errors array"]
+    controllers --> routeQ{"New endpoint?"}
+    routeQ -->|Yes| routing["Register in<br/><code>zmscitizenapi/routing.php</code>"]
+    routeQ -->|No| citizenDone
+    routing --> citizenDone["Citizen API ready for<br/><code>zmscitizenview</code>"]
+  end
+
+  citizenDone --> citizenViewLater["<code>zmscitizenview</code><br/>— covered in a later step"]
 
   style databaseLayer fill:#e3f2fd,stroke:#0277bd,stroke-width:2px,color:#01579b
   style entitiesLayer fill:#e0f2f1,stroke:#00897b,stroke-width:2px,color:#00695c
   style clientsLayer fill:#fff3e0,stroke:#ef6c00,stroke-width:2px,color:#e65100
+  style citizenApiLayer fill:#ede7f6,stroke:#5e35b1,stroke-width:2px,color:#311b92
   classDef dbNode fill:#bbdefb,stroke:#0277bd,stroke-width:1px,color:#0d47a1
   classDef entitiesNode fill:#b2dfdb,stroke:#00897b,stroke-width:1px,color:#004d40
   classDef clientsNode fill:#ffe0b2,stroke:#ef6c00,stroke-width:1px,color:#e65100
+  classDef citizenApiNode fill:#d1c4e9,stroke:#5e35b1,stroke-width:1px,color:#311b92
   class dbLayer,migrations,migTypes,schema,data,expandContract,dataMig,bothNote,repos,conditions,alwaysCond,maybeDataCond,maybeNoMigCond,serviceLayer dbNode
   class entitiesQ,schemaModel,maybeController,apiController,apiElse,apiMore,apiDone entitiesNode
-  class frontendFork,legacyMods,citizenStack,laterClients clientsNode
+  class frontendFork,legacyMods,laterLegacy clientsNode
+  class citizenApiQ,buildsOn,citizenSchema,schemaFiles,servicesQ,services,errorsQ,errorCatalog,controllers,routeQ,routing,citizenDone citizenApiNode
 ```
 
 <div class="story-layer story-layer--database">
@@ -165,15 +190,105 @@ Either answer **closes** the backend path for this story. Continue at [Above the
 
 ## Above the API
 
-This is where Question 1 (**backend yes/no**) and Question 5 (**API done**) meet. From here you only choose which **client path** the story needs — you are no longer deciding whether to change `zmsbackend`.
+This is where Question 1 (**backend yes/no**) and Question 5 (**API done**) meet. From here you choose which path the story needs. You are no longer deciding whether to change `zmsbackend`.
 
 **Question 6: Legacy frontend modules, or the citizen stack?**
 
-| Path                 | Modules                                                                          | When                                                                              |
-| -------------------- | -------------------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
-| **Legacy frontends** | `zmsadmin`, `zmsstatistic`, `zmsticketprinter`, `zmscalldisplay`, `zmsmessaging` | Staff / operations UIs and related legacy PHP frontends that talk to `zmsbackend` |
-| **Citizen stack**    | `zmscitizenapi` → `zmscitizenview`                                               | Public booking flow: citizen API first, then the citizen UI                       |
+| Path                 | Modules                                                                          | When                                                                                                    |
+| -------------------- | -------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| **Legacy frontends** | `zmsadmin`, `zmsstatistic`, `zmsticketprinter`, `zmscalldisplay`, `zmsmessaging` | Staff / operations UIs and related legacy PHP frontends that talk to `zmsbackend`                       |
+| **Citizen stack**    | `zmscitizenapi` → `zmscitizenview`                                               | Public booking flow. Next step is still a backend: [`zmscitizenapi`](#citizen-api), then the citizen UI |
 
-A story can touch one path, both, or neither (backend-only). Details for each path come in later steps on this page.
+A story can touch one path, both, or neither (backend-only). Legacy module details come in a later step. The citizen path continues below.
+
+</div>
+
+<div class="story-layer story-layer--citizenapi">
+
+## Citizen API
+
+`zmscitizenapi` sits above the ZMS API and is still a backend. It does not read or write the database. It calls `zmsbackend`, maps the full entities into a smaller citizen contract, and that contract is what `zmscitizenview` renders — including the error payload behind the callout boxes.
+
+### Builds on the backend
+
+**Question 7: Do we need to change something in `zmscitizenapi`?**
+
+- **No** — leave this module. Continue with `zmscitizenview` when that step is documented, or stop here if the story is already done.
+- **Yes** — stay here. The bottom of this module is the HTTP call into `zmsbackend`, not a migration.
+
+How that call is built:
+
+- `ZmsApiClientService` performs the HTTP calls and receives full `zmsentities` such as `Process`, `Scope`, `Provider`, and `Calendar`.
+- `ExceptionService` turns backend exceptions (`ProcessNotFound`, `EmailRequired`, and the others it maps) into citizen error codes. The UI never sees the backend exception class name.
+- `ZmsApiFacadeService` orchestrates those calls, caches source data (offices, services, scopes), and asks the mapper for citizen models.
+- `MapperService` is the translation. `processToThinnedProcess` (and the matching writers in the other direction) turns a full process into a `ThinnedProcess` that contains only what a citizen is allowed to see.
+
+Typical layout:
+
+- `zmscitizenapi/src/Zmscitizenapi/Services/Core/ZmsApiClientService.php` — HTTP client to `zmsbackend`
+- `zmscitizenapi/src/Zmscitizenapi/Services/Core/ZmsApiFacadeService.php` — orchestration and cache
+- `zmscitizenapi/src/Zmscitizenapi/Services/Core/MapperService.php` — backend entity ↔ citizen model
+- `zmscitizenapi/src/Zmscitizenapi/Services/…` — domain services the controllers call (`Appointment`, `Office`, `Availability`, `Captcha`)
+
+### Own schemas and models
+
+These are separate from the internal entity schemas in Question 4. The citizen response has its own JSON Schema and its own PHP models.
+
+**Question 8: Do I need to change or add a citizen JSON schema and model?**
+
+- **Yes** — update or add the schema in `zmsentities/schema/citizenapi/` first, then the PHP model in `zmscitizenapi/src/Zmscitizenapi/Models/`. Each model extends `BO\Zmsentities\Schema\Entity`, points `public static $schema` at that file (for example `citizenapi/thinnedProcess.json`), and refuses to construct when `testValid()` fails.
+- **No** — services and controllers can still change while the response shape stays the same.
+
+A field added on a backend entity in Question 4 does not appear in the citizen response until the mapper copies it onto a citizen model whose schema allows it.
+
+### Services, then controllers
+
+**Question 9: Do I need to change how we call the backend, map the result, or validate the request?**
+
+Domain services (for example `AppointmentByIdService`) are what controllers call. They validate input through `ValidationService`, call the facade, and return either a citizen model or `['errors' => […]]`.
+
+| What the story needs                                | Where                                                                    |
+| --------------------------------------------------- | ------------------------------------------------------------------------ |
+| New or changed call to `zmsbackend`                 | `ZmsApiClientService`, then the facade method that uses it               |
+| Different fields on the citizen response            | `MapperService`, after the schema and model from Question 8              |
+| New booking, office, calendar, or captcha behaviour | Domain service under `Services/`                                         |
+| Reject bad input before the backend call            | `ValidationService` — return an errors array and do not call the backend |
+
+**Question 10: Can this fail in a way the citizen UI must show as a callout?**
+
+`zmscitizenview` reads the first entry of the `errors` array and renders a callout (`muc-callout`). The catalog lives in `zmscitizenapi/src/Zmscitizenapi/Utils/ErrorMessages.php`. Each entry has four fields:
+
+| Field          | Role                                                                                                                          |
+| -------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| `errorCode`    | Stable id. The view maps it to a translated headline and text (`apiError…Header` / `apiError…Text` in `zmscitizenview`).      |
+| `errorMessage` | English text stored with the code. The sentence the citizen reads comes from the view translations, looked up by `errorCode`. |
+| `statusCode`   | HTTP status. The controller responds with the highest status in the array.                                                    |
+| `errorType`    | Callout kind: `error`, `warning`, or `info`. The view passes this through to the callout.                                     |
+
+`BaseController::createJsonResponse` fills a returned error from that catalog. When the failure comes from `zmsbackend`, add or adapt the mapping in `ExceptionService` so the same catalog entry is used.
+
+```json
+{
+  "errors": [
+    {
+      "errorCode": "appointmentNotFound",
+      "errorMessage": "Maybe you have already canceled your appointment? Otherwise, please check that you have used the correct link.",
+      "statusCode": 404,
+      "errorType": "error"
+    }
+  ]
+}
+```
+
+A new `errorCode` only becomes a specific callout after `zmscitizenview` knows that code (error-state map and translation keys). That wiring belongs to the citizen view step. Define the code, message, status, and `errorType` here first, so the view has a contract to bind to.
+
+**Question 11: Do I need a new or changed controller?**
+
+Controllers under `zmscitizenapi/src/Zmscitizenapi/Controllers/` extend `BaseController`. They validate the HTTP request, call one domain service, and return either the model or the errors array.
+
+- **new controller** → register it in [`zmscitizenapi/routing.php`](https://github.com/it-at-m/eappointment/blob/main/zmscitizenapi/routing.php) (Slim route → controller class, with the OpenAPI block above the route). A controller file alone is not enough.
+- changed route, request parsing, or status handling on an existing controller → update that controller and, when the URL or the documented response changes, the matching block in `routing.php`.
+
+Either way, this **closes** the citizen API for the story. `zmscitizenapi` now delivers what `zmscitizenview` needs. The citizen UI step comes next.
 
 </div>

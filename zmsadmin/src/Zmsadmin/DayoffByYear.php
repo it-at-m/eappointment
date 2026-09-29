@@ -37,7 +37,8 @@ class DayoffByYear extends BaseController
         if (array_key_exists('save', (array) $input)) {
             $data = (array_key_exists('dayoff', $input)) ? $input['dayoff'] : [];
             $collection = (new DayoffList($data))->withTimestampFromDateformat();
-            \App::$http->readPostResult('/dayoff/' . $year . '/', $collection);
+            $collection->testUniqueDates();
+            \App::$http->readPostResult('/dayoff/' . $year . '/', $collection)->getCollection();
             return \BO\Slim\Render::redirect('dayoffByYear', ['year' => $year], [
                 'success' => 'dayoff_saved'
             ]);

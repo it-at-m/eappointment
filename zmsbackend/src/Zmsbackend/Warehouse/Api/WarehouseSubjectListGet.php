@@ -23,7 +23,7 @@ class WarehouseSubjectListGet extends \BO\Zmsbackend\Api\BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        $workstation = (new \BO\Zmsbackend\Helper\User($request, 2))->checkPermissions('statistic');
+        $workstation = \BO\Zmsbackend\Helper\User::readStatisticWorkstation($request);
 
         $message = \BO\Zmsbackend\Api\Response\Message::create($request);
         $subjectsList = (new Query())->readSubjectsList();

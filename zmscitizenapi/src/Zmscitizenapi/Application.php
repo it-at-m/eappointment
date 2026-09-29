@@ -62,10 +62,14 @@ class Application extends \BO\Slim\Application
 
     public static string $ACCESS_UNPUBLISHED_ON_DOMAIN;
 
+    public const string DEFAULT_PLACEHOLDER_EMAIL = 'noreply-terminvereinbarung@muenchen.de';
+    public static string $PLACEHOLDER_EMAIL = self::DEFAULT_PLACEHOLDER_EMAIL;
+
     public static function initialize(): void
     {
         self::initializeMaintenanceMode();
         self::initializeSource();
+        self::initializePlaceholderEmail();
         self::initializeLogger();
         self::initializeCaptcha();
         self::initializeCache(__DIR__ . '/cache');
@@ -83,6 +87,21 @@ class Application extends \BO\Slim\Application
         if (is_string($fromEnv) && trim($fromEnv) !== '') {
             self::$source_name = trim($fromEnv);
         }
+    }
+
+    private static function initializePlaceholderEmail(): void
+    {
+        self::$PLACEHOLDER_EMAIL = self::getenvString(
+            'ZMS_CITIZENAPI_PLACEHOLDER_EMAIL',
+            self::DEFAULT_PLACEHOLDER_EMAIL
+        );
+    }
+
+    public static function getPlaceholderEmail(): string
+    {
+        return self::$PLACEHOLDER_EMAIL !== ''
+            ? self::$PLACEHOLDER_EMAIL
+            : self::DEFAULT_PLACEHOLDER_EMAIL;
     }
 
     /**

@@ -27,7 +27,7 @@ class QueueMailReminder
 
     protected $count = 0;
 
-    public function __construct(\DateTimeInterface $now, $sendReminderBeforeMinutes, $verbose = false)
+    public function __construct(\DateTimeInterface $now, int $sendReminderBeforeMinutes, bool $verbose = false)
     {
         $config = (new ConfigRepository())->readEntity();
         $configLimit = $config->getPreference('mailings', 'sqlMaxLimit');
@@ -59,17 +59,17 @@ class QueueMailReminder
         return $this->count;
     }
 
-    public function setLimit($limit): void
+    public function setLimit(int $limit): void
     {
         $this->limit = $limit;
     }
 
-    public function setLoopCount($loopCount): void
+    public function setLoopCount(int $loopCount): void
     {
         $this->loopCount = $loopCount;
     }
 
-    public function startProcessing($commit): void
+    public function startProcessing(bool $commit): void
     {
         if ($commit) {
             (new MailRepository())->writeReminderLastRun($this->dateTime);
@@ -79,7 +79,7 @@ class QueueMailReminder
         $this->log("\nSUMMARY: Queued mail reminder: " . $this->count);
     }
 
-    protected function writeMailReminderList($commit): void
+    protected function writeMailReminderList(bool $commit): void
     {
         // The offset parameter was removed here, because with each loop the processes are searched, which have not
         // been processed yet. An offset leads to the fact that with the renewed search the first results are skipped.
@@ -97,7 +97,7 @@ class QueueMailReminder
         $this->count += $count;
     }
 
-    protected function writeByCallback($commit, \Closure $callback): int
+    protected function writeByCallback(bool $commit, \Closure $callback): int
     {
         $processCount = 0;
         while ($processCount < $this->limit) {
@@ -115,7 +115,7 @@ class QueueMailReminder
         return $processCount;
     }
 
-    protected function writeReminder(Process $process, $commit, int $processCount): void
+    protected function writeReminder(Process $process, bool $commit, int $processCount): void
     {
         $department = (new DepartmentRepository())->readByScopeId($process->getScopeId(), 0);
         if ($process->getFirstClient()->hasEmail() && $department->hasMail()) {

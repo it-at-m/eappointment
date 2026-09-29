@@ -11,13 +11,6 @@ use BO\Zmsentities\Collection\TicketprinterList as Collection;
  */
 class Ticketprinter extends \BO\Zmsbackend\Base
 {
-    /**
-     * read entity
-     *
-     * @param int|string $itemId
-     *
-     * @return Entity
-     */
     public function readEntity($itemId)
     {
         $query = new \BO\Zmsbackend\Ticketprinter\Repository\Ticketprinter(\BO\Zmsbackend\Query\Base::SELECT);
@@ -30,11 +23,6 @@ class Ticketprinter extends \BO\Zmsbackend\Base
         return $ticketprinter;
     }
 
-    /**
-     * read list of ticketprinters
-     *
-     * @return Collection
-     */
     protected function readList($statement)
     {
         $ticketprinterList = new Collection();
@@ -45,13 +33,6 @@ class Ticketprinter extends \BO\Zmsbackend\Base
         return $ticketprinterList;
     }
 
-    /**
-     * read Ticketprinter by Hash
-     *
-     * @param string $hash
-     *
-     * @return Entity
-     */
     public function readByHash($hash)
     {
         $query = new \BO\Zmsbackend\Ticketprinter\Repository\Ticketprinter(\BO\Zmsbackend\Query\Base::SELECT);
@@ -64,56 +45,122 @@ class Ticketprinter extends \BO\Zmsbackend\Base
         return $ticketprinter;
     }
 
-    /**
-     * read Ticketprinter by comma separated buttonlist
-     *
-     * @param \BO\Zmsentities\Ticketprinter $ticketprinter
-     * @param \DateTimeInterface $now
-     *
-     * @return Entity
-     */
     public function readByButtonList(Entity $ticketprinter, \DateTimeImmutable $now)
     {
         if (count($ticketprinter->buttons) > 6) {
             throw new \BO\Zmsbackend\Ticketprinter\Exception\TooManyButtons();
         }
 
-        foreach ($ticketprinter->buttons as $key => $button) {
-            if ('scope' == $button['type']) {
-                $query = new \BO\Zmsbackend\Scope\Service\Scope();
-                $scope = $query->readWithWorkstationCount($button['scope']['id'], $now);
-                if (! $scope) {
-                    throw new \BO\Zmsbackend\Ticketprinter\Exception\UnvalidButtonList();
-                }
-                $ticketprinter->buttons[$key]['scope'] = $scope;
-                $ticketprinter->buttons[$key]['enabled'] = $query->readIsEnabled($scope->id, $now);
-                $ticketprinter->buttons[$key]['name'] = $scope->getPreference('ticketprinter', 'buttonName');
-            }
-
-            if ('request' == $button['type']) {
-                $scopeId = explode('-', $button['request']['id'])[0];
-                $requestId = explode('-', $button['request']['id'])[1];
-                $request = (new \BO\Zmsbackend\Request\Service\Request())->readEntity('dldb', $requestId);
-                $scope = (new \BO\Zmsbackend\Scope\Service\Scope())->readWithWorkstationCount($scopeId, $now);
-
-                if (! $request || ! $scope) {
-                    throw new \BO\Zmsbackend\Ticketprinter\Exception\UnvalidButtonList();
-                }
-                $ticketprinter->buttons[$key]['scope'] = $scope;
-
-                $ticketprinter->buttons[$key]['requestId'] = $requestId;
-                $ticketprinter->buttons[$key]['enabled'] = (new \BO\Zmsbackend\Scope\Service\Scope())->readIsEnabled($scope->id, $now);
-                $ticketprinter->buttons[$key]['name'] = $request->getProperty('name');
-            }
+        $ticketprinter->buttons = $this->omitButtonsWithMissingScopeOrRequest($ticketprinter->buttons, $now);
+        if (! $this->hasScopeOrRequestButton($ticketprinter)) {
+            throw new \BO\Zmsbackend\Ticketprinter\Exception\UnvalidButtonList();
         }
+
         $this->readExceptions($ticketprinter);
-        $ticketprinter = $this->readWithContactData($ticketprinter);
-        return $ticketprinter;
+        return $this->readWithContactData($ticketprinter);
     }
 
     /**
-     * @return void
+     * @param iterable<int, array<string, mixed>> $buttons
+     * @return array<int, array<string, mixed>>
      */
+    private function omitButtonsWithMissingScopeOrRequest(iterable $buttons, \DateTimeImmutable $now): array
+    {
+        $kept = [];
+        foreach ($buttons as $button) {
+            $button = $this->validateButton($button, $now);
+            if ($button !== null) {
+                $kept[] = $button;
+            }
+        }
+        return $kept;
+    }
+
+    /**
+     * @param array<string, mixed> $button
+     * @return array<string, mixed>|null
+     */
+    private function validateButton(array $button, \DateTimeImmutable $now): ?array
+    {
+        if (($button['type'] ?? '') === 'scope') {
+            return $this->validateScopeButton($button, $now);
+        }
+        if (($button['type'] ?? '') === 'request') {
+            return $this->validateRequestButton($button, $now);
+        }
+        return $button;
+    }
+
+    /**
+     * @param array<string, mixed> $button
+     * @return array<string, mixed>|null
+     */
+    private function validateScopeButton(array $button, \DateTimeImmutable $now): ?array
+    {
+        $scopeId = $button['scope']['id'];
+        $query = new \BO\Zmsbackend\Scope\Service\Scope();
+        $scope = $query->readWithWorkstationCount($scopeId, $now);
+        if (! $scope) {
+            \App::$log->warning('Ticketprinter: skip missing scope id', [
+                'scopeId' => $scopeId,
+            ]);
+            return null;
+        }
+        $button['scope'] = $scope;
+        $button['enabled'] = $query->readIsEnabled($scope->id, $now);
+        $button['name'] = $scope->getPreference('ticketprinter', 'buttonName');
+        return $button;
+    }
+
+    /**
+     * @param array<string, mixed> $button
+     * @return array<string, mixed>|null
+     */
+    private function validateRequestButton(array $button, \DateTimeImmutable $now): ?array
+    {
+        $parts = explode('-', (string) $button['request']['id']);
+        $scopeId = $parts[0];
+        $requestId = $parts[1] ?? '';
+        $scope = (new \BO\Zmsbackend\Scope\Service\Scope())->readWithWorkstationCount($scopeId, $now);
+        if (! $scope) {
+            \App::$log->warning('Ticketprinter: skip missing scope id', [
+                'scopeId' => $scopeId,
+            ]);
+            return null;
+        }
+        $request = $this->findRequest($requestId);
+        if (! $request) {
+            \App::$log->warning('Ticketprinter: skip missing request id', [
+                'requestId' => $requestId,
+            ]);
+            return null;
+        }
+        $button['scope'] = $scope;
+        $button['requestId'] = $requestId;
+        $button['enabled'] = (new \BO\Zmsbackend\Scope\Service\Scope())->readIsEnabled($scope->id, $now);
+        $button['name'] = $request->getProperty('name');
+        return $button;
+    }
+
+    private function findRequest(string $requestId): ?\BO\Zmsentities\Request
+    {
+        try {
+            return (new \BO\Zmsbackend\Request\Service\Request())->readEntity('dldb', $requestId);
+        } catch (\BO\Zmsbackend\Request\Exception\RequestNotFound) {
+            return null;
+        }
+    }
+
+    private function hasScopeOrRequestButton(Entity $ticketprinter): bool
+    {
+        foreach ($ticketprinter->buttons as $button) {
+            if (in_array($button['type'] ?? '', ['scope', 'request'], true)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     protected function readExceptions(Entity $ticketprinter)
     {
         $query = new \BO\Zmsbackend\Scope\Service\Scope();
@@ -126,15 +173,6 @@ class Ticketprinter extends \BO\Zmsbackend\Base
     protected function readWithContactData(Entity $entity): Entity
     {
         $contact = new \BO\Zmsentities\Contact();
-
-        /* cluster not allowed anymore as button (2018-01-30, Abnahme mit TE)
-        if (1 == $entity->getClusterList()->count() && 0 == $entity->getScopeList()->count()) {
-            $contact->name = $entity->getClusterList()->getFirst()->name;
-        } elseif (0 == $entity->getClusterList()->count() && 1 == $entity->getScopeList()->count()) {
-            $department = (new \BO\Zmsbackend\Department\Service\Department())->readByScopeId($entity->getScopeList()->getFirst()->id);
-            $contact->name = $department->name;
-        }
-        */
 
         if (1 == $entity->getScopeList()->count()) {
             $department = (new \BO\Zmsbackend\Department\Service\Department())->readByScopeId($entity->getScopeList()->getFirst()->id);
@@ -152,26 +190,9 @@ class Ticketprinter extends \BO\Zmsbackend\Base
             $scope = $ticketprinter->getScopeList()->getFirst();
             $scope = (new \BO\Zmsbackend\Scope\Service\Scope())->readEntity($scope['id']);
         }
-        /* cluster not allowed anymore as button (2018-01-30, Abnahme mit TE)
-        elseif (1 == $ticketprinter->getClusterList()->count()) {
-            $scopeList = $ticketprinter->getClusterList()->getFirst()->scopes;
-            $scopeList = new \BO\Zmsentities\Collection\ScopeList($scopeList);
-            if (1 == $scopeList->count()) {
-                $scope = (new \BO\Zmsbackend\Scope\Service\Scope())->readEntity($scopeList->getFirst()['id']);
-            }
-        }
-        */
         return $scope;
     }
 
-    /**
-     * write a cookie for ticketprinter
-     *
-     * @param int $organisationId
-     * @param string $ticketprinterName
-     *
-     * @return Entity
-     */
     public function writeEntityWithHash($organisationId, $ticketprinterName = '')
     {
         $query = new \BO\Zmsbackend\Ticketprinter\Repository\Ticketprinter(\BO\Zmsbackend\Query\Base::INSERT);
@@ -181,7 +202,6 @@ class Ticketprinter extends \BO\Zmsbackend\Base
         $organisation = (new \BO\Zmsbackend\Organisation\Service\Organisation())->readEntity($organisationId);
 
         $values = $query->reverseEntityMapping($ticketprinter, $organisation->id);
-        //get owner by organisation
         $owner = (new \BO\Zmsbackend\Owner\Service\Owner())->readByOrganisationId($organisationId);
         $values['kundenid'] = $owner->id;
         $query->addValues($values);
@@ -190,20 +210,11 @@ class Ticketprinter extends \BO\Zmsbackend\Base
         return $this->readEntity($lastInsertId);
     }
 
-    /**
-     * write a ticketprinter
-     *
-     * @param \BO\Zmsentities\Ticketprinter $entity
-     * @param int $organisationId
-     *
-     * @return Entity
-     */
     public function writeEntity(Entity $entity, $organisationId)
     {
         $query = new \BO\Zmsbackend\Ticketprinter\Repository\Ticketprinter(\BO\Zmsbackend\Query\Base::INSERT);
         $values = $query->reverseEntityMapping($entity, $organisationId);
 
-        //get owner by organisation
         $owner = (new \BO\Zmsbackend\Owner\Service\Owner())->readByOrganisationId($organisationId);
         $values['kundenid'] = $owner->id;
 
@@ -213,13 +224,6 @@ class Ticketprinter extends \BO\Zmsbackend\Base
         return $this->readEntity($lastInsertId);
     }
 
-    /**
-     * read list of ticketprinter by organisation
-     *
-     * @param int $organisationId
-     *
-     * @return Collection
-     */
     public function readByOrganisationId($organisationId)
     {
         $query = new \BO\Zmsbackend\Ticketprinter\Repository\Ticketprinter(\BO\Zmsbackend\Query\Base::SELECT);
@@ -230,13 +234,6 @@ class Ticketprinter extends \BO\Zmsbackend\Base
         return $this->readList($statement);
     }
 
-    /**
-    * remove an ticketprinter
-    *
-     * @param int|string $itemId
-     *
-     * @return Entity|null
-    */
     public function deleteEntity($itemId)
     {
         $query =  new \BO\Zmsbackend\Ticketprinter\Repository\Ticketprinter(\BO\Zmsbackend\Query\Base::DELETE);

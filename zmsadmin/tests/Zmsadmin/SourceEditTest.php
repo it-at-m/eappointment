@@ -10,6 +10,7 @@ class SourceEditTest extends Base
 
     protected $classname = 'SourceEdit';
 
+    #[\Override]
     public function testRendering()
     {
         $this->setApiCalls(

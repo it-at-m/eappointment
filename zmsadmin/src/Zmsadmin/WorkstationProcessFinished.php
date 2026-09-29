@@ -113,7 +113,7 @@ class WorkstationProcessFinished extends BaseController
         ?int $nextProcessId = null
     ): \BO\Slim\Response {
         $process ??= clone $workstation->getProcess();
-        $process['status'] = ('pending' != $process['status']) ? 'finished' : $process['status'];
+        $process['status'] = 'finished';
         \App::$http->readPostResult('/process/status/finished/', new Process($process))->getEntity();
         $redirectParams = [];
         if ($nextProcessId !== null) {

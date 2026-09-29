@@ -6,6 +6,7 @@ class CalendarAvailabilityGetTest extends \BO\Zmsbackend\Tests\Api\Base
 {
     protected $classname = "CalendarAvailabilityGet";
 
+    #[\Override]
     public function testRendering()
     {
         $now = \App::$now;

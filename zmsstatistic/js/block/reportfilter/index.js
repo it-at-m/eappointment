@@ -204,6 +204,7 @@ class View extends BaseView {
         return clampedDate.format('YYYY-MM-DD');
     }
 
+    // eslint-disable-next-line complexity
     updateDateRangeLimits() {
         const fromInput = this.$main.find('#calendar-date-from');
         const toInput = this.$main.find('#calendar-date-until');
@@ -308,6 +309,7 @@ class View extends BaseView {
         }
     }
 
+    // eslint-disable-next-line complexity
     handleFormSubmit() {
         const selectedScopes = this.getSelectedScopes();
         const fromDate = this.$main.find('#calendar-date-from').val();

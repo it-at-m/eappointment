@@ -2,13 +2,53 @@
 {% from 'element/helper/snippets.twig' import headline1 %}
 {% block headline %}
     {{ headline1(pageTitle) }}
-    <button class="button button-submit" onclick="previewEmail('appointment')">Confirmation</button>
-    <button class="button button-submit" onclick="previewEmail('deleted')">Delete</button>
-    <button class="button button-submit" onclick="previewEmail('preconfirmed')">Preconfirmed</button>
-    <button class="button button-submit" onclick="previewEmail('reminder')">Reminder</button>
-    <div id="preview-container">
 
+    <div class="form-actions">
+        <a
+            class="button button--positive"
+            href="{{ urlGet(
+                'mailtemplatesCopy',
+                {},
+                {'sourceScopeId': scopeId}
+            ) }}"
+        >
+            Templates auf andere Standorte kopieren
+        </a>
+
+        <button
+            type="button"
+            class="button button-submit"
+            onclick="previewEmail('appointment')"
+        >
+            Confirmation
+        </button>
+
+        <button
+            type="button"
+            class="button button-submit"
+            onclick="previewEmail('deleted')"
+        >
+            Delete
+        </button>
+
+        <button
+            type="button"
+            class="button button-submit"
+            onclick="previewEmail('preconfirmed')"
+        >
+            Preconfirmed
+        </button>
+
+        <button
+            type="button"
+            class="button button-submit"
+            onclick="previewEmail('reminder')"
+        >
+            Reminder
+        </button>
     </div>
+
+    <div id="preview-container"></div>
 {% endblock %}
 
 {% block content %}

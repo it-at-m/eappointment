@@ -6,6 +6,7 @@ class OwnerGetTest extends \BO\Zmsbackend\Tests\Api\Base
 {
     protected $classname = "OwnerGet";
 
+    #[\Override]
     public function testRendering()
     {
         $this->setWorkstation()->getUseraccount()->setPermissions('jurisdiction', 'superuser');

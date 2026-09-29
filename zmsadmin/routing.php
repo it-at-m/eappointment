@@ -77,6 +77,9 @@ use Slim\Routing\RouteCollectorProxy;
 \App::$slim->get('/mailtemplates/', \BO\Zmsadmin\MailTemplates::class)
      ->setName("mailtemplates");
 
+\App::$slim->map(['GET', 'POST'], '/mailtemplates/copy/', \BO\Zmsadmin\MailTemplatesCopy::class)
+    ->setName('mailtemplatesCopy');
+
  \App::$slim->post('/mailtemplates/{id:\d+}/', \BO\Zmsadmin\Helper\MailTemplateHandler::class)
      ->setName("MailTemplateHandler");
 

@@ -19,6 +19,7 @@ class WorkstationSelectTest extends Base
         return array_merge(['__uri' => '/workstation/select/'], $extra);
     }
 
+    #[\Override]
     public function testRendering()
     {
         $this->setApiCalls(

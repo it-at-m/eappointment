@@ -7,8 +7,8 @@ $scopeId = false;
 if (count($scopeIds)) {
     $scopeId = array_shift($scopeIds);
 }
-$verbose = preg_grep('#^--?v(erbose)?$#', $argv);
-$commit = preg_grep('#^--commit$#', $argv);
+$verbose = (bool) preg_grep('#^--?v(erbose)?$#', $argv);
+$commit = (bool) preg_grep('#^--commit$#', $argv);
 
 $job = new \BO\Zmsbackend\Helper\QueueProcessListToScopeAdmin($verbose, $scopeId);
 $job->startProcessing($commit);

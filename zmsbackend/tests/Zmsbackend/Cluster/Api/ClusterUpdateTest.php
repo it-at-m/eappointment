@@ -8,6 +8,7 @@ class ClusterUpdateTest extends \BO\Zmsbackend\Tests\Api\Base
 {
     protected $classname = "ClusterUpdate";
 
+    #[\Override]
     public function testRendering()
     {
         $this->setWorkstation();

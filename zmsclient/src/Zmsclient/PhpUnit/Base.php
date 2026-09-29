@@ -31,6 +31,7 @@ abstract class Base extends \BO\Slim\PhpUnit\Base
 
     protected array $apiCalls = array();
 
+    #[\Override]
     public function setUp(): void
     {
         \App::$http = $this->getApiMockup();
@@ -41,6 +42,7 @@ abstract class Base extends \BO\Slim\PhpUnit\Base
         }
     }
 
+    #[\Override]
     public function tearDown(): void
     {
     }
@@ -72,6 +74,7 @@ abstract class Base extends \BO\Slim\PhpUnit\Base
                         $options['url'],
                         Argument::that(function (mixed $value): bool {
                             return
+                                is_array($value) ||
                                 ($value instanceof \BO\Zmsentities\Schema\Entity) ||
                                 ($value instanceof \BO\Zmsentities\Collection\Base);
                         }),

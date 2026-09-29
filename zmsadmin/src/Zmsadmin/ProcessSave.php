@@ -94,7 +94,7 @@ class ProcessSave extends BaseController
         return ($conflictList && isset($conflictList[$dayKey])) ? $conflictList[$dayKey] : null;
     }
 
-    protected function writeUpdatedProcess($input, Process $process, $validator, $notify = true)
+    protected function writeUpdatedProcess($input, Process $process, $validator, bool $notify = true)
     {
         $initiator = $validator->getParameter('initiator')->isString()->getValue();
         $process = \App::$http->readPostResult(

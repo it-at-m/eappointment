@@ -12,7 +12,9 @@ class TableNameTest extends TestCase
      */
     protected function traitObject()
     {
-        return $this->getMockForTrait('BO\\Zmsbackend\\Query\\Builder\\TableName');
+        return new class {
+            use \BO\Zmsbackend\Query\Builder\TableName;
+        };
     }
 
     public function testSetGet()

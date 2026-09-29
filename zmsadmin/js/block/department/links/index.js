@@ -1,7 +1,13 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-import { getEntity } from '../../../lib/schema'
 import * as Inputs from '../../../lib/inputs'
+
+const emptyLink = () => ({
+    id: 0,
+    name: '',
+    url: '',
+    target: 0
+})
 
 const renderLink = (organisationId, link, index, onChange, onDeleteClick) => {
     const formName = `links[${index}]`
@@ -95,11 +101,9 @@ class LinksView extends Component {
     }
 
     componentDidMount() {
-        getEntity('link').then((entity) => {
-            this.setState((prevState, props) => ({
-                links: props.links.length > 0 ? props.links : [entity]
-            }))
-        })
+        this.setState((prevState, props) => ({
+            links: props.links.length > 0 ? props.links : [emptyLink()]
+        }))
     }
 
     changeItemField(index, field, value) {
@@ -112,12 +116,9 @@ class LinksView extends Component {
     }
 
     addNewItem() {
-        getEntity('link').then((entity) => {
-            this.setState((prevState) => ({
-                links: prevState.links.concat([entity])
-            }))
-        })
-
+        this.setState((prevState) => ({
+            links: prevState.links.concat([emptyLink()])
+        }))
     }
 
     deleteItem(deleteIndex) {

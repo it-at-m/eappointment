@@ -10,6 +10,7 @@ class AppointmentUpdateTest extends \BO\Zmsbackend\Tests\Api\Base
 
     const string AUTHKEY = 'cdce';
 
+    #[\Override]
     public function testRendering()
     {
         \App::$now->modify('2016-05-30');

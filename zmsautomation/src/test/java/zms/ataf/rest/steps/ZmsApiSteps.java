@@ -2,7 +2,11 @@ package zms.ataf.rest.steps;
 
 import static io.restassured.RestAssured.given;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 
 import org.assertj.core.api.Assertions;
 
@@ -15,11 +19,13 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import ataf.core.helpers.TestPropertiesHelper;
 import ataf.core.logging.ScenarioLogManager;
 import config.TestConfig;
+import io.cucumber.java.After;
 import io.cucumber.java.Before;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import io.restassured.response.Response;
+import zms.ataf.helpers.AccountCheckout;
 import zms.ataf.helpers.BerlinTime;
 import zms.ataf.rest.dto.common.ApiResponse;
 import zms.ataf.rest.dto.zmsapi.StatusResponse;
@@ -34,6 +40,8 @@ public class ZmsApiSteps {
     private String scenarioLoginUsername;
     private String scenarioLoginPassword;
     private JsonNode lastProcess;
+    private String ticketprinterHash;
+    private Integer createdAvailabilityId;
 
     @Before
     public void resetProcessContext() {
@@ -41,6 +49,26 @@ public class ZmsApiSteps {
         cachedXAuthKey = null;
         scenarioLoginUsername = null;
         scenarioLoginPassword = null;
+        ticketprinterHash = null;
+        createdAvailabilityId = null;
+    }
+
+    @After
+    public void deleteOpeningHoursLeftByTheScenario() {
+        Integer id = createdAvailabilityId;
+        createdAvailabilityId = null;
+        if (id == null) {
+            return;
+        }
+        try {
+            given()
+                .baseUri(apiBaseUri())
+                .header("X-AuthKey", getOrLoginXAuthKey())
+            .when()
+                .delete("/availability/" + id + "/");
+        } catch (RuntimeException e) {
+            ScenarioLogManager.getLogger().warn("Could not delete opening hours {}: {}", id, e.getMessage());
+        }
     }
     
     @Given("the ZMS API is available")
@@ -169,7 +197,7 @@ public class ZmsApiSteps {
 
         JsonNode workstation = parseDataNode(getResponse);
         if (workstation instanceof ObjectNode objectNode) {
-            objectNode.put("name", counter);
+            objectNode.put("name", AccountCheckout.workstationCounter(counter));
             JsonNode scopeNode = objectNode.path("scope");
             if (scopeNode instanceof ObjectNode scopeObject) {
                 scopeObject.put("id", scopeId);
@@ -205,36 +233,59 @@ public class ZmsApiSteps {
             int scopeId, String serviceName, String amendment) {
         String authKey = getOrLoginXAuthKey();
         JsonNode request = findScopeRequestByName(scopeId, serviceName, authKey);
-        JsonNode freeProcess = fetchFirstFreeProcess(scopeId, request, authKey);
-        ObjectNode process = freeProcess.deepCopy();
-
+        JsonNode freeList = fetchFreeProcesses(scopeId, request, authKey);
         String familyName = TestPropertiesHelper.getPropertyAsString("zmsapiAppointmentFamilyName", true, "Terminkunde");
         String email = TestPropertiesHelper.getPropertyAsString("zmsapiAppointmentEmail", true, "terminkunde@example.com");
-        process.put("amendment", amendment);
-        process.set("requests", MAPPER.createArrayNode().add(request.deepCopy()));
 
-        ObjectNode client = MAPPER.createObjectNode();
-        client.put("familyName", familyName);
-        client.put("email", email);
-        client.put("surveyAccepted", 1);
-        ArrayNode clients = MAPPER.createArrayNode();
-        clients.add(client);
-        process.set("clients", clients);
+        JsonNode reserved = null;
+        for (int i = 0; i < freeList.size(); i++) {
+            ObjectNode process = freeList.get(i).deepCopy();
+            process.put("amendment", amendment);
+            process.set("requests", MAPPER.createArrayNode().add(request.deepCopy()));
 
-        response = given()
-            .baseUri(baseUri != null ? baseUri : TestConfig.getBaseUri())
-            .header("X-AuthKey", authKey)
-            .contentType("application/json")
-            .queryParam("slotType", "intern")
-            .queryParam("clientkey", "")
-            .queryParam("slotsRequired", 0)
-            .body(toJson(process))
-        .when()
-            .post("/process/status/reserved/");
-        CommonApiSteps.setResponse(response);
+            ObjectNode client = MAPPER.createObjectNode();
+            client.put("familyName", familyName);
+            client.put("email", email);
+            client.put("surveyAccepted", 1);
+            ArrayNode clients = MAPPER.createArrayNode();
+            clients.add(client);
+            process.set("clients", clients);
 
-        JsonNode reserved = parseDataNode(response);
-        Assertions.assertThat(reserved).isNotNull();
+            response = given()
+                .baseUri(baseUri != null ? baseUri : TestConfig.getBaseUri())
+                .header("X-AuthKey", authKey)
+                .contentType("application/json")
+                .queryParam("slotType", "intern")
+                .queryParam("clientkey", "")
+                .queryParam("slotsRequired", 0)
+                .body(toJson(process))
+            .when()
+                .post("/process/status/reserved/");
+            CommonApiSteps.setResponse(response);
+            if (response.getStatusCode() == 200) {
+                reserved = parseDataNode(response);
+                Assertions.assertThat(reserved)
+                    .as("POST /process/status/reserved/ returned 200 without data: %s",
+                        truncate(response.asString(), 1000))
+                    .isNotNull();
+                break;
+            }
+            boolean slotTaken = response.getStatusCode() == 404
+                && response.asString().contains("Failed to reserve process. Maybe someone was faster.");
+            if (slotTaken && i < freeList.size() - 1) {
+                ScenarioLogManager.getLogger().info(
+                    "Intern slot for scope {} was reserved or booked (status {}); trying the next free process",
+                    scopeId,
+                    response.getStatusCode());
+                continue;
+            }
+            throw new IllegalStateException(
+                "POST /process/status/reserved/ failed with " + response.getStatusCode() + ": "
+                    + truncate(response.asString(), 1000));
+        }
+        Assertions.assertThat(reserved)
+            .as("POST /process/status/reserved/ for scope %d", scopeId)
+            .isNotNull();
 
         response = given()
             .baseUri(baseUri != null ? baseUri : TestConfig.getBaseUri())
@@ -347,6 +398,351 @@ public class ZmsApiSteps {
         Assertions.assertThat(statusData).isNotNull();
         Assertions.assertThat(statusData.getVersion()).isNotNull();
     }
+
+    @Given("I have a ticketprinter session for scope {int}")
+    public void iHaveATicketprinterSessionForScope(int scopeId) {
+        Response orgResponse = given()
+            .baseUri(apiBaseUri())
+            .queryParam("resolveReferences", 0)
+        .when()
+            .get("/scope/" + scopeId + "/organisation/");
+        Assertions.assertThat(orgResponse.getStatusCode())
+            .as("GET /scope/%d/organisation/", scopeId)
+            .isEqualTo(200);
+        int organisationId = parseDataNode(orgResponse).path("id").asInt();
+        Assertions.assertThat(organisationId).isPositive();
+
+        Response hashResponse = given()
+            .baseUri(apiBaseUri())
+        .when()
+            .get("/organisation/" + organisationId + "/hash/");
+        Assertions.assertThat(hashResponse.getStatusCode())
+            .as("GET /organisation/%d/hash/", organisationId)
+            .isEqualTo(200);
+        ticketprinterHash = parseDataNode(hashResponse).path("hash").asText();
+        Assertions.assertThat(ticketprinterHash)
+            .as("organisation hash for ticketprinter")
+            .isNotBlank();
+        ScenarioLogManager.getLogger().info("Ticketprinter session established for scope {}", scopeId);
+    }
+
+    @Given("Spontankunden opening hours exist for scope {int} from {string} to {string}")
+    public void spontankundenOpeningHoursExistForScope(int scopeId, String from, String to) {
+        AccountCheckout.checkout("scope:" + scopeId + ":spontankunden");
+        if (findOpeningHoursIds(scopeId, "ATAF-ZMSKVR-167").isEmpty()) {
+            createSpontankundenOpeningHours(scopeId, from, to);
+        }
+    }
+
+    @When("I create opening hours for scope {int} through Sunday of the current week with the X-AuthKey")
+    public void iCreateOpeningHoursThroughSundayOfTheCurrentWeek(int scopeId) {
+        AccountCheckout.checkout("scope:" + scopeId + ":zmskvr-1672");
+        String authKey = getOrLoginXAuthKey();
+        LocalDate today = BerlinTime.today();
+        LocalDate sunday = today.with(DayOfWeek.SUNDAY);
+        long startEpoch = today.atTime(BerlinTime.now()).atZone(BerlinTime.ZONE).toEpochSecond();
+        long endEpoch = sunday.atStartOfDay(BerlinTime.ZONE).toEpochSecond();
+        String endTime = closingTimeOn(sunday);
+
+        ObjectNode weekday = MAPPER.createObjectNode();
+        for (DayOfWeek day : DayOfWeek.values()) {
+            boolean selected = day == DayOfWeek.SUNDAY
+                    || (day == DayOfWeek.SATURDAY && today.getDayOfWeek() != DayOfWeek.SUNDAY);
+            weekday.put(day.name().toLowerCase(Locale.ROOT), selected ? 1 : 0);
+        }
+
+        ObjectNode availability = MAPPER.createObjectNode();
+        availability.put("type", "openinghours");
+        availability.put("kind", "default");
+        availability.put("description", "ATAF-ZMSKVR-1672");
+        availability.put("startDate", startEpoch);
+        availability.put("endDate", endEpoch);
+        availability.put("startTime", "08:00:00");
+        availability.put("endTime", endTime);
+        availability.put("slotTimeInMinutes", 10);
+        ObjectNode scope = MAPPER.createObjectNode();
+        scope.put("id", scopeId);
+        availability.set("scope", scope);
+        availability.set("weekday", weekday);
+        ObjectNode workstationCount = MAPPER.createObjectNode();
+        workstationCount.put("intern", 0);
+        workstationCount.put("public", 0);
+        availability.set("workstationCount", workstationCount);
+
+        ObjectNode body = MAPPER.createObjectNode();
+        body.set("availabilityList", MAPPER.createArrayNode().add(availability));
+        body.put("selectedDate", today.toString());
+
+        response = given()
+            .baseUri(apiBaseUri())
+            .header("X-AuthKey", authKey)
+            .contentType("application/json")
+            .body(toJson(body))
+        .when()
+            .post("/availability/");
+        CommonApiSteps.setResponse(response);
+        if (response.getStatusCode() == 200) {
+            ArrayNode created = parseDataArray(response);
+            if (created != null && !created.isEmpty() && created.get(0).path("id").asInt() > 0) {
+                createdAvailabilityId = created.get(0).path("id").asInt();
+            }
+        }
+    }
+
+    @Then("the response should not report a missing weekday")
+    public void theResponseShouldNotReportAMissingWeekday() {
+        String body = response.asString();
+        Assertions.assertThat(body).doesNotContain("invalidWeekday");
+        Assertions.assertThat(body).doesNotContain("kommen im gewählten Zeitraum nicht vor");
+    }
+
+    @When("I delete the opening hours created for the current week with the X-AuthKey")
+    public void iDeleteTheOpeningHoursCreatedForTheCurrentWeek() {
+        Assertions.assertThat(createdAvailabilityId)
+            .as("opening hours id from POST /availability/")
+            .isNotNull();
+        int id = createdAvailabilityId;
+        response = given()
+            .baseUri(apiBaseUri())
+            .header("X-AuthKey", getOrLoginXAuthKey())
+        .when()
+            .delete("/availability/" + id + "/");
+        CommonApiSteps.setResponse(response);
+        if (response.getStatusCode() == 200) {
+            createdAvailabilityId = null;
+        }
+    }
+
+    @When("I delete Spontankunden opening hours for scope {int} with the X-AuthKey")
+    public void iDeleteSpontankundenOpeningHoursForScope(int scopeId) {
+        AccountCheckout.checkout("scope:" + scopeId + ":spontankunden");
+        String authKey = getOrLoginXAuthKey();
+        java.util.List<Integer> ids = findOpeningHoursIds(scopeId, null);
+        Assertions.assertThat(ids)
+            .as("scope %d should have Spontankunden opening hours to delete", scopeId)
+            .isNotEmpty();
+        for (int id : ids) {
+            response = given()
+                .baseUri(apiBaseUri())
+                .header("X-AuthKey", authKey)
+            .when()
+                .delete("/availability/" + id + "/");
+            CommonApiSteps.setResponse(response);
+            Assertions.assertThat(response.getStatusCode())
+                .as("DELETE /availability/%d/", id)
+                .isEqualTo(200);
+        }
+    }
+
+    @When("I request a ticketprinter button list {string}")
+    public void iRequestATicketprinterButtonList(String buttonList) {
+        Assertions.assertThat(ticketprinterHash)
+            .as("Call 'I have a ticketprinter session for scope …' first")
+            .isNotBlank();
+        ObjectNode body = MAPPER.createObjectNode();
+        body.put("buttonlist", buttonList);
+        body.put("hash", ticketprinterHash);
+        response = given()
+            .baseUri(apiBaseUri())
+            .contentType("application/json")
+            .body(toJson(body))
+        .when()
+            .post("/ticketprinter/");
+        CommonApiSteps.setResponse(response);
+        if (response.getStatusCode() != 200) {
+            ScenarioLogManager.getLogger().error(
+                "POST /ticketprinter/ failed with {}: {}",
+                response.getStatusCode(),
+                truncate(response.asString(), 1000));
+        }
+    }
+
+    @When("I request a waiting number for scope {int}")
+    public void iRequestAWaitingNumberForScope(int scopeId) {
+        requestWaitingNumber(scopeId, null);
+    }
+
+    @When("I request a waiting number for scope {int} and request {int}")
+    public void iRequestAWaitingNumberForScopeAndRequest(int scopeId, int requestId) {
+        requestWaitingNumber(scopeId, requestId);
+    }
+
+    @Then("the ticketprinter button for scope {int} should be enabled")
+    public void theTicketprinterButtonForScopeShouldBeEnabled(int scopeId) {
+        JsonNode button = findScopeButton(scopeId);
+        Assertions.assertThat(button)
+            .as("scope button %d in POST /ticketprinter/ response", scopeId)
+            .isNotNull();
+        Assertions.assertThat(button.path("enabled").asBoolean()).isTrue();
+    }
+
+    @Then("the ticketprinter button for scope {int} should be disabled")
+    public void theTicketprinterButtonForScopeShouldBeDisabled(int scopeId) {
+        JsonNode button = findScopeButton(scopeId);
+        Assertions.assertThat(button)
+            .as("scope button %d in POST /ticketprinter/ response", scopeId)
+            .isNotNull();
+        Assertions.assertThat(button.path("enabled").asBoolean()).isFalse();
+    }
+
+    @Then("the ticketprinter response should not contain scope {int}")
+    public void theTicketprinterResponseShouldNotContainScope(int scopeId) {
+        Assertions.assertThat(findScopeButton(scopeId))
+            .as("missing scope %d should be omitted from the button list", scopeId)
+            .isNull();
+    }
+
+    @Then("the process should have a waiting number")
+    public void theProcessShouldHaveAWaitingNumber() {
+        JsonNode process = lastProcess != null ? lastProcess : parseDataNode(response);
+        Assertions.assertThat(process).isNotNull();
+        int number = process.path("queue").path("number").asInt();
+        Assertions.assertThat(number)
+            .as("process.queue.number")
+            .isPositive();
+        ScenarioLogManager.getLogger().info("Ticketprinter waiting number: {}", number);
+    }
+
+    private void requestWaitingNumber(int scopeId, Integer requestId) {
+        Assertions.assertThat(ticketprinterHash)
+            .as("Call 'I have a ticketprinter session for scope …' first")
+            .isNotBlank();
+        var request = given()
+            .baseUri(apiBaseUri());
+        if (requestId != null) {
+            request = request.queryParam("requestId", requestId);
+        }
+        response = request
+        .when()
+            .get("/scope/" + scopeId + "/waitingnumber/" + ticketprinterHash + "/");
+        CommonApiSteps.setResponse(response);
+        rememberProcess(parseDataNode(response));
+    }
+
+    private void createSpontankundenOpeningHours(int scopeId, String from, String to) {
+        if (from != null && from.startsWith("00:00")) {
+            throw new IllegalArgumentException(
+                "Spontankunden startTime cannot be 00:00:00; the API ignores midnight as empty opening hours");
+        }
+        String authKey = getOrLoginXAuthKey();
+        LocalDate today = BerlinTime.today();
+        long startEpoch = today.atStartOfDay(BerlinTime.ZONE).toEpochSecond();
+        DayOfWeek todayWeekday = today.getDayOfWeek();
+
+        ObjectNode weekday = MAPPER.createObjectNode();
+        for (DayOfWeek day : DayOfWeek.values()) {
+            weekday.put(day.name().toLowerCase(Locale.ROOT), day == todayWeekday ? 1 : 0);
+        }
+
+        ObjectNode availability = MAPPER.createObjectNode();
+        availability.put("type", "openinghours");
+        availability.put("kind", "default");
+        availability.put("description", "ATAF-ZMSKVR-167");
+        availability.put("startDate", startEpoch);
+        availability.put("endDate", startEpoch);
+        availability.put("startTime", normalizeClock(from));
+        availability.put("endTime", normalizeClock(to));
+        ObjectNode scope = MAPPER.createObjectNode();
+        scope.put("id", scopeId);
+        availability.set("scope", scope);
+        availability.set("weekday", weekday);
+        ObjectNode workstationCount = MAPPER.createObjectNode();
+        workstationCount.put("intern", 0);
+        workstationCount.put("public", 0);
+        availability.set("workstationCount", workstationCount);
+
+        ObjectNode body = MAPPER.createObjectNode();
+        body.set("availabilityList", MAPPER.createArrayNode().add(availability));
+        body.put("selectedDate", today.toString());
+
+        response = given()
+            .baseUri(apiBaseUri())
+            .header("X-AuthKey", authKey)
+            .contentType("application/json")
+            .body(toJson(body))
+        .when()
+            .post("/availability/");
+        CommonApiSteps.setResponse(response);
+        if (response.getStatusCode() != 200) {
+            throw new IllegalStateException(
+                "POST /availability/ for Spontankunden hours on scope " + scopeId
+                    + " failed with " + response.getStatusCode() + ": "
+                    + truncate(response.asString(), 1000));
+        }
+    }
+
+    private java.util.List<Integer> findOpeningHoursIds(int scopeId, String description) {
+        String authKey = getOrLoginXAuthKey();
+        LocalDate today = BerlinTime.today();
+        Response listResponse = given()
+            .baseUri(apiBaseUri())
+            .header("X-AuthKey", authKey)
+            .queryParam("startDate", today.toString())
+            .queryParam("endDate", today.toString())
+        .when()
+            .get("/scope/" + scopeId + "/availability/");
+        if (listResponse.getStatusCode() != 200) {
+            return java.util.List.of();
+        }
+        ArrayNode list = parseDataArray(listResponse);
+        if (list == null) {
+            return java.util.List.of();
+        }
+        java.util.List<Integer> ids = new java.util.ArrayList<>();
+        for (JsonNode item : list) {
+            if (!"openinghours".equals(item.path("type").asText()) || item.path("id").asInt() <= 0) {
+                continue;
+            }
+            if (description != null && !description.equals(item.path("description").asText())) {
+                continue;
+            }
+            ids.add(item.path("id").asInt());
+        }
+        return ids;
+    }
+
+    private JsonNode findScopeButton(int scopeId) {
+        JsonNode data = parseDataNode(response);
+        Assertions.assertThat(data).isNotNull();
+        JsonNode buttons = data.path("buttons");
+        if (!buttons.isArray()) {
+            return null;
+        }
+        for (JsonNode button : buttons) {
+            if ("scope".equals(button.path("type").asText())
+                    && button.path("scope").path("id").asInt() == scopeId) {
+                return button;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * 17:00 while Sunday is still ahead. On a Sunday evening the end clock has to stay after now,
+     * on a 10-minute grid so it divides by slotTimeInMinutes.
+     */
+    private static String closingTimeOn(LocalDate endDay) {
+        LocalTime end = LocalTime.of(17, 0);
+        if (!endDay.isAfter(BerlinTime.today())) {
+            LocalTime now = BerlinTime.now().withSecond(0).withNano(0);
+            if (!end.isAfter(now)) {
+                int roundedMinute = ((now.getMinute() / 10) + 1) * 10;
+                end = now.withMinute(0).plusMinutes(roundedMinute + 10L);
+                if (!end.isAfter(now) || end.isAfter(LocalTime.of(23, 50))) {
+                    end = LocalTime.of(23, 50);
+                }
+            }
+        }
+        return end.format(DateTimeFormatter.ofPattern("HH:mm:ss"));
+    }
+
+    private static String normalizeClock(String time) {
+        return time != null && time.length() == 5 ? time + ":00" : time;
+    }
+
+    private String apiBaseUri() {
+        return baseUri != null ? baseUri : TestConfig.getBaseUri();
+    }
     
     private <T> T as(Response response, TypeReference<T> typeReference) {
         try {
@@ -428,7 +824,7 @@ public class ZmsApiSteps {
             String password = scenarioLoginPassword != null && !scenarioLoginPassword.isBlank()
                 ? scenarioLoginPassword
                 : defaultWorkstationPassword();
-            return new String[] { resolveWorkstationUsername(scenarioLoginUsername), password };
+            return credentials(resolveWorkstationUsername(scenarioLoginUsername), password);
         }
 
         String username = TestPropertiesHelper.getPropertyAsString("zmsapiUserName", true);
@@ -438,7 +834,12 @@ public class ZmsApiSteps {
                 "Set testautomation.zmsapiUserName and testautomation.zmsapiUserPassword in testautomation.properties, "
                     + "or use 'Given the ZMS API workstation user is \"<role>\"' in the scenario");
         }
-        return new String[] { resolveWorkstationUsername(username), password };
+        return credentials(resolveWorkstationUsername(username), password);
+    }
+
+    private String[] credentials(String username, String password) {
+        String login = AccountCheckout.assignWorkstationLogin(username);
+        return new String[] { resolveWorkstationUsername(login), password };
     }
 
     private String defaultWorkstationPassword() {
@@ -488,7 +889,7 @@ public class ZmsApiSteps {
         return requests.get(0);
     }
 
-    private JsonNode fetchFirstFreeProcess(int scopeId, JsonNode request, String authKey) {
+    private JsonNode fetchFreeProcesses(int scopeId, JsonNode request, String authKey) {
         LocalDate today = BerlinTime.today();
         ObjectNode calendar = MAPPER.createObjectNode();
         ObjectNode firstDay = MAPPER.createObjectNode();
@@ -523,7 +924,7 @@ public class ZmsApiSteps {
             .as("POST /process/status/free/ for scope %d on %s", scopeId, today)
             .isNotNull()
             .isNotEmpty();
-        return freeList.get(0);
+        return freeList;
     }
 
     private JsonNode refreshAssignedProcessFromWorkstation(String authKey) {

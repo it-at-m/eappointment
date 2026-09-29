@@ -96,7 +96,7 @@ class Scope extends BaseController
         return $source;
     }
 
-    protected function writeUpdatedEntity(array $input, $entityId = null, Entity $existingScope = null, $workstation = null)
+    protected function writeUpdatedEntity(array $input, $entityId = null, ?Entity $existingScope = null, $workstation = null)
     {
         $entity = (new Entity($input))->withCleanedUpFormData();
         if ($workstation && !$workstation->getUseraccount()->hasPermissions(['scope'])) {

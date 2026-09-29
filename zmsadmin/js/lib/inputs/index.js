@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import React from 'react'
 export * from './select'
 export * from './checkbox'

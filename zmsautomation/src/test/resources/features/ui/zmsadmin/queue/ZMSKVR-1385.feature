@@ -5,7 +5,7 @@ Funktionalität: Während der Bearbeitung kann der Sachbearbeiter zu einem ander
 	Szenario: [AUT] Im Status aufgerufen bleibt der aktuelle Vorgang mit Fehlermeldung bestehen
 		Wenn Sie zur Webseite der Administration navigieren.
 		Und  Sie im Zeitmanagementsystem auf die Schaltfläche "Anmelden" klicken.
-		Und  Sie für "Standort" den Wert "Bürgerbüro Orleansplatz (KVR-II/231 KP) Abholung" auswählen.
+		Und  Sie für "Standort" den Wert "Bürgerbüro Pasing (KVR-II/235 KP) Abholung" auswählen.
 		Und  Sie in Feld "Platz-Nr. oder Tresen" den Text "13" eingeben.
 		Und  Sie im Zeitmanagementsystem auf die Schaltfläche "Auswahl bestätigen" klicken.
 		Dann wird die Seite Sachbearbeiterplatz angezeigt.
@@ -26,7 +26,7 @@ Funktionalität: Während der Bearbeitung kann der Sachbearbeiter zu einem ander
 	Szenario: [AUT] Option 2 - Zurück zum aktuellen Vorgang lässt Bearbeitungszeit unverändert
 		Wenn Sie zur Webseite der Administration navigieren.
 		Und  Sie im Zeitmanagementsystem auf die Schaltfläche "Anmelden" klicken.
-		Und  Sie für "Standort" den Wert "Bürgerbüro Orleansplatz (KVR-II/231 KP) Abholung" auswählen.
+		Und  Sie für "Standort" den Wert "Bürgerbüro Pasing (KVR-II/235 KP) Abholung" auswählen.
 		Und  Sie in Feld "Platz-Nr. oder Tresen" den Text "13" eingeben.
 		Und  Sie im Zeitmanagementsystem auf die Schaltfläche "Auswahl bestätigen" klicken.
 		Dann wird die Seite Sachbearbeiterplatz angezeigt.
@@ -52,7 +52,7 @@ Funktionalität: Während der Bearbeitung kann der Sachbearbeiter zu einem ander
 	Szenario: [AUT] Option 1 - Aktuellen Termin fertig stellen und ausgewählten Kunden aufrufen
 		Wenn Sie zur Webseite der Administration navigieren.
 		Und  Sie im Zeitmanagementsystem auf die Schaltfläche "Anmelden" klicken.
-		Und  Sie für "Standort" den Wert "Bürgerbüro Orleansplatz (KVR-II/231 KP) Abholung" auswählen.
+		Und  Sie für "Standort" den Wert "Bürgerbüro Pasing (KVR-II/235 KP) Abholung" auswählen.
 		Und  Sie in Feld "Platz-Nr. oder Tresen" den Text "13" eingeben.
 		Und  Sie im Zeitmanagementsystem auf die Schaltfläche "Auswahl bestätigen" klicken.
 		Dann wird die Seite Sachbearbeiterplatz angezeigt.

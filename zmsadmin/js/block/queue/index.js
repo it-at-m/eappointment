@@ -126,7 +126,7 @@ class View extends BaseView {
             this.onEditProcess(ev)
         }).on('click', 'a.process-reset', (ev) => {
             this.onResetProcess(ev);
-        }).on('click', '#called-appointments', (ev) => {
+        }).on('click', '#called-appointments', () => {
             this.withCalled = ! this.withCalled
             if (this.withCalled) {
                 this.load(true)

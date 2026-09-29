@@ -6,6 +6,7 @@ class TicketprinterTest extends \BO\Zmsbackend\Tests\Api\Base
 {
     protected $classname = "Ticketprinter";
 
+    #[\Override]
     public function testRendering()
     {
         $response = $this->render([], [
@@ -76,6 +77,23 @@ class TicketprinterTest extends \BO\Zmsbackend\Tests\Api\Base
         ], []);
         $this->assertStringContainsString('ticketprinter.json', (string)$response->getBody());
         $this->assertTrue(200 == $response->getStatusCode());
+    }
+
+    public function testFromButtonListSkipsMissingScopeWhenOthersExist()
+    {
+        $response = $this->render([], [
+            '__body' => '{
+                "buttonlist": "s999,s141",
+                "enabled": true,
+                "hash": "71abcdefghijklmnopqrstuvwxyz",
+                "id": 8,
+                "lastUpdate": 1447925326000,
+                "name": "Eingangsbereich links"
+            }'
+        ], []);
+        $this->assertTrue(200 == $response->getStatusCode());
+        $this->assertStringContainsString('"id":141', (string)$response->getBody());
+        $this->assertStringNotContainsString('"id":999', (string)$response->getBody());
     }
 
     public function testFromButtonListScopeFailed()

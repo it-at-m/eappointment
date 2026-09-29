@@ -13,6 +13,7 @@ class RequestSizeLimitMiddlewareTest extends MiddlewareTestCase
 {
     private RequestSizeLimitMiddleware $middleware;
 
+    #[\Override]
     protected function setUp(): void
     {
         parent::setUp();

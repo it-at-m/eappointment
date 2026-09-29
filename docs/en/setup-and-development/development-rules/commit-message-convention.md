@@ -43,6 +43,7 @@ The `commit-msg` Git hook validates only the subject line. Merge commits use Git
    - `clean`: refactoring/cleanup without behavior change
    - `docs`: documentation-only change
    - `chore`: maintenance/dependency/build tooling changes
+   - `test`: automated test only, with no product change
 
 2. **project**: The project identifier. This should be:
    - `ZMS` for the ZMS project
@@ -66,12 +67,13 @@ The `commit-msg` Git hook validates only the subject line. Merge commits use Git
 - `clean(GH): remove obsolete workflow`
 - `feat(ZMS-1 ZMS-2): shared change for two tickets`
 - `feat(ZMS-1 ZMS-2): fix(GH-1 ZMS-3): multi-type multi-ticket change`
+- `test(ZMSKVR-157 ZMSKVR-1673): lock customer actions while forwarding`
 
 ## Regular Expression
 
 The subject line validated by the `commit-msg` hook matches:
 
-`^((feat|fix|clean|chore|docs)\(((ZMS|ZMSKVR|MPDZBS|MUXDBS|GH)(-[0-9]+)?)( (ZMS|ZMSKVR|MPDZBS|MUXDBS|GH)(-[0-9]+)?)*\): )+.+$`
+`^((feat|fix|clean|chore|docs|test)\(((ZMS|ZMSKVR|MPDZBS|MUXDBS|GH)(-[0-9]+)?)( (ZMS|ZMSKVR|MPDZBS|MUXDBS|GH)(-[0-9]+)?)*\): )+.+$`
 
 Merge commits with a subject starting with `Merge ` are exempt (see [Git hooks (Husky)](../git-hooks.md)).
 

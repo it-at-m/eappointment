@@ -10,6 +10,7 @@ class AvailableCalendarControllerTest extends ControllerTestCase
 {
     protected $classname = "\BO\Zmscitizenapi\Controllers\Availability\AvailableCalendarController";
 
+    #[\Override]
     public function setUp(): void
     {
         parent::setUp();
@@ -23,6 +24,7 @@ class AvailableCalendarControllerTest extends ControllerTestCase
         ValidationService::clearOfficeServicesCacheForTesting();
     }
 
+    #[\Override]
     public function testRendering()
     {
         $this->setCalendarAvailabilityApiCalls();

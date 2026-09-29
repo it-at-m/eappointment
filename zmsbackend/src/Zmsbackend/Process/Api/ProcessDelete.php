@@ -9,6 +9,7 @@ namespace BO\Zmsbackend\Process\Api;
 
 use BO\Slim\Render;
 use BO\Zmsbackend\Process\Service\Process;
+use BO\Zmsbackend\ProcessSearchHistory\Service\ProcessSearchHistory as HistoryService;
 use BO\Zmsbackend\Mail\Service\Mail;
 use BO\Zmsbackend\Config\Service\Config;
 use BO\Mellon\Validator;
@@ -32,6 +33,7 @@ class ProcessDelete extends \BO\Zmsbackend\Api\BaseController
         \BO\Zmsbackend\Connection\Select::getWriteConnection();
         $process = (new \BO\Zmsbackend\Process\Service\Process())->readEntity($args['id'], new \BO\Zmsbackend\Helper\NoAuth(), 2);
         $this->testProcessData($process, $args['authKey']);
+        $this->writeCancelSearchHistory($process, HistoryService::STATUS_CANCELLED_BY_CITIZEN);
         if ('reserved' == $process->status) {
             if (!(new \BO\Zmsbackend\Process\Service\Process())->writeBlockedEntity($process, false, $workstation->getUseraccount())) {
                 throw new \BO\Zmsbackend\Process\Exception\ProcessDeleteFailed(); // @codeCoverageIgnore
@@ -77,6 +79,25 @@ class ProcessDelete extends \BO\Zmsbackend\Api\BaseController
                 ->toResolvedEntity($process, $config, 'deleted', $initiator);
             (new \BO\Zmsbackend\Mail\Service\Mail())->writeInQueueWithAdmin($mail, \App::$now);
         }
+    }
+
+    protected function writeCancelSearchHistory(
+        \BO\Zmsentities\Process $process,
+        string $historyStatus
+    ): void {
+        if (!$process->hasProcessCredentials()) {
+            return;
+        }
+
+        $now = class_exists('\App') && isset(\App::$now)
+            ? \App::$now
+            : new \DateTimeImmutable();
+
+        (new HistoryService())->writeHistoryEntry(
+            $process,
+            $historyStatus,
+            $now
+        );
     }
 
     /**

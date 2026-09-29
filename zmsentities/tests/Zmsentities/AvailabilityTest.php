@@ -996,4 +996,60 @@ class AvailabilityTest extends EntityCommonTests
             ]
         );
     }
+
+    public function testValidateWeekdaysIncludesEndDayDespiteClockTime(): void
+    {
+        $entity = new Availability();
+        $zone = new \DateTimeZone('Europe/Berlin');
+        $weekday = array_fill_keys(self::$weekdayNameList, 0);
+        $weekday['friday'] = 1;
+        $weekday['saturday'] = 1;
+        $weekday['sunday'] = 1;
+
+        // 08.05.2026 14:30 through 10.05.2026 00:00: Friday, Saturday and Sunday.
+        $start = new \DateTimeImmutable('2026-05-08 14:30:00', $zone);
+        $end = new \DateTimeImmutable('2026-05-10 00:00:00', $zone);
+        $this->assertSame([], $entity->validateWeekdays($start, $end, $weekday, ''));
+
+        $weekday['sunday'] = 0;
+        $saturdayEnd = new \DateTimeImmutable('2026-05-09 00:00:00', $zone);
+        $this->assertSame([], $entity->validateWeekdays($start, $saturdayEnd, $weekday, ''));
+
+        $midweek = array_fill_keys(self::$weekdayNameList, 0);
+        $midweek['monday'] = 1;
+        $midweek['wednesday'] = 1;
+        $monday = new \DateTimeImmutable('2026-05-04 16:00:00', $zone);
+        $wednesday = new \DateTimeImmutable('2026-05-06 00:00:00', $zone);
+        $this->assertSame([], $entity->validateWeekdays($monday, $wednesday, $midweek, ''));
+    }
+
+    public function testValidateWeekdaysRejectsDayOutsideRange(): void
+    {
+        $entity = new Availability();
+        $zone = new \DateTimeZone('Europe/Berlin');
+        $weekday = array_fill_keys(self::$weekdayNameList, 0);
+        $weekday['monday'] = 1;
+
+        $start = new \DateTimeImmutable('2026-05-08 09:00:00', $zone);
+        $end = new \DateTimeImmutable('2026-05-10 12:00:00', $zone);
+        $errors = $entity->validateWeekdays($start, $end, $weekday, '');
+
+        $this->assertCount(1, $errors);
+        $this->assertSame('invalidWeekday', $errors[0]['type']);
+        $this->assertStringContainsString('Montag', $errors[0]['message']);
+    }
+
+    public function testValidateWeekdaysIncludesDayAfterDstFallback(): void
+    {
+        $entity = new Availability();
+        $zone = new \DateTimeZone('Europe/Berlin');
+        $weekday = array_fill_keys(self::$weekdayNameList, 0);
+        $weekday['sunday'] = 1;
+        $weekday['monday'] = 1;
+
+        // 25.10.2026 is the DST fallback Sunday. The following Monday must still count.
+        $start = new \DateTimeImmutable('2026-10-23 15:00:00', $zone);
+        $end = new \DateTimeImmutable('2026-10-26 00:00:00', $zone);
+        $this->assertSame([], $entity->validateWeekdays($start, $end, $weekday, ''));
+    }
 }

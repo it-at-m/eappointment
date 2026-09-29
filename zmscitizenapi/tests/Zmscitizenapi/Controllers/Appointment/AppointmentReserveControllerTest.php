@@ -9,6 +9,7 @@ class AppointmentReserveControllerTest extends ControllerTestCase
 {
     protected $classname = "\BO\Zmscitizenapi\Controllers\Appointment\AppointmentReserveController";
 
+    #[\Override]
     public function setUp(): void
     {
         parent::setUp();
@@ -20,6 +21,7 @@ class AppointmentReserveControllerTest extends ControllerTestCase
         }
     }
 
+    #[\Override]
     public function testRendering()
     {
         $this->setApiCalls(
@@ -74,7 +76,7 @@ class AppointmentReserveControllerTest extends ControllerTestCase
             "familyName" => "TEST_USER",
             "customTextfield" => "",
             "customTextfield2" => "",
-            "email" => "test@muenchen.de",
+            "email" => "noreply-terminvereinbarung@muenchen.de",
             "telephone" => "123456789",
             "officeName" => null,
             "officeId" => 10546,

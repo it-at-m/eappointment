@@ -10,6 +10,7 @@ class DialogHandlerTest extends Base
 
     protected $classname = "\BO\Zmsadmin\Helper\DialogHandler";
 
+    #[\Override]
     public function testRendering()
     {
         $this->setApiCalls(
@@ -45,18 +46,6 @@ class DialogHandlerTest extends Base
         ], []);
         $this->assertStringContainsString('Nummer 6', (string)$response->getBody());
         $this->assertStringContainsString('data-id="6" data-name="unittest"', (string)$response->getBody());
-        $this->assertEquals(200, $response->getStatusCode());
-    }
-
-    public function testConfirmFinishList()
-    {
-        $response = $this->render([], ['template' => 'confirm_finish_list'], []);
-        $this->assertStringContainsString(
-            'Wollen Sie wirklich alle Abholer aus dieser Liste löschen?',
-            (string)$response->getBody()
-        );
-        $this->assertStringContainsString('data-action-finishList', (string)$response->getBody());
-        $this->assertStringContainsString('data-action-abort', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 

@@ -10,6 +10,7 @@ class AppointmentFormButtonsTest extends Base
 
     protected $classname = "AppointmentFormButtons";
 
+    #[\Override]
     public function testRendering()
     {
         \App::$now = new \DateTimeImmutable('2016-04-01 11:55:00', new \DateTimeZone('Europe/Berlin'));

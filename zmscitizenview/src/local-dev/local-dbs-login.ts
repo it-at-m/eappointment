@@ -182,15 +182,25 @@ function emitAuthEvent(accessToken: string, idToken?: string): void {
   );
 }
 
-/**
- * Vue registers `authorization-event` in onMounted; this module may finish earlier.
- * Emit now and again shortly after so late subscribers still receive the session.
- */
+/** Vue registers `authorization-event` in onMounted, often after this module has already exchanged the code. */
+let publishTimer: number | undefined;
+
 function publishSession(accessToken: string, idToken?: string): void {
   saveSession(accessToken, idToken);
-  emitAuthEvent(accessToken, idToken);
-  window.setTimeout(() => emitAuthEvent(accessToken, idToken), 0);
-  window.setTimeout(() => emitAuthEvent(accessToken, idToken), 300);
+  if (publishTimer !== undefined) {
+    window.clearInterval(publishTimer);
+  }
+  const started = Date.now();
+  const tick = (): void => {
+    if (!loadSession() || Date.now() - started > 20000) {
+      window.clearInterval(publishTimer);
+      publishTimer = undefined;
+      return;
+    }
+    emitAuthEvent(accessToken, idToken);
+  };
+  tick();
+  publishTimer = window.setInterval(tick, 500);
 }
 
 async function startLogin(config: LoginConfig): Promise<void> {

@@ -56,7 +56,7 @@ class TicketprinterAccess
      *
      * @return void
      */
-    public static function testTicketprinterIsProtectedEnabled($entity, $isProtectionEnabled)
+    public static function testTicketprinterIsProtectedEnabled($entity, bool $isProtectionEnabled)
     {
         if ($isProtectionEnabled && ! $entity->isEnabled()) {
             throw new \BO\Zmsbackend\Ticketprinter\Exception\TicketprinterNotEnabled();

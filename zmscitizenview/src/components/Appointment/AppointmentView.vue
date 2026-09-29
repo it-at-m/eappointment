@@ -2,16 +2,23 @@
   <div class="m-component m-component-form">
     <!-- Maintenance Page -->
     <div
-      v-if="isInMaintenanceModeComputed"
-      class="container"
+      role="status"
+      aria-live="polite"
+      aria-atomic="true"
     >
-      <div class="m-component__grid">
-        <div class="m-component__column">
-          <error-alert
-            :message="t('maintenancePageText')"
-            :header="t('maintenancePageHeader')"
-            type="warning"
-          />
+      <div
+        v-if="isInMaintenanceModeComputed"
+        class="container"
+      >
+        <div class="m-component__grid">
+          <div class="m-component__column">
+            <error-alert
+              :message="t('maintenancePageText')"
+              :header="t('maintenancePageHeader')"
+              type="warning"
+              :live="false"
+            />
+          </div>
         </div>
       </div>
     </div>
@@ -72,7 +79,7 @@
         :step-items="STEPPER_ITEMS"
         :active-item="activeStep"
         :disable-previous-steps="
-          !!appointmentHash || appointmentAlreadyActivated
+          isExistingAppointmentDeepLink || appointmentAlreadyActivated
         "
         @change-step="changeStep"
       />
@@ -82,7 +89,7 @@
             <div
               v-if="
                 currentView === 0 &&
-                !appointmentHash &&
+                !isExistingAppointmentDeepLink &&
                 !appointmentAlreadyActivated
               "
             >
@@ -100,7 +107,7 @@
             </div>
 
             <!-- Keep mounted through overview so Zurück does not remount and wipe selectedProvider.
-                 Skip appointmentHash (mail deep link and Bürger-Login return): leftover
+                 Skip existing-appointment deep links and reserved login resume: leftover
                  selectedServiceMap would remount the calendar and overwrite the real officeId. -->
             <div v-show="currentView === 1">
               <AppointmentSelection
@@ -108,7 +115,8 @@
                   currentView === 1 ||
                   ((currentView === 2 || currentView === 3) &&
                     selectedServiceMap.size > 0 &&
-                    !appointmentHash)
+                    !appointmentHash &&
+                    !isReservedBookingInProgress)
                 "
                 :key="appointmentSelectionKey"
                 :global-state="globalState"
@@ -127,6 +135,7 @@
                 "
                 :booking-error-key="bookingErrorKey"
                 @back="decreaseCurrentView"
+                @cancel-reschedule="nextCancelReschedule"
                 @clearBookingError="clearBookingError"
                 @next="nextReserveAppointment"
               />
@@ -221,6 +230,42 @@
       <div class="container">
         <div class="m-component__grid">
           <div class="m-component__column">
+            <div
+              role="status"
+              aria-live="polite"
+              aria-atomic="true"
+            >
+              <muc-callout
+                v-if="currentView === 4 && cancelAppointmentSuccess"
+                type="success"
+              >
+                <template #content>
+                  <p>{{ t("appointmentSuccessfullyCanceledText") }}</p>
+                </template>
+                <template #header>
+                  {{ t("appointmentSuccessfullyCanceledHeader") }}
+                </template>
+              </muc-callout>
+            </div>
+
+            <div
+              role="status"
+              aria-live="polite"
+              aria-atomic="true"
+            >
+              <muc-callout
+                v-if="currentView !== 4 && confirmAppointmentSuccess"
+                type="success"
+              >
+                <template #content>
+                  <p>{{ t("appointmentSuccessfullyBookedText") }}</p>
+                </template>
+                <template #header>
+                  {{ t("appointmentSuccessfullyBookedHeader") }}
+                </template>
+              </muc-callout>
+            </div>
+
             <template v-if="currentView === 4">
               <muc-callout
                 v-if="!cancelAppointmentSuccess"
@@ -234,44 +279,26 @@
                 </template>
               </muc-callout>
 
-              <muc-callout
-                v-if="cancelAppointmentSuccess"
-                type="success"
-              >
-                <template #content>
-                  <p>{{ t("appointmentSuccessfullyCanceledText") }}</p>
-                </template>
-                <template #header>
-                  {{ t("appointmentSuccessfullyCanceledHeader") }}
-                </template>
-              </muc-callout>
-
-              <muc-callout
+              <div
                 v-if="hasCancelAppointmentError"
-                :type="toCalloutType(apiErrorTranslation.errorType)"
+                role="alert"
+                aria-live="assertive"
+                aria-atomic="true"
               >
-                <template #content>
-                  <p>{{ t(apiErrorTranslation.textKey) }}</p>
-                </template>
-                <template #header>
-                  {{ t(apiErrorTranslation.headerKey) }}
-                </template>
-              </muc-callout>
+                <muc-callout
+                  :type="toCalloutType(apiErrorTranslation.errorType)"
+                >
+                  <template #content>
+                    <p>{{ t(apiErrorTranslation.textKey) }}</p>
+                  </template>
+                  <template #header>
+                    {{ t(apiErrorTranslation.headerKey) }}
+                  </template>
+                </muc-callout>
+              </div>
             </template>
 
             <template v-else>
-              <muc-callout
-                v-if="confirmAppointmentSuccess"
-                type="success"
-              >
-                <template #content>
-                  <p>{{ t("appointmentSuccessfullyBookedText") }}</p>
-                </template>
-                <template #header>
-                  {{ t("appointmentSuccessfullyBookedHeader") }}
-                </template>
-              </muc-callout>
-
               <div
                 v-if="confirmAppointmentSuccess"
                 class="m-button-group"
@@ -299,21 +326,27 @@
                 </muc-button>
               </div>
 
-              <muc-callout
+              <div
                 v-if="
                   !confirmAppointmentSuccess &&
                   !appointmentAlreadyActivated &&
                   hasConfirmAppointmentError
                 "
-                :type="toCalloutType(apiErrorTranslation.errorType)"
+                role="alert"
+                aria-live="assertive"
+                aria-atomic="true"
               >
-                <template #content>
-                  <p>{{ t(apiErrorTranslation.textKey) }}</p>
-                </template>
-                <template #header>
-                  {{ t(apiErrorTranslation.headerKey) }}
-                </template>
-              </muc-callout>
+                <muc-callout
+                  :type="toCalloutType(apiErrorTranslation.errorType)"
+                >
+                  <template #content>
+                    <p>{{ t(apiErrorTranslation.textKey) }}</p>
+                  </template>
+                  <template #header>
+                    {{ t(apiErrorTranslation.headerKey) }}
+                  </template>
+                </muc-callout>
+              </div>
 
               <muc-callout
                 v-if="hasInitializationError"
@@ -362,6 +395,7 @@
 
 <script setup lang="ts">
 import type { ApiErrorTranslation, ErrorStateMap } from "@/utils/errorHandler";
+import type { AppointmentTrackSlotUi } from "@/utils/trackAppointmentEvent";
 
 import {
   MucButton,
@@ -450,10 +484,16 @@ import {
 import {
   applyAppointmentContactToCustomerData,
   hasMissingRequiredContact,
+  isReservedProcessStatus,
   joinFamilyName,
 } from "@/utils/rebookingContact";
 import { resolveOfficeById, toOfficeImpl } from "@/utils/resolveOfficeById";
 import { isExpired } from "@/utils/timestampInPast";
+import {
+  bookingFlow,
+  trackAppointmentEvent,
+  trackAppointmentScreenFromView,
+} from "@/utils/trackAppointmentEvent";
 
 const props = defineProps<{
   globalState: GlobalState;
@@ -556,6 +596,17 @@ const offices = ref<Office[]>([]);
 
 const rebookOrCancelDialog = ref<boolean>(false);
 const isRebooking = ref<boolean>(false);
+const reservedHashResumeApplied = ref<boolean>(false);
+
+const isReservedBookingInProgress = computed(
+  () =>
+    isReservedProcessStatus(appointment.value?.status) &&
+    !rebookOrCancelDialog.value
+);
+
+const isExistingAppointmentDeepLink = computed(
+  () => !!props.appointmentHash && !isReservedBookingInProgress.value
+);
 const captchaToken = ref<string | undefined>(undefined);
 const captchaError = ref<boolean>(false);
 const forcedPast = ref(false);
@@ -660,11 +711,11 @@ const activeContext = computed<string>(() => {
   if (props.confirmAppointmentHash) {
     return "confirm";
   }
-  // During rebooking, use the current context instead of initialization
-  if (props.appointmentHash && isRebooking.value) {
-    return currentContext.value;
-  }
-  if (props.appointmentHash) {
+  if (
+    props.appointmentHash &&
+    !isReservedBookingInProgress.value &&
+    !isRebooking.value
+  ) {
     return "initialization";
   }
   return currentContext.value;
@@ -790,6 +841,52 @@ const copyRebookedContactOntoAppointment = () => {
     rebookedAppointment.value.customTextfield2;
 };
 
+const rebuildSelectedServiceMapFromAppointment = (): void => {
+  selectedServiceMap.value = new Map();
+  const loaded = appointment.value;
+  if (!loaded) {
+    return;
+  }
+  if (loaded.serviceId && loaded.serviceCount) {
+    selectedServiceMap.value.set(String(loaded.serviceId), loaded.serviceCount);
+  }
+  (loaded.subRequestCounts ?? []).forEach((subRequestCount) => {
+    if (subRequestCount.count > 0) {
+      selectedServiceMap.value.set(
+        String(subRequestCount.id),
+        subRequestCount.count
+      );
+    }
+  });
+};
+
+const resumeReservedBookingFromHash = (): void => {
+  rebookOrCancelDialog.value = false;
+  currentContext.value = "update";
+  if (!appointment.value) {
+    if (!reservedHashResumeApplied.value) {
+      currentView.value = 2;
+      reservedHashResumeApplied.value = true;
+    }
+    return;
+  }
+  applyAppointmentContactToCustomerData(customerData.value, appointment.value);
+  selectedTimeslot.value = Number(appointment.value.timestamp) || 0;
+  rebuildSelectedServiceMapFromAppointment();
+  if (reservedHashResumeApplied.value) {
+    return;
+  }
+  reservedHashResumeApplied.value = true;
+  if (isAppointmentInPast.value) {
+    currentView.value = 3;
+    return;
+  }
+  const scope = selectedProvider.value?.scope ?? appointment.value.scope;
+  currentView.value = hasMissingRequiredContact(appointment.value, scope)
+    ? 2
+    : 3;
+};
+
 const fillCustomerDataFromRebookedAppointment = () => {
   if (!rebookedAppointment.value) {
     return;
@@ -844,7 +941,9 @@ const setRebookData = () => {
   }
 };
 
-const nextReserveAppointment = () => {
+const nextReserveAppointment = (
+  slotUi: AppointmentTrackSlotUi = "calendar"
+) => {
   if (isReservingAppointment.value) {
     return;
   }
@@ -870,6 +969,12 @@ const nextReserveAppointment = () => {
         }
         appointment.value = data as AppointmentDTO;
         reservationStartMs.value = Date.now();
+        trackAppointmentEvent({
+          object: "reserved",
+          action: "success",
+          flow: bookingFlow(isRebooking.value),
+          slot_ui: slotUi,
+        });
         if (isRebooking.value) {
           continueRebookingAfterReserve();
         } else {
@@ -926,7 +1031,16 @@ const nextUpdateAppointment = () => {
     )
       .then((data) => {
         if ((data as AppointmentDTO).processId != undefined) {
-          appointment.value = data as AppointmentDTO;
+          const updated = data as AppointmentDTO;
+          appointment.value = {
+            ...updated,
+            status: updated.status ?? appointment.value?.status,
+          };
+          trackAppointmentEvent({
+            object: "updated",
+            action: "success",
+            flow: bookingFlow(isRebooking.value),
+          });
           increaseCurrentView();
         } else {
           handleErrorApiResponse(
@@ -983,6 +1097,11 @@ const nextBookAppointment = () => {
             currentContext.value = "cancel";
             cancelAppointment(props.globalState, rebookedAppointment.value);
           }
+          trackAppointmentEvent({
+            object: "preconfirmed",
+            action: "success",
+            flow: bookingFlow(isRebooking.value),
+          });
           increaseCurrentView();
         }
       })
@@ -1014,6 +1133,11 @@ const nextCancelAppointment = () => {
 
         if ((data as AppointmentDTO).processId != undefined) {
           cancelAppointmentSuccess.value = true;
+          trackAppointmentEvent({
+            object: "cancelled",
+            action: "success",
+            flow: bookingFlow(isRebooking.value),
+          });
         } else {
           cancelAppointmentError.value = true;
         }
@@ -1038,6 +1162,7 @@ const nextRescheduleAppointment = () => {
   // normal rebooking flow
   isRebooking.value = true;
   rebookedAppointment.value = appointment.value;
+  trackAppointmentEvent({ object: "rebooking", action: "started" });
   setServices();
   currentView.value = 1;
 };
@@ -1046,6 +1171,8 @@ const nextCancelReschedule = () => {
   clearContextErrors(errorStateMap.value);
   isRebooking.value = false;
   rebookOrCancelDialog.value = true;
+  trackAppointmentEvent({ object: "rebooking", action: "abandoned" });
+  currentView.value = 3;
 };
 
 /**
@@ -1055,6 +1182,7 @@ watch(currentView, (newCurrentView) => {
   activeStep.value = newCurrentView.toString();
   goToTop();
   focusActiveStepperItem();
+  trackAppointmentScreenFromView(newCurrentView);
 });
 
 /**
@@ -1080,6 +1208,11 @@ const requestLogin = () => {
     appointment.value?.processId,
     appointment.value?.authKey
   );
+  trackAppointmentEvent({
+    object: "login",
+    action: "click",
+    widget: "appointment",
+  });
   document.dispatchEvent(
     new CustomEvent("authorization-request", {
       detail: {
@@ -1228,10 +1361,14 @@ const runLoginResumeFromHashAndLocalStorage = (
               selectedProvider.value = appointmentOffice;
               preselectedLocationId.value = String(appointmentOffice.id);
             }
-            // Keep stepper step from UI localStorage (do not open reschedule/cancel dialog).
-            currentView.value = isAppointmentInPast.value
-              ? 3
-              : uiData.currentView;
+            if (isReservedProcessStatus(appointment.value.status)) {
+              resumeReservedBookingFromHash();
+            } else {
+              // Keep stepper step from UI localStorage (do not open reschedule/cancel dialog).
+              currentView.value = isAppointmentInPast.value
+                ? 3
+                : uiData.currentView;
+            }
             clearAppointmentLocalStorage();
             clearAppointmentAuthHashSession();
           } else {
@@ -1329,10 +1466,10 @@ const runAppointmentFromHash = (hash: string | undefined): void => {
   }
 
   resetConfirmRouteState();
+  reservedHashResumeApplied.value = false;
   loadedAppointmentHash.value = hash;
   isLoadingAppointmentFromHash.value = true;
   clearContextErrors(errorStateMap.value);
-  rebookOrCancelDialog.value = true;
 
   fetchServicesAndProviders(
     props.serviceId ?? undefined,
@@ -1413,14 +1550,22 @@ const runAppointmentFromHash = (hash: string | undefined): void => {
             selectedProvider.value = resolvedOffice;
           }
 
-          if (!appointmentData.action || isAppointmentInPast.value) {
-            currentView.value = 3;
-          } else if (
-            appointmentData.action === APPOINTMENT_ACTION_TYPE.RESCHEDULE
+          if (
+            isReservedProcessStatus(appointment.value.status) &&
+            !props.confirmAppointmentHash
           ) {
-            nextRescheduleAppointment();
+            resumeReservedBookingFromHash();
           } else {
-            nextCancelAppointment();
+            rebookOrCancelDialog.value = true;
+            if (!appointmentData.action || isAppointmentInPast.value) {
+              currentView.value = 3;
+            } else if (
+              appointmentData.action === APPOINTMENT_ACTION_TYPE.RESCHEDULE
+            ) {
+              nextRescheduleAppointment();
+            } else {
+              nextCancelAppointment();
+            }
           }
         } else {
           handleApiError(
@@ -1492,15 +1637,28 @@ function showAlreadyActivatedAppointment(hash: string): void {
 
 function nextConfirmAppointment(
   appointmentData: AppointmentHash,
-  hash: string
+  hash?: string
 ) {
-  confirmAppointment(props.globalState, appointmentData)
+  const sourceAppointment =
+    isRebooking.value && rebookedAppointment.value
+      ? rebookedAppointment.value
+      : undefined;
+  const confirmPromise = sourceAppointment
+    ? confirmAppointment(props.globalState, appointmentData, sourceAppointment)
+    : confirmAppointment(props.globalState, appointmentData);
+
+  confirmPromise
     .then((data) => {
       currentView.value = 5;
 
       if ((data as AppointmentDTO).processId != undefined) {
         confirmAppointmentSuccess.value = true;
         appointment.value = data as AppointmentDTO;
+        trackAppointmentEvent({
+          object: "confirmed",
+          action: "success",
+          flow: bookingFlow(isRebooking.value),
+        });
         clearContextErrors(errorStateMap.value);
         if (isRebooking.value && rebookedAppointment.value) {
           currentContext.value = "cancel";
@@ -1513,7 +1671,7 @@ function nextConfirmAppointment(
           Promise.resolve(
             fetchAppointment(props.globalState, appointmentData)
           ).then((fetched) => {
-            if ((fetched as AppointmentDTO)?.processId != undefined) {
+            if (hash && (fetched as AppointmentDTO)?.processId != undefined) {
               showAlreadyActivatedAppointment(hash);
               return;
             }
@@ -1554,7 +1712,12 @@ watch(
   () => props.appointmentHash,
   (hash) => {
     if (!hash) {
-      loadedAppointmentHash.value = null;
+      if (!isReservedBookingInProgress.value) {
+        loadedAppointmentHash.value = null;
+      }
+      return;
+    }
+    if (hash === loadedAppointmentHash.value) {
       return;
     }
     const uiData = getFreshLocalStorageUiData();

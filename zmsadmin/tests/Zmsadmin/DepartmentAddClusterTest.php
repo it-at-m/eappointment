@@ -13,6 +13,7 @@ class DepartmentAddClusterTest extends Base
 
     protected $classname = "DepartmentAddCluster";
 
+    #[\Override]
     public function testRendering()
     {
         $this->setApiCalls(

@@ -8,7 +8,6 @@
 namespace BO\Zmsbackend\Workstation\Api;
 
 use BO\Slim\Render;
-use BO\Zmsbackend\Workstation\Service\Workstation;
 use BO\Zmsbackend\Process\Service\Process as Query;
 use BO\Zmsentities\Process;
 

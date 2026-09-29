@@ -9,6 +9,7 @@ class AppointmentPreconfirmControllerTest extends ControllerTestCase
 {
     protected $classname = "\BO\Zmscitizenapi\Controllers\Appointment\AppointmentPreconfirmController";
 
+    #[\Override]
     public function setUp(): void
     {
         parent::setUp();
@@ -20,6 +21,7 @@ class AppointmentPreconfirmControllerTest extends ControllerTestCase
         }
     }
 
+    #[\Override]
     public function testRendering()
     {
         $this->setApiCalls(
@@ -30,7 +32,7 @@ class AppointmentPreconfirmControllerTest extends ControllerTestCase
                     'parameters' => [
                         'resolveReferences' => 2,
                     ],
-                    'response' => $this->readFixture("GET_process.json")
+                    'response' => $this->readFixture("GET_process_reserved.json")
                 ],
                 [
                     'function' => 'readGetResult',
@@ -196,7 +198,7 @@ class AppointmentPreconfirmControllerTest extends ControllerTestCase
                 'parameters' => [
                     'resolveReferences' => 2,
                 ],
-                'response' => $this->readFixture("GET_process.json")
+                'response' => $this->readFixture("GET_process_reserved.json")
             ],
             [
                 'function' => 'readGetResult',
@@ -245,7 +247,7 @@ class AppointmentPreconfirmControllerTest extends ControllerTestCase
                 'parameters' => [
                     'resolveReferences' => 2,
                 ],
-                'response' => $this->readFixture("GET_process.json")
+                'response' => $this->readFixture("GET_process_reserved.json")
             ],
             [
                 'function' => 'readGetResult',
@@ -344,7 +346,7 @@ class AppointmentPreconfirmControllerTest extends ControllerTestCase
                 'parameters' => [
                     'resolveReferences' => 2,
                 ],
-                'response' => $this->readFixture("GET_process.json")
+                'response' => $this->readFixture("GET_process_reserved.json")
             ],
             [
                 'function' => 'readGetResult',
@@ -384,7 +386,7 @@ class AppointmentPreconfirmControllerTest extends ControllerTestCase
                 'parameters' => [
                     'resolveReferences' => 2,
                 ],
-                'response' => $this->readFixture("GET_process.json")
+                'response' => $this->readFixture("GET_process_reserved.json")
             ],
             [
                 'function' => 'readGetResult',
@@ -424,7 +426,7 @@ class AppointmentPreconfirmControllerTest extends ControllerTestCase
                 'parameters' => [
                     'resolveReferences' => 2,
                 ],
-                'response' => $this->readFixture("GET_process.json")
+                'response' => $this->readFixture("GET_process_reserved.json")
             ],
             [
                 'function' => 'readGetResult',
@@ -464,7 +466,7 @@ class AppointmentPreconfirmControllerTest extends ControllerTestCase
                 'parameters' => [
                     'resolveReferences' => 2,
                 ],
-                'response' => $this->readFixture("GET_process.json")
+                'response' => $this->readFixture("GET_process_reserved.json")
             ],
             [
                 'function' => 'readGetResult',
@@ -488,6 +490,41 @@ class AppointmentPreconfirmControllerTest extends ControllerTestCase
         $this->assertEquals(ErrorMessages::get('processNotReservedAnymore')['statusCode'], $response->getStatusCode());
         $this->assertEqualsCanonicalizing(
             ['errors' => [ErrorMessages::get('processNotReservedAnymore')]],
+            $responseBody
+        );
+    }
+
+    public function testRejectsPlaceholderEmailOnPreconfirm()
+    {
+        $this->setApiCalls([
+            [
+                'function' => 'readGetResult',
+                'url' => '/process/101002/fb43/',
+                'parameters' => [
+                    'resolveReferences' => 2,
+                ],
+                'response' => $this->processFixtureWith([
+                    'status' => 'reserved',
+                    'email' => \App::getPlaceholderEmail(),
+                    'familyName' => null,
+                ])
+            ],
+            [
+                'function' => 'readGetResult',
+                'url' => '/process/101002/fb43/ics/',
+                'response' => $this->readFixture("GET_process_ics_template.json")
+            ]
+        ]);
+
+        $response = $this->render([], [
+            'processId' => '101002',
+            'authKey' => 'fb43'
+        ], [], 'POST');
+        $responseBody = json_decode((string) $response->getBody(), true);
+
+        $this->assertEquals(ErrorMessages::get('placeholderEmailNotAllowed')['statusCode'], $response->getStatusCode());
+        $this->assertEqualsCanonicalizing(
+            ['errors' => [ErrorMessages::get('placeholderEmailNotAllowed')]],
             $responseBody
         );
     }

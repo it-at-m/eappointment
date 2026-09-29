@@ -13,7 +13,7 @@ class QueueProcessListToScopeAdmin
 
     protected $verbose = false;
 
-    public function __construct($verbose = false, $scopeId = false)
+    public function __construct(bool $verbose = false, $scopeId = false)
     {
         $this->dateTime = new \DateTimeImmutable();
         if ($verbose) {
@@ -28,7 +28,7 @@ class QueueProcessListToScopeAdmin
         }
     }
 
-    public function startProcessing($commit): void
+    public function startProcessing(bool $commit): void
     {
         foreach ($this->scopeList as $scope) {
             if ($this->verbose) {

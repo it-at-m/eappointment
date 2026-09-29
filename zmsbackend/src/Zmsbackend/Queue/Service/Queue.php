@@ -17,7 +17,7 @@ class Queue extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfaces\Res
     public function readListByScopeAndTime(
         $scopeIds,
         \DateTimeInterface $dateTime,
-        $resolveReferences = 0
+        int $resolveReferences = 0
     ) {
         $query = new \BO\Zmsbackend\Queue\Repository\Queue(\BO\Zmsbackend\Query\Base::SELECT);
         $query

@@ -20,7 +20,7 @@ class Mail extends \BO\Zmsbackend\Base
      *
      * @param false|string $itemId
      */
-    public function readEntity(string|false $itemId, $resolveReferences = 1)
+    public function readEntity(string|false $itemId, int $resolveReferences = 1)
     {
         $query = new \BO\Zmsbackend\Mail\Repository\MailQueue(\BO\Zmsbackend\Query\Base::SELECT);
         $query->addEntityMapping()
@@ -33,7 +33,7 @@ class Mail extends \BO\Zmsbackend\Base
         return $mail;
     }
 
-    public function readEntities(array $itemIds, $resolveReferences = 1, $limit = 300, string $order = 'ASC'): Collection
+    public function readEntities(array $itemIds, int $resolveReferences = 1, int $limit = 300, string $order = 'ASC'): Collection
     {
         $mailList = new Collection();
         $query = new \BO\Zmsbackend\Mail\Repository\MailQueue(\BO\Zmsbackend\Query\Base::SELECT);
@@ -54,7 +54,7 @@ class Mail extends \BO\Zmsbackend\Base
     }
 
 
-    public function readEntitiesIds(array $itemIds, $resolveReferences = 1, $limit = 300, string $order = 'ASC')
+    public function readEntitiesIds(array $itemIds, int $resolveReferences = 1, int $limit = 300, string $order = 'ASC')
     {
 
         $query = new \BO\Zmsbackend\Mail\Repository\MailQueue(\BO\Zmsbackend\Query\Base::SELECT);
@@ -68,7 +68,7 @@ class Mail extends \BO\Zmsbackend\Base
         return $this->fetchList($query, new Entity());
     }
 
-    public function readList($resolveReferences = 1, $limit = 300, string $order = 'ASC'): Collection
+    public function readList(int $resolveReferences = 1, int $limit = 300, string $order = 'ASC'): Collection
     {
         $mailList = new Collection();
         $query = new \BO\Zmsbackend\Mail\Repository\MailQueue(\BO\Zmsbackend\Query\Base::SELECT);
@@ -88,7 +88,7 @@ class Mail extends \BO\Zmsbackend\Base
     }
 
 
-    public function readListIds($resolveReferences = 1, $limit = 300, string $order = 'ASC')
+    public function readListIds(int $resolveReferences = 1, int $limit = 300, string $order = 'ASC')
     {
         $query = new \BO\Zmsbackend\Mail\Repository\MailQueue(\BO\Zmsbackend\Query\Base::SELECT);
         $query->selectFields(['id', 'createTimestamp'])
@@ -106,7 +106,7 @@ class Mail extends \BO\Zmsbackend\Base
      * @return Entity
      */
     #[\Override]
-    public function readResolvedReferences(\BO\Zmsentities\Schema\Entity $entity, $resolveReferences)
+    public function readResolvedReferences(\BO\Zmsentities\Schema\Entity $entity, int $resolveReferences)
     {
         if (!$entity instanceof Entity) {
             throw new \InvalidArgumentException('Expected ' . Entity::class);

@@ -4,16 +4,17 @@ declare(strict_types=1);
 namespace BO\Zmscitizenapi\Tests\Services\Security;
 
 use BO\Zmscitizenapi\Services\Captcha\CaptchaService;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
-/**
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
- */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState(false)]
 class CaptchaServiceTest extends TestCase
 {
     private CaptchaService $captchaService;
 
+    #[\Override]
     protected function setUp(): void
     {
         parent::setUp();

@@ -10,6 +10,7 @@ class ApikeyDeleteTest extends \BO\Zmsbackend\Tests\Api\Base
 {
     protected $classname = "ApikeyDelete";
 
+    #[\Override]
     public function testRendering()
     {
         $input = (new Entity)->createExample();

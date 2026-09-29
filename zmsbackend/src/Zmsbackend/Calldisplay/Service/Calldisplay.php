@@ -11,14 +11,15 @@ use BO\Zmsentities\Calldisplay as Entity;
 class Calldisplay extends \BO\Zmsbackend\Base
 {
     /**
-     * read Ticketprinter by comma separated buttonlist
+     * read calldisplay with resolved scopes and clusters
      *
-     * @param \BO\Zmsentities\Ticketprinter $ticketprinter
-     * @param \DateTimeInterface $now
+     * @param Entity $calldisplay
+     * @param \DateTimeImmutable $dateTime
+     * @param int $resolveReferences
      *
      * @return Entity
      */
-    public function readResolvedEntity(Entity $calldisplay, \DateTimeImmutable $dateTime, $resolveReferences = 0)
+    public function readResolvedEntity(Entity $calldisplay, \DateTimeImmutable $dateTime, int $resolveReferences = 0)
     {
         if ($calldisplay->hasScopeList()) {
             $scopeList = new \BO\Zmsentities\Collection\ScopeList();

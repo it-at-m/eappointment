@@ -33,7 +33,7 @@ class Organisation extends \BO\Zmsbackend\Base
      * @return \BO\Zmsentities\Schema\Entity
      */
     #[\Override]
-    public function readResolvedReferences(\BO\Zmsentities\Schema\Entity $entity, $resolveReferences)
+    public function readResolvedReferences(\BO\Zmsentities\Schema\Entity $entity, int $resolveReferences)
     {
         if (0 < $resolveReferences && $entity->hasId()) {
             $entity['departments'] = (new \BO\Zmsbackend\Department\Service\Department())
@@ -44,7 +44,7 @@ class Organisation extends \BO\Zmsbackend\Base
         return $entity;
     }
 
-    public function readByScopeId($scopeId, $resolveReferences = 0)
+    public function readByScopeId($scopeId, int $resolveReferences = 0)
     {
         $query = new \BO\Zmsbackend\Organisation\Repository\Organisation(\BO\Zmsbackend\Query\Base::SELECT);
         $query->addEntityMapping()
@@ -64,7 +64,7 @@ class Organisation extends \BO\Zmsbackend\Base
         return $this->readResolvedReferences($organisation, $resolveReferences);
     }
 
-    public function readByClusterId($clusterId, $resolveReferences = 0)
+    public function readByClusterId($clusterId, int $resolveReferences = 0)
     {
         $scope = (new \BO\Zmsbackend\Scope\Service\Scope())->readByClusterId($clusterId, $resolveReferences)->getFirst();
         if (! $scope) {
@@ -73,7 +73,7 @@ class Organisation extends \BO\Zmsbackend\Base
         return $this->readByScopeId($scope->id, $resolveReferences);
     }
 
-    public function readByOwnerId($ownerId, $resolveReferences = 0): Collection
+    public function readByOwnerId($ownerId, int $resolveReferences = 0): Collection
     {
         $organisationList = new Collection();
         $query = new \BO\Zmsbackend\Organisation\Repository\Organisation(\BO\Zmsbackend\Query\Base::SELECT);
@@ -101,7 +101,7 @@ class Organisation extends \BO\Zmsbackend\Base
         return $this->readEntity($organisationId);
     }
 
-    public function readList($resolveReferences = 0): Collection
+    public function readList(int $resolveReferences = 0): Collection
     {
         $organisationList = new Collection();
         $query = new \BO\Zmsbackend\Organisation\Repository\Organisation(\BO\Zmsbackend\Query\Base::SELECT);

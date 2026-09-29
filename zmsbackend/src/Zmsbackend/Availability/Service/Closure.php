@@ -9,7 +9,7 @@ use DateTime;
 
 class Closure extends \BO\Zmsbackend\Base
 {
-    public function readByScopeId($scopeId = 0, $disableCache = false)
+    public function readByScopeId($scopeId = 0, bool $disableCache = false)
     {
         $cacheKey = "closuresByScope-$scopeId";
 

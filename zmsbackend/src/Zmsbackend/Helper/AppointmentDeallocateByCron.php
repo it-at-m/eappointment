@@ -23,7 +23,7 @@ class AppointmentDeallocateByCron
 
     protected $count = [];
 
-    public function __construct(\DateTimeInterface $dateTime, $verbose = false)
+    public function __construct(\DateTimeInterface $dateTime, bool $verbose = false)
     {
         $this->time = $dateTime;
         if ($verbose) {
@@ -42,24 +42,24 @@ class AppointmentDeallocateByCron
         return $this->count;
     }
 
-    public function setLimit($limit): void
+    public function setLimit(int $limit): void
     {
         $this->limit = $limit;
     }
 
-    public function setLoopCount($loopCount): void
+    public function setLoopCount(int $loopCount): void
     {
         $this->loopCount = $loopCount;
     }
 
-    public function startProcessing($commit): void
+    public function startProcessing(bool $commit): void
     {
         $this->count['deallocated'] = 0;
         $this->deallocateProcessList($commit);
         $this->log("\nSUMMARY: Deallocated processes: " . var_export($this->count, true));
     }
 
-    protected function deallocateProcessList($commit): void
+    protected function deallocateProcessList(bool $commit): void
     {
         $this->log("\nDeallocate cancelled processes");
         $count = $this->deleteByCallback($commit, function ($limit, $offset) {
@@ -70,7 +70,7 @@ class AppointmentDeallocateByCron
         $this->count["deallocated"] += $count;
     }
 
-    protected function deleteByCallback($commit, \Closure $callback): int
+    protected function deleteByCallback(bool $commit, \Closure $callback): int
     {
         $processCount = 0;
         $startposition = 0;
@@ -89,7 +89,7 @@ class AppointmentDeallocateByCron
         return $processCount;
     }
 
-    protected function handleProcess(\BO\Zmsentities\Process $process, $commit, int $processCount): int
+    protected function handleProcess(\BO\Zmsentities\Process $process, bool $commit, int $processCount): int
     {
         $verbose = $this->verbose;
         if (in_array($process->status, $this->statuslist)) {

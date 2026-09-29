@@ -114,13 +114,13 @@ class ProcessStatusArchived extends \BO\Zmsbackend\Query\Base implements \BO\Zms
         return $this;
     }
 
-    public function addConditionIsMissed($missed): static
+    public function addConditionIsMissed(int $missed): static
     {
         $this->query->where('process.nicht_erschienen', '=', $missed);
         return $this;
     }
 
-    public function addConditionWithAppointment($withAppointment): static
+    public function addConditionWithAppointment(int $withAppointment): static
     {
         $this->query->where('process.mitTermin', '=', $withAppointment);
         return $this;

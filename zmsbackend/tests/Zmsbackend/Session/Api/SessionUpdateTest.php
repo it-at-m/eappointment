@@ -6,6 +6,7 @@ class SessionUpdateTest extends \BO\Zmsbackend\Tests\Api\Base
 {
     protected $classname = "SessionUpdate";
 
+    #[\Override]
     public function testRendering()
     {
         $response = $this->render([], [

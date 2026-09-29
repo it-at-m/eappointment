@@ -9,6 +9,7 @@ class WorkstationProfileGetTest extends
 {
     protected $classname = 'WorkstationProfileGet';
 
+    #[\Override]
     public function testRendering(): ResponseInterface
     {
         $workstation = $this->setWorkstation();

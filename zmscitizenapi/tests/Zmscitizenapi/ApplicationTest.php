@@ -4,16 +4,17 @@ declare(strict_types=1);
 namespace BO\Zmscitizenapi\Tests;
 
 use BO\Zmscitizenapi\Application;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 
-/**
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
- */
+#[RunTestsInSeparateProcesses]
+#[PreserveGlobalState(false)]
 class ApplicationTest extends TestCase
 {
     private string $tempDir;
 
+    #[\Override]
     protected function setUp(): void
     {
         parent::setUp();
@@ -174,6 +175,18 @@ class ApplicationTest extends TestCase
         $this->assertEquals('', Application::getIpBlacklist());
     }
 
+    public function testInitializePlaceholderEmail(): void
+    {
+        putenv('ZMS_CITIZENAPI_PLACEHOLDER_EMAIL=noreply@placeholder.invalid');
+        Application::initialize();
+        $this->assertEquals('noreply@placeholder.invalid', Application::getPlaceholderEmail());
+
+        putenv('ZMS_CITIZENAPI_PLACEHOLDER_EMAIL');
+        Application::initialize();
+        $this->assertEquals(Application::DEFAULT_PLACEHOLDER_EMAIL, Application::getPlaceholderEmail());
+    }
+
+    #[\Override]
     protected function tearDown(): void
     {
         parent::tearDown();
@@ -214,6 +227,7 @@ class ApplicationTest extends TestCase
         putenv('MAX_STRING_LENGTH');
         putenv('MAX_RECURSION_DEPTH');
         putenv('IP_BLACKLIST');
+        putenv('ZMS_CITIZENAPI_PLACEHOLDER_EMAIL');
     }
 
     private function removeDirectory(string $dir): void

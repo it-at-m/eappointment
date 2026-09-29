@@ -36,6 +36,7 @@ import ataf.core.properties.DefaultValues;
 import ataf.web.model.LocatorType;
 import ataf.web.pages.BasePage;
 import ataf.web.utils.DriverUtil;
+import zms.ataf.helpers.AccountCheckout;
 import zms.ataf.helpers.BerlinTime;
 
 
@@ -79,6 +80,9 @@ public class StatisticsPage extends BasePage {
         try {
             AuthenticationHelper.getUserName().access(clearUserName::append);
             AuthenticationHelper.getUserPassword().access(clearPassword::append);
+            String assigned = AccountCheckout.assignWorkstationLogin(clearUserName.toString());
+            clearUserName.setLength(0);
+            clearUserName.append(assigned);
             WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
             wait.until(ExpectedConditions.presenceOfElementLocated(By.id("username")));
             if ("chrome".equals(

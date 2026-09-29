@@ -1,0 +1,32 @@
+.scope-multiselect {
+    max-width: 95rem;
+
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.5rem;
+
+        label {
+            margin: 0;
+            font-weight: bold;
+        }
+    }
+
+    .btn-icon {
+        padding: 0.25rem;
+        line-height: 1;
+        cursor: pointer;
+        background: transparent;
+        border: 1px solid #000;
+        border-radius: 0.25rem;
+
+        &:hover {
+            background: rgba(0, 123, 255, 0.1);
+        }
+    }
+
+    select[multiple] {
+        width: 100%;
+    }
+}

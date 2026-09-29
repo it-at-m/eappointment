@@ -37,7 +37,7 @@ class View extends BaseView {
                 try {
                     this.changeformData(JSON.parse($link.attr('data-availability')));
                     $form.show();
-                } catch (exception) {
+                } catch {
                     console.log("Fehlerhafte Daten: %o", $link.attr('data-availability'));
                     $clonedForm.remove();
                 }

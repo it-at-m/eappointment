@@ -60,7 +60,7 @@ class Munich
 
     // Offices that share one Ort but keep pooled calendar capacity (ZMSKVR-1046 Ausbildung).
     public const array LOCATIONS_SHARED_BOOKING = [
-        [10489, 10503, 10500, 10491] // 10491 now has some of the same services as 10489 10502 10503 which means if it exposes external appointments it must mix them otherwise shows up double.
+        [10489, 10313237, 10500, 10491] // 10491 now has some of the same services as 10489 10502 10313237 which means if it exposes external appointments it must mix them otherwise shows up double.
     ];
 
     /** Aligned with dldb-mapper/app/map.php DONT_SHOW_SERVICE_ON_START_PAGE */
@@ -217,9 +217,9 @@ class Munich
 
     /**
      * Path to bundled SADB overwrite (ex-dldb-mapper prod.json).
-     * Local extras: Passkalender 10502 (Pass services) + Ausbildungskalender 10503
+     * Local extras: Passkalender 10502 (Pass services) + KVR-II/2252 10313237
      * (Haushaltsbescheinigung 1080843, Wohnsitzanmeldung 1063475, Wohnsitzanmeldung Familie 10224132).
-     * TODO ZMSKVR-1046: Remove 10503 from the overwrite once a real Ausbildung office exists in SADB.
+     * Wohnsitz abmelden 1063486 at 10313237 stays SADB-internal (public false).
      */
     public static function defaultSadbOverwritePath(): string
     {

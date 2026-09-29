@@ -62,7 +62,7 @@ class Owner extends \BO\Zmsbackend\Base
         return $ownerList;
     }
 
-    public function readByOrganisationId(int $organisationId, $resolveReferences = 0)
+    public function readByOrganisationId(int $organisationId, int $resolveReferences = 0)
     {
         $query = new \BO\Zmsbackend\Owner\Repository\Owner(\BO\Zmsbackend\Query\Base::SELECT);
         $query

@@ -13,6 +13,7 @@ class CounterQueueInfoTest extends Base
 
     protected $classname = "CounterQueueInfo";
 
+    #[\Override]
     public function testRendering()
     {
         $this->setApiCalls(

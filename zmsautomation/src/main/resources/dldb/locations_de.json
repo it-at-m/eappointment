@@ -3188,7 +3188,7 @@
             "forceSlotTimeUpdate": true,
             "sharedBookingOfficeIds": [
                 10489,
-                10503,
+                10313237,
                 10500,
                 10491
             ]
@@ -3446,7 +3446,7 @@
             "forceSlotTimeUpdate": true,
             "sharedBookingOfficeIds": [
                 10489,
-                10503,
+                10313237,
                 10500,
                 10491
             ],
@@ -4058,7 +4058,7 @@
             "forceSlotTimeUpdate": true,
             "sharedBookingOfficeIds": [
                 10489,
-                10503,
+                10313237,
                 10500,
                 10491
             ],
@@ -14119,14 +14119,12 @@
             "forceSlotTimeUpdate": true
         },
         {
-            "id": "10503",
-            "name": "Bürgerbüro Ruppertstraße (Ausbildung)",
-            "displayName": "Bürgerbüro Ruppertstraße (Ausbildung)",
+            "id": "10313237",
+            "name": "Bürgerbüro Ruppertstraße (KVR-II/2252)",
+            "displayName": "Bürgerbüro Ruppertstraße",
             "displayNameAlternatives": [
                 "Hauptabteilung II Bürgerangelegenheiten",
-                "Bürgerangelegenheiten Bürgerbüro Ruppertstraße",
-                "Ausbildung",
-                "KVR-II/22 Ausbildung"
+                "Bürgerbüro Ruppertstraße"
             ],
             "organization": "Landeshauptstadt München",
             "organizationUnit": "Kreisverwaltungsreferat",
@@ -14135,10 +14133,10 @@
                 "url": "https://stadt.muenchen.de/en/buergerservice/terminvereinbarung.html/#/locations/{locationId}",
                 "lastupdate": "2026-06-08T07:41:01",
                 "locale": "de",
-                "keywords": "Hauptabteilung II Bürgerangelegenheiten, Bürgerangelegenheiten Bürgerbüro Ruppertstraße",
+                "keywords": "Hauptabteilung II Bürgerangelegenheiten, Bürgerbüro Ruppertstraße",
                 "translated": true,
                 "hash": "",
-                "id": "10489"
+                "id": "10313237"
             },
             "address": {
                 "house_number": "19",
@@ -14165,9 +14163,9 @@
                     "service": "1080843",
                     "contact": [],
                     "hint": false,
-                    "url": "https://stadt.muenchen.de/en/buergerservice/terminvereinbarung.html/#/services/1080843/locations/10503",
+                    "url": "https://stadt.muenchen.de/en/buergerservice/terminvereinbarung.html/#/services/1080843/locations/10313237",
                     "appointment": {
-                        "link": "https://stadt.muenchen.de/en/buergerservice/terminvereinbarung.html/#/services/1080843/locations/10503",
+                        "link": "https://stadt.muenchen.de/en/buergerservice/terminvereinbarung.html/#/services/1080843/locations/10313237",
                         "slots": "1",
                         "external": false,
                         "allowed": true
@@ -14176,15 +14174,16 @@
                         "description": null,
                         "link": "https://stadt.muenchen.de/en/buergerservice/terminvereinbarung.html/#/services/1080843"
                     },
-                    "duration": 5
+                    "duration": 5,
+                    "public": true
                 },
                 {
                     "service": "1063475",
                     "contact": [],
                     "hint": false,
-                    "url": "https://stadt.muenchen.de/en/buergerservice/terminvereinbarung.html/#/services/1063475/locations/10503",
+                    "url": "https://stadt.muenchen.de/en/buergerservice/terminvereinbarung.html/#/services/1063475/locations/10313237",
                     "appointment": {
-                        "link": "https://stadt.muenchen.de/en/buergerservice/terminvereinbarung.html/#/services/1063475/locations/10503",
+                        "link": "https://stadt.muenchen.de/en/buergerservice/terminvereinbarung.html/#/services/1063475/locations/10313237",
                         "slots": "3",
                         "external": false,
                         "allowed": true
@@ -14193,15 +14192,16 @@
                         "description": null,
                         "link": "https://stadt.muenchen.de/en/buergerservice/terminvereinbarung.html/#/services/1063475"
                     },
-                    "duration": 15
+                    "duration": 15,
+                    "public": true
                 },
                 {
                     "service": "10224132",
                     "contact": [],
                     "hint": false,
-                    "url": "https://stadt.muenchen.de/en/buergerservice/terminvereinbarung.html/#/services/10224132/locations/10503",
+                    "url": "https://stadt.muenchen.de/en/buergerservice/terminvereinbarung.html/#/services/10224132/locations/10313237",
                     "appointment": {
-                        "link": "https://stadt.muenchen.de/en/buergerservice/terminvereinbarung.html/#/services/10224132/locations/10503",
+                        "link": "https://stadt.muenchen.de/en/buergerservice/terminvereinbarung.html/#/services/10224132/locations/10313237",
                         "slots": "6",
                         "external": false,
                         "allowed": true
@@ -14211,7 +14211,26 @@
                         "link": "https://stadt.muenchen.de/en/buergerservice/terminvereinbarung.html/#/services/10224132"
                     },
                     "duration": 30,
-                    "maxQuantity": 3
+                    "maxQuantity": 3,
+                    "public": true
+                },
+                {
+                    "service": "1063486",
+                    "contact": [],
+                    "hint": false,
+                    "url": "https://stadt.muenchen.de/en/buergerservice/terminvereinbarung.html/#/services/1063486/locations/10313237",
+                    "appointment": {
+                        "link": "https://stadt.muenchen.de/en/buergerservice/terminvereinbarung.html/#/services/1063486/locations/10313237",
+                        "slots": "1",
+                        "external": false,
+                        "allowed": true
+                    },
+                    "onlineprocessing": {
+                        "description": null,
+                        "link": "https://stadt.muenchen.de/en/buergerservice/terminvereinbarung.html/#/services/1063486"
+                    },
+                    "duration": 5,
+                    "public": false
                 }
             ],
             "prio": 100,
@@ -14222,7 +14241,7 @@
             "forceSlotTimeUpdate": true,
             "sharedBookingOfficeIds": [
                 10489,
-                10503,
+                10313237,
                 10500,
                 10491
             ]

@@ -11,6 +11,7 @@ class AppointmentByIdServiceTest extends MiddlewareTestCase
     private AppointmentByIdService $service;
     private \ReflectionClass $reflector;
 
+    #[\Override]
     protected function setUp(): void
     {
         parent::setUp();

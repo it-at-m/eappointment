@@ -164,6 +164,56 @@ class ProcessSearchHistoryTest extends \BO\Zmsbackend\Tests\Service\Base
         );
     }
 
+    public function testWriteHistoryEntryCancelledByCitizen(): void
+    {
+        $service = new HistoryService();
+
+        $this->prepareProcessData($service);
+
+        $process = $this->readProcess($service);
+
+        $historyKey = $service->writeHistoryEntry(
+            $process,
+            HistoryService::STATUS_CANCELLED_BY_CITIZEN,
+            new \DateTimeImmutable('2016-04-18 12:00:00')
+        );
+
+        $historyEntry = $this->readHistoryEntry(
+            $service,
+            $historyKey
+        );
+
+        $this->assertSame(
+            HistoryService::STATUS_CANCELLED_BY_CITIZEN,
+            $historyEntry['status']
+        );
+    }
+
+    public function testWriteHistoryEntryCancelledByStaff(): void
+    {
+        $service = new HistoryService();
+
+        $this->prepareProcessData($service);
+
+        $process = $this->readProcess($service);
+
+        $historyKey = $service->writeHistoryEntry(
+            $process,
+            HistoryService::STATUS_CANCELLED_BY_STAFF,
+            new \DateTimeImmutable('2016-04-18 12:00:00')
+        );
+
+        $historyEntry = $this->readHistoryEntry(
+            $service,
+            $historyKey
+        );
+
+        $this->assertSame(
+            HistoryService::STATUS_CANCELLED_BY_STAFF,
+            $historyEntry['status']
+        );
+    }
+
     public function testWriteHistoryEntryMissed(): void
     {
         $service = new HistoryService();

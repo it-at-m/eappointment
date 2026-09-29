@@ -6,6 +6,7 @@ class TicketprinterWaitingnumberByClusterTest extends \BO\Zmsbackend\Tests\Api\B
 {
     protected $classname = "TicketprinterWaitingnumberByCluster";
 
+    #[\Override]
     public function testRendering()
     {
         //Schöneberg with test scope ghostWorkstationCount of 3

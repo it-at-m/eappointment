@@ -10,6 +10,7 @@ class AvailabilityDeleteTest extends Base
 
     protected $classname = "AvailabilityDelete";
 
+    #[\Override]
     public function testRendering()
     {
         $this->setApiCalls(

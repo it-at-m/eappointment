@@ -5,7 +5,7 @@
   "service": "web",
   "workspaceFolder": "/var/www/html",
   "shutdownAction": "stopCompose",
-  "forwardPorts": [8025, 8036, 8080, 8082, 8084, 8090, 9003],
+  "forwardPorts": [8025, 8036, 8080, 8082, 8084, 8090, 9003, 39146],
   "portsAttributes": {
     "8025": {
       "label": "mail-viewer"
@@ -24,6 +24,9 @@
     },
     "8090": {
       "label": "zms"
+    },
+    "39146": {
+      "label": "captchaservice"
     }
   },
   "customizations": {

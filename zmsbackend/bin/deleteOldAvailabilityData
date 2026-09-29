@@ -17,7 +17,7 @@ Usage: {$argv[0]} [days|date] [--verbose] --commit
 EOS;
 
 $verbose = (preg_grep('#^--?v(erbose)?$#', $argv)) ? true : false;
-$commit = preg_grep('#^--commit$#', $argv);
+$commit = (bool) preg_grep('#^--commit$#', $argv);
 $dayCount = preg_grep('#^\d+$#', $argv);
 $dayCount = array_shift($dayCount);
 $dates = preg_grep('#^\d\d\d\d-\d\d?-\d\d?#', $argv);

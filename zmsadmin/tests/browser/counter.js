@@ -38,7 +38,7 @@ test('NewAppointment', async t => {
     const dialogContent = await Selector('.dialog .message__body').textContent;
     const processId = dialogContent.match(/\d{6,}/)[0];
     await t
-        .expect(Selector('.dialog .message__body').textContent).contains('Vorgangsnummer', 'use right term for an appointment')
+        .expect(Selector('.dialog .message__body').textContent).contains('Wartenummer drucken', 'use unified print button label for an appointment')
         .click('.lightbox .dialog .button-ok')
         .expect(Selector('.queue-table a[data-id="'+processId+'"]').exists).ok()
         .click(Selector('.queue-table a[data-id="'+processId+'"].process-edit'))
@@ -120,7 +120,7 @@ test('ValidationAppointment', async t => {
         ;
     const processId = await Selector('.dialog .message__body button[name="printWaitingNumber"]').getAttribute("data-id");
     await t
-        .expect(Selector('.dialog .message__body').textContent).contains('Vorgangsnummer', 'use right term for an queue entry')
+        .expect(Selector('.dialog .message__body').textContent).contains('Wartenummer drucken', 'use unified print label for an appointment')
         .click('.lightbox .dialog .button-ok')
         .expect(Selector('.queue-table a[data-id="'+processId+'"]').exists).ok()
         .click(Selector('.queue-table a[data-id="'+processId+'"].process-delete'))

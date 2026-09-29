@@ -5,7 +5,9 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.Locale;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
@@ -425,7 +427,57 @@ public class CounterProcessingStationPage extends AdminPage {
         TestDataHelper.setTestData("new_appointment_date", date);
     }
 
+    /**
+     * Today's time list always offers Spontankunde ({@code 00-00}) even when no appointment slot is left.
+     */
+    private boolean selectWalkInOption(Select timeList, WebElement select) {
+        boolean hasWalkIn = timeList.getOptions().stream().anyMatch(option -> option.getText().contains("Spontankunde"));
+        if (!hasWalkIn) {
+            return false;
+        }
+        timeList.selectByValue("00-00");
+        fireProcessTimeChange(select);
+        TestDataHelper.setTestData("new_appointment_time", "00:00");
+        TestDataHelper.setTestData("appointment_booked_as_walk_in", "true");
+        ScenarioLogManager.getLogger().info("No appointment slot left; selected Spontankunde.");
+        return true;
+    }
+
+    public boolean hasBookAppointmentButton() {
+        List<WebElement> buttons = DRIVER.findElements(By.cssSelector("button.process-reserve"));
+        return !buttons.isEmpty() && buttons.get(0).isDisplayed();
+    }
+
+    public void selectWalkInCustomer() {
+        WebElement select = findElementByLocatorType(APPOINTMENT_TIME_LOCATOR_ID, LocatorType.ID, true);
+        Assert.assertTrue(selectWalkInOption(new Select(select), select), "Spontankunde is not in the time list.");
+        new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(ExpectedConditions.elementToBeClickable(By.cssSelector("button.process-queue")));
+    }
+
+    /**
+     * Firefox applies {@code selectByValue} without the {@code change} event jQuery uses to load
+     * {@code button.process-reserve}. Without that event the form stays on Spontankunden hinzufügen.
+     */
+    private void fireProcessTimeChange(WebElement select) {
+        ((JavascriptExecutor) DRIVER).executeScript(
+                "var select = arguments[0];"
+                        + "select.dispatchEvent(new Event('change', {bubbles: true}));"
+                        + "var jq = window.jQuery || window.$;"
+                        + "if (jq) { jq(select).trigger('change'); }",
+                select);
+    }
+
     public void selectTimeInNewAppointmentDropDownList(String time) {
+        selectTimeInNewAppointmentDropDownList(time, Set.of(), false);
+    }
+
+    public void selectTimeInNewAppointmentDropDownList(String time, Set<String> excludedTimes) {
+        selectTimeInNewAppointmentDropDownList(time, excludedTimes, false);
+    }
+
+    public void selectTimeInNewAppointmentDropDownList(String time, Set<String> excludedTimes, boolean fallBackToWalkIn) {
+        TestDataHelper.setTestData("appointment_booked_as_walk_in", "false");
         ScenarioLogManager.getLogger().info("Trying to select time \"" + time + "\" in new appointment drop down list...");
         Pattern timeSlotPattern = Pattern.compile("([0-9][0-9]:[0-9][0-9]) \\(noch ([0-9]) frei\\)");
         WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
@@ -434,6 +486,7 @@ public class CounterProcessingStationPage extends AdminPage {
         wait.withMessage("Could not locate any time slot elements in time!");
         try {
             wait.until((ExpectedCondition<Boolean>) waitDriver -> {
+                TestDataHelper.setTestData("appointment_booked_as_walk_in", "false");
                 CONTEXT.waitForSpinners();
                 WebElement newAppointmentTimeDropDownList = findElementByLocatorType(APPOINTMENT_TIME_LOCATOR_ID, LocatorType.ID, true);
                 scrollToCenterByVisibleElement(newAppointmentTimeDropDownList);
@@ -445,9 +498,15 @@ public class CounterProcessingStationPage extends AdminPage {
                     case "<nächste>":
                         List<WebElement> bookableTimeSlots = options.stream()
                                 .filter(option -> !option.getText().contains("Spontankunde"))
-                                .filter(option -> timeSlotPattern.matcher(option.getText()).find())
+                                .filter(option -> {
+                                    Matcher matcher = timeSlotPattern.matcher(option.getText());
+                                    return matcher.find() && !excludedTimes.contains(matcher.group(1));
+                                })
                                 .collect(Collectors.toList());
                         if (bookableTimeSlots.isEmpty()) {
+                            if (fallBackToWalkIn && selectWalkInOption(newAppointmentTimeDropDownListSelections, newAppointmentTimeDropDownList)) {
+                                break;
+                            }
                             return false;
                         }
                         WebElement webElement;
@@ -460,6 +519,7 @@ public class CounterProcessingStationPage extends AdminPage {
                         Matcher timeSlotMatcher = timeSlotPattern.matcher(webElement.getText());
                         timeSlotMatcher.find();
                         newAppointmentTimeDropDownListSelections.selectByValue(webElement.getAttribute("value"));
+                        fireProcessTimeChange(newAppointmentTimeDropDownList);
                         ScenarioLogManager.getLogger().info("Time \"" + timeSlotMatcher.group(1) + "\" selected!");
                         TestDataHelper.setTestData("new_appointment_time", timeSlotMatcher.group(1));
                         break;
@@ -467,6 +527,7 @@ public class CounterProcessingStationPage extends AdminPage {
                         for (WebElement webElementInList : options) {
                             if (webElementInList.getText().contains(time)) {
                                 newAppointmentTimeDropDownListSelections.selectByValue(time.replaceFirst(":", "-"));
+                                fireProcessTimeChange(newAppointmentTimeDropDownList);
                                 break;
                             }
                         }
@@ -476,13 +537,20 @@ public class CounterProcessingStationPage extends AdminPage {
                     // shifting focus away from the dropdown
                     clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "h2.board__heading", LocatorType.CSSSELECTOR, false);
                     // on false it will retry
-                    if (findElementByLocatorType(APPOINTMENT_TIME_LOCATOR_ID, LocatorType.ID, true).getAttribute("value")
-                            .equals(TestDataHelper.getTestData("new_appointment_time").replaceFirst(":", "-"))) {
-                        return true;
-                    } else {
+                    String expectedTime = TestDataHelper.getTestData("new_appointment_time").replaceFirst(":", "-");
+                    if (!findElementByLocatorType(APPOINTMENT_TIME_LOCATOR_ID, LocatorType.ID, true).getAttribute("value")
+                            .equals(expectedTime)) {
                         ScenarioLogManager.getLogger().warn("Time not selected! Retrying...");
                         return false;
                     }
+                    boolean bookedAsWalkIn = "true".equals(TestDataHelper.getTestData("appointment_booked_as_walk_in"));
+                    String submitButton = bookedAsWalkIn ? "button.process-queue" : "button.process-reserve";
+                    if (DRIVER.findElements(By.cssSelector(submitButton)).isEmpty()) {
+                        ScenarioLogManager.getLogger().warn(
+                                "Time \"" + expectedTime + "\" is set, the booking button is not in the form yet. Retrying...");
+                        return false;
+                    }
+                    return true;
                 } else {
                     return false;
                 }
@@ -564,13 +632,22 @@ public class CounterProcessingStationPage extends AdminPage {
         WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME * 2L));
         AtomicReference<String> newAppointmentNumber = new AtomicReference<>("");
         AtomicBoolean validationErrorsVisible = new AtomicBoolean(false);
-        final int maxBookingAttempts = 3;
+        Set<String> skippedTimes = new HashSet<>();
+        final int maxBookingAttempts = 6;
+        boolean bookingAttempted = false;
+        fillCustomTextfieldsForSpontaneousCustomerIfNeeded();
     
         for (int attempt = 1; attempt <= maxBookingAttempts; attempt++) {
-            if (attempt > 1) {
+            if (attempt > 1 && bookingAttempted) {
+                String previousTime = TestDataHelper.getTestData("new_appointment_time");
+                if (previousTime != null && !previousTime.isBlank()) {
+                    skippedTimes.add(previousTime);
+                }
                 ScenarioLogManager.getLogger().warn(
-                        "Retrying \"book appointment\" click (attempt " + attempt + "/" + maxBookingAttempts + ")...");
+                        "Slot \"" + previousTime + "\" was not booked; trying the next available slot (attempt "
+                                + attempt + "/" + maxBookingAttempts + ")...");
                 CONTEXT.waitForSpinners();
+                selectTimeInNewAppointmentDropDownList("<nächste>", skippedTimes);
             }
     
             WebElement bookButton = wait.until(
@@ -579,12 +656,15 @@ public class CounterProcessingStationPage extends AdminPage {
                     )
             );
     
-            ((JavascriptExecutor) DRIVER).executeScript("arguments[0].scrollIntoView({block:'center'});", bookButton);
-    
-            if (attempt == 1) {
-                bookButton.click();
-            } else {
+            bookingAttempted = false;
+            try {
+                ((JavascriptExecutor) DRIVER).executeScript("arguments[0].scrollIntoView({block:'center'});", bookButton);
                 ((JavascriptExecutor) DRIVER).executeScript("arguments[0].click();", bookButton);
+                bookingAttempted = true;
+            } catch (StaleElementReferenceException | ElementClickInterceptedException | TimeoutException e) {
+                ScenarioLogManager.getLogger().warn(
+                        "Book click did not complete (attempt " + attempt + "/" + maxBookingAttempts + ").");
+                continue;
             }
     
             CONTEXT.waitForSpinners();
@@ -596,7 +676,9 @@ public class CounterProcessingStationPage extends AdminPage {
                     List<WebElement> errorElements = driver.findElements(By.xpath(
                             "//li[@data-key='familyName'] | " +
                             "//li[@data-key='email'] | " +
-                            "//li[@data-key='requests']"
+                            "//li[@data-key='requests'] | " +
+                            "//li[@data-key='customTextfield'] | " +
+                            "//li[@data-key='customTextfield2']"
                     ));
     
                     if (!errorElements.isEmpty()) {
@@ -621,6 +703,13 @@ public class CounterProcessingStationPage extends AdminPage {
                                         "Fehler: Es muss mindestens eine Dienstleistung ausgewählt werden!"
                                 );
                                 break;
+                            case "customTextfield":
+                            case "customTextfield2":
+                                TestDataHelper.setTestData(
+                                        "Fehler-Bemerkung",
+                                        "Fehler: Die zusätzliche Bemerkung fehlt."
+                                );
+                                break;
                             default:
                                 break;
                             }
@@ -630,7 +719,7 @@ public class CounterProcessingStationPage extends AdminPage {
                     }
     
                     List<WebElement> successHeader = driver.findElements(
-                            By.xpath("//h2[normalize-space()='Termin erfolgreich eingetragen']")
+                            By.xpath("//h2[normalize-space()='Termin wurde erfolgreich eingetragen']")
                     );
     
                     if (!successHeader.isEmpty()) {
@@ -722,7 +811,7 @@ public class CounterProcessingStationPage extends AdminPage {
         ScenarioLogManager.getLogger().info("Trying to click on \"Add spontaneous customer\"  button...");
         fillCustomTextfieldsForSpontaneousCustomerIfNeeded();
         clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME * 2, "//button[text()='Spontankunden hinzufügen']", LocatorType.XPATH, false, CONTEXT);
-        Assert.assertTrue(isWebElementVisible(DEFAULT_EXPLICIT_WAIT_TIME * 2, "//h2[text()='Wartenummer wurde hinzugefügt']", LocatorType.XPATH, false, CONTEXT),
+        Assert.assertTrue(isWebElementVisible(DEFAULT_EXPLICIT_WAIT_TIME * 2, "//h2[text()='Spontankunde wurde erfolgreich eingetragen']", LocatorType.XPATH, false, CONTEXT),
                 "Click on \"Add spontaneous customer\"  button has failed! Success message is not displayed!");
         Pattern appointmentNumberPattern = Pattern.compile("^Termin-Nr\\.\\s*([0-9]+).*");
         Matcher appointmentNumberMatcher = appointmentNumberPattern.matcher(
@@ -730,6 +819,35 @@ public class CounterProcessingStationPage extends AdminPage {
         Assert.assertTrue(appointmentNumberMatcher.find(), "Click on \"Add spontaneous customer\"  button has failed! Waiting number is not displayed!");
         TestDataHelper.setTestData("new_waiting_number", appointmentNumberMatcher.group(1));
         return appointmentNumberMatcher.group(1);
+    }
+
+    public void clickOnEditProcessButton() {
+        ScenarioLogManager.getLogger().info("Trying to click on \"edit process\" button...");
+        clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "//button[contains(text(),'Termin bearbeiten')]", LocatorType.XPATH, false, CONTEXT);
+    }
+
+    public void checkProcessEditFormIsVisible() {
+        ScenarioLogManager.getLogger().info("Checking if process edit form is visible...");
+        CONTEXT.waitForSpinners();
+
+        Assert.assertTrue(isWebElementVisible(DEFAULT_EXPLICIT_WAIT_TIME, "//input[@id='process_date']", LocatorType.XPATH, false, CONTEXT), "Process edit form is not visible!");
+
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        wait.withMessage("The expected walk-in customer was not loaded into the edit form!");
+
+        wait.until(ExpectedConditions.textToBePresentInElementValue(By.xpath("//input[@name='familyName']"), TestDataHelper.getTestData("customer_name")));
+    }
+
+    public void checkAppointmentEditFormIsVisible() {
+        ScenarioLogManager.getLogger().info("Checking if appointment edit form is visible...");
+        CONTEXT.waitForSpinners();
+
+        Assert.assertTrue(isWebElementVisible(DEFAULT_EXPLICIT_WAIT_TIME, "//input[@id='process_date']", LocatorType.XPATH, false, CONTEXT), "Appointment edit form is not visible!");
+
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        wait.withMessage("The expected appointment customer was not loaded into the edit form!");
+
+        wait.until(ExpectedConditions.textToBePresentInElementValue(By.xpath("//input[@name='familyName']"), TestDataHelper.getTestData("new_appointment_customer_name"))); 
     }
 
     public void clickOnCloseButton() {
@@ -744,7 +862,7 @@ public class CounterProcessingStationPage extends AdminPage {
 
     public void clickOnPrintAppointmentNumberButton() {
         ScenarioLogManager.getLogger().info("Trying to click on \"print appointment number\"  button...");
-        clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "//button[contains(text(),'Vorgangsnummer drucken')]", LocatorType.XPATH, false);
+        clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "//button[contains(text(),'Wartenummer drucken')]", LocatorType.XPATH, false, CONTEXT);
     }
 
     public void checkAppointmentConfirmationPrint() {

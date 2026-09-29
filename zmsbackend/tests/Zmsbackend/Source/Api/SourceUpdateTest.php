@@ -6,6 +6,7 @@ class SourceUpdateTest extends \BO\Zmsbackend\Tests\Api\Base
 {
     protected $classname = "SourceUpdate";
 
+    #[\Override]
     public function testRendering()
     {
         $this->setWorkstation()->getUseraccount()->setPermissions('source');

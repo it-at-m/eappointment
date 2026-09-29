@@ -50,7 +50,7 @@ class CalldisplayQueue extends \BO\Zmsbackend\Api\BaseController
         return $response;
     }
 
-    protected function readCalculatedQueueListFromScope($scope, $resolveReferences)
+    protected function readCalculatedQueueListFromScope($scope, int $resolveReferences)
     {
         $query = new \BO\Zmsbackend\Scope\Service\Scope();
         $scope = (isset($this->scopeCache[$scope->id])) ?
@@ -71,7 +71,7 @@ class CalldisplayQueue extends \BO\Zmsbackend\Api\BaseController
         return $queueList;
     }
 
-    protected function readQueueListFromScopeAndStatus($scope, $status, $resolveReferences): \BO\Zmsentities\Collection\QueueList
+    protected function readQueueListFromScopeAndStatus($scope, $status, int $resolveReferences): \BO\Zmsentities\Collection\QueueList
     {
         $query = new \BO\Zmsbackend\Process\Service\Process();
         return $query
