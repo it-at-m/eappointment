@@ -420,6 +420,7 @@ public class AdminSteps {
         if (!"true".equals(TestDataHelper.getTestData("appointment_booked_as_walk_in"))
                 && COUNTER_PROCESSING_STATION_PAGE.hasBookAppointmentButton()) {
             COUNTER_PROCESSING_STATION_PAGE.clickOnBookAppointmentButton(true);
+            COUNTER_PROCESSING_STATION_PAGE.clickOnCloseButton();
             return;
         }
         if (!"true".equals(TestDataHelper.getTestData("appointment_booked_as_walk_in"))) {
@@ -429,6 +430,7 @@ public class AdminSteps {
         }
         String waitingNumber = COUNTER_PROCESSING_STATION_PAGE.clickOnAddSpontaneousCustomer();
         TestDataHelper.setTestData("new_appointment_number", waitingNumber);
+        COUNTER_PROCESSING_STATION_PAGE.clickOnCloseButton();
     }
 
     @Wenn("Sie im " + AdminPageContext.NAME + " unter Termin erstellen das Datum {string} eingeben.")
