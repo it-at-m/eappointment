@@ -118,6 +118,8 @@ class QueueListTest extends EntityCommonTests
         $appointmentProcess->number = 111111;
         $appointmentProcess->queue->arrivalTime = $now->modify('-10 minutes')->getTimestamp();
         $appointmentProcess->queue->lastCallTime = $now->modify('-2 minutes')->getTimestamp();
+        $appointmentProcess->queue->callCount = 1;
+        $appointmentProcess->timeoutTime = $now->modify('-2 minutes')->format('Y-m-d H:i:s');
         $appointmentProcess->getFirstAppointment()->date = $now->modify('-10 minutes')->getTimestamp();
 
         $spontaneousProcess = (new \BO\Zmsentities\Process())->getExample();
@@ -138,7 +140,7 @@ class QueueListTest extends EntityCommonTests
         $this->assertEquals(222222, $nextProcess->id);
     }
 
-    public function testGetNextProcessAllowsAppointmentAfterRecallCooldon() {
+    public function testGetNextProcessAllowsAppointmentAfterRecallCooldown() {
         $now = new \DateTimeImmutable(self::DEFAULT_TIME);
 
         $processList = new \BO\Zmsentities\Collection\ProcessList();
@@ -149,7 +151,9 @@ class QueueListTest extends EntityCommonTests
         $appointmentProcess->queue->withAppointment = true;
         $appointmentProcess->number = 111111;
         $appointmentProcess->queue->arrivalTime = $now->modify('-10 minutes')->getTimestamp();
-        $appointmentProcess->queue->lastCallTime = $now->modify('-5 minutes')->getTimestamp();
+        $appointmentProcess->queue->lastCallTime = 0;
+        $appointmentProcess->queue->callCount = 1;
+        $appointmentProcess->timeoutTime = $now->modify('-5 minutes')->format('Y-m-d H:i:s');
         $appointmentProcess->getFirstAppointment()->date = $now->modify('-10 minutes')->getTimestamp();
 
         $spontaneousProcess = (new \BO\Zmsentities\Process())->getExample();
