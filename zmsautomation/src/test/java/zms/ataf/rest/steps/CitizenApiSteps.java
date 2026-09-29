@@ -4,6 +4,7 @@ import static io.restassured.RestAssured.given;
 
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -736,6 +737,12 @@ public class CitizenApiSteps {
     @When("I update the appointment with contact details and customTextfield {string}")
     public void iUpdateTheAppointmentWithContactDetailsAndCustomTextfield(String customTextfield) {
         postAppointmentUpdate(scenarioContactFamilyName(), scenarioContactEmail(), customTextfield != null ? customTextfield : "", true, false);
+    }
+
+    @When("I update the appointment with family name {string} and customTextfield {string}")
+    public void iUpdateTheAppointmentWithFamilyNameAndCustomTextfield(String familyName, String customTextfield) {
+        String email = familyName.toLowerCase(Locale.ROOT).replaceAll("[^a-z0-9]", "") + "@mailinator.com";
+        postAppointmentUpdate(familyName, email, customTextfield != null ? customTextfield : "", true, false);
     }
 
     @When("I update the appointment with contact details and customTextfield {string} as the logged-in citizen")
