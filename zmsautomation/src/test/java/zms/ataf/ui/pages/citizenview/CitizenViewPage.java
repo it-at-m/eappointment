@@ -2392,6 +2392,28 @@ public class CitizenViewPage extends BasePage {
                 "Cancel reschedule button (Verschieben abbrechen) not found after rebooking slot selection.");
     }
 
+    /**
+     * ZMSKVR-1631 / ZMSKVR-1651: Verschieben abbrechen from the Termin step returns to the existing
+     * appointment, where both Termin verschieben and Termin absagen are offered again.
+     */
+    public void assertRescheduleOrCancelActionsVisible() {
+        CONTEXT.set();
+        ScenarioLogManager.getLogger()
+                .info(
+                        "zmscitizenview: waiting for reschedule and cancel actions ({} / Termin absagen)",
+                        RESCHEDULE_APPOINTMENT_BUTTON);
+        waitWithThreeWindows(
+                () -> shadowDomContainsText(RESCHEDULE_APPOINTMENT_BUTTON)
+                        && shadowDomContainsText("Termin absagen"),
+                "Reschedule or cancel actions");
+        Assert.assertTrue(
+                shadowDomContainsText(RESCHEDULE_APPOINTMENT_BUTTON),
+                "Termin verschieben not visible after returning from the Termin step.");
+        Assert.assertTrue(
+                shadowDomContainsText("Termin absagen"),
+                "Termin absagen not visible after returning from the Termin step.");
+    }
+
     /** ZMSKVR-1500: abort reschedule and return to appointment overview. */
     public void clickCancelReschedule() {
         CONTEXT.set();
