@@ -2,16 +2,23 @@
   <div class="m-component m-component-form">
     <!-- Maintenance Page -->
     <div
-      v-if="isInMaintenanceModeComputed"
-      class="container"
+      role="status"
+      aria-live="polite"
+      aria-atomic="true"
     >
-      <div class="m-component__grid">
-        <div class="m-component__column">
-          <error-alert
-            :message="t('maintenancePageText')"
-            :header="t('maintenancePageHeader')"
-            type="warning"
-          />
+      <div
+        v-if="isInMaintenanceModeComputed"
+        class="container"
+      >
+        <div class="m-component__grid">
+          <div class="m-component__column">
+            <error-alert
+              :message="t('maintenancePageText')"
+              :header="t('maintenancePageHeader')"
+              type="warning"
+              :live="false"
+            />
+          </div>
         </div>
       </div>
     </div>
@@ -223,6 +230,42 @@
       <div class="container">
         <div class="m-component__grid">
           <div class="m-component__column">
+            <div
+              role="status"
+              aria-live="polite"
+              aria-atomic="true"
+            >
+              <muc-callout
+                v-if="currentView === 4 && cancelAppointmentSuccess"
+                type="success"
+              >
+                <template #content>
+                  <p>{{ t("appointmentSuccessfullyCanceledText") }}</p>
+                </template>
+                <template #header>
+                  {{ t("appointmentSuccessfullyCanceledHeader") }}
+                </template>
+              </muc-callout>
+            </div>
+
+            <div
+              role="status"
+              aria-live="polite"
+              aria-atomic="true"
+            >
+              <muc-callout
+                v-if="currentView !== 4 && confirmAppointmentSuccess"
+                type="success"
+              >
+                <template #content>
+                  <p>{{ t("appointmentSuccessfullyBookedText") }}</p>
+                </template>
+                <template #header>
+                  {{ t("appointmentSuccessfullyBookedHeader") }}
+                </template>
+              </muc-callout>
+            </div>
+
             <template v-if="currentView === 4">
               <muc-callout
                 v-if="!cancelAppointmentSuccess"
@@ -236,44 +279,26 @@
                 </template>
               </muc-callout>
 
-              <muc-callout
-                v-if="cancelAppointmentSuccess"
-                type="success"
-              >
-                <template #content>
-                  <p>{{ t("appointmentSuccessfullyCanceledText") }}</p>
-                </template>
-                <template #header>
-                  {{ t("appointmentSuccessfullyCanceledHeader") }}
-                </template>
-              </muc-callout>
-
-              <muc-callout
+              <div
                 v-if="hasCancelAppointmentError"
-                :type="toCalloutType(apiErrorTranslation.errorType)"
+                role="alert"
+                aria-live="assertive"
+                aria-atomic="true"
               >
-                <template #content>
-                  <p>{{ t(apiErrorTranslation.textKey) }}</p>
-                </template>
-                <template #header>
-                  {{ t(apiErrorTranslation.headerKey) }}
-                </template>
-              </muc-callout>
+                <muc-callout
+                  :type="toCalloutType(apiErrorTranslation.errorType)"
+                >
+                  <template #content>
+                    <p>{{ t(apiErrorTranslation.textKey) }}</p>
+                  </template>
+                  <template #header>
+                    {{ t(apiErrorTranslation.headerKey) }}
+                  </template>
+                </muc-callout>
+              </div>
             </template>
 
             <template v-else>
-              <muc-callout
-                v-if="confirmAppointmentSuccess"
-                type="success"
-              >
-                <template #content>
-                  <p>{{ t("appointmentSuccessfullyBookedText") }}</p>
-                </template>
-                <template #header>
-                  {{ t("appointmentSuccessfullyBookedHeader") }}
-                </template>
-              </muc-callout>
-
               <div
                 v-if="confirmAppointmentSuccess"
                 class="m-button-group"
@@ -301,21 +326,27 @@
                 </muc-button>
               </div>
 
-              <muc-callout
+              <div
                 v-if="
                   !confirmAppointmentSuccess &&
                   !appointmentAlreadyActivated &&
                   hasConfirmAppointmentError
                 "
-                :type="toCalloutType(apiErrorTranslation.errorType)"
+                role="alert"
+                aria-live="assertive"
+                aria-atomic="true"
               >
-                <template #content>
-                  <p>{{ t(apiErrorTranslation.textKey) }}</p>
-                </template>
-                <template #header>
-                  {{ t(apiErrorTranslation.headerKey) }}
-                </template>
-              </muc-callout>
+                <muc-callout
+                  :type="toCalloutType(apiErrorTranslation.errorType)"
+                >
+                  <template #content>
+                    <p>{{ t(apiErrorTranslation.textKey) }}</p>
+                  </template>
+                  <template #header>
+                    {{ t(apiErrorTranslation.headerKey) }}
+                  </template>
+                </muc-callout>
+              </div>
 
               <muc-callout
                 v-if="hasInitializationError"
