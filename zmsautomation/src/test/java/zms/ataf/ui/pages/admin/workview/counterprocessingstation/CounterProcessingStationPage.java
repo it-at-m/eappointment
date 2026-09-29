@@ -37,6 +37,7 @@ import ataf.core.logging.ScenarioLogManager;
 import ataf.core.properties.DefaultValues;
 import ataf.web.model.LocatorType;
 import zms.ataf.helpers.AppointmentCountHelper;
+import zms.ataf.helpers.BerlinTime;
 import zms.ataf.ui.pages.admin.AdminPage;
 import zms.ataf.ui.pages.admin.AdminPageContext;
 
@@ -510,6 +511,7 @@ public class CounterProcessingStationPage extends AdminPage {
         wait.ignoring(StaleElementReferenceException.class, ElementClickInterceptedException.class);
         wait.pollingEvery(Duration.ofMillis(1000L));
         wait.withMessage("Could not locate any time slot elements in time!");
+        int[] daysAhead = { 0 };
         try {
             wait.until((ExpectedCondition<Boolean>) waitDriver -> {
                 TestDataHelper.setTestData("appointment_booked_as_walk_in", "false");
@@ -533,7 +535,7 @@ public class CounterProcessingStationPage extends AdminPage {
                             if (fallBackToWalkIn && selectWalkInOption(newAppointmentTimeDropDownListSelections, newAppointmentTimeDropDownList)) {
                                 break;
                             }
-                            return false;
+                            return moveToNextDayWithSlots(daysAhead);
                         }
                         WebElement webElement;
                         if (time.equals("<beliebig>")) {
@@ -578,12 +580,28 @@ public class CounterProcessingStationPage extends AdminPage {
                     }
                     return true;
                 } else {
-                    return false;
+                    return moveToNextDayWithSlots(daysAhead);
                 }
             });
         } catch (Exception e) {
             Assert.fail("Selecting time \"" + TestDataHelper.getTestData("new_appointment_time") + "\" in new appointment drop down list has failed,", e);
         }
+    }
+
+    /**
+     * Today's Terminkunde list is empty once fewer than three hours remain until 23:55.
+     * The next day is opened for the whole day, so the form moves there and the time list is read again.
+     */
+    private boolean moveToNextDayWithSlots(int[] daysAhead) {
+        if (daysAhead[0] >= 7) {
+            return false;
+        }
+        daysAhead[0]++;
+        LocalDate day = BerlinTime.today().plusDays(daysAhead[0]);
+        String date = day.format(DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.GERMAN));
+        ScenarioLogManager.getLogger().info("No Terminkunde slot left; opening {}", date);
+        enterDateInNewAppointmentTextField(date);
+        return false;
     }
 
     public void enterNameInNewAppointmentTextField(String name) {

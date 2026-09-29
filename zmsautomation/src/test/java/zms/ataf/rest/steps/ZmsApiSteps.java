@@ -259,7 +259,7 @@ public class ZmsApiSteps {
             int scopeId, String serviceName, String amendment) {
         String familyName = TestPropertiesHelper.getPropertyAsString("zmsapiAppointmentFamilyName", true, "Terminkunde");
         String email = TestPropertiesHelper.getPropertyAsString("zmsapiAppointmentEmail", true, "terminkunde@example.com");
-        reserveConfirmedAppointment(scopeId, serviceName, familyName, email, amendment, false);
+        reserveConfirmedAppointment(scopeId, serviceName, familyName, email, amendment, true);
     }
 
     @When("I reserve an appointment at scope {int} with service {string}, name {string} and amendment {string} with the X-AuthKey")
@@ -422,6 +422,7 @@ public class ZmsApiSteps {
             .as("Reserve an appointment before calling it")
             .isNotNull();
 
+        replaceFutureAppointmentWithWalkIn();
         String authKey = getOrLoginXAuthKey();
         response = given()
             .baseUri(baseUri != null ? baseUri : TestConfig.getBaseUri())
@@ -434,6 +435,52 @@ public class ZmsApiSteps {
         CommonApiSteps.setResponse(response);
         JsonNode workstation = parseDataNode(response);
         rememberProcess(workstation != null ? workstation.path("process") : null);
+    }
+
+    /**
+     * A confirmed slot on a later day cannot be called. Queue a walk-in for today and drop the future appointment.
+     */
+    private void replaceFutureAppointmentWithWalkIn() {
+        if (appointmentIsToday(lastProcess)) {
+            return;
+        }
+        int futureId = lastProcess.path("id").asInt();
+        ObjectNode body = lastProcess.deepCopy();
+        body.remove("id");
+        body.remove("authKey");
+        body.put("status", "queued");
+        String authKey = getOrLoginXAuthKey();
+        ScenarioLogManager.getLogger().info(
+            "Appointment {} is not today; queueing a walk-in so it can be called", futureId);
+        response = given()
+            .baseUri(baseUri != null ? baseUri : TestConfig.getBaseUri())
+            .header("X-AuthKey", authKey)
+            .contentType("application/json")
+            .body(toJson(body))
+        .when()
+            .post("/workstation/process/waitingnumber/");
+        CommonApiSteps.setResponse(response);
+        Assertions.assertThat(response.getStatusCode())
+            .as("POST /workstation/process/waitingnumber/ body=%s", truncate(response.asString(), 1000))
+            .isEqualTo(200);
+        JsonNode queued = parseDataNode(response);
+        Assertions.assertThat(queued).isNotNull();
+        given()
+            .baseUri(baseUri != null ? baseUri : TestConfig.getBaseUri())
+            .header("X-AuthKey", authKey)
+            .queryParam("initiator", "admin")
+        .when()
+            .delete("/process/" + futureId + "/");
+        rememberProcess(queued);
+    }
+
+    private boolean appointmentIsToday(JsonNode process) {
+        long timestamp = process.path("appointments").path(0).path("date").asLong(0);
+        if (timestamp <= 0) {
+            return true;
+        }
+        long start = BerlinTime.today().atStartOfDay(java.time.ZoneId.of("Europe/Berlin")).toEpochSecond();
+        return timestamp >= start && timestamp < start + 86_400L;
     }
 
     @When("I set the assigned process status to processing with the X-AuthKey")
