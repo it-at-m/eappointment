@@ -697,6 +697,41 @@ public class CounterProcessingStationPage extends AdminPage {
         TestDataHelper.setTestData("new_appointment_service", service);
     }
 
+    public void increaseSelectedServiceCount(String service, int times) {
+        ScenarioLogManager.getLogger().info("Increasing the count of selected service \"{}\" by {}", service, times);
+        By plus = By.xpath(selectedServiceRow(service) + "//input[@class='plus']");
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        for (int i = 0; i < times; i++) {
+            wait.until(ExpectedConditions.elementToBeClickable(plus)).click();
+            CONTEXT.waitForSpinners();
+        }
+    }
+
+    public void clearSelectedServiceList() {
+        ScenarioLogManager.getLogger().info("Clearing the selected service list...");
+        clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "button.clear-list", LocatorType.CSSSELECTOR, false);
+        CONTEXT.waitForSpinners();
+    }
+
+    public void assertSelectedServiceCount(String service, int expectedCount) {
+        By count = By.xpath(selectedServiceRow(service) + "//span[@class='request-count']");
+        WebElement countElement = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(ExpectedConditions.visibilityOfElementLocated(count));
+        Assert.assertEquals(countElement.getText().trim(), Integer.toString(expectedCount),
+                "Selected service \"" + service + "\" has the wrong count.");
+    }
+
+    public void assertSelectedServiceHidden(String service) {
+        By row = By.xpath(selectedServiceRow(service));
+        new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .withMessage("Service \"" + service + "\" is still in the selected list.")
+                .until(driver -> driver.findElements(row).stream().noneMatch(WebElement::isDisplayed));
+    }
+
+    private String selectedServiceRow(String service) {
+        return "//ul[@aria-label='Dienstleistungen Abwahlliste']//li[.//span[normalize-space(.)='" + service + "']]";
+    }
+
     public void clickOnBookAppointmentButton(boolean assertErrors) {
         ScenarioLogManager.getLogger().info("Trying to click on \"book appointment\" button...");
     
