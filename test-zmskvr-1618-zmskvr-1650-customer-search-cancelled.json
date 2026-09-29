@@ -1,44 +1,44 @@
 {
   "branch": "test-zmskvr-1618-zmskvr-1650-customer-search-cancelled",
   "branchSlug": "test-zmskvr-1618-zmskvr-1650-customer-search-cancelled",
-  "runId": "36622763669",
-  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36622763669",
-  "runStartedAt": "2026-09-29T19:56:24Z",
-  "publishedAt": "2026-09-29T20:10:40.721Z",
+  "runId": "36622806866",
+  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36622806866",
+  "runStartedAt": "2026-09-29T19:56:49Z",
+  "publishedAt": "2026-09-29T20:13:09.208Z",
   "features": {
     "feature-ui-zmsadmin-citizen-search-zmskvr-1650-zmskvr-1618-cancelled-status": {
       "status": "passed",
-      "shard": "custom",
+      "shard": "zmscitizenview",
       "browser": "chrome",
-      "rel": "ui/zmsadmin/citizen-search/zmskvr-1650_zmskvr-1618_cancelled_status.feature",
-      "runId": "36622763669",
-      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36622763669",
-      "runStartedAt": "2026-09-29T19:56:24Z",
       "browsers": {
         "chrome": {
           "status": "passed",
-          "shard": "custom",
-          "runId": "36622763669",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36622763669",
-          "runStartedAt": "2026-09-29T19:56:24Z"
+          "shard": "zmscitizenview",
+          "runId": "36622806866",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36622806866",
+          "runStartedAt": "2026-09-29T19:56:49Z"
         }
-      }
+      },
+      "rel": "ui/zmsadmin/citizen-search/zmskvr-1650_zmskvr-1618_cancelled_status.feature",
+      "runId": "36622806866",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36622806866",
+      "runStartedAt": "2026-09-29T19:56:49Z"
     },
     "feature-ui-zmsadmin-booking-zmskvr-1049": {
       "status": "passed",
       "shard": "zmsadmin",
       "browser": "chrome",
       "rel": "ui/zmsadmin/booking/ZMSKVR-1049.feature",
-      "runId": "36619955351",
-      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36619955351",
-      "runStartedAt": "2026-09-29T19:32:22Z",
+      "runId": "36622806866",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36622806866",
+      "runStartedAt": "2026-09-29T19:56:49Z",
       "browsers": {
         "chrome": {
           "status": "passed",
           "shard": "zmsadmin",
-          "runId": "36619955351",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36619955351",
-          "runStartedAt": "2026-09-29T19:32:22Z"
+          "runId": "36622806866",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36622806866",
+          "runStartedAt": "2026-09-29T19:56:49Z"
         }
       }
     },
@@ -47,16 +47,16 @@
       "shard": "zmsadmin",
       "browser": "chrome",
       "rel": "ui/zmsadmin/booking/ZMSKVR-1328.feature",
-      "runId": "36619955351",
-      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36619955351",
-      "runStartedAt": "2026-09-29T19:32:22Z",
+      "runId": "36622806866",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36622806866",
+      "runStartedAt": "2026-09-29T19:56:49Z",
       "browsers": {
         "chrome": {
           "status": "passed",
           "shard": "zmsadmin",
-          "runId": "36619955351",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36619955351",
-          "runStartedAt": "2026-09-29T19:32:22Z"
+          "runId": "36622806866",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36622806866",
+          "runStartedAt": "2026-09-29T19:56:49Z"
         }
       }
     },
@@ -65,16 +65,16 @@
       "shard": "zmsadmin",
       "browser": "chrome",
       "rel": "ui/zmsadmin/booking/ZMSKVR-343.feature",
-      "runId": "36619955351",
-      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36619955351",
-      "runStartedAt": "2026-09-29T19:32:22Z",
+      "runId": "36622806866",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36622806866",
+      "runStartedAt": "2026-09-29T19:56:49Z",
       "browsers": {
         "chrome": {
           "status": "passed",
           "shard": "zmsadmin",
-          "runId": "36619955351",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36619955351",
-          "runStartedAt": "2026-09-29T19:32:22Z"
+          "runId": "36622806866",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36622806866",
+          "runStartedAt": "2026-09-29T19:56:49Z"
         }
       }
     },
@@ -83,16 +83,16 @@
       "shard": "zmsadmin",
       "browser": "chrome",
       "rel": "ui/zmsadmin/citizen-call/ZMS-1546.feature",
-      "runId": "36619955351",
-      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36619955351",
-      "runStartedAt": "2026-09-29T19:32:22Z",
+      "runId": "36622806866",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36622806866",
+      "runStartedAt": "2026-09-29T19:56:49Z",
       "browsers": {
         "chrome": {
           "status": "passed",
           "shard": "zmsadmin",
-          "runId": "36619955351",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36619955351",
-          "runStartedAt": "2026-09-29T19:32:22Z"
+          "runId": "36622806866",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36622806866",
+          "runStartedAt": "2026-09-29T19:56:49Z"
         }
       }
     },
@@ -101,16 +101,16 @@
       "shard": "zmsadmin",
       "browser": "chrome",
       "rel": "ui/zmsadmin/citizen-call/ZMS-2850.feature",
-      "runId": "36619955351",
-      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36619955351",
-      "runStartedAt": "2026-09-29T19:32:22Z",
+      "runId": "36622806866",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36622806866",
+      "runStartedAt": "2026-09-29T19:56:49Z",
       "browsers": {
         "chrome": {
           "status": "passed",
           "shard": "zmsadmin",
-          "runId": "36619955351",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36619955351",
-          "runStartedAt": "2026-09-29T19:32:22Z"
+          "runId": "36622806866",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36622806866",
+          "runStartedAt": "2026-09-29T19:56:49Z"
         }
       }
     },
@@ -119,16 +119,16 @@
       "shard": "zmsadmin",
       "browser": "chrome",
       "rel": "ui/zmsadmin/citizen-call/ZMS-2851.feature",
-      "runId": "36619955351",
-      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36619955351",
-      "runStartedAt": "2026-09-29T19:32:22Z",
+      "runId": "36622806866",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36622806866",
+      "runStartedAt": "2026-09-29T19:56:49Z",
       "browsers": {
         "chrome": {
           "status": "passed",
           "shard": "zmsadmin",
-          "runId": "36619955351",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36619955351",
-          "runStartedAt": "2026-09-29T19:32:22Z"
+          "runId": "36622806866",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36622806866",
+          "runStartedAt": "2026-09-29T19:56:49Z"
         }
       }
     },
@@ -137,16 +137,16 @@
       "shard": "zmsadmin",
       "browser": "chrome",
       "rel": "ui/zmsadmin/citizen-call/ZMS-2853.feature",
-      "runId": "36619955351",
-      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36619955351",
-      "runStartedAt": "2026-09-29T19:32:22Z",
+      "runId": "36622806866",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36622806866",
+      "runStartedAt": "2026-09-29T19:56:49Z",
       "browsers": {
         "chrome": {
           "status": "passed",
           "shard": "zmsadmin",
-          "runId": "36619955351",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36619955351",
-          "runStartedAt": "2026-09-29T19:32:22Z"
+          "runId": "36622806866",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36622806866",
+          "runStartedAt": "2026-09-29T19:56:49Z"
         }
       }
     },
@@ -155,16 +155,16 @@
       "shard": "zmsadmin",
       "browser": "chrome",
       "rel": "ui/zmsadmin/configuration/ZMS-3160.feature",
-      "runId": "36619955351",
-      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36619955351",
-      "runStartedAt": "2026-09-29T19:32:22Z",
+      "runId": "36622806866",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36622806866",
+      "runStartedAt": "2026-09-29T19:56:49Z",
       "browsers": {
         "chrome": {
           "status": "passed",
           "shard": "zmsadmin",
-          "runId": "36619955351",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36619955351",
-          "runStartedAt": "2026-09-29T19:32:22Z"
+          "runId": "36622806866",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36622806866",
+          "runStartedAt": "2026-09-29T19:56:49Z"
         }
       }
     },
@@ -173,16 +173,16 @@
       "shard": "zmsadmin",
       "browser": "chrome",
       "rel": "ui/zmsadmin/configuration/ZMS-3171.feature",
-      "runId": "36619955351",
-      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36619955351",
-      "runStartedAt": "2026-09-29T19:32:22Z",
+      "runId": "36622806866",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36622806866",
+      "runStartedAt": "2026-09-29T19:56:49Z",
       "browsers": {
         "chrome": {
           "status": "failed",
           "shard": "zmsadmin",
-          "runId": "36619955351",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36619955351",
-          "runStartedAt": "2026-09-29T19:32:22Z"
+          "runId": "36622806866",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36622806866",
+          "runStartedAt": "2026-09-29T19:56:49Z"
         }
       }
     },
@@ -191,16 +191,16 @@
       "shard": "zmsadmin",
       "browser": "chrome",
       "rel": "ui/zmsadmin/opening-hours/ZMS-878.feature",
-      "runId": "36619955351",
-      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36619955351",
-      "runStartedAt": "2026-09-29T19:32:22Z",
+      "runId": "36622806866",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36622806866",
+      "runStartedAt": "2026-09-29T19:56:49Z",
       "browsers": {
         "chrome": {
           "status": "passed",
           "shard": "zmsadmin",
-          "runId": "36619955351",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36619955351",
-          "runStartedAt": "2026-09-29T19:32:22Z"
+          "runId": "36622806866",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36622806866",
+          "runStartedAt": "2026-09-29T19:56:49Z"
         }
       }
     },
@@ -209,16 +209,16 @@
       "shard": "zmsadmin",
       "browser": "chrome",
       "rel": "ui/zmsadmin/opening-hours/zmskvr-1672_zmskvr-1411_opening_hours_including_sunday.feature",
-      "runId": "36619955351",
-      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36619955351",
-      "runStartedAt": "2026-09-29T19:32:22Z",
+      "runId": "36622806866",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36622806866",
+      "runStartedAt": "2026-09-29T19:56:49Z",
       "browsers": {
         "chrome": {
           "status": "passed",
           "shard": "zmsadmin",
-          "runId": "36619955351",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36619955351",
-          "runStartedAt": "2026-09-29T19:32:22Z"
+          "runId": "36622806866",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36622806866",
+          "runStartedAt": "2026-09-29T19:56:49Z"
         }
       }
     },
@@ -227,16 +227,16 @@
       "shard": "zmsadmin",
       "browser": "chrome",
       "rel": "ui/zmsadmin/queue/ZMS-1548.feature",
-      "runId": "36619955351",
-      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36619955351",
-      "runStartedAt": "2026-09-29T19:32:22Z",
+      "runId": "36622806866",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36622806866",
+      "runStartedAt": "2026-09-29T19:56:49Z",
       "browsers": {
         "chrome": {
           "status": "passed",
           "shard": "zmsadmin",
-          "runId": "36619955351",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36619955351",
-          "runStartedAt": "2026-09-29T19:32:22Z"
+          "runId": "36622806866",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36622806866",
+          "runStartedAt": "2026-09-29T19:56:49Z"
         }
       }
     },
@@ -245,16 +245,16 @@
       "shard": "zmsadmin",
       "browser": "chrome",
       "rel": "ui/zmsadmin/queue/ZMS-1549.feature",
-      "runId": "36619955351",
-      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36619955351",
-      "runStartedAt": "2026-09-29T19:32:22Z",
+      "runId": "36622806866",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36622806866",
+      "runStartedAt": "2026-09-29T19:56:49Z",
       "browsers": {
         "chrome": {
           "status": "failed",
           "shard": "zmsadmin",
-          "runId": "36619955351",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36619955351",
-          "runStartedAt": "2026-09-29T19:32:22Z"
+          "runId": "36622806866",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36622806866",
+          "runStartedAt": "2026-09-29T19:56:49Z"
         }
       }
     },
@@ -263,16 +263,16 @@
       "shard": "zmsadmin",
       "browser": "chrome",
       "rel": "ui/zmsadmin/queue/ZMS-2389.feature",
-      "runId": "36619955351",
-      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36619955351",
-      "runStartedAt": "2026-09-29T19:32:22Z",
+      "runId": "36622806866",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36622806866",
+      "runStartedAt": "2026-09-29T19:56:49Z",
       "browsers": {
         "chrome": {
           "status": "passed",
           "shard": "zmsadmin",
-          "runId": "36619955351",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36619955351",
-          "runStartedAt": "2026-09-29T19:32:22Z"
+          "runId": "36622806866",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36622806866",
+          "runStartedAt": "2026-09-29T19:56:49Z"
         }
       }
     },
@@ -281,16 +281,16 @@
       "shard": "zmsadmin",
       "browser": "chrome",
       "rel": "ui/zmsadmin/queue/ZMS-2577.feature",
-      "runId": "36619955351",
-      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36619955351",
-      "runStartedAt": "2026-09-29T19:32:22Z",
+      "runId": "36622806866",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36622806866",
+      "runStartedAt": "2026-09-29T19:56:49Z",
       "browsers": {
         "chrome": {
           "status": "passed",
           "shard": "zmsadmin",
-          "runId": "36619955351",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36619955351",
-          "runStartedAt": "2026-09-29T19:32:22Z"
+          "runId": "36622806866",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36622806866",
+          "runStartedAt": "2026-09-29T19:56:49Z"
         }
       }
     },
@@ -299,16 +299,16 @@
       "shard": "zmsadmin",
       "browser": "chrome",
       "rel": "ui/zmsadmin/queue/ZMS-2578.feature",
-      "runId": "36619955351",
-      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36619955351",
-      "runStartedAt": "2026-09-29T19:32:22Z",
+      "runId": "36622806866",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36622806866",
+      "runStartedAt": "2026-09-29T19:56:49Z",
       "browsers": {
         "chrome": {
           "status": "passed",
           "shard": "zmsadmin",
-          "runId": "36619955351",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36619955351",
-          "runStartedAt": "2026-09-29T19:32:22Z"
+          "runId": "36622806866",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36622806866",
+          "runStartedAt": "2026-09-29T19:56:49Z"
         }
       }
     },
@@ -317,16 +317,16 @@
       "shard": "zmsadmin",
       "browser": "chrome",
       "rel": "ui/zmsadmin/queue/ZMSKVR-1385.feature",
-      "runId": "36619955351",
-      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36619955351",
-      "runStartedAt": "2026-09-29T19:32:22Z",
+      "runId": "36622806866",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36622806866",
+      "runStartedAt": "2026-09-29T19:56:49Z",
       "browsers": {
         "chrome": {
           "status": "passed",
           "shard": "zmsadmin",
-          "runId": "36619955351",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36619955351",
-          "runStartedAt": "2026-09-29T19:32:22Z"
+          "runId": "36622806866",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36622806866",
+          "runStartedAt": "2026-09-29T19:56:49Z"
         }
       }
     },
@@ -335,16 +335,16 @@
       "shard": "zmsadmin",
       "browser": "chrome",
       "rel": "ui/zmsadmin/rebooking/ZMS-2702.feature",
-      "runId": "36619955351",
-      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36619955351",
-      "runStartedAt": "2026-09-29T19:32:22Z",
+      "runId": "36622806866",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36622806866",
+      "runStartedAt": "2026-09-29T19:56:49Z",
       "browsers": {
         "chrome": {
           "status": "failed",
           "shard": "zmsadmin",
-          "runId": "36619955351",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36619955351",
-          "runStartedAt": "2026-09-29T19:32:22Z"
+          "runId": "36622806866",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36622806866",
+          "runStartedAt": "2026-09-29T19:56:49Z"
         }
       }
     },
@@ -353,52 +353,484 @@
       "shard": "zmsadmin",
       "browser": "chrome",
       "rel": "ui/zmsadmin/rebooking/zmskvr-1673_zmskvr-157_forward_cancel_locks_actions.feature",
-      "runId": "36619955351",
-      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36619955351",
-      "runStartedAt": "2026-09-29T19:32:22Z",
+      "runId": "36622806866",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36622806866",
+      "runStartedAt": "2026-09-29T19:56:49Z",
       "browsers": {
         "chrome": {
           "status": "passed",
           "shard": "zmsadmin",
-          "runId": "36619955351",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36619955351",
-          "runStartedAt": "2026-09-29T19:32:22Z"
+          "runId": "36622806866",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36622806866",
+          "runStartedAt": "2026-09-29T19:56:49Z"
         }
       }
     },
     "feature-rest-zmsapi-citizen-search-zmskvr-1650-zmskvr-1618-cancelled-by-staff": {
       "status": "passed",
-      "shard": "custom",
+      "shard": "zmsapi",
       "browser": "chrome",
       "rel": "rest/zmsapi/citizen-search/zmskvr-1650_zmskvr-1618_cancelled_by_staff.feature",
-      "runId": "36622763669",
-      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36622763669",
-      "runStartedAt": "2026-09-29T19:56:24Z",
+      "runId": "36622806866",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36622806866",
+      "runStartedAt": "2026-09-29T19:56:49Z",
       "browsers": {
         "chrome": {
           "status": "passed",
-          "shard": "custom",
-          "runId": "36622763669",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36622763669",
-          "runStartedAt": "2026-09-29T19:56:24Z"
+          "shard": "zmsapi",
+          "runId": "36622806866",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36622806866",
+          "runStartedAt": "2026-09-29T19:56:49Z"
         }
       }
     },
     "feature-rest-zmscitizenapi-citizen-search-zmskvr-1650-zmskvr-1618-cancelled-by-citizen": {
       "status": "passed",
-      "shard": "custom",
+      "shard": "zmscitizenapi",
       "browser": "chrome",
       "rel": "rest/zmscitizenapi/citizen-search/zmskvr-1650_zmskvr-1618_cancelled_by_citizen.feature",
-      "runId": "36622763669",
-      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36622763669",
-      "runStartedAt": "2026-09-29T19:56:24Z",
+      "runId": "36622806866",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36622806866",
+      "runStartedAt": "2026-09-29T19:56:49Z",
       "browsers": {
         "chrome": {
           "status": "passed",
-          "shard": "custom",
-          "runId": "36622763669",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36622763669",
-          "runStartedAt": "2026-09-29T19:56:24Z"
+          "shard": "zmscitizenapi",
+          "runId": "36622806866",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36622806866",
+          "runStartedAt": "2026-09-29T19:56:49Z"
+        }
+      }
+    },
+    "feature-rest-zmsapi-booking-zmsadmin-zmskvr-1049": {
+      "status": "failed",
+      "shard": "zmsapi",
+      "browser": "chrome",
+      "rel": "rest/zmsapi/booking/zmsadmin/ZMSKVR-1049.feature",
+      "runId": "36622806866",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36622806866",
+      "runStartedAt": "2026-09-29T19:56:49Z",
+      "browsers": {
+        "chrome": {
+          "status": "failed",
+          "shard": "zmsapi",
+          "runId": "36622806866",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36622806866",
+          "runStartedAt": "2026-09-29T19:56:49Z"
+        }
+      }
+    },
+    "feature-rest-zmsapi-booking-zmsticketprinter-zmskvr-167": {
+      "status": "passed",
+      "shard": "zmsapi",
+      "browser": "chrome",
+      "rel": "rest/zmsapi/booking/zmsticketprinter/ZMSKVR-167.feature",
+      "runId": "36622806866",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36622806866",
+      "runStartedAt": "2026-09-29T19:56:49Z",
+      "browsers": {
+        "chrome": {
+          "status": "passed",
+          "shard": "zmsapi",
+          "runId": "36622806866",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36622806866",
+          "runStartedAt": "2026-09-29T19:56:49Z"
+        }
+      }
+    },
+    "feature-rest-zmsapi-citizen-call-zmsadmin-zmskvr-1328": {
+      "status": "failed",
+      "shard": "zmsapi",
+      "browser": "chrome",
+      "rel": "rest/zmsapi/citizen-call/zmsadmin/ZMSKVR-1328.feature",
+      "runId": "36622806866",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36622806866",
+      "runStartedAt": "2026-09-29T19:56:49Z",
+      "browsers": {
+        "chrome": {
+          "status": "failed",
+          "shard": "zmsapi",
+          "runId": "36622806866",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36622806866",
+          "runStartedAt": "2026-09-29T19:56:49Z"
+        }
+      }
+    },
+    "feature-rest-zmsapi-opening-hours-zmskvr-1672-zmskvr-1411-opening-hours-including-sunday": {
+      "status": "passed",
+      "shard": "zmsapi",
+      "browser": "chrome",
+      "rel": "rest/zmsapi/opening-hours/zmskvr-1672_zmskvr-1411_opening_hours_including_sunday.feature",
+      "runId": "36622806866",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36622806866",
+      "runStartedAt": "2026-09-29T19:56:49Z",
+      "browsers": {
+        "chrome": {
+          "status": "passed",
+          "shard": "zmsapi",
+          "runId": "36622806866",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36622806866",
+          "runStartedAt": "2026-09-29T19:56:49Z"
+        }
+      }
+    },
+    "feature-rest-zmsapi-status": {
+      "status": "passed",
+      "shard": "zmsapi",
+      "browser": "chrome",
+      "rel": "rest/zmsapi/status.feature",
+      "runId": "36622806866",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36622806866",
+      "runStartedAt": "2026-09-29T19:56:49Z",
+      "browsers": {
+        "chrome": {
+          "status": "passed",
+          "shard": "zmsapi",
+          "runId": "36622806866",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36622806866",
+          "runStartedAt": "2026-09-29T19:56:49Z"
+        }
+      }
+    },
+    "feature-rest-zmsapi-workstation-login": {
+      "status": "passed",
+      "shard": "zmsapi",
+      "browser": "chrome",
+      "rel": "rest/zmsapi/workstation-login.feature",
+      "runId": "36622806866",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36622806866",
+      "runStartedAt": "2026-09-29T19:56:49Z",
+      "browsers": {
+        "chrome": {
+          "status": "passed",
+          "shard": "zmsapi",
+          "runId": "36622806866",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36622806866",
+          "runStartedAt": "2026-09-29T19:56:49Z"
+        }
+      }
+    },
+    "feature-rest-zmscitizenapi-booking-zmskvr-1630-zmskvr-1030-placeholder-email-citizenapi": {
+      "status": "passed",
+      "shard": "zmscitizenapi",
+      "browser": "chrome",
+      "rel": "rest/zmscitizenapi/booking/zmskvr-1630_zmskvr-1030_placeholder_email_citizenapi.feature",
+      "runId": "36622806866",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36622806866",
+      "runStartedAt": "2026-09-29T19:56:49Z",
+      "browsers": {
+        "chrome": {
+          "status": "passed",
+          "shard": "zmscitizenapi",
+          "runId": "36622806866",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36622806866",
+          "runStartedAt": "2026-09-29T19:56:49Z"
+        }
+      }
+    },
+    "feature-rest-zmscitizenapi-booking-zmskvr-955-zmskvr-965-logged-in-booking-no-activation-citizenapi": {
+      "status": "passed",
+      "shard": "zmscitizenapi",
+      "browser": "chrome",
+      "rel": "rest/zmscitizenapi/booking/zmskvr-955_zmskvr-965_logged_in_booking_no_activation_citizenapi.feature",
+      "runId": "36622806866",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36622806866",
+      "runStartedAt": "2026-09-29T19:56:49Z",
+      "browsers": {
+        "chrome": {
+          "status": "passed",
+          "shard": "zmscitizenapi",
+          "runId": "36622806866",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36622806866",
+          "runStartedAt": "2026-09-29T19:56:49Z"
+        }
+      }
+    },
+    "feature-rest-zmscitizenapi-dldb-special-cases-zmskvr-1046-booking-ruppertstrasse-shared-booking-ausbildung-citizenapi": {
+      "status": "passed",
+      "shard": "zmscitizenapi",
+      "browser": "chrome",
+      "rel": "rest/zmscitizenapi/dldb-special-cases/zmskvr-1046_booking_ruppertstrasse_shared_booking_ausbildung_citizenapi.feature",
+      "runId": "36622806866",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36622806866",
+      "runStartedAt": "2026-09-29T19:56:49Z",
+      "browsers": {
+        "chrome": {
+          "status": "passed",
+          "shard": "zmscitizenapi",
+          "runId": "36622806866",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36622806866",
+          "runStartedAt": "2026-09-29T19:56:49Z"
+        }
+      }
+    },
+    "feature-rest-zmscitizenapi-dldb-special-cases-zmskvr-1124-booking-ruppertstrasse-pass-calendar-jumpin-links-citizenapi": {
+      "status": "passed",
+      "shard": "zmscitizenapi",
+      "browser": "chrome",
+      "rel": "rest/zmscitizenapi/dldb-special-cases/zmskvr-1124_booking_ruppertstrasse_pass_calendar_jumpin_links_citizenapi.feature",
+      "runId": "36622806866",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36622806866",
+      "runStartedAt": "2026-09-29T19:56:49Z",
+      "browsers": {
+        "chrome": {
+          "status": "passed",
+          "shard": "zmscitizenapi",
+          "runId": "36622806866",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36622806866",
+          "runStartedAt": "2026-09-29T19:56:49Z"
+        }
+      }
+    },
+    "feature-rest-zmscitizenapi-dldb-special-cases-zmskvr-833-zmskvr-1025-rebooking-required-fields-citizenapi": {
+      "status": "passed",
+      "shard": "zmscitizenapi",
+      "browser": "chrome",
+      "rel": "rest/zmscitizenapi/dldb-special-cases/zmskvr-833_zmskvr-1025_rebooking_required_fields_citizenapi.feature",
+      "runId": "36622806866",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36622806866",
+      "runStartedAt": "2026-09-29T19:56:49Z",
+      "browsers": {
+        "chrome": {
+          "status": "passed",
+          "shard": "zmscitizenapi",
+          "runId": "36622806866",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36622806866",
+          "runStartedAt": "2026-09-29T19:56:49Z"
+        }
+      }
+    },
+    "feature-rest-zmscitizenapi-rebooking-zmskvr-353-rebooking-no-activation-citizenapi": {
+      "status": "passed",
+      "shard": "zmscitizenapi",
+      "browser": "chrome",
+      "rel": "rest/zmscitizenapi/rebooking/zmskvr-353_rebooking_no_activation_citizenapi.feature",
+      "runId": "36622806866",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36622806866",
+      "runStartedAt": "2026-09-29T19:56:49Z",
+      "browsers": {
+        "chrome": {
+          "status": "passed",
+          "shard": "zmscitizenapi",
+          "runId": "36622806866",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36622806866",
+          "runStartedAt": "2026-09-29T19:56:49Z"
+        }
+      }
+    },
+    "feature-ui-zmscitizenview-booking-zmskvr-1571-scheidplatz-contact-location-back-login": {
+      "status": "passed",
+      "shard": "zmscitizenview",
+      "browser": "chrome",
+      "rel": "ui/zmscitizenview/booking/zmskvr-1571_scheidplatz_contact_location_back_login.feature",
+      "runId": "36622806866",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36622806866",
+      "runStartedAt": "2026-09-29T19:56:49Z",
+      "browsers": {
+        "chrome": {
+          "status": "passed",
+          "shard": "zmscitizenview",
+          "runId": "36622806866",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36622806866",
+          "runStartedAt": "2026-09-29T19:56:49Z"
+        }
+      }
+    },
+    "feature-ui-zmscitizenview-booking-zmskvr-1630-zmskvr-1030-reserved-hash-resume": {
+      "status": "passed",
+      "shard": "zmscitizenview",
+      "browser": "chrome",
+      "rel": "ui/zmscitizenview/booking/zmskvr-1630_zmskvr-1030_reserved_hash_resume.feature",
+      "runId": "36622806866",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36622806866",
+      "runStartedAt": "2026-09-29T19:56:49Z",
+      "browsers": {
+        "chrome": {
+          "status": "passed",
+          "shard": "zmscitizenview",
+          "runId": "36622806866",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36622806866",
+          "runStartedAt": "2026-09-29T19:56:49Z"
+        }
+      }
+    },
+    "feature-ui-zmscitizenview-booking-zmskvr-955-zmskvr-965-logged-in-booking-no-activation": {
+      "status": "passed",
+      "shard": "zmscitizenview",
+      "browser": "chrome",
+      "rel": "ui/zmscitizenview/booking/zmskvr-955_zmskvr-965_logged_in_booking_no_activation.feature",
+      "runId": "36622806866",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36622806866",
+      "runStartedAt": "2026-09-29T19:56:49Z",
+      "browsers": {
+        "chrome": {
+          "status": "passed",
+          "shard": "zmscitizenview",
+          "runId": "36622806866",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36622806866",
+          "runStartedAt": "2026-09-29T19:56:49Z"
+        }
+      }
+    },
+    "feature-ui-zmscitizenview-dldb-special-cases-zmskvr-1046-booking-ruppertstrasse-shared-booking-ausbildung": {
+      "status": "passed",
+      "shard": "zmscitizenview",
+      "browser": "chrome",
+      "rel": "ui/zmscitizenview/dldb-special-cases/zmskvr-1046_booking_ruppertstrasse_shared_booking_ausbildung.feature",
+      "runId": "36622806866",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36622806866",
+      "runStartedAt": "2026-09-29T19:56:49Z",
+      "browsers": {
+        "chrome": {
+          "status": "passed",
+          "shard": "zmscitizenview",
+          "runId": "36622806866",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36622806866",
+          "runStartedAt": "2026-09-29T19:56:49Z"
+        }
+      }
+    },
+    "feature-ui-zmscitizenview-dldb-special-cases-zmskvr-1124-booking-ruppertstrasse-pass-calendar-jumpin-links": {
+      "status": "passed",
+      "shard": "zmscitizenview",
+      "browser": "chrome",
+      "rel": "ui/zmscitizenview/dldb-special-cases/zmskvr-1124_booking_ruppertstrasse_pass_calendar_jumpin_links.feature",
+      "runId": "36622806866",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36622806866",
+      "runStartedAt": "2026-09-29T19:56:49Z",
+      "browsers": {
+        "chrome": {
+          "status": "passed",
+          "shard": "zmscitizenview",
+          "runId": "36622806866",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36622806866",
+          "runStartedAt": "2026-09-29T19:56:49Z"
+        }
+      }
+    },
+    "feature-ui-zmscitizenview-dldb-special-cases-zmskvr-1500-already-activated-confirm-banner": {
+      "status": "passed",
+      "shard": "zmscitizenview",
+      "browser": "chrome",
+      "rel": "ui/zmscitizenview/dldb-special-cases/zmskvr-1500_already_activated_confirm_banner.feature",
+      "runId": "36622806866",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36622806866",
+      "runStartedAt": "2026-09-29T19:56:49Z",
+      "browsers": {
+        "chrome": {
+          "status": "passed",
+          "shard": "zmscitizenview",
+          "runId": "36622806866",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36622806866",
+          "runStartedAt": "2026-09-29T19:56:49Z"
+        }
+      }
+    },
+    "feature-ui-zmscitizenview-dldb-special-cases-zmskvr-833-zmskvr-1025-rebooking-required-fields": {
+      "status": "passed",
+      "shard": "zmscitizenview",
+      "browser": "chrome",
+      "rel": "ui/zmscitizenview/dldb-special-cases/zmskvr-833_zmskvr-1025_rebooking_required_fields.feature",
+      "runId": "36622806866",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36622806866",
+      "runStartedAt": "2026-09-29T19:56:49Z",
+      "browsers": {
+        "chrome": {
+          "status": "passed",
+          "shard": "zmscitizenview",
+          "runId": "36622806866",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36622806866",
+          "runStartedAt": "2026-09-29T19:56:49Z"
+        }
+      }
+    },
+    "feature-ui-zmscitizenview-rebooking-zmskvr-1651-zmskvr-1631-back-from-termin-step": {
+      "status": "passed",
+      "shard": "zmscitizenview",
+      "browser": "chrome",
+      "rel": "ui/zmscitizenview/rebooking/zmskvr-1651_zmskvr-1631_back_from_termin_step.feature",
+      "runId": "36622806866",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36622806866",
+      "runStartedAt": "2026-09-29T19:56:49Z",
+      "browsers": {
+        "chrome": {
+          "status": "passed",
+          "shard": "zmscitizenview",
+          "runId": "36622806866",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36622806866",
+          "runStartedAt": "2026-09-29T19:56:49Z"
+        }
+      }
+    },
+    "feature-ui-zmscitizenview-rebooking-zmskvr-353-rebooking-no-activation": {
+      "status": "passed",
+      "shard": "zmscitizenview",
+      "browser": "chrome",
+      "rel": "ui/zmscitizenview/rebooking/zmskvr-353_rebooking_no_activation.feature",
+      "runId": "36622806866",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36622806866",
+      "runStartedAt": "2026-09-29T19:56:49Z",
+      "browsers": {
+        "chrome": {
+          "status": "passed",
+          "shard": "zmscitizenview",
+          "runId": "36622806866",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36622806866",
+          "runStartedAt": "2026-09-29T19:56:49Z"
+        }
+      }
+    },
+    "feature-ui-zmsstatistic-citizen-stats-zms-1558": {
+      "status": "passed",
+      "shard": "zmsstatistic",
+      "browser": "chrome",
+      "rel": "ui/zmsstatistic/citizen-stats/ZMS-1558.feature",
+      "runId": "36622806866",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36622806866",
+      "runStartedAt": "2026-09-29T19:56:49Z",
+      "browsers": {
+        "chrome": {
+          "status": "passed",
+          "shard": "zmsstatistic",
+          "runId": "36622806866",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36622806866",
+          "runStartedAt": "2026-09-29T19:56:49Z"
+        }
+      }
+    },
+    "feature-ui-zmsstatistic-services-zms-1559": {
+      "status": "passed",
+      "shard": "zmsstatistic",
+      "browser": "chrome",
+      "rel": "ui/zmsstatistic/services/ZMS-1559.feature",
+      "runId": "36622806866",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36622806866",
+      "runStartedAt": "2026-09-29T19:56:49Z",
+      "browsers": {
+        "chrome": {
+          "status": "passed",
+          "shard": "zmsstatistic",
+          "runId": "36622806866",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36622806866",
+          "runStartedAt": "2026-09-29T19:56:49Z"
+        }
+      }
+    },
+    "feature-ui-zmsticketprinter-booking-zmskvr-167": {
+      "status": "passed",
+      "shard": "zmsticketprinter",
+      "browser": "chrome",
+      "rel": "ui/zmsticketprinter/booking/ZMSKVR-167.feature",
+      "runId": "36622806866",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36622806866",
+      "runStartedAt": "2026-09-29T19:56:49Z",
+      "browsers": {
+        "chrome": {
+          "status": "passed",
+          "shard": "zmsticketprinter",
+          "runId": "36622806866",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36622806866",
+          "runStartedAt": "2026-09-29T19:56:49Z"
         }
       }
     }
