@@ -335,6 +335,13 @@ public class CitizenViewSteps {
         page.assertPreconfirmationCalloutNotVisible();
     }
 
+    @Then("the reschedule and cancel actions for the existing appointment should be visible in the citizen view")
+    public void theRescheduleAndCancelActionsShouldBeVisible() {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: assert Termin verschieben and Termin absagen after leaving the Termin step");
+        page.assertRescheduleOrCancelActionsVisible();
+    }
+
     /** ZMSKVR-1500: Verschieben abbrechen → back to overview with already-activated banner. */
     @When("I cancel the reschedule in the citizen view")
     public void iCancelTheRescheduleInTheCitizenView() {
