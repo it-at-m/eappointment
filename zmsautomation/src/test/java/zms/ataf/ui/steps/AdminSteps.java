@@ -495,9 +495,27 @@ public class AdminSteps {
         case "Spontankunden hinzufügen":
             COUNTER_PROCESSING_STATION_PAGE.clickOnAddSpontaneousCustomer();
             break;
+        case "Liste leeren":
+            COUNTER_PROCESSING_STATION_PAGE.clearSelectedServiceList();
+            break;
         default:
             throw new IllegalArgumentException("For button \"" + button + "\" no action is implemented yet!");
         }
+    }
+
+    @Wenn("Sie die Anzahl der ausgewählten Dienstleistung {string} um {int} erhöhen.")
+    public void wenn_sie_die_anzahl_der_ausgewaehlten_dienstleistung_um_erhoehen(String service, int times) {
+        COUNTER_PROCESSING_STATION_PAGE.increaseSelectedServiceCount(service, times);
+    }
+
+    @Dann("ist die Anzahl der ausgewählten Dienstleistung {string} {int}.")
+    public void dann_ist_die_anzahl_der_ausgewaehlten_dienstleistung(String service, int count) {
+        COUNTER_PROCESSING_STATION_PAGE.assertSelectedServiceCount(service, count);
+    }
+
+    @Dann("ist die Dienstleistung {string} nicht in der ausgewählten Liste.")
+    public void dann_ist_die_dienstleistung_nicht_in_der_ausgewaehlten_liste(String service) {
+        COUNTER_PROCESSING_STATION_PAGE.assertSelectedServiceHidden(service);
     }
 
     @Dann("kann die Terminbestätigung gedruckt werden.")
