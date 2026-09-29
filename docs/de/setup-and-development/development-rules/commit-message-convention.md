@@ -43,6 +43,7 @@ Der Git-Hook `commit-msg` prüft nur die Subject-Zeile. Merge-Commits nutzen aut
    - `clean`: Refactoring/Aufräumen ohne Verhaltensänderung
    - `docs`: ausschließlich Dokumentationsänderung
    - `chore`: Wartung/Abhängigkeiten/Build-Tooling-Änderungen
+   - `test`: nur automatisierte Tests, ohne Produktänderung
 
 2. **project**: Der Projektkürzel. Erlaubt sind:
    - `ZMS` für das ZMS-Projekt
@@ -66,12 +67,13 @@ Der Git-Hook `commit-msg` prüft nur die Subject-Zeile. Merge-Commits nutzen aut
 - `clean(GH): veralteten Workflow entfernen`
 - `feat(ZMS-1 ZMS-2): gemeinsame Änderung für zwei Tickets`
 - `feat(ZMS-1 ZMS-2): fix(GH-1 ZMS-3): Multi-Type-/Multi-Ticket-Änderung`
+- `test(ZMSKVR-157 ZMSKVR-1673): lock customer actions while forwarding`
 
 ## Regulärer Ausdruck
 
 Die vom Hook `commit-msg` geprüfte Subject-Zeile entspricht:
 
-`^((feat|fix|clean|chore|docs)\(((ZMS|ZMSKVR|MPDZBS|MUXDBS|GH)(-[0-9]+)?)( (ZMS|ZMSKVR|MPDZBS|MUXDBS|GH)(-[0-9]+)?)*\): )+.+$`
+`^((feat|fix|clean|chore|docs|test)\(((ZMS|ZMSKVR|MPDZBS|MUXDBS|GH)(-[0-9]+)?)( (ZMS|ZMSKVR|MPDZBS|MUXDBS|GH)(-[0-9]+)?)*\): )+.+$`
 
 Merge-Commits mit Subject `Merge …` sind ausgenommen (siehe [Git-Hooks (Husky)](../git-hooks.md)).
 

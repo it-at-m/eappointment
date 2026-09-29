@@ -16,29 +16,20 @@
 --  - 184 -> officeId 10502 (WB03 Pass, KVR-II/221)
 --  - 342 -> officeId 10502 (Serviceschalter Pass, KVR-II/221)
 
--- round current time to next 5 minute slot
+-- 5-minute Zeitschlitz. Stay on today until 23:55 while at least three hours
+-- remain, so 10489 and 10313237 still share a multi-slot window. A shorter stub
+-- leaves one timestamp on one office, so the next day is opened 00:05–23:55.
+SET @slot_seconds := 300;
+SET @latest_end := '23:55:00';
 SET @rounded_start :=
-  SEC_TO_TIME(CEILING(TIME_TO_SEC(CURTIME()) / 300) * 300);
+  SEC_TO_TIME(CEILING(TIME_TO_SEC(CURTIME()) / @slot_seconds) * @slot_seconds);
 
--- desired end = +6 hours
-SET @desired_end :=
-  ADDTIME(@rounded_start, '06:00:00');
-
--- latest allowed end so slots still fit
-SET @rounded_end :=
-  LEAST(@desired_end, '23:55:00');
-
--- If the capped end is not after the rounded start (e.g. late night / 24:00:00 start),
--- or less than 3 hours remain today, use the next calendar day with appointment
--- window 00:05–03:05 (still capped at 23:55). A short same-day window leaves the
--- shared 10489/10313237 calendar with a single timestamp on one office.
 SET @start_sec := TIME_TO_SEC(@rounded_start);
-SET @end_sec := TIME_TO_SEC(@rounded_end);
-SET @use_next_day := (@end_sec <= @start_sec) OR ((@end_sec - @start_sec) < 3 * 3600);
+SET @end_sec := TIME_TO_SEC(@latest_end);
+SET @use_next_day := (@start_sec >= 24 * 3600) OR (@end_sec <= @start_sec) OR ((@end_sec - @start_sec) < 3 * 3600);
 
 SET @appt_start := IF(@use_next_day, '00:05:00', @rounded_start);
-SET @appt_end :=
-  IF(@use_next_day, LEAST(ADDTIME('00:05:00', '03:00:00'), '23:55:00'), @rounded_end);
+SET @appt_end := @latest_end;
 
 SET @range_start := IF(@use_next_day, DATE_ADD(CURDATE(), INTERVAL 1 DAY), CURDATE());
 SET @range_end :=
