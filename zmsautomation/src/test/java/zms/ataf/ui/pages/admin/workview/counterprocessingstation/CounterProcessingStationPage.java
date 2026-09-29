@@ -23,7 +23,6 @@ import org.openqa.selenium.Keys;
 import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -37,6 +36,7 @@ import ataf.core.logging.ScenarioLogManager;
 import ataf.core.properties.DefaultValues;
 import ataf.web.model.LocatorType;
 import zms.ataf.helpers.AppointmentCountHelper;
+import zms.ataf.helpers.BerlinTime;
 import zms.ataf.ui.pages.admin.AdminPage;
 import zms.ataf.ui.pages.admin.AdminPageContext;
 
@@ -393,6 +393,32 @@ public class CounterProcessingStationPage extends AdminPage {
         AppointmentCountHelper.incrementAppointmentCanceledCount();
     }
 
+    /**
+     * Deletes the queue row for a customer just booked in this scenario.
+     * The trash icon uses the internal process id, which is not the number shown as Termin-Nr.
+     */
+    public void deleteQueuedAppointmentByFamilyName(String familyName) {
+        CONTEXT.set();
+        if ("true".equals(TestDataHelper.getTestData("appointment_booked_as_walk_in"))) {
+            showSpontaneousCustomers(true);
+            CONTEXT.waitForSpinners();
+        }
+        ScenarioLogManager.getLogger().info("Deleting queued appointment for {}", familyName);
+        String deleteLink = "//table[@id='table-queued-appointments']//tr["
+                + "td[contains(@class,'callnextclient') and normalize-space(.)='" + familyName + "']]"
+                + "//a[contains(@class,'process-delete')]";
+        clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, deleteLink, LocatorType.XPATH, false, CONTEXT);
+        WebElement messageTitleElement = findElementByLocatorType("section.board.dialog h2.board__heading", LocatorType.CSSSELECTOR, false);
+        Assert.assertTrue(
+                messageTitleElement.getText().contains("Eintrag löschen"),
+                "Delete confirmation did not open for " + familyName);
+        clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "a.button.button--destructive.button-ok", LocatorType.CSSSELECTOR, false, CONTEXT);
+        messageTitleElement = findElementByLocatorType("h2.message__heading.title", LocatorType.CSSSELECTOR, false);
+        Assert.assertEquals(messageTitleElement.getText(), "Vorgang gelöscht",
+                "Deleting the appointment for " + familyName + " did not succeed.");
+        clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "button.button-ok", LocatorType.CSSSELECTOR, false);
+    }
+
     public void enterDateInNewAppointmentTextField(String date) {
         ScenarioLogManager.getLogger().info("Trying to enter date \"" + date + "\" in new appointment text field...");
 
@@ -414,17 +440,79 @@ public class CounterProcessingStationPage extends AdminPage {
                 .contains("an diesem Tag sind keine Termine möglich") && count <= TestPropertiesHelper.getPropertyAsInteger(
                 "numberOfRetries", true, 3) * 3);
 
-        //TODO remove NullPointerException workaround after fix https://jira.muenchen.de/browse/ZMS-1891
-        WebElement newAppointmentDateTextField = findElementByLocatorType("process_date", LocatorType.ID, true);
-        new Actions(DRIVER)
-                .sendKeys(newAppointmentDateTextField, Keys.BACK_SPACE, Keys.BACK_SPACE, Keys.BACK_SPACE, Keys.BACK_SPACE, Keys.BACK_SPACE, Keys.BACK_SPACE,
-                        Keys.BACK_SPACE, Keys.BACK_SPACE)
-                .sendKeys(newAppointmentDateTextField, date)
-                .perform();
-        CONTEXT.waitForSpinners();
-        Assert.assertEquals(findElementByLocatorType("process_date", LocatorType.ID, true).getAttribute("value"), date,
-                "Entering date \"" + date + "\" in new appointment text field has failed...");
+        // process_date is a React datepicker. Typing focuses it, the calendar opens, and the
+        // keystrokes move the month (the popup can land on an unrelated month) without changing the value.
+        chooseDateInAppointmentPicker(dateDesired, date);
         TestDataHelper.setTestData("new_appointment_date", date);
+    }
+
+    private void chooseDateInAppointmentPicker(LocalDate target, String date) {
+        WebElement dateField = findElementByLocatorType("process_date", LocatorType.ID, true);
+        dateField.sendKeys(Keys.ESCAPE);
+        WebElement opener = findElementByLocatorType("#appointment-datepicker a.calendar-placement", LocatorType.CSSSELECTOR, true);
+        ((JavascriptExecutor) DRIVER).executeScript("arguments[0].click();", opener);
+
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        By monthHeader = By.cssSelector(".react-datepicker__current-month");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(monthHeader));
+
+        DateTimeFormatter monthYear = DateTimeFormatter.ofPattern("MMMM yyyy", Locale.GERMAN);
+        String targetMonth = target.format(monthYear);
+        DateTimeFormatter shownMonth = DateTimeFormatter.ofPattern("d MMMM yyyy", Locale.GERMAN);
+        String shown = "";
+        boolean reachedMonth = false;
+        for (int step = 0; step < 14; step++) {
+            shown = DRIVER.findElement(monthHeader).getText().replace('\u00a0', ' ').trim();
+            if (shown.equalsIgnoreCase(targetMonth)) {
+                reachedMonth = true;
+                break;
+            }
+            LocalDate shownDate = LocalDate.parse("1 " + shown, shownMonth);
+            String navigation = shownDate.isBefore(target.withDayOfMonth(1))
+                    ? ".react-datepicker__navigation--next"
+                    : ".react-datepicker__navigation--previous";
+            DRIVER.findElement(By.cssSelector(navigation)).click();
+        }
+        if (!reachedMonth) {
+            Assert.fail("Appointment calendar did not reach " + targetMonth + ". It still shows " + shown + ".");
+        }
+
+        String dayText = Integer.toString(target.getDayOfMonth());
+        By day = By.xpath("//div[contains(@class,'react-datepicker__day')"
+                + " and not(contains(@class,'outside-month'))"
+                + " and not(contains(@class,'disabled'))"
+                + " and normalize-space(.)='" + dayText + "']");
+        wait.until(ExpectedConditions.elementToBeClickable(day)).click();
+        wait.until(ExpectedConditions.attributeToBe(By.id("process_date"), "value", date));
+        CONTEXT.waitForSpinners();
+    }
+
+    /**
+     * Today's time list always offers Spontankunde ({@code 00-00}) even when no appointment slot is left.
+     */
+    private boolean selectWalkInOption(Select timeList, WebElement select) {
+        boolean hasWalkIn = timeList.getOptions().stream().anyMatch(option -> option.getText().contains("Spontankunde"));
+        if (!hasWalkIn) {
+            return false;
+        }
+        timeList.selectByValue("00-00");
+        fireProcessTimeChange(select);
+        TestDataHelper.setTestData("new_appointment_time", "00:00");
+        TestDataHelper.setTestData("appointment_booked_as_walk_in", "true");
+        ScenarioLogManager.getLogger().info("No appointment slot left; selected Spontankunde.");
+        return true;
+    }
+
+    public boolean hasBookAppointmentButton() {
+        List<WebElement> buttons = DRIVER.findElements(By.cssSelector("button.process-reserve"));
+        return !buttons.isEmpty() && buttons.get(0).isDisplayed();
+    }
+
+    public void selectWalkInCustomer() {
+        WebElement select = findElementByLocatorType(APPOINTMENT_TIME_LOCATOR_ID, LocatorType.ID, true);
+        Assert.assertTrue(selectWalkInOption(new Select(select), select), "Spontankunde is not in the time list.");
+        new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(ExpectedConditions.elementToBeClickable(By.cssSelector("button.process-queue")));
     }
 
     /**
@@ -441,18 +529,25 @@ public class CounterProcessingStationPage extends AdminPage {
     }
 
     public void selectTimeInNewAppointmentDropDownList(String time) {
-        selectTimeInNewAppointmentDropDownList(time, Set.of());
+        selectTimeInNewAppointmentDropDownList(time, Set.of(), false);
     }
 
     public void selectTimeInNewAppointmentDropDownList(String time, Set<String> excludedTimes) {
+        selectTimeInNewAppointmentDropDownList(time, excludedTimes, false);
+    }
+
+    public void selectTimeInNewAppointmentDropDownList(String time, Set<String> excludedTimes, boolean fallBackToWalkIn) {
+        TestDataHelper.setTestData("appointment_booked_as_walk_in", "false");
         ScenarioLogManager.getLogger().info("Trying to select time \"" + time + "\" in new appointment drop down list...");
         Pattern timeSlotPattern = Pattern.compile("([0-9][0-9]:[0-9][0-9]) \\(noch ([0-9]) frei\\)");
         WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
         wait.ignoring(StaleElementReferenceException.class, ElementClickInterceptedException.class);
         wait.pollingEvery(Duration.ofMillis(1000L));
         wait.withMessage("Could not locate any time slot elements in time!");
+        int[] daysAhead = { 0 };
         try {
             wait.until((ExpectedCondition<Boolean>) waitDriver -> {
+                TestDataHelper.setTestData("appointment_booked_as_walk_in", "false");
                 CONTEXT.waitForSpinners();
                 WebElement newAppointmentTimeDropDownList = findElementByLocatorType(APPOINTMENT_TIME_LOCATOR_ID, LocatorType.ID, true);
                 scrollToCenterByVisibleElement(newAppointmentTimeDropDownList);
@@ -470,7 +565,10 @@ public class CounterProcessingStationPage extends AdminPage {
                                 })
                                 .collect(Collectors.toList());
                         if (bookableTimeSlots.isEmpty()) {
-                            return false;
+                            if (fallBackToWalkIn && selectWalkInOption(newAppointmentTimeDropDownListSelections, newAppointmentTimeDropDownList)) {
+                                break;
+                            }
+                            return moveToNextDayWithSlots(daysAhead);
                         }
                         WebElement webElement;
                         if (time.equals("<beliebig>")) {
@@ -506,19 +604,37 @@ public class CounterProcessingStationPage extends AdminPage {
                         ScenarioLogManager.getLogger().warn("Time not selected! Retrying...");
                         return false;
                     }
-                    if (DRIVER.findElements(By.cssSelector("button.process-reserve")).isEmpty()) {
+                    boolean bookedAsWalkIn = "true".equals(TestDataHelper.getTestData("appointment_booked_as_walk_in"));
+                    String submitButton = bookedAsWalkIn ? "button.process-queue" : "button.process-reserve";
+                    if (DRIVER.findElements(By.cssSelector(submitButton)).isEmpty()) {
                         ScenarioLogManager.getLogger().warn(
-                                "Time \"" + expectedTime + "\" is set, Termin buchen is not in the form yet. Retrying...");
+                                "Time \"" + expectedTime + "\" is set, the booking button is not in the form yet. Retrying...");
                         return false;
                     }
                     return true;
                 } else {
-                    return false;
+                    return moveToNextDayWithSlots(daysAhead);
                 }
             });
         } catch (Exception e) {
             Assert.fail("Selecting time \"" + TestDataHelper.getTestData("new_appointment_time") + "\" in new appointment drop down list has failed,", e);
         }
+    }
+
+    /**
+     * Today's Terminkunde list is empty once fewer than three hours remain until 23:55.
+     * The next day is opened for the whole day, so the form moves there and the time list is read again.
+     */
+    private boolean moveToNextDayWithSlots(int[] daysAhead) {
+        if (daysAhead[0] >= 7) {
+            return false;
+        }
+        daysAhead[0]++;
+        LocalDate day = BerlinTime.today().plusDays(daysAhead[0]);
+        String date = day.format(DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.GERMAN));
+        ScenarioLogManager.getLogger().info("No Terminkunde slot left; opening {}", date);
+        enterDateInNewAppointmentTextField(date);
+        return false;
     }
 
     public void enterNameInNewAppointmentTextField(String name) {
@@ -579,6 +695,41 @@ public class CounterProcessingStationPage extends AdminPage {
                 isWebElementVisible(DEFAULT_EXPLICIT_WAIT_TIME, "//ul[@aria-label='Dienstleistungen Abwahlliste']//span[contains(text(),'" + service + "')]",
                         LocatorType.XPATH, false), "Selecting service \"" + service + "\" in new appointment multi list has failed...");
         TestDataHelper.setTestData("new_appointment_service", service);
+    }
+
+    public void increaseSelectedServiceCount(String service, int times) {
+        ScenarioLogManager.getLogger().info("Increasing the count of selected service \"{}\" by {}", service, times);
+        By plus = By.xpath(selectedServiceRow(service) + "//input[@class='plus']");
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        for (int i = 0; i < times; i++) {
+            wait.until(ExpectedConditions.elementToBeClickable(plus)).click();
+            CONTEXT.waitForSpinners();
+        }
+    }
+
+    public void clearSelectedServiceList() {
+        ScenarioLogManager.getLogger().info("Clearing the selected service list...");
+        clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "button.clear-list", LocatorType.CSSSELECTOR, false);
+        CONTEXT.waitForSpinners();
+    }
+
+    public void assertSelectedServiceCount(String service, int expectedCount) {
+        By count = By.xpath(selectedServiceRow(service) + "//span[@class='request-count']");
+        WebElement countElement = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(ExpectedConditions.visibilityOfElementLocated(count));
+        Assert.assertEquals(countElement.getText().trim(), Integer.toString(expectedCount),
+                "Selected service \"" + service + "\" has the wrong count.");
+    }
+
+    public void assertSelectedServiceHidden(String service) {
+        By row = By.xpath(selectedServiceRow(service));
+        new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .withMessage("Service \"" + service + "\" is still in the selected list.")
+                .until(driver -> driver.findElements(row).stream().noneMatch(WebElement::isDisplayed));
+    }
+
+    private String selectedServiceRow(String service) {
+        return "//ul[@aria-label='Dienstleistungen Abwahlliste']//li[.//span[normalize-space(.)='" + service + "']]";
     }
 
     public void clickOnBookAppointmentButton(boolean assertErrors) {

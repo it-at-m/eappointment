@@ -1,12 +1,15 @@
 package zms.ataf.ui.steps;
 
+import java.time.DayOfWeek;
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Supplier;
 
 import org.openqa.selenium.By;
@@ -37,6 +40,7 @@ import zms.ataf.helpers.RandomNameHelper;
 import zms.ataf.ui.pages.admin.AdminPage;
 import zms.ataf.ui.pages.admin.AdminPageContext;
 import zms.ataf.ui.pages.admin.administration.AuthoritiesAndLocationsPage;
+import zms.ataf.ui.pages.admin.search.CustomerSearchPage;
 import zms.ataf.ui.pages.admin.workview.counterprocessingstation.CounterProcessingStationPage;
 import zms.ataf.ui.pages.admin.workview.counterprocessingstation.CounterSection;
 import zms.ataf.ui.pages.admin.workview.counterprocessingstation.ProcessingStationSection;
@@ -49,10 +53,12 @@ public class AdminSteps {
     private final AuthoritiesAndLocationsPage AUTHORITIES_AND_LOCATIONS_PAGE;
 
     private final ProcessingStationSection PROCESSING_STATION_SECTION;
+    private final CustomerSearchPage CUSTOMER_SEARCH_PAGE;
 
     public AdminSteps() {
         ADMIN_PAGE = new AdminPage(DriverUtil.getDriver());
         COUNTER_PROCESSING_STATION_PAGE = new CounterProcessingStationPage(DriverUtil.getDriver(), ADMIN_PAGE.getContext());
+        CUSTOMER_SEARCH_PAGE = new CustomerSearchPage(DriverUtil.getDriver(), ADMIN_PAGE.getContext());
         AUTHORITIES_AND_LOCATIONS_PAGE = new AuthoritiesAndLocationsPage(DriverUtil.getDriver(), ADMIN_PAGE.getContext());
         PROCESSING_STATION_SECTION = new ProcessingStationSection(DriverUtil.getDriver(), ADMIN_PAGE.getContext());
         COUNTER_SECTION = new CounterSection(DriverUtil.getDriver(), ADMIN_PAGE.getContext());
@@ -172,8 +178,8 @@ public class AdminSteps {
     @Wenn("Sie in Feld {string} den Text {string} eingeben.")
     public void wenn_sie_in_feld_string_den_text_string_eingeben(String field, String text) {
         text = TestDataHelper.transformTestData(text);
-        if ("Datum bis".equals(field) && "<heute+14_tage>".equals(text)) {
-            text = BerlinTime.today().plusDays(14).format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
+        if ("Datum bis".equals(field)) {
+            text = resolveClosingDate(text);
         }
         switch (field) {
         case "Platz-Nr. oder Tresen":
@@ -278,6 +284,33 @@ public class AdminSteps {
         AUTHORITIES_AND_LOCATIONS_PAGE.selectWeekDay(TestDataHelper.transformTestData(weekDay));
     }
 
+    @Und("Sie die Wochentage Samstag und Sonntag der aktuellen Woche selektieren.")
+    public void und_sie_die_wochentage_samstag_und_sonntag_der_aktuellen_woche_selektieren() {
+        AUTHORITIES_AND_LOCATIONS_PAGE.selectWeekendDaysOfCurrentWeek();
+    }
+
+    @Dann("sollte keine Fehlermeldung zu nicht vorkommenden Wochentagen angezeigt werden.")
+    public void dann_sollte_keine_fehlermeldung_zu_nicht_vorkommenden_wochentagen_angezeigt_werden() {
+        AUTHORITIES_AND_LOCATIONS_PAGE.assertNoMissingWeekdayError();
+    }
+
+    @Dann("die Schaltfläche {string} sollte zum Speichern der Öffnungszeiten aktiv sein.")
+    public void dann_die_schaltflaeche_sollte_zum_speichern_der_oeffnungszeiten_aktiv_sein(String button) {
+        AUTHORITIES_AND_LOCATIONS_PAGE.assertOpeningHoursSaveButtonEnabled(TestDataHelper.transformTestData(button));
+    }
+
+    private String resolveClosingDate(String text) {
+        DateTimeFormatter format = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+        LocalDate today = BerlinTime.today();
+        if ("<heute+14_tage>".equals(text)) {
+            return today.plusDays(14).format(format);
+        }
+        if ("<sonntag_dieser_woche>".equals(text)) {
+            return today.with(DayOfWeek.SUNDAY).format(format);
+        }
+        return text;
+    }
+
     @Wenn("Sie für Terminarbeitsplätze unter {string} die Anzahl {int} auswählen.")
     public void wenn_sie_fuer_terminarbeitsplaetze_unter_string_die_anzahl_int_auswaehlen(String type, int number) {
         type = TestDataHelper.transformTestData(type);
@@ -357,6 +390,49 @@ public class AdminSteps {
         COUNTER_PROCESSING_STATION_PAGE.clickOnDeleteAppointmentLink(TestDataHelper.transformTestData(appointmentNumber));
     }
 
+    @Wenn("Sie einen Terminkunden mit der Dienstleistung {string} und dem Namen {string} buchen.")
+    public void sie_einen_terminkunden_mit_der_dienstleistung_und_dem_namen_buchen(String service, String name) {
+        wenn_sie_im_zeitmanagementsystem_unter_terminvereinbarung_neu_die_dienstleistung_string_auswaehlen(service);
+        selectCounterAppointmentTimeOrWalkIn();
+        wenn_sie_im_zeitmanagementsystem_unter_terminvereinbarung_neu_den_namen_string_eingeben(name);
+        wenn_sie_im_zeitmanagementsystem_unter_terminvereinbarung_neu_die_email_adresse_string_eingeben("<mailinator>");
+        bookNamedAppointmentOrWalkIn(TestDataHelper.getTestData("customer_name"), TestDataHelper.getTestData("customer_email"));
+    }
+
+    @Wenn("Sie den gerade gebuchten Termin von {string} in der Warteschlange löschen.")
+    public void sie_den_gerade_gebuchten_termin_in_der_warteschlange_loeschen(String familyName) {
+        COUNTER_PROCESSING_STATION_PAGE.deleteQueuedAppointmentByFamilyName(TestDataHelper.transformTestData(familyName));
+    }
+
+    @Wenn("Sie in der Kundensuche nach {string} suchen.")
+    public void sie_in_der_kundensuche_nach_suchen(String query) {
+        CUSTOMER_SEARCH_PAGE.search(TestDataHelper.transformTestData(query));
+    }
+
+    @Dann("zeigt die Kundensuche für {string} den Status {string} mit Buchungs- und Stornierungszeit.")
+    public void zeigt_die_kundensuche_den_status_mit_zeiten(String familyName, String statusLabel) {
+        CUSTOMER_SEARCH_PAGE.assertCancelledStatus(
+                TestDataHelper.transformTestData(familyName),
+                TestDataHelper.transformTestData(statusLabel));
+    }
+
+    private void bookNamedAppointmentOrWalkIn(String name, String email) {
+        if (!"true".equals(TestDataHelper.getTestData("appointment_booked_as_walk_in"))
+                && COUNTER_PROCESSING_STATION_PAGE.hasBookAppointmentButton()) {
+            COUNTER_PROCESSING_STATION_PAGE.clickOnBookAppointmentButton(true);
+            COUNTER_PROCESSING_STATION_PAGE.clickOnCloseButton();
+            return;
+        }
+        if (!"true".equals(TestDataHelper.getTestData("appointment_booked_as_walk_in"))) {
+            COUNTER_PROCESSING_STATION_PAGE.selectWalkInCustomer();
+            COUNTER_PROCESSING_STATION_PAGE.enterNameInNewAppointmentTextField(name);
+            COUNTER_PROCESSING_STATION_PAGE.enterEmailInNewAppointmentTextField(email);
+        }
+        String waitingNumber = COUNTER_PROCESSING_STATION_PAGE.clickOnAddSpontaneousCustomer();
+        TestDataHelper.setTestData("new_appointment_number", waitingNumber);
+        COUNTER_PROCESSING_STATION_PAGE.clickOnCloseButton();
+    }
+
     @Wenn("Sie im " + AdminPageContext.NAME + " unter Termin erstellen das Datum {string} eingeben.")
     public void wenn_sie_im_zeitmanagementsystem_unter_terminvereinbarung_neu_das_datum_string_eingeben(String date) {
         COUNTER_PROCESSING_STATION_PAGE.enterDateInNewAppointmentTextField(TestDataHelper.transformTestData(date));
@@ -419,9 +495,27 @@ public class AdminSteps {
         case "Spontankunden hinzufügen":
             COUNTER_PROCESSING_STATION_PAGE.clickOnAddSpontaneousCustomer();
             break;
+        case "Liste leeren":
+            COUNTER_PROCESSING_STATION_PAGE.clearSelectedServiceList();
+            break;
         default:
             throw new IllegalArgumentException("For button \"" + button + "\" no action is implemented yet!");
         }
+    }
+
+    @Wenn("Sie die Anzahl der ausgewählten Dienstleistung {string} um {int} erhöhen.")
+    public void wenn_sie_die_anzahl_der_ausgewaehlten_dienstleistung_um_erhoehen(String service, int times) {
+        COUNTER_PROCESSING_STATION_PAGE.increaseSelectedServiceCount(service, times);
+    }
+
+    @Dann("ist die Anzahl der ausgewählten Dienstleistung {string} {int}.")
+    public void dann_ist_die_anzahl_der_ausgewaehlten_dienstleistung(String service, int count) {
+        COUNTER_PROCESSING_STATION_PAGE.assertSelectedServiceCount(service, count);
+    }
+
+    @Dann("ist die Dienstleistung {string} nicht in der ausgewählten Liste.")
+    public void dann_ist_die_dienstleistung_nicht_in_der_ausgewaehlten_liste(String service) {
+        COUNTER_PROCESSING_STATION_PAGE.assertSelectedServiceHidden(service);
     }
 
     @Dann("kann die Terminbestätigung gedruckt werden.")
@@ -468,6 +562,9 @@ public class AdminSteps {
 
     @Wenn("Der Sachbearbeiter {string} aus der Warteliste aufruft.")
     public void wenn_der_sachbearbeiter_den_kunden_mit_der_nummer_aus_der_warteliste_aufruft(String nummer) {
+        if ("true".equals(TestDataHelper.getTestData("appointment_booked_as_walk_in"))) {
+            COUNTER_PROCESSING_STATION_PAGE.showSpontaneousCustomers(true);
+        }
         PROCESSING_STATION_SECTION.callCustomerFromQueueWithNumber(TestDataHelper.transformTestData(nummer));
     }
 
@@ -579,8 +676,8 @@ public class AdminSteps {
             // Dienstleistung auswählen
             wenn_sie_im_zeitmanagementsystem_unter_terminvereinbarung_neu_die_dienstleistung_string_auswaehlen(dienstleistung);
     
-            // Zeitslot wählen
-            COUNTER_PROCESSING_STATION_PAGE.selectTimeInNewAppointmentDropDownList("<nächste>");
+            // Zeitslot wählen. Ohne Termin heute wird ein Spontankunde gebucht, der noch aufgerufen werden kann.
+            COUNTER_PROCESSING_STATION_PAGE.selectTimeInNewAppointmentDropDownList("<nächste>", java.util.Set.of(), true);
     
             // Name + E-Mail setzen (RandomNameHelper)
             String randomName = RandomNameHelper.generateRandomName();
@@ -589,6 +686,18 @@ public class AdminSteps {
     
             String emailSafeName = randomName.replaceAll("[^a-zA-Z0-9]", "").toLowerCase();
             COUNTER_PROCESSING_STATION_PAGE.enterEmailInNewAppointmentTextField(emailSafeName + "@mailinator.com");
+
+            if ("true".equals(TestDataHelper.getTestData("appointment_booked_as_walk_in"))) {
+                String waitingNumber = COUNTER_PROCESSING_STATION_PAGE.clickOnAddSpontaneousCustomer();
+                TestDataHelper.setTestData(terminName, waitingNumber.replaceAll("\\D+", ""));
+                try {
+                    wenn_sie_im_zeitmanagementsystem_auf_die_schaltflaeche_string_klicken("Schließen");
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+                COUNTER_PROCESSING_STATION_PAGE.isCustomerVisibleInQueue(waitingNumber, true);
+                continue;
+            }
     
             // Buchen
             COUNTER_PROCESSING_STATION_PAGE.clickOnBookAppointmentButton(false);
@@ -641,10 +750,27 @@ public class AdminSteps {
         COUNTER_PROCESSING_STATION_PAGE.isCustomerVisibleInQueue(TestDataHelper.getTestData("new_waiting_number"), true);
     }
 
+    private void selectCounterAppointmentTimeOrWalkIn() {
+        COUNTER_PROCESSING_STATION_PAGE.selectTimeInNewAppointmentDropDownList("<beliebig>", Set.of(), true);
+    }
+
+    private void confirmCounterAppointmentBooking() {
+        if (!"true".equals(TestDataHelper.getTestData("appointment_booked_as_walk_in"))
+                && COUNTER_PROCESSING_STATION_PAGE.hasBookAppointmentButton()) {
+            COUNTER_PROCESSING_STATION_PAGE.clickOnBookAppointmentButton(true);
+            return;
+        }
+        if (!"true".equals(TestDataHelper.getTestData("appointment_booked_as_walk_in"))) {
+            COUNTER_PROCESSING_STATION_PAGE.selectWalkInCustomer();
+        }
+        String waitingNumber = COUNTER_PROCESSING_STATION_PAGE.clickOnAddSpontaneousCustomer();
+        TestDataHelper.setTestData("new_appointment_number", waitingNumber);
+    }
+
     @Wenn("Sie einen Terminkunden mit ausgewählter Dienstleistung, Uhrzeit, name und gültige E-Mail-Adresse buchen.")
     public void wenn_sie_einen_terminkunden_mit_ausgewaehlter_dienstleistung_uhrzeit_name_und_gueltige_email_adresse_buchen() {
         wenn_sie_im_zeitmanagementsystem_unter_terminvereinbarung_neu_die_dienstleistung_string_auswaehlen("<beliebig>");
-        COUNTER_PROCESSING_STATION_PAGE.selectTimeInNewAppointmentDropDownList("<beliebig>");
+        selectCounterAppointmentTimeOrWalkIn();
         
         // ✅ UPDATED: Use RandomNameHelper instead of RandomNameGenerator
         String randomName = RandomNameHelper.generateRandomName();
@@ -654,14 +780,14 @@ public class AdminSteps {
         String emailSafeName = randomName.replaceAll("[^a-zA-Z0-9]", "").toLowerCase();
         COUNTER_PROCESSING_STATION_PAGE.enterEmailInNewAppointmentTextField(emailSafeName + "@mailinator.com");
         
-        COUNTER_PROCESSING_STATION_PAGE.clickOnBookAppointmentButton(true);
+        confirmCounterAppointmentBooking();
     }
 
     @Wenn("Sie einen Terminkunden mit der Dienstleistung {string}, Uhrzeit, name und gültige E-Mail-Adresse buchen.")
     public void wenn_sie_einen_terminkunden_mit_der_dienstleistung_uhrzeit_name_und_gueltige_email_adresse_buchen(String dienstleistungen) {
         List<String> services = Arrays.asList(dienstleistungen.split(",\\s*"));
         services.forEach(this::wenn_sie_im_zeitmanagementsystem_unter_terminvereinbarung_neu_die_dienstleistung_string_auswaehlen);
-        COUNTER_PROCESSING_STATION_PAGE.selectTimeInNewAppointmentDropDownList("<beliebig>");
+        selectCounterAppointmentTimeOrWalkIn();
         
         // ✅ UPDATED: Use RandomNameHelper instead of RandomNameGenerator
         String randomName = RandomNameHelper.generateRandomName();
@@ -671,7 +797,7 @@ public class AdminSteps {
         String emailSafeName = randomName.replaceAll("[^a-zA-Z0-9]", "").toLowerCase();
         COUNTER_PROCESSING_STATION_PAGE.enterEmailInNewAppointmentTextField(emailSafeName + "@mailinator.com");
         
-        COUNTER_PROCESSING_STATION_PAGE.clickOnBookAppointmentButton(true);
+        confirmCounterAppointmentBooking();
     }
 
     @Wenn("Sie einen Terminkunden mit der Dienstleistung {string}, Uhrzeit, name, gültige E-Mail-Adresse und die Anmerkung {string} buchen.")
@@ -679,7 +805,7 @@ public class AdminSteps {
             String anmerkung) {
         List<String> services = Arrays.asList(dienstleistungen.split(",\\s*"));
         services.forEach(this::wenn_sie_im_zeitmanagementsystem_unter_terminvereinbarung_neu_die_dienstleistung_string_auswaehlen);
-        COUNTER_PROCESSING_STATION_PAGE.selectTimeInNewAppointmentDropDownList("<beliebig>");
+        selectCounterAppointmentTimeOrWalkIn();
         
         // ✅ UPDATED: Use RandomNameHelper instead of RandomNameGenerator
         String randomName = RandomNameHelper.generateRandomName();
@@ -690,18 +816,23 @@ public class AdminSteps {
         COUNTER_PROCESSING_STATION_PAGE.enterEmailInNewAppointmentTextField(emailSafeName + "@mailinator.com");
         
         COUNTER_PROCESSING_STATION_PAGE.enterNoteInNewAppointmentTextField(anmerkung);
-        COUNTER_PROCESSING_STATION_PAGE.clickOnBookAppointmentButton(true);
+        confirmCounterAppointmentBooking();
     }
 
     @Dann("Es erscheint ein Pop-Up-Fenster {string} und der Termin ist auch in der Warteschlange sichtbar.")
     public void es_erscheint_ein_popup_fenster_und_der_termin_ist_auch_in_der_warteschlange_sichtbar(String popUpName) {
-        Assert.assertTrue(ADMIN_PAGE.isPopUpVisible(popUpName), String.format("Popup '%s' is not visible!", popUpName));
+        boolean bookedAsWalkIn = "true".equals(TestDataHelper.getTestData("appointment_booked_as_walk_in"));
+        String visiblePopup = bookedAsWalkIn ? "Spontankunde wurde erfolgreich eingetragen" : popUpName;
+        Assert.assertTrue(ADMIN_PAGE.isPopUpVisible(visiblePopup), String.format("Popup '%s' is not visible!", visiblePopup));
         try {
             wenn_sie_im_zeitmanagementsystem_auf_die_schaltflaeche_string_klicken("Schließen");
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        COUNTER_PROCESSING_STATION_PAGE.isCustomerVisibleInQueue(TestDataHelper.getTestData("new_appointment_number"), false);
+        String queueNumber = bookedAsWalkIn
+                ? TestDataHelper.getTestData("new_waiting_number")
+                : TestDataHelper.getTestData("new_appointment_number");
+        COUNTER_PROCESSING_STATION_PAGE.isCustomerVisibleInQueue(queueNumber, bookedAsWalkIn);
 
     }
 
@@ -758,6 +889,41 @@ public class AdminSteps {
         PROCESSING_STATION_SECTION.selectLocationForAppointmentForwarding(standort);
         PROCESSING_STATION_SECTION.enterNoteForAppointmentForwarding(anmerkung);
         PROCESSING_STATION_SECTION.submitForwardAppointment();
+    }
+
+    @Dann("sind die Kundenaktionen Fertig stellen, Weiterleiten, Parken und Abbrechen anklickbar.")
+    public void sind_die_kundenaktionen_anklickbar() {
+        PROCESSING_STATION_SECTION.assertCustomerActionsEnabled();
+    }
+
+    @Dann("sind die Kundenaktionen Fertig stellen, Weiterleiten, Parken und Abbrechen gesperrt.")
+    public void sind_die_kundenaktionen_gesperrt() {
+        PROCESSING_STATION_SECTION.assertCustomerActionsDisabled();
+    }
+
+    @Wenn("Sie die Weiterleitung öffnen.")
+    public void sie_die_weiterleitung_oeffnen() {
+        PROCESSING_STATION_SECTION.clickOnForwardAppointment();
+    }
+
+    @Dann("ist das Weiterleitungsformular sichtbar.")
+    public void ist_das_weiterleitungsformular_sichtbar() {
+        PROCESSING_STATION_SECTION.assertForwardingFormVisible();
+    }
+
+    @Dann("ist die blaue Schaltfläche Abbrechen der Weiterleitung sichtbar.")
+    public void ist_die_blaue_schaltflaeche_abbrechen_der_weiterleitung_sichtbar() {
+        PROCESSING_STATION_SECTION.assertCancelForwardingButtonBlue();
+    }
+
+    @Wenn("Sie die Weiterleitung abbrechen.")
+    public void sie_die_weiterleitung_abbrechen() {
+        PROCESSING_STATION_SECTION.clickCancelForwarding();
+    }
+
+    @Dann("ist das Terminerstellungsformular sichtbar.")
+    public void ist_das_terminerstellungsformular_sichtbar() {
+        PROCESSING_STATION_SECTION.assertAppointmentFormVisible();
     }
 
     @Dann("erscheint der Termin {string} unter geparkte Termine.")

@@ -165,10 +165,10 @@ class Ticketprinter
 
     protected function isMissingScope(ClientException $exception): bool
     {
-        if ((int) $exception->getCode() === 404) {
+        if ($exception->getCode() === 404) {
             return true;
         }
-        $template = (string) $exception->template;
+        $template = $exception->template;
         return str_contains($template, 'ScopeNotFound')
             || str_contains($template, 'OrganisationNotFound');
     }

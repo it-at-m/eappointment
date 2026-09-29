@@ -1,5 +1,6 @@
 package zms.ataf.ui.pages.admin.administration;
 
+import java.time.DayOfWeek;
 import java.time.Duration;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -367,6 +368,37 @@ public void saveLocationChanges() {
         // react-datepicker uses strictParsing, so character-by-character typing snaps back to the
         // selected day before "dd.MM.yyyy" is complete. Set the full value in one step, as for the times.
         setInputValue(findVisibleInputById("AvDatesEnd"), date);
+    }
+
+    /**
+     * Selects Saturday and Sunday when they still fall in the range from today through Sunday.
+     * The start date cannot move before the opened day, so a run on Sunday only selects Sunday.
+     */
+    public void selectWeekendDaysOfCurrentWeek() {
+        if (BerlinTime.today().getDayOfWeek() != DayOfWeek.SUNDAY) {
+            selectWeekDay("Samstag");
+        }
+        selectWeekDay("Sonntag");
+    }
+
+    public void assertNoMissingWeekdayError() {
+        CONTEXT.set();
+        By error = By.xpath("//*[contains(@class,'message--error')]"
+                + "[contains(., 'kommen im gewählten Zeitraum nicht vor')]");
+        try {
+            new WebDriverWait(DRIVER, Duration.ofSeconds(5))
+                    .until(ExpectedConditions.invisibilityOfElementLocated(error));
+        } catch (TimeoutException e) {
+            Assert.fail("Weekday range error is still shown: " + DRIVER.findElement(error).getText(), e);
+        }
+    }
+
+    public void assertOpeningHoursSaveButtonEnabled(String buttonLabel) {
+        CONTEXT.set();
+        By save = By.xpath("//button[contains(@class,'button-save') and normalize-space()='" + buttonLabel + "']");
+        WebElement button = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(ExpectedConditions.presenceOfElementLocated(save));
+        Assert.assertTrue(button.isEnabled(), "\"" + buttonLabel + "\" is disabled");
     }
 
     private WebElement findVisibleInputById(String id) {

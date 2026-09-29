@@ -4,6 +4,8 @@ import static io.restassured.RestAssured.given;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 
 import org.assertj.core.api.Assertions;
@@ -17,6 +19,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import ataf.core.helpers.TestPropertiesHelper;
 import ataf.core.logging.ScenarioLogManager;
 import config.TestConfig;
+import io.cucumber.java.After;
 import io.cucumber.java.Before;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
@@ -38,6 +41,8 @@ public class ZmsApiSteps {
     private String scenarioLoginPassword;
     private JsonNode lastProcess;
     private String ticketprinterHash;
+    private Integer createdAvailabilityId;
+    private boolean lastProcessDeleted;
 
     @Before
     public void resetProcessContext() {
@@ -46,6 +51,50 @@ public class ZmsApiSteps {
         scenarioLoginUsername = null;
         scenarioLoginPassword = null;
         ticketprinterHash = null;
+        createdAvailabilityId = null;
+        lastProcessDeleted = false;
+    }
+
+    @After
+    public void deleteOpeningHoursLeftByTheScenario() {
+        Integer id = createdAvailabilityId;
+        createdAvailabilityId = null;
+        if (id != null) {
+            try {
+                given()
+                    .baseUri(apiBaseUri())
+                    .header("X-AuthKey", getOrLoginXAuthKey())
+                .when()
+                    .delete("/availability/" + id + "/");
+            } catch (RuntimeException e) {
+                ScenarioLogManager.getLogger().warn("Could not delete opening hours {}: {}", id, e.getMessage());
+            }
+        }
+        deleteLastProcessIfStillOpen();
+    }
+
+    private void deleteLastProcessIfStillOpen() {
+        if (lastProcess == null || lastProcessDeleted) {
+            return;
+        }
+        int processId = lastProcess.path("id").asInt();
+        if (processId <= 0) {
+            return;
+        }
+        try {
+            Response cleanup = given()
+                .baseUri(apiBaseUri())
+                .header("X-AuthKey", getOrLoginXAuthKey())
+                .queryParam("initiator", "admin")
+            .when()
+                .delete("/process/" + processId + "/");
+            if (cleanup.getStatusCode() >= 300 && cleanup.getStatusCode() != 404) {
+                ScenarioLogManager.getLogger().warn(
+                    "Could not delete process {}: HTTP {}", processId, cleanup.getStatusCode());
+            }
+        } catch (RuntimeException e) {
+            ScenarioLogManager.getLogger().warn("Could not delete process {}: {}", processId, e.getMessage());
+        }
     }
     
     @Given("the ZMS API is available")
@@ -208,11 +257,103 @@ public class ZmsApiSteps {
     @When("I reserve an appointment at scope {int} with service {string} and amendment {string} with the X-AuthKey")
     public void iReserveAnAppointmentAtScopeWithServiceAndAmendmentWithTheXAuthKey(
             int scopeId, String serviceName, String amendment) {
-        String authKey = getOrLoginXAuthKey();
-        JsonNode request = findScopeRequestByName(scopeId, serviceName, authKey);
-        JsonNode freeList = fetchFreeProcesses(scopeId, request, authKey);
         String familyName = TestPropertiesHelper.getPropertyAsString("zmsapiAppointmentFamilyName", true, "Terminkunde");
         String email = TestPropertiesHelper.getPropertyAsString("zmsapiAppointmentEmail", true, "terminkunde@example.com");
+        reserveConfirmedAppointment(scopeId, serviceName, familyName, email, amendment, true);
+    }
+
+    @When("I reserve an appointment at scope {int} with service {string}, name {string} and amendment {string} with the X-AuthKey")
+    public void iReserveAnAppointmentAtScopeWithServiceNameAndAmendmentWithTheXAuthKey(
+            int scopeId, String serviceName, String familyName, String amendment) {
+        String email = familyName.toLowerCase(Locale.ROOT).replaceAll("[^a-z0-9]", "") + "@mailinator.com";
+        reserveConfirmedAppointment(scopeId, serviceName, familyName, email, amendment, true);
+    }
+
+    @When("I delete the last process with the X-AuthKey")
+    public void iDeleteTheLastProcessWithTheXAuthKey() {
+        Assertions.assertThat(lastProcess)
+            .as("Reserve an appointment before deleting it")
+            .isNotNull();
+        int processId = lastProcess.path("id").asInt();
+        Assertions.assertThat(processId).isPositive();
+        String authKey = getOrLoginXAuthKey();
+        response = given()
+            .baseUri(baseUri != null ? baseUri : TestConfig.getBaseUri())
+            .header("X-AuthKey", authKey)
+            .queryParam("initiator", "admin")
+        .when()
+            .delete("/process/" + processId + "/");
+        CommonApiSteps.setResponse(response);
+        Assertions.assertThat(response.getStatusCode())
+            .as("DELETE /process/%d/ body=%s", processId, truncate(response.asString(), 1000))
+            .isEqualTo(200);
+        lastProcessDeleted = true;
+    }
+
+    @When("I search processes for {string} with the X-AuthKey")
+    public void iSearchProcessesForWithTheXAuthKey(String query) {
+        String authKey = getOrLoginXAuthKey();
+        response = given()
+            .baseUri(baseUri != null ? baseUri : TestConfig.getBaseUri())
+            .header("X-AuthKey", authKey)
+            .queryParam("query", query)
+            .queryParam("resolveReferences", 1)
+        .when()
+            .get("/process/search/");
+        CommonApiSteps.setResponse(response);
+        Assertions.assertThat(response.getStatusCode())
+            .as("GET /process/search/ body=%s", truncate(response.asString(), 1000))
+            .isEqualTo(200);
+    }
+
+    @Then("the process search result for {string} has appointment status {string} with booking and cancellation today")
+    public void theProcessSearchResultHasAppointmentStatusWithBookingAndCancellationToday(
+            String familyName, String appointmentStatus) {
+        ArrayNode results = parseDataArray(response);
+        Assertions.assertThat(results)
+            .as("GET /process/search/ data for %s", familyName)
+            .isNotNull();
+        JsonNode match = null;
+        for (JsonNode row : results) {
+            if (familyName.equals(row.path("clients").path(0).path("familyName").asText())
+                    && appointmentStatus.equals(row.path("appointmentStatus").asText())) {
+                match = row;
+                break;
+            }
+        }
+        if (match == null) {
+            throw new AssertionError(String.format(
+                "search hit %s with status %s. Body=%s",
+                familyName,
+                appointmentStatus,
+                truncate(response.asString(), 1500)));
+        }
+        long start = BerlinTime.today().atStartOfDay(java.time.ZoneId.of("Europe/Berlin")).toEpochSecond();
+        long end = start + 86_400L;
+        long booked = match.path("createTimestamp").asLong();
+        long cancelled = match.path("finalizedAt").asLong();
+        Assertions.assertThat(booked)
+            .as("createTimestamp for %s", familyName)
+            .isGreaterThanOrEqualTo(start)
+            .isLessThan(end);
+        Assertions.assertThat(cancelled)
+            .as("finalizedAt for %s", familyName)
+            .isGreaterThanOrEqualTo(start)
+            .isLessThan(end);
+    }
+
+    private void reserveConfirmedAppointment(
+            int scopeId,
+            String serviceName,
+            String familyName,
+            String email,
+            String amendment,
+            boolean lookAhead) {
+        String authKey = getOrLoginXAuthKey();
+        JsonNode request = findScopeRequestByName(scopeId, serviceName, authKey);
+        JsonNode freeList = lookAhead
+            ? fetchFreeProcessesLookingAhead(scopeId, request, authKey)
+            : fetchFreeProcesses(scopeId, request, authKey);
 
         JsonNode reserved = null;
         for (int i = 0; i < freeList.size(); i++) {
@@ -281,6 +422,7 @@ public class ZmsApiSteps {
             .as("Reserve an appointment before calling it")
             .isNotNull();
 
+        replaceFutureAppointmentWithWalkIn();
         String authKey = getOrLoginXAuthKey();
         response = given()
             .baseUri(baseUri != null ? baseUri : TestConfig.getBaseUri())
@@ -293,6 +435,55 @@ public class ZmsApiSteps {
         CommonApiSteps.setResponse(response);
         JsonNode workstation = parseDataNode(response);
         rememberProcess(workstation != null ? workstation.path("process") : null);
+    }
+
+    /**
+     * A confirmed slot on a later day cannot be called. Queue a walk-in for today and drop the future appointment.
+     */
+    private void replaceFutureAppointmentWithWalkIn() {
+        if (appointmentIsToday(lastProcess)) {
+            return;
+        }
+        int futureId = lastProcess.path("id").asInt();
+        ObjectNode body = lastProcess.deepCopy();
+        body.remove("id");
+        body.remove("authKey");
+        body.put("status", "queued");
+        String authKey = getOrLoginXAuthKey();
+        ScenarioLogManager.getLogger().info(
+            "Appointment {} is not today; queueing a walk-in so it can be called", futureId);
+        response = given()
+            .baseUri(baseUri != null ? baseUri : TestConfig.getBaseUri())
+            .header("X-AuthKey", authKey)
+            .contentType("application/json")
+            .body(toJson(body))
+        .when()
+            .post("/workstation/process/waitingnumber/");
+        CommonApiSteps.setResponse(response);
+        Assertions.assertThat(response.getStatusCode())
+            .as("POST /workstation/process/waitingnumber/ body=%s", truncate(response.asString(), 1000))
+            .isEqualTo(200);
+        JsonNode queued = parseDataNode(response);
+        Assertions.assertThat(queued).isNotNull();
+        Response deleted = given()
+            .baseUri(baseUri != null ? baseUri : TestConfig.getBaseUri())
+            .header("X-AuthKey", authKey)
+            .queryParam("initiator", "admin")
+        .when()
+            .delete("/process/" + futureId + "/");
+        Assertions.assertThat(deleted.getStatusCode())
+            .as("DELETE /process/%d/ body=%s", futureId, truncate(deleted.asString(), 1000))
+            .isEqualTo(200);
+        rememberProcess(queued);
+    }
+
+    private boolean appointmentIsToday(JsonNode process) {
+        long timestamp = process.path("appointments").path(0).path("date").asLong(0);
+        if (timestamp <= 0) {
+            return true;
+        }
+        long start = BerlinTime.today().atStartOfDay(java.time.ZoneId.of("Europe/Berlin")).toEpochSecond();
+        return timestamp >= start && timestamp < start + 86_400L;
     }
 
     @When("I set the assigned process status to processing with the X-AuthKey")
@@ -408,6 +599,85 @@ public class ZmsApiSteps {
         AccountCheckout.checkout("scope:" + scopeId + ":spontankunden");
         if (findOpeningHoursIds(scopeId, "ATAF-ZMSKVR-167").isEmpty()) {
             createSpontankundenOpeningHours(scopeId, from, to);
+        }
+    }
+
+    @When("I create opening hours for scope {int} through Sunday of the current week with the X-AuthKey")
+    public void iCreateOpeningHoursThroughSundayOfTheCurrentWeek(int scopeId) {
+        AccountCheckout.checkout("scope:" + scopeId + ":zmskvr-1672");
+        String authKey = getOrLoginXAuthKey();
+        LocalDate today = BerlinTime.today();
+        LocalDate sunday = today.with(DayOfWeek.SUNDAY);
+        long startEpoch = today.atTime(BerlinTime.now()).atZone(BerlinTime.ZONE).toEpochSecond();
+        long endEpoch = sunday.atStartOfDay(BerlinTime.ZONE).toEpochSecond();
+        String endTime = closingTimeOn(sunday);
+
+        ObjectNode weekday = MAPPER.createObjectNode();
+        for (DayOfWeek day : DayOfWeek.values()) {
+            boolean selected = day == DayOfWeek.SUNDAY
+                    || (day == DayOfWeek.SATURDAY && today.getDayOfWeek() != DayOfWeek.SUNDAY);
+            weekday.put(day.name().toLowerCase(Locale.ROOT), selected ? 1 : 0);
+        }
+
+        ObjectNode availability = MAPPER.createObjectNode();
+        availability.put("type", "openinghours");
+        availability.put("kind", "default");
+        availability.put("description", "ATAF-ZMSKVR-1672");
+        availability.put("startDate", startEpoch);
+        availability.put("endDate", endEpoch);
+        availability.put("startTime", "08:00:00");
+        availability.put("endTime", endTime);
+        availability.put("slotTimeInMinutes", 10);
+        ObjectNode scope = MAPPER.createObjectNode();
+        scope.put("id", scopeId);
+        availability.set("scope", scope);
+        availability.set("weekday", weekday);
+        ObjectNode workstationCount = MAPPER.createObjectNode();
+        workstationCount.put("intern", 0);
+        workstationCount.put("public", 0);
+        availability.set("workstationCount", workstationCount);
+
+        ObjectNode body = MAPPER.createObjectNode();
+        body.set("availabilityList", MAPPER.createArrayNode().add(availability));
+        body.put("selectedDate", today.toString());
+
+        response = given()
+            .baseUri(apiBaseUri())
+            .header("X-AuthKey", authKey)
+            .contentType("application/json")
+            .body(toJson(body))
+        .when()
+            .post("/availability/");
+        CommonApiSteps.setResponse(response);
+        if (response.getStatusCode() == 200) {
+            ArrayNode created = parseDataArray(response);
+            if (created != null && !created.isEmpty() && created.get(0).path("id").asInt() > 0) {
+                createdAvailabilityId = created.get(0).path("id").asInt();
+            }
+        }
+    }
+
+    @Then("the response should not report a missing weekday")
+    public void theResponseShouldNotReportAMissingWeekday() {
+        String body = response.asString();
+        Assertions.assertThat(body).doesNotContain("invalidWeekday");
+        Assertions.assertThat(body).doesNotContain("kommen im gewählten Zeitraum nicht vor");
+    }
+
+    @When("I delete the opening hours created for the current week with the X-AuthKey")
+    public void iDeleteTheOpeningHoursCreatedForTheCurrentWeek() {
+        Assertions.assertThat(createdAvailabilityId)
+            .as("opening hours id from POST /availability/")
+            .isNotNull();
+        int id = createdAvailabilityId;
+        response = given()
+            .baseUri(apiBaseUri())
+            .header("X-AuthKey", getOrLoginXAuthKey())
+        .when()
+            .delete("/availability/" + id + "/");
+        CommonApiSteps.setResponse(response);
+        if (response.getStatusCode() == 200) {
+            createdAvailabilityId = null;
         }
     }
 
@@ -615,6 +885,25 @@ public class ZmsApiSteps {
         return null;
     }
 
+    /**
+     * 17:00 while Sunday is still ahead. On a Sunday evening the end clock has to stay after now,
+     * on a 10-minute grid so it divides by slotTimeInMinutes.
+     */
+    private static String closingTimeOn(LocalDate endDay) {
+        LocalTime end = LocalTime.of(17, 0);
+        if (!endDay.isAfter(BerlinTime.today())) {
+            LocalTime now = BerlinTime.now().withSecond(0).withNano(0);
+            if (!end.isAfter(now)) {
+                int roundedMinute = ((now.getMinute() / 10) + 1) * 10;
+                end = now.withMinute(0).plusMinutes(roundedMinute + 10L);
+                if (!end.isAfter(now) || end.isAfter(LocalTime.of(23, 50))) {
+                    end = LocalTime.of(23, 50);
+                }
+            }
+        }
+        return end.format(DateTimeFormatter.ofPattern("HH:mm:ss"));
+    }
+
     private static String normalizeClock(String time) {
         return time != null && time.length() == 5 ? time + ":00" : time;
     }
@@ -804,6 +1093,58 @@ public class ZmsApiSteps {
             .isNotNull()
             .isNotEmpty();
         return freeList;
+    }
+
+    private JsonNode fetchFreeProcessesLookingAhead(int scopeId, JsonNode request, String authKey) {
+        LocalDate start = BerlinTime.today();
+        JsonNode lastEmpty = null;
+        for (int offset = 0; offset < 8; offset++) {
+            LocalDate day = start.plusDays(offset);
+            Response freeResponse = given()
+                .baseUri(baseUri != null ? baseUri : TestConfig.getBaseUri())
+                .header("X-AuthKey", authKey)
+                .contentType("application/json")
+                .queryParam("slotType", "intern")
+                .queryParam("slotsRequired", 0)
+                .body(toJson(freeProcessCalendar(scopeId, request, day)))
+            .when()
+                .post("/process/status/free/");
+            JsonNode freeList = parseDataArray(freeResponse);
+            if (freeList != null && !freeList.isEmpty()) {
+                if (offset > 0) {
+                    ScenarioLogManager.getLogger().info(
+                        "No intern slot left on {}; using {}", start, day);
+                }
+                return freeList;
+            }
+            lastEmpty = freeList;
+        }
+        Assertions.assertThat(lastEmpty)
+            .as("POST /process/status/free/ for scope %d from %s", scopeId, start)
+            .isNotNull()
+            .isNotEmpty();
+        return lastEmpty;
+    }
+
+    private ObjectNode freeProcessCalendar(int scopeId, JsonNode request, LocalDate day) {
+        ObjectNode calendar = MAPPER.createObjectNode();
+        ObjectNode dayNode = MAPPER.createObjectNode();
+        dayNode.put("year", day.getYear());
+        dayNode.put("month", day.getMonthValue());
+        dayNode.put("day", day.getDayOfMonth());
+        calendar.set("firstDay", dayNode);
+        calendar.set("lastDay", dayNode.deepCopy());
+
+        ArrayNode scopes = MAPPER.createArrayNode();
+        ObjectNode scope = MAPPER.createObjectNode();
+        scope.put("id", scopeId);
+        scopes.add(scope);
+        calendar.set("scopes", scopes);
+
+        ArrayNode requests = MAPPER.createArrayNode();
+        requests.add(request.deepCopy());
+        calendar.set("requests", requests);
+        return calendar;
     }
 
     private JsonNode refreshAssignedProcessFromWorkstation(String authKey) {

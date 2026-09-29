@@ -26,6 +26,8 @@ import zms.ataf.ui.pages.admin.AdminPageContext;
  */
 public class ProcessingStationSection extends CounterProcessingStationPage {
 
+    private static final String[] CUSTOMER_ACTION_LABELS = {"Fertig stellen", "Weiterleiten", "Parken", "Abbrechen"};
+
     public ProcessingStationSection(RemoteWebDriver driver, AdminPageContext adminPageContext) {
         super(driver, adminPageContext);
     }
@@ -528,6 +530,84 @@ public class ProcessingStationSection extends CounterProcessingStationPage {
             clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, submitLocator, LocatorType.XPATH, false, CONTEXT);
         }
         CONTEXT.waitForSpinners();
+    }
+
+    /**
+     * Kundeninformationen while a process is in processing: Fertig stellen, Weiterleiten, Parken, Abbrechen.
+     * Locked on the redirect page (ZMSKVR-157); clickable again after "Abbrechen der Weiterleitung".
+     */
+    public void assertCustomerActionsEnabled() {
+        ScenarioLogManager.getLogger().info("Checking that customer actions are visible and clickable...");
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("section.client-info[data-actions-locked='0']")));
+        for (String label : CUSTOMER_ACTION_LABELS) {
+            WebElement action = wait.until(ExpectedConditions.visibilityOfElementLocated(customerActionLocator(label, true)));
+            Assert.assertTrue(action.isDisplayed(), "Customer action '" + label + "' is not visible.");
+            Assert.assertTrue(action.isEnabled(), "Customer action '" + label + "' is visible but not clickable.");
+        }
+    }
+
+    public void assertCustomerActionsDisabled() {
+        ScenarioLogManager.getLogger().info("Checking that customer actions stay visible but have no function...");
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("section.client-info[data-actions-locked='1']")));
+        for (String label : CUSTOMER_ACTION_LABELS) {
+            WebElement action = wait.until(ExpectedConditions.visibilityOfElementLocated(customerActionLocator(label, false)));
+            Assert.assertTrue(action.isDisplayed(), "Customer action '" + label + "' is not visible while forwarding.");
+            Assert.assertFalse(action.isEnabled(), "Customer action '" + label + "' is still clickable while forwarding.");
+        }
+    }
+
+    public void assertForwardingFormVisible() {
+        ScenarioLogManager.getLogger().info("Checking that the forwarding form is visible...");
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        wait.until(ExpectedConditions.urlContains("/workstation/process/redirect/"));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(
+                "//section[contains(@class,'appointment-form')]//h2[contains(@class,'board__heading') and contains(normalize-space(.), 'Termin Weiterleiten')]")));
+        Assert.assertTrue(isWebElementVisible(DEFAULT_EXPLICIT_WAIT_TIME, "//select[@name='location']", LocatorType.XPATH, true, CONTEXT),
+                "Forwarding location dropdown is not visible.");
+    }
+
+    public void assertCancelForwardingButtonBlue() {
+        ScenarioLogManager.getLogger().info("Checking the blue cancel-forwarding button...");
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        WebElement cancel = wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("a.button-redirect-cancel")));
+        Assert.assertEquals(cancel.getText().trim(), "Abbrechen der Weiterleitung",
+                "Cancel forwarding button has the wrong label.");
+        String background = cancel.getCssValue("background-color").replace(" ", "");
+        Assert.assertTrue(background.contains("0,83,180"),
+                "Cancel forwarding button should be blue (#0053B4) but background-color was " + cancel.getCssValue("background-color") + ".");
+    }
+
+    public void clickCancelForwarding() {
+        ScenarioLogManager.getLogger().info("Trying to click on \"Abbrechen der Weiterleitung\"...");
+        final String locator = "//a[contains(@class,'button-redirect-cancel') and normalize-space()='Abbrechen der Weiterleitung']";
+        Assert.assertTrue(isWebElementVisible(DEFAULT_EXPLICIT_WAIT_TIME, locator, LocatorType.XPATH, true, CONTEXT),
+                "Button 'Abbrechen der Weiterleitung' is not visible!");
+        clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, locator, LocatorType.XPATH, false, CONTEXT);
+    }
+
+    public void assertAppointmentFormVisible() {
+        ScenarioLogManager.getLogger().info("Checking that the appointment form is back...");
+        CONTEXT.set();
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        wait.until(driver -> driver.getCurrentUrl() == null || !driver.getCurrentUrl().contains("/process/redirect/"));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(
+                "//section[contains(@class,'appointment-form')]//h2[contains(@class,'board__heading') and contains(normalize-space(.), 'Termin erstellen')]")));
+        Assert.assertTrue(DRIVER.findElements(By.cssSelector("a.button-redirect-cancel")).isEmpty(),
+                "Cancel forwarding button is still visible after leaving the forwarding form.");
+    }
+
+    private By customerActionLocator(String label, boolean enabled) {
+        String section = "//section[contains(@class,'client-info')]";
+        String exact = "normalize-space()='" + label + "'";
+        if (!enabled) {
+            return By.xpath(section + "//button[" + exact + " and @disabled]");
+        }
+        if ("Parken".equals(label) || "Abbrechen".equals(label)) {
+            return By.xpath(section + "//button[" + exact + " and not(@disabled)]");
+        }
+        return By.xpath(section + "//a[" + exact + "]");
     }
 
 }

@@ -10,9 +10,11 @@ import ataf.core.helpers.TestDataHelper;
 import ataf.core.logging.ScenarioLogManager;
 import ataf.web.utils.DriverUtil;
 import io.cucumber.java.After;
+import io.cucumber.java.de.Wenn;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import zms.ataf.rest.steps.ZmsApiMailSteps;
 import zms.ataf.ui.pages.citizenview.CitizenViewPage;
 
 /**
@@ -336,6 +338,13 @@ public class CitizenViewSteps {
         page.assertPreconfirmationCalloutNotVisible();
     }
 
+    @Then("the reschedule and cancel actions for the existing appointment should be visible in the citizen view")
+    public void theRescheduleAndCancelActionsShouldBeVisible() {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: assert Termin verschieben and Termin absagen after leaving the Termin step");
+        page.assertRescheduleOrCancelActionsVisible();
+    }
+
     /** ZMSKVR-1500: Verschieben abbrechen → back to overview with already-activated banner. */
     @When("I cancel the reschedule in the citizen view")
     public void iCancelTheRescheduleInTheCitizenView() {
@@ -346,6 +355,43 @@ public class CitizenViewSteps {
     @When("I cancel the appointment in the citizen view")
     public void iCancelTheAppointmentInTheCitizenView() {
         ScenarioLogManager.getLogger().info("zmscitizenview: cancel appointment via Termin absagen");
+        page.clickCancelAppointmentAndConfirm();
+    }
+
+    /**
+     * Abholung at Ruppertstraße, then Termin absagen. The Nachname is what Kundensuche matches.
+     */
+    @Wenn("ein Bürger über die Bürgeransicht einen Termin mit dem Nachnamen {string} bucht und absagt.")
+    public void einBuergerBuchtUndSagtAb(String lastName) throws Exception {
+        String name = TestDataHelper.transformTestData(lastName);
+        TestDataHelper.setTestData("customer_name", "E2E " + name);
+        ScenarioLogManager.getLogger().info("zmscitizenview: book and cancel Abholung, Nachname {}", name);
+        page.navigateWithJumpIn("10295182", "10492");
+        page.assertCombinationStepVisible();
+        page.clickWeiter();
+        page.selectOfficeById(10492);
+        try {
+            Thread.sleep(4000L);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+        page.waitUntilSlotsReadyForBooking();
+        page.clickSpäterIfAvailableAndReloadSlots();
+        page.highlightPreferredTimeslotForOffice(10492);
+        page.clickHighlightedTimeslotSelection();
+        page.assertCalloutAndReserveAfterSlotSelection(10492);
+        page.fillContactDetailsRandom();
+        page.clickWeiter(30);
+        page.waitForPreconfirmPageAfterUpdate();
+        page.acceptCommunication();
+        page.continueFromPreconfirmStep();
+        page.assertPreconfirmationCalloutVisible(30);
+        page.syncBookingProcessFromLocalStorage();
+        new ZmsApiMailSteps().iFetchThePreconfirmationMailForTheCurrentProcess();
+        page.openConfirmationDeepLinkInBrowser();
+        page.assertConfirmationSuccessCalloutVisible();
+        page.reopenConfirmationDeepLinkInBrowser();
+        page.assertAlreadyActivatedAppointmentBannerVisible();
         page.clickCancelAppointmentAndConfirm();
     }
 
