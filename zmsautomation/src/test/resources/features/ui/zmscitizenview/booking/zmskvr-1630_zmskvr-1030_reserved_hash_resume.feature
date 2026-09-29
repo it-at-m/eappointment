@@ -1,5 +1,5 @@
 #language: en
-@web @zmscitizenview @booking @citizen @ZMSKVR-1630 @ZMSKVR-1030 @executeLocally
+@web @zmscitizenview @booking @citizen @ZMSKVR-1630 @ZMSKVR-1030 @ZMSKVR-1665 @ZMSKVR-1666 @executeLocally
 Feature: CitizenView: reserved appointment hash resumes an unfinished booking
   As a citizen who reopens #/appointment/{hash} for a reserved process
   I want a placeholder email to keep me on Kontakt and a real update to open the book overview

@@ -2,7 +2,7 @@ name: 🛡️ Trivy Security Check (scheduled)
 
 on:
   schedule:
-    # Scheduled workflows run on the default branch only; scan main and next explicitly.
+    # Scheduled workflows run on the default branch only; scan next.
     - cron: "0 1 * * *"
   workflow_dispatch:
 
@@ -15,7 +15,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        branch: [main, next]
+        branch: [next]
     permissions:
       contents: read
       actions: read
