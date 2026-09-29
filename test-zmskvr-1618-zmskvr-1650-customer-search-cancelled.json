@@ -1,0 +1,28 @@
+{
+  "branch": "test-zmskvr-1618-zmskvr-1650-customer-search-cancelled",
+  "branchSlug": "test-zmskvr-1618-zmskvr-1650-customer-search-cancelled",
+  "runId": "36617458122",
+  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36617458122",
+  "runStartedAt": "2026-09-29T19:11:24Z",
+  "publishedAt": "2026-09-29T19:25:28.469Z",
+  "features": {
+    "feature-ui-zmsadmin-citizen-search-zmskvr-1650-zmskvr-1618-cancelled-status": {
+      "status": "failed",
+      "shard": "custom",
+      "browser": "chrome",
+      "rel": "ui/zmsadmin/citizen-search/zmskvr-1650_zmskvr-1618_cancelled_status.feature",
+      "runId": "36617458122",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36617458122",
+      "runStartedAt": "2026-09-29T19:11:24Z",
+      "browsers": {
+        "chrome": {
+          "status": "failed",
+          "shard": "custom",
+          "runId": "36617458122",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36617458122",
+          "runStartedAt": "2026-09-29T19:11:24Z"
+        }
+      }
+    }
+  }
+}
