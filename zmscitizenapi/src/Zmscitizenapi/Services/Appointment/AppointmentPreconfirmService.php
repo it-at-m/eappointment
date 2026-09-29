@@ -21,7 +21,7 @@ class AppointmentPreconfirmService
         }
 
         $reservedProcess = $this->getReservedProcess($clientData->processId, $clientData->authKey, $authenticatedUser);
-        if (is_array($reservedProcess) && !empty($reservedProcess['errors'])) {
+        if (is_array($reservedProcess)) {
             return $reservedProcess;
         }
 
