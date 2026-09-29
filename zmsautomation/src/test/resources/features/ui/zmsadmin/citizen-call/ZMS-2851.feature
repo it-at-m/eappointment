@@ -1,7 +1,7 @@
 #language: de
 Funktionalität: Ein nicht erschienener Kunde kann nach dem Aufruf entsprechend markiert werden, damit der Vorgang weiterverarbeitet werden kann.
 
-  @web @zmsadmin @customer-call @clerk @ZMS-2851 @ZMS-1795 @executeLocally
+  @web @zmsadmin @citizen-call @clerk @ZMS-2851 @ZMS-1795 @executeLocally
   Szenario: [AUT] Kunde nach Aufruf nicht erschienen - Button umbenennen
     Wenn Sie zur Webseite der Administration navigieren.
     Und  Sie im Zeitmanagementsystem auf die Schaltfläche "Anmelden" klicken.
