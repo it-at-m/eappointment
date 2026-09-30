@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-09-30T19:30:13.336Z",
+  "publishedAt": "2026-09-30T19:59:33.644Z",
   "branches": [
     {
       "name": "next",
@@ -222,6 +222,12 @@
       "slug": "renovate-next-ghcr.io-it-at-m-refarch-refarch-gateway-1.x",
       "runId": "34037729850",
       "runStartedAt": "2026-09-06T13:58:56Z"
+    },
+    {
+      "name": "test-zmskvr-1334-appointment-ics-download",
+      "slug": "test-zmskvr-1334-appointment-ics-download",
+      "runId": "36768219848",
+      "runStartedAt": "2026-09-30T19:48:26Z"
     },
     {
       "name": "test-zmskvr-1411-zmskvr-1672-opening-hours-sunday",
