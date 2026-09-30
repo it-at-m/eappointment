@@ -919,6 +919,15 @@ public class CounterProcessingStationPage extends AdminPage {
         }
     }
 
+    public void fillCustomTextfield(String fieldName, String value) {
+        if (value == null || value.isBlank()) {
+            return;
+        }
+        CONTEXT.set();
+        WebElement textarea = findElementByLocatorType("//textarea[@name='" + fieldName + "']", LocatorType.XPATH, true);
+        enterTextInWebElement(DEFAULT_EXPLICIT_WAIT_TIME, value, textarea);
+    }
+
     public String clickOnAddSpontaneousCustomer() {
         ScenarioLogManager.getLogger().info("Trying to click on \"Add spontaneous customer\"  button...");
         fillCustomTextfieldsForSpontaneousCustomerIfNeeded();

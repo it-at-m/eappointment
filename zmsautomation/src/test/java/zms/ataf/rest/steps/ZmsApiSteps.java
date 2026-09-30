@@ -6,7 +6,11 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 import org.assertj.core.api.Assertions;
 
@@ -40,6 +44,8 @@ public class ZmsApiSteps {
     private String scenarioLoginUsername;
     private String scenarioLoginPassword;
     private JsonNode lastProcess;
+    private final List<Integer> scenarioProcessIds = new ArrayList<>();
+    private JsonNode departmentServices;
     private String ticketprinterHash;
     private Integer createdAvailabilityId;
     private boolean lastProcessDeleted;
@@ -47,6 +53,8 @@ public class ZmsApiSteps {
     @Before
     public void resetProcessContext() {
         lastProcess = null;
+        scenarioProcessIds.clear();
+        departmentServices = null;
         cachedXAuthKey = null;
         scenarioLoginUsername = null;
         scenarioLoginPassword = null;
@@ -70,7 +78,55 @@ public class ZmsApiSteps {
                 ScenarioLogManager.getLogger().warn("Could not delete opening hours {}: {}", id, e.getMessage());
             }
         }
+        deleteScenarioProcesses();
         deleteLastProcessIfStillOpen();
+    }
+
+    private void deleteScenarioProcesses() {
+        int lastId = lastProcess == null ? 0 : lastProcess.path("id").asInt();
+        for (Integer processId : new ArrayList<>(scenarioProcessIds)) {
+            boolean removed = deleteProcessById(processId, false);
+            if (processId == lastId && removed) {
+                lastProcessDeleted = true;
+            }
+        }
+        scenarioProcessIds.clear();
+    }
+
+    /** @return true when the process is gone (deleted or already absent) */
+    private boolean deleteProcessById(int processId, boolean assertSuccess) {
+        if (processId <= 0) {
+            return true;
+        }
+        try {
+            Response cleanup = given()
+                .baseUri(apiBaseUri())
+                .header("X-AuthKey", getOrLoginXAuthKey())
+                .queryParam("initiator", "admin")
+            .when()
+                .delete("/process/" + processId + "/");
+            int status = cleanup.getStatusCode();
+            if (assertSuccess) {
+                CommonApiSteps.setResponse(cleanup);
+                response = cleanup;
+                Assertions.assertThat(status)
+                    .as("DELETE /process/%d/ body=%s", processId, truncate(cleanup.asString(), 1000))
+                    .isEqualTo(200);
+                return true;
+            }
+            if (status < 300 || status == 404) {
+                return true;
+            }
+            ScenarioLogManager.getLogger().warn(
+                "Could not delete process {}: HTTP {}", processId, status);
+            return false;
+        } catch (RuntimeException e) {
+            if (assertSuccess) {
+                throw e;
+            }
+            ScenarioLogManager.getLogger().warn("Could not delete process {}: {}", processId, e.getMessage());
+            return false;
+        }
     }
 
     private void deleteLastProcessIfStillOpen() {
@@ -254,6 +310,95 @@ public class ZmsApiSteps {
         }
     }
 
+    @When("I queue a walk-in at scope {int} with service {string} and name {string} with the X-AuthKey")
+    public void iQueueAWalkInAtScopeWithServiceAndNameWithTheXAuthKey(
+            int scopeId, String serviceName, String familyName) {
+        String authKey = getOrLoginXAuthKey();
+        JsonNode request = findScopeRequestByName(scopeId, serviceName, authKey);
+        ObjectNode scope = MAPPER.createObjectNode();
+        scope.put("id", scopeId);
+        ObjectNode appointment = MAPPER.createObjectNode();
+        appointment.set("scope", scope.deepCopy());
+        appointment.put("date", 0);
+        ObjectNode client = MAPPER.createObjectNode();
+        client.put("familyName", familyName);
+        client.put("email", "zmskvr1564@example.com");
+        client.put("surveyAccepted", 1);
+        ObjectNode process = MAPPER.createObjectNode();
+        process.put("status", "queued");
+        process.set("scope", scope);
+        process.set("appointments", MAPPER.createArrayNode().add(appointment));
+        process.set("requests", MAPPER.createArrayNode().add(request.deepCopy()));
+        process.set("clients", MAPPER.createArrayNode().add(client));
+
+        response = given()
+            .baseUri(baseUri != null ? baseUri : TestConfig.getBaseUri())
+            .header("X-AuthKey", authKey)
+            .contentType("application/json")
+            .body(toJson(process))
+        .when()
+            .post("/workstation/process/waitingnumber/");
+        CommonApiSteps.setResponse(response);
+        Assertions.assertThat(response.getStatusCode())
+            .as("POST /workstation/process/waitingnumber/ body=%s", truncate(response.asString(), 1000))
+            .isEqualTo(200);
+        rememberProcess(parseDataNode(response));
+    }
+
+    @When("I queue a walk-in at scope {int} with service {string}, name {string}, free text {string} and second free text {string} with the X-AuthKey")
+    public void iQueueAWalkInWithFreeTextWithTheXAuthKey(
+            int scopeId, String serviceName, String familyName, String freeText, String secondFreeText) {
+        String authKey = getOrLoginXAuthKey();
+        JsonNode request = findScopeRequestByName(scopeId, serviceName, authKey);
+        ObjectNode scope = MAPPER.createObjectNode();
+        scope.put("id", scopeId);
+        ObjectNode appointment = MAPPER.createObjectNode();
+        appointment.set("scope", scope.deepCopy());
+        appointment.put("date", 0);
+        ObjectNode client = MAPPER.createObjectNode();
+        client.put("familyName", familyName);
+        client.put("email", familyName.toLowerCase(Locale.ROOT).replaceAll("[^a-z0-9]", "") + "@mailinator.com");
+        client.put("surveyAccepted", 1);
+        ObjectNode process = MAPPER.createObjectNode();
+        process.put("status", "queued");
+        process.put("customTextfield", freeText);
+        process.put("customTextfield2", secondFreeText);
+        process.set("scope", scope);
+        process.set("appointments", MAPPER.createArrayNode().add(appointment));
+        process.set("requests", MAPPER.createArrayNode().add(request.deepCopy()));
+        process.set("clients", MAPPER.createArrayNode().add(client));
+
+        response = given()
+            .baseUri(baseUri != null ? baseUri : TestConfig.getBaseUri())
+            .header("X-AuthKey", authKey)
+            .contentType("application/json")
+            .body(toJson(process))
+        .when()
+            .post("/workstation/process/waitingnumber/");
+        CommonApiSteps.setResponse(response);
+        Assertions.assertThat(response.getStatusCode())
+            .as("POST /workstation/process/waitingnumber/ body=%s", truncate(response.asString(), 1000))
+            .isEqualTo(200);
+        JsonNode queued = parseDataNode(response);
+        rememberProcess(queued);
+        int processId = queued == null ? 0 : queued.path("id").asInt();
+        if (processId > 0 && !scenarioProcessIds.contains(processId)) {
+            scenarioProcessIds.add(processId);
+        }
+    }
+
+    @When("I delete the processes created in this scenario with the X-AuthKey")
+    public void iDeleteTheProcessesCreatedInThisScenarioWithTheXAuthKey() {
+        Assertions.assertThat(scenarioProcessIds)
+            .as("Queue the walk-ins before deleting them")
+            .isNotEmpty();
+        for (Integer processId : new ArrayList<>(scenarioProcessIds)) {
+            deleteProcessById(processId, true);
+        }
+        scenarioProcessIds.clear();
+        lastProcessDeleted = true;
+    }
+
     @When("I reserve an appointment at scope {int} with service {string} and amendment {string} with the X-AuthKey")
     public void iReserveAnAppointmentAtScopeWithServiceAndAmendmentWithTheXAuthKey(
             int scopeId, String serviceName, String amendment) {
@@ -340,6 +485,30 @@ public class ZmsApiSteps {
             .as("finalizedAt for %s", familyName)
             .isGreaterThanOrEqualTo(start)
             .isLessThan(end);
+    }
+
+    @Then("the process search results include {string}")
+    public void theProcessSearchResultsInclude(String familyName) {
+        Assertions.assertThat(familyNamesInSearch())
+            .as("GET /process/search/ body=%s", truncate(response.asString(), 1500))
+            .contains(familyName);
+    }
+
+    @Then("the process search results do not include {string}")
+    public void theProcessSearchResultsDoNotInclude(String familyName) {
+        Assertions.assertThat(familyNamesInSearch())
+            .as("GET /process/search/ body=%s", truncate(response.asString(), 1500))
+            .doesNotContain(familyName);
+    }
+
+    private List<String> familyNamesInSearch() {
+        ArrayNode results = parseDataArray(response);
+        Assertions.assertThat(results).as("GET /process/search/ data").isNotNull();
+        List<String> names = new ArrayList<>();
+        for (JsonNode row : results) {
+            names.add(row.path("clients").path(0).path("familyName").asText());
+        }
+        return names;
     }
 
     private void reserveConfirmedAppointment(
@@ -511,6 +680,105 @@ public class ZmsApiSteps {
             .post("/process/" + processId + "/" + processAuthKey + "/");
         CommonApiSteps.setResponse(response);
         rememberProcess(parseDataNode(response));
+    }
+
+    @When("I request the department services for scope {int} with the X-AuthKey")
+    public void iRequestTheDepartmentServicesForScopeWithTheXAuthKey(int scopeId) {
+        String authKey = getOrLoginXAuthKey();
+        response = given()
+            .baseUri(baseUri != null ? baseUri : TestConfig.getBaseUri())
+            .header("X-AuthKey", authKey)
+        .when()
+            .get("/scope/" + scopeId + "/request/department/");
+        CommonApiSteps.setResponse(response);
+        Assertions.assertThat(response.getStatusCode())
+            .as("GET /scope/%d/request/department/ body=%s", scopeId, truncate(response.asString(), 1000))
+            .isEqualTo(200);
+        departmentServices = parseDataNode(response);
+        Assertions.assertThat(departmentServices)
+            .as("GET /scope/%d/request/department/ data", scopeId)
+            .isNotNull();
+    }
+
+    @Then("the scope services should include {string}")
+    public void theScopeServicesShouldInclude(String serviceName) {
+        Assertions.assertThat(requestListContainsName(departmentServices.path("scopeRequests"), serviceName))
+            .as("scopeRequests should include %s", serviceName)
+            .isTrue();
+    }
+
+    @Then("the scope services should not include {string}")
+    public void theScopeServicesShouldNotInclude(String serviceName) {
+        Assertions.assertThat(requestListContainsName(departmentServices.path("scopeRequests"), serviceName))
+            .as("scopeRequests should not include %s", serviceName)
+            .isFalse();
+    }
+
+    @Then("the additional department services should include {string}")
+    public void theAdditionalDepartmentServicesShouldInclude(String serviceName) {
+        Assertions.assertThat(requestListContainsName(
+                departmentServices.path("additionalDepartmentRequests"), serviceName))
+            .as("additionalDepartmentRequests should include %s", serviceName)
+            .isTrue();
+    }
+
+    @Then("the scope services and the additional department services should not overlap")
+    public void theScopeServicesAndTheAdditionalDepartmentServicesShouldNotOverlap() {
+        Set<String> scopeIds = requestIds(departmentServices.path("scopeRequests"));
+        Set<String> additionalIds = requestIds(departmentServices.path("additionalDepartmentRequests"));
+        scopeIds.retainAll(additionalIds);
+        Assertions.assertThat(scopeIds)
+            .as("services listed both on the scope and as additional department services")
+            .isEmpty();
+    }
+
+    @When("I finish the assigned process including additional service {string} with the X-AuthKey")
+    public void iFinishTheAssignedProcessIncludingAdditionalServiceWithTheXAuthKey(String serviceName) {
+        Assertions.assertThat(departmentServices)
+            .as("Request the department services before finishing with an additional service")
+            .isNotNull();
+        JsonNode extra = findRequestByName(departmentServices.path("additionalDepartmentRequests"), serviceName);
+        Assertions.assertThat(extra)
+            .as("additional department service %s", serviceName)
+            .isNotNull();
+
+        String authKey = getOrLoginXAuthKey();
+        JsonNode process = refreshAssignedProcessFromWorkstation(authKey);
+        Assertions.assertThat(process).isNotNull();
+
+        ObjectNode body = process.deepCopy();
+        body.put("status", "finished");
+        JsonNode existingRequests = body.get("requests");
+        ArrayNode requests;
+        if (existingRequests != null && existingRequests.isArray()) {
+            requests = (ArrayNode) existingRequests;
+        } else {
+            requests = MAPPER.createArrayNode();
+            body.set("requests", requests);
+        }
+        if (!requestListContainsName(requests, serviceName)) {
+            requests.add(extra.deepCopy());
+        }
+
+        response = given()
+            .baseUri(baseUri != null ? baseUri : TestConfig.getBaseUri())
+            .header("X-AuthKey", authKey)
+            .contentType("application/json")
+            .body(toJson(body))
+        .when()
+            .post("/process/status/finished/");
+        CommonApiSteps.setResponse(response);
+        rememberProcess(parseDataNode(response));
+    }
+
+    @Then("the finished process requests should include {string}")
+    public void theFinishedProcessRequestsShouldInclude(String serviceName) {
+        JsonNode process = lastProcess != null ? lastProcess : parseDataNode(response);
+        Assertions.assertThat(process).isNotNull();
+        Assertions.assertThat(requestListContainsName(process.path("requests"), serviceName))
+            .as("finished process requests should include %s. Body=%s",
+                serviceName, truncate(response != null ? response.asString() : "", 1000))
+            .isTrue();
     }
 
     @When("I finish the assigned process with the X-AuthKey")
@@ -1183,6 +1451,36 @@ public class ZmsApiSteps {
             return "";
         }
         return value.length() > maxLength ? value.substring(0, maxLength) + "..." : value;
+    }
+
+    private boolean requestListContainsName(JsonNode requests, String serviceName) {
+        return findRequestByName(requests, serviceName) != null;
+    }
+
+    private JsonNode findRequestByName(JsonNode requests, String serviceName) {
+        if (requests == null || !requests.isArray()) {
+            return null;
+        }
+        for (JsonNode request : requests) {
+            if (serviceName.equals(request.path("name").asText())) {
+                return request;
+            }
+        }
+        return null;
+    }
+
+    private Set<String> requestIds(JsonNode requests) {
+        Set<String> ids = new HashSet<>();
+        if (requests == null || !requests.isArray()) {
+            return ids;
+        }
+        for (JsonNode request : requests) {
+            String id = request.path("id").asText();
+            if (!id.isBlank()) {
+                ids.add(id);
+            }
+        }
+        return ids;
     }
 
     private JsonNode parseDataNode(Response apiResponse) {
