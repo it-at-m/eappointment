@@ -1,26 +1,26 @@
 {
   "branch": "test-zmskvr-1334-appointment-ics-download",
   "branchSlug": "test-zmskvr-1334-appointment-ics-download",
-  "runId": "36768219848",
-  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36768219848",
-  "runStartedAt": "2026-09-30T19:48:26Z",
-  "publishedAt": "2026-09-30T19:59:33.644Z",
+  "runId": "36768472739",
+  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36768472739",
+  "runStartedAt": "2026-09-30T19:50:40Z",
+  "publishedAt": "2026-09-30T20:00:45.141Z",
   "features": {
     "feature-ui-zmscitizenview-citizen-login-zmskvr-1334-appointment-ics-download": {
       "status": "failed",
       "shard": "custom",
-      "browser": "chrome",
+      "browser": "firefox",
       "rel": "ui/zmscitizenview/citizen-login/zmskvr-1334_appointment_ics_download.feature",
-      "runId": "36768219848",
-      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36768219848",
-      "runStartedAt": "2026-09-30T19:48:26Z",
+      "runId": "36768472739",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36768472739",
+      "runStartedAt": "2026-09-30T19:50:40Z",
       "browsers": {
-        "chrome": {
+        "firefox": {
           "status": "failed",
           "shard": "custom",
-          "runId": "36768219848",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36768219848",
-          "runStartedAt": "2026-09-30T19:48:26Z"
+          "runId": "36768472739",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36768472739",
+          "runStartedAt": "2026-09-30T19:50:40Z"
         }
       }
     }
