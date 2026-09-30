@@ -6,7 +6,8 @@ Feature: ZMSKVR-1431 / ZMSKVR-1564 Department services on finish
 
   # Scope 121 provider 10181768: Führungszeugnis, no Meldebescheinigung.
   # Meldebescheinigung is on sibling scope 136 in department 46.
-  # Opening hours for the reserve step are V31. statisticsEnabled is already 1 in V6.
+  # V31 sets standort.ohnestatistik = 0 so the admin finish form is shown.
+  # The walk-in does not need opening hours; ZMS-878 and ZMSKVR-1672 own that calendar.
 
   Background:
     Given the ZMS API is available
@@ -22,9 +23,9 @@ Feature: ZMSKVR-1431 / ZMSKVR-1564 Department services on finish
     And the additional department services should include "Meldebescheinigung"
     And the additional department services should include "Abholung Personalausweis, Reisepass oder eID-Karte"
     And the scope services and the additional department services should not overlap
-    When I reserve an appointment at scope 121 with service "Führungszeugnis" and amendment "Zmskvr1564" with the X-AuthKey
+    When I queue a walk-in at scope 121 with service "Führungszeugnis" and name "Zmskvr1564" with the X-AuthKey
     Then the response status code should be 200
-    And the process status should be "confirmed"
+    And the process status should be "queued"
     When I call the last process at the workstation with the X-AuthKey
     Then the response status code should be 200
     When I set the assigned process status to processing with the X-AuthKey

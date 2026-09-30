@@ -258,6 +258,41 @@ public class ZmsApiSteps {
         }
     }
 
+    @When("I queue a walk-in at scope {int} with service {string} and name {string} with the X-AuthKey")
+    public void iQueueAWalkInAtScopeWithServiceAndNameWithTheXAuthKey(
+            int scopeId, String serviceName, String familyName) {
+        String authKey = getOrLoginXAuthKey();
+        JsonNode request = findScopeRequestByName(scopeId, serviceName, authKey);
+        ObjectNode scope = MAPPER.createObjectNode();
+        scope.put("id", scopeId);
+        ObjectNode appointment = MAPPER.createObjectNode();
+        appointment.set("scope", scope.deepCopy());
+        appointment.put("date", 0);
+        ObjectNode client = MAPPER.createObjectNode();
+        client.put("familyName", familyName);
+        client.put("email", "zmskvr1564@example.com");
+        client.put("surveyAccepted", 1);
+        ObjectNode process = MAPPER.createObjectNode();
+        process.put("status", "queued");
+        process.set("scope", scope);
+        process.set("appointments", MAPPER.createArrayNode().add(appointment));
+        process.set("requests", MAPPER.createArrayNode().add(request.deepCopy()));
+        process.set("clients", MAPPER.createArrayNode().add(client));
+
+        response = given()
+            .baseUri(baseUri != null ? baseUri : TestConfig.getBaseUri())
+            .header("X-AuthKey", authKey)
+            .contentType("application/json")
+            .body(toJson(process))
+        .when()
+            .post("/workstation/process/waitingnumber/");
+        CommonApiSteps.setResponse(response);
+        Assertions.assertThat(response.getStatusCode())
+            .as("POST /workstation/process/waitingnumber/ body=%s", truncate(response.asString(), 1000))
+            .isEqualTo(200);
+        rememberProcess(parseDataNode(response));
+    }
+
     @When("I reserve an appointment at scope {int} with service {string} and amendment {string} with the X-AuthKey")
     public void iReserveAnAppointmentAtScopeWithServiceAndAmendmentWithTheXAuthKey(
             int scopeId, String serviceName, String amendment) {

@@ -1,9 +1,9 @@
 #language: de
 Funktionalität: Beim Abschluss einer Terminbearbeitung können Dienstleistungen der ganzen Behörde erfasst werden.
 
-	# Scope 121, Bürgerbüro Pasing Serviceschalter: Statistik ist aktiv (V6).
-	# Führungszeugnis gehört zum Standort. Meldebescheinigung liegt nur auf dem Geschwisterstandort 136
-	# derselben Behörde und erscheint unter "Weitere Dienstleistungen". Öffnungszeiten: V31.
+	# Scope 121, Bürgerbüro Pasing Serviceschalter. Führungszeugnis gehört zum Standort.
+	# Meldebescheinigung liegt nur auf dem Geschwisterstandort 136 derselben Behörde.
+	# V31 setzt ohnestatistik = 0, sonst überspringt Fertig stellen das Statistikformular.
 
 	@web @zmsadmin @citizen-call @clerk @ZMSKVR-1431 @ZMSKVR-1564 @automatisiert @executeLocally
 	Szenario: Weitere Dienstleistungen lassen sich aufklappen und Meldebescheinigung wird erfasst
