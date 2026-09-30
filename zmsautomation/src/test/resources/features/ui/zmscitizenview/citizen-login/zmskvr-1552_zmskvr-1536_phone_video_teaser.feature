@@ -9,6 +9,7 @@ Feature: Citizen login appointment teasers for phone and video
   #   2 / 2 Auskunft zur Rente Telefon (scope 369; production scope 394)
   #   1 / 1 Auskunft zur Rente Video (scope 371; production scope 391)
   # The phone teaser shows the number entered on Kontakt. The video teaser shows Webex (Online-Meeting).
+  # The booking summary shows the office display name, Versicherungsamt.
   # Each appointment is cancelled at the end.
 
   Background:
@@ -33,7 +34,7 @@ Feature: Citizen login appointment teasers for phone and video
     Then I should be logged in on the contact form in the citizen view
     When I fill contact details without continuing in the citizen view
     And I continue from the contact form in the citizen view
-    Then the booking summary should show provider <location> in the citizen view
+    Then the booking summary should show provider <location> with label "<providerLabel>" in the citizen view
     When I accept communication in the citizen view
     And I confirm the logged-in booking from the summary in the citizen view
     Then the confirmation success callout should be visible in the citizen view
@@ -43,6 +44,6 @@ Feature: Citizen login appointment teasers for phone and video
     And I cancel the appointment in the citizen view
 
     Examples:
-      | service | location | serviceName                  | type            | place                  |
-      | 2       | 2        | Auskunft zur Rente Telefon   | Telefon-Termin  | +491234567890          |
-      | 1       | 1        | Auskunft zur Rente Video     | Videoberatung   | Webex (Online-Meeting) |
+      | service | location | serviceName                  | providerLabel      | type            | place                  |
+      | 2       | 2        | Auskunft zur Rente Telefon   | Versicherungsamt   | Telefon-Termin  | +491234567890          |
+      | 1       | 1        | Auskunft zur Rente Video     | Versicherungsamt   | Videoberatung   | Webex (Online-Meeting) |

@@ -511,6 +511,16 @@ public class CitizenViewSteps {
         page.assertProviderSummaryVisible(officeId);
     }
 
+    @Then("the booking summary should show provider {int} with label {string} in the citizen view")
+    public void theBookingSummaryShouldShowProviderWithLabel(int officeId, String providerLabel) {
+        ScenarioLogManager.getLogger()
+                .info(
+                        "zmscitizenview: assert booking summary shows provider {} label {}",
+                        officeId,
+                        providerLabel);
+        page.assertProviderSummaryVisible(officeId, providerLabel);
+    }
+
     @Then("the estimated duration in the booking summary should be {int} minutes in the citizen view")
     public void theEstimatedDurationInTheBookingSummaryShouldBeMinutesInTheCitizenView(int minutes) {
         ScenarioLogManager.getLogger()
