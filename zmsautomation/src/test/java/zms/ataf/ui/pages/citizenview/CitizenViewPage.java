@@ -2,12 +2,16 @@ package zms.ataf.ui.pages.citizenview;
 
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Base64;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.BooleanSupplier;
-
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.TimeoutException;
@@ -211,6 +215,23 @@ public class CitizenViewPage extends BasePage {
                         + "return walk(document.documentElement).replace(/\\s+/g,' ').indexOf(sub)>=0;";
         Object o = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script);
         return Boolean.TRUE.equals(o);
+    }
+
+    /** True when an {@code h1}–{@code h6} in the shadow tree has this exact text. Level 2 is an {@code h2}. */
+    private boolean shadowDomHasHeading(int level, String heading) {
+        Assert.assertTrue(level >= 1 && level <= 6, "Heading level must be 1 to 6.");
+        String script =
+                "var tagName=arguments[0];var heading=arguments[1];"
+                        + "function textOf(n){var s='';if(!n)return s;if(n.nodeType===3)return n.nodeValue||'';"
+                        + "if(n.shadowRoot)s+=textOf(n.shadowRoot);var c=n.childNodes;if(c)for(var i=0;i<c.length;i++)s+=textOf(c[i]);return s;}"
+                        + "function walk(n,fn){if(!n)return false;if(fn(n))return true;if(n.shadowRoot&&walk(n.shadowRoot,fn))return true;"
+                        + "var c=n.children;if(c)for(var i=0;i<c.length;i++)if(walk(c[i],fn))return true;return false;}"
+                        + "return walk(document.body,function(n){"
+                        + "var tag=(n.tagName||'').toUpperCase();"
+                        + "return tag===tagName&&textOf(n).trim()===heading;});";
+        Object raw =
+                ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script, "H" + level, heading);
+        return Boolean.TRUE.equals(raw);
     }
 
     public void waitUntilShadowContains(String substring, int seconds) {
@@ -450,6 +471,78 @@ public class CitizenViewPage extends BasePage {
                 (shadowDomContainsText(DE_INVALID_JUMPIN_HEADER) || shadowDomContainsText(EN_INVALID_JUMPIN_HEADER))
                         && (shadowDomContainsText(DE_INVALID_JUMPIN_TEXT) || shadowDomContainsText(EN_INVALID_JUMPIN_TEXT)),
                 "Invalid jump-in callout not found (de or en). Expected for invalid service–office pairs only.");
+    }
+
+    public void assertInvalidJumpinRestartButtonVisible() {
+        CONTEXT.set();
+        int sec = Math.min(15, DEFAULT_EXPLICIT_WAIT_TIME);
+        long deadline = System.currentTimeMillis() + sec * 1000L;
+        while (System.currentTimeMillis() < deadline) {
+            if (invalidJumpinRestartButton(false)) {
+                return;
+            }
+            try {
+                Thread.sleep(300L);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                break;
+            }
+        }
+        Assert.assertTrue(
+                invalidJumpinRestartButton(false),
+                "Restart button \"Termin vereinbaren\" is not visible on the invalid jump-in callout.");
+    }
+
+    public void clickInvalidJumpinRestartButton() {
+        CONTEXT.set();
+        Assert.assertTrue(
+                invalidJumpinRestartButton(true),
+                "Could not click \"Termin vereinbaren\" on the invalid jump-in callout.");
+        new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(d -> {
+                    String url = d.getCurrentUrl();
+                    return url != null && !url.contains("#/services/");
+                });
+    }
+
+    public void assertAddressHasNoJumpIn() {
+        CONTEXT.set();
+        String url = DriverUtil.getDriver().getCurrentUrl();
+        Assert.assertFalse(
+                url != null && url.contains("#/services/"),
+                "Jump-in route is still in the address: " + url);
+    }
+
+    /**
+     * Restart control on the invalid jump-in callout. The painted button can sit in the
+     * shadow root of {@code muc-button}, whose host has no box of its own.
+     */
+    private boolean invalidJumpinRestartButton(boolean click) {
+        String script =
+                "var click=arguments[0];"
+                        + "function box(el){if(!el||el.nodeType!==1||!el.getBoundingClientRect)return false;"
+                        + "var r=el.getBoundingClientRect();if(r.width<=0||r.height<=0)return false;"
+                        + "var st=window.getComputedStyle(el);return st.visibility!=='hidden'&&st.display!=='none'&&st.opacity!=='0';}"
+                        + "function painted(el){if(box(el))return el;var found=null;"
+                        + "function w(n){if(!n||found)return;if(n.nodeType===1&&n!==el&&box(n)){found=n;return;}"
+                        + "if(n.shadowRoot)w(n.shadowRoot);var c=n.children;if(c)for(var i=0;i<c.length;i++)w(c[i]);}"
+                        + "w(el);return found;}"
+                        + "function walk(n,fn){if(!n)return false;if(fn(n))return true;"
+                        + "if(n.shadowRoot&&walk(n.shadowRoot,fn))return true;"
+                        + "var c=n.children;if(c)for(var i=0;i<c.length;i++)if(walk(c[i],fn))return true;return false;}"
+                        + "var target=null;"
+                        + "walk(document.body,function(n){"
+                        + "var tag=(n.tagName||'').toUpperCase();"
+                        + "if(tag!=='MUC-BUTTON'&&tag!=='BUTTON'&&tag!=='A')return false;"
+                        + "var label=((n.innerText||n.textContent||'')+'').replace(/\\s+/g,' ').trim();"
+                        + "if(label.indexOf('Weiteren')>=0)return false;"
+                        + "if(label.indexOf('Termin vereinbaren')<0&&label.indexOf('Book appointment')<0)return false;"
+                        + "var hit=painted(n);if(!hit)return false;target=hit;return true;});"
+                        + "if(!target)return false;"
+                        + "if(click){target.scrollIntoView({block:'center'});target.click();}"
+                        + "return true;";
+        Object found = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script, click);
+        return Boolean.TRUE.equals(found);
     }
 
     public void waitUntilDeepElementExists(String cssSelector, int seconds) {
@@ -2246,50 +2339,68 @@ public class CitizenViewPage extends BasePage {
     public void acceptCommunication() {
         CONTEXT.set();
         ScenarioLogManager.getLogger().info("zmscitizenview: accept electronic communication (visible label)");
-        new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
-                .until(d -> clickVisibleElectronicCommunicationLabel());
-        new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
-                .until(d -> isElectronicCommunicationChecked());
-        Assert.assertTrue(
-                isElectronicCommunicationChecked(),
-                "Electronic communication checkbox was not checked (visible label click).");
+        acceptVisibleCheckbox("checkbox-electronic-communication", "Electronic communication");
     }
 
-    private boolean clickVisibleElectronicCommunicationLabel() {
+    /**
+     * Videoberatung keeps Termin reservieren disabled until the video terms are accepted.
+     * Phone appointments do not show that checkbox.
+     */
+    public void acceptVideoConsultationTermsIfShown() {
+        CONTEXT.set();
+        if (!shadowDomContainsText("Nutzungsbedingungen Videoberatung")) {
+            ScenarioLogManager.getLogger().info("zmscitizenview: video consultation terms are not shown");
+            return;
+        }
+        ScenarioLogManager.getLogger().info("zmscitizenview: accept video consultation terms (visible label)");
+        acceptVisibleCheckbox("checkbox-video-consultation", "Video consultation terms");
+    }
+
+    private void acceptVisibleCheckbox(String checkboxId, String label) {
+        new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(d -> clickVisibleCheckboxLabel(checkboxId));
+        new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(d -> isCheckboxChecked(checkboxId));
+        Assert.assertTrue(isCheckboxChecked(checkboxId), label + " checkbox was not checked (visible label click).");
+    }
+
+    private boolean clickVisibleCheckboxLabel(String checkboxId) {
         String script =
-                "function vis(el){if(!el||!el.getBoundingClientRect)return false;"
+                "var checkboxId=arguments[0];"
+                        + "function vis(el){if(!el||!el.getBoundingClientRect)return false;"
                         + "var r=el.getBoundingClientRect();if(r.width<=0||r.height<=0)return false;"
                         + "var st=window.getComputedStyle(el);return st.visibility!=='hidden'&&st.display!=='none'&&st.opacity!=='0';}"
                         + "function walk(root){if(!root)return null;"
-                        + "var labels=root.querySelectorAll?root.querySelectorAll('label[for=\"checkbox-electronic-communication\"]'):[];"
+                        + "var labels=root.querySelectorAll?root.querySelectorAll('label[for=\"'+checkboxId+'\"]'):[];"
                         + "for(var i=0;i<labels.length;i++)if(vis(labels[i]))return labels[i];"
                         + "var all=root.querySelectorAll?root.querySelectorAll('*'):[];"
                         + "for(var j=0;j<all.length;j++)if(all[j].shadowRoot){var f=walk(all[j].shadowRoot);if(f)return f;}"
                         + "return null;}"
                         + "var lab=walk(document.body);if(!lab)return false;"
                         + "var root=lab.getRootNode?lab.getRootNode():document;"
-                        + "var input=root.querySelector?root.querySelector('#checkbox-electronic-communication'):null;"
+                        + "var input=root.querySelector?root.querySelector('#'+checkboxId):null;"
                         + "if(input&&input.checked)return true;"
                         + "lab.scrollIntoView({block:'center'});lab.click();return true;";
-        Object o = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script);
+        Object o = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script, checkboxId);
         return Boolean.TRUE.equals(o);
     }
 
-    private boolean isElectronicCommunicationChecked() {
+    private boolean isCheckboxChecked(String checkboxId) {
         String script =
-                "function vis(el){if(!el||!el.getBoundingClientRect)return false;"
+                "var checkboxId=arguments[0];"
+                        + "function vis(el){if(!el||!el.getBoundingClientRect)return false;"
                         + "var r=el.getBoundingClientRect();if(r.width<=0||r.height<=0)return false;"
                         + "var st=window.getComputedStyle(el);return st.visibility!=='hidden'&&st.display!=='none'&&st.opacity!=='0';}"
                         + "function walk(root){if(!root)return null;"
-                        + "var labels=root.querySelectorAll?root.querySelectorAll('label[for=\"checkbox-electronic-communication\"]'):[];"
+                        + "var labels=root.querySelectorAll?root.querySelectorAll('label[for=\"'+checkboxId+'\"]'):[];"
                         + "for(var i=0;i<labels.length;i++)if(vis(labels[i])){"
                         + "var rn=labels[i].getRootNode?labels[i].getRootNode():document;"
-                        + "return rn.querySelector?rn.querySelector('#checkbox-electronic-communication'):null;}"
+                        + "return rn.querySelector?rn.querySelector('#'+checkboxId):null;}"
                         + "var all=root.querySelectorAll?root.querySelectorAll('*'):[];"
                         + "for(var j=0;j<all.length;j++)if(all[j].shadowRoot){var f=walk(all[j].shadowRoot);if(f)return f;}"
                         + "return null;}"
                         + "var input=walk(document.body);return !!(input&&input.checked);";
-        Object o = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script);
+        Object o = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script, checkboxId);
         return Boolean.TRUE.equals(o);
     }
 
@@ -2510,11 +2621,15 @@ public class CitizenViewPage extends BasePage {
                 "Selected-appointment info callout not found after choosing slot.");
     }
 
-    /** Click "Termin absagen" below the summary (sends cancel request), then wait for the cancellation success callout. */
+    /**
+     * Click "Termin absagen". The detail view opens "Absage Ihres Termins"; confirm with "Absagen"
+     * before the success callout appears.
+     */
     public void clickCancelAppointmentAndConfirm() {
         CONTEXT.set();
         ScenarioLogManager.getLogger().info("zmscitizenview: clicking cancel appointment button (Termin absagen)");
         waitForAndClickButtonContaining("Termin absagen", DEFAULT_EXPLICIT_WAIT_TIME);
+        confirmCancelAppointmentDialogIfShown();
         String marker = "Sie haben Ihren Termin erfolgreich abgesagt.";
         ScenarioLogManager.getLogger()
                 .info("zmscitizenview: waiting in 5s + 10s + 15s windows (30s total) for cancellation success callout");
@@ -2522,6 +2637,20 @@ public class CitizenViewPage extends BasePage {
         Assert.assertTrue(
                 shadowDomContainsText(marker),
                 "Cancellation success callout (Sie haben Ihren Termin erfolgreich abgesagt.) not visible after Termin absagen with retries.");
+    }
+
+    /** Detail view asks for Absagen inside "Absage Ihres Termins" before the appointment is deleted. */
+    private void confirmCancelAppointmentDialogIfShown() {
+        String heading = "Absage Ihres Termins";
+        try {
+            new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(5))
+                    .until(d -> shadowDomContainsText(heading));
+        } catch (TimeoutException e) {
+            ScenarioLogManager.getLogger().info("zmscitizenview: cancel dialog was not shown");
+            return;
+        }
+        ScenarioLogManager.getLogger().info("zmscitizenview: confirm cancel dialog (Absagen)");
+        waitForAndClickButtonContaining("Absagen", DEFAULT_EXPLICIT_WAIT_TIME);
     }
 
     public void assertCancellationSuccessCalloutVisible() {
@@ -3330,5 +3459,300 @@ public class CitizenViewPage extends BasePage {
             ScenarioLogManager.getLogger().debug("zmscitizenview: could not parse appointment hash", e);
             return false;
         }
+    }
+
+    private static final ZoneId BERLIN = ZoneId.of("Europe/Berlin");
+    private static final DateTimeFormatter TEASER_DATE_TIME =
+            DateTimeFormatter.ofPattern("EEEE, dd.MM.uuuu, HH:mm", Locale.GERMAN);
+    private static final DateTimeFormatter ICS_DATE_TIME = DateTimeFormatter.ofPattern("yyyyMMdd'T'HHmmss");
+    private static final String ICS_DOWNLOAD_LABEL = "Termin herunterladen (ics)";
+
+    private Long rememberedAppointmentEpoch;
+    private String capturedIcs;
+
+    /** Unix time of the slot stored in {@code window.__zmsCitizenViewSlotId}. */
+    public void rememberSelectedAppointmentTime() {
+        CONTEXT.set();
+        long timestamp = readStoredSlotTimestamp();
+        Assert.assertTrue(timestamp > 0, "Selected timeslot id has no timestamp.");
+        rememberedAppointmentEpoch = timestamp;
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: remembered appointment time {}", rememberedAppointmentEpoch);
+    }
+
+    public void openMeineTermine() {
+        CONTEXT.set();
+        String current = DriverUtil.getDriver().getCurrentUrl();
+        Assert.assertTrue(current != null && !current.isBlank(), "Citizen view URL is missing.");
+        int hash = current.indexOf('#');
+        String withoutHash = hash >= 0 ? current.substring(0, hash) : current;
+        int slash = withoutHash.lastIndexOf('/');
+        String overview = withoutHash.substring(0, slash + 1) + "appointment-overview.html";
+        ScenarioLogManager.getLogger().info("zmscitizenview: open Meine Termine {}", overview);
+        try {
+            DriverUtil.getDriver().navigate().to(overview);
+        } catch (TimeoutException e) {
+            ScenarioLogManager.getLogger().warn("Meine Termine navigation timed out, continuing.", e);
+        }
+    }
+
+    public void assertMeineTermineTeaser(String serviceName, String typeLabel, String locationText) {
+        CONTEXT.set();
+        Assert.assertNotNull(rememberedAppointmentEpoch, "Selected appointment time was not remembered.");
+        ZonedDateTime when = Instant.ofEpochSecond(rememberedAppointmentEpoch).atZone(BERLIN);
+        String dateTime = TEASER_DATE_TIME.format(when);
+        String monthStem = when.format(DateTimeFormatter.ofPattern("MMM", Locale.GERMAN))
+                .replace(".", "")
+                .substring(0, 3)
+                .toUpperCase(Locale.GERMAN);
+        String day = Integer.toString(when.getDayOfMonth());
+        ScenarioLogManager.getLogger()
+                .info(
+                        "zmscitizenview: assert teaser {} type {} place {} at {}",
+                        serviceName,
+                        typeLabel,
+                        locationText,
+                        dateTime);
+        String card = waitForTeaserText(serviceName);
+        Assert.assertTrue(card.contains(typeLabel), "Teaser is missing type \"" + typeLabel + "\". Text: " + card);
+        Assert.assertTrue(
+                card.contains("1x " + serviceName),
+                "Teaser title is missing \"1x " + serviceName + "\". Text: " + card);
+        Assert.assertTrue(
+                card.contains(locationText),
+                "Teaser place is missing \"" + locationText + "\". Text: " + card);
+        Assert.assertTrue(card.contains(dateTime), "Teaser time is missing \"" + dateTime + "\". Text: " + card);
+        Assert.assertTrue(card.contains("Uhr"), "Teaser time is missing \"Uhr\". Text: " + card);
+        Assert.assertTrue(
+                card.toUpperCase(Locale.GERMAN).contains(day) && card.toUpperCase(Locale.GERMAN).contains(monthStem),
+                "Teaser calendar leaf is missing " + day + " " + monthStem + ". Text: " + card);
+    }
+
+    public void openMeineTermineTeaser(String serviceName) {
+        CONTEXT.set();
+        ScenarioLogManager.getLogger().info("zmscitizenview: open teaser {}", serviceName);
+        String script =
+                "var name=arguments[0];"
+                        + "function textOf(n){var s='';if(!n)return s;if(n.nodeType===3)return n.nodeValue||'';"
+                        + "if(n.shadowRoot)s+=textOf(n.shadowRoot);var c=n.childNodes;if(c)for(var i=0;i<c.length;i++)s+=textOf(c[i]);return s;}"
+                        + "function walk(n,fn){if(!n)return false;if(fn(n))return true;if(n.shadowRoot&&walk(n.shadowRoot,fn))return true;"
+                        + "var c=n.children;if(c)for(var i=0;i<c.length;i++)if(walk(c[i],fn))return true;return false;}"
+                        + "var card=null;"
+                        + "walk(document.body,function(n){"
+                        + "var tag=(n.tagName||'').toUpperCase();"
+                        + "if(tag!=='MUC-CARD'&&tag!=='A')return false;"
+                        + "if(textOf(n).indexOf(name)<0)return false;"
+                        + "card=n;return true;});"
+                        + "if(!card)return false;"
+                        + "var hit=card;"
+                        + "if(card.shadowRoot){var a=card.shadowRoot.querySelector('a[href]');if(a)hit=a;}"
+                        + "hit.scrollIntoView({block:'center'});hit.click();return true;";
+        boolean opened = false;
+        long deadline = System.currentTimeMillis() + DEFAULT_EXPLICIT_WAIT_TIME * 1000L;
+        while (System.currentTimeMillis() < deadline && !opened) {
+            Object clicked = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script, serviceName);
+            opened = Boolean.TRUE.equals(clicked);
+            if (!opened) {
+                try {
+                    Thread.sleep(300L);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    break;
+                }
+            }
+        }
+        Assert.assertTrue(opened, "Could not open the Meine Termine teaser for \"" + serviceName + "\".");
+        waitWithThreeWindows(
+                () -> shadowDomContainsText("Termin absagen"),
+                "Appointment detail after opening the teaser");
+    }
+
+    /**
+     * ZMSKVR-1538: intro tagline and place, then the Ort section for a phone or video appointment.
+     * {@code extra} is the video delay hint; phone leaves it blank.
+     */
+    public void assertAppointmentDetailLocation(
+            String typeLabel, String place, String locationText, String preparationHint, String extra) {
+        CONTEXT.set();
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: assert appointment detail location for {}", typeLabel);
+        waitWithThreeWindows(
+                () -> shadowDomContainsText(locationText) && shadowDomHasHeading(2, "Ort"),
+                "Ort section on the appointment detail");
+        Assert.assertTrue(shadowDomHasHeading(2, "Ort"), "The detail page is missing the Ort heading.");
+        Assert.assertTrue(
+                shadowDomContainsText(typeLabel),
+                "Detail intro is missing \"" + typeLabel + "\".");
+        Assert.assertTrue(shadowDomContainsText(place), "Detail place is missing \"" + place + "\".");
+        Assert.assertTrue(
+                shadowDomContainsText(locationText),
+                "Ort section is missing \"" + locationText + "\".");
+        Assert.assertTrue(
+                shadowDomContainsText(preparationHint),
+                "Ort section is missing \"" + preparationHint + "\".");
+        if (extra != null && !extra.isBlank()) {
+            Assert.assertTrue(shadowDomContainsText(extra), "Ort section is missing \"" + extra + "\".");
+        }
+        if ("Videoberatung".equals(typeLabel)) {
+            Assert.assertTrue(
+                    shadowDomContainsText("Info-Seite zur Videoberatung"),
+                    "Ort section is missing the video consultation info link.");
+            Assert.assertFalse(
+                    shadowDomContainsText("Wir rufen Sie unter der von Ihnen angegebenen Nummer an:"),
+                    "Video detail should not show the telephone location text.");
+        } else {
+            Assert.assertFalse(
+                    shadowDomContainsText("Info-Seite zur Videoberatung"),
+                    "Phone detail should not show the video consultation info link.");
+        }
+    }
+
+    private String waitForTeaserText(String serviceName) {
+        long deadline = System.currentTimeMillis() + Math.max(30, DEFAULT_EXPLICIT_WAIT_TIME) * 1000L;
+        String last = "";
+        while (System.currentTimeMillis() < deadline) {
+            last = teaserText(serviceName);
+            if (last.contains(serviceName) && last.contains("Terminnummer")) {
+                return last;
+            }
+            try {
+                Thread.sleep(400L);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                break;
+            }
+        }
+        Assert.fail("Meine Termine teaser for \"" + serviceName + "\" did not appear. Last text: " + last);
+        return last;
+    }
+
+    private String teaserText(String serviceName) {
+        String script =
+                "var name=arguments[0];"
+                        + "function textOf(n){var s='';if(!n)return s;if(n.nodeType===3)return n.nodeValue||'';"
+                        + "if(n.shadowRoot)s+=textOf(n.shadowRoot);var c=n.childNodes;if(c)for(var i=0;i<c.length;i++)s+=textOf(c[i]);return s;}"
+                        + "function walk(n,fn){if(!n)return false;if(fn(n))return true;if(n.shadowRoot&&walk(n.shadowRoot,fn))return true;"
+                        + "var c=n.children;if(c)for(var i=0;i<c.length;i++)if(walk(c[i],fn))return true;return false;}"
+                        + "var best='';"
+                        + "walk(document.body,function(n){"
+                        + "if(n.nodeType!==1)return false;"
+                        + "var t=textOf(n);"
+                        + "if(t.indexOf(name)<0||t.indexOf('Terminnummer')<0)return false;"
+                        + "if(!best||t.length<best.length)best=t;"
+                        + "return false;});"
+                        + "return best;";
+        Object raw = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script, serviceName);
+        return raw instanceof String ? (String) raw : "";
+    }
+
+    /** ZMSKVR-1334: intro link "Termin herunterladen (ics)" on the appointment detail page. */
+    public void assertIcsDownloadOfferedOnDetailIntro() {
+        CONTEXT.set();
+        ScenarioLogManager.getLogger().info("zmscitizenview: assert ICS download in the detail intro");
+        waitWithThreeWindows(
+                () -> shadowDomContainsText(ICS_DOWNLOAD_LABEL),
+                "ICS download link in the appointment detail intro");
+        Assert.assertTrue(
+                shadowDomContainsText(ICS_DOWNLOAD_LABEL),
+                "The appointment detail intro should offer \"" + ICS_DOWNLOAD_LABEL + "\".");
+    }
+
+    /**
+     * ZMSKVR-1334: the link builds a calendar blob in the browser instead of navigating. Capture that
+     * blob so the scenario can check the file without depending on the download folder.
+     */
+    public void downloadAppointmentIcs() {
+        CONTEXT.set();
+        ScenarioLogManager.getLogger().info("zmscitizenview: download appointment ICS");
+        RemoteWebDriver driver = DriverUtil.getDriver();
+        ((JavascriptExecutor) driver)
+                .executeScript(
+                        "window.__zmsCapturedIcs='';"
+                                + "if(!window.__zmsIcsHooked){"
+                                + "window.__zmsIcsHooked=true;"
+                                + "var NativeBlob=window.Blob;"
+                                + "function CapturingBlob(parts,options){"
+                                + "var blob=new NativeBlob(parts,options);"
+                                + "var type=options&&options.type?String(options.type):'';"
+                                + "if(type.indexOf('text/calendar')>=0){"
+                                + "window.__zmsCapturedIcs=Array.prototype.map.call(parts,function(p){"
+                                + "return typeof p==='string'?p:'';}).join('');}"
+                                + "return blob;}"
+                                + "CapturingBlob.prototype=NativeBlob.prototype;"
+                                + "window.Blob=CapturingBlob;}");
+        String clickScript =
+                "var label=arguments[0];"
+                        + "function textOf(n){var s='';if(!n)return s;if(n.nodeType===3)return n.nodeValue||'';"
+                        + "if(n.shadowRoot)s+=textOf(n.shadowRoot);var c=n.childNodes;if(c)for(var i=0;i<c.length;i++)s+=textOf(c[i]);return s;}"
+                        + "function walk(n,fn){if(!n)return false;if(fn(n))return true;if(n.shadowRoot&&walk(n.shadowRoot,fn))return true;"
+                        + "var c=n.children;if(c)for(var i=0;i<c.length;i++)if(walk(c[i],fn))return true;return false;}"
+                        + "var hit=null;"
+                        + "walk(document.body,function(n){"
+                        + "var tag=(n.tagName||'').toUpperCase();"
+                        + "if(tag!=='MUC-LINK'&&tag!=='A')return false;"
+                        + "if(textOf(n).indexOf(label)<0)return false;"
+                        + "hit=n;return true;});"
+                        + "if(!hit)return false;"
+                        + "hit.scrollIntoView({block:'center'});hit.click();return true;";
+        boolean clicked = false;
+        long deadline = System.currentTimeMillis() + DEFAULT_EXPLICIT_WAIT_TIME * 1000L;
+        while (System.currentTimeMillis() < deadline && !clicked) {
+            Object result = ((JavascriptExecutor) driver).executeScript(clickScript, ICS_DOWNLOAD_LABEL);
+            clicked = Boolean.TRUE.equals(result);
+            if (!clicked) {
+                try {
+                    Thread.sleep(300L);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    break;
+                }
+            }
+        }
+        Assert.assertTrue(clicked, "Could not click \"" + ICS_DOWNLOAD_LABEL + "\".");
+        new WebDriverWait(driver, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(
+                        d -> {
+                            Object raw =
+                                    ((JavascriptExecutor) d)
+                                            .executeScript("return window.__zmsCapturedIcs || '';");
+                            return raw instanceof String && !((String) raw).isBlank();
+                        });
+        Object raw = ((JavascriptExecutor) driver).executeScript("return window.__zmsCapturedIcs || '';");
+        capturedIcs = raw instanceof String ? (String) raw : "";
+        Assert.assertFalse(capturedIcs.isBlank(), "The ICS download did not produce a calendar file.");
+    }
+
+    /**
+     * ZMSKVR-1334: the file must carry the fields a calendar app needs for this appointment.
+     * The mail template puts the request name in SUMMARY, not a fixed "München-Termin" label.
+     */
+    public void assertDownloadedIcsContainsBookedAppointment() {
+        CONTEXT.set();
+        ScenarioLogManager.getLogger().info("zmscitizenview: assert downloaded ICS contents");
+        Assert.assertNotNull(capturedIcs, "No ICS file was downloaded.");
+        Assert.assertTrue(capturedIcs.contains("BEGIN:VCALENDAR"), "ICS is missing BEGIN:VCALENDAR.");
+        Assert.assertTrue(capturedIcs.contains("BEGIN:VEVENT"), "ICS is missing BEGIN:VEVENT.");
+        Assert.assertTrue(capturedIcs.contains("END:VCALENDAR"), "ICS is missing END:VCALENDAR.");
+        Assert.assertTrue(
+                capturedIcs.contains("SUMMARY:") && capturedIcs.contains("Abholung Personalausweis"),
+                "ICS SUMMARY should name the booked service. Was: " + icsSummaryLine());
+        Assert.assertTrue(capturedIcs.contains("LOCATION:"), "ICS is missing LOCATION.");
+        Assert.assertTrue(
+                capturedIcs.contains("DTEND;TZID=Europe/Berlin:"), "ICS is missing DTEND.");
+        Assert.assertTrue(
+                rememberedAppointmentEpoch != null && rememberedAppointmentEpoch > 0,
+                "The booked appointment time was not remembered.");
+        String start =
+                Instant.ofEpochSecond(rememberedAppointmentEpoch).atZone(BERLIN).format(ICS_DATE_TIME);
+        Assert.assertTrue(
+                capturedIcs.contains("DTSTART;TZID=Europe/Berlin:" + start),
+                "ICS DTSTART should be the booked slot " + start + ".");
+    }
+
+    private String icsSummaryLine() {
+        if (capturedIcs == null) {
+            return "";
+        }
+        return capturedIcs.lines().filter(line -> line.startsWith("SUMMARY:")).findFirst().orElse("");
     }
 }

@@ -160,6 +160,16 @@ public class AdminPage extends BasePage {
         clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, NAV_SELECT_LOCATION_LOCATOR, LocatorType.XPATH, true, CONTEXT);
     }
 
+    public void clickInNavigationOnWorkstation() {
+        ScenarioLogManager.getLogger().info("Trying to open the Sachbearbeiterplatz...");
+        clickOnWebElement(
+                DEFAULT_EXPLICIT_WAIT_TIME,
+                "//nav//a[contains(@href,'workstation')]",
+                LocatorType.XPATH,
+                true,
+                CONTEXT);
+    }
+
     public void clickInNavigationOnTresenButton() {
         ScenarioLogManager.getLogger().info("Trying to click on 'Tresen' Button");
         clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "//a[@title='Termine vereinbaren, ändern & löschen und die Warteschlange verwalten']", LocatorType.XPATH,

@@ -1,4 +1,5 @@
 -- Flyway migration: captcha booking scope (ZMSKVR-1440)
+-- Version 33: next already has V30 (GH-3281 login-pool rename), V31, and V32.
 --
 -- Standort 74, Kommunale Verkehrsüberwachung (KVR-I/31), officeId 10427.
 -- Not a Bürgerbüro, and no other ATAF feature books it.
