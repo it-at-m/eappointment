@@ -27,8 +27,8 @@ Feature: Citizen login appointment teasers for phone and video
     And I click Später in the time slot grid if available in the citizen view
     And I scroll to and highlight the preferred timeslot for office <location> in the citizen view
     And I click the highlighted timeslot in the citizen view
-    And I remember the selected appointment time in the citizen view
     And I continue after slot selection with Weiter for office <location> in the citizen view
+    And I remember the selected appointment time in the citizen view
     When I log in via Bürger-Login with Keycloak in the citizen view
     Then I should be logged in on the contact form in the citizen view
     When I fill contact details without continuing in the citizen view
