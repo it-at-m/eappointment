@@ -6,7 +6,9 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
@@ -42,6 +44,7 @@ public class ZmsApiSteps {
     private String scenarioLoginUsername;
     private String scenarioLoginPassword;
     private JsonNode lastProcess;
+    private final List<Integer> scenarioProcessIds = new ArrayList<>();
     private JsonNode departmentServices;
     private String ticketprinterHash;
     private Integer createdAvailabilityId;
@@ -50,6 +53,7 @@ public class ZmsApiSteps {
     @Before
     public void resetProcessContext() {
         lastProcess = null;
+        scenarioProcessIds.clear();
         departmentServices = null;
         cachedXAuthKey = null;
         scenarioLoginUsername = null;
@@ -74,7 +78,55 @@ public class ZmsApiSteps {
                 ScenarioLogManager.getLogger().warn("Could not delete opening hours {}: {}", id, e.getMessage());
             }
         }
+        deleteScenarioProcesses();
         deleteLastProcessIfStillOpen();
+    }
+
+    private void deleteScenarioProcesses() {
+        int lastId = lastProcess == null ? 0 : lastProcess.path("id").asInt();
+        for (Integer processId : new ArrayList<>(scenarioProcessIds)) {
+            boolean removed = deleteProcessById(processId, false);
+            if (processId == lastId && removed) {
+                lastProcessDeleted = true;
+            }
+        }
+        scenarioProcessIds.clear();
+    }
+
+    /** @return true when the process is gone (deleted or already absent) */
+    private boolean deleteProcessById(int processId, boolean assertSuccess) {
+        if (processId <= 0) {
+            return true;
+        }
+        try {
+            Response cleanup = given()
+                .baseUri(apiBaseUri())
+                .header("X-AuthKey", getOrLoginXAuthKey())
+                .queryParam("initiator", "admin")
+            .when()
+                .delete("/process/" + processId + "/");
+            int status = cleanup.getStatusCode();
+            if (assertSuccess) {
+                CommonApiSteps.setResponse(cleanup);
+                response = cleanup;
+                Assertions.assertThat(status)
+                    .as("DELETE /process/%d/ body=%s", processId, truncate(cleanup.asString(), 1000))
+                    .isEqualTo(200);
+                return true;
+            }
+            if (status < 300 || status == 404) {
+                return true;
+            }
+            ScenarioLogManager.getLogger().warn(
+                "Could not delete process {}: HTTP {}", processId, status);
+            return false;
+        } catch (RuntimeException e) {
+            if (assertSuccess) {
+                throw e;
+            }
+            ScenarioLogManager.getLogger().warn("Could not delete process {}: {}", processId, e.getMessage());
+            return false;
+        }
     }
 
     private void deleteLastProcessIfStillOpen() {
@@ -293,6 +345,60 @@ public class ZmsApiSteps {
         rememberProcess(parseDataNode(response));
     }
 
+    @When("I queue a walk-in at scope {int} with service {string}, name {string}, free text {string} and second free text {string} with the X-AuthKey")
+    public void iQueueAWalkInWithFreeTextWithTheXAuthKey(
+            int scopeId, String serviceName, String familyName, String freeText, String secondFreeText) {
+        String authKey = getOrLoginXAuthKey();
+        JsonNode request = findScopeRequestByName(scopeId, serviceName, authKey);
+        ObjectNode scope = MAPPER.createObjectNode();
+        scope.put("id", scopeId);
+        ObjectNode appointment = MAPPER.createObjectNode();
+        appointment.set("scope", scope.deepCopy());
+        appointment.put("date", 0);
+        ObjectNode client = MAPPER.createObjectNode();
+        client.put("familyName", familyName);
+        client.put("email", familyName.toLowerCase(Locale.ROOT).replaceAll("[^a-z0-9]", "") + "@mailinator.com");
+        client.put("surveyAccepted", 1);
+        ObjectNode process = MAPPER.createObjectNode();
+        process.put("status", "queued");
+        process.put("customTextfield", freeText);
+        process.put("customTextfield2", secondFreeText);
+        process.set("scope", scope);
+        process.set("appointments", MAPPER.createArrayNode().add(appointment));
+        process.set("requests", MAPPER.createArrayNode().add(request.deepCopy()));
+        process.set("clients", MAPPER.createArrayNode().add(client));
+
+        response = given()
+            .baseUri(baseUri != null ? baseUri : TestConfig.getBaseUri())
+            .header("X-AuthKey", authKey)
+            .contentType("application/json")
+            .body(toJson(process))
+        .when()
+            .post("/workstation/process/waitingnumber/");
+        CommonApiSteps.setResponse(response);
+        Assertions.assertThat(response.getStatusCode())
+            .as("POST /workstation/process/waitingnumber/ body=%s", truncate(response.asString(), 1000))
+            .isEqualTo(200);
+        JsonNode queued = parseDataNode(response);
+        rememberProcess(queued);
+        int processId = queued == null ? 0 : queued.path("id").asInt();
+        if (processId > 0 && !scenarioProcessIds.contains(processId)) {
+            scenarioProcessIds.add(processId);
+        }
+    }
+
+    @When("I delete the processes created in this scenario with the X-AuthKey")
+    public void iDeleteTheProcessesCreatedInThisScenarioWithTheXAuthKey() {
+        Assertions.assertThat(scenarioProcessIds)
+            .as("Queue the walk-ins before deleting them")
+            .isNotEmpty();
+        for (Integer processId : new ArrayList<>(scenarioProcessIds)) {
+            deleteProcessById(processId, true);
+        }
+        scenarioProcessIds.clear();
+        lastProcessDeleted = true;
+    }
+
     @When("I reserve an appointment at scope {int} with service {string} and amendment {string} with the X-AuthKey")
     public void iReserveAnAppointmentAtScopeWithServiceAndAmendmentWithTheXAuthKey(
             int scopeId, String serviceName, String amendment) {
@@ -379,6 +485,30 @@ public class ZmsApiSteps {
             .as("finalizedAt for %s", familyName)
             .isGreaterThanOrEqualTo(start)
             .isLessThan(end);
+    }
+
+    @Then("the process search results include {string}")
+    public void theProcessSearchResultsInclude(String familyName) {
+        Assertions.assertThat(familyNamesInSearch())
+            .as("GET /process/search/ body=%s", truncate(response.asString(), 1500))
+            .contains(familyName);
+    }
+
+    @Then("the process search results do not include {string}")
+    public void theProcessSearchResultsDoNotInclude(String familyName) {
+        Assertions.assertThat(familyNamesInSearch())
+            .as("GET /process/search/ body=%s", truncate(response.asString(), 1500))
+            .doesNotContain(familyName);
+    }
+
+    private List<String> familyNamesInSearch() {
+        ArrayNode results = parseDataArray(response);
+        Assertions.assertThat(results).as("GET /process/search/ data").isNotNull();
+        List<String> names = new ArrayList<>();
+        for (JsonNode row : results) {
+            names.add(row.path("clients").path(0).path("familyName").asText());
+        }
+        return names;
     }
 
     private void reserveConfirmedAppointment(

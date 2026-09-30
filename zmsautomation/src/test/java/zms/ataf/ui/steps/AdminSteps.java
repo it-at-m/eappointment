@@ -1,5 +1,6 @@
 package zms.ataf.ui.steps;
 
+import java.util.Locale;
 import java.time.DayOfWeek;
 import java.time.Duration;
 import java.time.LocalDate;
@@ -407,6 +408,39 @@ public class AdminSteps {
     @Wenn("Sie in der Kundensuche nach {string} suchen.")
     public void sie_in_der_kundensuche_nach_suchen(String query) {
         CUSTOMER_SEARCH_PAGE.search(TestDataHelper.transformTestData(query));
+    }
+
+    @Wenn("Sie einen Spontankunden mit der Dienstleistung {string}, dem Namen {string}, Freitextfeld {string} und Freitextfeld 2 {string} buchen.")
+    public void sie_einen_spontankunden_mit_freitextfeldern_buchen(
+            String service, String name, String freeText, String secondFreeText) {
+        wenn_sie_im_zeitmanagementsystem_unter_terminvereinbarung_neu_die_dienstleistung_string_auswaehlen(service);
+        COUNTER_PROCESSING_STATION_PAGE.selectWalkInCustomer();
+        COUNTER_PROCESSING_STATION_PAGE.enterNameInNewAppointmentTextField(name);
+        String email = name.toLowerCase(Locale.ROOT).replaceAll("[^a-z0-9]", "") + "@mailinator.com";
+        COUNTER_PROCESSING_STATION_PAGE.enterEmailInNewAppointmentTextField(email);
+        COUNTER_PROCESSING_STATION_PAGE.fillCustomTextfield("customTextfield", freeText);
+        COUNTER_PROCESSING_STATION_PAGE.fillCustomTextfield("customTextfield2", secondFreeText);
+        COUNTER_PROCESSING_STATION_PAGE.clickOnAddSpontaneousCustomer();
+        try {
+            wenn_sie_im_zeitmanagementsystem_auf_die_schaltflaeche_string_klicken("Schließen");
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Wenn("Sie zum Sachbearbeiterplatz zurückkehren.")
+    public void sie_zum_sachbearbeiterplatz_zurueckkehren() {
+        ADMIN_PAGE.clickInNavigationOnWorkstation();
+    }
+
+    @Dann("zeigt die Kundensuche den Kunden {string}.")
+    public void zeigt_die_kundensuche_den_kunden(String familyName) {
+        CUSTOMER_SEARCH_PAGE.assertCustomerListed(TestDataHelper.transformTestData(familyName));
+    }
+
+    @Dann("zeigt die Kundensuche den Kunden {string} nicht.")
+    public void zeigt_die_kundensuche_den_kunden_nicht(String familyName) {
+        CUSTOMER_SEARCH_PAGE.assertCustomerNotListed(TestDataHelper.transformTestData(familyName));
     }
 
     @Dann("zeigt die Kundensuche für {string} den Status {string} mit Buchungs- und Stornierungszeit.")
