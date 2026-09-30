@@ -220,6 +220,45 @@ public class CitizenApiSteps {
         lastAvailableCalendarResponse = fetchAvailableCalendar(officeIds, serviceIds, serviceCounts);
     }
 
+    @When("I request available days for office {int} and services {string} with service counts {string}")
+    public void iRequestAvailableDaysForOfficeAndServicesWithCounts(
+            int officeId, String serviceIdsCsv, String serviceCountsCsv) {
+        List<Integer> serviceIds = parseOfficeIdsCsv(serviceIdsCsv);
+        List<Integer> serviceCounts = parseOfficeIdsCsv(serviceCountsCsv);
+        Assertions.assertThat(serviceIds).as("serviceIds csv").isNotEmpty();
+        Assertions.assertThat(serviceCounts).as("serviceCounts csv").hasSameSizeAs(serviceIds);
+        lastOfficeId = officeId;
+        lastServiceId = serviceIds.get(0);
+        lastServiceCount = serviceCounts.get(0);
+        lastAvailableCalendarResponse = fetchAvailableCalendar(List.of(officeId), serviceIds, serviceCounts);
+    }
+
+    @Then("the available calendar should include a bookable day for office {int}")
+    public void theAvailableCalendarShouldIncludeABookableDayForOffice(int officeId) {
+        Assertions.assertThat(response.getStatusCode())
+            .as("GET /available-calendar/")
+            .isEqualTo(200);
+        Assertions.assertThat(lastAvailableCalendarResponse)
+            .as("Request available days first")
+            .isNotNull();
+        Assertions.assertThat(lastAvailableCalendarResponse.getFirstAvailableDayForOffice(officeId))
+            .as("Expected a bookable day with slots for office %d", officeId)
+            .isNotBlank();
+    }
+
+    @Then("the available calendar should include no bookable day for office {int}")
+    public void theAvailableCalendarShouldIncludeNoBookableDayForOffice(int officeId) {
+        Assertions.assertThat(response.getStatusCode())
+            .as("GET /available-calendar/")
+            .isEqualTo(200);
+        Assertions.assertThat(lastAvailableCalendarResponse)
+            .as("Request available days first")
+            .isNotNull();
+        Assertions.assertThat(lastAvailableCalendarResponse.getFirstAvailableDayForOffice(officeId))
+            .as("Expected no bookable day for office %d when the appointment no longer fits", officeId)
+            .isNull();
+    }
+
     @Then("the available calendar should include appointments for offices {string}")
     public void theAvailableCalendarShouldIncludeAppointmentsForOffices(String officeIdsCsv) {
         int[] officeIds = parseOfficeIdsCsv(officeIdsCsv).stream().mapToInt(Integer::intValue).toArray();

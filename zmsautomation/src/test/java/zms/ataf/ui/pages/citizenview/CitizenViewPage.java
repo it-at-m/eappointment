@@ -626,6 +626,147 @@ public class CitizenViewPage extends BasePage {
         }
     }
 
+    private static final String NO_APPOINTMENT_CALLOUT = "Aktuell ist kein Termin verfügbar.";
+
+    /**
+     * A fitting length shows slots, then the same day in the list, and does not show the empty-day callout.
+     */
+    public void assertBookableDayInCalendarAndList(int officeId) {
+        CONTEXT.set();
+        waitUntilCalendarSettled(officeId, true);
+        Assert.assertTrue(
+                deepTimeslotPresentForProvider(officeId),
+                "Expected a timeslot for office " + officeId);
+        Assert.assertFalse(
+                shadowDomContainsText(NO_APPOINTMENT_CALLOUT),
+                "A fitting appointment must not show '" + NO_APPOINTMENT_CALLOUT + "'");
+        Assert.assertTrue(
+                deepClickButtonByAriaContains("Zur Listenansicht wechseln"),
+                "Could not switch to the list view");
+        Assert.assertTrue(
+                deepElementExists("#listViewAccordion"),
+                "List view should show the bookable day");
+        Assert.assertFalse(
+                shadowDomContainsText(NO_APPOINTMENT_CALLOUT),
+                "List view must not show '" + NO_APPOINTMENT_CALLOUT + "' for a fitting appointment");
+        Assert.assertTrue(
+                deepClickButtonByAriaContains("Zur Kalenderansicht wechseln"),
+                "Could not switch back to the calendar");
+        Assert.assertTrue(
+                deepTimeslotPresentForProvider(officeId),
+                "Calendar should still show a timeslot for office " + officeId + " after the list");
+    }
+
+    /**
+     * A length that does not fit leaves the day unselected. The blue info callout is the empty state,
+     * and neither the calendar nor the list offers that day.
+     */
+    public void assertNoBookableDay(int officeId) {
+        CONTEXT.set();
+        waitUntilCalendarSettled(officeId, false);
+        Assert.assertTrue(
+                shadowDomContainsText(NO_APPOINTMENT_CALLOUT),
+                "Expected the info callout '" + NO_APPOINTMENT_CALLOUT + "'");
+        Assert.assertTrue(
+                deepInfoCalloutContains(NO_APPOINTMENT_CALLOUT),
+                "Expected muc-callout type=info for '" + NO_APPOINTMENT_CALLOUT + "'");
+        Assert.assertFalse(
+                deepTimeslotPresentForProvider(officeId),
+                "A day that does not fit must not show a timeslot for office " + officeId);
+        Assert.assertFalse(
+                deepElementExists("#listViewAccordion"),
+                "List view must not offer a day that does not fit");
+        Assert.assertFalse(
+                deepAriaContains("Zur Listenansicht wechseln"),
+                "Calendar/list toggle must stay hidden when no day fits");
+    }
+
+    private void waitUntilCalendarSettled(int officeId, boolean expectSlots) {
+        long deadline = System.currentTimeMillis() + Math.max(30, DEFAULT_EXPLICIT_WAIT_TIME) * 1000L;
+        while (System.currentTimeMillis() < deadline) {
+            if (!deepMucSpinnerVisible()) {
+                boolean slots = deepTimeslotPresentForProvider(officeId);
+                boolean callout = shadowDomContainsText(NO_APPOINTMENT_CALLOUT);
+                if (expectSlots && slots) {
+                    return;
+                }
+                if (!expectSlots && callout && !slots) {
+                    return;
+                }
+            }
+            sleepQuiet(400L);
+        }
+    }
+
+    private boolean deepClickButtonByAriaContains(String fragment) {
+        CONTEXT.set();
+        String script =
+                "var needle=arguments[0];"
+                        + "function walk(root){"
+                        + " if(!root)return null;"
+                        + " var nodes=root.querySelectorAll('button');"
+                        + " for(var i=0;i<nodes.length;i++){"
+                        + "  var aria=nodes[i].getAttribute('aria-label')||'';"
+                        + "  if(aria.indexOf(needle)>=0)return nodes[i];"
+                        + " }"
+                        + " var all=root.querySelectorAll('*');"
+                        + " for(var j=0;j<all.length;j++){"
+                        + "  if(all[j].shadowRoot){var found=walk(all[j].shadowRoot);if(found)return found;}"
+                        + " }"
+                        + " return null;"
+                        + "}"
+                        + "var button=walk(document.body);"
+                        + "if(!button)return false;"
+                        + "button.scrollIntoView({block:'center'});button.click();return true;";
+        Object clicked = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script, fragment);
+        return Boolean.TRUE.equals(clicked);
+    }
+
+    private boolean deepAriaContains(String fragment) {
+        CONTEXT.set();
+        String script =
+                "var needle=arguments[0];"
+                        + "function walk(root){"
+                        + " if(!root)return false;"
+                        + " var nodes=root.querySelectorAll('[aria-label]');"
+                        + " for(var i=0;i<nodes.length;i++){"
+                        + "  if((nodes[i].getAttribute('aria-label')||'').indexOf(needle)>=0)return true;"
+                        + " }"
+                        + " var all=root.querySelectorAll('*');"
+                        + " for(var j=0;j<all.length;j++){"
+                        + "  if(all[j].shadowRoot&&walk(all[j].shadowRoot))return true;"
+                        + " }"
+                        + " return false;"
+                        + "}"
+                        + "return walk(document.body);";
+        return Boolean.TRUE.equals(
+                ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script, fragment));
+    }
+
+    private boolean deepInfoCalloutContains(String text) {
+        CONTEXT.set();
+        String script =
+                "var needle=arguments[0];"
+                        + "function textOf(node){return (node.innerText||node.textContent||'');}"
+                        + "function walk(root){"
+                        + " if(!root)return false;"
+                        + " var nodes=root.querySelectorAll('muc-callout');"
+                        + " for(var i=0;i<nodes.length;i++){"
+                        + "  var type=(nodes[i].getAttribute('type')||'').toLowerCase();"
+                        + "  if(type==='info'&&textOf(nodes[i]).indexOf(needle)>=0)return true;"
+                        + "  if(nodes[i].shadowRoot&&walk(nodes[i].shadowRoot))return true;"
+                        + " }"
+                        + " var all=root.querySelectorAll('*');"
+                        + " for(var j=0;j<all.length;j++){"
+                        + "  if(all[j].shadowRoot&&walk(all[j].shadowRoot))return true;"
+                        + " }"
+                        + " return false;"
+                        + "}"
+                        + "return walk(document.body);";
+        return Boolean.TRUE.equals(
+                ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script, text));
+    }
+
     /**
      * Assert timeslot buttons exist for each real provider id (shared booking peers under one Ort grid).
      * Clicks Später across hour/day-parts until every provider has been seen at least once.
