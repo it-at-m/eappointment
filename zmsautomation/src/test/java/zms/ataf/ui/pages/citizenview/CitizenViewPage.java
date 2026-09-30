@@ -3374,6 +3374,60 @@ public class CitizenViewPage extends BasePage {
                 "Appointment detail after opening the teaser");
     }
 
+    /**
+     * ZMSKVR-1538: intro tagline and place, then the Ort section for a phone or video appointment.
+     * {@code extra} is the video delay hint; phone leaves it blank.
+     */
+    public void assertAppointmentDetailLocation(
+            String typeLabel, String place, String locationText, String preparationHint, String extra) {
+        CONTEXT.set();
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: assert appointment detail location for {}", typeLabel);
+        waitWithThreeWindows(
+                () -> shadowDomContainsText(locationText) && shadowDomHasHeading("Ort"),
+                "Ort section on the appointment detail");
+        Assert.assertTrue(shadowDomHasHeading("Ort"), "The detail page is missing the Ort heading.");
+        Assert.assertTrue(
+                shadowDomContainsText(typeLabel),
+                "Detail intro is missing \"" + typeLabel + "\".");
+        Assert.assertTrue(shadowDomContainsText(place), "Detail place is missing \"" + place + "\".");
+        Assert.assertTrue(
+                shadowDomContainsText(locationText),
+                "Ort section is missing \"" + locationText + "\".");
+        Assert.assertTrue(
+                shadowDomContainsText(preparationHint),
+                "Ort section is missing \"" + preparationHint + "\".");
+        if (extra != null && !extra.isBlank()) {
+            Assert.assertTrue(shadowDomContainsText(extra), "Ort section is missing \"" + extra + "\".");
+        }
+        if ("Videoberatung".equals(typeLabel)) {
+            Assert.assertTrue(
+                    shadowDomContainsText("Info-Seite zur Videoberatung"),
+                    "Ort section is missing the video consultation info link.");
+            Assert.assertFalse(
+                    shadowDomContainsText("Wir rufen Sie unter der von Ihnen angegebenen Nummer an:"),
+                    "Video detail should not show the telephone location text.");
+        } else {
+            Assert.assertFalse(
+                    shadowDomContainsText("Info-Seite zur Videoberatung"),
+                    "Phone detail should not show the video consultation info link.");
+        }
+    }
+
+    private boolean shadowDomHasHeading(String heading) {
+        String script =
+                "var heading=arguments[0];"
+                        + "function textOf(n){var s='';if(!n)return s;if(n.nodeType===3)return n.nodeValue||'';"
+                        + "if(n.shadowRoot)s+=textOf(n.shadowRoot);var c=n.childNodes;if(c)for(var i=0;i<c.length;i++)s+=textOf(c[i]);return s;}"
+                        + "function walk(n,fn){if(!n)return false;if(fn(n))return true;if(n.shadowRoot&&walk(n.shadowRoot,fn))return true;"
+                        + "var c=n.children;if(c)for(var i=0;i<c.length;i++)if(walk(c[i],fn))return true;return false;}"
+                        + "return walk(document.body,function(n){"
+                        + "var tag=(n.tagName||'').toUpperCase();"
+                        + "return tag==='H2'&&textOf(n).trim()===heading;});";
+        Object raw = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script, heading);
+        return Boolean.TRUE.equals(raw);
+    }
+
     private String waitForTeaserText(String serviceName) {
         long deadline = System.currentTimeMillis() + Math.max(30, DEFAULT_EXPLICIT_WAIT_TIME) * 1000L;
         String last = "";
