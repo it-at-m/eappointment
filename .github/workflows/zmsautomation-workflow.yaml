@@ -102,10 +102,7 @@ on:
         required: false
         default: ""
       browser_chrome:
-        description: |
-          Chrome for UI tests. Check every browser this run should use.
-          Each checked browser gets its own UI jobs. API-only modules
-          (zmsapi / zmscitizenapi) still run once.
+        description: "Chrome for UI tests"
         required: true
         type: boolean
         default: true
