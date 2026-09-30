@@ -11,7 +11,7 @@ run-name: >-
     || format(
          'zmsautomation | ▶️ manual | {0} | {1}{2}{3}{4}',
          github.ref_name,
-         inputs.browser == 'firefox' && '🦊 firefox' || (inputs.browser == 'edge' && '🪟 edge' || '🌐 chrome'),
+         format('{0}{1}{2}', inputs.browser_chrome && '🌐 chrome' || '', inputs.browser_firefox && format('{0}🦊 firefox', inputs.browser_chrome && ' + ' || '') || '', inputs.browser_edge && format('{0}🪟 edge', (inputs.browser_chrome || inputs.browser_firefox) && ' + ' || '') || ''),
          inputs.cucumber_tag_expressions != '' && format(' | {0}', inputs.cucumber_tag_expressions) || (inputs.use_custom_tags && ' | custom tags' || ''),
          inputs.ataf_version != '' && format(' | ATAF {0}', inputs.ataf_version) || '',
          inputs.serial_scenarios && ' | serial scenarios' || ''
@@ -31,9 +31,9 @@ on:
         default: false
       run_all_in_one_job:
         description: |
-          Run the full suite in one sequential job instead of parallel module shards.
-          Default (disabled): all checked modules below run in parallel on the branch
-          selected via "Use workflow from" above.
+          Run the full suite in one sequential job per checked browser instead of
+          parallel module shards. Default (disabled): all checked modules below run
+          in parallel on the branch selected via "Use workflow from" above.
         required: true
         type: boolean
         default: false
@@ -101,15 +101,24 @@ on:
           Examples: @ZMSKVR-833, @smoke
         required: false
         default: ""
-      browser:
-        description: Browser for UI tests (ignored for API-only modules zmsapi / zmscitizenapi)
+      browser_chrome:
+        description: |
+          Chrome for UI tests. Check every browser this run should use.
+          Each checked browser gets its own UI jobs. API-only modules
+          (zmsapi / zmscitizenapi) still run once.
         required: true
-        type: choice
-        options:
-          - chrome
-          - firefox
-          - edge
-        default: chrome
+        type: boolean
+        default: true
+      browser_firefox:
+        description: "Firefox for UI tests"
+        required: true
+        type: boolean
+        default: false
+      browser_edge:
+        description: "Edge for UI tests"
+        required: true
+        type: boolean
+        default: false
       per_step_screenshots:
         description: Enable/disable per-step screenshots
         required: true
@@ -198,34 +207,85 @@ jobs:
             echo "max_parallel=$MATRIX_SIZE" >> "$GITHUB_OUTPUT"
           else
             BRANCH="${{ github.ref_name }}"
-            BROWSER="${{ inputs.browser }}"
             TEST_LAYER="${{ inputs.test_layer }}"
             TAG_INPUT="${{ inputs.cucumber_tag_expressions }}"
             TAG_INPUT_TRIMMED="$(printf '%s' "$TAG_INPUT" | tr -d '[:space:]')"
+
+            BROWSERS_JSON='[]'
+            if [[ "${{ inputs.browser_chrome }}" == "true" ]]; then
+              BROWSERS_JSON="$(jq -c '. + ["chrome"]' <<<"$BROWSERS_JSON")"
+            fi
+            if [[ "${{ inputs.browser_firefox }}" == "true" ]]; then
+              BROWSERS_JSON="$(jq -c '. + ["firefox"]' <<<"$BROWSERS_JSON")"
+            fi
+            if [[ "${{ inputs.browser_edge }}" == "true" ]]; then
+              BROWSERS_JSON="$(jq -c '. + ["edge"]' <<<"$BROWSERS_JSON")"
+            fi
+            if [[ "$(jq 'length' <<<"$BROWSERS_JSON")" -eq 0 ]]; then
+              echo "Select at least one browser."
+              exit 1
+            fi
 
             # Filling the tag field is enough; the checkbox is optional.
             if [[ "${{ inputs.use_custom_tags }}" == "true" || -n "$TAG_INPUT_TRIMMED" ]]; then
               jq -n \
                 --arg branch "$BRANCH" \
-                --arg browser "$BROWSER" \
+                --argjson browsers "$BROWSERS_JSON" \
                 --arg test_layer "$TEST_LAYER" \
                 --arg tag_filter "$TAG_INPUT" \
-                '{include: [{branch: $branch, browser: $browser, shard: "custom", test_layer: $test_layer, tag_filter: $tag_filter, use_custom_tags: "true"}]}' \
-                > matrix.json
-              echo "max_parallel=1" >> "$GITHUB_OUTPUT"
+                '
+                {
+                  include: (
+                    if $test_layer == "api" then
+                      [{
+                        branch: $branch,
+                        browser: $browsers[0],
+                        shard: "custom",
+                        test_layer: $test_layer,
+                        tag_filter: $tag_filter,
+                        use_custom_tags: "true"
+                      }]
+                    else
+                      [
+                        $browsers[] as $browser
+                        | {
+                            branch: $branch,
+                            browser: $browser,
+                            shard: "custom",
+                            test_layer: $test_layer,
+                            tag_filter: $tag_filter,
+                            use_custom_tags: "true"
+                          }
+                      ]
+                    end
+                  )
+                }
+                ' > matrix.json
             elif [[ "${{ inputs.run_all_in_one_job }}" == "true" ]]; then
               TAG_FILTER="$(append_not_ignore '')"
               jq -n \
                 --arg branch "$BRANCH" \
-                --arg browser "$BROWSER" \
+                --argjson browsers "$BROWSERS_JSON" \
                 --arg tag_filter "$TAG_FILTER" \
-                '{include: [{branch: $branch, browser: $browser, shard: "all", test_layer: "both", tag_filter: $tag_filter, use_custom_tags: false}]}' \
-                > matrix.json
-              echo "max_parallel=1" >> "$GITHUB_OUTPUT"
+                '
+                {
+                  include: [
+                    $browsers[] as $browser
+                    | {
+                        branch: $branch,
+                        browser: $browser,
+                        shard: "all",
+                        test_layer: "both",
+                        tag_filter: $tag_filter,
+                        use_custom_tags: false
+                      }
+                  ]
+                }
+                ' > matrix.json
             else
               jq -n \
                 --arg branch "$BRANCH" \
-                --arg browser "$BROWSER" \
+                --argjson browsers "$BROWSERS_JSON" \
                 --arg admin "$(append_not_ignore '@zmsadmin')" \
                 --arg citizenview "$(append_not_ignore '@zmscitizenview')" \
                 --arg statistic "$(append_not_ignore '@zmsstatistic')" \
@@ -240,27 +300,37 @@ jobs:
                 --argjson module_zmscitizenapi "${{ inputs.module_zmscitizenapi }}" \
                 '
                 {
-                  include: [
-                    if $module_admin then
-                      {shard: "zmsadmin", test_layer: "ui", tag_filter: $admin, use_custom_tags: false}
-                    else empty end,
-                    if $module_citizenview then
-                      {shard: "zmscitizenview", test_layer: "ui", tag_filter: $citizenview, use_custom_tags: false}
-                    else empty end,
-                    if $module_statistic then
-                      {shard: "zmsstatistic", test_layer: "ui", tag_filter: $statistic, use_custom_tags: false}
-                    else empty end,
-                    if $module_ticketprinter then
-                      {shard: "zmsticketprinter", test_layer: "ui", tag_filter: $ticketprinter, use_custom_tags: false}
-                    else empty end,
-                    if $module_zmsapi then
-                      {shard: "zmsapi", test_layer: "api", tag_filter: $zmsapi, use_custom_tags: false}
-                    else empty end,
-                    if $module_zmscitizenapi then
-                      {shard: "zmscitizenapi", test_layer: "api", tag_filter: $zmscitizenapi, use_custom_tags: false}
-                    else empty end
-                  ]
-                  | map(. + {branch: $branch, browser: $browser})
+                  include: (
+                    [
+                      [
+                        if $module_admin then
+                          {shard: "zmsadmin", test_layer: "ui", tag_filter: $admin, use_custom_tags: false}
+                        else empty end,
+                        if $module_citizenview then
+                          {shard: "zmscitizenview", test_layer: "ui", tag_filter: $citizenview, use_custom_tags: false}
+                        else empty end,
+                        if $module_statistic then
+                          {shard: "zmsstatistic", test_layer: "ui", tag_filter: $statistic, use_custom_tags: false}
+                        else empty end,
+                        if $module_ticketprinter then
+                          {shard: "zmsticketprinter", test_layer: "ui", tag_filter: $ticketprinter, use_custom_tags: false}
+                        else empty end
+                      ][] as $shard
+                      | $browsers[] as $browser
+                      | $shard + {branch: $branch, browser: $browser}
+                    ]
+                    + [
+                      [
+                        if $module_zmsapi then
+                          {shard: "zmsapi", test_layer: "api", tag_filter: $zmsapi, use_custom_tags: false}
+                        else empty end,
+                        if $module_zmscitizenapi then
+                          {shard: "zmscitizenapi", test_layer: "api", tag_filter: $zmscitizenapi, use_custom_tags: false}
+                        else empty end
+                      ][] as $shard
+                      | $shard + {branch: $branch, browser: $browsers[0]}
+                    ]
+                  )
                 }
                 ' > matrix.json
 
@@ -269,8 +339,8 @@ jobs:
                 echo "No modules selected. Enable run_all_in_one_job, use_custom_tags, or at least one module checkbox."
                 exit 1
               fi
-              echo "max_parallel=$SHARD_COUNT" >> "$GITHUB_OUTPUT"
             fi
+            echo "max_parallel=$(jq '.include | length' matrix.json)" >> "$GITHUB_OUTPUT"
           fi
 
           if [[ "$FULL_MATRIX" == true ]]; then

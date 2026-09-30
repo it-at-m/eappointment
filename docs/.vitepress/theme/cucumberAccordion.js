@@ -848,7 +848,9 @@ export function cucumberGhRunCommand(entry) {
     ["use_custom_tags", "true"],
     ["test_layer", testLayer],
     ["cucumber_tag_expressions", tags],
-    ["browser", "chrome"],
+    ["browser_chrome", "true"],
+    ["browser_firefox", "false"],
+    ["browser_edge", "false"],
     ["per_step_screenshots", "true"],
   ];
   const lines = [
