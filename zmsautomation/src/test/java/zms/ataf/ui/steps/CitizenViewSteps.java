@@ -638,4 +638,22 @@ public class CitizenViewSteps {
         ScenarioLogManager.getLogger().info("zmscitizenview: open Meine Termine teaser {}", serviceName);
         page.openMeineTermineTeaser(serviceName);
     }
+
+    @Then("the appointment detail intro should offer an ICS download in the citizen view")
+    public void theAppointmentDetailIntroShouldOfferAnIcsDownload() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: assert ICS download offered");
+        page.assertIcsDownloadOfferedOnDetailIntro();
+    }
+
+    @When("I download the appointment ICS file in the citizen view")
+    public void iDownloadTheAppointmentIcsFile() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: download appointment ICS");
+        page.downloadAppointmentIcs();
+    }
+
+    @Then("the downloaded ICS file should contain the booked appointment in the citizen view")
+    public void theDownloadedIcsFileShouldContainTheBookedAppointment() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: assert downloaded ICS");
+        page.assertDownloadedIcsContainsBookedAppointment();
+    }
 }

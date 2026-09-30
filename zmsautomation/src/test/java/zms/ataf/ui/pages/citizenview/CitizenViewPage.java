@@ -3271,8 +3271,11 @@ public class CitizenViewPage extends BasePage {
     private static final ZoneId BERLIN = ZoneId.of("Europe/Berlin");
     private static final DateTimeFormatter TEASER_DATE_TIME =
             DateTimeFormatter.ofPattern("EEEE, dd.MM.uuuu, HH:mm", Locale.GERMAN);
+    private static final DateTimeFormatter ICS_DATE_TIME = DateTimeFormatter.ofPattern("yyyyMMdd'T'HHmmss");
+    private static final String ICS_DOWNLOAD_LABEL = "Termin herunterladen (ics)";
 
     private Long rememberedAppointmentEpoch;
+    private String capturedIcs;
 
     /** Unix time of the slot stored in {@code window.__zmsCitizenViewSlotId}. */
     public void rememberSelectedAppointmentTime() {
@@ -3407,5 +3410,106 @@ public class CitizenViewPage extends BasePage {
                         + "return best;";
         Object raw = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script, serviceName);
         return raw instanceof String ? (String) raw : "";
+    }
+
+    /** ZMSKVR-1334: intro link "Termin herunterladen (ics)" on the appointment detail page. */
+    public void assertIcsDownloadOfferedOnDetailIntro() {
+        CONTEXT.set();
+        ScenarioLogManager.getLogger().info("zmscitizenview: assert ICS download in the detail intro");
+        waitWithThreeWindows(
+                () -> shadowDomContainsText(ICS_DOWNLOAD_LABEL),
+                "ICS download link in the appointment detail intro");
+        Assert.assertTrue(
+                shadowDomContainsText(ICS_DOWNLOAD_LABEL),
+                "The appointment detail intro should offer \"" + ICS_DOWNLOAD_LABEL + "\".");
+    }
+
+    /**
+     * ZMSKVR-1334: the link builds a calendar blob in the browser instead of navigating. Capture that
+     * blob so the scenario can check the file without depending on the download folder.
+     */
+    public void downloadAppointmentIcs() {
+        CONTEXT.set();
+        ScenarioLogManager.getLogger().info("zmscitizenview: download appointment ICS");
+        WebDriver driver = DriverUtil.getDriver();
+        ((JavascriptExecutor) driver)
+                .executeScript(
+                        "window.__zmsCapturedIcs='';"
+                                + "if(!window.__zmsIcsHooked){"
+                                + "window.__zmsIcsHooked=true;"
+                                + "var NativeBlob=window.Blob;"
+                                + "function CapturingBlob(parts,options){"
+                                + "var blob=new NativeBlob(parts,options);"
+                                + "var type=options&&options.type?String(options.type):'';"
+                                + "if(type.indexOf('text/calendar')>=0){"
+                                + "window.__zmsCapturedIcs=Array.prototype.map.call(parts,function(p){"
+                                + "return typeof p==='string'?p:'';}).join('');}"
+                                + "return blob;}"
+                                + "CapturingBlob.prototype=NativeBlob.prototype;"
+                                + "window.Blob=CapturingBlob;}");
+        String clickScript =
+                "var label=arguments[0];"
+                        + "function textOf(n){var s='';if(!n)return s;if(n.nodeType===3)return n.nodeValue||'';"
+                        + "if(n.shadowRoot)s+=textOf(n.shadowRoot);var c=n.childNodes;if(c)for(var i=0;i<c.length;i++)s+=textOf(c[i]);return s;}"
+                        + "function walk(n,fn){if(!n)return false;if(fn(n))return true;if(n.shadowRoot&&walk(n.shadowRoot,fn))return true;"
+                        + "var c=n.children;if(c)for(var i=0;i<c.length;i++)if(walk(c[i],fn))return true;return false;}"
+                        + "var hit=null;"
+                        + "walk(document.body,function(n){"
+                        + "var tag=(n.tagName||'').toUpperCase();"
+                        + "if(tag!=='MUC-LINK'&&tag!=='A')return false;"
+                        + "if(textOf(n).indexOf(label)<0)return false;"
+                        + "hit=n;return true;});"
+                        + "if(!hit)return false;"
+                        + "hit.scrollIntoView({block:'center'});hit.click();return true;";
+        boolean clicked = false;
+        long deadline = System.currentTimeMillis() + DEFAULT_EXPLICIT_WAIT_TIME * 1000L;
+        while (System.currentTimeMillis() < deadline && !clicked) {
+            Object result = ((JavascriptExecutor) driver).executeScript(clickScript, ICS_DOWNLOAD_LABEL);
+            clicked = Boolean.TRUE.equals(result);
+            if (!clicked) {
+                try {
+                    Thread.sleep(300L);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    break;
+                }
+            }
+        }
+        Assert.assertTrue(clicked, "Could not click \"" + ICS_DOWNLOAD_LABEL + "\".");
+        new WebDriverWait(driver, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(
+                        d -> {
+                            Object raw =
+                                    ((JavascriptExecutor) d)
+                                            .executeScript("return window.__zmsCapturedIcs || '';");
+                            return raw instanceof String && !((String) raw).isBlank();
+                        });
+        Object raw = ((JavascriptExecutor) driver).executeScript("return window.__zmsCapturedIcs || '';");
+        capturedIcs = raw instanceof String ? (String) raw : "";
+        Assert.assertFalse(capturedIcs.isBlank(), "The ICS download did not produce a calendar file.");
+    }
+
+    /** ZMSKVR-1334: the file must carry the fields a calendar app needs for this appointment. */
+    public void assertDownloadedIcsContainsBookedAppointment() {
+        CONTEXT.set();
+        ScenarioLogManager.getLogger().info("zmscitizenview: assert downloaded ICS contents");
+        Assert.assertNotNull(capturedIcs, "No ICS file was downloaded.");
+        Assert.assertTrue(capturedIcs.contains("BEGIN:VCALENDAR"), "ICS is missing BEGIN:VCALENDAR.");
+        Assert.assertTrue(capturedIcs.contains("BEGIN:VEVENT"), "ICS is missing BEGIN:VEVENT.");
+        Assert.assertTrue(capturedIcs.contains("END:VCALENDAR"), "ICS is missing END:VCALENDAR.");
+        Assert.assertTrue(
+                capturedIcs.contains("SUMMARY:") && capturedIcs.contains("München-Termin:"),
+                "ICS SUMMARY should name the München appointment.");
+        Assert.assertTrue(capturedIcs.contains("LOCATION:"), "ICS is missing LOCATION.");
+        Assert.assertTrue(
+                capturedIcs.contains("DTEND;TZID=Europe/Berlin:"), "ICS is missing DTEND.");
+        Assert.assertTrue(
+                rememberedAppointmentEpoch != null && rememberedAppointmentEpoch > 0,
+                "The booked appointment time was not remembered.");
+        String start =
+                Instant.ofEpochSecond(rememberedAppointmentEpoch).atZone(BERLIN).format(ICS_DATE_TIME);
+        Assert.assertTrue(
+                capturedIcs.contains("DTSTART;TZID=Europe/Berlin:" + start),
+                "ICS DTSTART should be the booked slot " + start + ".");
     }
 }
