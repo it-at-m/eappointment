@@ -1,0 +1,46 @@
+{
+  "branch": "test-zmskvr-1418-zmskvr-1545-zmskvr-1590-past-appointments",
+  "branchSlug": "test-zmskvr-1418-zmskvr-1545-zmskvr-1590-past-appointments",
+  "runId": "36786409781",
+  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36786409781",
+  "runStartedAt": "2026-09-30T22:35:06Z",
+  "publishedAt": "2026-09-30T22:46:16.118Z",
+  "features": {
+    "feature-rest-zmsapi-citizen-search-zmskvr-1545-zmskvr-1418-past-appointments-search": {
+      "status": "passed",
+      "shard": "custom",
+      "browser": "chrome",
+      "rel": "rest/zmsapi/citizen-search/zmskvr-1545_zmskvr-1418_past_appointments_search.feature",
+      "runId": "36786409781",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36786409781",
+      "runStartedAt": "2026-09-30T22:35:06Z",
+      "browsers": {
+        "chrome": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "36786409781",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36786409781",
+          "runStartedAt": "2026-09-30T22:35:06Z"
+        }
+      }
+    },
+    "feature-ui-zmsadmin-citizen-search-zmskvr-1590-zmskvr-1418-past-appointment-status": {
+      "status": "passed",
+      "shard": "custom",
+      "browser": "chrome",
+      "rel": "ui/zmsadmin/citizen-search/zmskvr-1590_zmskvr-1418_past_appointment_status.feature",
+      "runId": "36786409781",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36786409781",
+      "runStartedAt": "2026-09-30T22:35:06Z",
+      "browsers": {
+        "chrome": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "36786409781",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36786409781",
+          "runStartedAt": "2026-09-30T22:35:06Z"
+        }
+      }
+    }
+  }
+}

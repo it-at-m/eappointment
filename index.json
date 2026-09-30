@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-09-30T22:34:32.034Z",
+  "publishedAt": "2026-09-30T22:46:16.118Z",
   "branches": [
     {
       "name": "next",
@@ -234,6 +234,12 @@
       "slug": "test-zmskvr-1411-zmskvr-1672-opening-hours-sunday",
       "runId": "36478331157",
       "runStartedAt": "2026-09-28T20:19:07Z"
+    },
+    {
+      "name": "test-zmskvr-1418-zmskvr-1545-zmskvr-1590-past-appointments",
+      "slug": "test-zmskvr-1418-zmskvr-1545-zmskvr-1590-past-appointments",
+      "runId": "36786409781",
+      "runStartedAt": "2026-09-30T22:35:06Z"
     },
     {
       "name": "test-zmskvr-1431-zmskvr-1564-department-services-finish",
