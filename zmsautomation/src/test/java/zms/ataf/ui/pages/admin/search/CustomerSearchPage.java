@@ -31,6 +31,7 @@ public class CustomerSearchPage extends AdminPage {
         ScenarioLogManager.getLogger().info("Kundensuche: query {}", query);
         String input = "//form[contains(@action,'/search/')]//input[@name='query']";
         WebElement field = findElementByLocatorType(input, LocatorType.XPATH, true);
+        field.clear();
         enterTextInWebElement(DEFAULT_EXPLICIT_WAIT_TIME, query, field);
         clickOnWebElement(
                 DEFAULT_EXPLICIT_WAIT_TIME,
@@ -64,5 +65,20 @@ public class CustomerSearchPage extends AdminPage {
         Assert.assertFalse(
                 text.contains("Status: " + otherStatus),
                 "Row for " + familyName + " shows the other cancellation status. Row: " + text);
+    }
+
+    public void assertCustomerListed(String familyName) {
+        CONTEXT.set();
+        String rowXpath = "//table[contains(@class,'table--base')]//td[contains(.,'" + familyName + "')]";
+        new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(ExpectedConditions.presenceOfElementLocated(By.xpath(rowXpath)));
+    }
+
+    public void assertCustomerNotListed(String familyName) {
+        CONTEXT.set();
+        String rowXpath = "//table[contains(@class,'table--base')]//td[contains(.,'" + familyName + "')]";
+        Assert.assertTrue(
+                DRIVER.findElements(By.xpath(rowXpath)).isEmpty(),
+                "Kundensuche still lists " + familyName);
     }
 }
