@@ -3384,9 +3384,9 @@ public class CitizenViewPage extends BasePage {
         ScenarioLogManager.getLogger()
                 .info("zmscitizenview: assert appointment detail location for {}", typeLabel);
         waitWithThreeWindows(
-                () -> shadowDomContainsText(locationText) && shadowDomHasHeading("Ort"),
+                () -> shadowDomContainsText(locationText) && shadowDomHasH2("Ort"),
                 "Ort section on the appointment detail");
-        Assert.assertTrue(shadowDomHasHeading("Ort"), "The detail page is missing the Ort heading.");
+        Assert.assertTrue(shadowDomHasH2("Ort"), "The detail page is missing the Ort heading.");
         Assert.assertTrue(
                 shadowDomContainsText(typeLabel),
                 "Detail intro is missing \"" + typeLabel + "\".");
@@ -3414,7 +3414,8 @@ public class CitizenViewPage extends BasePage {
         }
     }
 
-    private boolean shadowDomHasHeading(String heading) {
+    /** True when an {@code h2} in the shadow tree has this exact text, such as the Ort section. */
+    private boolean shadowDomHasH2(String heading) {
         String script =
                 "var heading=arguments[0];"
                         + "function textOf(n){var s='';if(!n)return s;if(n.nodeType===3)return n.nodeValue||'';"
