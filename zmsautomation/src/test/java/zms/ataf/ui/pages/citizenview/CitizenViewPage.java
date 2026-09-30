@@ -2240,50 +2240,68 @@ public class CitizenViewPage extends BasePage {
     public void acceptCommunication() {
         CONTEXT.set();
         ScenarioLogManager.getLogger().info("zmscitizenview: accept electronic communication (visible label)");
-        new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
-                .until(d -> clickVisibleElectronicCommunicationLabel());
-        new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
-                .until(d -> isElectronicCommunicationChecked());
-        Assert.assertTrue(
-                isElectronicCommunicationChecked(),
-                "Electronic communication checkbox was not checked (visible label click).");
+        acceptVisibleCheckbox("checkbox-electronic-communication", "Electronic communication");
     }
 
-    private boolean clickVisibleElectronicCommunicationLabel() {
+    /**
+     * Videoberatung keeps Termin reservieren disabled until the video terms are accepted.
+     * Phone appointments do not show that checkbox.
+     */
+    public void acceptVideoConsultationTermsIfShown() {
+        CONTEXT.set();
+        if (!shadowDomContainsText("Nutzungsbedingungen Videoberatung")) {
+            ScenarioLogManager.getLogger().info("zmscitizenview: video consultation terms are not shown");
+            return;
+        }
+        ScenarioLogManager.getLogger().info("zmscitizenview: accept video consultation terms (visible label)");
+        acceptVisibleCheckbox("checkbox-video-consultation", "Video consultation terms");
+    }
+
+    private void acceptVisibleCheckbox(String checkboxId, String label) {
+        new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(d -> clickVisibleCheckboxLabel(checkboxId));
+        new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(d -> isCheckboxChecked(checkboxId));
+        Assert.assertTrue(isCheckboxChecked(checkboxId), label + " checkbox was not checked (visible label click).");
+    }
+
+    private boolean clickVisibleCheckboxLabel(String checkboxId) {
         String script =
-                "function vis(el){if(!el||!el.getBoundingClientRect)return false;"
+                "var checkboxId=arguments[0];"
+                        + "function vis(el){if(!el||!el.getBoundingClientRect)return false;"
                         + "var r=el.getBoundingClientRect();if(r.width<=0||r.height<=0)return false;"
                         + "var st=window.getComputedStyle(el);return st.visibility!=='hidden'&&st.display!=='none'&&st.opacity!=='0';}"
                         + "function walk(root){if(!root)return null;"
-                        + "var labels=root.querySelectorAll?root.querySelectorAll('label[for=\"checkbox-electronic-communication\"]'):[];"
+                        + "var labels=root.querySelectorAll?root.querySelectorAll('label[for=\"'+checkboxId+'\"]'):[];"
                         + "for(var i=0;i<labels.length;i++)if(vis(labels[i]))return labels[i];"
                         + "var all=root.querySelectorAll?root.querySelectorAll('*'):[];"
                         + "for(var j=0;j<all.length;j++)if(all[j].shadowRoot){var f=walk(all[j].shadowRoot);if(f)return f;}"
                         + "return null;}"
                         + "var lab=walk(document.body);if(!lab)return false;"
                         + "var root=lab.getRootNode?lab.getRootNode():document;"
-                        + "var input=root.querySelector?root.querySelector('#checkbox-electronic-communication'):null;"
+                        + "var input=root.querySelector?root.querySelector('#'+checkboxId):null;"
                         + "if(input&&input.checked)return true;"
                         + "lab.scrollIntoView({block:'center'});lab.click();return true;";
-        Object o = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script);
+        Object o = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script, checkboxId);
         return Boolean.TRUE.equals(o);
     }
 
-    private boolean isElectronicCommunicationChecked() {
+    private boolean isCheckboxChecked(String checkboxId) {
         String script =
-                "function vis(el){if(!el||!el.getBoundingClientRect)return false;"
+                "var checkboxId=arguments[0];"
+                        + "function vis(el){if(!el||!el.getBoundingClientRect)return false;"
                         + "var r=el.getBoundingClientRect();if(r.width<=0||r.height<=0)return false;"
                         + "var st=window.getComputedStyle(el);return st.visibility!=='hidden'&&st.display!=='none'&&st.opacity!=='0';}"
                         + "function walk(root){if(!root)return null;"
-                        + "var labels=root.querySelectorAll?root.querySelectorAll('label[for=\"checkbox-electronic-communication\"]'):[];"
+                        + "var labels=root.querySelectorAll?root.querySelectorAll('label[for=\"'+checkboxId+'\"]'):[];"
                         + "for(var i=0;i<labels.length;i++)if(vis(labels[i])){"
                         + "var rn=labels[i].getRootNode?labels[i].getRootNode():document;"
-                        + "return rn.querySelector?rn.querySelector('#checkbox-electronic-communication'):null;}"
+                        + "return rn.querySelector?rn.querySelector('#'+checkboxId):null;}"
                         + "var all=root.querySelectorAll?root.querySelectorAll('*'):[];"
                         + "for(var j=0;j<all.length;j++)if(all[j].shadowRoot){var f=walk(all[j].shadowRoot);if(f)return f;}"
                         + "return null;}"
                         + "var input=walk(document.body);return !!(input&&input.checked);";
-        Object o = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script);
+        Object o = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script, checkboxId);
         return Boolean.TRUE.equals(o);
     }
 
@@ -2504,11 +2522,15 @@ public class CitizenViewPage extends BasePage {
                 "Selected-appointment info callout not found after choosing slot.");
     }
 
-    /** Click "Termin absagen" below the summary (sends cancel request), then wait for the cancellation success callout. */
+    /**
+     * Click "Termin absagen". The detail view opens "Absage Ihres Termins"; confirm with "Absagen"
+     * before the success callout appears.
+     */
     public void clickCancelAppointmentAndConfirm() {
         CONTEXT.set();
         ScenarioLogManager.getLogger().info("zmscitizenview: clicking cancel appointment button (Termin absagen)");
         waitForAndClickButtonContaining("Termin absagen", DEFAULT_EXPLICIT_WAIT_TIME);
+        confirmCancelAppointmentDialogIfShown();
         String marker = "Sie haben Ihren Termin erfolgreich abgesagt.";
         ScenarioLogManager.getLogger()
                 .info("zmscitizenview: waiting in 5s + 10s + 15s windows (30s total) for cancellation success callout");
@@ -2516,6 +2538,20 @@ public class CitizenViewPage extends BasePage {
         Assert.assertTrue(
                 shadowDomContainsText(marker),
                 "Cancellation success callout (Sie haben Ihren Termin erfolgreich abgesagt.) not visible after Termin absagen with retries.");
+    }
+
+    /** Detail view asks for Absagen inside "Absage Ihres Termins" before the appointment is deleted. */
+    private void confirmCancelAppointmentDialogIfShown() {
+        String heading = "Absage Ihres Termins";
+        try {
+            new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(5))
+                    .until(d -> shadowDomContainsText(heading));
+        } catch (TimeoutException e) {
+            ScenarioLogManager.getLogger().info("zmscitizenview: cancel dialog was not shown");
+            return;
+        }
+        ScenarioLogManager.getLogger().info("zmscitizenview: confirm cancel dialog (Absagen)");
+        waitForAndClickButtonContaining("Absagen", DEFAULT_EXPLICIT_WAIT_TIME);
     }
 
     public void assertCancellationSuccessCalloutVisible() {

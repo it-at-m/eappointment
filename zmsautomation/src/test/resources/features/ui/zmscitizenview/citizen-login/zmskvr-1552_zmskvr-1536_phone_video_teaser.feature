@@ -36,6 +36,7 @@ Feature: Citizen login appointment teasers for phone and video
     And I continue from the contact form in the citizen view
     Then the booking summary should show provider <location> with label "<providerLabel>" in the citizen view
     When I accept communication in the citizen view
+    And I accept the video consultation terms if they are shown in the citizen view
     And I confirm the logged-in booking from the summary in the citizen view
     Then the confirmation success callout should be visible in the citizen view
     When I open Meine Termine in the citizen view
