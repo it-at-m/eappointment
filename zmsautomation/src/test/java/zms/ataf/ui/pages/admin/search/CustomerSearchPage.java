@@ -2,6 +2,8 @@ package zms.ataf.ui.pages.admin.search;
 
 import java.time.Duration;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
@@ -80,5 +82,69 @@ public class CustomerSearchPage extends AdminPage {
         Assert.assertTrue(
                 DRIVER.findElements(By.xpath(rowXpath)).isEmpty(),
                 "Kundensuche still lists " + familyName);
+    }
+
+    public void assertClerkFilterHidden() {
+        CONTEXT.set();
+        Assert.assertTrue(
+                DRIVER.findElements(By.xpath("//label[normalize-space()='Sachbearbeiter']")).isEmpty(),
+                "The Sachbearbeiter filter is visible.");
+        Assert.assertTrue(
+                DRIVER.findElements(By.id("search-user-yes")).isEmpty(),
+                "The Sachbearbeiter filter radios are visible.");
+    }
+
+    public void assertListedInOrder(String... familyNames) {
+        CONTEXT.set();
+        List<WebElement> rows = DRIVER.findElements(By.xpath("//table[contains(@class,'table--base')]/tbody/tr"));
+        List<String> found = new ArrayList<>();
+        for (WebElement row : rows) {
+            String text = row.getText();
+            for (String familyName : familyNames) {
+                if (text.contains(familyName)) {
+                    found.add(familyName);
+                }
+            }
+        }
+        Assert.assertEquals(found, List.of(familyNames), "Kundensuche row order. Found: " + found);
+    }
+
+    public void assertStatusWithoutCall(String familyName, String statusLabel, String bookingStamp) {
+        assertStatusRow(familyName, statusLabel, bookingStamp, null);
+    }
+
+    public void assertStatusWithCall(String familyName, String statusLabel, String bookingStamp, String callStamp) {
+        assertStatusRow(familyName, statusLabel, bookingStamp, callStamp);
+    }
+
+    public String bookingDateDaysAgo(int daysAgo) {
+        return BerlinTime.today().minusDays(daysAgo).format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
+    }
+
+    public String bookingStampDaysAgo(int daysAgo, String time) {
+        return bookingDateDaysAgo(daysAgo) + ", " + time;
+    }
+
+    private void assertStatusRow(String familyName, String statusLabel, String bookingStamp, String callStamp) {
+        CONTEXT.set();
+        String rowXpath = "//table[contains(@class,'table--base')]//tr["
+                + "td[contains(.,'" + familyName + "')] and "
+                + "td[contains(.,'Status: " + statusLabel + "')]]";
+        WebElement row = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(ExpectedConditions.presenceOfElementLocated(By.xpath(rowXpath)));
+        String text = row.getText().replace('\u00a0', ' ');
+        ScenarioLogManager.getLogger().info("Kundensuche row for {}: {}", familyName, text);
+        Assert.assertTrue(
+                text.contains("Buchung: " + bookingStamp),
+                "Booking time missing for " + familyName + ". Expected " + bookingStamp + ". Row: " + text);
+        if (callStamp == null) {
+            Assert.assertFalse(
+                    text.contains("Terminaufruf:"),
+                    "Call time should be absent for " + familyName + ". Row: " + text);
+        } else {
+            Assert.assertTrue(
+                    text.contains("Terminaufruf: " + callStamp),
+                    "Call time missing for " + familyName + ". Expected " + callStamp + ". Row: " + text);
+        }
     }
 }
