@@ -504,7 +504,7 @@ public class ZmsApiSteps {
     @Then("the process search lists {string} before {string}")
     public void theProcessSearchListsBefore(String earlierName, String laterName) {
         List<String> names = familyNamesInSearch().stream()
-            .filter(name -> name.startsWith("Zmskvr1418"))
+            .filter(name -> name.startsWith("Muster John Doe"))
             .toList();
         Assertions.assertThat(names)
             .as("GET /process/search/ past appointments")

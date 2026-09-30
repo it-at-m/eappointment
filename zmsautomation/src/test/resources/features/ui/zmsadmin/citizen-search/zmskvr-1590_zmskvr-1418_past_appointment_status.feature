@@ -16,14 +16,14 @@ Funktionalität: Kundensuche zeigt den Terminstatus vergangener Termine
     Und Sie in Feld "Platz-Nr. oder Tresen" den Text "4" eingeben.
     Und Sie im Zeitmanagementsystem auf die Schaltfläche "Auswahl bestätigen" klicken.
     Dann wird die Seite Sachbearbeiterplatz angezeigt.
-    Wenn Sie einen Terminkunden mit der Dienstleistung "Führungszeugnis" und dem Namen "Zmskvr1418Planned" buchen.
-    Und Sie in der Kundensuche nach "Zmskvr1418" suchen.
+    Wenn Sie einen Terminkunden mit der Dienstleistung "Führungszeugnis" und dem Namen "Muster John Doe Planned" buchen.
+    Und Sie in der Kundensuche nach "Muster John Doe" suchen.
     Dann ist der Sachbearbeiter-Filter in der Kundensuche nicht sichtbar.
-    Und listet die Kundensuche "Zmskvr1418Planned" vor "Zmskvr1418Missed" vor "Zmskvr1418Within".
-    Und zeigt die Kundensuche den Kunden "Zmskvr1418Old" nicht.
-    Und zeigt die Kundensuche für "Zmskvr1418Planned" den Status "Geplant" mit heutiger Buchung und ohne Terminaufruf.
-    Und zeigt die Kundensuche für "Zmskvr1418Within" den Status "Abgeschlossen" mit Buchung vor 81 Tagen um "09:00" und ohne Terminaufruf.
-    Und zeigt die Kundensuche für "Zmskvr1418Missed" den Status "Nicht erschienen" mit Buchung vor 11 Tagen um "09:00" und Terminaufruf vor 10 Tagen um "15:30".
+    Und listet die Kundensuche "Muster John Doe Planned" vor "Muster John Doe Missed" vor "Muster John Doe Within".
+    Und zeigt die Kundensuche den Kunden "Muster John Doe Old" nicht.
+    Und zeigt die Kundensuche für "Muster John Doe Planned" den Status "Geplant" mit heutiger Buchung und ohne Terminaufruf.
+    Und zeigt die Kundensuche für "Muster John Doe Within" den Status "Abgeschlossen" mit Buchung vor 81 Tagen um "09:00" und ohne Terminaufruf.
+    Und zeigt die Kundensuche für "Muster John Doe Missed" den Status "Nicht erschienen" mit Buchung vor 11 Tagen um "09:00" und Terminaufruf vor 10 Tagen um "15:30".
     Wenn Sie zum Sachbearbeiterplatz zurückkehren.
     Dann wird die Seite Sachbearbeiterplatz angezeigt.
-    Wenn Sie den gerade gebuchten Termin von "Zmskvr1418Planned" in der Warteschlange löschen.
+    Wenn Sie den gerade gebuchten Termin von "Muster John Doe Planned" in der Warteschlange löschen.
