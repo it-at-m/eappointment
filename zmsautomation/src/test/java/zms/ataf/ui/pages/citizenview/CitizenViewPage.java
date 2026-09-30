@@ -1905,7 +1905,9 @@ public class CitizenViewPage extends BasePage {
                             "zmscitizenview: Weiter after slot callout → reserve appointment (then Kontakt form) timestamp={}",
                             timestamp);
             clickWeiter();
-            pendingReserveTimestamp = timestamp > 0 ? timestamp : pendingReserveTimestamp;
+            if (timestamp > 0) {
+                pendingReserveTimestamp = timestamp;
+            }
             switch (waitForReserveOutcome()) {
                 case CONTACT -> {
                     keepReservedSlot(timestamp);
