@@ -1862,8 +1862,10 @@ public class CitizenViewPage extends BasePage {
     public void assertCalloutAndReserveAfterSlotSelection(int officeId) {
         CONTEXT.set();
         Set<Long> skipped = new HashSet<>();
+        Long pendingReserveTimestamp = null;
         for (int attempt = 1; attempt <= 8; attempt++) {
             if (contactStepReached()) {
+                keepReservedSlot(pendingReserveTimestamp);
                 finishReserveOnContactStep();
                 return;
             }
@@ -1872,6 +1874,7 @@ public class CitizenViewPage extends BasePage {
                         skipped.stream().map(String::valueOf).reduce((a, b) -> a + "," + b).orElse("");
                 if (!highlightPreferredTimeslotForOfficeOrAbsent(officeId, skippedTimestamps)) {
                     if (contactStepReached()) {
+                        keepReservedSlot(pendingReserveTimestamp);
                         finishReserveOnContactStep();
                         return;
                     }
@@ -1892,6 +1895,7 @@ public class CitizenViewPage extends BasePage {
                 }
             }
             if (!assertSelectedAppointmentCalloutShowsProvider(officeId)) {
+                keepReservedSlot(pendingReserveTimestamp);
                 finishReserveOnContactStep();
                 return;
             }
@@ -1901,17 +1905,28 @@ public class CitizenViewPage extends BasePage {
                             "zmscitizenview: Weiter after slot callout → reserve appointment (then Kontakt form) timestamp={}",
                             timestamp);
             clickWeiter();
-            if (reserveReachedContactForm()) {
-                finishReserveOnContactStep();
-                return;
+            pendingReserveTimestamp = timestamp > 0 ? timestamp : pendingReserveTimestamp;
+            switch (waitForReserveOutcome()) {
+                case CONTACT -> {
+                    keepReservedSlot(timestamp);
+                    finishReserveOnContactStep();
+                    return;
+                }
+                case SLOT_TAKEN -> {
+                    if (timestamp > 0) {
+                        skipped.add(timestamp);
+                    }
+                    pendingReserveTimestamp = null;
+                    ScenarioLogManager.getLogger()
+                            .info(
+                                    "zmscitizenview: slot timestamp={} is no longer available; trying the next available slot",
+                                    timestamp);
+                }
+                case UNFINISHED ->
+                        Assert.fail(
+                                "zmscitizenview: reserve did not reach Kontaktdaten and did not report a taken slot for office "
+                                        + officeId);
             }
-            if (timestamp > 0) {
-                skipped.add(timestamp);
-            }
-            ScenarioLogManager.getLogger()
-                    .info(
-                            "zmscitizenview: slot timestamp={} is reserved or booked; trying the next available slot",
-                            timestamp);
         }
         Assert.fail("zmscitizenview: no free slot remained for office " + officeId);
     }
@@ -1948,25 +1963,43 @@ public class CitizenViewPage extends BasePage {
         trySetBookingProcessFromPage();
     }
 
-    private boolean reserveReachedContactForm() {
-        long deadline = System.currentTimeMillis() + 30_000L;
+    /**
+     * A slow Kontakt page is not a taken slot. Only the explicit error moves on to the next timestamp.
+     * Timing out and highlighting another slot overwrites {@code __zmsCitizenViewSlotId} while the first
+     * reserve is still landing, so later assertions remember the wrong time.
+     */
+    private enum ReserveOutcome {
+        CONTACT,
+        SLOT_TAKEN,
+        UNFINISHED
+    }
+
+    private ReserveOutcome waitForReserveOutcome() {
+        long deadline = System.currentTimeMillis() + 60_000L;
         while (System.currentTimeMillis() < deadline) {
             if (contactStepReached() || shadowDomContainsText("Termin verschieben")) {
-                return true;
+                return ReserveOutcome.CONTACT;
             }
             if (shadowDomContainsText("Ihr gewählter Termin ist nicht mehr verfügbar.")
                     || shadowDomContainsText("Ein unbekannter Fehler ist aufgetreten.")) {
-                return false;
+                return ReserveOutcome.SLOT_TAKEN;
             }
             sleepQuiet(400L);
         }
         if (contactStepReached()) {
-            return true;
+            return ReserveOutcome.CONTACT;
         }
         ScenarioLogManager.getLogger()
                 .info(
                         "zmscitizenview: reserve did not reach Kontaktdaten and did not report a taken slot");
-        return false;
+        return ReserveOutcome.UNFINISHED;
+    }
+
+    /** Keep the slot whose Weiter reached Kontakt, not a later highlight. */
+    private void keepReservedSlot(Long timestamp) {
+        if (timestamp != null && timestamp > 0) {
+            rememberedAppointmentEpoch = timestamp;
+        }
     }
 
     private long readStoredSlotTimestamp() {
@@ -3294,12 +3327,17 @@ public class CitizenViewPage extends BasePage {
     private Long rememberedAppointmentEpoch;
     private String capturedIcs;
 
-    /** Unix time of the slot stored in {@code window.__zmsCitizenViewSlotId}. */
+    /**
+     * Unix time of the slot that reached Kontakt. Falls back to {@code window.__zmsCitizenViewSlotId}
+     * when this scenario did not go through the reserve retry.
+     */
     public void rememberSelectedAppointmentTime() {
         CONTEXT.set();
-        long timestamp = readStoredSlotTimestamp();
-        Assert.assertTrue(timestamp > 0, "Selected timeslot id has no timestamp.");
-        rememberedAppointmentEpoch = timestamp;
+        if (rememberedAppointmentEpoch == null || rememberedAppointmentEpoch <= 0) {
+            long timestamp = readStoredSlotTimestamp();
+            Assert.assertTrue(timestamp > 0, "Selected timeslot id has no timestamp.");
+            rememberedAppointmentEpoch = timestamp;
+        }
         ScenarioLogManager.getLogger()
                 .info("zmscitizenview: remembered appointment time {}", rememberedAppointmentEpoch);
     }
