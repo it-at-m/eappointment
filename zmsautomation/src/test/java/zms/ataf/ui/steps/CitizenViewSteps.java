@@ -217,6 +217,12 @@ public class CitizenViewSteps {
         page.acceptCommunication();
     }
 
+    @When("I accept the video consultation terms if they are shown in the citizen view")
+    public void iAcceptTheVideoConsultationTermsIfTheyAreShown() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: accept video consultation terms when shown");
+        page.acceptVideoConsultationTermsIfShown();
+    }
+
     /** Preconfirm page: privacy + this Weiter → activation callout (not before Kontakt). */
     @When("I continue from the preconfirm step in the citizen view")
     public void iContinueFromThePreconfirmStepInTheCitizenView() {
@@ -412,6 +418,24 @@ public class CitizenViewSteps {
         page.assertInvalidJumpinLinkCalloutVisible();
     }
 
+    @Then("the restart appointment button should be visible on the invalid jump-in callout")
+    public void theRestartAppointmentButtonShouldBeVisibleOnTheInvalidJumpinCallout() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: assert Termin vereinbaren on the invalid jump-in callout");
+        page.assertInvalidJumpinRestartButtonVisible();
+    }
+
+    @When("I click the restart appointment button on the invalid jump-in callout")
+    public void iClickTheRestartAppointmentButtonOnTheInvalidJumpinCallout() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: Termin vereinbaren returns to the start");
+        page.clickInvalidJumpinRestartButton();
+    }
+
+    @Then("the citizen view address should not contain the jump-in")
+    public void theCitizenViewAddressShouldNotContainTheJumpIn() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: address no longer contains the jump-in");
+        page.assertAddressHasNoJumpIn();
+    }
+
     @Then("provider checkbox {int} should be visible in the citizen view")
     public void providerCheckboxShouldBeVisible(int officeId) {
         ScenarioLogManager.getLogger().info("zmscitizenview: assert provider checkbox {} visible", officeId);
@@ -491,6 +515,16 @@ public class CitizenViewSteps {
     public void theBookingSummaryShouldShowProvider(int officeId) {
         ScenarioLogManager.getLogger().info("zmscitizenview: assert booking summary shows provider {}", officeId);
         page.assertProviderSummaryVisible(officeId);
+    }
+
+    @Then("the booking summary should show provider {int} with label {string} in the citizen view")
+    public void theBookingSummaryShouldShowProviderWithLabel(int officeId, String providerLabel) {
+        ScenarioLogManager.getLogger()
+                .info(
+                        "zmscitizenview: assert booking summary shows provider {} label {}",
+                        officeId,
+                        providerLabel);
+        page.assertProviderSummaryVisible(officeId, providerLabel);
     }
 
     @Then("the estimated duration in the booking summary should be {int} minutes in the citizen view")
@@ -578,5 +612,56 @@ public class CitizenViewSteps {
         ScenarioLogManager.getLogger()
                 .info("zmscitizenview: assert electronic communication checkbox on book overview");
         page.assertElectronicCommunicationCheckboxVisible();
+    }
+
+    @When("I remember the selected appointment time in the citizen view")
+    public void iRememberTheSelectedAppointmentTime() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: remember selected appointment time");
+        page.rememberSelectedAppointmentTime();
+    }
+
+    @When("I open Meine Termine in the citizen view")
+    public void iOpenMeineTermine() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: open Meine Termine");
+        page.openMeineTermine();
+    }
+
+    @Then("the Meine Termine teaser for {string} should show type {string} and location {string}")
+    public void theMeineTermineTeaserShouldShowTypeAndLocation(String serviceName, String typeLabel, String locationText) {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: assert Meine Termine teaser for {}", serviceName);
+        page.assertMeineTermineTeaser(serviceName, typeLabel, locationText);
+    }
+
+    @When("I open the Meine Termine teaser for {string}")
+    public void iOpenTheMeineTermineTeaser(String serviceName) {
+        ScenarioLogManager.getLogger().info("zmscitizenview: open Meine Termine teaser {}", serviceName);
+        page.openMeineTermineTeaser(serviceName);
+    }
+
+    @Then("the appointment detail should show {string} at {string} with {string}, {string} and {string}")
+    public void theAppointmentDetailShouldShowLocation(
+            String typeLabel, String place, String locationText, String preparationHint, String extra) {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: assert appointment detail location for {}", typeLabel);
+        page.assertAppointmentDetailLocation(typeLabel, place, locationText, preparationHint, extra);
+    }
+
+    @Then("the appointment detail intro should offer an ICS download in the citizen view")
+    public void theAppointmentDetailIntroShouldOfferAnIcsDownload() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: assert ICS download offered");
+        page.assertIcsDownloadOfferedOnDetailIntro();
+    }
+
+    @When("I download the appointment ICS file in the citizen view")
+    public void iDownloadTheAppointmentIcsFile() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: download appointment ICS");
+        page.downloadAppointmentIcs();
+    }
+
+    @Then("the downloaded ICS file should contain the booked appointment in the citizen view")
+    public void theDownloadedIcsFileShouldContainTheBookedAppointment() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: assert downloaded ICS");
+        page.assertDownloadedIcsContainsBookedAppointment();
     }
 }

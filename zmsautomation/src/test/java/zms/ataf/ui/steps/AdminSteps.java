@@ -1,5 +1,6 @@
 package zms.ataf.ui.steps;
 
+import java.util.Locale;
 import java.time.DayOfWeek;
 import java.time.Duration;
 import java.time.LocalDate;
@@ -407,6 +408,39 @@ public class AdminSteps {
     @Wenn("Sie in der Kundensuche nach {string} suchen.")
     public void sie_in_der_kundensuche_nach_suchen(String query) {
         CUSTOMER_SEARCH_PAGE.search(TestDataHelper.transformTestData(query));
+    }
+
+    @Wenn("Sie einen Spontankunden mit der Dienstleistung {string}, dem Namen {string}, Freitextfeld {string} und Freitextfeld 2 {string} buchen.")
+    public void sie_einen_spontankunden_mit_freitextfeldern_buchen(
+            String service, String name, String freeText, String secondFreeText) {
+        wenn_sie_im_zeitmanagementsystem_unter_terminvereinbarung_neu_die_dienstleistung_string_auswaehlen(service);
+        COUNTER_PROCESSING_STATION_PAGE.selectWalkInCustomer();
+        COUNTER_PROCESSING_STATION_PAGE.enterNameInNewAppointmentTextField(name);
+        String email = name.toLowerCase(Locale.ROOT).replaceAll("[^a-z0-9]", "") + "@mailinator.com";
+        COUNTER_PROCESSING_STATION_PAGE.enterEmailInNewAppointmentTextField(email);
+        COUNTER_PROCESSING_STATION_PAGE.fillCustomTextfield("customTextfield", freeText);
+        COUNTER_PROCESSING_STATION_PAGE.fillCustomTextfield("customTextfield2", secondFreeText);
+        COUNTER_PROCESSING_STATION_PAGE.clickOnAddSpontaneousCustomer();
+        try {
+            wenn_sie_im_zeitmanagementsystem_auf_die_schaltflaeche_string_klicken("Schließen");
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Wenn("Sie zum Sachbearbeiterplatz zurückkehren.")
+    public void sie_zum_sachbearbeiterplatz_zurueckkehren() {
+        ADMIN_PAGE.clickInNavigationOnWorkstation();
+    }
+
+    @Dann("zeigt die Kundensuche den Kunden {string}.")
+    public void zeigt_die_kundensuche_den_kunden(String familyName) {
+        CUSTOMER_SEARCH_PAGE.assertCustomerListed(TestDataHelper.transformTestData(familyName));
+    }
+
+    @Dann("zeigt die Kundensuche den Kunden {string} nicht.")
+    public void zeigt_die_kundensuche_den_kunden_nicht(String familyName) {
+        CUSTOMER_SEARCH_PAGE.assertCustomerNotListed(TestDataHelper.transformTestData(familyName));
     }
 
     @Dann("zeigt die Kundensuche für {string} den Status {string} mit Buchungs- und Stornierungszeit.")
@@ -1171,6 +1205,40 @@ public class AdminSteps {
     @Und("Sie ggf. die Statistikbearbeitung abschließen.")
     public void sie_ggf_die_statistikbearbeitung_abschliessen() {
         PROCESSING_STATION_SECTION.completeStatisticsFinishIfPresent();
+    }
+
+    @Dann("wird die Schaltfläche {string} in der Statistik angezeigt.")
+    public void wird_die_schaltflaeche_in_der_statistik_angezeigt(String label) {
+        PROCESSING_STATION_SECTION.assertStatisticToggleLabel(label);
+    }
+
+    @Wenn("Sie in der Statistik auf {string} klicken.")
+    public void sie_in_der_statistik_auf_klicken(String label) {
+        if ("Bearbeitung abschließen".equals(label)) {
+            PROCESSING_STATION_SECTION.submitStatisticsFinish();
+            return;
+        }
+        PROCESSING_STATION_SECTION.clickStatisticToggle(label);
+    }
+
+    @Dann("ist die Dienstleistung {string} unter Dienstleistungen Erfassen sichtbar.")
+    public void ist_die_dienstleistung_unter_dienstleistungen_erfassen_sichtbar(String service) {
+        PROCESSING_STATION_SECTION.assertScopeStatisticServiceVisible(service);
+    }
+
+    @Dann("ist die Dienstleistung {string} unter Weitere Dienstleistungen sichtbar.")
+    public void ist_die_dienstleistung_unter_weitere_dienstleistungen_sichtbar(String service) {
+        PROCESSING_STATION_SECTION.assertAdditionalStatisticServiceDisplayed(service, true);
+    }
+
+    @Dann("ist die Dienstleistung {string} unter Weitere Dienstleistungen nicht sichtbar.")
+    public void ist_die_dienstleistung_unter_weitere_dienstleistungen_nicht_sichtbar(String service) {
+        PROCESSING_STATION_SECTION.assertAdditionalStatisticServiceDisplayed(service, false);
+    }
+
+    @Wenn("Sie die Anzahl der Dienstleistung {string} unter Weitere Dienstleistungen um {int} erhöhen.")
+    public void sie_die_anzahl_der_dienstleistung_unter_weitere_dienstleistungen_erhoehen(String service, int times) {
+        PROCESSING_STATION_SECTION.increaseAdditionalStatisticService(service, times);
     }
 
     @Wenn("Sie unter der Standortkonfiguration auf die Schaltfläche {string} klicken.")
