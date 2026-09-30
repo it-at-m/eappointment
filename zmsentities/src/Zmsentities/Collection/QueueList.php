@@ -262,6 +262,8 @@ class QueueList extends Base implements \BO\Zmsentities\Helper\NoSanitize
         } else {
             $excludeNumbers = explode(',', $exclude === null ? '' : (string) $exclude);
         }
+
+        $excludeNumbers = array_map('strval', $excludeNumbers);
         $queueList = clone $this;
         // sort by waiting time to get realistic next process
         $queueList = $queueList
@@ -273,7 +275,7 @@ class QueueList extends Base implements \BO\Zmsentities\Helper\NoSanitize
         $currentTime = $dateTime->getTimestamp();
 
         while ($next) {
-            if (in_array($next->number, $excludeNumbers, true)) {
+            if (in_array((string)$next->number, $excludeNumbers, true)) {
                 $next = array_shift($queueList);
                 continue;
             }
@@ -285,8 +287,8 @@ class QueueList extends Base implements \BO\Zmsentities\Helper\NoSanitize
             }
 
             $timeoutTime = isset($process->timeoutTime)
-            ? strtotime((string) $process->timeoutTime)
-            : false;
+                ? strtotime((string) $process->timeoutTime)
+                : false;
 
             if (
                 $process->queue->callCount > 0
