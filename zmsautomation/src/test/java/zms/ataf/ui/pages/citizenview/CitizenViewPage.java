@@ -3384,9 +3384,9 @@ public class CitizenViewPage extends BasePage {
         ScenarioLogManager.getLogger()
                 .info("zmscitizenview: assert appointment detail location for {}", typeLabel);
         waitWithThreeWindows(
-                () -> shadowDomContainsText(locationText) && shadowDomHasH2("Ort"),
+                () -> shadowDomContainsText(locationText) && shadowDomHasHeading(2, "Ort"),
                 "Ort section on the appointment detail");
-        Assert.assertTrue(shadowDomHasH2("Ort"), "The detail page is missing the Ort heading.");
+        Assert.assertTrue(shadowDomHasHeading(2, "Ort"), "The detail page is missing the Ort heading.");
         Assert.assertTrue(
                 shadowDomContainsText(typeLabel),
                 "Detail intro is missing \"" + typeLabel + "\".");
@@ -3414,18 +3414,20 @@ public class CitizenViewPage extends BasePage {
         }
     }
 
-    /** True when an {@code h2} in the shadow tree has this exact text, such as the Ort section. */
-    private boolean shadowDomHasH2(String heading) {
+    /** True when an {@code h1}–{@code h6} in the shadow tree has this exact text. Level 2 is an {@code h2}. */
+    private boolean shadowDomHasHeading(int level, String heading) {
+        Assert.assertTrue(level >= 1 && level <= 6, "Heading level must be 1 to 6.");
         String script =
-                "var heading=arguments[0];"
+                "var tagName=arguments[0];var heading=arguments[1];"
                         + "function textOf(n){var s='';if(!n)return s;if(n.nodeType===3)return n.nodeValue||'';"
                         + "if(n.shadowRoot)s+=textOf(n.shadowRoot);var c=n.childNodes;if(c)for(var i=0;i<c.length;i++)s+=textOf(c[i]);return s;}"
                         + "function walk(n,fn){if(!n)return false;if(fn(n))return true;if(n.shadowRoot&&walk(n.shadowRoot,fn))return true;"
                         + "var c=n.children;if(c)for(var i=0;i<c.length;i++)if(walk(c[i],fn))return true;return false;}"
                         + "return walk(document.body,function(n){"
                         + "var tag=(n.tagName||'').toUpperCase();"
-                        + "return tag==='H2'&&textOf(n).trim()===heading;});";
-        Object raw = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script, heading);
+                        + "return tag===tagName&&textOf(n).trim()===heading;});";
+        Object raw =
+                ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script, "H" + level, heading);
         return Boolean.TRUE.equals(raw);
     }
 
