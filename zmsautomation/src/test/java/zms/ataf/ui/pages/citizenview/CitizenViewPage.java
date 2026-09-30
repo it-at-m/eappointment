@@ -3489,7 +3489,10 @@ public class CitizenViewPage extends BasePage {
         Assert.assertFalse(capturedIcs.isBlank(), "The ICS download did not produce a calendar file.");
     }
 
-    /** ZMSKVR-1334: the file must carry the fields a calendar app needs for this appointment. */
+    /**
+     * ZMSKVR-1334: the file must carry the fields a calendar app needs for this appointment.
+     * The mail template puts the request name in SUMMARY, not a fixed "München-Termin" label.
+     */
     public void assertDownloadedIcsContainsBookedAppointment() {
         CONTEXT.set();
         ScenarioLogManager.getLogger().info("zmscitizenview: assert downloaded ICS contents");
@@ -3498,8 +3501,8 @@ public class CitizenViewPage extends BasePage {
         Assert.assertTrue(capturedIcs.contains("BEGIN:VEVENT"), "ICS is missing BEGIN:VEVENT.");
         Assert.assertTrue(capturedIcs.contains("END:VCALENDAR"), "ICS is missing END:VCALENDAR.");
         Assert.assertTrue(
-                capturedIcs.contains("SUMMARY:") && capturedIcs.contains("München-Termin:"),
-                "ICS SUMMARY should name the München appointment.");
+                capturedIcs.contains("SUMMARY:") && capturedIcs.contains("Abholung Personalausweis"),
+                "ICS SUMMARY should name the booked service. Was: " + icsSummaryLine());
         Assert.assertTrue(capturedIcs.contains("LOCATION:"), "ICS is missing LOCATION.");
         Assert.assertTrue(
                 capturedIcs.contains("DTEND;TZID=Europe/Berlin:"), "ICS is missing DTEND.");
@@ -3511,5 +3514,12 @@ public class CitizenViewPage extends BasePage {
         Assert.assertTrue(
                 capturedIcs.contains("DTSTART;TZID=Europe/Berlin:" + start),
                 "ICS DTSTART should be the booked slot " + start + ".");
+    }
+
+    private String icsSummaryLine() {
+        if (capturedIcs == null) {
+            return "";
+        }
+        return capturedIcs.lines().filter(line -> line.startsWith("SUMMARY:")).findFirst().orElse("");
     }
 }
