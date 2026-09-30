@@ -639,6 +639,14 @@ public class CitizenViewSteps {
         page.openMeineTermineTeaser(serviceName);
     }
 
+    @Then("the appointment detail should show {string} at {string} with {string}, {string} and {string}")
+    public void theAppointmentDetailShouldShowLocation(
+            String typeLabel, String place, String locationText, String preparationHint, String extra) {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: assert appointment detail location for {}", typeLabel);
+        page.assertAppointmentDetailLocation(typeLabel, place, locationText, preparationHint, extra);
+    }
+
     @Then("the appointment detail intro should offer an ICS download in the citizen view")
     public void theAppointmentDetailIntroShouldOfferAnIcsDownload() {
         ScenarioLogManager.getLogger().info("zmscitizenview: assert ICS download offered");
