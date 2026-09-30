@@ -1,9 +1,5 @@
 package zms.ataf.ui.pages.citizenview;
 
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.Instant;
@@ -3245,40 +3241,6 @@ public class CitizenViewPage extends BasePage {
             DateTimeFormatter.ofPattern("EEEE, dd.MM.uuuu, HH:mm", Locale.GERMAN);
 
     private Long rememberedAppointmentEpoch;
-
-    /**
-     * Offices-and-services is cached for an hour. Telephone on scopes 369 and 371 is turned on by
-     * Flyway just before the suite, so Meine Termine only sees it after this refresh.
-     */
-    public void refreshOfficesCacheForRenteVariants() {
-        String token = System.getenv("SOURCE_CACHE_WARMUP_TOKEN");
-        Assert.assertTrue(
-                token != null && !token.isBlank(),
-                "SOURCE_CACHE_WARMUP_TOKEN is required to refresh the citizen offices cache.");
-        String url = System.getenv().getOrDefault(
-                "ZMS_CITIZENAPI_WARMUP_URL",
-                "http://127.0.0.1/terminvereinbarung/api/citizen/source-cache/warmup/");
-        ScenarioLogManager.getLogger().info("zmscitizenview: refresh offices cache {}", url);
-        try {
-            HttpResponse<String> response = HttpClient.newHttpClient()
-                    .send(
-                            HttpRequest.newBuilder(URI.create(url))
-                                    .timeout(Duration.ofSeconds(30))
-                                    .header("X-Source-Cache-Warmup-Token", token)
-                                    .POST(HttpRequest.BodyPublishers.noBody())
-                                    .build(),
-                            HttpResponse.BodyHandlers.ofString());
-            Assert.assertEquals(
-                    response.statusCode(),
-                    200,
-                    "Citizen offices cache warmup failed: HTTP " + response.statusCode());
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            Assert.fail("Citizen offices cache warmup was interrupted.");
-        } catch (Exception e) {
-            Assert.fail("Citizen offices cache warmup failed: " + e.getMessage());
-        }
-    }
 
     /** Unix time of the slot clicked in {@link #clickHighlightedTimeslotSelection()}. */
     public void rememberSelectedAppointmentTime() {

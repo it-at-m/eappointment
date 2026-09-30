@@ -598,13 +598,6 @@ public class CitizenViewSteps {
         page.assertElectronicCommunicationCheckboxVisible();
     }
 
-    @Then("the citizen offices cache includes the Rente phone and video scopes")
-    public void theCitizenOfficesCacheIncludesTheRentePhoneAndVideoScopes() {
-        ScenarioLogManager.getLogger()
-                .info("zmscitizenview: refresh offices cache for Rente phone and video");
-        page.refreshOfficesCacheForRenteVariants();
-    }
-
     @When("I remember the selected appointment time in the citizen view")
     public void iRememberTheSelectedAppointmentTime() {
         ScenarioLogManager.getLogger().info("zmscitizenview: remember selected appointment time");

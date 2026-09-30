@@ -16,7 +16,6 @@ Feature: Citizen login appointment teasers for phone and video
     When I request the offices and services endpoint
     Then the response status code should be 200
     And the response should contain offices and services
-    And the citizen offices cache includes the Rente phone and video scopes
 
   Scenario Outline: Meine Termine teaser shows the appointment type, time, and place
     Given I open zmscitizenview with jump-in service "<service>" and location "<location>"
