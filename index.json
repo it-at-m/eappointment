@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-09-30T05:53:53.136Z",
+  "publishedAt": "2026-09-30T06:17:42.870Z",
   "branches": [
     {
       "name": "next",
@@ -228,6 +228,12 @@
       "slug": "test-zmskvr-1411-zmskvr-1672-opening-hours-sunday",
       "runId": "36478331157",
       "runStartedAt": "2026-09-28T20:19:07Z"
+    },
+    {
+      "name": "test-zmskvr-1431-zmskvr-1564-department-services-finish",
+      "slug": "test-zmskvr-1431-zmskvr-1564-department-services-finish",
+      "runId": "36675946358",
+      "runStartedAt": "2026-09-30T05:59:09Z"
     },
     {
       "name": "test-zmskvr-1618-zmskvr-1650-customer-search-cancelled",
