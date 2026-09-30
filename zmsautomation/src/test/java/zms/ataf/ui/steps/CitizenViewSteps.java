@@ -217,6 +217,12 @@ public class CitizenViewSteps {
         page.acceptCommunication();
     }
 
+    @When("I accept the video consultation terms if they are shown in the citizen view")
+    public void iAcceptTheVideoConsultationTermsIfTheyAreShown() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: accept video consultation terms when shown");
+        page.acceptVideoConsultationTermsIfShown();
+    }
+
     /** Preconfirm page: privacy + this Weiter → activation callout (not before Kontakt). */
     @When("I continue from the preconfirm step in the citizen view")
     public void iContinueFromThePreconfirmStepInTheCitizenView() {
