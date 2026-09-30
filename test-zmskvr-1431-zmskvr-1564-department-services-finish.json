@@ -1,10 +1,10 @@
 {
   "branch": "test-zmskvr-1431-zmskvr-1564-department-services-finish",
   "branchSlug": "test-zmskvr-1431-zmskvr-1564-department-services-finish",
-  "runId": "36675946358",
-  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36675946358",
-  "runStartedAt": "2026-09-30T05:59:09Z",
-  "publishedAt": "2026-09-30T06:17:42.870Z",
+  "runId": "36684883675",
+  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36684883675",
+  "runStartedAt": "2026-09-30T07:38:40Z",
+  "publishedAt": "2026-09-30T07:48:23.750Z",
   "features": {
     "feature-ui-zmsadmin-booking-zmskvr-1049": {
       "status": "passed",
@@ -151,20 +151,20 @@
       }
     },
     "feature-ui-zmsadmin-citizen-call-zmskvr-1564-zmskvr-1431-department-services-on-finish": {
-      "status": "failed",
-      "shard": "zmsadmin",
+      "status": "passed",
+      "shard": "custom",
       "browser": "chrome",
       "rel": "ui/zmsadmin/citizen-call/zmskvr-1564_zmskvr-1431_department_services_on_finish.feature",
-      "runId": "36675946358",
-      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36675946358",
-      "runStartedAt": "2026-09-30T05:59:09Z",
+      "runId": "36684883675",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36684883675",
+      "runStartedAt": "2026-09-30T07:38:40Z",
       "browsers": {
         "chrome": {
-          "status": "failed",
-          "shard": "zmsadmin",
-          "runId": "36675946358",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36675946358",
-          "runStartedAt": "2026-09-30T05:59:09Z"
+          "status": "passed",
+          "shard": "custom",
+          "runId": "36684883675",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36684883675",
+          "runStartedAt": "2026-09-30T07:38:40Z"
         }
       }
     },
@@ -458,19 +458,19 @@
     },
     "feature-rest-zmsapi-citizen-call-zmsadmin-zmskvr-1564-zmskvr-1431-department-services-on-finish": {
       "status": "passed",
-      "shard": "zmsapi",
+      "shard": "custom",
       "browser": "chrome",
       "rel": "rest/zmsapi/citizen-call/zmsadmin/zmskvr-1564_zmskvr-1431_department_services_on_finish.feature",
-      "runId": "36675946358",
-      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36675946358",
-      "runStartedAt": "2026-09-30T05:59:09Z",
+      "runId": "36684883675",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36684883675",
+      "runStartedAt": "2026-09-30T07:38:40Z",
       "browsers": {
         "chrome": {
           "status": "passed",
-          "shard": "zmsapi",
-          "runId": "36675946358",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36675946358",
-          "runStartedAt": "2026-09-30T05:59:09Z"
+          "shard": "custom",
+          "runId": "36684883675",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36684883675",
+          "runStartedAt": "2026-09-30T07:38:40Z"
         }
       }
     },
