@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-09-30T08:44:35.560Z",
+  "publishedAt": "2026-09-30T16:16:04.881Z",
   "branches": [
     {
       "name": "next",
@@ -234,6 +234,12 @@
       "slug": "test-zmskvr-1431-zmskvr-1564-department-services-finish",
       "runId": "36686267302",
       "runStartedAt": "2026-09-30T07:52:46Z"
+    },
+    {
+      "name": "test-zmskvr-1474-zmskvr-1563-customer-search-free-text",
+      "slug": "test-zmskvr-1474-zmskvr-1563-customer-search-free-text",
+      "runId": "36741697972",
+      "runStartedAt": "2026-09-30T16:05:51Z"
     },
     {
       "name": "test-zmskvr-1618-zmskvr-1650-customer-search-cancelled",
