@@ -36,6 +36,7 @@ import io.cucumber.java.de.Dann;
 import io.cucumber.java.de.Gegebenseien;
 import io.cucumber.java.de.Und;
 import io.cucumber.java.de.Wenn;
+import zms.ataf.helpers.AccountCheckout;
 import zms.ataf.helpers.BerlinTime;
 import zms.ataf.helpers.RandomNameHelper;
 import zms.ataf.ui.pages.admin.AdminPage;
@@ -405,9 +406,55 @@ public class AdminSteps {
         COUNTER_PROCESSING_STATION_PAGE.deleteQueuedAppointmentByFamilyName(TestDataHelper.transformTestData(familyName));
     }
 
+    @Wenn("Sie sich als {string} im Zeitmanagementsystem anmelden.")
+    public void sie_sich_als_im_zeitmanagementsystem_anmelden(String username) throws Exception {
+        ADMIN_PAGE.loginWithKeycloakUser(
+                AccountCheckout.assignWorkstationLogin(TestDataHelper.transformTestData(username)));
+    }
+
     @Wenn("Sie in der Kundensuche nach {string} suchen.")
     public void sie_in_der_kundensuche_nach_suchen(String query) {
         CUSTOMER_SEARCH_PAGE.search(TestDataHelper.transformTestData(query));
+    }
+
+    @Dann("ist der Sachbearbeiter-Filter in der Kundensuche nicht sichtbar.")
+    public void ist_der_sachbearbeiter_filter_nicht_sichtbar() {
+        CUSTOMER_SEARCH_PAGE.assertClerkFilterHidden();
+    }
+
+    @Dann("listet die Kundensuche {string} vor {string} vor {string}.")
+    public void listet_die_kundensuche_in_reihenfolge(String first, String second, String third) {
+        CUSTOMER_SEARCH_PAGE.assertListedInOrder(
+                TestDataHelper.transformTestData(first),
+                TestDataHelper.transformTestData(second),
+                TestDataHelper.transformTestData(third));
+    }
+
+    @Dann("zeigt die Kundensuche für {string} den Status {string} mit heutiger Buchung und ohne Terminaufruf.")
+    public void zeigt_den_status_mit_heutiger_buchung(String familyName, String statusLabel) {
+        CUSTOMER_SEARCH_PAGE.assertStatusWithoutCall(
+                TestDataHelper.transformTestData(familyName),
+                TestDataHelper.transformTestData(statusLabel),
+                CUSTOMER_SEARCH_PAGE.bookingDateDaysAgo(0));
+    }
+
+    @Dann("zeigt die Kundensuche für {string} den Status {string} mit Buchung vor {int} Tagen um {string} und ohne Terminaufruf.")
+    public void zeigt_den_status_mit_buchung_ohne_aufruf(
+            String familyName, String statusLabel, int daysAgo, String time) {
+        CUSTOMER_SEARCH_PAGE.assertStatusWithoutCall(
+                TestDataHelper.transformTestData(familyName),
+                TestDataHelper.transformTestData(statusLabel),
+                CUSTOMER_SEARCH_PAGE.bookingStampDaysAgo(daysAgo, time));
+    }
+
+    @Dann("zeigt die Kundensuche für {string} den Status {string} mit Buchung vor {int} Tagen um {string} und Terminaufruf vor {int} Tagen um {string}.")
+    public void zeigt_den_status_mit_buchung_und_aufruf(
+            String familyName, String statusLabel, int bookedDaysAgo, String bookedTime, int calledDaysAgo, String calledTime) {
+        CUSTOMER_SEARCH_PAGE.assertStatusWithCall(
+                TestDataHelper.transformTestData(familyName),
+                TestDataHelper.transformTestData(statusLabel),
+                CUSTOMER_SEARCH_PAGE.bookingStampDaysAgo(bookedDaysAgo, bookedTime),
+                CUSTOMER_SEARCH_PAGE.bookingStampDaysAgo(calledDaysAgo, calledTime));
     }
 
     @Wenn("Sie einen Spontankunden mit der Dienstleistung {string}, dem Namen {string}, Freitextfeld {string} und Freitextfeld 2 {string} buchen.")
