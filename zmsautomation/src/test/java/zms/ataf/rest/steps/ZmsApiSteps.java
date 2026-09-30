@@ -501,6 +501,55 @@ public class ZmsApiSteps {
             .doesNotContain(familyName);
     }
 
+    @Then("the process search lists {string} before {string}")
+    public void theProcessSearchListsBefore(String earlierName, String laterName) {
+        List<String> names = familyNamesInSearch().stream()
+            .filter(name -> name.startsWith("Muster John Doe"))
+            .toList();
+        Assertions.assertThat(names)
+            .as("GET /process/search/ past appointments")
+            .containsExactly(earlierName, laterName);
+    }
+
+    @Then("the process {string} has appointment status {string} and a booking time")
+    public void theProcessHasAppointmentStatusAndABookingTime(String familyName, String appointmentStatus) {
+        JsonNode match = searchRow(familyName);
+        Assertions.assertThat(match.path("appointmentStatus").asText())
+            .as("appointmentStatus for %s", familyName)
+            .isEqualTo(appointmentStatus);
+        Assertions.assertThat(match.path("createTimestamp").asLong())
+            .as("createTimestamp for %s", familyName)
+            .isPositive();
+    }
+
+    @Then("the process {string} was called")
+    public void theProcessWasCalled(String familyName) {
+        Assertions.assertThat(searchRow(familyName).path("queue").path("callTime").asLong())
+            .as("callTime for %s", familyName)
+            .isPositive();
+    }
+
+    @Then("the process {string} was not called")
+    public void theProcessWasNotCalled(String familyName) {
+        Assertions.assertThat(searchRow(familyName).path("queue").path("callTime").asLong())
+            .as("callTime for %s", familyName)
+            .isZero();
+    }
+
+    private JsonNode searchRow(String familyName) {
+        ArrayNode results = parseDataArray(response);
+        Assertions.assertThat(results).as("GET /process/search/ data").isNotNull();
+        for (JsonNode row : results) {
+            if (familyName.equals(row.path("clients").path(0).path("familyName").asText())) {
+                return row;
+            }
+        }
+        throw new AssertionError(String.format(
+            "search hit %s. Body=%s",
+            familyName,
+            truncate(response.asString(), 1500)));
+    }
+
     private List<String> familyNamesInSearch() {
         ArrayNode results = parseDataArray(response);
         Assertions.assertThat(results).as("GET /process/search/ data").isNotNull();
