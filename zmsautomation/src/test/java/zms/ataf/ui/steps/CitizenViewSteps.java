@@ -597,4 +597,36 @@ public class CitizenViewSteps {
                 .info("zmscitizenview: assert electronic communication checkbox on book overview");
         page.assertElectronicCommunicationCheckboxVisible();
     }
+
+    @Then("the citizen offices cache includes the Rente phone and video scopes")
+    public void theCitizenOfficesCacheIncludesTheRentePhoneAndVideoScopes() {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: refresh offices cache for Rente phone and video");
+        page.refreshOfficesCacheForRenteVariants();
+    }
+
+    @When("I remember the selected appointment time in the citizen view")
+    public void iRememberTheSelectedAppointmentTime() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: remember selected appointment time");
+        page.rememberSelectedAppointmentTime();
+    }
+
+    @When("I open Meine Termine in the citizen view")
+    public void iOpenMeineTermine() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: open Meine Termine");
+        page.openMeineTermine();
+    }
+
+    @Then("the Meine Termine teaser for {string} should show type {string} and location {string}")
+    public void theMeineTermineTeaserShouldShowTypeAndLocation(String serviceName, String typeLabel, String locationText) {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: assert Meine Termine teaser for {}", serviceName);
+        page.assertMeineTermineTeaser(serviceName, typeLabel, locationText);
+    }
+
+    @When("I open the Meine Termine teaser for {string}")
+    public void iOpenTheMeineTermineTeaser(String serviceName) {
+        ScenarioLogManager.getLogger().info("zmscitizenview: open Meine Termine teaser {}", serviceName);
+        page.openMeineTermineTeaser(serviceName);
+    }
 }
