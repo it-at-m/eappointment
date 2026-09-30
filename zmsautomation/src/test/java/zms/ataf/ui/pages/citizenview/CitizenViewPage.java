@@ -445,6 +445,19 @@ public class CitizenViewPage extends BasePage {
 
     public void assertInvalidJumpinRestartButtonVisible() {
         CONTEXT.set();
+        int sec = Math.min(15, DEFAULT_EXPLICIT_WAIT_TIME);
+        long deadline = System.currentTimeMillis() + sec * 1000L;
+        while (System.currentTimeMillis() < deadline) {
+            if (invalidJumpinRestartButton(false)) {
+                return;
+            }
+            try {
+                Thread.sleep(300L);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                break;
+            }
+        }
         Assert.assertTrue(
                 invalidJumpinRestartButton(false),
                 "Restart button \"Termin vereinbaren\" is not visible on the invalid jump-in callout.");
@@ -470,29 +483,33 @@ public class CitizenViewPage extends BasePage {
                 "Jump-in route is still in the address: " + url);
     }
 
-    /** Visible restart button inside the invalid jump-in callout. Click when {@code click} is true. */
+    /**
+     * Restart control on the invalid jump-in callout. The painted button can sit in the
+     * shadow root of {@code muc-button}, whose host has no box of its own.
+     */
     private boolean invalidJumpinRestartButton(boolean click) {
         String script =
                 "var click=arguments[0];"
-                        + "function visible(el){if(!el||!el.getBoundingClientRect)return false;"
+                        + "function box(el){if(!el||el.nodeType!==1||!el.getBoundingClientRect)return false;"
                         + "var r=el.getBoundingClientRect();if(r.width<=0||r.height<=0)return false;"
                         + "var st=window.getComputedStyle(el);return st.visibility!=='hidden'&&st.display!=='none'&&st.opacity!=='0';}"
+                        + "function painted(el){if(box(el))return el;var found=null;"
+                        + "function w(n){if(!n||found)return;if(n.nodeType===1&&n!==el&&box(n)){found=n;return;}"
+                        + "if(n.shadowRoot)w(n.shadowRoot);var c=n.children;if(c)for(var i=0;i<c.length;i++)w(c[i]);}"
+                        + "w(el);return found;}"
                         + "function walk(n,fn){if(!n)return false;if(fn(n))return true;"
                         + "if(n.shadowRoot&&walk(n.shadowRoot,fn))return true;"
                         + "var c=n.children;if(c)for(var i=0;i<c.length;i++)if(walk(c[i],fn))return true;return false;}"
-                        + "var button=null;"
+                        + "var target=null;"
                         + "walk(document.body,function(n){"
-                        + "if((n.tagName||'').toUpperCase()!=='MUC-CALLOUT')return false;"
-                        + "var t=n.textContent||'';"
-                        + "if(t.indexOf('Diese Ansicht kann nicht geladen werden')<0&&t.indexOf('This view cannot be loaded')<0)return false;"
-                        + "walk(n,function(b){"
-                        + "if((b.tagName||'').toUpperCase()!=='MUC-BUTTON')return false;"
-                        + "var label=(b.textContent||'').trim();"
-                        + "if((label==='Termin vereinbaren'||label==='Book appointment')&&visible(b)){button=b;return true;}"
-                        + "return false;});"
-                        + "return !!button;});"
-                        + "if(!button)return false;"
-                        + "if(click){button.scrollIntoView({block:'center'});button.click();}"
+                        + "var tag=(n.tagName||'').toUpperCase();"
+                        + "if(tag!=='MUC-BUTTON'&&tag!=='BUTTON'&&tag!=='A')return false;"
+                        + "var label=((n.innerText||n.textContent||'')+'').replace(/\\s+/g,' ').trim();"
+                        + "if(label.indexOf('Weiteren')>=0)return false;"
+                        + "if(label.indexOf('Termin vereinbaren')<0&&label.indexOf('Book appointment')<0)return false;"
+                        + "var hit=painted(n);if(!hit)return false;target=hit;return true;});"
+                        + "if(!target)return false;"
+                        + "if(click){target.scrollIntoView({block:'center'});target.click();}"
                         + "return true;";
         Object found = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script, click);
         return Boolean.TRUE.equals(found);
