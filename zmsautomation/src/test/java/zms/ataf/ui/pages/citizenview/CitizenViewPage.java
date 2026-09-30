@@ -1,12 +1,23 @@
 package zms.ataf.ui.pages.citizenview;
 
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Base64;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.BooleanSupplier;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
@@ -3226,5 +3237,184 @@ public class CitizenViewPage extends BasePage {
             ScenarioLogManager.getLogger().debug("zmscitizenview: could not parse appointment hash", e);
             return false;
         }
+    }
+
+    private static final ZoneId BERLIN = ZoneId.of("Europe/Berlin");
+    private static final Pattern SLOT_EPOCH = Pattern.compile("-timeslot-(\\d+)$");
+    private static final DateTimeFormatter TEASER_DATE_TIME =
+            DateTimeFormatter.ofPattern("EEEE, dd.MM.uuuu, HH:mm", Locale.GERMAN);
+
+    private Long rememberedAppointmentEpoch;
+
+    /**
+     * Offices-and-services is cached for an hour. Telephone on scopes 369 and 371 is turned on by
+     * Flyway just before the suite, so Meine Termine only sees it after this refresh.
+     */
+    public void refreshOfficesCacheForRenteVariants() {
+        String token = System.getenv("SOURCE_CACHE_WARMUP_TOKEN");
+        Assert.assertTrue(
+                token != null && !token.isBlank(),
+                "SOURCE_CACHE_WARMUP_TOKEN is required to refresh the citizen offices cache.");
+        String url = System.getenv().getOrDefault(
+                "ZMS_CITIZENAPI_WARMUP_URL",
+                "http://127.0.0.1/terminvereinbarung/api/citizen/source-cache/warmup/");
+        ScenarioLogManager.getLogger().info("zmscitizenview: refresh offices cache {}", url);
+        try {
+            HttpResponse<String> response = HttpClient.newHttpClient()
+                    .send(
+                            HttpRequest.newBuilder(URI.create(url))
+                                    .timeout(Duration.ofSeconds(30))
+                                    .header("X-Source-Cache-Warmup-Token", token)
+                                    .POST(HttpRequest.BodyPublishers.noBody())
+                                    .build(),
+                            HttpResponse.BodyHandlers.ofString());
+            Assert.assertEquals(
+                    response.statusCode(),
+                    200,
+                    "Citizen offices cache warmup failed: HTTP " + response.statusCode());
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            Assert.fail("Citizen offices cache warmup was interrupted.");
+        } catch (Exception e) {
+            Assert.fail("Citizen offices cache warmup failed: " + e.getMessage());
+        }
+    }
+
+    /** Unix time of the slot clicked in {@link #clickHighlightedTimeslotSelection()}. */
+    public void rememberSelectedAppointmentTime() {
+        CONTEXT.set();
+        Object raw = ((JavascriptExecutor) DriverUtil.getDriver())
+                .executeScript("return window.__zmsCitizenViewSlotId||'';");
+        String slotId = raw instanceof String ? (String) raw : "";
+        Matcher matcher = SLOT_EPOCH.matcher(slotId);
+        Assert.assertTrue(matcher.find(), "Selected timeslot id has no timestamp: " + slotId);
+        rememberedAppointmentEpoch = Long.parseLong(matcher.group(1));
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: remembered appointment time {}", rememberedAppointmentEpoch);
+    }
+
+    public void openMeineTermine() {
+        CONTEXT.set();
+        String current = DriverUtil.getDriver().getCurrentUrl();
+        Assert.assertTrue(current != null && !current.isBlank(), "Citizen view URL is missing.");
+        int hash = current.indexOf('#');
+        String withoutHash = hash >= 0 ? current.substring(0, hash) : current;
+        int slash = withoutHash.lastIndexOf('/');
+        String overview = withoutHash.substring(0, slash + 1) + "appointment-overview.html";
+        ScenarioLogManager.getLogger().info("zmscitizenview: open Meine Termine {}", overview);
+        try {
+            DriverUtil.getDriver().navigate().to(overview);
+        } catch (TimeoutException e) {
+            ScenarioLogManager.getLogger().warn("Meine Termine navigation timed out, continuing.", e);
+        }
+    }
+
+    public void assertMeineTermineTeaser(String serviceName, String typeLabel, String locationText) {
+        CONTEXT.set();
+        Assert.assertNotNull(rememberedAppointmentEpoch, "Selected appointment time was not remembered.");
+        ZonedDateTime when = Instant.ofEpochSecond(rememberedAppointmentEpoch).atZone(BERLIN);
+        String dateTime = TEASER_DATE_TIME.format(when);
+        String monthStem = when.format(DateTimeFormatter.ofPattern("MMM", Locale.GERMAN))
+                .replace(".", "")
+                .substring(0, 3)
+                .toUpperCase(Locale.GERMAN);
+        String day = Integer.toString(when.getDayOfMonth());
+        ScenarioLogManager.getLogger()
+                .info(
+                        "zmscitizenview: assert teaser {} type {} place {} at {}",
+                        serviceName,
+                        typeLabel,
+                        locationText,
+                        dateTime);
+        String card = waitForTeaserText(serviceName);
+        Assert.assertTrue(card.contains(typeLabel), "Teaser is missing type \"" + typeLabel + "\". Text: " + card);
+        Assert.assertTrue(
+                card.contains("1x " + serviceName),
+                "Teaser title is missing \"1x " + serviceName + "\". Text: " + card);
+        Assert.assertTrue(
+                card.contains(locationText),
+                "Teaser place is missing \"" + locationText + "\". Text: " + card);
+        Assert.assertTrue(card.contains(dateTime), "Teaser time is missing \"" + dateTime + "\". Text: " + card);
+        Assert.assertTrue(card.contains("Uhr"), "Teaser time is missing \"Uhr\". Text: " + card);
+        Assert.assertTrue(
+                card.toUpperCase(Locale.GERMAN).contains(day) && card.toUpperCase(Locale.GERMAN).contains(monthStem),
+                "Teaser calendar leaf is missing " + day + " " + monthStem + ". Text: " + card);
+    }
+
+    public void openMeineTermineTeaser(String serviceName) {
+        CONTEXT.set();
+        ScenarioLogManager.getLogger().info("zmscitizenview: open teaser {}", serviceName);
+        String script =
+                "var name=arguments[0];"
+                        + "function textOf(n){var s='';if(!n)return s;if(n.nodeType===3)return n.nodeValue||'';"
+                        + "if(n.shadowRoot)s+=textOf(n.shadowRoot);var c=n.childNodes;if(c)for(var i=0;i<c.length;i++)s+=textOf(c[i]);return s;}"
+                        + "function walk(n,fn){if(!n)return false;if(fn(n))return true;if(n.shadowRoot&&walk(n.shadowRoot,fn))return true;"
+                        + "var c=n.children;if(c)for(var i=0;i<c.length;i++)if(walk(c[i],fn))return true;return false;}"
+                        + "var card=null;"
+                        + "walk(document.body,function(n){"
+                        + "var tag=(n.tagName||'').toUpperCase();"
+                        + "if(tag!=='MUC-CARD'&&tag!=='A')return false;"
+                        + "if(textOf(n).indexOf(name)<0)return false;"
+                        + "card=n;return true;});"
+                        + "if(!card)return false;"
+                        + "var hit=card;"
+                        + "if(card.shadowRoot){var a=card.shadowRoot.querySelector('a[href]');if(a)hit=a;}"
+                        + "hit.scrollIntoView({block:'center'});hit.click();return true;";
+        boolean opened = false;
+        long deadline = System.currentTimeMillis() + DEFAULT_EXPLICIT_WAIT_TIME * 1000L;
+        while (System.currentTimeMillis() < deadline && !opened) {
+            Object clicked = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script, serviceName);
+            opened = Boolean.TRUE.equals(clicked);
+            if (!opened) {
+                try {
+                    Thread.sleep(300L);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    break;
+                }
+            }
+        }
+        Assert.assertTrue(opened, "Could not open the Meine Termine teaser for \"" + serviceName + "\".");
+        waitWithThreeWindows(
+                () -> shadowDomContainsText("Termin absagen"),
+                "Appointment detail after opening the teaser");
+    }
+
+    private String waitForTeaserText(String serviceName) {
+        long deadline = System.currentTimeMillis() + Math.max(30, DEFAULT_EXPLICIT_WAIT_TIME) * 1000L;
+        String last = "";
+        while (System.currentTimeMillis() < deadline) {
+            last = teaserText(serviceName);
+            if (last.contains(serviceName) && last.contains("Terminnummer")) {
+                return last;
+            }
+            try {
+                Thread.sleep(400L);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                break;
+            }
+        }
+        Assert.fail("Meine Termine teaser for \"" + serviceName + "\" did not appear. Last text: " + last);
+        return last;
+    }
+
+    private String teaserText(String serviceName) {
+        String script =
+                "var name=arguments[0];"
+                        + "function textOf(n){var s='';if(!n)return s;if(n.nodeType===3)return n.nodeValue||'';"
+                        + "if(n.shadowRoot)s+=textOf(n.shadowRoot);var c=n.childNodes;if(c)for(var i=0;i<c.length;i++)s+=textOf(c[i]);return s;}"
+                        + "function walk(n,fn){if(!n)return false;if(fn(n))return true;if(n.shadowRoot&&walk(n.shadowRoot,fn))return true;"
+                        + "var c=n.children;if(c)for(var i=0;i<c.length;i++)if(walk(c[i],fn))return true;return false;}"
+                        + "var best='';"
+                        + "walk(document.body,function(n){"
+                        + "if(n.nodeType!==1)return false;"
+                        + "var t=textOf(n);"
+                        + "if(t.indexOf(name)<0||t.indexOf('Terminnummer')<0)return false;"
+                        + "if(!best||t.length<best.length)best=t;"
+                        + "return false;});"
+                        + "return best;";
+        Object raw = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script, serviceName);
+        return raw instanceof String ? (String) raw : "";
     }
 }
