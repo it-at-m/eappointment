@@ -1,0 +1,28 @@
+{
+  "branch": "test-zmskvr-1538-zmskvr-1548-appointment-detail-location",
+  "branchSlug": "test-zmskvr-1538-zmskvr-1548-appointment-detail-location",
+  "runId": "36776958001",
+  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36776958001",
+  "runStartedAt": "2026-09-30T21:03:59Z",
+  "publishedAt": "2026-09-30T21:15:14.098Z",
+  "features": {
+    "feature-ui-zmscitizenview-citizen-login-zmskvr-1548-zmskvr-1538-phone-video-detail": {
+      "status": "passed",
+      "shard": "custom",
+      "browser": "chrome",
+      "rel": "ui/zmscitizenview/citizen-login/zmskvr-1548_zmskvr-1538_phone_video_detail.feature",
+      "runId": "36776958001",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36776958001",
+      "runStartedAt": "2026-09-30T21:03:59Z",
+      "browsers": {
+        "chrome": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "36776958001",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36776958001",
+          "runStartedAt": "2026-09-30T21:03:59Z"
+        }
+      }
+    }
+  }
+}
