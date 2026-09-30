@@ -208,6 +208,23 @@ public class CitizenViewPage extends BasePage {
         return Boolean.TRUE.equals(o);
     }
 
+    /** True when an {@code h1}–{@code h6} in the shadow tree has this exact text. Level 2 is an {@code h2}. */
+    private boolean shadowDomHasHeading(int level, String heading) {
+        Assert.assertTrue(level >= 1 && level <= 6, "Heading level must be 1 to 6.");
+        String script =
+                "var tagName=arguments[0];var heading=arguments[1];"
+                        + "function textOf(n){var s='';if(!n)return s;if(n.nodeType===3)return n.nodeValue||'';"
+                        + "if(n.shadowRoot)s+=textOf(n.shadowRoot);var c=n.childNodes;if(c)for(var i=0;i<c.length;i++)s+=textOf(c[i]);return s;}"
+                        + "function walk(n,fn){if(!n)return false;if(fn(n))return true;if(n.shadowRoot&&walk(n.shadowRoot,fn))return true;"
+                        + "var c=n.children;if(c)for(var i=0;i<c.length;i++)if(walk(c[i],fn))return true;return false;}"
+                        + "return walk(document.body,function(n){"
+                        + "var tag=(n.tagName||'').toUpperCase();"
+                        + "return tag===tagName&&textOf(n).trim()===heading;});";
+        Object raw =
+                ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script, "H" + level, heading);
+        return Boolean.TRUE.equals(raw);
+    }
+
     public void waitUntilShadowContains(String substring, int seconds) {
         CONTEXT.set();
         new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(seconds))
@@ -3412,23 +3429,6 @@ public class CitizenViewPage extends BasePage {
                     shadowDomContainsText("Info-Seite zur Videoberatung"),
                     "Phone detail should not show the video consultation info link.");
         }
-    }
-
-    /** True when an {@code h1}–{@code h6} in the shadow tree has this exact text. Level 2 is an {@code h2}. */
-    private boolean shadowDomHasHeading(int level, String heading) {
-        Assert.assertTrue(level >= 1 && level <= 6, "Heading level must be 1 to 6.");
-        String script =
-                "var tagName=arguments[0];var heading=arguments[1];"
-                        + "function textOf(n){var s='';if(!n)return s;if(n.nodeType===3)return n.nodeValue||'';"
-                        + "if(n.shadowRoot)s+=textOf(n.shadowRoot);var c=n.childNodes;if(c)for(var i=0;i<c.length;i++)s+=textOf(c[i]);return s;}"
-                        + "function walk(n,fn){if(!n)return false;if(fn(n))return true;if(n.shadowRoot&&walk(n.shadowRoot,fn))return true;"
-                        + "var c=n.children;if(c)for(var i=0;i<c.length;i++)if(walk(c[i],fn))return true;return false;}"
-                        + "return walk(document.body,function(n){"
-                        + "var tag=(n.tagName||'').toUpperCase();"
-                        + "return tag===tagName&&textOf(n).trim()===heading;});";
-        Object raw =
-                ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script, "H" + level, heading);
-        return Boolean.TRUE.equals(raw);
     }
 
     private String waitForTeaserText(String serviceName) {
