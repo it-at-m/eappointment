@@ -443,6 +443,61 @@ public class CitizenViewPage extends BasePage {
                 "Invalid jump-in callout not found (de or en). Expected for invalid service–office pairs only.");
     }
 
+    public void assertInvalidJumpinRestartButtonVisible() {
+        CONTEXT.set();
+        Assert.assertTrue(
+                invalidJumpinRestartButton(false),
+                "Restart button \"Termin vereinbaren\" is not visible on the invalid jump-in callout.");
+    }
+
+    public void clickInvalidJumpinRestartButton() {
+        CONTEXT.set();
+        Assert.assertTrue(
+                invalidJumpinRestartButton(true),
+                "Could not click \"Termin vereinbaren\" on the invalid jump-in callout.");
+        new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(d -> {
+                    String url = d.getCurrentUrl();
+                    return url != null && !url.contains("#/services/");
+                });
+    }
+
+    public void assertAddressHasNoJumpIn() {
+        CONTEXT.set();
+        String url = DriverUtil.getDriver().getCurrentUrl();
+        Assert.assertFalse(
+                url != null && url.contains("#/services/"),
+                "Jump-in route is still in the address: " + url);
+    }
+
+    /** Visible restart button inside the invalid jump-in callout. Click when {@code click} is true. */
+    private boolean invalidJumpinRestartButton(boolean click) {
+        String script =
+                "var click=arguments[0];"
+                        + "function visible(el){if(!el||!el.getBoundingClientRect)return false;"
+                        + "var r=el.getBoundingClientRect();if(r.width<=0||r.height<=0)return false;"
+                        + "var st=window.getComputedStyle(el);return st.visibility!=='hidden'&&st.display!=='none'&&st.opacity!=='0';}"
+                        + "function walk(n,fn){if(!n)return false;if(fn(n))return true;"
+                        + "if(n.shadowRoot&&walk(n.shadowRoot,fn))return true;"
+                        + "var c=n.children;if(c)for(var i=0;i<c.length;i++)if(walk(c[i],fn))return true;return false;}"
+                        + "var button=null;"
+                        + "walk(document.body,function(n){"
+                        + "if((n.tagName||'').toUpperCase()!=='MUC-CALLOUT')return false;"
+                        + "var t=n.textContent||'';"
+                        + "if(t.indexOf('Diese Ansicht kann nicht geladen werden')<0&&t.indexOf('This view cannot be loaded')<0)return false;"
+                        + "walk(n,function(b){"
+                        + "if((b.tagName||'').toUpperCase()!=='MUC-BUTTON')return false;"
+                        + "var label=(b.textContent||'').trim();"
+                        + "if((label==='Termin vereinbaren'||label==='Book appointment')&&visible(b)){button=b;return true;}"
+                        + "return false;});"
+                        + "return !!button;});"
+                        + "if(!button)return false;"
+                        + "if(click){button.scrollIntoView({block:'center'});button.click();}"
+                        + "return true;";
+        Object found = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script, click);
+        return Boolean.TRUE.equals(found);
+    }
+
     public void waitUntilDeepElementExists(String cssSelector, int seconds) {
         CONTEXT.set();
         new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(seconds))

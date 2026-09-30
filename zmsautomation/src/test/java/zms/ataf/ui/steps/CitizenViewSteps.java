@@ -412,6 +412,24 @@ public class CitizenViewSteps {
         page.assertInvalidJumpinLinkCalloutVisible();
     }
 
+    @Then("the restart appointment button should be visible on the invalid jump-in callout")
+    public void theRestartAppointmentButtonShouldBeVisibleOnTheInvalidJumpinCallout() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: assert Termin vereinbaren on the invalid jump-in callout");
+        page.assertInvalidJumpinRestartButtonVisible();
+    }
+
+    @When("I click the restart appointment button on the invalid jump-in callout")
+    public void iClickTheRestartAppointmentButtonOnTheInvalidJumpinCallout() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: Termin vereinbaren returns to the start");
+        page.clickInvalidJumpinRestartButton();
+    }
+
+    @Then("the citizen view address should not contain the jump-in")
+    public void theCitizenViewAddressShouldNotContainTheJumpIn() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: address no longer contains the jump-in");
+        page.assertAddressHasNoJumpIn();
+    }
+
     @Then("provider checkbox {int} should be visible in the citizen view")
     public void providerCheckboxShouldBeVisible(int officeId) {
         ScenarioLogManager.getLogger().info("zmscitizenview: assert provider checkbox {} visible", officeId);
