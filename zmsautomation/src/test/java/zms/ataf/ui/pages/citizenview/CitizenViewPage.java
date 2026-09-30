@@ -3431,7 +3431,7 @@ public class CitizenViewPage extends BasePage {
     public void downloadAppointmentIcs() {
         CONTEXT.set();
         ScenarioLogManager.getLogger().info("zmscitizenview: download appointment ICS");
-        WebDriver driver = DriverUtil.getDriver();
+        RemoteWebDriver driver = DriverUtil.getDriver();
         ((JavascriptExecutor) driver)
                 .executeScript(
                         "window.__zmsCapturedIcs='';"
