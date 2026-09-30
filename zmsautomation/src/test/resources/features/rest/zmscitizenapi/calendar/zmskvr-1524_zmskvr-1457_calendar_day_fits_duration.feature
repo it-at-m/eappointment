@@ -5,33 +5,43 @@ Feature: Calendar days follow the appointment length
   I want a day to stay available only when the selected length still fits
   So that a longer service does not mark a short gap as bookable
 
-  # Scope 9901457, Muster Kalender. Tomorrow 10:00–10:10 is two 5-minute slots.
-  # Muster Kurz is 1 slot. Muster Zusatz is 1 slot. Muster Lang is 3 slots.
-  # One or two short appointments fit. Three short ones, the long service, and short+long do not.
+  # Bürgerbüro Forstenrieder Allee (KVR-II/234 Team 1), office 10286848, scope 130.
+  # Tomorrow 10:00–10:10 is two 5-minute slots.
+  # Führungszeugnis 1063565 and Lebensbescheinigung 10297413 are 1 slot.
+  # Gewerbezentralregister, natürliche Person 1064033 is 2 slots.
+  # Gewerbezentralregister, juristische Person 10225129 is 3 slots.
 
   Background:
     Given the Citizen API is available
 
-  Scenario: one short appointment still has a bookable day
-    When I request available days for office 9901457 and service 9901451 with service count 1
-    Then the available calendar should include a bookable day for office 9901457
+  Scenario: one five minute appointment still has a bookable day
+    When I request available days for office 10286848 and service 1063565 with service count 1
+    Then the available calendar should include a bookable day for office 10286848
 
-  Scenario: two short appointments still fit in the ten minute gap
-    When I request available days for office 9901457 and service 9901451 with service count 2
-    Then the available calendar should include a bookable day for office 9901457
+  Scenario: two five minute appointments still fit in the ten minute gap
+    When I request available days for office 10286848 and service 1063565 with service count 2
+    Then the available calendar should include a bookable day for office 10286848
 
-  Scenario: three short appointments no longer fit
-    When I request available days for office 9901457 and service 9901451 with service count 3
-    Then the available calendar should include no bookable day for office 9901457
+  Scenario: three five minute appointments no longer fit
+    When I request available days for office 10286848 and service 1063565 with service count 3
+    Then the available calendar should include no bookable day for office 10286848
+
+  Scenario: one ten minute appointment still fits in the ten minute gap
+    When I request available days for office 10286848 and service 1064033 with service count 1
+    Then the available calendar should include a bookable day for office 10286848
+
+  Scenario: two ten minute appointments no longer fit
+    When I request available days for office 10286848 and service 1064033 with service count 2
+    Then the available calendar should include no bookable day for office 10286848
 
   Scenario: a fifteen minute service does not fit in the ten minute gap
-    When I request available days for office 9901457 and service 9901453 with service count 1
-    Then the available calendar should include no bookable day for office 9901457
+    When I request available days for office 10286848 and service 10225129 with service count 1
+    Then the available calendar should include no bookable day for office 10286848
 
-  Scenario: two different short services still fit together
-    When I request available days for office 9901457 and services "9901451,9901452" with service counts "1,1"
-    Then the available calendar should include a bookable day for office 9901457
+  Scenario: two different five minute services still fit together
+    When I request available days for office 10286848 and services "1063565,10297413" with service counts "1,1"
+    Then the available calendar should include a bookable day for office 10286848
 
-  Scenario: a short service plus a long service does not fit
-    When I request available days for office 9901457 and services "9901451,9901453" with service counts "1,1"
-    Then the available calendar should include no bookable day for office 9901457
+  Scenario: a five minute service plus a fifteen minute service does not fit
+    When I request available days for office 10286848 and services "1063565,10225129" with service counts "1,1"
+    Then the available calendar should include no bookable day for office 10286848
