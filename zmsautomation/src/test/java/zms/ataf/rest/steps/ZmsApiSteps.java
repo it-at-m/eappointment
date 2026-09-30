@@ -85,17 +85,18 @@ public class ZmsApiSteps {
     private void deleteScenarioProcesses() {
         int lastId = lastProcess == null ? 0 : lastProcess.path("id").asInt();
         for (Integer processId : new ArrayList<>(scenarioProcessIds)) {
-            deleteProcessById(processId, false);
-            if (processId == lastId) {
+            boolean removed = deleteProcessById(processId, false);
+            if (processId == lastId && removed) {
                 lastProcessDeleted = true;
             }
         }
         scenarioProcessIds.clear();
     }
 
-    private void deleteProcessById(int processId, boolean assertSuccess) {
+    /** @return true when the process is gone (deleted or already absent) */
+    private boolean deleteProcessById(int processId, boolean assertSuccess) {
         if (processId <= 0) {
-            return;
+            return true;
         }
         try {
             Response cleanup = given()
@@ -104,21 +105,27 @@ public class ZmsApiSteps {
                 .queryParam("initiator", "admin")
             .when()
                 .delete("/process/" + processId + "/");
+            int status = cleanup.getStatusCode();
             if (assertSuccess) {
                 CommonApiSteps.setResponse(cleanup);
-                Assertions.assertThat(cleanup.getStatusCode())
+                response = cleanup;
+                Assertions.assertThat(status)
                     .as("DELETE /process/%d/ body=%s", processId, truncate(cleanup.asString(), 1000))
                     .isEqualTo(200);
-                response = cleanup;
-            } else if (cleanup.getStatusCode() >= 300 && cleanup.getStatusCode() != 404) {
-                ScenarioLogManager.getLogger().warn(
-                    "Could not delete process {}: HTTP {}", processId, cleanup.getStatusCode());
+                return true;
             }
+            if (status < 300 || status == 404) {
+                return true;
+            }
+            ScenarioLogManager.getLogger().warn(
+                "Could not delete process {}: HTTP {}", processId, status);
+            return false;
         } catch (RuntimeException e) {
             if (assertSuccess) {
                 throw e;
             }
             ScenarioLogManager.getLogger().warn("Could not delete process {}: {}", processId, e.getMessage());
+            return false;
         }
     }
 
