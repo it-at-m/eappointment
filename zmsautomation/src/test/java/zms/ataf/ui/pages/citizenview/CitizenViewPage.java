@@ -12,9 +12,6 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.BooleanSupplier;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.TimeoutException;
@@ -3236,21 +3233,17 @@ public class CitizenViewPage extends BasePage {
     }
 
     private static final ZoneId BERLIN = ZoneId.of("Europe/Berlin");
-    private static final Pattern SLOT_EPOCH = Pattern.compile("-timeslot-(\\d+)$");
     private static final DateTimeFormatter TEASER_DATE_TIME =
             DateTimeFormatter.ofPattern("EEEE, dd.MM.uuuu, HH:mm", Locale.GERMAN);
 
     private Long rememberedAppointmentEpoch;
 
-    /** Unix time of the slot clicked in {@link #clickHighlightedTimeslotSelection()}. */
+    /** Unix time of the slot stored in {@code window.__zmsCitizenViewSlotId}. */
     public void rememberSelectedAppointmentTime() {
         CONTEXT.set();
-        Object raw = ((JavascriptExecutor) DriverUtil.getDriver())
-                .executeScript("return window.__zmsCitizenViewSlotId||'';");
-        String slotId = raw instanceof String ? (String) raw : "";
-        Matcher matcher = SLOT_EPOCH.matcher(slotId);
-        Assert.assertTrue(matcher.find(), "Selected timeslot id has no timestamp: " + slotId);
-        rememberedAppointmentEpoch = Long.parseLong(matcher.group(1));
+        long timestamp = readStoredSlotTimestamp();
+        Assert.assertTrue(timestamp > 0, "Selected timeslot id has no timestamp.");
+        rememberedAppointmentEpoch = timestamp;
         ScenarioLogManager.getLogger()
                 .info("zmscitizenview: remembered appointment time {}", rememberedAppointmentEpoch);
     }
