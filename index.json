@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-10-01T10:01:36.676Z",
+  "publishedAt": "2026-10-01T10:56:52.024Z",
   "branches": [
     {
       "name": "next",
@@ -264,6 +264,12 @@
       "slug": "test-zmskvr-1474-zmskvr-1563-customer-search-free-text",
       "runId": "36747004232",
       "runStartedAt": "2026-09-30T16:49:24Z"
+    },
+    {
+      "name": "test-zmskvr-1504-zmskvr-1523-waiting-count-refresh",
+      "slug": "test-zmskvr-1504-zmskvr-1523-waiting-count-refresh",
+      "runId": "36850423909",
+      "runStartedAt": "2026-10-01T10:38:46Z"
     },
     {
       "name": "test-zmskvr-1536-zmskvr-1552-appointment-teaser",
