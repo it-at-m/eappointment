@@ -444,31 +444,25 @@ public class CounterProcessingStationPage extends AdminPage {
     public void enterDateInNewAppointmentTextField(String date) {
         ScenarioLogManager.getLogger().info("Trying to enter date \"" + date + "\" in new appointment text field...");
 
-        // Check if date has opening hours
+        // process_date is a React datepicker. The old calendar tile (div[data-date]) is not on this form.
         LocalDate dateDesired = LocalDate.parse(date, DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.GERMAN));
-        WebElement calendarElementOfDesiredDate;
-        int count = 0;
-        do {
+        int maxDays = TestPropertiesHelper.getPropertyAsInteger("numberOfRetries", true, 3) * 3;
+        for (int count = 0; count <= maxDays; count++) {
             if (count > 0) {
-                // While the desired date has no opening hours try next day...
-                ScenarioLogManager.getLogger().info("The desired date \"" + date + "\" has no opening hours! Trying next day...");
                 dateDesired = dateDesired.plusDays(1L);
                 date = dateDesired.format(DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.GERMAN));
+                ScenarioLogManager.getLogger().info("The day is not selectable. Trying {}", date);
             }
-            calendarElementOfDesiredDate = findElementByLocatorType(
-                    "//div[@data-date='" + dateDesired.format(DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.GERMAN)) + "']", LocatorType.XPATH, true);
-            count++;
-        } while (calendarElementOfDesiredDate.getAttribute("title")
-                .contains("an diesem Tag sind keine Termine möglich") && count <= TestPropertiesHelper.getPropertyAsInteger(
-                "numberOfRetries", true, 3) * 3);
-
-        // process_date is a React datepicker. Typing focuses it, the calendar opens, and the
-        // keystrokes move the month (the popup can land on an unrelated month) without changing the value.
-        chooseDateInAppointmentPicker(dateDesired, date);
-        TestDataHelper.setTestData("new_appointment_date", date);
+            if (chooseDateInAppointmentPicker(dateDesired, date)) {
+                TestDataHelper.setTestData("new_appointment_date", date);
+                return;
+            }
+        }
+        Assert.fail("No selectable appointment day found from " + date);
     }
 
-    private void chooseDateInAppointmentPicker(LocalDate target, String date) {
+    /** @return false when the day is shown but disabled, so the caller can try the next day. */
+    private boolean chooseDateInAppointmentPicker(LocalDate target, String date) {
         WebElement dateField = findElementByLocatorType("process_date", LocatorType.ID, true);
         dateField.sendKeys(Keys.ESCAPE);
         WebElement opener = findElementByLocatorType("#appointment-datepicker a.calendar-placement", LocatorType.CSSSELECTOR, true);
@@ -502,11 +496,17 @@ public class CounterProcessingStationPage extends AdminPage {
         String dayText = Integer.toString(target.getDayOfMonth());
         By day = By.xpath("//div[contains(@class,'react-datepicker__day')"
                 + " and not(contains(@class,'outside-month'))"
-                + " and not(contains(@class,'disabled'))"
                 + " and normalize-space(.)='" + dayText + "']");
-        wait.until(ExpectedConditions.elementToBeClickable(day)).click();
+        WebElement dayElement = wait.until(ExpectedConditions.presenceOfElementLocated(day));
+        String dayClass = dayElement.getAttribute("class");
+        if (dayClass != null && dayClass.contains("disabled")) {
+            dateField.sendKeys(Keys.ESCAPE);
+            return false;
+        }
+        wait.until(ExpectedConditions.elementToBeClickable(dayElement)).click();
         wait.until(ExpectedConditions.attributeToBe(By.id("process_date"), "value", date));
         CONTEXT.waitForSpinners();
+        return true;
     }
 
     /**
