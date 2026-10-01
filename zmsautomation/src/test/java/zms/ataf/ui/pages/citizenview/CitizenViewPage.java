@@ -2902,8 +2902,13 @@ public class CitizenViewPage extends BasePage {
     public ThinnedProcess syncBookingProcessFromLocalStorage() throws Exception {
         CONTEXT.set();
         ThinnedProcess already = zms.ataf.rest.steps.CitizenApiSteps.getBookingProcess();
-        if (already != null) {
+        if (hasCancelCredentials(already)) {
             ScenarioLogManager.getLogger().info("zmscitizenview: booking process already set (from reserve step), skipping localStorage read");
+            return already;
+        }
+        captureBookingProcessForCleanup();
+        already = zms.ataf.rest.steps.CitizenApiSteps.getBookingProcess();
+        if (hasCancelCredentials(already)) {
             return already;
         }
         String json =
@@ -2928,10 +2933,23 @@ public class CitizenViewPage extends BasePage {
     /** Try to set booking process after activation callout: first from localStorage, then from confirm link on page (same process id as mail). */
     private void trySyncBookingProcessFromLocalStorageOnce() {
         CONTEXT.set();
+        if (hasCancelCredentials(zms.ataf.rest.steps.CitizenApiSteps.getBookingProcess())) {
+            return;
+        }
         if (trySetBookingProcessFromLocalStorage()) {
             return;
         }
+        if (trySetBookingProcessFromVueAppointment()) {
+            return;
+        }
         trySetBookingProcessFromConfirmLinkOnPage();
+    }
+
+    private static boolean hasCancelCredentials(ThinnedProcess process) {
+        return process != null
+                && process.getProcessId() != null
+                && process.getAuthKey() != null
+                && !process.getAuthKey().isBlank();
     }
 
     /** @return true if process was set from localStorage */
@@ -3574,7 +3592,88 @@ public class CitizenViewPage extends BasePage {
         if (trySetBookingProcessFromCurrentReservedHash()) {
             return;
         }
+        if (trySetBookingProcessFromVueAppointment()) {
+            return;
+        }
         trySetBookingProcessIdFromDom();
+    }
+
+    /**
+     * Guest preconfirm keeps processId and authKey on the Vue appointment, not in localStorage.
+     * The summary DOM only exposes the process id.
+     */
+    private boolean trySetBookingProcessFromVueAppointment() {
+        CONTEXT.set();
+        String script =
+                "function creds(state){"
+                        + " if(!state)return null;"
+                        + " var keys;try{keys=Object.keys(state);}catch(e){return null;}"
+                        + " for(var i=0;i<keys.length;i++){"
+                        + "  var raw=state[keys[i]];"
+                        + "  var v=raw&&raw.__v_isRef?raw.value:raw;"
+                        + "  if(v&&v.processId&&v.authKey)return {processId:v.processId,authKey:String(v.authKey)};"
+                        + " }"
+                        + " return null;"
+                        + "}"
+                        + "function walkInst(inst,depth,seen){"
+                        + " if(!inst||depth>50||seen.has(inst))return null;"
+                        + " seen.add(inst);"
+                        + " var hit=creds(inst.setupState)||creds(inst.exposed)||creds(inst.ctx);"
+                        + " if(hit)return hit;"
+                        + " var nodes=[];"
+                        + " if(inst.subTree)nodes.push(inst.subTree);"
+                        + " if(inst.vnode)nodes.push(inst.vnode);"
+                        + " for(var n=0;n<nodes.length;n++){"
+                        + "  var node=nodes[n];"
+                        + "  if(node&&node.component){var a=walkInst(node.component,depth+1,seen);if(a)return a;}"
+                        + "  var kids=node&&node.children;"
+                        + "  if(kids&&kids.length)for(var k=0;k<kids.length;k++){"
+                        + "   var child=kids[k];"
+                        + "   if(child&&child.component){var b=walkInst(child.component,depth+1,seen);if(b)return b;}"
+                        + "  }"
+                        + " }"
+                        + " return null;"
+                        + "}"
+                        + "function walkDom(root,seen){"
+                        + " if(!root||!root.querySelectorAll)return null;"
+                        + " var nodes=root.querySelectorAll('*');"
+                        + " for(var i=0;i<nodes.length;i++){"
+                        + "  var el=nodes[i];"
+                        + "  if(el._instance){var hit=walkInst(el._instance,0,seen);if(hit)return hit;}"
+                        + "  if(el.shadowRoot){var inner=walkDom(el.shadowRoot,seen);if(inner)return inner;}"
+                        + " }"
+                        + " return null;"
+                        + "}"
+                        + "var seen=new Set();"
+                        + "return walkDom(document.body,seen)||walkDom(document.documentElement,seen);";
+        Object raw = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script);
+        if (!(raw instanceof java.util.Map<?, ?> map)) {
+            return false;
+        }
+        Object idRaw = map.get("processId");
+        Object keyRaw = map.get("authKey");
+        if (idRaw == null || keyRaw == null) {
+            return false;
+        }
+        try {
+            int processId = idRaw instanceof Number number
+                    ? number.intValue()
+                    : Integer.parseInt(String.valueOf(idRaw));
+            String authKey = String.valueOf(keyRaw);
+            if (processId <= 0 || authKey.isBlank()) {
+                return false;
+            }
+            ThinnedProcess p = new ThinnedProcess();
+            p.setProcessId(processId);
+            p.setAuthKey(authKey);
+            zms.ataf.rest.steps.CitizenApiSteps.setBookingProcess(p);
+            ScenarioLogManager.getLogger()
+                    .info("zmscitizenview: captured booking process from Vue appointment (processId={})", processId);
+            return true;
+        } catch (NumberFormatException e) {
+            ScenarioLogManager.getLogger().debug("zmscitizenview: Vue appointment process id was not numeric", e);
+            return false;
+        }
     }
 
     /** Summary nodes are {@code process-{id}-displayNumber-*}. The id is enough to match GET /mails/. */
