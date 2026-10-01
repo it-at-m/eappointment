@@ -191,10 +191,13 @@ public class CounterProcessingStationPage extends AdminPage {
     
         scrollToCenterByVisibleElement(table);
     
-        // Wait for specific row with transaction number
+        // The queue shows the display number. Briefbüro prints a prefix (X0723);
+        // other scopes print the process id. Match either form.
+        String shown = transactionNumber == null ? "" : transactionNumber.trim();
         By rowByNumber = By.xpath(
                 "//table[@id='table-queued-appointments']" +
-                "//tbody/tr[.//td[normalize-space()='" + numOnly + "']]"
+                "//tbody/tr[.//td[normalize-space()='" + shown + "'" +
+                " or normalize-space()='" + numOnly + "']]"
         );
     
         WebElement row = wait.until(
@@ -397,6 +400,25 @@ public class CounterProcessingStationPage extends AdminPage {
      * Deletes the queue row for a customer just booked in this scenario.
      * The trash icon uses the internal process id, which is not the number shown as Termin-Nr.
      */
+    /**
+     * A forwarded Terminkunde is queued without an appointment time, so the Prio field is visible.
+     * Mittel is the selected option when the stored priority is 2.
+     */
+    public void assertQueuedCustomerPriority(String familyName, String priorityLabel) {
+        CONTEXT.set();
+        showSpontaneousCustomers(true);
+        CONTEXT.waitForSpinners();
+        String editLink = "//table[@id='table-queued-appointments']//tr["
+                + "td[contains(@class,'callnextclient') and normalize-space(.)='" + familyName + "']]"
+                + "//a[contains(@class,'process-edit')]";
+        clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, editLink, LocatorType.XPATH, false, CONTEXT);
+        WebElement priority = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("select[name='priority']")));
+        String selected = new Select(priority).getFirstSelectedOption().getText().trim();
+        Assert.assertEquals(selected, priorityLabel,
+                "Expected priority \"" + priorityLabel + "\" for " + familyName + ", but found \"" + selected + "\".");
+    }
+
     public void deleteQueuedAppointmentByFamilyName(String familyName) {
         CONTEXT.set();
         if ("true".equals(TestDataHelper.getTestData("appointment_booked_as_walk_in"))) {
@@ -838,7 +860,7 @@ public class CounterProcessingStationPage extends AdminPage {
                         WebElement dtElement = driver.findElement(
                                 By.xpath("//dt[starts-with(normalize-space(), 'Termin-Nr.')]")
                         );
-                        Matcher matcher = Pattern.compile("Termin-Nr\\.\\s*([0-9]+)").matcher(dtElement.getText());
+                        Matcher matcher = Pattern.compile("Termin-Nr\\.\\s*([A-Za-z]*[0-9]+)").matcher(dtElement.getText());
                         if (matcher.find()) {
                             newAppointmentNumber.set(matcher.group(1));
                             return true;
@@ -934,7 +956,7 @@ public class CounterProcessingStationPage extends AdminPage {
         clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME * 2, "//button[text()='Spontankunden hinzufügen']", LocatorType.XPATH, false, CONTEXT);
         Assert.assertTrue(isWebElementVisible(DEFAULT_EXPLICIT_WAIT_TIME * 2, "//h2[text()='Spontankunde wurde erfolgreich eingetragen']", LocatorType.XPATH, false, CONTEXT),
                 "Click on \"Add spontaneous customer\"  button has failed! Success message is not displayed!");
-        Pattern appointmentNumberPattern = Pattern.compile("^Termin-Nr\\.\\s*([0-9]+).*");
+        Pattern appointmentNumberPattern = Pattern.compile("^Termin-Nr\\.\\s*([A-Za-z]*[0-9]+).*");
         Matcher appointmentNumberMatcher = appointmentNumberPattern.matcher(
                 getWebElementText(DEFAULT_EXPLICIT_WAIT_TIME * 2, "//dt[starts-with(normalize-space(), 'Termin-Nr.')]", LocatorType.XPATH, CONTEXT));
         Assert.assertTrue(appointmentNumberMatcher.find(), "Click on \"Add spontaneous customer\"  button has failed! Waiting number is not displayed!");
