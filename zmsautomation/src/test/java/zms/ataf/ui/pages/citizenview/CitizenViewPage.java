@@ -946,14 +946,168 @@ public class CitizenViewPage extends BasePage {
                 "Privacy acknowledgement checkbox should be gone.");
     }
 
+    /**
+     * Termin-step callout. Telephone and video show only the variant label, with no office name and no icon.
+     * On-site variants keep the office name, so {@code exclusive} is {@code no} and this check is skipped.
+     */
+    public void assertSelectedAppointmentPlaceExclusive(String heading, String exclusive) {
+        if (!"yes".equals(exclusive)) {
+            return;
+        }
+        CONTEXT.set();
+        new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(d -> selectedAppointmentPlaceText() != null);
+        String text = selectedAppointmentPlaceText();
+        Assert.assertEquals(
+                text,
+                heading,
+                "Selected appointment place should be only the variant label.");
+        Assert.assertFalse(
+                selectedAppointmentPlaceHasIcon(),
+                "Selected appointment place should not show a variant icon. text=" + text);
+    }
+
+    /** Visible Ort block on the booking overview and on the mail-link overview. */
+    public void assertBookingOverviewPlace(int officeId, String heading, String hint) {
+        String text = visibleProviderSummaryOrFail(officeId);
+        Assert.assertTrue(
+                text.contains(heading),
+                "Expected place heading in office " + officeId + " summary: " + heading + " actual=" + text);
+        Assert.assertTrue(
+                text.contains(hint),
+                "Expected place hint in office " + officeId + " summary: " + hint + " actual=" + text);
+    }
+
+    public void assertBookingOverviewPlaceIncludes(int officeId, String fragment) {
+        if (fragment == null || fragment.isBlank()) {
+            return;
+        }
+        String text = visibleProviderSummaryOrFail(officeId);
+        Assert.assertTrue(
+                text.contains(fragment),
+                "Expected place text in office " + officeId + " summary: " + fragment + " actual=" + text);
+    }
+
+    public void assertBookingOverviewPlaceExcludes(int officeId, String fragment) {
+        if (fragment == null || fragment.isBlank()) {
+            return;
+        }
+        String text = visibleProviderSummaryOrFail(officeId);
+        Assert.assertFalse(
+                text.contains(fragment),
+                "Place for office " + officeId + " should not contain: " + fragment + " actual=" + text);
+    }
+
+    /**
+     * Videoberatung legal block. {@code yes} requires the three h4 headings and the shipped links.
+     * {@code no} requires that the video terms heading is absent.
+     */
+    public void assertVideoLegalNotices(String legal) {
+        CONTEXT.set();
+        if (!"yes".equals(legal)) {
+            Assert.assertFalse(
+                    shadowDomContainsText("Nutzungsbedingungen Videoberatung"),
+                    "Video consultation terms should be hidden for this variant.");
+            return;
+        }
+        waitUntilShadowContains("Nutzungsbedingungen Videoberatung", DEFAULT_EXPLICIT_WAIT_TIME);
+        Assert.assertTrue(
+                shadowDomHasHeading(4, "Datenschutz und Datenverarbeitung"),
+                "Expected h4 Datenschutz und Datenverarbeitung.");
+        Assert.assertTrue(
+                shadowDomHasHeading(4, "Elektronische Kommunikation"),
+                "Expected h4 Elektronische Kommunikation.");
+        Assert.assertTrue(
+                shadowDomHasHeading(4, "Nutzungsbedingungen Videoberatung"),
+                "Expected h4 Nutzungsbedingungen Videoberatung.");
+        assertShadowHref("https://stadt.muenchen.de/dam/jcr:26e72fa3-cec7-4628-9a0a-272c330a2bd2/23_07_Art_13_DSGVO.pdf");
+        assertShadowHref("https://stadt.muenchen.de/dam/DSGVO/Datenschutzhinweise-Videoberatung.pdf");
+        assertShadowHref("https://stadt.muenchen.de/infos/elektronische-kommunikation.html");
+        assertShadowHref("https://stadt.muenchen.de/dam/DSGVO/Nutzungsbedingungen-Videoberatung.pdf");
+    }
+
     public void assertReserveAppointmentButtonEnabled(boolean enabled) {
         CONTEXT.set();
         new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
                 .until(d -> reserveAppointmentButtonState() != null);
+        String state = reserveAppointmentButtonState();
         Assert.assertEquals(
-                reserveAppointmentButtonState(),
+                state,
                 enabled ? "enabled" : "disabled",
                 "Termin reservieren should be " + (enabled ? "enabled" : "disabled") + ".");
+    }
+
+    /** After communication alone, Videoberatung stays disabled until the video terms are accepted. */
+    public void assertReserveAppointmentButtonAfterCommunication(String legal) {
+        assertReserveAppointmentButtonEnabled(!"yes".equals(legal));
+    }
+
+    public void assertServiceLinkPointsToMunichDe() {
+        CONTEXT.set();
+        new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(d -> shadowHrefContains("https://stadt.muenchen.de/service/info/"));
+        Assert.assertTrue(
+                shadowHrefContains("https://stadt.muenchen.de/service/info/"),
+                "Expected a service link to https://stadt.muenchen.de/service/info/.");
+    }
+
+    private String visibleProviderSummaryOrFail(int officeId) {
+        CONTEXT.set();
+        waitWithThreeWindows(
+                () -> deepVisibleProviderSummaryExists(officeId), "Provider summary #provider-" + officeId);
+        String text = deepVisibleProviderSummaryText(officeId);
+        Assert.assertNotNull(text, "Expected visible booking summary provider block #provider-" + officeId);
+        return text;
+    }
+
+    private String selectedAppointmentPlaceText() {
+        Object raw =
+                ((JavascriptExecutor) DriverUtil.getDriver())
+                        .executeScript(selectedAppointmentPlaceScript(false));
+        if (raw == null) {
+            return null;
+        }
+        String text = String.valueOf(raw).replaceAll("\\s+", " ").trim();
+        return text.isEmpty() ? null : text;
+    }
+
+    private boolean selectedAppointmentPlaceHasIcon() {
+        Object raw =
+                ((JavascriptExecutor) DriverUtil.getDriver())
+                        .executeScript(selectedAppointmentPlaceScript(true));
+        return Boolean.TRUE.equals(raw);
+    }
+
+    private static String selectedAppointmentPlaceScript(boolean icon) {
+        String result = icon
+                ? "return !!(el.querySelector && el.querySelector('svg,use'));"
+                : "return (el.innerText||el.textContent||'').replace(/\\s+/g,' ').trim();";
+        return "function visible(el){"
+                + " if(!el||el.nodeType!==1)return false;"
+                + " var n=el;"
+                + " while(n){"
+                + "  if(n.nodeType===1){try{var st=getComputedStyle(n);if(st.display==='none'||st.visibility==='hidden')return false;}catch(e0){}}"
+                + "  if(n.parentElement){n=n.parentElement;continue;}"
+                + "  var root=n.getRootNode&&n.getRootNode();"
+                + "  if(root&&root.host){n=root.host;continue;}"
+                + "  break;"
+                + " }"
+                + " try{return el.getClientRects().length>0;}catch(e1){return true;}"
+                + "}"
+                + "function walk(root){"
+                + " if(!root)return null;"
+                + " if(root.nodeType===1){"
+                + "  var cls=root.className&&root.className.baseVal!==undefined?root.className.baseVal:root.className;"
+                + "  if(typeof cls==='string'&&cls.indexOf('m-teaser-contained-contact__summary')>=0&&visible(root)){"
+                + "   var el=root;"
+                + result
+                + "  }"
+                + "  if(root.shadowRoot){var s=walk(root.shadowRoot);if(s)return s;}"
+                + " }"
+                + " var c=root.children;if(c)for(var i=0;i<c.length;i++){var f=walk(c[i]);if(f)return f;}"
+                + " return null;"
+                + "}"
+                + "return walk(document.body);";
     }
 
     private String reserveAppointmentButtonState() {
@@ -963,14 +1117,19 @@ public class CitizenViewPage extends BasePage {
                         + " try{var st=getComputedStyle(el);if(st.display==='none'||st.visibility==='hidden')return false;"
                         + " return el.getClientRects().length>0;}catch(e){return true;}"
                         + "}"
+                        + "function off(el){"
+                        + " if(!el)return false;"
+                        + " if(el.disabled===true||(el.hasAttribute&&el.hasAttribute('disabled'))||el.getAttribute('aria-disabled')==='true')return true;"
+                        + " var inner=el.shadowRoot&&el.shadowRoot.querySelector&&el.shadowRoot.querySelector('button,[aria-disabled]');"
+                        + " return !!(inner&&(inner.disabled===true||inner.hasAttribute('disabled')||inner.getAttribute('aria-disabled')==='true'));"
+                        + "}"
                         + "function walk(root){"
                         + " if(!root)return null;"
                         + " if(root.nodeType===1){"
                         + "  var tag=(root.tagName||'').toUpperCase();"
                         + "  var txt=((root.innerText||root.textContent||'')+'').replace(/\\s+/g,' ').trim();"
                         + "  if((tag==='MUC-BUTTON'||tag==='BUTTON')&&txt.indexOf('Termin reservieren')>=0&&visible(root)){"
-                        + "   var off=root.disabled===true||root.hasAttribute('disabled')||root.getAttribute('aria-disabled')==='true';"
-                        + "   return off?'disabled':'enabled';"
+                        + "   return off(root)?'disabled':'enabled';"
                         + "  }"
                         + "  if(root.shadowRoot){var s=walk(root.shadowRoot);if(s)return s;}"
                         + " }"
@@ -1008,6 +1167,10 @@ public class CitizenViewPage extends BasePage {
                         + "return walk(document.body);";
         Object raw = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script);
         return Boolean.TRUE.equals(raw);
+    }
+
+    private void assertShadowHref(String href) {
+        Assert.assertTrue(shadowHrefContains(href), "Expected link href: " + href);
     }
 
     private boolean shadowHrefContains(String href) {
@@ -3592,10 +3755,10 @@ public class CitizenViewPage extends BasePage {
         if (trySetBookingProcessFromCurrentReservedHash()) {
             return;
         }
-        if (trySetBookingProcessFromCapturedApiResponse()) {
+        if (trySetBookingProcessFromVueAppointment()) {
             return;
         }
-        if (trySetBookingProcessFromVueAppointment()) {
+        if (trySetBookingProcessFromCapturedApiResponse()) {
             return;
         }
         trySetBookingProcessIdFromDom();
@@ -3640,30 +3803,24 @@ public class CitizenViewPage extends BasePage {
         String script =
                 "function creds(state){"
                         + " if(!state)return null;"
-                        + " var keys;try{keys=Object.keys(state);}catch(e){return null;}"
-                        + " for(var i=0;i<keys.length;i++){"
-                        + "  var raw=state[keys[i]];"
-                        + "  var v=raw&&raw.__v_isRef?raw.value:raw;"
-                        + "  if(v&&v.processId&&v.authKey)return {processId:v.processId,authKey:String(v.authKey)};"
-                        + " }"
+                        + " var raw=state.appointment;"
+                        + " var v=raw&&raw.__v_isRef?raw.value:raw;"
+                        + " if(v&&v.processId&&v.authKey)return {processId:v.processId,authKey:String(v.authKey)};"
                         + " return null;"
                         + "}"
                         + "function walkInst(inst,depth,seen){"
-                        + " if(!inst||depth>50||seen.has(inst))return null;"
+                        + " if(!inst||depth>80||seen.has(inst))return null;"
                         + " seen.add(inst);"
-                        + " var hit=creds(inst.setupState)||creds(inst.exposed)||creds(inst.ctx);"
+                        + " var hit=creds(inst.setupState)||creds(inst.exposed);"
                         + " if(hit)return hit;"
-                        + " var nodes=[];"
-                        + " if(inst.subTree)nodes.push(inst.subTree);"
-                        + " if(inst.vnode)nodes.push(inst.vnode);"
-                        + " for(var n=0;n<nodes.length;n++){"
-                        + "  var node=nodes[n];"
-                        + "  if(node&&node.component){var a=walkInst(node.component,depth+1,seen);if(a)return a;}"
-                        + "  var kids=node&&node.children;"
-                        + "  if(kids&&kids.length)for(var k=0;k<kids.length;k++){"
-                        + "   var child=kids[k];"
-                        + "   if(child&&child.component){var b=walkInst(child.component,depth+1,seen);if(b)return b;}"
-                        + "  }"
+                        + " return inst.subTree?walkNode(inst.subTree,depth+1,seen):null;"
+                        + "}"
+                        + "function walkNode(node,depth,seen){"
+                        + " if(!node||depth>80)return null;"
+                        + " if(node.component){var a=walkInst(node.component,depth+1,seen);if(a)return a;}"
+                        + " var kids=node.children;"
+                        + " if(kids&&kids.length)for(var k=0;k<kids.length;k++){"
+                        + "  var b=walkNode(kids[k],depth+1,seen);if(b)return b;"
                         + " }"
                         + " return null;"
                         + "}"
