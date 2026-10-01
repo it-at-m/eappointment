@@ -912,6 +912,124 @@ public class CitizenViewPage extends BasePage {
                         + summaryText);
     }
 
+    /**
+     * ZMSKVR-1491 / ZMSKVR-1510: last booking step uses Rechtliche Hinweise.
+     * Privacy is a link only. The electronic-communication checkbox stays and is the only checkbox.
+     */
+    public void assertStandardLegalNotices() {
+        CONTEXT.set();
+        waitUntilShadowContains("Rechtliche Hinweise", DEFAULT_EXPLICIT_WAIT_TIME);
+        Assert.assertTrue(
+                shadowDomHasHeading(3, "Rechtliche Hinweise"),
+                "Expected h3 Rechtliche Hinweise above Termin reservieren.");
+        Assert.assertFalse(
+                shadowDomContainsText("Einwilligungen"),
+                "The consent heading Einwilligungen should be gone.");
+        Assert.assertTrue(
+                shadowDomHasHeading(4, "Datenschutz und Datenverarbeitung"),
+                "Expected h4 Datenschutz und Datenverarbeitung.");
+        Assert.assertTrue(
+                shadowDomContainsText("Datenschutzhinweise Terminvereinbarung"),
+                "Expected the privacy link text.");
+        Assert.assertTrue(
+                shadowHrefContains(
+                        "https://stadt.muenchen.de/dam/jcr:26e72fa3-cec7-4628-9a0a-272c330a2bd2/23_07_Art_13_DSGVO.pdf"),
+                "Expected the shipped privacy PDF link.");
+        Assert.assertTrue(
+                shadowDomHasHeading(4, "Elektronische Kommunikation"),
+                "Expected h4 Elektronische Kommunikation.");
+        Assert.assertTrue(
+                deepElementExists("#checkbox-electronic-communication"),
+                "Expected the electronic communication checkbox.");
+        Assert.assertFalse(
+                privacyAcknowledgementCheckboxPresent(),
+                "Privacy acknowledgement checkbox should be gone.");
+    }
+
+    public void assertReserveAppointmentButtonEnabled(boolean enabled) {
+        CONTEXT.set();
+        new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(d -> reserveAppointmentButtonState() != null);
+        Assert.assertEquals(
+                reserveAppointmentButtonState(),
+                enabled ? "enabled" : "disabled",
+                "Termin reservieren should be " + (enabled ? "enabled" : "disabled") + ".");
+    }
+
+    private String reserveAppointmentButtonState() {
+        String script =
+                "function visible(el){"
+                        + " if(!el||el.nodeType!==1)return false;"
+                        + " try{var st=getComputedStyle(el);if(st.display==='none'||st.visibility==='hidden')return false;"
+                        + " return el.getClientRects().length>0;}catch(e){return true;}"
+                        + "}"
+                        + "function walk(root){"
+                        + " if(!root)return null;"
+                        + " if(root.nodeType===1){"
+                        + "  var tag=(root.tagName||'').toUpperCase();"
+                        + "  var txt=((root.innerText||root.textContent||'')+'').replace(/\\s+/g,' ').trim();"
+                        + "  if((tag==='MUC-BUTTON'||tag==='BUTTON')&&txt.indexOf('Termin reservieren')>=0&&visible(root)){"
+                        + "   var off=root.disabled===true||root.hasAttribute('disabled')||root.getAttribute('aria-disabled')==='true';"
+                        + "   return off?'disabled':'enabled';"
+                        + "  }"
+                        + "  if(root.shadowRoot){var s=walk(root.shadowRoot);if(s)return s;}"
+                        + "  var c=root.children;if(c)for(var i=0;i<c.length;i++){var f=walk(c[i]);if(f)return f;}"
+                        + " }"
+                        + " return null;"
+                        + "}"
+                        + "return walk(document.body);";
+        Object raw = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script);
+        return raw == null ? null : String.valueOf(raw);
+    }
+
+    private boolean privacyAcknowledgementCheckboxPresent() {
+        String script =
+                "function walk(root){"
+                        + " if(!root)return false;"
+                        + " if(root.nodeType===1){"
+                        + "  var tag=(root.tagName||'').toUpperCase();"
+                        + "  var type=(root.getAttribute&&root.getAttribute('type')||'').toLowerCase();"
+                        + "  if((tag==='INPUT'&&type==='checkbox')||tag.indexOf('CHECKBOX')>=0){"
+                        + "   var id=(root.id||'')+' '+(root.getAttribute('name')||'')+' '+(root.getAttribute('aria-label')||'');"
+                        + "   var label='';"
+                        + "   if(root.id){"
+                        + "    var rootNode=root.getRootNode?root.getRootNode():document;"
+                        + "    var lab=rootNode.querySelector?rootNode.querySelector('label[for=\"'+root.id+'\"]'):null;"
+                        + "    if(lab)label=lab.textContent||'';"
+                        + "   }"
+                        + "   var blob=(id+' '+label).toLowerCase();"
+                        + "   if(blob.indexOf('datenschutz')>=0||blob.indexOf('dsgvo')>=0||blob.indexOf('einwilligung')>=0)return true;"
+                        + "  }"
+                        + "  if(root.shadowRoot&&walk(root.shadowRoot))return true;"
+                        + "  var c=root.children;if(c)for(var i=0;i<c.length;i++)if(walk(c[i]))return true;"
+                        + " }"
+                        + " return false;"
+                        + "}"
+                        + "return walk(document.body);";
+        Object raw = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script);
+        return Boolean.TRUE.equals(raw);
+    }
+
+    private boolean shadowHrefContains(String href) {
+        String script =
+                "var href=arguments[0];"
+                        + "function walk(root){"
+                        + " if(!root)return false;"
+                        + " if(root.nodeType===1){"
+                        + "  if((root.tagName||'').toUpperCase()==='A'){"
+                        + "   var h=root.getAttribute('href')||'';"
+                        + "   if(h.indexOf(href)>=0)return true;"
+                        + "  }"
+                        + "  if(root.shadowRoot&&walk(root.shadowRoot))return true;"
+                        + "  var c=root.children;if(c)for(var i=0;i<c.length;i++)if(walk(c[i]))return true;"
+                        + " }"
+                        + " return false;"
+                        + "}"
+                        + "return walk(document.body);";
+        Object raw = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script, href);
+        return Boolean.TRUE.equals(raw);
+    }
+
     /** On Passkalender jump-in, only Pass services should be combinable (names from API). */
     public void assertPassOnlyCombinationServicesVisible() {
         CONTEXT.set();

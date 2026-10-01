@@ -231,6 +231,23 @@ public class CitizenViewSteps {
         page.acceptCommunication();
     }
 
+    @Then("the legal notices on the booking overview should replace the consent heading in the citizen view")
+    public void theLegalNoticesOnTheBookingOverviewShouldReplaceTheConsentHeading() {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: assert Rechtliche Hinweise, privacy link, and electronic communication checkbox");
+        page.assertStandardLegalNotices();
+    }
+
+    @Then("the reserve appointment button should be disabled in the citizen view")
+    public void theReserveAppointmentButtonShouldBeDisabled() {
+        page.assertReserveAppointmentButtonEnabled(false);
+    }
+
+    @Then("the reserve appointment button should be enabled in the citizen view")
+    public void theReserveAppointmentButtonShouldBeEnabled() {
+        page.assertReserveAppointmentButtonEnabled(true);
+    }
+
     @When("I accept the video consultation terms if they are shown in the citizen view")
     public void iAcceptTheVideoConsultationTermsIfTheyAreShown() {
         ScenarioLogManager.getLogger().info("zmscitizenview: accept video consultation terms when shown");
