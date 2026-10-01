@@ -952,6 +952,26 @@ public class CitizenViewPage extends BasePage {
         return Boolean.TRUE.equals(o);
     }
 
+    /** Current value of the same shadow input {@link #deepSetById(String, String)} writes. */
+    public String deepInputValue(String id) {
+        CONTEXT.set();
+        String script =
+                "var want=arguments[0];"
+                        + "var ids=[];ids.push(want);"
+                        + "if(want.indexOf('input-')===0)ids.push(want.slice(6));else ids.push('input-'+want);"
+                        + "if(want.indexOf('textarea-')===0)ids.push(want.slice(9));else ids.push('textarea-'+want);"
+                        + "function byId(root,id){try{if(root.getElementById)return root.getElementById(id);}catch(e0){}"
+                        + "try{return root.querySelector('#'+id.replace(/([^a-zA-Z0-9_-])/g,'\\\\$1'));}catch(e1){return root.querySelector('[id=\"'+id.replace(/\"/g,'')+'\"]');}}"
+                        + "function resolve(el){if(!el)return null;if(el.tagName==='INPUT'||el.tagName==='TEXTAREA')return el;"
+                        + "if(el.shadowRoot){var q=el.shadowRoot.querySelector('input:not([type=hidden]):not([type=checkbox]):not([type=radio]),textarea');if(q)return q;}return null;}"
+                        + "function scanRoot(root){if(!root)return null;for(var i=0;i<ids.length;i++){var el=byId(root,ids[i]);var r=resolve(el);if(r)return r;}"
+                        + "var nodes=root.querySelectorAll('*');for(var j=0;j<nodes.length;j++){if(nodes[j].shadowRoot){var r2=scanRoot(nodes[j].shadowRoot);if(r2)return r2;}}return null;}"
+                        + "var e=scanRoot(document);if(!e)e=scanRoot(document.body);"
+                        + "return e ? String(e.value == null ? '' : e.value) : null;";
+        Object o = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script, id);
+        return o == null ? null : String.valueOf(o);
+    }
+
     /**
      * True when the resolved input/textarea (or its muc-input / muc-text-area host) is disabled or
      * read-only. Same id resolution as {@link #deepSetById(String, String)}.
@@ -3211,6 +3231,71 @@ public class CitizenViewPage extends BasePage {
                 "Expected 'Sie sind angemeldet.' after Bürger-Login. Kontakt was still showing Anmelden.");
         ScenarioLogManager.getLogger().info("zmscitizenview: Bürger-Login completed");
         trySetBookingProcessFromPage();
+    }
+
+    /**
+     * Local Keycloak has no Abbrechen. After Anmelden reaches the login form, load the citizen
+     * origin the way a cancelled IdP does: {@code redirect_uri?error=access_denied} and no code.
+     */
+    public void cancelBuergerLoginOnKeycloakForm() throws Exception {
+        CONTEXT.set();
+        String citizenUrl = DriverUtil.getDriver().getCurrentUrl();
+        ScenarioLogManager.getLogger().info("zmscitizenview: click in-app Anmelden (Bürger-Login cancel)");
+        try {
+            new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                    .until(d -> clickInAppBuergerLoginAnmelden());
+        } catch (TimeoutException e) {
+            ScenarioLogManager.getLogger()
+                    .warn("zmscitizenview: in-app Anmelden not found; falling back to any Anmelden button");
+            waitForAndClickButtonContaining("Anmelden", DEFAULT_EXPLICIT_WAIT_TIME);
+        }
+
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        try {
+            wait.until(ExpectedConditions.presenceOfElementLocated(By.id("username")));
+        } catch (TimeoutException e) {
+            throw new TimeoutException(
+                    "Keycloak login form (#username) not shown after Anmelden. currentUrl="
+                            + DRIVER.getCurrentUrl(),
+                    e);
+        }
+        String returnUrl = accessDeniedReturnUrl(citizenUrl);
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: return from Keycloak as cancelled login url={}", returnUrl);
+        DriverUtil.getDriver().navigate().to(returnUrl);
+        waitWithThreeWindows(
+                () -> shadowDomContainsText("Kontaktdaten"),
+                "Kontakt after cancelled Bürger-Login");
+        trySetBookingProcessFromPage();
+    }
+
+    /** Citizen OIDC redirect is origin and path only, so a cancel return has no hash and no code. */
+    private String accessDeniedReturnUrl(String citizenUrl) {
+        String base = citizenUrl == null ? "" : citizenUrl;
+        int hash = base.indexOf('#');
+        if (hash >= 0) {
+            base = base.substring(0, hash);
+        }
+        int query = base.indexOf('?');
+        if (query >= 0) {
+            base = base.substring(0, query);
+        }
+        return base + "?error=access_denied";
+    }
+
+    public void assertContactEmailFieldEmpty() {
+        CONTEXT.set();
+        waitWithThreeWindows(
+                () -> shadowDomContainsText("Kontaktdaten"),
+                "Kontakt form for empty email assertion");
+        String email = deepInputValue("mailaddress");
+        Assert.assertNotNull(email, "Kontakt E-Mail field was not found after cancelled Bürger-Login.");
+        Assert.assertTrue(
+                email.isBlank(),
+                "Kontakt E-Mail should be empty after cancelled Bürger-Login, was: " + email);
+        Assert.assertFalse(
+                shadowDomContainsText("Sie sind angemeldet."),
+                "Cancelled Bürger-Login must not leave the citizen logged in.");
     }
 
     /**

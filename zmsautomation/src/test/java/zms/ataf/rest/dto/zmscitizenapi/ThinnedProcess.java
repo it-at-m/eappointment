@@ -18,6 +18,8 @@ public class ThinnedProcess {
     private String status;
     private String familyName;
     private String email;
+    /** Configured reserve placeholder, returned by GET /appointment/. */
+    private String placeholderEmail;
     private String telephone;
     private String customTextfield;
     private String customTextfield2;

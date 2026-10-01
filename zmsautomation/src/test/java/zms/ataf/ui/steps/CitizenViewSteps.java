@@ -589,6 +589,20 @@ public class CitizenViewSteps {
         page.loginViaBuergerLoginWithKeycloak();
     }
 
+    @When("I cancel Bürger-Login on the Keycloak form in the citizen view")
+    public void iCancelBuergerLoginOnTheKeycloakForm() throws Exception {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: leave Keycloak without a code (error=access_denied)");
+        page.cancelBuergerLoginOnKeycloakForm();
+    }
+
+    @Then("the contact email field should be empty in the citizen view")
+    public void theContactEmailFieldShouldBeEmpty() {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: assert Kontakt E-Mail is empty after cancelled Bürger-Login");
+        page.assertContactEmailFieldEmpty();
+    }
+
     @Then("I should be logged in on the contact form in the citizen view")
     public void iShouldBeLoggedInOnTheContactForm() {
         ScenarioLogManager.getLogger().info("zmscitizenview: assert Sie sind angemeldet on Kontakt");
