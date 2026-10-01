@@ -1,7 +1,8 @@
 #language: de
 Funktionalität: Die Anzahl der Wartenden aktualisiert sich von selbst
 
-	# Sachbearbeitung Basis, Standort 130, Bürgerbüro Forstenrieder Allee (KVR-II/234 Team 1).
+	# Sachbearbeitung Basis, Standort 130.
+	# Die Auswahlliste zeigt Name und Kurzname: Bürgerbüro Forstenrieder Allee (KVR-II/234 Team 1) Serviceschalter.
 	# Die Warteschlange lädt sich alle 60 Sekunden neu und übernimmt dabei die Anzahl der Wartenden.
 	# Drei heutige Wartende werden angelegt, während der Sachbearbeiterplatz offen bleibt, und danach gelöscht.
 
@@ -10,7 +11,7 @@ Funktionalität: Die Anzahl der Wartenden aktualisiert sich von selbst
 		Wenn Sie zur Webseite der Administration navigieren.
 		Dann sollten Sie sich am Start des Zeitmanagementsystem befinden.
 		Wenn Sie sich als "agent_basic" im Zeitmanagementsystem anmelden.
-		Und Sie für "Standort" den Wert "Bürgerbüro Forstenrieder Allee (KVR-II/234 Team 1)" auswählen.
+		Und Sie für "Standort" den Wert "Bürgerbüro Forstenrieder Allee (KVR-II/234 Team 1) Serviceschalter" auswählen.
 		Und Sie in Feld "Platz-Nr. oder Tresen" den Text "21" eingeben.
 		Und Sie im Zeitmanagementsystem auf die Schaltfläche "Auswahl bestätigen" klicken.
 		Dann wird die Seite Sachbearbeiterplatz angezeigt.
