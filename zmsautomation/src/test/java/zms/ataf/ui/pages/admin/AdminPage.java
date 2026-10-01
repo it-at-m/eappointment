@@ -186,10 +186,11 @@ public class AdminPage extends BasePage {
                     CONTEXT);
             return;
         }
-        // Gesamtübersicht has no sidebar. Its Zurück link points at the counter and, on click,
-        // follows document.referrer instead, which is the edit form.
+        // Gesamtübersicht has no sidebar. Zurück points at the counter and, on click, follows
+        // document.referrer (the edit form). The queue lives on the Sachbearbeiterplatz.
         WebElement back = findElementByLocatorType("back-button", LocatorType.ID, true);
-        ((JavascriptExecutor) DRIVER).executeScript("window.location.assign(arguments[0].href);", back);
+        ((JavascriptExecutor) DRIVER).executeScript(
+                "window.location.assign(arguments[0].href.replace(/counter\\/?$/, 'workstation/'));", back);
         new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
                 .until(ExpectedConditions.textToBePresentInElementLocated(By.cssSelector("h1"), "Sachbearbeiterplatz"));
     }
