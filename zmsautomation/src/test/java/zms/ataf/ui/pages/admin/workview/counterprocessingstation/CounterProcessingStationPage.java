@@ -807,17 +807,13 @@ public class CounterProcessingStationPage extends AdminPage {
                 wait.until(driver -> {
                     CONTEXT.waitForSpinners();
     
-                    List<WebElement> errorElements = driver.findElements(By.xpath(
-                            "//li[@data-key='familyName'] | " +
-                            "//li[@data-key='email'] | " +
-                            "//li[@data-key='requests'] | " +
-                            "//li[@data-key='customTextfield'] | " +
-                            "//li[@data-key='customTextfield2']"
-                    ));
+                    List<WebElement> errorElements = driver.findElements(By.cssSelector("ul.error-list li[data-key]"));
     
                     if (!errorElements.isEmpty()) {
                         for (WebElement element : errorElements) {
                             String key = element.getAttribute("data-key");
+                            ScenarioLogManager.getLogger()
+                                    .error("Booking rejected ({}): {}", key, element.getText());
                             switch (key) {
                             case "familyName":
                                 TestDataHelper.setTestData(

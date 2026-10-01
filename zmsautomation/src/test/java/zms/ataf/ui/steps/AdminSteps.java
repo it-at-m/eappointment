@@ -494,6 +494,7 @@ public class AdminSteps {
         COUNTER_PROCESSING_STATION_PAGE.enterNameInNewAppointmentTextField(familyName);
         String email = familyName.toLowerCase(java.util.Locale.ROOT).replaceAll("[^a-z0-9]", "") + "@mailinator.com";
         COUNTER_PROCESSING_STATION_PAGE.enterEmailInNewAppointmentTextField(email);
+        COUNTER_PROCESSING_STATION_PAGE.enterPhoneNumberInNewAppointmentTextField("+491234567890");
         COUNTER_PROCESSING_STATION_PAGE.clickOnBookAppointmentButton(true);
     }
 
