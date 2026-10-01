@@ -66,6 +66,14 @@ public class CitizenViewSteps {
         page.assertCombinationStepVisible();
     }
 
+    @Then("the appointment duration should be {int} minutes and not {int} minutes in the citizen view")
+    public void theAppointmentDurationShouldBeMinutesAndNotMinutes(int minutes, int wrongMinutes) {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: assert duration {} minutes, not {}", minutes, wrongMinutes);
+        page.assertEstimatedDurationMinutes(minutes, "appointment duration");
+        page.assertEstimatedDurationMinutesNot(wrongMinutes);
+    }
+
     @Then("the estimated duration on the service combination step should be {int} minutes")
     public void theEstimatedDurationOnTheServiceCombinationStepShouldBeMinutes(int minutes) {
         ScenarioLogManager.getLogger()

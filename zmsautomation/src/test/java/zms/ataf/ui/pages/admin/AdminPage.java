@@ -163,6 +163,16 @@ public class AdminPage extends BasePage {
         clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, NAV_SELECT_LOCATION_LOCATOR, LocatorType.XPATH, true, CONTEXT);
     }
 
+    public void clickInNavigationOnOverallCalendar() {
+        ScenarioLogManager.getLogger().info("Trying to open the Gesamtübersicht...");
+        clickOnWebElement(
+                DEFAULT_EXPLICIT_WAIT_TIME,
+                "//nav//a[normalize-space()='Gesamtübersicht']",
+                LocatorType.XPATH,
+                true,
+                CONTEXT);
+    }
+
     public void clickInNavigationOnWorkstation() {
         ScenarioLogManager.getLogger().info("Trying to open the Sachbearbeiterplatz...");
         clickOnWebElement(

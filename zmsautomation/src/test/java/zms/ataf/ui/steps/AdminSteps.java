@@ -481,6 +481,32 @@ public class AdminSteps {
         ADMIN_PAGE.clickInNavigationOnWorkstation();
     }
 
+    @Dann("zeigt das Terminformular für {string} die Dauer {int} Minuten und nicht {int} Minuten.")
+    public void zeigt_das_terminformular_die_dauer(String service, int minutes, int wrongMinutes) {
+        COUNTER_PROCESSING_STATION_PAGE.assertAppointmentFormDuration(
+                TestDataHelper.transformTestData(service), minutes, wrongMinutes);
+    }
+
+    @Wenn("Sie den bereits gewählten Termin für {string} buchen.")
+    public void sie_den_bereits_gewaehlten_termin_buchen(String name) {
+        COUNTER_PROCESSING_STATION_PAGE.selectTimeInNewAppointmentDropDownList("<nächste>", java.util.Set.of(), false);
+        String familyName = TestDataHelper.transformTestData(name);
+        COUNTER_PROCESSING_STATION_PAGE.enterNameInNewAppointmentTextField(familyName);
+        String email = familyName.toLowerCase(java.util.Locale.ROOT).replaceAll("[^a-z0-9]", "") + "@mailinator.com";
+        COUNTER_PROCESSING_STATION_PAGE.enterEmailInNewAppointmentTextField(email);
+        COUNTER_PROCESSING_STATION_PAGE.clickOnBookAppointmentButton(true);
+    }
+
+    @Wenn("Sie die Gesamtübersicht öffnen.")
+    public void sie_die_gesamtuebersicht_oeffnen() {
+        ADMIN_PAGE.clickInNavigationOnOverallCalendar();
+    }
+
+    @Dann("zeigt die Gesamtübersicht den gerade gebuchten Termin mit einer Dauer von {int} Minuten.")
+    public void zeigt_die_gesamtuebersicht_die_dauer(int minutes) {
+        COUNTER_PROCESSING_STATION_PAGE.assertOverallCalendarAppointmentSpansMinutes(minutes);
+    }
+
     @Dann("zeigt die Kundensuche den Kunden {string}.")
     public void zeigt_die_kundensuche_den_kunden(String familyName) {
         CUSTOMER_SEARCH_PAGE.assertCustomerListed(TestDataHelper.transformTestData(familyName));

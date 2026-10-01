@@ -1382,4 +1382,74 @@ public class CounterProcessingStationPage extends AdminPage {
         WebElement dropdown = queueBar().findElement(By.cssSelector(".switchcluster select[name='scope']"));
         Assert.assertTrue(dropdown.isDisplayed(), "Das Standort-Dropdown in der blauen Leiste ist nicht sichtbar.");
     }
+
+    /**
+     * Service label is "name (45 min)" and the Termindauer select shows that number.
+     * The broken mapping showed 135.
+     */
+    public void assertAppointmentFormDuration(String serviceFragment, int minutes, int wrongMinutes) {
+        CONTEXT.set();
+        CONTEXT.waitForSpinners();
+        By label = By.xpath(
+                "//ul[@aria-label='Dienstleistungen Abwahlliste']//span[contains(.,'" + serviceFragment + "')]");
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        WebElement span = wait.until(ExpectedConditions.visibilityOfElementLocated(label));
+        String text = span.getText().replaceAll("\\s+", " ").trim();
+        Assert.assertTrue(
+                text.contains("(" + minutes + " min)"),
+                "Expected (" + minutes + " min) on the service. actual=" + text);
+        Assert.assertFalse(
+                text.contains("(" + wrongMinutes + " min)"),
+                "Service duration must not be (" + wrongMinutes + " min). actual=" + text);
+        List<WebElement> selects = DRIVER.findElements(By.id("appointmentForm_slotCount"));
+        if (!selects.isEmpty() && selects.get(0).isDisplayed()) {
+            String selected = new Select(selects.get(0)).getFirstSelectedOption().getText().trim();
+            Assert.assertEquals(selected, String.valueOf(minutes), "Termindauer select. actual=" + selected);
+        }
+        List<WebElement> dates = DRIVER.findElements(By.id("process_selected_date"));
+        if (!dates.isEmpty()) {
+            String iso = dates.get(0).getAttribute("value");
+            if (iso != null && !iso.isBlank()) {
+                TestDataHelper.setTestData("new_appointment_iso_date", iso);
+            }
+        }
+    }
+
+    /** Gesamtübersicht cell for the booked number. The title is "HH:mm – HH:mm". */
+    public void assertOverallCalendarAppointmentSpansMinutes(int minutes) {
+        CONTEXT.set();
+        CONTEXT.waitForSpinners();
+        String number = TestDataHelper.getTestData("new_appointment_number");
+        Assert.assertNotNull(number, "No booked appointment number for the Gesamtübersicht.");
+        String iso = TestDataHelper.getTestData("new_appointment_iso_date");
+        if (iso == null || iso.isBlank()) {
+            String german = TestDataHelper.getTestData("new_appointment_date");
+            if (german != null && !german.isBlank()) {
+                iso = LocalDate.parse(german, DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.GERMAN))
+                        .format(DateTimeFormatter.ISO_LOCAL_DATE);
+            } else {
+                iso = BerlinTime.today().format(DateTimeFormatter.ISO_LOCAL_DATE);
+            }
+        }
+        WebElement from = findElementByLocatorType("calendar-date-from", LocatorType.ID, false);
+        WebElement until = findElementByLocatorType("calendar-date-until", LocatorType.ID, false);
+        ((JavascriptExecutor) DRIVER).executeScript(
+                "arguments[0].value=arguments[2]; arguments[1].value=arguments[2];", from, until, iso);
+        Select scopes = new Select(findElementByLocatorType("scope-select", LocatorType.ID, false));
+        scopes.deselectAll();
+        scopes.selectByValue("319");
+        clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "//button[normalize-space()='Übernehmen']", LocatorType.XPATH, false, CONTEXT);
+        By cellLabel = By.xpath(
+                "//span[contains(@class,'overall-calendar-termin-label') and normalize-space(.)='" + number + "']");
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        WebElement label = wait.until(ExpectedConditions.visibilityOfElementLocated(cellLabel));
+        WebElement cell = label.findElement(By.xpath("./parent::*"));
+        String title = cell.getAttribute("title");
+        Assert.assertNotNull(title, "Gesamtübersicht cell for " + number + " has no time title.");
+        Matcher matcher = Pattern.compile("(\\d{2}:\\d{2})\\s*[–-]\\s*(\\d{2}:\\d{2})").matcher(title);
+        Assert.assertTrue(matcher.find(), "Could not read the appointment span from \"" + title + "\".");
+        int span = (int) java.time.Duration.between(LocalTime.parse(matcher.group(1)), LocalTime.parse(matcher.group(2)))
+                .toMinutes();
+        Assert.assertEquals(span, minutes, "Gesamtübersicht span for " + number + " from title \"" + title + "\".");
+    }
 }

@@ -299,6 +299,15 @@ public class CitizenViewPage extends BasePage {
                 "Expected estimated duration '" + minutesText + "' to be visible in " + context);
     }
 
+    /** ZMSKVR-1501: the broken 15-minute mapping showed 135 minutes for a 45-minute service. */
+    public void assertEstimatedDurationMinutesNot(int minutes) {
+        CONTEXT.set();
+        String minutesText = minutes + " Minuten";
+        Assert.assertFalse(
+                shadowDomContainsText(minutesText),
+                "Duration '" + minutesText + "' must not be shown.");
+    }
+
     /**
      * Increase the quantity of a subservice by clicking the "+" control on its counter, resolving the subservice by
      * visible name. If the subservice is not yet visible (hidden behind "Alle Leistungen anzeigen"), this method will
