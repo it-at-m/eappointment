@@ -652,6 +652,7 @@ public class CitizenViewPage extends BasePage {
         Assert.assertTrue(
                 deepClickButtonByAriaContains("Zur Kalenderansicht wechseln"),
                 "Could not switch back to the calendar");
+        waitUntilCalendarSettled(officeId, true);
         Assert.assertTrue(
                 deepTimeslotPresentForProvider(officeId),
                 "Calendar should still show a timeslot for office " + officeId + " after the list");
@@ -669,7 +670,7 @@ public class CitizenViewPage extends BasePage {
                 "Expected the info callout '" + NO_APPOINTMENT_CALLOUT + "'");
         Assert.assertTrue(
                 deepInfoCalloutContains(NO_APPOINTMENT_CALLOUT),
-                "Expected muc-callout type=info for '" + NO_APPOINTMENT_CALLOUT + "'");
+                "Expected the blue info callout for '" + NO_APPOINTMENT_CALLOUT + "'");
         Assert.assertFalse(
                 deepTimeslotPresentForProvider(officeId),
                 "A day that does not fit must not show a timeslot for office " + officeId);
@@ -748,14 +749,15 @@ public class CitizenViewPage extends BasePage {
         String script =
                 "var needle=arguments[0];"
                         + "function textOf(node){return (node.innerText||node.textContent||'');}"
+                        + "function isInfoCallout(node){"
+                        + " if(!node||!node.classList)return false;"
+                        + " if(!node.classList.contains('m-callout')||!node.classList.contains('m-callout--default'))return false;"
+                        + " return textOf(node).indexOf(needle)>=0;"
+                        + "}"
                         + "function walk(root){"
                         + " if(!root)return false;"
-                        + " var nodes=root.querySelectorAll('muc-callout');"
-                        + " for(var i=0;i<nodes.length;i++){"
-                        + "  var type=(nodes[i].getAttribute('type')||'').toLowerCase();"
-                        + "  if(type==='info'&&textOf(nodes[i]).indexOf(needle)>=0)return true;"
-                        + "  if(nodes[i].shadowRoot&&walk(nodes[i].shadowRoot))return true;"
-                        + " }"
+                        + " var nodes=root.querySelectorAll('.m-callout');"
+                        + " for(var i=0;i<nodes.length;i++){if(isInfoCallout(nodes[i]))return true;}"
                         + " var all=root.querySelectorAll('*');"
                         + " for(var j=0;j<all.length;j++){"
                         + "  if(all[j].shadowRoot&&walk(all[j].shadowRoot))return true;"
