@@ -1,11 +1,12 @@
 import type { AppointmentDTO } from "@/api/models/AppointmentDTO";
 
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { CustomerData } from "@/types/CustomerData";
 import {
   applyAppointmentContactToCustomerData,
   getContactFieldLocks,
+  getPlaceholderReserveEmail,
   hasMissingRequiredContact,
   isFilledContactValue,
   isFilledEmail,
@@ -13,6 +14,8 @@ import {
   isReservedProcessStatus,
   joinFamilyName,
   PLACEHOLDER_RESERVE_EMAIL,
+  resetPlaceholderReserveEmail,
+  setPlaceholderReserveEmail,
   splitFamilyName,
 } from "@/utils/rebookingContact";
 
@@ -35,6 +38,11 @@ const baseAppointment = (
   }) as AppointmentDTO;
 
 describe("rebookingContact", () => {
+  afterEach(() => {
+    resetPlaceholderReserveEmail();
+    vi.unstubAllEnvs();
+  });
+
   it("treats reserve placeholder mail as empty only for email", () => {
     expect(isPlaceholderEmail(PLACEHOLDER_RESERVE_EMAIL)).toBe(true);
     expect(isPlaceholderEmail("Max@Example.com")).toBe(false);
@@ -124,7 +132,33 @@ describe("rebookingContact", () => {
     const customerData = new CustomerData("", "", "", "", "", "");
     applyAppointmentContactToCustomerData(
       customerData,
-      baseAppointment({ email: PLACEHOLDER_RESERVE_EMAIL })
+      baseAppointment({ email: PLACEHOLDER_RESERVE_EMAIL, familyName: "" })
+    );
+    expect(customerData.mailAddress).toBe("");
+    expect(customerData.firstName).toBe("");
+  });
+
+  it("uses the placeholder address from the API or ZMS_CITIZENAPI_PLACEHOLDER_EMAIL", () => {
+    setPlaceholderReserveEmail(PLACEHOLDER_RESERVE_EMAIL);
+    expect(getPlaceholderReserveEmail()).toBe(PLACEHOLDER_RESERVE_EMAIL);
+    expect(isPlaceholderEmail("Noreply-Terminvereinbarung@muenchen.de")).toBe(
+      true
+    );
+    expect(isPlaceholderEmail("max@example.com")).toBe(false);
+
+    resetPlaceholderReserveEmail();
+    vi.stubEnv("ZMS_CITIZENAPI_PLACEHOLDER_EMAIL", PLACEHOLDER_RESERVE_EMAIL);
+    expect(getPlaceholderReserveEmail()).toBe(PLACEHOLDER_RESERVE_EMAIL);
+    expect(isPlaceholderEmail(PLACEHOLDER_RESERVE_EMAIL)).toBe(true);
+    expect(isPlaceholderEmail("max@example.com")).toBe(false);
+
+    const customerData = new CustomerData("", "", "", "", "", "");
+    applyAppointmentContactToCustomerData(
+      customerData,
+      baseAppointment({
+        email: PLACEHOLDER_RESERVE_EMAIL,
+        familyName: "",
+      })
     );
     expect(customerData.mailAddress).toBe("");
   });
