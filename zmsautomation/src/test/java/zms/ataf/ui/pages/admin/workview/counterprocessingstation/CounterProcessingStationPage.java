@@ -1384,8 +1384,9 @@ public class CounterProcessingStationPage extends AdminPage {
     }
 
     /**
-     * Service label is "name (45 min)" and the Termindauer select shows that number.
-     * The broken mapping showed 135.
+     * The Auswahlliste label is "name (45 min)". Selecting the service hides that row and moves
+     * the plain name to the Abwahlliste, so the label is read from text content.
+     * Termindauer then shows the same number. The broken mapping showed 135.
      */
     public void assertAppointmentFormDuration(String serviceFragment, int minutes, int wrongMinutes) {
         CONTEXT.set();
@@ -1393,19 +1394,18 @@ public class CounterProcessingStationPage extends AdminPage {
         By label = By.xpath(
                 "//ul[@aria-label='Dienstleistungen Auswahlliste']//span[contains(.,'" + serviceFragment + "')]");
         WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
-        WebElement span = wait.until(ExpectedConditions.visibilityOfElementLocated(label));
-        String text = span.getText().replaceAll("\\s+", " ").trim();
+        WebElement span = wait.until(ExpectedConditions.presenceOfElementLocated(label));
+        String text = String.valueOf(((JavascriptExecutor) DRIVER)
+                        .executeScript("return (arguments[0].textContent || '').replace(/\\s+/g, ' ').trim();", span));
         Assert.assertTrue(
                 text.contains("(" + minutes + " min)"),
                 "Expected (" + minutes + " min) on the service. actual=" + text);
         Assert.assertFalse(
                 text.contains("(" + wrongMinutes + " min)"),
                 "Service duration must not be (" + wrongMinutes + " min). actual=" + text);
-        List<WebElement> selects = DRIVER.findElements(By.id("appointmentForm_slotCount"));
-        if (!selects.isEmpty() && selects.get(0).isDisplayed()) {
-            String selected = new Select(selects.get(0)).getFirstSelectedOption().getText().trim();
-            Assert.assertEquals(selected, String.valueOf(minutes), "Termindauer select. actual=" + selected);
-        }
+        WebElement slotCount = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("appointmentForm_slotCount")));
+        String selected = new Select(slotCount).getFirstSelectedOption().getText().trim();
+        Assert.assertEquals(selected, String.valueOf(minutes), "Termindauer select. actual=" + selected);
         List<WebElement> dates = DRIVER.findElements(By.id("process_selected_date"));
         if (!dates.isEmpty()) {
             String iso = dates.get(0).getAttribute("value");
