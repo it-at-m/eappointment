@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-10-01T20:44:44.651Z",
+  "publishedAt": "2026-10-01T20:47:19.431Z",
   "branches": [
     {
       "name": "next",
@@ -286,8 +286,8 @@
     {
       "name": "test-zmskvr-1508-zmskvr-1520-appointment-variants",
       "slug": "test-zmskvr-1508-zmskvr-1520-appointment-variants",
-      "runId": "36917686235",
-      "runStartedAt": "2026-10-01T19:54:11Z"
+      "runId": "36920973656",
+      "runStartedAt": "2026-10-01T20:21:28Z"
     },
     {
       "name": "test-zmskvr-1536-zmskvr-1552-appointment-teaser",
