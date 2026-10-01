@@ -163,14 +163,40 @@ public class AdminPage extends BasePage {
         clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, NAV_SELECT_LOCATION_LOCATOR, LocatorType.XPATH, true, CONTEXT);
     }
 
-    public void clickInNavigationOnWorkstation() {
-        ScenarioLogManager.getLogger().info("Trying to open the Sachbearbeiterplatz...");
+    public void clickInNavigationOnOverallCalendar() {
+        ScenarioLogManager.getLogger().info("Trying to open the Gesamtübersicht...");
         clickOnWebElement(
                 DEFAULT_EXPLICIT_WAIT_TIME,
-                "//nav//a[contains(@href,'workstation')]",
+                "//nav//a[normalize-space()='Gesamtübersicht']",
                 LocatorType.XPATH,
                 true,
                 CONTEXT);
+    }
+
+    public void clickInNavigationOnWorkstation() {
+        CONTEXT.set();
+        ScenarioLogManager.getLogger().info("Trying to open the Sachbearbeiterplatz...");
+        List<WebElement> nav = DRIVER.findElements(By.xpath("//nav//a[contains(@href,'workstation')]"));
+        if (nav.stream().anyMatch(WebElement::isDisplayed)) {
+            clickOnWebElement(
+                    DEFAULT_EXPLICIT_WAIT_TIME,
+                    "//nav//a[contains(@href,'workstation')]",
+                    LocatorType.XPATH,
+                    true,
+                    CONTEXT);
+            return;
+        }
+        // Gesamtübersicht has no sidebar. Zurück points at the counter and, on click, follows
+        // document.referrer (the edit form). The queue lives on the Sachbearbeiterplatz.
+        WebElement back = findElementByLocatorType("back-button", LocatorType.ID, true);
+        String bookedDate = TestDataHelper.getTestData("new_appointment_iso_date");
+        String dateQuery = bookedDate == null || bookedDate.isBlank() ? "" : "?date=" + bookedDate;
+        ((JavascriptExecutor) DRIVER).executeScript(
+                "window.location.assign(arguments[0].href.replace(/counter\\/?$/, 'workstation/') + arguments[1]);",
+                back,
+                dateQuery);
+        new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(ExpectedConditions.textToBePresentInElementLocated(By.cssSelector("h1"), "Sachbearbeiterplatz"));
     }
 
     public void clickInNavigationOnTresenButton() {
