@@ -973,8 +973,8 @@ public class CitizenViewPage extends BasePage {
                         + "   return off?'disabled':'enabled';"
                         + "  }"
                         + "  if(root.shadowRoot){var s=walk(root.shadowRoot);if(s)return s;}"
-                        + "  var c=root.children;if(c)for(var i=0;i<c.length;i++){var f=walk(c[i]);if(f)return f;}"
                         + " }"
+                        + " var c=root.children;if(c)for(var i=0;i<c.length;i++){var f=walk(c[i]);if(f)return f;}"
                         + " return null;"
                         + "}"
                         + "return walk(document.body);";
@@ -1001,8 +1001,8 @@ public class CitizenViewPage extends BasePage {
                         + "   if(blob.indexOf('datenschutz')>=0||blob.indexOf('dsgvo')>=0||blob.indexOf('einwilligung')>=0)return true;"
                         + "  }"
                         + "  if(root.shadowRoot&&walk(root.shadowRoot))return true;"
-                        + "  var c=root.children;if(c)for(var i=0;i<c.length;i++)if(walk(c[i]))return true;"
                         + " }"
+                        + " var c=root.children;if(c)for(var i=0;i<c.length;i++)if(walk(c[i]))return true;"
                         + " return false;"
                         + "}"
                         + "return walk(document.body);";
@@ -1021,8 +1021,8 @@ public class CitizenViewPage extends BasePage {
                         + "   if(h.indexOf(href)>=0)return true;"
                         + "  }"
                         + "  if(root.shadowRoot&&walk(root.shadowRoot))return true;"
-                        + "  var c=root.children;if(c)for(var i=0;i<c.length;i++)if(walk(c[i]))return true;"
                         + " }"
+                        + " var c=root.children;if(c)for(var i=0;i<c.length;i++)if(walk(c[i]))return true;"
                         + " return false;"
                         + "}"
                         + "return walk(document.body);";
