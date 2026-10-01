@@ -707,6 +707,50 @@ public class AdminSteps {
         //COUNTER_PROCESSING_STATION_PAGE.checkQueueElementsVisibleWithoutSMS();
     }
 
+    @Dann("ist das Datum in der blauen Warteschlangenleiste sichtbar.")
+    public void ist_das_datum_in_der_blauen_warteschlangenleiste_sichtbar() {
+        COUNTER_PROCESSING_STATION_PAGE.assertQueueBarDateVisible();
+    }
+
+    @Dann("ist in der blauen Warteschlangenleiste die Schaltfläche {string} sichtbar.")
+    public void ist_in_der_blauen_warteschlangenleiste_die_schaltflaeche_sichtbar(String label) {
+        Assert.assertEquals(label, "Listen neu laden");
+        COUNTER_PROCESSING_STATION_PAGE.assertListenNeuLadenVisible();
+    }
+
+    @Dann("ist der Button {string} unter der Warteschlange nicht sichtbar.")
+    public void ist_der_button_unter_der_warteschlange_nicht_sichtbar(String label) {
+        Assert.assertEquals(label, "Warteschlange aktualisieren");
+        COUNTER_PROCESSING_STATION_PAGE.assertWarteschlangeAktualisierenHidden();
+    }
+
+    @Dann("ist {string} einschließlich der Tagesnavigation in der Warteschlangenleiste nicht sichtbar.")
+    public void ist_heute_einschliesslich_der_tagesnavigation_nicht_sichtbar(String label) {
+        Assert.assertEquals(label, "Heute");
+        COUNTER_PROCESSING_STATION_PAGE.assertQueueBarDayNavigationHidden();
+    }
+
+    @Dann("ist {string} in der Warteschlangenleiste nicht sichtbar.")
+    public void ist_in_der_warteschlangenleiste_nicht_sichtbar(String label) {
+        Assert.assertEquals(label, "Spontankunden einblenden");
+        COUNTER_PROCESSING_STATION_PAGE.assertSpontankundenEinblendenHidden();
+    }
+
+    @Dann("ist der Download der Warteschlange nicht sichtbar.")
+    public void ist_der_download_der_warteschlange_nicht_sichtbar() {
+        COUNTER_PROCESSING_STATION_PAGE.assertQueueDownloadHidden();
+    }
+
+    @Dann("ist die Druckfunktion der Warteschlange nicht sichtbar.")
+    public void ist_die_druckfunktion_der_warteschlange_nicht_sichtbar() {
+        COUNTER_PROCESSING_STATION_PAGE.assertQueuePrintHidden();
+    }
+
+    @Dann("ist das Standort-Dropdown in der blauen Warteschlangenleiste sichtbar.")
+    public void ist_das_standort_dropdown_in_der_blauen_warteschlangenleiste_sichtbar() {
+        COUNTER_PROCESSING_STATION_PAGE.assertClusterScopeDropdownVisible();
+    }
+
     @Dann("wird das Bearbeitungsformular für den Spontankunden angezeigt.")
     public void wird_das_bearbeitungsformular_fuer_den_spontankunden_angezeigt() {
         COUNTER_PROCESSING_STATION_PAGE.checkProcessEditFormIsVisible();
