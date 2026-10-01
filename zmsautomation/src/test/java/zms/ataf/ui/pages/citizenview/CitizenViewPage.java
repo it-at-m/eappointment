@@ -921,6 +921,287 @@ public class CitizenViewPage extends BasePage {
                         + summaryText);
     }
 
+    /**
+     * ZMSKVR-1491 / ZMSKVR-1510: last booking step uses Rechtliche Hinweise.
+     * Privacy is a link only. The electronic-communication checkbox stays and is the only checkbox.
+     */
+    public void assertStandardLegalNotices() {
+        CONTEXT.set();
+        waitUntilShadowContains("Rechtliche Hinweise", DEFAULT_EXPLICIT_WAIT_TIME);
+        Assert.assertTrue(
+                shadowDomHasHeading(3, "Rechtliche Hinweise"),
+                "Expected h3 Rechtliche Hinweise above Termin reservieren.");
+        Assert.assertFalse(
+                shadowDomContainsText("Einwilligungen"),
+                "The consent heading Einwilligungen should be gone.");
+        Assert.assertTrue(
+                shadowDomHasHeading(4, "Datenschutz und Datenverarbeitung"),
+                "Expected h4 Datenschutz und Datenverarbeitung.");
+        Assert.assertTrue(
+                shadowDomContainsText("Datenschutzhinweise Terminvereinbarung"),
+                "Expected the privacy link text.");
+        Assert.assertTrue(
+                shadowHrefContains(
+                        "https://stadt.muenchen.de/dam/jcr:26e72fa3-cec7-4628-9a0a-272c330a2bd2/23_07_Art_13_DSGVO.pdf"),
+                "Expected the shipped privacy PDF link.");
+        Assert.assertTrue(
+                shadowDomHasHeading(4, "Elektronische Kommunikation"),
+                "Expected h4 Elektronische Kommunikation.");
+        Assert.assertTrue(
+                deepElementExists("#checkbox-electronic-communication"),
+                "Expected the electronic communication checkbox.");
+        Assert.assertFalse(
+                privacyAcknowledgementCheckboxPresent(),
+                "Privacy acknowledgement checkbox should be gone.");
+    }
+
+    /**
+     * Termin-step callout. Telephone and video show only the variant label, with no office name and no icon.
+     * On-site variants keep the office name, so {@code exclusive} is {@code no} and this check is skipped.
+     */
+    public void assertSelectedAppointmentPlaceExclusive(String heading, String exclusive) {
+        if (!"yes".equals(exclusive)) {
+            return;
+        }
+        CONTEXT.set();
+        new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(d -> selectedAppointmentPlaceText() != null);
+        String text = selectedAppointmentPlaceText();
+        Assert.assertEquals(
+                text,
+                heading,
+                "Selected appointment place should be only the variant label.");
+        Assert.assertFalse(
+                selectedAppointmentPlaceHasIcon(),
+                "Selected appointment place should not show a variant icon. text=" + text);
+    }
+
+    /** Visible Ort block on the booking overview and on the mail-link overview. */
+    public void assertBookingOverviewPlace(int officeId, String heading, String hint) {
+        String text = visibleProviderSummaryOrFail(officeId);
+        Assert.assertTrue(
+                text.contains(heading),
+                "Expected place heading in office " + officeId + " summary: " + heading + " actual=" + text);
+        Assert.assertTrue(
+                text.contains(hint),
+                "Expected place hint in office " + officeId + " summary: " + hint + " actual=" + text);
+    }
+
+    public void assertBookingOverviewPlaceIncludes(int officeId, String fragment) {
+        if (fragment == null || fragment.isBlank()) {
+            return;
+        }
+        String text = visibleProviderSummaryOrFail(officeId);
+        Assert.assertTrue(
+                text.contains(fragment),
+                "Expected place text in office " + officeId + " summary: " + fragment + " actual=" + text);
+    }
+
+    public void assertBookingOverviewPlaceExcludes(int officeId, String fragment) {
+        if (fragment == null || fragment.isBlank()) {
+            return;
+        }
+        String text = visibleProviderSummaryOrFail(officeId);
+        Assert.assertFalse(
+                text.contains(fragment),
+                "Place for office " + officeId + " should not contain: " + fragment + " actual=" + text);
+    }
+
+    /**
+     * Videoberatung legal block. {@code yes} requires the three h4 headings and the shipped links.
+     * {@code no} requires that the video terms heading is absent.
+     */
+    public void assertVideoLegalNotices(String legal) {
+        CONTEXT.set();
+        if (!"yes".equals(legal)) {
+            Assert.assertFalse(
+                    shadowDomContainsText("Nutzungsbedingungen Videoberatung"),
+                    "Video consultation terms should be hidden for this variant.");
+            return;
+        }
+        waitUntilShadowContains("Nutzungsbedingungen Videoberatung", DEFAULT_EXPLICIT_WAIT_TIME);
+        Assert.assertTrue(
+                shadowDomHasHeading(4, "Datenschutz und Datenverarbeitung"),
+                "Expected h4 Datenschutz und Datenverarbeitung.");
+        Assert.assertTrue(
+                shadowDomHasHeading(4, "Elektronische Kommunikation"),
+                "Expected h4 Elektronische Kommunikation.");
+        Assert.assertTrue(
+                shadowDomHasHeading(4, "Nutzungsbedingungen Videoberatung"),
+                "Expected h4 Nutzungsbedingungen Videoberatung.");
+        assertShadowHref("https://stadt.muenchen.de/dam/jcr:26e72fa3-cec7-4628-9a0a-272c330a2bd2/23_07_Art_13_DSGVO.pdf");
+        assertShadowHref("https://stadt.muenchen.de/dam/DSGVO/Datenschutzhinweise-Videoberatung.pdf");
+        assertShadowHref("https://stadt.muenchen.de/infos/elektronische-kommunikation.html");
+        assertShadowHref("https://stadt.muenchen.de/dam/DSGVO/Nutzungsbedingungen-Videoberatung.pdf");
+    }
+
+    public void assertReserveAppointmentButtonEnabled(boolean enabled) {
+        CONTEXT.set();
+        new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(d -> reserveAppointmentButtonState() != null);
+        String state = reserveAppointmentButtonState();
+        Assert.assertEquals(
+                state,
+                enabled ? "enabled" : "disabled",
+                "Termin reservieren should be " + (enabled ? "enabled" : "disabled") + ".");
+    }
+
+    /** After communication alone, Videoberatung stays disabled until the video terms are accepted. */
+    public void assertReserveAppointmentButtonAfterCommunication(String legal) {
+        assertReserveAppointmentButtonEnabled(!"yes".equals(legal));
+    }
+
+    public void assertServiceLinkPointsToMunichDe() {
+        CONTEXT.set();
+        new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(d -> shadowHrefContains("https://stadt.muenchen.de/service/info/"));
+        Assert.assertTrue(
+                shadowHrefContains("https://stadt.muenchen.de/service/info/"),
+                "Expected a service link to https://stadt.muenchen.de/service/info/.");
+    }
+
+    private String visibleProviderSummaryOrFail(int officeId) {
+        CONTEXT.set();
+        waitWithThreeWindows(
+                () -> deepVisibleProviderSummaryExists(officeId), "Provider summary #provider-" + officeId);
+        String text = deepVisibleProviderSummaryText(officeId);
+        Assert.assertNotNull(text, "Expected visible booking summary provider block #provider-" + officeId);
+        return text;
+    }
+
+    private String selectedAppointmentPlaceText() {
+        Object raw =
+                ((JavascriptExecutor) DriverUtil.getDriver())
+                        .executeScript(selectedAppointmentPlaceScript(false));
+        if (raw == null) {
+            return null;
+        }
+        String text = String.valueOf(raw).replaceAll("\\s+", " ").trim();
+        return text.isEmpty() ? null : text;
+    }
+
+    private boolean selectedAppointmentPlaceHasIcon() {
+        Object raw =
+                ((JavascriptExecutor) DriverUtil.getDriver())
+                        .executeScript(selectedAppointmentPlaceScript(true));
+        return Boolean.TRUE.equals(raw);
+    }
+
+    private static String selectedAppointmentPlaceScript(boolean icon) {
+        String result = icon
+                ? "return !!(el.querySelector && el.querySelector('svg,use'));"
+                : "return (el.innerText||el.textContent||'').replace(/\\s+/g,' ').trim();";
+        return "function visible(el){"
+                + " if(!el||el.nodeType!==1)return false;"
+                + " var n=el;"
+                + " while(n){"
+                + "  if(n.nodeType===1){try{var st=getComputedStyle(n);if(st.display==='none'||st.visibility==='hidden')return false;}catch(e0){}}"
+                + "  if(n.parentElement){n=n.parentElement;continue;}"
+                + "  var root=n.getRootNode&&n.getRootNode();"
+                + "  if(root&&root.host){n=root.host;continue;}"
+                + "  break;"
+                + " }"
+                + " try{return el.getClientRects().length>0;}catch(e1){return true;}"
+                + "}"
+                + "function walk(root){"
+                + " if(!root)return null;"
+                + " if(root.nodeType===1){"
+                + "  var cls=root.className&&root.className.baseVal!==undefined?root.className.baseVal:root.className;"
+                + "  if(typeof cls==='string'&&cls.indexOf('m-teaser-contained-contact__summary')>=0&&visible(root)){"
+                + "   var el=root;"
+                + result
+                + "  }"
+                + "  if(root.shadowRoot){var s=walk(root.shadowRoot);if(s)return s;}"
+                + " }"
+                + " var c=root.children;if(c)for(var i=0;i<c.length;i++){var f=walk(c[i]);if(f)return f;}"
+                + " return null;"
+                + "}"
+                + "return walk(document.body);";
+    }
+
+    private String reserveAppointmentButtonState() {
+        String script =
+                "function visible(el){"
+                        + " if(!el||el.nodeType!==1)return false;"
+                        + " try{var st=getComputedStyle(el);if(st.display==='none'||st.visibility==='hidden')return false;"
+                        + " return el.getClientRects().length>0;}catch(e){return true;}"
+                        + "}"
+                        + "function off(el){"
+                        + " if(!el)return false;"
+                        + " if(el.disabled===true||(el.hasAttribute&&el.hasAttribute('disabled'))||el.getAttribute('aria-disabled')==='true')return true;"
+                        + " var inner=el.shadowRoot&&el.shadowRoot.querySelector&&el.shadowRoot.querySelector('button,[aria-disabled]');"
+                        + " return !!(inner&&(inner.disabled===true||inner.hasAttribute('disabled')||inner.getAttribute('aria-disabled')==='true'));"
+                        + "}"
+                        + "function walk(root){"
+                        + " if(!root)return null;"
+                        + " if(root.nodeType===1){"
+                        + "  var tag=(root.tagName||'').toUpperCase();"
+                        + "  var txt=((root.innerText||root.textContent||'')+'').replace(/\\s+/g,' ').trim();"
+                        + "  if((tag==='MUC-BUTTON'||tag==='BUTTON')&&txt.indexOf('Termin reservieren')>=0&&visible(root)){"
+                        + "   return off(root)?'disabled':'enabled';"
+                        + "  }"
+                        + "  if(root.shadowRoot){var s=walk(root.shadowRoot);if(s)return s;}"
+                        + " }"
+                        + " var c=root.children;if(c)for(var i=0;i<c.length;i++){var f=walk(c[i]);if(f)return f;}"
+                        + " return null;"
+                        + "}"
+                        + "return walk(document.body);";
+        Object raw = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script);
+        return raw == null ? null : String.valueOf(raw);
+    }
+
+    private boolean privacyAcknowledgementCheckboxPresent() {
+        String script =
+                "function walk(root){"
+                        + " if(!root)return false;"
+                        + " if(root.nodeType===1){"
+                        + "  var tag=(root.tagName||'').toUpperCase();"
+                        + "  var type=(root.getAttribute&&root.getAttribute('type')||'').toLowerCase();"
+                        + "  if((tag==='INPUT'&&type==='checkbox')||tag.indexOf('CHECKBOX')>=0){"
+                        + "   var id=(root.id||'')+' '+(root.getAttribute('name')||'')+' '+(root.getAttribute('aria-label')||'');"
+                        + "   var label='';"
+                        + "   if(root.id){"
+                        + "    var rootNode=root.getRootNode?root.getRootNode():document;"
+                        + "    var lab=rootNode.querySelector?rootNode.querySelector('label[for=\"'+root.id+'\"]'):null;"
+                        + "    if(lab)label=lab.textContent||'';"
+                        + "   }"
+                        + "   var blob=(id+' '+label).toLowerCase();"
+                        + "   if(blob.indexOf('datenschutz')>=0||blob.indexOf('dsgvo')>=0||blob.indexOf('einwilligung')>=0)return true;"
+                        + "  }"
+                        + "  if(root.shadowRoot&&walk(root.shadowRoot))return true;"
+                        + " }"
+                        + " var c=root.children;if(c)for(var i=0;i<c.length;i++)if(walk(c[i]))return true;"
+                        + " return false;"
+                        + "}"
+                        + "return walk(document.body);";
+        Object raw = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script);
+        return Boolean.TRUE.equals(raw);
+    }
+
+    private void assertShadowHref(String href) {
+        Assert.assertTrue(shadowHrefContains(href), "Expected link href: " + href);
+    }
+
+    private boolean shadowHrefContains(String href) {
+        String script =
+                "var href=arguments[0];"
+                        + "function walk(root){"
+                        + " if(!root)return false;"
+                        + " if(root.nodeType===1){"
+                        + "  if((root.tagName||'').toUpperCase()==='A'){"
+                        + "   var h=root.getAttribute('href')||'';"
+                        + "   if(h.indexOf(href)>=0)return true;"
+                        + "  }"
+                        + "  if(root.shadowRoot&&walk(root.shadowRoot))return true;"
+                        + " }"
+                        + " var c=root.children;if(c)for(var i=0;i<c.length;i++)if(walk(c[i]))return true;"
+                        + " return false;"
+                        + "}"
+                        + "return walk(document.body);";
+        Object raw = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script, href);
+        return Boolean.TRUE.equals(raw);
+    }
+
     /** On Passkalender jump-in, only Pass services should be combinable (names from API). */
     public void assertPassOnlyCombinationServicesVisible() {
         CONTEXT.set();
@@ -2793,13 +3074,13 @@ public class CitizenViewPage extends BasePage {
     public ThinnedProcess syncBookingProcessFromLocalStorage() throws Exception {
         CONTEXT.set();
         ThinnedProcess already = zms.ataf.rest.steps.CitizenApiSteps.getBookingProcess();
-        if (already != null && already.getAuthKey() != null && !already.getAuthKey().isBlank()) {
+        if (hasCancelCredentials(already)) {
             ScenarioLogManager.getLogger().info("zmscitizenview: booking process already set (from reserve step), skipping localStorage read");
             return already;
         }
         captureBookingProcessForCleanup();
         already = zms.ataf.rest.steps.CitizenApiSteps.getBookingProcess();
-        if (already != null && already.getAuthKey() != null && !already.getAuthKey().isBlank()) {
+        if (hasCancelCredentials(already)) {
             return already;
         }
         String json =
@@ -2824,10 +3105,23 @@ public class CitizenViewPage extends BasePage {
     /** Try to set booking process after activation callout: first from localStorage, then from confirm link on page (same process id as mail). */
     private void trySyncBookingProcessFromLocalStorageOnce() {
         CONTEXT.set();
+        if (hasCancelCredentials(zms.ataf.rest.steps.CitizenApiSteps.getBookingProcess())) {
+            return;
+        }
         if (trySetBookingProcessFromLocalStorage()) {
             return;
         }
+        if (trySetBookingProcessFromVueAppointment()) {
+            return;
+        }
         trySetBookingProcessFromConfirmLinkOnPage();
+    }
+
+    private static boolean hasCancelCredentials(ThinnedProcess process) {
+        return process != null
+                && process.getProcessId() != null
+                && process.getAuthKey() != null
+                && !process.getAuthKey().isBlank();
     }
 
     /** @return true if process was set from localStorage */
@@ -3470,6 +3764,9 @@ public class CitizenViewPage extends BasePage {
         if (trySetBookingProcessFromCurrentReservedHash()) {
             return;
         }
+        if (trySetBookingProcessFromVueAppointment()) {
+            return;
+        }
         if (trySetBookingProcessFromCapturedApiResponse()) {
             return;
         }
@@ -3502,6 +3799,78 @@ public class CitizenViewPage extends BasePage {
             return true;
         } catch (NumberFormatException e) {
             ScenarioLogManager.getLogger().debug("zmscitizenview: captured appointment process id was not numeric", e);
+            return false;
+        }
+    }
+
+    /**
+     * Guest preconfirm keeps processId and authKey on the Vue appointment, not in localStorage.
+     * The summary DOM only exposes the process id.
+     */
+    private boolean trySetBookingProcessFromVueAppointment() {
+        CONTEXT.set();
+        String script =
+                "function creds(state){"
+                        + " if(!state)return null;"
+                        + " var raw=state.appointment;"
+                        + " var v=raw&&raw.__v_isRef?raw.value:raw;"
+                        + " if(v&&v.processId&&v.authKey)return {processId:v.processId,authKey:String(v.authKey)};"
+                        + " return null;"
+                        + "}"
+                        + "function walkInst(inst,depth,seen){"
+                        + " if(!inst||depth>80||seen.has(inst))return null;"
+                        + " seen.add(inst);"
+                        + " var hit=creds(inst.setupState)||creds(inst.exposed);"
+                        + " if(hit)return hit;"
+                        + " return inst.subTree?walkNode(inst.subTree,depth+1,seen):null;"
+                        + "}"
+                        + "function walkNode(node,depth,seen){"
+                        + " if(!node||depth>80)return null;"
+                        + " if(node.component){var a=walkInst(node.component,depth+1,seen);if(a)return a;}"
+                        + " var kids=node.children;"
+                        + " if(kids&&kids.length)for(var k=0;k<kids.length;k++){"
+                        + "  var b=walkNode(kids[k],depth+1,seen);if(b)return b;"
+                        + " }"
+                        + " return null;"
+                        + "}"
+                        + "function walkDom(root,seen){"
+                        + " if(!root||!root.querySelectorAll)return null;"
+                        + " var nodes=root.querySelectorAll('*');"
+                        + " for(var i=0;i<nodes.length;i++){"
+                        + "  var el=nodes[i];"
+                        + "  if(el._instance){var hit=walkInst(el._instance,0,seen);if(hit)return hit;}"
+                        + "  if(el.shadowRoot){var inner=walkDom(el.shadowRoot,seen);if(inner)return inner;}"
+                        + " }"
+                        + " return null;"
+                        + "}"
+                        + "var seen=new Set();"
+                        + "return walkDom(document.body,seen)||walkDom(document.documentElement,seen);";
+        Object raw = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script);
+        if (!(raw instanceof java.util.Map<?, ?> map)) {
+            return false;
+        }
+        Object idRaw = map.get("processId");
+        Object keyRaw = map.get("authKey");
+        if (idRaw == null || keyRaw == null) {
+            return false;
+        }
+        try {
+            int processId = idRaw instanceof Number number
+                    ? number.intValue()
+                    : Integer.parseInt(String.valueOf(idRaw));
+            String authKey = String.valueOf(keyRaw);
+            if (processId <= 0 || authKey.isBlank()) {
+                return false;
+            }
+            ThinnedProcess p = new ThinnedProcess();
+            p.setProcessId(processId);
+            p.setAuthKey(authKey);
+            zms.ataf.rest.steps.CitizenApiSteps.setBookingProcess(p);
+            ScenarioLogManager.getLogger()
+                    .info("zmscitizenview: captured booking process from Vue appointment (processId={})", processId);
+            return true;
+        } catch (NumberFormatException e) {
+            ScenarioLogManager.getLogger().debug("zmscitizenview: Vue appointment process id was not numeric", e);
             return false;
         }
     }

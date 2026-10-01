@@ -239,10 +239,67 @@ public class CitizenViewSteps {
         page.acceptCommunication();
     }
 
+    @Then("the legal notices on the booking overview should replace the consent heading in the citizen view")
+    public void theLegalNoticesOnTheBookingOverviewShouldReplaceTheConsentHeading() {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: assert Rechtliche Hinweise, privacy link, and electronic communication checkbox");
+        page.assertStandardLegalNotices();
+    }
+
     @When("I accept the video consultation terms if they are shown in the citizen view")
     public void iAcceptTheVideoConsultationTermsIfTheyAreShown() {
         ScenarioLogManager.getLogger().info("zmscitizenview: accept video consultation terms when shown");
         page.acceptVideoConsultationTermsIfShown();
+    }
+
+    @Then("the selected appointment place should show only {string} when {string} in the citizen view")
+    public void theSelectedAppointmentPlaceShouldShowOnlyWhen(String heading, String exclusive) {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: selected appointment place exclusive={} heading={}", exclusive, heading);
+        page.assertSelectedAppointmentPlaceExclusive(heading, exclusive);
+    }
+
+    @Then("the booking overview place for office {int} should show {string} and {string} in the citizen view")
+    public void theBookingOverviewPlaceShouldShow(int officeId, String heading, String hint) {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: overview place office={} heading={}", officeId, heading);
+        page.assertBookingOverviewPlace(officeId, heading, hint);
+    }
+
+    @Then("the booking overview place for office {int} should include {string} in the citizen view")
+    public void theBookingOverviewPlaceShouldInclude(int officeId, String fragment) {
+        page.assertBookingOverviewPlaceIncludes(officeId, fragment);
+    }
+
+    @Then("the booking overview place for office {int} should not include {string} in the citizen view")
+    public void theBookingOverviewPlaceShouldNotInclude(int officeId, String fragment) {
+        page.assertBookingOverviewPlaceExcludes(officeId, fragment);
+    }
+
+    @Then("the video consultation legal notices should match {string} in the citizen view")
+    public void theVideoConsultationLegalNoticesShouldMatch(String legal) {
+        ScenarioLogManager.getLogger().info("zmscitizenview: video legal notices expected={}", legal);
+        page.assertVideoLegalNotices(legal);
+    }
+
+    @Then("the reserve appointment button should be disabled in the citizen view")
+    public void theReserveAppointmentButtonShouldBeDisabled() {
+        page.assertReserveAppointmentButtonEnabled(false);
+    }
+
+    @Then("the reserve appointment button should stay disabled when {string} in the citizen view")
+    public void theReserveAppointmentButtonShouldStayDisabledWhen(String legal) {
+        page.assertReserveAppointmentButtonAfterCommunication(legal);
+    }
+
+    @Then("the reserve appointment button should be enabled in the citizen view")
+    public void theReserveAppointmentButtonShouldBeEnabled() {
+        page.assertReserveAppointmentButtonEnabled(true);
+    }
+
+    @Then("the service link should point to muenchen.de in the citizen view")
+    public void theServiceLinkShouldPointToMuenchenDe() {
+        page.assertServiceLinkPointsToMunichDe();
     }
 
     /** Preconfirm page: privacy + this Weiter → activation callout (not before Kontakt). */
