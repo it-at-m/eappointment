@@ -56,6 +56,7 @@ public class AdminSteps {
 
     private final ProcessingStationSection PROCESSING_STATION_SECTION;
     private final CustomerSearchPage CUSTOMER_SEARCH_PAGE;
+    private int rememberedWaitingClients;
 
     public AdminSteps() {
         ADMIN_PAGE = new AdminPage(DriverUtil.getDriver());
@@ -684,6 +685,19 @@ public class AdminSteps {
     @Dann("öffnet sich die Standort auswählen Seite.")
     public void dann_oeffnet_sich_die_standort_auswaehlen_seite() {
         ADMIN_PAGE.checkForLocationPage();
+    }
+
+    @Wenn("die aktuelle Anzahl der Wartenden gemerkt wird.")
+    public void die_aktuelle_anzahl_der_wartenden_gemerkt_wird() {
+        rememberedWaitingClients = COUNTER_PROCESSING_STATION_PAGE.readWaitingClientsEffective();
+        ScenarioLogManager.getLogger().info("Wartende before the new queue entries: {}", rememberedWaitingClients);
+    }
+
+    @Dann("steigt die gemerkte Anzahl der Wartenden ohne Seitenaktualisierung innerhalb von {int} Sekunden um {int}.")
+    public void steigt_die_gemerkte_anzahl_der_wartenden_ohne_seitenaktualisierung(
+            int timeoutSeconds, int increase) {
+        COUNTER_PROCESSING_STATION_PAGE.waitUntilWaitingClientsEffectiveAtLeast(
+                rememberedWaitingClients + increase, timeoutSeconds);
     }
 
     @Dann("wird die Seite Sachbearbeiterplatz angezeigt.")
