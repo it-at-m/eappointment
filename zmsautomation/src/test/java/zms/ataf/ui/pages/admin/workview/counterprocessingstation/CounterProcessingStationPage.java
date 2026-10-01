@@ -1245,6 +1245,47 @@ public class CounterProcessingStationPage extends AdminPage {
         areValuesVisibleInTableColumn(APPOINTMENT_FINISHED_TABLE_LOCATOR_ID, LocatorType.ID, column, searchStrings);
     }
 
+    private static final By WAITING_CLIENTS_EFFECTIVE =
+            By.cssSelector("span.waiting-count[data-waiting-clients-effective]");
+
+    /** Visible Wartende count. Does not reload the page. */
+    public int readWaitingClientsEffective() {
+        CONTEXT.set();
+        WebElement count = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(ExpectedConditions.visibilityOfElementLocated(WAITING_CLIENTS_EFFECTIVE));
+        return Integer.parseInt(count.getText().trim());
+    }
+
+    /**
+     * The workstation reloads the queue itself every 60 seconds and copies the new count into Wartende.
+     * Poll the number already on the page. Do not call refresh.
+     */
+    public void waitUntilWaitingClientsEffectiveAtLeast(int expected, int timeoutSeconds) {
+        CONTEXT.set();
+        long deadline = System.currentTimeMillis() + timeoutSeconds * 1000L;
+        int latest = -1;
+        while (System.currentTimeMillis() < deadline) {
+            try {
+                latest = Integer.parseInt(DRIVER.findElement(WAITING_CLIENTS_EFFECTIVE).getText().trim());
+                if (latest >= expected) {
+                    ScenarioLogManager.getLogger()
+                            .info("Wartende reached {} (expected at least {}) without a page reload", latest, expected);
+                    return;
+                }
+            } catch (StaleElementReferenceException | NumberFormatException ignored) {
+                // The queue partial is being replaced by its own reload.
+            }
+            try {
+                Thread.sleep(1000L);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                break;
+            }
+        }
+        Assert.fail("Wartende stayed at " + latest + ". Expected at least " + expected
+                + " within " + timeoutSeconds + " seconds, without reloading the page.");
+    }
+
     public void checkForValuesInMissedTableColumn(String column, String... searchStrings) {
         ScenarioLogManager.getLogger().info("Checking for values to be visible in '{}' column of the missed table...", column);
         CONTEXT.waitForSpinners();

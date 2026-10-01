@@ -686,6 +686,20 @@ public class AdminSteps {
         ADMIN_PAGE.checkForLocationPage();
     }
 
+    @Wenn("die aktuelle Anzahl der Wartenden gemerkt wird.")
+    public void die_aktuelle_anzahl_der_wartenden_gemerkt_wird() {
+        int count = COUNTER_PROCESSING_STATION_PAGE.readWaitingClientsEffective();
+        TestDataHelper.setTestData("waiting_clients_effective", String.valueOf(count));
+        ScenarioLogManager.getLogger().info("Wartende before the new queue entries: {}", count);
+    }
+
+    @Dann("steigt die gemerkte Anzahl der Wartenden ohne Seitenaktualisierung innerhalb von {int} Sekunden um {int}.")
+    public void steigt_die_gemerkte_anzahl_der_wartenden_ohne_seitenaktualisierung(
+            int timeoutSeconds, int increase) {
+        int start = Integer.parseInt(TestDataHelper.getTestData("waiting_clients_effective"));
+        COUNTER_PROCESSING_STATION_PAGE.waitUntilWaitingClientsEffectiveAtLeast(start + increase, timeoutSeconds);
+    }
+
     @Dann("wird die Seite Sachbearbeiterplatz angezeigt.")
     public void dann_wird_die_seite_sachbearbeiterplatz_geoeffnet() {
         PROCESSING_STATION_SECTION.checkCustomerCallVisible();
