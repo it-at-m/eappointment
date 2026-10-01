@@ -56,16 +56,16 @@
         },
         {
             "name": "aura/sql",
-            "version": "6.0.1",
+            "version": "6.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/auraphp/Aura.Sql.git",
-                "reference": "0f4ac7a11b435a9854a28d686e7269ebe7582ec8"
+                "reference": "90546f4771ea7ea38eb17a135936ad554d268a9d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/auraphp/Aura.Sql/zipball/0f4ac7a11b435a9854a28d686e7269ebe7582ec8",
-                "reference": "0f4ac7a11b435a9854a28d686e7269ebe7582ec8",
+                "url": "https://api.github.com/repos/auraphp/Aura.Sql/zipball/90546f4771ea7ea38eb17a135936ad554d268a9d",
+                "reference": "90546f4771ea7ea38eb17a135936ad554d268a9d",
                 "shasum": ""
             },
             "require": {
@@ -108,9 +108,9 @@
             ],
             "support": {
                 "issues": "https://github.com/auraphp/Aura.Sql/issues",
-                "source": "https://github.com/auraphp/Aura.Sql/tree/6.0.1"
+                "source": "https://github.com/auraphp/Aura.Sql/tree/6.1.0"
             },
-            "time": "2026-01-05T05:21:45+00:00"
+            "time": "2026-09-29T06:10:04+00:00"
         },
         {
             "name": "clue/stream-filter",
