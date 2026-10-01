@@ -70,7 +70,7 @@ class AppointmentPreconfirmControllerTest extends ControllerTestCase
             'familyName' => 'TEST_USER',
             'customTextfield' => 'Some custom text',
             'customTextfield2' => 'Another custom text',
-            'email' => 'test@muenchen.de',
+            'email' => 'noreply-terminvereinbarung@muenchen.de',
             'telephone' => '123456789',
             'officeName' => null,
             'officeId' => 0,
