@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-10-01T07:39:02.978Z",
+  "publishedAt": "2026-10-01T10:01:36.676Z",
   "branches": [
     {
       "name": "next",
@@ -222,6 +222,12 @@
       "slug": "renovate-next-ghcr.io-it-at-m-refarch-refarch-gateway-1.x",
       "runId": "34037729850",
       "runStartedAt": "2026-09-06T13:58:56Z"
+    },
+    {
+      "name": "renovate/next-quay.io-keycloak-keycloak-26.x",
+      "slug": "renovate-next-quay.io-keycloak-keycloak-26.x",
+      "runId": "36842239847",
+      "runStartedAt": "2026-10-01T09:21:53Z"
     },
     {
       "name": "test-zmskvr-1334-appointment-ics-download",
