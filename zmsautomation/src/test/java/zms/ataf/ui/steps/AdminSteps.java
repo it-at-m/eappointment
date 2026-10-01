@@ -978,6 +978,12 @@ public class AdminSteps {
         PROCESSING_STATION_SECTION.clickOnParkAppointment();
     }
 
+    @Dann("hat der weitergeleitete Kunde {string} die Priorität {string}.")
+    public void hat_der_weitergeleitete_kunde_die_prioritaet(String kunde, String prioritaet) {
+        COUNTER_PROCESSING_STATION_PAGE.assertQueuedCustomerPriority(
+                TestDataHelper.transformTestData(kunde), prioritaet);
+    }
+
     @Wenn("Sie den Termin zu {string} mit der Anmerkung {string} weiterleiten.")
     public void wenn_sie_den_termin_weiterleiten(String standort, String anmerkung) {
         PROCESSING_STATION_SECTION.clickOnForwardAppointment();

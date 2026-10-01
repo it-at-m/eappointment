@@ -397,6 +397,25 @@ public class CounterProcessingStationPage extends AdminPage {
      * Deletes the queue row for a customer just booked in this scenario.
      * The trash icon uses the internal process id, which is not the number shown as Termin-Nr.
      */
+    /**
+     * A forwarded Terminkunde is queued without an appointment time, so the Prio field is visible.
+     * Mittel is the selected option when the stored priority is 2.
+     */
+    public void assertQueuedCustomerPriority(String familyName, String priorityLabel) {
+        CONTEXT.set();
+        showSpontaneousCustomers(true);
+        CONTEXT.waitForSpinners();
+        String editLink = "//table[@id='table-queued-appointments']//tr["
+                + "td[contains(@class,'callnextclient') and normalize-space(.)='" + familyName + "']]"
+                + "//a[contains(@class,'process-edit')]";
+        clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, editLink, LocatorType.XPATH, false, CONTEXT);
+        WebElement priority = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("select[name='priority']")));
+        String selected = new Select(priority).getFirstSelectedOption().getText().trim();
+        Assert.assertEquals(selected, priorityLabel,
+                "Expected priority \"" + priorityLabel + "\" for " + familyName + ", but found \"" + selected + "\".");
+    }
+
     public void deleteQueuedAppointmentByFamilyName(String familyName) {
         CONTEXT.set();
         if ("true".equals(TestDataHelper.getTestData("appointment_booked_as_walk_in"))) {

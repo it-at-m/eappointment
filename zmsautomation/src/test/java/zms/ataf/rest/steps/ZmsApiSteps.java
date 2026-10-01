@@ -438,6 +438,62 @@ public class ZmsApiSteps {
         reserveConfirmedAppointment(scopeId, serviceName, familyName, email, amendment, true);
     }
 
+    @When("I redirect the last process to scope {int} with the X-AuthKey")
+    public void iRedirectTheLastProcessToScopeWithTheXAuthKey(int targetScopeId) {
+        Assertions.assertThat(lastProcess)
+            .as("Reserve an appointment before redirecting it")
+            .isNotNull();
+        int originalId = lastProcess.path("id").asInt();
+        Assertions.assertThat(originalId).isPositive();
+        if (!scenarioProcessIds.contains(originalId)) {
+            scenarioProcessIds.add(originalId);
+        }
+
+        ObjectNode body = (ObjectNode) lastProcess.deepCopy();
+        if (body.path("scope").isObject()) {
+            ((ObjectNode) body.get("scope")).put("id", targetScopeId);
+        } else {
+            body.set("scope", MAPPER.createObjectNode().put("id", targetScopeId));
+        }
+        JsonNode appointments = body.path("appointments");
+        if (appointments.isArray() && appointments.size() > 0 && appointments.get(0).isObject()) {
+            ObjectNode appointment = (ObjectNode) appointments.get(0);
+            if (appointment.path("scope").isObject()) {
+                ((ObjectNode) appointment.get("scope")).put("id", targetScopeId);
+            }
+        }
+
+        String authKey = getOrLoginXAuthKey();
+        response = given()
+            .baseUri(apiBaseUri())
+            .header("X-AuthKey", authKey)
+            .contentType("application/json")
+            .body(toJson(body))
+        .when()
+            .post("/process/status/redirect/");
+        CommonApiSteps.setResponse(response);
+        Assertions.assertThat(response.getStatusCode())
+            .as("POST /process/status/redirect/ body=%s", truncate(response.asString(), 1000))
+            .isEqualTo(200);
+        JsonNode created = parseDataNode(response);
+        Assertions.assertThat(created).as("redirect response data").isNotNull();
+        int createdId = created.path("id").asInt();
+        if (createdId > 0 && !scenarioProcessIds.contains(createdId)) {
+            scenarioProcessIds.add(createdId);
+        }
+        rememberProcess(created);
+    }
+
+    @Then("the last process has priority {int}")
+    public void theLastProcessHasPriority(int priority) {
+        Assertions.assertThat(lastProcess)
+            .as("Redirect the appointment before reading its priority")
+            .isNotNull();
+        Assertions.assertThat(lastProcess.path("priority").asInt())
+            .as("priority of process %s", lastProcess.path("id").asInt())
+            .isEqualTo(priority);
+    }
+
     @When("I delete the last process with the X-AuthKey")
     public void iDeleteTheLastProcessWithTheXAuthKey() {
         Assertions.assertThat(lastProcess)
