@@ -37,6 +37,9 @@ const baseAppointment = (
 describe("rebookingContact", () => {
   it("treats reserve placeholder mail as empty only for email", () => {
     expect(isPlaceholderEmail(PLACEHOLDER_RESERVE_EMAIL)).toBe(true);
+    expect(isPlaceholderEmail("test@muenchen.de")).toBe(true);
+    expect(isPlaceholderEmail("TEST@muenchen.de")).toBe(true);
+    expect(isPlaceholderEmail("zms-reserved@placeholder.invalid")).toBe(true);
     expect(isPlaceholderEmail("Max@Example.com")).toBe(false);
     expect(isFilledEmail(PLACEHOLDER_RESERVE_EMAIL)).toBe(false);
     expect(isFilledEmail("max@example.com")).toBe(true);
@@ -121,12 +124,19 @@ describe("rebookingContact", () => {
   });
 
   it("does not copy placeholder email onto customerData", () => {
-    const customerData = new CustomerData("", "", "", "", "", "");
-    applyAppointmentContactToCustomerData(
-      customerData,
-      baseAppointment({ email: PLACEHOLDER_RESERVE_EMAIL })
-    );
-    expect(customerData.mailAddress).toBe("");
+    for (const email of [
+      PLACEHOLDER_RESERVE_EMAIL,
+      "test@muenchen.de",
+      "zms-reserved@placeholder.invalid",
+    ]) {
+      const customerData = new CustomerData("", "", "", "", "", "");
+      applyAppointmentContactToCustomerData(
+        customerData,
+        baseAppointment({ email, familyName: "" })
+      );
+      expect(customerData.mailAddress).toBe("");
+      expect(customerData.firstName).toBe("");
+    }
   });
 
   it("detects missing required fields for the target scope", () => {

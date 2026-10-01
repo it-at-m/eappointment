@@ -5,12 +5,23 @@ import type { ComputedRef, Ref } from "vue";
 
 import { nextTick, onUpdated, watch } from "vue";
 
-/** Placeholder set by reserve before real contact data is written. */
+/**
+ * Addresses reserve has stored before the citizen submits real contact data.
+ * The current default is first. Older deployments still return the legacy
+ * mailbox, and a cancelled Bürgerlogin reloads that reserved process into Kontakt.
+ */
+const RESERVE_PLACEHOLDER_EMAILS = new Set([
+  "noreply-terminvereinbarung@muenchen.de",
+  "test@muenchen.de",
+  "zms-reserved@placeholder.invalid",
+]);
+
+/** Current reserve placeholder. Older addresses are still treated as empty. */
 export const PLACEHOLDER_RESERVE_EMAIL =
   "noreply-terminvereinbarung@muenchen.de";
 
 export function isPlaceholderEmail(email?: string | null): boolean {
-  return (email ?? "").trim().toLowerCase() === PLACEHOLDER_RESERVE_EMAIL;
+  return RESERVE_PLACEHOLDER_EMAILS.has((email ?? "").trim().toLowerCase());
 }
 
 export function isFilledContactValue(value?: string | null): boolean {

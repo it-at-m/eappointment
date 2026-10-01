@@ -2956,6 +2956,42 @@ describe("AppointmentView", () => {
       ).toBe("false");
     });
 
+    it("leaves the contact form empty when a cancelled login resumes the legacy placeholder", async () => {
+      vi.mocked(ZMSAppointmentAPI.fetchAppointment).mockResolvedValue({
+        processId: "100318",
+        authKey: "test-auth-key",
+        timestamp: futureTimestamp,
+        familyName: "",
+        email: "test@muenchen.de",
+        officeId: "789",
+        scope: {},
+        subRequestCounts: [],
+        serviceId: "123",
+        serviceName: "Test Service",
+        serviceCount: 1,
+        status: "reserved",
+      } as any);
+
+      const wrapper = createWrapper({ appointmentHash: validHash });
+
+      await vi.waitFor(() => {
+        expect(wrapper.vm.appointment?.processId).toBe("100318");
+      });
+
+      expect(wrapper.vm.currentView).toBe(2);
+      expect(wrapper.vm.customerData.mailAddress).toBe("");
+      expect(wrapper.vm.customerData.firstName).toBe("");
+      expect(wrapper.find('[data-test="customer-info"]').exists()).toBe(true);
+      expect(wrapper.find('[data-test="appointment-summary"]').exists()).toBe(
+        false
+      );
+      expect(
+        wrapper
+          .find('[data-test="muc-stepper"]')
+          .attributes("data-disable-previous-steps")
+      ).toBe("false");
+    });
+
     it("opens the booking summary for a reserved appointment that already has contact data", async () => {
       vi.mocked(ZMSAppointmentAPI.fetchAppointment).mockResolvedValue({
         processId: "100318",
