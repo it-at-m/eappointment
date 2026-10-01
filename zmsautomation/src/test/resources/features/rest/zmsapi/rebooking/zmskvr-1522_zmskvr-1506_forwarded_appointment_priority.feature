@@ -1,4 +1,4 @@
-@rest @zmsapi @clerk @system @ZMSKVR-1506 @ZMSKVR-1522
+@rest @zmsapi @rebooking @clerk @system @ZMSKVR-1506 @ZMSKVR-1522
 Feature: A forwarded appointment is queued with medium priority
 
   # KfZ Zulassungsstelle, cluster 16: Briefbüro is scope 46, Import is scope 49.

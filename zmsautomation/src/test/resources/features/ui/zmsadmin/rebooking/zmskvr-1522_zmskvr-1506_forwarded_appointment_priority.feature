@@ -4,7 +4,7 @@ Funktionalität: Ein weitergeleiteter Termin wird mit der Priorität Mittel eing
 	# KfZ Zulassungsstelle: Briefbüro nach Import.
 	# Der Termin wird abgeschlossen und am Ziel als Wartender mit der Priorität Mittel geführt.
 
-	@web @zmsadmin @queue @clerk @ZMSKVR-1506 @ZMSKVR-1522 @executeLocally
+	@web @zmsadmin @rebooking @clerk @ZMSKVR-1506 @ZMSKVR-1522 @executeLocally
 	Szenario: Ein Termin vom Briefbüro nach Import behält die Priorität Mittel
 		Wenn Sie zur Webseite der Administration navigieren.
 		Und  Sie im Zeitmanagementsystem auf die Schaltfläche "Anmelden" klicken.
