@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-10-01T20:20:08.570Z",
+  "publishedAt": "2026-10-01T20:44:44.651Z",
   "branches": [
     {
       "name": "next",
@@ -268,8 +268,8 @@
     {
       "name": "test-zmskvr-1491-zmskvr-1510-legal-notices",
       "slug": "test-zmskvr-1491-zmskvr-1510-legal-notices",
-      "runId": "36917819810",
-      "runStartedAt": "2026-10-01T20:03:59Z"
+      "runId": "36921579726",
+      "runStartedAt": "2026-10-01T20:26:30Z"
     },
     {
       "name": "test-zmskvr-1504-zmskvr-1523-waiting-count-refresh",
