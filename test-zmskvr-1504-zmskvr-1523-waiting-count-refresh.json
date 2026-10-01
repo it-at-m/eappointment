@@ -3,8 +3,8 @@
   "branchSlug": "test-zmskvr-1504-zmskvr-1523-waiting-count-refresh",
   "runId": "36851419475",
   "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36851419475",
-  "runStartedAt": "2026-10-01T10:48:26Z",
-  "publishedAt": "2026-10-01T10:57:59.591Z",
+  "runStartedAt": "2026-10-01T11:01:17Z",
+  "publishedAt": "2026-10-01T11:10:22.941Z",
   "features": {
     "feature-ui-zmsadmin-booking-zmskvr-1049": {
       "status": "passed",
@@ -388,19 +388,19 @@
       "status": "failed",
       "shard": "custom",
       "browser": "chrome",
-      "rel": "ui/zmsadmin/queue/zmskvr-1523_zmskvr-1504_waiting_count_refresh.feature",
-      "runId": "36851419475",
-      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36851419475",
-      "runStartedAt": "2026-10-01T10:48:26Z",
       "browsers": {
         "chrome": {
           "status": "failed",
           "shard": "custom",
           "runId": "36851419475",
           "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36851419475",
-          "runStartedAt": "2026-10-01T10:48:26Z"
+          "runStartedAt": "2026-10-01T11:01:17Z"
         }
-      }
+      },
+      "rel": "ui/zmsadmin/queue/zmskvr-1523_zmskvr-1504_waiting_count_refresh.feature",
+      "runId": "36851419475",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36851419475",
+      "runStartedAt": "2026-10-01T11:01:17Z"
     },
     "feature-ui-zmsadmin-queue-zmskvr-1565-zmskvr-1385-switch-queue-customer": {
       "status": "passed",
