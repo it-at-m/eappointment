@@ -400,10 +400,42 @@ jobs:
         run: |
           set -euo pipefail
           PHP_TAG="${{ steps.tags.outputs.php_tag }}"
+          FALLBACK_TAG="branch-next"
           modules=(zmsadmin zmsbackend zmscalldisplay zmscitizenapi zmsmessaging zmsstatistic zmsticketprinter)
+          tags_file="${RUNNER_TEMP}/module-image-tags"
+          : > "$tags_file"
+
+          # A branch image exists only after that module's PHP image build finishes.
+          # Until then, use the latest next image for that module.
+          pull_image() {
+            local ref="$1"
+            local log
+            if log="$(docker pull "$ref" 2>&1)"; then
+              printf '%s\n' "$log"
+              return 0
+            fi
+            printf '%s\n' "$log" >&2
+            if grep -Eqi 'not found|manifest unknown|name unknown' <<<"$log"; then
+              return 2
+            fi
+            return 1
+          }
+
           for m in "${modules[@]}"; do
-            echo "Pulling $m:$PHP_TAG"
-            docker pull "ghcr.io/${GITHUB_REPOSITORY}/${m}:$PHP_TAG"
+            image="ghcr.io/${GITHUB_REPOSITORY}/${m}"
+            tag="$PHP_TAG"
+            rc=0
+            pull_image "${image}:${tag}" || rc=$?
+            if [[ "$rc" -eq 2 && "$tag" != "$FALLBACK_TAG" ]]; then
+              echo "No image ${image}:${tag} yet; using ${FALLBACK_TAG}"
+              tag="$FALLBACK_TAG"
+              pull_image "${image}:${tag}"
+            elif [[ "$rc" -ne 0 ]]; then
+              echo "Failed to pull ${image}:${PHP_TAG}"
+              exit 1
+            fi
+            echo "${m} ${tag}" >> "$tags_file"
+            echo "Resolved ${m} -> ${tag}"
           done
 
       - name: Start required containers (stack once)
@@ -558,9 +590,14 @@ jobs:
         run: |
           set -euo pipefail
           WEB_CONT="zms-web"
-          PHP_TAG="${{ steps.tags.outputs.php_tag }}"
+          tags_file="${RUNNER_TEMP}/module-image-tags"
           modules=(zmsadmin zmsbackend zmscalldisplay zmscitizenapi zmsmessaging zmsstatistic zmsticketprinter)
           layout_modules=(zmsadmin zmsstatistic)
+
+          tag_for() {
+            local module="$1"
+            awk -v module="$module" '$1 == module { print $2; exit }' "$tags_file"
+          }
 
           retry() {
             local max_attempts="$1"
@@ -589,13 +626,19 @@ jobs:
 
           inject_module() {
             local m="$1"
-            echo "Injecting $m from GHCR image tag $PHP_TAG into $WEB_CONT:/var/www/html/$m"
+            local tag
+            tag="$(tag_for "$m")"
+            if [[ -z "$tag" ]]; then
+              echo "No resolved image tag for ${m}"
+              return 1
+            fi
+            echo "Injecting $m from GHCR image tag $tag into $WEB_CONT:/var/www/html/$m"
             docker exec -u root "$WEB_CONT" bash -lc "mkdir -p /var/www/html/${m}"
 
             if [[ " ${layout_modules[*]} " == *" ${m} "* ]]; then
               docker run --rm \
                 -v "${GITHUB_WORKSPACE}/zmslayout:/var/www/zmslayout:ro" \
-                "ghcr.io/${GITHUB_REPOSITORY}/${m}:${PHP_TAG}" \
+                "ghcr.io/${GITHUB_REPOSITORY}/${m}:${tag}" \
                 bash -lc 'set -euo pipefail
                   cd /var/www/html
                   for spec in bo-zms-layout-js:js bo-zms-layout-scss:scss; do
@@ -609,7 +652,7 @@ jobs:
                   tar cf - -C /var/www/html .' \
                 | docker exec -i -u root "$WEB_CONT" tar -xf - -C "/var/www/html/${m}/"
             else
-              docker run --rm --entrypoint tar "ghcr.io/${GITHUB_REPOSITORY}/${m}:${PHP_TAG}" \
+              docker run --rm --entrypoint tar "ghcr.io/${GITHUB_REPOSITORY}/${m}:${tag}" \
                 -cf - -C /var/www/html . \
                 | docker exec -i -u root "$WEB_CONT" tar -xf - -C "/var/www/html/${m}/"
             fi

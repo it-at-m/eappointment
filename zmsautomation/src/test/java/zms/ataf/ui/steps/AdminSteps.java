@@ -707,6 +707,50 @@ public class AdminSteps {
         //COUNTER_PROCESSING_STATION_PAGE.checkQueueElementsVisibleWithoutSMS();
     }
 
+    @Dann("ist das Datum in der blauen Warteschlangenleiste sichtbar.")
+    public void ist_das_datum_in_der_blauen_warteschlangenleiste_sichtbar() {
+        COUNTER_PROCESSING_STATION_PAGE.assertQueueBarDateVisible();
+    }
+
+    @Dann("ist in der blauen Warteschlangenleiste die Schaltfläche {string} sichtbar.")
+    public void ist_in_der_blauen_warteschlangenleiste_die_schaltflaeche_sichtbar(String label) {
+        Assert.assertEquals(label, "Listen neu laden");
+        COUNTER_PROCESSING_STATION_PAGE.assertListenNeuLadenVisible();
+    }
+
+    @Dann("ist der Button {string} unter der Warteschlange nicht sichtbar.")
+    public void ist_der_button_unter_der_warteschlange_nicht_sichtbar(String label) {
+        Assert.assertEquals(label, "Warteschlange aktualisieren");
+        COUNTER_PROCESSING_STATION_PAGE.assertWarteschlangeAktualisierenHidden();
+    }
+
+    @Dann("ist {string} einschließlich der Tagesnavigation in der Warteschlangenleiste nicht sichtbar.")
+    public void ist_heute_einschliesslich_der_tagesnavigation_nicht_sichtbar(String label) {
+        Assert.assertEquals(label, "Heute");
+        COUNTER_PROCESSING_STATION_PAGE.assertQueueBarDayNavigationHidden();
+    }
+
+    @Dann("ist {string} in der Warteschlangenleiste nicht sichtbar.")
+    public void ist_in_der_warteschlangenleiste_nicht_sichtbar(String label) {
+        Assert.assertEquals(label, "Spontankunden einblenden");
+        COUNTER_PROCESSING_STATION_PAGE.assertSpontankundenEinblendenHidden();
+    }
+
+    @Dann("ist der Download der Warteschlange nicht sichtbar.")
+    public void ist_der_download_der_warteschlange_nicht_sichtbar() {
+        COUNTER_PROCESSING_STATION_PAGE.assertQueueDownloadHidden();
+    }
+
+    @Dann("ist die Druckfunktion der Warteschlange nicht sichtbar.")
+    public void ist_die_druckfunktion_der_warteschlange_nicht_sichtbar() {
+        COUNTER_PROCESSING_STATION_PAGE.assertQueuePrintHidden();
+    }
+
+    @Dann("ist das Standort-Dropdown in der blauen Warteschlangenleiste sichtbar.")
+    public void ist_das_standort_dropdown_in_der_blauen_warteschlangenleiste_sichtbar() {
+        COUNTER_PROCESSING_STATION_PAGE.assertClusterScopeDropdownVisible();
+    }
+
     @Dann("wird das Bearbeitungsformular für den Spontankunden angezeigt.")
     public void wird_das_bearbeitungsformular_fuer_den_spontankunden_angezeigt() {
         COUNTER_PROCESSING_STATION_PAGE.checkProcessEditFormIsVisible();
@@ -818,15 +862,14 @@ public class AdminSteps {
                         "Unreachable: failure did not throw (apptNo was null/blank)");
             }
     
-            // Optional: nur Ziffern verwenden (falls UI in Klammern o.Ä. loggt)
-            String apptNoOnly = apptNo.replaceAll("\\D+", "");
-            if (apptNoOnly.isBlank()) {
+            // Keep a scope prefix (Briefbüro "X0723"). A plain process id has no letters to drop.
+            String apptNoShown = apptNo.trim();
+            if (apptNoShown.replaceAll("\\D+", "").isBlank()) {
                 CustomAssertions.fail("Captured appointment number contains no digits: '" + apptNo + "'");
-                throw new AssertionError("Unreachable: failure did not throw (apptNoOnly was blank)");
+                throw new AssertionError("Unreachable: failure did not throw (apptNoShown had no digits)");
             }
     
-            // Terminname -> Termin-/Vorgangsnummer speichern (verschlüsselt über TestDataHelper)
-            TestDataHelper.setTestData(terminName, apptNoOnly);
+            TestDataHelper.setTestData(terminName, apptNoShown);
     
             // Dialog bestätigen
             try {
@@ -836,7 +879,7 @@ public class AdminSteps {
             }
     
             // Sichtbarkeit in der Warteschlange prüfen
-            COUNTER_PROCESSING_STATION_PAGE.isCustomerVisibleInQueue(apptNoOnly, false);
+            COUNTER_PROCESSING_STATION_PAGE.isCustomerVisibleInQueue(apptNoShown, false);
         }
     }
 
@@ -976,6 +1019,12 @@ public class AdminSteps {
     @Wenn("Sie den Termin parken.")
     public void wenn_sie_den_termin_parken() {
         PROCESSING_STATION_SECTION.clickOnParkAppointment();
+    }
+
+    @Dann("hat der weitergeleitete Kunde {string} die Priorität {string}.")
+    public void hat_der_weitergeleitete_kunde_die_prioritaet(String kunde, String prioritaet) {
+        COUNTER_PROCESSING_STATION_PAGE.assertQueuedCustomerPriority(
+                TestDataHelper.transformTestData(kunde), prioritaet);
     }
 
     @Wenn("Sie den Termin zu {string} mit der Anmerkung {string} weiterleiten.")

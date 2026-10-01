@@ -513,6 +513,7 @@ import {
   hasMissingRequiredContact,
   isReservedProcessStatus,
   joinFamilyName,
+  setPlaceholderReserveEmail,
 } from "@/utils/rebookingContact";
 import { resolveOfficeById, toOfficeImpl } from "@/utils/resolveOfficeById";
 import { isExpired } from "@/utils/timestampInPast";
@@ -910,6 +911,15 @@ const rebuildSelectedServiceMapFromAppointment = (): void => {
   });
 };
 
+const rememberConfiguredPlaceholder = (
+  loaded?: AppointmentDTO | null
+): void => {
+  const configured = loaded?.placeholderEmail?.trim();
+  if (configured) {
+    setPlaceholderReserveEmail(configured);
+  }
+};
+
 const resumeReservedBookingFromHash = (): void => {
   rebookOrCancelDialog.value = false;
   currentContext.value = "update";
@@ -920,6 +930,7 @@ const resumeReservedBookingFromHash = (): void => {
     }
     return;
   }
+  rememberConfiguredPlaceholder(appointment.value);
   applyAppointmentContactToCustomerData(customerData.value, appointment.value);
   selectedTimeslot.value = Number(appointment.value.timestamp) || 0;
   rebuildSelectedServiceMapFromAppointment();
@@ -941,6 +952,7 @@ const fillCustomerDataFromRebookedAppointment = () => {
   if (!rebookedAppointment.value) {
     return;
   }
+  rememberConfiguredPlaceholder(rebookedAppointment.value);
   applyAppointmentContactToCustomerData(
     customerData.value,
     rebookedAppointment.value
@@ -1052,6 +1064,7 @@ const nextUpdateAppointment = () => {
     isUpdatingAppointment.value = true;
     clearContextErrors(errorStateMap.value);
     if (isRebooking.value && rebookedAppointment.value) {
+      rememberConfiguredPlaceholder(rebookedAppointment.value);
       applyAppointmentContactToCustomerData(
         customerData.value,
         rebookedAppointment.value

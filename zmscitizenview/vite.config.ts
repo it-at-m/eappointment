@@ -119,8 +119,8 @@ export default defineConfig({
     }),
     restartOnGitCheckout(),
   ],
-  // Expose SHOW_CITIZEN_LOGIN from .env / compose (same name as zms-deployment).
-  envPrefix: ['VITE_', 'SHOW_'],
+  // SHOW_CITIZEN_LOGIN and ZMS_CITIZENAPI_PLACEHOLDER_EMAIL keep the names used by compose.
+  envPrefix: ['VITE_', 'SHOW_', 'ZMS_CITIZENAPI_PLACEHOLDER_EMAIL'],
   define: {
     'process.env': {},
     'import.meta.env.VITE_GIT_COMMIT': JSON.stringify(gitBuildInfo.commit),

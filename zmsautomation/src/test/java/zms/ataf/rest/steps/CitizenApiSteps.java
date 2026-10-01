@@ -1213,6 +1213,18 @@ public class CitizenApiSteps {
         }
     }
 
+    @Then("the fetched appointment should report placeholder email {string}")
+    public void theFetchedAppointmentShouldReportPlaceholderEmail(String email) {
+        ThinnedProcess process = lastReserveProcess != null ? lastReserveProcess : parseDataResponse(response, ThinnedProcess.class);
+        Assertions.assertThat(process).as("fetched appointment").isNotNull();
+        Assertions.assertThat(process.getEmail())
+            .as("stored client email")
+            .isEqualToIgnoringCase(email);
+        Assertions.assertThat(process.getPlaceholderEmail())
+            .as("configured placeholderEmail")
+            .isEqualToIgnoringCase(email);
+    }
+
     @Then("the appointment endpoint response should include a thinned booking process with processId, authKey, officeId, and serviceId")
     public void theAppointmentEndpointResponseShouldIncludeAThinnedBookingProcessWithProcessIdAuthOfficeAndServiceId() {
         ThinnedProcess process = lastReserveProcess != null ? lastReserveProcess : parseDataResponse(response, ThinnedProcess.class);
