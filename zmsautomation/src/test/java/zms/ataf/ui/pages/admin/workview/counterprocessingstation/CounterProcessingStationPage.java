@@ -1298,4 +1298,66 @@ public class CounterProcessingStationPage extends AdminPage {
         areValuesVisibleInTableColumn(APPOINTMENT_MISSED_TABLE_LOCATOR_ID, LocatorType.ID, column, searchStrings);
 
     }
+
+    private WebElement queueBoard() {
+        CONTEXT.set();
+        return new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".queue-table")));
+    }
+
+    /** Blue Terminübersicht bar above the tables. */
+    private WebElement queueBar() {
+        return queueBoard().findElement(By.cssSelector(".board__actions"));
+    }
+
+    public void assertQueueBarDateVisible() {
+        WebElement date = queueBar().findElement(By.cssSelector("strong.date"));
+        Assert.assertTrue(date.isDisplayed(), "Das Datum in der blauen Warteschlangenleiste ist nicht sichtbar.");
+        Assert.assertFalse(date.getText().trim().isEmpty(), "Das Datum in der blauen Warteschlangenleiste ist leer.");
+    }
+
+    public void assertListenNeuLadenVisible() {
+        WebElement reload = queueBar().findElement(By.cssSelector("a.reload"));
+        Assert.assertTrue(reload.isDisplayed(), "Listen neu laden in der blauen Leiste ist nicht sichtbar.");
+        Assert.assertEquals(
+                reload.getAttribute("title"),
+                "Listen neu laden",
+                "Die Schaltfläche in der blauen Leiste ist nicht mit Listen neu laden beschriftet.");
+    }
+
+    /** The button under the queue tables, not the reload control in the blue bar. */
+    public void assertWarteschlangeAktualisierenHidden() {
+        Assert.assertTrue(
+                queueBoard().findElements(By.cssSelector("button.button-reload")).isEmpty(),
+                "Der Button Warteschlange aktualisieren unter der Warteschlange ist sichtbar.");
+    }
+
+    public void assertQueueBarDayNavigationHidden() {
+        Assert.assertTrue(
+                queueBar().findElements(By.cssSelector(".calendar-navigation")).isEmpty(),
+                "Heute einschließlich Zurück- und Weiter-Pfeile ist in der Warteschlangenleiste sichtbar.");
+    }
+
+    public void assertSpontankundenEinblendenHidden() {
+        Assert.assertTrue(
+                queueBar().findElements(By.xpath(".//label[contains(.,'Spontankunden einblenden')]")).isEmpty(),
+                "Spontankunden einblenden ist in der Warteschlangenleiste sichtbar.");
+    }
+
+    public void assertQueueDownloadHidden() {
+        Assert.assertTrue(
+                queueBar().findElements(By.cssSelector("a.download")).isEmpty(),
+                "Der Download der Warteschlange ist sichtbar.");
+    }
+
+    public void assertQueuePrintHidden() {
+        Assert.assertTrue(
+                queueBar().findElements(By.cssSelector("a.print")).isEmpty(),
+                "Die Druckfunktion der Warteschlange ist sichtbar.");
+    }
+
+    public void assertClusterScopeDropdownVisible() {
+        WebElement dropdown = queueBar().findElement(By.cssSelector(".switchcluster select[name='scope']"));
+        Assert.assertTrue(dropdown.isDisplayed(), "Das Standort-Dropdown in der blauen Leiste ist nicht sichtbar.");
+    }
 }
