@@ -1,0 +1,46 @@
+{
+  "branch": "test-zmskvr-1630-zmskvr-1665-cancel-buergerlogin-email",
+  "branchSlug": "test-zmskvr-1630-zmskvr-1665-cancel-buergerlogin-email",
+  "runId": "36870592220",
+  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36870592220",
+  "runStartedAt": "2026-10-01T13:41:48Z",
+  "publishedAt": "2026-10-01T13:52:04.833Z",
+  "features": {
+    "feature-rest-zmscitizenapi-booking-zmskvr-1630-zmskvr-1030-placeholder-email-citizenapi": {
+      "status": "passed",
+      "shard": "custom",
+      "browser": "chrome",
+      "rel": "rest/zmscitizenapi/booking/zmskvr-1630_zmskvr-1030_placeholder_email_citizenapi.feature",
+      "runId": "36870592220",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36870592220",
+      "runStartedAt": "2026-10-01T13:41:48Z",
+      "browsers": {
+        "chrome": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "36870592220",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36870592220",
+          "runStartedAt": "2026-10-01T13:41:48Z"
+        }
+      }
+    },
+    "feature-ui-zmscitizenview-booking-zmskvr-1630-zmskvr-1030-reserved-hash-resume": {
+      "status": "passed",
+      "shard": "custom",
+      "browser": "chrome",
+      "rel": "ui/zmscitizenview/booking/zmskvr-1630_zmskvr-1030_reserved_hash_resume.feature",
+      "runId": "36870592220",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36870592220",
+      "runStartedAt": "2026-10-01T13:41:48Z",
+      "browsers": {
+        "chrome": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "36870592220",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36870592220",
+          "runStartedAt": "2026-10-01T13:41:48Z"
+        }
+      }
+    }
+  }
+}

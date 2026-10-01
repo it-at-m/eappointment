@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-10-01T11:49:42.104Z",
+  "publishedAt": "2026-10-01T13:52:04.833Z",
   "branches": [
     {
       "name": "next",
@@ -294,6 +294,12 @@
       "slug": "test-zmskvr-1630-zmskvr-1030-reserved-hash-resume",
       "runId": "35192194712",
       "runStartedAt": "2026-09-17T06:57:34Z"
+    },
+    {
+      "name": "test-zmskvr-1630-zmskvr-1665-cancel-buergerlogin-email",
+      "slug": "test-zmskvr-1630-zmskvr-1665-cancel-buergerlogin-email",
+      "runId": "36870592220",
+      "runStartedAt": "2026-10-01T13:41:48Z"
     },
     {
       "name": "test-zmskvr-1631-zmskvr-1651-back-from-termin",
