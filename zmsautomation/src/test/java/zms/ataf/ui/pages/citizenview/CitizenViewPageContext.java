@@ -2,6 +2,7 @@ package zms.ataf.ui.pages.citizenview;
 
 import java.util.Objects;
 
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
@@ -95,8 +96,36 @@ public class CitizenViewPageContext extends Context {
         WindowControls.updateWindowList(DriverUtil.getDriver(), windowType);
         FrameControls.setCurrentFrame(FrameControls.DEFAULT_CONTENT);
         ScenarioLogManager.getLogger().info("Jump-in loaded: {}", jumpInUrl);
+        rememberAppointmentCredentialsFromLaterResponses();
         // Vue + offices-and-services fetch: wait until error callout or combination UI is present
         waitJumpInDomSettled();
+    }
+
+    /**
+     * Guest bookings keep the auth key in the reserve response, not in localStorage.
+     * Record it before the slot is reserved so cancel can free the process.
+     */
+    private void rememberAppointmentCredentialsFromLaterResponses() {
+        String script =
+                "if(window.__zmsCaptureBookingInstalled)return;"
+                        + "window.__zmsCaptureBookingInstalled=true;"
+                        + "window.__zmsCapturedBooking=null;"
+                        + "function note(text){var data;try{data=JSON.parse(text);}catch(e){return;}"
+                        + "var list=[data,data&&data.data,data&&data.appointment];"
+                        + "for(var i=0;i<list.length;i++){var body=list[i];"
+                        + "if(body&&body.processId&&body.authKey){"
+                        + "window.__zmsCapturedBooking=String(body.processId)+'|'+String(body.authKey);}}"
+                        + "}"
+                        + "var orig=window.fetch;"
+                        + "if(typeof orig!=='function')return;"
+                        + "window.fetch=function(){return orig.apply(this,arguments).then(function(res){"
+                        + "try{res.clone().text().then(note);}catch(e){}"
+                        + "return res;});};";
+        try {
+            ((JavascriptExecutor) DRIVER).executeScript(script);
+        } catch (RuntimeException e) {
+            ScenarioLogManager.getLogger().warn("Could not record later appointment responses.", e);
+        }
     }
 
     /** Poll shadow DOM until invalid jump-in, Weiter, or Service Finder copy appears (max ~25s). */

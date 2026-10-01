@@ -1391,7 +1391,7 @@ public class CounterProcessingStationPage extends AdminPage {
         CONTEXT.set();
         CONTEXT.waitForSpinners();
         By label = By.xpath(
-                "//ul[@aria-label='Dienstleistungen Abwahlliste']//span[contains(.,'" + serviceFragment + "')]");
+                "//ul[@aria-label='Dienstleistungen Auswahlliste']//span[contains(.,'" + serviceFragment + "')]");
         WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
         WebElement span = wait.until(ExpectedConditions.visibilityOfElementLocated(label));
         String text = span.getText().replaceAll("\\s+", " ").trim();
