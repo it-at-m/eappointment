@@ -18,6 +18,7 @@ import {
   SESSIONSTORAGE_PARAM_APPOINTMENT_AUTH_HASH,
 } from "@/utils/Constants";
 import de from "@/utils/de-DE.json";
+import { resetPlaceholderReserveEmail } from "@/utils/rebookingContact";
 // beforeEach is already imported from vitest on line 2
 import { nowUnixSeconds } from "@/utils/timestampInPast";
 import {
@@ -2910,6 +2911,7 @@ describe("AppointmentView", () => {
     beforeEach(() => {
       localStorage.clear();
       sessionStorage.clear();
+      resetPlaceholderReserveEmail();
       vi.mocked(ZMSAppointmentAPI.fetchAppointment).mockReset();
       vi.stubGlobal(
         "fetch",
@@ -2945,6 +2947,43 @@ describe("AppointmentView", () => {
       expect(wrapper.vm.currentView).toBe(2);
       expect(wrapper.vm.rebookOrCancelDialog).toBe(false);
       expect(wrapper.vm.customerData.mailAddress).toBe("");
+      expect(wrapper.find('[data-test="customer-info"]').exists()).toBe(true);
+      expect(wrapper.find('[data-test="appointment-summary"]').exists()).toBe(
+        false
+      );
+      expect(
+        wrapper
+          .find('[data-test="muc-stepper"]')
+          .attributes("data-disable-previous-steps")
+      ).toBe("false");
+    });
+
+    it("leaves the contact form empty when a cancelled login resumes the reserve placeholder", async () => {
+      vi.mocked(ZMSAppointmentAPI.fetchAppointment).mockResolvedValue({
+        processId: "100318",
+        authKey: "test-auth-key",
+        timestamp: futureTimestamp,
+        familyName: "",
+        email: "noreply-terminvereinbarung@muenchen.de",
+        placeholderEmail: "noreply-terminvereinbarung@muenchen.de",
+        officeId: "789",
+        scope: {},
+        subRequestCounts: [],
+        serviceId: "123",
+        serviceName: "Test Service",
+        serviceCount: 1,
+        status: "reserved",
+      } as any);
+
+      const wrapper = createWrapper({ appointmentHash: validHash });
+
+      await vi.waitFor(() => {
+        expect(wrapper.vm.appointment?.processId).toBe("100318");
+      });
+
+      expect(wrapper.vm.currentView).toBe(2);
+      expect(wrapper.vm.customerData.mailAddress).toBe("");
+      expect(wrapper.vm.customerData.firstName).toBe("");
       expect(wrapper.find('[data-test="customer-info"]').exists()).toBe(true);
       expect(wrapper.find('[data-test="appointment-summary"]').exists()).toBe(
         false

@@ -410,7 +410,7 @@ class ValidationServiceTest extends TestCase
         $stored->familyName = 'Jane Doe';
         $stored->email = 'jane@example.com';
         $stored->telephone = '';
-        $stored->customTextfield = 'test@muenchen.de';
+        $stored->customTextfield = 'noreply-terminvereinbarung@muenchen.de';
         $stored->customTextfield2 = null;
 
         $result = ValidationService::validateUnchangedStoredContact(
