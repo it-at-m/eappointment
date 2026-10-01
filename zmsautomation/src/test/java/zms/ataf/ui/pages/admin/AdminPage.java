@@ -174,13 +174,24 @@ public class AdminPage extends BasePage {
     }
 
     public void clickInNavigationOnWorkstation() {
+        CONTEXT.set();
         ScenarioLogManager.getLogger().info("Trying to open the Sachbearbeiterplatz...");
-        clickOnWebElement(
-                DEFAULT_EXPLICIT_WAIT_TIME,
-                "//nav//a[contains(@href,'workstation')]",
-                LocatorType.XPATH,
-                true,
-                CONTEXT);
+        List<WebElement> nav = DRIVER.findElements(By.xpath("//nav//a[contains(@href,'workstation')]"));
+        if (nav.stream().anyMatch(WebElement::isDisplayed)) {
+            clickOnWebElement(
+                    DEFAULT_EXPLICIT_WAIT_TIME,
+                    "//nav//a[contains(@href,'workstation')]",
+                    LocatorType.XPATH,
+                    true,
+                    CONTEXT);
+            return;
+        }
+        // Gesamtübersicht has no sidebar. Its Zurück link points at the counter and, on click,
+        // follows document.referrer instead, which is the edit form.
+        WebElement back = findElementByLocatorType("back-button", LocatorType.ID, true);
+        ((JavascriptExecutor) DRIVER).executeScript("window.location.assign(arguments[0].href);", back);
+        new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(ExpectedConditions.textToBePresentInElementLocated(By.cssSelector("h1"), "Sachbearbeiterplatz"));
     }
 
     public void clickInNavigationOnTresenButton() {
