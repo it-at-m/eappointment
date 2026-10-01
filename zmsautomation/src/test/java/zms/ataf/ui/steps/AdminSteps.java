@@ -36,6 +36,7 @@ import io.cucumber.java.de.Dann;
 import io.cucumber.java.de.Gegebenseien;
 import io.cucumber.java.de.Und;
 import io.cucumber.java.de.Wenn;
+import zms.ataf.helpers.AccountCheckout;
 import zms.ataf.helpers.BerlinTime;
 import zms.ataf.helpers.RandomNameHelper;
 import zms.ataf.ui.pages.admin.AdminPage;
@@ -55,6 +56,7 @@ public class AdminSteps {
 
     private final ProcessingStationSection PROCESSING_STATION_SECTION;
     private final CustomerSearchPage CUSTOMER_SEARCH_PAGE;
+    private int rememberedWaitingClients;
 
     public AdminSteps() {
         ADMIN_PAGE = new AdminPage(DriverUtil.getDriver());
@@ -405,9 +407,55 @@ public class AdminSteps {
         COUNTER_PROCESSING_STATION_PAGE.deleteQueuedAppointmentByFamilyName(TestDataHelper.transformTestData(familyName));
     }
 
+    @Wenn("Sie sich als {string} im Zeitmanagementsystem anmelden.")
+    public void sie_sich_als_im_zeitmanagementsystem_anmelden(String username) throws Exception {
+        ADMIN_PAGE.loginWithKeycloakUser(
+                AccountCheckout.assignWorkstationLogin(TestDataHelper.transformTestData(username)));
+    }
+
     @Wenn("Sie in der Kundensuche nach {string} suchen.")
     public void sie_in_der_kundensuche_nach_suchen(String query) {
         CUSTOMER_SEARCH_PAGE.search(TestDataHelper.transformTestData(query));
+    }
+
+    @Dann("ist der Sachbearbeiter-Filter in der Kundensuche nicht sichtbar.")
+    public void ist_der_sachbearbeiter_filter_nicht_sichtbar() {
+        CUSTOMER_SEARCH_PAGE.assertClerkFilterHidden();
+    }
+
+    @Dann("listet die Kundensuche {string} vor {string} vor {string}.")
+    public void listet_die_kundensuche_in_reihenfolge(String first, String second, String third) {
+        CUSTOMER_SEARCH_PAGE.assertListedInOrder(
+                TestDataHelper.transformTestData(first),
+                TestDataHelper.transformTestData(second),
+                TestDataHelper.transformTestData(third));
+    }
+
+    @Dann("zeigt die Kundensuche für {string} den Status {string} mit heutiger Buchung und ohne Terminaufruf.")
+    public void zeigt_den_status_mit_heutiger_buchung(String familyName, String statusLabel) {
+        CUSTOMER_SEARCH_PAGE.assertStatusWithoutCall(
+                TestDataHelper.transformTestData(familyName),
+                TestDataHelper.transformTestData(statusLabel),
+                CUSTOMER_SEARCH_PAGE.bookingDateDaysAgo(0));
+    }
+
+    @Dann("zeigt die Kundensuche für {string} den Status {string} mit Buchung vor {int} Tagen um {string} und ohne Terminaufruf.")
+    public void zeigt_den_status_mit_buchung_ohne_aufruf(
+            String familyName, String statusLabel, int daysAgo, String time) {
+        CUSTOMER_SEARCH_PAGE.assertStatusWithoutCall(
+                TestDataHelper.transformTestData(familyName),
+                TestDataHelper.transformTestData(statusLabel),
+                CUSTOMER_SEARCH_PAGE.bookingStampDaysAgo(daysAgo, time));
+    }
+
+    @Dann("zeigt die Kundensuche für {string} den Status {string} mit Buchung vor {int} Tagen um {string} und Terminaufruf vor {int} Tagen um {string}.")
+    public void zeigt_den_status_mit_buchung_und_aufruf(
+            String familyName, String statusLabel, int bookedDaysAgo, String bookedTime, int calledDaysAgo, String calledTime) {
+        CUSTOMER_SEARCH_PAGE.assertStatusWithCall(
+                TestDataHelper.transformTestData(familyName),
+                TestDataHelper.transformTestData(statusLabel),
+                CUSTOMER_SEARCH_PAGE.bookingStampDaysAgo(bookedDaysAgo, bookedTime),
+                CUSTOMER_SEARCH_PAGE.bookingStampDaysAgo(calledDaysAgo, calledTime));
     }
 
     @Wenn("Sie einen Spontankunden mit der Dienstleistung {string}, dem Namen {string}, Freitextfeld {string} und Freitextfeld 2 {string} buchen.")
@@ -637,6 +685,19 @@ public class AdminSteps {
     @Dann("öffnet sich die Standort auswählen Seite.")
     public void dann_oeffnet_sich_die_standort_auswaehlen_seite() {
         ADMIN_PAGE.checkForLocationPage();
+    }
+
+    @Wenn("die aktuelle Anzahl der Wartenden gemerkt wird.")
+    public void die_aktuelle_anzahl_der_wartenden_gemerkt_wird() {
+        rememberedWaitingClients = COUNTER_PROCESSING_STATION_PAGE.readWaitingClientsEffective();
+        ScenarioLogManager.getLogger().info("Wartende before the new queue entries: {}", rememberedWaitingClients);
+    }
+
+    @Dann("steigt die gemerkte Anzahl der Wartenden ohne Seitenaktualisierung innerhalb von {int} Sekunden um {int}.")
+    public void steigt_die_gemerkte_anzahl_der_wartenden_ohne_seitenaktualisierung(
+            int timeoutSeconds, int increase) {
+        COUNTER_PROCESSING_STATION_PAGE.waitUntilWaitingClientsEffectiveAtLeast(
+                rememberedWaitingClients + increase, timeoutSeconds);
     }
 
     @Dann("wird die Seite Sachbearbeiterplatz angezeigt.")

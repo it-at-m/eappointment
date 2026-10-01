@@ -341,9 +341,9 @@ jobs:
           fi
 
           if [[ "$FULL_MATRIX" == true ]]; then
-            jq '.include |= map(. + {job_name: "\(.branch) · \(.shard) · \(.browser)"})' matrix.json > matrix.tmp.json
+            jq '.include |= map(. + {job_name: (if .test_layer == "api" then "\(.branch) · \(.shard)" else "\(.branch) · \(.shard) · \(.browser)" end)})' matrix.json > matrix.tmp.json
           else
-            jq '.include |= map(. + {job_name: "\(.shard) · \(.browser)"})' matrix.json > matrix.tmp.json
+            jq '.include |= map(. + {job_name: (if .test_layer == "api" then .shard else "\(.shard) · \(.browser)" end)})' matrix.json > matrix.tmp.json
           fi
           mv matrix.tmp.json matrix.json
 

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "7b9e211870910fc67cb74af2d23fb3ba",
+    "content-hash": "0d779a8afc87c2902dc30a42706b0d25",
     "packages": [
         {
             "name": "roave/security-advisories",
@@ -3713,16 +3713,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "13.3.5",
+            "version": "13.3.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "1b482b9a77774705a5c4a47ab7d60819d2589e90"
+                "reference": "b7d0ee4ea89121cb963302b8708b1c09d9ebc7d6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/1b482b9a77774705a5c4a47ab7d60819d2589e90",
-                "reference": "1b482b9a77774705a5c4a47ab7d60819d2589e90",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/b7d0ee4ea89121cb963302b8708b1c09d9ebc7d6",
+                "reference": "b7d0ee4ea89121cb963302b8708b1c09d9ebc7d6",
                 "shasum": ""
             },
             "require": {
@@ -3793,7 +3793,7 @@
             "support": {
                 "issues": "https://github.com/sebastianbergmann/phpunit/issues",
                 "security": "https://github.com/sebastianbergmann/phpunit/security/policy",
-                "source": "https://github.com/sebastianbergmann/phpunit/tree/13.3.5"
+                "source": "https://github.com/sebastianbergmann/phpunit/tree/13.3.6"
             },
             "funding": [
                 {
@@ -3801,7 +3801,7 @@
                     "type": "other"
                 }
             ],
-            "time": "2026-09-25T08:41:20+00:00"
+            "time": "2026-09-29T12:12:05+00:00"
         },
         {
             "name": "psr/container",
@@ -6524,16 +6524,16 @@
         },
         {
             "name": "vimeo/psalm",
-            "version": "6.18.1",
+            "version": "6.19.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/vimeo/psalm.git",
-                "reference": "79465b8dc674127f442ae31ea114c11bc4dd7ed6"
+                "reference": "e2ca44251c1f1aa2e35452d426895746b47de64e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/vimeo/psalm/zipball/79465b8dc674127f442ae31ea114c11bc4dd7ed6",
-                "reference": "79465b8dc674127f442ae31ea114c11bc4dd7ed6",
+                "url": "https://api.github.com/repos/vimeo/psalm/zipball/e2ca44251c1f1aa2e35452d426895746b47de64e",
+                "reference": "e2ca44251c1f1aa2e35452d426895746b47de64e",
                 "shasum": ""
             },
             "require": {
@@ -6638,7 +6638,7 @@
                 "issues": "https://github.com/vimeo/psalm/issues",
                 "source": "https://github.com/vimeo/psalm"
             },
-            "time": "2026-09-23T10:02:42+00:00"
+            "time": "2026-09-29T09:38:04+00:00"
         },
         {
             "name": "webmozart/assert",

@@ -107,6 +107,20 @@ public class CitizenViewSteps {
         }
     }
 
+    @Then("the citizen calendar and list should show a bookable day for office {int}")
+    public void theCitizenCalendarAndListShouldShowABookableDay(int officeId) {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: calendar and list show a bookable day for office {}", officeId);
+        page.assertBookableDayInCalendarAndList(officeId);
+    }
+
+    @Then("the citizen calendar should not offer a bookable day for office {int}")
+    public void theCitizenCalendarShouldNotOfferABookableDay(int officeId) {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: no bookable day for office {}", officeId);
+        page.assertNoBookableDay(officeId);
+    }
+
     @When("I wait for appointment slots to be ready in the citizen view")
     public void iWaitForAppointmentSlotsToBeReadyInTheCitizenView() {
         ScenarioLogManager.getLogger().info("zmscitizenview: wait for appointment slots (spinner cleared)");
