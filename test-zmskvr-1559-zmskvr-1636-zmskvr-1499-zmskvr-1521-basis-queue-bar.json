@@ -1,0 +1,28 @@
+{
+  "branch": "test-zmskvr-1559-zmskvr-1636-zmskvr-1499-zmskvr-1521-basis-queue-bar",
+  "branchSlug": "test-zmskvr-1559-zmskvr-1636-zmskvr-1499-zmskvr-1521-basis-queue-bar",
+  "runId": "36901999010",
+  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36901999010",
+  "runStartedAt": "2026-10-01T17:47:35Z",
+  "publishedAt": "2026-10-01T17:55:44.386Z",
+  "features": {
+    "feature-ui-zmsadmin-roles-zmskvr-1636-zmskvr-1559-zmskvr-1521-zmskvr-1499-basis-queue-bar": {
+      "status": "passed",
+      "shard": "custom",
+      "browser": "chrome",
+      "rel": "ui/zmsadmin/roles/zmskvr-1636_zmskvr-1559_zmskvr-1521_zmskvr-1499_basis_queue_bar.feature",
+      "runId": "36901999010",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36901999010",
+      "runStartedAt": "2026-10-01T17:47:35Z",
+      "browsers": {
+        "chrome": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "36901999010",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36901999010",
+          "runStartedAt": "2026-10-01T17:47:35Z"
+        }
+      }
+    }
+  }
+}
