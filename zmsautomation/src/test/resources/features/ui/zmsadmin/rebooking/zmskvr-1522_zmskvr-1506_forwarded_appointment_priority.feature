@@ -3,6 +3,7 @@ Funktionalität: Ein weitergeleiteter Termin wird mit der Priorität Mittel eing
 
 	# KfZ Zulassungsstelle: Briefbüro nach Import.
 	# Der Termin wird abgeschlossen und am Ziel als Wartender mit der Priorität Mittel geführt.
+	# Die Auswahlliste zeigt den Namen plus "(15 min)". Der Schritt trifft den gemeinsamen Namensteil.
 
 	@web @zmsadmin @rebooking @clerk @ZMSKVR-1506 @ZMSKVR-1522 @executeLocally
 	Szenario: Ein Termin vom Briefbüro nach Import behält die Priorität Mittel
@@ -14,7 +15,7 @@ Funktionalität: Ein weitergeleiteter Termin wird mit der Priorität Mittel eing
 		Dann wird die Seite Sachbearbeiterplatz angezeigt.
 		Gegeben seien Sie einen Terminkunden für die Dienstleistung buchen:
 			| Dienstleistung                                                                                         | Termin name | Kunde  |
-			| Beantragung oder Abholung einer neuen Zulassungsbescheinigung Teil II nach Verlust oder Diebstahl | Termin1     | Kunde1 |
+			| Zulassungsbescheinigung Teil II nach Verlust | Termin1     | Kunde1 |
 		Wenn Der Sachbearbeiter "<TestData.Termin1>" aus der Warteliste aufruft.
 		Dann wird der wartende Kunde "<TestData.Termin1>" aufgerufen.
 		Wenn Sie im Zeitmanagementsystem auf die Schaltfläche "Ja, Kunde erschienen" klicken.
