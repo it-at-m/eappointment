@@ -1,26 +1,26 @@
 {
   "branch": "test-zmskvr-1501-zmskvr-1509-slot-calculation",
   "branchSlug": "test-zmskvr-1501-zmskvr-1509-slot-calculation",
-  "runId": "36938714325",
-  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36938714325",
-  "runStartedAt": "2026-10-01T23:03:52Z",
-  "publishedAt": "2026-10-01T23:20:27.011Z",
+  "runId": "36940576562",
+  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36940576562",
+  "runStartedAt": "2026-10-01T23:23:48Z",
+  "publishedAt": "2026-10-01T23:44:28.066Z",
   "features": {
     "feature-rest-zmscitizenapi-slot-calculation-zmskvr-1509-zmskvr-1501-forty-five-minute-slot": {
       "status": "passed",
       "shard": "custom",
       "browser": "chrome",
       "rel": "rest/zmscitizenapi/slot-calculation/zmskvr-1509_zmskvr-1501_forty_five_minute_slot.feature",
-      "runId": "36938714325",
-      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36938714325",
-      "runStartedAt": "2026-10-01T23:03:52Z",
+      "runId": "36940576562",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36940576562",
+      "runStartedAt": "2026-10-01T23:23:48Z",
       "browsers": {
         "chrome": {
           "status": "passed",
           "shard": "custom",
-          "runId": "36938714325",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36938714325",
-          "runStartedAt": "2026-10-01T23:03:52Z"
+          "runId": "36940576562",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36940576562",
+          "runStartedAt": "2026-10-01T23:23:48Z"
         }
       }
     },
@@ -29,16 +29,16 @@
       "shard": "custom",
       "browser": "chrome",
       "rel": "ui/zmsadmin/slot-calculation/zmskvr-1509_zmskvr-1501_forty_five_minute_slot.feature",
-      "runId": "36938714325",
-      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36938714325",
-      "runStartedAt": "2026-10-01T23:03:52Z",
+      "runId": "36940576562",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36940576562",
+      "runStartedAt": "2026-10-01T23:23:48Z",
       "browsers": {
         "chrome": {
           "status": "passed",
           "shard": "custom",
-          "runId": "36938714325",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36938714325",
-          "runStartedAt": "2026-10-01T23:03:52Z"
+          "runId": "36940576562",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36940576562",
+          "runStartedAt": "2026-10-01T23:23:48Z"
         }
       }
     },
@@ -47,16 +47,16 @@
       "shard": "custom",
       "browser": "chrome",
       "rel": "ui/zmscitizenview/slot-calculation/zmskvr-1509_zmskvr-1501_forty_five_minute_slot.feature",
-      "runId": "36938714325",
-      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36938714325",
-      "runStartedAt": "2026-10-01T23:03:52Z",
+      "runId": "36940576562",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36940576562",
+      "runStartedAt": "2026-10-01T23:23:48Z",
       "browsers": {
         "chrome": {
           "status": "passed",
           "shard": "custom",
-          "runId": "36938714325",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36938714325",
-          "runStartedAt": "2026-10-01T23:03:52Z"
+          "runId": "36940576562",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36940576562",
+          "runStartedAt": "2026-10-01T23:23:48Z"
         }
       }
     }
