@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-10-01T21:02:58.336Z",
+  "publishedAt": "2026-10-01T21:06:19.680Z",
   "branches": [
     {
       "name": "next",
@@ -268,8 +268,8 @@
     {
       "name": "test-zmskvr-1491-zmskvr-1510-legal-notices",
       "slug": "test-zmskvr-1491-zmskvr-1510-legal-notices",
-      "runId": "36921579726",
-      "runStartedAt": "2026-10-01T20:26:30Z"
+      "runId": "36925179533",
+      "runStartedAt": "2026-10-01T20:56:03Z"
     },
     {
       "name": "test-zmskvr-1501-zmskvr-1509-slot-calculation",

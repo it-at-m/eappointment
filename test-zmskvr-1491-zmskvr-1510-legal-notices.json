@@ -1,35 +1,28 @@
 {
   "branch": "test-zmskvr-1491-zmskvr-1510-legal-notices",
   "branchSlug": "test-zmskvr-1491-zmskvr-1510-legal-notices",
-  "runId": "36921579726",
-  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36921579726",
-  "runStartedAt": "2026-10-01T20:26:30Z",
-  "publishedAt": "2026-10-01T20:44:44.651Z",
+  "runId": "36925179533",
+  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36925179533",
+  "runStartedAt": "2026-10-01T20:56:03Z",
+  "publishedAt": "2026-10-01T21:06:19.680Z",
   "features": {
     "feature-ui-zmscitizenview-booking-zmskvr-1510-zmskvr-1491-legal-notices": {
-      "status": "failed",
+      "status": "passed",
       "shard": "custom",
       "browser": "chrome",
+      "rel": "ui/zmscitizenview/booking/zmskvr-1510_zmskvr-1491_legal_notices.feature",
+      "runId": "36925179533",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36925179533",
+      "runStartedAt": "2026-10-01T20:56:03Z",
       "browsers": {
         "chrome": {
-          "status": "failed",
+          "status": "passed",
           "shard": "custom",
-          "runId": "36921579726",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36921579726",
-          "runStartedAt": "2026-10-01T20:26:30Z"
-        },
-        "firefox": {
-          "status": "failed",
-          "shard": "custom",
-          "runId": "36921579726",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36921579726",
-          "runStartedAt": "2026-10-01T20:26:30Z"
+          "runId": "36925179533",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36925179533",
+          "runStartedAt": "2026-10-01T20:56:03Z"
         }
-      },
-      "rel": "ui/zmscitizenview/booking/zmskvr-1510_zmskvr-1491_legal_notices.feature",
-      "runId": "36921579726",
-      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36921579726",
-      "runStartedAt": "2026-10-01T20:26:30Z"
+      }
     }
   }
 }
