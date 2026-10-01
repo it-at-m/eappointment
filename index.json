@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-10-01T19:16:23.245Z",
+  "publishedAt": "2026-10-01T20:06:07.078Z",
   "branches": [
     {
       "name": "next",
@@ -276,6 +276,12 @@
       "slug": "test-zmskvr-1506-zmskvr-1522-forwarded-priority",
       "runId": "36911493314",
       "runStartedAt": "2026-10-01T19:03:43Z"
+    },
+    {
+      "name": "test-zmskvr-1508-zmskvr-1520-appointment-variants",
+      "slug": "test-zmskvr-1508-zmskvr-1520-appointment-variants",
+      "runId": "36917686235",
+      "runStartedAt": "2026-10-01T19:54:11Z"
     },
     {
       "name": "test-zmskvr-1536-zmskvr-1552-appointment-teaser",
