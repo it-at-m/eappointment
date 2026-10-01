@@ -3592,10 +3592,43 @@ public class CitizenViewPage extends BasePage {
         if (trySetBookingProcessFromCurrentReservedHash()) {
             return;
         }
+        if (trySetBookingProcessFromCapturedApiResponse()) {
+            return;
+        }
         if (trySetBookingProcessFromVueAppointment()) {
             return;
         }
         trySetBookingProcessIdFromDom();
+    }
+
+    /** processId|authKey remembered from the reserve or update response. */
+    private boolean trySetBookingProcessFromCapturedApiResponse() {
+        CONTEXT.set();
+        Object raw =
+                ((JavascriptExecutor) DriverUtil.getDriver())
+                        .executeScript("return window.__zmsCapturedBooking || null;");
+        if (!(raw instanceof String captured) || !captured.contains("|")) {
+            return false;
+        }
+        int split = captured.indexOf('|');
+        String idText = captured.substring(0, split);
+        String authKey = captured.substring(split + 1);
+        try {
+            int processId = Integer.parseInt(idText);
+            if (processId <= 0 || authKey.isBlank()) {
+                return false;
+            }
+            ThinnedProcess p = new ThinnedProcess();
+            p.setProcessId(processId);
+            p.setAuthKey(authKey);
+            zms.ataf.rest.steps.CitizenApiSteps.setBookingProcess(p);
+            ScenarioLogManager.getLogger()
+                    .info("zmscitizenview: captured booking process from appointment response (processId={})", processId);
+            return true;
+        } catch (NumberFormatException e) {
+            ScenarioLogManager.getLogger().debug("zmscitizenview: captured appointment process id was not numeric", e);
+            return false;
+        }
     }
 
     /**
