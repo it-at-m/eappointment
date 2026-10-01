@@ -1,0 +1,46 @@
+{
+  "branch": "test-zmskvr-1506-zmskvr-1522-forwarded-priority",
+  "branchSlug": "test-zmskvr-1506-zmskvr-1522-forwarded-priority",
+  "runId": "36896241809",
+  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36896241809",
+  "runStartedAt": "2026-10-01T17:00:53Z",
+  "publishedAt": "2026-10-01T17:10:09.646Z",
+  "features": {
+    "feature-rest-zmsapi-rebooking-zmskvr-1522-zmskvr-1506-forwarded-appointment-priority": {
+      "status": "failed",
+      "shard": "custom",
+      "browser": "chrome",
+      "rel": "rest/zmsapi/rebooking/zmskvr-1522_zmskvr-1506_forwarded_appointment_priority.feature",
+      "runId": "36896241809",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36896241809",
+      "runStartedAt": "2026-10-01T17:00:53Z",
+      "browsers": {
+        "chrome": {
+          "status": "failed",
+          "shard": "custom",
+          "runId": "36896241809",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36896241809",
+          "runStartedAt": "2026-10-01T17:00:53Z"
+        }
+      }
+    },
+    "feature-ui-zmsadmin-rebooking-zmskvr-1522-zmskvr-1506-forwarded-appointment-priority": {
+      "status": "failed",
+      "shard": "custom",
+      "browser": "chrome",
+      "rel": "ui/zmsadmin/rebooking/zmskvr-1522_zmskvr-1506_forwarded_appointment_priority.feature",
+      "runId": "36896241809",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36896241809",
+      "runStartedAt": "2026-10-01T17:00:53Z",
+      "browsers": {
+        "chrome": {
+          "status": "failed",
+          "shard": "custom",
+          "runId": "36896241809",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/36896241809",
+          "runStartedAt": "2026-10-01T17:00:53Z"
+        }
+      }
+    }
+  }
+}
