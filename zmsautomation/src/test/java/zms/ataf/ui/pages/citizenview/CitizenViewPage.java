@@ -635,6 +635,149 @@ public class CitizenViewPage extends BasePage {
         }
     }
 
+    private static final String NO_APPOINTMENT_CALLOUT = "Aktuell ist kein Termin verfügbar.";
+
+    /**
+     * A fitting length shows slots, then the same day in the list, and does not show the empty-day callout.
+     */
+    public void assertBookableDayInCalendarAndList(int officeId) {
+        CONTEXT.set();
+        waitUntilCalendarSettled(officeId, true);
+        Assert.assertTrue(
+                deepTimeslotPresentForProvider(officeId),
+                "Expected a timeslot for office " + officeId);
+        Assert.assertFalse(
+                shadowDomContainsText(NO_APPOINTMENT_CALLOUT),
+                "A fitting appointment must not show '" + NO_APPOINTMENT_CALLOUT + "'");
+        Assert.assertTrue(
+                deepClickButtonByAriaContains("Zur Listenansicht wechseln"),
+                "Could not switch to the list view");
+        Assert.assertTrue(
+                deepElementExists("#listViewAccordion"),
+                "List view should show the bookable day");
+        Assert.assertFalse(
+                shadowDomContainsText(NO_APPOINTMENT_CALLOUT),
+                "List view must not show '" + NO_APPOINTMENT_CALLOUT + "' for a fitting appointment");
+        Assert.assertTrue(
+                deepClickButtonByAriaContains("Zur Kalenderansicht wechseln"),
+                "Could not switch back to the calendar");
+        waitUntilCalendarSettled(officeId, true);
+        Assert.assertTrue(
+                deepTimeslotPresentForProvider(officeId),
+                "Calendar should still show a timeslot for office " + officeId + " after the list");
+    }
+
+    /**
+     * A length that does not fit leaves the day unselected. The blue info callout is the empty state,
+     * and neither the calendar nor the list offers that day.
+     */
+    public void assertNoBookableDay(int officeId) {
+        CONTEXT.set();
+        waitUntilCalendarSettled(officeId, false);
+        Assert.assertTrue(
+                shadowDomContainsText(NO_APPOINTMENT_CALLOUT),
+                "Expected the info callout '" + NO_APPOINTMENT_CALLOUT + "'");
+        Assert.assertTrue(
+                deepInfoCalloutContains(NO_APPOINTMENT_CALLOUT),
+                "Expected the blue info callout for '" + NO_APPOINTMENT_CALLOUT + "'");
+        Assert.assertFalse(
+                deepTimeslotPresentForProvider(officeId),
+                "A day that does not fit must not show a timeslot for office " + officeId);
+        Assert.assertFalse(
+                deepElementExists("#listViewAccordion"),
+                "List view must not offer a day that does not fit");
+        Assert.assertFalse(
+                deepAriaContains("Zur Listenansicht wechseln"),
+                "Calendar/list toggle must stay hidden when no day fits");
+    }
+
+    private void waitUntilCalendarSettled(int officeId, boolean expectSlots) {
+        long deadline = System.currentTimeMillis() + Math.max(30, DEFAULT_EXPLICIT_WAIT_TIME) * 1000L;
+        while (System.currentTimeMillis() < deadline) {
+            if (!deepMucSpinnerVisible()) {
+                boolean slots = deepTimeslotPresentForProvider(officeId);
+                boolean callout = shadowDomContainsText(NO_APPOINTMENT_CALLOUT);
+                if (expectSlots && slots) {
+                    return;
+                }
+                if (!expectSlots && callout && !slots) {
+                    return;
+                }
+            }
+            sleepQuiet(400L);
+        }
+    }
+
+    private boolean deepClickButtonByAriaContains(String fragment) {
+        CONTEXT.set();
+        String script =
+                "var needle=arguments[0];"
+                        + "function walk(root){"
+                        + " if(!root)return null;"
+                        + " var nodes=root.querySelectorAll('button');"
+                        + " for(var i=0;i<nodes.length;i++){"
+                        + "  var aria=nodes[i].getAttribute('aria-label')||'';"
+                        + "  if(aria.indexOf(needle)>=0)return nodes[i];"
+                        + " }"
+                        + " var all=root.querySelectorAll('*');"
+                        + " for(var j=0;j<all.length;j++){"
+                        + "  if(all[j].shadowRoot){var found=walk(all[j].shadowRoot);if(found)return found;}"
+                        + " }"
+                        + " return null;"
+                        + "}"
+                        + "var button=walk(document.body);"
+                        + "if(!button)return false;"
+                        + "button.scrollIntoView({block:'center'});button.click();return true;";
+        Object clicked = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script, fragment);
+        return Boolean.TRUE.equals(clicked);
+    }
+
+    private boolean deepAriaContains(String fragment) {
+        CONTEXT.set();
+        String script =
+                "var needle=arguments[0];"
+                        + "function walk(root){"
+                        + " if(!root)return false;"
+                        + " var nodes=root.querySelectorAll('[aria-label]');"
+                        + " for(var i=0;i<nodes.length;i++){"
+                        + "  if((nodes[i].getAttribute('aria-label')||'').indexOf(needle)>=0)return true;"
+                        + " }"
+                        + " var all=root.querySelectorAll('*');"
+                        + " for(var j=0;j<all.length;j++){"
+                        + "  if(all[j].shadowRoot&&walk(all[j].shadowRoot))return true;"
+                        + " }"
+                        + " return false;"
+                        + "}"
+                        + "return walk(document.body);";
+        return Boolean.TRUE.equals(
+                ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script, fragment));
+    }
+
+    private boolean deepInfoCalloutContains(String text) {
+        CONTEXT.set();
+        String script =
+                "var needle=arguments[0];"
+                        + "function textOf(node){return (node.innerText||node.textContent||'');}"
+                        + "function isInfoCallout(node){"
+                        + " if(!node||!node.classList)return false;"
+                        + " if(!node.classList.contains('m-callout')||!node.classList.contains('m-callout--default'))return false;"
+                        + " return textOf(node).indexOf(needle)>=0;"
+                        + "}"
+                        + "function walk(root){"
+                        + " if(!root)return false;"
+                        + " var nodes=root.querySelectorAll('.m-callout');"
+                        + " for(var i=0;i<nodes.length;i++){if(isInfoCallout(nodes[i]))return true;}"
+                        + " var all=root.querySelectorAll('*');"
+                        + " for(var j=0;j<all.length;j++){"
+                        + "  if(all[j].shadowRoot&&walk(all[j].shadowRoot))return true;"
+                        + " }"
+                        + " return false;"
+                        + "}"
+                        + "return walk(document.body);";
+        return Boolean.TRUE.equals(
+                ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script, text));
+    }
+
     /**
      * Assert timeslot buttons exist for each real provider id (shared booking peers under one Ort grid).
      * Clicks Später across hour/day-parts until every provider has been seen at least once.
@@ -1944,8 +2087,10 @@ public class CitizenViewPage extends BasePage {
     public void assertCalloutAndReserveAfterSlotSelection(int officeId) {
         CONTEXT.set();
         Set<Long> skipped = new HashSet<>();
+        Long pendingReserveTimestamp = null;
         for (int attempt = 1; attempt <= 8; attempt++) {
             if (contactStepReached()) {
+                keepReservedSlot(pendingReserveTimestamp);
                 finishReserveOnContactStep();
                 return;
             }
@@ -1954,6 +2099,7 @@ public class CitizenViewPage extends BasePage {
                         skipped.stream().map(String::valueOf).reduce((a, b) -> a + "," + b).orElse("");
                 if (!highlightPreferredTimeslotForOfficeOrAbsent(officeId, skippedTimestamps)) {
                     if (contactStepReached()) {
+                        keepReservedSlot(pendingReserveTimestamp);
                         finishReserveOnContactStep();
                         return;
                     }
@@ -1974,6 +2120,7 @@ public class CitizenViewPage extends BasePage {
                 }
             }
             if (!assertSelectedAppointmentCalloutShowsProvider(officeId)) {
+                keepReservedSlot(pendingReserveTimestamp);
                 finishReserveOnContactStep();
                 return;
             }
@@ -1983,17 +2130,30 @@ public class CitizenViewPage extends BasePage {
                             "zmscitizenview: Weiter after slot callout → reserve appointment (then Kontakt form) timestamp={}",
                             timestamp);
             clickWeiter();
-            if (reserveReachedContactForm()) {
-                finishReserveOnContactStep();
-                return;
-            }
             if (timestamp > 0) {
-                skipped.add(timestamp);
+                pendingReserveTimestamp = timestamp;
             }
-            ScenarioLogManager.getLogger()
-                    .info(
-                            "zmscitizenview: slot timestamp={} is reserved or booked; trying the next available slot",
-                            timestamp);
+            switch (waitForReserveOutcome()) {
+                case CONTACT -> {
+                    keepReservedSlot(timestamp);
+                    finishReserveOnContactStep();
+                    return;
+                }
+                case SLOT_TAKEN -> {
+                    if (timestamp > 0) {
+                        skipped.add(timestamp);
+                    }
+                    pendingReserveTimestamp = null;
+                    ScenarioLogManager.getLogger()
+                            .info(
+                                    "zmscitizenview: slot timestamp={} is no longer available; trying the next available slot",
+                                    timestamp);
+                }
+                case UNFINISHED ->
+                        Assert.fail(
+                                "zmscitizenview: reserve did not reach Kontaktdaten and did not report a taken slot for office "
+                                        + officeId);
+            }
         }
         Assert.fail("zmscitizenview: no free slot remained for office " + officeId);
     }
@@ -2030,25 +2190,43 @@ public class CitizenViewPage extends BasePage {
         trySetBookingProcessFromPage();
     }
 
-    private boolean reserveReachedContactForm() {
-        long deadline = System.currentTimeMillis() + 30_000L;
+    /**
+     * A slow Kontakt page is not a taken slot. Only the explicit error moves on to the next timestamp.
+     * Timing out and highlighting another slot overwrites {@code __zmsCitizenViewSlotId} while the first
+     * reserve is still landing, so later assertions remember the wrong time.
+     */
+    private enum ReserveOutcome {
+        CONTACT,
+        SLOT_TAKEN,
+        UNFINISHED
+    }
+
+    private ReserveOutcome waitForReserveOutcome() {
+        long deadline = System.currentTimeMillis() + 60_000L;
         while (System.currentTimeMillis() < deadline) {
             if (contactStepReached() || shadowDomContainsText("Termin verschieben")) {
-                return true;
+                return ReserveOutcome.CONTACT;
             }
             if (shadowDomContainsText("Ihr gewählter Termin ist nicht mehr verfügbar.")
                     || shadowDomContainsText("Ein unbekannter Fehler ist aufgetreten.")) {
-                return false;
+                return ReserveOutcome.SLOT_TAKEN;
             }
             sleepQuiet(400L);
         }
         if (contactStepReached()) {
-            return true;
+            return ReserveOutcome.CONTACT;
         }
         ScenarioLogManager.getLogger()
                 .info(
                         "zmscitizenview: reserve did not reach Kontaktdaten and did not report a taken slot");
-        return false;
+        return ReserveOutcome.UNFINISHED;
+    }
+
+    /** Keep the slot whose Weiter reached Kontakt, not a later highlight. */
+    private void keepReservedSlot(Long timestamp) {
+        if (timestamp != null && timestamp > 0) {
+            rememberedAppointmentEpoch = timestamp;
+        }
     }
 
     private long readStoredSlotTimestamp() {
@@ -3470,12 +3648,17 @@ public class CitizenViewPage extends BasePage {
     private Long rememberedAppointmentEpoch;
     private String capturedIcs;
 
-    /** Unix time of the slot stored in {@code window.__zmsCitizenViewSlotId}. */
+    /**
+     * Unix time of the slot that reached Kontakt. Falls back to {@code window.__zmsCitizenViewSlotId}
+     * when this scenario did not go through the reserve retry.
+     */
     public void rememberSelectedAppointmentTime() {
         CONTEXT.set();
-        long timestamp = readStoredSlotTimestamp();
-        Assert.assertTrue(timestamp > 0, "Selected timeslot id has no timestamp.");
-        rememberedAppointmentEpoch = timestamp;
+        if (rememberedAppointmentEpoch == null || rememberedAppointmentEpoch <= 0) {
+            long timestamp = readStoredSlotTimestamp();
+            Assert.assertTrue(timestamp > 0, "Selected timeslot id has no timestamp.");
+            rememberedAppointmentEpoch = timestamp;
+        }
         ScenarioLogManager.getLogger()
                 .info("zmscitizenview: remembered appointment time {}", rememberedAppointmentEpoch);
     }

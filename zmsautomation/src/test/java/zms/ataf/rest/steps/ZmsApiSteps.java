@@ -25,6 +25,7 @@ import ataf.core.logging.ScenarioLogManager;
 import config.TestConfig;
 import io.cucumber.java.After;
 import io.cucumber.java.Before;
+import io.cucumber.java.de.Wenn;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
@@ -345,6 +346,29 @@ public class ZmsApiSteps {
         rememberProcess(parseDataNode(response));
     }
 
+    @Wenn("für Standort {int} und die Dienstleistung {string} werden {int} Wartende angelegt.")
+    public void fuerStandortWerdenWartendeAngelegt(int scopeId, String serviceName, int count) {
+        Assertions.assertThat(count).isBetween(1, 3);
+        iAmLoggedInToTheZmsApiAs("agent_queue");
+        iUpdateTheWorkstationWithScopeAndCounterWithTheXAuthKey(scopeId, "22");
+        Assertions.assertThat(response.getStatusCode())
+            .as("POST /workstation/ for scope %d body=%s", scopeId, truncate(response.asString(), 1000))
+            .isEqualTo(200);
+        String[] names = {"Muster Waiting Ada", "Muster Waiting Ben", "Muster Waiting Cora"};
+        for (int i = 0; i < count; i++) {
+            iQueueAWalkInAtScopeWithServiceAndNameWithTheXAuthKey(scopeId, serviceName, names[i]);
+            int processId = lastProcess == null ? 0 : lastProcess.path("id").asInt();
+            if (processId > 0 && !scenarioProcessIds.contains(processId)) {
+                scenarioProcessIds.add(processId);
+            }
+        }
+    }
+
+    @Wenn("die in diesem Szenario angelegten Termine gelöscht werden.")
+    public void dieInDiesemSzenarioAngelegtenTermineGeloeschtWerden() {
+        iDeleteTheProcessesCreatedInThisScenarioWithTheXAuthKey();
+    }
+
     @When("I queue a walk-in at scope {int} with service {string}, name {string}, free text {string} and second free text {string} with the X-AuthKey")
     public void iQueueAWalkInWithFreeTextWithTheXAuthKey(
             int scopeId, String serviceName, String familyName, String freeText, String secondFreeText) {
@@ -499,6 +523,55 @@ public class ZmsApiSteps {
         Assertions.assertThat(familyNamesInSearch())
             .as("GET /process/search/ body=%s", truncate(response.asString(), 1500))
             .doesNotContain(familyName);
+    }
+
+    @Then("the process search lists {string} before {string}")
+    public void theProcessSearchListsBefore(String earlierName, String laterName) {
+        List<String> names = familyNamesInSearch().stream()
+            .filter(name -> name.startsWith("Muster John Doe"))
+            .toList();
+        Assertions.assertThat(names)
+            .as("GET /process/search/ past appointments")
+            .containsExactly(earlierName, laterName);
+    }
+
+    @Then("the process {string} has appointment status {string} and a booking time")
+    public void theProcessHasAppointmentStatusAndABookingTime(String familyName, String appointmentStatus) {
+        JsonNode match = searchRow(familyName);
+        Assertions.assertThat(match.path("appointmentStatus").asText())
+            .as("appointmentStatus for %s", familyName)
+            .isEqualTo(appointmentStatus);
+        Assertions.assertThat(match.path("createTimestamp").asLong())
+            .as("createTimestamp for %s", familyName)
+            .isPositive();
+    }
+
+    @Then("the process {string} was called")
+    public void theProcessWasCalled(String familyName) {
+        Assertions.assertThat(searchRow(familyName).path("queue").path("callTime").asLong())
+            .as("callTime for %s", familyName)
+            .isPositive();
+    }
+
+    @Then("the process {string} was not called")
+    public void theProcessWasNotCalled(String familyName) {
+        Assertions.assertThat(searchRow(familyName).path("queue").path("callTime").asLong())
+            .as("callTime for %s", familyName)
+            .isZero();
+    }
+
+    private JsonNode searchRow(String familyName) {
+        ArrayNode results = parseDataArray(response);
+        Assertions.assertThat(results).as("GET /process/search/ data").isNotNull();
+        for (JsonNode row : results) {
+            if (familyName.equals(row.path("clients").path(0).path("familyName").asText())) {
+                return row;
+            }
+        }
+        throw new AssertionError(String.format(
+            "search hit %s. Body=%s",
+            familyName,
+            truncate(response.asString(), 1500)));
     }
 
     private List<String> familyNamesInSearch() {
