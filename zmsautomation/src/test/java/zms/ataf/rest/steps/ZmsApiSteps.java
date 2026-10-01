@@ -488,6 +488,8 @@ public class ZmsApiSteps {
         JsonNode created = parseDataNode(response);
         Assertions.assertThat(created).as("redirect response data").isNotNull();
         int createdId = created.path("id").asInt();
+        // Redirect finishes the source appointment and clears its scope. That row can no longer be deleted.
+        forgetProcess(originalId);
         trackProcess(createdId, targetScopeId);
         rememberProcess(created);
     }
@@ -1476,6 +1478,11 @@ public class ZmsApiSteps {
         ScenarioLogManager.getLogger().warn(
             "Request '{}' not found for scope {}; using first available request", serviceName, scopeId);
         return requests.get(0);
+    }
+
+    private void forgetProcess(int processId) {
+        scenarioProcessIds.remove(Integer.valueOf(processId));
+        processScopeById.remove(processId);
     }
 
     private void trackProcess(int processId, int scopeId) {
