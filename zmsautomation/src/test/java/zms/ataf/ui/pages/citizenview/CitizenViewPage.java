@@ -913,6 +913,40 @@ public class CitizenViewPage extends BasePage {
     }
 
     /**
+     * ZMSKVR-1491 / ZMSKVR-1510: last booking step uses Rechtliche Hinweise.
+     * Privacy is a link only. The electronic-communication checkbox stays and is the only checkbox.
+     */
+    public void assertStandardLegalNotices() {
+        CONTEXT.set();
+        waitUntilShadowContains("Rechtliche Hinweise", DEFAULT_EXPLICIT_WAIT_TIME);
+        Assert.assertTrue(
+                shadowDomHasHeading(3, "Rechtliche Hinweise"),
+                "Expected h3 Rechtliche Hinweise above Termin reservieren.");
+        Assert.assertFalse(
+                shadowDomContainsText("Einwilligungen"),
+                "The consent heading Einwilligungen should be gone.");
+        Assert.assertTrue(
+                shadowDomHasHeading(4, "Datenschutz und Datenverarbeitung"),
+                "Expected h4 Datenschutz und Datenverarbeitung.");
+        Assert.assertTrue(
+                shadowDomContainsText("Datenschutzhinweise Terminvereinbarung"),
+                "Expected the privacy link text.");
+        Assert.assertTrue(
+                shadowHrefContains(
+                        "https://stadt.muenchen.de/dam/jcr:26e72fa3-cec7-4628-9a0a-272c330a2bd2/23_07_Art_13_DSGVO.pdf"),
+                "Expected the shipped privacy PDF link.");
+        Assert.assertTrue(
+                shadowDomHasHeading(4, "Elektronische Kommunikation"),
+                "Expected h4 Elektronische Kommunikation.");
+        Assert.assertTrue(
+                deepElementExists("#checkbox-electronic-communication"),
+                "Expected the electronic communication checkbox.");
+        Assert.assertFalse(
+                privacyAcknowledgementCheckboxPresent(),
+                "Privacy acknowledgement checkbox should be gone.");
+    }
+
+    /**
      * Termin-step callout. Telephone and video show only the variant label, with no office name and no icon.
      * On-site variants keep the office name, so {@code exclusive} is {@code no} and this check is skipped.
      */
@@ -1105,6 +1139,34 @@ public class CitizenViewPage extends BasePage {
                         + "return walk(document.body);";
         Object raw = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script);
         return raw == null ? null : String.valueOf(raw);
+    }
+
+    private boolean privacyAcknowledgementCheckboxPresent() {
+        String script =
+                "function walk(root){"
+                        + " if(!root)return false;"
+                        + " if(root.nodeType===1){"
+                        + "  var tag=(root.tagName||'').toUpperCase();"
+                        + "  var type=(root.getAttribute&&root.getAttribute('type')||'').toLowerCase();"
+                        + "  if((tag==='INPUT'&&type==='checkbox')||tag.indexOf('CHECKBOX')>=0){"
+                        + "   var id=(root.id||'')+' '+(root.getAttribute('name')||'')+' '+(root.getAttribute('aria-label')||'');"
+                        + "   var label='';"
+                        + "   if(root.id){"
+                        + "    var rootNode=root.getRootNode?root.getRootNode():document;"
+                        + "    var lab=rootNode.querySelector?rootNode.querySelector('label[for=\"'+root.id+'\"]'):null;"
+                        + "    if(lab)label=lab.textContent||'';"
+                        + "   }"
+                        + "   var blob=(id+' '+label).toLowerCase();"
+                        + "   if(blob.indexOf('datenschutz')>=0||blob.indexOf('dsgvo')>=0||blob.indexOf('einwilligung')>=0)return true;"
+                        + "  }"
+                        + "  if(root.shadowRoot&&walk(root.shadowRoot))return true;"
+                        + " }"
+                        + " var c=root.children;if(c)for(var i=0;i<c.length;i++)if(walk(c[i]))return true;"
+                        + " return false;"
+                        + "}"
+                        + "return walk(document.body);";
+        Object raw = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script);
+        return Boolean.TRUE.equals(raw);
     }
 
     private void assertShadowHref(String href) {
@@ -3003,8 +3065,13 @@ public class CitizenViewPage extends BasePage {
     public ThinnedProcess syncBookingProcessFromLocalStorage() throws Exception {
         CONTEXT.set();
         ThinnedProcess already = zms.ataf.rest.steps.CitizenApiSteps.getBookingProcess();
-        if (already != null) {
+        if (hasCancelCredentials(already)) {
             ScenarioLogManager.getLogger().info("zmscitizenview: booking process already set (from reserve step), skipping localStorage read");
+            return already;
+        }
+        captureBookingProcessForCleanup();
+        already = zms.ataf.rest.steps.CitizenApiSteps.getBookingProcess();
+        if (hasCancelCredentials(already)) {
             return already;
         }
         String json =
@@ -3029,10 +3096,23 @@ public class CitizenViewPage extends BasePage {
     /** Try to set booking process after activation callout: first from localStorage, then from confirm link on page (same process id as mail). */
     private void trySyncBookingProcessFromLocalStorageOnce() {
         CONTEXT.set();
+        if (hasCancelCredentials(zms.ataf.rest.steps.CitizenApiSteps.getBookingProcess())) {
+            return;
+        }
         if (trySetBookingProcessFromLocalStorage()) {
             return;
         }
+        if (trySetBookingProcessFromVueAppointment()) {
+            return;
+        }
         trySetBookingProcessFromConfirmLinkOnPage();
+    }
+
+    private static boolean hasCancelCredentials(ThinnedProcess process) {
+        return process != null
+                && process.getProcessId() != null
+                && process.getAuthKey() != null
+                && !process.getAuthKey().isBlank();
     }
 
     /** @return true if process was set from localStorage */
@@ -3675,7 +3755,115 @@ public class CitizenViewPage extends BasePage {
         if (trySetBookingProcessFromCurrentReservedHash()) {
             return;
         }
+        if (trySetBookingProcessFromVueAppointment()) {
+            return;
+        }
+        if (trySetBookingProcessFromCapturedApiResponse()) {
+            return;
+        }
         trySetBookingProcessIdFromDom();
+    }
+
+    /** processId|authKey remembered from the reserve or update response. */
+    private boolean trySetBookingProcessFromCapturedApiResponse() {
+        CONTEXT.set();
+        Object raw =
+                ((JavascriptExecutor) DriverUtil.getDriver())
+                        .executeScript("return window.__zmsCapturedBooking || null;");
+        if (!(raw instanceof String captured) || !captured.contains("|")) {
+            return false;
+        }
+        int split = captured.indexOf('|');
+        String idText = captured.substring(0, split);
+        String authKey = captured.substring(split + 1);
+        try {
+            int processId = Integer.parseInt(idText);
+            if (processId <= 0 || authKey.isBlank()) {
+                return false;
+            }
+            ThinnedProcess p = new ThinnedProcess();
+            p.setProcessId(processId);
+            p.setAuthKey(authKey);
+            zms.ataf.rest.steps.CitizenApiSteps.setBookingProcess(p);
+            ScenarioLogManager.getLogger()
+                    .info("zmscitizenview: captured booking process from appointment response (processId={})", processId);
+            return true;
+        } catch (NumberFormatException e) {
+            ScenarioLogManager.getLogger().debug("zmscitizenview: captured appointment process id was not numeric", e);
+            return false;
+        }
+    }
+
+    /**
+     * Guest preconfirm keeps processId and authKey on the Vue appointment, not in localStorage.
+     * The summary DOM only exposes the process id.
+     */
+    private boolean trySetBookingProcessFromVueAppointment() {
+        CONTEXT.set();
+        String script =
+                "function creds(state){"
+                        + " if(!state)return null;"
+                        + " var raw=state.appointment;"
+                        + " var v=raw&&raw.__v_isRef?raw.value:raw;"
+                        + " if(v&&v.processId&&v.authKey)return {processId:v.processId,authKey:String(v.authKey)};"
+                        + " return null;"
+                        + "}"
+                        + "function walkInst(inst,depth,seen){"
+                        + " if(!inst||depth>80||seen.has(inst))return null;"
+                        + " seen.add(inst);"
+                        + " var hit=creds(inst.setupState)||creds(inst.exposed);"
+                        + " if(hit)return hit;"
+                        + " return inst.subTree?walkNode(inst.subTree,depth+1,seen):null;"
+                        + "}"
+                        + "function walkNode(node,depth,seen){"
+                        + " if(!node||depth>80)return null;"
+                        + " if(node.component){var a=walkInst(node.component,depth+1,seen);if(a)return a;}"
+                        + " var kids=node.children;"
+                        + " if(kids&&kids.length)for(var k=0;k<kids.length;k++){"
+                        + "  var b=walkNode(kids[k],depth+1,seen);if(b)return b;"
+                        + " }"
+                        + " return null;"
+                        + "}"
+                        + "function walkDom(root,seen){"
+                        + " if(!root||!root.querySelectorAll)return null;"
+                        + " var nodes=root.querySelectorAll('*');"
+                        + " for(var i=0;i<nodes.length;i++){"
+                        + "  var el=nodes[i];"
+                        + "  if(el._instance){var hit=walkInst(el._instance,0,seen);if(hit)return hit;}"
+                        + "  if(el.shadowRoot){var inner=walkDom(el.shadowRoot,seen);if(inner)return inner;}"
+                        + " }"
+                        + " return null;"
+                        + "}"
+                        + "var seen=new Set();"
+                        + "return walkDom(document.body,seen)||walkDom(document.documentElement,seen);";
+        Object raw = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script);
+        if (!(raw instanceof java.util.Map<?, ?> map)) {
+            return false;
+        }
+        Object idRaw = map.get("processId");
+        Object keyRaw = map.get("authKey");
+        if (idRaw == null || keyRaw == null) {
+            return false;
+        }
+        try {
+            int processId = idRaw instanceof Number number
+                    ? number.intValue()
+                    : Integer.parseInt(String.valueOf(idRaw));
+            String authKey = String.valueOf(keyRaw);
+            if (processId <= 0 || authKey.isBlank()) {
+                return false;
+            }
+            ThinnedProcess p = new ThinnedProcess();
+            p.setProcessId(processId);
+            p.setAuthKey(authKey);
+            zms.ataf.rest.steps.CitizenApiSteps.setBookingProcess(p);
+            ScenarioLogManager.getLogger()
+                    .info("zmscitizenview: captured booking process from Vue appointment (processId={})", processId);
+            return true;
+        } catch (NumberFormatException e) {
+            ScenarioLogManager.getLogger().debug("zmscitizenview: Vue appointment process id was not numeric", e);
+            return false;
+        }
     }
 
     /** Summary nodes are {@code process-{id}-displayNumber-*}. The id is enough to match GET /mails/. */
