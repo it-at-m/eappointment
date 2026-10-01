@@ -197,9 +197,8 @@ public class CitizenApiSteps {
                 }
             }
         }
-        Assertions.assertThat(relation)
-            .as("relation office %d service %d", officeId, serviceId)
-            .isNotNull();
+        relation = java.util.Objects.requireNonNull(
+                relation, "relation office " + officeId + " service " + serviceId);
         Assertions.assertThat(relation.getSlots())
             .as("service %d slots at office %d", serviceId, officeId)
             .isEqualTo(slots);
