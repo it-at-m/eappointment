@@ -1253,7 +1253,12 @@ public class CounterProcessingStationPage extends AdminPage {
         CONTEXT.set();
         WebElement count = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
                 .until(ExpectedConditions.visibilityOfElementLocated(WAITING_CLIENTS_EFFECTIVE));
-        return Integer.parseInt(count.getText().trim());
+        String text = count.getText().trim();
+        try {
+            return Integer.parseInt(text);
+        } catch (NumberFormatException e) {
+            throw new AssertionError("Wartende count is not a number: \"" + text + "\"", e);
+        }
     }
 
     /**

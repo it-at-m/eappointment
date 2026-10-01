@@ -56,6 +56,7 @@ public class AdminSteps {
 
     private final ProcessingStationSection PROCESSING_STATION_SECTION;
     private final CustomerSearchPage CUSTOMER_SEARCH_PAGE;
+    private int rememberedWaitingClients;
 
     public AdminSteps() {
         ADMIN_PAGE = new AdminPage(DriverUtil.getDriver());
@@ -688,16 +689,15 @@ public class AdminSteps {
 
     @Wenn("die aktuelle Anzahl der Wartenden gemerkt wird.")
     public void die_aktuelle_anzahl_der_wartenden_gemerkt_wird() {
-        int count = COUNTER_PROCESSING_STATION_PAGE.readWaitingClientsEffective();
-        TestDataHelper.setTestData("waiting_clients_effective", String.valueOf(count));
-        ScenarioLogManager.getLogger().info("Wartende before the new queue entries: {}", count);
+        rememberedWaitingClients = COUNTER_PROCESSING_STATION_PAGE.readWaitingClientsEffective();
+        ScenarioLogManager.getLogger().info("Wartende before the new queue entries: {}", rememberedWaitingClients);
     }
 
     @Dann("steigt die gemerkte Anzahl der Wartenden ohne Seitenaktualisierung innerhalb von {int} Sekunden um {int}.")
     public void steigt_die_gemerkte_anzahl_der_wartenden_ohne_seitenaktualisierung(
             int timeoutSeconds, int increase) {
-        int start = Integer.parseInt(TestDataHelper.getTestData("waiting_clients_effective"));
-        COUNTER_PROCESSING_STATION_PAGE.waitUntilWaitingClientsEffectiveAtLeast(start + increase, timeoutSeconds);
+        COUNTER_PROCESSING_STATION_PAGE.waitUntilWaitingClientsEffectiveAtLeast(
+                rememberedWaitingClients + increase, timeoutSeconds);
     }
 
     @Dann("wird die Seite Sachbearbeiterplatz angezeigt.")
