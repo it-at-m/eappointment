@@ -113,29 +113,71 @@
               </p>
               <p class="no-bottom-margin smaller-front-size">
                 <strong>{{
-                  getAppointmentLocationVariantLabel(variantId, t)
+                  getAppointmentLocationVariantLabel(
+                    variantId,
+                    t,
+                    selectedService?.variantOverwrite
+                  )
                 }}</strong
                 ><br />
               </p>
-              <p v-if="getAppointmentLocationVariantHint(variantId, t)">
-                {{ getAppointmentLocationVariantHint(variantId, t) }}
+              <p
+                v-if="
+                  getAppointmentLocationVariantHint(
+                    variantId,
+                    t,
+                    selectedService?.variantOverwrite
+                  )
+                "
+              >
+                {{
+                  getAppointmentLocationVariantHint(
+                    variantId,
+                    t,
+                    selectedService?.variantOverwrite
+                  )
+                }}
               </p>
             </template>
 
-            <template v-else-if="isVariantWithHint(variantId)">
+            <template
+              v-else-if="
+                getAppointmentLocationVariantHint(
+                  variantId,
+                  t,
+                  selectedService?.variantOverwrite
+                )
+              "
+            >
               <p class="no-bottom-margin smaller-front-size">
                 <strong>{{
-                  getAppointmentLocationVariantLabel(variantId, t)
+                  getAppointmentLocationVariantLabel(
+                    variantId,
+                    t,
+                    selectedService?.variantOverwrite
+                  )
                 }}</strong
                 ><br />
               </p>
-              <p>{{ getAppointmentLocationVariantHint(variantId, t) }}</p>
+              <p>
+                {{
+                  getAppointmentLocationVariantHint(
+                    variantId,
+                    t,
+                    selectedService?.variantOverwrite
+                  )
+                }}
+              </p>
             </template>
 
             <template v-else>
               <p>
                 <strong>{{
-                  getAppointmentLocationVariantLabel(variantId, t)
+                  getAppointmentLocationVariantLabel(
+                    variantId,
+                    t,
+                    selectedService?.variantOverwrite
+                  )
                 }}</strong
                 ><br />
               </p>
@@ -378,7 +420,6 @@ import {
   getAppointmentLocationVariantLabel,
   getServiceBaseURL,
   isVariantWithAddress,
-  isVariantWithHint,
   VARIANT_ID_VIDEO,
 } from "@/utils/Constants";
 import { containsParagraphTag } from "@/utils/containsParagraphTag";

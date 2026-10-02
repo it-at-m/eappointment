@@ -20,7 +20,13 @@
             class="m-teaser-contained-contact__summary"
           >
             <span v-if="isTelephoneOrVideoVariant">
-              {{ t(`appointmentTypes.${variantId}`) }}
+              {{
+                getAppointmentLocationVariantLabel(
+                  variantId,
+                  t,
+                  selectedService?.variantOverwrite
+                )
+              }}
             </span>
             <span v-else>
               {{ selectedProvider.name }}
@@ -67,7 +73,11 @@ import { computed, ref } from "vue";
 
 // Calculate duration locally
 import { calculateEstimatedDuration } from "@/utils/calculateEstimatedDuration";
-import { VARIANT_ID_TELEPHONE, VARIANT_ID_VIDEO } from "@/utils/Constants";
+import {
+  getAppointmentLocationVariantLabel,
+  VARIANT_ID_TELEPHONE,
+  VARIANT_ID_VIDEO,
+} from "@/utils/Constants";
 import { containsParagraphTag } from "@/utils/containsParagraphTag";
 import {
   formatDayFromDate,
