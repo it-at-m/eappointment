@@ -21,11 +21,7 @@
           >
             <span v-if="isTelephoneOrVideoVariant">
               {{
-                getAppointmentLocationVariantLabel(
-                  variantId,
-                  t,
-                  selectedService?.variantOverwrite
-                )
+                getVariant(variantId, selectedService?.variantOverwrite)?.name
               }}
             </span>
             <span v-else>
@@ -73,17 +69,14 @@ import { computed, ref } from "vue";
 
 // Calculate duration locally
 import { calculateEstimatedDuration } from "@/utils/calculateEstimatedDuration";
-import {
-  getAppointmentLocationVariantLabel,
-  VARIANT_ID_TELEPHONE,
-  VARIANT_ID_VIDEO,
-} from "@/utils/Constants";
+import { VARIANT_ID_TELEPHONE, VARIANT_ID_VIDEO } from "@/utils/Constants";
 import { containsParagraphTag } from "@/utils/containsParagraphTag";
 import {
   formatDayFromDate,
   formatTimeFromUnix,
 } from "@/utils/formatAppointmentDateTime";
 import { sanitizeHtml } from "@/utils/sanitizeHtml";
+import { useVariant } from "@/utils/useVariant";
 
 const props = defineProps<{
   t: (key: string) => string;
@@ -92,6 +85,8 @@ const props = defineProps<{
   selectedTimeslot: number;
   selectedService: any;
 }>();
+
+const getVariant = useVariant(props.t);
 
 const summary = ref<HTMLElement | null>(null);
 

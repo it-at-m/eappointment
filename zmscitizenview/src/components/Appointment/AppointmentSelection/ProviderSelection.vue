@@ -78,11 +78,8 @@
                     "
                   >
                     {{
-                      getAppointmentLocationVariantLabel(
-                        variantId,
-                        t,
-                        selectedService?.variantOverwrite
-                      )
+                      getVariant(variantId, selectedService?.variantOverwrite)
+                        ?.name
                     }}
                   </span>
 
@@ -107,7 +104,7 @@ import { MucCheckbox, MucCheckboxGroup } from "@muenchen/muc-patternlab-vue";
 import { computed, inject } from "vue";
 
 import { SelectedServiceProvider } from "@/types/ProvideInjectTypes";
-import { getAppointmentLocationVariantLabel } from "@/utils/Constants";
+import { useVariant } from "@/utils/useVariant";
 
 const VARIANT_ID_TEL = 2;
 const VARIANT_ID_VIDEO = 3;
@@ -120,6 +117,8 @@ const props = defineProps<{
   selectedProviders: { [id: string]: boolean };
   providerSelectionError: string | undefined;
 }>();
+
+const getVariant = useVariant(props.t);
 
 const emit = defineEmits<{
   (e: "update:selectedProviders", value: { [id: string]: boolean }): void;

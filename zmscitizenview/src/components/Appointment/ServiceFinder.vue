@@ -72,18 +72,10 @@
             :id="'variant-' + variant.variantId"
             :value="variant.variantId?.toString() ?? ''"
             :label="
-              getAppointmentLocationVariantLabel(
-                variant.variantId,
-                t,
-                variant.variantOverwrite
-              )
+              getVariant(variant.variantId, variant.variantOverwrite)?.name
             "
             :hint="
-              getVariantHint(
-                variant.variantId ?? 0,
-                t,
-                variant.variantOverwrite
-              )
+              getVariant(variant.variantId, variant.variantOverwrite)?.hint
             "
           />
         </muc-radio-button-group>
@@ -228,9 +220,7 @@ import { ServiceImpl } from "@/types/ServiceImpl";
 import { handleApiResponseForDownTime } from "@/utils/apiStatusService";
 import { calculateEstimatedDuration } from "@/utils/calculateEstimatedDuration";
 import {
-  getAppointmentLocationVariantLabel,
   getServiceBaseURL,
-  getVariantHint,
   OFTEN_SEARCHED_SERVICES,
   shouldAddImplicitPresenceVariant,
   VARIANT_ID_PRESENCE,
@@ -250,6 +240,7 @@ import {
   getMaxSlotOfProvider,
 } from "@/utils/slotCalculations";
 import { trackAppointmentEvent } from "@/utils/trackAppointmentEvent";
+import { useVariant } from "@/utils/useVariant";
 
 const isCaptchaValid = ref<boolean>(false);
 const servicesRef = ref(null);
@@ -262,6 +253,8 @@ const props = defineProps<{
   exclusiveLocation: string | undefined;
   t: (key: string) => string;
 }>();
+
+const getVariant = useVariant(props.t);
 
 const emit = defineEmits<{
   (e: "next"): void;
