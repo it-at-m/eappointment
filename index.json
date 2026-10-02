@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-10-02T11:25:40.585Z",
+  "publishedAt": "2026-10-02T11:47:27.594Z",
   "branches": [
     {
       "name": "next",
@@ -108,6 +108,12 @@
       "slug": "feature-zmskvr-1191-proactive-source-cache-warmup",
       "runId": "33154463439",
       "runStartedAt": "2026-08-28T08:13:00Z"
+    },
+    {
+      "name": "feature-zmskvr-1319-allow-variant-overwrite",
+      "slug": "feature-zmskvr-1319-allow-variant-overwrite",
+      "runId": "37001219486",
+      "runStartedAt": "2026-10-02T11:28:45Z"
     },
     {
       "name": "feature-zmskvr-1440-captcha-restart-booking",
