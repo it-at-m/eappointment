@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-10-02T11:47:27.594Z",
+  "publishedAt": "2026-10-02T13:33:47.172Z",
   "branches": [
     {
       "name": "next",
@@ -282,6 +282,12 @@
       "slug": "test-zmskvr-1491-zmskvr-1510-legal-notices",
       "runId": "36925179533",
       "runStartedAt": "2026-10-01T20:56:03Z"
+    },
+    {
+      "name": "test-zmskvr-1496-zmskvr-1550-zmskvr-1573-service-statistic",
+      "slug": "test-zmskvr-1496-zmskvr-1550-zmskvr-1573-service-statistic",
+      "runId": "37012472426",
+      "runStartedAt": "2026-10-02T13:21:41Z"
     },
     {
       "name": "test-zmskvr-1501-zmskvr-1509-slot-calculation",
