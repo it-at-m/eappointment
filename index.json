@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-10-02T23:11:37.369Z",
+  "publishedAt": "2026-10-02T23:15:57.516Z",
   "branches": [
     {
       "name": "next",
@@ -216,6 +216,12 @@
       "slug": "fix-zmsstatistic-psalm-alerts",
       "runId": "34109819115",
       "runStartedAt": "2026-09-07T10:08:06Z"
+    },
+    {
+      "name": "maintenance-gh-3481-english-cucumber",
+      "slug": "maintenance-gh-3481-english-cucumber",
+      "runId": "37075582707",
+      "runStartedAt": "2026-10-02T23:02:02Z"
     },
     {
       "name": "renovate/next-cucumber.version",

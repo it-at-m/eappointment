@@ -1,0 +1,35 @@
+{
+  "branch": "maintenance-gh-3481-english-cucumber",
+  "branchSlug": "maintenance-gh-3481-english-cucumber",
+  "runId": "37075582707",
+  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37075582707",
+  "runStartedAt": "2026-10-02T23:02:02Z",
+  "publishedAt": "2026-10-02T23:15:57.516Z",
+  "features": {
+    "feature-ui-zmsadmin-queue-zmskvr-1531-zmskvr-1493-appointment-waiting-count": {
+      "status": "passed",
+      "shard": "custom",
+      "browser": "chrome",
+      "browsers": {
+        "chrome": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "37075582707",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37075582707",
+          "runStartedAt": "2026-10-02T23:02:02Z"
+        },
+        "firefox": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "37075582707",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37075582707",
+          "runStartedAt": "2026-10-02T23:02:02Z"
+        }
+      },
+      "rel": "ui/zmsadmin/queue/zmskvr-1531_zmskvr-1493_appointment_waiting_count.feature",
+      "runId": "37075582707",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37075582707",
+      "runStartedAt": "2026-10-02T23:02:02Z"
+    }
+  }
+}
