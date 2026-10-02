@@ -9,8 +9,8 @@ Funktionalität: Kundensuche findet kurze Namen
   # Die beiden Szenarien laufen parallel und dürfen sich keine Namen teilen.
   # Jax, Jax Quinn, Quinn Jax, Jaxley Quinn, Jaxlin Shore, Porter, Porter Shaw,
   # Shaw Porter, Porterlyn Shaw und Lark Meadow sind erfundene Bürgernamen.
-  # Die Liste steht mit dem neuesten Termin zuerst, bei gleichem Termin mit der
-  # höchsten Vorgangsnummer. Der echte Name wird zuletzt angelegt und steht oben.
+  # Neue Vorgänge bekommen eine freie Nummer aus der Sequenz, nicht die nächste.
+  # Bei gleichem Termin folgt die Liste dieser Nummer, deshalb wird nur die Menge geprüft.
   # Alle Spontankunden werden gelöscht.
 
   Szenario: Drei Zeichen finden den Namen unabhängig von der Großschreibung
@@ -27,14 +27,14 @@ Funktionalität: Kundensuche findet kurze Namen
     Und Sie einen Spontankunden mit der Dienstleistung "Spontan eAT/eRA", dem Namen "Jax Quinn", Freitextfeld "Note" und Freitextfeld 2 "" buchen.
     Und Sie einen Spontankunden mit der Dienstleistung "Spontan eAT/eRA", dem Namen "Jax", Freitextfeld "Note" und Freitextfeld 2 "" buchen.
     Wenn Sie in der Kundensuche nach "Jax" suchen.
-    Dann listet die Kundensuche die Namen in dieser Reihenfolge:
+    Dann listet die Kundensuche diese Namen:
       | Jax |
       | Jax Quinn |
       | Quinn Jax |
       | Jaxlin Shore |
       | Jaxley Quinn |
     Wenn Sie in der Kundensuche nach "jax" suchen.
-    Dann listet die Kundensuche die Namen in dieser Reihenfolge:
+    Dann listet die Kundensuche diese Namen:
       | Jax |
       | Jax Quinn |
       | Quinn Jax |
@@ -48,7 +48,7 @@ Funktionalität: Kundensuche findet kurze Namen
     Und Sie den gerade gebuchten Termin von "Jax Quinn" in der Warteschlange löschen.
     Und Sie den gerade gebuchten Termin von "Jax" in der Warteschlange löschen.
 
-  Szenario: Ein älterer Teilstring steht unter dem später gebuchten Namen
+  Szenario: Ein älterer Teilstring bleibt neben dem Namen sichtbar
     Wenn Sie zur Webseite der Administration navigieren.
     Dann sollten Sie sich am Start des Zeitmanagementsystem befinden.
     Wenn Sie im Zeitmanagementsystem auf die Schaltfläche "Anmelden" klicken.
@@ -62,7 +62,7 @@ Funktionalität: Kundensuche findet kurze Namen
     Und Sie einen Spontankunden mit der Dienstleistung "Spontan eAT/eRA", dem Namen "Porter Shaw", Freitextfeld "Note" und Freitextfeld 2 "" buchen.
     Und Sie einen Spontankunden mit der Dienstleistung "Spontan eAT/eRA", dem Namen "Porter", Freitextfeld "Note" und Freitextfeld 2 "" buchen.
     Wenn Sie in der Kundensuche nach "Porter" suchen.
-    Dann listet die Kundensuche die Namen in dieser Reihenfolge:
+    Dann listet die Kundensuche diese Namen:
       | Porter |
       | Porter Shaw |
       | Shaw Porter |

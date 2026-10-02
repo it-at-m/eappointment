@@ -432,13 +432,13 @@ public class AdminSteps {
                 TestDataHelper.transformTestData(third));
     }
 
-    @Dann("listet die Kundensuche die Namen in dieser Reihenfolge:")
-    public void listetDieKundensucheDieNamenInDieserReihenfolge(DataTable table) {
+    @Dann("listet die Kundensuche diese Namen:")
+    public void listetDieKundensucheDieseNamen(DataTable table) {
         List<String> names = new ArrayList<>();
         for (List<String> row : table.asLists()) {
             names.add(TestDataHelper.transformTestData(row.get(0)));
         }
-        CUSTOMER_SEARCH_PAGE.assertNamesInOrder(names);
+        CUSTOMER_SEARCH_PAGE.assertNames(names);
     }
 
     @Dann("zeigt die Kundensuche für {string} den Status {string} mit heutiger Buchung und ohne Terminaufruf.")

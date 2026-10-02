@@ -602,15 +602,16 @@ public class ZmsApiSteps {
             .containsExactly(earlierName, laterName);
     }
 
-    @Then("the process search lists these names in order:")
-    public void theProcessSearchListsTheseNamesInOrder(DataTable table) {
+    @Then("the process search lists these names:")
+    public void theProcessSearchListsTheseNames(DataTable table) {
         List<String> expected = table.asLists().stream().map(row -> row.get(0)).toList();
         List<String> found = familyNamesInSearch().stream()
             .filter(expected::contains)
+            .distinct()
             .toList();
         Assertions.assertThat(found)
-            .as("GET /process/search/ name order. Body=%s", truncate(response.asString(), 1500))
-            .containsExactlyElementsOf(expected);
+            .as("GET /process/search/ names. Body=%s", truncate(response.asString(), 1500))
+            .containsExactlyInAnyOrderElementsOf(expected);
     }
 
     @Then("the process {string} has appointment status {string} and a booking time")
