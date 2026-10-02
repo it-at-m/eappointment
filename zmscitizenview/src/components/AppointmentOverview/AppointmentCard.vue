@@ -39,6 +39,7 @@ import { Office } from "@/api/models/Office";
 import { Service } from "@/api/models/Service";
 import CalendarIcon from "@/components/Common/CalendarIcon.vue";
 import {
+  getAppointmentLocationVariantLabel,
   QUERY_PARAM_APPOINTMENT_DISPLAY_NUMBER,
   QUERY_PARAM_APPOINTMENT_ID,
   resolveAgainstCurrentPage,
@@ -75,14 +76,26 @@ const variantId = computed<number | null>(
 
 const appointmentTypeLabel = computed<string>(() => {
   if (variantId.value === VARIANT_ID_TELEPHONE) {
-    return props.t(`appointmentTypes.${VARIANT_ID_TELEPHONE}`);
+    return getAppointmentLocationVariantLabel(
+      variantId.value,
+      props.t,
+      selectedService.value?.variantOverwrite
+    )!;
   }
 
   if (variantId.value === VARIANT_ID_VIDEO) {
-    return props.t(`appointmentTypes.${VARIANT_ID_VIDEO}`);
+    return getAppointmentLocationVariantLabel(
+      variantId.value,
+      props.t,
+      selectedService.value?.variantOverwrite
+    )!;
   }
 
-  return props.t(`appointmentTypes.${VARIANT_ID_PRESENCE}`);
+  return getAppointmentLocationVariantLabel(
+    variantId.value,
+    props.t,
+    selectedService.value?.variantOverwrite
+  )!;
 });
 
 const locationIcon = computed<string>(() => {
