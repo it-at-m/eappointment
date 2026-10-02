@@ -740,7 +740,12 @@ public class AdminSteps {
 
     @Dann("ist die gemerkte Anzahl der Wartenden unter Informationen mit Erreichen der Terminminute um {int} erhöht.")
     public void ist_die_anzahl_der_wartenden_mit_erreichen_der_terminminute_erhoeht(int increase) {
-        long appointment = Long.parseLong(TestDataHelper.getTestData("appointment_epoch"));
+        long appointment;
+        try {
+            appointment = Long.parseLong(TestDataHelper.getTestData("appointment_epoch"));
+        } catch (NumberFormatException exception) {
+            throw new AssertionError("Appointment time was not stored", exception);
+        }
         long now = Instant.now().getEpochSecond();
         if (appointment - now > 45) {
             int before = COUNTER_SECTION.reloadAndReadWaitingClientsOnCounter();
