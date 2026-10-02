@@ -242,6 +242,31 @@ public class StatisticsPage extends BasePage {
         }
     }
 
+    /**
+     * Selects exactly the given Standorte in the report filter. A plain click replaces the selection;
+     * several Standorte are set together so the report is not limited to the workstation scope.
+     */
+    public void selectScopesInStatisticsTableFilter(List<String> locations) {
+        ScenarioLogManager.getLogger().info("Selecting scopes in statistics table filter: " + locations);
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        WebElement select = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("scope-select")));
+        Object result = ((JavascriptExecutor) DRIVER).executeScript(
+                "var sel = arguments[0]; var wanted = arguments[1];"
+                        + "for (var i = 0; i < sel.options.length; i++) { sel.options[i].selected = false; }"
+                        + "for (var w = 0; w < wanted.length; w++) {"
+                        + "  var hits = [];"
+                        + "  for (var i = 0; i < sel.options.length; i++) {"
+                        + "    if (sel.options[i].text.indexOf(wanted[w]) !== -1) hits.push(i);"
+                        + "  }"
+                        + "  if (hits.length !== 1) return wanted[w] + ' matches ' + hits.length;"
+                        + "  sel.options[hits[0]].selected = true;"
+                        + "}"
+                        + "sel.dispatchEvent(new Event('change', {bubbles: true}));"
+                        + "return 'ok';",
+                select, locations);
+        Assert.assertEquals(String.valueOf(result), "ok", "Standortauswahl failed: " + result);
+    }
+
     /** Second scope context: set date range in the statistics table filter panel (after opening a statistics sub-page). */
     public void applyDateRangeFilter(LocalDate from, LocalDate to) {
         ScenarioLogManager.getLogger().info("Applying date range in statistics table filter...");
