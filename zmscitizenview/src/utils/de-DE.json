@@ -303,7 +303,7 @@
   "systemFailurePageHeader": "Diese Funktion ist zur Zeit nicht verfügbar.",
   "systemFailurePageText": "Es gibt aktuell leider ein technisches Problem mit dieser Funktion. Bitte versuchen Sie es später noch einmal.",
   "appointmentType": "Art des Termins",
-  "appointmentTypes": {
+  "variants": {
     "1": "Vor-Ort-Termin",
     "2": "Telefon-Termin",
     "3": "Videoberatung",
@@ -312,7 +312,7 @@
     "6": "Termin für einen Kleinkunden",
     "7": "Termin für einen Großkunden"
   },
-  "locationVariantText": {
+  "variantHint": {
     "1": "Sie kommen persönlich an unserem Standort vorbei.",
     "2": "Wir rufen Sie unter Ihrer gewünschten Nummer an.",
     "3": "Sie erhalten einen Einwahllink für ein Online-Meeting."
