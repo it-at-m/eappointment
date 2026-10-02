@@ -960,6 +960,20 @@ const publishAssetsWithoutMdNames = (outDir) => {
         changed = true;
       }
     }
+    // The router does not store "index.md.<hash>.js". It builds
+    // `/assets/${page}.md.${hash}.js` and then swaps in ".lean.js".
+    // Renaming the file is not enough; the built URL has to drop ".md" too.
+    if (file.endsWith(".js")) {
+      const patched = text.replace(
+        /\/assets\/\$\{([A-Za-z_$][\w$]*)\}\.\$\{([A-Za-z_$][\w$]*)\}\.js/g,
+        (_match, pageVar, hashVar) =>
+          `/assets/\${${pageVar}.replace(/\\.md$/, "")}.\${${hashVar}}.js`
+      );
+      if (patched !== text) {
+        text = patched;
+        changed = true;
+      }
+    }
     if (changed) {
       fs.writeFileSync(file, text);
     }
