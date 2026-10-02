@@ -9,7 +9,6 @@ import ataf.core.helpers.TestDataHelper;
 import ataf.core.logging.ScenarioLogManager;
 import ataf.web.utils.DriverUtil;
 import io.cucumber.java.After;
-import io.cucumber.java.de.Wenn;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
@@ -445,7 +444,7 @@ public class CitizenViewSteps {
     /**
      * Abholung at Ruppertstraße, then Termin absagen. The Nachname is what Kundensuche matches.
      */
-    @Wenn("ein Bürger über die Bürgeransicht einen Termin mit dem Nachnamen {string} bucht und absagt.")
+    @When("a citizen books and cancels an appointment with family name {string} in the citizen view.")
     public void einBuergerBuchtUndSagtAb(String lastName) throws Exception {
         String name = TestDataHelper.transformTestData(lastName);
         TestDataHelper.setTestData("customer_name", "E2E " + name);

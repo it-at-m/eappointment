@@ -1,20 +1,20 @@
-#language: de
-Funktionalität: Am Tresen ist jederzeit sichtbar, welche Kunden sich aktuell in der Warteschlange befinden.
+#language: en
+Feature: The counter always shows which customers are currently in the queue.
 
 	@web @zmsadmin @queue @clerk @ZMS-1548 @ZMS-1547 @E2E @automatisiert @executeLocally
-	Szenario: Tresen Übersicht der aktuellen Warteschlange
-		Wenn Sie zur Webseite der Administration navigieren.
-		Dann sollten Sie sich am Start des Zeitmanagementsystem befinden.
-		Wenn Sie im Zeitmanagementsystem auf die Schaltfläche "Anmelden" klicken.
-		Dann öffnet sich die Standort auswählen Seite.
-		Wenn Sie für "Standort" den Wert "Bürgerbüro Orleansplatz (KVR II/231 SP) Serviceschalter" auswählen.
-		Wenn Sie im Zeitmanagementsystem auf die Schaltfläche "Auswahl bestätigen" klicken.
-		Dann wird die Seite Tresen geöffnet.
-		Wenn Sie im Zeitmanagementsystem in der Kopfzeile auf die Schaltfläche "Auswahl ändern" klicken.
-		Dann öffnet sich die Standort auswählen Seite.
-		Wenn Sie für "Standort" den Wert "Bürgerbüro Orleansplatz (KVR II/231 SP) Serviceschalter" auswählen.
-		Wenn Sie in Feld "Platz-Nr. oder Tresen" den Text "1" eingeben.
-		Wenn Sie im Zeitmanagementsystem auf die Schaltfläche "Auswahl bestätigen" klicken.
-		Dann wird die Seite Sachbearbeiterplatz angezeigt.
-		Wenn Sie im Zeitmanagementsystem in der Navigationsleite auf die Schaltfläche "Tresen" klicken.
-		Dann wird die Seite Tresen geöffnet.
+	Scenario: Counter overview of the current queue
+		When I open the administration website.
+		Then I should be on the administration start page.
+		When I click the button "Anmelden" in the administration.
+		Then the select-location page opens.
+		When I select for "Standort" the value "Bürgerbüro Orleansplatz (KVR II/231 SP) Serviceschalter".
+		When I click the button "Auswahl bestätigen" in the administration.
+		Then the counter page is opened.
+		When I click the button "Auswahl ändern" in the administration header.
+		Then the select-location page opens.
+		When I select for "Standort" the value "Bürgerbüro Orleansplatz (KVR II/231 SP) Serviceschalter".
+		When I enter in the field "Platz-Nr. oder Tresen" the text "1".
+		When I click the button "Auswahl bestätigen" in the administration.
+		Then the workstation page is displayed.
+		When I click the button "Tresen" in the administration navigation.
+		Then the counter page is opened.

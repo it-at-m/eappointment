@@ -1,32 +1,32 @@
-#language: de
-Funktionalität: Einheitliches Erfolgs-Pop-Up für Termin- und Spontankunden
+#language: en
+Feature: The same success popup for appointment customers and walk-in customers
 
     @web @zmsadmin @booking @clerk @ZMSKVR-343 @automatisiert @executeLocally
-    Szenario: Spontankunde kann direkt nach dem Anlegen bearbeitet werden
-        Wenn Sie zur Webseite der Administration navigieren.
-        Dann sollten Sie sich am Start des Zeitmanagementsystem befinden.
-        Wenn Sie im Zeitmanagementsystem auf die Schaltfläche "Anmelden" klicken.
-        Und Sie für "Standort" den Wert "Bürgerbüro Pasing (KVR-II/235)" auswählen.
-        Und Sie in Feld "Platz-Nr. oder Tresen" den Text "4" eingeben.
-        Und Sie im Zeitmanagementsystem auf die Schaltfläche "Auswahl bestätigen" klicken.
-        Dann wird die Seite Sachbearbeiterplatz angezeigt.
-        Wenn Sie im Zeitmanagementsystem unter Termin erstellen die Dienstleistung "Führungszeugnis" auswählen.
-        Und Sie im Zeitmanagementsystem unter Termin erstellen den Namen "<zufällig>" eingeben.
-        Und Sie im Zeitmanagementsystem unter Termin erstellen auf die Schaltfläche "Spontankunden hinzufügen" klicken.
-        Wenn Sie im Zeitmanagementsystem auf die Schaltfläche "Termin bearbeiten" klicken.
-        Dann wird das Bearbeitungsformular für den Spontankunden angezeigt.
+    Scenario: A walk-in customer can be edited immediately after creation
+        When I open the administration website.
+        Then I should be on the administration start page.
+        When I click the button "Anmelden" in the administration.
+        And I select for "Standort" the value "Bürgerbüro Pasing (KVR-II/235)".
+        And I enter in the field "Platz-Nr. oder Tresen" the text "4".
+        And I click the button "Auswahl bestätigen" in the administration.
+        Then the workstation page is displayed.
+        When I select the service "Führungszeugnis" under create appointment in the administration.
+        And I enter the name "<zufällig>" under create appointment in the administration.
+        And I click the button "Spontankunden hinzufügen" under create appointment in the administration.
+        When I click the button "Termin bearbeiten" in the administration.
+        Then the edit form for the walk-in customer is displayed.
 
 
 
     @web @zmsadmin @booking @clerk @ZMSKVR-343 @automatisiert @executeLocally
-    Szenario: Terminkunde kann direkt nach dem Anlegen bearbeitet werden
-        Wenn Sie zur Webseite der Administration navigieren.
-        Dann sollten Sie sich am Start des Zeitmanagementsystem befinden.
-        Wenn Sie im Zeitmanagementsystem auf die Schaltfläche "Anmelden" klicken.
-        Und Sie für "Standort" den Wert "Bürgerbüro Pasing (KVR-II/235)" auswählen.
-        Und Sie in Feld "Platz-Nr. oder Tresen" den Text "4" eingeben.
-        Und Sie im Zeitmanagementsystem auf die Schaltfläche "Auswahl bestätigen" klicken.
-        Dann wird die Seite Sachbearbeiterplatz angezeigt.
-        Wenn Sie einen Terminkunden mit der Dienstleistung "Führungszeugnis", Uhrzeit, name und gültige E-Mail-Adresse buchen.
-        Wenn Sie im Zeitmanagementsystem auf die Schaltfläche "Termin bearbeiten" klicken.
-        Dann wird das Bearbeitungsformular für den Terminkunden angezeigt.
+    Scenario: An appointment customer can be edited immediately after creation
+        When I open the administration website.
+        Then I should be on the administration start page.
+        When I click the button "Anmelden" in the administration.
+        And I select for "Standort" the value "Bürgerbüro Pasing (KVR-II/235)".
+        And I enter in the field "Platz-Nr. oder Tresen" the text "4".
+        And I click the button "Auswahl bestätigen" in the administration.
+        Then the workstation page is displayed.
+        When I book an appointment customer with service "Führungszeugnis", time, name and a valid email address.
+        When I click the button "Termin bearbeiten" in the administration.
+        Then the edit form for the appointment customer is displayed.

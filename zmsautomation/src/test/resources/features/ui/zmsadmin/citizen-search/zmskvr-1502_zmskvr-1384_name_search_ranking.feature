@@ -1,8 +1,8 @@
-#language: de
+#language: en
 @web @zmsadmin @citizen-search @clerk @ZMSKVR-1384 @ZMSKVR-1502 @automatisiert @executeLocally
-Funktionalität: Kundensuche findet kurze Namen
-  Als Sachbearbeiter*in möchte ich einen Termin über einen kurzen Namen finden
-  Damit Groß- und Kleinschreibung denselben Treffer liefern
+Feature: Customer search finds short names
+  As a clerk I want to find an appointment by a short name
+  So that upper and lower case return the same match
 
   # Standort 368, Dokumentenausgabe2. Freitextfeld 1 ist Pflicht.
   # "Note" steht dort, außer wenn der Treffer nur im Freitext liegen soll.
@@ -13,65 +13,65 @@ Funktionalität: Kundensuche findet kurze Namen
   # Bei gleichem Termin folgt die Liste dieser Nummer, deshalb wird nur die Menge geprüft.
   # Alle Spontankunden werden gelöscht.
 
-  Szenario: Drei Zeichen finden den Namen unabhängig von der Großschreibung
-    Wenn Sie zur Webseite der Administration navigieren.
-    Dann sollten Sie sich am Start des Zeitmanagementsystem befinden.
-    Wenn Sie im Zeitmanagementsystem auf die Schaltfläche "Anmelden" klicken.
-    Und Sie für "Standort" den Wert "Dokumentenausgabe (KVR-V/132) Dokumentenausgabe2" auswählen.
-    Und Sie in Feld "Platz-Nr. oder Tresen" den Text "4" eingeben.
-    Und Sie im Zeitmanagementsystem auf die Schaltfläche "Auswahl bestätigen" klicken.
-    Dann wird die Seite Sachbearbeiterplatz angezeigt.
-    Wenn Sie einen Spontankunden mit der Dienstleistung "Spontan eAT/eRA", dem Namen "Jaxley Quinn", Freitextfeld "Note" und Freitextfeld 2 "" buchen.
-    Und Sie einen Spontankunden mit der Dienstleistung "Spontan eAT/eRA", dem Namen "Jaxlin Shore", Freitextfeld "Note" und Freitextfeld 2 "" buchen.
-    Und Sie einen Spontankunden mit der Dienstleistung "Spontan eAT/eRA", dem Namen "Quinn Jax", Freitextfeld "Note" und Freitextfeld 2 "" buchen.
-    Und Sie einen Spontankunden mit der Dienstleistung "Spontan eAT/eRA", dem Namen "Jax Quinn", Freitextfeld "Note" und Freitextfeld 2 "" buchen.
-    Und Sie einen Spontankunden mit der Dienstleistung "Spontan eAT/eRA", dem Namen "Jax", Freitextfeld "Note" und Freitextfeld 2 "" buchen.
-    Wenn Sie in der Kundensuche nach "Jax" suchen.
-    Dann listet die Kundensuche diese Namen:
+  Scenario: Three characters find the name regardless of case
+    When I open the administration website.
+    Then I should be on the administration start page.
+    When I click the button "Anmelden" in the administration.
+    And I select for "Standort" the value "Dokumentenausgabe (KVR-V/132) Dokumentenausgabe2".
+    And I enter in the field "Platz-Nr. oder Tresen" the text "4".
+    And I click the button "Auswahl bestätigen" in the administration.
+    Then the workstation page is displayed.
+    When I book a walk-in customer with service "Spontan eAT/eRA", name "Jaxley Quinn", free text "Note" and second free text "".
+    And I book a walk-in customer with service "Spontan eAT/eRA", name "Jaxlin Shore", free text "Note" and second free text "".
+    And I book a walk-in customer with service "Spontan eAT/eRA", name "Quinn Jax", free text "Note" and second free text "".
+    And I book a walk-in customer with service "Spontan eAT/eRA", name "Jax Quinn", free text "Note" and second free text "".
+    And I book a walk-in customer with service "Spontan eAT/eRA", name "Jax", free text "Note" and second free text "".
+    When I search for "Jax" in the customer search.
+    Then the customer search lists these names:
       | Jax |
       | Jax Quinn |
       | Quinn Jax |
       | Jaxlin Shore |
       | Jaxley Quinn |
-    Wenn Sie in der Kundensuche nach "jax" suchen.
-    Dann listet die Kundensuche diese Namen:
+    When I search for "jax" in the customer search.
+    Then the customer search lists these names:
       | Jax |
       | Jax Quinn |
       | Quinn Jax |
       | Jaxlin Shore |
       | Jaxley Quinn |
-    Wenn Sie zum Sachbearbeiterplatz zurückkehren.
-    Dann wird die Seite Sachbearbeiterplatz angezeigt.
-    Wenn Sie den gerade gebuchten Termin von "Jaxley Quinn" in der Warteschlange löschen.
-    Und Sie den gerade gebuchten Termin von "Jaxlin Shore" in der Warteschlange löschen.
-    Und Sie den gerade gebuchten Termin von "Quinn Jax" in der Warteschlange löschen.
-    Und Sie den gerade gebuchten Termin von "Jax Quinn" in der Warteschlange löschen.
-    Und Sie den gerade gebuchten Termin von "Jax" in der Warteschlange löschen.
+    When I return to the workstation.
+    Then the workstation page is displayed.
+    When I delete the just booked appointment of "Jaxley Quinn" from the queue.
+    And I delete the just booked appointment of "Jaxlin Shore" from the queue.
+    And I delete the just booked appointment of "Quinn Jax" from the queue.
+    And I delete the just booked appointment of "Jax Quinn" from the queue.
+    And I delete the just booked appointment of "Jax" from the queue.
 
-  Szenario: Ein älterer Teilstring bleibt neben dem Namen sichtbar
-    Wenn Sie zur Webseite der Administration navigieren.
-    Dann sollten Sie sich am Start des Zeitmanagementsystem befinden.
-    Wenn Sie im Zeitmanagementsystem auf die Schaltfläche "Anmelden" klicken.
-    Und Sie für "Standort" den Wert "Dokumentenausgabe (KVR-V/132) Dokumentenausgabe2" auswählen.
-    Und Sie in Feld "Platz-Nr. oder Tresen" den Text "4" eingeben.
-    Und Sie im Zeitmanagementsystem auf die Schaltfläche "Auswahl bestätigen" klicken.
-    Dann wird die Seite Sachbearbeiterplatz angezeigt.
-    Wenn Sie einen Spontankunden mit der Dienstleistung "Spontan eAT/eRA", dem Namen "Lark Meadow", Freitextfeld "Porter" und Freitextfeld 2 "" buchen.
-    Und Sie einen Spontankunden mit der Dienstleistung "Spontan eAT/eRA", dem Namen "Porterlyn Shaw", Freitextfeld "Note" und Freitextfeld 2 "" buchen.
-    Und Sie einen Spontankunden mit der Dienstleistung "Spontan eAT/eRA", dem Namen "Shaw Porter", Freitextfeld "Note" und Freitextfeld 2 "" buchen.
-    Und Sie einen Spontankunden mit der Dienstleistung "Spontan eAT/eRA", dem Namen "Porter Shaw", Freitextfeld "Note" und Freitextfeld 2 "" buchen.
-    Und Sie einen Spontankunden mit der Dienstleistung "Spontan eAT/eRA", dem Namen "Porter", Freitextfeld "Note" und Freitextfeld 2 "" buchen.
-    Wenn Sie in der Kundensuche nach "Porter" suchen.
-    Dann listet die Kundensuche diese Namen:
+  Scenario: An older substring stays visible beside the name
+    When I open the administration website.
+    Then I should be on the administration start page.
+    When I click the button "Anmelden" in the administration.
+    And I select for "Standort" the value "Dokumentenausgabe (KVR-V/132) Dokumentenausgabe2".
+    And I enter in the field "Platz-Nr. oder Tresen" the text "4".
+    And I click the button "Auswahl bestätigen" in the administration.
+    Then the workstation page is displayed.
+    When I book a walk-in customer with service "Spontan eAT/eRA", name "Lark Meadow", free text "Porter" and second free text "".
+    And I book a walk-in customer with service "Spontan eAT/eRA", name "Porterlyn Shaw", free text "Note" and second free text "".
+    And I book a walk-in customer with service "Spontan eAT/eRA", name "Shaw Porter", free text "Note" and second free text "".
+    And I book a walk-in customer with service "Spontan eAT/eRA", name "Porter Shaw", free text "Note" and second free text "".
+    And I book a walk-in customer with service "Spontan eAT/eRA", name "Porter", free text "Note" and second free text "".
+    When I search for "Porter" in the customer search.
+    Then the customer search lists these names:
       | Porter |
       | Porter Shaw |
       | Shaw Porter |
       | Porterlyn Shaw |
       | Lark Meadow |
-    Wenn Sie zum Sachbearbeiterplatz zurückkehren.
-    Dann wird die Seite Sachbearbeiterplatz angezeigt.
-    Wenn Sie den gerade gebuchten Termin von "Lark Meadow" in der Warteschlange löschen.
-    Und Sie den gerade gebuchten Termin von "Porterlyn Shaw" in der Warteschlange löschen.
-    Und Sie den gerade gebuchten Termin von "Shaw Porter" in der Warteschlange löschen.
-    Und Sie den gerade gebuchten Termin von "Porter Shaw" in der Warteschlange löschen.
-    Und Sie den gerade gebuchten Termin von "Porter" in der Warteschlange löschen.
+    When I return to the workstation.
+    Then the workstation page is displayed.
+    When I delete the just booked appointment of "Lark Meadow" from the queue.
+    And I delete the just booked appointment of "Porterlyn Shaw" from the queue.
+    And I delete the just booked appointment of "Shaw Porter" from the queue.
+    And I delete the just booked appointment of "Porter Shaw" from the queue.
+    And I delete the just booked appointment of "Porter" from the queue.

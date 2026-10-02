@@ -31,7 +31,6 @@ import config.TestConfig;
 import io.cucumber.datatable.DataTable;
 import io.cucumber.java.After;
 import io.cucumber.java.Before;
-import io.cucumber.java.de.Wenn;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
@@ -362,7 +361,7 @@ public class ZmsApiSteps {
         rememberProcess(parseDataNode(response));
     }
 
-    @Wenn("für Standort {int} und die Dienstleistung {string} wird ein Terminkunde {string} zur nächsten Minute angelegt.")
+    @When("for scope {int} and service {string} an appointment customer {string} is created at the next minute.")
     public void fuerStandortWirdEinTerminkundeZurNaechstenMinuteAngelegt(
             int scopeId, String serviceName, String familyName) {
         iAmLoggedInToTheZmsApiAs("agent_queue");
@@ -447,7 +446,7 @@ public class ZmsApiSteps {
                 "Terminkunde {} booked at epoch {} for scope {}", familyName, appointment, scopeId);
     }
 
-    @Wenn("für Standort {int} und die Dienstleistung {string} werden {int} Wartende angelegt.")
+    @When("for scope {int} and service {string}, {int} waiting customers are created.")
     public void fuerStandortWerdenWartendeAngelegt(int scopeId, String serviceName, int count) {
         Assertions.assertThat(count).isBetween(1, 3);
         iAmLoggedInToTheZmsApiAs("agent_queue");
@@ -465,7 +464,7 @@ public class ZmsApiSteps {
         }
     }
 
-    @Wenn("die in diesem Szenario angelegten Termine gelöscht werden.")
+    @When("the appointments created in this scenario are deleted.")
     public void dieInDiesemSzenarioAngelegtenTermineGeloeschtWerden() {
         iDeleteTheProcessesCreatedInThisScenarioWithTheXAuthKey();
     }

@@ -1,21 +1,21 @@
-#language: de
-Funktionalität: Das Controlling kann die Dienstleistungsstatistik in der Statistik-Oberfläche öffnen und auswerten.
+#language: en
+Feature: Controlling can open and evaluate the service statistics in the statistics UI.
 
 	@web @zmsstatistic @service-stats @controlling @ZMS-1559 @ZMS-1557 @E2E @automatisiert @executeLocally
-	Szenario: Dienstleistungsstatistik
-		Wenn Sie zur Webseite der Statistik navigieren.
-		Und  Sie in der Statistik auf die Schaltfläche "Anmelden" klicken.
-		Und  Sie in der Statistik für "Standort" den Wert "Gewerbeamt (KVR-III/23) Verkehr" auswählen.
-		Und  Sie in der Statistik auf die Schaltfläche "Auswahl bestätigen" klicken.
-		Dann wird die Übersichtsseite der Statistik angezeigt.
-		Wenn Sie in der Statistik in der Seitenleiste auf die Schaltfläche "Dienstleistungsstatistik" klicken.
-		Dann wird die Statistik-Seite "Dienstleistungsstatistik" angezeigt.
-		Und  Sie in der Statistik im Filter für "Standort" den Wert "Gewerbeamt (KVR-III/23) Verkehr" auswählen.
-		Und  Sie in der Statistik im Zeitraum von 14 Tagen vor heute bis heute filtern.
-		Und  die folgenden Dienstleistungen sollten in der Dienstleistungsstatistik angezeigt werden:
+	Scenario: Service statistics
+		When I open the statistics website.
+		And I click the button "Anmelden" in the statistics.
+		And I select for "Standort" the value "Gewerbeamt (KVR-III/23) Verkehr" in the statistics.
+		And I click the button "Auswahl bestätigen" in the statistics.
+		Then the statistics overview page is displayed.
+		When I click the button "Dienstleistungsstatistik" in the statistics sidebar.
+		Then the statistics page "Dienstleistungsstatistik" is displayed.
+		And I select for "Standort" the value "Gewerbeamt (KVR-III/23) Verkehr" in the statistics filter.
+		And I filter the statistics from 14 days before today until today.
+		And the following services should be shown in the service statistics:
 			| dienstleistung                              |
 			| Güterkraftverkehr (Gemeinschaftslizenz) – Erstantrag oder erneuter Antrag   |
 			| Taxi oder Mietwagen – Unterlagen nachreichen |
 			| Zulassung Taxi oder Mietwagen              |
-		Wenn Sie In der Statistik auf den Download-Button klicken.
-		Dann wird die Dienstleistungsstatistik heruntergeladen.
+		When I click the download button in the statistics.
+		Then the service statistics are downloaded.
