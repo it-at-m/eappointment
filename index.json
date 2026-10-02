@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-10-02T10:13:25.676Z",
+  "publishedAt": "2026-10-02T10:28:46.033Z",
   "branches": [
     {
       "name": "next",
@@ -238,8 +238,8 @@
     {
       "name": "test-zmskvr-1384-zmskvr-1502-name-search-ranking",
       "slug": "test-zmskvr-1384-zmskvr-1502-name-search-ranking",
-      "runId": "36993038492",
-      "runStartedAt": "2026-10-02T10:00:29Z"
+      "runId": "36994589650",
+      "runStartedAt": "2026-10-02T10:16:49Z"
     },
     {
       "name": "test-zmskvr-1411-zmskvr-1672-opening-hours-sunday",
