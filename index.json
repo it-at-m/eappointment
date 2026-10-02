@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-10-02T23:15:57.516Z",
+  "publishedAt": "2026-10-02T23:39:07.846Z",
   "branches": [
     {
       "name": "next",
@@ -220,8 +220,8 @@
     {
       "name": "maintenance-gh-3481-english-cucumber",
       "slug": "maintenance-gh-3481-english-cucumber",
-      "runId": "37075582707",
-      "runStartedAt": "2026-10-02T23:02:02Z"
+      "runId": "37076737184",
+      "runStartedAt": "2026-10-02T23:15:55Z"
     },
     {
       "name": "renovate/next-cucumber.version",
