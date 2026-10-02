@@ -1,7 +1,7 @@
 #language: de
 Funktionalität: Das Controlling kann die Dienstleistungsstatistik in der Statistik-Oberfläche öffnen und auswerten.
 
-	@web @zmsstatistic @services @controlling @ZMS-1559 @ZMS-1557 @E2E @automatisiert @executeLocally
+	@web @zmsstatistic @service-stats @controlling @ZMS-1559 @ZMS-1557 @E2E @automatisiert @executeLocally
 	Szenario: Dienstleistungsstatistik
 		Wenn Sie zur Webseite der Statistik navigieren.
 		Und  Sie in der Statistik auf die Schaltfläche "Anmelden" klicken.

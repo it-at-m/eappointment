@@ -165,7 +165,7 @@ public class StatisticsSteps {
 
     @Wenn("Sie In der Statistik auf den Download-Button klicken.")
     public void wenn_sie_in_der_statistik_auf_den_download_button_klicken() {
-        STATISTICS_PAGE.clickDownloadButton();
+        SERVICE_STATISTICS_PAGE.clickDownloadButton();
     }
 
     @Dann("wird die Kundenstatistik heruntergeladen.")
@@ -178,6 +178,21 @@ public class StatisticsSteps {
     public void wird_die_dienstleistungsstatistik_heruntergeladen() {
         // For UI tests we only verify that the download button is present and clickable.
         STATISTICS_PAGE.clickDownloadButton();
+    }
+
+    @Dann("zeigt die Dienstleistungsstatistik diese Werte:")
+    public void zeigt_die_dienstleistungsstatistik_diese_werte(DataTable dataTable) {
+        SERVICE_STATISTICS_PAGE.assertStatisticValues(dataTable.asMaps(String.class, String.class));
+    }
+
+    @Und("Sie in der Statistik im Filter die Standorte {string} und {string} auswählen.")
+    public void sie_in_der_statistik_im_filter_die_standorte_auswaehlen(String first, String second) {
+        STATISTICS_PAGE.selectScopesInStatisticsTableFilter(List.of(first, second));
+    }
+
+    @Dann("stimmt die heruntergeladene Dienstleistungsstatistik mit diesen Werten überein:")
+    public void stimmt_die_heruntergeladene_dienstleistungsstatistik_ueberein(DataTable dataTable) throws Exception {
+        SERVICE_STATISTICS_PAGE.assertDownloadedStatisticValues(dataTable.asMaps(String.class, String.class));
     }
 
     @Und("die folgenden Dienstleistungen sollten in der Dienstleistungsstatistik angezeigt werden:")
