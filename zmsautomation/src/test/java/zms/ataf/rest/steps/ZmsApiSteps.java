@@ -3,10 +3,12 @@ package zms.ataf.rest.steps;
 import static io.restassured.RestAssured.given;
 
 import java.time.DayOfWeek;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -22,6 +24,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
+import ataf.core.helpers.TestDataHelper;
 import ataf.core.helpers.TestPropertiesHelper;
 import ataf.core.logging.ScenarioLogManager;
 import config.TestConfig;
@@ -357,6 +360,91 @@ public class ZmsApiSteps {
             .as("POST /workstation/process/waitingnumber/ body=%s", truncate(response.asString(), 1000))
             .isEqualTo(200);
         rememberProcess(parseDataNode(response));
+    }
+
+    @Wenn("für Standort {int} und die Dienstleistung {string} wird ein Terminkunde {string} zur nächsten Minute angelegt.")
+    public void fuerStandortWirdEinTerminkundeZurNaechstenMinuteAngelegt(
+            int scopeId, String serviceName, String familyName) {
+        iAmLoggedInToTheZmsApiAs("agent_queue");
+        String authKey = getOrLoginXAuthKey();
+        JsonNode request = findScopeRequestByName(scopeId, serviceName, authKey);
+        JsonNode freeList = fetchFreeProcesses(scopeId, request, authKey);
+
+        long now = Instant.now().getEpochSecond();
+        long currentMinute = now - (now % 60);
+        long earliest = (now % 60 > 40) ? currentMinute + 60 : currentMinute;
+        long latest = now + 6 * 60;
+        List<JsonNode> candidates = new ArrayList<>();
+        for (JsonNode process : freeList) {
+            long date = process.path("appointments").path(0).path("date").asLong(0);
+            if (date >= earliest && date <= latest) {
+                candidates.add(process);
+            }
+        }
+        candidates.sort(Comparator.comparingLong(
+                process -> process.path("appointments").path(0).path("date").asLong()));
+        Assertions.assertThat(candidates)
+                .as("scope %d should have an intern slot between epoch %d and %d", scopeId, earliest, latest)
+                .isNotEmpty();
+
+        JsonNode reserved = null;
+        for (int i = 0; i < candidates.size(); i++) {
+            ObjectNode process = (ObjectNode) candidates.get(i).deepCopy();
+            process.set("requests", MAPPER.createArrayNode().add(request.deepCopy()));
+            ObjectNode client = MAPPER.createObjectNode();
+            client.put("familyName", familyName);
+            client.put("email", "muster.wartende@example.com");
+            client.put("surveyAccepted", 1);
+            process.set("clients", MAPPER.createArrayNode().add(client));
+
+            response = given()
+                .baseUri(baseUri != null ? baseUri : TestConfig.getBaseUri())
+                .header("X-AuthKey", authKey)
+                .contentType("application/json")
+                .queryParam("slotType", "intern")
+                .queryParam("clientkey", "")
+                .queryParam("slotsRequired", 0)
+                .body(toJson(process))
+            .when()
+                .post("/process/status/reserved/");
+            CommonApiSteps.setResponse(response);
+            if (response.getStatusCode() == 200) {
+                reserved = parseDataNode(response);
+                break;
+            }
+            boolean slotTaken = response.getStatusCode() == 404
+                    && response.asString().contains("Failed to reserve process. Maybe someone was faster.");
+            if (slotTaken && i < candidates.size() - 1) {
+                continue;
+            }
+            throw new IllegalStateException(
+                    "POST /process/status/reserved/ failed with " + response.getStatusCode() + ": "
+                            + truncate(response.asString(), 1000));
+        }
+        Assertions.assertThat(reserved).as("reserved terminkunde at scope %d", scopeId).isNotNull();
+
+        response = given()
+            .baseUri(baseUri != null ? baseUri : TestConfig.getBaseUri())
+            .header("X-AuthKey", authKey)
+            .contentType("application/json")
+            .body(toJson(reserved))
+        .when()
+            .post("/process/status/confirmed/");
+        CommonApiSteps.setResponse(response);
+        Assertions.assertThat(response.getStatusCode())
+                .as("POST /process/status/confirmed/ body=%s", truncate(response.asString(), 1000))
+                .isEqualTo(200);
+        JsonNode confirmed = parseDataNode(response);
+        rememberProcess(confirmed);
+        trackProcess(confirmed.path("id").asInt(), scopeId);
+
+        long appointment = confirmed.path("appointments").path(0).path("date").asLong(0);
+        Assertions.assertThat(appointment)
+                .as("confirmed appointment time")
+                .isBetween(earliest, latest);
+        TestDataHelper.setTestData("appointment_epoch", Long.toString(appointment));
+        ScenarioLogManager.getLogger().info(
+                "Terminkunde {} booked at epoch {} for scope {}", familyName, appointment, scopeId);
     }
 
     @Wenn("für Standort {int} und die Dienstleistung {string} werden {int} Wartende angelegt.")
