@@ -39,7 +39,6 @@ import { Office } from "@/api/models/Office";
 import { Service } from "@/api/models/Service";
 import CalendarIcon from "@/components/Common/CalendarIcon.vue";
 import {
-  getAppointmentLocationVariantLabel,
   QUERY_PARAM_APPOINTMENT_DISPLAY_NUMBER,
   QUERY_PARAM_APPOINTMENT_ID,
   resolveAgainstCurrentPage,
@@ -49,6 +48,7 @@ import {
 } from "@/utils/Constants";
 import { formatAppointmentDateTime } from "@/utils/formatAppointmentDateTime";
 import { formatMultilineTitle } from "@/utils/formatMultilineTitle";
+import { useVariant } from "@/utils/useVariant";
 
 const props = defineProps<{
   appointment: AppointmentDTO;
@@ -57,6 +57,8 @@ const props = defineProps<{
   services: Service[];
   t: (key: string) => string;
 }>();
+
+const getVariant = useVariant(props.t);
 
 const selectedProvider = computed<Office | undefined>(() =>
   props.offices.find(
@@ -74,29 +76,13 @@ const variantId = computed<number | null>(
   () => selectedService.value?.variantId ?? null
 );
 
-const appointmentTypeLabel = computed<string>(() => {
-  if (variantId.value === VARIANT_ID_TELEPHONE) {
-    return getAppointmentLocationVariantLabel(
-      variantId.value,
-      props.t,
+const appointmentTypeLabel = computed(
+  () =>
+    getVariant(
+      variantId.value ?? VARIANT_ID_PRESENCE,
       selectedService.value?.variantOverwrite
-    )!;
-  }
-
-  if (variantId.value === VARIANT_ID_VIDEO) {
-    return getAppointmentLocationVariantLabel(
-      variantId.value,
-      props.t,
-      selectedService.value?.variantOverwrite
-    )!;
-  }
-
-  return getAppointmentLocationVariantLabel(
-    variantId.value,
-    props.t,
-    selectedService.value?.variantOverwrite
-  )!;
-});
+    )?.name
+);
 
 const locationIcon = computed<string>(() => {
   if (variantId.value === VARIANT_ID_TELEPHONE) {
