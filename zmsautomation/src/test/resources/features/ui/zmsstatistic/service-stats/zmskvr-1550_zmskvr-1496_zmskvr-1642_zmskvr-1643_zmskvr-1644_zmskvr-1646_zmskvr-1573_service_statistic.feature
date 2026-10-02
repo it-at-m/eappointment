@@ -1,7 +1,7 @@
 #language: de
 Funktionalität: Die Dienstleistungsstatistik zählt nicht erfasste und nicht erbrachte Dienstleistungen in der Summe und in der durchschnittlichen Bearbeitungsdauer.
 
-	@web @zmsstatistic @services @controlling @ZMSKVR-1550 @ZMSKVR-1496 @ZMSKVR-1642 @ZMSKVR-1643 @ZMSKVR-1644 @ZMSKVR-1646 @ZMSKVR-1573 @E2E @automatisiert @executeLocally
+	@web @zmsstatistic @service-stats @controlling @ZMSKVR-1550 @ZMSKVR-1496 @ZMSKVR-1642 @ZMSKVR-1643 @ZMSKVR-1644 @ZMSKVR-1646 @ZMSKVR-1573 @E2E @automatisiert @executeLocally
 	Szenario: Sonderzeilen in Summe und durchschnittlicher Bearbeitungsdauer
 		Wenn Sie zur Webseite der Statistik navigieren.
 		Und  Sie in der Statistik auf die Schaltfläche "Anmelden" klicken.
