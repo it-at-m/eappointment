@@ -448,8 +448,8 @@ describe("AppointmentSummary", () => {
       expect(wrapper.text()).toContain("Test Street 123");
       expect(wrapper.text()).toContain("12345 Test City");
       expect(wrapper.text()).toContain("Test Info Scope");
-      expect(wrapper.text()).not.toContain("appointmentTypes.1");
-      expect(wrapper.text()).not.toContain("locationVariantText.1");
+      expect(wrapper.text()).not.toContain("variants.1");
+      expect(wrapper.text()).not.toContain("variantHint.1");
     });
 
     it("should show address/hint and base text for variant 1", async () => {
@@ -461,8 +461,8 @@ describe("AppointmentSummary", () => {
       expect(wrapper.text()).toContain("12345 Test City");
       expect(wrapper.text()).toContain("Test Info Scope");
 
-      expect(wrapper.text()).toContain("appointmentTypes.1");
-      expect(wrapper.text()).toContain("locationVariantText.1");
+      expect(wrapper.text()).toContain("variants.1");
+      expect(wrapper.text()).toContain("variantHint.1");
     });
 
     it("should hide address/hint and show variant text for variant 2", async () => {
@@ -475,14 +475,14 @@ describe("AppointmentSummary", () => {
 
       const borderBlocks = wrapper.findAll(".m-content.border-bottom");
       const locationBlock = borderBlocks.find(b =>
-        b.text().includes("appointmentTypes.2")
+        b.text().includes("variants.2")
       );
       expect(locationBlock).toBeTruthy();
 
       expect(locationBlock!.text()).not.toContain("Test Info Scope");
 
-      expect(wrapper.text()).toContain("appointmentTypes.2");
-      expect(wrapper.text()).toContain("locationVariantText.2");
+      expect(wrapper.text()).toContain("variants.2");
+      expect(wrapper.text()).toContain("variantHint.2");
     });
 
     it.each([4, 5, 6, 7])(
@@ -500,10 +500,10 @@ describe("AppointmentSummary", () => {
     );
 
     it.each([
-      [4, "appointmentTypes.4"],
-      [5, "appointmentTypes.5"],
-      [6, "appointmentTypes.1"],
-      [7, "appointmentTypes.1"],
+      [4, "variants.4"],
+      [5, "variants.5"],
+      [6, "variants.1"],
+      [7, "variants.1"],
     ])(
       "should show the correct appointment type label for variant %i",
       async (variantId, expectedAppointmentTypeLabel) => {
@@ -522,8 +522,8 @@ describe("AppointmentSummary", () => {
       await nextTick();
 
       expect(wrapper.text()).not.toContain("Test Street 123");
-      expect(wrapper.text()).toContain("appointmentTypes.3");
-      expect(wrapper.text()).toContain("locationVariantText.3");
+      expect(wrapper.text()).toContain("variants.3");
+      expect(wrapper.text()).toContain("variantHint.3");
     });
   });
 });

@@ -28,18 +28,18 @@ describe("AppointmentDetailHeader", () => {
   });
 
   const mockAppointment =
-    {
-      timestamp: Math.floor(Date.now() / 1000),
-      processId: "12345",
-      familyName: "John Doe",
-      email: "john@example.com",
-      officeId: "1",
-      telephone: "1234567890",
-      serviceId: "id_12345",
-      serviceName: "Personalausweis",
-      serviceCount: 1,
-      subRequestCounts: [],
-    };
+  {
+    timestamp: Math.floor(Date.now() / 1000),
+    processId: "12345",
+    familyName: "John Doe",
+    email: "john@example.com",
+    officeId: "1",
+    telephone: "1234567890",
+    serviceId: "id_12345",
+    serviceName: "Personalausweis",
+    serviceCount: 1,
+    subRequestCounts: [],
+  };
 
   const mockProvider = {
     id: "1",
@@ -95,7 +95,7 @@ describe("AppointmentDetailHeader", () => {
     await nextTick();
 
     expect(wrapper.find('[data-test="muc-intro"]').exists()).toBe(true);
-    expect(wrapper.find('[data-test="muc-intro"]').attributes('tagline')).toBe(de.appointmentTypes["1"]);
+    expect(wrapper.find('[data-test="muc-intro"]').attributes('tagline')).toBe(de.variants["1"]);
     expect(wrapper.find('[data-test="muc-intro"]').attributes('title')).toBe(wrapper.vm.formatMultilineTitle(mockAppointment));
     expect(wrapper.find('[data-test="muc-button"]').exists()).toBe(true);
     expect(wrapper.findAll('[data-test="muc-button"]')).toHaveLength(2);
@@ -113,7 +113,7 @@ describe("AppointmentDetailHeader", () => {
 
       expect(
         wrapper.find('[data-test="muc-intro"]').attributes("tagline")
-      ).toBe(de.appointmentTypes["1"]);
+      ).toBe(de.variants["1"]);
 
       const locationLink = wrapper.find(
         '[data-test="muc-link"][data-prepend-icon="map-pin"]'
@@ -129,7 +129,7 @@ describe("AppointmentDetailHeader", () => {
 
     expect(
       wrapper.find('[data-test="muc-intro"]').attributes("tagline")
-    ).toBe(de.appointmentTypes["2"]);
+    ).toBe(de.variants["2"]);
 
     const locationLink = wrapper.find(
       '[data-test="muc-link"][data-prepend-icon="telephone"]'
@@ -147,7 +147,7 @@ describe("AppointmentDetailHeader", () => {
 
     expect(
       wrapper.find('[data-test="muc-intro"]').attributes("tagline")
-    ).toBe(de.appointmentTypes["3"]);
+    ).toBe(de.variants["3"]);
 
     const locationLink = wrapper.find(
       '[data-test="muc-link"][data-prepend-icon="video-camera"]'
@@ -160,13 +160,13 @@ describe("AppointmentDetailHeader", () => {
   });
 
   it("renders header without provider", async () => {
-    const wrapper = createWrapper({selectedProvider: undefined});
+    const wrapper = createWrapper({ selectedProvider: undefined });
     await nextTick();
 
     expect(wrapper.find('[data-test="muc-intro"]').exists()).toBe(true);
     expect(
       wrapper.find('[data-test="muc-intro"]').attributes("tagline")
-    ).toBe(de.appointmentTypes["1"]);
+    ).toBe(de.variants["1"]);
     expect(wrapper.find('[data-test="muc-intro"]').attributes('title')).toBe(wrapper.vm.formatMultilineTitle(mockAppointment));
     expect(wrapper.find('[data-test="muc-button"]').exists()).toBe(true);
     expect(wrapper.findAll('[data-test="muc-button"]')).toHaveLength(2);
@@ -176,7 +176,7 @@ describe("AppointmentDetailHeader", () => {
   });
 
   it("renders header without appointment", async () => {
-    const wrapper = createWrapper({appointment: undefined});
+    const wrapper = createWrapper({ appointment: undefined });
     await nextTick();
     expect(wrapper.find('[data-test="muc-intro"]').exists()).toBe(false);
     expect(wrapper.find('.multiline-text').exists()).toBe(false);
