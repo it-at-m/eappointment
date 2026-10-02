@@ -7,9 +7,11 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 
 import org.assertj.core.api.Assertions;
@@ -46,6 +48,8 @@ public class ZmsApiSteps {
     private String scenarioLoginPassword;
     private JsonNode lastProcess;
     private final List<Integer> scenarioProcessIds = new ArrayList<>();
+    private final Map<Integer, Integer> processScopeById = new HashMap<>();
+    private int workstationScopeId;
     private JsonNode departmentServices;
     private String ticketprinterHash;
     private Integer createdAvailabilityId;
@@ -55,6 +59,8 @@ public class ZmsApiSteps {
     public void resetProcessContext() {
         lastProcess = null;
         scenarioProcessIds.clear();
+        processScopeById.clear();
+        workstationScopeId = 0;
         departmentServices = null;
         cachedXAuthKey = null;
         scenarioLoginUsername = null;
@@ -98,6 +104,10 @@ public class ZmsApiSteps {
     private boolean deleteProcessById(int processId, boolean assertSuccess) {
         if (processId <= 0) {
             return true;
+        }
+        Integer scopeId = processScopeById.get(processId);
+        if (scopeId != null) {
+            ensureWorkstationOnScope(scopeId);
         }
         try {
             Response cleanup = given()
@@ -308,6 +318,8 @@ public class ZmsApiSteps {
                 "POST /workstation/ failed with {}: {}",
                 response.getStatusCode(),
                 truncate(response.asString(), 1000));
+        } else {
+            workstationScopeId = scopeId;
         }
     }
 
@@ -436,6 +448,60 @@ public class ZmsApiSteps {
             int scopeId, String serviceName, String familyName, String amendment) {
         String email = familyName.toLowerCase(Locale.ROOT).replaceAll("[^a-z0-9]", "") + "@mailinator.com";
         reserveConfirmedAppointment(scopeId, serviceName, familyName, email, amendment, true);
+    }
+
+    @When("I redirect the last process to scope {int} with the X-AuthKey")
+    public void iRedirectTheLastProcessToScopeWithTheXAuthKey(int targetScopeId) {
+        Assertions.assertThat(lastProcess)
+            .as("Reserve an appointment before redirecting it")
+            .isNotNull();
+        int originalId = lastProcess.path("id").asInt();
+        Assertions.assertThat(originalId).isPositive();
+        trackProcess(originalId, scopeIdOf(lastProcess));
+
+        ObjectNode body = (ObjectNode) lastProcess.deepCopy();
+        if (body.path("scope").isObject()) {
+            ((ObjectNode) body.get("scope")).put("id", targetScopeId);
+        } else {
+            body.set("scope", MAPPER.createObjectNode().put("id", targetScopeId));
+        }
+        JsonNode appointments = body.path("appointments");
+        if (appointments.isArray() && appointments.size() > 0 && appointments.get(0).isObject()) {
+            ObjectNode appointment = (ObjectNode) appointments.get(0);
+            if (appointment.path("scope").isObject()) {
+                ((ObjectNode) appointment.get("scope")).put("id", targetScopeId);
+            }
+        }
+
+        String authKey = getOrLoginXAuthKey();
+        response = given()
+            .baseUri(apiBaseUri())
+            .header("X-AuthKey", authKey)
+            .contentType("application/json")
+            .body(toJson(body))
+        .when()
+            .post("/process/status/redirect/");
+        CommonApiSteps.setResponse(response);
+        Assertions.assertThat(response.getStatusCode())
+            .as("POST /process/status/redirect/ body=%s", truncate(response.asString(), 1000))
+            .isEqualTo(200);
+        JsonNode created = parseDataNode(response);
+        Assertions.assertThat(created).as("redirect response data").isNotNull();
+        int createdId = created.path("id").asInt();
+        // Redirect finishes the source appointment and clears its scope. That row can no longer be deleted.
+        forgetProcess(originalId);
+        trackProcess(createdId, targetScopeId);
+        rememberProcess(created);
+    }
+
+    @Then("the last process has priority {int}")
+    public void theLastProcessHasPriority(int priority) {
+        Assertions.assertThat(lastProcess)
+            .as("Redirect the appointment before reading its priority")
+            .isNotNull();
+        Assertions.assertThat(lastProcess.path("priority").asInt())
+            .as("priority of process %s", lastProcess.path("id").asInt())
+            .isEqualTo(priority);
     }
 
     @When("I delete the last process with the X-AuthKey")
@@ -1388,14 +1454,76 @@ public class ZmsApiSteps {
             .isNotNull()
             .isNotEmpty();
 
+        JsonNode containsMatch = null;
+        int containsLength = Integer.MAX_VALUE;
         for (JsonNode candidate : requests) {
-            if (serviceName.equalsIgnoreCase(candidate.path("name").asText())) {
+            String name = candidate.path("name").asText();
+            if (serviceName.equalsIgnoreCase(name)) {
                 return candidate;
             }
+            if (name.toLowerCase(Locale.ROOT).contains(serviceName.toLowerCase(Locale.ROOT))
+                    && name.length() < containsLength) {
+                containsMatch = candidate;
+                containsLength = name.length();
+            }
+        }
+        if (containsMatch != null) {
+            ScenarioLogManager.getLogger().info(
+                "Request '{}' matched '{}' for scope {}",
+                serviceName,
+                containsMatch.path("name").asText(),
+                scopeId);
+            return containsMatch;
         }
         ScenarioLogManager.getLogger().warn(
             "Request '{}' not found for scope {}; using first available request", serviceName, scopeId);
         return requests.get(0);
+    }
+
+    private void forgetProcess(int processId) {
+        scenarioProcessIds.remove(Integer.valueOf(processId));
+        processScopeById.remove(processId);
+    }
+
+    private void trackProcess(int processId, int scopeId) {
+        if (processId <= 0) {
+            return;
+        }
+        if (!scenarioProcessIds.contains(processId)) {
+            scenarioProcessIds.add(processId);
+        }
+        if (scopeId > 0) {
+            processScopeById.put(processId, scopeId);
+        }
+    }
+
+    private int scopeIdOf(JsonNode process) {
+        if (process == null) {
+            return 0;
+        }
+        int scopeId = process.path("scope").path("id").asInt();
+        if (scopeId > 0) {
+            return scopeId;
+        }
+        JsonNode appointments = process.path("appointments");
+        if (appointments.isArray() && appointments.size() > 0) {
+            return appointments.get(0).path("scope").path("id").asInt();
+        }
+        return 0;
+    }
+
+    /**
+     * Delete is allowed only for the workstation scope and the user's departments.
+     * A forwarded appointment lives on the target scope, so the workstation has to follow it.
+     */
+    private void ensureWorkstationOnScope(int scopeId) {
+        if (scopeId <= 0 || scopeId == workstationScopeId) {
+            return;
+        }
+        iUpdateTheWorkstationWithScopeAndCounterWithTheXAuthKey(scopeId, "21");
+        Assertions.assertThat(response.getStatusCode())
+            .as("POST /workstation/ for scope %d body=%s", scopeId, truncate(response.asString(), 500))
+            .isEqualTo(200);
     }
 
     private JsonNode fetchFreeProcesses(int scopeId, JsonNode request, String authKey) {
