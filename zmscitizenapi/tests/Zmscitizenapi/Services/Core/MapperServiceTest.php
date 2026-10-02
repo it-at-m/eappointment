@@ -750,6 +750,34 @@ class MapperServiceTest extends TestCase
         $this->assertEquals(3, $services[0]['parentId']);
         $this->assertEquals(1080455, $services[0]['rootParentId']);
     }
+
+    public function testMapServicesWithCombinationsIncludesVariantOverwrite(): void
+    {
+        $request = new Request();
+        $request->id = 42;
+        $request->name = 'Beratung';
+        $request->variant_id = 2;
+        $request->data = [
+            'variantOverwrite' => [
+                'de' => ['name' => 'Rückruf'],
+                'en' => ['hint' => 'We will call you.'],
+            ],
+        ];
+
+        $provider = new Provider();
+        $provider->id = 100;
+        $relation = new RequestRelation();
+        $relation->request = $request;
+        $relation->provider = $provider;
+        $relation->slots = 1;
+
+        $result = MapperService::mapServicesWithCombinations(
+            new RequestList([$request]),
+            new RequestRelationList([$relation])
+        );
+
+        $this->assertSame($request->data['variantOverwrite'], $result->toArray()['services'][0]['variantOverwrite']);
+    }
     
     public function testScopeToThinnedScopeWithMissingProvider()
     {
