@@ -186,6 +186,28 @@ describe("AppointmentDetailView", () => {
   });
 
   describe("Appointment Variants", () => {
+    it("uses the configured variant name but keeps detail-specific location text", async () => {
+      const wrapper = createWrapper();
+      wrapper.vm.appointment = mockAppointment;
+      wrapper.vm.selectedProvider = mockProvider;
+      wrapper.vm.selectedService = {
+        id: mockAppointment.serviceId,
+        name: mockAppointment.serviceName,
+        maxQuantity: 1,
+        parentId: null,
+        variantId: 3,
+        variantOverwrite: { de: { name: "Online-Sprechstunde", hint: "Eigener Einwahlhinweis" } },
+      };
+      wrapper.vm.loading = false;
+      await nextTick();
+
+      const location = wrapper.find(".location-text-margin-top");
+      expect(location.text()).toContain("Online-Sprechstunde");
+      expect(location.text()).toContain(de.appointmentDetailVideoLocationText);
+      expect(location.text()).not.toContain("Eigener Einwahlhinweis");
+      expect(location.text()).not.toContain(de.variants["3"].hint);
+    });
+
     it("shows telephone-specific appointment information", async () => {
       const wrapper = createWrapper();
 
@@ -208,10 +230,11 @@ describe("AppointmentDetailView", () => {
       expect(locationSection.exists()).toBe(true);
       expect(timeSection.exists()).toBe(true);
 
-      expect(locationSection.text()).toContain(de.variants["2"]);
+      expect(locationSection.text()).toContain(de.variants["2"].name);
       expect(locationSection.text()).toContain(
         de.appointmentDetailTelephoneLocationText
       );
+      expect(locationSection.text()).not.toContain(de.variants["2"].hint);
       expect(locationSection.text()).toContain(mockAppointment.telephone);
       expect(locationSection.text()).toContain(
         de.appointmentDetailTelephonePreparationHint
@@ -252,10 +275,11 @@ describe("AppointmentDetailView", () => {
       expect(locationSection.exists()).toBe(true);
       expect(timeSection.exists()).toBe(true);
 
-      expect(locationSection.text()).toContain(de.variants["3"]);
+      expect(locationSection.text()).toContain(de.variants["3"].name);
       expect(locationSection.text()).toContain(
         de.appointmentDetailVideoLocationText
       );
+      expect(locationSection.text()).not.toContain(de.variants["3"].hint);
       expect(locationSection.text()).toContain(
         de.appointmentDetailVideoPreparationHint
       );

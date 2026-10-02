@@ -95,7 +95,7 @@ describe("AppointmentDetailHeader", () => {
     await nextTick();
 
     expect(wrapper.find('[data-test="muc-intro"]').exists()).toBe(true);
-    expect(wrapper.find('[data-test="muc-intro"]').attributes('tagline')).toBe(de.variants["1"]);
+    expect(wrapper.find('[data-test="muc-intro"]').attributes('tagline')).toBe(de.variants["1"].name);
     expect(wrapper.find('[data-test="muc-intro"]').attributes('title')).toBe(wrapper.vm.formatMultilineTitle(mockAppointment));
     expect(wrapper.find('[data-test="muc-button"]').exists()).toBe(true);
     expect(wrapper.findAll('[data-test="muc-button"]')).toHaveLength(2);
@@ -103,6 +103,16 @@ describe("AppointmentDetailHeader", () => {
     expect(wrapper.text()).toContain(wrapper.vm.formatAppointmentDateTime(mockAppointment.timestamp));
     expect(wrapper.text()).toContain(mockProvider.address.street);
     expect(wrapper.text()).toContain(mockProvider.address.house_number);
+  });
+
+  it("uses the variant name override in the header", () => {
+    const wrapper = createWrapper({
+      variantId: 2,
+      variantOverwrite: { de: { name: "Rückruf" } },
+    });
+    expect(wrapper.find('[data-test="muc-intro"]').attributes("tagline")).toBe(
+      "Rückruf"
+    );
   });
 
   it.each([1, 4, 5, 6, 7])(
@@ -113,7 +123,7 @@ describe("AppointmentDetailHeader", () => {
 
       expect(
         wrapper.find('[data-test="muc-intro"]').attributes("tagline")
-      ).toBe(de.variants["1"]);
+      ).toBe(de.variants[String(variantId) as keyof typeof de.variants].name);
 
       const locationLink = wrapper.find(
         '[data-test="muc-link"][data-prepend-icon="map-pin"]'
@@ -129,7 +139,7 @@ describe("AppointmentDetailHeader", () => {
 
     expect(
       wrapper.find('[data-test="muc-intro"]').attributes("tagline")
-    ).toBe(de.variants["2"]);
+    ).toBe(de.variants["2"].name);
 
     const locationLink = wrapper.find(
       '[data-test="muc-link"][data-prepend-icon="telephone"]'
@@ -147,7 +157,7 @@ describe("AppointmentDetailHeader", () => {
 
     expect(
       wrapper.find('[data-test="muc-intro"]').attributes("tagline")
-    ).toBe(de.variants["3"]);
+    ).toBe(de.variants["3"].name);
 
     const locationLink = wrapper.find(
       '[data-test="muc-link"][data-prepend-icon="video-camera"]'
@@ -166,7 +176,7 @@ describe("AppointmentDetailHeader", () => {
     expect(wrapper.find('[data-test="muc-intro"]').exists()).toBe(true);
     expect(
       wrapper.find('[data-test="muc-intro"]').attributes("tagline")
-    ).toBe(de.variants["1"]);
+    ).toBe(de.variants["1"].name);
     expect(wrapper.find('[data-test="muc-intro"]').attributes('title')).toBe(wrapper.vm.formatMultilineTitle(mockAppointment));
     expect(wrapper.find('[data-test="muc-button"]').exists()).toBe(true);
     expect(wrapper.findAll('[data-test="muc-button"]')).toHaveLength(2);

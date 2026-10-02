@@ -109,7 +109,7 @@ describe("AppointmentCard", () => {
     await nextTick();
 
     expect(wrapper.find('[data-test="muc-card"]').exists()).toBe(true);
-    expect(wrapper.find('[data-test="muc-card"]').attributes('tagline')).toBe(de.variants["1"]);
+    expect(wrapper.find('[data-test="muc-card"]').attributes('tagline')).toBe(de.variants["1"].name);
     expect(wrapper.find('[data-test="muc-card"]').attributes('title')).toBe(wrapper.vm.formatMultilineTitle(mockAppointment));
     expect(wrapper.find('.multiline-text').exists()).toBe(true);
     expect(wrapper.text()).toContain(mockProvider.address.street);
@@ -121,7 +121,7 @@ describe("AppointmentCard", () => {
     await nextTick();
 
     expect(wrapper.find('[data-test="muc-card"]').exists()).toBe(true);
-    expect(wrapper.find('[data-test="muc-card"]').attributes('tagline')).toBe(de.variants["1"]);
+    expect(wrapper.find('[data-test="muc-card"]').attributes('tagline')).toBe(de.variants["1"].name);
     expect(wrapper.find('[data-test="muc-card"]').attributes('title')).toBe(wrapper.vm.formatMultilineTitle(mockAppointmentSubServices));
     expect(wrapper.find('.multiline-text').exists()).toBe(true);
     expect(wrapper.text()).toContain(mockProvider.address.street);
@@ -146,7 +146,7 @@ describe("AppointmentCard", () => {
 
     expect(
       wrapper.find('[data-test="muc-card"]').attributes("tagline")
-    ).toBe(de.variants["2"]);
+    ).toBe(de.variants["2"].name);
 
     const location = wrapper.find(
       '[data-test="appointment-location"]'
@@ -178,7 +178,7 @@ describe("AppointmentCard", () => {
 
     expect(
       wrapper.find('[data-test="muc-card"]').attributes("tagline")
-    ).toBe(de.variants["3"]);
+    ).toBe(de.variants["3"].name);
 
     const location = wrapper.find(
       '[data-test="appointment-location"]'
@@ -193,6 +193,21 @@ describe("AppointmentCard", () => {
     );
 
     expect(location.text()).not.toContain(mockProvider.address.street);
+  });
+
+  it("uses the selected service's variant name override", () => {
+    const wrapper = createWrapper(
+      {
+        services: [{
+          ...createMockService("id_12345", 4),
+          variantOverwrite: { de: { name: "Persönliche Beratung" } },
+        }],
+      },
+      mockAppointment
+    );
+    expect(wrapper.find('[data-test="muc-card"]').attributes("tagline")).toBe(
+      "Persönliche Beratung"
+    );
   });
 
   it.each([null, 1, 4, 5, 6, 7])(
@@ -217,7 +232,7 @@ describe("AppointmentCard", () => {
 
       expect(
         wrapper.find('[data-test="muc-card"]').attributes("tagline")
-      ).toBe(de.variants["1"]);
+      ).toBe(de.variants[String(variantId ?? 1) as keyof typeof de.variants].name);
 
       const location = wrapper.find(
         '[data-test="appointment-location"]'
