@@ -40,7 +40,7 @@ final class RequestStatisticWorkbook {
                 Element cell = (Element) cells.item(i);
                 String ref = cell.getAttribute("r");
                 String column = ref.replaceAll("\\d", "");
-                int row = Integer.parseInt(ref.replaceAll("\\D", ""));
+                int row = rowNumber(ref);
                 if (!column.equals("A") && !column.equals("B") && !column.equals("C")) {
                     continue;
                 }
@@ -71,11 +71,24 @@ final class RequestStatisticWorkbook {
         return shared;
     }
 
-    private static String cellText(Element cell, String[] shared) {
+    private static int rowNumber(String ref) throws IOException {
+        try {
+            return Integer.parseInt(ref.replaceAll("\\D", ""));
+        } catch (NumberFormatException exception) {
+            throw new IOException("Workbook cell has no row number: " + ref, exception);
+        }
+    }
+
+    private static String cellText(Element cell, String[] shared) throws IOException {
         String type = cell.getAttribute("t");
         if ("s".equals(type)) {
             String index = directValue(cell);
-            int sharedIndex = Integer.parseInt(index);
+            int sharedIndex;
+            try {
+                sharedIndex = Integer.parseInt(index);
+            } catch (NumberFormatException exception) {
+                throw new IOException("Workbook shared string index is not a number: " + index, exception);
+            }
             return sharedIndex >= 0 && sharedIndex < shared.length ? shared[sharedIndex] : "";
         }
         if ("inlineStr".equals(type)) {

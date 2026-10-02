@@ -140,7 +140,13 @@ public class ServiceStatisticsPage extends StatisticsPage {
         if (parts.length != 2) {
             return trimmed;
         }
-        return Integer.parseInt(parts[0].trim()) + ":" + String.format("%02d", Integer.parseInt(parts[1].trim()));
+        try {
+            int minutes = Integer.parseInt(parts[0].trim());
+            int seconds = Integer.parseInt(parts[1].trim());
+            return minutes + ":" + String.format("%02d", seconds);
+        } catch (NumberFormatException exception) {
+            return trimmed;
+        }
     }
 
     private static String normalizeCount(String value) {
