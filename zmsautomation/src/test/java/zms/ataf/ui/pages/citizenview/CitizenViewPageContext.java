@@ -104,6 +104,10 @@ public class CitizenViewPageContext extends Context {
     /**
      * Guest bookings keep the auth key in the reserve response, not in localStorage.
      * Record it before the slot is reserved so cancel can free the process.
+     *
+     * <p>Call the saved fetch with the window as {@code this}. A bare {@code fetch()} from the page
+     * has {@code this === undefined}, and Firefox then throws instead of sending the request. The
+     * calendar call never reaches the server and the page stays on "kein Termin".
      */
     private void rememberAppointmentCredentialsFromLaterResponses() {
         String script =
@@ -118,8 +122,9 @@ public class CitizenViewPageContext extends Context {
                         + "}"
                         + "var orig=window.fetch;"
                         + "if(typeof orig!=='function')return;"
-                        + "window.fetch=function(){return orig.apply(this,arguments).then(function(res){"
-                        + "try{res.clone().text().then(note);}catch(e){}"
+                        + "var bound=orig.bind(window);"
+                        + "window.fetch=function(){return bound.apply(window,arguments).then(function(res){"
+                        + "try{res.clone().text().then(note).catch(function(){});}catch(e){}"
                         + "return res;});};";
         try {
             ((JavascriptExecutor) DRIVER).executeScript(script);
