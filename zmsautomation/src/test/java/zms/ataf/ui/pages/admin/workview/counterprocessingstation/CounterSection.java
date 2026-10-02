@@ -41,8 +41,7 @@ public class CounterSection extends CounterProcessingStationPage {
     }
 
     private static final By COUNTER_WAITING_COUNT = By.xpath(
-            "//div[contains(@class,'queue-info')]//h4[contains(@class,'wartende')]"
-                    + "/ancestor::li//span[contains(@class,'waiting-count')]");
+            "//h4[contains(@class,'wartende')]/ancestor::li//span[contains(@class,'waiting-count')]");
 
     /** Wartende under Informationen on Tresen. The panel arrives after its own reload. */
     public int readWaitingClientsOnCounter() {
