@@ -1,16 +1,16 @@
-#language: de
-Funktionalität: Spontankunden lassen sich am Tresen ebenso wie Terminkunden in die Warteschlange aufnehmen.
+#language: en
+Feature: Walk-in customers can be added to the queue at the counter just like appointment customers.
 
 	@web @zmsadmin @queue @clerk @ZMS-1549 @ZMS-1547 @E2E @automatisiert @executeLocally
-	Szenario: Test-Tresen-Kund*in hinzufügen
-		Wenn Sie zur Webseite der Administration navigieren.
-		Und  Sie im Zeitmanagementsystem auf die Schaltfläche "Anmelden" klicken.
-		Und  Sie für "Standort" den Wert "Bürgerbüro Orleansplatz (KVR-II/231)" auswählen.
-		Und  Sie im Zeitmanagementsystem auf die Schaltfläche "Auswahl bestätigen" klicken.
-		Dann wird die Seite Tresen geöffnet.
-		Wenn Sie einen Spontankunden für die Dienstleistung "<beliebig>" buchen.
-		Dann wird der Spontankunden in der Warteschlange angezeigt.
-		Wenn Sie einen Terminkunden mit ausgewählter Dienstleistung, Uhrzeit, name und gültige E-Mail-Adresse buchen.
-		Dann Es erscheint ein Pop-Up-Fenster "Termin wurde erfolgreich eingetragen" und der Termin ist auch in der Warteschlange sichtbar.
-		Wenn Sie einen Terminkunden mit ausgewählter Dienstleistung und Uhrzeit buchen.
-		Dann erscheinen zwei Fehlermeldungen die bei Name und E-Mail-Adresse rot hinterlegt sind.
+	Scenario: Add a test counter customer
+		When I open the administration website.
+		And I click the button "Anmelden" in the administration.
+		And I select for "Standort" the value "Bürgerbüro Orleansplatz (KVR-II/231)".
+		And I click the button "Auswahl bestätigen" in the administration.
+		Then the counter page is opened.
+		When I book a walk-in customer for the service "<beliebig>".
+		Then the walk-in customer is shown in the queue.
+		When I book an appointment customer with the selected service, time, name and a valid email address.
+		Then a popup "Termin wurde erfolgreich eingetragen" appears and the appointment is also visible in the queue.
+		When I book an appointment customer with the selected service and time.
+		Then two error messages highlighted in red appear for name and email address.

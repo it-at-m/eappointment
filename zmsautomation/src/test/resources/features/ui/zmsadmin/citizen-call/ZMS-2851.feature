@@ -1,34 +1,34 @@
-#language: de
-Funktionalität: Ein nicht erschienener Kunde kann nach dem Aufruf entsprechend markiert werden, damit der Vorgang weiterverarbeitet werden kann.
+#language: en
+Feature: A customer who did not show up can be marked after the call so the process can continue.
 
   @web @zmsadmin @citizen-call @clerk @ZMS-2851 @ZMS-1795 @executeLocally
-  Szenario: [AUT] Kunde nach Aufruf nicht erschienen - Button umbenennen
-    Wenn Sie zur Webseite der Administration navigieren.
-    Und  Sie im Zeitmanagementsystem auf die Schaltfläche "Anmelden" klicken.
-    Und Sie unter dem Menü Administration auf den Eintrag "Behörden und Standorte" klicken.
-    Und Sie für den Standort "Standesamt München (KVR-II/112) Geburtenbüro" die Wiederholungsaufrufe auf "0" setzen.
-    Dann sind Für den Standort "Standesamt München (KVR-II/112) Geburtenbüro" Wiederholungsaufrufe auf "0" begrenzt.
-    Wenn Sie unter dem Menü Administration auf den Eintrag "Behörden und Standorte" klicken.
-    Und Sie für den Standort "Standesamt München (KVR-II/1141) Urkundenstelle" die Wiederholungsaufrufe auf "1" setzen.
-    Dann sind Für den Standort "Standesamt München (KVR-II/1141) Urkundenstelle" Wiederholungsaufrufe auf "1" begrenzt.
-    Und Sie "1" Minute bis die Änderungen übernommen werden warten.
+  Scenario: [AUT] Customer did not show up after the call
+    When I open the administration website.
+    And I click the button "Anmelden" in the administration.
+    And I click the entry "Behörden und Standorte" in the Administration menu.
+    And I set for location "Standesamt München (KVR-II/112) Geburtenbüro" the repeat calls to "0".
+    Then repeat calls for location "Standesamt München (KVR-II/112) Geburtenbüro" are limited to "0".
+    When I click the entry "Behörden und Standorte" in the Administration menu.
+    And I set for location "Standesamt München (KVR-II/1141) Urkundenstelle" the repeat calls to "1".
+    Then repeat calls for location "Standesamt München (KVR-II/1141) Urkundenstelle" are limited to "1".
+    And I wait "1" minute for the changes to be applied.
 #Standort: Standesamt München (KVR-II/112) Geburtenbüro, Wiederholungsaufrufe: 0
-    Wenn Sie im Zeitmanagementsystem in der Kopfzeile auf die Schaltfläche "Auswahl ändern" klicken.
-    Und  Sie für "Standort" den Wert "Standesamt München (KVR-II/112) Geburtenbüro" auswählen.
-    Und  Sie in Feld "Platz-Nr. oder Tresen" den Text "13" eingeben.
-    Und  Sie im Zeitmanagementsystem auf die Schaltfläche "Auswahl bestätigen" klicken.
-    Dann wird die Seite Sachbearbeiterplatz angezeigt.
-    Gegeben seien Sie einen Spontankunden für die Dienstleistung buchen:
+    When I click the button "Auswahl ändern" in the administration header.
+    And I select for "Standort" the value "Standesamt München (KVR-II/112) Geburtenbüro".
+    And I enter in the field "Platz-Nr. oder Tresen" the text "13".
+    And I click the button "Auswahl bestätigen" in the administration.
+    Then the workstation page is displayed.
+    Given I book a walk-in customer for the service:
       | Dienstleistung  | Termin name   | Kunde        |
       | Urkundenabholung       | Termin_lang_1 | kunde_lang_1 |
       | Vaterschaftsanerkennung ohne Sorgerechtserklärung vor Geburt/Geburtsbeurkundung des Kindes | Termin_lang_2 | kunde_lang_2 |
-    Wenn Der Sachbearbeiter den Kunden "<TestData.kunde_lang_1>" aus der Warteliste aufruft.
-    Dann wird der wartende Kunde "<TestData.Termin_lang_1>" aufgerufen.
-    Wenn Sie im Zeitmanagementsystem auf die Schaltfläche "Nein, nicht erschienen" klicken.
-    Dann Sollte der Kunde "<TestData.Termin_lang_1>" unter verpasste Termine erscheinen.
-    Wenn Der Sachbearbeiter den Kunden "<TestData.kunde_lang_2>" aus der Warteliste aufruft.
-    Dann wird der wartende Kunde "<TestData.Termin_lang_2>" aufgerufen.
-    Wenn Sie im Zeitmanagementsystem auf die Schaltfläche "Ja, Kunde erschienen" klicken.
+    When the clerk calls the customer "<TestData.kunde_lang_1>" from the waiting list.
+    Then the waiting customer "<TestData.Termin_lang_1>" is called.
+    When I click the button "Nein, nicht erschienen" in the administration.
+    Then the customer "<TestData.Termin_lang_1>" should appear under missed appointments.
+    When the clerk calls the customer "<TestData.kunde_lang_2>" from the waiting list.
+    Then the waiting customer "<TestData.Termin_lang_2>" is called.
+    When I click the button "Ja, Kunde erschienen" in the administration.
     # Todo: Bug Fix ZMSKVR-1102 -> Abbrechen Button appointment gets stuck in Aufgerufene Termine and no longer returns to the queue Warteschlange
     # Wenn Sie im Zeitmanagementsystem auf die Schaltfläche "Abbrechen" klicken.
     #Dann Sollte der Kunde "<TestData.Termin_lang_2>" in der Warteliste erscheinen.
