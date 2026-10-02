@@ -91,14 +91,14 @@ const props = defineProps<{
 
 const introTagline = computed(() => {
   if (props.variantId === VARIANT_ID_TELEPHONE) {
-    return props.t(`appointmentTypes.${VARIANT_ID_TELEPHONE}`);
+    return props.t(`variants.${VARIANT_ID_TELEPHONE}`);
   }
 
   if (props.variantId === VARIANT_ID_VIDEO) {
-    return props.t(`appointmentTypes.${VARIANT_ID_VIDEO}`);
+    return props.t(`variants.${VARIANT_ID_VIDEO}`);
   }
 
-  return props.t(`appointmentTypes.${VARIANT_ID_PRESENCE}`);
+  return props.t(`variants.${VARIANT_ID_PRESENCE}`);
 });
 
 const introLocation = computed(() => {
