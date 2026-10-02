@@ -115,7 +115,8 @@ public class CustomerSearchPage extends AdminPage {
      */
     public void assertNamesInOrder(List<String> expected) {
         CONTEXT.set();
-        List<WebElement> rows = DRIVER.findElements(By.xpath("//table[contains(@class,'table--base')]/tbody/tr"));
+        List<WebElement> rows = DRIVER.findElements(By.xpath(
+                "//table[@data-processList-count]/tbody/tr[td and not(preceding-sibling::tr[th])]"));
         List<String> found = new ArrayList<>();
         for (WebElement row : rows) {
             String cell = row.findElement(By.xpath("./td[1]")).getText().replace('\u00a0', ' ').trim();
