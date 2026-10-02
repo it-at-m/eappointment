@@ -5,8 +5,8 @@ Feature: Process search finds a three character name and ranks a word above an o
   So that an older substring hit no longer buries the whole word
 
   # Scope 368, Dokumentenausgabe2. Free text 1 is "Note", except when the hit is only in that field.
-  # Doe, Guest, Doeguest, Doeclient and Guestdoe are English citizen names.
-  # Doeguest and Guestdoe are created first. They used to share a rank with the real name and therefore sorted above it.
+  # Jax, Jax Porter, Porter Jax, Jaxley Quinn, Jaxlin Shore, Porter, Porterlyn Shaw and Lark Meadow are invented citizen names.
+  # Jaxley Quinn and Porterlyn Shaw are created first. They used to share a rank with the real name and therefore sorted above it.
   # Every walk-in is deleted.
 
   Background:
@@ -16,60 +16,60 @@ Feature: Process search finds a three character name and ranks a word above an o
   Scenario: A three character name is found in either case
     When I update the workstation with scope 368 and counter "4" with the X-AuthKey
     Then the response status code should be 200
-    When I queue a walk-in at scope 368 with service "Spontan eAT/eRA", name "Doeguest", free text "Note" and second free text "" with the X-AuthKey
+    When I queue a walk-in at scope 368 with service "Spontan eAT/eRA", name "Jaxley Quinn", free text "Note" and second free text "" with the X-AuthKey
     Then the response status code should be 200
     And the process status should be "queued"
-    When I queue a walk-in at scope 368 with service "Spontan eAT/eRA", name "Doeclient", free text "Note" and second free text "" with the X-AuthKey
+    When I queue a walk-in at scope 368 with service "Spontan eAT/eRA", name "Jaxlin Shore", free text "Note" and second free text "" with the X-AuthKey
     Then the response status code should be 200
     And the process status should be "queued"
-    When I queue a walk-in at scope 368 with service "Spontan eAT/eRA", name "Muster Doe", free text "Note" and second free text "" with the X-AuthKey
+    When I queue a walk-in at scope 368 with service "Spontan eAT/eRA", name "Porter Jax", free text "Note" and second free text "" with the X-AuthKey
     Then the response status code should be 200
     And the process status should be "queued"
-    When I queue a walk-in at scope 368 with service "Spontan eAT/eRA", name "Doe Muster", free text "Note" and second free text "" with the X-AuthKey
+    When I queue a walk-in at scope 368 with service "Spontan eAT/eRA", name "Jax Porter", free text "Note" and second free text "" with the X-AuthKey
     Then the response status code should be 200
     And the process status should be "queued"
-    When I queue a walk-in at scope 368 with service "Spontan eAT/eRA", name "Doe", free text "Note" and second free text "" with the X-AuthKey
+    When I queue a walk-in at scope 368 with service "Spontan eAT/eRA", name "Jax", free text "Note" and second free text "" with the X-AuthKey
     Then the response status code should be 200
     And the process status should be "queued"
-    When I search processes for "Doe" with the X-AuthKey
+    When I search processes for "Jax" with the X-AuthKey
     Then the process search lists these names in order:
-      | Doe |
-      | Doe Muster |
-      | Muster Doe |
-      | Doeguest |
-      | Doeclient |
-    When I search processes for "doe" with the X-AuthKey
+      | Jax |
+      | Jax Porter |
+      | Porter Jax |
+      | Jaxley Quinn |
+      | Jaxlin Shore |
+    When I search processes for "jax" with the X-AuthKey
     Then the process search lists these names in order:
-      | Doe |
-      | Doe Muster |
-      | Muster Doe |
-      | Doeguest |
-      | Doeclient |
+      | Jax |
+      | Jax Porter |
+      | Porter Jax |
+      | Jaxley Quinn |
+      | Jaxlin Shore |
     When I delete the processes created in this scenario with the X-AuthKey
 
   Scenario: An older substring no longer buries the whole word
     When I update the workstation with scope 368 and counter "4" with the X-AuthKey
     Then the response status code should be 200
-    When I queue a walk-in at scope 368 with service "Spontan eAT/eRA", name "Muster Client", free text "Guest" and second free text "" with the X-AuthKey
+    When I queue a walk-in at scope 368 with service "Spontan eAT/eRA", name "Lark Meadow", free text "Porter" and second free text "" with the X-AuthKey
     Then the response status code should be 200
     And the process status should be "queued"
-    When I queue a walk-in at scope 368 with service "Spontan eAT/eRA", name "Guestdoe", free text "Note" and second free text "" with the X-AuthKey
+    When I queue a walk-in at scope 368 with service "Spontan eAT/eRA", name "Porterlyn Shaw", free text "Note" and second free text "" with the X-AuthKey
     Then the response status code should be 200
     And the process status should be "queued"
-    When I queue a walk-in at scope 368 with service "Spontan eAT/eRA", name "Doe Guest", free text "Note" and second free text "" with the X-AuthKey
+    When I queue a walk-in at scope 368 with service "Spontan eAT/eRA", name "Jax Porter", free text "Note" and second free text "" with the X-AuthKey
     Then the response status code should be 200
     And the process status should be "queued"
-    When I queue a walk-in at scope 368 with service "Spontan eAT/eRA", name "Guest Doe", free text "Note" and second free text "" with the X-AuthKey
+    When I queue a walk-in at scope 368 with service "Spontan eAT/eRA", name "Porter Jax", free text "Note" and second free text "" with the X-AuthKey
     Then the response status code should be 200
     And the process status should be "queued"
-    When I queue a walk-in at scope 368 with service "Spontan eAT/eRA", name "Guest", free text "Note" and second free text "" with the X-AuthKey
+    When I queue a walk-in at scope 368 with service "Spontan eAT/eRA", name "Porter", free text "Note" and second free text "" with the X-AuthKey
     Then the response status code should be 200
     And the process status should be "queued"
-    When I search processes for "Guest" with the X-AuthKey
+    When I search processes for "Porter" with the X-AuthKey
     Then the process search lists these names in order:
-      | Guest |
-      | Guest Doe |
-      | Doe Guest |
-      | Guestdoe |
-      | Muster Client |
+      | Porter |
+      | Porter Jax |
+      | Jax Porter |
+      | Porterlyn Shaw |
+      | Lark Meadow |
     When I delete the processes created in this scenario with the X-AuthKey

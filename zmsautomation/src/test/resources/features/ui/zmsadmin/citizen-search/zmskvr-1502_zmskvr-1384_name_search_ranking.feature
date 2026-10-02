@@ -6,9 +6,10 @@ Funktionalität: Kundensuche findet kurze Namen und sortiert Worttreffer vor Tei
 
   # Standort 368, Dokumentenausgabe2. Freitextfeld 1 ist Pflicht.
   # "Note" steht dort, außer wenn der Treffer nur im Freitext liegen soll.
-  # Doe, Guest, Doeguest, Doeclient und Guestdoe sind englische Bürgernamen.
-  # Doeguest und Guestdoe werden zuerst angelegt. Früher lagen sie auf demselben Rang
-  # wie der echte Name und standen deshalb darüber.
+  # Jax, Jax Porter, Porter Jax, Jaxley Quinn, Jaxlin Shore, Porter, Porterlyn Shaw
+  # und Lark Meadow sind erfundene Bürgernamen.
+  # Jaxley Quinn und Porterlyn Shaw werden zuerst angelegt. Früher lagen sie auf
+  # demselben Rang wie der echte Name und standen deshalb darüber.
   # Alle Spontankunden werden gelöscht.
 
   Szenario: Drei Zeichen finden den Namen unabhängig von der Großschreibung
@@ -19,32 +20,32 @@ Funktionalität: Kundensuche findet kurze Namen und sortiert Worttreffer vor Tei
     Und Sie in Feld "Platz-Nr. oder Tresen" den Text "4" eingeben.
     Und Sie im Zeitmanagementsystem auf die Schaltfläche "Auswahl bestätigen" klicken.
     Dann wird die Seite Sachbearbeiterplatz angezeigt.
-    Wenn Sie einen Spontankunden mit der Dienstleistung "Spontan eAT/eRA", dem Namen "Doeguest", Freitextfeld "Note" und Freitextfeld 2 "" buchen.
-    Und Sie einen Spontankunden mit der Dienstleistung "Spontan eAT/eRA", dem Namen "Doeclient", Freitextfeld "Note" und Freitextfeld 2 "" buchen.
-    Und Sie einen Spontankunden mit der Dienstleistung "Spontan eAT/eRA", dem Namen "Muster Doe", Freitextfeld "Note" und Freitextfeld 2 "" buchen.
-    Und Sie einen Spontankunden mit der Dienstleistung "Spontan eAT/eRA", dem Namen "Doe Muster", Freitextfeld "Note" und Freitextfeld 2 "" buchen.
-    Und Sie einen Spontankunden mit der Dienstleistung "Spontan eAT/eRA", dem Namen "Doe", Freitextfeld "Note" und Freitextfeld 2 "" buchen.
-    Wenn Sie in der Kundensuche nach "Doe" suchen.
+    Wenn Sie einen Spontankunden mit der Dienstleistung "Spontan eAT/eRA", dem Namen "Jaxley Quinn", Freitextfeld "Note" und Freitextfeld 2 "" buchen.
+    Und Sie einen Spontankunden mit der Dienstleistung "Spontan eAT/eRA", dem Namen "Jaxlin Shore", Freitextfeld "Note" und Freitextfeld 2 "" buchen.
+    Und Sie einen Spontankunden mit der Dienstleistung "Spontan eAT/eRA", dem Namen "Porter Jax", Freitextfeld "Note" und Freitextfeld 2 "" buchen.
+    Und Sie einen Spontankunden mit der Dienstleistung "Spontan eAT/eRA", dem Namen "Jax Porter", Freitextfeld "Note" und Freitextfeld 2 "" buchen.
+    Und Sie einen Spontankunden mit der Dienstleistung "Spontan eAT/eRA", dem Namen "Jax", Freitextfeld "Note" und Freitextfeld 2 "" buchen.
+    Wenn Sie in der Kundensuche nach "Jax" suchen.
     Dann listet die Kundensuche die Namen in dieser Reihenfolge:
-      | Doe |
-      | Doe Muster |
-      | Muster Doe |
-      | Doeguest |
-      | Doeclient |
-    Wenn Sie in der Kundensuche nach "doe" suchen.
+      | Jax |
+      | Jax Porter |
+      | Porter Jax |
+      | Jaxley Quinn |
+      | Jaxlin Shore |
+    Wenn Sie in der Kundensuche nach "jax" suchen.
     Dann listet die Kundensuche die Namen in dieser Reihenfolge:
-      | Doe |
-      | Doe Muster |
-      | Muster Doe |
-      | Doeguest |
-      | Doeclient |
+      | Jax |
+      | Jax Porter |
+      | Porter Jax |
+      | Jaxley Quinn |
+      | Jaxlin Shore |
     Wenn Sie zum Sachbearbeiterplatz zurückkehren.
     Dann wird die Seite Sachbearbeiterplatz angezeigt.
-    Wenn Sie den gerade gebuchten Termin von "Doeguest" in der Warteschlange löschen.
-    Und Sie den gerade gebuchten Termin von "Doeclient" in der Warteschlange löschen.
-    Und Sie den gerade gebuchten Termin von "Muster Doe" in der Warteschlange löschen.
-    Und Sie den gerade gebuchten Termin von "Doe Muster" in der Warteschlange löschen.
-    Und Sie den gerade gebuchten Termin von "Doe" in der Warteschlange löschen.
+    Wenn Sie den gerade gebuchten Termin von "Jaxley Quinn" in der Warteschlange löschen.
+    Und Sie den gerade gebuchten Termin von "Jaxlin Shore" in der Warteschlange löschen.
+    Und Sie den gerade gebuchten Termin von "Porter Jax" in der Warteschlange löschen.
+    Und Sie den gerade gebuchten Termin von "Jax Porter" in der Warteschlange löschen.
+    Und Sie den gerade gebuchten Termin von "Jax" in der Warteschlange löschen.
 
   Szenario: Ein älterer Teilstring verdrängt den Worttreffer nicht mehr
     Wenn Sie zur Webseite der Administration navigieren.
@@ -54,22 +55,22 @@ Funktionalität: Kundensuche findet kurze Namen und sortiert Worttreffer vor Tei
     Und Sie in Feld "Platz-Nr. oder Tresen" den Text "4" eingeben.
     Und Sie im Zeitmanagementsystem auf die Schaltfläche "Auswahl bestätigen" klicken.
     Dann wird die Seite Sachbearbeiterplatz angezeigt.
-    Wenn Sie einen Spontankunden mit der Dienstleistung "Spontan eAT/eRA", dem Namen "Muster Client", Freitextfeld "Guest" und Freitextfeld 2 "" buchen.
-    Und Sie einen Spontankunden mit der Dienstleistung "Spontan eAT/eRA", dem Namen "Guestdoe", Freitextfeld "Note" und Freitextfeld 2 "" buchen.
-    Und Sie einen Spontankunden mit der Dienstleistung "Spontan eAT/eRA", dem Namen "Doe Guest", Freitextfeld "Note" und Freitextfeld 2 "" buchen.
-    Und Sie einen Spontankunden mit der Dienstleistung "Spontan eAT/eRA", dem Namen "Guest Doe", Freitextfeld "Note" und Freitextfeld 2 "" buchen.
-    Und Sie einen Spontankunden mit der Dienstleistung "Spontan eAT/eRA", dem Namen "Guest", Freitextfeld "Note" und Freitextfeld 2 "" buchen.
-    Wenn Sie in der Kundensuche nach "Guest" suchen.
+    Wenn Sie einen Spontankunden mit der Dienstleistung "Spontan eAT/eRA", dem Namen "Lark Meadow", Freitextfeld "Porter" und Freitextfeld 2 "" buchen.
+    Und Sie einen Spontankunden mit der Dienstleistung "Spontan eAT/eRA", dem Namen "Porterlyn Shaw", Freitextfeld "Note" und Freitextfeld 2 "" buchen.
+    Und Sie einen Spontankunden mit der Dienstleistung "Spontan eAT/eRA", dem Namen "Jax Porter", Freitextfeld "Note" und Freitextfeld 2 "" buchen.
+    Und Sie einen Spontankunden mit der Dienstleistung "Spontan eAT/eRA", dem Namen "Porter Jax", Freitextfeld "Note" und Freitextfeld 2 "" buchen.
+    Und Sie einen Spontankunden mit der Dienstleistung "Spontan eAT/eRA", dem Namen "Porter", Freitextfeld "Note" und Freitextfeld 2 "" buchen.
+    Wenn Sie in der Kundensuche nach "Porter" suchen.
     Dann listet die Kundensuche die Namen in dieser Reihenfolge:
-      | Guest |
-      | Guest Doe |
-      | Doe Guest |
-      | Guestdoe |
-      | Muster Client |
+      | Porter |
+      | Porter Jax |
+      | Jax Porter |
+      | Porterlyn Shaw |
+      | Lark Meadow |
     Wenn Sie zum Sachbearbeiterplatz zurückkehren.
     Dann wird die Seite Sachbearbeiterplatz angezeigt.
-    Wenn Sie den gerade gebuchten Termin von "Muster Client" in der Warteschlange löschen.
-    Und Sie den gerade gebuchten Termin von "Guestdoe" in der Warteschlange löschen.
-    Und Sie den gerade gebuchten Termin von "Doe Guest" in der Warteschlange löschen.
-    Und Sie den gerade gebuchten Termin von "Guest Doe" in der Warteschlange löschen.
-    Und Sie den gerade gebuchten Termin von "Guest" in der Warteschlange löschen.
+    Wenn Sie den gerade gebuchten Termin von "Lark Meadow" in der Warteschlange löschen.
+    Und Sie den gerade gebuchten Termin von "Porterlyn Shaw" in der Warteschlange löschen.
+    Und Sie den gerade gebuchten Termin von "Jax Porter" in der Warteschlange löschen.
+    Und Sie den gerade gebuchten Termin von "Porter Jax" in der Warteschlange löschen.
+    Und Sie den gerade gebuchten Termin von "Porter" in der Warteschlange löschen.
