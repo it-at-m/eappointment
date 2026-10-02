@@ -1,7 +1,8 @@
 #language: de
 Funktionalität: Terminkunden zählen am Tresen ab der Minute des Termins als Wartende
 
-	# Standort 2, Gewerbeamt (KVR-III/23) Verkehr, hat heute Fünf-Minuten-Slots.
+	# Standort 2, Gewerbeamt (KVR-III/23) Verkehr.
+	# Am Abend, wenn die normalen Öffnungszeiten auf den nächsten Tag rutschen, bleiben Ein-Minuten-Slots bis 23:59.
 	# Der Terminkunde wird zur nächsten freien Minute gebucht.
 	# Unter Informationen zählt er ab dieser Minute, nicht erst eine Minute danach.
 	# Die Seite wird neu geladen, damit nicht der 60-Sekunden-Takt der Warteschlange entscheidet.
