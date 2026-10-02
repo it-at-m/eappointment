@@ -1,3 +1,60 @@
+## Release Muc-49 (02.10.2026)
+                                   
+<h2>        Bug
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-157'>ZMSKVR-157</a>] -         Systemfehler bei Weiterleiten &gt; Parken &gt; Buchen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-751'>ZMSKVR-751</a>] -         Nicht aktivierte Termine weisen Wartezeit auf
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-833'>ZMSKVR-833</a>] -         Bürgeransicht Umbuchung fehlgeschlagen: Pflichtfelder am Zielstandort nicht bearbeitbar
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1025'>ZMSKVR-1025</a>] -         Fehlerhandling beim zweiten Freitextfeld
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1030'>ZMSKVR-1030</a>] -         Terminbuchung ohne Aktivierungsmail nur bei eingeloggten Nutzern oder Umbuchungen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1246'>ZMSKVR-1246</a>] -         Cronjob löscht manche Termine mit Status pending und preconfirmed nicht
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1411'>ZMSKVR-1411</a>] -         Fehlermeldung beim Anlegen einer Öffnungszeit inkl. Sonntag
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1487'>ZMSKVR-1487</a>] -         ZMS-Admin: Verdoppelte Leistungsdauer durch das Bearbeiten eines Spontankundentermins
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1495'>ZMSKVR-1495</a>] -         Summenfeld in Terminkapazität zeigt den falschen Monat an
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1630'>ZMSKVR-1630</a>] -         Reservierten Termin mit Platzhalter-E-Mail test@muenchen.de nicht ohne Update/Preconfirm bestätigen lassen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1654'>ZMSKVR-1654</a>] -         Schreibweise &quot;Wohnsitzanmeldung&quot; angleichen
+</li>
+</ul>
+                                            
+                                                                                                                                                                                    
+<h2>        Story
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-167'>ZMSKVR-167</a>] -         Ticketprinter - Betriebsstabilität Standort Ids
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-343'>ZMSKVR-343</a>] -         Vereinheitlichung der Popup-Fenster nach Terminbuchung
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-690'>ZMSKVR-690</a>] -         Upgrade PHP 8.3 auf 8.4
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-759'>ZMSKVR-759</a>] -         Effizientes Kopieren von Customized E-Mail-Templates zwischen Standorten für Technische Administratoren
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1318'>ZMSKVR-1318</a>] -         MSE Terminvarianten „Entwässerungsplanvorbesprechung“ (Vor Ort / Video)
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1417'>ZMSKVR-1417</a>] -         Logo aus E-Mail-Signatur entfernen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1618'>ZMSKVR-1618</a>] -         Kundensuche um Status „Selbst storniert“ erweitern
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1619'>ZMSKVR-1619</a>] -         Direktzugriff auf Öffnungszeiten aus der Gesamtübersicht
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1629'>ZMSKVR-1629</a>] -         Terminkapazitäten standardmäßig als Tagessumme anzeigen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1631'>ZMSKVR-1631</a>] -         Bürgerfrontend: Zurück von Prozesschritt Termin zur Verschieben/Absagen-Seite
+</li>
+</ul>
+                                                            
+
+
 ## Release Muc-48 (14.09.2026)
                          
 <h2>        Bug
