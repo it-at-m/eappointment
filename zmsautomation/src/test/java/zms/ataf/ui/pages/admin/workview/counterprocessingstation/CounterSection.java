@@ -1,6 +1,12 @@
 package zms.ataf.ui.pages.admin.workview.counterprocessingstation;
 
+import java.time.Duration;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.RemoteWebDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 
 import ataf.core.logging.ScenarioLogManager;
@@ -32,5 +38,27 @@ public class CounterSection extends CounterProcessingStationPage {
         Assert.assertTrue(
                 isWebElementVisible(DEFAULT_EXPLICIT_WAIT_TIME, "//h4[contains(normalize-space(.), 'Wartezeit für neue Spontankunden')]", LocatorType.XPATH, false),
                 "'Wartezeit für neue Spontankunden:' not visible.");
+    }
+
+    private static final By COUNTER_WAITING_COUNT = By.xpath(
+            "//div[contains(@class,'queue-info')]//h4[contains(@class,'wartende')]"
+                    + "/ancestor::li//span[contains(@class,'waiting-count')]");
+
+    /** Wartende under Informationen on Tresen. The panel arrives after its own reload. */
+    public int readWaitingClientsOnCounter() {
+        CONTEXT.set();
+        WebElement count = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(ExpectedConditions.visibilityOfElementLocated(COUNTER_WAITING_COUNT));
+        String text = count.getText().trim();
+        try {
+            return Integer.parseInt(text);
+        } catch (NumberFormatException e) {
+            throw new AssertionError("Wartende under Informationen is not a number: \"" + text + "\"", e);
+        }
+    }
+
+    public int reloadAndReadWaitingClientsOnCounter() {
+        DRIVER.navigate().refresh();
+        return readWaitingClientsOnCounter();
     }
 }
