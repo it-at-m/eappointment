@@ -44,9 +44,17 @@ export interface Service {
    * @memberof Service
    */
   variantId: number | null;
+  variantOverwrite?: VariantOverwrite;
   /**
    * @type {(boolean)}
    * @memberof Service
    */
   showOnStartPage?: boolean;
+}
+
+export interface VariantOverwrite {
+  [locale: string]: {
+    name?: string;
+    hint?: string;
+  };
 }

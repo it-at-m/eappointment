@@ -77,7 +77,13 @@
                       variantId === VARIANT_ID_VIDEO
                     "
                   >
-                    {{ t(`appointmentTypes.${variantId}`) }}
+                    {{
+                      getAppointmentLocationVariantLabel(
+                        variantId,
+                        t,
+                        selectedService?.variantOverwrite
+                      )
+                    }}
                   </span>
 
                   <span v-else>
@@ -101,6 +107,7 @@ import { MucCheckbox, MucCheckboxGroup } from "@muenchen/muc-patternlab-vue";
 import { computed, inject } from "vue";
 
 import { SelectedServiceProvider } from "@/types/ProvideInjectTypes";
+import { getAppointmentLocationVariantLabel } from "@/utils/Constants";
 
 const VARIANT_ID_TEL = 2;
 const VARIANT_ID_VIDEO = 3;

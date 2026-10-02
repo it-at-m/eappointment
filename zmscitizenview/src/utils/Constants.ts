@@ -117,12 +117,6 @@ export const VARIANT_ID_LARGE_CLIENT = 7;
 export const VIDEO_CONSULTATION_INFO_URL =
   "https://stadt.muenchen.de/infos/videoberatung.html";
 
-export const VARIANTS_WITH_HINTS = [
-  VARIANT_ID_PRESENCE,
-  VARIANT_ID_TELEPHONE,
-  VARIANT_ID_VIDEO,
-] as const;
-
 export const VARIANT_IDS_WITH_ADDRESS = [
   VARIANT_ID_PRESENCE,
   VARIANT_ID_LARGE_CLIENT,
@@ -143,41 +137,72 @@ export function isVariantWithAddress(variantId: number | null): boolean {
   );
 }
 
-export function isVariantWithHint(variantId: number | null): boolean {
+export const getVariantHint = (
+  variantId: number,
+  t: (key: string) => string,
+  variantOverwrite?: Record<string, { name?: string; hint?: string }>
+): string | undefined => {
   return (
-    variantId != null &&
-    (VARIANTS_WITH_HINTS as readonly number[]).includes(variantId)
+    getVariantText(variantId, "hint", t, variantOverwrite) ??
+    getTranslationIfPresent(`variantHint.${variantId}`, t)
+  );
+};
+
+type VariantOverwrite = Record<string, { name?: string; hint?: string }>;
+
+function getOverwriteLocale(t: (key: string) => string): string {
+  // The translation function is passed through the component tree, so this keeps
+  // the helper independent of a particular vue-i18n instance.
+  return t("languages.de") === "Deutsch" ? "de" : "en";
+}
+
+function getVariantText(
+  variantId: number,
+  field: "name" | "hint",
+  t: (key: string) => string,
+  overwrite?: VariantOverwrite
+): string | undefined {
+  const locale = getOverwriteLocale(t);
+  return (
+    overwrite?.[locale]?.[field] ??
+    overwrite?.[locale === "de" ? "de-DE" : "en-US"]?.[field]
   );
 }
 
-export const getVariantHint = (
-  variantId: number,
+function getTranslationIfPresent(
+  key: string,
   t: (key: string) => string
-): string | undefined => {
-  return (VARIANTS_WITH_HINTS as readonly number[]).includes(variantId)
-    ? t(`locationVariantText.${variantId}`)
-    : undefined;
-};
+): string | undefined {
+  const translation = t(key);
+  return translation === key ? undefined : translation;
+}
 
 export const getAppointmentLocationVariantHint = (
   variantId: number | null,
-  t: (key: string) => string
+  t: (key: string) => string,
+  variantOverwrite?: VariantOverwrite
 ): string | undefined => {
   if (variantId == null) return undefined;
+
+  const hint = getVariantHint(variantId, t, variantOverwrite);
+  if (hint) {
+    return hint;
+  }
 
   if (
     variantId === VARIANT_ID_SMALL_CLIENT ||
     variantId === VARIANT_ID_LARGE_CLIENT
   ) {
-    return t(`locationVariantText.${VARIANT_ID_PRESENCE}`);
+    return getVariantHint(VARIANT_ID_PRESENCE, t, variantOverwrite);
   }
 
-  return getVariantHint(variantId, t);
+  return undefined;
 };
 
 export const getAppointmentLocationVariantLabel = (
   variantId: number | null,
-  t: (key: string) => string
+  t: (key: string) => string,
+  variantOverwrite?: VariantOverwrite
 ): string | undefined => {
   if (variantId == null) return undefined;
 
@@ -185,10 +210,16 @@ export const getAppointmentLocationVariantLabel = (
     variantId === VARIANT_ID_SMALL_CLIENT ||
     variantId === VARIANT_ID_LARGE_CLIENT
   ) {
-    return t(`appointmentTypes.${VARIANT_ID_PRESENCE}`);
+    return (
+      getVariantText(VARIANT_ID_PRESENCE, "name", t, variantOverwrite) ??
+      t(`variants.${VARIANT_ID_PRESENCE}`)
+    );
   }
 
-  return t(`appointmentTypes.${variantId}`);
+  return (
+    getVariantText(variantId, "name", t, variantOverwrite) ??
+    t(`variants.${variantId}`)
+  );
 };
 
 export function shouldAddImplicitPresenceVariant(

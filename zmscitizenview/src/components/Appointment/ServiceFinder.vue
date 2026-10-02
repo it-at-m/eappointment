@@ -71,8 +71,20 @@
             :key="variant.variantId ?? ''"
             :id="'variant-' + variant.variantId"
             :value="variant.variantId?.toString() ?? ''"
-            :label="t(`appointmentTypes.${variant.variantId}`)"
-            :hint="getVariantHint(variant.variantId ?? 0, t)"
+            :label="
+              getAppointmentLocationVariantLabel(
+                variant.variantId,
+                t,
+                variant.variantOverwrite
+              )
+            "
+            :hint="
+              getVariantHint(
+                variant.variantId ?? 0,
+                t,
+                variant.variantOverwrite
+              )
+            "
           />
         </muc-radio-button-group>
       </div>
@@ -216,6 +228,7 @@ import { ServiceImpl } from "@/types/ServiceImpl";
 import { handleApiResponseForDownTime } from "@/utils/apiStatusService";
 import { calculateEstimatedDuration } from "@/utils/calculateEstimatedDuration";
 import {
+  getAppointmentLocationVariantLabel,
   getServiceBaseURL,
   getVariantHint,
   OFTEN_SEARCHED_SERVICES,
