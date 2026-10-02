@@ -1,5 +1,5 @@
 import { mount } from "@vue/test-utils";
-import {afterAll, beforeAll, describe, expect, it, vi} from "vitest";
+import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 import de from '@/utils/de-DE.json';
 import { nextTick } from "vue";
 
@@ -48,43 +48,43 @@ describe("AppointmentDetailView", () => {
   const mockRescheduleAppointmentUrl = "https://www.muenchen.de/reschedule-appointment";
 
   const mockAppointment =
-    {
-      timestamp: Math.floor(Date.now() / 1000),
-      processId: "12345",
-      familyName: "John Doe",
-      email: "john@example.com",
-      officeId: "1",
-      telephone: "1234567890",
-      serviceId: "id_12345",
-      serviceName: "Personalausweis",
-      serviceCount: 1,
-      subRequestCounts: [],
-    };
+  {
+    timestamp: Math.floor(Date.now() / 1000),
+    processId: "12345",
+    familyName: "John Doe",
+    email: "john@example.com",
+    officeId: "1",
+    telephone: "1234567890",
+    serviceId: "id_12345",
+    serviceName: "Personalausweis",
+    serviceCount: 1,
+    subRequestCounts: [],
+  };
 
   const mockSubRequestAppointment =
-    {
-      timestamp: Math.floor(Date.now() / 1000),
-      processId: "12345",
-      familyName: "John Doe",
-      email: "john@example.com",
-      officeId: "1",
-      telephone: "1234567890",
-      serviceId: "id_12345",
-      serviceName: "Personalausweis",
-      serviceCount: 1,
-      subRequestCounts: [
-        {
-          id: "subid_12345",
-          name: "Reisepass",
-          count: 2,
-        },
-        {
-          id: "subid_6789",
-          name: "Wohnsitz ummelden",
-          count: 3,
-        },
-      ],
-    };
+  {
+    timestamp: Math.floor(Date.now() / 1000),
+    processId: "12345",
+    familyName: "John Doe",
+    email: "john@example.com",
+    officeId: "1",
+    telephone: "1234567890",
+    serviceId: "id_12345",
+    serviceName: "Personalausweis",
+    serviceCount: 1,
+    subRequestCounts: [
+      {
+        id: "subid_12345",
+        name: "Reisepass",
+        count: 2,
+      },
+      {
+        id: "subid_6789",
+        name: "Wohnsitz ummelden",
+        count: 3,
+      },
+    ],
+  };
 
   const mockProvider = {
     id: "1",
@@ -208,7 +208,7 @@ describe("AppointmentDetailView", () => {
       expect(locationSection.exists()).toBe(true);
       expect(timeSection.exists()).toBe(true);
 
-      expect(locationSection.text()).toContain(de.appointmentTypes["2"]);
+      expect(locationSection.text()).toContain(de.variants["2"]);
       expect(locationSection.text()).toContain(
         de.appointmentDetailTelephoneLocationText
       );
@@ -252,7 +252,7 @@ describe("AppointmentDetailView", () => {
       expect(locationSection.exists()).toBe(true);
       expect(timeSection.exists()).toBe(true);
 
-      expect(locationSection.text()).toContain(de.appointmentTypes["3"]);
+      expect(locationSection.text()).toContain(de.variants["3"]);
       expect(locationSection.text()).toContain(
         de.appointmentDetailVideoLocationText
       );

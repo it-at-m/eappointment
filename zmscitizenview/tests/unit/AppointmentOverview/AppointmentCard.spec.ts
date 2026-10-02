@@ -20,48 +20,48 @@ describe("AppointmentCard", () => {
   const mockAppointmentDetailUrl = "https://www.muenchen.de/appointment-detail";
 
   const mockAppointment =
-      {
-        timestamp: Math.floor(Date.now() / 1000),
-        processId: "12345",
-        familyName: "John Doe",
-        email: "john@example.com",
-        officeId: "1",
-        telephone: "1234567890",
-        serviceId: "id_12345",
-        serviceName: "Personalausweis",
-        serviceCount: 1,
-        subRequestCounts: [],
-      };
+  {
+    timestamp: Math.floor(Date.now() / 1000),
+    processId: "12345",
+    familyName: "John Doe",
+    email: "john@example.com",
+    officeId: "1",
+    telephone: "1234567890",
+    serviceId: "id_12345",
+    serviceName: "Personalausweis",
+    serviceCount: 1,
+    subRequestCounts: [],
+  };
 
   const mockAppointmentSubServices =
+  {
+    timestamp: Math.floor(Date.now() / 1000),
+    processId: "12345",
+    familyName: "John Doe",
+    email: "john@example.com",
+    officeId: "1",
+    telephone: "1234567890",
+    serviceId: "id_12345",
+    serviceName: "Personalausweis",
+    serviceCount: 2,
+    subRequestCounts: [
       {
-        timestamp: Math.floor(Date.now() / 1000),
-        processId: "12345",
-        familyName: "John Doe",
-        email: "john@example.com",
-        officeId: "1",
-        telephone: "1234567890",
-        serviceId: "id_12345",
-        serviceName: "Personalausweis",
-        serviceCount: 2,
-        subRequestCounts: [
-          {
-            id: "2",
-            name: "Reisepass",
-            count: 2,
-          },
-        ],
-      };
+        id: "2",
+        name: "Reisepass",
+        count: 2,
+      },
+    ],
+  };
 
   const mockProvider =
-    {
-      id: "1",
-      name: "Rathaus Marienplatz",
-      address: {
-        street: "Marienplatz",
-        house_number: "8"
-      },
-    };
+  {
+    id: "1",
+    name: "Rathaus Marienplatz",
+    address: {
+      street: "Marienplatz",
+      house_number: "8"
+    },
+  };
 
   const createMockService = (
     id: string,
@@ -105,11 +105,11 @@ describe("AppointmentCard", () => {
   };
 
   it("renders appointment card with one service", async () => {
-    const wrapper = createWrapper({offices: [mockProvider]}, mockAppointment);
+    const wrapper = createWrapper({ offices: [mockProvider] }, mockAppointment);
     await nextTick();
 
     expect(wrapper.find('[data-test="muc-card"]').exists()).toBe(true);
-    expect(wrapper.find('[data-test="muc-card"]').attributes('tagline')).toBe(de.appointmentTypes["1"]);
+    expect(wrapper.find('[data-test="muc-card"]').attributes('tagline')).toBe(de.variants["1"]);
     expect(wrapper.find('[data-test="muc-card"]').attributes('title')).toBe(wrapper.vm.formatMultilineTitle(mockAppointment));
     expect(wrapper.find('.multiline-text').exists()).toBe(true);
     expect(wrapper.text()).toContain(mockProvider.address.street);
@@ -117,11 +117,11 @@ describe("AppointmentCard", () => {
   });
 
   it("renders appointment card with two services", async () => {
-    const wrapper = createWrapper({offices: [mockProvider]}, mockAppointmentSubServices);
+    const wrapper = createWrapper({ offices: [mockProvider] }, mockAppointmentSubServices);
     await nextTick();
 
     expect(wrapper.find('[data-test="muc-card"]').exists()).toBe(true);
-    expect(wrapper.find('[data-test="muc-card"]').attributes('tagline')).toBe(de.appointmentTypes["1"]);
+    expect(wrapper.find('[data-test="muc-card"]').attributes('tagline')).toBe(de.variants["1"]);
     expect(wrapper.find('[data-test="muc-card"]').attributes('title')).toBe(wrapper.vm.formatMultilineTitle(mockAppointmentSubServices));
     expect(wrapper.find('.multiline-text').exists()).toBe(true);
     expect(wrapper.text()).toContain(mockProvider.address.street);
@@ -146,7 +146,7 @@ describe("AppointmentCard", () => {
 
     expect(
       wrapper.find('[data-test="muc-card"]').attributes("tagline")
-    ).toBe(de.appointmentTypes["2"]);
+    ).toBe(de.variants["2"]);
 
     const location = wrapper.find(
       '[data-test="appointment-location"]'
@@ -178,7 +178,7 @@ describe("AppointmentCard", () => {
 
     expect(
       wrapper.find('[data-test="muc-card"]').attributes("tagline")
-    ).toBe(de.appointmentTypes["3"]);
+    ).toBe(de.variants["3"]);
 
     const location = wrapper.find(
       '[data-test="appointment-location"]'
@@ -217,7 +217,7 @@ describe("AppointmentCard", () => {
 
       expect(
         wrapper.find('[data-test="muc-card"]').attributes("tagline")
-      ).toBe(de.appointmentTypes["1"]);
+      ).toBe(de.variants["1"]);
 
       const location = wrapper.find(
         '[data-test="appointment-location"]'
