@@ -25,6 +25,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import ataf.core.helpers.TestPropertiesHelper;
 import ataf.core.logging.ScenarioLogManager;
 import config.TestConfig;
+import io.cucumber.datatable.DataTable;
 import io.cucumber.java.After;
 import io.cucumber.java.Before;
 import io.cucumber.java.de.Wenn;
@@ -599,6 +600,17 @@ public class ZmsApiSteps {
         Assertions.assertThat(names)
             .as("GET /process/search/ past appointments")
             .containsExactly(earlierName, laterName);
+    }
+
+    @Then("the process search lists these names in order:")
+    public void theProcessSearchListsTheseNamesInOrder(DataTable table) {
+        List<String> expected = table.asLists().stream().map(row -> row.get(0)).toList();
+        List<String> found = familyNamesInSearch().stream()
+            .filter(expected::contains)
+            .toList();
+        Assertions.assertThat(found)
+            .as("GET /process/search/ name order. Body=%s", truncate(response.asString(), 1500))
+            .containsExactlyElementsOf(expected);
     }
 
     @Then("the process {string} has appointment status {string} and a booking time")

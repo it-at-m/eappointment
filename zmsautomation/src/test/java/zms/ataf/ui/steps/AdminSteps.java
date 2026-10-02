@@ -7,6 +7,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -429,6 +430,15 @@ public class AdminSteps {
                 TestDataHelper.transformTestData(first),
                 TestDataHelper.transformTestData(second),
                 TestDataHelper.transformTestData(third));
+    }
+
+    @Dann("listet die Kundensuche die Namen in dieser Reihenfolge:")
+    public void listetDieKundensucheDieNamenInDieserReihenfolge(DataTable table) {
+        List<String> names = new ArrayList<>();
+        for (List<String> row : table.asLists()) {
+            names.add(TestDataHelper.transformTestData(row.get(0)));
+        }
+        CUSTOMER_SEARCH_PAGE.assertNamesInOrder(names);
     }
 
     @Dann("zeigt die Kundensuche für {string} den Status {string} mit heutiger Buchung und ohne Terminaufruf.")

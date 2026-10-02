@@ -109,6 +109,24 @@ public class CustomerSearchPage extends AdminPage {
         Assert.assertEquals(found, List.of(familyNames), "Kundensuche row order. Found: " + found);
     }
 
+    /**
+     * Compares the name cell, not the whole row. A shorter name is contained in a longer one,
+     * so a row-text contains-check would count both names on the longer row.
+     */
+    public void assertNamesInOrder(List<String> expected) {
+        CONTEXT.set();
+        List<WebElement> rows = DRIVER.findElements(By.xpath("//table[contains(@class,'table--base')]/tbody/tr"));
+        List<String> found = new ArrayList<>();
+        for (WebElement row : rows) {
+            String cell = row.findElement(By.xpath("./td[1]")).getText().replace('\u00a0', ' ').trim();
+            String name = cell.replaceFirst("\\s*\\(.*$", "").trim();
+            if (expected.contains(name)) {
+                found.add(name);
+            }
+        }
+        Assert.assertEquals(found, expected, "Kundensuche name order. Found: " + found);
+    }
+
     public void assertStatusWithoutCall(String familyName, String statusLabel, String bookingStamp) {
         assertStatusRow(familyName, statusLabel, bookingStamp, null);
     }
