@@ -3,7 +3,9 @@ package zms.ataf.ui.pages.admin.search;
 import java.time.Duration;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
@@ -107,6 +109,27 @@ public class CustomerSearchPage extends AdminPage {
             }
         }
         Assert.assertEquals(found, List.of(familyNames), "Kundensuche row order. Found: " + found);
+    }
+
+    /**
+     * Compares the name cell, not the whole row. A shorter name is contained in a longer one,
+     * so a row-text contains-check would count both names on the longer row.
+     * Walk-in ids come from a random free slot, so same-day results have no stable order.
+     */
+    public void assertNames(List<String> expected) {
+        CONTEXT.set();
+        List<WebElement> rows = DRIVER.findElements(By.xpath(
+                "//div[contains(@class,'searchresults')]//table[@data-processList-count]"
+                        + "/tbody/tr[td[1]//a and not(preceding-sibling::tr[th])]"));
+        Set<String> found = new LinkedHashSet<>();
+        for (WebElement row : rows) {
+            String cell = row.findElement(By.xpath("./td[1]")).getText().replace('\u00a0', ' ').trim();
+            String name = cell.replaceFirst("\\s*\\(.*$", "").trim();
+            if (expected.contains(name)) {
+                found.add(name);
+            }
+        }
+        Assert.assertEquals(found, new LinkedHashSet<>(expected), "Kundensuche names. Found: " + found);
     }
 
     public void assertStatusWithoutCall(String familyName, String statusLabel, String bookingStamp) {
