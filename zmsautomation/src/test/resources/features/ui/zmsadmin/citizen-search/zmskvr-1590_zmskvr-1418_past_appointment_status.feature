@@ -1,29 +1,29 @@
-#language: de
+#language: en
 @web @zmsadmin @citizen-search @appointment-admin @ZMSKVR-1418 @ZMSKVR-1590 @executeLocally
-Funktionalität: Kundensuche zeigt den Terminstatus vergangener Termine
-  Als Terminadministrator möchte ich in der Kundensuche Status, Buchungszeit und Terminaufruf sehen
-  Damit frühere Termine nachvollzogen werden können
+Feature: Customer search shows the status of past appointments
+  As an appointment administrator I want to see status, booking time and call time in the customer search
+  So that earlier appointments can be traced
 
   # Dieselbe Historie wie ZMSKVR-1545 am Bürgerbüro Forstenrieder Allee (Standort 169).
   # Der geplante Termin wird gebucht und am Ende gelöscht.
   # Der Sachbearbeiter-Filter bleibt für die Terminadministration ausgeblendet.
 
-  Szenario: Terminstatus, Reihenfolge und kein Sachbearbeiter-Filter
-    Wenn Sie zur Webseite der Administration navigieren.
-    Dann sollten Sie sich am Start des Zeitmanagementsystem befinden.
-    Wenn Sie sich als "appointment_admin" im Zeitmanagementsystem anmelden.
-    Und Sie für "Standort" den Wert "Bürgerbüro Forstenrieder Allee (KVR-II/234)" auswählen.
-    Und Sie in Feld "Platz-Nr. oder Tresen" den Text "4" eingeben.
-    Und Sie im Zeitmanagementsystem auf die Schaltfläche "Auswahl bestätigen" klicken.
-    Dann wird die Seite Sachbearbeiterplatz angezeigt.
-    Wenn Sie einen Terminkunden mit der Dienstleistung "Führungszeugnis" und dem Namen "Muster John Doe Planned" buchen.
-    Und Sie in der Kundensuche nach "Muster John Doe" suchen.
-    Dann ist der Sachbearbeiter-Filter in der Kundensuche nicht sichtbar.
-    Und listet die Kundensuche "Muster John Doe Planned" vor "Muster John Doe Missed" vor "Muster John Doe Within".
-    Und zeigt die Kundensuche den Kunden "Muster John Doe Old" nicht.
-    Und zeigt die Kundensuche für "Muster John Doe Planned" den Status "Geplant" mit heutiger Buchung und ohne Terminaufruf.
-    Und zeigt die Kundensuche für "Muster John Doe Within" den Status "Abgeschlossen" mit Buchung vor 81 Tagen um "09:00" und ohne Terminaufruf.
-    Und zeigt die Kundensuche für "Muster John Doe Missed" den Status "Nicht erschienen" mit Buchung vor 11 Tagen um "09:00" und Terminaufruf vor 10 Tagen um "15:30".
-    Wenn Sie zum Sachbearbeiterplatz zurückkehren.
-    Dann wird die Seite Sachbearbeiterplatz angezeigt.
-    Wenn Sie den gerade gebuchten Termin von "Muster John Doe Planned" in der Warteschlange löschen.
+  Scenario: Appointment status, order and no clerk filter
+    When I open the administration website.
+    Then I should be on the administration start page.
+    When I sign in to the administration as "appointment_admin".
+    And I select for "Standort" the value "Bürgerbüro Forstenrieder Allee (KVR-II/234)".
+    And I enter in the field "Platz-Nr. oder Tresen" the text "4".
+    And I click the button "Auswahl bestätigen" in the administration.
+    Then the workstation page is displayed.
+    When I book an appointment customer with service "Führungszeugnis" and name "Muster John Doe Planned".
+    And I search for "Muster John Doe" in the customer search.
+    Then the clerk filter is not visible in the customer search.
+    And the customer search lists "Muster John Doe Planned" before "Muster John Doe Missed" before "Muster John Doe Within".
+    And the customer search does not show the customer "Muster John Doe Old".
+    And the customer search shows "Muster John Doe Planned" with status "Geplant", booked today and without a call time.
+    And the customer search shows "Muster John Doe Within" with status "Abgeschlossen", booked 81 days ago at "09:00" and without a call time.
+    And the customer search shows "Muster John Doe Missed" with status "Nicht erschienen", booked 11 days ago at "09:00" and called 10 days ago at "15:30".
+    When I return to the workstation.
+    Then the workstation page is displayed.
+    When I delete the just booked appointment of "Muster John Doe Planned" from the queue.

@@ -1,26 +1,26 @@
-#language: de
-Funktionalität: Ein interner Terminkunde einer zms-Variante, die in provider.data.services nicht hinterlegt ist, kann trotzdem am Tresen gebucht werden.
+#language: en
+Feature: An internal appointment customer of a zms variant that is missing from provider.data.services can still be booked at the counter.
 
     @web @zmsadmin @booking @clerk @ZMSKVR-1049 @automatisiert @executeLocally
-    Szenario: Terminkunde Gewerbeanmeldung Telefon über Tresen trotz fehlender JSON-services
-        Wenn Sie zur Webseite der Administration navigieren.
-        Dann sollten Sie sich am Start des Zeitmanagementsystem befinden.
-        Wenn Sie im Zeitmanagementsystem auf die Schaltfläche "Anmelden" klicken.
-        Und Sie für "Standort" den Wert "Gewerbeamt Telefon/Video" auswählen.
-        Und Sie in Feld "Platz-Nr. oder Tresen" den Text "4" eingeben.
-        Und Sie im Zeitmanagementsystem auf die Schaltfläche "Auswahl bestätigen" klicken.
-        Dann wird die Seite Sachbearbeiterplatz angezeigt.
-        Wenn Sie einen Terminkunden mit der Dienstleistung "Gewerbeanmeldung Telefon", Uhrzeit, name, gültige E-Mail-Adresse und die Anmerkung "TerminkundeTelefon" buchen.
-        Dann Es erscheint ein Pop-Up-Fenster "Termin wurde erfolgreich eingetragen" und der Termin ist auch in der Warteschlange sichtbar.
+    Scenario: Phone trade-registration appointment customer booked at the counter without JSON services
+        When I open the administration website.
+        Then I should be on the administration start page.
+        When I click the button "Anmelden" in the administration.
+        And I select for "Standort" the value "Gewerbeamt Telefon/Video".
+        And I enter in the field "Platz-Nr. oder Tresen" the text "4".
+        And I click the button "Auswahl bestätigen" in the administration.
+        Then the workstation page is displayed.
+        When I book an appointment customer with service "Gewerbeanmeldung Telefon", time, name, a valid email address and the note "TerminkundeTelefon".
+        Then a popup "Termin wurde erfolgreich eingetragen" appears and the appointment is also visible in the queue.
 
     @web @zmsadmin @booking @clerk @ZMSKVR-1049 @automatisiert @executeLocally
-    Szenario: Terminkunde Gewerbeanmeldung Video über Tresen trotz fehlender JSON-services
-        Wenn Sie zur Webseite der Administration navigieren.
-        Dann sollten Sie sich am Start des Zeitmanagementsystem befinden.
-        Wenn Sie im Zeitmanagementsystem auf die Schaltfläche "Anmelden" klicken.
-        Und Sie für "Standort" den Wert "Gewerbeamt Telefon/Video" auswählen.
-        Und Sie in Feld "Platz-Nr. oder Tresen" den Text "4" eingeben.
-        Und Sie im Zeitmanagementsystem auf die Schaltfläche "Auswahl bestätigen" klicken.
-        Dann wird die Seite Sachbearbeiterplatz angezeigt.
-        Wenn Sie einen Terminkunden mit der Dienstleistung "Gewerbeanmeldung Video", Uhrzeit, name, gültige E-Mail-Adresse und die Anmerkung "TerminkundeVideo" buchen.
-        Dann Es erscheint ein Pop-Up-Fenster "Termin wurde erfolgreich eingetragen" und der Termin ist auch in der Warteschlange sichtbar.
+    Scenario: Video trade-registration appointment customer booked at the counter without JSON services
+        When I open the administration website.
+        Then I should be on the administration start page.
+        When I click the button "Anmelden" in the administration.
+        And I select for "Standort" the value "Gewerbeamt Telefon/Video".
+        And I enter in the field "Platz-Nr. oder Tresen" the text "4".
+        And I click the button "Auswahl bestätigen" in the administration.
+        Then the workstation page is displayed.
+        When I book an appointment customer with service "Gewerbeanmeldung Video", time, name, a valid email address and the note "TerminkundeVideo".
+        Then a popup "Termin wurde erfolgreich eingetragen" appears and the appointment is also visible in the queue.
