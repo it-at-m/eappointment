@@ -3,6 +3,7 @@ package zms.ataf.ui.steps;
 import java.util.Locale;
 import java.time.DayOfWeek;
 import java.time.Duration;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -728,6 +729,48 @@ public class AdminSteps {
     public void die_aktuelle_anzahl_der_wartenden_gemerkt_wird() {
         rememberedWaitingClients = COUNTER_PROCESSING_STATION_PAGE.readWaitingClientsEffective();
         ScenarioLogManager.getLogger().info("Wartende before the new queue entries: {}", rememberedWaitingClients);
+    }
+
+    @Wenn("die aktuelle Anzahl der Wartenden unter Informationen gemerkt wird.")
+    public void die_aktuelle_anzahl_der_wartenden_unter_informationen_gemerkt_wird() {
+        rememberedWaitingClients = COUNTER_SECTION.readWaitingClientsOnCounter();
+        ScenarioLogManager.getLogger().info(
+                "Wartende under Informationen before the appointment: {}", rememberedWaitingClients);
+    }
+
+    @Dann("ist die gemerkte Anzahl der Wartenden unter Informationen mit Erreichen der Terminminute um {int} erhöht.")
+    public void ist_die_anzahl_der_wartenden_mit_erreichen_der_terminminute_erhoeht(int increase) {
+        long appointment;
+        try {
+            appointment = Long.parseLong(TestDataHelper.getTestData("appointment_epoch"));
+        } catch (NumberFormatException exception) {
+            throw new AssertionError("Appointment time was not stored", exception);
+        }
+        long now = Instant.now().getEpochSecond();
+        if (appointment - now > 45) {
+            int before = COUNTER_SECTION.reloadAndReadWaitingClientsOnCounter();
+            Assert.assertEquals(
+                    before,
+                    rememberedWaitingClients,
+                    "Wartende under Informationen rose before the appointment minute");
+        }
+        while (Instant.now().getEpochSecond() < appointment) {
+            try {
+                Thread.sleep(500L);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                Assert.fail("Interrupted while waiting for the appointment minute");
+            }
+        }
+        int after = COUNTER_SECTION.reloadAndReadWaitingClientsOnCounter();
+        long checkedAt = Instant.now().getEpochSecond();
+        Assert.assertTrue(
+                checkedAt < appointment + 60,
+                "The check finished after the appointment minute (epoch " + checkedAt + ")");
+        Assert.assertEquals(
+                after,
+                rememberedWaitingClients + increase,
+                "Wartende under Informationen at the appointment minute");
     }
 
     @Dann("steigt die gemerkte Anzahl der Wartenden ohne Seitenaktualisierung innerhalb von {int} Sekunden um {int}.")
