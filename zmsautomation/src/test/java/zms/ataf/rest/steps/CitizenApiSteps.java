@@ -33,6 +33,7 @@ import zms.ataf.rest.dto.common.ApiResponse;
 import zms.ataf.rest.dto.zmscitizenapi.AvailableAppointmentsResponse;
 import zms.ataf.rest.dto.zmscitizenapi.AvailableCalendarResponse;
 import zms.ataf.rest.dto.zmscitizenapi.Office;
+import zms.ataf.rest.dto.zmscitizenapi.OfficeServiceRelation;
 import zms.ataf.rest.dto.zmscitizenapi.ReserveAppointmentRequest;
 import zms.ataf.rest.dto.zmscitizenapi.ThinnedProcess;
 import zms.ataf.rest.dto.zmscitizenapi.collections.OfficesAndServicesResponse;
@@ -170,6 +171,37 @@ public class CitizenApiSteps {
         Assertions.assertThat(office.getSharedBookingOfficeIds())
             .as("office %d sharedBookingOfficeIds", officeId)
             .containsExactlyInAnyOrderElementsOf(expected);
+    }
+
+    @Then("office {int} should use a slot time of {int} minutes and service {int} should take {int} slot")
+    public void officeShouldUseSlotTimeAndServiceShouldTakeSlots(
+            int officeId, int slotTimeInMinutes, int serviceId, int slots) {
+        Assertions.assertThat(lastOfficesAndServicesResponse)
+            .as("Request offices-and-services first")
+            .isNotNull();
+        Office office = findOfficeById(lastOfficesAndServicesResponse, officeId);
+        Assertions.assertThat(office)
+            .as("Expected office %d in offices-and-services", officeId)
+            .isNotNull();
+        Assertions.assertThat(office.getSlotTimeInMinutes())
+            .as("office %d slotTimeInMinutes", officeId)
+            .isEqualTo(slotTimeInMinutes);
+        OfficeServiceRelation relation = null;
+        if (lastOfficesAndServicesResponse.getRelations() != null) {
+            for (OfficeServiceRelation candidate : lastOfficesAndServicesResponse.getRelations()) {
+                if (candidate != null
+                        && officeId == (candidate.getOfficeId() == null ? -1 : candidate.getOfficeId())
+                        && serviceId == (candidate.getServiceId() == null ? -1 : candidate.getServiceId())) {
+                    relation = candidate;
+                    break;
+                }
+            }
+        }
+        relation = java.util.Objects.requireNonNull(
+                relation, "relation office " + officeId + " service " + serviceId);
+        Assertions.assertThat(relation.getSlots())
+            .as("service %d slots at office %d", serviceId, officeId)
+            .isEqualTo(slots);
     }
 
     @When("I request available days for office {int} and service {int}")
