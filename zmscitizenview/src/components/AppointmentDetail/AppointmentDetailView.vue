@@ -236,7 +236,7 @@
               >
                 <template v-if="isVideoVariant">
                   <p>
-                    <strong>{{ t("appointmentTypes.3") }}</strong
+                    <strong>{{ t("variants.3") }}</strong
                     ><br />
                     {{ t("appointmentDetailVideoLocationText") }}
                   </p>
@@ -259,7 +259,7 @@
 
                 <template v-else-if="isTelephoneVariant">
                   <p>
-                    <strong>{{ t("appointmentTypes.2") }}</strong
+                    <strong>{{ t("variants.2") }}</strong
                     ><br />
                     {{ t("appointmentDetailTelephoneLocationText") }}<br />
                     <br />
