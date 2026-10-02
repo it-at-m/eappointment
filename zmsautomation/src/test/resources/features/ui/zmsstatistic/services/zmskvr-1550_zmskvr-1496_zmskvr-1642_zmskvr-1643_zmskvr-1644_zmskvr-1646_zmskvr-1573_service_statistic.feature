@@ -18,6 +18,13 @@ Funktionalität: Die Dienstleistungsstatistik zählt nicht erfasste und nicht er
 			| Dienstleistung wurde nicht erfasst             | 20:00             | 1     |
 			| Dienstleistung konnte nicht erbracht werden    | 16:00             | 1     |
 			| Ø Bearbeitungsdauer (unabhängig von DL) / Summe | 14:00             | 4     |
+		Wenn Sie In der Statistik auf den Download-Button klicken.
+		Dann stimmt die heruntergeladene Dienstleistungsstatistik mit diesen Werten überein:
+			| Dienstleistung                                 | Bearbeitungsdauer | Summe |
+			| Führungen auf den Feuerwachen                  | 10:00             | 2     |
+			| Dienstleistung wurde nicht erfasst             | 20:00             | 1     |
+			| Dienstleistung konnte nicht erbracht werden    | 16:00             | 1     |
+			| Ø Bearbeitungsdauer (unabhängig von DL) / Summe | 14:00             | 4     |
 		Und  Sie in der Statistik im Filter die Standorte "Feuerwache 8 - Föhring" und "Feuerwache 7 - Milbertshofen" auswählen.
 		Und  Sie in der Statistik im Zeitraum von 1 Tagen vor heute bis heute filtern.
 		Dann zeigt die Dienstleistungsstatistik diese Werte:

@@ -11,6 +11,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.openqa.selenium.By;
@@ -30,6 +31,14 @@ import zms.ataf.ui.pages.statistics.StatisticsPageContext;
 
 
 public class ServiceStatisticsPage extends StatisticsPage {
+
+    private static final String WORKBOOK_NAME = "requeststatistic_.*\\.xlsx";
+
+    private Map<String, String> workbooksBeforeClick = Map.of();
+
+    private String pendingWorkbookName;
+
+    private long pendingWorkbookSize = -1;
 
     public ServiceStatisticsPage(RemoteWebDriver driver, StatisticsPageContext statisticsPageContext) {
         super(driver, statisticsPageContext);
@@ -67,6 +76,14 @@ public class ServiceStatisticsPage extends StatisticsPage {
         }
     }
 
+    @Override
+    public void clickDownloadButton() {
+        workbooksBeforeClick = workbookNames();
+        pendingWorkbookName = null;
+        pendingWorkbookSize = -1;
+        super.clickDownloadButton();
+    }
+
     public void isServiceStatisticDownloaded() {
         isStatisticDownloaded("requeststatistic_\\d{4}-\\d{1,2}(-\\d{2})?\\.xlsx");
     }
@@ -101,8 +118,7 @@ public class ServiceStatisticsPage extends StatisticsPage {
     }
 
     public void assertDownloadedStatisticValues(List<Map<String, String>> rows) throws IOException {
-        isServiceStatisticDownloaded();
-        Map<String, String[]> workbook = RequestStatisticWorkbook.rows(newestRequestStatistic());
+        Map<String, String[]> workbook = RequestStatisticWorkbook.rows(workbookFromThisDownload());
         for (Map<String, String> row : rows) {
             String label = row.get("Dienstleistung");
             String[] cells = workbook.get(label);
@@ -113,25 +129,109 @@ public class ServiceStatisticsPage extends StatisticsPage {
         }
     }
 
-    private Path newestRequestStatistic() throws IOException {
-        String pattern = "requeststatistic_.*\\.xlsx";
+    private Path workbookFromThisDownload() {
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        wait.withMessage("The statistic workbook from this download did not finish.");
         if (DriverUtil.isLocalExecution()) {
             Path downloads = Paths.get(System.getProperty("user.home"), "Downloads");
-            try (Stream<Path> walk = Files.walk(downloads)) {
-                return walk.filter(Files::isRegularFile)
-                        .filter(path -> path.getFileName().toString().matches(pattern))
-                        .max(Comparator.comparingLong(path -> path.toFile().lastModified()))
-                        .orElseThrow(() -> new IOException("No requeststatistic workbook in " + downloads));
-            }
+            return wait.until(ignored -> stableNewLocalWorkbook(downloads));
         }
-        HasDownloads downloads = (HasDownloads) DRIVER;
-        HasDownloads.DownloadedFile file = downloads.getDownloadedFiles().stream()
-                .filter(candidate -> candidate.getName().matches(pattern))
+        HasDownloads.DownloadedFile file = wait.until(ignored -> stableNewRemoteWorkbook());
+        try {
+            Path directory = Files.createTempDirectory("requeststatistic-");
+            ((HasDownloads) DRIVER).downloadFile(file.getName(), directory);
+            return directory.resolve(file.getName());
+        } catch (IOException exception) {
+            throw new IllegalStateException("Could not copy the statistic workbook " + file.getName(), exception);
+        }
+    }
+
+    private Path stableNewLocalWorkbook(Path downloads) {
+        Path newest;
+        try (Stream<Path> list = Files.list(downloads)) {
+            newest = list.filter(Files::isRegularFile)
+                    .filter(path -> isNewWorkbook(path.getFileName().toString(), sizeOf(path), path.toFile().lastModified()))
+                    .max(Comparator.comparingLong(path -> path.toFile().lastModified()))
+                    .orElse(null);
+        } catch (IOException exception) {
+            return null;
+        }
+        if (newest == null) {
+            pendingWorkbookName = null;
+            pendingWorkbookSize = -1;
+            return null;
+        }
+        long size;
+        try {
+            size = Files.size(newest);
+        } catch (IOException exception) {
+            return null;
+        }
+        return rememberStableSize(newest.getFileName().toString(), size) ? newest : null;
+    }
+
+    private HasDownloads.DownloadedFile stableNewRemoteWorkbook() {
+        HasDownloads.DownloadedFile newest = ((HasDownloads) DRIVER).getDownloadedFiles().stream()
+                .filter(candidate -> isNewWorkbook(candidate.getName(), candidate.getSize(), candidate.getLastModifiedTime()))
+                .filter(candidate -> candidate.getSize() > 0)
                 .max(Comparator.comparingLong(HasDownloads.DownloadedFile::getLastModifiedTime))
-                .orElseThrow(() -> new IOException("No requeststatistic workbook in the browser downloads"));
-        Path target = Files.createTempFile("requeststatistic-", ".xlsx");
-        downloads.downloadFile(file.getName(), target);
-        return target;
+                .orElse(null);
+        if (newest == null) {
+            pendingWorkbookName = null;
+            pendingWorkbookSize = -1;
+            return null;
+        }
+        return rememberStableSize(newest.getName(), newest.getSize()) ? newest : null;
+    }
+
+    private boolean isNewWorkbook(String name, long size, long modified) {
+        if (!name.matches(WORKBOOK_NAME) || size <= 0) {
+            return false;
+        }
+        String previous = workbooksBeforeClick.get(name);
+        return previous == null || !previous.equals(size + ":" + modified);
+    }
+
+    private static long sizeOf(Path path) {
+        try {
+            return Files.size(path);
+        } catch (IOException exception) {
+            return -1;
+        }
+    }
+
+    private boolean rememberStableSize(String name, long size) {
+        boolean stable = name.equals(pendingWorkbookName) && size == pendingWorkbookSize;
+        pendingWorkbookName = name;
+        pendingWorkbookSize = size;
+        return stable;
+    }
+
+    private Map<String, String> workbookNames() {
+        try {
+            if (DriverUtil.isLocalExecution()) {
+                Path downloads = Paths.get(System.getProperty("user.home"), "Downloads");
+                if (!Files.isDirectory(downloads)) {
+                    return Map.of();
+                }
+                try (Stream<Path> list = Files.list(downloads)) {
+                    return list.filter(Files::isRegularFile)
+                            .filter(path -> path.getFileName().toString().matches(WORKBOOK_NAME))
+                            .collect(Collectors.toMap(
+                                    path -> path.getFileName().toString(),
+                                    path -> sizeOf(path) + ":" + path.toFile().lastModified(),
+                                    (left, right) -> right));
+                }
+            }
+            return ((HasDownloads) DRIVER).getDownloadedFiles().stream()
+                    .filter(candidate -> candidate.getName().matches(WORKBOOK_NAME))
+                    .collect(Collectors.toMap(
+                            HasDownloads.DownloadedFile::getName,
+                            candidate -> candidate.getSize() + ":" + candidate.getLastModifiedTime(),
+                            (left, right) -> right));
+        } catch (IOException exception) {
+            return Map.of();
+        }
     }
 
     private static String normalizeTime(String value) {

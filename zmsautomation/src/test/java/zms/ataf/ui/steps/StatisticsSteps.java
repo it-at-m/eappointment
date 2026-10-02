@@ -165,7 +165,7 @@ public class StatisticsSteps {
 
     @Wenn("Sie In der Statistik auf den Download-Button klicken.")
     public void wenn_sie_in_der_statistik_auf_den_download_button_klicken() {
-        STATISTICS_PAGE.clickDownloadButton();
+        SERVICE_STATISTICS_PAGE.clickDownloadButton();
     }
 
     @Dann("wird die Kundenstatistik heruntergeladen.")
