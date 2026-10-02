@@ -266,6 +266,7 @@ class MapperService
                     variantId: $variantId,
                     showOnStartPage: $service->getAdditionalData()['showOnStartPage'] ?? true,
                     rootParentId: (int) $service->getRootParentId(),
+                    variantOverwrite: $extra['variantOverwrite'] ?? null,
                 );
             }
         }
