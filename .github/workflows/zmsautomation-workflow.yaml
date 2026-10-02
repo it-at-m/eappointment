@@ -409,15 +409,19 @@ jobs:
           # Until then, use the latest next image for that module.
           pull_image() {
             local ref="$1"
-            local log
-            if log="$(docker pull "$ref" 2>&1)"; then
-              printf '%s\n' "$log"
-              return 0
-            fi
-            printf '%s\n' "$log" >&2
-            if grep -Eqi 'not found|manifest unknown|name unknown' <<<"$log"; then
-              return 2
-            fi
+            local log attempt
+            for attempt in 1 2 3; do
+              if log="$(docker pull --quiet "$ref" 2>&1)"; then
+                printf '%s\n' "$log"
+                return 0
+              fi
+              printf '%s\n' "$log" >&2
+              if grep -Eqi 'not found|manifest unknown|name unknown' <<<"$log"; then
+                return 2
+              fi
+              echo "Pull of ${ref} failed (attempt ${attempt}/3)." >&2
+              sleep $((attempt * 15))
+            done
             return 1
           }
 
@@ -445,10 +449,29 @@ jobs:
 
           cd .devcontainer
 
-          docker compose -f docker-compose.yaml down -v --remove-orphans || true
-          docker compose -f docker-compose.yaml up -d \
-            web db citizenview refarch-gateway keycloak init-keycloak \
-            captcha-db captchaservice
+          # Ten shards pull these images at once. A dropped layer is "unexpected EOF"
+          # and used to fail the job before any test ran. Retry the pull; quiet
+          # progress so a redraw is not thousands of log lines.
+          compose() {
+            docker compose --progress quiet -f docker-compose.yaml "$@"
+          }
+          services=(web db citizenview refarch-gateway keycloak init-keycloak captcha-db captchaservice)
+          pulled=0
+          for attempt in 1 2 3; do
+            if compose pull "${services[@]}"; then
+              pulled=1
+              break
+            fi
+            echo "Stack image pull failed (attempt ${attempt}/3)."
+            sleep $((attempt * 15))
+          done
+          if [[ "$pulled" -ne 1 ]]; then
+            echo "Stack image pull failed after 3 attempts."
+            exit 1
+          fi
+
+          compose down -v --remove-orphans || true
+          compose up -d "${services[@]}"
 
           captcha_ready=""
           for _ in {1..60}; do
