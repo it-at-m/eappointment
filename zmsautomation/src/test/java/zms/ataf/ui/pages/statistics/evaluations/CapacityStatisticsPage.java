@@ -58,14 +58,12 @@ public class CapacityStatisticsPage extends StatisticsPage {
         int plannedSlots = Integer.parseInt(planned.replace(".", ""));
         Assert.assertTrue(plannedSlots > 0, "The day has no planned slots: " + planned);
 
-        Object chartDays = ((JavascriptExecutor) DRIVER).executeScript(
-                "var el = document.querySelector('.report-board--chart-data-full');"
-                        + "if (!el) return 'missing-chart';"
-                        + "var rows = JSON.parse(el.textContent).data;"
-                        + "if (!Array.isArray(rows)) return 'not-array';"
-                        + "return String(rows.length);");
-        Assert.assertEquals(String.valueOf(chartDays), "1", "The chart does not show one day.");
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".chartist canvas")));
+        WebElement canvas = wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".chartist canvas")));
+        WebElement chart = canvas.findElement(By.xpath(".."));
+        Assert.assertFalse(chart.getText().contains("Diagrammdaten konnten nicht geladen werden"),
+                "The capacity chart did not render.");
+        Assert.assertEquals(chart.getAttribute("data-chart-date-from"), from, "The chart does not show that one day.");
+        Assert.assertEquals(chart.getAttribute("data-chart-date-to"), until, "The chart does not show that one day.");
     }
 
     public void selectCapacityFilter(String selectCss, String value) {
