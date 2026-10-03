@@ -665,7 +665,17 @@ public class AdminSteps {
 
     @When("I book the already selected appointment for {string}.")
     public void sie_den_bereits_gewaehlten_termin_buchen(String name) {
-        COUNTER_PROCESSING_STATION_PAGE.selectTimeInNewAppointmentDropDownList("<nächste>", java.util.Set.of(), false);
+        bookAlreadySelectedAppointment(name, true);
+    }
+
+    @When("I book today's already selected appointment for {string}.")
+    public void iBookTodaysAlreadySelectedAppointment(String name) {
+        bookAlreadySelectedAppointment(name, false);
+    }
+
+    private void bookAlreadySelectedAppointment(String name, boolean allowNextDay) {
+        COUNTER_PROCESSING_STATION_PAGE.selectTimeInNewAppointmentDropDownList(
+                "<nächste>", java.util.Set.of(), false, allowNextDay);
         String familyName = TestDataHelper.transformTestData(name);
         COUNTER_PROCESSING_STATION_PAGE.enterNameInNewAppointmentTextField(familyName);
         String email = familyName.toLowerCase(java.util.Locale.ROOT).replaceAll("[^a-z0-9]", "") + "@mailinator.com";
@@ -1409,6 +1419,47 @@ public class AdminSteps {
         COUNTER_PROCESSING_STATION_PAGE.isCustomerVisibleInMissedTable(terminName, true);
     }
 
+    @When("I resume the missed appointment of {string}.")
+    public void iResumeTheMissedAppointmentOf(String familyName) {
+        COUNTER_PROCESSING_STATION_PAGE.resumeMissedAppointment(
+                bookedAppointmentNumber(), TestDataHelper.transformTestData(familyName));
+    }
+
+    @Then("the resumed appointment of {string} shows only its time in the first minute.")
+    public void theResumedAppointmentShowsOnlyItsTimeInTheFirstMinute(String familyName) {
+        COUNTER_PROCESSING_STATION_PAGE.assertResumedAppointmentShowsOnlyItsTime(
+                bookedAppointmentNumber(), TestDataHelper.transformTestData(familyName));
+    }
+
+    /**
+     * A no-show hides the call link for five wall-clock minutes. The suite clock does not
+     * move that far, so the lockout is stored as already over and the queue is reloaded.
+     */
+    @When("the no-show lockout for {string} has passed.")
+    public void theNoShowLockoutHasPassed(String familyName) {
+        String name = TestDataHelper.transformTestData(familyName);
+        COUNTER_PROCESSING_STATION_PAGE.waitUntilCustomerIsBackInQueue(name);
+        endNoShowLockout(name);
+        COUNTER_PROCESSING_STATION_PAGE.reloadQueueLists();
+    }
+
+    /**
+     * The queue shows whole minutes from the arrival time against the request clock.
+     * That clock is the database time, so the arrival is stored 90 seconds before
+     * the current database minute and the queue is reloaded.
+     */
+    @When("one minute has passed for the resumed appointment of {string}.")
+    public void oneMinuteHasPassedForTheResumedAppointmentOf(String familyName) {
+        storeOneMinuteOfWaitingTime(TestDataHelper.transformTestData(familyName));
+        COUNTER_PROCESSING_STATION_PAGE.reloadQueueLists();
+    }
+
+    @Then("the resumed appointment of {string} shows the waiting time in whole minutes.")
+    public void theResumedAppointmentShowsTheWaitingTimeInWholeMinutes(String familyName) {
+        COUNTER_PROCESSING_STATION_PAGE.assertResumedAppointmentShowsWholeMinutes(
+                bookedAppointmentNumber(), TestDataHelper.transformTestData(familyName));
+    }
+
     @Then("the customer {string} should appear in the waiting list.")
     public void sollte_der_kunde_in_der_warteliste_erscheinen(String kunde) {
         COUNTER_PROCESSING_STATION_PAGE.isCustomerVisibleInQueue(TestDataHelper.transformTestData(kunde), true);
@@ -1976,6 +2027,75 @@ public class AdminSteps {
             case FRIDAY -> 32;
             case SATURDAY -> 64;
         };
+    }
+
+    private static String bookedAppointmentNumber() {
+        String number = TestDataHelper.getTestData("new_appointment_number");
+        if (number == null || number.isBlank()) {
+            throw new IllegalStateException("The booked appointment number was not stored.");
+        }
+        return number;
+    }
+
+    private static void endNoShowLockout(String familyName) {
+        String displayNumber = bookedAppointmentNumber();
+        String sql = "UPDATE buerger SET timeoutTime = DATE_SUB(NOW(), INTERVAL 6 MINUTE) WHERE BuergerID = ?";
+        try (Connection connection = openZmsConnection()) {
+            int processId = processIdForBookedAppointment(connection, displayNumber, familyName);
+            try (PreparedStatement statement = connection.prepareStatement(sql)) {
+                statement.setInt(1, processId);
+                int updated = statement.executeUpdate();
+                if (updated != 1) {
+                    throw new IllegalStateException(
+                            "Expected one appointment \"" + displayNumber + "\", updated " + updated + ".");
+                }
+            }
+        } catch (SQLException e) {
+            throw new IllegalStateException(
+                    "Could not end the no-show lockout for \"" + displayNumber + "\".", e);
+        }
+    }
+
+    private static void storeOneMinuteOfWaitingTime(String familyName) {
+        String displayNumber = bookedAppointmentNumber();
+        String sql = "UPDATE buerger SET waiting_time = '00:01:30', "
+                + "wsm_aufnahmezeit = TIME(DATE_SUB(DATE_FORMAT(NOW(), '%Y-%m-%d %H:%i:00'), INTERVAL 90 SECOND)) "
+                + "WHERE BuergerID = ?";
+        try (Connection connection = openZmsConnection()) {
+            int processId = processIdForBookedAppointment(connection, displayNumber, familyName);
+            try (PreparedStatement statement = connection.prepareStatement(sql)) {
+                statement.setInt(1, processId);
+                int updated = statement.executeUpdate();
+                if (updated != 1) {
+                    throw new IllegalStateException(
+                            "Expected one appointment \"" + displayNumber + "\", updated " + updated + ".");
+                }
+            }
+        } catch (SQLException e) {
+            throw new IllegalStateException(
+                    "Could not store one minute of waiting time for \"" + displayNumber + "\".", e);
+        }
+    }
+
+    private static int processIdForBookedAppointment(
+            Connection connection, String displayNumber, String familyName) throws SQLException {
+        String sql = "SELECT BuergerID FROM buerger WHERE displayNumber = ? AND Name = ?";
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setString(1, displayNumber);
+            statement.setString(2, familyName);
+            try (ResultSet rows = statement.executeQuery()) {
+                if (!rows.next()) {
+                    throw new IllegalStateException(
+                            "No appointment \"" + displayNumber + "\" is stored for \"" + familyName + "\".");
+                }
+                int processId = rows.getInt("BuergerID");
+                if (rows.next()) {
+                    throw new IllegalStateException(
+                            "More than one appointment \"" + displayNumber + "\" is stored for \"" + familyName + "\".");
+                }
+                return processId;
+            }
+        }
     }
 
     private static LocalDateTime suiteClock() {
