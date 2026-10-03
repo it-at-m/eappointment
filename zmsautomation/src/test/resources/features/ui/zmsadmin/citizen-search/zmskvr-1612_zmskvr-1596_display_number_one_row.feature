@@ -15,7 +15,9 @@ Feature: A display number without its letters returns one search row
 		And I enter in the field "Platz-Nr. oder Tresen" the text "4".
 		And I click the button "Auswahl bestätigen" in the administration.
 		Then the workstation page is displayed.
-		When I book an appointment customer with service "Führungszeugnis" and name "Muster Zmskvr1612".
+		When I select the service "Führungszeugnis" under create appointment in the administration.
+		And I enter the name "Muster Zmskvr1612" under create appointment in the administration.
+		And I book the already selected appointment for "Muster Zmskvr1612".
 		And I click the button "Termin bearbeiten" in the administration.
 		And I save the appointment again with one more slot.
 		When I search for the appointment number without its letters in the customer search.
