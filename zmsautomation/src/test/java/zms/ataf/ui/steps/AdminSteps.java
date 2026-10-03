@@ -1589,12 +1589,6 @@ public class AdminSteps {
         if (appointment.toLocalDate().isBefore(suiteClock.toLocalDate())) {
             appointment = suiteClock.toLocalDate().atTime(0, 0, 1);
         }
-        long gapSeconds = Duration.between(appointment, suiteClock).getSeconds();
-        if (gapSeconds < 60) {
-            throw new IllegalStateException(
-                    "Suite clock " + suiteClock + " is in the first minute of the day, so a reserved appointment"
-                            + " cannot be one minute overdue on the same day.");
-        }
         reservedAppointmentClock = appointment.format(DateTimeFormatter.ofPattern("HH:mm"));
         String sql = """
                 UPDATE buerger
