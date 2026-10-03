@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-10-03T19:10:33.943Z",
+  "publishedAt": "2026-10-03T19:28:45.279Z",
   "branches": [
     {
       "name": "next",
@@ -384,6 +384,12 @@
       "slug": "test-zmskvr-1538-zmskvr-1548-appointment-detail-location",
       "runId": "36776958001",
       "runStartedAt": "2026-09-30T21:03:59Z"
+    },
+    {
+      "name": "test-zmskvr-1557-zmskvr-1570-estimated-duration",
+      "slug": "test-zmskvr-1557-zmskvr-1570-estimated-duration",
+      "runId": "37147318168",
+      "runStartedAt": "2026-10-03T19:16:51Z"
     },
     {
       "name": "test-zmskvr-1559-zmskvr-1636-zmskvr-1499-zmskvr-1521-basis-queue-bar",
