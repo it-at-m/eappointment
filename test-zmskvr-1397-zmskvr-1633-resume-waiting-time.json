@@ -1,35 +1,35 @@
 {
   "branch": "test-zmskvr-1397-zmskvr-1633-resume-waiting-time",
   "branchSlug": "test-zmskvr-1397-zmskvr-1633-resume-waiting-time",
-  "runId": "37136323374",
-  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37136323374",
-  "runStartedAt": "2026-10-03T16:17:45Z",
-  "publishedAt": "2026-10-03T16:27:54.320Z",
+  "runId": "37137159568",
+  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37137159568",
+  "runStartedAt": "2026-10-03T16:31:22Z",
+  "publishedAt": "2026-10-03T16:40:34.773Z",
   "features": {
     "feature-ui-zmsadmin-queue-zmskvr-1633-zmskvr-1397-resume-waiting-time": {
-      "status": "failed",
+      "status": "passed",
       "shard": "custom",
       "browser": "chrome",
       "browsers": {
         "chrome": {
-          "status": "failed",
+          "status": "passed",
           "shard": "custom",
-          "runId": "37136323374",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37136323374",
-          "runStartedAt": "2026-10-03T16:17:45Z"
+          "runId": "37137159568",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37137159568",
+          "runStartedAt": "2026-10-03T16:31:22Z"
         },
         "firefox": {
           "status": "passed",
           "shard": "custom",
-          "runId": "37136323374",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37136323374",
-          "runStartedAt": "2026-10-03T16:17:45Z"
+          "runId": "37137159568",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37137159568",
+          "runStartedAt": "2026-10-03T16:31:22Z"
         }
       },
       "rel": "ui/zmsadmin/queue/zmskvr-1633_zmskvr-1397_resume_waiting_time.feature",
-      "runId": "37136323374",
-      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37136323374",
-      "runStartedAt": "2026-10-03T16:17:45Z"
+      "runId": "37137159568",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37137159568",
+      "runStartedAt": "2026-10-03T16:31:22Z"
     }
   }
 }
