@@ -477,6 +477,21 @@ public class AdminSteps {
         CUSTOMER_SEARCH_PAGE.search(TestDataHelper.transformTestData(query));
     }
 
+    @When("I open the found appointment of {string} from the customer search.")
+    public void iOpenTheFoundAppointmentFromTheCustomerSearch(String familyName) {
+        CUSTOMER_SEARCH_PAGE.openFoundAppointment(TestDataHelper.transformTestData(familyName));
+    }
+
+    @Then("the appointment edit form for {string} is open.")
+    public void theAppointmentEditFormIsOpen(String familyName) {
+        CUSTOMER_SEARCH_PAGE.assertEditFormOpen(TestDataHelper.transformTestData(familyName));
+    }
+
+    @When("I delete the open appointment.")
+    public void iDeleteTheOpenAppointment() {
+        CUSTOMER_SEARCH_PAGE.deleteOpenAppointment();
+    }
+
     @Then("the clerk filter is not visible in the customer search.")
     public void ist_der_sachbearbeiter_filter_nicht_sichtbar() {
         CUSTOMER_SEARCH_PAGE.assertClerkFilterHidden();
