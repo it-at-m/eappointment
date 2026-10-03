@@ -20,6 +20,7 @@ import zms.ataf.helpers.AccountCheckout;
 import zms.ataf.helpers.BerlinTime;
 import zms.ataf.ui.pages.statistics.StatisticsPage;
 import zms.ataf.ui.pages.statistics.StatisticsPageContext;
+import zms.ataf.ui.pages.statistics.evaluations.CapacityStatisticsPage;
 import zms.ataf.ui.pages.statistics.evaluations.CustomerStatisticsPage;
 import zms.ataf.ui.pages.statistics.evaluations.ServiceStatisticsPage;
 
@@ -28,11 +29,13 @@ public class StatisticsSteps {
     private final StatisticsPage STATISTICS_PAGE;
     private final CustomerStatisticsPage CUSTOMER_STATISTICS_PAGE;
     private final ServiceStatisticsPage SERVICE_STATISTICS_PAGE;
+    private final CapacityStatisticsPage CAPACITY_STATISTICS_PAGE;
 
     public StatisticsSteps() {
         STATISTICS_PAGE = new StatisticsPage(DriverUtil.getDriver());
         CUSTOMER_STATISTICS_PAGE = new CustomerStatisticsPage(DriverUtil.getDriver(), STATISTICS_PAGE.getContext());
         SERVICE_STATISTICS_PAGE = new ServiceStatisticsPage(DriverUtil.getDriver(), STATISTICS_PAGE.getContext());
+        CAPACITY_STATISTICS_PAGE = new CapacityStatisticsPage(DriverUtil.getDriver(), STATISTICS_PAGE.getContext());
     }
 
     @When("I open the statistics website.")
@@ -106,6 +109,73 @@ public class StatisticsSteps {
         STATISTICS_PAGE.applyDateRangeFilter(from, to);
     }
 
+    @And("I filter the statistics from {int} days after today until {int} days after today.")
+    public void iFilterTheStatisticsFromDaysAfterToday(int fromOffset, int untilOffset) {
+        LocalDate today = BerlinTime.today();
+        STATISTICS_PAGE.applyDateRangeFilter(today.plusDays(fromOffset), today.plusDays(untilOffset));
+    }
+
+    @And("I apply the statistics filter.")
+    public void iApplyTheStatisticsFilter() {
+        STATISTICS_PAGE.applyStatisticsFilter();
+    }
+
+    @Then("the capacity statistics show the daily total for that one day.")
+    public void theCapacityStatisticsShowTheDailyTotalForThatOneDay() {
+        CAPACITY_STATISTICS_PAGE.assertOneDayDailyTotal();
+    }
+
+    @When("I select the capacity filter {string} value {string}.")
+    public void iSelectTheCapacityFilter(String filter, String label) {
+        CAPACITY_STATISTICS_PAGE.selectCapacityFilter(capacitySelect(filter), capacityValue(filter, label));
+    }
+
+    @Then("the capacity filter {string} is {string}.")
+    public void theCapacityFilterIs(String filter, String label) {
+        CAPACITY_STATISTICS_PAGE.assertCapacityFilter(capacitySelect(filter), capacityValue(filter, label));
+    }
+
+    @Then("the statistics date filter is still {int} days after today until {int} days after today.")
+    public void theStatisticsDateFilterIsStill(int fromOffset, int untilOffset) {
+        LocalDate today = BerlinTime.today();
+        CAPACITY_STATISTICS_PAGE.assertDateFilter(today.plusDays(fromOffset), today.plusDays(untilOffset));
+    }
+
+    private static String capacitySelect(String filter) {
+        switch (filter) {
+        case "Ansicht":
+            return ".report-board--capacity-granularity-select";
+        case "Kapazitätskanal":
+            return ".report-board--capacity-channel-select";
+        case "Einheit":
+            return ".report-board--capacity-unit-select";
+        default:
+            throw new IllegalArgumentException("For capacity filter \"" + filter + "\" no action is implemented yet!");
+        }
+    }
+
+    private static String capacityValue(String filter, String label) {
+        switch (filter + "|" + label) {
+        case "Ansicht|Tagessumme":
+            return "day";
+        case "Ansicht|Stundenansicht":
+            return "hour";
+        case "Kapazitätskanal|Insgesamt":
+            return "total";
+        case "Kapazitätskanal|Internet":
+            return "public";
+        case "Kapazitätskanal|Nur intern":
+            return "intern_only";
+        case "Einheit|Zeitschlitze":
+            return "slots";
+        case "Einheit|Minuten":
+            return "minutes";
+        default:
+            throw new IllegalArgumentException(
+                    "For capacity filter \"" + filter + "\" the value \"" + label + "\" is not implemented yet!");
+        }
+    }
+
     @When("I click the button {string} in the statistics sidebar.")
     public void wenn_sie_in_der_statistik_in_der_seitenleiste_auf_die_schaltflaeche_string_klicken(String button) {
         button = TestDataHelper.transformTestData(button);
@@ -115,6 +185,9 @@ public class StatisticsSteps {
             break;
         case "Dienstleistungsstatistik":
             STATISTICS_PAGE.clickOnServiceStatistics();
+            break;
+        case "Terminkapazität":
+            STATISTICS_PAGE.clickOnCapacityStatistics();
             break;
         default:
             throw new IllegalArgumentException("For button \"" + button + "\" no action is implemented yet!");
@@ -196,6 +269,11 @@ public class StatisticsSteps {
     @And("I select the locations {string} and {string} in the statistics filter.")
     public void sie_in_der_statistik_im_filter_die_standorte_auswaehlen(String first, String second) {
         STATISTICS_PAGE.selectScopesInStatisticsTableFilter(List.of(first, second));
+    }
+
+    @When("I select the location {string} in the statistics filter.")
+    public void iSelectTheLocationInTheStatisticsFilter(String location) {
+        STATISTICS_PAGE.selectScopesInStatisticsTableFilter(List.of(location));
     }
 
     @Then("the service statistics show the day {int} days before today.")

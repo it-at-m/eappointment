@@ -198,6 +198,7 @@ The ATAF tests automatically run Flyway migrations before executing tests. The m
   - `@web` - All web UI tests
   - `@zmsadmin` - Admin UI features (`features/ui/zmsadmin/**`)
   - `@zmsstatistic` - Statistik UI features (`features/ui/zmsstatistic/**`)
+  - `@capacity` - Terminkapazität (`ui/zmsstatistic/capacity/`)
   - `@zmscitizenview` - Citizen view webcomponent UI (`features/ui/zmscitizenview/**`)
   - `@zmsticketprinter` - Ticketprinter / kiosk UI (`features/ui/zmsticketprinter/**`) and matching zmsbackend REST (`rest/zmsapi/**/zmsticketprinter/`)
   - `@zmscalldisplay` - Call display UI (`features/ui/zmscalldisplay/**`) and matching zmsbackend REST (`rest/zmsapi/calldisplay/`)
@@ -249,6 +250,7 @@ Additional REST features (availability, offices-and-services, etc.) may be added
 
 #### Statistik UI (`ui/zmsstatistic/`)
 - Features for the Statistik web UI (Dienstleistungsstatistik, Kundenstatistik, CSV export, etc.)
+- `capacity/zmskvr-1663_zmskvr-1629_daily_capacity_total.feature` - one-day Tagessumme, then Ansicht, Kanal, and Einheit stay after a new date range and location
 
 #### Ticketprinter UI (`ui/zmsticketprinter/booking/`)
 - `zmskvr-1652_zmskvr-167_waiting_number.feature` - one local Chrome session for Orleansplatz KP Abholung (scope 127): Spontankunden hours, Standort (`s127`), Dienstleistung (`r127-10295182`), mixed button list (`s999,s127` skips the missing scope), then delete hours so the kiosk shows closed
