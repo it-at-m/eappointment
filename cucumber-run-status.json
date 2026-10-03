@@ -1,10 +1,10 @@
 {
   "branch": "next",
   "branchSlug": "next",
-  "runId": "37116590022",
-  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37116590022",
-  "runStartedAt": "2026-10-03T10:29:34Z",
-  "publishedAt": "2026-10-03T10:52:03.732Z",
+  "runId": "37121954129",
+  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37121954129",
+  "runStartedAt": "2026-10-03T12:09:26Z",
+  "publishedAt": "2026-10-03T12:19:03.898Z",
   "features": {
     "feature-rest-zmsapi-zmskvr-1328": {
       "status": "passed",
@@ -2099,6 +2099,31 @@
       "runId": "37116590022",
       "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37116590022",
       "runStartedAt": "2026-10-03T10:29:34Z"
+    },
+    "feature-ui-zmscitizenview-booking-zmskvr-1598-zmskvr-1571-scheidplatz-contact-location-back-login": {
+      "status": "passed",
+      "shard": "custom",
+      "browser": "chrome",
+      "browsers": {
+        "chrome": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "37121954129",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37121954129",
+          "runStartedAt": "2026-10-03T12:09:26Z"
+        },
+        "firefox": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "37121954129",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37121954129",
+          "runStartedAt": "2026-10-03T12:09:26Z"
+        }
+      },
+      "rel": "ui/zmscitizenview/booking/zmskvr-1598_zmskvr-1571_scheidplatz_contact_location_back_login.feature",
+      "runId": "37121954129",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37121954129",
+      "runStartedAt": "2026-10-03T12:09:26Z"
     }
   }
 }
