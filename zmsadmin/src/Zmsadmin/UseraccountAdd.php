@@ -69,7 +69,7 @@ class UseraccountAdd extends BaseController
             $response,
             'page/useraccountEdit.twig',
             [
-                'ownerList' => $ownerList->toDepartmentListByOrganisationName(),
+                'ownerList' => $ownerList ? $ownerList->toDepartmentListByOrganisationName() : [],
                 'workstation' => $workstation,
                 'success' => $confirmSuccess,
                 'action' => 'add',
