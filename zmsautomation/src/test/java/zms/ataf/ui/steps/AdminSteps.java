@@ -311,11 +311,13 @@ public class AdminSteps {
         AUTHORITIES_AND_LOCATIONS_PAGE.openOpeningHourHistory(TestDataHelper.transformTestData(note));
     }
 
-    @Then("the change history shows the saved opening hour {string} as {string}.")
-    public void theChangeHistoryShowsTheSavedOpeningHour(String note, String action) {
+    @Then("the change history shows the saved opening hour {string} as {string} from {string} to {string}.")
+    public void theChangeHistoryShowsTheSavedOpeningHour(String note, String action, String from, String until) {
         AUTHORITIES_AND_LOCATIONS_PAGE.assertOpeningHourHistory(
                 TestDataHelper.transformTestData(note),
-                TestDataHelper.transformTestData(action));
+                TestDataHelper.transformTestData(action),
+                from,
+                until);
     }
 
     @Then("the deleted opening hours list shows {string}.")

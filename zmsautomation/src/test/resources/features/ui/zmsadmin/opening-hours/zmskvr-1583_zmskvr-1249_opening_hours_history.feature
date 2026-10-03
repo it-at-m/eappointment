@@ -34,7 +34,7 @@ Feature: A technical admin can see the change history of opening hours
     And I replace the opening-hours note "Geaendert".
     And I click the button "Alle Änderungen aktivieren" in the administration.
     And I open the change history of the opening hour with the note "<TestData.Geaendert>".
-    Then the change history shows the saved opening hour "<TestData.Geaendert>" as "Geändert".
+    Then the change history shows the saved opening hour "<TestData.Geaendert>" as "Geändert" from "05:00" to "06:00".
     And the active opening hours with the note "<TestData.Geaendert>" should be deletable.
     And the deleted opening hours list shows "<TestData.Geaendert>".
 

@@ -613,7 +613,7 @@ public void saveLocationChanges() {
         });
     }
 
-    public void assertOpeningHourHistory(String note, String action) {
+    public void assertOpeningHourHistory(String note, String action, String from, String until) {
         WebElement table = historyTable();
         List<String> historyHeaders = headerLabels(table);
         List<String> openingHourHeaders = headerLabels(DRIVER.findElement(
@@ -623,11 +623,15 @@ public void saveLocationChanges() {
                     "The change history is missing the opening-hours column \"" + header + "\".");
         }
         Assert.assertTrue(historyHeaders.contains("Zeitschlitz"), "The change history is missing Zeitschlitz.");
-        String body = table.getText();
-        Assert.assertTrue(body.contains(action), "The change history does not show \"" + action + "\".");
-        Assert.assertTrue(body.contains(note), "The change history does not show the saved note \"" + note + "\".");
-        Assert.assertTrue(body.matches("(?s).*\\d{2}\\.\\d{2}\\.\\d{4}.*"),
-                "The change history does not show a timestamp.");
+        WebElement row = table.findElement(By.xpath(".//tr[td[contains(., '" + note + "')]]"));
+        String entry = row.getText();
+        Assert.assertTrue(entry.contains(action),
+                "The history entry for \"" + note + "\" does not show \"" + action + "\".");
+        Assert.assertTrue(entry.contains(from) && entry.contains(until),
+                "The history entry for \"" + note + "\" does not show " + from + "–" + until + ".");
+        String changedAt = row.findElement(By.cssSelector("td.cell--meta")).getText();
+        Assert.assertTrue(changedAt.matches("(?s).*\\d{2}\\.\\d{2}\\.\\d{4} \\d{2}:\\d{2}.*"),
+                "The history entry for \"" + note + "\" has no timestamp: " + changedAt);
     }
 
     public void assertDeletedOpeningHour(String note) {

@@ -1217,9 +1217,10 @@ public class ZmsApiSteps {
                 break;
             }
         }
-        Assertions.assertThat(match)
-            .as("history row %s with note %s", action, note)
-            .isNotNull();
+        if (match == null) {
+            Assertions.fail("history row " + action + " with note " + note + " is missing");
+            return;
+        }
         Assertions.assertThat(match.path("timeSlot").asText())
             .as("Zeitschlitz")
             .isEqualTo("00:10:00");
