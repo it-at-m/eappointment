@@ -32,12 +32,15 @@ public class UseraccountPage extends BasePage {
     }
 
     public void openNewUser() {
-        ScenarioLogManager.getLogger().info("Opening the form for a new user...");
-        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
-        WebElement link = wait.until(ExpectedConditions.elementToBeClickable(
-                By.xpath("//a[contains(., 'neue*r Nutzer*in')]")));
-        link.click();
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("select[name='departments[][id]']")));
+        String current = DRIVER.getCurrentUrl();
+        Assert.assertTrue(
+                current != null && current.contains("/users"),
+                "Expected the user administration page, got: " + current);
+        String add = current.replaceFirst("(/users)(?:/)?(?:\\?.*)?$", "/users/add/");
+        ScenarioLogManager.getLogger().info("Opening the form for a new user at {}", add);
+        DRIVER.navigate().to(add);
+        new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("select[name='departments[][id]']")));
     }
 
     public void preferLocalLogin() {

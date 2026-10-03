@@ -5,6 +5,8 @@ Feature: User administration requires a department for a new account
 	# A new local account saved without a Behörde shows the input error,
 	# asks for a department, and outlines that field in red.
 	# No account is created.
+	# The user list for this login answers 500, because the department search
+	# cache key contains user_admin@keycloak. The scenario opens /users/add/ directly.
 
 	@web @zmsadmin @user-administration @ZMSKVR-1624 @ZMSKVR-1497 @executeLocally
 	Scenario: Saving a new account without a department shows an input error
