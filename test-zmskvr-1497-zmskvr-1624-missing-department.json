@@ -1,10 +1,10 @@
 {
   "branch": "test-zmskvr-1497-zmskvr-1624-missing-department",
   "branchSlug": "test-zmskvr-1497-zmskvr-1624-missing-department",
-  "runId": "37143272758",
-  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37143272758",
-  "runStartedAt": "2026-10-03T18:11:32Z",
-  "publishedAt": "2026-10-03T18:21:14.104Z",
+  "runId": "37144731403",
+  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37144731403",
+  "runStartedAt": "2026-10-03T18:34:51Z",
+  "publishedAt": "2026-10-03T18:52:56.939Z",
   "features": {
     "feature-ui-zmsadmin-user-administration-zmskvr-1624-zmskvr-1497-missing-department": {
       "status": "passed",
@@ -14,22 +14,22 @@
         "chrome": {
           "status": "passed",
           "shard": "custom",
-          "runId": "37143272758",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37143272758",
-          "runStartedAt": "2026-10-03T18:11:32Z"
+          "runId": "37144731403",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37144731403",
+          "runStartedAt": "2026-10-03T18:34:51Z"
         },
         "firefox": {
           "status": "passed",
           "shard": "custom",
-          "runId": "37143272758",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37143272758",
-          "runStartedAt": "2026-10-03T18:11:32Z"
+          "runId": "37144731403",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37144731403",
+          "runStartedAt": "2026-10-03T18:34:51Z"
         }
       },
       "rel": "ui/zmsadmin/user-administration/zmskvr-1624_zmskvr-1497_missing_department.feature",
-      "runId": "37143272758",
-      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37143272758",
-      "runStartedAt": "2026-10-03T18:11:32Z"
+      "runId": "37144731403",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37144731403",
+      "runStartedAt": "2026-10-03T18:34:51Z"
     }
   }
 }
