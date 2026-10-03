@@ -1,0 +1,35 @@
+{
+  "branch": "test-zmskvr-1249-zmskvr-1583-opening-hours-history",
+  "branchSlug": "test-zmskvr-1249-zmskvr-1583-opening-hours-history",
+  "runId": "37125506932",
+  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37125506932",
+  "runStartedAt": "2026-10-03T13:14:35Z",
+  "publishedAt": "2026-10-03T13:25:18.004Z",
+  "features": {
+    "feature-ui-zmsadmin-opening-hours-zmskvr-1583-zmskvr-1249-opening-hours-history": {
+      "status": "passed",
+      "shard": "custom",
+      "browser": "chrome",
+      "browsers": {
+        "chrome": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "37125506932",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37125506932",
+          "runStartedAt": "2026-10-03T13:14:35Z"
+        },
+        "firefox": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "37125506932",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37125506932",
+          "runStartedAt": "2026-10-03T13:14:35Z"
+        }
+      },
+      "rel": "ui/zmsadmin/opening-hours/zmskvr-1583_zmskvr-1249_opening_hours_history.feature",
+      "runId": "37125506932",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37125506932",
+      "runStartedAt": "2026-10-03T13:14:35Z"
+    }
+  }
+}
