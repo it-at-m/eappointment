@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-10-03T20:25:47.696Z",
+  "publishedAt": "2026-10-03T20:35:45.817Z",
   "branches": [
     {
       "name": "next",
@@ -276,6 +276,12 @@
       "slug": "test-zmskvr-1384-zmskvr-1502-name-search-ranking",
       "runId": "36999528835",
       "runStartedAt": "2026-10-02T11:10:18Z"
+    },
+    {
+      "name": "test-zmskvr-1397-zmskvr-1633-evening-pasing-slots",
+      "slug": "test-zmskvr-1397-zmskvr-1633-evening-pasing-slots",
+      "runId": "37151202778",
+      "runStartedAt": "2026-10-03T20:20:44Z"
     },
     {
       "name": "test-zmskvr-1397-zmskvr-1633-resume-waiting-time",
