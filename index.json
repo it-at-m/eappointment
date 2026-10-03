@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-10-03T19:28:45.279Z",
+  "publishedAt": "2026-10-03T19:37:49.685Z",
   "branches": [
     {
       "name": "next",
@@ -342,6 +342,12 @@
       "slug": "test-zmskvr-1497-zmskvr-1624-missing-department",
       "runId": "37144731403",
       "runStartedAt": "2026-10-03T18:34:51Z"
+    },
+    {
+      "name": "test-zmskvr-1501-zmskvr-1509-next-day-slots",
+      "slug": "test-zmskvr-1501-zmskvr-1509-next-day-slots",
+      "runId": "37147684624",
+      "runStartedAt": "2026-10-03T19:22:59Z"
     },
     {
       "name": "test-zmskvr-1501-zmskvr-1509-slot-calculation",
