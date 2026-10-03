@@ -12,6 +12,7 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.BooleanSupplier;
+
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.TimeoutException;
@@ -982,9 +983,11 @@ public class CitizenViewPage extends BasePage {
         Assert.assertTrue(
                 text.contains(heading),
                 "Expected place heading in office " + officeId + " summary: " + heading + " actual=" + text);
-        Assert.assertTrue(
-                text.contains(hint),
-                "Expected place hint in office " + officeId + " summary: " + hint + " actual=" + text);
+        if (hint != null && !hint.isBlank()) {
+            Assert.assertTrue(
+                    text.contains(hint),
+                    "Expected place hint in office " + officeId + " summary: " + hint + " actual=" + text);
+        }
     }
 
     public void assertBookingOverviewPlaceIncludes(int officeId, String fragment) {
