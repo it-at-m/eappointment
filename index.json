@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-10-03T03:33:20.941Z",
+  "publishedAt": "2026-10-03T03:36:09.252Z",
   "branches": [
     {
       "name": "next",
@@ -286,8 +286,8 @@
     {
       "name": "test-zmskvr-1487-zmskvr-1660-walk-in-duration",
       "slug": "test-zmskvr-1487-zmskvr-1660-walk-in-duration",
-      "runId": "37090834366",
-      "runStartedAt": "2026-10-03T02:44:15Z"
+      "runId": "37092146796",
+      "runStartedAt": "2026-10-03T03:07:30Z"
     },
     {
       "name": "test-zmskvr-1491-zmskvr-1510-legal-notices",
