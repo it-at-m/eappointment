@@ -577,7 +577,17 @@ public class AdminSteps {
 
     @When("I book the already selected appointment for {string}.")
     public void sie_den_bereits_gewaehlten_termin_buchen(String name) {
-        COUNTER_PROCESSING_STATION_PAGE.selectTimeInNewAppointmentDropDownList("<nächste>", java.util.Set.of(), false);
+        bookAlreadySelectedAppointment(name, true);
+    }
+
+    @When("I book today's already selected appointment for {string}.")
+    public void iBookTodaysAlreadySelectedAppointment(String name) {
+        bookAlreadySelectedAppointment(name, false);
+    }
+
+    private void bookAlreadySelectedAppointment(String name, boolean allowNextDay) {
+        COUNTER_PROCESSING_STATION_PAGE.selectTimeInNewAppointmentDropDownList(
+                "<nächste>", java.util.Set.of(), false, allowNextDay);
         String familyName = TestDataHelper.transformTestData(name);
         COUNTER_PROCESSING_STATION_PAGE.enterNameInNewAppointmentTextField(familyName);
         String email = familyName.toLowerCase(java.util.Locale.ROOT).replaceAll("[^a-z0-9]", "") + "@mailinator.com";
@@ -1323,13 +1333,14 @@ public class AdminSteps {
 
     @When("I resume the missed appointment of {string}.")
     public void iResumeTheMissedAppointmentOf(String familyName) {
-        COUNTER_PROCESSING_STATION_PAGE.resumeMissedAppointment(TestDataHelper.transformTestData(familyName));
+        COUNTER_PROCESSING_STATION_PAGE.resumeMissedAppointment(
+                bookedAppointmentNumber(), TestDataHelper.transformTestData(familyName));
     }
 
     @Then("the resumed appointment of {string} shows only its time in the first minute.")
     public void theResumedAppointmentShowsOnlyItsTimeInTheFirstMinute(String familyName) {
         COUNTER_PROCESSING_STATION_PAGE.assertResumedAppointmentShowsOnlyItsTime(
-                TestDataHelper.transformTestData(familyName));
+                bookedAppointmentNumber(), TestDataHelper.transformTestData(familyName));
     }
 
     /**
@@ -1346,7 +1357,7 @@ public class AdminSteps {
     @Then("the resumed appointment of {string} shows the waiting time in whole minutes.")
     public void theResumedAppointmentShowsTheWaitingTimeInWholeMinutes(String familyName) {
         COUNTER_PROCESSING_STATION_PAGE.assertResumedAppointmentShowsWholeMinutes(
-                TestDataHelper.transformTestData(familyName));
+                bookedAppointmentNumber(), TestDataHelper.transformTestData(familyName));
     }
 
     @Then("the customer {string} should appear in the waiting list.")
@@ -1918,28 +1929,61 @@ public class AdminSteps {
         };
     }
 
+    private static String bookedAppointmentNumber() {
+        String number = TestDataHelper.getTestData("new_appointment_number");
+        if (number == null || number.isBlank()) {
+            throw new IllegalStateException("The booked appointment number was not stored.");
+        }
+        return number;
+    }
+
     private static void storeOneMinuteOfWaitingTime(String familyName) {
+        String displayNumber = bookedAppointmentNumber();
         LocalDateTime suiteClock = suiteClock();
         LocalDateTime arrival = suiteClock.minusSeconds(90);
         boolean sameDay = arrival.toLocalDate().equals(suiteClock.toLocalDate());
         String sql = sameDay
-                ? "UPDATE buerger SET waiting_time = '00:01:30', wsm_aufnahmezeit = ? WHERE Name = ?"
-                : "UPDATE buerger SET waiting_time = '00:01:30' WHERE Name = ?";
-        try (Connection connection = openZmsConnection();
-                PreparedStatement statement = connection.prepareStatement(sql)) {
-            if (sameDay) {
-                statement.setString(1, arrival.toLocalTime().format(DateTimeFormatter.ofPattern("HH:mm:ss")));
-                statement.setString(2, familyName);
-            } else {
-                statement.setString(1, familyName);
-            }
-            int updated = statement.executeUpdate();
-            if (updated != 1) {
-                throw new IllegalStateException(
-                        "Expected one appointment named \"" + familyName + "\", updated " + updated + ".");
+                ? "UPDATE buerger SET waiting_time = '00:01:30', wsm_aufnahmezeit = ? WHERE BuergerID = ?"
+                : "UPDATE buerger SET waiting_time = '00:01:30' WHERE BuergerID = ?";
+        try (Connection connection = openZmsConnection()) {
+            int processId = processIdForBookedAppointment(connection, displayNumber, familyName);
+            try (PreparedStatement statement = connection.prepareStatement(sql)) {
+                if (sameDay) {
+                    statement.setString(1, arrival.toLocalTime().format(DateTimeFormatter.ofPattern("HH:mm:ss")));
+                    statement.setInt(2, processId);
+                } else {
+                    statement.setInt(1, processId);
+                }
+                int updated = statement.executeUpdate();
+                if (updated != 1) {
+                    throw new IllegalStateException(
+                            "Expected one appointment \"" + displayNumber + "\", updated " + updated + ".");
+                }
             }
         } catch (SQLException e) {
-            throw new IllegalStateException("Could not store one minute of waiting time for \"" + familyName + "\".", e);
+            throw new IllegalStateException(
+                    "Could not store one minute of waiting time for \"" + displayNumber + "\".", e);
+        }
+    }
+
+    private static int processIdForBookedAppointment(
+            Connection connection, String displayNumber, String familyName) throws SQLException {
+        String sql = "SELECT BuergerID FROM buerger WHERE displayNumber = ? AND Name = ?";
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setString(1, displayNumber);
+            statement.setString(2, familyName);
+            try (ResultSet rows = statement.executeQuery()) {
+                if (!rows.next()) {
+                    throw new IllegalStateException(
+                            "No appointment \"" + displayNumber + "\" is stored for \"" + familyName + "\".");
+                }
+                int processId = rows.getInt("BuergerID");
+                if (rows.next()) {
+                    throw new IllegalStateException(
+                            "More than one appointment \"" + displayNumber + "\" is stored for \"" + familyName + "\".");
+                }
+                return processId;
+            }
         }
     }
 

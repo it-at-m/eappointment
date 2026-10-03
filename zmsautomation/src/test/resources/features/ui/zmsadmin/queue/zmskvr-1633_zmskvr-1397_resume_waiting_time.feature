@@ -19,7 +19,7 @@ Feature: Resuming a missed appointment does not show a zero waiting time
 		Then the workstation page is displayed.
 		When I select the service "Führungszeugnis" under create appointment in the administration.
 		And I enter the name "Muster Zmskvr1633" under create appointment in the administration.
-		And I book the already selected appointment for "Muster Zmskvr1633".
+		And I book today's already selected appointment for "Muster Zmskvr1633".
 		And I click the button "Schließen" in the administration.
 		When the clerk calls the customer "Muster Zmskvr1633" from the waiting list.
 		And I click the button "Nein, nicht erschienen" in the administration.

@@ -285,12 +285,11 @@ public class CounterProcessingStationPage extends AdminPage {
      * "wieder aufnehmen" has no OK button, so the success lightbox stays open.
      * The status change is already saved; a reload shows the queue without that dialog.
      */
-    public void resumeMissedAppointment(String familyName) {
-        ScenarioLogManager.getLogger().info("Resuming missed appointment of \"" + familyName + "\"...");
+    public void resumeMissedAppointment(String displayNumber, String familyName) {
+        ScenarioLogManager.getLogger().info("Resuming missed appointment \"" + displayNumber + "\"...");
         CONTEXT.waitForSpinners();
-        By resumeLink = By.xpath("//table[@id='" + APPOINTMENT_MISSED_TABLE_LOCATOR_ID
-                + "']//tr[td[contains(normalize-space(.), \"" + familyName
-                + "\")]]//a[contains(@class,'process-reset')]");
+        By resumeLink = By.xpath(appointmentRow(APPOINTMENT_MISSED_TABLE_LOCATOR_ID, displayNumber, familyName)
+                + "//a[contains(@class,'process-reset')]");
         WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
         WebElement link = wait.until(ExpectedConditions.elementToBeClickable(resumeLink));
         scrollToCenterByVisibleElement(link);
@@ -314,34 +313,38 @@ public class CounterProcessingStationPage extends AdminPage {
         CONTEXT.waitForSpinners();
     }
 
-    public void assertResumedAppointmentShowsOnlyItsTime(String familyName) {
-        String text = queueTimeText(familyName);
+    public void assertResumedAppointmentShowsOnlyItsTime(String displayNumber, String familyName) {
+        String text = queueTimeText(displayNumber, familyName);
         Assert.assertTrue(text.matches("\\d{2}:\\d{2}"),
                 "In the first minute Uhrzeit should be only the appointment time, but was: " + text);
         Assert.assertFalse(text.contains("+00:00"),
                 "Uhrzeit shows a zero waiting time: " + text);
     }
 
-    public void assertResumedAppointmentShowsWholeMinutes(String familyName) {
+    public void assertResumedAppointmentShowsWholeMinutes(String displayNumber, String familyName) {
         WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
         wait.ignoring(StaleElementReferenceException.class);
         String text = wait.until(driver -> {
-            String value = queueTimeText(familyName);
-            if (value.matches("\\d{2}:\\d{2} \\+\\d+ Min\\.") && !value.contains("+00:")) {
+            String value = queueTimeText(displayNumber, familyName);
+            if (value.matches("\\d{2}:\\d{2} \\+1 Min\\.")) {
                 return value;
             }
             return null;
         });
-        Assert.assertNotNull(text, "Uhrzeit does not show the waiting time as whole minutes.");
+        Assert.assertNotNull(text, "Uhrzeit does not show the waiting time as +1 Min.");
     }
 
-    private String queueTimeText(String familyName) {
-        By cell = By.xpath("//table[@id='" + APPOINTMENT_QUEUE_TABLE_LOCATOR_ID
-                + "']//tr[td[contains(normalize-space(.), \"" + familyName + "\")]]/td[2]");
+    private String queueTimeText(String displayNumber, String familyName) {
+        By cell = By.xpath(appointmentRow(APPOINTMENT_QUEUE_TABLE_LOCATOR_ID, displayNumber, familyName) + "/td[2]");
         WebElement time = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
                 .ignoring(StaleElementReferenceException.class)
                 .until(ExpectedConditions.visibilityOfElementLocated(cell));
         return time.getText().replace('\u00a0', ' ').replaceAll("\\s+", " ").trim();
+    }
+
+    private static String appointmentRow(String tableId, String displayNumber, String familyName) {
+        return "//table[@id='" + tableId + "']//tr[td[normalize-space(.)='" + displayNumber
+                + "'] and td[contains(normalize-space(.), \"" + familyName + "\")]]";
     }
 
     public void isCustomerVisibleInFinishedTable(String customer) {
@@ -622,6 +625,11 @@ public class CounterProcessingStationPage extends AdminPage {
     }
 
     public void selectTimeInNewAppointmentDropDownList(String time, Set<String> excludedTimes, boolean fallBackToWalkIn) {
+        selectTimeInNewAppointmentDropDownList(time, excludedTimes, fallBackToWalkIn, true);
+    }
+
+    public void selectTimeInNewAppointmentDropDownList(
+            String time, Set<String> excludedTimes, boolean fallBackToWalkIn, boolean allowNextDay) {
         TestDataHelper.setTestData("appointment_booked_as_walk_in", "false");
         ScenarioLogManager.getLogger().info("Trying to select time \"" + time + "\" in new appointment drop down list...");
         Pattern timeSlotPattern = Pattern.compile("([0-9][0-9]:[0-9][0-9]) \\(noch ([0-9]) frei\\)");
@@ -653,7 +661,7 @@ public class CounterProcessingStationPage extends AdminPage {
                             if (fallBackToWalkIn && selectWalkInOption(newAppointmentTimeDropDownListSelections, newAppointmentTimeDropDownList)) {
                                 break;
                             }
-                            return moveToNextDayWithSlots(daysAhead);
+                            return nextDayOrFail(daysAhead, allowNextDay);
                         }
                         WebElement webElement;
                         if (time.equals("<beliebig>")) {
@@ -698,7 +706,7 @@ public class CounterProcessingStationPage extends AdminPage {
                     }
                     return true;
                 } else {
-                    return moveToNextDayWithSlots(daysAhead);
+                    return nextDayOrFail(daysAhead, allowNextDay);
                 }
             });
         } catch (Exception e) {
@@ -710,6 +718,13 @@ public class CounterProcessingStationPage extends AdminPage {
      * Today's Terminkunde list is empty once fewer than three hours remain until 23:55.
      * The next day is opened for the whole day, so the form moves there and the time list is read again.
      */
+    private boolean nextDayOrFail(int[] daysAhead, boolean allowNextDay) {
+        if (!allowNextDay) {
+            Assert.fail("No appointment slot is left today.");
+        }
+        return moveToNextDayWithSlots(daysAhead);
+    }
+
     private boolean moveToNextDayWithSlots(int[] daysAhead) {
         if (daysAhead[0] >= 7) {
             return false;
