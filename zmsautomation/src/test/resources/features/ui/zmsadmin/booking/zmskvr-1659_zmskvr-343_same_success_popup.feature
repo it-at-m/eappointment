@@ -1,7 +1,7 @@
 #language: en
 Feature: The same success popup for appointment customers and walk-in customers
 
-    @web @zmsadmin @booking @clerk @ZMSKVR-343 @automatisiert @executeLocally
+    @web @zmsadmin @booking @clerk @ZMSKVR-1659 @ZMSKVR-343 @automatisiert @executeLocally
     Scenario: A walk-in customer can be edited immediately after creation
         When I open the administration website.
         Then I should be on the administration start page.
@@ -18,7 +18,7 @@ Feature: The same success popup for appointment customers and walk-in customers
 
 
 
-    @web @zmsadmin @booking @clerk @ZMSKVR-343 @automatisiert @executeLocally
+    @web @zmsadmin @booking @clerk @ZMSKVR-1659 @ZMSKVR-343 @automatisiert @executeLocally
     Scenario: An appointment customer can be edited immediately after creation
         When I open the administration website.
         Then I should be on the administration start page.
