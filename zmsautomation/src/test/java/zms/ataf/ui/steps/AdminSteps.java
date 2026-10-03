@@ -291,6 +291,43 @@ public class AdminSteps {
         AUTHORITIES_AND_LOCATIONS_PAGE.expandOpeningHoursAccordionByTitle(accordionTitle);
     }
 
+    @Then("the opening hours page for the location should be visible.")
+    public void theOpeningHoursPageForTheLocationShouldBeVisible() {
+        AUTHORITIES_AND_LOCATIONS_PAGE.assertOpeningHoursDayPage();
+    }
+
+    @When("I open the opening hour with the note {string} for editing.")
+    public void iOpenTheOpeningHourWithTheNoteForEditing(String note) {
+        AUTHORITIES_AND_LOCATIONS_PAGE.openOpeningHourForEditing(TestDataHelper.transformTestData(note));
+    }
+
+    @When("I replace the opening-hours note {string}.")
+    public void iReplaceTheOpeningHoursNote(String noteKey) {
+        AUTHORITIES_AND_LOCATIONS_PAGE.replaceOpeningHoursNote(TestDataHelper.transformTestData(noteKey));
+    }
+
+    @When("I open the change history of the opening hour with the note {string}.")
+    public void iOpenTheChangeHistoryOfTheOpeningHour(String note) {
+        AUTHORITIES_AND_LOCATIONS_PAGE.openOpeningHourHistory(TestDataHelper.transformTestData(note));
+    }
+
+    @Then("the change history shows the saved opening hour {string} as {string}.")
+    public void theChangeHistoryShowsTheSavedOpeningHour(String note, String action) {
+        AUTHORITIES_AND_LOCATIONS_PAGE.assertOpeningHourHistory(
+                TestDataHelper.transformTestData(note),
+                TestDataHelper.transformTestData(action));
+    }
+
+    @Then("the deleted opening hours list shows {string}.")
+    public void theDeletedOpeningHoursListShows(String note) {
+        AUTHORITIES_AND_LOCATIONS_PAGE.assertDeletedOpeningHour(TestDataHelper.transformTestData(note));
+    }
+
+    @Then("the opening-hours change history is hidden.")
+    public void theOpeningHoursChangeHistoryIsHidden() {
+        AUTHORITIES_AND_LOCATIONS_PAGE.assertOpeningHourHistoryHidden();
+    }
+
     @When("I click day {string} under opening hours.")
     public void wenn_sie_unter_oeffnungszeiten_auf_tag_string_klicken(String day) {
         AUTHORITIES_AND_LOCATIONS_PAGE.clickOnDayEntry(TestDataHelper.transformTestData(day));
