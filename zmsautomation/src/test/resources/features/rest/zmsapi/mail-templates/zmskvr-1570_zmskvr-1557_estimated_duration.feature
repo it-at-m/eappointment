@@ -10,6 +10,8 @@ Feature: Estimated appointment duration in confirmation and reminder mails
   # Voraussichtliche Termindauer: <number> Minuten
   # Duration is slotTimeInMinutes times slotCount.
   # The reminder is queued the same way as the minutely cron, for appointments already inside the reminder window.
+  # That script also updates every other due appointment. A parallel scenario can delete one of those
+  # rows, and the script then stops. The step retries until this appointment's reminder is queued.
 
   Scenario: Confirmation and reminder mails show the estimated duration after the time
     When for scope 2 and service "Zulassung Taxi oder Mietwagen" an appointment customer "Muster Zmskvr1570" is created at the next minute.
