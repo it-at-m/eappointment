@@ -4109,6 +4109,7 @@ public class CitizenViewPage extends BasePage {
         CONTEXT.set();
         String previous = TestDataHelper.getTestData(meineTermineNumberKey(serviceName));
         String current = appointmentNumberOnMeineTermine(serviceName);
+        Assert.assertFalse(current.isBlank(), "Meine Termine has no number for \"" + serviceName + "\".");
         Assert.assertNotEquals(
                 current,
                 previous,
