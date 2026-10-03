@@ -1681,8 +1681,13 @@ public class CounterProcessingStationPage extends AdminPage {
         scopes.deselectAll();
         scopes.selectByValue(Integer.toString(opening.scopeId));
         clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "//button[normalize-space()='Übernehmen']", LocatorType.XPATH, false, CONTEXT);
-        new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME)).until(
-                ExpectedConditions.numberOfElementsToBeMoreThan(By.cssSelector(".overall-calendar-scope-header"), 0));
+        String dayPart = opening.day.format(DateTimeFormatter.ofPattern("dd.MM."));
+        new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .ignoring(StaleElementReferenceException.class)
+                .until(driver -> driver.findElements(By.cssSelector(".overall-calendar-scope-header")).size() == 1
+                        && driver.findElements(By.cssSelector(".overall-calendar-day-label")).size() == 1
+                        && driver.findElement(By.cssSelector(".overall-calendar-day-label")).getText().contains(dayPart)
+                        && !driver.findElements(By.cssSelector("#overall-calendar .overall-calendar-open")).isEmpty());
     }
 
     public void assertWalkInHoursAreNotWhite() {
@@ -1692,12 +1697,15 @@ public class CounterProcessingStationPage extends AdminPage {
         DateTimeFormatter clock = DateTimeFormatter.ofPattern("HH:mm");
         String appointment = walkInOpening.appointmentStart.format(clock);
         boolean appointmentShown = false;
-        List<WebElement> open = DRIVER.findElements(By.cssSelector("#overall-calendar .overall-calendar-open"));
-        for (WebElement cell : open) {
-            String title = cell.getAttribute("title");
-            if (title == null) {
-                continue;
-            }
+        Object titles = ((JavascriptExecutor) DRIVER).executeScript(
+                "return Array.from(document.querySelectorAll('#overall-calendar .overall-calendar-open')).map(function (cell) {"
+                        + "return cell.getAttribute('title') || '';"
+                        + "});");
+        if (!(titles instanceof List<?>)) {
+            throw new IllegalStateException("The overall view returned no opening cells.");
+        }
+        for (Object titleObject : (List<?>) titles) {
+            String title = String.valueOf(titleObject);
             Matcher matcher = Pattern.compile("(\\d{2}:\\d{2})\\s*[–-]\\s*(\\d{2}:\\d{2})").matcher(title);
             if (!matcher.find()) {
                 continue;
