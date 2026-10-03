@@ -22,6 +22,7 @@ Feature: The appointment administrator can define working hours and their validi
 		And I select "Mittwoch" under weekdays.
 		And I select "Donnerstag" under weekdays.
 		And I select "Freitag" under weekdays.
+		And I select "<heute_wochentag>" under weekdays.
 		And I enter in the field "Datum bis" the text "<heute+14_tage>".
 		And I enter in the field "Uhrzeit von" the text "08:00".
 		And I enter in the field "Uhrzeit bis" the text "17:00".

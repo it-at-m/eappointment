@@ -484,39 +484,51 @@ public void saveLocationChanges() {
         CONTEXT.set();
         String publishButton =
                 "//button[contains(@class,'button-save') and normalize-space()='Alle Änderungen aktivieren']";
+        clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, publishButton, LocatorType.XPATH, false, CONTEXT);
+        // A holiday in the range asks to continue, then the save dialog asks again.
+        // Confirm each dialog until the success message is on the page.
         By confirmButton = By.xpath("//div[contains(@class,'lightbox__content')]//a[@data-action-ok]");
-        WebElement confirmBtn = null;
-        for (int attempt = 1; attempt <= 3 && confirmBtn == null; attempt++) {
-            clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, publishButton, LocatorType.XPATH, false, CONTEXT);
-            try {
-                confirmBtn =
-                        new WebDriverWait(DRIVER, Duration.ofSeconds(30))
-                                .until(ExpectedConditions.visibilityOfElementLocated(confirmButton));
-            } catch (TimeoutException e) {
-                ScenarioLogManager.getLogger()
-                        .info(
-                                "Confirm dialog not shown after Alle Änderungen aktivieren (attempt {})",
-                                attempt);
-            }
+        By success = By.xpath("//div[contains(@class,'message--success')][contains(., 'Öffnungszeiten gespeichert')]");
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        wait.ignoring(StaleElementReferenceException.class);
+        try {
+            wait.until(driver -> {
+                if (driver.findElements(success).stream().anyMatch(this::isShown)) {
+                    return true;
+                }
+                for (WebElement ok : driver.findElements(confirmButton)) {
+                    if (isShown(ok)) {
+                        ok.click();
+                        return false;
+                    }
+                }
+                return false;
+            });
+        } catch (TimeoutException e) {
+            Assert.fail("Opening hours were not saved.", e);
         }
-        Assert.assertNotNull(confirmBtn, "Confirm dialog for opening hours did not appear");
-        confirmBtn.click();
-        new WebDriverWait(DRIVER, Duration.ofSeconds(5))
-                .until(ExpectedConditions.invisibilityOfElementLocated(confirmButton));
         String message = getWebElementText(
             DEFAULT_EXPLICIT_WAIT_TIME,
             "//div[contains(@class,'message--success')]",
             LocatorType.XPATH,
             CONTEXT
         ).replaceAll("\\n", "").trim();
-    
+
         String today = BerlinTime.today()
                 .format(DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.GERMANY));
-    
+
         Assert.assertTrue(
                 message.contains("Öffnungszeiten gespeichert, " + today),
                 "Success message does not contain today's date!"
         );
+    }
+
+    private boolean isShown(WebElement element) {
+        try {
+            return element.isDisplayed();
+        } catch (StaleElementReferenceException e) {
+            return false;
+        }
     }
 
     /**
