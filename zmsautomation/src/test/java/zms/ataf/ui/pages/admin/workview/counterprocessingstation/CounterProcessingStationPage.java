@@ -960,6 +960,21 @@ public class CounterProcessingStationPage extends AdminPage {
         return appointmentNumberMatcher.group(1);
     }
 
+    public void saveAppointmentWithOneMoreSlot() {
+        CONTEXT.set();
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        WebElement slotCount = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("appointmentForm_slotCount")));
+        new Select(slotCount).selectByValue("2");
+        WebElement note = DRIVER.findElement(By.name("amendment"));
+        note.clear();
+        note.sendKeys("Muster Hinweis");
+        clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "//button[contains(@class,'process-save')]", LocatorType.XPATH, false, CONTEXT);
+        WebElement dialog = wait.until(ExpectedConditions.visibilityOfElementLocated(
+                By.xpath("//*[contains(@class,'dialog')][contains(.,'erfolgreich aktualisiert')]")));
+        dialog.findElement(By.cssSelector("button.button-ok")).click();
+        wait.until(ExpectedConditions.invisibilityOf(dialog));
+    }
+
     public void clickOnEditProcessButton() {
         ScenarioLogManager.getLogger().info("Trying to click on \"edit process\" button...");
         clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "//button[contains(text(),'Termin bearbeiten')]", LocatorType.XPATH, false, CONTEXT);
@@ -1506,5 +1521,219 @@ public class CounterProcessingStationPage extends AdminPage {
         WebElement dayLabel = DRIVER.findElement(By.cssSelector(".overall-calendar-day-label"));
         Assert.assertTrue(dayLabel.getText().contains(dayPart),
                 "The day header should show " + dayPart + " but was \"" + dayLabel.getText() + "\".");
+    }
+
+    /**
+     * A walk-in window that is outside the appointment hours of the same opening.
+     * {@code gapEnd} is exclusive. {@code appointmentStart} is a time that must still be shown.
+     */
+    public static final class WalkInOpening {
+        public final int scopeId;
+        public final LocalDate day;
+        public final LocalTime gapStart;
+        public final LocalTime gapEnd;
+        public final LocalTime appointmentStart;
+
+        public WalkInOpening(int scopeId, LocalDate day, LocalTime gapStart, LocalTime gapEnd, LocalTime appointmentStart) {
+            this.scopeId = scopeId;
+            this.day = day;
+            this.gapStart = gapStart;
+            this.gapEnd = gapEnd;
+            this.appointmentStart = appointmentStart;
+        }
+    }
+
+    private LocalDate overallViewStart;
+    private WalkInOpening walkInOpening;
+
+    public LocalDate overallViewStart() {
+        if (overallViewStart == null) {
+            throw new IllegalStateException("The overall view has no start date.");
+        }
+        return overallViewStart;
+    }
+
+    public List<String> overallViewScopeOptionValues() {
+        Select scopes = new Select(DRIVER.findElement(By.id("scope-select")));
+        return scopes.getOptions().stream().map(option -> option.getAttribute("value")).collect(Collectors.toList());
+    }
+
+    public void showEveryLocationInOverallView(int days) {
+        CONTEXT.set();
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(90));
+        WebElement toggle = wait.until(ExpectedConditions.elementToBeClickable(By.id("select-all-scopes")));
+        toggle.click();
+        WebElement from = DRIVER.findElement(By.id("calendar-date-from"));
+        String startValue = from.getAttribute("value");
+        if (startValue == null || startValue.isBlank()) {
+            throw new IllegalStateException("The overall view has no start date.");
+        }
+        overallViewStart = LocalDate.parse(startValue);
+        LocalDate until = overallViewStart.plusDays(days - 1L);
+        WebElement untilInput = DRIVER.findElement(By.id("calendar-date-until"));
+        ((JavascriptExecutor) DRIVER).executeScript(
+                "arguments[0].value=arguments[1]; arguments[2].value=arguments[3];",
+                from, startValue, untilInput, until.toString());
+        clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "//button[normalize-space()='Übernehmen']", LocatorType.XPATH, false, CONTEXT);
+        wait.until(ExpectedConditions.numberOfElementsToBeMoreThan(By.cssSelector(".overall-calendar-day-label"), 1));
+        wait.until(ExpectedConditions.numberOfElementsToBeMoreThan(By.cssSelector(".overall-calendar-scope-header"), 0));
+    }
+
+    public void openOverallViewFullScreen() {
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        WebElement button = wait.until(ExpectedConditions.elementToBeClickable(By.id("calendar-fullscreen")));
+        button.click();
+        wait.until(ExpectedConditions.attributeContains(
+                By.cssSelector(".overall-calendar-wrapper"), "class", "fullscreen"));
+    }
+
+    public void scrollOverallViewToTheRight() {
+        Object scrolled = ((JavascriptExecutor) DRIVER).executeScript(
+                "var wrapper = document.querySelector('.overall-calendar-wrapper');"
+                        + "wrapper.scrollLeft = wrapper.scrollWidth;"
+                        + "return wrapper.scrollLeft;");
+        Assert.assertTrue(scrolled instanceof Number && ((Number) scrolled).intValue() > 0,
+                "The overall view did not scroll sideways.");
+    }
+
+    public void assertEachVisibleLocationShowsItsDate() {
+        Object result = ((JavascriptExecutor) DRIVER).executeScript(
+                "var wrapper = document.querySelector('.overall-calendar-wrapper');"
+                        + "var view = wrapper.getBoundingClientRect();"
+                        + "function span(el) {"
+                        + "  var parts = el.style.gridColumn.split('/');"
+                        + "  var start = parseInt(parts[0], 10);"
+                        + "  var width = parseInt(parts[1].replace('span', ''), 10);"
+                        + "  return [start, start + width - 1];"
+                        + "}"
+                        + "var days = Array.from(document.querySelectorAll('.overall-calendar-day-header'));"
+                        + "var scopes = Array.from(document.querySelectorAll('.overall-calendar-scope-header'));"
+                        + "if (scopes.length === 0) return 'no locations';"
+                        + "var seen = 0;"
+                        + "for (var i = 0; i < scopes.length; i++) {"
+                        + "  var box = scopes[i].getBoundingClientRect();"
+                        + "  if (box.right < view.left || box.left > view.right || box.width === 0) continue;"
+                        + "  seen++;"
+                        + "  var place = span(scopes[i]);"
+                        + "  var day = null;"
+                        + "  for (var d = 0; d < days.length; d++) {"
+                        + "    var dayPlace = span(days[d]);"
+                        + "    if (place[0] >= dayPlace[0] && place[1] <= dayPlace[1]) day = days[d];"
+                        + "  }"
+                        + "  if (!day) return 'location without a day';"
+                        + "  var label = day.querySelector('.overall-calendar-day-label');"
+                        + "  if (!label || !/\\d{2}\\.\\d{2}\\./.test(label.textContent)) return 'day has no date';"
+                        + "  var labelBox = label.getBoundingClientRect();"
+                        + "  if (labelBox.right < view.left || labelBox.left > view.right || labelBox.width < 2) {"
+                        + "    return 'date not in view: ' + label.textContent;"
+                        + "  }"
+                        + "}"
+                        + "return seen > 0 ? 'ok' : 'no location in view';");
+        Assert.assertEquals(String.valueOf(result), "ok", "A shown location has no readable date.");
+    }
+
+    public void assertOverallViewHasNoAxisLabels(String rowLabel, String columnLabel) {
+        List<WebElement> corners = DRIVER.findElements(By.cssSelector("#overall-calendar .overall-calendar-empty-header"));
+        Assert.assertEquals(corners.size(), 2, "The overall view should have two empty corner cells.");
+        for (WebElement corner : corners) {
+            String text = corner.getText().trim();
+            Assert.assertNotEquals(text, rowLabel, "The row label should be gone.");
+            Assert.assertNotEquals(text, columnLabel, "The column label should be gone.");
+            Assert.assertTrue(text.isEmpty(), "The corner cell should be empty but was \"" + text + "\".");
+        }
+    }
+
+    public void assertHourLabelSitsOnTheHourRow() {
+        Object result = ((JavascriptExecutor) DRIVER).executeScript(
+                "var label = document.querySelector('.overall-calendar-time-hour .overall-calendar-time-label');"
+                        + "if (!label || !/^\\d{2}:00$/.test(label.textContent.trim())) return 'missing hour label';"
+                        + "var row = label.parentElement.style.gridRow.split('/')[0].trim();"
+                        + "var stripes = Array.from(document.querySelectorAll('.overall-calendar-stripe-hour'));"
+                        + "var stripe = stripes.find(function (item) {"
+                        + "  return item.style.gridRow.split('/')[0].trim() === row;"
+                        + "});"
+                        + "if (!stripe) return 'missing hour line';"
+                        + "var labelBox = label.getBoundingClientRect();"
+                        + "var lineBox = stripe.getBoundingClientRect();"
+                        + "var labelMiddle = labelBox.top + labelBox.height / 2;"
+                        + "var lineMiddle = lineBox.top + lineBox.height / 2;"
+                        + "if (labelMiddle <= lineMiddle) return 'the hour label sits on the hour line';"
+                        + "return 'ok';");
+        Assert.assertEquals(String.valueOf(result), "ok", "The hour label should sit on the first row of the hour.");
+    }
+
+    public void assertDayLinesKeepOneWidth() {
+        Object result = ((JavascriptExecutor) DRIVER).executeScript(
+                "var widths = Array.from(document.querySelectorAll('.overall-calendar-day-separator')).map(function (line) {"
+                        + "  return Math.round(line.getBoundingClientRect().width);"
+                        + "});"
+                        + "if (widths.length < 2) return 'not enough day lines';"
+                        + "var same = widths.every(function (width) { return width === widths[0] && width >= 3; });"
+                        + "if (!same) return 'day line widths ' + widths.slice(0, 6).join(',');"
+                        + "function sideBorder(selector) {"
+                        + "  var style = getComputedStyle(document.querySelector(selector));"
+                        + "  return style.borderLeftWidth === '0px' && style.borderRightWidth === '0px';"
+                        + "}"
+                        + "if (!sideBorder('.overall-calendar-scope-header')) return 'location header has a side border';"
+                        + "if (!sideBorder('.overall-calendar-day-header')) return 'day header has a side border';"
+                        + "return 'ok';");
+        Assert.assertEquals(String.valueOf(result), "ok", "The day lines should keep one width.");
+    }
+
+    public void showWalkInOpening(WalkInOpening opening) {
+        CONTEXT.set();
+        walkInOpening = opening;
+        WebElement fullscreen = DRIVER.findElement(By.id("calendar-fullscreen"));
+        if (DRIVER.findElement(By.cssSelector(".overall-calendar-wrapper")).getAttribute("class").contains("fullscreen")) {
+            fullscreen.click();
+        }
+        WebElement from = DRIVER.findElement(By.id("calendar-date-from"));
+        WebElement until = DRIVER.findElement(By.id("calendar-date-until"));
+        String day = opening.day.toString();
+        ((JavascriptExecutor) DRIVER).executeScript(
+                "arguments[0].value=arguments[2]; arguments[1].value=arguments[2];", from, until, day);
+        Select scopes = new Select(DRIVER.findElement(By.id("scope-select")));
+        scopes.deselectAll();
+        scopes.selectByValue(Integer.toString(opening.scopeId));
+        clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "//button[normalize-space()='Übernehmen']", LocatorType.XPATH, false, CONTEXT);
+        String dayPart = opening.day.format(DateTimeFormatter.ofPattern("dd.MM."));
+        new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .ignoring(StaleElementReferenceException.class)
+                .until(driver -> driver.findElements(By.cssSelector(".overall-calendar-scope-header")).size() == 1
+                        && driver.findElements(By.cssSelector(".overall-calendar-day-label")).size() == 1
+                        && driver.findElement(By.cssSelector(".overall-calendar-day-label")).getText().contains(dayPart)
+                        && !driver.findElements(By.cssSelector("#overall-calendar .overall-calendar-open")).isEmpty());
+    }
+
+    public void assertWalkInHoursAreNotWhite() {
+        if (walkInOpening == null) {
+            throw new IllegalStateException("No walk-in opening was chosen.");
+        }
+        DateTimeFormatter clock = DateTimeFormatter.ofPattern("HH:mm");
+        String appointment = walkInOpening.appointmentStart.format(clock);
+        boolean appointmentShown = false;
+        Object titles = ((JavascriptExecutor) DRIVER).executeScript(
+                "return Array.from(document.querySelectorAll('#overall-calendar .overall-calendar-open')).map(function (cell) {"
+                        + "return cell.getAttribute('title') || '';"
+                        + "});");
+        if (!(titles instanceof List<?>)) {
+            throw new IllegalStateException("The overall view returned no opening cells.");
+        }
+        for (Object titleObject : (List<?>) titles) {
+            String title = String.valueOf(titleObject);
+            Matcher matcher = Pattern.compile("(\\d{2}:\\d{2})\\s*[–-]\\s*(\\d{2}:\\d{2})").matcher(title);
+            if (!matcher.find()) {
+                continue;
+            }
+            LocalTime start = LocalTime.parse(matcher.group(1));
+            if (!start.isBefore(walkInOpening.gapStart) && start.isBefore(walkInOpening.gapEnd)) {
+                Assert.fail("Walk-in time " + title + " is shown in white.");
+            }
+            if (matcher.group(1).equals(appointment)) {
+                appointmentShown = true;
+            }
+        }
+        Assert.assertTrue(appointmentShown,
+                "The appointment hour " + appointment + " should still be shown for scope " + walkInOpening.scopeId + ".");
     }
 }
