@@ -740,6 +740,21 @@ public class CitizenViewSteps {
         page.assertMeineTermineLists(serviceName);
     }
 
+    @Then("I remember the Meine Termine appointment for {string}")
+    public void iRememberTheMeineTermineAppointment(String serviceName) {
+        page.rememberMeineTermineAppointment(serviceName);
+    }
+
+    @Then("the Meine Termine appointment for {string} was replaced")
+    public void theMeineTermineAppointmentWasReplaced(String serviceName) {
+        page.assertMeineTermineAppointmentReplaced(serviceName);
+    }
+
+    @Then("the Meine Termine appointment for {string} is unchanged")
+    public void theMeineTermineAppointmentIsUnchanged(String serviceName) {
+        page.assertMeineTermineAppointmentUnchanged(serviceName);
+    }
+
     @Then("Meine Termine does not list {string}")
     public void meineTermineDoesNotList(String serviceName) {
         page.assertMeineTermineDoesNotList(serviceName);

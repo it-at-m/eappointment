@@ -1324,15 +1324,21 @@ public class CitizenViewPage extends BasePage {
         CONTEXT.set();
         String script =
                 "var label=arguments[0];"
-                        + "function visible(el){if(!el||!el.getBoundingClientRect)return false;"
+                        + "function box(el){if(!el||el.nodeType!==1||!el.getBoundingClientRect)return false;"
                         + "var r=el.getBoundingClientRect();if(r.width<=0||r.height<=0)return false;"
                         + "var st=window.getComputedStyle(el);return st.visibility!=='hidden'&&st.display!=='none'&&st.opacity!=='0';}"
+                        + "function painted(el){if(box(el))return el;var found=null;"
+                        + "function w(n){if(!n||found)return;if(n.nodeType===1&&n!==el&&box(n)){found=n;return;}"
+                        + "if(n.shadowRoot)w(n.shadowRoot);var c=n.children;if(c)for(var i=0;i<c.length;i++)w(c[i]);}"
+                        + "w(el);return found;}"
                         + "function norm(s){return (s||'').replace(/\\s+/g,' ').trim();}"
-                        + "function walkClick(n){if(!n)return false;if(n.shadowRoot&&walkClick(n.shadowRoot))return true;"
+                        + "function walkClick(n){if(!n)return false;"
                         + "var tag=(n.tagName||'').toUpperCase();"
                         + "if(tag==='BUTTON'||tag==='A'||tag==='MUC-BUTTON'){"
-                        + "if(norm(n.textContent)===label&&!n.disabled&&visible(n)){"
-                        + "n.scrollIntoView({block:'center'});n.click();return true;}}"
+                        + "if(norm(n.textContent)===label&&!n.disabled"
+                        + "&&!(n.getAttribute&&n.getAttribute('aria-disabled')==='true')){"
+                        + "var hit=painted(n);if(hit){hit.scrollIntoView({block:'center'});hit.click();return true;}}}"
+                        + "if(n.shadowRoot&&walkClick(n.shadowRoot))return true;"
                         + "var c=n.children;if(c)for(var i=0;i<c.length;i++)if(walkClick(c[i]))return true;return false;}"
                         + "return walkClick(document.body);";
         Object o = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script, text);
@@ -4083,10 +4089,62 @@ public class CitizenViewPage extends BasePage {
         waitWithThreeWindows(
                 () -> shadowDomContainsText("Neuer Termin"),
                 "Meine Termine finished loading");
+        Assert.assertTrue(
+                shadowDomContainsText("Neuer Termin"),
+                "Meine Termine did not finish loading.");
         Assert.assertEquals(
                 countTeasers(serviceName),
                 0,
                 "Meine Termine still lists \"" + serviceName + "\".");
+    }
+
+    public void rememberMeineTermineAppointment(String serviceName) {
+        CONTEXT.set();
+        String number = appointmentNumberOnMeineTermine(serviceName);
+        Assert.assertFalse(number.isBlank(), "Meine Termine has no number for \"" + serviceName + "\".");
+        TestDataHelper.setTestData(meineTermineNumberKey(serviceName), number);
+    }
+
+    public void assertMeineTermineAppointmentReplaced(String serviceName) {
+        CONTEXT.set();
+        String previous = TestDataHelper.getTestData(meineTermineNumberKey(serviceName));
+        String current = appointmentNumberOnMeineTermine(serviceName);
+        Assert.assertNotEquals(
+                current,
+                previous,
+                "Meine Termine still shows the original appointment for \"" + serviceName + "\".");
+    }
+
+    public void assertMeineTermineAppointmentUnchanged(String serviceName) {
+        CONTEXT.set();
+        String previous = TestDataHelper.getTestData(meineTermineNumberKey(serviceName));
+        String current = appointmentNumberOnMeineTermine(serviceName);
+        Assert.assertEquals(
+                current,
+                previous,
+                "Meine Termine changed the appointment for \"" + serviceName + "\".");
+    }
+
+    private String appointmentNumberOnMeineTermine(String serviceName) {
+        String script =
+                "var name=arguments[0];"
+                        + "function textOf(n){var s='';if(!n)return s;if(n.nodeType===3)return n.nodeValue||'';"
+                        + "if(n.shadowRoot)s+=textOf(n.shadowRoot);var c=n.childNodes;if(c)for(var i=0;i<c.length;i++)s+=textOf(c[i]);return s;}"
+                        + "function walk(n,fn){if(!n)return null;if(n.nodeType===1){var hit=fn(n);if(hit)return hit;}"
+                        + "if(n.shadowRoot){var inner=walk(n.shadowRoot,fn);if(inner)return inner;}"
+                        + "var c=n.children;if(c)for(var i=0;i<c.length;i++){var next=walk(c[i],fn);if(next)return next;}return null;}"
+                        + "return walk(document.body,function(el){"
+                        + "if((el.tagName||'').toLowerCase()!=='muc-card')return null;"
+                        + "var text=textOf(el).replace(/\\s+/g,' ').trim();"
+                        + "if(text.indexOf('1x '+name)<0)return null;"
+                        + "var match=text.match(/Terminnummer:\\s*(\\S+)/);"
+                        + "return match?match[1]:'';});";
+        Object raw = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script, serviceName);
+        return raw == null ? "" : raw.toString();
+    }
+
+    private static String meineTermineNumberKey(String serviceName) {
+        return "meine_termine_number_" + serviceName;
     }
 
     private int countTeasers(String serviceName) {

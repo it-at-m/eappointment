@@ -58,6 +58,8 @@ Feature: Logged-in Meine Termine still lists every booked appointment
     Then the confirmation success callout should be visible in the citizen view
     When I open Meine Termine in the citizen view
     Then Meine Termine lists "Auskunft zur Rente Telefon" and "Auskunft zur Rente Video"
+    And I remember the Meine Termine appointment for "Auskunft zur Rente Telefon"
+    And I remember the Meine Termine appointment for "Auskunft zur Rente Video"
 
     When I open the Meine Termine teaser for "Auskunft zur Rente Telefon"
     And I reschedule the appointment from Meine Termine in the citizen view
@@ -74,6 +76,8 @@ Feature: Logged-in Meine Termine still lists every booked appointment
     Then the confirmation success callout should be visible in the citizen view
     When I open Meine Termine in the citizen view
     Then Meine Termine lists "Auskunft zur Rente Telefon" and "Auskunft zur Rente Video"
+    And the Meine Termine appointment for "Auskunft zur Rente Telefon" was replaced
+    And the Meine Termine appointment for "Auskunft zur Rente Video" is unchanged
 
     When I open the Meine Termine teaser for "Auskunft zur Rente Telefon"
     And I cancel the appointment in the citizen view
