@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-10-03T12:35:44.950Z",
+  "publishedAt": "2026-10-03T12:48:37.284Z",
   "branches": [
     {
       "name": "next",
@@ -240,6 +240,12 @@
       "slug": "renovate-next-quay.io-keycloak-keycloak-26.x",
       "runId": "36842239847",
       "runStartedAt": "2026-10-01T09:21:53Z"
+    },
+    {
+      "name": "test-zmskvr-1204-zmskvr-1576-my-appointments",
+      "slug": "test-zmskvr-1204-zmskvr-1576-my-appointments",
+      "runId": "37123409755",
+      "runStartedAt": "2026-10-03T12:36:18Z"
     },
     {
       "name": "test-zmskvr-1334-appointment-ics-download",
