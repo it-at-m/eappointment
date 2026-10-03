@@ -117,8 +117,14 @@ public class ProcessingStationSection extends CounterProcessingStationPage {
 
     public void callCustomerFromQueueWithName(String name) {
         ScenarioLogManager.getLogger().info("Trying to call customer from queue with name \"" + name + "\"...");
-        WebElement link = getTableCellElement("table-queued-appointments", LocatorType.ID, "Name (Aufrufe)", name);
-        link.findElement(By.cssSelector("a")).click();
+        // A repeat call shows the count beside the name, so the cell text is no longer only the name.
+        By callLink = By.xpath(
+                "//table[@id='table-queued-appointments']//td[contains(@class,'callnextclient')]"
+                        + "//a[normalize-space(.)='" + name + "']");
+        WebElement link = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(ExpectedConditions.elementToBeClickable(callLink));
+        scrollToCenterByVisibleElement(link);
+        link.click();
     }
 
     public void callCustomerFromParkingTableWithNumber(String number) {
