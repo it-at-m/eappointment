@@ -1,12 +1,12 @@
-@rest @zmscitizenapi @dldb-special-cases @citizen @ZMSKVR-833 @ZMSKVR-1025 @ZMSKVR-1648
-Feature: ZMSKVR-833 / ZMSKVR-1025 / ZMSKVR-1648 Rebooking onto a Bürgerbüro that requires custom text — Citizen API
+@rest @zmscitizenapi @dldb-special-cases @citizen @ZMSKVR-833 @ZMSKVR-1025 @ZMSKVR-1648 @ZMSKVR-1647
+Feature: ZMSKVR-833 / ZMSKVR-1025 / ZMSKVR-1648 / ZMSKVR-1647 Rebooking onto a Bürgerbüro that requires custom text — Citizen API
   As a citizen API client
   I want rebooking from Ausbildung (optional remarks) onto Haupt (required remarks) to copy stored contact and reject changes to filled fields
   So that only the missing Pflichtfeld can be added on update
 
   # Ausbildung 10313237 (scope 372): custom text activated, not required (V26).
   # Haupt 10489 (scope 160): custom text activated and required (V26).
-  # The UI journey is covered by zmskvr-1648_zmskvr-833_zmskvr-1025_rebooking_required_fields.feature.
+  # The UI journey is covered by zmskvr-1648_zmskvr-1647_zmskvr-833_zmskvr-1025_rebooking_required_fields.feature.
   # This scenario hits the HTTP contract the UI cannot: changing an already stored familyName.
 
   Background:
