@@ -5,7 +5,8 @@ Feature: Resuming a missed appointment does not show a zero waiting time
 	# A missed appointment is resumed from Verpasste Termine. In the first minute
 	# the Uhrzeit column shows only the appointment time. After one minute it
 	# also shows the waiting time as + # Min., never as +00:00:00.
-	# The suite clock does not move, so that minute is stored and the queue reloaded.
+	# The page counts those minutes from the arrival time, so that arrival is
+	# stored from the database clock and the queue is reloaded.
 	# This Standort allows one repeat call. The first no-show hides the call link for
 	# five minutes, so that lockout is ended before the second call. The second
 	# no-show moves the appointment to Verpasste Termine. The appointment is deleted afterwards.

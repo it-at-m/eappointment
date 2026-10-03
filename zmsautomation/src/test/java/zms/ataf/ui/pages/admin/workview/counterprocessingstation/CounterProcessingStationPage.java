@@ -334,14 +334,17 @@ public class CounterProcessingStationPage extends AdminPage {
     public void assertResumedAppointmentShowsWholeMinutes(String displayNumber, String familyName) {
         WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
         wait.ignoring(StaleElementReferenceException.class);
+        String[] seen = {""};
+        wait.withMessage(() -> "Uhrzeit does not show the waiting time as whole minutes, but was: " + seen[0]);
         String text = wait.until(driver -> {
             String value = queueTimeText(displayNumber, familyName);
-            if (value.matches("\\d{2}:\\d{2} \\+1 Min\\.")) {
+            seen[0] = value;
+            if (value.matches("\\d{2}:\\d{2} \\+[1-9]\\d* Min\\.")) {
                 return value;
             }
             return null;
         });
-        Assert.assertNotNull(text, "Uhrzeit does not show the waiting time as +1 Min.");
+        Assert.assertNotNull(text, "Uhrzeit does not show the waiting time as whole minutes.");
     }
 
     private String queueTimeText(String displayNumber, String familyName) {

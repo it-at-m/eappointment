@@ -1344,11 +1344,6 @@ public class AdminSteps {
     }
 
     /**
-     * {@code ZMS_TIMEADJUST} stays at the suite start, so waiting a wall-clock minute
-     * does not change the waiting time. One minute is stored, and the arrival is moved
-     * to 90 seconds before that clock, so a reload still shows {@code +1 Min.}
-     */
-    /**
      * A no-show hides the call link for five wall-clock minutes. The suite clock does not
      * move that far, so the lockout is stored as already over and the queue is reloaded.
      */
@@ -1360,6 +1355,11 @@ public class AdminSteps {
         COUNTER_PROCESSING_STATION_PAGE.reloadQueueLists();
     }
 
+    /**
+     * The queue shows whole minutes from the arrival time against the request clock.
+     * That clock is the database time, so the arrival is stored 90 seconds before
+     * the current database minute and the queue is reloaded.
+     */
     @When("one minute has passed for the resumed appointment of {string}.")
     public void oneMinuteHasPassedForTheResumedAppointmentOf(String familyName) {
         storeOneMinuteOfWaitingTime(TestDataHelper.transformTestData(familyName));
@@ -1970,21 +1970,13 @@ public class AdminSteps {
 
     private static void storeOneMinuteOfWaitingTime(String familyName) {
         String displayNumber = bookedAppointmentNumber();
-        LocalDateTime suiteClock = suiteClock();
-        LocalDateTime arrival = suiteClock.minusSeconds(90);
-        boolean sameDay = arrival.toLocalDate().equals(suiteClock.toLocalDate());
-        String sql = sameDay
-                ? "UPDATE buerger SET waiting_time = '00:01:30', wsm_aufnahmezeit = ? WHERE BuergerID = ?"
-                : "UPDATE buerger SET waiting_time = '00:01:30' WHERE BuergerID = ?";
+        String sql = "UPDATE buerger SET waiting_time = '00:01:30', "
+                + "wsm_aufnahmezeit = TIME(DATE_SUB(DATE_FORMAT(NOW(), '%Y-%m-%d %H:%i:00'), INTERVAL 90 SECOND)) "
+                + "WHERE BuergerID = ?";
         try (Connection connection = openZmsConnection()) {
             int processId = processIdForBookedAppointment(connection, displayNumber, familyName);
             try (PreparedStatement statement = connection.prepareStatement(sql)) {
-                if (sameDay) {
-                    statement.setString(1, arrival.toLocalTime().format(DateTimeFormatter.ofPattern("HH:mm:ss")));
-                    statement.setInt(2, processId);
-                } else {
-                    statement.setInt(1, processId);
-                }
+                statement.setInt(1, processId);
                 int updated = statement.executeUpdate();
                 if (updated != 1) {
                     throw new IllegalStateException(
