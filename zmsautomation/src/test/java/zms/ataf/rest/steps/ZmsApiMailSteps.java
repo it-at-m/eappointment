@@ -291,6 +291,24 @@ public class ZmsApiMailSteps {
         assertEstimatedDurationAfterTime("in Kürze folgenden Termin");
     }
 
+    /** One lookup. The reminder script also updates other appointments and can stop before this one is queued. */
+    public boolean currentProcessHasReminderMail() {
+        String processId = TestDataHelper.getTestData("mail_process_id");
+        if (processId == null || !processId.trim().matches("[1-9]\\d*")) {
+            return false;
+        }
+        Response response = given()
+                .baseUri(TestConfig.getBaseUri())
+                .header("X-Authkey", getOrLoginXAuthKey())
+                .queryParam("limit", 500)
+            .when()
+                .get("/mails/");
+        if (response.getStatusCode() != 200) {
+            return false;
+        }
+        return extractHtmlContaining(response.asString(), processId.trim(), "in Kürze folgenden Termin") != null;
+    }
+
     private void assertEstimatedDurationAfterTime(String marker) {
         String processId = TestDataHelper.getTestData("mail_process_id");
         Assertions.assertThat(processId)

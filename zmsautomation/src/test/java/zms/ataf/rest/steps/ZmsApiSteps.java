@@ -495,37 +495,56 @@ public class ZmsApiSteps {
         builder.environment().putIfAbsent("ZMS_ENV", "dev");
         builder.environment().put("ZMS_CRONROOT", "1");
         builder.redirectErrorStream(true);
-        Process queued = null;
+        String logged = "";
         try {
-            queued = builder.start();
-            StringBuffer output = new StringBuffer();
-            Process reading = queued;
-            Thread reader = new Thread(() -> {
+            for (int attempt = 1; attempt <= 3; attempt++) {
+                Process queued = builder.start();
+                StringBuffer output = new StringBuffer();
+                Thread reader = new Thread(() -> {
+                    try {
+                        output.append(new String(queued.getInputStream().readAllBytes(), StandardCharsets.UTF_8));
+                    } catch (IOException io) {
+                        output.append(io.getMessage());
+                    }
+                }, "queueMailReminder-output");
+                reader.setDaemon(true);
+                reader.start();
+                boolean finished;
                 try {
-                    output.append(new String(reading.getInputStream().readAllBytes(), StandardCharsets.UTF_8));
-                } catch (IOException io) {
-                    output.append(io.getMessage());
+                    finished = queued.waitFor(90, TimeUnit.SECONDS);
+                } catch (InterruptedException interrupted) {
+                    queued.destroyForcibly();
+                    Thread.currentThread().interrupt();
+                    throw new IllegalStateException("Interrupted while queueing reminder mails", interrupted);
                 }
-            }, "queueMailReminder-output");
-            reader.setDaemon(true);
-            reader.start();
-            boolean finished = queued.waitFor(90, TimeUnit.SECONDS);
-            if (!finished) {
-                queued.destroyForcibly();
+                if (!finished) {
+                    queued.destroyForcibly();
+                }
+                reader.join(2000L);
+                logged = truncate(output.toString(), 1500);
+                Assertions.assertThat(finished)
+                        .as("queueMailReminder did not finish. output=%s", logged)
+                        .isTrue();
+                if (queued.exitValue() == 0) {
+                    ScenarioLogManager.getLogger().info("queueMailReminder finished: {}", truncate(output.toString(), 500));
+                    return;
+                }
+                boolean lostProcess = output.toString().contains("ProcessUpdateFailed");
+                if (lostProcess && new ZmsApiMailSteps().currentProcessHasReminderMail()) {
+                    ScenarioLogManager.getLogger().info(
+                            "queueMailReminder stopped on another appointment; this reminder is already queued");
+                    return;
+                }
+                if (lostProcess && attempt < 3) {
+                    ScenarioLogManager.getLogger().info(
+                            "queueMailReminder hit a deleted appointment, retry {}", attempt);
+                    continue;
+                }
+                Assertions.assertThat(queued.exitValue())
+                        .as("queueMailReminder output=%s", logged)
+                        .isEqualTo(0);
             }
-            reader.join(2000L);
-            String logged = truncate(output.toString(), 1500);
-            Assertions.assertThat(finished)
-                    .as("queueMailReminder did not finish. output=%s", logged)
-                    .isTrue();
-            Assertions.assertThat(queued.exitValue())
-                    .as("queueMailReminder output=%s", logged)
-                    .isEqualTo(0);
-            ScenarioLogManager.getLogger().info("queueMailReminder finished: {}", truncate(output.toString(), 500));
         } catch (InterruptedException interrupted) {
-            if (queued != null) {
-                queued.destroyForcibly();
-            }
             Thread.currentThread().interrupt();
             throw new IllegalStateException("Interrupted while queueing reminder mails", interrupted);
         } catch (IOException io) {
