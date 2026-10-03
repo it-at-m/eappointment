@@ -1,7 +1,9 @@
--- Benutzerverwaltung pool. A feature that says user_admin takes a free member
--- that already has a department and waits if every such member is in use.
--- Sixteen UI browsers plus one spare. The single user_admin@keycloak row stays
--- without a department and is not part of the pool.
+-- ZMS role user_admin (Benutzerverwaltung). Berechtigung stays 1.
+-- Technische Administration is system_admin. Terminadministration is appointment_admin.
+-- Keycloak grants only the client role user. This migration assigns user_admin.
+-- A feature that says user_admin takes a free member that already has a department
+-- and waits if every such member is in use. Sixteen UI browsers plus one spare.
+-- The single user_admin@keycloak row stays without a department and is not in the pool.
 -- Password is vorschau. Department 40 is the department the other role accounts use.
 
 INSERT IGNORE INTO `nutzer`

@@ -2,7 +2,10 @@ id: add user_admin pool
 author: ZMS Development
 realm: zms
 changes:
-  # Benutzerverwaltung. A feature that says "user_admin" takes a free member that has a department.
+  # ZMS role user_admin, shown as Benutzerverwaltung.
+  # Technische Administration is system_admin. Terminadministration is appointment_admin.
+  # The Keycloak role "user" only lets the account sign in. Flyway V42 assigns user_admin.
+  # A feature that says "user_admin" takes a free member that has a department.
   # UI threads 16 + 1 spare.
   - addUser:
       name: ataf_user_admin_1

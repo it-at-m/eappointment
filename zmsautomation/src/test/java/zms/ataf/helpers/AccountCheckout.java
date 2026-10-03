@@ -172,7 +172,9 @@ public final class AccountCheckout {
     );
 
     /**
-     * Nutzer accounts with the role {@code user_admin} (Benutzerverwaltung).
+     * Nutzer accounts with the ZMS role {@code user_admin} (Benutzerverwaltung).
+     * Technische Administration is {@code system_admin}. Terminadministration is {@code appointment_admin}.
+     * Keycloak only grants the client role {@code user}. Flyway assigns {@code user_admin}.
      * A feature that says {@code user_admin} takes a free one that already has a department.
      * Sixteen UI threads plus one spare. The original {@code user_admin} row has no department
      * and is not in this pool.
