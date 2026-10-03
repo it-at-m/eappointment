@@ -13,7 +13,8 @@ Feature: Capacity statistics open on the daily total
 		Then the statistics overview page is displayed.
 		When I click the button "Terminkapazität" in the statistics sidebar.
 		Then the statistics page "Terminkapazität" is displayed.
-		When I filter the statistics from 1 days after today until 1 days after today.
+		When I select the location "Gewerbeamt (KVR-III/23) Verkehr" in the statistics filter.
+		And I filter the statistics from 1 days after today until 1 days after today.
 		Then the capacity statistics show the daily total for that one day.
 		When I select the capacity filter "Ansicht" value "Stundenansicht".
 		And I select the capacity filter "Kapazitätskanal" value "Internet".
