@@ -92,8 +92,9 @@ public class UseraccountPage extends BasePage {
 
         WebElement select = DRIVER.findElement(By.cssSelector("select[name='departments[][id]']"));
         String signedInDepartment = TestDataHelper.getTestData("signed_in_department");
-        Assert.assertNotNull(signedInDepartment, "The signed-in user admin has no department.");
-        int departmentId = Integer.parseInt(signedInDepartment);
+        Assert.assertTrue(
+                signedInDepartment != null && signedInDepartment.matches("[1-9]\\d*"),
+                "The signed-in user admin has no department number: " + signedInDepartment);
         List<String> listed = new ArrayList<>();
         for (WebElement option : select.findElements(By.tagName("option"))) {
             String value = option.getAttribute("value");
@@ -101,7 +102,7 @@ public class UseraccountPage extends BasePage {
                 listed.add(value);
             }
         }
-        Assert.assertEquals(listed, List.of(Integer.toString(departmentId)),
+        Assert.assertEquals(listed, List.of(signedInDepartment),
                 "Behörde does not list the signed-in user's department.");
         WebElement group = select.findElement(By.xpath("ancestor::*[contains(@class,'form-group')][1]"));
         String groupClass = group.getAttribute("class");
