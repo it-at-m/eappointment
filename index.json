@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-10-03T13:06:23.466Z",
+  "publishedAt": "2026-10-03T13:09:28.723Z",
   "branches": [
     {
       "name": "next",
@@ -358,8 +358,8 @@
     {
       "name": "test-zmskvr-1532-zmskvr-1595-basis-search-edit",
       "slug": "test-zmskvr-1532-zmskvr-1595-basis-search-edit",
-      "runId": "37122276763",
-      "runStartedAt": "2026-10-03T12:15:24Z"
+      "runId": "37124661001",
+      "runStartedAt": "2026-10-03T12:59:20Z"
     },
     {
       "name": "test-zmskvr-1536-zmskvr-1552-appointment-teaser",
