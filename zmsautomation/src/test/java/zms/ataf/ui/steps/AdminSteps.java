@@ -1650,22 +1650,27 @@ public class AdminSteps {
         WebDriverWait wait = new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(30));
         wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".queue-table")));
         List<WebElement> rows = DriverUtil.getDriver().findElements(By.cssSelector(".queue-table tr.reserved"));
-        WebElement match = null;
+        WebElement timeCell = null;
         for (WebElement row : rows) {
-            if (row.getText().contains(reservedAppointmentClock)) {
-                match = row;
+            List<WebElement> cells = row.findElements(By.xpath("./td"));
+            if (cells.size() < 2) {
+                continue;
+            }
+            WebElement clockCell = cells.get(1);
+            if (clockCell.getText().trim().startsWith(reservedAppointmentClock)) {
+                timeCell = clockCell;
                 break;
             }
         }
-        Assert.assertNotNull(match,
-                "Reserved appointment at " + reservedAppointmentClock + " is not in the queue.");
-        List<WebElement> waitingTime = match.findElements(By.cssSelector(".queue-table-amendment-time"));
+        Assert.assertNotNull(timeCell,
+                "Reserved appointment at " + reservedAppointmentClock + " is not in the queue Uhrzeit column.");
+        List<WebElement> waitingTime = timeCell.findElements(By.cssSelector(".queue-table-amendment-time"));
         Assert.assertTrue(waitingTime.isEmpty(),
                 "Reserved appointment at " + reservedAppointmentClock
-                        + " shows a waiting time in Uhrzeit: " + match.getText());
-        Assert.assertFalse(match.getText().matches("(?s).*\\+\\s*\\d+\\s*Min\\..*"),
+                        + " shows a waiting time in Uhrzeit: " + timeCell.getText());
+        Assert.assertFalse(timeCell.getText().matches("(?s).*\\+\\s*\\d+\\s*Min\\..*"),
                 "Reserved appointment at " + reservedAppointmentClock
-                        + " shows +Min. in Uhrzeit: " + match.getText());
+                        + " shows +Min. in Uhrzeit: " + timeCell.getText());
     }
 
     private static LocalDateTime suiteClock() {
