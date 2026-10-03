@@ -3,7 +3,9 @@
 --
 -- The scope existed without opening hours, and appointments started seven days
 -- out. A 45-minute visit needs a long enough window. Stay on today while four
--- hours remain; otherwise the next day is open 00:00–23:55.
+-- hours remain; otherwise the next day is open 00:45–23:55.
+-- Slot calculation ignores an availability whose appointment start is 00:00:00,
+-- so the next day must not start at midnight.
 -- The slot length is 45 minutes. Termin bearbeiten reads that length from the
 -- booked availability, so a 5-minute slot shows "(5 min)" on the edit form.
 -- CURDATE()/CURTIME() follow zms-db TZ=Europe/Berlin.
@@ -29,7 +31,7 @@ SET @start_sec := TIME_TO_SEC(@rounded_start);
 SET @end_sec := TIME_TO_SEC(@latest_end);
 SET @use_next_day := (@start_sec >= 24 * 3600) OR (@end_sec <= @start_sec) OR ((@end_sec - @start_sec) < 4 * 3600);
 
-SET @appt_start := IF(@use_next_day, '00:00:00', @rounded_start);
+SET @appt_start := IF(@use_next_day, '00:45:00', @rounded_start);
 SET @appt_end := @latest_end;
 
 SET @range_start := IF(@use_next_day, DATE_ADD(CURDATE(), INTERVAL 1 DAY), CURDATE());
