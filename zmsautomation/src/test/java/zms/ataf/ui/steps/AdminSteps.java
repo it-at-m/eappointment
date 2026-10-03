@@ -51,6 +51,7 @@ import zms.ataf.rest.steps.CitizenApiSteps;
 import zms.ataf.ui.pages.admin.AdminPage;
 import zms.ataf.ui.pages.admin.AdminPageContext;
 import zms.ataf.ui.pages.admin.ProfilePage;
+import zms.ataf.ui.pages.admin.StatusPage;
 import zms.ataf.ui.pages.admin.administration.AuthoritiesAndLocationsPage;
 import zms.ataf.ui.pages.admin.search.CustomerSearchPage;
 import zms.ataf.ui.pages.admin.workview.counterprocessingstation.CounterProcessingStationPage;
@@ -61,6 +62,7 @@ import zms.ataf.ui.pages.admin.workview.counterprocessingstation.ProcessingStati
 public class AdminSteps {
     private final AdminPage ADMIN_PAGE;
     private final ProfilePage PROFILE_PAGE;
+    private final StatusPage STATUS_PAGE;
     private final CounterProcessingStationPage COUNTER_PROCESSING_STATION_PAGE;
     private final CounterSection COUNTER_SECTION;
     private final AuthoritiesAndLocationsPage AUTHORITIES_AND_LOCATIONS_PAGE;
@@ -74,6 +76,7 @@ public class AdminSteps {
     public AdminSteps() {
         ADMIN_PAGE = new AdminPage(DriverUtil.getDriver());
         PROFILE_PAGE = new ProfilePage(DriverUtil.getDriver());
+        STATUS_PAGE = new StatusPage(DriverUtil.getDriver());
         COUNTER_PROCESSING_STATION_PAGE = new CounterProcessingStationPage(DriverUtil.getDriver(), ADMIN_PAGE.getContext());
         CUSTOMER_SEARCH_PAGE = new CustomerSearchPage(DriverUtil.getDriver(), ADMIN_PAGE.getContext());
         AUTHORITIES_AND_LOCATIONS_PAGE = new AuthoritiesAndLocationsPage(DriverUtil.getDriver(), ADMIN_PAGE.getContext());
@@ -432,6 +435,26 @@ public class AdminSteps {
         String login = AccountCheckout.assignWorkstationLogin(TestDataHelper.transformTestData(username));
         TestDataHelper.setTestData("signed_in_login", login);
         ADMIN_PAGE.loginWithKeycloakUser(login, By.cssSelector(".user-name a"));
+    }
+
+    @Then("the status link is visible in the page footer.")
+    public void theStatusLinkIsVisibleInThePageFooter() {
+        STATUS_PAGE.assertStatusLinkVisible();
+    }
+
+    @Then("the system status page hides the technical administration section.")
+    public void theSystemStatusPageHidesTheTechnicalAdministrationSection() {
+        STATUS_PAGE.assertTechnicalSectionHidden();
+    }
+
+    @When("I open the status page from the page footer.")
+    public void iOpenTheStatusPageFromThePageFooter() {
+        STATUS_PAGE.openFromFooter();
+    }
+
+    @Then("the system status page is displayed.")
+    public void theSystemStatusPageIsDisplayed() {
+        STATUS_PAGE.assertStatusPageOpen();
     }
 
     @When("I open my profile from the header.")
