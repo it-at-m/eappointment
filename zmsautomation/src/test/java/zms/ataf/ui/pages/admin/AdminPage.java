@@ -12,6 +12,7 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 
@@ -117,6 +118,33 @@ public class AdminPage extends BasePage {
         AccountCheckout.checkout("scope:" + location);
         selectDropDownListValueByVisibleText(DEFAULT_EXPLICIT_WAIT_TIME, "scope", LocatorType.NAME, location);
         TestDataHelper.setTestData("location", location);
+    }
+
+    /**
+     * Picks the Standort option whose value is the scope id. The visible label is
+     * {@code contact.name + " " + shortName}, and a trailing space in the short name
+     * must not change which Standort is selected.
+     */
+    public void selectLocationByScopeId(int scopeId) {
+        CONTEXT.set();
+        String scopeValue = Integer.toString(scopeId);
+        WebElement selectEl = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(ExpectedConditions.presenceOfElementLocated(By.name("scope")));
+        Select select = new Select(selectEl);
+        String visible = null;
+        for (WebElement option : select.getOptions()) {
+            if (scopeValue.equals(option.getAttribute("value"))) {
+                visible = option.getText();
+                break;
+            }
+        }
+        if (visible == null || visible.isBlank()) {
+            throw new IllegalStateException("No Standort option for scope " + scopeId);
+        }
+        ScenarioLogManager.getLogger().info("Trying to select location \"" + visible + "\" for scope " + scopeId);
+        AccountCheckout.checkout("scope:" + visible);
+        select.selectByValue(scopeValue);
+        TestDataHelper.setTestData("location", visible);
     }
 
     public void enterWorkstation(String workstation) {
