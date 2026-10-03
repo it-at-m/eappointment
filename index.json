@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-10-03T15:09:37.916Z",
+  "publishedAt": "2026-10-03T15:15:46.711Z",
   "branches": [
     {
       "name": "next",
@@ -256,8 +256,8 @@
     {
       "name": "test-zmskvr-1249-zmskvr-1583-opening-hours-history",
       "slug": "test-zmskvr-1249-zmskvr-1583-opening-hours-history",
-      "runId": "37130343661",
-      "runStartedAt": "2026-10-03T14:38:47Z"
+      "runId": "37131937625",
+      "runStartedAt": "2026-10-03T15:04:22Z"
     },
     {
       "name": "test-zmskvr-1334-appointment-ics-download",
