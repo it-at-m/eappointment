@@ -188,4 +188,43 @@ public class CustomerSearchPage extends AdminPage {
                     "Call time missing for " + familyName + ". Expected " + callStamp + ". Row: " + text);
         }
     }
+
+    public void openFoundAppointment(String familyName) {
+        CONTEXT.set();
+        WebElement link = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(ExpectedConditions.elementToBeClickable(By.xpath(
+                        "//table[contains(@class,'table--base')]//a[contains(.,'" + familyName + "')]")));
+        link.click();
+    }
+
+    public void assertEditFormOpen(String familyName) {
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        wait.until(ExpectedConditions.urlContains("selectedprocess="));
+        String url = DRIVER.getCurrentUrl();
+        Assert.assertTrue(url.contains("/workstation"), "The result link did not open the workstation: " + url);
+        Assert.assertFalse(url.contains("/counter"), "The result link opened the counter: " + url);
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("form[data-saved-process]")));
+        WebElement name = wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("input[name='familyName']")));
+        Assert.assertEquals(name.getAttribute("value"), familyName,
+                "The edit form does not show " + familyName + ".");
+        Assert.assertTrue(
+                wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("button.process-save"))).isDisplayed(),
+                "The edit form has no save button.");
+        Assert.assertTrue(DRIVER.findElements(By.cssSelector(".message--error")).isEmpty(),
+                "Opening the appointment shows an error.");
+    }
+
+    public void deleteOpenAppointment() {
+        CONTEXT.set();
+        clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "button.process-delete", LocatorType.CSSSELECTOR, false, CONTEXT);
+        WebElement messageTitleElement = findElementByLocatorType("section.board.dialog h2.board__heading", LocatorType.CSSSELECTOR, false);
+        Assert.assertTrue(messageTitleElement.getText().contains("Eintrag löschen"), "Delete confirmation did not open.");
+        clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "a.button.button--destructive.button-ok", LocatorType.CSSSELECTOR, false, CONTEXT);
+        messageTitleElement = findElementByLocatorType("h2.message__heading.title", LocatorType.CSSSELECTOR, false);
+        Assert.assertEquals(messageTitleElement.getText(), "Vorgang gelöscht", "Deleting the open appointment did not succeed.");
+        // The dialog covers a spinner that stays on the form, so do not wait for that spinner first.
+        clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "button.button-ok", LocatorType.CSSSELECTOR, false);
+        new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(ExpectedConditions.invisibilityOfElementLocated(By.cssSelector("h2.message__heading.title")));
+    }
 }
