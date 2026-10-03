@@ -305,11 +305,20 @@ public class CounterProcessingStationPage extends AdminPage {
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.id(APPOINTMENT_QUEUE_TABLE_LOCATOR_ID)));
     }
 
+    /** The queue replaces this link while a row comes back, so a stale click is retried. */
     public void reloadQueueLists() {
-        WebElement reload = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
-                .until(ExpectedConditions.elementToBeClickable(By.cssSelector(".queue-table a.reload")));
-        scrollToCenterByVisibleElement(reload);
-        reload.click();
+        By reloadLink = By.cssSelector(".queue-table a.reload");
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        wait.ignoring(StaleElementReferenceException.class);
+        wait.until(driver -> {
+            List<WebElement> links = driver.findElements(reloadLink);
+            if (links.isEmpty() || !links.get(0).isDisplayed()) {
+                return false;
+            }
+            scrollToCenterByVisibleElement(links.get(0));
+            links.get(0).click();
+            return true;
+        });
         CONTEXT.waitForSpinners();
     }
 
