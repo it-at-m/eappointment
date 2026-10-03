@@ -1,0 +1,28 @@
+{
+  "branch": "test-zmskvr-1557-zmskvr-1570-reminder-queue-retry",
+  "branchSlug": "test-zmskvr-1557-zmskvr-1570-reminder-queue-retry",
+  "runId": "37155043339",
+  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37155043339",
+  "runStartedAt": "2026-10-03T21:25:20Z",
+  "publishedAt": "2026-10-03T21:37:20.315Z",
+  "features": {
+    "feature-rest-zmsapi-mail-templates-zmskvr-1570-zmskvr-1557-estimated-duration": {
+      "status": "passed",
+      "shard": "custom",
+      "browser": "chrome",
+      "rel": "rest/zmsapi/mail-templates/zmskvr-1570_zmskvr-1557_estimated_duration.feature",
+      "runId": "37155043339",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37155043339",
+      "runStartedAt": "2026-10-03T21:25:20Z",
+      "browsers": {
+        "chrome": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "37155043339",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37155043339",
+          "runStartedAt": "2026-10-03T21:25:20Z"
+        }
+      }
+    }
+  }
+}
