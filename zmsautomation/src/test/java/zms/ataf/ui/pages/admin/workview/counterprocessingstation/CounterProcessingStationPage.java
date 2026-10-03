@@ -313,6 +313,16 @@ public class CounterProcessingStationPage extends AdminPage {
         CONTEXT.waitForSpinners();
     }
 
+    /** After a no-show the row returns without a call link until the lockout ends. */
+    public void waitUntilCustomerIsBackInQueue(String familyName) {
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        wait.ignoring(StaleElementReferenceException.class);
+        wait.until(driver -> {
+            List<WebElement> tables = driver.findElements(By.id(APPOINTMENT_QUEUE_TABLE_LOCATOR_ID));
+            return !tables.isEmpty() && tables.get(0).getText().contains(familyName);
+        });
+    }
+
     public void assertResumedAppointmentShowsOnlyItsTime(String displayNumber, String familyName) {
         String text = queueTimeText(displayNumber, familyName);
         Assert.assertTrue(text.matches("\\d{2}:\\d{2}"),

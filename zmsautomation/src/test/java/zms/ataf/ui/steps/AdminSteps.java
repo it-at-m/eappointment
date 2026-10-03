@@ -1348,6 +1348,18 @@ public class AdminSteps {
      * does not change the waiting time. One minute is stored, and the arrival is moved
      * to 90 seconds before that clock, so a reload still shows {@code +1 Min.}
      */
+    /**
+     * A no-show hides the call link for five wall-clock minutes. The suite clock does not
+     * move that far, so the lockout is stored as already over and the queue is reloaded.
+     */
+    @When("the no-show lockout for {string} has passed.")
+    public void theNoShowLockoutHasPassed(String familyName) {
+        String name = TestDataHelper.transformTestData(familyName);
+        COUNTER_PROCESSING_STATION_PAGE.waitUntilCustomerIsBackInQueue(name);
+        endNoShowLockout(name);
+        COUNTER_PROCESSING_STATION_PAGE.reloadQueueLists();
+    }
+
     @When("one minute has passed for the resumed appointment of {string}.")
     public void oneMinuteHasPassedForTheResumedAppointmentOf(String familyName) {
         storeOneMinuteOfWaitingTime(TestDataHelper.transformTestData(familyName));
@@ -1935,6 +1947,25 @@ public class AdminSteps {
             throw new IllegalStateException("The booked appointment number was not stored.");
         }
         return number;
+    }
+
+    private static void endNoShowLockout(String familyName) {
+        String displayNumber = bookedAppointmentNumber();
+        String sql = "UPDATE buerger SET timeoutTime = DATE_SUB(NOW(), INTERVAL 6 MINUTE) WHERE BuergerID = ?";
+        try (Connection connection = openZmsConnection()) {
+            int processId = processIdForBookedAppointment(connection, displayNumber, familyName);
+            try (PreparedStatement statement = connection.prepareStatement(sql)) {
+                statement.setInt(1, processId);
+                int updated = statement.executeUpdate();
+                if (updated != 1) {
+                    throw new IllegalStateException(
+                            "Expected one appointment \"" + displayNumber + "\", updated " + updated + ".");
+                }
+            }
+        } catch (SQLException e) {
+            throw new IllegalStateException(
+                    "Could not end the no-show lockout for \"" + displayNumber + "\".", e);
+        }
     }
 
     private static void storeOneMinuteOfWaitingTime(String familyName) {
