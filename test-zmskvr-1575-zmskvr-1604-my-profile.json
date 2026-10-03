@@ -1,0 +1,35 @@
+{
+  "branch": "test-zmskvr-1575-zmskvr-1604-my-profile",
+  "branchSlug": "test-zmskvr-1575-zmskvr-1604-my-profile",
+  "runId": "37092145036",
+  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37092145036",
+  "runStartedAt": "2026-10-03T03:07:28Z",
+  "publishedAt": "2026-10-03T03:39:31.887Z",
+  "features": {
+    "feature-ui-zmsadmin-roles-zmskvr-1604-zmskvr-1575-my-profile": {
+      "status": "passed",
+      "shard": "custom",
+      "browser": "chrome",
+      "browsers": {
+        "chrome": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "37092145036",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37092145036",
+          "runStartedAt": "2026-10-03T03:07:28Z"
+        },
+        "firefox": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "37092145036",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37092145036",
+          "runStartedAt": "2026-10-03T03:07:28Z"
+        }
+      },
+      "rel": "ui/zmsadmin/roles/zmskvr-1604_zmskvr-1575_my_profile.feature",
+      "runId": "37092145036",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37092145036",
+      "runStartedAt": "2026-10-03T03:07:28Z"
+    }
+  }
+}
