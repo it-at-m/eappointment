@@ -383,6 +383,12 @@ public class CitizenViewSteps {
         page.clickRescheduleAppointment();
     }
 
+    @When("I reschedule the appointment from Meine Termine in the citizen view")
+    public void iRescheduleTheAppointmentFromMeineTermine() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: reschedule from Meine Termine via Verschieben");
+        page.rescheduleFromMeineTermine();
+    }
+
     /** ZMSKVR-1500: rebooking confirm summary reached (Verschieben abbrechen shown). */
     @Then("the cancel reschedule button should be visible in the citizen view")
     public void theCancelRescheduleButtonShouldBeVisible() {
@@ -653,6 +659,12 @@ public class CitizenViewSteps {
         page.loginViaBuergerLoginWithKeycloak();
     }
 
+    @When("I log in via Bürger-Login with Keycloak in the citizen view if I am not already logged in")
+    public void iLogInViaBuergerLoginWithKeycloakIfNeeded() throws Exception {
+        ScenarioLogManager.getLogger().info("zmscitizenview: Bürger-Login only when the contact form is not logged in");
+        page.loginViaBuergerLoginWithKeycloakIfNeeded();
+    }
+
     @When("I cancel Bürger-Login on the Keycloak form in the citizen view")
     public void iCancelBuergerLoginOnTheKeycloakForm() throws Exception {
         ScenarioLogManager.getLogger()
@@ -716,6 +728,21 @@ public class CitizenViewSteps {
     public void iOpenMeineTermine() {
         ScenarioLogManager.getLogger().info("zmscitizenview: open Meine Termine");
         page.openMeineTermine();
+    }
+
+    @Then("Meine Termine lists {string} and {string}")
+    public void meineTermineListsBoth(String first, String second) {
+        page.assertMeineTermineLists(first, second);
+    }
+
+    @Then("Meine Termine lists {string}")
+    public void meineTermineLists(String serviceName) {
+        page.assertMeineTermineLists(serviceName);
+    }
+
+    @Then("Meine Termine does not list {string}")
+    public void meineTermineDoesNotList(String serviceName) {
+        page.assertMeineTermineDoesNotList(serviceName);
     }
 
     @Then("the Meine Termine teaser for {string} should show type {string} and location {string}")
