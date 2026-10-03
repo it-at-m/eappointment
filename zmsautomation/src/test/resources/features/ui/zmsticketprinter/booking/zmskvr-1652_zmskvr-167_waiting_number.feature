@@ -1,7 +1,7 @@
 #language: en
 Feature: Walk-in customers can draw a waiting number at the ticket printer when the location is open.
 
-	@web @zmsticketprinter @booking @abholung @ZMSKVR-167 @automatisiert @executeLocally
+	@web @zmsticketprinter @booking @abholung @ZMSKVR-1652 @ZMSKVR-167 @automatisiert @executeLocally
 	Scenario: [AUT] A location button issues a waiting number
 		When I open the administration website.
 		Then I should be on the administration start page.
@@ -23,7 +23,7 @@ Feature: Walk-in customers can draw a waiting number at the ticket printer when 
 		When I click the button "Wartenummer für Bürgerbüro Ruppertstraße (KVR-II/211)" on the ticket printer.
 		Then a waiting number should be displayed.
 
-	@web @zmsticketprinter @booking @abholung @ZMSKVR-167 @automatisiert @executeLocally
+	@web @zmsticketprinter @booking @abholung @ZMSKVR-1652 @ZMSKVR-167 @automatisiert @executeLocally
 	Scenario: [AUT] A service button issues a waiting number
 		When I open the administration website.
 		Then I should be on the administration start page.
@@ -45,7 +45,7 @@ Feature: Walk-in customers can draw a waiting number at the ticket printer when 
 		When I click the button "Wartenummer für Abholung Personalausweis, Reisepass oder eID-Karte" on the ticket printer.
 		Then a waiting number should be displayed.
 
-	@web @zmsticketprinter @booking @abholung @ZMSKVR-167 @automatisiert @executeLocally
+	@web @zmsticketprinter @booking @abholung @ZMSKVR-1652 @ZMSKVR-167 @automatisiert @executeLocally
 	Scenario: [AUT] A button list issues a waiting number
 		When I open the administration website.
 		Then I should be on the administration start page.
@@ -68,7 +68,7 @@ Feature: Walk-in customers can draw a waiting number at the ticket printer when 
 		When I click the button "Wartenummer für Bürgerbüro Riesenfeldstraße (KVR-II/233" on the ticket printer.
 		Then a waiting number should be displayed.
 
-	@web @zmsticketprinter @booking @abholung @ZMSKVR-167 @automatisiert @executeLocally
+	@web @zmsticketprinter @booking @abholung @ZMSKVR-1652 @ZMSKVR-167 @automatisiert @executeLocally
 	Scenario: [AUT] A closed location does not show the kiosk
 		When I open the administration website.
 		Then I should be on the administration start page.
