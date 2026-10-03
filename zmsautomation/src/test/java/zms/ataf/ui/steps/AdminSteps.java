@@ -1321,6 +1321,34 @@ public class AdminSteps {
         COUNTER_PROCESSING_STATION_PAGE.isCustomerVisibleInMissedTable(terminName, true);
     }
 
+    @When("I resume the missed appointment of {string}.")
+    public void iResumeTheMissedAppointmentOf(String familyName) {
+        COUNTER_PROCESSING_STATION_PAGE.resumeMissedAppointment(TestDataHelper.transformTestData(familyName));
+    }
+
+    @Then("the resumed appointment of {string} shows only its time in the first minute.")
+    public void theResumedAppointmentShowsOnlyItsTimeInTheFirstMinute(String familyName) {
+        COUNTER_PROCESSING_STATION_PAGE.assertResumedAppointmentShowsOnlyItsTime(
+                TestDataHelper.transformTestData(familyName));
+    }
+
+    /**
+     * {@code ZMS_TIMEADJUST} stays at the suite start, so waiting a wall-clock minute
+     * does not change the waiting time. One minute is stored, and the arrival is moved
+     * to 90 seconds before that clock, so a reload still shows {@code +1 Min.}
+     */
+    @When("one minute has passed for the resumed appointment of {string}.")
+    public void oneMinuteHasPassedForTheResumedAppointmentOf(String familyName) {
+        storeOneMinuteOfWaitingTime(TestDataHelper.transformTestData(familyName));
+        COUNTER_PROCESSING_STATION_PAGE.reloadQueueLists();
+    }
+
+    @Then("the resumed appointment of {string} shows the waiting time in whole minutes.")
+    public void theResumedAppointmentShowsTheWaitingTimeInWholeMinutes(String familyName) {
+        COUNTER_PROCESSING_STATION_PAGE.assertResumedAppointmentShowsWholeMinutes(
+                TestDataHelper.transformTestData(familyName));
+    }
+
     @Then("the customer {string} should appear in the waiting list.")
     public void sollte_der_kunde_in_der_warteliste_erscheinen(String kunde) {
         COUNTER_PROCESSING_STATION_PAGE.isCustomerVisibleInQueue(TestDataHelper.transformTestData(kunde), true);
@@ -1888,6 +1916,31 @@ public class AdminSteps {
             case FRIDAY -> 32;
             case SATURDAY -> 64;
         };
+    }
+
+    private static void storeOneMinuteOfWaitingTime(String familyName) {
+        LocalDateTime suiteClock = suiteClock();
+        LocalDateTime arrival = suiteClock.minusSeconds(90);
+        boolean sameDay = arrival.toLocalDate().equals(suiteClock.toLocalDate());
+        String sql = sameDay
+                ? "UPDATE buerger SET waiting_time = '00:01:30', wsm_aufnahmezeit = ? WHERE Name = ?"
+                : "UPDATE buerger SET waiting_time = '00:01:30' WHERE Name = ?";
+        try (Connection connection = openZmsConnection();
+                PreparedStatement statement = connection.prepareStatement(sql)) {
+            if (sameDay) {
+                statement.setString(1, arrival.toLocalTime().format(DateTimeFormatter.ofPattern("HH:mm:ss")));
+                statement.setString(2, familyName);
+            } else {
+                statement.setString(1, familyName);
+            }
+            int updated = statement.executeUpdate();
+            if (updated != 1) {
+                throw new IllegalStateException(
+                        "Expected one appointment named \"" + familyName + "\", updated " + updated + ".");
+            }
+        } catch (SQLException e) {
+            throw new IllegalStateException("Could not store one minute of waiting time for \"" + familyName + "\".", e);
+        }
     }
 
     private static LocalDateTime suiteClock() {

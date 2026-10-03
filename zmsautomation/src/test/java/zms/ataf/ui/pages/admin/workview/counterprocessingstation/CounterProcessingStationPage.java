@@ -281,6 +281,69 @@ public class CounterProcessingStationPage extends AdminPage {
         checkForValuesInMissedTableColumn("Nr.", transactionNumber);
     }
 
+    /**
+     * "wieder aufnehmen" has no OK button, so the success lightbox stays open.
+     * The status change is already saved; a reload shows the queue without that dialog.
+     */
+    public void resumeMissedAppointment(String familyName) {
+        ScenarioLogManager.getLogger().info("Resuming missed appointment of \"" + familyName + "\"...");
+        CONTEXT.waitForSpinners();
+        By resumeLink = By.xpath("//table[@id='" + APPOINTMENT_MISSED_TABLE_LOCATOR_ID
+                + "']//tr[td[contains(normalize-space(.), \"" + familyName
+                + "\")]]//a[contains(@class,'process-reset')]");
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        WebElement link = wait.until(ExpectedConditions.elementToBeClickable(resumeLink));
+        scrollToCenterByVisibleElement(link);
+        link.click();
+        WebElement heading = wait.until(ExpectedConditions.visibilityOfElementLocated(
+                By.xpath("//*[contains(@class,'message__heading') and contains(., 'Erfolgreiche Wiederaufnahme')]")));
+        Assert.assertTrue(heading.isDisplayed(), "The resume success message is not visible.");
+        String body = DRIVER.findElement(By.cssSelector(".message--success .message__body")).getText();
+        Assert.assertTrue(body.contains("erfolgreich zum Aufruf zurückgesetzt"),
+                "The resume message does not confirm the appointment is back in the queue: " + body);
+        DRIVER.navigate().refresh();
+        CONTEXT.waitForSpinners();
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id(APPOINTMENT_QUEUE_TABLE_LOCATOR_ID)));
+    }
+
+    public void reloadQueueLists() {
+        WebElement reload = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(ExpectedConditions.elementToBeClickable(By.cssSelector(".queue-table a.reload")));
+        scrollToCenterByVisibleElement(reload);
+        reload.click();
+        CONTEXT.waitForSpinners();
+    }
+
+    public void assertResumedAppointmentShowsOnlyItsTime(String familyName) {
+        String text = queueTimeText(familyName);
+        Assert.assertTrue(text.matches("\\d{2}:\\d{2}"),
+                "In the first minute Uhrzeit should be only the appointment time, but was: " + text);
+        Assert.assertFalse(text.contains("+00:00"),
+                "Uhrzeit shows a zero waiting time: " + text);
+    }
+
+    public void assertResumedAppointmentShowsWholeMinutes(String familyName) {
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        wait.ignoring(StaleElementReferenceException.class);
+        String text = wait.until(driver -> {
+            String value = queueTimeText(familyName);
+            if (value.matches("\\d{2}:\\d{2} \\+\\d+ Min\\.") && !value.contains("+00:")) {
+                return value;
+            }
+            return null;
+        });
+        Assert.assertNotNull(text, "Uhrzeit does not show the waiting time as whole minutes.");
+    }
+
+    private String queueTimeText(String familyName) {
+        By cell = By.xpath("//table[@id='" + APPOINTMENT_QUEUE_TABLE_LOCATOR_ID
+                + "']//tr[td[contains(normalize-space(.), \"" + familyName + "\")]]/td[2]");
+        WebElement time = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .ignoring(StaleElementReferenceException.class)
+                .until(ExpectedConditions.visibilityOfElementLocated(cell));
+        return time.getText().replace('\u00a0', ' ').replaceAll("\\s+", " ").trim();
+    }
+
     public void isCustomerVisibleInFinishedTable(String customer) {
         ScenarioLogManager.getLogger().info("Checking for customer(" + customer + ") under finished appointments...");
         showTheFinishedAppointmentTable();
