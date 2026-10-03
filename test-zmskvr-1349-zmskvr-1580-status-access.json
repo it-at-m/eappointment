@@ -1,0 +1,60 @@
+{
+  "branch": "test-zmskvr-1349-zmskvr-1580-status-access",
+  "branchSlug": "test-zmskvr-1349-zmskvr-1580-status-access",
+  "runId": "37122758826",
+  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37122758826",
+  "runStartedAt": "2026-10-03T12:24:15Z",
+  "publishedAt": "2026-10-03T12:35:44.950Z",
+  "features": {
+    "feature-rest-zmsapi-zmskvr-1580-zmskvr-1349-status-access": {
+      "status": "failed",
+      "shard": "custom",
+      "browser": "chrome",
+      "browsers": {
+        "chrome": {
+          "status": "failed",
+          "shard": "custom",
+          "runId": "37122758826",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37122758826",
+          "runStartedAt": "2026-10-03T12:24:15Z"
+        },
+        "firefox": {
+          "status": "failed",
+          "shard": "custom",
+          "runId": "37122758826",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37122758826",
+          "runStartedAt": "2026-10-03T12:24:15Z"
+        }
+      },
+      "rel": "rest/zmsapi/zmskvr-1580_zmskvr-1349_status_access.feature",
+      "runId": "37122758826",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37122758826",
+      "runStartedAt": "2026-10-03T12:24:15Z"
+    },
+    "feature-ui-zmsadmin-roles-zmskvr-1580-zmskvr-1349-status-access": {
+      "status": "failed",
+      "shard": "custom",
+      "browser": "chrome",
+      "browsers": {
+        "chrome": {
+          "status": "failed",
+          "shard": "custom",
+          "runId": "37122758826",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37122758826",
+          "runStartedAt": "2026-10-03T12:24:15Z"
+        },
+        "firefox": {
+          "status": "failed",
+          "shard": "custom",
+          "runId": "37122758826",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37122758826",
+          "runStartedAt": "2026-10-03T12:24:15Z"
+        }
+      },
+      "rel": "ui/zmsadmin/roles/zmskvr-1580_zmskvr-1349_status_access.feature",
+      "runId": "37122758826",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37122758826",
+      "runStartedAt": "2026-10-03T12:24:15Z"
+    }
+  }
+}

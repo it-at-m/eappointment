@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-10-03T12:27:29.637Z",
+  "publishedAt": "2026-10-03T12:35:44.950Z",
   "branches": [
     {
       "name": "next",
@@ -246,6 +246,12 @@
       "slug": "test-zmskvr-1334-appointment-ics-download",
       "runId": "36770240919",
       "runStartedAt": "2026-09-30T20:05:58Z"
+    },
+    {
+      "name": "test-zmskvr-1349-zmskvr-1580-status-access",
+      "slug": "test-zmskvr-1349-zmskvr-1580-status-access",
+      "runId": "37122758826",
+      "runStartedAt": "2026-10-03T12:24:15Z"
     },
     {
       "name": "test-zmskvr-1384-zmskvr-1502-name-search-ranking",
