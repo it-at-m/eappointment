@@ -1,7 +1,7 @@
 #language: en
 Feature: A display number without its letters returns one search row
 
-	# ZMSKVR-1596 / ZMSKVR-1612. Bürgerbüro Pasing (KVR-II/235) has the prefix P.
+	# ZMSKVR-1596 / ZMSKVR-1612. Bürgerbüro Pasing (KVR-II/235), scope 136, prefix P.
 	# The appointment is saved again with a second slot. Searching the number without P
 	# must list that appointment once and must not add a (Folgetermin) row per slot.
 	# The appointment is deleted afterwards.
