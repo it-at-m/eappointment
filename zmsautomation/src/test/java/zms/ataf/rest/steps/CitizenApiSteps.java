@@ -963,7 +963,8 @@ public class CitizenApiSteps {
             .post("/cancel-appointment/");
         CommonApiSteps.setResponse(response);
         response.then().statusCode(200);
-        if (lastReserveProcess != null && remembered.processId.equals(lastReserveProcess.getProcessId())) {
+        Integer currentProcessId = lastReserveProcess == null ? null : lastReserveProcess.getProcessId();
+        if (currentProcessId != null && currentProcessId.intValue() == remembered.processId) {
             lastReserveProcess.setStatus("deleted");
             setLastReserveProcess(lastReserveProcess);
         }
