@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-10-03T11:43:04.112Z",
+  "publishedAt": "2026-10-03T11:51:21.623Z",
   "branches": [
     {
       "name": "next",
@@ -312,6 +312,12 @@
       "slug": "test-zmskvr-1496-zmskvr-1550-zmskvr-1573-service-statistic",
       "runId": "37014434435",
       "runStartedAt": "2026-10-02T13:39:24Z"
+    },
+    {
+      "name": "test-zmskvr-1497-zmskvr-1624-missing-department",
+      "slug": "test-zmskvr-1497-zmskvr-1624-missing-department",
+      "runId": "37120364167",
+      "runStartedAt": "2026-10-03T11:39:41Z"
     },
     {
       "name": "test-zmskvr-1501-zmskvr-1509-slot-calculation",
