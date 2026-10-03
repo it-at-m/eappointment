@@ -534,6 +534,51 @@ public class AdminSteps {
                 TestDataHelper.transformTestData(linkLabel));
     }
 
+    @When("I show every location in the overall view for {int} days.")
+    public void iShowEveryLocationInTheOverallViewForDays(int days) {
+        COUNTER_PROCESSING_STATION_PAGE.showEveryLocationInOverallView(days);
+    }
+
+    @When("I open the full view of the overall calendar.")
+    public void iOpenTheFullViewOfTheOverallCalendar() {
+        COUNTER_PROCESSING_STATION_PAGE.openOverallViewFullScreen();
+    }
+
+    @When("I scroll the overall view to the right.")
+    public void iScrollTheOverallViewToTheRight() {
+        COUNTER_PROCESSING_STATION_PAGE.scrollOverallViewToTheRight();
+    }
+
+    @Then("each shown location keeps its date in view.")
+    public void eachShownLocationKeepsItsDateInView() {
+        COUNTER_PROCESSING_STATION_PAGE.assertEachVisibleLocationShowsItsDate();
+    }
+
+    @Then("the overall view has no {string} row label and no {string} column label.")
+    public void theOverallViewHasNoRowOrColumnLabel(String rowLabel, String columnLabel) {
+        COUNTER_PROCESSING_STATION_PAGE.assertOverallViewHasNoAxisLabels(rowLabel, columnLabel);
+    }
+
+    @Then("the hour label sits on the first row of that hour.")
+    public void theHourLabelSitsOnTheFirstRowOfThatHour() {
+        COUNTER_PROCESSING_STATION_PAGE.assertHourLabelSitsOnTheHourRow();
+    }
+
+    @Then("the day lines keep one width and location headers have no side border.")
+    public void theDayLinesKeepOneWidth() {
+        COUNTER_PROCESSING_STATION_PAGE.assertDayLinesKeepOneWidth();
+    }
+
+    @When("I show one location with walk-in opening hours in the overall view.")
+    public void iShowOneLocationWithWalkInOpeningHours() throws SQLException {
+        COUNTER_PROCESSING_STATION_PAGE.showWalkInOpening(walkInOpening());
+    }
+
+    @Then("that walk-in opening time is not shown in white.")
+    public void thatWalkInOpeningTimeIsNotShownInWhite() {
+        COUNTER_PROCESSING_STATION_PAGE.assertWalkInHoursAreNotWhite();
+    }
+
     @Then("the overall view shows the just booked appointment with a duration of {int} minutes.")
     public void zeigt_die_gesamtuebersicht_die_dauer(int minutes) {
         COUNTER_PROCESSING_STATION_PAGE.assertOverallCalendarAppointmentSpansMinutes(minutes);
@@ -1714,6 +1759,66 @@ public class AdminSteps {
         Assert.assertFalse(timeCell.getText().matches("(?s).*\\+\\s*\\d+\\s*Min\\..*"),
                 "Reserved appointment at " + reservedAppointmentClock
                         + " shows +Min. in Uhrzeit: " + timeCell.getText());
+    }
+
+    private CounterProcessingStationPage.WalkInOpening walkInOpening() throws SQLException {
+        LocalDate firstDay = COUNTER_PROCESSING_STATION_PAGE.overallViewStart();
+        List<String> scopeIds = COUNTER_PROCESSING_STATION_PAGE.overallViewScopeOptionValues();
+        String sql = """
+                SELECT scope_id, start_time, end_time, appointment_start_time, appointment_end_time
+                FROM oeffnungszeit
+                WHERE start_date <= ? AND end_date >= ?
+                  AND (weekday & ?) <> 0
+                  AND every_x_weeks = 1 AND every_other_week = 0
+                  AND start_time <> '00:00:00' AND end_time <> '00:00:00'
+                  AND appointment_start_time <> '00:00:00' AND appointment_end_time <> '00:00:00'
+                  AND (start_time < appointment_start_time OR end_time > appointment_end_time)
+                """;
+        try (Connection connection = openZmsConnection();
+                PreparedStatement statement = connection.prepareStatement(sql)) {
+            for (int offset = 0; offset < 2; offset++) {
+                LocalDate day = firstDay.plusDays(offset);
+                statement.setString(1, day.toString());
+                statement.setString(2, day.toString());
+                statement.setInt(3, weekdayBit(day.getDayOfWeek()));
+                try (ResultSet rows = statement.executeQuery()) {
+                    while (rows.next()) {
+                        int scopeId = rows.getInt("scope_id");
+                        if (!scopeIds.contains(Integer.toString(scopeId))) {
+                            continue;
+                        }
+                        LocalTime walkInStart = rows.getTime("start_time").toLocalTime();
+                        LocalTime walkInEnd = rows.getTime("end_time").toLocalTime();
+                        LocalTime appointmentStart = rows.getTime("appointment_start_time").toLocalTime();
+                        LocalTime appointmentEnd = rows.getTime("appointment_end_time").toLocalTime();
+                        if (walkInStart.isBefore(appointmentStart)
+                                && java.time.Duration.between(walkInStart, appointmentStart).toMinutes() >= 15) {
+                            return new CounterProcessingStationPage.WalkInOpening(
+                                    scopeId, day, walkInStart, appointmentStart, appointmentStart);
+                        }
+                        if (appointmentEnd.isBefore(walkInEnd)
+                                && java.time.Duration.between(appointmentEnd, walkInEnd).toMinutes() >= 15) {
+                            return new CounterProcessingStationPage.WalkInOpening(
+                                    scopeId, day, appointmentEnd, walkInEnd, appointmentStart);
+                        }
+                    }
+                }
+            }
+        }
+        throw new IllegalStateException(
+                "No weekly walk-in opening time outside the appointment hours is available in the overall view.");
+    }
+
+    private static int weekdayBit(DayOfWeek day) {
+        return switch (day) {
+            case SUNDAY -> 1;
+            case MONDAY -> 2;
+            case TUESDAY -> 4;
+            case WEDNESDAY -> 8;
+            case THURSDAY -> 16;
+            case FRIDAY -> 32;
+            case SATURDAY -> 64;
+        };
     }
 
     private static LocalDateTime suiteClock() {
