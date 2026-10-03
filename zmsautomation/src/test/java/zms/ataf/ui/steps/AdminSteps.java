@@ -423,6 +423,29 @@ public class AdminSteps {
                 AccountCheckout.assignWorkstationLogin(TestDataHelper.transformTestData(username)));
     }
 
+    @When("I save the appointment again with one more slot.")
+    public void iSaveTheAppointmentAgainWithOneMoreSlot() {
+        COUNTER_PROCESSING_STATION_PAGE.saveAppointmentWithOneMoreSlot();
+    }
+
+    @When("I search for the appointment number without its letters in the customer search.")
+    public void iSearchForTheAppointmentNumberWithoutItsLetters() {
+        String number = TestDataHelper.getTestData("new_appointment_number");
+        Assert.assertNotNull(number, "The booked appointment has no number.");
+        String digits = number.replaceFirst("^[A-Za-z]+", "");
+        Assert.assertNotEquals(digits, number, "The appointment number has no letter prefix: " + number);
+        Assert.assertFalse(digits.isBlank(), "The appointment number has no digits: " + number);
+        CUSTOMER_SEARCH_PAGE.search(digits);
+    }
+
+    @Then("the customer search shows that appointment in one row and no follow-up slot rows.")
+    public void theCustomerSearchShowsThatAppointmentInOneRow() {
+        String number = TestDataHelper.getTestData("new_appointment_number");
+        CUSTOMER_SEARCH_PAGE.assertOneAppointmentWithoutFollowUpRows(
+                TestDataHelper.getTestData("customer_name"),
+                number.replaceFirst("^[A-Za-z]+", ""));
+    }
+
     @When("I search for {string} in the customer search.")
     public void sie_in_der_kundensuche_nach_suchen(String query) {
         CUSTOMER_SEARCH_PAGE.search(TestDataHelper.transformTestData(query));

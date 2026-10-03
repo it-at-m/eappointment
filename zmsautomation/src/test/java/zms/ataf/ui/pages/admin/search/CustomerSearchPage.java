@@ -140,6 +140,24 @@ public class CustomerSearchPage extends AdminPage {
         assertStatusRow(familyName, statusLabel, bookingStamp, callStamp);
     }
 
+    public void assertOneAppointmentWithoutFollowUpRows(String familyName, String numberWithoutLetters) {
+        CONTEXT.set();
+        new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(ExpectedConditions.presenceOfElementLocated(
+                        By.xpath("//table[contains(@class,'table--base')]//td[contains(.,'" + familyName + "')]")));
+        List<WebElement> rows = DRIVER.findElements(By.cssSelector("table.table--base tbody tr"));
+        List<String> texts = new ArrayList<>();
+        for (WebElement row : rows) {
+            texts.add(row.getText().replace('\u00a0', ' '));
+        }
+        long followUps = texts.stream().filter(text -> text.contains("(Folgetermin)")).count();
+        long named = texts.stream().filter(text -> text.contains(familyName) && text.contains(numberWithoutLetters)).count();
+        String count = DRIVER.findElement(By.cssSelector("table.table--base")).getAttribute("data-processList-count");
+        Assert.assertEquals(followUps, 0L, "Follow-up slot rows are listed. Rows: " + texts);
+        Assert.assertEquals(named, 1L, "The appointment should appear once. Rows: " + texts);
+        Assert.assertEquals(count, "1", "The search should return one row. Rows: " + texts);
+    }
+
     public String bookingDateDaysAgo(int daysAgo) {
         return BerlinTime.today().minusDays(daysAgo).format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
     }
