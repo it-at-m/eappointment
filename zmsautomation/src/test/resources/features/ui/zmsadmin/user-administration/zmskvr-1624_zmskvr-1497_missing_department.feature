@@ -4,9 +4,9 @@ Feature: User administration requires a department for a new account
 	# ZMSKVR-1497 / ZMSKVR-1624.
 	# The signed-in account has the ZMS role user_admin (Benutzerverwaltung).
 	# Technische Administration is system_admin. Terminadministration is appointment_admin.
-	# user_admin takes a free ataf_user_admin_* account that already has a department
-	# and waits while every such account is in use. The Behörde list on the new-user
-	# form is that account's department. The new account is still saved with none selected.
+	# There is one ataf_user_admin_* account per department. The scenario takes a free
+	# one at random and waits while every such account is in use. The Behörde list is
+	# that account's department. The new account is still saved with none selected.
 	# A new local account saved without a Behörde shows the input error,
 	# asks for a department, and outlines that field in red.
 	# No account is created.

@@ -1,6 +1,7 @@
 package zms.ataf.ui.pages.admin;
 
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.openqa.selenium.By;
@@ -11,6 +12,7 @@ import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 
+import ataf.core.helpers.TestDataHelper;
 import ataf.core.logging.ScenarioLogManager;
 import ataf.web.pages.BasePage;
 
@@ -89,6 +91,18 @@ public class UseraccountPage extends BasePage {
                 "The account was created without a department.");
 
         WebElement select = DRIVER.findElement(By.cssSelector("select[name='departments[][id]']"));
+        String signedInDepartment = TestDataHelper.getTestData("signed_in_department");
+        Assert.assertNotNull(signedInDepartment, "The signed-in user admin has no department.");
+        int departmentId = Integer.parseInt(signedInDepartment);
+        List<String> listed = new ArrayList<>();
+        for (WebElement option : select.findElements(By.tagName("option"))) {
+            String value = option.getAttribute("value");
+            if (value != null && value.matches("[1-9]\\d*")) {
+                listed.add(value);
+            }
+        }
+        Assert.assertEquals(listed, List.of(Integer.toString(departmentId)),
+                "Behörde does not list the signed-in user's department.");
         WebElement group = select.findElement(By.xpath("ancestor::*[contains(@class,'form-group')][1]"));
         String groupClass = group.getAttribute("class");
         Assert.assertTrue(groupClass.contains("has-error"), "Behörde is not marked invalid: " + groupClass);

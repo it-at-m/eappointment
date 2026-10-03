@@ -6,6 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -171,34 +172,6 @@ public final class AccountCheckout {
             "ataf_citizen_33"
     );
 
-    /**
-     * Nutzer accounts with the ZMS role {@code user_admin} (Benutzerverwaltung).
-     * Technische Administration is {@code system_admin}. Terminadministration is {@code appointment_admin}.
-     * Keycloak only grants the client role {@code user}. Flyway assigns {@code user_admin}.
-     * A feature that says {@code user_admin} takes a free one that already has a department.
-     * Sixteen UI threads plus one spare. The original {@code user_admin} row has no department
-     * and is not in this pool.
-     */
-    private static final List<String> USER_ADMINS = List.of(
-            "ataf_user_admin_1",
-            "ataf_user_admin_2",
-            "ataf_user_admin_3",
-            "ataf_user_admin_4",
-            "ataf_user_admin_5",
-            "ataf_user_admin_6",
-            "ataf_user_admin_7",
-            "ataf_user_admin_8",
-            "ataf_user_admin_9",
-            "ataf_user_admin_10",
-            "ataf_user_admin_11",
-            "ataf_user_admin_12",
-            "ataf_user_admin_13",
-            "ataf_user_admin_14",
-            "ataf_user_admin_15",
-            "ataf_user_admin_16",
-            "ataf_user_admin_17"
-    );
-
     private AccountCheckout() {
     }
 
@@ -220,7 +193,8 @@ public final class AccountCheckout {
     /**
      * {@code ataf} takes a free {@code ataf_superuser_*} account. {@code agent_queue} takes a free
      * {@code ataf_agent_queue_*} account. {@code user_admin} takes a free {@code ataf_user_admin_*}
-     * account that already has a department and waits while every such account is in use.
+     * account at random. Each of those accounts is Benutzerverwaltung for one department.
+     * The scenario uses that account's department. It waits while every such account is in use.
      * Any other name stays on that exact account. Returns the Keycloak username to type.
      */
     public static String assignWorkstationLogin(String loginName) {
@@ -232,15 +206,33 @@ public final class AccountCheckout {
             return checkoutFree(AGENT_QUEUE_USERS, true);
         }
         if ("user_admin".equals(bare)) {
-            return assignUserAdminLogin(userAdminDepartments());
+            return assignRandomUserAdminLogin(userAdminDepartments());
         }
         checkoutWorkstation(bare);
         return bare;
     }
 
     /**
+     * Shuffles {@code loginToDepartment} and checks out the first free account.
+     * The remembered department is the one that account has.
+     */
+    public static String assignRandomUserAdminLogin(Map<String, Integer> loginToDepartment) {
+        if (loginToDepartment == null || loginToDepartment.isEmpty()) {
+            throw new IllegalStateException("No user_admin pool account has a department.");
+        }
+        List<String> logins = new ArrayList<>(loginToDepartment.keySet());
+        Collections.shuffle(logins);
+        Map<String, Integer> shuffled = new LinkedHashMap<>();
+        for (String login : logins) {
+            shuffled.put(login, loginToDepartment.get(login));
+        }
+        return assignUserAdminLogin(shuffled);
+    }
+
+    /**
      * Checks out one of {@code loginToDepartment} and remembers that account's department.
      * Waits until one of those accounts is free. An empty map means none of them has a department.
+     * Map order is the order in which free accounts are tried.
      */
     public static String assignUserAdminLogin(Map<String, Integer> loginToDepartment) {
         if (loginToDepartment == null || loginToDepartment.isEmpty()) {
@@ -398,38 +390,22 @@ public final class AccountCheckout {
 
     private static Map<String, Integer> userAdminDepartments() {
         Map<String, Integer> byLogin = new LinkedHashMap<>();
-        StringBuilder placeholders = new StringBuilder();
-        for (int i = 0; i < USER_ADMINS.size(); i++) {
-            if (i > 0) {
-                placeholders.append(',');
-            }
-            placeholders.append('?');
-        }
-        String sql = "SELECT Name, BehoerdenID FROM nutzer WHERE Name IN (" + placeholders + ") AND BehoerdenID <> 0";
+        String sql = "SELECT Name, BehoerdenID FROM nutzer "
+                + "WHERE Name LIKE 'ataf_user_admin_%@keycloak' AND BehoerdenID <> 0 "
+                + "ORDER BY NutzerID";
         try (Connection connection = openConnection();
-                PreparedStatement statement = connection.prepareStatement(sql)) {
-            for (int i = 0; i < USER_ADMINS.size(); i++) {
-                statement.setString(i + 1, workstationAccountId(USER_ADMINS.get(i)));
-            }
-            try (ResultSet rows = statement.executeQuery()) {
-                while (rows.next()) {
-                    int departmentId = rows.getInt("BehoerdenID");
-                    if (departmentId != 0) {
-                        byLogin.put(stripKeycloak(rows.getString("Name")), departmentId);
-                    }
+                PreparedStatement statement = connection.prepareStatement(sql);
+                ResultSet rows = statement.executeQuery()) {
+            while (rows.next()) {
+                int departmentId = rows.getInt("BehoerdenID");
+                if (departmentId != 0) {
+                    byLogin.put(stripKeycloak(rows.getString("Name")), departmentId);
                 }
             }
         } catch (SQLException e) {
             throw new IllegalStateException("Could not read the user_admin pool departments.", e);
         }
-        Map<String, Integer> ordered = new LinkedHashMap<>();
-        for (String login : USER_ADMINS) {
-            Integer departmentId = byLogin.get(login);
-            if (departmentId != null) {
-                ordered.put(login, departmentId);
-            }
-        }
-        return ordered;
+        return byLogin;
     }
 
     private static Connection openConnection() throws SQLException {
