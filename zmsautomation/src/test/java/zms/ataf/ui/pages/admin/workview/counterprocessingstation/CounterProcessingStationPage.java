@@ -960,6 +960,21 @@ public class CounterProcessingStationPage extends AdminPage {
         return appointmentNumberMatcher.group(1);
     }
 
+    public void saveAppointmentWithOneMoreSlot() {
+        CONTEXT.set();
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        WebElement slotCount = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("appointmentForm_slotCount")));
+        new Select(slotCount).selectByValue("2");
+        WebElement note = DRIVER.findElement(By.name("amendment"));
+        note.clear();
+        note.sendKeys("Muster Hinweis");
+        clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "//button[contains(@class,'process-save')]", LocatorType.XPATH, false, CONTEXT);
+        WebElement dialog = wait.until(ExpectedConditions.visibilityOfElementLocated(
+                By.xpath("//*[contains(@class,'dialog')][contains(.,'erfolgreich aktualisiert')]")));
+        dialog.findElement(By.cssSelector("button.button-ok")).click();
+        wait.until(ExpectedConditions.invisibilityOf(dialog));
+    }
+
     public void clickOnEditProcessButton() {
         ScenarioLogManager.getLogger().info("Trying to click on \"edit process\" button...");
         clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "//button[contains(text(),'Termin bearbeiten')]", LocatorType.XPATH, false, CONTEXT);
