@@ -204,6 +204,7 @@ The ATAF tests automatically run Flyway migrations before executing tests. The m
   - `@booking` - Booking / waiting-number flows (UI: `zmsadmin/booking`, `zmscitizenview/booking`, `zmsticketprinter/booking`; REST: `rest/zmsapi/booking/{frontend}/`, `rest/zmscitizenapi/booking/`)
   - `@rebooking` - Umbuchung / Weiterleiten (UI: `zmscitizenview/rebooking`, `zmsadmin/rebooking`; REST: `rest/zmscitizenapi/rebooking/`)
   - `@user-administration` - Nutzer*innen (UI: `zmsadmin/user-administration`)
+  - `@mail-templates` - Confirmation and reminder mail content (`rest/zmsapi/mail-templates/`)
   - `@citizen-login` - Bürger-Login (DBS) actor for logged-in citizen scenarios
   - `@jumpin` - Booking scenarios that open jump-in URL (combination step first)
   - `@ruppertstrasse` - Ruppertstraße Passkalender (10502) style flows
@@ -227,6 +228,7 @@ The ATAF tests automatically run Flyway migrations before executing tests. The m
 - `booking/zmsticketprinter/zmskvr-1652_zmskvr-167_waiting_number.feature` - Orleansplatz KP Abholung (scope 127): Spontankunden hours, `POST /ticketprinter/` (`s127` and `s999,s127`), waiting numbers, then disabled buttons after hours are deleted
 - `calldisplay/zmskvr-1581_zmskvr-166_missing_scope.feature` - `POST /calldisplay/` with scopes 999 and 142 returns the existing location and omits the missing one
 - `citizen-call/zmsadmin/ZMSKVR-1328.feature` - book, call and finish a scheduled appointment at the counter
+- `mail-templates/zmskvr-1570_zmskvr-1557_estimated_duration.feature` - today's appointment: confirmation and reminder mails show the estimated duration on the line after the time under Zeit
 
 #### Citizen API (`rest/zmscitizenapi/`)
 - `dldb-special-cases/zmskvr-1124_booking_ruppertstrasse_pass_calendar_jumpin_links_citizenapi.feature` - Ruppertstraße Citizen API booking (10502 / 10489 / 10492, jump-in)
