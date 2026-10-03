@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-10-03T19:44:58.404Z",
+  "publishedAt": "2026-10-03T19:49:47.547Z",
   "branches": [
     {
       "name": "next",
@@ -346,8 +346,8 @@
     {
       "name": "test-zmskvr-1501-zmskvr-1509-next-day-slots",
       "slug": "test-zmskvr-1501-zmskvr-1509-next-day-slots",
-      "runId": "37147684624",
-      "runStartedAt": "2026-10-03T19:22:59Z"
+      "runId": "37147839194",
+      "runStartedAt": "2026-10-03T19:25:33Z"
     },
     {
       "name": "test-zmskvr-1501-zmskvr-1509-slot-calculation",
