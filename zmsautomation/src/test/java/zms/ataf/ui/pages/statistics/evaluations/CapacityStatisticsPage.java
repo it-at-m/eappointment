@@ -55,7 +55,13 @@ public class CapacityStatisticsPage extends StatisticsPage {
         Assert.assertEquals(days.get(0).getText().trim(), LocalDate.parse(from).format(DAY));
 
         String planned = days.get(0).findElement(By.xpath("following-sibling::td[1]")).getText().trim();
-        int plannedSlots = Integer.parseInt(planned.replace(".", ""));
+        int plannedSlots;
+        try {
+            plannedSlots = Integer.parseInt(planned.replace(".", ""));
+        } catch (NumberFormatException exception) {
+            Assert.fail("Planned slots are not a number: " + planned, exception);
+            return;
+        }
         Assert.assertTrue(plannedSlots > 0, "The day has no planned slots: " + planned);
 
         WebElement canvas = wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".chartist canvas")));
