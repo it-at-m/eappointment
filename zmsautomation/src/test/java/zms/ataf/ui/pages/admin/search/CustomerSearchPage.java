@@ -222,6 +222,9 @@ public class CustomerSearchPage extends AdminPage {
         clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "a.button.button--destructive.button-ok", LocatorType.CSSSELECTOR, false, CONTEXT);
         messageTitleElement = findElementByLocatorType("h2.message__heading.title", LocatorType.CSSSELECTOR, false);
         Assert.assertEquals(messageTitleElement.getText(), "Vorgang gelöscht", "Deleting the open appointment did not succeed.");
-        clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "button.button-ok", LocatorType.CSSSELECTOR, false, CONTEXT);
+        // The dialog covers a spinner that stays on the form, so do not wait for that spinner first.
+        clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "button.button-ok", LocatorType.CSSSELECTOR, false);
+        new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(ExpectedConditions.invisibilityOfElementLocated(By.cssSelector("h2.message__heading.title")));
     }
 }
