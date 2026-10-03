@@ -1271,7 +1271,12 @@ public class ZmsApiSteps {
     public void iRequestACallDisplayForLocations(String scopeList) {
         ArrayNode scopes = MAPPER.createArrayNode();
         for (String id : scopeList.split(",")) {
-            scopes.add(MAPPER.createObjectNode().put("id", Integer.parseInt(id.trim())));
+            String token = id.trim();
+            try {
+                scopes.add(MAPPER.createObjectNode().put("id", Integer.parseInt(token)));
+            } catch (NumberFormatException e) {
+                Assertions.fail("Location id must be a number, got: " + token, e);
+            }
         }
         ObjectNode body = MAPPER.createObjectNode();
         body.set("scopes", scopes);
