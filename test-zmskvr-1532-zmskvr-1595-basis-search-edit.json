@@ -1,0 +1,35 @@
+{
+  "branch": "test-zmskvr-1532-zmskvr-1595-basis-search-edit",
+  "branchSlug": "test-zmskvr-1532-zmskvr-1595-basis-search-edit",
+  "runId": "37122276763",
+  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37122276763",
+  "runStartedAt": "2026-10-03T12:15:24Z",
+  "publishedAt": "2026-10-03T12:27:29.637Z",
+  "features": {
+    "feature-ui-zmsadmin-citizen-search-zmskvr-1595-zmskvr-1532-basis-search-edit": {
+      "status": "failed",
+      "shard": "custom",
+      "browser": "chrome",
+      "browsers": {
+        "chrome": {
+          "status": "failed",
+          "shard": "custom",
+          "runId": "37122276763",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37122276763",
+          "runStartedAt": "2026-10-03T12:15:24Z"
+        },
+        "firefox": {
+          "status": "failed",
+          "shard": "custom",
+          "runId": "37122276763",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37122276763",
+          "runStartedAt": "2026-10-03T12:15:24Z"
+        }
+      },
+      "rel": "ui/zmsadmin/citizen-search/zmskvr-1595_zmskvr-1532_basis_search_edit.feature",
+      "runId": "37122276763",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37122276763",
+      "runStartedAt": "2026-10-03T12:15:24Z"
+    }
+  }
+}
