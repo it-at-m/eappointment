@@ -1,0 +1,35 @@
+{
+  "branch": "test-zmskvr-1487-zmskvr-1660-walk-in-duration",
+  "branchSlug": "test-zmskvr-1487-zmskvr-1660-walk-in-duration",
+  "runId": "37090834366",
+  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37090834366",
+  "runStartedAt": "2026-10-03T02:44:15Z",
+  "publishedAt": "2026-10-03T03:20:03.697Z",
+  "features": {
+    "feature-ui-zmsadmin-booking-zmskvr-1660-zmskvr-1487-walk-in-duration": {
+      "status": "passed",
+      "shard": "custom",
+      "browser": "chrome",
+      "browsers": {
+        "chrome": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "37090834366",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37090834366",
+          "runStartedAt": "2026-10-03T02:44:15Z"
+        },
+        "firefox": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "37090834366",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37090834366",
+          "runStartedAt": "2026-10-03T02:44:15Z"
+        }
+      },
+      "rel": "ui/zmsadmin/booking/zmskvr-1660_zmskvr-1487_walk_in_duration.feature",
+      "runId": "37090834366",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37090834366",
+      "runStartedAt": "2026-10-03T02:44:15Z"
+    }
+  }
+}

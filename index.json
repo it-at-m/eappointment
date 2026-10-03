@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-10-03T02:45:47.279Z",
+  "publishedAt": "2026-10-03T03:20:03.697Z",
   "branches": [
     {
       "name": "next",
@@ -282,6 +282,12 @@
       "slug": "test-zmskvr-1474-zmskvr-1563-customer-search-free-text",
       "runId": "36747004232",
       "runStartedAt": "2026-09-30T16:49:24Z"
+    },
+    {
+      "name": "test-zmskvr-1487-zmskvr-1660-walk-in-duration",
+      "slug": "test-zmskvr-1487-zmskvr-1660-walk-in-duration",
+      "runId": "37090834366",
+      "runStartedAt": "2026-10-03T02:44:15Z"
     },
     {
       "name": "test-zmskvr-1491-zmskvr-1510-legal-notices",
