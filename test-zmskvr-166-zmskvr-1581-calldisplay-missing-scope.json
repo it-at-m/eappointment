@@ -1,0 +1,60 @@
+{
+  "branch": "test-zmskvr-166-zmskvr-1581-calldisplay-missing-scope",
+  "branchSlug": "test-zmskvr-166-zmskvr-1581-calldisplay-missing-scope",
+  "runId": "37124009285",
+  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37124009285",
+  "runStartedAt": "2026-10-03T12:47:23Z",
+  "publishedAt": "2026-10-03T12:57:10.487Z",
+  "features": {
+    "feature-rest-zmsapi-calldisplay-zmskvr-1581-zmskvr-166-missing-scope": {
+      "status": "passed",
+      "shard": "custom",
+      "browser": "chrome",
+      "browsers": {
+        "chrome": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "37124009285",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37124009285",
+          "runStartedAt": "2026-10-03T12:47:23Z"
+        },
+        "firefox": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "37124009285",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37124009285",
+          "runStartedAt": "2026-10-03T12:47:23Z"
+        }
+      },
+      "rel": "rest/zmsapi/calldisplay/zmskvr-1581_zmskvr-166_missing_scope.feature",
+      "runId": "37124009285",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37124009285",
+      "runStartedAt": "2026-10-03T12:47:23Z"
+    },
+    "feature-ui-zmscalldisplay-zmskvr-1581-zmskvr-166-missing-scope": {
+      "status": "passed",
+      "shard": "custom",
+      "browser": "chrome",
+      "browsers": {
+        "chrome": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "37124009285",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37124009285",
+          "runStartedAt": "2026-10-03T12:47:23Z"
+        },
+        "firefox": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "37124009285",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37124009285",
+          "runStartedAt": "2026-10-03T12:47:23Z"
+        }
+      },
+      "rel": "ui/zmscalldisplay/zmskvr-1581_zmskvr-166_missing_scope.feature",
+      "runId": "37124009285",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37124009285",
+      "runStartedAt": "2026-10-03T12:47:23Z"
+    }
+  }
+}
