@@ -1448,4 +1448,63 @@ public class CounterProcessingStationPage extends AdminPage {
                 .toMinutes();
         Assert.assertEquals(span, minutes, "Gesamtübersicht span for " + number + " from title \"" + title + "\".");
     }
+
+    private String overallViewDay;
+    private String overallViewLocation;
+    private int overallViewScopeId;
+
+    /**
+     * One location, one day. The day is the date already offered as "Von", so it stays inside the
+     * calendar's allowed range.
+     */
+    public void showLocationInOverallViewForOneDay(String locationName, int scopeId) {
+        CONTEXT.set();
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        WebElement from = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("calendar-date-from")));
+        String date = from.getAttribute("value");
+        if (date == null || date.isBlank()) {
+            throw new IllegalStateException("The overall view has no start date.");
+        }
+        overallViewDay = date;
+        overallViewLocation = locationName;
+        overallViewScopeId = scopeId;
+        WebElement until = DRIVER.findElement(By.id("calendar-date-until"));
+        ((JavascriptExecutor) DRIVER).executeScript(
+                "arguments[0].value=arguments[2]; arguments[1].value=arguments[2];", from, until, date);
+        Select scopes = new Select(wait.until(ExpectedConditions.presenceOfElementLocated(By.id("scope-select"))));
+        scopes.deselectAll();
+        scopes.selectByValue(Integer.toString(scopeId));
+        clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "//button[normalize-space()='Übernehmen']", LocatorType.XPATH, false, CONTEXT);
+    }
+
+    public void assertOverallViewLinksLocationToOpeningHours(String linkLabel) {
+        CONTEXT.set();
+        if (overallViewDay == null || overallViewLocation == null || overallViewScopeId <= 0) {
+            throw new IllegalStateException("The overall view day and location were not chosen.");
+        }
+        String locationName = overallViewLocation;
+        int scopeId = overallViewScopeId;
+        String hrefPart = "/scope/" + scopeId + "/availability/day/" + overallViewDay + "/";
+        By linkBy = By.xpath(
+                "//*[contains(@class,'overall-calendar-scope-header')]"
+                        + "[.//*[contains(@class,'overall-calendar-scope-name') and contains(normalize-space(.),\""
+                        + locationName + "\")]]"
+                        + "//a[@title=\"" + linkLabel + "\"]");
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        WebElement link = wait.until(ExpectedConditions.presenceOfElementLocated(linkBy));
+        String href = link.getAttribute("href");
+        Assert.assertNotNull(href, "The opening-hours link has no address.");
+        Assert.assertTrue(href.contains(hrefPart),
+                "The opening-hours link should point at " + hrefPart + " but was " + href);
+        Assert.assertEquals(link.getAttribute("target"), "_blank",
+                "The opening hours should open in a new tab.");
+        Assert.assertEquals(link.getAttribute("title"), linkLabel,
+                "The link label should say where it leads.");
+        Assert.assertFalse(link.findElements(By.cssSelector("i.fa-clock")).isEmpty(),
+                "The opening-hours link should show the clock icon.");
+        String dayPart = LocalDate.parse(overallViewDay).format(DateTimeFormatter.ofPattern("dd.MM."));
+        WebElement dayLabel = DRIVER.findElement(By.cssSelector(".overall-calendar-day-label"));
+        Assert.assertTrue(dayLabel.getText().contains(dayPart),
+                "The day header should show " + dayPart + " but was \"" + dayLabel.getText() + "\".");
+    }
 }
