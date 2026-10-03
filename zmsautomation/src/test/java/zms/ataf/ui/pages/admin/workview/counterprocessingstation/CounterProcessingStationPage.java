@@ -1395,6 +1395,90 @@ public class CounterProcessingStationPage extends AdminPage {
     }
 
     /**
+     * The create form shows each service as "name (N min)". Editing a walk-in used to double N
+     * in that list and in Termindauer. The values are stored here and checked again on the edit form.
+     */
+    public void noteServiceAndAnotherDuration(String serviceFragment) {
+        CONTEXT.set();
+        CONTEXT.waitForSpinners();
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        By spans = By.cssSelector("ul[aria-label='Dienstleistungen Auswahlliste'] span");
+        wait.until(ExpectedConditions.numberOfElementsToBeMoreThan(spans, 1));
+        String serviceText = shortestDurationLabel(serviceFragment, true);
+        String otherText = shortestDurationLabel(serviceFragment, false);
+        Assert.assertNotNull(serviceText, "Service \"" + serviceFragment + "\" has no duration on the form.");
+        Assert.assertNotNull(otherText, "No second service duration is visible on the form.");
+        Matcher matcher = Pattern.compile("\\((\\d+) min\\)").matcher(serviceText);
+        Assert.assertTrue(matcher.find(), "No minute count on \"" + serviceText + "\".");
+        TestDataHelper.setTestData("noted_service_minutes", matcher.group(1));
+        TestDataHelper.setTestData("noted_service_fragment", serviceFragment);
+        TestDataHelper.setTestData("noted_other_service_text", otherText);
+    }
+
+    public void assertNotedDurationsStillShown() {
+        CONTEXT.set();
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        wait.until(ExpectedConditions.textToBePresentInElementValue(
+                By.name("familyName"), TestDataHelper.getTestData("customer_name")));
+        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("button.process-save")));
+        String minutes = TestDataHelper.getTestData("noted_service_minutes");
+        String fragment = TestDataHelper.getTestData("noted_service_fragment");
+        String serviceText = shortestDurationLabel(fragment, true);
+        Assert.assertNotNull(serviceText, "Service \"" + fragment + "\" is missing on the edit form.");
+        Assert.assertTrue(serviceText.contains("(" + minutes + " min)"),
+                "Service duration changed. expected (" + minutes + " min). actual=" + serviceText);
+        int doubled = Integer.parseInt(minutes) * 2;
+        Assert.assertFalse(serviceText.contains("(" + doubled + " min)"),
+                "Service duration was doubled. actual=" + serviceText);
+        WebElement slotCount = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("appointmentForm_slotCount")));
+        String selected = new Select(slotCount).getFirstSelectedOption().getText().trim();
+        Assert.assertEquals(selected, minutes,
+                "Termindauer was " + selected + " minutes instead of " + minutes + ".");
+        String other = TestDataHelper.getTestData("noted_other_service_text");
+        boolean otherUnchanged = durationLabels().stream().anyMatch(other::equals);
+        Assert.assertTrue(otherUnchanged, "Another service duration changed. expected \"" + other + "\".");
+    }
+
+    public void saveWalkInAppointmentWithNote(String note) {
+        CONTEXT.set();
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        WebElement amendment = wait.until(ExpectedConditions.visibilityOfElementLocated(By.name("amendment")));
+        amendment.clear();
+        amendment.sendKeys(note);
+        clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "//button[contains(@class,'process-save')]", LocatorType.XPATH, false, CONTEXT);
+        WebElement dialog = wait.until(ExpectedConditions.visibilityOfElementLocated(
+                By.xpath("//*[contains(@class,'dialog')][contains(.,'erfolgreich aktualisiert')]")));
+        dialog.findElement(By.cssSelector("button.button-ok")).click();
+        wait.until(ExpectedConditions.invisibilityOf(dialog));
+    }
+
+    private String shortestDurationLabel(String serviceFragment, boolean matchingFragment) {
+        String best = null;
+        for (String text : durationLabels()) {
+            boolean matches = text.contains(serviceFragment);
+            if (matches != matchingFragment) {
+                continue;
+            }
+            if (best == null || text.length() < best.length()) {
+                best = text;
+            }
+        }
+        return best;
+    }
+
+    private List<String> durationLabels() {
+        return DRIVER.findElements(By.cssSelector("ul[aria-label='Dienstleistungen Auswahlliste'] span")).stream()
+                .map(this::normalizedText)
+                .filter(text -> text.matches(".*\\(\\d+ min\\).*"))
+                .collect(Collectors.toList());
+    }
+
+    private String normalizedText(WebElement element) {
+        return String.valueOf(((JavascriptExecutor) DRIVER).executeScript(
+                "return (arguments[0].textContent || '').replace(/\\s+/g, ' ').trim();", element));
+    }
+
+    /**
      * The Auswahlliste label is "name (45 min)". Selecting the service hides that row and moves
      * the plain name to the Abwahlliste, so the label is read from text content.
      * Termindauer then shows the same number. The broken mapping showed 135.

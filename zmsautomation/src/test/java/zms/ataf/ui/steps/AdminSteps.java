@@ -549,6 +549,26 @@ public class AdminSteps {
         ADMIN_PAGE.clickInNavigationOnWorkstation();
     }
 
+    @When("I note the duration of {string} and of another service.")
+    public void iNoteTheDurationOfTheServiceAndOfAnother(String service) {
+        COUNTER_PROCESSING_STATION_PAGE.noteServiceAndAnotherDuration(TestDataHelper.transformTestData(service));
+    }
+
+    @When("I select a walk-in customer under create appointment in the administration.")
+    public void iSelectAWalkInCustomerUnderCreateAppointment() {
+        COUNTER_PROCESSING_STATION_PAGE.selectWalkInCustomer();
+    }
+
+    @Then("the edited walk-in appointment still shows those durations.")
+    public void theEditedWalkInAppointmentStillShowsThoseDurations() {
+        COUNTER_PROCESSING_STATION_PAGE.assertNotedDurationsStillShown();
+    }
+
+    @When("I save the walk-in appointment with the note {string}.")
+    public void iSaveTheWalkInAppointmentWithTheNote(String note) {
+        COUNTER_PROCESSING_STATION_PAGE.saveWalkInAppointmentWithNote(TestDataHelper.transformTestData(note));
+    }
+
     @Then("the appointment form for {string} shows a duration of {int} minutes and not {int} minutes.")
     public void zeigt_das_terminformular_die_dauer(String service, int minutes, int wrongMinutes) {
         COUNTER_PROCESSING_STATION_PAGE.assertAppointmentFormDuration(
