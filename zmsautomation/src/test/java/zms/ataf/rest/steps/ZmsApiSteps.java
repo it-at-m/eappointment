@@ -56,6 +56,8 @@ public class ZmsApiSteps {
     private JsonNode departmentServices;
     private String ticketprinterHash;
     private Integer createdAvailabilityId;
+    private Integer historyAvailabilityId;
+    private int historyScopeId;
     private boolean lastProcessDeleted;
 
     @Before
@@ -70,6 +72,8 @@ public class ZmsApiSteps {
         scenarioLoginPassword = null;
         ticketprinterHash = null;
         createdAvailabilityId = null;
+        historyAvailabilityId = null;
+        historyScopeId = 0;
         lastProcessDeleted = false;
     }
 
@@ -1169,6 +1173,131 @@ public class ZmsApiSteps {
         String body = response.asString();
         Assertions.assertThat(body).doesNotContain("invalidWeekday");
         Assertions.assertThat(body).doesNotContain("kommen im gewählten Zeitraum nicht vor");
+    }
+
+    @When("I create opening hours for scope {int} with note {string} with the X-AuthKey")
+    public void iCreateOpeningHoursWithNote(int scopeId, String note) {
+        AccountCheckout.checkout("scope:" + scopeId + ":zmskvr-1583");
+        historyScopeId = scopeId;
+        response = postScopedOpeningHours(scopeId, null, note);
+        CommonApiSteps.setResponse(response);
+        rememberCreatedOpeningHours();
+    }
+
+    @When("I save the created opening hours again with note {string} with the X-AuthKey")
+    public void iSaveTheCreatedOpeningHoursAgainWithNote(String note) {
+        Assertions.assertThat(createdAvailabilityId)
+            .as("opening hours id from POST /availability/")
+            .isNotNull();
+        response = postScopedOpeningHours(historyScopeId, createdAvailabilityId, note);
+        CommonApiSteps.setResponse(response);
+    }
+
+    @When("I request the history of the created opening hours with the X-AuthKey")
+    public void iRequestTheHistoryOfTheCreatedOpeningHours() {
+        Assertions.assertThat(historyAvailabilityId)
+            .as("opening hours id kept for the history request")
+            .isNotNull();
+        requestOpeningHoursHistory(historyScopeId, historyAvailabilityId);
+    }
+
+    @When("I request the opening-hours history for scope {int} with the X-AuthKey")
+    public void iRequestTheOpeningHoursHistoryForScope(int scopeId) {
+        requestOpeningHoursHistory(scopeId, null);
+    }
+
+    @Then("the opening-hours history contains action {string} and note {string}")
+    public void theOpeningHoursHistoryContainsActionAndNote(String action, String note) {
+        ArrayNode rows = parseDataArray(response);
+        Assertions.assertThat(rows).as("GET /scope/{id}/availability/history/ data").isNotNull();
+        JsonNode match = null;
+        for (JsonNode row : rows) {
+            if (action.equals(row.path("action").asText()) && note.equals(row.path("comment").asText())) {
+                match = row;
+                break;
+            }
+        }
+        if (match == null) {
+            Assertions.fail("history row " + action + " with note " + note + " is missing");
+            return;
+        }
+        Assertions.assertThat(match.path("timeSlot").asText())
+            .as("Zeitschlitz")
+            .isEqualTo("00:10:00");
+        Assertions.assertThat(match.path("changedAt").asText())
+            .startsWith(BerlinTime.today().toString());
+    }
+
+    private void rememberCreatedOpeningHours() {
+        if (response.getStatusCode() != 200) {
+            return;
+        }
+        ArrayNode created = parseDataArray(response);
+        if (created != null && !created.isEmpty() && created.get(0).path("id").asInt() > 0) {
+            createdAvailabilityId = created.get(0).path("id").asInt();
+            historyAvailabilityId = createdAvailabilityId;
+        }
+    }
+
+    private void requestOpeningHoursHistory(int scopeId, Integer availabilityId) {
+        var request = given()
+            .baseUri(apiBaseUri())
+            .header("X-AuthKey", getOrLoginXAuthKey());
+        if (availabilityId != null) {
+            request = request.queryParam("availabilityId", availabilityId);
+        }
+        response = request
+        .when()
+            .get("/scope/" + scopeId + "/availability/history/");
+        CommonApiSteps.setResponse(response);
+    }
+
+    private Response postScopedOpeningHours(int scopeId, Integer availabilityId, String note) {
+        String authKey = getOrLoginXAuthKey();
+        LocalDate today = BerlinTime.today();
+        LocalDate sunday = today.with(DayOfWeek.SUNDAY);
+        long startEpoch = today.atTime(BerlinTime.now()).atZone(BerlinTime.ZONE).toEpochSecond();
+        long endEpoch = sunday.atStartOfDay(BerlinTime.ZONE).toEpochSecond();
+
+        ObjectNode weekday = MAPPER.createObjectNode();
+        for (DayOfWeek day : DayOfWeek.values()) {
+            boolean selected = day == DayOfWeek.SUNDAY
+                    || (day == DayOfWeek.SATURDAY && today.getDayOfWeek() != DayOfWeek.SUNDAY);
+            weekday.put(day.name().toLowerCase(Locale.ROOT), selected ? 1 : 0);
+        }
+
+        ObjectNode availability = MAPPER.createObjectNode();
+        if (availabilityId != null) {
+            availability.put("id", availabilityId);
+        }
+        availability.put("type", "openinghours");
+        availability.put("kind", "default");
+        availability.put("description", note);
+        availability.put("startDate", startEpoch);
+        availability.put("endDate", endEpoch);
+        availability.put("startTime", "08:00:00");
+        availability.put("endTime", closingTimeOn(sunday));
+        availability.put("slotTimeInMinutes", 10);
+        ObjectNode scope = MAPPER.createObjectNode();
+        scope.put("id", scopeId);
+        availability.set("scope", scope);
+        availability.set("weekday", weekday);
+        ObjectNode workstationCount = MAPPER.createObjectNode();
+        workstationCount.put("intern", 1);
+        workstationCount.put("public", 1);
+        availability.set("workstationCount", workstationCount);
+
+        ObjectNode body = MAPPER.createObjectNode();
+        body.set("availabilityList", MAPPER.createArrayNode().add(availability));
+        body.put("selectedDate", today.toString());
+
+        return given()
+            .baseUri(apiBaseUri())
+            .header("X-AuthKey", authKey)
+            .contentType("application/json")
+            .body(toJson(body))
+        .when()
+            .post("/availability/");
     }
 
     @When("I delete the opening hours created for the current week with the X-AuthKey")
