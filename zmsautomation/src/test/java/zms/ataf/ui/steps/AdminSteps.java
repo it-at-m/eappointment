@@ -52,6 +52,7 @@ import zms.ataf.ui.pages.admin.AdminPage;
 import zms.ataf.ui.pages.admin.AdminPageContext;
 import zms.ataf.ui.pages.admin.ProfilePage;
 import zms.ataf.ui.pages.admin.StatusPage;
+import zms.ataf.ui.pages.admin.UseraccountPage;
 import zms.ataf.ui.pages.admin.administration.AuthoritiesAndLocationsPage;
 import zms.ataf.ui.pages.admin.search.CustomerSearchPage;
 import zms.ataf.ui.pages.admin.workview.counterprocessingstation.CounterProcessingStationPage;
@@ -63,6 +64,7 @@ public class AdminSteps {
     private final AdminPage ADMIN_PAGE;
     private final ProfilePage PROFILE_PAGE;
     private final StatusPage STATUS_PAGE;
+    private final UseraccountPage USERACCOUNT_PAGE;
     private final CounterProcessingStationPage COUNTER_PROCESSING_STATION_PAGE;
     private final CounterSection COUNTER_SECTION;
     private final AuthoritiesAndLocationsPage AUTHORITIES_AND_LOCATIONS_PAGE;
@@ -77,6 +79,7 @@ public class AdminSteps {
         ADMIN_PAGE = new AdminPage(DriverUtil.getDriver());
         PROFILE_PAGE = new ProfilePage(DriverUtil.getDriver());
         STATUS_PAGE = new StatusPage(DriverUtil.getDriver());
+        USERACCOUNT_PAGE = new UseraccountPage(DriverUtil.getDriver());
         COUNTER_PROCESSING_STATION_PAGE = new CounterProcessingStationPage(DriverUtil.getDriver(), ADMIN_PAGE.getContext());
         CUSTOMER_SEARCH_PAGE = new CustomerSearchPage(DriverUtil.getDriver(), ADMIN_PAGE.getContext());
         AUTHORITIES_AND_LOCATIONS_PAGE = new AuthoritiesAndLocationsPage(DriverUtil.getDriver(), ADMIN_PAGE.getContext());
@@ -484,7 +487,38 @@ public class AdminSteps {
     public void iSignInToTheAdministrationAndWaitForTheHeader(String username) throws Exception {
         String login = AccountCheckout.assignWorkstationLogin(TestDataHelper.transformTestData(username));
         TestDataHelper.setTestData("signed_in_login", login);
+        Integer departmentId = AccountCheckout.checkedOutDepartmentId();
+        if (departmentId != null) {
+            TestDataHelper.setTestData("signed_in_department", departmentId.toString());
+        }
         ADMIN_PAGE.loginWithKeycloakUser(login, By.cssSelector(".user-name a"));
+    }
+
+    @When("I open the form for a new user.")
+    public void iOpenTheFormForANewUser() {
+        USERACCOUNT_PAGE.openNewUser();
+    }
+
+    @When("I prefer a local login for the new user.")
+    public void iPreferALocalLoginForTheNewUser() {
+        USERACCOUNT_PAGE.preferLocalLogin();
+    }
+
+    @When("I enter the new user {string} with password {string}.")
+    public void iEnterTheNewUserWithPassword(String username, String password) {
+        USERACCOUNT_PAGE.enterNewUser(
+                TestDataHelper.transformTestData(username),
+                TestDataHelper.transformTestData(password));
+    }
+
+    @When("I save the new user.")
+    public void iSaveTheNewUser() {
+        USERACCOUNT_PAGE.saveNewUser();
+    }
+
+    @Then("the new user form asks for a department and outlines Behörde in red.")
+    public void theNewUserFormAsksForADepartmentAndOutlinesTheFieldInRed() {
+        USERACCOUNT_PAGE.assertDepartmentIsRequired();
     }
 
     @Then("the status link is visible in the page footer.")
