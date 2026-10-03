@@ -3,6 +3,7 @@ package zms.ataf.rest.steps;
 import static io.restassured.RestAssured.given;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.DayOfWeek;
@@ -485,21 +486,23 @@ public class ZmsApiSteps {
         if (!Files.isRegularFile(backend.resolve("bin/queueMailReminder"))) {
             backend = Path.of("/var/www/html/zmsbackend");
         }
-        Path script = backend.resolve("bin/queueMailReminder");
+        Path script = backend.resolve("bin/queueMailReminder").toAbsolutePath();
         Assertions.assertThat(Files.isRegularFile(script))
                 .as("reminder queue script %s", script)
                 .isTrue();
-        ProcessBuilder builder = new ProcessBuilder("php", "bin/queueMailReminder", "120", "--commit");
+        ProcessBuilder builder = new ProcessBuilder(phpBinary(), script.toString(), "120", "--commit");
         builder.directory(backend.toFile());
         builder.environment().putIfAbsent("ZMS_ENV", "dev");
         builder.environment().put("ZMS_CRONROOT", "1");
         builder.redirectErrorStream(true);
+        Process queued = null;
         try {
-            Process queued = builder.start();
-            StringBuilder output = new StringBuilder();
+            queued = builder.start();
+            StringBuffer output = new StringBuffer();
+            Process reading = queued;
             Thread reader = new Thread(() -> {
                 try {
-                    output.append(new String(queued.getInputStream().readAllBytes()));
+                    output.append(new String(reading.getInputStream().readAllBytes(), StandardCharsets.UTF_8));
                 } catch (IOException io) {
                     output.append(io.getMessage());
                 }
@@ -520,11 +523,21 @@ public class ZmsApiSteps {
                     .isEqualTo(0);
             ScenarioLogManager.getLogger().info("queueMailReminder finished: {}", truncate(output.toString(), 500));
         } catch (InterruptedException interrupted) {
+            if (queued != null) {
+                queued.destroyForcibly();
+            }
             Thread.currentThread().interrupt();
             throw new IllegalStateException("Interrupted while queueing reminder mails", interrupted);
         } catch (IOException io) {
             throw new IllegalStateException("Could not run queueMailReminder", io);
         }
+    }
+
+    private static String phpBinary() {
+        if (Files.isExecutable(Path.of("/usr/local/bin/php"))) {
+            return "/usr/local/bin/php";
+        }
+        return "/usr/bin/php";
     }
 
     private void rememberExpectedDuration(JsonNode process) {
@@ -537,6 +550,10 @@ public class ZmsApiSteps {
         String expectedMinutes = slotCount > 0 && slotMinutes > 0
                 ? Integer.toString(slotCount * slotMinutes)
                 : "";
+        Assertions.assertThat(expectedMinutes)
+                .as("expected duration must be computable from slotCount %s and slotTimeInMinutes %s",
+                        slotCount, slotMinutes)
+                .isNotBlank();
         TestDataHelper.setTestData("expected_duration_minutes", expectedMinutes);
         ScenarioLogManager.getLogger().info(
                 "Estimated duration inputs slotCount={} slotTimeInMinutes={}", slotCount, slotMinutes);
