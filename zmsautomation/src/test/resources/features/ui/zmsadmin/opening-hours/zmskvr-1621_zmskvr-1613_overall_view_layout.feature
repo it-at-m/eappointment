@@ -3,7 +3,8 @@ Feature: The overall view leaves out walk-in hours and keeps each location's dat
 
 	# ZMSKVR-1613 / ZMSKVR-1621.
 	# All locations, two days, full view. After scrolling right, each location still shows its date.
-	# Walk-in opening hours are not drawn in white. The Datum and Zeit labels are gone.
+	# Standesamt (KVR-II/1131) is open for walk-in customers from 08:00 and for appointments from 09:00.
+	# That first hour is not drawn in white. The Datum and Zeit labels are gone.
 	# The day lines keep one width, and the location headers have no side border.
 
 	@web @zmsadmin @opening-hours @clerk @ZMSKVR-1621 @ZMSKVR-1613 @executeLocally

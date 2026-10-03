@@ -1638,9 +1638,11 @@ public class CounterProcessingStationPage extends AdminPage {
                         + "  return item.style.gridRow.split('/')[0].trim() === row;"
                         + "});"
                         + "if (!stripe) return 'missing hour line';"
-                        + "if (stripe.getBoundingClientRect().top >= label.getBoundingClientRect().top) {"
-                        + "  return 'the hour line is not above the hour label';"
-                        + "}"
+                        + "var labelBox = label.getBoundingClientRect();"
+                        + "var lineBox = stripe.getBoundingClientRect();"
+                        + "var labelMiddle = labelBox.top + labelBox.height / 2;"
+                        + "var lineMiddle = lineBox.top + lineBox.height / 2;"
+                        + "if (labelMiddle <= lineMiddle) return 'the hour label sits on the hour line';"
                         + "return 'ok';");
         Assert.assertEquals(String.valueOf(result), "ok", "The hour label should sit on the first row of the hour.");
     }
