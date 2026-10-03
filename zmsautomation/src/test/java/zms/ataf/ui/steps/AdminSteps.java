@@ -1783,8 +1783,8 @@ public class AdminSteps {
                 statement.setInt(3, weekdayBit(day.getDayOfWeek()));
                 try (ResultSet rows = statement.executeQuery()) {
                     while (rows.next()) {
-                        String scopeId = Integer.toString(rows.getInt("scope_id"));
-                        if (!scopeIds.contains(scopeId)) {
+                        int scopeId = rows.getInt("scope_id");
+                        if (!scopeIds.contains(Integer.toString(scopeId))) {
                             continue;
                         }
                         LocalTime walkInStart = rows.getTime("start_time").toLocalTime();
@@ -1794,12 +1794,12 @@ public class AdminSteps {
                         if (walkInStart.isBefore(appointmentStart)
                                 && java.time.Duration.between(walkInStart, appointmentStart).toMinutes() >= 15) {
                             return new CounterProcessingStationPage.WalkInOpening(
-                                    Integer.parseInt(scopeId), day, walkInStart, appointmentStart, appointmentStart);
+                                    scopeId, day, walkInStart, appointmentStart, appointmentStart);
                         }
                         if (appointmentEnd.isBefore(walkInEnd)
                                 && java.time.Duration.between(appointmentEnd, walkInEnd).toMinutes() >= 15) {
                             return new CounterProcessingStationPage.WalkInOpening(
-                                    Integer.parseInt(scopeId), day, appointmentEnd, walkInEnd, appointmentStart);
+                                    scopeId, day, appointmentEnd, walkInEnd, appointmentStart);
                         }
                     }
                 }
