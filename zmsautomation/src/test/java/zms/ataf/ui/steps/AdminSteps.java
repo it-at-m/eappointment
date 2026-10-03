@@ -17,6 +17,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.TreeSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
@@ -49,6 +50,7 @@ import zms.ataf.helpers.RandomNameHelper;
 import zms.ataf.rest.steps.CitizenApiSteps;
 import zms.ataf.ui.pages.admin.AdminPage;
 import zms.ataf.ui.pages.admin.AdminPageContext;
+import zms.ataf.ui.pages.admin.ProfilePage;
 import zms.ataf.ui.pages.admin.administration.AuthoritiesAndLocationsPage;
 import zms.ataf.ui.pages.admin.search.CustomerSearchPage;
 import zms.ataf.ui.pages.admin.workview.counterprocessingstation.CounterProcessingStationPage;
@@ -58,6 +60,7 @@ import zms.ataf.ui.pages.admin.workview.counterprocessingstation.ProcessingStati
 
 public class AdminSteps {
     private final AdminPage ADMIN_PAGE;
+    private final ProfilePage PROFILE_PAGE;
     private final CounterProcessingStationPage COUNTER_PROCESSING_STATION_PAGE;
     private final CounterSection COUNTER_SECTION;
     private final AuthoritiesAndLocationsPage AUTHORITIES_AND_LOCATIONS_PAGE;
@@ -70,6 +73,7 @@ public class AdminSteps {
 
     public AdminSteps() {
         ADMIN_PAGE = new AdminPage(DriverUtil.getDriver());
+        PROFILE_PAGE = new ProfilePage(DriverUtil.getDriver());
         COUNTER_PROCESSING_STATION_PAGE = new CounterProcessingStationPage(DriverUtil.getDriver(), ADMIN_PAGE.getContext());
         CUSTOMER_SEARCH_PAGE = new CustomerSearchPage(DriverUtil.getDriver(), ADMIN_PAGE.getContext());
         AUTHORITIES_AND_LOCATIONS_PAGE = new AuthoritiesAndLocationsPage(DriverUtil.getDriver(), ADMIN_PAGE.getContext());
@@ -421,6 +425,28 @@ public class AdminSteps {
     public void sie_sich_als_im_zeitmanagementsystem_anmelden(String username) throws Exception {
         ADMIN_PAGE.loginWithKeycloakUser(
                 AccountCheckout.assignWorkstationLogin(TestDataHelper.transformTestData(username)));
+    }
+
+    @When("I sign in to the administration as {string} and wait for the header.")
+    public void iSignInToTheAdministrationAndWaitForTheHeader(String username) throws Exception {
+        String login = AccountCheckout.assignWorkstationLogin(TestDataHelper.transformTestData(username));
+        TestDataHelper.setTestData("signed_in_login", login);
+        ADMIN_PAGE.loginWithKeycloakUser(login, By.cssSelector(".user-name a"));
+    }
+
+    @When("I open my profile from the header.")
+    public void iOpenMyProfileFromTheHeader() {
+        PROFILE_PAGE.openFromHeader();
+    }
+
+    @Then("my profile shows only the LDAP name, the role {string} and its permissions.")
+    public void myProfileShowsOnlyTheLdapNameTheRoleAndItsPermissions(String role) {
+        String login = TestDataHelper.getTestData("signed_in_login");
+        if (login == null || login.isBlank()) {
+            throw new IllegalStateException("The signed-in login was not stored.");
+        }
+        Set<String> permissions = permissionsForRole(role);
+        PROFILE_PAGE.assertOnlyLdapRoleAndPermissions(login, role, permissions);
     }
 
     @When("I save the appointment again with one more slot.")
@@ -1850,6 +1876,44 @@ public class AdminSteps {
             return LocalDateTime.parse(adjusted.trim(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
         }
         return LocalDateTime.now(BerlinTime.ZONE);
+    }
+
+    private static Set<String> permissionsForRole(String roleDescription) {
+        String roleName = null;
+        Set<String> permissions = new TreeSet<>();
+        try (Connection connection = openZmsConnection();
+                PreparedStatement role = connection.prepareStatement(
+                        "SELECT name FROM `role` WHERE description = ?")) {
+            role.setString(1, roleDescription);
+            try (ResultSet rows = role.executeQuery()) {
+                if (!rows.next()) {
+                    throw new IllegalStateException("No role is stored with the description \"" + roleDescription + "\".");
+                }
+                roleName = rows.getString(1);
+                if (rows.next()) {
+                    throw new IllegalStateException("More than one role uses the description \"" + roleDescription + "\".");
+                }
+            }
+            try (PreparedStatement permission = connection.prepareStatement(
+                    "SELECT COALESCE(NULLIF(p.description, ''), p.name) "
+                            + "FROM `role` r "
+                            + "JOIN role_permission rp ON rp.role_id = r.id "
+                            + "JOIN permission p ON p.id = rp.permission_id "
+                            + "WHERE r.name = ?")) {
+                permission.setString(1, roleName);
+                try (ResultSet rows = permission.executeQuery()) {
+                    while (rows.next()) {
+                        permissions.add(rows.getString(1).trim());
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            throw new IllegalStateException("Could not read the permissions of \"" + roleDescription + "\".", e);
+        }
+        if (permissions.isEmpty()) {
+            throw new IllegalStateException("Role \"" + roleDescription + "\" has no stored permissions.");
+        }
+        return permissions;
     }
 
     private static Connection openZmsConnection() throws SQLException {

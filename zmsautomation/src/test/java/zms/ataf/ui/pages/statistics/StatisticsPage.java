@@ -73,31 +73,44 @@ public class StatisticsPage extends BasePage {
 
     /** Login and SSO flow aligned with AdminPage (same pattern as zmsadmin). */
     public void clickOnLoginButton() throws Exception {
+        final StringBuilder clearUserName = new StringBuilder();
+        Exception exception = null;
+        try {
+            AuthenticationHelper.getUserName().access(clearUserName::append);
+            loginWithKeycloakUser(AccountCheckout.assignWorkstationLogin(clearUserName.toString()));
+        } catch (Exception e) {
+            ScenarioLogManager.getLogger().error(e.getMessage(), e);
+            exception = e;
+        } finally {
+            clearUserName.setLength(0);
+            if (exception != null) {
+                throw exception;
+            }
+        }
+    }
+
+    /** Keycloak login for one statistics user. The caller checks the account out. */
+    public void loginWithKeycloakUser(String username) throws Exception {
         ScenarioLogManager.getLogger().info("Trying to click on \"Login\" button...");
         clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "//button[@type='submit' and @value='keycloak']", LocatorType.XPATH, false);
         ScenarioLogManager.getLogger().info("SSO-Login page detected!");
 
-        final StringBuilder clearUserName = new StringBuilder();
         final StringBuilder clearPassword = new StringBuilder();
         Exception exception = null;
         try {
-            AuthenticationHelper.getUserName().access(clearUserName::append);
             AuthenticationHelper.getUserPassword().access(clearPassword::append);
-            String assigned = AccountCheckout.assignWorkstationLogin(clearUserName.toString());
-            clearUserName.setLength(0);
-            clearUserName.append(assigned);
             WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
             wait.until(ExpectedConditions.presenceOfElementLocated(By.id("username")));
             if ("chrome".equals(
                     TestPropertiesHelper.getPropertyAsString("browser", true, DefaultValues.BROWSER))) {
                 wait.until(ExpectedConditions.presenceOfElementLocated(By.id("kc-login")));
-                String credentials = URLEncoder.encode(clearUserName.toString(), StandardCharsets.UTF_8) + ":"
+                String credentials = URLEncoder.encode(username, StandardCharsets.UTF_8) + ":"
                         + URLEncoder.encode(clearPassword.toString(), StandardCharsets.UTF_8) + "@";
                 DRIVER.navigate().to(DRIVER.getCurrentUrl().replaceFirst("^(https?://)", "$1" + credentials));
             }
 
             ScenarioLogManager.getLogger().info("Trying to enter user name...");
-            enterTextInWebElement(DEFAULT_EXPLICIT_WAIT_TIME, clearUserName.toString(), "username", LocatorType.ID);
+            enterTextInWebElement(DEFAULT_EXPLICIT_WAIT_TIME, username, "username", LocatorType.ID);
 
             ScenarioLogManager.getLogger().info("Trying to enter password...");
             enterTextInWebElement(DEFAULT_EXPLICIT_WAIT_TIME, clearPassword.toString(), "password", LocatorType.ID);
@@ -114,7 +127,6 @@ public class StatisticsPage extends BasePage {
             ScenarioLogManager.getLogger().error(e.getMessage(), e);
             exception = e;
         } finally {
-            clearUserName.setLength(0);
             clearPassword.setLength(0);
             if (exception != null) {
                 throw exception;
