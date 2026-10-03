@@ -1,7 +1,7 @@
 #language: en
 Feature: An internal appointment customer of a zms variant that is missing from provider.data.services can still be booked at the counter.
 
-    @web @zmsadmin @booking @clerk @ZMSKVR-1049 @automatisiert @executeLocally
+    @web @zmsadmin @booking @clerk @ZMSKVR-1610 @ZMSKVR-1049 @automatisiert @executeLocally
     Scenario: Phone trade-registration appointment customer booked at the counter without JSON services
         When I open the administration website.
         Then I should be on the administration start page.
@@ -13,7 +13,7 @@ Feature: An internal appointment customer of a zms variant that is missing from 
         When I book an appointment customer with service "Gewerbeanmeldung Telefon", time, name, a valid email address and the note "TerminkundeTelefon".
         Then a popup "Termin wurde erfolgreich eingetragen" appears and the appointment is also visible in the queue.
 
-    @web @zmsadmin @booking @clerk @ZMSKVR-1049 @automatisiert @executeLocally
+    @web @zmsadmin @booking @clerk @ZMSKVR-1610 @ZMSKVR-1049 @automatisiert @executeLocally
     Scenario: Video trade-registration appointment customer booked at the counter without JSON services
         When I open the administration website.
         Then I should be on the administration start page.
