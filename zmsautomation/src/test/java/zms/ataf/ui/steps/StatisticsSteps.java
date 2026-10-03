@@ -190,6 +190,26 @@ public class StatisticsSteps {
         STATISTICS_PAGE.selectScopesInStatisticsTableFilter(List.of(first, second));
     }
 
+    @Then("the service statistics show the day {int} days before today.")
+    public void zeigt_die_dienstleistungsstatistik_den_tag_vor_heute(int daysBeforeToday) {
+        SERVICE_STATISTICS_PAGE.assertDayColumn(BerlinTime.today().minusDays(daysBeforeToday), true);
+    }
+
+    @Then("the service statistics hide the day {int} days before today.")
+    public void blendet_die_dienstleistungsstatistik_den_tag_vor_heute_aus(int daysBeforeToday) {
+        SERVICE_STATISTICS_PAGE.assertDayColumn(BerlinTime.today().minusDays(daysBeforeToday), false);
+    }
+
+    @Then("the downloaded service statistics show the day {int} days before today.")
+    public void zeigt_die_heruntergeladene_dienstleistungsstatistik_den_tag_vor_heute(int daysBeforeToday) throws Exception {
+        SERVICE_STATISTICS_PAGE.assertDownloadedDayColumn(BerlinTime.today().minusDays(daysBeforeToday), true);
+    }
+
+    @Then("the downloaded service statistics hide the day {int} days before today.")
+    public void blendet_die_heruntergeladene_dienstleistungsstatistik_den_tag_vor_heute_aus(int daysBeforeToday) throws Exception {
+        SERVICE_STATISTICS_PAGE.assertDownloadedDayColumn(BerlinTime.today().minusDays(daysBeforeToday), false);
+    }
+
     @Then("the downloaded service statistics match these values:")
     public void stimmt_die_heruntergeladene_dienstleistungsstatistik_ueberein(DataTable dataTable) throws Exception {
         SERVICE_STATISTICS_PAGE.assertDownloadedStatisticValues(dataTable.asMaps(String.class, String.class));
