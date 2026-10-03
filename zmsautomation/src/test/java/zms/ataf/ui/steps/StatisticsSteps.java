@@ -16,6 +16,7 @@ import io.cucumber.datatable.DataTable;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import zms.ataf.helpers.AccountCheckout;
 import zms.ataf.helpers.BerlinTime;
 import zms.ataf.ui.pages.statistics.StatisticsPage;
 import zms.ataf.ui.pages.statistics.StatisticsPageContext;
@@ -37,6 +38,13 @@ public class StatisticsSteps {
     @When("I open the statistics website.")
     public void wenn_sie_zur_webseite_der_administration_navigieren() {
         STATISTICS_PAGE.navigateToPage();
+    }
+
+    @When("I sign in to the statistics as {string}.")
+    public void iSignInToTheStatisticsAs(String username) throws Exception {
+        String login = AccountCheckout.assignWorkstationLogin(TestDataHelper.transformTestData(username));
+        TestDataHelper.setTestData("signed_in_login", login);
+        STATISTICS_PAGE.loginWithKeycloakUser(login);
     }
 
     @Then("I should be on the statistics start page.")

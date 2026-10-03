@@ -61,6 +61,14 @@ public class AdminPage extends BasePage {
 
     /** Keycloak login for one workstation user. The caller checks the account out. */
     public void loginWithKeycloakUser(String username) throws Exception {
+        loginWithKeycloakUser(username, By.name("scope"));
+    }
+
+    /**
+     * Same login, but waits for {@code ready} instead of the location form.
+     * Benutzerverwaltung and Innenrevision never reach that form.
+     */
+    public void loginWithKeycloakUser(String username, By ready) throws Exception {
         if (isAlreadyLoggedIn()) {
             ScenarioLogManager.getLogger().info("Already logged in, skipping SSO login.");
             return;
@@ -94,7 +102,7 @@ public class AdminPage extends BasePage {
                     .until(ExpectedConditions.elementToBeClickable(By.id("kc-login")));
             ((JavascriptExecutor) DRIVER).executeScript("arguments[0].click();", kcLogin);
             new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
-                    .until(ExpectedConditions.presenceOfElementLocated(By.name("scope")));
+                    .until(ExpectedConditions.presenceOfElementLocated(ready));
             ScenarioLogManager.getLogger().info("SSO login submitted successfully.");
         } catch (Exception e) {
             ScenarioLogManager.getLogger().error(e.getMessage(), e);
