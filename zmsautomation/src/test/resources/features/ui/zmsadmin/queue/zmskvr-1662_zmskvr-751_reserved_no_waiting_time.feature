@@ -5,7 +5,8 @@ Feature: Reserved appointments show no waiting time in the queue
 	# office 10489, is reserved through Übersicht and left unconfirmed.
 	# The suite clock does not move, so the appointment is placed two minutes before that
 	# clock with a stored waiting time of two minutes. Uhrzeit must not show +2 Min.
-	# The appointment is cancelled at the end.
+	# Citizen cancel refuses an appointment that is already in the past, so the row is
+	# moved forward again before it is cancelled.
 
 	@web @zmsadmin @queue @clerk @ZMSKVR-1662 @ZMSKVR-751 @executeLocally
 	Scenario: A reserved appointment shows no waiting time after its time has passed
@@ -32,4 +33,5 @@ Feature: Reserved appointments show no waiting time in the queue
 		When I sign in at the workstation of the reserved appointment.
 		Then the workstation page is displayed.
 		And the reserved appointment shows no waiting time in the queue time column.
+		When the reserved appointment is moved back to after the suite clock.
 		Then I cancel the appointment

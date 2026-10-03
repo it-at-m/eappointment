@@ -1625,6 +1625,43 @@ public class AdminSteps {
                 processId, reservedScopeId, reservedAppointmentClock, suiteClock);
     }
 
+    /**
+     * Citizen cancel refuses an appointment that is already before {@code App::$now}.
+     * After the queue check, put the same reserved row back in the future so it can be deleted.
+     */
+    @When("the reserved appointment is moved back to after the suite clock.")
+    public void theReservedAppointmentIsMovedBackToAfterTheSuiteClock() {
+        var process = CitizenApiSteps.getBookingProcess();
+        if (process == null || process.getProcessId() == null) {
+            throw new IllegalStateException("No reserved appointment was captured from the citizen view.");
+        }
+        int processId = process.getProcessId();
+        LocalDateTime appointment = suiteClock().plusMinutes(30);
+        String sql = """
+                UPDATE buerger
+                   SET Datum = ?, Uhrzeit = ?
+                 WHERE BuergerID = ?
+                   AND bestaetigt = 0
+                   AND vorlaeufigeBuchung = 1
+                """;
+        try (Connection connection = openZmsConnection();
+                PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setString(1, appointment.toLocalDate().toString());
+            statement.setString(2, appointment.toLocalTime().format(DateTimeFormatter.ofPattern("HH:mm:ss")));
+            statement.setInt(3, processId);
+            int updated = statement.executeUpdate();
+            if (updated != 1) {
+                throw new IllegalStateException(
+                        "Process " + processId + " is not a reserved appointment (updated rows: " + updated + ").");
+            }
+        } catch (SQLException e) {
+            throw new IllegalStateException(
+                    "Could not move reserved appointment " + processId + " back after the suite clock.", e);
+        }
+        ScenarioLogManager.getLogger().info(
+                "Reserved process {} is back at {} so it can be cancelled", processId, appointment);
+    }
+
     @When("I sign in at the workstation of the reserved appointment.")
     public void iSignInAtTheWorkstationOfTheReservedAppointment() throws Exception {
         if (reservedScopeId <= 0) {
