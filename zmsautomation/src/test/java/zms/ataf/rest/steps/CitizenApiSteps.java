@@ -902,14 +902,13 @@ public class CitizenApiSteps {
         .when()
             .get("/my-appointments/");
         CommonApiSteps.setResponse(response);
-        String body = response.asString();
-        ScenarioLogManager.getLogger().info(String.format(
-                "Citizen API /my-appointments/ status=%d body=%s",
-                response.getStatusCode(),
-                body.length() > 1250 ? body.substring(0, 1250) + "..." : body));
         response.then().statusCode(200);
         ThinnedProcess[] appointments = response.as(ThinnedProcess[].class);
         myAppointments = appointments == null ? List.of() : List.of(appointments);
+        ScenarioLogManager.getLogger().info(String.format(
+                "Citizen API /my-appointments/ status=%d appointmentCount=%d",
+                response.getStatusCode(),
+                myAppointments.size()));
     }
 
     @Then("my appointments include the remembered {string} appointment for service {int}")
