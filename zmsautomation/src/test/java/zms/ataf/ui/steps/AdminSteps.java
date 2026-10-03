@@ -434,6 +434,10 @@ public class AdminSteps {
     public void iSignInToTheAdministrationAndWaitForTheHeader(String username) throws Exception {
         String login = AccountCheckout.assignWorkstationLogin(TestDataHelper.transformTestData(username));
         TestDataHelper.setTestData("signed_in_login", login);
+        Integer departmentId = AccountCheckout.checkedOutDepartmentId();
+        if (departmentId != null) {
+            TestDataHelper.setTestData("signed_in_department", departmentId.toString());
+        }
         ADMIN_PAGE.loginWithKeycloakUser(login, By.cssSelector(".user-name a"));
     }
 

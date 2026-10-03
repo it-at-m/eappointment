@@ -1,8 +1,15 @@
 package zms.ataf.helpers;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -17,6 +24,7 @@ public final class AccountCheckout {
 
     private static final ConcurrentHashMap<String, ReentrantLock> LOCKS = new ConcurrentHashMap<>();
     private static final ThreadLocal<LinkedHashSet<String>> HELD = ThreadLocal.withInitial(LinkedHashSet::new);
+    private static final ThreadLocal<Integer> DEPARTMENT = new ThreadLocal<>();
 
     /**
      * Superuser nutzer accounts ({@code Berechtigung} 90). A feature that says {@code ataf} takes a free one.
@@ -163,6 +171,32 @@ public final class AccountCheckout {
             "ataf_citizen_33"
     );
 
+    /**
+     * Nutzer accounts with the role {@code user_admin} (Benutzerverwaltung).
+     * A feature that says {@code user_admin} takes a free one that already has a department.
+     * Sixteen UI threads plus one spare. The original {@code user_admin} row has no department
+     * and is not in this pool.
+     */
+    private static final List<String> USER_ADMINS = List.of(
+            "ataf_user_admin_1",
+            "ataf_user_admin_2",
+            "ataf_user_admin_3",
+            "ataf_user_admin_4",
+            "ataf_user_admin_5",
+            "ataf_user_admin_6",
+            "ataf_user_admin_7",
+            "ataf_user_admin_8",
+            "ataf_user_admin_9",
+            "ataf_user_admin_10",
+            "ataf_user_admin_11",
+            "ataf_user_admin_12",
+            "ataf_user_admin_13",
+            "ataf_user_admin_14",
+            "ataf_user_admin_15",
+            "ataf_user_admin_16",
+            "ataf_user_admin_17"
+    );
+
     private AccountCheckout() {
     }
 
@@ -183,8 +217,9 @@ public final class AccountCheckout {
 
     /**
      * {@code ataf} takes a free {@code ataf_superuser_*} account. {@code agent_queue} takes a free
-     * {@code ataf_agent_queue_*} account. Any other name stays on that exact account.
-     * Returns the Keycloak username to type.
+     * {@code ataf_agent_queue_*} account. {@code user_admin} takes a free {@code ataf_user_admin_*}
+     * account that already has a department and waits while every such account is in use.
+     * Any other name stays on that exact account. Returns the Keycloak username to type.
      */
     public static String assignWorkstationLogin(String loginName) {
         String bare = stripKeycloak(loginName);
@@ -194,8 +229,34 @@ public final class AccountCheckout {
         if ("agent_queue".equals(bare)) {
             return checkoutFree(AGENT_QUEUE_USERS, true);
         }
+        if ("user_admin".equals(bare)) {
+            return assignUserAdminLogin(userAdminDepartments());
+        }
         checkoutWorkstation(bare);
         return bare;
+    }
+
+    /**
+     * Checks out one of {@code loginToDepartment} and remembers that account's department.
+     * Waits until one of those accounts is free. An empty map means none of them has a department.
+     */
+    public static String assignUserAdminLogin(Map<String, Integer> loginToDepartment) {
+        if (loginToDepartment == null || loginToDepartment.isEmpty()) {
+            throw new IllegalStateException("No user_admin pool account has a department.");
+        }
+        String login = checkoutFree(new ArrayList<>(loginToDepartment.keySet()), true);
+        Integer departmentId = loginToDepartment.get(login);
+        if (departmentId == null || departmentId == 0) {
+            throw new IllegalStateException("Checked out " + login + " without a department.");
+        }
+        DEPARTMENT.set(departmentId);
+        log("Using department " + departmentId + " from " + login);
+        return login;
+    }
+
+    /** Department of the user-admin pool account this thread checked out, or null. */
+    public static Integer checkedOutDepartmentId() {
+        return DEPARTMENT.get();
     }
 
     /**
@@ -319,6 +380,7 @@ public final class AccountCheckout {
     }
 
     public static void releaseAll() {
+        DEPARTMENT.remove();
         LinkedHashSet<String> held = HELD.get();
         List<String> keys = new ArrayList<>(held);
         HELD.remove();
@@ -330,6 +392,68 @@ public final class AccountCheckout {
                 log("Released account " + accountId);
             }
         }
+    }
+
+    private static Map<String, Integer> userAdminDepartments() {
+        Map<String, Integer> byLogin = new LinkedHashMap<>();
+        StringBuilder placeholders = new StringBuilder();
+        for (int i = 0; i < USER_ADMINS.size(); i++) {
+            if (i > 0) {
+                placeholders.append(',');
+            }
+            placeholders.append('?');
+        }
+        String sql = "SELECT Name, BehoerdenID FROM nutzer WHERE Name IN (" + placeholders + ") AND BehoerdenID <> 0";
+        try (Connection connection = openConnection();
+                PreparedStatement statement = connection.prepareStatement(sql)) {
+            for (int i = 0; i < USER_ADMINS.size(); i++) {
+                statement.setString(i + 1, workstationAccountId(USER_ADMINS.get(i)));
+            }
+            try (ResultSet rows = statement.executeQuery()) {
+                while (rows.next()) {
+                    int departmentId = rows.getInt("BehoerdenID");
+                    if (departmentId != 0) {
+                        byLogin.put(stripKeycloak(rows.getString("Name")), departmentId);
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            throw new IllegalStateException("Could not read the user_admin pool departments.", e);
+        }
+        Map<String, Integer> ordered = new LinkedHashMap<>();
+        for (String login : USER_ADMINS) {
+            Integer departmentId = byLogin.get(login);
+            if (departmentId != null) {
+                ordered.put(login, departmentId);
+            }
+        }
+        return ordered;
+    }
+
+    private static Connection openConnection() throws SQLException {
+        String host = envOrDefault("MYSQL_HOST", "db");
+        String port = mysqlPort(envOrDefault("MYSQL_PORT", "3306"));
+        String database = envOrDefault("MYSQL_DATABASE", "db");
+        String user = envOrDefault("MYSQL_USER", "db");
+        String url = "jdbc:mysql://" + host + ":" + port + "/" + database;
+        log("Opening suite database " + url + " as " + user);
+        return DriverManager.getConnection(url, user, envOrDefault("MYSQL_PASSWORD", "db"));
+    }
+
+    private static String mysqlPort(String raw) {
+        int colon = raw.lastIndexOf(':');
+        if (colon >= 0 && colon < raw.length() - 1) {
+            return raw.substring(colon + 1);
+        }
+        return raw;
+    }
+
+    private static String envOrDefault(String name, String fallback) {
+        String value = System.getenv(name);
+        if (value == null || value.isBlank()) {
+            return fallback;
+        }
+        return value.trim();
     }
 
     private static void log(String message) {

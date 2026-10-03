@@ -1,12 +1,15 @@
 #language: en
 Feature: User administration requires a department for a new account
 
-	# ZMSKVR-1497 / ZMSKVR-1624. Benutzerverwaltung (user_admin).
+	# ZMSKVR-1497 / ZMSKVR-1624. Benutzerverwaltung.
+	# user_admin takes a free ataf_user_admin_* account that already has a department
+	# and waits while every such account is in use. The Behörde list on the new-user
+	# form is that account's department. The new account is still saved with none selected.
 	# A new local account saved without a Behörde shows the input error,
 	# asks for a department, and outlines that field in red.
 	# No account is created.
-	# The user list for this login answers 500, because the department search
-	# cache key contains user_admin@keycloak. The scenario opens /users/add/ directly.
+	# The user list answers 500, because the department search cache key contains
+	# the login's @keycloak suffix. The scenario opens /users/add/ directly.
 
 	@web @zmsadmin @user-administration @ZMSKVR-1624 @ZMSKVR-1497 @executeLocally
 	Scenario: Saving a new account without a department shows an input error
