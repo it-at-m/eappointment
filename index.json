@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-10-03T15:15:46.711Z",
+  "publishedAt": "2026-10-03T15:25:12.458Z",
   "branches": [
     {
       "name": "next",
@@ -280,8 +280,8 @@
     {
       "name": "test-zmskvr-1397-zmskvr-1633-resume-waiting-time",
       "slug": "test-zmskvr-1397-zmskvr-1633-resume-waiting-time",
-      "runId": "37129576991",
-      "runStartedAt": "2026-10-03T14:26:11Z"
+      "runId": "37132532807",
+      "runStartedAt": "2026-10-03T15:14:20Z"
     },
     {
       "name": "test-zmskvr-1411-zmskvr-1672-opening-hours-sunday",
