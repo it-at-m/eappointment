@@ -50,10 +50,11 @@ public class UseraccountPage extends BasePage {
         }
         ScenarioLogManager.getLogger().info("Preferring a local login for the new user...");
         new Select(provider.get(0)).selectByVisibleText("Nein, lokale Anmeldung bevorzugen");
-        new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME)).until(driver -> driver
-                .findElements(By.cssSelector("input[type='password']"))
-                .stream()
-                .allMatch(input -> input.getAttribute("readonly") == null));
+        new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME)).until(driver -> {
+            List<WebElement> fields = driver.findElements(By.cssSelector("input[name='changePassword[]']"));
+            return fields.size() == 2
+                    && fields.stream().allMatch(input -> input.getAttribute("readonly") == null);
+        });
     }
 
     public void enterNewUser(String username, String password) {
