@@ -298,6 +298,17 @@ public class AdminSteps {
 
     @When("I select {string} under weekdays.")
     public void wenn_sie_string_unter_wochentage_selektieren(String weekDay) {
+        if ("<heute_wochentag>".equals(weekDay)) {
+            weekDay = switch (BerlinTime.today().getDayOfWeek()) {
+                case MONDAY -> "Montag";
+                case TUESDAY -> "Dienstag";
+                case WEDNESDAY -> "Mittwoch";
+                case THURSDAY -> "Donnerstag";
+                case FRIDAY -> "Freitag";
+                case SATURDAY -> "Samstag";
+                case SUNDAY -> "Sonntag";
+            };
+        }
         AUTHORITIES_AND_LOCATIONS_PAGE.selectWeekDay(TestDataHelper.transformTestData(weekDay));
     }
 
