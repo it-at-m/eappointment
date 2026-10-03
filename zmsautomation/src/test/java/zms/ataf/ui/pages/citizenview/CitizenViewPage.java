@@ -4134,7 +4134,7 @@ public class CitizenViewPage extends BasePage {
                         + "if(n.shadowRoot){var inner=walk(n.shadowRoot,fn);if(inner)return inner;}"
                         + "var c=n.children;if(c)for(var i=0;i<c.length;i++){var next=walk(c[i],fn);if(next)return next;}return null;}"
                         + "return walk(document.body,function(el){"
-                        + "if((el.tagName||'').toLowerCase()!=='muc-card')return null;"
+                        + "if(!el.classList||!el.classList.contains('card'))return null;"
                         + "var text=textOf(el).replace(/\\s+/g,' ').trim();"
                         + "if(text.indexOf('1x '+name)<0)return null;"
                         + "var match=text.match(/Terminnummer:\\s*(\\S+)/);"
@@ -4147,6 +4147,7 @@ public class CitizenViewPage extends BasePage {
         return "meine_termine_number_" + serviceName;
     }
 
+    /** Patternlab MucCard renders a {@code div.card}, and the title wraps onto a second line. */
     private int countTeasers(String serviceName) {
         String script =
                 "var name=arguments[0];"
@@ -4155,8 +4156,8 @@ public class CitizenViewPage extends BasePage {
                         + "function walk(n,fn){if(!n)return;if(n.nodeType===1)fn(n);if(n.shadowRoot)walk(n.shadowRoot,fn);"
                         + "var c=n.children;if(c)for(var i=0;i<c.length;i++)walk(c[i],fn);}"
                         + "var n=0;walk(document.body,function(el){"
-                        + "if((el.tagName||'').toLowerCase()!=='muc-card')return;"
-                        + "if(textOf(el).indexOf('1x '+name)>=0)n++;});"
+                        + "if(!el.classList||!el.classList.contains('card'))return;"
+                        + "if(textOf(el).replace(/\\s+/g,' ').indexOf('1x '+name)>=0)n++;});"
                         + "return n;";
         Object raw = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script, serviceName);
         if (raw instanceof Number number) {
