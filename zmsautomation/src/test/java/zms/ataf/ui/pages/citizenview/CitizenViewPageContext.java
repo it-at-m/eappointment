@@ -95,7 +95,7 @@ public class CitizenViewPageContext extends Context {
             String currentUrl = DRIVER.getCurrentUrl();
             if (currentUrl != null && currentUrl.startsWith(base)) {
                 String separator = base.contains("?") ? "&" : "?";
-                jumpInUrl = base + separator + "zmsjump=" + System.nanoTime() + route;
+                jumpInUrl = base + separator + "zmsjump=" + java.lang.System.nanoTime() + route;
             }
         } catch (RuntimeException ignored) {
             ScenarioLogManager.getLogger().debug("Jump-in has no current page yet.");
