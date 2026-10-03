@@ -6,7 +6,8 @@ Feature: Resuming a missed appointment does not show a zero waiting time
 	# the Uhrzeit column shows only the appointment time. After one minute it
 	# also shows the waiting time as + # Min., never as +00:00:00.
 	# The suite clock does not move, so that minute is stored and the queue reloaded.
-	# The appointment is deleted afterwards.
+	# This Standort allows one repeat call, so the second no-show moves the appointment
+	# to Verpasste Termine. The appointment is deleted afterwards.
 
 	@web @zmsadmin @queue @clerk @ZMSKVR-1633 @ZMSKVR-1397 @executeLocally
 	Scenario: A resumed appointment shows no +00:00:00 waiting time
@@ -22,6 +23,8 @@ Feature: Resuming a missed appointment does not show a zero waiting time
 		And I book today's already selected appointment for "Muster Zmskvr1633".
 		And I click the button "Schließen" in the administration.
 		When the clerk calls the customer "Muster Zmskvr1633" from the waiting list.
+		And I click the button "Nein, nicht erschienen" in the administration.
+		And the clerk calls the customer "Muster Zmskvr1633" from the waiting list.
 		And I click the button "Nein, nicht erschienen" in the administration.
 		And I resume the missed appointment of "Muster Zmskvr1633".
 		Then the resumed appointment of "Muster Zmskvr1633" shows only its time in the first minute.
