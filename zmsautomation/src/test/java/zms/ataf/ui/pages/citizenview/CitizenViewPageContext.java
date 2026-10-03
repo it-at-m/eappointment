@@ -87,7 +87,19 @@ public class CitizenViewPageContext extends Context {
         windowType = new WindowType(NAME, new System(NAME, citizenViewUrl));
         int hashIdx = citizenViewUrl.indexOf('#');
         String base = hashIdx >= 0 ? citizenViewUrl.substring(0, hashIdx) : citizenViewUrl;
-        String jumpInUrl = base + "#/services/" + serviceId + "/locations/" + locationId;
+        String route = "#/services/" + serviceId + "/locations/" + locationId;
+        // A hash change on the open page does not remount the widget, so a second booking
+        // stays on the confirmation of the first. A new query loads the jump-in from scratch.
+        String jumpInUrl = base + route;
+        try {
+            String currentUrl = DRIVER.getCurrentUrl();
+            if (currentUrl != null && currentUrl.startsWith(base)) {
+                String separator = base.contains("?") ? "&" : "?";
+                jumpInUrl = base + separator + "zmsjump=" + java.lang.System.nanoTime() + route;
+            }
+        } catch (RuntimeException ignored) {
+            ScenarioLogManager.getLogger().debug("Jump-in has no current page yet.");
+        }
         try {
             DRIVER.navigate().to(jumpInUrl);
         } catch (TimeoutException e) {
