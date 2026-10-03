@@ -522,6 +522,18 @@ public class AdminSteps {
         ADMIN_PAGE.clickInNavigationOnOverallCalendar();
     }
 
+    @When("I show location {string} with id {int} in the overall view for one day.")
+    public void iShowLocationInTheOverallViewForOneDay(String location, int scopeId) {
+        COUNTER_PROCESSING_STATION_PAGE.showLocationInOverallViewForOneDay(
+                TestDataHelper.transformTestData(location), scopeId);
+    }
+
+    @Then("the overall view links that location to its opening hours for that day with the label {string}.")
+    public void theOverallViewLinksThatLocationToItsOpeningHours(String linkLabel) {
+        COUNTER_PROCESSING_STATION_PAGE.assertOverallViewLinksLocationToOpeningHours(
+                TestDataHelper.transformTestData(linkLabel));
+    }
+
     @Then("the overall view shows the just booked appointment with a duration of {int} minutes.")
     public void zeigt_die_gesamtuebersicht_die_dauer(int minutes) {
         COUNTER_PROCESSING_STATION_PAGE.assertOverallCalendarAppointmentSpansMinutes(minutes);
