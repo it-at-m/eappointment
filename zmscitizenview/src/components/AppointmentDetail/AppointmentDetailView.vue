@@ -181,6 +181,7 @@
         :appointment="appointment"
         :selected-provider="selectedProvider"
         :variant-id="variantId"
+        :variant-overwrite="selectedService?.variantOverwrite"
         :t="t"
         @cancel-appointment="openCancelModal"
         @focus-location="focusLocationTitle"
@@ -236,7 +237,7 @@
               >
                 <template v-if="isVideoVariant">
                   <p>
-                    <strong>{{ t("appointmentTypes.3") }}</strong
+                    <strong>{{ variant?.name }}</strong
                     ><br />
                     {{ t("appointmentDetailVideoLocationText") }}
                   </p>
@@ -259,7 +260,7 @@
 
                 <template v-else-if="isTelephoneVariant">
                   <p>
-                    <strong>{{ t("appointmentTypes.2") }}</strong
+                    <strong>{{ variant?.name }}</strong
                     ><br />
                     {{ t("appointmentDetailTelephoneLocationText") }}<br />
                     <br />
@@ -433,6 +434,7 @@ import { formatAppointmentDateTime } from "@/utils/formatAppointmentDateTime";
 import { getProviders } from "@/utils/getProviders";
 import { resolveOfficeById } from "@/utils/resolveOfficeById";
 import sanitizeHtml from "@/utils/sanitizeHtml";
+import { useVariant } from "@/utils/useVariant";
 
 const props = defineProps<{
   globalState: GlobalState;
@@ -440,6 +442,8 @@ const props = defineProps<{
   rescheduleAppointmentUrl: string;
   t: (key: string) => string;
 }>();
+
+const getVariant = useVariant(props.t);
 
 const services = ref<Service[]>([]);
 const relations = ref<Relation[]>([]);
@@ -456,6 +460,9 @@ const isMobile = ref(false);
 
 const variantId = computed<number | null>(
   () => selectedService.value?.variantId ?? null
+);
+const variant = computed(() =>
+  getVariant(variantId.value, selectedService.value?.variantOverwrite)
 );
 
 const isTelephoneVariant = computed(
