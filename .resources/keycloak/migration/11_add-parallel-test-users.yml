@@ -713,7 +713,8 @@ changes:
   # Technische Administration is system_admin. Terminadministration is appointment_admin.
   # The Keycloak role "user" only lets the account sign in. Flyway V30 assigns user_admin
   # and that account's department. A feature that says "user_admin" takes a free one at random.
-  # Numbered in the same order as the departments, ataf_user_admin_1 onward.
+  # Numbered in BehoerdenID order for departments that belong to an organisation.
+  # The base Testbehoerde has no organisation and is not in this pool.
   - addUser:
       name: ataf_user_admin_1
       lastName: Admin

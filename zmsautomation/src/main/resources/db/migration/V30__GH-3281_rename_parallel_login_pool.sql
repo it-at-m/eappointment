@@ -190,8 +190,10 @@ FROM nutzer u
          JOIN role r ON r.name = 'agent_queue'
 WHERE u.Name = 'ataf_agent_queue_1@keycloak';
 
--- One Benutzerverwaltung account per department. The scenario takes a free one
--- at random and the Behörde list is that account's department.
+-- One Benutzerverwaltung account per department that belongs to an organisation.
+-- The base Testbehoerde has no organisation, so it is not in this pool and does
+-- not add an ataf_user_admin_* login. Keycloak has the same logins.
+-- The scenario takes a free one at random and the Behörde list is that account's department.
 -- ZMS role user_admin. Berechtigung stays 1.
 -- Technische Administration is system_admin. Terminadministration is appointment_admin.
 -- Keycloak grants only the client role user. This migration assigns user_admin.
@@ -222,8 +224,9 @@ SELECT
     CURRENT_TIMESTAMP,
     NULL
 FROM (
-    SELECT BehoerdenID, ROW_NUMBER() OVER (ORDER BY BehoerdenID) AS n
-    FROM behoerde
+    SELECT b.BehoerdenID, ROW_NUMBER() OVER (ORDER BY b.BehoerdenID) AS n
+    FROM behoerde b
+             INNER JOIN organisation o ON o.OrganisationsID = b.OrganisationsID
 ) departments;
 
 INSERT IGNORE INTO `nutzerzuordnung` (`nutzerid`, `behoerdenid`)
