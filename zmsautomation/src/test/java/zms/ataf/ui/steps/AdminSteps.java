@@ -1677,12 +1677,29 @@ public class AdminSteps {
     }
 
     private static Connection openZmsConnection() throws SQLException {
-        String url = String.format("jdbc:mysql://%s:%s/%s",
-                System.getenv().getOrDefault("MYSQL_HOST", "db"),
-                System.getenv().getOrDefault("MYSQL_PORT", "3306"),
-                System.getenv().getOrDefault("MYSQL_DATABASE", "zmsbo"));
-        return DriverManager.getConnection(url,
-                System.getenv().getOrDefault("MYSQL_USER", "zmsbo"),
-                System.getenv().getOrDefault("MYSQL_PASSWORD", "zmsbo"));
+        String host = envOrDefault("MYSQL_HOST", "db");
+        String port = mysqlPort(envOrDefault("MYSQL_PORT", "3306"));
+        String database = envOrDefault("MYSQL_DATABASE", "db");
+        String user = envOrDefault("MYSQL_USER", "db");
+        String url = "jdbc:mysql://" + host + ":" + port + "/" + database;
+        ScenarioLogManager.getLogger().info("Opening suite database {} as {}", url, user);
+        return DriverManager.getConnection(url, user, envOrDefault("MYSQL_PASSWORD", "db"));
+    }
+
+    /** The wrapper exports {@code MYSQL_PORT} as {@code tcp://db:3306} or as a bare port. */
+    private static String mysqlPort(String raw) {
+        int colon = raw.lastIndexOf(':');
+        if (colon >= 0 && colon < raw.length() - 1) {
+            return raw.substring(colon + 1);
+        }
+        return raw;
+    }
+
+    private static String envOrDefault(String name, String fallback) {
+        String value = System.getenv(name);
+        if (value == null || value.isBlank()) {
+            return fallback;
+        }
+        return value.trim();
     }
 }
