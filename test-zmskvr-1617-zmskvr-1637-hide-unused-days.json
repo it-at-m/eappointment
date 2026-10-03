@@ -1,0 +1,35 @@
+{
+  "branch": "test-zmskvr-1617-zmskvr-1637-hide-unused-days",
+  "branchSlug": "test-zmskvr-1617-zmskvr-1637-hide-unused-days",
+  "runId": "37086608682",
+  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37086608682",
+  "runStartedAt": "2026-10-03T01:34:28Z",
+  "publishedAt": "2026-10-03T01:43:01.875Z",
+  "features": {
+    "feature-ui-zmsstatistic-service-stats-zmskvr-1637-zmskvr-1617-unused-days-hidden": {
+      "status": "passed",
+      "shard": "custom",
+      "browser": "chrome",
+      "browsers": {
+        "chrome": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "37086608682",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37086608682",
+          "runStartedAt": "2026-10-03T01:34:28Z"
+        },
+        "firefox": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "37086608682",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37086608682",
+          "runStartedAt": "2026-10-03T01:34:28Z"
+        }
+      },
+      "rel": "ui/zmsstatistic/service-stats/zmskvr-1637_zmskvr-1617_unused_days_hidden.feature",
+      "runId": "37086608682",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37086608682",
+      "runStartedAt": "2026-10-03T01:34:28Z"
+    }
+  }
+}
