@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-10-03T20:05:59.802Z",
+  "publishedAt": "2026-10-03T20:25:47.696Z",
   "branches": [
     {
       "name": "next",
@@ -438,6 +438,12 @@
       "slug": "test-zmskvr-1619-zmskvr-1653-overall-opening-hours",
       "runId": "37085086155",
       "runStartedAt": "2026-10-03T01:10:43Z"
+    },
+    {
+      "name": "test-zmskvr-1629-zmskvr-1663-daily-capacity-total",
+      "slug": "test-zmskvr-1629-zmskvr-1663-daily-capacity-total",
+      "runId": "37150787776",
+      "runStartedAt": "2026-10-03T20:13:50Z"
     },
     {
       "name": "test-zmskvr-1630-zmskvr-1030-reserved-hash-resume",
