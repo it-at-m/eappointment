@@ -3,7 +3,11 @@ package zms.ataf.ui.pages.statistics.evaluations;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -55,6 +59,65 @@ final class RequestStatisticWorkbook {
             }
             return labeled;
         }
+    }
+
+    /**
+     * Cells of the column header that starts with Dienstleistung.
+     * A date stored as an Excel serial is returned as dd.MM.yyyy.
+     */
+    static List<String> columnHeaders(Path xlsx) throws IOException {
+        try (ZipFile zip = new ZipFile(xlsx.toFile())) {
+            String[] shared = sharedStrings(zip);
+            ZipEntry sheet = zip.getEntry("xl/worksheets/sheet1.xml");
+            if (sheet == null) {
+                throw new IOException("Workbook has no sheet1: " + xlsx);
+            }
+            Document document = parse(zip.getInputStream(sheet));
+            Map<Integer, Map<Integer, String>> byRow = new HashMap<>();
+            NodeList cells = elements(document, "c");
+            for (int i = 0; i < cells.getLength(); i++) {
+                Element cell = (Element) cells.item(i);
+                String ref = cell.getAttribute("r");
+                int row = rowNumber(ref);
+                byRow.computeIfAbsent(row, ignored -> new HashMap<>())
+                        .put(columnIndex(ref), display(cellText(cell, shared)));
+            }
+            for (Map<Integer, String> columns : byRow.values()) {
+                if ("Dienstleistung".equals(columns.get(0))) {
+                    int last = columns.keySet().stream().mapToInt(Integer::intValue).max().orElse(0);
+                    List<String> headers = new ArrayList<>();
+                    for (int column = 0; column <= last; column++) {
+                        headers.add(columns.getOrDefault(column, ""));
+                    }
+                    return headers;
+                }
+            }
+            throw new IOException("Workbook has no Dienstleistung header: " + xlsx);
+        }
+    }
+
+    private static int columnIndex(String ref) {
+        int index = 0;
+        for (int i = 0; i < ref.length(); i++) {
+            char letter = ref.charAt(i);
+            if (letter < 'A' || letter > 'Z') {
+                break;
+            }
+            index = index * 26 + (letter - 'A' + 1);
+        }
+        return index - 1;
+    }
+
+    private static String display(String raw) {
+        if (!raw.matches("\\d+(\\.\\d+)?")) {
+            return raw;
+        }
+        double serial = Double.parseDouble(raw);
+        long days = Math.round(serial);
+        if (days < 20000 || days > 80000) {
+            return raw;
+        }
+        return LocalDate.of(1899, 12, 30).plusDays(days).format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
     }
 
     private static String[] sharedStrings(ZipFile zip) throws IOException {

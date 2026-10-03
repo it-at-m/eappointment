@@ -5,7 +5,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.Month;
+import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
 import java.util.Comparator;
 import java.util.List;
@@ -35,6 +37,8 @@ public class ServiceStatisticsPage extends StatisticsPage {
     private static final String WORKBOOK_NAME = "requeststatistic_.*\\.xlsx";
 
     private Map<String, String> workbooksBeforeClick = Map.of();
+
+    private Path downloadedWorkbook;
 
     private String pendingWorkbookName;
 
@@ -78,6 +82,7 @@ public class ServiceStatisticsPage extends StatisticsPage {
 
     @Override
     public void clickDownloadButton() {
+        downloadedWorkbook = null;
         workbooksBeforeClick = workbookNames();
         pendingWorkbookName = null;
         pendingWorkbookSize = -1;
@@ -117,6 +122,29 @@ public class ServiceStatisticsPage extends StatisticsPage {
         }
     }
 
+    public void assertDayColumn(LocalDate day, boolean visible) {
+        String header = day.format(DateTimeFormatter.ofPattern("dd.MM."));
+        List<WebElement> columns = DRIVER.findElements(By.xpath(
+                "//table[contains(@class,'table--base')]//thead//th[contains(@class,'statistik') and normalize-space(.)='"
+                        + header + "']"));
+        if (visible) {
+            Assert.assertFalse(columns.isEmpty(), "Expected the day column " + header);
+            return;
+        }
+        Assert.assertTrue(columns.isEmpty(), "The day column " + header + " should be hidden");
+    }
+
+    public void assertDownloadedDayColumn(LocalDate day, boolean visible) throws IOException {
+        String header = day.format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
+        List<String> headers = RequestStatisticWorkbook.columnHeaders(workbookFromThisDownload());
+        boolean present = headers.contains(header);
+        if (visible) {
+            Assert.assertTrue(present, "Expected the downloaded day column " + header + ". Headers: " + headers);
+            return;
+        }
+        Assert.assertFalse(present, "The downloaded day column " + header + " should be hidden. Headers: " + headers);
+    }
+
     public void assertDownloadedStatisticValues(List<Map<String, String>> rows) throws IOException {
         Map<String, String[]> workbook = RequestStatisticWorkbook.rows(workbookFromThisDownload());
         for (Map<String, String> row : rows) {
@@ -130,17 +158,22 @@ public class ServiceStatisticsPage extends StatisticsPage {
     }
 
     private Path workbookFromThisDownload() {
+        if (downloadedWorkbook != null) {
+            return downloadedWorkbook;
+        }
         WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
         wait.withMessage("The statistic workbook from this download did not finish.");
         if (DriverUtil.isLocalExecution()) {
             Path downloads = Paths.get(System.getProperty("user.home"), "Downloads");
-            return wait.until(ignored -> stableNewLocalWorkbook(downloads));
+            downloadedWorkbook = wait.until(ignored -> stableNewLocalWorkbook(downloads));
+            return downloadedWorkbook;
         }
         HasDownloads.DownloadedFile file = wait.until(ignored -> stableNewRemoteWorkbook());
         try {
             Path directory = Files.createTempDirectory("requeststatistic-");
             ((HasDownloads) DRIVER).downloadFile(file.getName(), directory);
-            return directory.resolve(file.getName());
+            downloadedWorkbook = directory.resolve(file.getName());
+            return downloadedWorkbook;
         } catch (IOException exception) {
             throw new IllegalStateException("Could not copy the statistic workbook " + file.getName(), exception);
         }
