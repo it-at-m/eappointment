@@ -168,7 +168,7 @@ Required environment variables for ATAF tests:
 ### UI tests (SSO)
 For local UI tests (Statistik, Admin), the default SSO user is the Keycloak `ataf` user (password `vorschau`), created by Keycloak migration `.resources/keycloak/migration/07_add-system-users.yml` and related DB data in Flyway (e.g. `V16__add_keycloak_system_users.sql`). Credentials are set in `testautomation.properties` (`testautomation.userName` / `testautomation.userPassword`) or via ATAF environment variables. For other environments (e.g. ssodev.muenchen.de), override with the appropriate credentials.
 
-For role-specific local dev and API tests, use Keycloak users named after the role (password `vorschau`), e.g. `agent_basic`, from `.resources/keycloak/migration/08_add-role-test-users.yml` with matching ZMS accounts `<role>@keycloak` in Flyway `V22__add_role_test_users.sql`. Roles: `agent_basic`, `agent_queue`, `agent_queue_plus`, `appointment_admin`, `reporting_viewer`, `user_admin`, `audit_viewer`, `system_admin`.
+For role-specific local dev and API tests, use Keycloak users named after the role (password `vorschau`), e.g. `agent_basic`, from `.resources/keycloak/migration/08_add-role-test-users.yml` with matching ZMS accounts `<role>@keycloak` in Flyway `V22__add_role_test_users.sql`. Roles: `agent_basic`, `agent_queue`, `agent_queue_plus`, `appointment_admin`, `reporting_viewer`, `user_admin`, `audit_viewer`, `system_admin`. A feature that says `user_admin` does not use that single account. There is one `ataf_user_admin_*` account per department. The scenario takes a free one at random, uses that account's department, and waits if every such account is in use. Those accounts have the ZMS role `user_admin` (Benutzerverwaltung). Technische Administration is `system_admin`. Terminadministration is `appointment_admin`. Keycloak only gives the pool the client role `user`.
 
 ### Example
 
@@ -203,6 +203,7 @@ The ATAF tests automatically run Flyway migrations before executing tests. The m
   - `@zmscalldisplay` - Call display UI (`features/ui/zmscalldisplay/**`) and matching zmsbackend REST (`rest/zmsapi/calldisplay/`)
   - `@booking` - Booking / waiting-number flows (UI: `zmsadmin/booking`, `zmscitizenview/booking`, `zmsticketprinter/booking`; REST: `rest/zmsapi/booking/{frontend}/`, `rest/zmscitizenapi/booking/`)
   - `@rebooking` - Umbuchung / Weiterleiten (UI: `zmscitizenview/rebooking`, `zmsadmin/rebooking`; REST: `rest/zmscitizenapi/rebooking/`)
+  - `@user-administration` - Nutzer*innen (UI: `zmsadmin/user-administration`)
   - `@citizen-login` - Bürger-Login (DBS) actor for logged-in citizen scenarios
   - `@jumpin` - Booking scenarios that open jump-in URL (combination step first)
   - `@ruppertstrasse` - Ruppertstraße Passkalender (10502) style flows
