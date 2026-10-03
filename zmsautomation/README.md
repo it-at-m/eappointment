@@ -201,6 +201,7 @@ The ATAF tests automatically run Flyway migrations before executing tests. The m
   - `@zmsticketprinter` - Ticketprinter / kiosk UI (`features/ui/zmsticketprinter/**`) and matching zmsbackend REST (`rest/zmsapi/**/zmsticketprinter/`)
   - `@booking` - Booking / waiting-number flows (UI: `zmsadmin/booking`, `zmscitizenview/booking`, `zmsticketprinter/booking`; REST: `rest/zmsapi/booking/{frontend}/`, `rest/zmscitizenapi/booking/`)
   - `@rebooking` - Umbuchung / Weiterleiten (UI: `zmscitizenview/rebooking`, `zmsadmin/rebooking`; REST: `rest/zmscitizenapi/rebooking/`)
+  - `@user-administration` - Nutzer*innen (UI: `zmsadmin/user-administration`)
   - `@citizen-login` - Bürger-Login (DBS) actor for logged-in citizen scenarios
   - `@jumpin` - Booking scenarios that open jump-in URL (combination step first)
   - `@ruppertstrasse` - Ruppertstraße Passkalender (10502) style flows
