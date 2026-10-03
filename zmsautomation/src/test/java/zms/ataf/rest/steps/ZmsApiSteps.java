@@ -2,6 +2,10 @@ package zms.ataf.rest.steps;
 
 import static io.restassured.RestAssured.given;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.DayOfWeek;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -15,6 +19,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import org.assertj.core.api.Assertions;
 
@@ -448,6 +453,110 @@ public class ZmsApiSteps {
         TestDataHelper.setTestData("appointment_epoch", Long.toString(appointment));
         ScenarioLogManager.getLogger().info(
                 "Terminkunde {} booked at epoch {} for scope {}", familyName, appointment, scopeId);
+    }
+
+    @When("I send the confirmation mail for the current appointment")
+    public void iSendTheConfirmationMailForTheCurrentAppointment() {
+        Assertions.assertThat(lastProcess)
+                .as("Book the appointment before sending the confirmation mail")
+                .isNotNull();
+        int processId = lastProcess.path("id").asInt();
+        String processAuthKey = lastProcess.path("authKey").asText("");
+        Assertions.assertThat(processId).as("process id").isPositive();
+        Assertions.assertThat(processAuthKey).as("process authKey").isNotBlank();
+        rememberExpectedDuration(lastProcess);
+        String authKey = getOrLoginXAuthKey();
+        response = given()
+                .baseUri(baseUri != null ? baseUri : TestConfig.getBaseUri())
+                .header("X-AuthKey", authKey)
+                .contentType("application/json")
+                .body(toJson(lastProcess))
+            .when()
+                .post("/process/" + processId + "/" + processAuthKey + "/confirmation/mail/");
+        CommonApiSteps.setResponse(response);
+        Assertions.assertThat(response.getStatusCode())
+                .as("POST /process/%d/confirmation/mail/ body=%s", processId, truncate(response.asString(), 1000))
+                .isEqualTo(200);
+        TestDataHelper.setTestData("mail_process_id", Integer.toString(processId));
+    }
+
+    @When("I queue the reminder mails that are due")
+    public void iQueueTheReminderMailsThatAreDue() {
+        Path backend = Path.of(System.getProperty("user.dir")).resolve("../zmsbackend").normalize();
+        if (!Files.isRegularFile(backend.resolve("bin/queueMailReminder"))) {
+            backend = Path.of("/var/www/html/zmsbackend");
+        }
+        Path script = backend.resolve("bin/queueMailReminder").toAbsolutePath();
+        Assertions.assertThat(Files.isRegularFile(script))
+                .as("reminder queue script %s", script)
+                .isTrue();
+        ProcessBuilder builder = new ProcessBuilder(phpBinary(), script.toString(), "120", "--commit");
+        builder.directory(backend.toFile());
+        builder.environment().putIfAbsent("ZMS_ENV", "dev");
+        builder.environment().put("ZMS_CRONROOT", "1");
+        builder.redirectErrorStream(true);
+        Process queued = null;
+        try {
+            queued = builder.start();
+            StringBuffer output = new StringBuffer();
+            Process reading = queued;
+            Thread reader = new Thread(() -> {
+                try {
+                    output.append(new String(reading.getInputStream().readAllBytes(), StandardCharsets.UTF_8));
+                } catch (IOException io) {
+                    output.append(io.getMessage());
+                }
+            }, "queueMailReminder-output");
+            reader.setDaemon(true);
+            reader.start();
+            boolean finished = queued.waitFor(90, TimeUnit.SECONDS);
+            if (!finished) {
+                queued.destroyForcibly();
+            }
+            reader.join(2000L);
+            String logged = truncate(output.toString(), 1500);
+            Assertions.assertThat(finished)
+                    .as("queueMailReminder did not finish. output=%s", logged)
+                    .isTrue();
+            Assertions.assertThat(queued.exitValue())
+                    .as("queueMailReminder output=%s", logged)
+                    .isEqualTo(0);
+            ScenarioLogManager.getLogger().info("queueMailReminder finished: {}", truncate(output.toString(), 500));
+        } catch (InterruptedException interrupted) {
+            if (queued != null) {
+                queued.destroyForcibly();
+            }
+            Thread.currentThread().interrupt();
+            throw new IllegalStateException("Interrupted while queueing reminder mails", interrupted);
+        } catch (IOException io) {
+            throw new IllegalStateException("Could not run queueMailReminder", io);
+        }
+    }
+
+    private static String phpBinary() {
+        if (Files.isExecutable(Path.of("/usr/local/bin/php"))) {
+            return "/usr/local/bin/php";
+        }
+        return "/usr/bin/php";
+    }
+
+    private void rememberExpectedDuration(JsonNode process) {
+        JsonNode appointment = process.path("appointments").path(0);
+        int slotCount = appointment.path("slotCount").asInt(0);
+        int slotMinutes = appointment.path("availability").path("slotTimeInMinutes").asInt(0);
+        if (slotMinutes <= 0) {
+            slotMinutes = process.path("scope").path("provider").path("data").path("slotTimeInMinutes").asInt(0);
+        }
+        String expectedMinutes = slotCount > 0 && slotMinutes > 0
+                ? Integer.toString(slotCount * slotMinutes)
+                : "";
+        Assertions.assertThat(expectedMinutes)
+                .as("expected duration must be computable from slotCount %s and slotTimeInMinutes %s",
+                        slotCount, slotMinutes)
+                .isNotBlank();
+        TestDataHelper.setTestData("expected_duration_minutes", expectedMinutes);
+        ScenarioLogManager.getLogger().info(
+                "Estimated duration inputs slotCount={} slotTimeInMinutes={}", slotCount, slotMinutes);
     }
 
     @When("for scope {int} and service {string}, {int} waiting customers are created.")
