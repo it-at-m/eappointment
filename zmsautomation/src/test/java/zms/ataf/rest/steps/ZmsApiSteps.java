@@ -1267,6 +1267,57 @@ public class ZmsApiSteps {
             .isNull();
     }
 
+    @When("I request a call display for locations {string}")
+    public void iRequestACallDisplayForLocations(String scopeList) {
+        ArrayNode scopes = MAPPER.createArrayNode();
+        for (String id : scopeList.split(",")) {
+            String token = id.trim();
+            try {
+                scopes.add(MAPPER.createObjectNode().put("id", Integer.parseInt(token)));
+            } catch (NumberFormatException e) {
+                Assertions.fail("Location id must be a number, got: " + token, e);
+            }
+        }
+        ObjectNode body = MAPPER.createObjectNode();
+        body.set("scopes", scopes);
+        response = given()
+            .baseUri(apiBaseUri())
+            .contentType("application/json")
+            .body(toJson(body))
+        .when()
+            .post("/calldisplay/");
+        CommonApiSteps.setResponse(response);
+        if (response.getStatusCode() != 200) {
+            ScenarioLogManager.getLogger().error(
+                "POST /calldisplay/ failed with {}: {}",
+                response.getStatusCode(),
+                truncate(response.asString(), 1000));
+        }
+    }
+
+    @Then("the call display response should include location {int}")
+    public void theCallDisplayResponseShouldIncludeLocation(int scopeId) {
+        Assertions.assertThat(calldisplayScopeIds())
+            .as("POST /calldisplay/ scopes")
+            .contains(scopeId);
+    }
+
+    @Then("the call display response should not include location {int}")
+    public void theCallDisplayResponseShouldNotIncludeLocation(int scopeId) {
+        Assertions.assertThat(calldisplayScopeIds())
+            .as("missing location %d should be omitted", scopeId)
+            .doesNotContain(scopeId);
+    }
+
+    private List<Integer> calldisplayScopeIds() {
+        JsonNode scopes = parseDataNode(response).path("scopes");
+        List<Integer> ids = new ArrayList<>();
+        if (scopes.isArray()) {
+            scopes.forEach(scope -> ids.add(scope.path("id").asInt()));
+        }
+        return ids;
+    }
+
     @Then("the process should have a waiting number")
     public void theProcessShouldHaveAWaitingNumber() {
         JsonNode process = lastProcess != null ? lastProcess : parseDataNode(response);
