@@ -220,7 +220,7 @@ The ATAF tests automatically run Flyway migrations before executing tests. The m
 
 #### REST API (`rest/zmsapi/`, served by `zmsbackend`)
 - `status.feature` / `workstation-login.feature` - health and login
-- `booking/zmsadmin/ZMSKVR-1049.feature` - intern counter booking of a Mandanten variant missing from `provider.data.services`
+- `booking/zmsadmin/zmskvr-1610_zmskvr-1049_variant_counter_booking.feature` - intern counter booking of a Mandanten variant missing from `provider.data.services`
 - `booking/zmsticketprinter/zmskvr-1652_zmskvr-167_waiting_number.feature` - Orleansplatz KP Abholung (scope 127): Spontankunden hours, `POST /ticketprinter/` (`s127` and `s999,s127`), waiting numbers, then disabled buttons after hours are deleted
 - `citizen-call/zmsadmin/ZMSKVR-1328.feature` - book, call and finish a scheduled appointment at the counter
 
