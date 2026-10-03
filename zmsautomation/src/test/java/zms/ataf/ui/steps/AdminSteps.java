@@ -1,10 +1,16 @@
 package zms.ataf.ui.steps;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Locale;
 import java.time.DayOfWeek;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
@@ -40,6 +46,7 @@ import io.cucumber.java.en.When;
 import zms.ataf.helpers.AccountCheckout;
 import zms.ataf.helpers.BerlinTime;
 import zms.ataf.helpers.RandomNameHelper;
+import zms.ataf.rest.steps.CitizenApiSteps;
 import zms.ataf.ui.pages.admin.AdminPage;
 import zms.ataf.ui.pages.admin.AdminPageContext;
 import zms.ataf.ui.pages.admin.administration.AuthoritiesAndLocationsPage;
@@ -58,6 +65,8 @@ public class AdminSteps {
     private final ProcessingStationSection PROCESSING_STATION_SECTION;
     private final CustomerSearchPage CUSTOMER_SEARCH_PAGE;
     private int rememberedWaitingClients;
+    private int reservedScopeId;
+    private String reservedAppointmentClock;
 
     public AdminSteps() {
         ADMIN_PAGE = new AdminPage(DriverUtil.getDriver());
@@ -1561,5 +1570,119 @@ public class AdminSteps {
                 "//textarea[@name='preferences[appointment][infoForAppointment]']", LocatorType.XPATH);
         Assert.assertEquals(text, expectedText,
                 "Der Text für die Terminbuchung am Standort " + standort + " stimmt nicht überein. Erwartet: '" + expectedText + "', erhalten: '" + text + "'");
+    }
+
+    /**
+     * The suite clock ({@code ZMS_TIMEADJUST}) does not move while the scenario waits.
+     * A reserved Wohnsitzanmeldung is therefore placed two minutes before that clock, with a
+     * stored waiting time of two minutes. A confirmed row would show {@code +2 Min.} in Uhrzeit.
+     */
+    @When("the reserved appointment is moved to two minutes before the suite clock.")
+    public void theReservedAppointmentIsMovedToTwoMinutesBeforeTheSuiteClock() {
+        var process = CitizenApiSteps.getBookingProcess();
+        if (process == null || process.getProcessId() == null) {
+            throw new IllegalStateException("No reserved appointment was captured from the citizen view.");
+        }
+        int processId = process.getProcessId();
+        LocalDateTime suiteClock = suiteClock();
+        LocalDateTime appointment = suiteClock.minusMinutes(2);
+        if (appointment.toLocalDate().isBefore(suiteClock.toLocalDate())) {
+            appointment = suiteClock.toLocalDate().atTime(0, 0, 1);
+        }
+        long gapSeconds = Duration.between(appointment, suiteClock).getSeconds();
+        if (gapSeconds < 60) {
+            throw new IllegalStateException(
+                    "Suite clock " + suiteClock + " is in the first minute of the day, so a reserved appointment"
+                            + " cannot be one minute overdue on the same day.");
+        }
+        reservedAppointmentClock = appointment.format(DateTimeFormatter.ofPattern("HH:mm"));
+        String sql = """
+                UPDATE buerger
+                   SET Datum = ?, Uhrzeit = ?, waiting_time = '00:02:00'
+                 WHERE BuergerID = ?
+                   AND bestaetigt = 0
+                   AND vorlaeufigeBuchung = 1
+                """;
+        try (Connection connection = openZmsConnection();
+                PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setString(1, appointment.toLocalDate().toString());
+            statement.setString(2, appointment.toLocalTime().format(DateTimeFormatter.ofPattern("HH:mm:ss")));
+            statement.setInt(3, processId);
+            int updated = statement.executeUpdate();
+            if (updated != 1) {
+                throw new IllegalStateException(
+                        "Process " + processId + " is not a reserved appointment (updated rows: " + updated + ").");
+            }
+            try (PreparedStatement scope = connection.prepareStatement(
+                    "SELECT StandortID FROM buerger WHERE BuergerID = ?")) {
+                scope.setInt(1, processId);
+                try (ResultSet rows = scope.executeQuery()) {
+                    if (!rows.next()) {
+                        throw new IllegalStateException("Process " + processId + " disappeared after the time update.");
+                    }
+                    reservedScopeId = rows.getInt(1);
+                }
+            }
+        } catch (SQLException e) {
+            throw new IllegalStateException("Could not move reserved appointment " + processId + " before the suite clock.", e);
+        }
+        ScenarioLogManager.getLogger().info(
+                "Reserved process {} at scope {} is now at {} (suite clock {})",
+                processId, reservedScopeId, reservedAppointmentClock, suiteClock);
+    }
+
+    @When("I sign in at the workstation of the reserved appointment.")
+    public void iSignInAtTheWorkstationOfTheReservedAppointment() throws Exception {
+        if (reservedScopeId <= 0) {
+            throw new IllegalStateException("The reserved appointment has no Standort.");
+        }
+        wenn_sie_im_zeitmanagementsystem_auf_die_schaltflaeche_string_klicken("Anmelden");
+        ADMIN_PAGE.selectLocationByScopeId(reservedScopeId);
+        wenn_sie_in_feld_string_den_text_string_eingeben("Platz-Nr. oder Tresen", "1");
+        wenn_sie_im_zeitmanagementsystem_auf_die_schaltflaeche_string_klicken("Auswahl bestätigen");
+    }
+
+    @Then("the reserved appointment shows no waiting time in the queue time column.")
+    public void theReservedAppointmentShowsNoWaitingTimeInTheQueueTimeColumn() {
+        if (reservedAppointmentClock == null) {
+            throw new IllegalStateException("The reserved appointment time was not remembered.");
+        }
+        WebDriverWait wait = new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(30));
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".queue-table")));
+        List<WebElement> rows = DriverUtil.getDriver().findElements(By.cssSelector(".queue-table tr.reserved"));
+        WebElement match = null;
+        for (WebElement row : rows) {
+            if (row.getText().contains(reservedAppointmentClock)) {
+                match = row;
+                break;
+            }
+        }
+        Assert.assertNotNull(match,
+                "Reserved appointment at " + reservedAppointmentClock + " is not in the queue.");
+        List<WebElement> waitingTime = match.findElements(By.cssSelector(".queue-table-amendment-time"));
+        Assert.assertTrue(waitingTime.isEmpty(),
+                "Reserved appointment at " + reservedAppointmentClock
+                        + " shows a waiting time in Uhrzeit: " + match.getText());
+        Assert.assertFalse(match.getText().matches("(?s).*\\+\\s*\\d+\\s*Min\\..*"),
+                "Reserved appointment at " + reservedAppointmentClock
+                        + " shows +Min. in Uhrzeit: " + match.getText());
+    }
+
+    private static LocalDateTime suiteClock() {
+        String adjusted = System.getenv("ZMS_TIMEADJUST");
+        if (adjusted != null && !adjusted.isBlank()) {
+            return LocalDateTime.parse(adjusted.trim(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        }
+        return LocalDateTime.now(BerlinTime.ZONE);
+    }
+
+    private static Connection openZmsConnection() throws SQLException {
+        String url = String.format("jdbc:mysql://%s:%s/%s",
+                System.getenv().getOrDefault("MYSQL_HOST", "db"),
+                System.getenv().getOrDefault("MYSQL_PORT", "3306"),
+                System.getenv().getOrDefault("MYSQL_DATABASE", "zmsbo"));
+        return DriverManager.getConnection(url,
+                System.getenv().getOrDefault("MYSQL_USER", "zmsbo"),
+                System.getenv().getOrDefault("MYSQL_PASSWORD", "zmsbo"));
     }
 }
