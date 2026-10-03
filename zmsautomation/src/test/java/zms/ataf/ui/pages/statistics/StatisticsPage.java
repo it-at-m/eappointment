@@ -203,6 +203,18 @@ public class StatisticsPage extends BasePage {
                 .until(ExpectedConditions.presenceOfElementLocated(By.xpath("//h1[contains(normalize-space(),'Dienstleistungsstatistik')]")));
     }
 
+    public void clickOnCapacityStatistics() {
+        ScenarioLogManager.getLogger().info("Trying to click on \"Terminkapazität\" button in the sidebar...");
+        CONTEXT.set();
+        By linkLocator = By.xpath("//a[normalize-space()='Terminkapazität']");
+        WebElement link = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(ExpectedConditions.elementToBeClickable(linkLocator));
+        scrollToCenterByVisibleElement(link);
+        ((JavascriptExecutor) DRIVER).executeScript("arguments[0].click();", link);
+        new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(ExpectedConditions.presenceOfElementLocated(By.xpath("//h1[contains(normalize-space(),'Terminkapazität')]")));
+    }
+
     // --- Second scope selection (statistics table/report filter; different UI, after opening Kundenstatistik/Dienstleistungsstatistik) ---
 
     /**
@@ -304,6 +316,20 @@ public class StatisticsPage extends BasePage {
         setDateInputByJs("to", toIso);
 
         ScenarioLogManager.getLogger().info("Submitting statistics filter with Übernehmen button via JavaScript click...");
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        WebElement submitButton = wait.until(ExpectedConditions.elementToBeClickable(
+                By.cssSelector("form.form--base.panel--heavy .reportfilter-actions button[type='submit']")));
+        scrollToCenterByVisibleElement(submitButton);
+        String urlBeforeSubmit = DRIVER.getCurrentUrl();
+        List<String> requiredScopeIds = scopeIdsForNextFilter;
+        scopeIdsForNextFilter = List.of();
+        ((JavascriptExecutor) DRIVER).executeScript("arguments[0].click();", submitButton);
+        waitForReloadedStatistic(urlBeforeSubmit, requiredScopeIds);
+    }
+
+    /** Submits the report filter as it stands, including a Standort chosen just before. */
+    public void applyStatisticsFilter() {
+        ScenarioLogManager.getLogger().info("Submitting the statistics filter...");
         WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
         WebElement submitButton = wait.until(ExpectedConditions.elementToBeClickable(
                 By.cssSelector("form.form--base.panel--heavy .reportfilter-actions button[type='submit']")));
