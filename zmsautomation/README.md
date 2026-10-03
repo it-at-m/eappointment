@@ -148,6 +148,7 @@ Required environment variables for ATAF tests:
 - `ZMS_CONFIG_SECURE_TOKEN` - Token for `X-Token` on protected API calls such as `GET /status/` (default: `hash`, same as local `.env`). Required for zmsbackend health checks after ZMSKVR-1349.
 - `ADMIN_BASE_URI` / `STATISTIC_BASE_URI` - Defaults use `http://localhost/terminvereinbarung/.../` (typical when tests run inside the `web` container).
 - `TICKETPRINTER_BASE_URI` - Ticketprinter / kiosk base (default: `http://localhost/terminvereinbarung/ticketprinter/`).
+- `CALLDISPLAY_BASE_URI` - Call display base (default: `http://localhost/terminvereinbarung/calldisplay/`).
 - `CITIZEN_VIEW_BASE_URI` / `CITIZENVIEW_PORT` - CitizenView / Vite dev server (defaults: port `8082`, base `http://citizenview:8082/`). Override if your stack uses another port (e.g. prebuilt nginx image on `8080`).
 - `REFARCH_GATEWAY_OFFICES_URL` - Optional override for the extra health ping that hits the gateway (default: `http://refarch-gateway:8080/buergeransicht/api/citizen/offices-and-services/`). Same URL path the browser uses; produces lines in gateway logs.
 - `SKIP_REFARCH_GATEWAY_HEALTH=1` - Skip gateway ping (e.g. no refarch-gateway container).
@@ -199,6 +200,7 @@ The ATAF tests automatically run Flyway migrations before executing tests. The m
   - `@zmsstatistic` - Statistik UI features (`features/ui/zmsstatistic/**`)
   - `@zmscitizenview` - Citizen view webcomponent UI (`features/ui/zmscitizenview/**`)
   - `@zmsticketprinter` - Ticketprinter / kiosk UI (`features/ui/zmsticketprinter/**`) and matching zmsbackend REST (`rest/zmsapi/**/zmsticketprinter/`)
+  - `@zmscalldisplay` - Call display UI (`features/ui/zmscalldisplay/**`) and matching zmsbackend REST (`rest/zmsapi/calldisplay/`)
   - `@booking` - Booking / waiting-number flows (UI: `zmsadmin/booking`, `zmscitizenview/booking`, `zmsticketprinter/booking`; REST: `rest/zmsapi/booking/{frontend}/`, `rest/zmscitizenapi/booking/`)
   - `@rebooking` - Umbuchung / Weiterleiten (UI: `zmscitizenview/rebooking`, `zmsadmin/rebooking`; REST: `rest/zmscitizenapi/rebooking/`)
   - `@citizen-login` - Bürger-Login (DBS) actor for logged-in citizen scenarios
@@ -222,6 +224,7 @@ The ATAF tests automatically run Flyway migrations before executing tests. The m
 - `status.feature` / `workstation-login.feature` - health and login
 - `booking/zmsadmin/zmskvr-1610_zmskvr-1049_variant_counter_booking.feature` - intern counter booking of a Mandanten variant missing from `provider.data.services`
 - `booking/zmsticketprinter/zmskvr-1652_zmskvr-167_waiting_number.feature` - Orleansplatz KP Abholung (scope 127): Spontankunden hours, `POST /ticketprinter/` (`s127` and `s999,s127`), waiting numbers, then disabled buttons after hours are deleted
+- `calldisplay/zmskvr-1581_zmskvr-166_missing_scope.feature` - `POST /calldisplay/` with scopes 999 and 142 returns the existing location and omits the missing one
 - `citizen-call/zmsadmin/ZMSKVR-1328.feature` - book, call and finish a scheduled appointment at the counter
 
 #### Citizen API (`rest/zmscitizenapi/`)
@@ -246,6 +249,9 @@ Additional REST features (availability, offices-and-services, etc.) may be added
 
 #### Ticketprinter UI (`ui/zmsticketprinter/booking/`)
 - `zmskvr-1652_zmskvr-167_waiting_number.feature` - one local Chrome session for Orleansplatz KP Abholung (scope 127): Spontankunden hours, Standort (`s127`), Dienstleistung (`r127-10295182`), mixed button list (`s999,s127` skips the missing scope), then delete hours so the kiosk shows closed
+
+#### Call display UI (`ui/zmscalldisplay/`)
+- `zmskvr-1581_zmskvr-166_missing_scope.feature` - locations 142 and 148 open the display; replacing 148 with missing scope 999 and reloading still shows location 142
 
 ## CI/CD
 
