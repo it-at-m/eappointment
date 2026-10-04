@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-10-04T15:17:49.827Z",
+  "publishedAt": "2026-10-04T16:40:51.457Z",
   "branches": [
     {
       "name": "next",
@@ -432,6 +432,12 @@
       "slug": "test-zmskvr-1596-zmskvr-1612-display-number-search",
       "runId": "37092148415",
       "runStartedAt": "2026-10-03T03:07:32Z"
+    },
+    {
+      "name": "test-zmskvr-1596-zmskvr-1612-search-digit-match",
+      "slug": "test-zmskvr-1596-zmskvr-1612-search-digit-match",
+      "runId": "37217102828",
+      "runStartedAt": "2026-10-04T16:31:50Z"
     },
     {
       "name": "test-zmskvr-1613-zmskvr-1621-overall-view-layout",

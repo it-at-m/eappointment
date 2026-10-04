@@ -1,0 +1,35 @@
+{
+  "branch": "test-zmskvr-1596-zmskvr-1612-search-digit-match",
+  "branchSlug": "test-zmskvr-1596-zmskvr-1612-search-digit-match",
+  "runId": "37217102828",
+  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37217102828",
+  "runStartedAt": "2026-10-04T16:31:50Z",
+  "publishedAt": "2026-10-04T16:40:51.457Z",
+  "features": {
+    "feature-ui-zmsadmin-citizen-search-zmskvr-1612-zmskvr-1596-display-number-one-row": {
+      "status": "passed",
+      "shard": "custom",
+      "browser": "chrome",
+      "browsers": {
+        "chrome": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "37217102828",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37217102828",
+          "runStartedAt": "2026-10-04T16:31:50Z"
+        },
+        "firefox": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "37217102828",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37217102828",
+          "runStartedAt": "2026-10-04T16:31:50Z"
+        }
+      },
+      "rel": "ui/zmsadmin/citizen-search/zmskvr-1612_zmskvr-1596_display_number_one_row.feature",
+      "runId": "37217102828",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37217102828",
+      "runStartedAt": "2026-10-04T16:31:50Z"
+    }
+  }
+}
