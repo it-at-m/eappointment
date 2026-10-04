@@ -1,10 +1,10 @@
 name: ⚙️ zmsautomation
 run-name: >-
   ${{
-    github.event_name == 'schedule' && 'zmsautomation | ⏰ scheduled | UI × chrome+firefox, API once | next'
+    github.event_name == 'schedule' && 'zmsautomation | ⏰ scheduled | UI × chrome+firefox+edge, API once | next'
     || (github.event_name == 'workflow_dispatch' && inputs.run_main_next_matrix
         && format(
-             'zmsautomation | ▶️ manual | full shard matrix | UI × chrome+firefox, API once | next{0}{1}',
+             'zmsautomation | ▶️ manual | full shard matrix | UI × chrome+firefox+edge, API once | next{0}{1}',
              inputs.ataf_version != '' && format(' | ATAF {0}', inputs.ataf_version) || '',
              inputs.serial_scenarios && ' | serial scenarios' || ''
            ))
@@ -24,7 +24,7 @@ on:
       run_main_next_matrix:
         description: |
           Run the full scheduled shard matrix: next; UI modules (zmsadmin,
-          zmscitizenview, zmsstatistic, zmsticketprinter, zmscalldisplay) on chrome + firefox; API modules (zmsapi,
+          zmscitizenview, zmsstatistic, zmsticketprinter, zmscalldisplay) on chrome + firefox + edge; API modules (zmsapi,
           zmscitizenapi) once each. Ignores module/browser inputs below.
         required: true
         type: boolean
@@ -193,7 +193,7 @@ jobs:
                         {shard: "zmsticketprinter", test_layer: "ui", tag_filter: $ticketprinter},
                         {shard: "zmscalldisplay", test_layer: "ui", tag_filter: $calldisplay}
                       ][] as $shard
-                    | ["chrome", "firefox"][] as $browser
+                    | ["chrome", "firefox", "edge"][] as $browser
                     | $shard + {branch: $branch, browser: $browser, use_custom_tags: false}
                   ]
                   + [
