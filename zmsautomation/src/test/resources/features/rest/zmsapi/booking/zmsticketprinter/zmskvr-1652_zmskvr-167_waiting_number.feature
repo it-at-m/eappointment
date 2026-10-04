@@ -1,4 +1,4 @@
-@rest @zmsapi @booking @zmsticketprinter @abholung @system @ZMSKVR-167
+@rest @zmsapi @booking @zmsticketprinter @abholung @system @ZMSKVR-1652 @ZMSKVR-167
 Feature: ZMS API ticketprinter waiting numbers when a scope is open
   As the ticketprinter frontend
   I want the ZMS API to resolve button lists and issue waiting numbers

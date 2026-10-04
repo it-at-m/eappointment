@@ -409,15 +409,19 @@ jobs:
           # Until then, use the latest next image for that module.
           pull_image() {
             local ref="$1"
-            local log
-            if log="$(docker pull "$ref" 2>&1)"; then
-              printf '%s\n' "$log"
-              return 0
-            fi
-            printf '%s\n' "$log" >&2
-            if grep -Eqi 'not found|manifest unknown|name unknown' <<<"$log"; then
-              return 2
-            fi
+            local log attempt
+            for attempt in 1 2 3; do
+              if log="$(docker pull --quiet "$ref" 2>&1)"; then
+                printf '%s\n' "$log"
+                return 0
+              fi
+              printf '%s\n' "$log" >&2
+              if grep -Eqi 'not found|manifest unknown|name unknown' <<<"$log"; then
+                return 2
+              fi
+              echo "Pull of ${ref} failed (attempt ${attempt}/3)." >&2
+              sleep $((attempt * 15))
+            done
             return 1
           }
 
@@ -445,10 +449,29 @@ jobs:
 
           cd .devcontainer
 
-          docker compose -f docker-compose.yaml down -v --remove-orphans || true
-          docker compose -f docker-compose.yaml up -d \
-            web db citizenview refarch-gateway keycloak init-keycloak \
-            captcha-db captchaservice
+          # Ten shards pull these images at once. A dropped layer is "unexpected EOF"
+          # and used to fail the job before any test ran. Retry the pull; quiet
+          # progress so a redraw is not thousands of log lines.
+          compose() {
+            docker compose --progress quiet -f docker-compose.yaml "$@"
+          }
+          services=(web db citizenview refarch-gateway keycloak init-keycloak captcha-db captchaservice)
+          pulled=0
+          for attempt in 1 2 3; do
+            if compose pull "${services[@]}"; then
+              pulled=1
+              break
+            fi
+            echo "Stack image pull failed (attempt ${attempt}/3)."
+            sleep $((attempt * 15))
+          done
+          if [[ "$pulled" -ne 1 ]]; then
+            echo "Stack image pull failed after 3 attempts."
+            exit 1
+          fi
+
+          compose down -v --remove-orphans || true
+          compose up -d "${services[@]}"
 
           captcha_ready=""
           for _ in {1..60}; do
@@ -496,6 +519,25 @@ jobs:
 
           docker exec -u root -e TARGET_BROWSER="$TARGET_BROWSER" "$WEB_CONT" bash -lc '
             set -euo pipefail
+
+            fetch_url() {
+              local url="$1"
+              local dest="$2"
+              local attempt
+              for attempt in 1 2 3 4 5; do
+                if curl -fsSL -o "$dest" "$url"; then
+                  return 0
+                fi
+                echo "Download failed (attempt ${attempt}/5): ${url}" >&2
+                rm -f "$dest"
+                if [ "$attempt" -lt 5 ]; then
+                  sleep $((attempt * 5))
+                fi
+              done
+              echo "Download failed after 5 attempts: ${url}" >&2
+              return 1
+            }
+
             apt-get update
 
             # ATAF 0.3.4 ships Selenium 4.46, which speaks Chrome DevTools protocol
@@ -531,8 +573,9 @@ jobs:
             if [[ "${TARGET_BROWSER:-}" == "edge" ]]; then
               mkdir -p /etc/apt/keyrings
               rm -f /etc/apt/keyrings/microsoft.gpg
-              curl -fsSL https://packages.microsoft.com/keys/microsoft.asc \
-                | gpg --batch --yes --no-tty --dearmor -o /etc/apt/keyrings/microsoft.gpg
+              fetch_url https://packages.microsoft.com/keys/microsoft.asc /tmp/microsoft.asc
+              gpg --batch --yes --no-tty --dearmor -o /etc/apt/keyrings/microsoft.gpg /tmp/microsoft.asc
+              rm -f /tmp/microsoft.asc
               echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/microsoft.gpg] https://packages.microsoft.com/repos/edge stable main" \
                 > /etc/apt/sources.list.d/microsoft-edge.list
               apt-get update
@@ -540,8 +583,9 @@ jobs:
 
               EDGE_VERSION="$(microsoft-edge --version | awk "{print \$3}")"
               EDGE_VERSION="${EDGE_VERSION%%-*}"
-              curl -fsSL -o /tmp/msedgedriver.zip \
-                "https://msedgedriver.microsoft.com/${EDGE_VERSION}/edgedriver_linux64.zip"
+              fetch_url \
+                "https://msedgedriver.microsoft.com/${EDGE_VERSION}/edgedriver_linux64.zip" \
+                /tmp/msedgedriver.zip
               unzip -o /tmp/msedgedriver.zip -d /tmp
               mv /tmp/msedgedriver /usr/local/bin/msedgedriver
               chmod +x /usr/local/bin/msedgedriver
@@ -550,8 +594,9 @@ jobs:
 
             if ! command -v geckodriver >/dev/null 2>&1; then
               GECKODRIVER_VERSION="v0.36.0"
-              wget -O /tmp/geckodriver.tar.gz \
-                "https://github.com/mozilla/geckodriver/releases/download/${GECKODRIVER_VERSION}/geckodriver-${GECKODRIVER_VERSION}-linux64.tar.gz"
+              fetch_url \
+                "https://github.com/mozilla/geckodriver/releases/download/${GECKODRIVER_VERSION}/geckodriver-${GECKODRIVER_VERSION}-linux64.tar.gz" \
+                /tmp/geckodriver.tar.gz
               tar -xzf /tmp/geckodriver.tar.gz -C /tmp
               mv /tmp/geckodriver /usr/local/bin/geckodriver
               chmod +x /usr/local/bin/geckodriver
@@ -561,8 +606,9 @@ jobs:
             if ! command -v mvn >/dev/null 2>&1; then
               apt-get install -y --no-install-recommends gnupg
               rm -f /usr/share/keyrings/adoptium.gpg
-              curl -fsSL https://packages.adoptium.net/artifactory/api/gpg/key/public \
-                | gpg --batch --yes --no-tty --dearmor -o /usr/share/keyrings/adoptium.gpg
+              fetch_url https://packages.adoptium.net/artifactory/api/gpg/key/public /tmp/adoptium.asc
+              gpg --batch --yes --no-tty --dearmor -o /usr/share/keyrings/adoptium.gpg /tmp/adoptium.asc
+              rm -f /tmp/adoptium.asc
               echo "deb [signed-by=/usr/share/keyrings/adoptium.gpg] https://packages.adoptium.net/artifactory/deb $(. /etc/os-release && echo $VERSION_CODENAME) main" \
                 > /etc/apt/sources.list.d/adoptium.list
               apt-get update
@@ -572,10 +618,12 @@ jobs:
               export PATH="$JAVA_HOME/bin:$PATH"
 
               MAVEN_VERSION="3.9.12"
-              curl -fsSL -o /tmp/maven.tar.gz \
-                "https://archive.apache.org/dist/maven/maven-3/${MAVEN_VERSION}/binaries/apache-maven-${MAVEN_VERSION}-bin.tar.gz"
-              curl -fsSL -o /tmp/maven.tar.gz.sha512 \
-                "https://archive.apache.org/dist/maven/maven-3/${MAVEN_VERSION}/binaries/apache-maven-${MAVEN_VERSION}-bin.tar.gz.sha512"
+              fetch_url \
+                "https://archive.apache.org/dist/maven/maven-3/${MAVEN_VERSION}/binaries/apache-maven-${MAVEN_VERSION}-bin.tar.gz" \
+                /tmp/maven.tar.gz
+              fetch_url \
+                "https://archive.apache.org/dist/maven/maven-3/${MAVEN_VERSION}/binaries/apache-maven-${MAVEN_VERSION}-bin.tar.gz.sha512" \
+                /tmp/maven.tar.gz.sha512
               echo "$(cat /tmp/maven.tar.gz.sha512)  /tmp/maven.tar.gz" | sha512sum -c - \
                 && tar -xzf /tmp/maven.tar.gz -C /opt \
                 && ln -s /opt/apache-maven-${MAVEN_VERSION}/bin/mvn /usr/local/bin/mvn

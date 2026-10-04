@@ -12,6 +12,7 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 
@@ -60,6 +61,14 @@ public class AdminPage extends BasePage {
 
     /** Keycloak login for one workstation user. The caller checks the account out. */
     public void loginWithKeycloakUser(String username) throws Exception {
+        loginWithKeycloakUser(username, By.name("scope"));
+    }
+
+    /**
+     * Same login, but waits for {@code ready} instead of the location form.
+     * Benutzerverwaltung and Innenrevision never reach that form.
+     */
+    public void loginWithKeycloakUser(String username, By ready) throws Exception {
         if (isAlreadyLoggedIn()) {
             ScenarioLogManager.getLogger().info("Already logged in, skipping SSO login.");
             return;
@@ -93,7 +102,7 @@ public class AdminPage extends BasePage {
                     .until(ExpectedConditions.elementToBeClickable(By.id("kc-login")));
             ((JavascriptExecutor) DRIVER).executeScript("arguments[0].click();", kcLogin);
             new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
-                    .until(ExpectedConditions.presenceOfElementLocated(By.name("scope")));
+                    .until(ExpectedConditions.presenceOfElementLocated(ready));
             ScenarioLogManager.getLogger().info("SSO login submitted successfully.");
         } catch (Exception e) {
             ScenarioLogManager.getLogger().error(e.getMessage(), e);
@@ -117,6 +126,33 @@ public class AdminPage extends BasePage {
         AccountCheckout.checkout("scope:" + location);
         selectDropDownListValueByVisibleText(DEFAULT_EXPLICIT_WAIT_TIME, "scope", LocatorType.NAME, location);
         TestDataHelper.setTestData("location", location);
+    }
+
+    /**
+     * Picks the Standort option whose value is the scope id. The visible label is
+     * {@code contact.name + " " + shortName}, and a trailing space in the short name
+     * must not change which Standort is selected.
+     */
+    public void selectLocationByScopeId(int scopeId) {
+        CONTEXT.set();
+        String scopeValue = Integer.toString(scopeId);
+        WebElement selectEl = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(ExpectedConditions.presenceOfElementLocated(By.name("scope")));
+        Select select = new Select(selectEl);
+        String visible = null;
+        for (WebElement option : select.getOptions()) {
+            if (scopeValue.equals(option.getAttribute("value"))) {
+                visible = option.getText();
+                break;
+            }
+        }
+        if (visible == null || visible.isBlank()) {
+            throw new IllegalStateException("No Standort option for scope " + scopeId);
+        }
+        ScenarioLogManager.getLogger().info("Trying to select location \"" + visible + "\" for scope " + scopeId);
+        AccountCheckout.checkout("scope:" + visible);
+        select.selectByValue(scopeValue);
+        TestDataHelper.setTestData("location", visible);
     }
 
     public void enterWorkstation(String workstation) {
@@ -163,14 +199,40 @@ public class AdminPage extends BasePage {
         clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, NAV_SELECT_LOCATION_LOCATOR, LocatorType.XPATH, true, CONTEXT);
     }
 
-    public void clickInNavigationOnWorkstation() {
-        ScenarioLogManager.getLogger().info("Trying to open the Sachbearbeiterplatz...");
+    public void clickInNavigationOnOverallCalendar() {
+        ScenarioLogManager.getLogger().info("Trying to open the Gesamtübersicht...");
         clickOnWebElement(
                 DEFAULT_EXPLICIT_WAIT_TIME,
-                "//nav//a[contains(@href,'workstation')]",
+                "//nav//a[normalize-space()='Gesamtübersicht']",
                 LocatorType.XPATH,
                 true,
                 CONTEXT);
+    }
+
+    public void clickInNavigationOnWorkstation() {
+        CONTEXT.set();
+        ScenarioLogManager.getLogger().info("Trying to open the Sachbearbeiterplatz...");
+        List<WebElement> nav = DRIVER.findElements(By.xpath("//nav//a[contains(@href,'workstation')]"));
+        if (nav.stream().anyMatch(WebElement::isDisplayed)) {
+            clickOnWebElement(
+                    DEFAULT_EXPLICIT_WAIT_TIME,
+                    "//nav//a[contains(@href,'workstation')]",
+                    LocatorType.XPATH,
+                    true,
+                    CONTEXT);
+            return;
+        }
+        // Gesamtübersicht has no sidebar. Zurück points at the counter and, on click, follows
+        // document.referrer (the edit form). The queue lives on the Sachbearbeiterplatz.
+        WebElement back = findElementByLocatorType("back-button", LocatorType.ID, true);
+        String bookedDate = TestDataHelper.getTestData("new_appointment_iso_date");
+        String dateQuery = bookedDate == null || bookedDate.isBlank() ? "" : "?date=" + bookedDate;
+        ((JavascriptExecutor) DRIVER).executeScript(
+                "window.location.assign(arguments[0].href.replace(/counter\\/?$/, 'workstation/') + arguments[1]);",
+                back,
+                dateQuery);
+        new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(ExpectedConditions.textToBePresentInElementLocated(By.cssSelector("h1"), "Sachbearbeiterplatz"));
     }
 
     public void clickInNavigationOnTresenButton() {

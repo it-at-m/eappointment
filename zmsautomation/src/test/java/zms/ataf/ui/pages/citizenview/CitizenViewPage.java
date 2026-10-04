@@ -308,6 +308,15 @@ public class CitizenViewPage extends BasePage {
                 "Expected estimated duration '" + minutesText + "' to be visible in " + context);
     }
 
+    /** ZMSKVR-1501: the broken 15-minute mapping showed 135 minutes for a 45-minute service. */
+    public void assertEstimatedDurationMinutesNot(int minutes) {
+        CONTEXT.set();
+        String minutesText = minutes + " Minuten";
+        Assert.assertFalse(
+                shadowDomContainsText(minutesText),
+                "Duration '" + minutesText + "' must not be shown.");
+    }
+
     /**
      * Increase the quantity of a subservice by clicking the "+" control on its counter, resolving the subservice by
      * visible name. If the subservice is not yet visible (hidden behind "Alle Leistungen anzeigen"), this method will
@@ -1391,6 +1400,31 @@ public class CitizenViewPage extends BasePage {
                         + "return best;";
         Object o = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script);
         return o == null ? null : String.valueOf(o);
+    }
+
+    private boolean clickButtonWithExactText(String text) {
+        CONTEXT.set();
+        String script =
+                "var label=arguments[0];"
+                        + "function box(el){if(!el||el.nodeType!==1||!el.getBoundingClientRect)return false;"
+                        + "var r=el.getBoundingClientRect();if(r.width<=0||r.height<=0)return false;"
+                        + "var st=window.getComputedStyle(el);return st.visibility!=='hidden'&&st.display!=='none'&&st.opacity!=='0';}"
+                        + "function painted(el){if(box(el))return el;var found=null;"
+                        + "function w(n){if(!n||found)return;if(n.nodeType===1&&n!==el&&box(n)){found=n;return;}"
+                        + "if(n.shadowRoot)w(n.shadowRoot);var c=n.children;if(c)for(var i=0;i<c.length;i++)w(c[i]);}"
+                        + "w(el);return found;}"
+                        + "function norm(s){return (s||'').replace(/\\s+/g,' ').trim();}"
+                        + "function walkClick(n){if(!n)return false;"
+                        + "var tag=(n.tagName||'').toUpperCase();"
+                        + "if(tag==='BUTTON'||tag==='A'||tag==='MUC-BUTTON'){"
+                        + "if(norm(n.textContent)===label&&!n.disabled"
+                        + "&&!(n.getAttribute&&n.getAttribute('aria-disabled')==='true')){"
+                        + "var hit=painted(n);if(hit){hit.scrollIntoView({block:'center'});hit.click();return true;}}}"
+                        + "if(n.shadowRoot&&walkClick(n.shadowRoot))return true;"
+                        + "var c=n.children;if(c)for(var i=0;i<c.length;i++)if(walkClick(c[i]))return true;return false;}"
+                        + "return walkClick(document.body);";
+        Object o = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script, text);
+        return Boolean.TRUE.equals(o);
     }
 
     public void clickWeiter() {
@@ -3052,6 +3086,21 @@ public class CitizenViewPage extends BasePage {
         waitForAndClickButtonContaining(RESCHEDULE_APPOINTMENT_BUTTON, DEFAULT_EXPLICIT_WAIT_TIME);
     }
 
+    /**
+     * Meine Termine detail asks "Verschiebung Ihres Termins" and continues only after Verschieben.
+     * The confirm label is exactly Verschieben, so it is not the Termin verschieben action behind the dialog.
+     */
+    public void rescheduleFromMeineTermine() {
+        CONTEXT.set();
+        clickRescheduleAppointment();
+        waitWithThreeWindows(
+                () -> shadowDomContainsText("Verschiebung Ihres Termins"),
+                "Reschedule dialog");
+        ScenarioLogManager.getLogger().info("zmscitizenview: confirm reschedule dialog (Verschieben)");
+        new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(d -> clickButtonWithExactText("Verschieben"));
+    }
+
     /** ZMSKVR-1500: rebooking confirm summary shows Verschieben abbrechen. */
     public void assertCancelRescheduleButtonVisible() {
         CONTEXT.set();
@@ -3615,6 +3664,35 @@ public class CitizenViewPage extends BasePage {
     }
 
     /**
+     * A second booking in the same browser is already logged in. Keycloak may also skip the
+     * form when the session is still valid, so do not wait for the username field in that case.
+     */
+    public void loginViaBuergerLoginWithKeycloakIfNeeded() throws Exception {
+        CONTEXT.set();
+        if (shadowDomContainsText("Sie sind angemeldet.")) {
+            ScenarioLogManager.getLogger().info("zmscitizenview: already logged in, skipping Bürger-Login");
+            return;
+        }
+        ScenarioLogManager.getLogger().info("zmscitizenview: click in-app Anmelden (Bürger-Login, if needed)");
+        try {
+            new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                    .until(d -> clickInAppBuergerLoginAnmelden());
+        } catch (TimeoutException e) {
+            waitForAndClickButtonContaining("Anmelden", DEFAULT_EXPLICIT_WAIT_TIME);
+        }
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        wait.until(d -> shadowDomContainsText("Sie sind angemeldet.")
+                || !d.findElements(By.id("username")).isEmpty());
+        if (!shadowDomContainsText("Sie sind angemeldet.")) {
+            String username = TestPropertiesHelper.getPropertyAsString("citizenUserName", true, "citizen");
+            String password = TestPropertiesHelper.getPropertyAsString("citizenUserPassword", true, "vorschau");
+            completeKeycloakLoginForm(AccountCheckout.assignCitizenLogin(username), password);
+        }
+        waitWithThreeWindows(() -> shadowDomContainsText("Sie sind angemeldet"), "Logged-in callout");
+        Assert.assertTrue(shadowDomContainsText("Sie sind angemeldet."), "Expected 'Sie sind angemeldet.'.");
+    }
+
+    /**
      * Local Keycloak has no Abbrechen. After Anmelden reaches the login form, load the citizen
      * origin the way a cancelled IdP does: {@code redirect_uri?error=access_denied} and no code.
      */
@@ -4169,6 +4247,100 @@ public class CitizenViewPage extends BasePage {
         } catch (TimeoutException e) {
             ScenarioLogManager.getLogger().warn("Meine Termine navigation timed out, continuing.", e);
         }
+    }
+
+    public void assertMeineTermineLists(String... serviceNames) {
+        CONTEXT.set();
+        for (String serviceName : serviceNames) {
+            waitForTeaserText(serviceName);
+            Assert.assertEquals(
+                    countTeasers(serviceName),
+                    1,
+                    "Meine Termine should list \"" + serviceName + "\" once.");
+        }
+    }
+
+    public void assertMeineTermineDoesNotList(String serviceName) {
+        CONTEXT.set();
+        waitWithThreeWindows(
+                () -> shadowDomContainsText("Neuer Termin"),
+                "Meine Termine finished loading");
+        Assert.assertTrue(
+                shadowDomContainsText("Neuer Termin"),
+                "Meine Termine did not finish loading.");
+        Assert.assertEquals(
+                countTeasers(serviceName),
+                0,
+                "Meine Termine still lists \"" + serviceName + "\".");
+    }
+
+    public void rememberMeineTermineAppointment(String serviceName) {
+        CONTEXT.set();
+        String number = appointmentNumberOnMeineTermine(serviceName);
+        Assert.assertFalse(number.isBlank(), "Meine Termine has no number for \"" + serviceName + "\".");
+        TestDataHelper.setTestData(meineTermineNumberKey(serviceName), number);
+    }
+
+    public void assertMeineTermineAppointmentReplaced(String serviceName) {
+        CONTEXT.set();
+        String previous = TestDataHelper.getTestData(meineTermineNumberKey(serviceName));
+        String current = appointmentNumberOnMeineTermine(serviceName);
+        Assert.assertFalse(current.isBlank(), "Meine Termine has no number for \"" + serviceName + "\".");
+        Assert.assertNotEquals(
+                current,
+                previous,
+                "Meine Termine still shows the original appointment for \"" + serviceName + "\".");
+    }
+
+    public void assertMeineTermineAppointmentUnchanged(String serviceName) {
+        CONTEXT.set();
+        String previous = TestDataHelper.getTestData(meineTermineNumberKey(serviceName));
+        String current = appointmentNumberOnMeineTermine(serviceName);
+        Assert.assertEquals(
+                current,
+                previous,
+                "Meine Termine changed the appointment for \"" + serviceName + "\".");
+    }
+
+    private String appointmentNumberOnMeineTermine(String serviceName) {
+        String script =
+                "var name=arguments[0];"
+                        + "function textOf(n){var s='';if(!n)return s;if(n.nodeType===3)return n.nodeValue||'';"
+                        + "if(n.shadowRoot)s+=textOf(n.shadowRoot);var c=n.childNodes;if(c)for(var i=0;i<c.length;i++)s+=textOf(c[i]);return s;}"
+                        + "function walk(n,fn){if(!n)return null;if(n.nodeType===1){var hit=fn(n);if(hit)return hit;}"
+                        + "if(n.shadowRoot){var inner=walk(n.shadowRoot,fn);if(inner)return inner;}"
+                        + "var c=n.children;if(c)for(var i=0;i<c.length;i++){var next=walk(c[i],fn);if(next)return next;}return null;}"
+                        + "return walk(document.body,function(el){"
+                        + "if(!el.classList||!el.classList.contains('card'))return null;"
+                        + "var text=textOf(el).replace(/\\s+/g,' ').trim();"
+                        + "if(text.indexOf('1x '+name)<0)return null;"
+                        + "var match=text.match(/Terminnummer:\\s*(\\S+)/);"
+                        + "return match?match[1]:'';});";
+        Object raw = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script, serviceName);
+        return raw == null ? "" : raw.toString();
+    }
+
+    private static String meineTermineNumberKey(String serviceName) {
+        return "meine_termine_number_" + serviceName;
+    }
+
+    /** Patternlab MucCard renders a {@code div.card}, and the title wraps onto a second line. */
+    private int countTeasers(String serviceName) {
+        String script =
+                "var name=arguments[0];"
+                        + "function textOf(n){var s='';if(!n)return s;if(n.nodeType===3)return n.nodeValue||'';"
+                        + "if(n.shadowRoot)s+=textOf(n.shadowRoot);var c=n.childNodes;if(c)for(var i=0;i<c.length;i++)s+=textOf(c[i]);return s;}"
+                        + "function walk(n,fn){if(!n)return;if(n.nodeType===1)fn(n);if(n.shadowRoot)walk(n.shadowRoot,fn);"
+                        + "var c=n.children;if(c)for(var i=0;i<c.length;i++)walk(c[i],fn);}"
+                        + "var n=0;walk(document.body,function(el){"
+                        + "if(!el.classList||!el.classList.contains('card'))return;"
+                        + "if(textOf(el).replace(/\\s+/g,' ').indexOf('1x '+name)>=0)n++;});"
+                        + "return n;";
+        Object raw = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script, serviceName);
+        if (raw instanceof Number number) {
+            return number.intValue();
+        }
+        return 0;
     }
 
     public void assertMeineTermineTeaser(String serviceName, String typeLabel, String locationText) {

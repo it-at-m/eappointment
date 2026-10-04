@@ -22,6 +22,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.HasDownloads;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -42,6 +43,8 @@ import zms.ataf.helpers.BerlinTime;
 
 public class StatisticsPage extends BasePage {
     protected final StatisticsPageContext CONTEXT;
+
+    private List<String> scopeIdsForNextFilter = List.of();
 
     //aktueller Monat (auf deutsch)
     private final String currentMonth = BerlinTime.today().getMonth().getDisplayName(TextStyle.FULL_STANDALONE, Locale.GERMAN);
@@ -70,31 +73,44 @@ public class StatisticsPage extends BasePage {
 
     /** Login and SSO flow aligned with AdminPage (same pattern as zmsadmin). */
     public void clickOnLoginButton() throws Exception {
+        final StringBuilder clearUserName = new StringBuilder();
+        Exception exception = null;
+        try {
+            AuthenticationHelper.getUserName().access(clearUserName::append);
+            loginWithKeycloakUser(AccountCheckout.assignWorkstationLogin(clearUserName.toString()));
+        } catch (Exception e) {
+            ScenarioLogManager.getLogger().error(e.getMessage(), e);
+            exception = e;
+        } finally {
+            clearUserName.setLength(0);
+            if (exception != null) {
+                throw exception;
+            }
+        }
+    }
+
+    /** Keycloak login for one statistics user. The caller checks the account out. */
+    public void loginWithKeycloakUser(String username) throws Exception {
         ScenarioLogManager.getLogger().info("Trying to click on \"Login\" button...");
         clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "//button[@type='submit' and @value='keycloak']", LocatorType.XPATH, false);
         ScenarioLogManager.getLogger().info("SSO-Login page detected!");
 
-        final StringBuilder clearUserName = new StringBuilder();
         final StringBuilder clearPassword = new StringBuilder();
         Exception exception = null;
         try {
-            AuthenticationHelper.getUserName().access(clearUserName::append);
             AuthenticationHelper.getUserPassword().access(clearPassword::append);
-            String assigned = AccountCheckout.assignWorkstationLogin(clearUserName.toString());
-            clearUserName.setLength(0);
-            clearUserName.append(assigned);
             WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
             wait.until(ExpectedConditions.presenceOfElementLocated(By.id("username")));
             if ("chrome".equals(
                     TestPropertiesHelper.getPropertyAsString("browser", true, DefaultValues.BROWSER))) {
                 wait.until(ExpectedConditions.presenceOfElementLocated(By.id("kc-login")));
-                String credentials = URLEncoder.encode(clearUserName.toString(), StandardCharsets.UTF_8) + ":"
+                String credentials = URLEncoder.encode(username, StandardCharsets.UTF_8) + ":"
                         + URLEncoder.encode(clearPassword.toString(), StandardCharsets.UTF_8) + "@";
                 DRIVER.navigate().to(DRIVER.getCurrentUrl().replaceFirst("^(https?://)", "$1" + credentials));
             }
 
             ScenarioLogManager.getLogger().info("Trying to enter user name...");
-            enterTextInWebElement(DEFAULT_EXPLICIT_WAIT_TIME, clearUserName.toString(), "username", LocatorType.ID);
+            enterTextInWebElement(DEFAULT_EXPLICIT_WAIT_TIME, username, "username", LocatorType.ID);
 
             ScenarioLogManager.getLogger().info("Trying to enter password...");
             enterTextInWebElement(DEFAULT_EXPLICIT_WAIT_TIME, clearPassword.toString(), "password", LocatorType.ID);
@@ -111,7 +127,6 @@ public class StatisticsPage extends BasePage {
             ScenarioLogManager.getLogger().error(e.getMessage(), e);
             exception = e;
         } finally {
-            clearUserName.setLength(0);
             clearPassword.setLength(0);
             if (exception != null) {
                 throw exception;
@@ -188,6 +203,18 @@ public class StatisticsPage extends BasePage {
                 .until(ExpectedConditions.presenceOfElementLocated(By.xpath("//h1[contains(normalize-space(),'Dienstleistungsstatistik')]")));
     }
 
+    public void clickOnCapacityStatistics() {
+        ScenarioLogManager.getLogger().info("Trying to click on \"Terminkapazität\" button in the sidebar...");
+        CONTEXT.set();
+        By linkLocator = By.xpath("//a[normalize-space()='Terminkapazität']");
+        WebElement link = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(ExpectedConditions.elementToBeClickable(linkLocator));
+        scrollToCenterByVisibleElement(link);
+        ((JavascriptExecutor) DRIVER).executeScript("arguments[0].click();", link);
+        new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(ExpectedConditions.presenceOfElementLocated(By.xpath("//h1[contains(normalize-space(),'Terminkapazität')]")));
+    }
+
     // --- Second scope selection (statistics table/report filter; different UI, after opening Kundenstatistik/Dienstleistungsstatistik) ---
 
     /**
@@ -242,6 +269,34 @@ public class StatisticsPage extends BasePage {
         }
     }
 
+    /**
+     * Selects exactly the given Standorte in the report filter. A plain click replaces the selection;
+     * several Standorte are set together so the report is not limited to the workstation scope.
+     */
+    public void selectScopesInStatisticsTableFilter(List<String> locations) {
+        ScenarioLogManager.getLogger().info("Selecting scopes in statistics table filter: " + locations);
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        WebElement select = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("scope-select")));
+        Object result = ((JavascriptExecutor) DRIVER).executeScript(
+                "var sel = arguments[0]; var wanted = arguments[1]; var ids = [];"
+                        + "for (var i = 0; i < sel.options.length; i++) { sel.options[i].selected = false; }"
+                        + "for (var w = 0; w < wanted.length; w++) {"
+                        + "  var hits = [];"
+                        + "  for (var i = 0; i < sel.options.length; i++) {"
+                        + "    if (sel.options[i].text.indexOf(wanted[w]) !== -1) hits.push(i);"
+                        + "  }"
+                        + "  if (hits.length !== 1) return wanted[w] + ' matches ' + hits.length;"
+                        + "  sel.options[hits[0]].selected = true;"
+                        + "  ids.push(sel.options[hits[0]].value);"
+                        + "}"
+                        + "sel.dispatchEvent(new Event('change', {bubbles: true}));"
+                        + "return 'ok|' + ids.join(',');",
+                select, locations);
+        String selection = String.valueOf(result);
+        Assert.assertTrue(selection.startsWith("ok|"), "Standortauswahl failed: " + selection);
+        scopeIdsForNextFilter = List.of(selection.substring(3).split(","));
+    }
+
     /** Second scope context: set date range in the statistics table filter panel (after opening a statistics sub-page). */
     public void applyDateRangeFilter(LocalDate from, LocalDate to) {
         ScenarioLogManager.getLogger().info("Applying date range in statistics table filter...");
@@ -261,15 +316,54 @@ public class StatisticsPage extends BasePage {
         setDateInputByJs("to", toIso);
 
         ScenarioLogManager.getLogger().info("Submitting statistics filter with Übernehmen button via JavaScript click...");
-        try {
-            WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
-            WebElement submitButton = wait.until(ExpectedConditions.elementToBeClickable(
-                    By.cssSelector("form.form--base.panel--heavy .reportfilter-actions button[type='submit']")));
-            scrollToCenterByVisibleElement(submitButton);
-            ((JavascriptExecutor) DRIVER).executeScript("arguments[0].click();", submitButton);
-        } catch (Exception e) {
-            ScenarioLogManager.getLogger().error("Failed to submit statistics filter form", e);
-        }
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        WebElement submitButton = wait.until(ExpectedConditions.elementToBeClickable(
+                By.cssSelector("form.form--base.panel--heavy .reportfilter-actions button[type='submit']")));
+        scrollToCenterByVisibleElement(submitButton);
+        String urlBeforeSubmit = DRIVER.getCurrentUrl();
+        List<String> requiredScopeIds = scopeIdsForNextFilter;
+        scopeIdsForNextFilter = List.of();
+        ((JavascriptExecutor) DRIVER).executeScript("arguments[0].click();", submitButton);
+        waitForReloadedStatistic(urlBeforeSubmit, requiredScopeIds);
+    }
+
+    /** Submits the report filter as it stands, including a Standort chosen just before. */
+    public void applyStatisticsFilter() {
+        ScenarioLogManager.getLogger().info("Submitting the statistics filter...");
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        WebElement submitButton = wait.until(ExpectedConditions.elementToBeClickable(
+                By.cssSelector("form.form--base.panel--heavy .reportfilter-actions button[type='submit']")));
+        scrollToCenterByVisibleElement(submitButton);
+        String urlBeforeSubmit = DRIVER.getCurrentUrl();
+        List<String> requiredScopeIds = scopeIdsForNextFilter;
+        scopeIdsForNextFilter = List.of();
+        ((JavascriptExecutor) DRIVER).executeScript("arguments[0].click();", submitButton);
+        waitForReloadedStatistic(urlBeforeSubmit, requiredScopeIds);
+    }
+
+    private void waitForReloadedStatistic(String urlBeforeSubmit, List<String> requiredScopeIds) {
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        wait.withMessage("Statistic filter did not reload for scopes " + requiredScopeIds);
+        wait.until(driver -> {
+            String url = driver.getCurrentUrl();
+            if (url.equals(urlBeforeSubmit)) {
+                return false;
+            }
+            Object state = ((JavascriptExecutor) driver).executeScript("return document.readyState");
+            if (!"complete".equals(state)) {
+                return false;
+            }
+            for (String scopeId : requiredScopeIds) {
+                if (!url.contains(scopeId)) {
+                    return false;
+                }
+            }
+            try {
+                return driver.findElements(By.cssSelector("table.table--base")).stream().anyMatch(WebElement::isDisplayed);
+            } catch (StaleElementReferenceException exception) {
+                return false;
+            }
+        });
     }
 
     private void setDateInputByJs(String fieldName, String isoValue) {

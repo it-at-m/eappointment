@@ -1,14 +1,23 @@
 package zms.ataf.ui.steps;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Locale;
 import java.time.DayOfWeek;
 import java.time.Duration;
+import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.TreeSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
@@ -31,16 +40,19 @@ import ataf.web.model.WindowType;
 import ataf.web.steps.Hook;
 import ataf.web.utils.DriverUtil;
 import io.cucumber.datatable.DataTable;
-import io.cucumber.java.de.Angenommen;
-import io.cucumber.java.de.Dann;
-import io.cucumber.java.de.Gegebenseien;
-import io.cucumber.java.de.Und;
-import io.cucumber.java.de.Wenn;
+import io.cucumber.java.en.And;
+import io.cucumber.java.en.Given;
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
 import zms.ataf.helpers.AccountCheckout;
 import zms.ataf.helpers.BerlinTime;
 import zms.ataf.helpers.RandomNameHelper;
+import zms.ataf.rest.steps.CitizenApiSteps;
 import zms.ataf.ui.pages.admin.AdminPage;
 import zms.ataf.ui.pages.admin.AdminPageContext;
+import zms.ataf.ui.pages.admin.ProfilePage;
+import zms.ataf.ui.pages.admin.StatusPage;
+import zms.ataf.ui.pages.admin.UseraccountPage;
 import zms.ataf.ui.pages.admin.administration.AuthoritiesAndLocationsPage;
 import zms.ataf.ui.pages.admin.search.CustomerSearchPage;
 import zms.ataf.ui.pages.admin.workview.counterprocessingstation.CounterProcessingStationPage;
@@ -50,6 +62,9 @@ import zms.ataf.ui.pages.admin.workview.counterprocessingstation.ProcessingStati
 
 public class AdminSteps {
     private final AdminPage ADMIN_PAGE;
+    private final ProfilePage PROFILE_PAGE;
+    private final StatusPage STATUS_PAGE;
+    private final UseraccountPage USERACCOUNT_PAGE;
     private final CounterProcessingStationPage COUNTER_PROCESSING_STATION_PAGE;
     private final CounterSection COUNTER_SECTION;
     private final AuthoritiesAndLocationsPage AUTHORITIES_AND_LOCATIONS_PAGE;
@@ -57,9 +72,14 @@ public class AdminSteps {
     private final ProcessingStationSection PROCESSING_STATION_SECTION;
     private final CustomerSearchPage CUSTOMER_SEARCH_PAGE;
     private int rememberedWaitingClients;
+    private int reservedScopeId;
+    private String reservedAppointmentClock;
 
     public AdminSteps() {
         ADMIN_PAGE = new AdminPage(DriverUtil.getDriver());
+        PROFILE_PAGE = new ProfilePage(DriverUtil.getDriver());
+        STATUS_PAGE = new StatusPage(DriverUtil.getDriver());
+        USERACCOUNT_PAGE = new UseraccountPage(DriverUtil.getDriver());
         COUNTER_PROCESSING_STATION_PAGE = new CounterProcessingStationPage(DriverUtil.getDriver(), ADMIN_PAGE.getContext());
         CUSTOMER_SEARCH_PAGE = new CustomerSearchPage(DriverUtil.getDriver(), ADMIN_PAGE.getContext());
         AUTHORITIES_AND_LOCATIONS_PAGE = new AuthoritiesAndLocationsPage(DriverUtil.getDriver(), ADMIN_PAGE.getContext());
@@ -67,14 +87,14 @@ public class AdminSteps {
         COUNTER_SECTION = new CounterSection(DriverUtil.getDriver(), ADMIN_PAGE.getContext());
     }
 
-    @Dann("sollten Sie sich am Start des " + AdminPageContext.NAME + " befinden.")
+    @Then("I should be on the administration start page.")
     public void dann_sollten_sie_sich_am_start_des_zeitmanagementsystem_befinden() {
         Assert.assertEquals(WindowControls.getActiveWindow().getWindowTitle(), AdminPageContext.START_PAGE_TITLE,
                 "This is not the start page of the \"" + AdminPageContext.NAME + "\"");
         WindowControls.getActiveWindow().setWindowType(WindowType.getSystemWindowType("Admin"));
     }
 
-    @Wenn("Sie im " + AdminPageContext.NAME + " auf die Schaltfläche {string} klicken.")
+    @When("I click the button {string} in the administration.")
     public void wenn_sie_im_zeitmanagementsystem_auf_die_schaltflaeche_string_klicken(String button) throws Exception {
         button = TestDataHelper.transformTestData(button);
         switch (button) {
@@ -139,7 +159,7 @@ public class AdminSteps {
     }
 
     //TODO: 1
-    @Wenn("Sie im " + AdminPageContext.NAME + " in der Navigationsleite auf die Schaltfläche {string} klicken.")
+    @When("I click the button {string} in the administration navigation.")
     public void wenn_sie_im_zeitmanagementsystem_in_der_navigationsleiste_auf_die_schaltflaeche_string_klicken(String button) {
         switch (button) {
         case "Tresen":
@@ -148,7 +168,7 @@ public class AdminSteps {
         }
     }
 
-    @Wenn("Sie im " + AdminPageContext.NAME + " in der Kopfzeile auf die Schaltfläche {string} klicken.")
+    @When("I click the button {string} in the administration header.")
     public void wenn_sie_im_zeitmanagementsystem_in_der_kopfzeile_auf_die_schaltflaeche_string_klicken(String button) {
         switch (button) {
         case "Auswahl ändern":
@@ -157,7 +177,7 @@ public class AdminSteps {
         }
     }
 
-    @Wenn("Sie für {string} den Wert {string} auswählen.")
+    @When("I select for {string} the value {string}.")
     public void wenn_sie_fuer_string_den_wert_string_auswaehlen(String type, String value) {
         value = TestDataHelper.transformTestData(value);
         switch (type) {
@@ -178,7 +198,7 @@ public class AdminSteps {
         }
     }
 
-    @Wenn("Sie in Feld {string} den Text {string} eingeben.")
+    @When("I enter in the field {string} the text {string}.")
     public void wenn_sie_in_feld_string_den_text_string_eingeben(String field, String text) {
         text = TestDataHelper.transformTestData(text);
         if ("Datum bis".equals(field)) {
@@ -235,7 +255,7 @@ public class AdminSteps {
     }
 
     //TODO: 1
-    @Wenn("Sie unter dem Menü Administration auf den Eintrag {string} klicken.")
+    @When("I click the entry {string} in the Administration menu.")
     public void wenn_sie_unter_dem_menue_administration_auf_den_eintrag_string_klicken(String entry) {
         entry = TestDataHelper.transformTestData(entry);
         switch (entry) {
@@ -247,57 +267,107 @@ public class AdminSteps {
         }
     }
 
-    @Wenn("Sie für den Standort {string} die Anzahl an maximal buchbaren Slots pro Termin auf {string} setzen.")
+    @When("I set for location {string} the maximum bookable slots per appointment to {string}.")
     public void wenn_sie_fuer_den_standort_die_anzahl_an_maximal_buchbaren_slots_pro_termin_auf_setzen(String standort, String anzahl) {
         AUTHORITIES_AND_LOCATIONS_PAGE.clickOnLocationEntry(standort);
         AUTHORITIES_AND_LOCATIONS_PAGE.setMaxSlotsForLocation(standort, anzahl);
         AUTHORITIES_AND_LOCATIONS_PAGE.saveLocationChanges();
     }
 
-    @Wenn("Sie für den Standort {string} die Wiederholungsaufrufe auf {string} setzen.")
+    @When("I set for location {string} the repeat calls to {string}.")
     public void wenn_sie_fuer_den_standort_die_wiederholungsaufrufe_auf_setzen(String standort, String anzahl) {
         AUTHORITIES_AND_LOCATIONS_PAGE.clickOnLocationEntry(standort);
         AUTHORITIES_AND_LOCATIONS_PAGE.setRepeatCallsForLocation(standort, anzahl);
         AUTHORITIES_AND_LOCATIONS_PAGE.saveLocationChanges();
     }
 
-    @Wenn("Sie unter Behörden und Standorte auf den Öffnungszeiten Eintrag von {string} klicken.")
+    @When("I click the opening-hours entry of {string} under authorities and locations.")
     public void wenn_sie_unter_behoerden_und_standorte_auf_den_oeffnungszeiten_eintrag_von_string_klicken(String location) {
         AUTHORITIES_AND_LOCATIONS_PAGE.clickOnOpeningHoursEntryBy(TestDataHelper.transformTestData(location));
     }
 
-    @Wenn("Sie unter Behörden und Standorte auf den Standort {string} klicken.")
+    @When("I click the location {string} under authorities and locations.")
     public void wenn_sie_unter_behoerden_und_standorte_auf_den_standort_klicken(String location) {
         AUTHORITIES_AND_LOCATIONS_PAGE.clickOnLocationEntry(location);
     }
 
-    @Und("Sie die Öffnungszeit-Accordion {string} öffnen.")
+    @And("I open the opening-hours accordion {string}.")
     public void und_sie_die_oeffnungszeit_accordion_oeffnen(String accordionTitle) {
         accordionTitle = TestDataHelper.transformTestData(accordionTitle);
         AUTHORITIES_AND_LOCATIONS_PAGE.expandOpeningHoursAccordionByTitle(accordionTitle);
     }
 
-    @Wenn("Sie unter Öffnungszeiten auf Tag {string} klicken.")
+    @Then("the opening hours page for the location should be visible.")
+    public void theOpeningHoursPageForTheLocationShouldBeVisible() {
+        AUTHORITIES_AND_LOCATIONS_PAGE.assertOpeningHoursDayPage();
+    }
+
+    @When("I open the opening hour with the note {string} for editing.")
+    public void iOpenTheOpeningHourWithTheNoteForEditing(String note) {
+        AUTHORITIES_AND_LOCATIONS_PAGE.openOpeningHourForEditing(TestDataHelper.transformTestData(note));
+    }
+
+    @When("I replace the opening-hours note {string}.")
+    public void iReplaceTheOpeningHoursNote(String noteKey) {
+        AUTHORITIES_AND_LOCATIONS_PAGE.replaceOpeningHoursNote(TestDataHelper.transformTestData(noteKey));
+    }
+
+    @When("I open the change history of the opening hour with the note {string}.")
+    public void iOpenTheChangeHistoryOfTheOpeningHour(String note) {
+        AUTHORITIES_AND_LOCATIONS_PAGE.openOpeningHourHistory(TestDataHelper.transformTestData(note));
+    }
+
+    @Then("the change history shows the saved opening hour {string} as {string} from {string} to {string}.")
+    public void theChangeHistoryShowsTheSavedOpeningHour(String note, String action, String from, String until) {
+        AUTHORITIES_AND_LOCATIONS_PAGE.assertOpeningHourHistory(
+                TestDataHelper.transformTestData(note),
+                TestDataHelper.transformTestData(action),
+                from,
+                until);
+    }
+
+    @Then("the deleted opening hours list shows {string}.")
+    public void theDeletedOpeningHoursListShows(String note) {
+        AUTHORITIES_AND_LOCATIONS_PAGE.assertDeletedOpeningHour(TestDataHelper.transformTestData(note));
+    }
+
+    @Then("the opening-hours change history is hidden.")
+    public void theOpeningHoursChangeHistoryIsHidden() {
+        AUTHORITIES_AND_LOCATIONS_PAGE.assertOpeningHourHistoryHidden();
+    }
+
+    @When("I click day {string} under opening hours.")
     public void wenn_sie_unter_oeffnungszeiten_auf_tag_string_klicken(String day) {
         AUTHORITIES_AND_LOCATIONS_PAGE.clickOnDayEntry(TestDataHelper.transformTestData(day));
     }
 
-    @Wenn("Sie {string} unter Wochentage selektieren.")
+    @When("I select {string} under weekdays.")
     public void wenn_sie_string_unter_wochentage_selektieren(String weekDay) {
+        if ("<heute_wochentag>".equals(weekDay)) {
+            weekDay = switch (BerlinTime.today().getDayOfWeek()) {
+                case MONDAY -> "Montag";
+                case TUESDAY -> "Dienstag";
+                case WEDNESDAY -> "Mittwoch";
+                case THURSDAY -> "Donnerstag";
+                case FRIDAY -> "Freitag";
+                case SATURDAY -> "Samstag";
+                case SUNDAY -> "Sonntag";
+            };
+        }
         AUTHORITIES_AND_LOCATIONS_PAGE.selectWeekDay(TestDataHelper.transformTestData(weekDay));
     }
 
-    @Und("Sie die Wochentage Samstag und Sonntag der aktuellen Woche selektieren.")
+    @And("I select Saturday and Sunday of the current week.")
     public void und_sie_die_wochentage_samstag_und_sonntag_der_aktuellen_woche_selektieren() {
         AUTHORITIES_AND_LOCATIONS_PAGE.selectWeekendDaysOfCurrentWeek();
     }
 
-    @Dann("sollte keine Fehlermeldung zu nicht vorkommenden Wochentagen angezeigt werden.")
+    @Then("no error about weekdays that do not occur should be shown.")
     public void dann_sollte_keine_fehlermeldung_zu_nicht_vorkommenden_wochentagen_angezeigt_werden() {
         AUTHORITIES_AND_LOCATIONS_PAGE.assertNoMissingWeekdayError();
     }
 
-    @Dann("die Schaltfläche {string} sollte zum Speichern der Öffnungszeiten aktiv sein.")
+    @Then("the button {string} should be enabled for saving the opening hours.")
     public void dann_die_schaltflaeche_sollte_zum_speichern_der_oeffnungszeiten_aktiv_sein(String button) {
         AUTHORITIES_AND_LOCATIONS_PAGE.assertOpeningHoursSaveButtonEnabled(TestDataHelper.transformTestData(button));
     }
@@ -314,7 +384,7 @@ public class AdminSteps {
         return text;
     }
 
-    @Wenn("Sie für Terminarbeitsplätze unter {string} die Anzahl {int} auswählen.")
+    @When("I select for appointment desks under {string} the count {int}.")
     public void wenn_sie_fuer_terminarbeitsplaetze_unter_string_die_anzahl_int_auswaehlen(String type, int number) {
         type = TestDataHelper.transformTestData(type);
         String numberOfCounters;
@@ -335,12 +405,12 @@ public class AdminSteps {
         }
     }
 
-    @Dann("sollte Ihnen die Warteschlange angezeigt werden.")
+    @Then("the queue should be displayed.")
     public void dann_sollte_ihnen_die_warteschlange_angezeigt_werden() {
         COUNTER_PROCESSING_STATION_PAGE.checkQueueElementsVisible();
     }
 
-    @Wenn("Sie im " + AdminPageContext.NAME + " auf den {string} Link klicken.")
+    @When("I click the {string} link in the administration.")
     public void wenn_sie_im_zeitmanagementsystem_auf_den_string_link_klicken(String linkName) {
         linkName = TestDataHelper.transformTestData(linkName);
         switch (linkName) {
@@ -355,45 +425,45 @@ public class AdminSteps {
         }
     }
 
-    @Dann("öffnet sich der Wochenkalender.")
+    @Then("the week calendar opens.")
     public void dann_oeffnet_sich_der_wochenkalender() {
         COUNTER_PROCESSING_STATION_PAGE.checkIfWeeklyCalendarIsVisible();
     }
 
-    @Dann("werden alle gebuchten und verfügbaren Termine der aktuellen Kalenderwoche angezeigt.")
+    @Then("all booked and available appointments of the current calendar week are displayed.")
     public void dann_werden_alle_gebuchten_und_verfuegbaren_termine_der_aktuellen_kalenderwoche_angezeigt() {
         COUNTER_PROCESSING_STATION_PAGE.checkIfAllBookedAndFreeSlotsAreVisible();
     }
 
-    @Wenn("Sie nun den Bürger bzw. die Bürgerin mit der Terminnummer {string} aufrufen.")
+    @When("I call the citizen with appointment number {string}.")
     public void wenn_sie_nun_den_buerger_bzw_die_buergerin_mit_der_terminnummer_aufrufen(String appointmentNumber) {
         appointmentNumber = TestDataHelper.transformTestData(appointmentNumber);
         COUNTER_PROCESSING_STATION_PAGE.clickOnAppointmentNumberLink(appointmentNumber);
     }
 
-    @Dann("sollten die Kundeninformationen angezeigt werden.")
+    @Then("the customer information should be displayed.")
     public void dann_sollten_die_kundeninformationen_angezeigt_werden() {
         COUNTER_PROCESSING_STATION_PAGE.checkCustomerInformation();
     }
 
-    @Wenn("Sie zur Webseite der Administration navigieren.")
+    @When("I open the administration website.")
     public void wenn_sie_zur_webseite_der_administration_navigieren() {
         ADMIN_PAGE.navigateToPage();
     }
 
-    @Wenn("Sie nach Anruf des Bürgers bzw. Bürgerin den Termin mit der Nummer {string} auf die Zeit {string} anpassen.")
+    @When("I change the appointment with number {string} to the time {string} after calling the citizen.")
     public void wenn_sie_nach_anruf_des_buergers_bzw_buergerin_den_termin_mit_der_nummer_string_auf_die_zeit_string_anpassen(String appointmentNumber,
             String timeSlot) {
         COUNTER_PROCESSING_STATION_PAGE.clickOnAppointmentNumberEditLink(TestDataHelper.transformTestData(appointmentNumber));
         COUNTER_PROCESSING_STATION_PAGE.selectTimeSlot(TestDataHelper.transformTestData(timeSlot));
     }
 
-    @Wenn("Sie im " + AdminPageContext.NAME + " den Termin mit der Nummer {string} löschen.")
+    @When("I delete the appointment with number {string} in the administration.")
     public void wenn_sie_im_zeitmanagementsystem_den_termin_mit_der_nummer_loeschen(String appointmentNumber) {
         COUNTER_PROCESSING_STATION_PAGE.clickOnDeleteAppointmentLink(TestDataHelper.transformTestData(appointmentNumber));
     }
 
-    @Wenn("Sie einen Terminkunden mit der Dienstleistung {string} und dem Namen {string} buchen.")
+    @When("I book an appointment customer with service {string} and name {string}.")
     public void sie_einen_terminkunden_mit_der_dienstleistung_und_dem_namen_buchen(String service, String name) {
         wenn_sie_im_zeitmanagementsystem_unter_terminvereinbarung_neu_die_dienstleistung_string_auswaehlen(service);
         selectCounterAppointmentTimeOrWalkIn();
@@ -402,28 +472,139 @@ public class AdminSteps {
         bookNamedAppointmentOrWalkIn(TestDataHelper.getTestData("customer_name"), TestDataHelper.getTestData("customer_email"));
     }
 
-    @Wenn("Sie den gerade gebuchten Termin von {string} in der Warteschlange löschen.")
+    @When("I delete the just booked appointment of {string} from the queue.")
     public void sie_den_gerade_gebuchten_termin_in_der_warteschlange_loeschen(String familyName) {
         COUNTER_PROCESSING_STATION_PAGE.deleteQueuedAppointmentByFamilyName(TestDataHelper.transformTestData(familyName));
     }
 
-    @Wenn("Sie sich als {string} im Zeitmanagementsystem anmelden.")
+    @When("I sign in to the administration as {string}.")
     public void sie_sich_als_im_zeitmanagementsystem_anmelden(String username) throws Exception {
         ADMIN_PAGE.loginWithKeycloakUser(
                 AccountCheckout.assignWorkstationLogin(TestDataHelper.transformTestData(username)));
     }
 
-    @Wenn("Sie in der Kundensuche nach {string} suchen.")
+    @When("I sign in to the administration as {string} and wait for the header.")
+    public void iSignInToTheAdministrationAndWaitForTheHeader(String username) throws Exception {
+        String login = AccountCheckout.assignWorkstationLogin(TestDataHelper.transformTestData(username));
+        TestDataHelper.setTestData("signed_in_login", login);
+        Integer departmentId = AccountCheckout.checkedOutDepartmentId();
+        if (departmentId != null) {
+            TestDataHelper.setTestData("signed_in_department", departmentId.toString());
+        }
+        ADMIN_PAGE.loginWithKeycloakUser(login, By.cssSelector(".user-name a"));
+    }
+
+    @When("I open the form for a new user.")
+    public void iOpenTheFormForANewUser() {
+        USERACCOUNT_PAGE.openNewUser();
+    }
+
+    @When("I prefer a local login for the new user.")
+    public void iPreferALocalLoginForTheNewUser() {
+        USERACCOUNT_PAGE.preferLocalLogin();
+    }
+
+    @When("I enter the new user {string} with password {string}.")
+    public void iEnterTheNewUserWithPassword(String username, String password) {
+        USERACCOUNT_PAGE.enterNewUser(
+                TestDataHelper.transformTestData(username),
+                TestDataHelper.transformTestData(password));
+    }
+
+    @When("I save the new user.")
+    public void iSaveTheNewUser() {
+        USERACCOUNT_PAGE.saveNewUser();
+    }
+
+    @Then("the new user form asks for a department and outlines Behörde in red.")
+    public void theNewUserFormAsksForADepartmentAndOutlinesTheFieldInRed() {
+        USERACCOUNT_PAGE.assertDepartmentIsRequired();
+    }
+
+    @Then("the status link is visible in the page footer.")
+    public void theStatusLinkIsVisibleInThePageFooter() {
+        STATUS_PAGE.assertStatusLinkVisible();
+    }
+
+    @Then("the system status page hides the technical administration section.")
+    public void theSystemStatusPageHidesTheTechnicalAdministrationSection() {
+        STATUS_PAGE.assertTechnicalSectionHidden();
+    }
+
+    @When("I open the status page from the page footer.")
+    public void iOpenTheStatusPageFromThePageFooter() {
+        STATUS_PAGE.openFromFooter();
+    }
+
+    @Then("the system status page is displayed.")
+    public void theSystemStatusPageIsDisplayed() {
+        STATUS_PAGE.assertStatusPageOpen();
+    }
+
+    @When("I open my profile from the header.")
+    public void iOpenMyProfileFromTheHeader() {
+        PROFILE_PAGE.openFromHeader();
+    }
+
+    @Then("my profile shows only the LDAP name, the role {string} and its permissions.")
+    public void myProfileShowsOnlyTheLdapNameTheRoleAndItsPermissions(String role) {
+        String login = TestDataHelper.getTestData("signed_in_login");
+        if (login == null || login.isBlank()) {
+            throw new IllegalStateException("The signed-in login was not stored.");
+        }
+        Set<String> permissions = permissionsForRole(role);
+        PROFILE_PAGE.assertOnlyLdapRoleAndPermissions(login, role, permissions);
+    }
+
+    @When("I save the appointment again with one more slot.")
+    public void iSaveTheAppointmentAgainWithOneMoreSlot() {
+        COUNTER_PROCESSING_STATION_PAGE.saveAppointmentWithOneMoreSlot();
+    }
+
+    @When("I search for the appointment number without its letters in the customer search.")
+    public void iSearchForTheAppointmentNumberWithoutItsLetters() {
+        String number = TestDataHelper.getTestData("new_appointment_number");
+        Assert.assertNotNull(number, "The booked appointment has no number.");
+        String digits = number.replaceFirst("^[A-Za-z]+", "");
+        Assert.assertNotEquals(digits, number, "The appointment number has no letter prefix: " + number);
+        Assert.assertFalse(digits.isBlank(), "The appointment number has no digits: " + number);
+        CUSTOMER_SEARCH_PAGE.search(digits);
+    }
+
+    @Then("the customer search shows that appointment in one row and no follow-up slot rows.")
+    public void theCustomerSearchShowsThatAppointmentInOneRow() {
+        String number = TestDataHelper.getTestData("new_appointment_number");
+        CUSTOMER_SEARCH_PAGE.assertOneAppointmentWithoutFollowUpRows(
+                TestDataHelper.getTestData("customer_name"),
+                number.replaceFirst("^[A-Za-z]+", ""));
+    }
+
+    @When("I search for {string} in the customer search.")
     public void sie_in_der_kundensuche_nach_suchen(String query) {
         CUSTOMER_SEARCH_PAGE.search(TestDataHelper.transformTestData(query));
     }
 
-    @Dann("ist der Sachbearbeiter-Filter in der Kundensuche nicht sichtbar.")
+    @When("I open the found appointment of {string} from the customer search.")
+    public void iOpenTheFoundAppointmentFromTheCustomerSearch(String familyName) {
+        CUSTOMER_SEARCH_PAGE.openFoundAppointment(TestDataHelper.transformTestData(familyName));
+    }
+
+    @Then("the appointment edit form for {string} is open.")
+    public void theAppointmentEditFormIsOpen(String familyName) {
+        CUSTOMER_SEARCH_PAGE.assertEditFormOpen(TestDataHelper.transformTestData(familyName));
+    }
+
+    @When("I delete the open appointment.")
+    public void iDeleteTheOpenAppointment() {
+        CUSTOMER_SEARCH_PAGE.deleteOpenAppointment();
+    }
+
+    @Then("the clerk filter is not visible in the customer search.")
     public void ist_der_sachbearbeiter_filter_nicht_sichtbar() {
         CUSTOMER_SEARCH_PAGE.assertClerkFilterHidden();
     }
 
-    @Dann("listet die Kundensuche {string} vor {string} vor {string}.")
+    @Then("the customer search lists {string} before {string} before {string}.")
     public void listet_die_kundensuche_in_reihenfolge(String first, String second, String third) {
         CUSTOMER_SEARCH_PAGE.assertListedInOrder(
                 TestDataHelper.transformTestData(first),
@@ -431,7 +612,16 @@ public class AdminSteps {
                 TestDataHelper.transformTestData(third));
     }
 
-    @Dann("zeigt die Kundensuche für {string} den Status {string} mit heutiger Buchung und ohne Terminaufruf.")
+    @Then("the customer search lists these names:")
+    public void listetDieKundensucheDieseNamen(DataTable table) {
+        List<String> names = new ArrayList<>();
+        for (List<String> row : table.asLists()) {
+            names.add(TestDataHelper.transformTestData(row.get(0)));
+        }
+        CUSTOMER_SEARCH_PAGE.assertNames(names);
+    }
+
+    @Then("the customer search shows {string} with status {string}, booked today and without a call time.")
     public void zeigt_den_status_mit_heutiger_buchung(String familyName, String statusLabel) {
         CUSTOMER_SEARCH_PAGE.assertStatusWithoutCall(
                 TestDataHelper.transformTestData(familyName),
@@ -439,7 +629,7 @@ public class AdminSteps {
                 CUSTOMER_SEARCH_PAGE.bookingDateDaysAgo(0));
     }
 
-    @Dann("zeigt die Kundensuche für {string} den Status {string} mit Buchung vor {int} Tagen um {string} und ohne Terminaufruf.")
+    @Then("the customer search shows {string} with status {string}, booked {int} days ago at {string} and without a call time.")
     public void zeigt_den_status_mit_buchung_ohne_aufruf(
             String familyName, String statusLabel, int daysAgo, String time) {
         CUSTOMER_SEARCH_PAGE.assertStatusWithoutCall(
@@ -448,7 +638,7 @@ public class AdminSteps {
                 CUSTOMER_SEARCH_PAGE.bookingStampDaysAgo(daysAgo, time));
     }
 
-    @Dann("zeigt die Kundensuche für {string} den Status {string} mit Buchung vor {int} Tagen um {string} und Terminaufruf vor {int} Tagen um {string}.")
+    @Then("the customer search shows {string} with status {string}, booked {int} days ago at {string} and called {int} days ago at {string}.")
     public void zeigt_den_status_mit_buchung_und_aufruf(
             String familyName, String statusLabel, int bookedDaysAgo, String bookedTime, int calledDaysAgo, String calledTime) {
         CUSTOMER_SEARCH_PAGE.assertStatusWithCall(
@@ -458,7 +648,7 @@ public class AdminSteps {
                 CUSTOMER_SEARCH_PAGE.bookingStampDaysAgo(calledDaysAgo, calledTime));
     }
 
-    @Wenn("Sie einen Spontankunden mit der Dienstleistung {string}, dem Namen {string}, Freitextfeld {string} und Freitextfeld 2 {string} buchen.")
+    @When("I book a walk-in customer with service {string}, name {string}, free text {string} and second free text {string}.")
     public void sie_einen_spontankunden_mit_freitextfeldern_buchen(
             String service, String name, String freeText, String secondFreeText) {
         wenn_sie_im_zeitmanagementsystem_unter_terminvereinbarung_neu_die_dienstleistung_string_auswaehlen(service);
@@ -476,22 +666,136 @@ public class AdminSteps {
         }
     }
 
-    @Wenn("Sie zum Sachbearbeiterplatz zurückkehren.")
+    @When("I return to the workstation.")
     public void sie_zum_sachbearbeiterplatz_zurueckkehren() {
         ADMIN_PAGE.clickInNavigationOnWorkstation();
     }
 
-    @Dann("zeigt die Kundensuche den Kunden {string}.")
+    @When("I note the duration of {string} and of another service.")
+    public void iNoteTheDurationOfTheServiceAndOfAnother(String service) {
+        COUNTER_PROCESSING_STATION_PAGE.noteServiceAndAnotherDuration(TestDataHelper.transformTestData(service));
+    }
+
+    @When("I select a walk-in customer under create appointment in the administration.")
+    public void iSelectAWalkInCustomerUnderCreateAppointment() {
+        COUNTER_PROCESSING_STATION_PAGE.selectWalkInCustomer();
+    }
+
+    @Then("the edited walk-in appointment still shows those durations.")
+    public void theEditedWalkInAppointmentStillShowsThoseDurations() {
+        COUNTER_PROCESSING_STATION_PAGE.assertNotedDurationsStillShown();
+    }
+
+    @When("I save the walk-in appointment with the note {string}.")
+    public void iSaveTheWalkInAppointmentWithTheNote(String note) {
+        COUNTER_PROCESSING_STATION_PAGE.saveWalkInAppointmentWithNote(TestDataHelper.transformTestData(note));
+    }
+
+    @Then("the appointment form for {string} shows a duration of {int} minutes and not {int} minutes.")
+    public void zeigt_das_terminformular_die_dauer(String service, int minutes, int wrongMinutes) {
+        COUNTER_PROCESSING_STATION_PAGE.assertAppointmentFormDuration(
+                TestDataHelper.transformTestData(service), minutes, wrongMinutes);
+    }
+
+    @When("I book the already selected appointment for {string}.")
+    public void sie_den_bereits_gewaehlten_termin_buchen(String name) {
+        bookAlreadySelectedAppointment(name, true);
+    }
+
+    @When("I book today's already selected appointment for {string}.")
+    public void iBookTodaysAlreadySelectedAppointment(String name) {
+        bookAlreadySelectedAppointment(name, false);
+    }
+
+    private void bookAlreadySelectedAppointment(String name, boolean allowNextDay) {
+        COUNTER_PROCESSING_STATION_PAGE.selectTimeInNewAppointmentDropDownList(
+                "<nächste>", java.util.Set.of(), false, allowNextDay);
+        String familyName = TestDataHelper.transformTestData(name);
+        COUNTER_PROCESSING_STATION_PAGE.enterNameInNewAppointmentTextField(familyName);
+        String email = familyName.toLowerCase(java.util.Locale.ROOT).replaceAll("[^a-z0-9]", "") + "@mailinator.com";
+        COUNTER_PROCESSING_STATION_PAGE.enterEmailInNewAppointmentTextField(email);
+        COUNTER_PROCESSING_STATION_PAGE.enterPhoneNumberInNewAppointmentTextField("+491234567890");
+        COUNTER_PROCESSING_STATION_PAGE.clickOnBookAppointmentButton(true);
+    }
+
+    @When("I open the overall view.")
+    public void sie_die_gesamtuebersicht_oeffnen() {
+        ADMIN_PAGE.clickInNavigationOnOverallCalendar();
+    }
+
+    @When("I show location {string} with id {int} in the overall view for one day.")
+    public void iShowLocationInTheOverallViewForOneDay(String location, int scopeId) {
+        COUNTER_PROCESSING_STATION_PAGE.showLocationInOverallViewForOneDay(
+                TestDataHelper.transformTestData(location), scopeId);
+    }
+
+    @Then("the overall view links that location to its opening hours for that day with the label {string}.")
+    public void theOverallViewLinksThatLocationToItsOpeningHours(String linkLabel) {
+        COUNTER_PROCESSING_STATION_PAGE.assertOverallViewLinksLocationToOpeningHours(
+                TestDataHelper.transformTestData(linkLabel));
+    }
+
+    @When("I show every location in the overall view for {int} days.")
+    public void iShowEveryLocationInTheOverallViewForDays(int days) {
+        COUNTER_PROCESSING_STATION_PAGE.showEveryLocationInOverallView(days);
+    }
+
+    @When("I open the full view of the overall calendar.")
+    public void iOpenTheFullViewOfTheOverallCalendar() {
+        COUNTER_PROCESSING_STATION_PAGE.openOverallViewFullScreen();
+    }
+
+    @When("I scroll the overall view to the right.")
+    public void iScrollTheOverallViewToTheRight() {
+        COUNTER_PROCESSING_STATION_PAGE.scrollOverallViewToTheRight();
+    }
+
+    @Then("each shown location keeps its date in view.")
+    public void eachShownLocationKeepsItsDateInView() {
+        COUNTER_PROCESSING_STATION_PAGE.assertEachVisibleLocationShowsItsDate();
+    }
+
+    @Then("the overall view has no {string} row label and no {string} column label.")
+    public void theOverallViewHasNoRowOrColumnLabel(String rowLabel, String columnLabel) {
+        COUNTER_PROCESSING_STATION_PAGE.assertOverallViewHasNoAxisLabels(rowLabel, columnLabel);
+    }
+
+    @Then("the hour label sits on the first row of that hour.")
+    public void theHourLabelSitsOnTheFirstRowOfThatHour() {
+        COUNTER_PROCESSING_STATION_PAGE.assertHourLabelSitsOnTheHourRow();
+    }
+
+    @Then("the day lines keep one width and location headers have no side border.")
+    public void theDayLinesKeepOneWidth() {
+        COUNTER_PROCESSING_STATION_PAGE.assertDayLinesKeepOneWidth();
+    }
+
+    @When("I show one location with walk-in opening hours in the overall view.")
+    public void iShowOneLocationWithWalkInOpeningHours() throws SQLException {
+        COUNTER_PROCESSING_STATION_PAGE.showWalkInOpening(walkInOpening());
+    }
+
+    @Then("that walk-in opening time is not shown in white.")
+    public void thatWalkInOpeningTimeIsNotShownInWhite() {
+        COUNTER_PROCESSING_STATION_PAGE.assertWalkInHoursAreNotWhite();
+    }
+
+    @Then("the overall view shows the just booked appointment with a duration of {int} minutes.")
+    public void zeigt_die_gesamtuebersicht_die_dauer(int minutes) {
+        COUNTER_PROCESSING_STATION_PAGE.assertOverallCalendarAppointmentSpansMinutes(minutes);
+    }
+
+    @Then("the customer search shows the customer {string}.")
     public void zeigt_die_kundensuche_den_kunden(String familyName) {
         CUSTOMER_SEARCH_PAGE.assertCustomerListed(TestDataHelper.transformTestData(familyName));
     }
 
-    @Dann("zeigt die Kundensuche den Kunden {string} nicht.")
+    @Then("the customer search does not show the customer {string}.")
     public void zeigt_die_kundensuche_den_kunden_nicht(String familyName) {
         CUSTOMER_SEARCH_PAGE.assertCustomerNotListed(TestDataHelper.transformTestData(familyName));
     }
 
-    @Dann("zeigt die Kundensuche für {string} den Status {string} mit Buchungs- und Stornierungszeit.")
+    @Then("the customer search shows {string} with status {string} and a booking and cancellation time.")
     public void zeigt_die_kundensuche_den_status_mit_zeiten(String familyName, String statusLabel) {
         CUSTOMER_SEARCH_PAGE.assertCancelledStatus(
                 TestDataHelper.transformTestData(familyName),
@@ -515,17 +819,17 @@ public class AdminSteps {
         COUNTER_PROCESSING_STATION_PAGE.clickOnCloseButton();
     }
 
-    @Wenn("Sie im " + AdminPageContext.NAME + " unter Termin erstellen das Datum {string} eingeben.")
+    @When("I enter the date {string} under create appointment in the administration.")
     public void wenn_sie_im_zeitmanagementsystem_unter_terminvereinbarung_neu_das_datum_string_eingeben(String date) {
         COUNTER_PROCESSING_STATION_PAGE.enterDateInNewAppointmentTextField(TestDataHelper.transformTestData(date));
     }
 
-    @Wenn("Sie im " + AdminPageContext.NAME + " unter Termin erstellen die Zeit {string} auswählen.")
+    @When("I select the time {string} under create appointment in the administration.")
     public void wenn_sie_im_zeitmanagementsystem_unter_terminvereinbarung_neu_die_zeit_string_auswaehlen(String time) {
         COUNTER_PROCESSING_STATION_PAGE.selectTimeInNewAppointmentDropDownList(TestDataHelper.transformTestData(time));
     }
 
-    @Wenn("Sie im " + AdminPageContext.NAME + " unter Termin erstellen den Namen {string} eingeben.")
+    @When("I enter the name {string} under create appointment in the administration.")
     public void wenn_sie_im_zeitmanagementsystem_unter_terminvereinbarung_neu_den_namen_string_eingeben(String name) {
         name = TestDataHelper.transformTestData(name);
         if (name.equals("<zufällig>")) {
@@ -535,12 +839,12 @@ public class AdminSteps {
         COUNTER_PROCESSING_STATION_PAGE.enterNameInNewAppointmentTextField(TestDataHelper.transformTestData(name));
     }
 
-    @Wenn("Sie im " + AdminPageContext.NAME + " unter Termin erstellen die Telefonnummer {string} eingeben.")
+    @When("I enter the phone number {string} under create appointment in the administration.")
     public void wenn_sie_im_zeitmanagementsystem_unter_terminvereinbarung_neu_die_telefonnummer_string_eingeben(String phoneNumber) {
         COUNTER_PROCESSING_STATION_PAGE.enterPhoneNumberInNewAppointmentTextField(TestDataHelper.transformTestData(phoneNumber));
     }
 
-    @Wenn("Sie im " + AdminPageContext.NAME + " unter Termin erstellen die E-mail-Adresse {string} eingeben.")
+    @When("I enter the email address {string} under create appointment in the administration.")
     public void wenn_sie_im_zeitmanagementsystem_unter_terminvereinbarung_neu_die_email_adresse_string_eingeben(String email) {
         email = TestDataHelper.transformTestData(email);
         if (email.equals("<mailinator>")) {
@@ -557,17 +861,17 @@ public class AdminSteps {
         COUNTER_PROCESSING_STATION_PAGE.enterEmailInNewAppointmentTextField(TestDataHelper.transformTestData(email));
     }
 
-    @Und("Sie im " + AdminPageContext.NAME + " unter Termin erstellen die Anmerkung {string} eingeben.")
+    @And("I enter the note {string} under create appointment in the administration.")
     public void wenn_sie_im_zeitmanagementsystem_unter_terminvereinbarung_neu_die_anmerkung_string_eingeben(String note) {
         COUNTER_PROCESSING_STATION_PAGE.enterNoteInNewAppointmentTextField(TestDataHelper.transformTestData(note));
     }
 
-    @Wenn("Sie im " + AdminPageContext.NAME + " unter Termin erstellen die Dienstleistung {string} auswählen.")
+    @When("I select the service {string} under create appointment in the administration.")
     public void wenn_sie_im_zeitmanagementsystem_unter_terminvereinbarung_neu_die_dienstleistung_string_auswaehlen(String service) {
         COUNTER_PROCESSING_STATION_PAGE.selectServiceInNewAppointmentMultiList(TestDataHelper.transformTestData(service));
     }
 
-    @Wenn("Sie im " + AdminPageContext.NAME + " unter Termin erstellen auf die Schaltfläche {string} klicken.")
+    @When("I click the button {string} under create appointment in the administration.")
     public void wenn_sie_im_zeitmanagementsystem_unter_terminvereinbarung_neu_auf_die_schaltflaeche_string_klicken(String button) {
         button = TestDataHelper.transformTestData(button);
         switch (button) {
@@ -585,22 +889,22 @@ public class AdminSteps {
         }
     }
 
-    @Wenn("Sie die Anzahl der ausgewählten Dienstleistung {string} um {int} erhöhen.")
+    @When("I increase the count of the selected service {string} by {int}.")
     public void wenn_sie_die_anzahl_der_ausgewaehlten_dienstleistung_um_erhoehen(String service, int times) {
         COUNTER_PROCESSING_STATION_PAGE.increaseSelectedServiceCount(service, times);
     }
 
-    @Dann("ist die Anzahl der ausgewählten Dienstleistung {string} {int}.")
+    @Then("the count of the selected service {string} is {int}.")
     public void dann_ist_die_anzahl_der_ausgewaehlten_dienstleistung(String service, int count) {
         COUNTER_PROCESSING_STATION_PAGE.assertSelectedServiceCount(service, count);
     }
 
-    @Dann("ist die Dienstleistung {string} nicht in der ausgewählten Liste.")
+    @Then("the service {string} is not in the selected list.")
     public void dann_ist_die_dienstleistung_nicht_in_der_ausgewaehlten_liste(String service) {
         COUNTER_PROCESSING_STATION_PAGE.assertSelectedServiceHidden(service);
     }
 
-    @Dann("kann die Terminbestätigung gedruckt werden.")
+    @Then("the appointment confirmation can be printed.")
     public void dann_kann_die_terminbestaetigung_gedruckt_werden() {
         WindowControls.switchToOpenedWindow(DriverUtil.getDriver(),
                 TestPropertiesHelper.getPropertyAsInteger("defaultExplicitWaitTime", true, DefaultValues.DEFAULT_EXPLICIT_WAIT_TIME),
@@ -609,40 +913,40 @@ public class AdminSteps {
         COUNTER_PROCESSING_STATION_PAGE.checkAppointmentConfirmationPrint();
     }
 
-    @Dann("sollte die aktivierte Öffnungszeit löschbar sein.")
+    @Then("the active opening hours should be deletable.")
     public void dann_sollte_die_aktivierte_oeffnungszeit_loeschbar_sein() {
         COUNTER_PROCESSING_STATION_PAGE.clickOnDeleteIcon();
     }
 
-    @Dann("sollte die aktivierte Öffnungszeit mit der Anmerkung {string} löschbar sein.")
+    @Then("the active opening hours with the note {string} should be deletable.")
     public void dann_sollte_die_aktivierte_oeffnungszeit_mit_anmerkung_loeschbar_sein(String anmerkung) {
         String note = TestDataHelper.transformTestData(anmerkung);
         // Behörden und Standorte > Öffnungszeiten uses a custom dialog, not a browser alert
         AUTHORITIES_AND_LOCATIONS_PAGE.clickDeleteOpeningHoursWithNote(note);
     }
 
-    @Wenn("Sie die Öffnungszeit vom Typ {string} löschen.")
+    @When("I delete the opening hours of type {string}.")
     public void wenn_sie_die_oeffnungszeit_vom_typ_loeschen(String type) {
         AUTHORITIES_AND_LOCATIONS_PAGE.deleteOpeningHoursOfType(TestDataHelper.transformTestData(type));
     }
 
-    @Wenn("die bereits wartenden Kunden als nicht erschienen abgeschlossen werden.")
+    @When("the customers already waiting are finished as no-shows.")
     public void die_bereits_wartenden_kunden_als_nicht_erschienen_abgeschlossen_werden() {
         PROCESSING_STATION_SECTION.dismissCustomersAlreadyWaiting();
     }
 
-    @Wenn("Der Sachbearbeiter den wartenden Kunden aufruft.")
+    @When("the clerk calls the waiting customer.")
     public void wenn_der_sachbearbeiter_den_wartenden_kunden_aufruft() {
         PROCESSING_STATION_SECTION.callNextCustomer();
         PROCESSING_STATION_SECTION.confirmCustomerCall();
     }
 
-    @Wenn("Der Sachbearbeiter den Terminkunden mit der Anmerkung {string} aufruft.")
+    @When("the clerk calls the appointment customer with the note {string}.")
     public void wenn_der_sachbearbeiter_den_termin_kunden_mit_der_anmerkung_aufruft(String anmerkung) {
         PROCESSING_STATION_SECTION.callCustomerWithSpecificNote(anmerkung);
     }
 
-    @Wenn("Der Sachbearbeiter {string} aus der Warteliste aufruft.")
+    @When("the clerk calls {string} from the waiting list.")
     public void wenn_der_sachbearbeiter_den_kunden_mit_der_nummer_aus_der_warteliste_aufruft(String nummer) {
         if ("true".equals(TestDataHelper.getTestData("appointment_booked_as_walk_in"))) {
             COUNTER_PROCESSING_STATION_PAGE.showSpontaneousCustomers(true);
@@ -650,118 +954,160 @@ public class AdminSteps {
         PROCESSING_STATION_SECTION.callCustomerFromQueueWithNumber(TestDataHelper.transformTestData(nummer));
     }
 
-    @Wenn("Der Sachbearbeiter den Kunden {string} aus der Warteliste aufruft.")
+    @When("the clerk calls the customer {string} from the waiting list.")
     public void wenn_der_sachbearbeiter_den_kunden_mit_dem_namen_aus_der_warteliste_aufruft(String name) {
         PROCESSING_STATION_SECTION.callCustomerFromQueueWithName(TestDataHelper.transformTestData(name));
     }
 
-    @Wenn("Der Sachbearbeiter {string} aus den geparkten Terminen aufruft.")
+    @When("the clerk calls {string} from the parked appointments.")
     public void wenn_der_sachbearbeiter_den_kunden_mit_der_nummer_aus_den_geparkten_terminen_aufruft(String nummer) {
         PROCESSING_STATION_SECTION.callCustomerFromParkingTableWithNumber(TestDataHelper.transformTestData(nummer));
     }
 
-    @Dann("werden die eingegebene Arbeitsplatzinformationen im Seitenkopf angezeigt.")
+    @Then("the entered workstation information is shown in the page header.")
     public void dann_werden_eingegebene_arbeitsplatzinformationen_im_seitenkopf_angezeigt() {
         ADMIN_PAGE.enteredWorkplaceInformationMatchWithPageHeader();
     }
 
-    @Dann("wird der wartende Kunde aufgerufen.")
+    @Then("the waiting customer is called.")
     public void wird_der_wartende_kunde_aufgerufen() {
         PROCESSING_STATION_SECTION.validateCustomerCall();
     }
 
-    @Dann("wird der wartende Kunde {string} aufgerufen.")
+    @Then("the waiting customer {string} is called.")
     public void wird_der_wartende_kunde_mit_der_nummer_aufgerufen(String termin) {
         PROCESSING_STATION_SECTION.validateCustomerCallWithNumber(TestDataHelper.transformTestData(termin));
     }
 
-    @Dann("wird die Seite Tresen geöffnet.")
+    @Then("the counter page is opened.")
     public void dann_wird_die_seite_tresen_geoeffnet() {
         COUNTER_SECTION.checkInformationVisible();
         //TODO Die Spalten werden nicht mehr angezeigt, erst wenn termin vorhanden sind
         //COUNTER_PROCESSING_STATION_PAGE.checkQueueElementsVisibleWithoutSMS();
     }
 
-    @Dann("öffnet sich die Standort auswählen Seite.")
+    @Then("the select-location page opens.")
     public void dann_oeffnet_sich_die_standort_auswaehlen_seite() {
         ADMIN_PAGE.checkForLocationPage();
     }
 
-    @Wenn("die aktuelle Anzahl der Wartenden gemerkt wird.")
+    @When("the current number of waiting customers is remembered.")
     public void die_aktuelle_anzahl_der_wartenden_gemerkt_wird() {
         rememberedWaitingClients = COUNTER_PROCESSING_STATION_PAGE.readWaitingClientsEffective();
         ScenarioLogManager.getLogger().info("Wartende before the new queue entries: {}", rememberedWaitingClients);
     }
 
-    @Dann("steigt die gemerkte Anzahl der Wartenden ohne Seitenaktualisierung innerhalb von {int} Sekunden um {int}.")
+    @When("the current number of waiting customers under information is remembered.")
+    public void die_aktuelle_anzahl_der_wartenden_unter_informationen_gemerkt_wird() {
+        rememberedWaitingClients = COUNTER_SECTION.readWaitingClientsOnCounter();
+        ScenarioLogManager.getLogger().info(
+                "Wartende under Informationen before the appointment: {}", rememberedWaitingClients);
+    }
+
+    @Then("the remembered number of waiting customers under information has increased by {int} when the appointment minute is reached.")
+    public void ist_die_anzahl_der_wartenden_mit_erreichen_der_terminminute_erhoeht(int increase) {
+        long appointment;
+        try {
+            appointment = Long.parseLong(TestDataHelper.getTestData("appointment_epoch"));
+        } catch (NumberFormatException exception) {
+            throw new AssertionError("Appointment time was not stored", exception);
+        }
+        long now = Instant.now().getEpochSecond();
+        if (appointment - now > 45) {
+            int before = COUNTER_SECTION.reloadAndReadWaitingClientsOnCounter();
+            Assert.assertEquals(
+                    before,
+                    rememberedWaitingClients,
+                    "Wartende under Informationen rose before the appointment minute");
+        }
+        while (Instant.now().getEpochSecond() < appointment) {
+            try {
+                Thread.sleep(500L);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                Assert.fail("Interrupted while waiting for the appointment minute");
+            }
+        }
+        int after = COUNTER_SECTION.reloadAndReadWaitingClientsOnCounter();
+        long checkedAt = Instant.now().getEpochSecond();
+        Assert.assertTrue(
+                checkedAt < appointment + 60,
+                "The check finished after the appointment minute (epoch " + checkedAt + ")");
+        Assert.assertEquals(
+                after,
+                rememberedWaitingClients + increase,
+                "Wartende under Informationen at the appointment minute");
+    }
+
+    @Then("the remembered number of waiting customers increases within {int} seconds by {int} without a page reload.")
     public void steigt_die_gemerkte_anzahl_der_wartenden_ohne_seitenaktualisierung(
             int timeoutSeconds, int increase) {
         COUNTER_PROCESSING_STATION_PAGE.waitUntilWaitingClientsEffectiveAtLeast(
                 rememberedWaitingClients + increase, timeoutSeconds);
     }
 
-    @Dann("wird die Seite Sachbearbeiterplatz angezeigt.")
+    @Then("the workstation page is displayed.")
     public void dann_wird_die_seite_sachbearbeiterplatz_geoeffnet() {
         PROCESSING_STATION_SECTION.checkCustomerCallVisible();
         //TODO Die Spalten werden nicht mehr angezeigt, erst wenn termin vorhanden sind
         //COUNTER_PROCESSING_STATION_PAGE.checkQueueElementsVisibleWithoutSMS();
     }
 
-    @Dann("ist das Datum in der blauen Warteschlangenleiste sichtbar.")
+    @Then("the date is visible in the blue queue bar.")
     public void ist_das_datum_in_der_blauen_warteschlangenleiste_sichtbar() {
         COUNTER_PROCESSING_STATION_PAGE.assertQueueBarDateVisible();
     }
 
-    @Dann("ist in der blauen Warteschlangenleiste die Schaltfläche {string} sichtbar.")
+    @Then("the button {string} is visible in the blue queue bar.")
     public void ist_in_der_blauen_warteschlangenleiste_die_schaltflaeche_sichtbar(String label) {
         Assert.assertEquals(label, "Listen neu laden");
         COUNTER_PROCESSING_STATION_PAGE.assertListenNeuLadenVisible();
     }
 
-    @Dann("ist der Button {string} unter der Warteschlange nicht sichtbar.")
+    @Then("the button {string} below the queue is not visible.")
     public void ist_der_button_unter_der_warteschlange_nicht_sichtbar(String label) {
         Assert.assertEquals(label, "Warteschlange aktualisieren");
         COUNTER_PROCESSING_STATION_PAGE.assertWarteschlangeAktualisierenHidden();
     }
 
-    @Dann("ist {string} einschließlich der Tagesnavigation in der Warteschlangenleiste nicht sichtbar.")
+    @Then("{string} including the day navigation is not visible in the queue bar.")
     public void ist_heute_einschliesslich_der_tagesnavigation_nicht_sichtbar(String label) {
         Assert.assertEquals(label, "Heute");
         COUNTER_PROCESSING_STATION_PAGE.assertQueueBarDayNavigationHidden();
     }
 
-    @Dann("ist {string} in der Warteschlangenleiste nicht sichtbar.")
+    @Then("{string} is not visible in the queue bar.")
     public void ist_in_der_warteschlangenleiste_nicht_sichtbar(String label) {
         Assert.assertEquals(label, "Spontankunden einblenden");
         COUNTER_PROCESSING_STATION_PAGE.assertSpontankundenEinblendenHidden();
     }
 
-    @Dann("ist der Download der Warteschlange nicht sichtbar.")
+    @Then("the queue download is not visible.")
     public void ist_der_download_der_warteschlange_nicht_sichtbar() {
         COUNTER_PROCESSING_STATION_PAGE.assertQueueDownloadHidden();
     }
 
-    @Dann("ist die Druckfunktion der Warteschlange nicht sichtbar.")
+    @Then("the queue print function is not visible.")
     public void ist_die_druckfunktion_der_warteschlange_nicht_sichtbar() {
         COUNTER_PROCESSING_STATION_PAGE.assertQueuePrintHidden();
     }
 
-    @Dann("ist das Standort-Dropdown in der blauen Warteschlangenleiste sichtbar.")
+    @Then("the location dropdown is visible in the blue queue bar.")
     public void ist_das_standort_dropdown_in_der_blauen_warteschlangenleiste_sichtbar() {
         COUNTER_PROCESSING_STATION_PAGE.assertClusterScopeDropdownVisible();
     }
 
-    @Dann("wird das Bearbeitungsformular für den Spontankunden angezeigt.")
+    @Then("the edit form for the walk-in customer is displayed.")
     public void wird_das_bearbeitungsformular_fuer_den_spontankunden_angezeigt() {
         COUNTER_PROCESSING_STATION_PAGE.checkProcessEditFormIsVisible();
     }
 
-    @Dann("wird das Bearbeitungsformular für den Terminkunden angezeigt.")
+    @Then("the edit form for the appointment customer is displayed.")
     public void wird_das_bearbeitungsformular_fuer_den_terminkunden_angezeigt() {
         COUNTER_PROCESSING_STATION_PAGE.checkAppointmentEditFormIsVisible();
     }
 
-    @Wenn("Sie einen Spontankunden für die Dienstleistung {string} buchen.")
+    @When("I book a walk-in customer for the service {string}.")
     public void wenn_sie_einen_spontan_kunden_fuer_die_dienstleistung_buchen(String dienstleistung) {
         List<String> services = Arrays.asList(dienstleistung.split(",\\s*"));
         services.forEach(this::wenn_sie_im_zeitmanagementsystem_unter_terminvereinbarung_neu_die_dienstleistung_string_auswaehlen);
@@ -773,7 +1119,7 @@ public class AdminSteps {
         }
     }
 
-    @Wenn("Sie einen Spontankunden für die Dienstleistung buchen:")
+    @When("I book a walk-in customer for the service:")
     public void wenn_sie_einen_spontankunden_fuer_die_dienstleistung_buchen(DataTable dataTable) {
         List<Map<String, String>> services = dataTable.asMaps(String.class, String.class);
 
@@ -803,7 +1149,7 @@ public class AdminSteps {
         }
     }
 
-    @Wenn("Sie einen Terminkunden für die Dienstleistung buchen:")
+    @When("I book an appointment customer for the service:")
     public void wenn_sie_einen_terminkunden_fuer_die_dienstleistung_buchen(DataTable dataTable) {
         List<Map<String, String>> services = dataTable.asMaps(String.class, String.class);
     
@@ -883,7 +1229,7 @@ public class AdminSteps {
         }
     }
 
-    @Dann("wird der Spontankunden in der Warteschlange angezeigt.")
+    @Then("the walk-in customer is shown in the queue.")
     public void wird_der_spontankunde_in_der_warteschlange_angezeigt() {
         COUNTER_PROCESSING_STATION_PAGE.isCustomerVisibleInQueue(TestDataHelper.getTestData("new_waiting_number"), true);
     }
@@ -905,7 +1251,7 @@ public class AdminSteps {
         TestDataHelper.setTestData("new_appointment_number", waitingNumber);
     }
 
-    @Wenn("Sie einen Terminkunden mit ausgewählter Dienstleistung, Uhrzeit, name und gültige E-Mail-Adresse buchen.")
+    @When("I book an appointment customer with the selected service, time, name and a valid email address.")
     public void wenn_sie_einen_terminkunden_mit_ausgewaehlter_dienstleistung_uhrzeit_name_und_gueltige_email_adresse_buchen() {
         wenn_sie_im_zeitmanagementsystem_unter_terminvereinbarung_neu_die_dienstleistung_string_auswaehlen("<beliebig>");
         selectCounterAppointmentTimeOrWalkIn();
@@ -921,7 +1267,7 @@ public class AdminSteps {
         confirmCounterAppointmentBooking();
     }
 
-    @Wenn("Sie einen Terminkunden mit der Dienstleistung {string}, Uhrzeit, name und gültige E-Mail-Adresse buchen.")
+    @When("I book an appointment customer with service {string}, time, name and a valid email address.")
     public void wenn_sie_einen_terminkunden_mit_der_dienstleistung_uhrzeit_name_und_gueltige_email_adresse_buchen(String dienstleistungen) {
         List<String> services = Arrays.asList(dienstleistungen.split(",\\s*"));
         services.forEach(this::wenn_sie_im_zeitmanagementsystem_unter_terminvereinbarung_neu_die_dienstleistung_string_auswaehlen);
@@ -938,7 +1284,7 @@ public class AdminSteps {
         confirmCounterAppointmentBooking();
     }
 
-    @Wenn("Sie einen Terminkunden mit der Dienstleistung {string}, Uhrzeit, name, gültige E-Mail-Adresse und die Anmerkung {string} buchen.")
+    @When("I book an appointment customer with service {string}, time, name, a valid email address and the note {string}.")
     public void wenn_sie_einen_terminkunden_mit_der_dienstleistung_uhrzeit_name_gueltige_email_adresse_und_die_anmerkung_buchen(String dienstleistungen,
             String anmerkung) {
         List<String> services = Arrays.asList(dienstleistungen.split(",\\s*"));
@@ -957,7 +1303,7 @@ public class AdminSteps {
         confirmCounterAppointmentBooking();
     }
 
-    @Dann("Es erscheint ein Pop-Up-Fenster {string} und der Termin ist auch in der Warteschlange sichtbar.")
+    @Then("a popup {string} appears and the appointment is also visible in the queue.")
     public void es_erscheint_ein_popup_fenster_und_der_termin_ist_auch_in_der_warteschlange_sichtbar(String popUpName) {
         boolean bookedAsWalkIn = "true".equals(TestDataHelper.getTestData("appointment_booked_as_walk_in"));
         String visiblePopup = bookedAsWalkIn ? "Spontankunde wurde erfolgreich eingetragen" : popUpName;
@@ -974,31 +1320,31 @@ public class AdminSteps {
 
     }
 
-    @Wenn("Sie einen Terminkunden mit ausgewählter Dienstleistung und Uhrzeit buchen.")
+    @When("I book an appointment customer with the selected service and time.")
     public void wenn_sie_einen_terminkunden_mit_ausgewaehlter_dienstleistung_und_uhrzeit_buchen_erscheinen_zwei_fehlermeldungen() {
         wenn_sie_im_zeitmanagementsystem_unter_terminvereinbarung_neu_die_dienstleistung_string_auswaehlen("<beliebig>");
         COUNTER_PROCESSING_STATION_PAGE.selectTimeInNewAppointmentDropDownList("<beliebig>");
         COUNTER_PROCESSING_STATION_PAGE.clickOnBookAppointmentButton(false);
     }
 
-    @Dann("erscheinen zwei Fehlermeldungen die bei Name und E-Mail-Adresse rot hinterlegt sind.")
+    @Then("two error messages highlighted in red appear for name and email address.")
     public void erscheinen_zwei_fehlermeldungen_die_bei_name_und_email_adresse_rot_hinterlegt_sind() {
         Assert.assertNotNull(TestDataHelper.getTestData("Fehler-Name"), "Error message for the name field is not visible!");
         Assert.assertNotNull(TestDataHelper.getTestData("Fehler-Email"), "Error message for the email field is not visible!");
     }
 
-    @Dann("sollte der Kunde erschienen sein und der Termin fertiggestellt.")
+    @Then("the customer should have arrived and the appointment should be finished.")
     public void sollte_der_kunde_erschienen_sein_und_der_termin_fertig_gestellt() {
         PROCESSING_STATION_SECTION.clickOnYesCustomerAppeared();
         PROCESSING_STATION_SECTION.clickOnFinaliseAppointment();
     }
 
-    @Dann("sollte der Kunde nicht erschienen sein.")
+    @Then("the customer should not have arrived.")
     public void sollteDerKundeNichtErschienenSein() {
         PROCESSING_STATION_SECTION.clickOnNoCustomerDidNotAppear();
     }
 
-    @Dann("ist Für den Standort {string} ist die maximale Anzahl buchbarer Slots pro Termin auf {string} begrenzt.")
+    @Then("the maximum number of bookable slots per appointment for location {string} is limited to {string}.")
     public void fuer_den_standort_ist_die_maximale_anzahl_buchbarer_slots_pro_termin_begrenzt(String standort, String anzahl) {
         AUTHORITIES_AND_LOCATIONS_PAGE.clickOnLocationAdminEntry();
         AUTHORITIES_AND_LOCATIONS_PAGE.clickOnLocationEntry(standort);
@@ -1007,7 +1353,7 @@ public class AdminSteps {
                 "Expected maximum slots for location '" + standort + "' to be '" + anzahl + "', but found '" + found + "' instead.");
     }
 
-    @Dann("sind Für den Standort {string} Wiederholungsaufrufe auf {string} begrenzt.")
+    @Then("repeat calls for location {string} are limited to {string}.")
     public void fuer_den_standort_sind_die_wiederholungsaufrufe_begrenzt(String standort, String anzahl) {
         AUTHORITIES_AND_LOCATIONS_PAGE.clickOnLocationAdminEntry();
         AUTHORITIES_AND_LOCATIONS_PAGE.clickOnLocationEntry(standort);
@@ -1016,18 +1362,18 @@ public class AdminSteps {
                 "Expected 'Wiederholungsaufrufe' for location '" + standort + "' to be '" + anzahl + "', but found '" + found + "' instead.");
     }
 
-    @Wenn("Sie den Termin parken.")
+    @When("I park the appointment.")
     public void wenn_sie_den_termin_parken() {
         PROCESSING_STATION_SECTION.clickOnParkAppointment();
     }
 
-    @Dann("hat der weitergeleitete Kunde {string} die Priorität {string}.")
+    @Then("the forwarded customer {string} has priority {string}.")
     public void hat_der_weitergeleitete_kunde_die_prioritaet(String kunde, String prioritaet) {
         COUNTER_PROCESSING_STATION_PAGE.assertQueuedCustomerPriority(
                 TestDataHelper.transformTestData(kunde), prioritaet);
     }
 
-    @Wenn("Sie den Termin zu {string} mit der Anmerkung {string} weiterleiten.")
+    @When("I forward the appointment to {string} with the note {string}.")
     public void wenn_sie_den_termin_weiterleiten(String standort, String anmerkung) {
         PROCESSING_STATION_SECTION.clickOnForwardAppointment();
         PROCESSING_STATION_SECTION.selectLocationForAppointmentForwarding(standort);
@@ -1035,47 +1381,47 @@ public class AdminSteps {
         PROCESSING_STATION_SECTION.submitForwardAppointment();
     }
 
-    @Dann("sind die Kundenaktionen Fertig stellen, Weiterleiten, Parken und Abbrechen anklickbar.")
+    @Then("the customer actions finish, forward, park and cancel are clickable.")
     public void sind_die_kundenaktionen_anklickbar() {
         PROCESSING_STATION_SECTION.assertCustomerActionsEnabled();
     }
 
-    @Dann("sind die Kundenaktionen Fertig stellen, Weiterleiten, Parken und Abbrechen gesperrt.")
+    @Then("the customer actions finish, forward, park and cancel are disabled.")
     public void sind_die_kundenaktionen_gesperrt() {
         PROCESSING_STATION_SECTION.assertCustomerActionsDisabled();
     }
 
-    @Wenn("Sie die Weiterleitung öffnen.")
+    @When("I open the forward form.")
     public void sie_die_weiterleitung_oeffnen() {
         PROCESSING_STATION_SECTION.clickOnForwardAppointment();
     }
 
-    @Dann("ist das Weiterleitungsformular sichtbar.")
+    @Then("the forward form is visible.")
     public void ist_das_weiterleitungsformular_sichtbar() {
         PROCESSING_STATION_SECTION.assertForwardingFormVisible();
     }
 
-    @Dann("ist die blaue Schaltfläche Abbrechen der Weiterleitung sichtbar.")
+    @Then("the blue cancel-forward button is visible.")
     public void ist_die_blaue_schaltflaeche_abbrechen_der_weiterleitung_sichtbar() {
         PROCESSING_STATION_SECTION.assertCancelForwardingButtonBlue();
     }
 
-    @Wenn("Sie die Weiterleitung abbrechen.")
+    @When("I cancel the forward.")
     public void sie_die_weiterleitung_abbrechen() {
         PROCESSING_STATION_SECTION.clickCancelForwarding();
     }
 
-    @Dann("ist das Terminerstellungsformular sichtbar.")
+    @Then("the create-appointment form is visible.")
     public void ist_das_terminerstellungsformular_sichtbar() {
         PROCESSING_STATION_SECTION.assertAppointmentFormVisible();
     }
 
-    @Dann("erscheint der Termin {string} unter geparkte Termine.")
+    @Then("the appointment {string} appears under parked appointments.")
     public void erscheint_der_termin_unter_geparkte_termine(String termin) {
         PROCESSING_STATION_SECTION.isCustomerVisibleInParkingTable(TestDataHelper.transformTestData(termin));
     }
 
-    @Angenommen("Die fertige Termintabelle angezeigt.")
+    @Given("the finished appointment table is displayed.")
     public void sieDieFertigeTermintabelleAnzeigen() {
         COUNTER_PROCESSING_STATION_PAGE.showTheFinishedAppointmentTable();
     }
@@ -1096,23 +1442,64 @@ public class AdminSteps {
     }
 
     // Es geht über den Kundennamen
-    @Dann("Sollte der Kunde {string} unter abgeschlossene Termine erscheinen.")
+    @Then("the customer {string} should appear under finished appointments.")
     public void sollte_der_kunde_unter_abgeschlossene_termine_erscheinen(String kunde) {
         COUNTER_PROCESSING_STATION_PAGE.isCustomerVisibleInFinishedTable(TestDataHelper.transformTestData(kunde));
     }
 
-    @Dann("Sollte der Kunde {string} unter verpasste Termine erscheinen.")
+    @Then("the customer {string} should appear under missed appointments.")
     public void sollte_der_kunde_unter_verpasste_termine_erscheinen(String termin) {
         String terminName = TestDataHelper.transformTestData(termin);
         COUNTER_PROCESSING_STATION_PAGE.isCustomerVisibleInMissedTable(terminName, true);
     }
 
-    @Dann("Sollte der Kunde {string} in der Warteliste erscheinen.")
+    @When("I resume the missed appointment of {string}.")
+    public void iResumeTheMissedAppointmentOf(String familyName) {
+        COUNTER_PROCESSING_STATION_PAGE.resumeMissedAppointment(
+                bookedAppointmentNumber(), TestDataHelper.transformTestData(familyName));
+    }
+
+    @Then("the resumed appointment of {string} shows only its time in the first minute.")
+    public void theResumedAppointmentShowsOnlyItsTimeInTheFirstMinute(String familyName) {
+        COUNTER_PROCESSING_STATION_PAGE.assertResumedAppointmentShowsOnlyItsTime(
+                bookedAppointmentNumber(), TestDataHelper.transformTestData(familyName));
+    }
+
+    /**
+     * A no-show hides the call link for five wall-clock minutes. The suite clock does not
+     * move that far, so the lockout is stored as already over and the queue is reloaded.
+     */
+    @When("the no-show lockout for {string} has passed.")
+    public void theNoShowLockoutHasPassed(String familyName) {
+        String name = TestDataHelper.transformTestData(familyName);
+        COUNTER_PROCESSING_STATION_PAGE.waitUntilCustomerIsBackInQueue(name);
+        endNoShowLockout(name);
+        COUNTER_PROCESSING_STATION_PAGE.reloadQueueLists();
+    }
+
+    /**
+     * The queue shows whole minutes from the arrival time against the request clock.
+     * That clock is the database time, so the arrival is stored 90 seconds before
+     * the current database minute and the queue is reloaded.
+     */
+    @When("one minute has passed for the resumed appointment of {string}.")
+    public void oneMinuteHasPassedForTheResumedAppointmentOf(String familyName) {
+        storeOneMinuteOfWaitingTime(TestDataHelper.transformTestData(familyName));
+        COUNTER_PROCESSING_STATION_PAGE.reloadQueueLists();
+    }
+
+    @Then("the resumed appointment of {string} shows the waiting time in whole minutes.")
+    public void theResumedAppointmentShowsTheWaitingTimeInWholeMinutes(String familyName) {
+        COUNTER_PROCESSING_STATION_PAGE.assertResumedAppointmentShowsWholeMinutes(
+                bookedAppointmentNumber(), TestDataHelper.transformTestData(familyName));
+    }
+
+    @Then("the customer {string} should appear in the waiting list.")
     public void sollte_der_kunde_in_der_warteliste_erscheinen(String kunde) {
         COUNTER_PROCESSING_STATION_PAGE.isCustomerVisibleInQueue(TestDataHelper.transformTestData(kunde), true);
     }
 
-    @Dann("Die Wartezeit-H:mm:ss für {string} sollte zwischen {string} und {string} liegen.")
+    @Then("the waiting time H:mm:ss for {string} should be between {string} and {string}.")
     public void die_wartezeit_fuer_den_gegebenen_kunden_sollte_zwischen_zwei_werte_liegen(String kunde, String minimaleWartezeit, String maximaleWartezeit) {
         ScenarioLogManager.getLogger().info("Verifying if waiting time for {} is between {} and {}.", kunde, minimaleWartezeit, maximaleWartezeit);
         Duration minDuration = parseHmsDuration(minimaleWartezeit, "minimaleWartezeit");
@@ -1130,7 +1517,7 @@ public class AdminSteps {
         Assert.assertTrue(effektiveWartezeit.compareTo(minDuration) >= 0 && effektiveWartezeit.compareTo(maxDuration) <= 0, errorMessage);
     }
 
-    @Dann("Die Bearbeitungszeit-H:mm:ss für {string} sollte zwischen {string} und {string} liegen.")
+    @Then("the processing time H:mm:ss for {string} should be between {string} and {string}.")
     public void die_bearbeitungszeit_fuer_den_gegebenen_kunden_sollte_zwischen_zwei_werte_liegen(String kunde, String minimaleBearbeitungszeit,
             String maximaleBearbeitungszeit) {
         ScenarioLogManager.getLogger()
@@ -1150,13 +1537,13 @@ public class AdminSteps {
         Assert.assertTrue(effektiveBearbeitungszeit.compareTo(minDuration) >= 0 && effektiveBearbeitungszeit.compareTo(maxDuration) <= 0, errorMessage);
     }
 
-    @Wenn("Sie in der Menüzeile der Standorttabellen {string} im Dropdown Clusterstandort auswählen.")
+    @When("I select {string} in the cluster-location dropdown in the location-table menu.")
     public void wenn_sie_in_der_menuezeile_der_standorttabellen_im_dropdown_clusterstandort_auswaehlen(String standort) {
         COUNTER_PROCESSING_STATION_PAGE.SelectClusterLocation(standort);
         COUNTER_PROCESSING_STATION_PAGE.confirmClusterLocationSelection();
     }
 
-    @Dann("wird die Clusteransicht aktiviert.")
+    @Then("the cluster view is activated.")
     public void wird_die_clusteransicht_aktiviert() {
         Assert.assertTrue(
                 ADMIN_PAGE.isWebElementVisible(
@@ -1169,7 +1556,7 @@ public class AdminSteps {
         );
     }
 
-    @Und("In der Warteschlange sind die Kürzeln für folgende Standorten des Clusters zu sehen:")
+    @And("the queue shows the short codes of these cluster locations:")
     public void in_der_warteschlange_sind_die_kuerzeln_fuer_folgende_standorten_des_clusters_zu_sehen(DataTable dataTable) {
         List<String> codes = dataTable.asList(String.class);
         COUNTER_PROCESSING_STATION_PAGE.showSpontaneousCustomers(true);
@@ -1184,7 +1571,7 @@ public class AdminSteps {
         ScenarioLogManager.getLogger().info("kunde_SG42: " + TestDataHelper.getTestData("kunde_SG42"));
     }
 
-    @Dann("wird die Clusteransicht deaktiviert und die Ansicht für {string} wird aktiviert.")
+    @Then("the cluster view is deactivated and the view for {string} is activated.")
     public void wird_die_clusteransicht_deaktiviert_und_die_ansicht_fuer_wird_aktiviert(String standort) {
         ADMIN_PAGE.getContext().waitForSpinners();
 
@@ -1215,17 +1602,17 @@ public class AdminSteps {
         Assert.assertTrue(dropdownSupplier.get().getText().contains(standort), "Expected dropdown to contain the text: " + standort + ", but it did not.");
     }
 
-    @Gegebenseien("Für den Standort sind keine Termine in der Warteschlange vorhanden.")
+    @Given("the location has no appointments in the queue.")
     public void fuer_den_standort_sind_keine_termine_in_der_warteschlange_vorhanden() {
         COUNTER_PROCESSING_STATION_PAGE.isQueueEmpty();
     }
 
-    @Dann("erscheint die Meldung, dass keine wartenden Kunden vorhanden sind.")
+    @Then("the message that no waiting customers are present appears.")
     public void erscheint_die_meldung_dass_keine_wartenden_kunden_vorhanden_sind() {
         PROCESSING_STATION_SECTION.checkForNoWaitingCustomersMessage();
     }
 
-    @Und("Im Namensfeld der Warteschlange vom {string} steht, wie lange es noch dauert, bis der Kunde {string} nochmals aufgerufen werden kann.")
+    @And("the queue name field of {string} states how long until the customer {string} can be called again.")
     public void im_namensfeld_der_warteschlange_vom_steht_wie_lange_es_noch_dauert_bis_der_kunde_nochmals_aufgerufen_werden_kann(String kundenNummer,
             String kundenNamen) {
         String nummer = TestDataHelper.transformTestData(kundenNummer);
@@ -1242,68 +1629,68 @@ public class AdminSteps {
         Assert.assertTrue(element.getText().matches(".*" + pattern + ".*"), "The text did not match the expected pattern: " + pattern);
     }
 
-    @Dann("wird der Kundennamen {string} unter Kundeninformation angezeigt.")
+    @Then("the customer name {string} is shown under customer information.")
     public void wird_der_kundennamen_unter_kundeninformation_angezeigt(String name) {
         String kundenName = TestDataHelper.transformTestData(name);
         PROCESSING_STATION_SECTION.checkForCustomerNameUnderCustomerInformation(kundenName);
     }
 
-    @Dann("wird die Wartenummer {string} unter Kundeninformation angezeigt.")
+    @Then("the waiting number {string} is shown under customer information.")
     public void wird_die_wartenummer_unter_kundeninformation_angezeigt(String nummer) {
         String wartenummer = TestDataHelper.transformTestData(nummer);
         PROCESSING_STATION_SECTION.checkForWaitingNumberUnderCustomerInformation(wartenummer);
     }
 
-    @Dann("wird die Dienstleistung {string} unter Kundeninformation angezeigt.")
+    @Then("the service {string} is shown under customer information.")
     public void wird_die_dienstleistung_unter_kundeninformation_angezeigt(String dienstleistung) {
         String service = TestDataHelper.transformTestData(dienstleistung);
         PROCESSING_STATION_SECTION.checkForServiceUnderCustomerInformation(service);
     }
 
-    @Und("wird die Anmerkung {string} unter Kundeninformation angezeigt.")
+    @And("the note {string} is shown under customer information.")
     public void wird_die_anmerkung_unter_kundeninformation_angezeigt(String anmerkung) {
         String note = TestDataHelper.transformTestData(anmerkung);
         PROCESSING_STATION_SECTION.checkForNoteUnderCustomerInformation(note);
     }
 
-    @Und("wird die Telefinnummer {string} unter Kundeninformation angezeigt.")
+    @And("the phone number {string} is shown under customer information.")
     public void wirdDieTelefinnummerUnterKundeninformationAngezeigt(String telefon) {
         String nummer = TestDataHelper.transformTestData(telefon);
         PROCESSING_STATION_SECTION.checkForPhoneNumberUnderCustomerInformation(nummer);
     }
 
-    @Und("wird die E-Mail {string} unter Kundeninformation angezeigt.")
+    @And("the email {string} is shown under customer information.")
     public void wird_die_email_unter_kundeninformation_angezeigt(String email) {
         String emailAddress = TestDataHelper.transformTestData(email);
         PROCESSING_STATION_SECTION.checkForEmailUnderCustomerInformation(emailAddress);
     }
 
-    @Und("wird die Wartezeit unter Kundeninformation angezeigt.")
+    @And("the waiting time is shown under customer information.")
     public void wird_die_wartezeit_unter_kundeninformation_angezeigt() {
         PROCESSING_STATION_SECTION.checkForWaitingTimeUnderCustomerInformation();
     }
 
-    @Und("wird die Zeit seit Kundenaufruf unter Kundeninformation angezeigt.")
+    @And("the time since the customer was called is shown under customer information.")
     public void wird_die_zeit_seit_kundenaufruf_unter_kundeninformation_angezeigt() {
         PROCESSING_STATION_SECTION.checkForTimeSinceCustomerCallUnderCustomerInformation();
     }
 
-    @Dann("erscheint das Bestätigungsfenster zum Wechsel des Warteschlangen-Kunden.")
+    @Then("the confirmation dialog for switching the queue customer appears.")
     public void erscheint_das_bestaetigungsfenster_zum_wechsel_des_warteschlangen_kunden() {
         PROCESSING_STATION_SECTION.assertCallOtherProcessConfirmDialogVisible();
     }
 
-    @Dann("erscheint kein Bestätigungsfenster zum Wechsel des Warteschlangen-Kunden.")
+    @Then("no confirmation dialog for switching the queue customer appears.")
     public void erscheint_kein_bestaetigungsfenster_zum_wechsel_des_warteschlangen_kunden() {
         PROCESSING_STATION_SECTION.assertCallOtherProcessConfirmDialogNotVisible();
     }
 
-    @Dann("erscheint die Fehlermeldung, dass bereits ein Vorgang aufgerufen ist.")
+    @Then("the error that a process is already called appears.")
     public void erscheint_die_fehlermeldung_dass_bereits_ein_vorgang_aufgerufen_ist() {
         PROCESSING_STATION_SECTION.assertAlreadyCalledProcessErrorVisible();
     }
 
-    @Und("ist die Schaltfläche {string} sichtbar.")
+    @And("the button {string} is visible.")
     public void ist_die_schaltflaeche_sichtbar(String button) {
         if ("Ja, Kunde erschienen".equals(button)) {
             PROCESSING_STATION_SECTION.assertCustomerAppearedButtonVisible();
@@ -1312,17 +1699,17 @@ public class AdminSteps {
         throw new IllegalArgumentException("For button \"" + button + "\" no visibility check is implemented yet!");
     }
 
-    @Und("Sie ggf. die Statistikbearbeitung abschließen.")
+    @And("I finish the statistics processing if it is open.")
     public void sie_ggf_die_statistikbearbeitung_abschliessen() {
         PROCESSING_STATION_SECTION.completeStatisticsFinishIfPresent();
     }
 
-    @Dann("wird die Schaltfläche {string} in der Statistik angezeigt.")
+    @Then("the button {string} is shown in the statistics.")
     public void wird_die_schaltflaeche_in_der_statistik_angezeigt(String label) {
         PROCESSING_STATION_SECTION.assertStatisticToggleLabel(label);
     }
 
-    @Wenn("Sie in der Statistik auf {string} klicken.")
+    @When("I click {string} in the statistics.")
     public void sie_in_der_statistik_auf_klicken(String label) {
         if ("Bearbeitung abschließen".equals(label)) {
             PROCESSING_STATION_SECTION.submitStatisticsFinish();
@@ -1331,27 +1718,27 @@ public class AdminSteps {
         PROCESSING_STATION_SECTION.clickStatisticToggle(label);
     }
 
-    @Dann("ist die Dienstleistung {string} unter Dienstleistungen Erfassen sichtbar.")
+    @Then("the service {string} is visible under record services.")
     public void ist_die_dienstleistung_unter_dienstleistungen_erfassen_sichtbar(String service) {
         PROCESSING_STATION_SECTION.assertScopeStatisticServiceVisible(service);
     }
 
-    @Dann("ist die Dienstleistung {string} unter Weitere Dienstleistungen sichtbar.")
+    @Then("the service {string} is visible under further services.")
     public void ist_die_dienstleistung_unter_weitere_dienstleistungen_sichtbar(String service) {
         PROCESSING_STATION_SECTION.assertAdditionalStatisticServiceDisplayed(service, true);
     }
 
-    @Dann("ist die Dienstleistung {string} unter Weitere Dienstleistungen nicht sichtbar.")
+    @Then("the service {string} is not visible under further services.")
     public void ist_die_dienstleistung_unter_weitere_dienstleistungen_nicht_sichtbar(String service) {
         PROCESSING_STATION_SECTION.assertAdditionalStatisticServiceDisplayed(service, false);
     }
 
-    @Wenn("Sie die Anzahl der Dienstleistung {string} unter Weitere Dienstleistungen um {int} erhöhen.")
+    @When("I increase the count of service {string} under further services by {int}.")
     public void sie_die_anzahl_der_dienstleistung_unter_weitere_dienstleistungen_erhoehen(String service, int times) {
         PROCESSING_STATION_SECTION.increaseAdditionalStatisticService(service, times);
     }
 
-    @Wenn("Sie unter der Standortkonfiguration auf die Schaltfläche {string} klicken.")
+    @When("I click the button {string} in the location configuration.")
     public void wenn_sie_unter_der_standortkonfiguration_auf_die_schaltflaeche_klicken(String button) {
         button = TestDataHelper.transformTestData(button);
         switch (button) {
@@ -1363,7 +1750,7 @@ public class AdminSteps {
         }
     }
 
-    @Dann("erscheint ein Pop-Up-Fenster {string} um den Standort zu löschen.")
+    @Then("a popup {string} appears to delete the location.")
     public void erscheint_ein_popup_fenster_zum_loeschen_vom_standort(String expectedText) {
     
         ScenarioLogManager.getLogger().info(
@@ -1389,23 +1776,23 @@ public class AdminSteps {
         );
     }
 
-    @Wenn("Sie für den Standort den Wert für die E-Mail-Bestätigung auf {word} setzen.")
+    @When("I set the email-confirmation value for the location to {word}.")
     public void wenn_sie_fuer_den_standort_den_wert_fuer_die_email_bestaetigung_auf_setzen(String flag) {
         boolean booleanFlag = Boolean.parseBoolean(flag);
         AUTHORITIES_AND_LOCATIONS_PAGE.setValueForEmailConfirmation(booleanFlag);
     }
 
-    @Wenn("Sie für den Standort ins Textfeld Information zu Terminbuchung im Bürgerfrontend {string} eingeben.")
+    @When("I enter {string} in the location field for appointment-booking information in the citizen frontend.")
     public void wenn_sie_fuer_den_standort_ins_textfeld_info_zu_terminbuchung_in_buergerfrontend_eingeben(String text) {
         AUTHORITIES_AND_LOCATIONS_PAGE.enterInformationTextForAppointmentBookingInTheCitizenFrontend(text);
     }
 
-    @Wenn("Sie die Änderungen an der Standortkonfiguration speichern.")
+    @When("I save the changes to the location configuration.")
     public void wenn_sie_die_aenderungen_an_der_standortkonfiguration_speichern() {
         AUTHORITIES_AND_LOCATIONS_PAGE.saveLocationChanges();
     }
 
-    @Und("Sie {string} minuten bis die Änderungen übernommen werden warten.")
+    @And("I wait {string} minutes for the changes to be applied.")
     public void und_sie_minuten_bis_die_aenderungen_uebernommen_werden_warten(String minuten) {
         int minutes = Integer.parseInt(TestDataHelper.transformTestData(minuten));
         ScenarioLogManager.getLogger().info("Waiting {} minutes for changes to be applied...", minutes);
@@ -1417,7 +1804,19 @@ public class AdminSteps {
         }
     }
 
-    @Dann("^Sie \"(\\d+)\" Minuten? bis die Änderungen übernommen werden warten\\.$")
+    @When("I wait {string} milliseconds.")
+    public void iWaitMilliseconds(String milliseconds) {
+        long millis = Long.parseLong(TestDataHelper.transformTestData(milliseconds));
+        ScenarioLogManager.getLogger().info("Waiting for {} milliseconds...", millis);
+        try {
+            Thread.sleep(millis);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException("Wait for " + millis + " milliseconds was interrupted", e);
+        }
+    }
+
+    @Then("^I wait \"(\\d+)\" minutes? for the changes to be applied\\.$")
     public void sie_minute_bis_die_aenderungen_uebernommen_werden_warten(String minutesText) {
         int minutes;
         try {
@@ -1434,7 +1833,7 @@ public class AdminSteps {
         }
     }
 
-    @Dann("Für den Standort {string} ist der Standardwert für die E-Mail-Bestätigung auf {word} gesetzt.")
+    @Then("the default email confirmation for location {string} is set to {word}.")
     public void fuer_den_standort_ist_der_standardwert_fuer_die_email_bestaetigung_auf_gesetzt(String standort, String flag) {
         boolean booleanFlag = Boolean.parseBoolean(flag);
         AUTHORITIES_AND_LOCATIONS_PAGE.clickOnLocationAdminEntry();
@@ -1445,7 +1844,7 @@ public class AdminSteps {
         Assert.assertEquals(isChecked, booleanFlag, "Für Standort " + standort + " ist die E-Mail-Bestätigung nicht auf " + booleanFlag + " gesetzt.");
     }
 
-    @Dann("ist die Checkbox Mit E-Mail Bestätigung {string}.")
+    @Then("the email-confirmation checkbox is {string}.")
     public void ist_die_checkbox_mit_email_bestaetigungnicht_ausgewaehlt(String status) {
         boolean shouldBeSelected = status.equalsIgnoreCase("ausgewählt");
         WebElement checkbox = AUTHORITIES_AND_LOCATIONS_PAGE.findElementByLocatorType("input[value='1'][name='sendMailConfirmation']",
@@ -1461,7 +1860,7 @@ public class AdminSteps {
         );
     }
 
-    @Dann("ist Für den Standort {string} der Text {string} als Info für Terminbuchung vorhanden.")
+    @Then("location {string} has the text {string} as appointment-booking information.")
     public void ist_fuer_den_standort_der_text_als_info_fuer_terminbuchung_vorhanden(String standort, String expectedText) {
         AUTHORITIES_AND_LOCATIONS_PAGE.clickOnLocationAdminEntry();
         AUTHORITIES_AND_LOCATIONS_PAGE.clickOnLocationEntry(standort);
@@ -1470,5 +1869,339 @@ public class AdminSteps {
                 "//textarea[@name='preferences[appointment][infoForAppointment]']", LocatorType.XPATH);
         Assert.assertEquals(text, expectedText,
                 "Der Text für die Terminbuchung am Standort " + standort + " stimmt nicht überein. Erwartet: '" + expectedText + "', erhalten: '" + text + "'");
+    }
+
+    /**
+     * The suite clock ({@code ZMS_TIMEADJUST}) does not move while the scenario waits.
+     * A reserved Wohnsitzanmeldung is therefore placed two minutes before that clock, with a
+     * stored waiting time of two minutes. A confirmed row would show {@code +2 Min.} in Uhrzeit.
+     */
+    @When("the reserved appointment is moved to two minutes before the suite clock.")
+    public void theReservedAppointmentIsMovedToTwoMinutesBeforeTheSuiteClock() {
+        var process = CitizenApiSteps.getBookingProcess();
+        if (process == null || process.getProcessId() == null) {
+            throw new IllegalStateException("No reserved appointment was captured from the citizen view.");
+        }
+        int processId = process.getProcessId();
+        LocalDateTime suiteClock = suiteClock();
+        LocalDateTime appointment = suiteClock.minusMinutes(2);
+        if (appointment.toLocalDate().isBefore(suiteClock.toLocalDate())) {
+            appointment = suiteClock.toLocalDate().atTime(0, 0, 1);
+        }
+        reservedAppointmentClock = appointment.format(DateTimeFormatter.ofPattern("HH:mm"));
+        String sql = """
+                UPDATE buerger
+                   SET Datum = ?, Uhrzeit = ?, waiting_time = '00:02:00'
+                 WHERE BuergerID = ?
+                   AND bestaetigt = 0
+                   AND vorlaeufigeBuchung = 1
+                """;
+        try (Connection connection = openZmsConnection();
+                PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setString(1, appointment.toLocalDate().toString());
+            statement.setString(2, appointment.toLocalTime().format(DateTimeFormatter.ofPattern("HH:mm:ss")));
+            statement.setInt(3, processId);
+            int updated = statement.executeUpdate();
+            if (updated != 1) {
+                throw new IllegalStateException(
+                        "Process " + processId + " is not a reserved appointment (updated rows: " + updated + ").");
+            }
+            try (PreparedStatement scope = connection.prepareStatement(
+                    "SELECT StandortID FROM buerger WHERE BuergerID = ?")) {
+                scope.setInt(1, processId);
+                try (ResultSet rows = scope.executeQuery()) {
+                    if (!rows.next()) {
+                        throw new IllegalStateException("Process " + processId + " disappeared after the time update.");
+                    }
+                    reservedScopeId = rows.getInt(1);
+                }
+            }
+        } catch (SQLException e) {
+            throw new IllegalStateException("Could not move reserved appointment " + processId + " before the suite clock.", e);
+        }
+        ScenarioLogManager.getLogger().info(
+                "Reserved process {} at scope {} is now at {} (suite clock {})",
+                processId, reservedScopeId, reservedAppointmentClock, suiteClock);
+    }
+
+    /**
+     * Citizen cancel refuses an appointment that is already before {@code App::$now}.
+     * After the queue check, put the same reserved row back in the future so it can be deleted.
+     */
+    @When("the reserved appointment is moved back to after the suite clock.")
+    public void theReservedAppointmentIsMovedBackToAfterTheSuiteClock() {
+        var process = CitizenApiSteps.getBookingProcess();
+        if (process == null || process.getProcessId() == null) {
+            throw new IllegalStateException("No reserved appointment was captured from the citizen view.");
+        }
+        int processId = process.getProcessId();
+        LocalDateTime appointment = suiteClock().plusMinutes(30);
+        String sql = """
+                UPDATE buerger
+                   SET Datum = ?, Uhrzeit = ?
+                 WHERE BuergerID = ?
+                   AND bestaetigt = 0
+                   AND vorlaeufigeBuchung = 1
+                """;
+        try (Connection connection = openZmsConnection();
+                PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setString(1, appointment.toLocalDate().toString());
+            statement.setString(2, appointment.toLocalTime().format(DateTimeFormatter.ofPattern("HH:mm:ss")));
+            statement.setInt(3, processId);
+            int updated = statement.executeUpdate();
+            if (updated != 1) {
+                throw new IllegalStateException(
+                        "Process " + processId + " is not a reserved appointment (updated rows: " + updated + ").");
+            }
+        } catch (SQLException e) {
+            throw new IllegalStateException(
+                    "Could not move reserved appointment " + processId + " back after the suite clock.", e);
+        }
+        ScenarioLogManager.getLogger().info(
+                "Reserved process {} is back at {} so it can be cancelled", processId, appointment);
+    }
+
+    @When("I sign in at the workstation of the reserved appointment.")
+    public void iSignInAtTheWorkstationOfTheReservedAppointment() throws Exception {
+        if (reservedScopeId <= 0) {
+            throw new IllegalStateException("The reserved appointment has no Standort.");
+        }
+        wenn_sie_im_zeitmanagementsystem_auf_die_schaltflaeche_string_klicken("Anmelden");
+        ADMIN_PAGE.selectLocationByScopeId(reservedScopeId);
+        wenn_sie_in_feld_string_den_text_string_eingeben("Platz-Nr. oder Tresen", "1");
+        wenn_sie_im_zeitmanagementsystem_auf_die_schaltflaeche_string_klicken("Auswahl bestätigen");
+    }
+
+    @Then("the reserved appointment shows no waiting time in the queue time column.")
+    public void theReservedAppointmentShowsNoWaitingTimeInTheQueueTimeColumn() {
+        if (reservedAppointmentClock == null) {
+            throw new IllegalStateException("The reserved appointment time was not remembered.");
+        }
+        WebDriverWait wait = new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(30));
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".queue-table")));
+        List<WebElement> rows = DriverUtil.getDriver().findElements(By.cssSelector(".queue-table tr.reserved"));
+        WebElement timeCell = null;
+        for (WebElement row : rows) {
+            List<WebElement> cells = row.findElements(By.xpath("./td"));
+            if (cells.size() < 2) {
+                continue;
+            }
+            WebElement clockCell = cells.get(1);
+            if (clockCell.getText().trim().startsWith(reservedAppointmentClock)) {
+                timeCell = clockCell;
+                break;
+            }
+        }
+        Assert.assertNotNull(timeCell,
+                "Reserved appointment at " + reservedAppointmentClock + " is not in the queue Uhrzeit column.");
+        List<WebElement> waitingTime = timeCell.findElements(By.cssSelector(".queue-table-amendment-time"));
+        Assert.assertTrue(waitingTime.isEmpty(),
+                "Reserved appointment at " + reservedAppointmentClock
+                        + " shows a waiting time in Uhrzeit: " + timeCell.getText());
+        Assert.assertFalse(timeCell.getText().matches("(?s).*\\+\\s*\\d+\\s*Min\\..*"),
+                "Reserved appointment at " + reservedAppointmentClock
+                        + " shows +Min. in Uhrzeit: " + timeCell.getText());
+    }
+
+    private CounterProcessingStationPage.WalkInOpening walkInOpening() throws SQLException {
+        LocalDate firstDay = COUNTER_PROCESSING_STATION_PAGE.overallViewStart();
+        List<String> scopeIds = COUNTER_PROCESSING_STATION_PAGE.overallViewScopeOptionValues();
+        String sql = """
+                SELECT scope_id, start_time, end_time, appointment_start_time, appointment_end_time
+                FROM oeffnungszeit
+                WHERE start_date <= ? AND end_date >= ?
+                  AND (weekday & ?) <> 0
+                  AND every_x_weeks = 1 AND every_other_week = 0
+                  AND start_time <> '00:00:00' AND end_time <> '00:00:00'
+                  AND appointment_start_time <> '00:00:00' AND appointment_end_time <> '00:00:00'
+                  AND (start_time < appointment_start_time OR end_time > appointment_end_time)
+                """;
+        try (Connection connection = openZmsConnection();
+                PreparedStatement statement = connection.prepareStatement(sql)) {
+            for (int offset = 0; offset < 2; offset++) {
+                LocalDate day = firstDay.plusDays(offset);
+                statement.setString(1, day.toString());
+                statement.setString(2, day.toString());
+                statement.setInt(3, weekdayBit(day.getDayOfWeek()));
+                try (ResultSet rows = statement.executeQuery()) {
+                    while (rows.next()) {
+                        int scopeId = rows.getInt("scope_id");
+                        if (!scopeIds.contains(Integer.toString(scopeId))) {
+                            continue;
+                        }
+                        LocalTime walkInStart = rows.getTime("start_time").toLocalTime();
+                        LocalTime walkInEnd = rows.getTime("end_time").toLocalTime();
+                        LocalTime appointmentStart = rows.getTime("appointment_start_time").toLocalTime();
+                        LocalTime appointmentEnd = rows.getTime("appointment_end_time").toLocalTime();
+                        if (walkInStart.isBefore(appointmentStart)
+                                && java.time.Duration.between(walkInStart, appointmentStart).toMinutes() >= 15) {
+                            return new CounterProcessingStationPage.WalkInOpening(
+                                    scopeId, day, walkInStart, appointmentStart, appointmentStart);
+                        }
+                        if (appointmentEnd.isBefore(walkInEnd)
+                                && java.time.Duration.between(appointmentEnd, walkInEnd).toMinutes() >= 15) {
+                            return new CounterProcessingStationPage.WalkInOpening(
+                                    scopeId, day, appointmentEnd, walkInEnd, appointmentStart);
+                        }
+                    }
+                }
+            }
+        }
+        throw new IllegalStateException(
+                "No weekly walk-in opening time outside the appointment hours is available in the overall view.");
+    }
+
+    private static int weekdayBit(DayOfWeek day) {
+        return switch (day) {
+            case SUNDAY -> 1;
+            case MONDAY -> 2;
+            case TUESDAY -> 4;
+            case WEDNESDAY -> 8;
+            case THURSDAY -> 16;
+            case FRIDAY -> 32;
+            case SATURDAY -> 64;
+        };
+    }
+
+    private static String bookedAppointmentNumber() {
+        String number = TestDataHelper.getTestData("new_appointment_number");
+        if (number == null || number.isBlank()) {
+            throw new IllegalStateException("The booked appointment number was not stored.");
+        }
+        return number;
+    }
+
+    private static void endNoShowLockout(String familyName) {
+        String displayNumber = bookedAppointmentNumber();
+        String sql = "UPDATE buerger SET timeoutTime = DATE_SUB(NOW(), INTERVAL 6 MINUTE) WHERE BuergerID = ?";
+        try (Connection connection = openZmsConnection()) {
+            int processId = processIdForBookedAppointment(connection, displayNumber, familyName);
+            try (PreparedStatement statement = connection.prepareStatement(sql)) {
+                statement.setInt(1, processId);
+                int updated = statement.executeUpdate();
+                if (updated != 1) {
+                    throw new IllegalStateException(
+                            "Expected one appointment \"" + displayNumber + "\", updated " + updated + ".");
+                }
+            }
+        } catch (SQLException e) {
+            throw new IllegalStateException(
+                    "Could not end the no-show lockout for \"" + displayNumber + "\".", e);
+        }
+    }
+
+    private static void storeOneMinuteOfWaitingTime(String familyName) {
+        String displayNumber = bookedAppointmentNumber();
+        String sql = "UPDATE buerger SET waiting_time = '00:01:30', "
+                + "wsm_aufnahmezeit = TIME(DATE_SUB(DATE_FORMAT(NOW(), '%Y-%m-%d %H:%i:00'), INTERVAL 90 SECOND)) "
+                + "WHERE BuergerID = ?";
+        try (Connection connection = openZmsConnection()) {
+            int processId = processIdForBookedAppointment(connection, displayNumber, familyName);
+            try (PreparedStatement statement = connection.prepareStatement(sql)) {
+                statement.setInt(1, processId);
+                int updated = statement.executeUpdate();
+                if (updated != 1) {
+                    throw new IllegalStateException(
+                            "Expected one appointment \"" + displayNumber + "\", updated " + updated + ".");
+                }
+            }
+        } catch (SQLException e) {
+            throw new IllegalStateException(
+                    "Could not store one minute of waiting time for \"" + displayNumber + "\".", e);
+        }
+    }
+
+    private static int processIdForBookedAppointment(
+            Connection connection, String displayNumber, String familyName) throws SQLException {
+        String sql = "SELECT BuergerID FROM buerger WHERE displayNumber = ? AND Name = ?";
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setString(1, displayNumber);
+            statement.setString(2, familyName);
+            try (ResultSet rows = statement.executeQuery()) {
+                if (!rows.next()) {
+                    throw new IllegalStateException(
+                            "No appointment \"" + displayNumber + "\" is stored for \"" + familyName + "\".");
+                }
+                int processId = rows.getInt("BuergerID");
+                if (rows.next()) {
+                    throw new IllegalStateException(
+                            "More than one appointment \"" + displayNumber + "\" is stored for \"" + familyName + "\".");
+                }
+                return processId;
+            }
+        }
+    }
+
+    private static LocalDateTime suiteClock() {
+        String adjusted = System.getenv("ZMS_TIMEADJUST");
+        if (adjusted != null && !adjusted.isBlank()) {
+            return LocalDateTime.parse(adjusted.trim(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        }
+        return LocalDateTime.now(BerlinTime.ZONE);
+    }
+
+    private static Set<String> permissionsForRole(String roleDescription) {
+        String roleName = null;
+        Set<String> permissions = new TreeSet<>();
+        try (Connection connection = openZmsConnection();
+                PreparedStatement role = connection.prepareStatement(
+                        "SELECT name FROM `role` WHERE description = ?")) {
+            role.setString(1, roleDescription);
+            try (ResultSet rows = role.executeQuery()) {
+                if (!rows.next()) {
+                    throw new IllegalStateException("No role is stored with the description \"" + roleDescription + "\".");
+                }
+                roleName = rows.getString(1);
+                if (rows.next()) {
+                    throw new IllegalStateException("More than one role uses the description \"" + roleDescription + "\".");
+                }
+            }
+            try (PreparedStatement permission = connection.prepareStatement(
+                    "SELECT COALESCE(NULLIF(p.description, ''), p.name) "
+                            + "FROM `role` r "
+                            + "JOIN role_permission rp ON rp.role_id = r.id "
+                            + "JOIN permission p ON p.id = rp.permission_id "
+                            + "WHERE r.name = ?")) {
+                permission.setString(1, roleName);
+                try (ResultSet rows = permission.executeQuery()) {
+                    while (rows.next()) {
+                        permissions.add(rows.getString(1).trim());
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            throw new IllegalStateException("Could not read the permissions of \"" + roleDescription + "\".", e);
+        }
+        if (permissions.isEmpty()) {
+            throw new IllegalStateException("Role \"" + roleDescription + "\" has no stored permissions.");
+        }
+        return permissions;
+    }
+
+    private static Connection openZmsConnection() throws SQLException {
+        String host = envOrDefault("MYSQL_HOST", "db");
+        String port = mysqlPort(envOrDefault("MYSQL_PORT", "3306"));
+        String database = envOrDefault("MYSQL_DATABASE", "db");
+        String user = envOrDefault("MYSQL_USER", "db");
+        String url = "jdbc:mysql://" + host + ":" + port + "/" + database;
+        ScenarioLogManager.getLogger().info("Opening suite database {} as {}", url, user);
+        return DriverManager.getConnection(url, user, envOrDefault("MYSQL_PASSWORD", "db"));
+    }
+
+    /** The wrapper exports {@code MYSQL_PORT} as {@code tcp://db:3306} or as a bare port. */
+    private static String mysqlPort(String raw) {
+        int colon = raw.lastIndexOf(':');
+        if (colon >= 0 && colon < raw.length() - 1) {
+            return raw.substring(colon + 1);
+        }
+        return raw;
+    }
+
+    private static String envOrDefault(String name, String fallback) {
+        String value = System.getenv(name);
+        if (value == null || value.isBlank()) {
+            return fallback;
+        }
+        return value.trim();
     }
 }

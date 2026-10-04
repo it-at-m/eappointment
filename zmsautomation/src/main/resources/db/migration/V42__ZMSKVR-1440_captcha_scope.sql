@@ -1,5 +1,5 @@
 -- Flyway migration: captcha booking scope (ZMSKVR-1440)
--- Version 33: next already has V30 (GH-3281 login-pool rename), V31, and V32.
+-- Version 42: next already has V33 through V41. V29 uses opening-hours id 136213.
 --
 -- Standort 74, Kommunale Verkehrsüberwachung (KVR-I/31), officeId 10427.
 -- Not a Bürgerbüro, and no other ATAF feature books it.
@@ -82,7 +82,7 @@ INSERT IGNORE INTO `oeffnungszeit`
   `updateTimestamp`
 )
 VALUES
-  (136213, 74, @range_start, @range_end,
+  (136216, 74, @range_start, @range_end,
    1, 0, 127,
    '00:00:00', @appt_start,
    '00:00:00', @appt_end,

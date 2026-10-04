@@ -3,7 +3,9 @@ package zms.ataf.ui.pages.admin.search;
 import java.time.Duration;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
@@ -109,12 +111,51 @@ public class CustomerSearchPage extends AdminPage {
         Assert.assertEquals(found, List.of(familyNames), "Kundensuche row order. Found: " + found);
     }
 
+    /**
+     * Compares the name cell, not the whole row. A shorter name is contained in a longer one,
+     * so a row-text contains-check would count both names on the longer row.
+     * Walk-in ids come from a random free slot, so same-day results have no stable order.
+     */
+    public void assertNames(List<String> expected) {
+        CONTEXT.set();
+        List<WebElement> rows = DRIVER.findElements(By.xpath(
+                "//div[contains(@class,'searchresults')]//table[@data-processList-count]"
+                        + "/tbody/tr[td[1]//a and not(preceding-sibling::tr[th])]"));
+        Set<String> found = new LinkedHashSet<>();
+        for (WebElement row : rows) {
+            String cell = row.findElement(By.xpath("./td[1]")).getText().replace('\u00a0', ' ').trim();
+            String name = cell.replaceFirst("\\s*\\(.*$", "").trim();
+            if (expected.contains(name)) {
+                found.add(name);
+            }
+        }
+        Assert.assertEquals(found, new LinkedHashSet<>(expected), "Kundensuche names. Found: " + found);
+    }
+
     public void assertStatusWithoutCall(String familyName, String statusLabel, String bookingStamp) {
         assertStatusRow(familyName, statusLabel, bookingStamp, null);
     }
 
     public void assertStatusWithCall(String familyName, String statusLabel, String bookingStamp, String callStamp) {
         assertStatusRow(familyName, statusLabel, bookingStamp, callStamp);
+    }
+
+    public void assertOneAppointmentWithoutFollowUpRows(String familyName, String numberWithoutLetters) {
+        CONTEXT.set();
+        new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(ExpectedConditions.presenceOfElementLocated(
+                        By.xpath("//table[contains(@class,'table--base')]//td[contains(.,'" + familyName + "')]")));
+        List<WebElement> rows = DRIVER.findElements(By.cssSelector("table.table--base tbody tr"));
+        List<String> texts = new ArrayList<>();
+        for (WebElement row : rows) {
+            texts.add(row.getText().replace('\u00a0', ' '));
+        }
+        long followUps = texts.stream().filter(text -> text.contains("(Folgetermin)")).count();
+        long named = texts.stream().filter(text -> text.contains(familyName) && text.contains(numberWithoutLetters)).count();
+        String count = DRIVER.findElement(By.cssSelector("table.table--base")).getAttribute("data-processList-count");
+        Assert.assertEquals(followUps, 0L, "Follow-up slot rows are listed. Rows: " + texts);
+        Assert.assertEquals(named, 1L, "The appointment should appear once. Rows: " + texts);
+        Assert.assertEquals(count, "1", "The search should return one row. Rows: " + texts);
     }
 
     public String bookingDateDaysAgo(int daysAgo) {
@@ -146,5 +187,44 @@ public class CustomerSearchPage extends AdminPage {
                     text.contains("Terminaufruf: " + callStamp),
                     "Call time missing for " + familyName + ". Expected " + callStamp + ". Row: " + text);
         }
+    }
+
+    public void openFoundAppointment(String familyName) {
+        CONTEXT.set();
+        WebElement link = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(ExpectedConditions.elementToBeClickable(By.xpath(
+                        "//table[contains(@class,'table--base')]//a[contains(.,'" + familyName + "')]")));
+        link.click();
+    }
+
+    public void assertEditFormOpen(String familyName) {
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        wait.until(ExpectedConditions.urlContains("selectedprocess="));
+        String url = DRIVER.getCurrentUrl();
+        Assert.assertTrue(url.contains("/workstation"), "The result link did not open the workstation: " + url);
+        Assert.assertFalse(url.contains("/counter"), "The result link opened the counter: " + url);
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("form[data-saved-process]")));
+        WebElement name = wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("input[name='familyName']")));
+        Assert.assertEquals(name.getAttribute("value"), familyName,
+                "The edit form does not show " + familyName + ".");
+        Assert.assertTrue(
+                wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("button.process-save"))).isDisplayed(),
+                "The edit form has no save button.");
+        Assert.assertTrue(DRIVER.findElements(By.cssSelector(".message--error")).isEmpty(),
+                "Opening the appointment shows an error.");
+    }
+
+    public void deleteOpenAppointment() {
+        CONTEXT.set();
+        clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "button.process-delete", LocatorType.CSSSELECTOR, false, CONTEXT);
+        WebElement messageTitleElement = findElementByLocatorType("section.board.dialog h2.board__heading", LocatorType.CSSSELECTOR, false);
+        Assert.assertTrue(messageTitleElement.getText().contains("Eintrag löschen"), "Delete confirmation did not open.");
+        clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "a.button.button--destructive.button-ok", LocatorType.CSSSELECTOR, false, CONTEXT);
+        messageTitleElement = findElementByLocatorType("h2.message__heading.title", LocatorType.CSSSELECTOR, false);
+        Assert.assertEquals(messageTitleElement.getText(), "Vorgang gelöscht", "Deleting the open appointment did not succeed.");
+        // The dialog covers a spinner that stays on the form, so do not wait for that spinner first.
+        clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "button.button-ok", LocatorType.CSSSELECTOR, false);
+        new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(ExpectedConditions.invisibilityOfElementLocated(By.cssSelector("h2.message__heading.title")));
     }
 }

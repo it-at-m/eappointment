@@ -35,6 +35,7 @@ import zms.ataf.rest.dto.common.ApiResponse;
 import zms.ataf.rest.dto.zmscitizenapi.AvailableAppointmentsResponse;
 import zms.ataf.rest.dto.zmscitizenapi.AvailableCalendarResponse;
 import zms.ataf.rest.dto.zmscitizenapi.Office;
+import zms.ataf.rest.dto.zmscitizenapi.OfficeServiceRelation;
 import zms.ataf.rest.dto.zmscitizenapi.ReserveAppointmentRequest;
 import zms.ataf.rest.dto.zmscitizenapi.ThinnedProcess;
 import zms.ataf.rest.dto.zmscitizenapi.collections.OfficesAndServicesResponse;
@@ -67,6 +68,8 @@ public class CitizenApiSteps {
     private String citizenAccessToken;
     /** Sent on available-calendar and reserve-appointment once a captcha step has set it. */
     private String captchaToken;
+    private final Map<String, RememberedAppointment> rememberedAppointments = new java.util.LinkedHashMap<>();
+    private List<ThinnedProcess> myAppointments = List.of();
 
     private int parseIntOrFail(String value, String label) {
         try {
@@ -95,6 +98,8 @@ public class CitizenApiSteps {
         rebookingSourceProcessId = null;
         rebookingSourceAuthKey = null;
         citizenAccessToken = null;
+        rememberedAppointments.clear();
+        myAppointments = List.of();
     }
 
     /**
@@ -103,6 +108,9 @@ public class CitizenApiSteps {
      */
     @After(order = 10000)
     public void cancelLeftoverAppointmentAfterScenario() {
+        for (RememberedAppointment appointment : rememberedAppointments.values()) {
+            cancelProcessQuietly(appointment.processId, appointment.authKey);
+        }
         cancelLeftoverAppointmentQuietly();
     }
 
@@ -177,6 +185,37 @@ public class CitizenApiSteps {
         Assertions.assertThat(office.getSharedBookingOfficeIds())
             .as("office %d sharedBookingOfficeIds", officeId)
             .containsExactlyInAnyOrderElementsOf(expected);
+    }
+
+    @Then("office {int} should use a slot time of {int} minutes and service {int} should take {int} slot")
+    public void officeShouldUseSlotTimeAndServiceShouldTakeSlots(
+            int officeId, int slotTimeInMinutes, int serviceId, int slots) {
+        Assertions.assertThat(lastOfficesAndServicesResponse)
+            .as("Request offices-and-services first")
+            .isNotNull();
+        Office office = findOfficeById(lastOfficesAndServicesResponse, officeId);
+        Assertions.assertThat(office)
+            .as("Expected office %d in offices-and-services", officeId)
+            .isNotNull();
+        Assertions.assertThat(office.getSlotTimeInMinutes())
+            .as("office %d slotTimeInMinutes", officeId)
+            .isEqualTo(slotTimeInMinutes);
+        OfficeServiceRelation relation = null;
+        if (lastOfficesAndServicesResponse.getRelations() != null) {
+            for (OfficeServiceRelation candidate : lastOfficesAndServicesResponse.getRelations()) {
+                if (candidate != null
+                        && officeId == (candidate.getOfficeId() == null ? -1 : candidate.getOfficeId())
+                        && serviceId == (candidate.getServiceId() == null ? -1 : candidate.getServiceId())) {
+                    relation = candidate;
+                    break;
+                }
+            }
+        }
+        relation = java.util.Objects.requireNonNull(
+                relation, "relation office " + officeId + " service " + serviceId);
+        Assertions.assertThat(relation.getSlots())
+            .as("service %d slots at office %d", serviceId, officeId)
+            .isEqualTo(slots);
     }
 
     @When("I request available days for office {int} and service {int}")
@@ -869,6 +908,11 @@ public class CitizenApiSteps {
         postAppointmentUpdate(scenarioContactFamilyName(), scenarioContactEmail(), customTextfield != null ? customTextfield : "", true, true);
     }
 
+    @When("I update the appointment with contact details and telephone {string} as the logged-in citizen")
+    public void iUpdateTheAppointmentWithContactDetailsAndTelephoneAsTheLoggedInCitizen(String telephone) {
+        postAppointmentUpdate(scenarioContactFamilyName(), scenarioContactEmail(), "", telephone, true, true);
+    }
+
     @When("I update the appointment with contact details without custom text")
     public void iUpdateTheAppointmentWithContactDetailsWithoutCustomText() {
         postAppointmentUpdate(scenarioContactFamilyName(), scenarioContactEmail(), "", true, false);
@@ -904,10 +948,138 @@ public class CitizenApiSteps {
         postConfirmFromCurrentProcess(false, false, true);
     }
 
+    @When("I remember the current appointment as {string}")
+    public void iRememberTheCurrentAppointmentAs(String label) {
+        ThinnedProcess process = requireCurrentProcess();
+        RememberedAppointment previous = rememberedAppointments.get(label);
+        Integer previousProcessId = previous == null ? null : previous.processId;
+        rememberedAppointments.put(label, new RememberedAppointment(
+                process.getProcessId(),
+                process.getAuthKey(),
+                previousProcessId));
+        ScenarioLogManager.getLogger().info(String.format(
+                "Remembered appointment \"%s\" as processId=%d (previous=%s)",
+                label,
+                process.getProcessId(),
+                previousProcessId));
+    }
+
+    @When("I reserve an appointment with the first available slot using the remembered {string} appointment as source")
+    public void iReserveUsingTheRememberedAppointmentAsSource(String label) {
+        RememberedAppointment source = requireRemembered(label);
+        ThinnedProcess stub = new ThinnedProcess();
+        stub.setProcessId(source.processId);
+        stub.setAuthKey(source.authKey);
+        lastReserveProcess = stub;
+        reserveFirstAvailableSlot(true);
+    }
+
+    @When("I request my appointments as the logged-in citizen")
+    public void iRequestMyAppointmentsAsTheLoggedInCitizen() {
+        response = given()
+            .baseUri(baseUri != null ? baseUri : TestConfig.getCitizenApiBaseUri())
+            .header("Authorization", "Bearer " + requireCitizenAccessToken())
+        .when()
+            .get("/my-appointments/");
+        CommonApiSteps.setResponse(response);
+        response.then().statusCode(200);
+        ThinnedProcess[] appointments = response.as(ThinnedProcess[].class);
+        myAppointments = appointments == null ? List.of() : List.of(appointments);
+        ScenarioLogManager.getLogger().info(String.format(
+                "Citizen API /my-appointments/ status=%d appointmentCount=%d",
+                response.getStatusCode(),
+                myAppointments.size()));
+    }
+
+    @Then("my appointments include the remembered {string} appointment for service {int}")
+    public void myAppointmentsIncludeTheRememberedAppointmentForService(String label, int serviceId) {
+        RememberedAppointment remembered = requireRemembered(label);
+        ThinnedProcess match = findMyAppointment(remembered.processId);
+        Assertions.assertThat(match)
+            .as("my appointments should include process %s", remembered.processId)
+            .isNotNull();
+        Assertions.assertThat(match.getServiceId()).isEqualTo(serviceId);
+    }
+
+    @Then("my appointments do not include the remembered {string} appointment")
+    public void myAppointmentsDoNotIncludeTheRememberedAppointment(String label) {
+        RememberedAppointment remembered = requireRemembered(label);
+        Assertions.assertThat(findMyAppointment(remembered.processId))
+            .as("my appointments should not include process %s", remembered.processId)
+            .isNull();
+    }
+
+    @Then("the remembered {string} appointment was replaced")
+    public void theRememberedAppointmentWasReplaced(String label) {
+        RememberedAppointment remembered = requireRemembered(label);
+        Assertions.assertThat(remembered.previousProcessId)
+            .as("remember \"%s\" again after moving it", label)
+            .isNotNull();
+        Assertions.assertThat(remembered.processId).isNotEqualTo(remembered.previousProcessId);
+        Assertions.assertThat(findMyAppointment(remembered.previousProcessId)).isNull();
+        Assertions.assertThat(findMyAppointment(remembered.processId)).isNotNull();
+    }
+
+    @Then("the remembered {string} appointment is unchanged")
+    public void theRememberedAppointmentIsUnchanged(String label) {
+        RememberedAppointment remembered = requireRemembered(label);
+        Assertions.assertThat(remembered.previousProcessId).isNull();
+        Assertions.assertThat(findMyAppointment(remembered.processId)).isNotNull();
+    }
+
+    @When("I cancel the remembered {string} appointment")
+    public void iCancelTheRememberedAppointment(String label) {
+        RememberedAppointment remembered = requireRemembered(label);
+        ScenarioLogManager.getLogger().info(String.format(
+                "Citizen API /cancel-appointment/ for remembered \"%s\" processId=%d",
+                label,
+                remembered.processId));
+        response = given()
+            .baseUri(baseUri != null ? baseUri : TestConfig.getCitizenApiBaseUri())
+            .contentType("application/json")
+            .body(Map.of("processId", remembered.processId, "authKey", remembered.authKey))
+        .when()
+            .post("/cancel-appointment/");
+        CommonApiSteps.setResponse(response);
+        response.then().statusCode(200);
+        Integer currentProcessId = lastReserveProcess == null ? null : lastReserveProcess.getProcessId();
+        if (currentProcessId != null && currentProcessId.intValue() == remembered.processId) {
+            lastReserveProcess.setStatus("deleted");
+            setLastReserveProcess(lastReserveProcess);
+        }
+    }
+
+    private RememberedAppointment requireRemembered(String label) {
+        RememberedAppointment remembered = rememberedAppointments.get(label);
+        if (remembered == null) {
+            throw new IllegalStateException("Remember the appointment \"" + label + "\" first.");
+        }
+        return remembered;
+    }
+
+    private ThinnedProcess findMyAppointment(Integer processId) {
+        for (ThinnedProcess appointment : myAppointments) {
+            if (appointment != null && processId.equals(appointment.getProcessId())) {
+                return appointment;
+            }
+        }
+        return null;
+    }
+
     private void postAppointmentUpdate(
             String familyName,
             String email,
             String customTextfield,
+            boolean expectSuccess,
+            boolean asLoggedInCitizen) {
+        postAppointmentUpdate(familyName, email, customTextfield, "", expectSuccess, asLoggedInCitizen);
+    }
+
+    private void postAppointmentUpdate(
+            String familyName,
+            String email,
+            String customTextfield,
+            String telephone,
             boolean expectSuccess,
             boolean asLoggedInCitizen) {
         ThinnedProcess process = requireCurrentProcess();
@@ -918,7 +1090,7 @@ public class CitizenApiSteps {
         body.put("authKey", auth);
         body.put("familyName", familyName);
         body.put("email", email);
-        body.put("telephone", "");
+        body.put("telephone", telephone != null ? telephone : "");
         body.put("customTextfield", customTextfield != null ? customTextfield : "");
         body.put("customTextfield2", "");
         if (rebookingSourceProcessId != null && rebookingSourceAuthKey != null) {
@@ -1313,36 +1485,35 @@ public class CitizenApiSteps {
         if ("deleted".equalsIgnoreCase(process.getStatus())) {
             return;
         }
-        Integer pid = process.getProcessId();
-        String auth = process.getAuthKey();
+        if (cancelProcessQuietly(process.getProcessId(), process.getAuthKey())) {
+            process.setStatus("deleted");
+            lastReserveProcess = process;
+            setLastReserveProcess(process);
+        }
+    }
+
+    private boolean cancelProcessQuietly(Integer processId, String authKey) {
+        if (processId == null || authKey == null || authKey.isBlank()) {
+            return false;
+        }
         try {
             Response cancelResponse = given()
                 .baseUri(baseUri != null ? baseUri : TestConfig.getCitizenApiBaseUri())
                 .contentType("application/json")
-                .body(Map.of("processId", pid, "authKey", auth))
+                .body(Map.of("processId", processId, "authKey", authKey))
             .when()
                 .post("/cancel-appointment/");
             ScenarioLogManager.getLogger().info(String.format(
                 "Best-effort /cancel-appointment/ processId=%d http=%d",
-                pid,
+                processId,
                 cancelResponse.getStatusCode()
             ));
-            if (cancelResponse.getStatusCode() == 200) {
-                ThinnedProcess cancelled;
-                try {
-                    cancelled = cancelResponse.as(ThinnedProcess.class);
-                } catch (Exception e) {
-                    cancelled = parseDataResponse(cancelResponse, ThinnedProcess.class);
-                }
-                if (cancelled != null) {
-                    lastReserveProcess = cancelled;
-                    setLastReserveProcess(cancelled);
-                }
-            }
+            return cancelResponse.getStatusCode() == 200;
         } catch (Exception e) {
             ScenarioLogManager.getLogger().warn(
-                String.format("Best-effort cancel failed for processId=%d: %s", pid, e)
+                String.format("Best-effort cancel failed for processId=%d: %s", processId, e)
             );
+            return false;
         }
     }
 
@@ -1835,5 +2006,17 @@ public class CitizenApiSteps {
         this.confirmProcessId = processId;
         this.confirmAuthKey = authKey;
         setBookingConfirmCredentials(processId, authKey);
+    }
+
+    private static final class RememberedAppointment {
+        private final int processId;
+        private final String authKey;
+        private final Integer previousProcessId;
+
+        private RememberedAppointment(int processId, String authKey, Integer previousProcessId) {
+            this.processId = processId;
+            this.authKey = authKey;
+            this.previousProcessId = previousProcessId;
+        }
     }
 }

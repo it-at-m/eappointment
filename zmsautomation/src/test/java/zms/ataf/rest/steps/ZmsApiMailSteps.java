@@ -4,12 +4,15 @@ import static io.restassured.RestAssured.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.assertj.core.api.Assertions;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import ataf.core.helpers.TestDataHelper;
 import ataf.core.helpers.TestPropertiesHelper;
 import ataf.core.logging.ScenarioLogManager;
 import config.TestConfig;
@@ -33,6 +36,10 @@ import zms.ataf.rest.dto.zmscitizenapi.ThinnedProcess;
 public class ZmsApiMailSteps {
 
     private static final ThreadLocal<String> CACHED_X_AUTH_KEY = new ThreadLocal<>();
+    private static final Pattern ESTIMATED_DURATION_AFTER_TIME = Pattern.compile(
+            "<strong>\\s*Zeit:\\s*</strong>\\s*<br\\s*/?>\\s*([^<]*\\S[^<]*)<br\\s*/?>\\s*"
+                    + "Voraussichtliche Termindauer:\\s*(\\d+)\\s*Minuten",
+            Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
     private String lastCancellationMailHtml;
 
     @Before
@@ -272,6 +279,138 @@ public class ZmsApiMailSteps {
         Assertions.assertThat(hasExpected || hasGeloeschtEncodingVariant)
                 .as("cancellation mail HTML should include expected deletion word '%s' (or encoding variant)", expectedWord)
                 .isTrue();
+    }
+
+    @Then("the confirmation mail shows the estimated duration on the line after the time")
+    public void theConfirmationMailShowsTheEstimatedDurationOnTheLineAfterTheTime() {
+        assertEstimatedDurationAfterTime("folgenden Termin bei uns gebucht");
+    }
+
+    @Then("the reminder mail shows the estimated duration on the line after the time")
+    public void theReminderMailShowsTheEstimatedDurationOnTheLineAfterTheTime() {
+        assertEstimatedDurationAfterTime("in Kürze folgenden Termin");
+    }
+
+    /** One lookup. The reminder script also updates other appointments and can stop before this one is queued. */
+    public boolean currentProcessHasReminderMail() {
+        String processId = TestDataHelper.getTestData("mail_process_id");
+        if (processId == null || !processId.trim().matches("[1-9]\\d*")) {
+            return false;
+        }
+        Response response = given()
+                .baseUri(TestConfig.getBaseUri())
+                .header("X-Authkey", getOrLoginXAuthKey())
+                .queryParam("limit", 500)
+            .when()
+                .get("/mails/");
+        if (response.getStatusCode() != 200) {
+            return false;
+        }
+        return extractHtmlContaining(response.asString(), processId.trim(), "in Kürze folgenden Termin") != null;
+    }
+
+    private void assertEstimatedDurationAfterTime(String marker) {
+        String processId = TestDataHelper.getTestData("mail_process_id");
+        Assertions.assertThat(processId)
+                .as("confirmation mail must be sent before the duration is checked")
+                .matches("[1-9]\\d*");
+        String html = htmlForProcessContaining(processId.trim(), marker);
+        Matcher match = ESTIMATED_DURATION_AFTER_TIME.matcher(html);
+        Assertions.assertThat(match.find())
+                .as("mail for process %s containing '%s' should place "
+                        + "'Voraussichtliche Termindauer: <number> Minuten' on the line after the time under Zeit. html=%s",
+                        processId, marker, abbreviate(html))
+                .isTrue();
+        Assertions.assertThat(match.group(1))
+                .as("the line under Zeit is the appointment time")
+                .contains("Uhr");
+        Assertions.assertThat(match.group(2))
+                .as("estimated duration in minutes")
+                .matches("[1-9]\\d*");
+        String expected = TestDataHelper.getTestData("expected_duration_minutes");
+        if (expected != null && !expected.isBlank()) {
+            Assertions.assertThat(match.group(2))
+                    .as("estimated duration is slotTimeInMinutes * slotCount")
+                    .isEqualTo(expected.trim());
+        }
+        ScenarioLogManager.getLogger().info(
+                "Mail for process {} contains estimated duration {} minutes after Zeit",
+                processId, match.group(2));
+    }
+
+    private String htmlForProcessContaining(String processId, String marker) {
+        String authKey = getOrLoginXAuthKey();
+        String lastHtml = "";
+        for (int attempt = 1; attempt <= 4; attempt++) {
+            if (attempt > 1) {
+                try {
+                    Thread.sleep(1000L);
+                } catch (InterruptedException interrupted) {
+                    Thread.currentThread().interrupt();
+                    throw new IllegalStateException("Interrupted while waiting for mail", interrupted);
+                }
+            }
+            Response response = given()
+                    .baseUri(TestConfig.getBaseUri())
+                    .header("X-Authkey", authKey)
+                    .queryParam("limit", 500)
+                .when()
+                    .get("/mails/");
+            CommonApiSteps.setResponse(response);
+            Assertions.assertThat(response.getStatusCode())
+                    .as("GET /mails/ for process %s", processId)
+                    .isEqualTo(200);
+            String html = extractHtmlContaining(response.asString(), processId, marker);
+            if (html != null) {
+                return html;
+            }
+            lastHtml = response.asString();
+        }
+        throw new IllegalStateException(
+                "No mail for process " + processId + " contains '" + marker + "'. Last body "
+                        + abbreviate(lastHtml));
+    }
+
+    private String extractHtmlContaining(String responseBody, String processId, String marker) {
+        try {
+            JsonNode data = new ObjectMapper().readTree(responseBody).path("data");
+            if (!data.isArray()) {
+                return null;
+            }
+            String newest = null;
+            int newestId = -1;
+            for (JsonNode mail : data) {
+                if (!processId.equals(mail.path("process").path("id").asText(""))) {
+                    continue;
+                }
+                int mailId = mail.path("id").asInt(-1);
+                JsonNode multipart = mail.path("multipart");
+                if (!multipart.isArray()) {
+                    continue;
+                }
+                for (JsonNode part : multipart) {
+                    if (!"text/html".equals(part.path("mime").asText(null))) {
+                        continue;
+                    }
+                    String content = part.path("content").asText("");
+                    if (content.contains(marker) && mailId >= newestId) {
+                        newestId = mailId;
+                        newest = content;
+                    }
+                }
+            }
+            return newest;
+        } catch (Exception e) {
+            ScenarioLogManager.getLogger().debug("zmsapi: could not read mail html", e);
+            return null;
+        }
+    }
+
+    private static String abbreviate(String value) {
+        if (value == null) {
+            return "";
+        }
+        return value.length() > 800 ? value.substring(0, 800) + "..." : value;
     }
 
     private String extractCancellationMailHtmlFromMailResponse(String responseBody, Integer processId) {
