@@ -204,6 +204,9 @@ public class AdminSteps {
         if ("Datum bis".equals(field)) {
             text = resolveClosingDate(text);
         }
+        if ("Uhrzeit von".equals(field) || "Uhrzeit bis".equals(field)) {
+            text = resolveOpeningTime(text);
+        }
         switch (field) {
         case "Platz-Nr. oder Tresen":
             ADMIN_PAGE.enterWorkstation(text);
@@ -322,8 +325,8 @@ public class AdminSteps {
         AUTHORITIES_AND_LOCATIONS_PAGE.assertOpeningHourHistory(
                 TestDataHelper.transformTestData(note),
                 TestDataHelper.transformTestData(action),
-                from,
-                until);
+                resolveOpeningTime(from),
+                resolveOpeningTime(until));
     }
 
     @Then("the deleted opening hours list shows {string}.")
@@ -378,11 +381,48 @@ public class AdminSteps {
         if ("<heute+14_tage>".equals(text)) {
             return today.plusDays(14).format(format);
         }
-        if ("<heute+7_tage>".equals(text)) {
-            return today.plusDays(7).format(format);
-        }
         if ("<sonntag_dieser_woche>".equals(text)) {
-            return today.with(DayOfWeek.SUNDAY).format(format);
+            LocalDate sunday = today.with(DayOfWeek.SUNDAY);
+            if (!sunday.isAfter(today)) {
+                sunday = today;
+            }
+            ensureUpcomingOpeningTimes();
+            if (upcomingOpeningOnLaterDay && !sunday.isAfter(today)) {
+                sunday = sunday.plusWeeks(1);
+            }
+            return sunday.format(format);
+        }
+        return text;
+    }
+
+    private static final DateTimeFormatter OPENING_CLOCK = DateTimeFormatter.ofPattern("HH:mm");
+    private String upcomingOpeningStart;
+    private String upcomingOpeningEnd;
+    private boolean upcomingOpeningOnLaterDay;
+
+    /** Next full hour in Berlin. After 22:00 that hour no longer fits today, so use 08:00–09:00 on a later day. */
+    private void ensureUpcomingOpeningTimes() {
+        if (upcomingOpeningStart != null) {
+            return;
+        }
+        LocalTime now = BerlinTime.now().truncatedTo(ChronoUnit.MINUTES);
+        LocalTime start = now.withMinute(0).withSecond(0).plusHours(1);
+        LocalTime end = start.plusHours(1);
+        if (start.isAfter(now) && end.isAfter(start) && !end.isAfter(LocalTime.of(23, 0))) {
+            upcomingOpeningStart = start.format(OPENING_CLOCK);
+            upcomingOpeningEnd = end.format(OPENING_CLOCK);
+            upcomingOpeningOnLaterDay = false;
+            return;
+        }
+        upcomingOpeningStart = "08:00";
+        upcomingOpeningEnd = "09:00";
+        upcomingOpeningOnLaterDay = true;
+    }
+
+    private String resolveOpeningTime(String text) {
+        if ("<naechste_oeffnungszeit>".equals(text) || "<oeffnungszeit_danach>".equals(text)) {
+            ensureUpcomingOpeningTimes();
+            return "<naechste_oeffnungszeit>".equals(text) ? upcomingOpeningStart : upcomingOpeningEnd;
         }
         return text;
     }
