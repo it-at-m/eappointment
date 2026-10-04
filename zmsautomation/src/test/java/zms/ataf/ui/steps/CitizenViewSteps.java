@@ -10,7 +10,6 @@ import ataf.core.helpers.TestDataHelper;
 import ataf.core.logging.ScenarioLogManager;
 import ataf.web.utils.DriverUtil;
 import io.cucumber.java.After;
-import io.cucumber.java.de.Wenn;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
@@ -65,6 +64,14 @@ public class CitizenViewSteps {
     public void theServiceCombinationStepShouldBeVisible() {
         ScenarioLogManager.getLogger().info("zmscitizenview: assert service combination step visible");
         page.assertCombinationStepVisible();
+    }
+
+    @Then("the appointment duration should be {int} minutes and not {int} minutes in the citizen view")
+    public void theAppointmentDurationShouldBeMinutesAndNotMinutes(int minutes, int wrongMinutes) {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: assert duration {} minutes, not {}", minutes, wrongMinutes);
+        page.assertEstimatedDurationMinutes(minutes, "appointment duration");
+        page.assertEstimatedDurationMinutesNot(wrongMinutes);
     }
 
     @Then("the estimated duration on the service combination step should be {int} minutes")
@@ -239,16 +246,6 @@ public class CitizenViewSteps {
         page.assertStandardLegalNotices();
     }
 
-    @Then("the reserve appointment button should be disabled in the citizen view")
-    public void theReserveAppointmentButtonShouldBeDisabled() {
-        page.assertReserveAppointmentButtonEnabled(false);
-    }
-
-    @Then("the reserve appointment button should be enabled in the citizen view")
-    public void theReserveAppointmentButtonShouldBeEnabled() {
-        page.assertReserveAppointmentButtonEnabled(true);
-    }
-
     @When("I accept the video consultation terms if they are shown in the citizen view")
     public void iAcceptTheVideoConsultationTermsIfTheyAreShown() {
         ScenarioLogManager.getLogger().info("zmscitizenview: accept video consultation terms when shown");
@@ -387,6 +384,12 @@ public class CitizenViewSteps {
         page.clickRescheduleAppointment();
     }
 
+    @When("I reschedule the appointment from Meine Termine in the citizen view")
+    public void iRescheduleTheAppointmentFromMeineTermine() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: reschedule from Meine Termine via Verschieben");
+        page.rescheduleFromMeineTermine();
+    }
+
     /** ZMSKVR-1500: rebooking confirm summary reached (Verschieben abbrechen shown). */
     @Then("the cancel reschedule button should be visible in the citizen view")
     public void theCancelRescheduleButtonShouldBeVisible() {
@@ -448,7 +451,7 @@ public class CitizenViewSteps {
     /**
      * Abholung at Ruppertstraße, then Termin absagen. The Nachname is what Kundensuche matches.
      */
-    @Wenn("ein Bürger über die Bürgeransicht einen Termin mit dem Nachnamen {string} bucht und absagt.")
+    @When("a citizen books and cancels an appointment with family name {string} in the citizen view.")
     public void einBuergerBuchtUndSagtAb(String lastName) throws Exception {
         String name = TestDataHelper.transformTestData(lastName);
         TestDataHelper.setTestData("customer_name", "E2E " + name);
@@ -665,6 +668,12 @@ public class CitizenViewSteps {
         page.loginViaBuergerLoginWithKeycloak();
     }
 
+    @When("I log in via Bürger-Login with Keycloak in the citizen view if I am not already logged in")
+    public void iLogInViaBuergerLoginWithKeycloakIfNeeded() throws Exception {
+        ScenarioLogManager.getLogger().info("zmscitizenview: Bürger-Login only when the contact form is not logged in");
+        page.loginViaBuergerLoginWithKeycloakIfNeeded();
+    }
+
     @When("I cancel Bürger-Login on the Keycloak form in the citizen view")
     public void iCancelBuergerLoginOnTheKeycloakForm() throws Exception {
         ScenarioLogManager.getLogger()
@@ -783,6 +792,36 @@ public class CitizenViewSteps {
     public void iOpenMeineTermine() {
         ScenarioLogManager.getLogger().info("zmscitizenview: open Meine Termine");
         page.openMeineTermine();
+    }
+
+    @Then("Meine Termine lists {string} and {string}")
+    public void meineTermineListsBoth(String first, String second) {
+        page.assertMeineTermineLists(first, second);
+    }
+
+    @Then("Meine Termine lists {string}")
+    public void meineTermineLists(String serviceName) {
+        page.assertMeineTermineLists(serviceName);
+    }
+
+    @Then("I remember the Meine Termine appointment for {string}")
+    public void iRememberTheMeineTermineAppointment(String serviceName) {
+        page.rememberMeineTermineAppointment(serviceName);
+    }
+
+    @Then("the Meine Termine appointment for {string} was replaced")
+    public void theMeineTermineAppointmentWasReplaced(String serviceName) {
+        page.assertMeineTermineAppointmentReplaced(serviceName);
+    }
+
+    @Then("the Meine Termine appointment for {string} is unchanged")
+    public void theMeineTermineAppointmentIsUnchanged(String serviceName) {
+        page.assertMeineTermineAppointmentUnchanged(serviceName);
+    }
+
+    @Then("Meine Termine does not list {string}")
+    public void meineTermineDoesNotList(String serviceName) {
+        page.assertMeineTermineDoesNotList(serviceName);
     }
 
     @Then("the Meine Termine teaser for {string} should show type {string} and location {string}")

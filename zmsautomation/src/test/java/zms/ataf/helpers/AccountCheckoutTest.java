@@ -1,8 +1,13 @@
 package zms.ataf.helpers;
 
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
@@ -74,6 +79,50 @@ public class AccountCheckoutTest {
         String spare = AccountCheckout.assignWorkstationLogin("ataf_superuser_2");
         Assert.assertEquals(spare, "ataf_superuser_2");
         Assert.assertEquals(AccountCheckout.queueDesk("13"), "113");
+    }
+
+    @Test
+    public void userAdminPoolWaitsForAnUnlockedAccountThatHasADepartment() throws Exception {
+        Map<String, Integer> departments = new LinkedHashMap<>();
+        departments.put("ataf_user_admin_1", 40);
+        departments.put("ataf_user_admin_2", 41);
+        String first = AccountCheckout.assignUserAdminLogin(departments);
+        Assert.assertEquals(first, "ataf_user_admin_1");
+        Assert.assertEquals(AccountCheckout.checkedOutDepartmentId(), Integer.valueOf(40));
+        AtomicBoolean same = new AtomicBoolean(true);
+        AtomicInteger secondDepartment = new AtomicInteger();
+        Thread other = new Thread(() -> {
+            String second = AccountCheckout.assignUserAdminLogin(departments);
+            same.set(first.equals(second));
+            secondDepartment.set(AccountCheckout.checkedOutDepartmentId());
+            AccountCheckout.releaseAll();
+        });
+        other.start();
+        other.join(2000);
+        Assert.assertFalse(other.isAlive());
+        Assert.assertFalse(same.get());
+        Assert.assertEquals(secondDepartment.get(), 41);
+    }
+
+    @Test
+    public void userAdminPoolPicksARandomAccountAndUsesItsDepartment() {
+        Map<String, Integer> departments = new LinkedHashMap<>();
+        departments.put("ataf_user_admin_1", 2);
+        departments.put("ataf_user_admin_2", 40);
+        departments.put("ataf_user_admin_3", 102);
+        Set<String> seen = new LinkedHashSet<>();
+        for (int i = 0; i < 30; i++) {
+            String login = AccountCheckout.assignRandomUserAdminLogin(departments);
+            seen.add(login);
+            Assert.assertEquals(AccountCheckout.checkedOutDepartmentId(), departments.get(login));
+            AccountCheckout.releaseAll();
+        }
+        Assert.assertTrue(seen.size() > 1, "The pool always returned " + seen);
+    }
+
+    @Test(expectedExceptions = IllegalStateException.class)
+    public void userAdminPoolRejectsAccountsWithoutADepartment() {
+        AccountCheckout.assignUserAdminLogin(Map.of());
     }
 
     @Test

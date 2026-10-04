@@ -1,6 +1,6 @@
 #language: en
-@web @zmscitizenview @dldb-special-cases @citizen @ZMSKVR-833 @ZMSKVR-1025 @ZMSKVR-1648 @executeLocally @jumpin @sharedBooking
-Feature: ZMSKVR-833 / ZMSKVR-1025 / ZMSKVR-1648 Rebooking onto a Bürgerbüro that requires custom text
+@web @zmscitizenview @dldb-special-cases @citizen @ZMSKVR-833 @ZMSKVR-1025 @ZMSKVR-1648 @ZMSKVR-1647 @ZMSKVR-1638 @ZMSKVR-1602 @executeLocally @jumpin @sharedBooking
+Feature: ZMSKVR-833 / ZMSKVR-1025 / ZMSKVR-1648 / ZMSKVR-1647 / ZMSKVR-1638 / ZMSKVR-1602 Rebooking onto a Bürgerbüro that requires custom text
   As a citizen
   I want to rebook from a Bürgerbüro where custom text is optional onto one where it is required
   So that Kontakt opens for the missing Pflichtfeld instead of skipping to Übersicht

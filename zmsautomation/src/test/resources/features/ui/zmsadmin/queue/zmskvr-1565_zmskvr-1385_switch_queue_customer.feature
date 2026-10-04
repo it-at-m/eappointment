@@ -1,71 +1,71 @@
-#language: de
-Funktionalität: Während der Bearbeitung kann der Sachbearbeiter zu einem anderen Warteschlangen-Kunden wechseln, ohne den laufenden Vorgang zu verlieren.
+#language: en
+Feature: While processing, the clerk can switch to another queue customer without losing the current process.
 
 	@web @zmsadmin @queue @clerk @ZMSKVR-1385 @ZMSKVR-1565 @automatisiert @executeLocally
-	Szenario: [AUT] Im Status aufgerufen bleibt der aktuelle Vorgang mit Fehlermeldung bestehen
-		Wenn Sie zur Webseite der Administration navigieren.
-		Und  Sie im Zeitmanagementsystem auf die Schaltfläche "Anmelden" klicken.
-		Und  Sie für "Standort" den Wert "Bürgerbüro Pasing (KVR-II/235 KP) Abholung" auswählen.
-		Und  Sie in Feld "Platz-Nr. oder Tresen" den Text "13" eingeben.
-		Und  Sie im Zeitmanagementsystem auf die Schaltfläche "Auswahl bestätigen" klicken.
-		Dann wird die Seite Sachbearbeiterplatz angezeigt.
-		Gegeben seien Sie einen Spontankunden für die Dienstleistung buchen:
+	Scenario: [AUT] While a customer is called, the current process stays and an error is shown
+		When I open the administration website.
+		And I click the button "Anmelden" in the administration.
+		And I select for "Standort" the value "Bürgerbüro Pasing (KVR-II/235 KP) Abholung".
+		And I enter in the field "Platz-Nr. oder Tresen" the text "13".
+		And I click the button "Auswahl bestätigen" in the administration.
+		Then the workstation page is displayed.
+		Given I book a walk-in customer for the service:
 			| Dienstleistung                                        | Termin name | Kunde  |
 			| Abholung Personalausweis, Reisepass oder eID-Karte    | Termin1     | Kunde1 |
 			| Abholung Personalausweis, Reisepass oder eID-Karte    | Termin2     | Kunde2 |
-		Wenn Der Sachbearbeiter "<TestData.Termin1>" aus der Warteliste aufruft.
-		Dann wird der wartende Kunde "<TestData.Termin1>" aufgerufen.
-		Wenn Der Sachbearbeiter "<TestData.Termin2>" aus der Warteliste aufruft.
-		Dann erscheint die Fehlermeldung, dass bereits ein Vorgang aufgerufen ist.
-		Dann erscheint kein Bestätigungsfenster zum Wechsel des Warteschlangen-Kunden.
-		Dann wird der Kundennamen "<TestData.Kunde1>" unter Kundeninformation angezeigt.
-		Und  ist die Schaltfläche "Ja, Kunde erschienen" sichtbar.
+		When the clerk calls "<TestData.Termin1>" from the waiting list.
+		Then the waiting customer "<TestData.Termin1>" is called.
+		When the clerk calls "<TestData.Termin2>" from the waiting list.
+		Then the error that a process is already called appears.
+		Then no confirmation dialog for switching the queue customer appears.
+		Then the customer name "<TestData.Kunde1>" is shown under customer information.
+		And the button "Ja, Kunde erschienen" is visible.
 
 
 	@web @zmsadmin @queue @clerk @ZMSKVR-1385 @ZMSKVR-1565 @automatisiert @executeLocally
-	Szenario: [AUT] Option 2 - Zurück zum aktuellen Vorgang lässt Bearbeitungszeit unverändert
-		Wenn Sie zur Webseite der Administration navigieren.
-		Und  Sie im Zeitmanagementsystem auf die Schaltfläche "Anmelden" klicken.
-		Und  Sie für "Standort" den Wert "Bürgerbüro Pasing (KVR-II/235 KP) Abholung" auswählen.
-		Und  Sie in Feld "Platz-Nr. oder Tresen" den Text "13" eingeben.
-		Und  Sie im Zeitmanagementsystem auf die Schaltfläche "Auswahl bestätigen" klicken.
-		Dann wird die Seite Sachbearbeiterplatz angezeigt.
-		Gegeben seien Sie einen Spontankunden für die Dienstleistung buchen:
+	Scenario: [AUT] Option 2 - returning to the current process keeps the processing time
+		When I open the administration website.
+		And I click the button "Anmelden" in the administration.
+		And I select for "Standort" the value "Bürgerbüro Pasing (KVR-II/235 KP) Abholung".
+		And I enter in the field "Platz-Nr. oder Tresen" the text "13".
+		And I click the button "Auswahl bestätigen" in the administration.
+		Then the workstation page is displayed.
+		Given I book a walk-in customer for the service:
 			| Dienstleistung                                        | Termin name | Kunde  |
 			| Abholung Personalausweis, Reisepass oder eID-Karte    | Termin1     | Kunde1 |
 			| Abholung Personalausweis, Reisepass oder eID-Karte    | Termin2     | Kunde2 |
-		Wenn Der Sachbearbeiter "<TestData.Termin1>" aus der Warteliste aufruft.
-		Dann wird der wartende Kunde "<TestData.Termin1>" aufgerufen.
-		Wenn Sie im Zeitmanagementsystem auf die Schaltfläche "Ja, Kunde erschienen" klicken.
-		Und  Sie für "45000" Millisekunden warten.
-		Wenn Der Sachbearbeiter "<TestData.Termin2>" aus der Warteliste aufruft.
-		Dann erscheint das Bestätigungsfenster zum Wechsel des Warteschlangen-Kunden.
-		Wenn Sie im Zeitmanagementsystem auf die Schaltfläche "Zurück zum aktuellen Vorgang" klicken.
-		Dann wird der Kundennamen "<TestData.Kunde1>" unter Kundeninformation angezeigt.
-		Und  Sie im Zeitmanagementsystem auf die Schaltfläche "Fertig stellen" klicken.
-		Dann Sollte der Kunde "<TestData.Kunde1>" unter abgeschlossene Termine erscheinen.
-		Angenommen Die fertige Termintabelle angezeigt.
-		Dann Die Bearbeitungszeit-H:mm:ss für "<TestData.Kunde1>" sollte zwischen "00:00:30" und "00:02:00" liegen.
+		When the clerk calls "<TestData.Termin1>" from the waiting list.
+		Then the waiting customer "<TestData.Termin1>" is called.
+		When I click the button "Ja, Kunde erschienen" in the administration.
+		And I wait "45000" milliseconds.
+		When the clerk calls "<TestData.Termin2>" from the waiting list.
+		Then the confirmation dialog for switching the queue customer appears.
+		When I click the button "Zurück zum aktuellen Vorgang" in the administration.
+		Then the customer name "<TestData.Kunde1>" is shown under customer information.
+		And I click the button "Fertig stellen" in the administration.
+		Then the customer "<TestData.Kunde1>" should appear under finished appointments.
+		Given the finished appointment table is displayed.
+		Then the processing time H:mm:ss for "<TestData.Kunde1>" should be between "00:00:30" and "00:02:00".
 
 
 	@web @zmsadmin @queue @clerk @ZMSKVR-1385 @ZMSKVR-1565 @automatisiert @executeLocally
-	Szenario: [AUT] Option 1 - Aktuellen Termin fertig stellen und ausgewählten Kunden aufrufen
-		Wenn Sie zur Webseite der Administration navigieren.
-		Und  Sie im Zeitmanagementsystem auf die Schaltfläche "Anmelden" klicken.
-		Und  Sie für "Standort" den Wert "Bürgerbüro Pasing (KVR-II/235 KP) Abholung" auswählen.
-		Und  Sie in Feld "Platz-Nr. oder Tresen" den Text "13" eingeben.
-		Und  Sie im Zeitmanagementsystem auf die Schaltfläche "Auswahl bestätigen" klicken.
-		Dann wird die Seite Sachbearbeiterplatz angezeigt.
-		Gegeben seien Sie einen Spontankunden für die Dienstleistung buchen:
+	Scenario: [AUT] Option 1 - finish the current appointment and call the selected customer
+		When I open the administration website.
+		And I click the button "Anmelden" in the administration.
+		And I select for "Standort" the value "Bürgerbüro Pasing (KVR-II/235 KP) Abholung".
+		And I enter in the field "Platz-Nr. oder Tresen" the text "13".
+		And I click the button "Auswahl bestätigen" in the administration.
+		Then the workstation page is displayed.
+		Given I book a walk-in customer for the service:
 			| Dienstleistung                                        | Termin name | Kunde  |
 			| Abholung Personalausweis, Reisepass oder eID-Karte    | Termin1     | Kunde1 |
 			| Abholung Personalausweis, Reisepass oder eID-Karte    | Termin2     | Kunde2 |
-		Wenn Der Sachbearbeiter "<TestData.Termin1>" aus der Warteliste aufruft.
-		Dann wird der wartende Kunde "<TestData.Termin1>" aufgerufen.
-		Wenn Sie im Zeitmanagementsystem auf die Schaltfläche "Ja, Kunde erschienen" klicken.
-		Wenn Der Sachbearbeiter "<TestData.Termin2>" aus der Warteliste aufruft.
-		Dann erscheint das Bestätigungsfenster zum Wechsel des Warteschlangen-Kunden.
-		Wenn Sie im Zeitmanagementsystem auf die Schaltfläche "Aktuellen Termin fertig stellen und Kunden aufrufen" klicken.
-		Und  Sie ggf. die Statistikbearbeitung abschließen.
-		Dann wird der wartende Kunde "<TestData.Termin2>" aufgerufen.
-		Dann wird der Kundennamen "<TestData.Kunde2>" unter Kundeninformation angezeigt.
+		When the clerk calls "<TestData.Termin1>" from the waiting list.
+		Then the waiting customer "<TestData.Termin1>" is called.
+		When I click the button "Ja, Kunde erschienen" in the administration.
+		When the clerk calls "<TestData.Termin2>" from the waiting list.
+		Then the confirmation dialog for switching the queue customer appears.
+		When I click the button "Aktuellen Termin fertig stellen und Kunden aufrufen" in the administration.
+		And I finish the statistics processing if it is open.
+		Then the waiting customer "<TestData.Termin2>" is called.
+		Then the customer name "<TestData.Kunde2>" is shown under customer information.

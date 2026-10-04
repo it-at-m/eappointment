@@ -1,12 +1,12 @@
-#language: de
-Funktionalität: Vor dem Löschen einer Behörde oder eines Standorts verlangt das System eine abschließende Bestätigung.
+#language: en
+Feature: Before deleting an authority or a location the system asks for a final confirmation.
 
 	@web @zmsadmin @configuration @technical-admin @ZMS-3160 @ZMS-3162 @automatisiert @executeLocally
-	Szenario: [AUT] Löschen von Behörden und Standorte mit Bestätigung hinterlegen
-		Wenn Sie zur Webseite der Administration navigieren.
-		Dann sollten Sie sich am Start des Zeitmanagementsystem befinden.
-		Wenn Sie im Zeitmanagementsystem auf die Schaltfläche "Anmelden" klicken.
-		Und Sie unter dem Menü Administration auf den Eintrag "Behörden und Standorte" klicken.
-		Und Sie unter Behörden und Standorte auf den Standort "Bürgerbüro Scheidplatz (KVR-II/233 Team 1) Serviceschalter" klicken.
-		Und Sie unter der Standortkonfiguration auf die Schaltfläche "löschen" klicken.
-		Dann erscheint ein Pop-Up-Fenster "Der Standort wird gelöscht. Soll der Standort wirklich gelöscht werden?" um den Standort zu löschen.
+	Scenario: [AUT] Deleting authorities and locations requires confirmation
+		When I open the administration website.
+		Then I should be on the administration start page.
+		When I click the button "Anmelden" in the administration.
+		And I click the entry "Behörden und Standorte" in the Administration menu.
+		And I click the location "Bürgerbüro Scheidplatz (KVR-II/233 Team 1) Serviceschalter" under authorities and locations.
+		And I click the button "löschen" in the location configuration.
+		Then a popup "Der Standort wird gelöscht. Soll der Standort wirklich gelöscht werden?" appears to delete the location.

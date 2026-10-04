@@ -87,7 +87,19 @@ public class CitizenViewPageContext extends Context {
         windowType = new WindowType(NAME, new System(NAME, citizenViewUrl));
         int hashIdx = citizenViewUrl.indexOf('#');
         String base = hashIdx >= 0 ? citizenViewUrl.substring(0, hashIdx) : citizenViewUrl;
-        String jumpInUrl = base + "#/services/" + serviceId + "/locations/" + locationId;
+        String route = "#/services/" + serviceId + "/locations/" + locationId;
+        // A hash change on the open page does not remount the widget, so a second booking
+        // stays on the confirmation of the first. A new query loads the jump-in from scratch.
+        String jumpInUrl = base + route;
+        try {
+            String currentUrl = DRIVER.getCurrentUrl();
+            if (currentUrl != null && currentUrl.startsWith(base)) {
+                String separator = base.contains("?") ? "&" : "?";
+                jumpInUrl = base + separator + "zmsjump=" + java.lang.System.nanoTime() + route;
+            }
+        } catch (RuntimeException ignored) {
+            ScenarioLogManager.getLogger().debug("Jump-in has no current page yet.");
+        }
         try {
             DRIVER.navigate().to(jumpInUrl);
         } catch (TimeoutException e) {
@@ -104,6 +116,10 @@ public class CitizenViewPageContext extends Context {
     /**
      * Guest bookings keep the auth key in the reserve response, not in localStorage.
      * Record it before the slot is reserved so cancel can free the process.
+     *
+     * <p>Call the saved fetch with the window as {@code this}. A bare {@code fetch()} from the page
+     * has {@code this === undefined}, and Firefox then throws instead of sending the request. The
+     * calendar call never reaches the server and the page stays on "kein Termin".
      */
     private void rememberAppointmentCredentialsFromLaterResponses() {
         String script =
@@ -118,8 +134,9 @@ public class CitizenViewPageContext extends Context {
                         + "}"
                         + "var orig=window.fetch;"
                         + "if(typeof orig!=='function')return;"
-                        + "window.fetch=function(){return orig.apply(this,arguments).then(function(res){"
-                        + "try{res.clone().text().then(note);}catch(e){}"
+                        + "var bound=orig.bind(window);"
+                        + "window.fetch=function(){return bound.apply(window,arguments).then(function(res){"
+                        + "try{res.clone().text().then(note).catch(function(){});}catch(e){}"
                         + "return res;});};";
         try {
             ((JavascriptExecutor) DRIVER).executeScript(script);
