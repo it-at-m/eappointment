@@ -971,7 +971,7 @@ public class CitizenApiSteps {
         stub.setProcessId(source.processId);
         stub.setAuthKey(source.authKey);
         lastReserveProcess = stub;
-        reserveFirstAvailableSlot(true);
+        reserveFirstAvailableSlot(true, true);
     }
 
     @When("I request my appointments as the logged-in citizen")
