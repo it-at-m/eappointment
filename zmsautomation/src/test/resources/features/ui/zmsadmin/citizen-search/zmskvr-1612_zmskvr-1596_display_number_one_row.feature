@@ -4,6 +4,8 @@ Feature: A display number without its letters returns one search row
 	# ZMSKVR-1596 / ZMSKVR-1612. Bürgerbüro Pasing (KVR-II/235), scope 136, prefix P.
 	# The appointment is saved again with a second slot. Searching the number without P
 	# must list that appointment once and must not add a (Folgetermin) row per slot.
+	# The same digits can match another appointment when scenarios run together,
+	# for example 0002 inside 100020, so the result list is not always a single row.
 	# The appointment is deleted afterwards.
 
 	@web @zmsadmin @citizen-search @clerk @ZMSKVR-1612 @ZMSKVR-1596 @executeLocally
