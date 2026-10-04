@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-10-04T10:33:40.591Z",
+  "publishedAt": "2026-10-04T10:33:42.596Z",
   "branches": [
     {
       "name": "next",
@@ -262,8 +262,8 @@
     {
       "name": "test-zmskvr-1249-zmskvr-1583-sunday-opening-hours-range",
       "slug": "test-zmskvr-1249-zmskvr-1583-sunday-opening-hours-range",
-      "runId": "37194467164",
-      "runStartedAt": "2026-10-04T10:09:48Z"
+      "runId": "37194954540",
+      "runStartedAt": "2026-10-04T10:18:41Z"
     },
     {
       "name": "test-zmskvr-1334-appointment-ics-download",
@@ -408,12 +408,6 @@
       "slug": "test-zmskvr-1557-zmskvr-1570-estimated-duration",
       "runId": "37148320864",
       "runStartedAt": "2026-10-03T19:33:27Z"
-    },
-    {
-      "name": "test-zmskvr-1557-zmskvr-1570-next-reminder-slot",
-      "slug": "test-zmskvr-1557-zmskvr-1570-next-reminder-slot",
-      "runId": "37195269620",
-      "runStartedAt": "2026-10-04T10:24:37Z"
     },
     {
       "name": "test-zmskvr-1557-zmskvr-1570-reminder-queue-retry",
