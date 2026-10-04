@@ -451,7 +451,7 @@ public class ZmsApiSteps {
         long appointment = confirmed.path("appointments").path(0).path("date").asLong(0);
         Assertions.assertThat(appointment)
                 .as("confirmed appointment time")
-                .isBetween(earliest, latest);
+                .isBetween(earliest, reminderHorizon);
         TestDataHelper.setTestData("appointment_epoch", Long.toString(appointment));
         ScenarioLogManager.getLogger().info(
                 "Terminkunde {} booked at epoch {} for scope {}", familyName, appointment, scopeId);
