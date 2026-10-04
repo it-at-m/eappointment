@@ -1,10 +1,10 @@
 name: ⚙️ zmsautomation
 run-name: >-
   ${{
-    github.event_name == 'schedule' && 'zmsautomation | ⏰ scheduled | UI × chrome+firefox, API once | next'
+    github.event_name == 'schedule' && 'zmsautomation | ⏰ scheduled | UI × chrome+firefox+edge, API once | next'
     || (github.event_name == 'workflow_dispatch' && inputs.run_main_next_matrix
         && format(
-             'zmsautomation | ▶️ manual | full shard matrix | UI × chrome+firefox, API once | next{0}{1}',
+             'zmsautomation | ▶️ manual | full shard matrix | UI × chrome+firefox+edge, API once | next{0}{1}',
              inputs.ataf_version != '' && format(' | ATAF {0}', inputs.ataf_version) || '',
              inputs.serial_scenarios && ' | serial scenarios' || ''
            ))
@@ -24,7 +24,7 @@ on:
       run_main_next_matrix:
         description: |
           Run the full scheduled shard matrix: next; UI modules (zmsadmin,
-          zmscitizenview, zmsstatistic, zmsticketprinter) on chrome + firefox; API modules (zmsapi,
+          zmscitizenview, zmsstatistic, zmsticketprinter, zmscalldisplay) on chrome + firefox + edge; API modules (zmsapi,
           zmscitizenapi) once each. Ignores module/browser inputs below.
         required: true
         type: boolean
@@ -62,6 +62,11 @@ on:
         default: true
       module_ticketprinter:
         description: "Ticketprinter UI tests (@zmsticketprinter)"
+        required: true
+        type: boolean
+        default: true
+      module_calldisplay:
+        description: "Call display UI tests (@zmscalldisplay)"
         required: true
         type: boolean
         default: true
@@ -172,6 +177,7 @@ jobs:
               --arg citizenview "$(append_not_ignore '@zmscitizenview')" \
               --arg statistic "$(append_not_ignore '@zmsstatistic')" \
               --arg ticketprinter "$(append_not_ignore '@zmsticketprinter')" \
+              --arg calldisplay "$(append_not_ignore '@zmscalldisplay')" \
               --arg zmsapi "$(append_not_ignore '@zmsapi')" \
               --arg zmscitizenapi "$(append_not_ignore '@zmscitizenapi')" \
               --argjson branches "$MATRIX_BRANCHES" \
@@ -184,9 +190,10 @@ jobs:
                         {shard: "zmsadmin", test_layer: "ui", tag_filter: $admin},
                         {shard: "zmscitizenview", test_layer: "ui", tag_filter: $citizenview},
                         {shard: "zmsstatistic", test_layer: "ui", tag_filter: $statistic},
-                        {shard: "zmsticketprinter", test_layer: "ui", tag_filter: $ticketprinter}
+                        {shard: "zmsticketprinter", test_layer: "ui", tag_filter: $ticketprinter},
+                        {shard: "zmscalldisplay", test_layer: "ui", tag_filter: $calldisplay}
                       ][] as $shard
-                    | ["chrome", "firefox"][] as $browser
+                    | ["chrome", "firefox", "edge"][] as $browser
                     | $shard + {branch: $branch, browser: $browser, use_custom_tags: false}
                   ]
                   + [
@@ -287,12 +294,14 @@ jobs:
                 --arg citizenview "$(append_not_ignore '@zmscitizenview')" \
                 --arg statistic "$(append_not_ignore '@zmsstatistic')" \
                 --arg ticketprinter "$(append_not_ignore '@zmsticketprinter')" \
+                --arg calldisplay "$(append_not_ignore '@zmscalldisplay')" \
                 --arg zmsapi "$(append_not_ignore '@zmsapi')" \
                 --arg zmscitizenapi "$(append_not_ignore '@zmscitizenapi')" \
                 --argjson module_admin "${{ inputs.module_admin }}" \
                 --argjson module_citizenview "${{ inputs.module_citizenview }}" \
                 --argjson module_statistic "${{ inputs.module_statistic }}" \
                 --argjson module_ticketprinter "${{ inputs.module_ticketprinter }}" \
+                --argjson module_calldisplay "${{ inputs.module_calldisplay }}" \
                 --argjson module_zmsapi "${{ inputs.module_zmsapi }}" \
                 --argjson module_zmscitizenapi "${{ inputs.module_zmscitizenapi }}" \
                 '
@@ -311,6 +320,9 @@ jobs:
                         else empty end,
                         if $module_ticketprinter then
                           {shard: "zmsticketprinter", test_layer: "ui", tag_filter: $ticketprinter, use_custom_tags: false}
+                        else empty end,
+                        if $module_calldisplay then
+                          {shard: "zmscalldisplay", test_layer: "ui", tag_filter: $calldisplay, use_custom_tags: false}
                         else empty end
                       ][] as $shard
                       | $browsers[] as $browser
