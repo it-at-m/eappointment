@@ -305,12 +305,16 @@ public class CounterProcessingStationPage extends AdminPage {
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.id(APPOINTMENT_QUEUE_TABLE_LOCATOR_ID)));
     }
 
-    /** The queue replaces this link while a row comes back, so a stale click is retried. */
+    /** The queue replaces this link while a row comes back, and a loader can cover it, so the click is retried. */
     public void reloadQueueLists() {
         By reloadLink = By.cssSelector(".queue-table a.reload");
+        By loader = By.cssSelector("div.loader");
         WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
-        wait.ignoring(StaleElementReferenceException.class);
+        wait.ignoring(StaleElementReferenceException.class, ElementClickInterceptedException.class);
         wait.until(driver -> {
+            if (driver.findElements(loader).stream().anyMatch(WebElement::isDisplayed)) {
+                return false;
+            }
             List<WebElement> links = driver.findElements(reloadLink);
             if (links.isEmpty() || !links.get(0).isDisplayed()) {
                 return false;
