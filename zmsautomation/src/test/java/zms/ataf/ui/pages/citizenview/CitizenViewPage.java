@@ -2341,6 +2341,7 @@ public class CitizenViewPage extends BasePage {
         CONTEXT.set();
         Set<Long> skipped = new HashSet<>();
         Long pendingReserveTimestamp = null;
+        int unfinishedReserves = 0;
         for (int attempt = 1; attempt <= 8; attempt++) {
             if (contactStepReached()) {
                 keepReservedSlot(pendingReserveTimestamp);
@@ -2402,10 +2403,21 @@ public class CitizenViewPage extends BasePage {
                                     "zmscitizenview: slot timestamp={} is no longer available; trying the next available slot",
                                     timestamp);
                 }
-                case UNFINISHED ->
+                case UNFINISHED -> {
+                    if (timestamp > 0) {
+                        skipped.add(timestamp);
+                    }
+                    unfinishedReserves++;
+                    ScenarioLogManager.getLogger()
+                            .info(
+                                    "zmscitizenview: reserve for timestamp={} did not finish; trying the next available slot",
+                                    timestamp);
+                    if (unfinishedReserves >= 2) {
                         Assert.fail(
                                 "zmscitizenview: reserve did not reach Kontaktdaten and did not report a taken slot for office "
                                         + officeId);
+                    }
+                }
             }
         }
         Assert.fail("zmscitizenview: no free slot remained for office " + officeId);
@@ -2444,9 +2456,10 @@ public class CitizenViewPage extends BasePage {
     }
 
     /**
-     * A slow Kontakt page is not a taken slot. Only the explicit error moves on to the next timestamp.
-     * Timing out and highlighting another slot overwrites {@code __zmsCitizenViewSlotId} while the first
-     * reserve is still landing, so later assertions remember the wrong time.
+     * A slow Kontakt page is not a taken slot. Only the explicit error clears the pending timestamp.
+     * An unfinished reserve tries the next slot once. {@code pendingReserveTimestamp} stays set so a late
+     * Kontakt page still records the slot whose Weiter was clicked, even after a later highlight overwrites
+     * {@code __zmsCitizenViewSlotId}.
      */
     private enum ReserveOutcome {
         CONTACT,
