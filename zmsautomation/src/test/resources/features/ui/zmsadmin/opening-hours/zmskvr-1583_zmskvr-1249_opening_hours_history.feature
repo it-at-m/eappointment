@@ -20,7 +20,8 @@ Feature: A technical admin can see the change history of opening hours
     And I select for "Öffnungszeiten Anmerkung" the value "Anmerkung".
     And I select for "Öffnungszeiten Typ" the value "Terminkunden".
     And I select for "Serie" the value "jede Woche".
-    And I enter in the field "Datum bis" the text "<sonntag_dieser_woche>".
+    # End a week ahead. On Sunday, "this Sunday" is today, and 05:00–06:00 is already over.
+    And I enter in the field "Datum bis" the text "<heute+7_tage>".
     And I select Saturday and Sunday of the current week.
     Then no error about weekdays that do not occur should be shown.
     And the button "Alle Änderungen aktivieren" should be enabled for saving the opening hours.

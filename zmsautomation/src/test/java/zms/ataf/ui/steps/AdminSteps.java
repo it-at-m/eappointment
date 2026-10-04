@@ -378,6 +378,9 @@ public class AdminSteps {
         if ("<heute+14_tage>".equals(text)) {
             return today.plusDays(14).format(format);
         }
+        if ("<heute+7_tage>".equals(text)) {
+            return today.plusDays(7).format(format);
+        }
         if ("<sonntag_dieser_woche>".equals(text)) {
             return today.with(DayOfWeek.SUNDAY).format(format);
         }
