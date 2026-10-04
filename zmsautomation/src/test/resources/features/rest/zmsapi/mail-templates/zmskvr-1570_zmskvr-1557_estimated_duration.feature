@@ -5,7 +5,8 @@ Feature: Estimated appointment duration in confirmation and reminder mails
   I want the confirmation and reminder mails to show how long the appointment is expected to take
   So that I can plan the time
 
-  # Standort 2, Gewerbeamt (KVR-III/23) Verkehr, booked at the next free minute of the current day.
+  # Standort 2, Gewerbeamt (KVR-III/23) Verkehr. Prefer the next free minute.
+  # Parallel bookings can take that minute; a later slot today is still inside the 24-hour reminder window.
   # The stored templates place the duration on the line after the time under the heading Zeit:
   # Voraussichtliche Termindauer: <number> Minuten
   # Duration is slotTimeInMinutes times slotCount.
