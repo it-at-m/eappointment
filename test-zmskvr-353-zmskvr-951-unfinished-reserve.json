@@ -1,0 +1,35 @@
+{
+  "branch": "test-zmskvr-353-zmskvr-951-unfinished-reserve",
+  "branchSlug": "test-zmskvr-353-zmskvr-951-unfinished-reserve",
+  "runId": "37221805537",
+  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37221805537",
+  "runStartedAt": "2026-10-04T17:46:43Z",
+  "publishedAt": "2026-10-04T18:01:08.640Z",
+  "features": {
+    "feature-ui-zmscitizenview-rebooking-zmskvr-353-rebooking-no-activation": {
+      "status": "passed",
+      "shard": "custom",
+      "browser": "chrome",
+      "browsers": {
+        "chrome": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "37221805537",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37221805537",
+          "runStartedAt": "2026-10-04T17:46:43Z"
+        },
+        "firefox": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "37221805537",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37221805537",
+          "runStartedAt": "2026-10-04T17:46:43Z"
+        }
+      },
+      "rel": "ui/zmscitizenview/rebooking/zmskvr-353_rebooking_no_activation.feature",
+      "runId": "37221805537",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37221805537",
+      "runStartedAt": "2026-10-04T17:46:43Z"
+    }
+  }
+}
