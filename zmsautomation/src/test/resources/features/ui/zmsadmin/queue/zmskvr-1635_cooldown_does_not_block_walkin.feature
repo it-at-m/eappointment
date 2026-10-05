@@ -23,3 +23,4 @@ Feature: A customer in recall cooldown does not block the next waiting customer
 
         When I click the button "Aufruf nächster Kunde" in the administration.
         Then the waiting customer "<TestData.Termin2>" is called.
+        
