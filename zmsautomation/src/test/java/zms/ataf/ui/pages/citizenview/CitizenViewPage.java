@@ -849,7 +849,9 @@ public class CitizenViewPage extends BasePage {
     private String previousTimeslotId;
 
     private JsonNode citizenJson(String expression, Object... args) {
-        String script = CITIZEN_DOM + "return JSON.stringify(" + expression + ");";
+        CONTEXT.set();
+        // An IIFE has its own arguments object, so callers read the script arguments from __args.
+        String script = CITIZEN_DOM + "var __args=arguments;return JSON.stringify(" + expression + ");";
         Object raw = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script, args);
         try {
             return new ObjectMapper().readTree(raw == null ? "null" : String.valueOf(raw));
@@ -1001,7 +1003,7 @@ public class CitizenViewPage extends BasePage {
         String word = later ? "Später" : "Früher";
         JsonNode clicked = citizenJson(
                 "(function(){var open=cssAll('#listViewAccordion section.m-accordion__section-content.show')[0];"
-                        + "var btn=findButton(open,arguments[0]);if(!btn)return {clicked:false};"
+                        + "var btn=findButton(open,__args[0]);if(!btn)return {clicked:false};"
                         + "if(isDisabled(btn))return {clicked:false,disabled:true};"
                         + "var inner=btn.shadowRoot&&btn.shadowRoot.querySelector('button');"
                         + "(inner||btn).click();return {clicked:true};})()",
@@ -1070,7 +1072,7 @@ public class CitizenViewPage extends BasePage {
     public void selectVisibleTimeslot() {
         previousTimeslotId = markedTimeslotId;
         JsonNode clicked = citizenJson(
-                "(function(){var skip=arguments[0]==null?'':String(arguments[0]);"
+                "(function(){var skip=__args[0]==null?'':String(__args[0]);"
                         + "var slots=cssAll('.timeslot');var target=null;"
                         + "for(var i=0;i<slots.length;i++){var el=slots[i];if(!shown(el))continue;"
                         + "var id=el.id||'';if(skip&&id===skip)continue;"
@@ -1202,7 +1204,7 @@ public class CitizenViewPage extends BasePage {
 
     private JsonNode timeslotStyle(String slotId) {
         return citizenJson(
-                "(function(){var id=arguments[0]==null?'':String(arguments[0]);var slots=cssAll('.timeslot');var target=null;"
+                "(function(){var id=__args[0]==null?'':String(__args[0]);var slots=cssAll('.timeslot');var target=null;"
                         + "for(var i=0;i<slots.length;i++){if(id&&slots[i].id===id){target=slots[i];break;}"
                         + "if(!id&&(slots[i].getAttribute('variant')||'')==='primary'){target=slots[i];break;}}"
                         + "if(!target)return {found:false,id:id};"
