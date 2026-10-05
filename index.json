@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-10-05T23:31:57.949Z",
+  "publishedAt": "2026-10-05T23:38:39.055Z",
   "branches": [
     {
       "name": "next",
@@ -274,8 +274,8 @@
     {
       "name": "test-zmskvr-110-zmskvr-236-calendar-list-view",
       "slug": "test-zmskvr-110-zmskvr-236-calendar-list-view",
-      "runId": "37387789760",
-      "runStartedAt": "2026-10-05T23:19:09Z"
+      "runId": "37388531797",
+      "runStartedAt": "2026-10-05T23:26:51Z"
     },
     {
       "name": "test-zmskvr-1204-zmskvr-1576-my-appointments",
