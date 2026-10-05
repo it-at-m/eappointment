@@ -369,12 +369,23 @@ public class OverallCalendarPage extends AdminPage {
         String generation = "overall-" + System.nanoTime();
         ((JavascriptExecutor) DRIVER).executeScript(
                 "var calendar = document.getElementById('overall-calendar');"
-                        + "if (calendar) calendar.setAttribute('data-sample', arguments[0]);",
+                        + "if (!calendar) return;"
+                        + "calendar.textContent = '';"
+                        + "calendar.setAttribute('data-sample', arguments[0]);",
                 generation);
         clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "//button[normalize-space()='Übernehmen']", LocatorType.XPATH, false, CONTEXT);
         wait.ignoring(StaleElementReferenceException.class).until(driver -> {
             List<WebElement> calendars = driver.findElements(By.id("overall-calendar"));
-            return !calendars.isEmpty() && !generation.equals(calendars.get(0).getAttribute("data-sample"));
+            if (calendars.isEmpty()) {
+                return false;
+            }
+            WebElement calendar = calendars.get(0);
+            String text = calendar.getText();
+            if (text != null && text.contains("Keine Daten verfügbar.")) {
+                return true;
+            }
+            return !generation.equals(calendar.getAttribute("data-sample"))
+                    && !calendar.findElements(By.cssSelector(".overall-calendar-day-label")).isEmpty();
         });
     }
 
