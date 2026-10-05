@@ -1432,11 +1432,41 @@ public class CitizenViewPage extends BasePage {
                         + ". Steps: " + readBookingSteps());
     }
 
-    public void goBackToBookingStep(String label) {
+    /**
+     * Outline the finished step and leave it. The next step clicks it, so the screenshot after this
+     * step still shows the orange mark.
+     */
+    public void highlightFinishedBookingStep(String label) {
         CONTEXT.set();
-        ScenarioLogManager.getLogger().info("zmscitizenview: go back to booking step {}", label);
+        ScenarioLogManager.getLogger().info("zmscitizenview: highlight finished booking step {}", label);
         new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
-                .until(d -> clickFinishedBookingStep(label));
+                .until(d -> paintFinishedBookingStep(label));
+        Assert.assertTrue(
+                paintFinishedBookingStep(label),
+                "Finished booking step \"" + label + "\" has no back button. Steps: " + readBookingSteps());
+        try {
+            Thread.sleep(200L);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+    }
+
+    public void clickHighlightedBookingStep() {
+        CONTEXT.set();
+        JavascriptExecutor js = (JavascriptExecutor) DriverUtil.getDriver();
+        Object stored = js.executeScript("return window.__zmsCitizenViewStepperLabel || '';");
+        String label = stored instanceof String text ? text : "";
+        Assert.assertFalse(label.isBlank(), "No highlighted booking step to click.");
+        ScenarioLogManager.getLogger().info("zmscitizenview: click highlighted booking step {}", label);
+        Object clicked =
+                js.executeScript(
+                        "var button=window.__zmsCitizenViewStepperTarget;"
+                                + "if(!button)return false;"
+                                + "button.scrollIntoView({block:'center'});"
+                                + "button.click();"
+                                + "window.__zmsCitizenViewStepperTarget=null;"
+                                + "return true;");
+        Assert.assertTrue(Boolean.TRUE.equals(clicked), "Highlighted booking step could not be clicked.");
         new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
                 .until(d -> {
                     JsonNode step = findBookingStep(label);
@@ -1520,10 +1550,14 @@ public class CitizenViewPage extends BasePage {
         }
     }
 
-    private boolean clickFinishedBookingStep(String label) {
+    private boolean paintFinishedBookingStep(String label) {
         String script =
                 "var label=arguments[0];"
                         + "function norm(s){return (s||'').replace(/\\s+/g,' ').trim();}"
+                        + "function paint(node){if(!node)return;node.scrollIntoView({block:'center'});"
+                        + "try{node.style.outline='4px solid #ffbf00';"
+                        + "node.style.outlineOffset='3px';"
+                        + "node.style.backgroundColor='rgba(255,191,0,0.25)';}catch(e){}}"
                         + "var found=null;"
                         + "function walk(n){if(!n||found)return;var tag=(n.tagName||'').toUpperCase();"
                         + "if(tag==='OL'&&n.classList&&n.classList.contains('m-form-steps')){found=n;return;}"
@@ -1536,10 +1570,13 @@ public class CitizenViewPage extends BasePage {
                         + "if(norm(title?title.textContent:'')!==label)continue;"
                         + "var button=li.querySelector('button.m-form-step__button');"
                         + "if(!button)return false;"
-                        + "button.scrollIntoView({block:'center'});button.click();return true;}"
+                        + "paint(li);paint(button);"
+                        + "window.__zmsCitizenViewStepperTarget=button;"
+                        + "window.__zmsCitizenViewStepperLabel=label;"
+                        + "return true;}"
                         + "return false;";
-        Object clicked = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script, label);
-        return Boolean.TRUE.equals(clicked);
+        Object painted = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script, label);
+        return Boolean.TRUE.equals(painted);
     }
 
     /** Full entry: select service via \"Häufig gesuchte Leistungen\" link and navigate to combination step. */

@@ -32,7 +32,8 @@ Feature: CitizenView: booking stepper at the top of the page
     Then the booking step "Termin" is "current" with the "calendar" icon
     And the booking step "Leistung" is "finished" with the "shopping-cart" icon
     And the booking step "Kontakt" is "later" with the "mail" icon
-    When I go back to the booking step "Leistung"
+    When I highlight the finished booking step "Leistung"
+    And I click the highlighted booking step
     Then the service combination step should be visible
     And the booking step "Leistung" is "current" with the "shopping-cart" icon
     And the booking step "Termin" is "later" with the "calendar" icon
@@ -51,10 +52,12 @@ Feature: CitizenView: booking stepper at the top of the page
     And the booking step "Termin" is "finished" with the "calendar" icon
     And the booking step "Leistung" is "finished" with the "shopping-cart" icon
     And the booking step "Übersicht" is "later" with the "information" icon
-    When I go back to the booking step "Termin"
+    When I highlight the finished booking step "Termin"
+    And I click the highlighted booking step
     Then the booking step "Termin" is "current" with the "calendar" icon
     And the booking step "Kontakt" is "later" with the "mail" icon
-    When I go back to the booking step "Leistung"
+    When I highlight the finished booking step "Leistung"
+    And I click the highlighted booking step
     Then the service combination step should be visible
     And the booking step "Leistung" is "current" with the "shopping-cart" icon
     When I sync the booking process from citizen view localStorage

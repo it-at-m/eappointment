@@ -107,9 +107,14 @@ public class CitizenViewSteps {
         page.assertBookingStep(label, state, icon);
     }
 
-    @When("I go back to the booking step {string}")
-    public void iGoBackToTheBookingStep(String label) {
-        page.goBackToBookingStep(label);
+    @When("I highlight the finished booking step {string}")
+    public void iHighlightTheFinishedBookingStep(String label) {
+        page.highlightFinishedBookingStep(label);
+    }
+
+    @When("I click the highlighted booking step")
+    public void iClickTheHighlightedBookingStep() {
+        page.clickHighlightedBookingStep();
     }
 
     @Then("available appointments are shown in the citizen view")
