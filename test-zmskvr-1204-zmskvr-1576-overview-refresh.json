@@ -1,0 +1,35 @@
+{
+  "branch": "test-zmskvr-1204-zmskvr-1576-overview-refresh",
+  "branchSlug": "test-zmskvr-1204-zmskvr-1576-overview-refresh",
+  "runId": "37351332558",
+  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37351332558",
+  "runStartedAt": "2026-10-05T17:49:41Z",
+  "publishedAt": "2026-10-05T18:12:01.722Z",
+  "features": {
+    "feature-ui-zmscitizenview-citizen-login-zmskvr-1576-zmskvr-1204-my-appointments-list": {
+      "status": "passed",
+      "shard": "custom",
+      "browser": "chrome",
+      "browsers": {
+        "chrome": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "37351332558",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37351332558",
+          "runStartedAt": "2026-10-05T17:49:41Z"
+        },
+        "firefox": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "37351332558",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37351332558",
+          "runStartedAt": "2026-10-05T17:49:41Z"
+        }
+      },
+      "rel": "ui/zmscitizenview/citizen-login/zmskvr-1576_zmskvr-1204_my_appointments_list.feature",
+      "runId": "37351332558",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37351332558",
+      "runStartedAt": "2026-10-05T17:49:41Z"
+    }
+  }
+}
