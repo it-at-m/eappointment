@@ -80,6 +80,32 @@ public class CitizenViewSteps {
         page.assertEstimatedDurationMinutes(minutes, "service combination step");
     }
 
+    @Then("the service duration is shown with a clock and is {int} minutes")
+    public void theServiceDurationIsShownWithAClockAndIsMinutes(int minutes) {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: assert clock and estimated duration {} minutes", minutes);
+        page.assertEstimatedDurationShownWithClock(minutes);
+    }
+
+    @When("I increase the selected service {string}")
+    public void iIncreaseTheSelectedService(String label) {
+        ScenarioLogManager.getLogger().info("zmscitizenview: increase selected service {}", label);
+        page.increaseSelectedService(TestDataHelper.transformTestData(label));
+    }
+
+    @When("I decrease the selected service {string}")
+    public void iDecreaseTheSelectedService(String label) {
+        ScenarioLogManager.getLogger().info("zmscitizenview: decrease selected service {}", label);
+        page.decreaseSelectedService(TestDataHelper.transformTestData(label));
+    }
+
+    @Then("the selected service {string} cannot be reduced below 1")
+    public void theSelectedServiceCannotBeReducedBelow1(String label) {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: selected service {} stays at least 1", label);
+        page.assertSelectedServiceCannotDropBelowOne(TestDataHelper.transformTestData(label));
+    }
+
     @When("I add subservice {string} with quantity {int} on the service combination step")
     public void iAddSubserviceWithQuantityOnTheServiceCombinationStep(String subserviceLabel, int quantity) {
         String label = TestDataHelper.transformTestData(subserviceLabel);
