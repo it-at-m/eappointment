@@ -969,8 +969,12 @@ public class CitizenViewPage extends BasePage {
                 Assert.fail("10:00 is still the morning: " + state);
             }
         }
-        Assert.assertFalse(state.path("earlier").path("present").asBoolean(), "One office shows the whole morning");
-        Assert.assertFalse(state.path("later").path("present").asBoolean(), "One office shows the whole morning");
+        Assert.assertTrue(
+                state.path("earlier").path("present").asBoolean(),
+                "Früher stays while several locations are offered: " + state.path("earlier"));
+        Assert.assertTrue(
+                state.path("later").path("present").asBoolean(),
+                "Später stays while several locations are offered: " + state.path("later"));
         double labelLeft = state.path("labelLeft").asDouble();
         double headingLeft = state.path("headingLeft").asDouble();
         Assert.assertTrue(

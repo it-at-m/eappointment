@@ -7,11 +7,12 @@ Feature: Calendar and list views for available times
 
   # ZMSKVR-110, ZMSKVR-513, ZMSKVR-707 and tests ZMSKVR-236, ZMSKVR-701, ZMSKVR-739.
   # One feature, two scenarios. Both screens are the appointment step.
-  # Personalausweis at Hauptkalender 10489 and Passkalender 10502 fills the day, so times are grouped by hour.
+  # Personalausweis lists Passkalender 10502. That day is full, so times are grouped by hour.
+  # Hauptkalender 10489 is not a checkbox until Wohnsitzanmeldung is added.
   # The first five dates are accordions. Mehr laden adds at most three and leaves the open date open.
   # Opening another date closes the one that was open.
   # Führungszeugnis at Forstenrieder Allee Team 1 is two slots at 10:00, so that day is Vormittag.
-  # One office shows the whole morning, so Früher and Später are not on that list.
+  # Früher and Später stay while more than one location is offered, including that morning.
   # The active toggle label is #005A9F and the inactive label is #617586.
   # The heading is Datum und Uhrzeit. On a phone the toggle sits under it.
   # A selected time is the primary button: white text on #005A9F.
@@ -22,7 +23,7 @@ Feature: Calendar and list views for available times
     When I select service "Personalausweis" from the service finder and continue
     Then the service combination step should be visible
     When I continue from the service combination step
-    And I keep only providers "10489,10502" checked in the citizen view
+    And I keep only providers "10502" checked in the citizen view
     And I wait for appointment slots to be ready in the citizen view
     Then the calendar and list toggle shows "Kalenderansicht" as active
     And the calendar and list toggle sits below the time heading on a phone
