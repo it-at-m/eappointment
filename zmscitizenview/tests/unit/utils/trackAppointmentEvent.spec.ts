@@ -1,9 +1,11 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import {
+  APPOINTMENT_CLICK_TRACK_INTERVAL,
   APPOINTMENT_TRACK_CATEGORY,
   APPOINTMENT_TRACK_EVENT,
   bookingFlow,
+  resetAppointmentClickCount,
   trackAppointmentEvent,
   trackAppointmentScreenFromView,
   trackWidgetView,
@@ -79,6 +81,68 @@ describe("trackAppointmentEvent", () => {
     expect(() =>
       trackAppointmentEvent({ object: "confirmed", action: "success" })
     ).not.toThrow();
+  });
+
+  it("emits a click on every 10th click and still emits other actions", () => {
+    resetAppointmentClickCount();
+    const handler = vi.fn();
+    const sendEvent = vi.fn();
+    class FakeUserDefinedEvent {
+      objectName: string;
+      action?: string;
+      constructor(objectName: string, _category: string, action?: string) {
+        this.objectName = objectName;
+        this.action = action;
+      }
+    }
+    window._etracker = { sendEvent };
+    window.et_UserDefinedEvent = FakeUserDefinedEvent;
+    document.addEventListener(APPOINTMENT_TRACK_EVENT, handler);
+
+    const click = {
+      object: "login" as const,
+      action: "click" as const,
+      widget: "appointment" as const,
+    };
+    for (let n = 1; n < APPOINTMENT_CLICK_TRACK_INTERVAL; n += 1) {
+      trackAppointmentEvent(click);
+    }
+    expect(handler).not.toHaveBeenCalled();
+    expect(sendEvent).not.toHaveBeenCalled();
+
+    trackAppointmentEvent({ object: "contact", action: "view" });
+    expect(handler).toHaveBeenCalledTimes(1);
+    expect(handler.mock.calls[0][0].detail).toEqual({
+      object: "contact",
+      action: "view",
+    });
+
+    trackAppointmentEvent(click);
+    expect(handler).toHaveBeenCalledTimes(2);
+    expect(handler.mock.calls[1][0].detail).toEqual(click);
+    expect(sendEvent).toHaveBeenCalledTimes(2);
+    const forwarded = sendEvent.mock.calls[1][0] as FakeUserDefinedEvent;
+    expect(forwarded.objectName).toBe("login");
+    expect(forwarded.action).toBe("click");
+
+    for (let n = 1; n < APPOINTMENT_CLICK_TRACK_INTERVAL; n += 1) {
+      trackAppointmentEvent(click);
+    }
+    expect(handler).toHaveBeenCalledTimes(2);
+
+    trackAppointmentEvent({
+      object: "login",
+      action: "click",
+      widget: "appointment_detail",
+    });
+    expect(handler).toHaveBeenCalledTimes(3);
+    expect(handler.mock.calls[2][0].detail).toEqual({
+      object: "login",
+      action: "click",
+      widget: "appointment_detail",
+    });
+
+    document.removeEventListener(APPOINTMENT_TRACK_EVENT, handler);
   });
 
   it("does not throw when etracker sendEvent fails", () => {
