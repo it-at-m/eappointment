@@ -1,22 +1,21 @@
 /**
  * Privacy-safe booking analytics. Emits English, PII-free events that cross
  * Shadow DOM via document + composed CustomEvent. If etracker is present on
- * the host page, also forwards object/category/action. Click actions are
- * emitted on every 10th click. Other actions are emitted on every call.
- * Never throws.
+ * the host page, also forwards object/category/action. Each object and
+ * action pair is emitted on every 10th occurrence. Never throws.
  */
 
 export const APPOINTMENT_TRACK_EVENT = "zms-appointment-track";
 
 export const APPOINTMENT_TRACK_CATEGORY = "appointment";
 
-/** Click actions are forwarded once per this many clicks. */
-export const APPOINTMENT_CLICK_TRACK_INTERVAL = 10;
+/** Each object and action pair is forwarded once per this many occurrences. */
+export const APPOINTMENT_TRACK_SAMPLE_INTERVAL = 10;
 
-let trackedClickCount = 0;
+const trackedEventCounts = new Map<string, number>();
 
-export function resetAppointmentClickCount(): void {
-  trackedClickCount = 0;
+export function resetAppointmentTrackCounts(): void {
+  trackedEventCounts.clear();
 }
 
 export type AppointmentTrackObject =
@@ -94,12 +93,15 @@ export function trackWidgetView(widget: AppointmentTrackWidget): void {
   trackAppointmentEvent({ object: widget, action: "view" });
 }
 
+function eventSampleKey(payload: AppointmentTrackPayload): string {
+  return `${payload.object}:${payload.action}`;
+}
+
 function shouldEmit(payload: AppointmentTrackPayload): boolean {
-  if (payload.action !== "click") {
-    return true;
-  }
-  trackedClickCount += 1;
-  return trackedClickCount % APPOINTMENT_CLICK_TRACK_INTERVAL === 0;
+  const key = eventSampleKey(payload);
+  const count = (trackedEventCounts.get(key) ?? 0) + 1;
+  trackedEventCounts.set(key, count);
+  return count % APPOINTMENT_TRACK_SAMPLE_INTERVAL === 0;
 }
 
 export function trackAppointmentEvent(payload: AppointmentTrackPayload): void {

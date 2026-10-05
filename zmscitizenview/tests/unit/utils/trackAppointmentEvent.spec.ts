@@ -1,18 +1,27 @@
+import type { AppointmentTrackPayload } from "@/utils/trackAppointmentEvent";
+
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import {
-  APPOINTMENT_CLICK_TRACK_INTERVAL,
   APPOINTMENT_TRACK_CATEGORY,
   APPOINTMENT_TRACK_EVENT,
+  APPOINTMENT_TRACK_SAMPLE_INTERVAL,
   bookingFlow,
-  resetAppointmentClickCount,
+  resetAppointmentTrackCounts,
   trackAppointmentEvent,
   trackAppointmentScreenFromView,
   trackWidgetView,
 } from "@/utils/trackAppointmentEvent";
 
+function trackUntilSampled(payload: AppointmentTrackPayload): void {
+  for (let n = 0; n < APPOINTMENT_TRACK_SAMPLE_INTERVAL; n += 1) {
+    trackAppointmentEvent(payload);
+  }
+}
+
 describe("trackAppointmentEvent", () => {
   beforeEach(() => {
+    resetAppointmentTrackCounts();
     delete window._etracker;
     delete window.et_UserDefinedEvent;
   });
@@ -27,7 +36,7 @@ describe("trackAppointmentEvent", () => {
     const handler = vi.fn();
     document.addEventListener(APPOINTMENT_TRACK_EVENT, handler);
 
-    trackAppointmentEvent({
+    trackUntilSampled({
       object: "reserved",
       action: "success",
       flow: "new",
@@ -63,7 +72,7 @@ describe("trackAppointmentEvent", () => {
     window._etracker = { sendEvent };
     window.et_UserDefinedEvent = FakeUserDefinedEvent;
 
-    trackAppointmentEvent({
+    trackUntilSampled({
       object: "preconfirmed",
       action: "success",
       flow: "rebooking",
@@ -83,8 +92,7 @@ describe("trackAppointmentEvent", () => {
     ).not.toThrow();
   });
 
-  it("emits a click on every 10th click and still emits other actions", () => {
-    resetAppointmentClickCount();
+  it("emits each object and action on its own 10th occurrence", () => {
     const handler = vi.fn();
     const sendEvent = vi.fn();
     class FakeUserDefinedEvent {
@@ -99,34 +107,34 @@ describe("trackAppointmentEvent", () => {
     window.et_UserDefinedEvent = FakeUserDefinedEvent;
     document.addEventListener(APPOINTMENT_TRACK_EVENT, handler);
 
-    const click = {
+    const login = {
       object: "login" as const,
       action: "click" as const,
       widget: "appointment" as const,
     };
-    for (let n = 1; n < APPOINTMENT_CLICK_TRACK_INTERVAL; n += 1) {
-      trackAppointmentEvent(click);
+    const contact = { object: "contact" as const, action: "view" as const };
+
+    for (let n = 1; n < APPOINTMENT_TRACK_SAMPLE_INTERVAL; n += 1) {
+      trackAppointmentEvent(login);
+      trackAppointmentEvent(contact);
     }
     expect(handler).not.toHaveBeenCalled();
     expect(sendEvent).not.toHaveBeenCalled();
 
-    trackAppointmentEvent({ object: "contact", action: "view" });
-    expect(handler).toHaveBeenCalledTimes(1);
-    expect(handler.mock.calls[0][0].detail).toEqual({
-      object: "contact",
-      action: "view",
-    });
-
-    trackAppointmentEvent(click);
-    expect(handler).toHaveBeenCalledTimes(2);
-    expect(handler.mock.calls[1][0].detail).toEqual(click);
-    expect(sendEvent).toHaveBeenCalledTimes(2);
-    const forwarded = sendEvent.mock.calls[1][0] as FakeUserDefinedEvent;
+    trackAppointmentEvent(login);
+    expect(handler.mock.calls.map((call) => call[0].detail)).toEqual([login]);
+    const forwarded = sendEvent.mock.calls[0][0] as FakeUserDefinedEvent;
     expect(forwarded.objectName).toBe("login");
     expect(forwarded.action).toBe("click");
 
-    for (let n = 1; n < APPOINTMENT_CLICK_TRACK_INTERVAL; n += 1) {
-      trackAppointmentEvent(click);
+    trackAppointmentEvent(contact);
+    expect(handler.mock.calls.map((call) => call[0].detail)).toEqual([
+      login,
+      contact,
+    ]);
+
+    for (let n = 1; n < APPOINTMENT_TRACK_SAMPLE_INTERVAL; n += 1) {
+      trackAppointmentEvent(login);
     }
     expect(handler).toHaveBeenCalledTimes(2);
 
@@ -135,7 +143,6 @@ describe("trackAppointmentEvent", () => {
       action: "click",
       widget: "appointment_detail",
     });
-    expect(handler).toHaveBeenCalledTimes(3);
     expect(handler.mock.calls[2][0].detail).toEqual({
       object: "login",
       action: "click",
@@ -161,20 +168,26 @@ describe("trackAppointmentEvent", () => {
     };
 
     expect(() =>
-      trackAppointmentEvent({ object: "cancelled", action: "success" })
+      trackUntilSampled({ object: "cancelled", action: "success" })
     ).not.toThrow();
   });
 });
 
 describe("trackAppointmentScreenFromView", () => {
+  beforeEach(() => {
+    resetAppointmentTrackCounts();
+  });
+
   it("maps stepper views after service finder", () => {
     const handler = vi.fn();
     document.addEventListener(APPOINTMENT_TRACK_EVENT, handler);
 
-    trackAppointmentScreenFromView(0);
-    trackAppointmentScreenFromView(1);
-    trackAppointmentScreenFromView(2);
-    trackAppointmentScreenFromView(3);
+    for (let n = 0; n < APPOINTMENT_TRACK_SAMPLE_INTERVAL; n += 1) {
+      trackAppointmentScreenFromView(0);
+      trackAppointmentScreenFromView(1);
+      trackAppointmentScreenFromView(2);
+      trackAppointmentScreenFromView(3);
+    }
 
     expect(handler.mock.calls.map((call) => call[0].detail)).toEqual([
       { object: "appointment_selection", action: "view" },
@@ -198,11 +211,17 @@ describe("trackAppointmentScreenFromView", () => {
 });
 
 describe("trackWidgetView", () => {
+  beforeEach(() => {
+    resetAppointmentTrackCounts();
+  });
+
   it("emits a view for the web component", () => {
     const handler = vi.fn();
     document.addEventListener(APPOINTMENT_TRACK_EVENT, handler);
 
-    trackWidgetView("appointment_detail");
+    for (let n = 0; n < APPOINTMENT_TRACK_SAMPLE_INTERVAL; n += 1) {
+      trackWidgetView("appointment_detail");
+    }
 
     expect(handler.mock.calls[0][0].detail).toEqual({
       object: "appointment_detail",
