@@ -17,6 +17,8 @@
   "am": "Vormittag",
   "apiErrorAppointmentCanNotBeCanceledHeader": "Ihr Termin kann nicht abgesagt werden.",
   "apiErrorAppointmentCanNotBeCanceledText": "Leider kann Ihr Termin nicht abgesagt werden. Bitte wenden Sie sich an den Service, der Ihnen den Termin angeboten hat.",
+  "apiErrorRebookingDisabledHeader": "Dieser Termin kann nicht verschoben werden.",
+  "apiErrorRebookingDisabledText": "Eine Verschiebung ist für diesen Standort nicht möglich. Sie können den Termin absagen.",
   "apiErrorAppointmentNotAvailableHeader": "Ihr gewählter Termin ist nicht mehr verfügbar.",
   "apiErrorAppointmentNotAvailableText": "Leider hat inzwischen eine andere Person Ihren gewünschten Termin gebucht. Bitte wählen Sie einen neuen Termin aus.",
   "apiErrorAppointmentNotFoundHeader": "Wir konnten Ihren Termin nicht finden.",

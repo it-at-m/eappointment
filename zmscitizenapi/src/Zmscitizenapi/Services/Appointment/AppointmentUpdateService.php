@@ -54,6 +54,11 @@ class AppointmentUpdateService
         }
 
         if ($this->isRebookingUpdate($data)) {
+            $rebookingErrors = ValidationService::validateRebookingAllowed($reservedProcess->scope ?? null);
+            if ($rebookingErrors['errors'] !== []) {
+                return $rebookingErrors;
+            }
+
             $lockErrors = ValidationService::validateUnchangedStoredContact(
                 $reservedProcess,
                 $data->familyName,

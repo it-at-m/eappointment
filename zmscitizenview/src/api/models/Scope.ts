@@ -80,6 +80,12 @@ export interface Scope {
   captchaActivatedRequired?: boolean | null;
   /**
    *
+   * @type {boolean | null}
+   * @memberof Scope
+   */
+  rebookingDisabled?: boolean | null;
+  /**
+   *
    * @type {string | null}
    * @memberof Scope
    */
