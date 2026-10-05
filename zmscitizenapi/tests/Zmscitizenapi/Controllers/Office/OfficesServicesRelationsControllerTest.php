@@ -170,6 +170,7 @@ class OfficesServicesRelationsControllerTest extends ControllerTestCase
                     "variantId" => null,
                     "rootParentId" => 1,
                     "showOnStartPage" => true,
+                    "variantOverwrite" => null
                 ]
             ],
             "relations" => [
@@ -349,7 +350,8 @@ class OfficesServicesRelationsControllerTest extends ControllerTestCase
                     "parentId" => null,
                     "variantId" => null,
                     "rootParentId" => 1,
-                    "showOnStartPage" => true
+                    "showOnStartPage" => true,
+                    "variantOverwrite" => null
                 ],
                 [
                     "id" => 2,
@@ -362,7 +364,8 @@ class OfficesServicesRelationsControllerTest extends ControllerTestCase
                     "parentId" => null,
                     "variantId" => null,
                     "rootParentId" => 2,
-                    "showOnStartPage" => true
+                    "showOnStartPage" => true,
+                    "variantOverwrite" => null
                 ]
             ],
             "relations" => [
