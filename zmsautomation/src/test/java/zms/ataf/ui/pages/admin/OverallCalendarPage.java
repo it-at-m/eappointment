@@ -11,6 +11,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.ElementClickInterceptedException;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.TimeoutException;
@@ -167,8 +168,7 @@ public class OverallCalendarPage extends AdminPage {
     public void showEveryLocationInOverallView(int days) {
         CONTEXT.set();
         WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(90));
-        WebElement toggle = wait.until(ExpectedConditions.elementToBeClickable(By.id("select-all-scopes")));
-        toggle.click();
+        selectEveryLocation();
         WebElement from = DRIVER.findElement(By.id("calendar-date-from"));
         String startValue = from.getAttribute("value");
         if (startValue == null || startValue.isBlank()) {
@@ -183,6 +183,31 @@ public class OverallCalendarPage extends AdminPage {
         clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "//button[normalize-space()='Übernehmen']", LocatorType.XPATH, false, CONTEXT);
         wait.until(ExpectedConditions.numberOfElementsToBeMoreThan(By.cssSelector(".overall-calendar-day-label"), 1));
         wait.until(ExpectedConditions.numberOfElementsToBeMoreThan(By.cssSelector(".overall-calendar-scope-header"), 0));
+    }
+
+    /** Click select-all until locations are selected. The button is clickable before its listener exists. */
+    private void selectEveryLocation() {
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        wait.ignoring(StaleElementReferenceException.class, ElementClickInterceptedException.class);
+        wait.until(driver -> {
+            if (selectedScopeCount() > 0) {
+                return true;
+            }
+            List<WebElement> toggles = driver.findElements(By.id("select-all-scopes"));
+            if (toggles.isEmpty() || !toggles.get(0).isDisplayed() || !toggles.get(0).isEnabled()) {
+                return false;
+            }
+            toggles.get(0).click();
+            return selectedScopeCount() > 0;
+        });
+    }
+
+    private int selectedScopeCount() {
+        List<WebElement> selects = DRIVER.findElements(By.id("scope-select"));
+        if (selects.isEmpty()) {
+            return 0;
+        }
+        return new Select(selects.get(0)).getAllSelectedOptions().size();
     }
 
     public void openOverallViewFullScreen() {
