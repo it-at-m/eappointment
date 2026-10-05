@@ -225,6 +225,30 @@ public class CitizenViewPage extends BasePage {
         return Boolean.TRUE.equals(raw);
     }
 
+    /** Heading text that is actually painted. Hidden copies under {@code v-show} do not count. */
+    private boolean visibleHeadingShows(int level, String heading) {
+        String script =
+                "var tagName=arguments[0];var heading=arguments[1];"
+                        + "function textOf(n){var s='';if(!n)return s;if(n.nodeType===3)return n.nodeValue||'';"
+                        + "if(n.shadowRoot)s+=textOf(n.shadowRoot);var c=n.childNodes;if(c)for(var i=0;i<c.length;i++)s+=textOf(c[i]);return s;}"
+                        + "function shown(el){var n=el;while(n&&n.nodeType===1){"
+                        + "var st=window.getComputedStyle(n);"
+                        + "if(st.display==='none'||st.visibility==='hidden'||st.opacity==='0')return false;"
+                        + "if(n.parentElement){n=n.parentElement;continue;}"
+                        + "var root=n.getRootNode&&n.getRootNode();n=root&&root.host?root.host:null;}"
+                        + "return true;}"
+                        + "function walk(n){if(!n)return false;"
+                        + "var tag=(n.tagName||'').toUpperCase();"
+                        + "if(tag===tagName&&textOf(n).replace(/\\s+/g,' ').trim()===heading&&shown(n))return true;"
+                        + "if(n.shadowRoot&&walk(n.shadowRoot))return true;"
+                        + "var c=n.children;if(c)for(var i=0;i<c.length;i++)if(walk(c[i]))return true;return false;}"
+                        + "return walk(document.body);";
+        Object raw =
+                ((JavascriptExecutor) DriverUtil.getDriver())
+                        .executeScript(script, "H" + level, heading);
+        return Boolean.TRUE.equals(raw);
+    }
+
     public void waitUntilShadowContains(String substring, int seconds) {
         CONTEXT.set();
         new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(seconds))
@@ -1521,10 +1545,11 @@ public class CitizenViewPage extends BasePage {
 
     public void assertAvailableAppointmentsShown() {
         CONTEXT.set();
-        waitUntilShadowContains("Verfügbare Termine", DEFAULT_EXPLICIT_WAIT_TIME);
+        new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(d -> visibleHeadingShows(3, "Verfügbare Termine"));
         Assert.assertTrue(
-                shadowDomContainsText("Verfügbare Termine"),
-                "Expected Verfügbare Termine after an office is selected.");
+                visibleHeadingShows(3, "Verfügbare Termine"),
+                "Expected a visible Verfügbare Termine heading after an office is selected.");
     }
 
     private boolean serviceCounterShows(String label, int count) {
