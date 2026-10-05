@@ -106,7 +106,7 @@ class QueueListTest extends EntityCommonTests
         $this->assertEquals(null, $nextProcess);
     }
 
-    public function testGetNextProcessExcludesNumericQueueNumber() {
+    public function testGetNextProcessExcludesNumericQueueNumber(): void {
         $now = new \DateTimeImmutable(self::DEFAULT_TIME);
 
         $processList = new \BO\Zmsentities\Collection\ProcessList();
@@ -129,7 +129,7 @@ class QueueListTest extends EntityCommonTests
         $this->assertNull($queueList->getNextProcess($now, '123456'));
     }
 
-    public function testGetNextProcessSkipsAppointmentDuringRecallCooldown() {
+    public function testGetNextProcessSkipsAppointmentDuringRecallCooldown(): void {
         $now = new \DateTimeImmutable(self::DEFAULT_TIME);
 
         $processList = new \BO\Zmsentities\Collection\ProcessList();
@@ -163,7 +163,7 @@ class QueueListTest extends EntityCommonTests
         $this->assertEquals(222222, $nextProcess->id);
     }
 
-    public function testGetNextProcessAllowsAppointmentAfterRecallCooldown() {
+    public function testGetNextProcessAllowsAppointmentAfterRecallCooldown(): void {
         $now = new \DateTimeImmutable(self::DEFAULT_TIME);
 
         $processList = new \BO\Zmsentities\Collection\ProcessList();
@@ -196,7 +196,7 @@ class QueueListTest extends EntityCommonTests
         $this->assertEquals(111111, $nextProcess->id);
     }
 
-    public function testGetNextProcessSkipsFutureAppointmentForWaitingSpontaneousCustomer() {
+    public function testGetNextProcessSkipsFutureAppointmentForWaitingSpontaneousCustomer(): void {
         $now = new \DateTimeImmutable(self::DEFAULT_TIME);
 
         $processList = new \BO\Zmsentities\Collection\ProcessList();
