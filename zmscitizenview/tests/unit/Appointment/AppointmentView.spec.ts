@@ -484,7 +484,7 @@ describe("AppointmentView", () => {
   });
 
   describe("appointment tracking", () => {
-    it("tracks appointment_selection when the view changes to Termin", async () => {
+    it("tracks timestamp_selection when the view changes to Termin", async () => {
       const wrapper = createWrapper({ appointmentHash: undefined });
       vi.mocked(trackAppointmentScreenFromView).mockClear();
 
