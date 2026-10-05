@@ -5,6 +5,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Locale;
 import java.time.DayOfWeek;
 import java.time.Duration;
@@ -2254,11 +2255,6 @@ public class AdminSteps {
     }
 
     private static final int OVERALL_SCOPE_WITH_HOURS = 40;
-    private static final int OVERALL_ANCHOR_ID = 136491;
-    private static final int OVERALL_SATURDAY_ID = 136492;
-    private static final int OVERALL_ZERO_CLERK_ID = 136493;
-    private static final int OVERALL_HOLIDAY_ID = 136494;
-    private static final int OVERALL_APPOINTMENT_ID = 9901549;
     private static final String OVERALL_SAMPLE = "ZMSKVR-1549";
     private static final String OVERALL_LOCATION_WITH_HOURS = "RA-Termine";
     private static final String OVERALL_LOCATION_WITHOUT_HOURS = "Mietberatung";
@@ -2272,6 +2268,12 @@ public class AdminSteps {
     private boolean overallSaturdayOpen = true;
     private boolean overallSaturdayBooked;
     private boolean overallZeroClerkOpen = true;
+    private int overallAnchorId;
+    private int overallSaturdayId;
+    private int overallZeroClerkId;
+    private int overallHolidayId;
+    private int overallAppointmentProcessId;
+    private Integer overallAppointmentRowId;
 
     @After(value = "@ZMSKVR-1549", order = 10002)
     public void removeOverallViewSample() {
@@ -2309,13 +2311,18 @@ public class AdminSteps {
     public void iAddOverallViewOpeningHours() {
         ensureOverallWindow();
         try (Connection connection = openZmsConnection()) {
-            deleteOverallSample(connection);
+            deleteOpeningsBySampleComment(connection);
             chooseOverallDays(connection);
-            insertOpening(connection, OVERALL_ANCHOR_ID, overallAnchor, 2);
-            insertOpening(connection, OVERALL_SATURDAY_ID, overallSaturday, 2);
-            insertOpening(connection, OVERALL_ZERO_CLERK_ID, overallZeroClerk, 0);
+            int openingId = allocateOpeningId(connection);
+            overallAnchorId = openingId++;
+            overallSaturdayId = openingId++;
+            overallZeroClerkId = openingId++;
+            overallHolidayId = openingId;
+            insertOpening(connection, overallAnchorId, overallAnchor, 2);
+            insertOpening(connection, overallSaturdayId, overallSaturday, 2);
+            insertOpening(connection, overallZeroClerkId, overallZeroClerk, 0);
             if (needsOwnHolidayOpening()) {
-                insertOpening(connection, OVERALL_HOLIDAY_ID, overallHoliday, 2);
+                insertOpening(connection, overallHolidayId, overallHoliday, 2);
             }
         } catch (SQLException e) {
             throw new IllegalStateException("Could not add the overall-view opening hours.", e);
@@ -2346,7 +2353,7 @@ public class AdminSteps {
     @When("I replace that Saturday opening with an appointment and hide days without opening hours.")
     public void iReplaceThatSaturdayOpeningWithAnAppointment() {
         try (Connection connection = openZmsConnection()) {
-            deleteOpening(connection, OVERALL_SATURDAY_ID);
+            deleteOpening(connection, overallSaturdayId);
             insertSaturdayAppointment(connection);
         } catch (SQLException e) {
             throw new IllegalStateException("Could not replace the Saturday opening with an appointment.", e);
@@ -2358,7 +2365,7 @@ public class AdminSteps {
 
     @Then("that Saturday stays visible without opening hours.")
     public void thatSaturdayStaysVisibleWithoutOpeningHours() {
-        OVERALL_CALENDAR_PAGE.assertOverallViewShowsAppointment(OVERALL_APPOINTMENT_ID);
+        OVERALL_CALENDAR_PAGE.assertOverallViewShowsAppointment(overallAppointmentProcessId);
         OVERALL_CALENDAR_PAGE.assertOverallViewDays(List.of(overallSaturday), daysWithoutOpeningHours());
     }
 
@@ -2381,7 +2388,7 @@ public class AdminSteps {
     @When("I remove the weekday opening that has no clerks and hide days without opening hours.")
     public void iRemoveTheWeekdayOpeningThatHasNoClerks() {
         try (Connection connection = openZmsConnection()) {
-            deleteOpening(connection, OVERALL_ZERO_CLERK_ID);
+            deleteOpening(connection, overallZeroClerkId);
         } catch (SQLException e) {
             throw new IllegalStateException("Could not remove the weekday opening.", e);
         }
@@ -2570,24 +2577,35 @@ public class AdminSteps {
     }
 
     private void insertSaturdayAppointment(Connection connection) throws SQLException {
+        overallAppointmentProcessId = allocateProcessId(connection);
         try (PreparedStatement statement = connection.prepareStatement(
                 "INSERT INTO overview_calendar (scope_id, process_id, status, starts_at, ends_at) "
-                        + "VALUES (?, ?, 'confirmed', ?, ?)")) {
+                        + "VALUES (?, ?, 'confirmed', ?, ?)",
+                Statement.RETURN_GENERATED_KEYS)) {
             statement.setInt(1, OVERALL_SCOPE_WITH_HOURS);
-            statement.setInt(2, OVERALL_APPOINTMENT_ID);
+            statement.setInt(2, overallAppointmentProcessId);
             statement.setString(3, overallSaturday + " 10:00:00");
             statement.setString(4, overallSaturday + " 10:10:00");
             statement.executeUpdate();
+            try (ResultSet keys = statement.getGeneratedKeys()) {
+                if (!keys.next()) {
+                    throw new IllegalStateException("The overall view appointment was not stored.");
+                }
+                overallAppointmentRowId = keys.getInt(1);
+            }
         }
     }
 
     private void deleteSaturdayAppointment(Connection connection) throws SQLException {
+        if (overallAppointmentRowId == null) {
+            return;
+        }
         try (PreparedStatement statement = connection.prepareStatement(
-                "DELETE FROM overview_calendar WHERE process_id = ? AND scope_id = ?")) {
-            statement.setInt(1, OVERALL_APPOINTMENT_ID);
-            statement.setInt(2, OVERALL_SCOPE_WITH_HOURS);
+                "DELETE FROM overview_calendar WHERE id = ?")) {
+            statement.setInt(1, overallAppointmentRowId);
             statement.executeUpdate();
         }
+        overallAppointmentRowId = null;
     }
 
     private void deleteOpening(Connection connection, int id) throws SQLException {
@@ -2602,8 +2620,41 @@ public class AdminSteps {
 
     private void deleteOverallSample(Connection connection) throws SQLException {
         deleteSaturdayAppointment(connection);
-        for (int id : new int[] {OVERALL_ANCHOR_ID, OVERALL_SATURDAY_ID, OVERALL_ZERO_CLERK_ID, OVERALL_HOLIDAY_ID}) {
-            deleteOpening(connection, id);
+        deleteOpeningsBySampleComment(connection);
+    }
+
+    private int allocateOpeningId(Connection connection) throws SQLException {
+        try (PreparedStatement statement = connection.prepareStatement(
+                "SELECT COALESCE(MAX(OeffnungszeitID), 0) + 1 FROM oeffnungszeit")) {
+            try (ResultSet rows = statement.executeQuery()) {
+                rows.next();
+                return Math.max(rows.getInt(1), 1);
+            }
+        }
+    }
+
+    private int allocateProcessId(Connection connection) throws SQLException {
+        try (PreparedStatement statement = connection.prepareStatement(
+                "SELECT COALESCE(MAX(process_id), 0) + 1 FROM overview_calendar")) {
+            try (ResultSet rows = statement.executeQuery()) {
+                rows.next();
+                return Math.max(rows.getInt(1), 1);
+            }
+        }
+    }
+
+    private void deleteOpeningsBySampleComment(Connection connection) throws SQLException {
+        boolean comment = columnExists(connection, "comment");
+        boolean kommentar = columnExists(connection, "kommentar");
+        String sql = comment && kommentar
+                ? "DELETE FROM oeffnungszeit WHERE comment = ? OR kommentar = ?"
+                : "DELETE FROM oeffnungszeit WHERE " + (comment ? "comment" : "kommentar") + " = ?";
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setString(1, OVERALL_SAMPLE);
+            if (comment && kommentar) {
+                statement.setString(2, OVERALL_SAMPLE);
+            }
+            statement.executeUpdate();
         }
     }
 
