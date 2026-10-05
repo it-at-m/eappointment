@@ -45,6 +45,12 @@ describe("variant text", () => {
       name: de.variants["2"].name,
       hint: "Eigener Hinweis",
     });
+    expect(
+      getVariant(2, {
+        de: { hint: "Eigener Hinweis" },
+        "de-DE": { name: "Eigener Name" },
+      })
+    ).toEqual({ id: 2, name: "Eigener Name", hint: "Eigener Hinweis" });
 
     i18n.global.locale.value = "en-US";
     expect(getVariant(2, overwrite)).toEqual({
