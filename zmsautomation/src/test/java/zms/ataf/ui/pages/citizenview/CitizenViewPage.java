@@ -4119,11 +4119,7 @@ public class CitizenViewPage extends BasePage {
         if (shadowDomContainsText("Neuer Termin")) {
             return;
         }
-        ScenarioLogManager.getLogger()
-                .warn(
-                        "zmscitizenview: Meine Termine did not finish loading on {}; opening it again",
-                        DriverUtil.getDriver().getCurrentUrl());
-        navigateToMeineTermine(meineTermineOverviewUrl());
+        reloadMeineTermine();
         waitWithThreeWindows(
                 () -> shadowDomContainsText("Neuer Termin"),
                 "Meine Termine finished loading after reload");
@@ -4149,6 +4145,30 @@ public class CitizenViewPage extends BasePage {
         } catch (TimeoutException e) {
             ScenarioLogManager.getLogger().warn("Meine Termine navigation timed out, continuing.", e);
         }
+    }
+
+    /**
+     * Opening the overview URL again does nothing when Firefox is already on that page, so a
+     * load that never rendered "Neuer Termin" stays put. Refresh the document instead.
+     */
+    private void reloadMeineTermine() {
+        if (browserIsOnMeineTermine()) {
+            ScenarioLogManager.getLogger()
+                    .warn(
+                            "zmscitizenview: reloading Meine Termine {}",
+                            DriverUtil.getDriver().getCurrentUrl());
+            try {
+                DriverUtil.getDriver().navigate().refresh();
+            } catch (TimeoutException e) {
+                ScenarioLogManager.getLogger().warn("Meine Termine reload timed out, continuing.", e);
+            }
+            return;
+        }
+        ScenarioLogManager.getLogger()
+                .warn(
+                        "zmscitizenview: Meine Termine stayed on {}; opening it again",
+                        DriverUtil.getDriver().getCurrentUrl());
+        navigateToMeineTermine(meineTermineOverviewUrl());
     }
 
     public void rememberMeineTermineAppointment(String serviceName) {
