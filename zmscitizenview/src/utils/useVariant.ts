@@ -1,7 +1,7 @@
 import type { VariantOverwrite } from "@/api/models/Service";
 import type { I18n } from "vue-i18n";
 
-import { inject } from "vue";
+import { inject, unref } from "vue";
 import { I18nInjectionKey } from "vue-i18n";
 
 export interface Variant {
@@ -19,17 +19,11 @@ export function useVariant(t: (key: string) => string) {
   ): Variant | undefined => {
     if (id == null) return undefined;
 
-    const activeLocale = i18n?.global.locale;
-    const locale =
-      typeof activeLocale === "string"
-        ? activeLocale
-        : (activeLocale?.value ?? "de-DE");
-    const shortLocale = locale.split("-")[0];
-    const shortOverwrite = overwrite?.[shortLocale];
+    const locale = unref(i18n?.global.locale) ?? "de-DE";
+    const shortOverwrite = overwrite?.[locale.split("-")[0]];
     const fullOverwrite = overwrite?.[locale];
     const hintKey = `variants.${id}.hint`;
-    const translatedHint =
-      !i18n || i18n.global.te(hintKey, locale) ? t(hintKey) : hintKey;
+    const translatedHint = t(hintKey);
 
     return {
       id,
