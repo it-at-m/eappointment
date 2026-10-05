@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-10-05T08:58:01.863Z",
+  "publishedAt": "2026-10-05T09:19:33.235Z",
   "branches": [
     {
       "name": "next",
@@ -132,6 +132,12 @@
       "slug": "feature-zmskvr-1617-service-statistics-hide-days-without-usage",
       "runId": "33762107707",
       "runStartedAt": "2026-09-03T13:36:45Z"
+    },
+    {
+      "name": "feature-zmskvr-1620-scope-rebooking-setting",
+      "slug": "feature-zmskvr-1620-scope-rebooking-setting",
+      "runId": "37286663962",
+      "runStartedAt": "2026-10-05T08:55:19Z"
     },
     {
       "name": "feature-zmskvr-343-unify-secuess-callout-for-appointments",
