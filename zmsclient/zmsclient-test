@@ -64,6 +64,10 @@ else
   export XDEBUG_MODE=off
 fi
 
+#if [[ "${XDEBUG_MODE:-off}" == "off" ]]; then
+#  PHPUNIT_ARGS+=(--no-coverage)
+#fi
+
 section "1. Environment Detection"
 # Detect if we're using Podman or Docker
 USE_PODMAN=false
@@ -194,4 +198,3 @@ info "Tests completed with exit code: $EXIT_CODE"
 # compose_cmd down
 
 exit $EXIT_CODE
-
