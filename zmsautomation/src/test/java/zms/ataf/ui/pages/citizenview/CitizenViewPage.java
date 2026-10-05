@@ -1313,9 +1313,15 @@ public class CitizenViewPage extends BasePage {
         // and its Weiter must not steal the click from CustomerInfo/AppointmentSummary.
         String script =
                 "var label='" + esc + "';"
+                        + "function shown(el){var n=el;while(n&&n.nodeType===1){"
+                        + "var st=window.getComputedStyle(n);"
+                        + "if(st.display==='none'||st.visibility==='hidden'||st.opacity==='0')return false;"
+                        + "if(n.parentElement){n=n.parentElement;continue;}"
+                        + "var root=n.getRootNode&&n.getRootNode();n=root&&root.host?root.host:null;}"
+                        + "return true;}"
                         + "function visible(el){if(!el||!el.getBoundingClientRect)return false;"
                         + "var r=el.getBoundingClientRect();if(r.width<=0||r.height<=0)return false;"
-                        + "var st=window.getComputedStyle(el);return st.visibility!=='hidden'&&st.display!=='none'&&st.opacity!=='0';}"
+                        + "return shown(el);}"
                         + "function walkClick(n){if(!n)return false;if(n.shadowRoot&&walkClick(n.shadowRoot))return true;"
                         + "var tag=(n.tagName||'').toUpperCase();var isBtn=(tag==='BUTTON'||tag==='A'||tag==='MUC-BUTTON');"
                         + "if(isBtn){var t=(n.textContent||'').trim();"
@@ -2423,6 +2429,7 @@ public class CitizenViewPage extends BasePage {
         CONTEXT.set();
         Set<Long> skipped = new HashSet<>();
         Long pendingReserveTimestamp = null;
+        int unfinishedReserves = 0;
         for (int attempt = 1; attempt <= 8; attempt++) {
             if (contactStepReached()) {
                 keepReservedSlot(pendingReserveTimestamp);
@@ -2484,10 +2491,21 @@ public class CitizenViewPage extends BasePage {
                                     "zmscitizenview: slot timestamp={} is no longer available; trying the next available slot",
                                     timestamp);
                 }
-                case UNFINISHED ->
+                case UNFINISHED -> {
+                    if (timestamp > 0) {
+                        skipped.add(timestamp);
+                    }
+                    unfinishedReserves++;
+                    ScenarioLogManager.getLogger()
+                            .info(
+                                    "zmscitizenview: reserve for timestamp={} did not finish; trying the next available slot",
+                                    timestamp);
+                    if (unfinishedReserves >= 2) {
                         Assert.fail(
                                 "zmscitizenview: reserve did not reach Kontaktdaten and did not report a taken slot for office "
                                         + officeId);
+                    }
+                }
             }
         }
         Assert.fail("zmscitizenview: no free slot remained for office " + officeId);
@@ -2526,9 +2544,10 @@ public class CitizenViewPage extends BasePage {
     }
 
     /**
-     * A slow Kontakt page is not a taken slot. Only the explicit error moves on to the next timestamp.
-     * Timing out and highlighting another slot overwrites {@code __zmsCitizenViewSlotId} while the first
-     * reserve is still landing, so later assertions remember the wrong time.
+     * A slow Kontakt page is not a taken slot. Only the explicit error clears the pending timestamp.
+     * An unfinished reserve tries the next slot once. {@code pendingReserveTimestamp} stays set so a late
+     * Kontakt page still records the slot whose Weiter was clicked, even after a later highlight overwrites
+     * {@code __zmsCitizenViewSlotId}.
      */
     private enum ReserveOutcome {
         CONTACT,
@@ -4235,17 +4254,15 @@ public class CitizenViewPage extends BasePage {
 
     public void openMeineTermine() {
         CONTEXT.set();
-        String current = DriverUtil.getDriver().getCurrentUrl();
-        Assert.assertTrue(current != null && !current.isBlank(), "Citizen view URL is missing.");
-        int hash = current.indexOf('#');
-        String withoutHash = hash >= 0 ? current.substring(0, hash) : current;
-        int slash = withoutHash.lastIndexOf('/');
-        String overview = withoutHash.substring(0, slash + 1) + "appointment-overview.html";
+        String overview = meineTermineOverviewUrl();
         ScenarioLogManager.getLogger().info("zmscitizenview: open Meine Termine {}", overview);
-        try {
-            DriverUtil.getDriver().navigate().to(overview);
-        } catch (TimeoutException e) {
-            ScenarioLogManager.getLogger().warn("Meine Termine navigation timed out, continuing.", e);
+        navigateToMeineTermine(overview);
+        if (!browserIsOnMeineTermine()) {
+            ScenarioLogManager.getLogger()
+                    .warn(
+                            "zmscitizenview: Meine Termine stayed on {}; opening it again",
+                            DriverUtil.getDriver().getCurrentUrl());
+            navigateToMeineTermine(overview);
         }
     }
 
@@ -4262,9 +4279,7 @@ public class CitizenViewPage extends BasePage {
 
     public void assertMeineTermineDoesNotList(String serviceName) {
         CONTEXT.set();
-        waitWithThreeWindows(
-                () -> shadowDomContainsText("Neuer Termin"),
-                "Meine Termine finished loading");
+        waitUntilNeueTerminVisible();
         Assert.assertTrue(
                 shadowDomContainsText("Neuer Termin"),
                 "Meine Termine did not finish loading.");
@@ -4272,6 +4287,44 @@ public class CitizenViewPage extends BasePage {
                 countTeasers(serviceName),
                 0,
                 "Meine Termine still lists \"" + serviceName + "\".");
+    }
+
+    private void waitUntilNeueTerminVisible() {
+        waitWithThreeWindows(
+                () -> shadowDomContainsText("Neuer Termin"), "Meine Termine finished loading");
+        if (shadowDomContainsText("Neuer Termin")) {
+            return;
+        }
+        ScenarioLogManager.getLogger()
+                .warn(
+                        "zmscitizenview: Meine Termine did not finish loading on {}; opening it again",
+                        DriverUtil.getDriver().getCurrentUrl());
+        navigateToMeineTermine(meineTermineOverviewUrl());
+        waitWithThreeWindows(
+                () -> shadowDomContainsText("Neuer Termin"),
+                "Meine Termine finished loading after reload");
+    }
+
+    private String meineTermineOverviewUrl() {
+        String current = DriverUtil.getDriver().getCurrentUrl();
+        Assert.assertTrue(current != null && !current.isBlank(), "Citizen view URL is missing.");
+        int hash = current.indexOf('#');
+        String withoutHash = hash >= 0 ? current.substring(0, hash) : current;
+        int slash = withoutHash.lastIndexOf('/');
+        return withoutHash.substring(0, slash + 1) + "appointment-overview.html";
+    }
+
+    private boolean browserIsOnMeineTermine() {
+        String current = DriverUtil.getDriver().getCurrentUrl();
+        return current != null && current.contains("appointment-overview");
+    }
+
+    private void navigateToMeineTermine(String overview) {
+        try {
+            DriverUtil.getDriver().navigate().to(overview);
+        } catch (TimeoutException e) {
+            ScenarioLogManager.getLogger().warn("Meine Termine navigation timed out, continuing.", e);
+        }
     }
 
     public void rememberMeineTermineAppointment(String serviceName) {

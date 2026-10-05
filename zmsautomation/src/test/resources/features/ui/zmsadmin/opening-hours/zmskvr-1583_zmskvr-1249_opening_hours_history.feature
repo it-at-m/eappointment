@@ -24,8 +24,9 @@ Feature: A technical admin can see the change history of opening hours
     And I select Saturday and Sunday of the current week.
     Then no error about weekdays that do not occur should be shown.
     And the button "Alle Änderungen aktivieren" should be enabled for saving the opening hours.
-    And I enter in the field "Uhrzeit von" the text "05:00".
-    And I enter in the field "Uhrzeit bis" the text "06:00".
+    # Next full hour in Berlin. After 22:00 that hour no longer fits today, so the range moves to the following Sunday and the hour is 08:00–09:00.
+    And I enter in the field "Uhrzeit von" the text "<naechste_oeffnungszeit>".
+    And I enter in the field "Uhrzeit bis" the text "<oeffnungszeit_danach>".
     And I select for appointment desks under "Insgesamt" the count 1.
     And I select for appointment desks under "Internet" the count 1.
     And I click the button "Alle Änderungen aktivieren" in the administration.
@@ -34,7 +35,7 @@ Feature: A technical admin can see the change history of opening hours
     And I replace the opening-hours note "Geaendert".
     And I click the button "Alle Änderungen aktivieren" in the administration.
     And I open the change history of the opening hour with the note "<TestData.Geaendert>".
-    Then the change history shows the saved opening hour "<TestData.Geaendert>" as "Geändert" from "05:00" to "06:00".
+    Then the change history shows the saved opening hour "<TestData.Geaendert>" as "Geändert" from "<naechste_oeffnungszeit>" to "<oeffnungszeit_danach>".
     And the active opening hours with the note "<TestData.Geaendert>" should be deletable.
     And the deleted opening hours list shows "<TestData.Geaendert>".
 
