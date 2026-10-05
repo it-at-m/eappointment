@@ -1215,6 +1215,12 @@ const nextCancelAppointment = () => {
 const nextRescheduleAppointment = () => {
   clearContextErrors(errorStateMap.value);
 
+  if (appointment.value?.scope?.rebookingDisabled === true) {
+    rebookOrCancelDialog.value = true;
+    currentView.value = 3;
+    return;
+  }
+
   if (isExpired((appointment.value as any)?.timestamp)) {
     forcedPast.value = true;
     currentView.value = 3;

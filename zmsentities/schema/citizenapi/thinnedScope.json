@@ -142,6 +142,13 @@
                 "null"
             ],
             "description": "Additional hint information for the scope"
+        },
+        "rebookingDisabled": {
+            "type": [
+                "boolean",
+                "null"
+            ],
+            "description": "True when citizens cannot reschedule appointments for this scope"
         }
     }
 }

@@ -216,6 +216,11 @@ class Scope extends Schema\Entity implements Useraccount\AccessInterface
         return ($alternateUrl) ? $alternateUrl : null;
     }
 
+    public function isRebookingDisabled(): bool
+    {
+        return (bool) $this->getPreference('appointment', 'rebookingDisabled', true);
+    }
+
     public function getAppointmentsPerMail(): mixed
     {
         $appointmentsPerMail = $this->toProperty()->preferences->client->appointmentsPerMail->get();
