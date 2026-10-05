@@ -52,6 +52,7 @@ import zms.ataf.helpers.RandomNameHelper;
 import zms.ataf.rest.steps.CitizenApiSteps;
 import zms.ataf.ui.pages.admin.AdminPage;
 import zms.ataf.ui.pages.admin.AdminPageContext;
+import zms.ataf.ui.pages.admin.OverallCalendarPage;
 import zms.ataf.ui.pages.admin.ProfilePage;
 import zms.ataf.ui.pages.admin.StatusPage;
 import zms.ataf.ui.pages.admin.UseraccountPage;
@@ -68,6 +69,7 @@ public class AdminSteps {
     private final StatusPage STATUS_PAGE;
     private final UseraccountPage USERACCOUNT_PAGE;
     private final CounterProcessingStationPage COUNTER_PROCESSING_STATION_PAGE;
+    private final OverallCalendarPage OVERALL_CALENDAR_PAGE;
     private final CounterSection COUNTER_SECTION;
     private final AuthoritiesAndLocationsPage AUTHORITIES_AND_LOCATIONS_PAGE;
 
@@ -83,6 +85,7 @@ public class AdminSteps {
         STATUS_PAGE = new StatusPage(DriverUtil.getDriver());
         USERACCOUNT_PAGE = new UseraccountPage(DriverUtil.getDriver());
         COUNTER_PROCESSING_STATION_PAGE = new CounterProcessingStationPage(DriverUtil.getDriver(), ADMIN_PAGE.getContext());
+        OVERALL_CALENDAR_PAGE = new OverallCalendarPage(DriverUtil.getDriver(), ADMIN_PAGE.getContext());
         CUSTOMER_SEARCH_PAGE = new CustomerSearchPage(DriverUtil.getDriver(), ADMIN_PAGE.getContext());
         AUTHORITIES_AND_LOCATIONS_PAGE = new AuthoritiesAndLocationsPage(DriverUtil.getDriver(), ADMIN_PAGE.getContext());
         PROCESSING_STATION_SECTION = new ProcessingStationSection(DriverUtil.getDriver(), ADMIN_PAGE.getContext());
@@ -770,64 +773,64 @@ public class AdminSteps {
 
     @When("I show location {string} with id {int} in the overall view for one day.")
     public void iShowLocationInTheOverallViewForOneDay(String location, int scopeId) {
-        COUNTER_PROCESSING_STATION_PAGE.showLocationInOverallViewForOneDay(
+        OVERALL_CALENDAR_PAGE.showLocationInOverallViewForOneDay(
                 TestDataHelper.transformTestData(location), scopeId);
     }
 
     @Then("the overall view links that location to its opening hours for that day with the label {string}.")
     public void theOverallViewLinksThatLocationToItsOpeningHours(String linkLabel) {
-        COUNTER_PROCESSING_STATION_PAGE.assertOverallViewLinksLocationToOpeningHours(
+        OVERALL_CALENDAR_PAGE.assertOverallViewLinksLocationToOpeningHours(
                 TestDataHelper.transformTestData(linkLabel));
     }
 
     @When("I show every location in the overall view for {int} days.")
     public void iShowEveryLocationInTheOverallViewForDays(int days) {
-        COUNTER_PROCESSING_STATION_PAGE.showEveryLocationInOverallView(days);
+        OVERALL_CALENDAR_PAGE.showEveryLocationInOverallView(days);
     }
 
     @When("I open the full view of the overall calendar.")
     public void iOpenTheFullViewOfTheOverallCalendar() {
-        COUNTER_PROCESSING_STATION_PAGE.openOverallViewFullScreen();
+        OVERALL_CALENDAR_PAGE.openOverallViewFullScreen();
     }
 
     @When("I scroll the overall view to the right.")
     public void iScrollTheOverallViewToTheRight() {
-        COUNTER_PROCESSING_STATION_PAGE.scrollOverallViewToTheRight();
+        OVERALL_CALENDAR_PAGE.scrollOverallViewToTheRight();
     }
 
     @Then("each shown location keeps its date in view.")
     public void eachShownLocationKeepsItsDateInView() {
-        COUNTER_PROCESSING_STATION_PAGE.assertEachVisibleLocationShowsItsDate();
+        OVERALL_CALENDAR_PAGE.assertEachVisibleLocationShowsItsDate();
     }
 
     @Then("the overall view has no {string} row label and no {string} column label.")
     public void theOverallViewHasNoRowOrColumnLabel(String rowLabel, String columnLabel) {
-        COUNTER_PROCESSING_STATION_PAGE.assertOverallViewHasNoAxisLabels(rowLabel, columnLabel);
+        OVERALL_CALENDAR_PAGE.assertOverallViewHasNoAxisLabels(rowLabel, columnLabel);
     }
 
     @Then("the hour label sits on the first row of that hour.")
     public void theHourLabelSitsOnTheFirstRowOfThatHour() {
-        COUNTER_PROCESSING_STATION_PAGE.assertHourLabelSitsOnTheHourRow();
+        OVERALL_CALENDAR_PAGE.assertHourLabelSitsOnTheHourRow();
     }
 
     @Then("the day lines keep one width and location headers have no side border.")
     public void theDayLinesKeepOneWidth() {
-        COUNTER_PROCESSING_STATION_PAGE.assertDayLinesKeepOneWidth();
+        OVERALL_CALENDAR_PAGE.assertDayLinesKeepOneWidth();
     }
 
     @When("I show one location with walk-in opening hours in the overall view.")
     public void iShowOneLocationWithWalkInOpeningHours() throws SQLException {
-        COUNTER_PROCESSING_STATION_PAGE.showWalkInOpening(walkInOpening());
+        OVERALL_CALENDAR_PAGE.showWalkInOpening(walkInOpening());
     }
 
     @Then("that walk-in opening time is not shown in white.")
     public void thatWalkInOpeningTimeIsNotShownInWhite() {
-        COUNTER_PROCESSING_STATION_PAGE.assertWalkInHoursAreNotWhite();
+        OVERALL_CALENDAR_PAGE.assertWalkInHoursAreNotWhite();
     }
 
     @Then("the overall view shows the just booked appointment with a duration of {int} minutes.")
     public void zeigt_die_gesamtuebersicht_die_dauer(int minutes) {
-        COUNTER_PROCESSING_STATION_PAGE.assertOverallCalendarAppointmentSpansMinutes(minutes);
+        OVERALL_CALENDAR_PAGE.assertOverallCalendarAppointmentSpansMinutes(minutes);
     }
 
     @Then("the customer search shows the customer {string}.")
@@ -2048,9 +2051,9 @@ public class AdminSteps {
                         + " shows +Min. in Uhrzeit: " + timeCell.getText());
     }
 
-    private CounterProcessingStationPage.WalkInOpening walkInOpening() throws SQLException {
-        LocalDate firstDay = COUNTER_PROCESSING_STATION_PAGE.overallViewStart();
-        List<String> scopeIds = COUNTER_PROCESSING_STATION_PAGE.overallViewScopeOptionValues();
+    private OverallCalendarPage.WalkInOpening walkInOpening() throws SQLException {
+        LocalDate firstDay = OVERALL_CALENDAR_PAGE.overallViewStart();
+        List<String> scopeIds = OVERALL_CALENDAR_PAGE.overallViewScopeOptionValues();
         String sql = """
                 SELECT scope_id, start_time, end_time, appointment_start_time, appointment_end_time
                 FROM oeffnungszeit
@@ -2080,12 +2083,12 @@ public class AdminSteps {
                         LocalTime appointmentEnd = rows.getTime("appointment_end_time").toLocalTime();
                         if (walkInStart.isBefore(appointmentStart)
                                 && java.time.Duration.between(walkInStart, appointmentStart).toMinutes() >= 15) {
-                            return new CounterProcessingStationPage.WalkInOpening(
+                            return new OverallCalendarPage.WalkInOpening(
                                     scopeId, day, walkInStart, appointmentStart, appointmentStart);
                         }
                         if (appointmentEnd.isBefore(walkInEnd)
                                 && java.time.Duration.between(appointmentEnd, walkInEnd).toMinutes() >= 15) {
-                            return new CounterProcessingStationPage.WalkInOpening(
+                            return new OverallCalendarPage.WalkInOpening(
                                     scopeId, day, appointmentEnd, walkInEnd, appointmentStart);
                         }
                     }
@@ -2281,25 +2284,25 @@ public class AdminSteps {
 
     @Then("the overall view shows days without opening hours by default.")
     public void theOverallViewShowsDaysWithoutOpeningHoursByDefault() {
-        COUNTER_PROCESSING_STATION_PAGE.assertEmptyDaysAreShownByDefault();
+        OVERALL_CALENDAR_PAGE.assertEmptyDaysAreShownByDefault();
     }
 
     @When("I show location {int} in the overall view for the next 14 days with days without opening hours shown.")
     public void iShowOneLocationWithEmptyDaysShown(int scopeId) {
         ensureOverallWindow();
-        COUNTER_PROCESSING_STATION_PAGE.showOverallViewScopes(overallFrom, overallUntil, false, scopeId);
+        OVERALL_CALENDAR_PAGE.showOverallViewScopes(overallFrom, overallUntil, false, scopeId);
     }
 
     @When("I show locations {int} and {int} in the overall view for the next 14 days with days without opening hours hidden.")
     public void iShowTwoLocationsWithEmptyDaysHidden(int firstScopeId, int secondScopeId) {
         ensureOverallWindow();
-        COUNTER_PROCESSING_STATION_PAGE.showOverallViewScopes(
+        OVERALL_CALENDAR_PAGE.showOverallViewScopes(
                 overallFrom, overallUntil, true, firstScopeId, secondScopeId);
     }
 
     @Then("the overall view says that no data is available.")
     public void theOverallViewSaysThatNoDataIsAvailable() {
-        COUNTER_PROCESSING_STATION_PAGE.assertOverallViewHasNoData();
+        OVERALL_CALENDAR_PAGE.assertOverallViewHasNoData();
     }
 
     @When("I add overall-view opening hours for location 40.")
@@ -2325,19 +2328,19 @@ public class AdminSteps {
 
     @Then("the overall view lists every day in that range, including days without opening hours.")
     public void theOverallViewListsEveryDayInThatRange() {
-        COUNTER_PROCESSING_STATION_PAGE.assertOverallViewDayCount(14);
-        COUNTER_PROCESSING_STATION_PAGE.assertOverallViewDays(daysWithoutOpeningHours(), List.of());
+        OVERALL_CALENDAR_PAGE.assertOverallViewDayCount(14);
+        OVERALL_CALENDAR_PAGE.assertOverallViewDays(daysWithoutOpeningHours(), List.of());
     }
 
     @When("I hide days without opening hours in the overall view.")
     public void iHideDaysWithoutOpeningHours() {
-        COUNTER_PROCESSING_STATION_PAGE.chooseEmptyDaysVisibility(true);
+        OVERALL_CALENDAR_PAGE.chooseEmptyDaysVisibility(true);
     }
 
     @Then("the overall view keeps days that have opening hours and hides days that do not.")
     public void theOverallViewKeepsDaysThatHaveOpeningHours() {
         Assert.assertFalse(daysWithoutOpeningHours().isEmpty(), "The range should contain a day without opening hours.");
-        COUNTER_PROCESSING_STATION_PAGE.assertOverallViewDays(daysWithOpeningHours(), daysWithoutOpeningHours());
+        OVERALL_CALENDAR_PAGE.assertOverallViewDays(daysWithOpeningHours(), daysWithoutOpeningHours());
     }
 
     @When("I replace that Saturday opening with an appointment and hide days without opening hours.")
@@ -2355,8 +2358,8 @@ public class AdminSteps {
 
     @Then("that Saturday stays visible without opening hours.")
     public void thatSaturdayStaysVisibleWithoutOpeningHours() {
-        COUNTER_PROCESSING_STATION_PAGE.assertOverallViewShowsAppointment(OVERALL_APPOINTMENT_ID);
-        COUNTER_PROCESSING_STATION_PAGE.assertOverallViewDays(List.of(overallSaturday), daysWithoutOpeningHours());
+        OVERALL_CALENDAR_PAGE.assertOverallViewShowsAppointment(OVERALL_APPOINTMENT_ID);
+        OVERALL_CALENDAR_PAGE.assertOverallViewDays(List.of(overallSaturday), daysWithoutOpeningHours());
     }
 
     @When("I remove that Saturday appointment and hide days without opening hours.")
@@ -2372,7 +2375,7 @@ public class AdminSteps {
 
     @Then("that Saturday is hidden.")
     public void thatSaturdayIsHidden() {
-        COUNTER_PROCESSING_STATION_PAGE.assertOverallViewDays(List.of(overallAnchor), List.of(overallSaturday));
+        OVERALL_CALENDAR_PAGE.assertOverallViewDays(List.of(overallAnchor), List.of(overallSaturday));
     }
 
     @When("I remove the weekday opening that has no clerks and hide days without opening hours.")
@@ -2388,29 +2391,29 @@ public class AdminSteps {
 
     @Then("that weekday is hidden.")
     public void thatWeekdayIsHidden() {
-        COUNTER_PROCESSING_STATION_PAGE.assertOverallViewDays(List.of(overallAnchor), List.of(overallZeroClerk));
+        OVERALL_CALENDAR_PAGE.assertOverallViewDays(List.of(overallAnchor), List.of(overallZeroClerk));
     }
 
     @Then("a location without opening hours is left out of the overall view.")
     public void aLocationWithoutOpeningHoursIsLeftOut() {
-        COUNTER_PROCESSING_STATION_PAGE.assertOverallViewLocation(OVERALL_LOCATION_WITH_HOURS, true);
-        COUNTER_PROCESSING_STATION_PAGE.assertOverallViewLocation(OVERALL_LOCATION_WITHOUT_HOURS, false);
-        COUNTER_PROCESSING_STATION_PAGE.assertOverallViewDays(List.of(overallAnchor), daysWithoutOpeningHours());
+        OVERALL_CALENDAR_PAGE.assertOverallViewLocation(OVERALL_LOCATION_WITH_HOURS, true);
+        OVERALL_CALENDAR_PAGE.assertOverallViewLocation(OVERALL_LOCATION_WITHOUT_HOURS, false);
+        OVERALL_CALENDAR_PAGE.assertOverallViewDays(List.of(overallAnchor), daysWithoutOpeningHours());
     }
 
     @When("I show days without opening hours in the overall view.")
     public void iShowDaysWithoutOpeningHours() {
-        COUNTER_PROCESSING_STATION_PAGE.chooseEmptyDaysVisibility(false);
+        OVERALL_CALENDAR_PAGE.chooseEmptyDaysVisibility(false);
     }
 
     @Then("that location without opening hours is listed again.")
     public void thatLocationWithoutOpeningHoursIsListedAgain() {
-        COUNTER_PROCESSING_STATION_PAGE.assertOverallViewLocation(OVERALL_LOCATION_WITHOUT_HOURS, true);
-        COUNTER_PROCESSING_STATION_PAGE.assertOverallViewDays(daysWithoutOpeningHours(), List.of());
+        OVERALL_CALENDAR_PAGE.assertOverallViewLocation(OVERALL_LOCATION_WITHOUT_HOURS, true);
+        OVERALL_CALENDAR_PAGE.assertOverallViewDays(daysWithoutOpeningHours(), List.of());
     }
 
     private void reloadOverallView(boolean hideDaysWithoutOpeningHours, int... scopeIds) {
-        COUNTER_PROCESSING_STATION_PAGE.showOverallViewScopes(
+        OVERALL_CALENDAR_PAGE.showOverallViewScopes(
                 overallFrom, overallUntil, hideDaysWithoutOpeningHours, scopeIds);
     }
 
