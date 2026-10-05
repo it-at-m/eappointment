@@ -1,0 +1,35 @@
+{
+  "branch": "test-zmskvr-92-zmskvr-164-booking-stepper",
+  "branchSlug": "test-zmskvr-92-zmskvr-164-booking-stepper",
+  "runId": "37373063162",
+  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37373063162",
+  "runStartedAt": "2026-10-05T20:58:53Z",
+  "publishedAt": "2026-10-05T22:08:25.401Z",
+  "features": {
+    "feature-ui-zmscitizenview-booking-zmskvr-164-zmskvr-92-booking-stepper": {
+      "status": "failed",
+      "shard": "custom",
+      "browser": "chrome",
+      "browsers": {
+        "chrome": {
+          "status": "failed",
+          "shard": "custom",
+          "runId": "37373063162",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37373063162",
+          "runStartedAt": "2026-10-05T20:58:53Z"
+        },
+        "firefox": {
+          "status": "failed",
+          "shard": "custom",
+          "runId": "37373063162",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37373063162",
+          "runStartedAt": "2026-10-05T20:58:53Z"
+        }
+      },
+      "rel": "ui/zmscitizenview/booking/zmskvr-164_zmskvr-92_booking_stepper.feature",
+      "runId": "37373063162",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37373063162",
+      "runStartedAt": "2026-10-05T20:58:53Z"
+    }
+  }
+}
