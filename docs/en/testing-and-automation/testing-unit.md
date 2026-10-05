@@ -11,7 +11,7 @@ podman exec -it zms-web bash
 ```
 
 ```bash
-cd {zmsadmin, zmscalldisplay, zmsdldb, zmsentities, zmsmessaging, zmsslim, zmsstatistic, zmsticketprinter}
+cd {zmsadmin, zmscalldisplay, zmscitizenapi, zmsdldb, zmsentities, zmsmessaging, zmsslim, zmsstatistic, zmsticketprinter}
 ```
 
 ```bash
