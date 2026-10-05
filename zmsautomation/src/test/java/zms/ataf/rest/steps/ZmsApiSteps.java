@@ -790,7 +790,16 @@ public class ZmsApiSteps {
             .as("GET /workstation/ body=%s", truncate(response.asString(), 1000))
             .isEqualTo(200);
         JsonNode workstation = parseDataNode(response);
-        int scopeId = workstation == null ? 0 : workstation.path("scope").path("id").asInt(0);
+        Assertions.assertThat(workstation)
+            .as("GET /workstation/ data")
+            .isNotNull();
+        Assertions.assertThat(workstation.hasNonNull("id"))
+            .as("GET /workstation/ data.id")
+            .isTrue();
+        Assertions.assertThat(workstation.path("useraccount").isObject())
+            .as("GET /workstation/ data.useraccount")
+            .isTrue();
+        int scopeId = workstation.path("scope").path("id").asInt(0);
         Assertions.assertThat(scopeId)
             .as("GET /workstation/ selected a location")
             .isZero();
