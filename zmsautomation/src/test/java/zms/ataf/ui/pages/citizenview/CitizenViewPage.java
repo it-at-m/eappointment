@@ -4072,17 +4072,15 @@ public class CitizenViewPage extends BasePage {
 
     public void openMeineTermine() {
         CONTEXT.set();
-        String current = DriverUtil.getDriver().getCurrentUrl();
-        Assert.assertTrue(current != null && !current.isBlank(), "Citizen view URL is missing.");
-        int hash = current.indexOf('#');
-        String withoutHash = hash >= 0 ? current.substring(0, hash) : current;
-        int slash = withoutHash.lastIndexOf('/');
-        String overview = withoutHash.substring(0, slash + 1) + "appointment-overview.html";
+        String overview = meineTermineOverviewUrl();
         ScenarioLogManager.getLogger().info("zmscitizenview: open Meine Termine {}", overview);
-        try {
-            DriverUtil.getDriver().navigate().to(overview);
-        } catch (TimeoutException e) {
-            ScenarioLogManager.getLogger().warn("Meine Termine navigation timed out, continuing.", e);
+        navigateToMeineTermine(overview);
+        if (!browserIsOnMeineTermine()) {
+            ScenarioLogManager.getLogger()
+                    .warn(
+                            "zmscitizenview: Meine Termine stayed on {}; opening it again",
+                            DriverUtil.getDriver().getCurrentUrl());
+            navigateToMeineTermine(overview);
         }
     }
 
@@ -4099,9 +4097,7 @@ public class CitizenViewPage extends BasePage {
 
     public void assertMeineTermineDoesNotList(String serviceName) {
         CONTEXT.set();
-        waitWithThreeWindows(
-                () -> shadowDomContainsText("Neuer Termin"),
-                "Meine Termine finished loading");
+        waitUntilNeueTerminVisible();
         Assert.assertTrue(
                 shadowDomContainsText("Neuer Termin"),
                 "Meine Termine did not finish loading.");
@@ -4109,6 +4105,44 @@ public class CitizenViewPage extends BasePage {
                 countTeasers(serviceName),
                 0,
                 "Meine Termine still lists \"" + serviceName + "\".");
+    }
+
+    private void waitUntilNeueTerminVisible() {
+        waitWithThreeWindows(
+                () -> shadowDomContainsText("Neuer Termin"), "Meine Termine finished loading");
+        if (shadowDomContainsText("Neuer Termin")) {
+            return;
+        }
+        ScenarioLogManager.getLogger()
+                .warn(
+                        "zmscitizenview: Meine Termine did not finish loading on {}; opening it again",
+                        DriverUtil.getDriver().getCurrentUrl());
+        navigateToMeineTermine(meineTermineOverviewUrl());
+        waitWithThreeWindows(
+                () -> shadowDomContainsText("Neuer Termin"),
+                "Meine Termine finished loading after reload");
+    }
+
+    private String meineTermineOverviewUrl() {
+        String current = DriverUtil.getDriver().getCurrentUrl();
+        Assert.assertTrue(current != null && !current.isBlank(), "Citizen view URL is missing.");
+        int hash = current.indexOf('#');
+        String withoutHash = hash >= 0 ? current.substring(0, hash) : current;
+        int slash = withoutHash.lastIndexOf('/');
+        return withoutHash.substring(0, slash + 1) + "appointment-overview.html";
+    }
+
+    private boolean browserIsOnMeineTermine() {
+        String current = DriverUtil.getDriver().getCurrentUrl();
+        return current != null && current.contains("appointment-overview");
+    }
+
+    private void navigateToMeineTermine(String overview) {
+        try {
+            DriverUtil.getDriver().navigate().to(overview);
+        } catch (TimeoutException e) {
+            ScenarioLogManager.getLogger().warn("Meine Termine navigation timed out, continuing.", e);
+        }
     }
 
     public void rememberMeineTermineAppointment(String serviceName) {
