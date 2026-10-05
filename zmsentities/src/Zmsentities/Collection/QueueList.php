@@ -275,7 +275,7 @@ class QueueList extends Base implements \BO\Zmsentities\Helper\NoSanitize
         $currentTime = $dateTime->getTimestamp();
 
         while ($next) {
-            if (in_array((string)$next->number, $excludeNumbers, true)) {
+            if (in_array((string) $next->number, $excludeNumbers, true)) {
                 $next = array_shift($queueList);
                 continue;
             }

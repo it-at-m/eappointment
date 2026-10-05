@@ -106,6 +106,29 @@ class QueueListTest extends EntityCommonTests
         $this->assertEquals(null, $nextProcess);
     }
 
+    public function testGetNextProcessExcludesNumericQueueNumber() {
+        $now = new \DateTimeImmutable(self::DEFAULT_TIME);
+
+        $processList = new \BO\Zmsentities\Collection\ProcessList();
+
+        $process = (new \BO\Zmsentities\Process())->getExample();
+        $process->id = 111111;
+        $process->status = 'queued';
+        $process->queue->number = 123456;
+        $process->queue->withAppointment = false;
+        $process->queue->callCount = 0;
+        $process->queue->lastCallTime = 0;
+        $process->queue->arrivalTime = $now->modify('-5 minutes')->getTimestamp();
+
+        $processList->addEntity($process);
+
+        $queueList = $processList->toQueueList($now);
+
+        $this->assertEquals(111111, $queueList->getNextProcess($now)->id);
+
+        $this->assertNull($queueList->getNextProcess($now, '123456'));
+    }
+
     public function testGetNextProcessSkipsAppointmentDuringRecallCooldown() {
         $now = new \DateTimeImmutable(self::DEFAULT_TIME);
 
