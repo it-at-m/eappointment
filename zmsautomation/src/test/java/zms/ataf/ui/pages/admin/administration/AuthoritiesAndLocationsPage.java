@@ -1,5 +1,6 @@
 package zms.ataf.ui.pages.admin.administration;
 
+import java.time.DayOfWeek;
 import java.time.Duration;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -369,6 +370,37 @@ public void saveLocationChanges() {
         setInputValue(findVisibleInputById("AvDatesEnd"), date);
     }
 
+    /**
+     * Selects Saturday and Sunday when they still fall in the range from today through Sunday.
+     * The start date cannot move before the opened day, so a run on Sunday only selects Sunday.
+     */
+    public void selectWeekendDaysOfCurrentWeek() {
+        if (BerlinTime.today().getDayOfWeek() != DayOfWeek.SUNDAY) {
+            selectWeekDay("Samstag");
+        }
+        selectWeekDay("Sonntag");
+    }
+
+    public void assertNoMissingWeekdayError() {
+        CONTEXT.set();
+        By error = By.xpath("//*[contains(@class,'message--error')]"
+                + "[contains(., 'kommen im gewählten Zeitraum nicht vor')]");
+        try {
+            new WebDriverWait(DRIVER, Duration.ofSeconds(5))
+                    .until(ExpectedConditions.invisibilityOfElementLocated(error));
+        } catch (TimeoutException e) {
+            Assert.fail("Weekday range error is still shown: " + DRIVER.findElement(error).getText(), e);
+        }
+    }
+
+    public void assertOpeningHoursSaveButtonEnabled(String buttonLabel) {
+        CONTEXT.set();
+        By save = By.xpath("//button[contains(@class,'button-save') and normalize-space()='" + buttonLabel + "']");
+        WebElement button = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(ExpectedConditions.presenceOfElementLocated(save));
+        Assert.assertTrue(button.isEnabled(), "\"" + buttonLabel + "\" is disabled");
+    }
+
     private WebElement findVisibleInputById(String id) {
         String inOpenedAccordion = "(//div[contains(@class,'accordion__panel') and contains(@class,'opened')]"
                 + "//input[@id='" + id + "'])[last()]";
@@ -452,39 +484,51 @@ public void saveLocationChanges() {
         CONTEXT.set();
         String publishButton =
                 "//button[contains(@class,'button-save') and normalize-space()='Alle Änderungen aktivieren']";
+        clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, publishButton, LocatorType.XPATH, false, CONTEXT);
+        // A holiday in the range asks to continue, then the save dialog asks again.
+        // Confirm each dialog until the success message is on the page.
         By confirmButton = By.xpath("//div[contains(@class,'lightbox__content')]//a[@data-action-ok]");
-        WebElement confirmBtn = null;
-        for (int attempt = 1; attempt <= 3 && confirmBtn == null; attempt++) {
-            clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, publishButton, LocatorType.XPATH, false, CONTEXT);
-            try {
-                confirmBtn =
-                        new WebDriverWait(DRIVER, Duration.ofSeconds(30))
-                                .until(ExpectedConditions.visibilityOfElementLocated(confirmButton));
-            } catch (TimeoutException e) {
-                ScenarioLogManager.getLogger()
-                        .info(
-                                "Confirm dialog not shown after Alle Änderungen aktivieren (attempt {})",
-                                attempt);
-            }
+        By success = By.xpath("//div[contains(@class,'message--success')][contains(., 'Öffnungszeiten gespeichert')]");
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        wait.ignoring(StaleElementReferenceException.class);
+        try {
+            wait.until(driver -> {
+                if (driver.findElements(success).stream().anyMatch(this::isShown)) {
+                    return true;
+                }
+                for (WebElement ok : driver.findElements(confirmButton)) {
+                    if (isShown(ok)) {
+                        ok.click();
+                        return false;
+                    }
+                }
+                return false;
+            });
+        } catch (TimeoutException e) {
+            Assert.fail("Opening hours were not saved.", e);
         }
-        Assert.assertNotNull(confirmBtn, "Confirm dialog for opening hours did not appear");
-        confirmBtn.click();
-        new WebDriverWait(DRIVER, Duration.ofSeconds(5))
-                .until(ExpectedConditions.invisibilityOfElementLocated(confirmButton));
         String message = getWebElementText(
             DEFAULT_EXPLICIT_WAIT_TIME,
             "//div[contains(@class,'message--success')]",
             LocatorType.XPATH,
             CONTEXT
         ).replaceAll("\\n", "").trim();
-    
+
         String today = BerlinTime.today()
                 .format(DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.GERMANY));
-    
+
         Assert.assertTrue(
                 message.contains("Öffnungszeiten gespeichert, " + today),
                 "Success message does not contain today's date!"
         );
+    }
+
+    private boolean isShown(WebElement element) {
+        try {
+            return element.isDisplayed();
+        } catch (StaleElementReferenceException e) {
+            return false;
+        }
     }
 
     /**
@@ -544,6 +588,99 @@ public void saveLocationChanges() {
         confirmBtn.click();
         new WebDriverWait(DRIVER, Duration.ofSeconds(5))
                 .until(ExpectedConditions.invisibilityOfElementLocated(confirmButton));
+    }
+
+    public void assertOpeningHoursDayPage() {
+        CONTEXT.set();
+        WebElement heading = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(ExpectedConditions.visibilityOfElementLocated(
+                        By.xpath("//h1[contains(., 'Öffnungszeiten für den Standort')]")));
+        Assert.assertTrue(heading.isDisplayed(), "The opening-hours day page is not visible.");
+    }
+
+    public void openOpeningHourForEditing(String note) {
+        ScenarioLogManager.getLogger().info("Trying to edit the opening hour with note \"" + note + "\"...");
+        String pencil = openingHourRow(note) + "//a[@aria-label='Bearbeiten']";
+        clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, pencil, LocatorType.XPATH, false, CONTEXT);
+    }
+
+    public void replaceOpeningHoursNote(String noteKey) {
+        CONTEXT.set();
+        String note = "Note- " + RandomNameHelper.randomAlphanumeric(10);
+        ScenarioLogManager.getLogger().info("Trying to replace the opening-hours note with \"" + note + "\"...");
+        TestDataHelper.setTestData(noteKey, note);
+        setInputValue(findVisibleInputById("AvDayDescription"), note);
+    }
+
+    public void openOpeningHourHistory(String note) {
+        ScenarioLogManager.getLogger().info("Trying to open the change history of the opening hour \"" + note + "\"...");
+        String history = openingHourRow(note) + "//a[starts-with(@aria-label, 'Änderungsverlauf von')]";
+        clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, history, LocatorType.XPATH, false, CONTEXT);
+        new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(
+                        "tr.availability-history-row strong")));
+        new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME)).until(driver -> {
+            String text = historyTable().getText();
+            return !text.contains("Wird geladen") && (text.contains("Geändert") || text.contains("konnte nicht geladen"));
+        });
+    }
+
+    public void assertOpeningHourHistory(String note, String action, String from, String until) {
+        WebElement table = historyTable();
+        List<String> historyHeaders = headerLabels(table);
+        List<String> openingHourHeaders = headerLabels(DRIVER.findElement(
+                By.cssSelector("table.table--base:not(.availability-history-table)")));
+        for (String header : openingHourHeaders) {
+            Assert.assertTrue(historyHeaders.contains(header),
+                    "The change history is missing the opening-hours column \"" + header + "\".");
+        }
+        Assert.assertTrue(historyHeaders.contains("Zeitschlitz"), "The change history is missing Zeitschlitz.");
+        WebElement row = table.findElement(By.xpath(".//tr[td[contains(., '" + note + "')]]"));
+        String entry = row.getText();
+        Assert.assertTrue(entry.contains(action),
+                "The history entry for \"" + note + "\" does not show \"" + action + "\".");
+        Assert.assertTrue(entry.contains(from) && entry.contains(until),
+                "The history entry for \"" + note + "\" does not show " + from + "–" + until + ".");
+        String changedAt = row.findElement(By.cssSelector("td.cell--meta")).getText();
+        Assert.assertTrue(changedAt.matches("(?s).*\\d{2}\\.\\d{2}\\.\\d{4} \\d{2}:\\d{2}.*"),
+                "The history entry for \"" + note + "\" has no timestamp: " + changedAt);
+    }
+
+    public void assertDeletedOpeningHour(String note) {
+        new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(ExpectedConditions.invisibilityOfElementLocated(By.xpath(openingHourRow(note))));
+        DRIVER.navigate().refresh();
+        CONTEXT.set();
+        By deletedRow = By.xpath("//section[contains(@class,'availability-history')]"
+                + "//tr[.//td[contains(., 'Gelöscht')] and .//td[contains(., '" + note + "')]]");
+        new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(ExpectedConditions.visibilityOfElementLocated(deletedRow));
+    }
+
+    public void assertOpeningHourHistoryHidden() {
+        assertOpeningHoursDayPage();
+        Assert.assertTrue(
+                DRIVER.findElements(By.cssSelector("a[aria-label^='Änderungsverlauf von']")).isEmpty(),
+                "The change history is visible for a user who is not a technical admin.");
+        Assert.assertTrue(
+                DRIVER.findElements(By.xpath("//h2[contains(., 'Gelöschte Öffnungszeiten')]")).isEmpty(),
+                "Deleted opening hours are visible for a user who is not a technical admin.");
+    }
+
+    private String openingHourRow(String note) {
+        return "//table[contains(@class,'table--base') and not(contains(@class,'availability-history-table'))]"
+                + "//tr[.//td[contains(., '" + note + "')]]";
+    }
+
+    private WebElement historyTable() {
+        return DRIVER.findElement(By.cssSelector("tr.availability-history-row table.availability-history-table"));
+    }
+
+    private List<String> headerLabels(WebElement table) {
+        return table.findElements(By.cssSelector("thead th")).stream()
+                .map(cell -> cell.getText().trim())
+                .filter(label -> !label.isEmpty())
+                .toList();
     }
 
     public void clickOnDeleteLocation() {

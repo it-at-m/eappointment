@@ -13,12 +13,14 @@ import ataf.web.controls.WindowControls;
 import ataf.web.model.WindowType;
 import ataf.web.utils.DriverUtil;
 import io.cucumber.datatable.DataTable;
-import io.cucumber.java.de.Dann;
-import io.cucumber.java.de.Und;
-import io.cucumber.java.de.Wenn;
+import io.cucumber.java.en.And;
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
+import zms.ataf.helpers.AccountCheckout;
 import zms.ataf.helpers.BerlinTime;
 import zms.ataf.ui.pages.statistics.StatisticsPage;
 import zms.ataf.ui.pages.statistics.StatisticsPageContext;
+import zms.ataf.ui.pages.statistics.evaluations.CapacityStatisticsPage;
 import zms.ataf.ui.pages.statistics.evaluations.CustomerStatisticsPage;
 import zms.ataf.ui.pages.statistics.evaluations.ServiceStatisticsPage;
 
@@ -27,26 +29,35 @@ public class StatisticsSteps {
     private final StatisticsPage STATISTICS_PAGE;
     private final CustomerStatisticsPage CUSTOMER_STATISTICS_PAGE;
     private final ServiceStatisticsPage SERVICE_STATISTICS_PAGE;
+    private final CapacityStatisticsPage CAPACITY_STATISTICS_PAGE;
 
     public StatisticsSteps() {
         STATISTICS_PAGE = new StatisticsPage(DriverUtil.getDriver());
         CUSTOMER_STATISTICS_PAGE = new CustomerStatisticsPage(DriverUtil.getDriver(), STATISTICS_PAGE.getContext());
         SERVICE_STATISTICS_PAGE = new ServiceStatisticsPage(DriverUtil.getDriver(), STATISTICS_PAGE.getContext());
+        CAPACITY_STATISTICS_PAGE = new CapacityStatisticsPage(DriverUtil.getDriver(), STATISTICS_PAGE.getContext());
     }
 
-    @Wenn("Sie zur Webseite der Statistik navigieren.")
+    @When("I open the statistics website.")
     public void wenn_sie_zur_webseite_der_administration_navigieren() {
         STATISTICS_PAGE.navigateToPage();
     }
 
-    @Dann("sollten Sie sich am Start der " + StatisticsPageContext.NAME + " befinden.")
+    @When("I sign in to the statistics as {string}.")
+    public void iSignInToTheStatisticsAs(String username) throws Exception {
+        String login = AccountCheckout.assignWorkstationLogin(TestDataHelper.transformTestData(username));
+        TestDataHelper.setTestData("signed_in_login", login);
+        STATISTICS_PAGE.loginWithKeycloakUser(login);
+    }
+
+    @Then("I should be on the statistics start page.")
     public void dann_sollten_sie_sich_am_start_des_zeitmanagementsystem_befinden() {
         Assert.assertEquals(WindowControls.getActiveWindow().getWindowTitle(), StatisticsPageContext.TITLE,
                 "This is not the start page of the \"" + StatisticsPageContext.NAME + "\"");
         WindowControls.getActiveWindow().setWindowType(WindowType.getSystemWindowType("Statistik"));
     }
 
-    @Wenn("Sie in der " + StatisticsPageContext.NAME + " auf die Schaltfläche {string} klicken.")
+    @When("I click the button {string} in the statistics.")
     public void wenn_sie_in_der_statistik_auf_die_schaltflaeche_string_klicken(String button) throws Exception {
         button = TestDataHelper.transformTestData(button);
         switch (button) {
@@ -61,7 +72,7 @@ public class StatisticsSteps {
         }
     }
 
-    @Wenn("Sie in der Statistik für {string} den Wert {string} auswählen.")
+    @When("I select for {string} the value {string} in the statistics.")
     public void wenn_in_der_statistik_sie_fuer_string_den_wert_string_auswaehlen(String type, String value) {
         value = TestDataHelper.transformTestData(value);
         switch (type) {
@@ -73,12 +84,12 @@ public class StatisticsSteps {
         }
     }
 
-    @Dann("wird die Übersichtsseite der Statistik angezeigt.")
+    @Then("the statistics overview page is displayed.")
     public void dann_wird_die_seite_sachbearbeiterplatz_geoeffnet() {
         STATISTICS_PAGE.checkIfTheOverviewPageIsOpen();
     }
 
-    @Und("Sie in der Statistik im Filter für {string} den Wert {string} auswählen.")
+    @And("I select for {string} the value {string} in the statistics filter.")
     public void sie_in_der_statistik_im_filter_fuer_den_wert_auswaehlen(String type, String value) {
         value = TestDataHelper.transformTestData(value);
         switch (type) {
@@ -91,14 +102,81 @@ public class StatisticsSteps {
         }
     }
 
-    @Und("Sie in der Statistik im Zeitraum von {int} Tagen vor heute bis heute filtern.")
+    @And("I filter the statistics from {int} days before today until today.")
     public void sie_in_der_statistik_im_zeitraum_von_tagen_vor_heute_bis_heute_filtern(int daysBack) {
         LocalDate to = BerlinTime.today();
         LocalDate from = to.minusDays(daysBack);
         STATISTICS_PAGE.applyDateRangeFilter(from, to);
     }
 
-    @Wenn("Sie in der Statistik in der Seitenleiste auf die Schaltfläche {string} klicken.")
+    @And("I filter the statistics from {int} days after today until {int} days after today.")
+    public void iFilterTheStatisticsFromDaysAfterToday(int fromOffset, int untilOffset) {
+        LocalDate today = BerlinTime.today();
+        STATISTICS_PAGE.applyDateRangeFilter(today.plusDays(fromOffset), today.plusDays(untilOffset));
+    }
+
+    @And("I apply the statistics filter.")
+    public void iApplyTheStatisticsFilter() {
+        STATISTICS_PAGE.applyStatisticsFilter();
+    }
+
+    @Then("the capacity statistics show the daily total for that one day.")
+    public void theCapacityStatisticsShowTheDailyTotalForThatOneDay() {
+        CAPACITY_STATISTICS_PAGE.assertOneDayDailyTotal();
+    }
+
+    @When("I select the capacity filter {string} value {string}.")
+    public void iSelectTheCapacityFilter(String filter, String label) {
+        CAPACITY_STATISTICS_PAGE.selectCapacityFilter(capacitySelect(filter), capacityValue(filter, label));
+    }
+
+    @Then("the capacity filter {string} is {string}.")
+    public void theCapacityFilterIs(String filter, String label) {
+        CAPACITY_STATISTICS_PAGE.assertCapacityFilter(capacitySelect(filter), capacityValue(filter, label));
+    }
+
+    @Then("the statistics date filter is still {int} days after today until {int} days after today.")
+    public void theStatisticsDateFilterIsStill(int fromOffset, int untilOffset) {
+        LocalDate today = BerlinTime.today();
+        CAPACITY_STATISTICS_PAGE.assertDateFilter(today.plusDays(fromOffset), today.plusDays(untilOffset));
+    }
+
+    private static String capacitySelect(String filter) {
+        switch (filter) {
+        case "Ansicht":
+            return ".report-board--capacity-granularity-select";
+        case "Kapazitätskanal":
+            return ".report-board--capacity-channel-select";
+        case "Einheit":
+            return ".report-board--capacity-unit-select";
+        default:
+            throw new IllegalArgumentException("For capacity filter \"" + filter + "\" no action is implemented yet!");
+        }
+    }
+
+    private static String capacityValue(String filter, String label) {
+        switch (filter + "|" + label) {
+        case "Ansicht|Tagessumme":
+            return "day";
+        case "Ansicht|Stundenansicht":
+            return "hour";
+        case "Kapazitätskanal|Insgesamt":
+            return "total";
+        case "Kapazitätskanal|Internet":
+            return "public";
+        case "Kapazitätskanal|Nur intern":
+            return "intern_only";
+        case "Einheit|Zeitschlitze":
+            return "slots";
+        case "Einheit|Minuten":
+            return "minutes";
+        default:
+            throw new IllegalArgumentException(
+                    "For capacity filter \"" + filter + "\" the value \"" + label + "\" is not implemented yet!");
+        }
+    }
+
+    @When("I click the button {string} in the statistics sidebar.")
     public void wenn_sie_in_der_statistik_in_der_seitenleiste_auf_die_schaltflaeche_string_klicken(String button) {
         button = TestDataHelper.transformTestData(button);
         switch (button) {
@@ -108,27 +186,30 @@ public class StatisticsSteps {
         case "Dienstleistungsstatistik":
             STATISTICS_PAGE.clickOnServiceStatistics();
             break;
+        case "Terminkapazität":
+            STATISTICS_PAGE.clickOnCapacityStatistics();
+            break;
         default:
             throw new IllegalArgumentException("For button \"" + button + "\" no action is implemented yet!");
         }
     }
 
-    @Wenn("Sie in der Statistik den aktuellen Monat auswählen.")
+    @When("I select the current month in the statistics.")
     public void wenn_sie_in_der_statistik_den_aktuellen_monat_auswaehlen() {
         STATISTICS_PAGE.clickOnCurrentMonthName();
     }
 
-    @Dann("wird die Statistik-Seite {string} angezeigt.")
+    @Then("the statistics page {string} is displayed.")
     public void wird_die_statistik_seite_angezeigt(String pageName) {
         STATISTICS_PAGE.checkIfStatisticsPageIsOpen(pageName);
     }
 
-    @Dann("öffnet sich die Auswertung für den ausgewählten Monat.")
+    @Then("the evaluation for the selected month opens.")
     public void oeffnet_sich_die_auswertung_fuer_den_ausgewaehlten_monat() {
         STATISTICS_PAGE.checkIfTheStatisticForTheSelectedMonthIsOpen();
     }
 
-    @Und("die folgenden Daten sollten für den vorherigen Tag angezeigt werden:")
+    @And("the following data should be shown for the previous day:")
     public void zeige_kunden_statistik_fuer_vorherigen_tag(DataTable table) throws Exception {
         LocalDate gesternDatum = BerlinTime.today().minusDays(1);
         String gestern = DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.GERMANY).format(gesternDatum);
@@ -163,24 +244,64 @@ public class StatisticsSteps {
         }
     }
 
-    @Wenn("Sie In der Statistik auf den Download-Button klicken.")
+    @When("I click the download button in the statistics.")
     public void wenn_sie_in_der_statistik_auf_den_download_button_klicken() {
-        STATISTICS_PAGE.clickDownloadButton();
+        SERVICE_STATISTICS_PAGE.clickDownloadButton();
     }
 
-    @Dann("wird die Kundenstatistik heruntergeladen.")
+    @Then("the citizen statistics are downloaded.")
     public void wird_die_kundenstatistik_heruntergeladen() {
         // For UI tests we only verify that the download button is present and clickable.
         STATISTICS_PAGE.clickDownloadButton();
     }
 
-    @Dann("wird die Dienstleistungsstatistik heruntergeladen.")
+    @Then("the service statistics are downloaded.")
     public void wird_die_dienstleistungsstatistik_heruntergeladen() {
         // For UI tests we only verify that the download button is present and clickable.
         STATISTICS_PAGE.clickDownloadButton();
     }
 
-    @Und("die folgenden Dienstleistungen sollten in der Dienstleistungsstatistik angezeigt werden:")
+    @Then("the service statistics show these values:")
+    public void zeigt_die_dienstleistungsstatistik_diese_werte(DataTable dataTable) {
+        SERVICE_STATISTICS_PAGE.assertStatisticValues(dataTable.asMaps(String.class, String.class));
+    }
+
+    @And("I select the locations {string} and {string} in the statistics filter.")
+    public void sie_in_der_statistik_im_filter_die_standorte_auswaehlen(String first, String second) {
+        STATISTICS_PAGE.selectScopesInStatisticsTableFilter(List.of(first, second));
+    }
+
+    @When("I select the location {string} in the statistics filter.")
+    public void iSelectTheLocationInTheStatisticsFilter(String location) {
+        STATISTICS_PAGE.selectScopesInStatisticsTableFilter(List.of(location));
+    }
+
+    @Then("the service statistics show the day {int} days before today.")
+    public void zeigt_die_dienstleistungsstatistik_den_tag_vor_heute(int daysBeforeToday) {
+        SERVICE_STATISTICS_PAGE.assertDayColumn(BerlinTime.today().minusDays(daysBeforeToday), true);
+    }
+
+    @Then("the service statistics hide the day {int} days before today.")
+    public void blendet_die_dienstleistungsstatistik_den_tag_vor_heute_aus(int daysBeforeToday) {
+        SERVICE_STATISTICS_PAGE.assertDayColumn(BerlinTime.today().minusDays(daysBeforeToday), false);
+    }
+
+    @Then("the downloaded service statistics show the day {int} days before today.")
+    public void zeigt_die_heruntergeladene_dienstleistungsstatistik_den_tag_vor_heute(int daysBeforeToday) throws Exception {
+        SERVICE_STATISTICS_PAGE.assertDownloadedDayColumn(BerlinTime.today().minusDays(daysBeforeToday), true);
+    }
+
+    @Then("the downloaded service statistics hide the day {int} days before today.")
+    public void blendet_die_heruntergeladene_dienstleistungsstatistik_den_tag_vor_heute_aus(int daysBeforeToday) throws Exception {
+        SERVICE_STATISTICS_PAGE.assertDownloadedDayColumn(BerlinTime.today().minusDays(daysBeforeToday), false);
+    }
+
+    @Then("the downloaded service statistics match these values:")
+    public void stimmt_die_heruntergeladene_dienstleistungsstatistik_ueberein(DataTable dataTable) throws Exception {
+        SERVICE_STATISTICS_PAGE.assertDownloadedStatisticValues(dataTable.asMaps(String.class, String.class));
+    }
+
+    @And("the following services should be shown in the service statistics:")
     public void die_folgenden_dienstleistungen_sollten_in_der_dienstleistungsstatistik_angezeigt_werden(DataTable dataTable) {
         SERVICE_STATISTICS_PAGE.assertTableVisible();
 
@@ -191,7 +312,7 @@ public class StatisticsSteps {
         }
     }
 
-    @Wenn("Sie die Verfügbarkeit statistischer Informationen für den aktuellen Monat und die Dienstleistung {string} überprüfen.")
+    @When("I check the availability of statistical information for the current month and the service {string}.")
     public void wenn_sie_die_verfuegbarkeit_statistischer_informationen_fuer_den_aktuellen_monat_fuer_die_dienstleistung_ueberpruefen(String dienstleistung) {
         int jahr = BerlinTime.today().getYear();
         int monat = BerlinTime.today().getMonthValue();

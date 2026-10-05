@@ -26,7 +26,10 @@ class AppointmentCancelControllerTest extends ControllerTestCase
     {
         $processResponse = $this->readFixture("GET_process.json");
         $processData = json_decode($processResponse, true);
-        $processData['data']['appointments'][0]['date'] = time() + 86400; 
+        // time() + 86400 keeps the current minute. hasTime() treats 00:00 Europe/Berlin as no time
+        // and skips the ICS request this test expects (GH-3480).
+        $appointment = (new \DateTimeImmutable('+1 day', new \DateTimeZone('Europe/Berlin')))->setTime(10, 0);
+        $processData['data']['appointments'][0]['date'] = $appointment->getTimestamp(); 
     
         $this->setApiCalls(
             [
@@ -75,7 +78,7 @@ class AppointmentCancelControllerTest extends ControllerTestCase
             'familyName' => 'TEST_USER',
             'customTextfield' => 'Some custom text',
             'customTextfield2' => 'Another custom text',
-            'email' => 'test@muenchen.de',
+            'email' => 'noreply-terminvereinbarung@muenchen.de',
             'telephone' => '123456789',
             'officeName' => null,
             'officeId' => 0,

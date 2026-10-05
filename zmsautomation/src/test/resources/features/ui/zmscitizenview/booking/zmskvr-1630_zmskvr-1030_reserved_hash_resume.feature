@@ -1,5 +1,5 @@
 #language: en
-@web @zmscitizenview @booking @citizen @ZMSKVR-1630 @ZMSKVR-1030 @executeLocally
+@web @zmscitizenview @booking @citizen @ZMSKVR-1630 @ZMSKVR-1030 @ZMSKVR-1665 @ZMSKVR-1666 @executeLocally
 Feature: CitizenView: reserved appointment hash resumes an unfinished booking
   As a citizen who reopens #/appointment/{hash} for a reserved process
   I want a placeholder email to keep me on Kontakt and a real update to open the book overview
@@ -31,6 +31,24 @@ Feature: CitizenView: reserved appointment hash resumes an unfinished booking
     When I reload the reserved appointment hash in the citizen view
     Then the contact form should be visible in the citizen view
     And I should be logged in on the contact form in the citizen view
+    And the appointment management actions should not be visible in the citizen view
+    When I cancel the appointment
+
+  @jumpin @pickupCalendar
+  Scenario: Cancelled Bürger-Login keeps the placeholder email out of Kontakt
+    Given I open zmscitizenview with jump-in service "10295182" and location "10492"
+    Then the service combination step should be visible
+    When I continue from the service combination step
+    Then provider checkbox 10492 should be visible in the citizen view
+    When I select office 10492 in the citizen view
+    And I wait for appointment slots to be ready in the citizen view
+    And I click Später in the time slot grid if available in the citizen view
+    And I scroll to and highlight the preferred timeslot for office 10492 in the citizen view
+    And I click the highlighted timeslot in the citizen view
+    And I continue after slot selection with Weiter for office 10492 in the citizen view
+    When I cancel Bürger-Login on the Keycloak form in the citizen view
+    Then the contact form should be visible in the citizen view
+    And the contact email field should be empty in the citizen view
     And the appointment management actions should not be visible in the citizen view
     When I cancel the appointment
 
