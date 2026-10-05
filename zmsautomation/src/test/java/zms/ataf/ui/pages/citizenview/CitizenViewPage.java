@@ -1304,9 +1304,15 @@ public class CitizenViewPage extends BasePage {
         // and its Weiter must not steal the click from CustomerInfo/AppointmentSummary.
         String script =
                 "var label='" + esc + "';"
+                        + "function shown(el){var n=el;while(n&&n.nodeType===1){"
+                        + "var st=window.getComputedStyle(n);"
+                        + "if(st.display==='none'||st.visibility==='hidden'||st.opacity==='0')return false;"
+                        + "if(n.parentElement){n=n.parentElement;continue;}"
+                        + "var root=n.getRootNode&&n.getRootNode();n=root&&root.host?root.host:null;}"
+                        + "return true;}"
                         + "function visible(el){if(!el||!el.getBoundingClientRect)return false;"
                         + "var r=el.getBoundingClientRect();if(r.width<=0||r.height<=0)return false;"
-                        + "var st=window.getComputedStyle(el);return st.visibility!=='hidden'&&st.display!=='none'&&st.opacity!=='0';}"
+                        + "return shown(el);}"
                         + "function walkClick(n){if(!n)return false;if(n.shadowRoot&&walkClick(n.shadowRoot))return true;"
                         + "var tag=(n.tagName||'').toUpperCase();var isBtn=(tag==='BUTTON'||tag==='A'||tag==='MUC-BUTTON');"
                         + "if(isBtn){var t=(n.textContent||'').trim();"
