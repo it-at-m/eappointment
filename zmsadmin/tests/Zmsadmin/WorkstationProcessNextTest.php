@@ -73,7 +73,7 @@ class WorkstationProcessNextTest extends Base
             ]
         );
         $response = $this->render($this->arguments, $this->parameters, []);
-        $this->assertRedirect($response,'/workstation/process/82252/called/?exclude=');
+        $this->assertRedirect($response, '/workstation/process/82252/called/?exclude=');
         $this->assertEquals(302, $response->getStatusCode());
     }
 
