@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-10-05T22:46:41.304Z",
+  "publishedAt": "2026-10-05T22:58:37.519Z",
   "branches": [
     {
       "name": "next",
@@ -586,8 +586,8 @@
     {
       "name": "test-zmskvr-90-zmskvr-471-zmskvr-230-service-duration",
       "slug": "test-zmskvr-90-zmskvr-471-zmskvr-230-service-duration",
-      "runId": "37383318248",
-      "runStartedAt": "2026-10-05T22:34:20Z"
+      "runId": "37384629676",
+      "runStartedAt": "2026-10-05T22:46:55Z"
     },
     {
       "name": "test-zmskvr-92-zmskvr-164-booking-stepper",
