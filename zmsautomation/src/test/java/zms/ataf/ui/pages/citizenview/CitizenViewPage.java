@@ -323,6 +323,39 @@ public class CitizenViewPage extends BasePage {
                 "Expected estimated duration '" + minutesText + "' to be visible in " + context);
     }
 
+    /** Clock illustration beside Voraussichtliche Termindauer on the service combination step. */
+    public void assertEstimatedDurationShownWithClock(int minutes) {
+        assertEstimatedDurationMinutes(minutes, "service combination step");
+        Assert.assertTrue(
+                durationClockIsVisible(),
+                "Expected the clock beside Voraussichtliche Termindauer.");
+    }
+
+    private boolean durationClockIsVisible() {
+        String script =
+                "function shown(el){var n=el;while(n&&n.nodeType===1){"
+                        + "var st=window.getComputedStyle(n);"
+                        + "if(st.display==='none'||st.visibility==='hidden'||st.opacity==='0')return false;"
+                        + "if(n.parentElement){n=n.parentElement;continue;}"
+                        + "var root=n.getRootNode&&n.getRootNode();n=root&&root.host?root.host:null;}"
+                        + "return true;}"
+                        + "function textOf(n){var s='';if(!n)return s;if(n.nodeType===3)return n.nodeValue||'';"
+                        + "if(n.shadowRoot)s+=' '+textOf(n.shadowRoot);"
+                        + "var c=n.childNodes;if(c)for(var i=0;i<c.length;i++)s+=' '+textOf(c[i]);return s;}"
+                        + "function walk(n){if(!n)return false;"
+                        + "if((n.tagName||'').toUpperCase()==='SVG'&&(n.getAttribute('viewBox')||'')==='0 0 56 56'){"
+                        + "var host=n;while(host&&host.nodeType===1){"
+                        + "if(textOf(host).indexOf('Voraussichtliche Termindauer')>=0&&shown(n))return true;"
+                        + "if(host.parentElement){host=host.parentElement;continue;}"
+                        + "var root=host.getRootNode&&host.getRootNode();host=root&&root.host?root.host:null;}"
+                        + "}"
+                        + "if(n.shadowRoot&&walk(n.shadowRoot))return true;"
+                        + "var c=n.children;if(c)for(var i=0;i<c.length;i++)if(walk(c[i]))return true;return false;}"
+                        + "return walk(document.body);";
+        Object found = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script);
+        return Boolean.TRUE.equals(found);
+    }
+
     /** ZMSKVR-1501: the broken 15-minute mapping showed 135 minutes for a 45-minute service. */
     public void assertEstimatedDurationMinutesNot(int minutes) {
         CONTEXT.set();
@@ -358,6 +391,65 @@ public class CitizenViewPage extends BasePage {
                 Thread.currentThread().interrupt();
             }
         }
+    }
+
+    public void increaseSelectedService(String label) {
+        CONTEXT.set();
+        ScenarioLogManager.getLogger().info("zmscitizenview: increase service count for {}", label);
+        Assert.assertTrue(
+                pressServiceCounter(label, true),
+                "Could not increase the count for \"" + label + "\".");
+        sleepQuiet(500L);
+    }
+
+    public void decreaseSelectedService(String label) {
+        CONTEXT.set();
+        ScenarioLogManager.getLogger().info("zmscitizenview: decrease service count for {}", label);
+        Assert.assertTrue(
+                pressServiceCounter(label, false),
+                "Could not decrease the count for \"" + label + "\".");
+        sleepQuiet(500L);
+    }
+
+    /** The first selected service cannot be set to 0. */
+    public void assertSelectedServiceCannotDropBelowOne(String label) {
+        CONTEXT.set();
+        assertServiceCounter(label, 1);
+        String state = serviceCounterButtonState(label, false);
+        Assert.assertNotEquals(
+                "missing", state, "Minus for \"" + label + "\" was not on the service page.");
+        assertServiceCounter(label, 1);
+    }
+
+    private boolean pressServiceCounter(String label, boolean increase) {
+        return "clicked".equals(serviceCounterButtonState(label, increase));
+    }
+
+    private String serviceCounterButtonState(String label, boolean increase) {
+        String script =
+                "var label=arguments[0];var increase=arguments[1]===true;"
+                        + "function norm(t){return (t||'').replace(/\\s+/g,' ').trim();}"
+                        + "function key(t){return norm(t).replace(/-/g,'').toLowerCase();}"
+                        + "var labelKey=key(label);"
+                        + "function shown(el){var n=el;while(n&&n.nodeType===1){"
+                        + "var st=window.getComputedStyle(n);"
+                        + "if(st.display==='none'||st.visibility==='hidden'||st.opacity==='0')return false;"
+                        + "if(n.parentElement){n=n.parentElement;continue;}"
+                        + "var root=n.getRootNode&&n.getRootNode();n=root&&root.host?root.host:null;}return true;}"
+                        + "function matches(aria){if(!aria)return false;var lower=aria.toLowerCase();"
+                        + "var reduce=lower.indexOf('reduzier')>=0;"
+                        + "if(increase&&reduce)return false;if(!increase&&!reduce)return false;"
+                        + "return key(aria).indexOf(labelKey)>=0;}"
+                        + "var found=null;"
+                        + "function walk(n){if(!n||found)return;var tag=(n.tagName||'').toUpperCase();"
+                        + "if(tag==='BUTTON'&&matches(n.getAttribute('aria-label')||'')&&shown(n)){found=n;return;}"
+                        + "if(n.shadowRoot)walk(n.shadowRoot);"
+                        + "var c=n.children;if(c)for(var i=0;i<c.length;i++)walk(c[i]);}"
+                        + "walk(document.body);if(!found)return 'missing';"
+                        + "if(found.disabled||found.getAttribute('aria-disabled')==='true')return 'disabled';"
+                        + "found.scrollIntoView({block:'center'});found.click();return 'clicked';";
+        Object state = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script, label, increase);
+        return state == null ? "missing" : String.valueOf(state);
     }
 
     /**
