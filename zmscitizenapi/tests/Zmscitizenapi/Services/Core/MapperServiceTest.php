@@ -475,7 +475,8 @@ class MapperServiceTest extends TestCase
                     "parentId" => null,
                     "variantId" => null,
                     "rootParentId" => 1,
-                    "showOnStartPage" => true
+                    "showOnStartPage" => true,
+                    "variantOverwrite" => null
                 ],
                 [
                     "id" => 2,
@@ -485,7 +486,8 @@ class MapperServiceTest extends TestCase
                     "parentId" => null,
                     "variantId" => null,
                     "rootParentId" => 2,
-                    "showOnStartPage" => true
+                    "showOnStartPage" => true,
+                    "variantOverwrite" => null
                 ]
             ]
         ];
@@ -537,7 +539,8 @@ class MapperServiceTest extends TestCase
                     "parentId" => null,
                     "variantId" => null,
                     "rootParentId" => 2,
-                    "showOnStartPage" => true
+                    "showOnStartPage" => true,
+                    "variantOverwrite" => null
                 ]
             ]
         ];

@@ -65,11 +65,9 @@ class Service extends Entity implements JsonSerializable
             'parentId' => $this->parentId,
             'variantId' => $this->variantId,
             'rootParentId' => $this->rootParentId,
-            'showOnStartPage' => $this->showOnStartPage
+            'showOnStartPage' => $this->showOnStartPage,
+            'variantOverwrite' => $this->variantOverwrite
         ];
-        if ($this->variantOverwrite !== null) {
-            $data['variantOverwrite'] = $this->variantOverwrite;
-        }
         return $data;
     }
 
