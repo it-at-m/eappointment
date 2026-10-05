@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -40,6 +41,7 @@ import ataf.web.model.WindowType;
 import ataf.web.steps.Hook;
 import ataf.web.utils.DriverUtil;
 import io.cucumber.datatable.DataTable;
+import io.cucumber.java.After;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
@@ -2246,5 +2248,371 @@ public class AdminSteps {
             return fallback;
         }
         return value.trim();
+    }
+
+    private static final int OVERALL_SCOPE_WITH_HOURS = 40;
+    private static final int OVERALL_ANCHOR_ID = 136491;
+    private static final int OVERALL_SATURDAY_ID = 136492;
+    private static final int OVERALL_ZERO_CLERK_ID = 136493;
+    private static final int OVERALL_HOLIDAY_ID = 136494;
+    private static final int OVERALL_APPOINTMENT_ID = 9901549;
+    private static final String OVERALL_SAMPLE = "ZMSKVR-1549";
+    private static final String OVERALL_LOCATION_WITH_HOURS = "RA-Termine";
+    private static final String OVERALL_LOCATION_WITHOUT_HOURS = "Mietberatung";
+
+    private LocalDate overallFrom;
+    private LocalDate overallUntil;
+    private LocalDate overallSaturday;
+    private LocalDate overallAnchor;
+    private LocalDate overallZeroClerk;
+    private LocalDate overallHoliday;
+    private boolean overallSaturdayOpen = true;
+    private boolean overallSaturdayBooked;
+    private boolean overallZeroClerkOpen = true;
+
+    @After(value = "@ZMSKVR-1549", order = 10002)
+    public void removeOverallViewSample() {
+        try (Connection connection = openZmsConnection()) {
+            deleteOverallSample(connection);
+        } catch (SQLException e) {
+            throw new IllegalStateException("Could not remove the overall-view sample.", e);
+        }
+    }
+
+    @Then("the overall view shows days without opening hours by default.")
+    public void theOverallViewShowsDaysWithoutOpeningHoursByDefault() {
+        COUNTER_PROCESSING_STATION_PAGE.assertEmptyDaysAreShownByDefault();
+    }
+
+    @When("I show location {int} in the overall view for the next 14 days with days without opening hours shown.")
+    public void iShowOneLocationWithEmptyDaysShown(int scopeId) {
+        ensureOverallWindow();
+        COUNTER_PROCESSING_STATION_PAGE.showOverallViewScopes(overallFrom, overallUntil, false, scopeId);
+    }
+
+    @When("I show locations {int} and {int} in the overall view for the next 14 days with days without opening hours hidden.")
+    public void iShowTwoLocationsWithEmptyDaysHidden(int firstScopeId, int secondScopeId) {
+        ensureOverallWindow();
+        COUNTER_PROCESSING_STATION_PAGE.showOverallViewScopes(
+                overallFrom, overallUntil, true, firstScopeId, secondScopeId);
+    }
+
+    @Then("the overall view says that no data is available.")
+    public void theOverallViewSaysThatNoDataIsAvailable() {
+        COUNTER_PROCESSING_STATION_PAGE.assertOverallViewHasNoData();
+    }
+
+    @When("I add overall-view opening hours for location 40.")
+    public void iAddOverallViewOpeningHours() {
+        ensureOverallWindow();
+        try (Connection connection = openZmsConnection()) {
+            deleteOverallSample(connection);
+            chooseOverallDays(connection);
+            insertOpening(connection, OVERALL_ANCHOR_ID, overallAnchor, 2);
+            insertOpening(connection, OVERALL_SATURDAY_ID, overallSaturday, 2);
+            insertOpening(connection, OVERALL_ZERO_CLERK_ID, overallZeroClerk, 0);
+            if (needsOwnHolidayOpening()) {
+                insertOpening(connection, OVERALL_HOLIDAY_ID, overallHoliday, 2);
+            }
+        } catch (SQLException e) {
+            throw new IllegalStateException("Could not add the overall-view opening hours.", e);
+        }
+        ScenarioLogManager.getLogger().info(
+                "overall view sample from {} until {}, Saturday {}, empty days {}, anchor {}, no clerks {}, holiday {}",
+                overallFrom, overallUntil, overallSaturday, daysWithoutOpeningHours(),
+                overallAnchor, overallZeroClerk, overallHoliday);
+    }
+
+    @Then("the overall view lists every day in that range, including days without opening hours.")
+    public void theOverallViewListsEveryDayInThatRange() {
+        COUNTER_PROCESSING_STATION_PAGE.assertOverallViewDayCount(14);
+        COUNTER_PROCESSING_STATION_PAGE.assertOverallViewDays(daysWithoutOpeningHours(), List.of());
+    }
+
+    @When("I hide days without opening hours in the overall view.")
+    public void iHideDaysWithoutOpeningHours() {
+        COUNTER_PROCESSING_STATION_PAGE.chooseEmptyDaysVisibility(true);
+    }
+
+    @Then("the overall view keeps days that have opening hours and hides days that do not.")
+    public void theOverallViewKeepsDaysThatHaveOpeningHours() {
+        Assert.assertFalse(daysWithoutOpeningHours().isEmpty(), "The range should contain a day without opening hours.");
+        COUNTER_PROCESSING_STATION_PAGE.assertOverallViewDays(daysWithOpeningHours(), daysWithoutOpeningHours());
+    }
+
+    @When("I replace that Saturday opening with an appointment and hide days without opening hours.")
+    public void iReplaceThatSaturdayOpeningWithAnAppointment() {
+        try (Connection connection = openZmsConnection()) {
+            deleteOpening(connection, OVERALL_SATURDAY_ID);
+            insertSaturdayAppointment(connection);
+        } catch (SQLException e) {
+            throw new IllegalStateException("Could not replace the Saturday opening with an appointment.", e);
+        }
+        overallSaturdayOpen = false;
+        overallSaturdayBooked = true;
+        reloadOverallView(true, OVERALL_SCOPE_WITH_HOURS);
+    }
+
+    @Then("that Saturday stays visible without opening hours.")
+    public void thatSaturdayStaysVisibleWithoutOpeningHours() {
+        COUNTER_PROCESSING_STATION_PAGE.assertOverallViewShowsAppointment(OVERALL_APPOINTMENT_ID);
+        COUNTER_PROCESSING_STATION_PAGE.assertOverallViewDays(List.of(overallSaturday), daysWithoutOpeningHours());
+    }
+
+    @When("I remove that Saturday appointment and hide days without opening hours.")
+    public void iRemoveThatSaturdayAppointment() {
+        try (Connection connection = openZmsConnection()) {
+            deleteSaturdayAppointment(connection);
+        } catch (SQLException e) {
+            throw new IllegalStateException("Could not remove the Saturday appointment.", e);
+        }
+        overallSaturdayBooked = false;
+        reloadOverallView(true, OVERALL_SCOPE_WITH_HOURS);
+    }
+
+    @Then("that Saturday is hidden.")
+    public void thatSaturdayIsHidden() {
+        COUNTER_PROCESSING_STATION_PAGE.assertOverallViewDays(List.of(overallAnchor), List.of(overallSaturday));
+    }
+
+    @When("I remove the weekday opening that has no clerks and hide days without opening hours.")
+    public void iRemoveTheWeekdayOpeningThatHasNoClerks() {
+        try (Connection connection = openZmsConnection()) {
+            deleteOpening(connection, OVERALL_ZERO_CLERK_ID);
+        } catch (SQLException e) {
+            throw new IllegalStateException("Could not remove the weekday opening.", e);
+        }
+        overallZeroClerkOpen = false;
+        reloadOverallView(true, OVERALL_SCOPE_WITH_HOURS);
+    }
+
+    @Then("that weekday is hidden.")
+    public void thatWeekdayIsHidden() {
+        COUNTER_PROCESSING_STATION_PAGE.assertOverallViewDays(List.of(overallAnchor), List.of(overallZeroClerk));
+    }
+
+    @Then("a location without opening hours is left out of the overall view.")
+    public void aLocationWithoutOpeningHoursIsLeftOut() {
+        COUNTER_PROCESSING_STATION_PAGE.assertOverallViewLocation(OVERALL_LOCATION_WITH_HOURS, true);
+        COUNTER_PROCESSING_STATION_PAGE.assertOverallViewLocation(OVERALL_LOCATION_WITHOUT_HOURS, false);
+        COUNTER_PROCESSING_STATION_PAGE.assertOverallViewDays(List.of(overallAnchor), daysWithoutOpeningHours());
+    }
+
+    @When("I show days without opening hours in the overall view.")
+    public void iShowDaysWithoutOpeningHours() {
+        COUNTER_PROCESSING_STATION_PAGE.chooseEmptyDaysVisibility(false);
+    }
+
+    @Then("that location without opening hours is listed again.")
+    public void thatLocationWithoutOpeningHoursIsListedAgain() {
+        COUNTER_PROCESSING_STATION_PAGE.assertOverallViewLocation(OVERALL_LOCATION_WITHOUT_HOURS, true);
+        COUNTER_PROCESSING_STATION_PAGE.assertOverallViewDays(daysWithoutOpeningHours(), List.of());
+    }
+
+    private void reloadOverallView(boolean hideDaysWithoutOpeningHours, int... scopeIds) {
+        COUNTER_PROCESSING_STATION_PAGE.showOverallViewScopes(
+                overallFrom, overallUntil, hideDaysWithoutOpeningHours, scopeIds);
+    }
+
+    private void ensureOverallWindow() {
+        if (overallFrom != null) {
+            return;
+        }
+        overallFrom = BerlinTime.today();
+        overallUntil = overallFrom.plusDays(13);
+        overallSaturday = overallFrom.with(TemporalAdjusters.nextOrSame(DayOfWeek.SATURDAY));
+    }
+
+    private void chooseOverallDays(Connection connection) throws SQLException {
+        LocalDate firstSunday = overallFrom.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
+        LocalDate secondSunday = firstSunday.plusWeeks(1);
+        overallHoliday = holidayInWindow(connection);
+        List<LocalDate> weekdays = new ArrayList<>();
+        for (LocalDate day = overallFrom; !day.isAfter(overallUntil); day = day.plusDays(1)) {
+            DayOfWeek dayOfWeek = day.getDayOfWeek();
+            if (dayOfWeek != DayOfWeek.SATURDAY && dayOfWeek != DayOfWeek.SUNDAY && !day.equals(overallHoliday)) {
+                weekdays.add(day);
+            }
+        }
+        if (weekdays.size() < 2) {
+            throw new IllegalStateException("The next 14 days should contain two weekdays besides a holiday.");
+        }
+        overallAnchor = weekdays.get(0);
+        overallZeroClerk = weekdays.get(1);
+        if (!secondSunday.isAfter(overallUntil)) {
+            ScenarioLogManager.getLogger().info("overall view also covers Sunday {}", secondSunday);
+        }
+    }
+
+    private LocalDate holidayInWindow(Connection connection) throws SQLException {
+        try (PreparedStatement statement = connection.prepareStatement(
+                "SELECT Datum FROM feiertage WHERE Datum >= ? AND Datum <= ? ORDER BY Datum LIMIT 1")) {
+            statement.setString(1, overallFrom.toString());
+            statement.setString(2, overallUntil.toString());
+            try (ResultSet rows = statement.executeQuery()) {
+                if (!rows.next()) {
+                    return null;
+                }
+                return LocalDate.parse(rows.getString(1).substring(0, 10));
+            }
+        }
+    }
+
+    private boolean needsOwnHolidayOpening() {
+        return overallHoliday != null
+                && !overallHoliday.equals(overallSaturday)
+                && !overallHoliday.equals(overallAnchor)
+                && !overallHoliday.equals(overallZeroClerk);
+    }
+
+    private List<LocalDate> daysWithOpeningHours() {
+        List<LocalDate> days = new ArrayList<>();
+        if (overallSaturdayOpen || overallSaturdayBooked) {
+            days.add(overallSaturday);
+        }
+        days.add(overallAnchor);
+        if (overallZeroClerkOpen) {
+            days.add(overallZeroClerk);
+        }
+        if (needsOwnHolidayOpening() && !days.contains(overallHoliday)) {
+            days.add(overallHoliday);
+        }
+        return days;
+    }
+
+    private List<LocalDate> daysWithoutOpeningHours() {
+        List<LocalDate> covered = daysWithOpeningHours();
+        List<LocalDate> days = new ArrayList<>();
+        LocalDate emptySaturday = overallSaturday.plusWeeks(1);
+        LocalDate firstSunday = overallFrom.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
+        List<LocalDate> candidates = new ArrayList<>();
+        candidates.add(emptySaturday);
+        candidates.add(firstSunday);
+        candidates.add(firstSunday.plusWeeks(1));
+        if (!overallSaturdayOpen && !overallSaturdayBooked) {
+            candidates.add(overallSaturday);
+        }
+        if (!overallZeroClerkOpen) {
+            candidates.add(overallZeroClerk);
+        }
+        for (LocalDate day : candidates) {
+            if (!day.isBefore(overallFrom) && !day.isAfter(overallUntil) && !covered.contains(day) && !days.contains(day)) {
+                days.add(day);
+            }
+        }
+        return days;
+    }
+
+    private void insertOpening(Connection connection, int id, LocalDate day, int clerks) throws SQLException {
+        boolean german = columnExists(connection, "StandortID");
+        boolean english = columnExists(connection, "scope_id");
+        String dayText = day.toString();
+        if (german && english) {
+            insertOpeningRow(connection,
+                    "INSERT INTO oeffnungszeit ("
+                            + "OeffnungszeitID, StandortID, Startdatum, Endedatum, allexWochen, jedexteWoche, Wochentag, "
+                            + "Anfangszeit, Terminanfangszeit, Endzeit, Terminendzeit, Timeslot, Anzahlarbeitsplaetze, "
+                            + "Anzahlterminarbeitsplaetze, kommentar, reduktionTermineImInternet, erlaubemehrfachslots, "
+                            + "Offen_ab, Offen_bis, updateTimestamp, "
+                            + "scope_id, start_date, end_date, every_x_weeks, every_other_week, weekday, "
+                            + "start_time, appointment_start_time, end_time, appointment_end_time, time_slot, "
+                            + "workstation_count, appointment_workstation_count, comment, internet_reduction, "
+                            + "multiple_slots_allowed, open_from_days, open_until_days, updated_at) "
+                            + "VALUES (?,?,?,?,1,0,127,'10:00:00','10:00:00','11:00:00','11:00:00','00:10:00',?,?,?,0,1,0,60,NOW(),"
+                            + "?,?,?,1,0,127,'10:00:00','10:00:00','11:00:00','11:00:00','00:10:00',?,?,?,0,1,0,60,NOW())",
+                    id, dayText, clerks, true);
+            return;
+        }
+        if (english) {
+            insertOpeningRow(connection,
+                    "INSERT INTO oeffnungszeit ("
+                            + "OeffnungszeitID, scope_id, start_date, end_date, every_x_weeks, every_other_week, weekday, "
+                            + "start_time, appointment_start_time, end_time, appointment_end_time, time_slot, "
+                            + "workstation_count, appointment_workstation_count, comment, internet_reduction, "
+                            + "multiple_slots_allowed, open_from_days, open_until_days, updated_at) "
+                            + "VALUES (?,?,?,?,1,0,127,'10:00:00','10:00:00','11:00:00','11:00:00','00:10:00',?,?,?,0,1,0,60,NOW())",
+                    id, dayText, clerks, false);
+            return;
+        }
+        insertOpeningRow(connection,
+                "INSERT INTO oeffnungszeit ("
+                        + "OeffnungszeitID, StandortID, Startdatum, Endedatum, allexWochen, jedexteWoche, Wochentag, "
+                        + "Anfangszeit, Terminanfangszeit, Endzeit, Terminendzeit, Timeslot, Anzahlarbeitsplaetze, "
+                        + "Anzahlterminarbeitsplaetze, kommentar, reduktionTermineImInternet, erlaubemehrfachslots, "
+                        + "Offen_ab, Offen_bis, updateTimestamp) "
+                        + "VALUES (?,?,?,?,1,0,127,'10:00:00','10:00:00','11:00:00','11:00:00','00:10:00',?,?,?,0,1,0,60,NOW())",
+                id, dayText, clerks, false);
+    }
+
+    private void insertOpeningRow(Connection connection, String sql, int id, String dayText, int clerks, boolean bothColumnSets)
+            throws SQLException {
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setInt(1, id);
+            statement.setInt(2, OVERALL_SCOPE_WITH_HOURS);
+            statement.setString(3, dayText);
+            statement.setString(4, dayText);
+            statement.setInt(5, clerks);
+            statement.setInt(6, clerks);
+            statement.setString(7, OVERALL_SAMPLE);
+            if (bothColumnSets) {
+                statement.setInt(8, OVERALL_SCOPE_WITH_HOURS);
+                statement.setString(9, dayText);
+                statement.setString(10, dayText);
+                statement.setInt(11, clerks);
+                statement.setInt(12, clerks);
+                statement.setString(13, OVERALL_SAMPLE);
+            }
+            statement.executeUpdate();
+        }
+    }
+
+    private void insertSaturdayAppointment(Connection connection) throws SQLException {
+        try (PreparedStatement statement = connection.prepareStatement(
+                "INSERT INTO overview_calendar (scope_id, process_id, status, starts_at, ends_at) "
+                        + "VALUES (?, ?, 'confirmed', ?, ?)")) {
+            statement.setInt(1, OVERALL_SCOPE_WITH_HOURS);
+            statement.setInt(2, OVERALL_APPOINTMENT_ID);
+            statement.setString(3, overallSaturday + " 10:00:00");
+            statement.setString(4, overallSaturday + " 10:10:00");
+            statement.executeUpdate();
+        }
+    }
+
+    private void deleteSaturdayAppointment(Connection connection) throws SQLException {
+        try (PreparedStatement statement = connection.prepareStatement(
+                "DELETE FROM overview_calendar WHERE process_id = ? AND scope_id = ?")) {
+            statement.setInt(1, OVERALL_APPOINTMENT_ID);
+            statement.setInt(2, OVERALL_SCOPE_WITH_HOURS);
+            statement.executeUpdate();
+        }
+    }
+
+    private void deleteOpening(Connection connection, int id) throws SQLException {
+        String commentColumn = columnExists(connection, "comment") ? "comment" : "kommentar";
+        try (PreparedStatement statement = connection.prepareStatement(
+                "DELETE FROM oeffnungszeit WHERE OeffnungszeitID = ? AND " + commentColumn + " = ?")) {
+            statement.setInt(1, id);
+            statement.setString(2, OVERALL_SAMPLE);
+            statement.executeUpdate();
+        }
+    }
+
+    private void deleteOverallSample(Connection connection) throws SQLException {
+        deleteSaturdayAppointment(connection);
+        for (int id : new int[] {OVERALL_ANCHOR_ID, OVERALL_SATURDAY_ID, OVERALL_ZERO_CLERK_ID, OVERALL_HOLIDAY_ID}) {
+            deleteOpening(connection, id);
+        }
+    }
+
+    private static boolean columnExists(Connection connection, String column) throws SQLException {
+        try (PreparedStatement statement = connection.prepareStatement(
+                "SELECT COUNT(*) FROM information_schema.COLUMNS "
+                        + "WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'oeffnungszeit' AND COLUMN_NAME = ?")) {
+            statement.setString(1, column);
+            try (ResultSet rows = statement.executeQuery()) {
+                rows.next();
+                return rows.getInt(1) > 0;
+            }
+        }
     }
 }

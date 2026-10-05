@@ -1924,4 +1924,127 @@ public class CounterProcessingStationPage extends AdminPage {
         Assert.assertTrue(appointmentShown,
                 "The appointment hour " + appointment + " should still be shown for scope " + walkInOpening.scopeId + ".");
     }
+
+    public void assertEmptyDaysAreShownByDefault() {
+        CONTEXT.set();
+        WebElement show = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(ExpectedConditions.presenceOfElementLocated(
+                        By.cssSelector("input[name='emptyDaysVisibility'][value='show']")));
+        Assert.assertTrue(show.isSelected(),
+                "Days without opening hours should be shown until someone chooses to hide them.");
+    }
+
+    public void showOverallViewScopes(LocalDate from, LocalDate until, boolean hideDaysWithoutOpeningHours, int... scopeIds) {
+        CONTEXT.set();
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        WebElement fromInput = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("calendar-date-from")));
+        WebElement untilInput = DRIVER.findElement(By.id("calendar-date-until"));
+        ((JavascriptExecutor) DRIVER).executeScript(
+                "arguments[0].value=arguments[2]; arguments[1].value=arguments[3];",
+                fromInput, untilInput, from.toString(), until.toString());
+        chooseEmptyDaysVisibility(hideDaysWithoutOpeningHours);
+        Select scopes = new Select(wait.until(ExpectedConditions.presenceOfElementLocated(By.id("scope-select"))));
+        scopes.deselectAll();
+        for (int scopeId : scopeIds) {
+            scopes.selectByValue(Integer.toString(scopeId));
+        }
+        String generation = "overall-" + System.nanoTime();
+        ((JavascriptExecutor) DRIVER).executeScript(
+                "var calendar = document.getElementById('overall-calendar');"
+                        + "if (calendar) calendar.setAttribute('data-sample', arguments[0]);",
+                generation);
+        clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "//button[normalize-space()='Übernehmen']", LocatorType.XPATH, false, CONTEXT);
+        wait.ignoring(StaleElementReferenceException.class).until(driver -> {
+            List<WebElement> calendars = driver.findElements(By.id("overall-calendar"));
+            return !calendars.isEmpty() && !generation.equals(calendars.get(0).getAttribute("data-sample"));
+        });
+    }
+
+    public void chooseEmptyDaysVisibility(boolean hideDaysWithoutOpeningHours) {
+        String value = hideDaysWithoutOpeningHours ? "hide" : "show";
+        Object result = ((JavascriptExecutor) DRIVER).executeScript(
+                "var radio = document.querySelector('input[name=\"emptyDaysVisibility\"][value=\"' + arguments[0] + '\"]');"
+                        + "if (!radio) return 'missing';"
+                        + "radio.checked = true;"
+                        + "radio.dispatchEvent(new Event('change', {bubbles: true}));"
+                        + "return radio.checked ? 'ok' : 'not checked';",
+                value);
+        Assert.assertEquals(String.valueOf(result), "ok",
+                "The overall view should offer " + (hideDaysWithoutOpeningHours ? "Ausblenden" : "Einblenden") + ".");
+    }
+
+    public void assertOverallViewHasNoData() {
+        CONTEXT.set();
+        new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(ExpectedConditions.textToBePresentInElementLocated(
+                        By.id("overall-calendar"), "Keine Daten verfügbar."));
+    }
+
+    public void assertOverallViewDayCount(int days) {
+        CONTEXT.set();
+        new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .ignoring(StaleElementReferenceException.class)
+                .until(ExpectedConditions.numberOfElementsToBe(By.cssSelector(".overall-calendar-day-label"), days));
+    }
+
+    public void assertOverallViewDays(List<LocalDate> shown, List<LocalDate> hidden) {
+        CONTEXT.set();
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        wait.ignoring(StaleElementReferenceException.class);
+        try {
+            wait.until(driver -> overallDayLabelsMatch(shown, hidden));
+        } catch (TimeoutException e) {
+            Assert.fail("Overall view days did not match. Shown " + shown + ", hidden " + hidden
+                    + ", labels " + overallDayLabels() + ".");
+        }
+    }
+
+    public void assertOverallViewShowsAppointment(int processId) {
+        CONTEXT.set();
+        new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .ignoring(StaleElementReferenceException.class)
+                .until(ExpectedConditions.visibilityOfElementLocated(By.xpath(
+                        "//span[contains(@class,'overall-calendar-termin-label') and normalize-space(.)='"
+                                + processId + "']")));
+    }
+
+    public void assertOverallViewLocation(String name, boolean shown) {
+        CONTEXT.set();
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        wait.ignoring(StaleElementReferenceException.class);
+        try {
+            wait.until(driver -> overallLocationShown(name) == shown);
+        } catch (TimeoutException e) {
+            Assert.fail("Location \"" + name + "\" should be " + (shown ? "shown" : "hidden")
+                    + ". Headers: " + overallLocationNames() + ".");
+        }
+    }
+
+    private boolean overallDayLabelsMatch(List<LocalDate> shown, List<LocalDate> hidden) {
+        List<String> labels = overallDayLabels();
+        if (shown.stream().anyMatch(day -> labels.stream().noneMatch(text -> text.contains(overallDayPart(day))))) {
+            return false;
+        }
+        return hidden.stream().noneMatch(day -> labels.stream().anyMatch(text -> text.contains(overallDayPart(day))));
+    }
+
+    private List<String> overallDayLabels() {
+        return DRIVER.findElements(By.cssSelector(".overall-calendar-day-label")).stream()
+                .map(WebElement::getText)
+                .collect(Collectors.toList());
+    }
+
+    private boolean overallLocationShown(String name) {
+        return overallLocationNames().stream().anyMatch(text -> text.contains(name));
+    }
+
+    private List<String> overallLocationNames() {
+        return DRIVER.findElements(By.cssSelector(".overall-calendar-scope-name")).stream()
+                .map(WebElement::getText)
+                .collect(Collectors.toList());
+    }
+
+    private static String overallDayPart(LocalDate day) {
+        return day.format(DateTimeFormatter.ofPattern("dd.MM."));
+    }
 }
