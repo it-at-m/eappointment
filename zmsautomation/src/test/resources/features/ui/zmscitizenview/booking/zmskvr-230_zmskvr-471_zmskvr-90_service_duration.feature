@@ -12,7 +12,7 @@ Feature: Estimated duration on the service page
 
   Scenario: Reisepass duration follows the count and an added service
     Given I open the zmscitizenview booking page
-    Then the Service Finder should be visible
+    Then the Service Finder should be visible on the start page
     When I select service "Reisepass" from the service finder and continue
     Then the service combination step should be visible
     And the service duration is shown with a clock and is 15 minutes
