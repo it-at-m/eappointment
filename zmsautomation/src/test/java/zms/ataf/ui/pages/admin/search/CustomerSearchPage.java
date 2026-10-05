@@ -226,4 +226,48 @@ public class CustomerSearchPage extends AdminPage {
         new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
                 .until(ExpectedConditions.invisibilityOfElementLocated(By.cssSelector("h2.message__heading.title")));
     }
+
+    /**
+     * Innenrevision lands on Suche. The left navigation, and the Kundensuche field inside it, stay hidden.
+     * The login does not stop on the location page.
+     */
+    public void assertCustomerSearchIsTheStartPage() {
+        CONTEXT.set();
+        new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(ExpectedConditions.urlContains("/search/"));
+        String url = DRIVER.getCurrentUrl();
+        Assert.assertFalse(url.contains("/workstation/select/"),
+                "The login stopped on the location page: " + url);
+        WebElement title = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("h1.main-title")));
+        Assert.assertEquals(title.getText().trim(), "Suche", "The start page is not the customer search.");
+        Assert.assertTrue(DRIVER.findElements(By.cssSelector("nav.navigation-primary")).isEmpty(),
+                "The left menu is visible.");
+        Assert.assertTrue(DRIVER.findElements(By.xpath("//label[normalize-space()='Kundensuche']")).isEmpty(),
+                "The Kundensuche field is visible.");
+        Assert.assertTrue(DRIVER.findElements(By.cssSelector("select[name='scope']")).isEmpty(),
+                "The location selection is shown.");
+        Assert.assertTrue(DRIVER.findElements(By.cssSelector(".message--error")).isEmpty(),
+                "The customer search shows an error.");
+    }
+
+    /** The search on the Suche page. The sidebar Suche button is not on this page. */
+    public void submitOverallSearch(String query) {
+        CONTEXT.set();
+        ScenarioLogManager.getLogger().info("Suche: query {}", query);
+        WebElement field = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(ExpectedConditions.visibilityOfElementLocated(By.id("search-query")));
+        field.clear();
+        enterTextInWebElement(DEFAULT_EXPLICIT_WAIT_TIME, query, field);
+        clickOnWebElement(
+                DEFAULT_EXPLICIT_WAIT_TIME,
+                "//form[.//input[@id='search-query']]//button[normalize-space()='Übernehmen']",
+                LocatorType.XPATH,
+                false,
+                CONTEXT);
+        new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME)).until(driver -> {
+            List<WebElement> fields = driver.findElements(By.id("search-query"));
+            return !fields.isEmpty() && query.equals(fields.get(0).getAttribute("value"));
+        });
+    }
 }

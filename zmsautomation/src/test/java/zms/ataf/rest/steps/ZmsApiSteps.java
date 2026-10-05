@@ -763,6 +763,39 @@ public class ZmsApiSteps {
             .isEqualTo(200);
     }
 
+    @When("I request a process search for {string} with the X-AuthKey")
+    public void iRequestAProcessSearchForWithTheXAuthKey(String query) {
+        String authKey = getOrLoginXAuthKey();
+        response = given()
+            .baseUri(baseUri != null ? baseUri : TestConfig.getBaseUri())
+            .header("X-AuthKey", authKey)
+            .queryParam("query", query)
+            .queryParam("resolveReferences", 1)
+        .when()
+            .get("/process/search/");
+        CommonApiSteps.setResponse(response);
+    }
+
+    @Then("the workstation has no selected location")
+    public void theWorkstationHasNoSelectedLocation() {
+        String authKey = getOrLoginXAuthKey();
+        response = given()
+            .baseUri(baseUri != null ? baseUri : TestConfig.getBaseUri())
+            .header("X-AuthKey", authKey)
+            .queryParam("resolveReferences", 1)
+        .when()
+            .get("/workstation/");
+        CommonApiSteps.setResponse(response);
+        Assertions.assertThat(response.getStatusCode())
+            .as("GET /workstation/ body=%s", truncate(response.asString(), 1000))
+            .isEqualTo(200);
+        JsonNode workstation = parseDataNode(response);
+        int scopeId = workstation == null ? 0 : workstation.path("scope").path("id").asInt(0);
+        Assertions.assertThat(scopeId)
+            .as("GET /workstation/ selected a location")
+            .isZero();
+    }
+
     @Then("the process search result for {string} has appointment status {string} with booking and cancellation today")
     public void theProcessSearchResultHasAppointmentStatusWithBookingAndCancellationToday(
             String familyName, String appointmentStatus) {
