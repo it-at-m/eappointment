@@ -1536,6 +1536,12 @@ public class CitizenViewPage extends BasePage {
         long previous = readStoredSlotTimestamp();
         Assert.assertTrue(previous > 0, "No previous timeslot to skip.");
         rememberedAppointmentEpoch = previous;
+        try {
+            waitUntilAppointmentSlotsReady(Math.min(45, slotBookingWaitTimeoutSeconds()));
+        } catch (Exception e) {
+            ScenarioLogManager.getLogger()
+                    .warn("zmscitizenview: slots not ready before another timeslot: {}", e.toString());
+        }
         ScenarioLogManager.getLogger()
                 .info("zmscitizenview: highlight another timeslot for office {} skipping {}", officeId, previous);
         Assert.assertTrue(
@@ -2157,6 +2163,25 @@ public class CitizenViewPage extends BasePage {
                         + "return false;"
                         + "});"
                         + "if(!wrap)return false;"
+                        + "var days=[];"
+                        + "walk(wrap,function(el){"
+                        + "if(el.classList&&el.classList.contains('muc-calendar-item')&&el.getAttribute('role')==='button')days.push(el);"
+                        + "return false;"
+                        + "});"
+                        + "var selectedDay=-1;"
+                        + "for(var d=0;d<days.length;d++){"
+                        + "if(days[d].classList.contains('selected'))selectedDay=d;"
+                        + "}"
+                        + "if(selectedDay>=0){"
+                        + "for(var n=selectedDay+1;n<days.length;n++){"
+                        + "var tile=days[n];"
+                        + "if(tile.getAttribute('aria-disabled')==='true'||tile.classList.contains('disabled-tile')||tile.classList.contains('off-month'))continue;"
+                        + "var dayLabel=(tile.textContent||'').replace(/\\s+/g,' ').trim();"
+                        + "if(!/^\\d{1,2}$/.test(dayLabel))continue;"
+                        + "tile.click();"
+                        + "return true;"
+                        + "}"
+                        + "}"
                         + "var clicked=false;"
                         + "walk(wrap,function(el){"
                         + "if(clicked||el.tagName!=='BUTTON'||!enabled(el))return false;"
