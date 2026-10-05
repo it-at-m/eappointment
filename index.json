@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-10-05T22:37:00.442Z",
+  "publishedAt": "2026-10-05T22:46:41.304Z",
   "branches": [
     {
       "name": "next",
@@ -582,6 +582,12 @@
       "slug": "test-zmskvr-751-zmskvr-1662-reserved-no-waiting-time",
       "runId": "37083558241",
       "runStartedAt": "2026-10-03T00:47:57Z"
+    },
+    {
+      "name": "test-zmskvr-90-zmskvr-471-zmskvr-230-service-duration",
+      "slug": "test-zmskvr-90-zmskvr-471-zmskvr-230-service-duration",
+      "runId": "37383318248",
+      "runStartedAt": "2026-10-05T22:34:20Z"
     },
     {
       "name": "test-zmskvr-92-zmskvr-164-booking-stepper",
