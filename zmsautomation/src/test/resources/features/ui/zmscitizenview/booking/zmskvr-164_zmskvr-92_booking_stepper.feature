@@ -5,11 +5,10 @@ Feature: CitizenView: booking stepper at the top of the page
   I want the steps at the top to show where I am
   So that I can go back to a step I already finished
 
-  # ZMSKVR-92 / ZMSKVR-164. Personalausweis is the service-finder path that already
-  # reaches Passkalender 10502. The stepper stays on Leistung through the combination
-  # step. Weiter opens Termin. A finished step keeps its own icon and offers
-  # "Zurück zu Schritt". A later step has no button. Verfügbare Termine appears
-  # after the office is selected. The reserved appointment is cancelled at the end.
+  # ZMSKVR-92 / ZMSKVR-164. Personalausweis plus Wohnsitzanmeldung is the combination
+  # that reaches Hauptkalender 10489 and takes 30 minutes. Going back keeps that
+  # combination and the contact details. A second reserve replaces the first one,
+  # and the scenario cancels the appointment that remains.
 
   Background:
     Given the Citizen API is available
@@ -17,7 +16,7 @@ Feature: CitizenView: booking stepper at the top of the page
     Then the response status code should be 200
     And the response should contain offices and services
 
-  Scenario: Finished booking steps go back and later steps stay closed
+  Scenario: Finished booking steps keep the combination and the contact details
     Given I open the zmscitizenview booking page
     Then the Service Finder should be visible on the start page
     And the booking stepper shows Leistung, Termin, Kontakt, and Übersicht
@@ -28,37 +27,47 @@ Feature: CitizenView: booking stepper at the top of the page
     When I select service "Personalausweis" from the service finder and continue
     Then the service combination step should be visible
     And the booking step "Leistung" is "current" with the "shopping-cart" icon
+    When I add subservice "Wohnsitzanmeldung" with quantity 1 on the service combination step
+    Then the estimated duration on the service combination step should be 30 minutes
     When I continue from the service combination step
     Then the booking step "Termin" is "current" with the "calendar" icon
     And the booking step "Leistung" is "finished" with the "shopping-cart" icon
-    And the booking step "Kontakt" is "later" with the "mail" icon
     When I highlight the finished booking step "Leistung"
     And I click the highlighted booking step
     Then the service combination step should be visible
     And the booking step "Leistung" is "current" with the "shopping-cart" icon
-    And the booking step "Termin" is "later" with the "calendar" icon
+    And the service counter for "Personalausweis" should still be 1
+    And the service counter for "Wohnsitzanmeldung" should still be 1
+    And the estimated duration on the service combination step should be 30 minutes
     When I continue from the service combination step
-    Then provider checkbox 10502 should be visible in the citizen view
-    When I select office 10502 in the citizen view
+    Then provider checkbox 10489 should be visible in the citizen view
+    When I keep only providers "10489" checked in the citizen view
+    And I select office 10489 in the citizen view
     And I wait for appointment slots to be ready in the citizen view
     Then available appointments are shown in the citizen view
-    And the booking step "Termin" is "current" with the "calendar" icon
     When I click Später in the time slot grid if available in the citizen view
-    And I scroll to and highlight the preferred timeslot for office 10502 in the citizen view
+    And I scroll to and highlight the preferred timeslot for office 10489 in the citizen view
     And I click the highlighted timeslot in the citizen view
-    And I continue after slot selection with Weiter for office 10502 in the citizen view
+    And I continue after slot selection with Weiter for office 10489 in the citizen view
     Then the contact form should be visible in the citizen view
     And the booking step "Kontakt" is "current" with the "mail" icon
-    And the booking step "Termin" is "finished" with the "calendar" icon
-    And the booking step "Leistung" is "finished" with the "shopping-cart" icon
-    And the booking step "Übersicht" is "later" with the "information" icon
+    When I enter default contact details in the citizen view
+    Then the booking step "Übersicht" is "current" with the "information" icon
+    When I highlight the finished booking step "Kontakt"
+    And I click the highlighted booking step
+    Then the contact form should be visible in the citizen view
+    And the booking step "Kontakt" is "current" with the "mail" icon
+    And the entered contact details are still on the contact form in the citizen view
     When I highlight the finished booking step "Termin"
     And I click the highlighted booking step
     Then the booking step "Termin" is "current" with the "calendar" icon
-    And the booking step "Kontakt" is "later" with the "mail" icon
-    When I highlight the finished booking step "Leistung"
-    And I click the highlighted booking step
-    Then the service combination step should be visible
-    And the booking step "Leistung" is "current" with the "shopping-cart" icon
+    And provider checkbox 10489 should be visible in the citizen view
+    When I click Später in the time slot grid if available in the citizen view
+    And I scroll to and highlight another timeslot for office 10489 in the citizen view
+    And I click the highlighted timeslot in the citizen view
+    Then the estimated duration in the booking summary should be 30 minutes in the citizen view
+    When I continue after slot selection with Weiter for office 10489 in the citizen view
+    Then the contact form should be visible in the citizen view
+    And the entered contact details are still on the contact form in the citizen view
     When I sync the booking process from citizen view localStorage
     Then I cancel the appointment

@@ -1474,12 +1474,75 @@ public class CitizenViewPage extends BasePage {
                 });
     }
 
+    public void assertServiceCounter(String label, int count) {
+        CONTEXT.set();
+        new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(d -> serviceCounterShows(label, count));
+        Assert.assertTrue(
+                serviceCounterShows(label, count),
+                "Service counter for \"" + label + "\" should still be " + count + ".");
+    }
+
+    public void assertEnteredContactDetailsStillPresent() {
+        CONTEXT.set();
+        Assert.assertFalse(lastContactFirstName.isBlank(), "No contact details were entered.");
+        new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(d -> lastContactFirstName.equals(deepGetById("firstname")));
+        Assert.assertEquals(deepGetById("firstname"), lastContactFirstName, "Vorname was cleared.");
+        Assert.assertEquals(deepGetById("lastname"), lastContactLastName, "Nachname was cleared.");
+        String email = deepGetById("mailaddress");
+        Assert.assertNotNull(email, "E-Mail could not be read.");
+        Assert.assertTrue(
+                email.equalsIgnoreCase(lastContactEmail),
+                "E-Mail was cleared. expected=" + lastContactEmail + " actual=" + email);
+        if (deepContactPhoneFieldExists()) {
+            String phone = deepGetById("telephonenumber");
+            Assert.assertNotNull(phone, "Telephone could not be read.");
+            Assert.assertTrue(
+                    phone.contains(lastContactPhone) || phone.replaceAll("\\s+", "").contains("491234567890"),
+                    "Telephone was cleared. expected=" + lastContactPhone + " actual=" + phone);
+        }
+    }
+
+    /**
+     * Skip the slot that was already reserved so the next highlight is a different appointment.
+     */
+    public void highlightAnotherTimeslotForOffice(int officeId) {
+        CONTEXT.set();
+        long previous = readStoredSlotTimestamp();
+        Assert.assertTrue(previous > 0, "No previous timeslot to skip.");
+        rememberedAppointmentEpoch = previous;
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: highlight another timeslot for office {} skipping {}", officeId, previous);
+        Assert.assertTrue(
+                highlightPreferredTimeslotForOfficeOrAbsent(officeId, Long.toString(previous)),
+                "zmscitizenview: could not highlight another timeslot for provider " + officeId);
+    }
+
     public void assertAvailableAppointmentsShown() {
         CONTEXT.set();
         waitUntilShadowContains("Verfügbare Termine", DEFAULT_EXPLICIT_WAIT_TIME);
         Assert.assertTrue(
                 shadowDomContainsText("Verfügbare Termine"),
                 "Expected Verfügbare Termine after an office is selected.");
+    }
+
+    private boolean serviceCounterShows(String label, int count) {
+        String script =
+                "var label=arguments[0];var count=String(arguments[1]);"
+                        + "function walk(n){var s='';if(!n)return s;if(n.nodeType===3)return n.nodeValue||'';"
+                        + "if(n.shadowRoot)s+=' '+walk(n.shadowRoot);"
+                        + "var c=n.childNodes;if(c)for(var i=0;i<c.length;i++)s+=' '+walk(c[i]);return s;}"
+                        + "var text=walk(document.body).replace(/\\s+/g,' ');"
+                        + "var needle='Aktuell ausgewählte Anzahl für ';var from=0;"
+                        + "while(true){var at=text.indexOf(needle,from);if(at<0)return false;"
+                        + "var rest=text.substring(at+needle.length);var ist=rest.indexOf(' ist ');"
+                        + "if(ist>=0){var name=rest.substring(0,ist);var num=rest.substring(ist+5).match(/^(\\d+)/);"
+                        + "if(name.indexOf(label)>=0&&num&&num[1]===count)return true;}"
+                        + "from=at+needle.length;}"
+                        + "return false;";
+        Object found = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script, label, count);
+        return Boolean.TRUE.equals(found);
     }
 
     private boolean bookingStepMatches(String label, String state, String icon) {
@@ -2826,6 +2889,9 @@ public class CitizenViewPage extends BasePage {
         }
         String[] parts = RandomNameHelper.splitFullNameIntoFirstAndLast(fullName);
         String email = RandomNameHelper.getEmailConformName(fullName) + "@mailinator.com";
+        lastContactFirstName = parts[0];
+        lastContactLastName = parts[1];
+        lastContactEmail = email;
         zms.ataf.rest.steps.CitizenApiSteps.setBookingContactEmail(email);
         ScenarioLogManager.getLogger()
                 .info(
@@ -3619,7 +3685,10 @@ public class CitizenViewPage extends BasePage {
         return "http://" + u;
     }
 
-    /** Last Kontakt values filled by {@link #fillContactDetailsRandomWithoutContinue()} for later asserts. */
+    /** Last Kontakt values filled by {@link #fillContactDetailsRandom()} for later asserts. */
+    private String lastContactFirstName = "";
+    private String lastContactLastName = "";
+    private String lastContactEmail = "";
     private String lastContactPhone = CONTACT_PHONE_E2E;
     private String lastContactCustomText = CONTACT_LOREM_REQUIRED;
 

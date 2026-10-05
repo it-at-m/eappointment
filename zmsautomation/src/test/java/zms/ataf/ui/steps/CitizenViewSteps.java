@@ -123,6 +123,26 @@ public class CitizenViewSteps {
         page.assertAvailableAppointmentsShown();
     }
 
+    @Then("the service counter for {string} should still be {int}")
+    public void theServiceCounterShouldStillBe(String label, int count) {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: service counter {} is still {}", label, count);
+        page.assertServiceCounter(label, count);
+    }
+
+    @Then("the entered contact details are still on the contact form in the citizen view")
+    public void theEnteredContactDetailsAreStillOnTheContactForm() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: contact details are still filled in");
+        page.assertEnteredContactDetailsStillPresent();
+    }
+
+    @When("I scroll to and highlight another timeslot for office {int} in the citizen view")
+    public void iScrollToAndHighlightAnotherTimeslot(int officeId) {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: highlight a different timeslot for office {}", officeId);
+        page.highlightAnotherTimeslotForOffice(officeId);
+    }
+
     @When("I select service {string} from the service finder and continue")
     public void iSelectServiceFromTheServiceFinderAndContinue(String serviceLabel) {
         String label = TestDataHelper.transformTestData(serviceLabel);
