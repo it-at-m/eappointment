@@ -32,7 +32,7 @@ export type AppointmentTrackObject =
   | "appointment_overview"
   | "service_finder"
   | "service_combination"
-  | "appointment_selection"
+  | "timestamp_selection"
   | "contact"
   | "summary"
   | "reserved"
@@ -65,7 +65,7 @@ export type AppointmentTrackPayload = {
 };
 
 const BOOKING_SCREENS: Record<number, AppointmentTrackObject> = {
-  1: "appointment_selection",
+  1: "timestamp_selection",
   2: "contact",
   3: "summary",
 };

@@ -178,7 +178,7 @@ describe("trackAppointmentScreenFromView", () => {
     trackAppointmentScreenFromView(3);
 
     expect(handler.mock.calls.map((call) => call[0].detail)).toEqual([
-      { object: "appointment_selection", action: "view" },
+      { object: "timestamp_selection", action: "view" },
       { object: "contact", action: "view" },
       { object: "summary", action: "view" },
     ]);
