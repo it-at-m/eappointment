@@ -942,13 +942,14 @@ public class CitizenViewPage extends BasePage {
                     }
                     return null;
                 });
-        for (JsonNode label : state.path("timeLabels")) {
-            String text = label.asText();
-            Assert.assertFalse(
-                    "Vormittag".equals(text) || "Nachmittag".equals(text),
-                    "A busy day groups by hour, not " + text);
-        }
+        assertHourLabels(state);
         listHourLabel = firstHourLabel(state);
+    }
+
+    public void assertCalendarGroupsByHour() {
+        JsonNode state = new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(d -> hourLabel(calendarSnapshot()));
+        assertHourLabels(state);
     }
 
     public void assertOpenListGroupsByMorning() {
@@ -962,6 +963,49 @@ public class CitizenViewPage extends BasePage {
                     }
                     return null;
                 });
+        assertMorningLabels(state);
+    }
+
+    public void assertCalendarGroupsByMorning() {
+        JsonNode state = new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(d -> morningLabel(calendarSnapshot()));
+        assertMorningLabels(state);
+    }
+
+    private static JsonNode hourLabel(JsonNode node) {
+        if (node.path("list").asBoolean()) {
+            return null;
+        }
+        for (JsonNode label : node.path("timeLabels")) {
+            if (label.asText().matches("\\d{1,2}:00-\\d{1,2}:59")) {
+                return node;
+            }
+        }
+        return null;
+    }
+
+    private static JsonNode morningLabel(JsonNode node) {
+        if (node.path("list").asBoolean()) {
+            return null;
+        }
+        for (JsonNode label : node.path("timeLabels")) {
+            if ("Vormittag".equals(label.asText())) {
+                return node;
+            }
+        }
+        return null;
+    }
+
+    private static void assertHourLabels(JsonNode state) {
+        for (JsonNode label : state.path("timeLabels")) {
+            String text = label.asText();
+            Assert.assertFalse(
+                    "Vormittag".equals(text) || "Nachmittag".equals(text),
+                    "A busy day groups by hour, not " + text);
+        }
+    }
+
+    private static void assertMorningLabels(JsonNode state) {
         for (JsonNode label : state.path("timeLabels")) {
             String text = label.asText();
             Assert.assertFalse(text.matches("\\d{1,2}:00-\\d{1,2}:59"), "A short day is not grouped by hour: " + text);
@@ -1150,6 +1194,20 @@ public class CitizenViewPage extends BasePage {
         Assert.assertTrue(
                 color.contains(expected) || color.contains(compact),
                 text + " should be " + (active ? "#005A9F" : "#617586") + " but was " + color);
+    }
+
+    private JsonNode calendarSnapshot() {
+        return citizenJson(
+                "(function(){if(byId('listViewAccordion'))return {list:true,timeLabels:[]};"
+                        + "var timeLabels=[];var labelLeft=0;var ps=[];function collect(n){if(!n)return;"
+                        + "if(n.classList&&n.classList.contains('left-text'))ps.push(n);"
+                        + "if(n.shadowRoot)collect(n.shadowRoot);var c=n.children;if(c)for(var k=0;k<c.length;k++)collect(c[k]);}"
+                        + "collect(document.body);for(var p=0;p<ps.length;p++){if(!shown(ps[p]))continue;"
+                        + "timeLabels.push(textOf(ps[p]));if(!labelLeft)labelLeft=ps[p].getBoundingClientRect().left;}"
+                        + "var headingLeft=0;var h3s=cssAll('h3');for(var h=0;h<h3s.length;h++){"
+                        + "if(textOf(h3s[h])==='Verfügbare Termine'&&shown(h3s[h])){headingLeft=h3s[h].getBoundingClientRect().left;break;}}"
+                        + "return {list:false,timeLabels:timeLabels,labelLeft:labelLeft,headingLeft:headingLeft,"
+                        + "earlier:btnState(document.body,'Früher'),later:btnState(document.body,'Später')};})()");
     }
 
     private JsonNode listSnapshot() {

@@ -244,6 +244,18 @@ public class CitizenViewSteps {
         page.assertOpenListGroupsByMorning();
     }
 
+    @Then("the calendar groups times by hour")
+    public void theCalendarGroupsTimesByHour() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: calendar groups times by hour");
+        page.assertCalendarGroupsByHour();
+    }
+
+    @Then("the calendar groups the short day into Vormittag")
+    public void theCalendarGroupsTheShortDayIntoVormittag() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: calendar groups the short day into Vormittag");
+        page.assertCalendarGroupsByMorning();
+    }
+
     @Then("the earlier and later buttons are each on one line")
     public void theEarlierAndLaterButtonsAreEachOnOneLine() {
         ScenarioLogManager.getLogger().info("zmscitizenview: Früher and Später stay on one line");
