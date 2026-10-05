@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-10-05T11:35:01.995Z",
+  "publishedAt": "2026-10-05T12:15:45.318Z",
   "branches": [
     {
       "name": "next",
@@ -252,6 +252,12 @@
       "slug": "renovate-next-quay.io-keycloak-keycloak-26.x",
       "runId": "36842239847",
       "runStartedAt": "2026-10-01T09:21:53Z"
+    },
+    {
+      "name": "test-zms-1808-zms-2702-book-button",
+      "slug": "test-zms-1808-zms-2702-book-button",
+      "runId": "37307099663",
+      "runStartedAt": "2026-10-05T12:05:02Z"
     },
     {
       "name": "test-zms-opening-hours-holiday-dialog",
