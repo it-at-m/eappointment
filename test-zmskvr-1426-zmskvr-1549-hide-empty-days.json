@@ -1,0 +1,35 @@
+{
+  "branch": "test-zmskvr-1426-zmskvr-1549-hide-empty-days",
+  "branchSlug": "test-zmskvr-1426-zmskvr-1549-hide-empty-days",
+  "runId": "37280425949",
+  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37280425949",
+  "runStartedAt": "2026-10-05T07:54:54Z",
+  "publishedAt": "2026-10-05T08:08:37.099Z",
+  "features": {
+    "feature-ui-zmsadmin-opening-hours-zmskvr-1549-zmskvr-1426-hide-days-without-opening-hours": {
+      "status": "failed",
+      "shard": "custom",
+      "browser": "chrome",
+      "browsers": {
+        "chrome": {
+          "status": "failed",
+          "shard": "custom",
+          "runId": "37280425949",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37280425949",
+          "runStartedAt": "2026-10-05T07:54:54Z"
+        },
+        "firefox": {
+          "status": "failed",
+          "shard": "custom",
+          "runId": "37280425949",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37280425949",
+          "runStartedAt": "2026-10-05T07:54:54Z"
+        }
+      },
+      "rel": "ui/zmsadmin/opening-hours/zmskvr-1549_zmskvr-1426_hide_days_without_opening_hours.feature",
+      "runId": "37280425949",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37280425949",
+      "runStartedAt": "2026-10-05T07:54:54Z"
+    }
+  }
+}

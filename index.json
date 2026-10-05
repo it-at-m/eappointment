@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-10-05T07:31:05.109Z",
+  "publishedAt": "2026-10-05T08:08:37.099Z",
   "branches": [
     {
       "name": "next",
@@ -318,6 +318,12 @@
       "slug": "test-zmskvr-1418-zmskvr-1545-zmskvr-1590-past-appointments",
       "runId": "36786409781",
       "runStartedAt": "2026-09-30T22:35:06Z"
+    },
+    {
+      "name": "test-zmskvr-1426-zmskvr-1549-hide-empty-days",
+      "slug": "test-zmskvr-1426-zmskvr-1549-hide-empty-days",
+      "runId": "37280425949",
+      "runStartedAt": "2026-10-05T07:54:54Z"
     },
     {
       "name": "test-zmskvr-1431-zmskvr-1564-department-services-finish",
