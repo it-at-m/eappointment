@@ -299,9 +299,11 @@ class QueueList extends Base implements \BO\Zmsentities\Helper\NoSanitize
                 continue;
             }
 
+            $lastCallTime = (int) $next->lastCallTime;
+
             if (
-                0 != $next->lastCallTime
-                && ($next->lastCallTime + self::RECALL_COOLDOWN_SECONDS) > $currentTime
+                $lastCallTime !== 0
+                && ($lastCallTime + self::RECALL_COOLDOWN_SECONDS) > $currentTime
             ) {
                 $next = array_shift($queueList);
                 continue;

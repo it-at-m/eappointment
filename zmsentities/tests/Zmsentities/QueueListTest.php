@@ -140,7 +140,7 @@ class QueueListTest extends EntityCommonTests
         $appointmentProcess->queue->withAppointment = true;
         $appointmentProcess->queue->number = 111111;
         $appointmentProcess->queue->arrivalTime = $now->modify('-10 minutes')->getTimestamp();
-        $appointmentProcess->queue->lastCallTime = $now->modify('-2 minutes')->getTimestamp();
+        $appointmentProcess->queue->lastCallTime = 0;
         $appointmentProcess->queue->callCount = 1;
         $appointmentProcess->timeoutTime = $now->modify('-2 minutes')->format('Y-m-d H:i:s');
         $appointmentProcess->getFirstAppointment()->date = $now->modify('-10 minutes')->getTimestamp();
