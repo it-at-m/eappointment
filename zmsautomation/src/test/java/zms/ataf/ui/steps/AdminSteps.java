@@ -207,6 +207,9 @@ public class AdminSteps {
     @When("I enter in the field {string} the text {string}.")
     public void wenn_sie_in_feld_string_den_text_string_eingeben(String field, String text) {
         text = TestDataHelper.transformTestData(text);
+        // Only a feature that literally says 17:00. A resolved next-hour end of 17:00
+        // must stay 17:00, otherwise the history check looks for a clock the form never saved.
+        boolean fixedAfternoonClose = "Uhrzeit bis".equals(field) && "17:00".equals(text);
         if ("Datum bis".equals(field)) {
             text = resolveClosingDate(text);
         }
@@ -225,7 +228,7 @@ public class AdminSteps {
             // Make the closing time robust against running the test late in the day:
             // if the feature specifies 17:00, interpret it as "now plus up to 8 hours,
             // but never later than 22:00" in Europe/Berlin.
-            if ("17:00".equals(text)) {
+            if (fixedAfternoonClose) {
                 LocalTime now = BerlinTime.now().truncatedTo(ChronoUnit.MINUTES);
                 LocalTime maxByOffset = now.plusHours(8);
                 LocalTime latestAllowed = LocalTime.of(22, 0);
