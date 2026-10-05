@@ -71,6 +71,12 @@ class AppointmentReserveService
         if (is_array($sourceProcess)) {
             return $sourceProcess;
         }
+        if ($sourceProcess instanceof ThinnedProcess) {
+            $rebookingErrors = ValidationService::validateRebookingAllowed($sourceProcess->scope ?? null);
+            if ($rebookingErrors['errors'] !== []) {
+                return $rebookingErrors;
+            }
+        }
 
         return $this->reserveAppointment(
             $selectedProcess,

@@ -105,6 +105,7 @@ class AppointmentCancelControllerTest extends ControllerTestCase
                 'customTextfield2Required' => null,
                 'customTextfield2Label' => null,
                 'captchaActivatedRequired' => null,
+                'rebookingDisabled' => false,
                 'infoForAppointment' => null,
                 'infoForAllAppointments' => null,
                 'slotsPerAppointment' => null,

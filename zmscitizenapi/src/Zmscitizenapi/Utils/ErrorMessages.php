@@ -220,6 +220,12 @@ class ErrorMessages
             'errorType' => 'warning',
             'errorMessage' => 'The selected appointment cannot be canceled.'
         ],
+        'rebookingDisabled' => [
+            'errorCode' => 'rebookingDisabled',
+            'statusCode' => self::HTTP_NOT_ACCEPTABLE,
+            'errorType' => 'warning',
+            'errorMessage' => 'Rescheduling is disabled for this scope.'
+        ],
         'appointmentNotAvailable' => [
             'errorCode' => 'appointmentNotAvailable',
             'statusCode' => self::HTTP_NOT_FOUND,

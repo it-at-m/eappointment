@@ -304,6 +304,13 @@ describe("AppointmentSummary", () => {
       expect(findButtonByIcon(wrapper, "close")).toBeTruthy();
     });
 
+    it("hides reschedule and keeps cancel when rebooking is disabled", () => {
+      mockAppointment.value.scope.rebookingDisabled = true;
+      const wrapper = createWrapper({ rebookOrCancelDialog: true });
+      expect(findButtonByIcon(wrapper, "arrow-right")).toBeFalsy();
+      expect(findButtonByIcon(wrapper, "close")).toBeTruthy();
+    });
+
     it("emits rescheduleAppointment when reschedule is clicked", async () => {
       const wrapper = createWrapper({ rebookOrCancelDialog: true });
       const reschedule = findButtonByIcon(wrapper, "arrow-right");

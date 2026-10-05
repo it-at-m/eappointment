@@ -187,7 +187,8 @@ class MapperService
                     whitelistedMails: isset($providerScope->whitelistedMails) ? ($providerScope->whitelistedMails === '' ? null : $providerScope->whitelistedMails) : null,
                     reservationDuration: (int) self::extractReservationDuration($providerScope),
                     activationDuration: self::extractActivationDuration($providerScope),
-                    hint: isset($providerScope->hint) ? (trim($providerScope->hint) === '' ? null : $providerScope->hint) : null
+                    hint: isset($providerScope->hint) ? (trim($providerScope->hint) === '' ? null : $providerScope->hint) : null,
+                    rebookingDisabled: $providerScope->isRebookingDisabled()
                 ) : null,
                 slotsPerAppointment: isset($providerScope) && !isset($providerScope['errors']) && isset($providerScope->slotsPerAppointment) ? ($providerScope->slotsPerAppointment === '' ? null : $providerScope->slotsPerAppointment) : null,
                 parentId: isset($provider->parent_id) ? (int) $provider->parent_id : null,
@@ -373,7 +374,8 @@ class MapperService
                 : (string) $scope->getWhitelistedMails(),
             reservationDuration: MapperService::extractReservationDuration($scope),
             activationDuration: MapperService::extractActivationDuration($scope),
-            hint: (trim((string) ($scope->getScopeHint() ?? '')) === '') ? null : (string) $scope->getScopeHint()
+            hint: (trim((string) ($scope->getScopeHint() ?? '')) === '') ? null : (string) $scope->getScopeHint(),
+            rebookingDisabled: $scope->isRebookingDisabled()
         );
     }
 
