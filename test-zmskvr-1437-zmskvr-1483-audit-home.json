@@ -1,0 +1,60 @@
+{
+  "branch": "test-zmskvr-1437-zmskvr-1483-audit-home",
+  "branchSlug": "test-zmskvr-1437-zmskvr-1483-audit-home",
+  "runId": "37349801760",
+  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37349801760",
+  "runStartedAt": "2026-10-05T17:37:21Z",
+  "publishedAt": "2026-10-05T17:46:21.787Z",
+  "features": {
+    "feature-rest-zmsapi-roles-zmskvr-1483-zmskvr-1437-restricted-role-home": {
+      "status": "passed",
+      "shard": "custom",
+      "browser": "chrome",
+      "browsers": {
+        "chrome": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "37349801760",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37349801760",
+          "runStartedAt": "2026-10-05T17:37:21Z"
+        },
+        "firefox": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "37349801760",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37349801760",
+          "runStartedAt": "2026-10-05T17:37:21Z"
+        }
+      },
+      "rel": "rest/zmsapi/roles/zmskvr-1483_zmskvr-1437_restricted_role_home.feature",
+      "runId": "37349801760",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37349801760",
+      "runStartedAt": "2026-10-05T17:37:21Z"
+    },
+    "feature-ui-zmsadmin-roles-zmskvr-1483-zmskvr-1437-audit-home": {
+      "status": "passed",
+      "shard": "custom",
+      "browser": "chrome",
+      "browsers": {
+        "chrome": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "37349801760",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37349801760",
+          "runStartedAt": "2026-10-05T17:37:21Z"
+        },
+        "firefox": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "37349801760",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37349801760",
+          "runStartedAt": "2026-10-05T17:37:21Z"
+        }
+      },
+      "rel": "ui/zmsadmin/roles/zmskvr-1483_zmskvr-1437_audit_home.feature",
+      "runId": "37349801760",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37349801760",
+      "runStartedAt": "2026-10-05T17:37:21Z"
+    }
+  }
+}
