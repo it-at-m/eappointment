@@ -636,6 +636,16 @@ public class AdminSteps {
         CUSTOMER_SEARCH_PAGE.search(TestDataHelper.transformTestData(query));
     }
 
+    @Then("customer search is the start page, without a menu, a Kundensuche field, or a location prompt.")
+    public void customerSearchIsTheStartPageWithoutAMenu() {
+        CUSTOMER_SEARCH_PAGE.assertCustomerSearchIsTheStartPage();
+    }
+
+    @When("I submit the customer search for {string}.")
+    public void iSubmitTheCustomerSearchFor(String query) {
+        CUSTOMER_SEARCH_PAGE.submitOverallSearch(TestDataHelper.transformTestData(query));
+    }
+
     @When("I open the found appointment of {string} from the customer search.")
     public void iOpenTheFoundAppointmentFromTheCustomerSearch(String familyName) {
         CUSTOMER_SEARCH_PAGE.openFoundAppointment(TestDataHelper.transformTestData(familyName));
