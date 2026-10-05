@@ -35,6 +35,8 @@ Das Skript `zmsautomation-test` kümmert sich um Datenbank-Setup, Migrationen un
 
 Jede Logzeile beginnt mit dem Worker-Thread in eckigen Klammern, zum Beispiel `[29]`. TestNG verwendet denselben Thread für das nächste Szenario. Zeilen mit derselben Nummer gehören zu einem Szenario, bis dieser Thread `Starting scenario` protokolliert. Die letzte `Starting scenario`-Zeile mit dieser Nummer nennt den zugehörigen Test.
 
+Ein lokaler Lauf schreibt zusätzlich eine Logdatei pro Szenario nach `zmsautomation/logs`. Der Dateiname leitet sich vom Szenarionamen ab. Frühere Läufe desselben Szenarios bleiben als datierte `.log.gz`-Dateien erhalten. Das Verzeichnis ist von Git ausgeschlossen.
+
 ```bash
 # alle [ATAF](https://it-at-m.github.io/agile-test-automation-framework/)-Tests ausführen (API + UI)
 ./zmsautomation/zmsautomation-test -Pataf-api -Pataf-ui

@@ -381,18 +381,20 @@ public class ZmsApiSteps {
         long now = Instant.now().getEpochSecond();
         long currentMinute = now - (now % 60);
         long earliest = (now % 60 > 40) ? currentMinute + 60 : currentMinute;
-        long latest = now + 6 * 60;
-        List<JsonNode> candidates = new ArrayList<>();
-        for (JsonNode process : freeList) {
-            long date = process.path("appointments").path(0).path("date").asLong(0);
-            if (date >= earliest && date <= latest) {
-                candidates.add(process);
+        long soon = now + 6 * 60;
+        // Department 2 reminds 1440 minutes ahead, so a later slot today is still due.
+        long reminderHorizon = now + 24 * 60 * 60;
+        List<JsonNode> candidates = slotsBetween(freeList, earliest, soon);
+        if (candidates.isEmpty()) {
+            candidates = slotsBetween(freeList, earliest, reminderHorizon);
+            if (!candidates.isEmpty()) {
+                ScenarioLogManager.getLogger().info(
+                        "No intern slot in the next minutes for scope {}; using the next slot inside the reminder window",
+                        scopeId);
             }
         }
-        candidates.sort(Comparator.comparingLong(
-                process -> process.path("appointments").path(0).path("date").asLong()));
         Assertions.assertThat(candidates)
-                .as("scope %d should have an intern slot between epoch %d and %d", scopeId, earliest, latest)
+                .as("scope %d should have an intern slot between epoch %d and %d", scopeId, earliest, reminderHorizon)
                 .isNotEmpty();
 
         JsonNode reserved = null;
@@ -449,7 +451,7 @@ public class ZmsApiSteps {
         long appointment = confirmed.path("appointments").path(0).path("date").asLong(0);
         Assertions.assertThat(appointment)
                 .as("confirmed appointment time")
-                .isBetween(earliest, latest);
+                .isBetween(earliest, reminderHorizon);
         TestDataHelper.setTestData("appointment_epoch", Long.toString(appointment));
         ScenarioLogManager.getLogger().info(
                 "Terminkunde {} booked at epoch {} for scope {}", familyName, appointment, scopeId);
@@ -1932,6 +1934,22 @@ public class ZmsApiSteps {
         Assertions.assertThat(response.getStatusCode())
             .as("POST /workstation/ for scope %d body=%s", scopeId, truncate(response.asString(), 500))
             .isEqualTo(200);
+    }
+
+    private List<JsonNode> slotsBetween(JsonNode freeList, long fromInclusive, long toInclusive) {
+        List<JsonNode> candidates = new ArrayList<>();
+        if (freeList == null) {
+            return candidates;
+        }
+        for (JsonNode process : freeList) {
+            long date = process.path("appointments").path(0).path("date").asLong(0);
+            if (date >= fromInclusive && date <= toInclusive) {
+                candidates.add(process);
+            }
+        }
+        candidates.sort(Comparator.comparingLong(
+                process -> process.path("appointments").path(0).path("date").asLong()));
+        return candidates;
     }
 
     private JsonNode fetchFreeProcesses(int scopeId, JsonNode request, String authKey) {

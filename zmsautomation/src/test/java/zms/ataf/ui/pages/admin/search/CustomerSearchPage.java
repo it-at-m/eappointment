@@ -152,10 +152,9 @@ public class CustomerSearchPage extends AdminPage {
         }
         long followUps = texts.stream().filter(text -> text.contains("(Folgetermin)")).count();
         long named = texts.stream().filter(text -> text.contains(familyName) && text.contains(numberWithoutLetters)).count();
-        String count = DRIVER.findElement(By.cssSelector("table.table--base")).getAttribute("data-processList-count");
         Assert.assertEquals(followUps, 0L, "Follow-up slot rows are listed. Rows: " + texts);
-        Assert.assertEquals(named, 1L, "The appointment should appear once. Rows: " + texts);
-        Assert.assertEquals(count, "1", "The search should return one row. Rows: " + texts);
+        Assert.assertEquals(named, 1L,
+                "The appointment should appear once. Other appointments can contain the same digits. Rows: " + texts);
     }
 
     public String bookingDateDaysAgo(int daysAgo) {

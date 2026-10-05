@@ -33,6 +33,8 @@ The `zmsautomation-test` script handles database setup, migrations, and test exe
 
 Each log line starts with the worker thread in brackets, for example `[29]`. TestNG reuses that thread for the next scenario, so lines with the same number belong to one scenario until that thread logs `Starting scenario`. Scroll up to the latest `Starting scenario` line with that number to see which test those lines belong to.
 
+A local run also writes one log file per scenario to `zmsautomation/logs`. The file name comes from the scenario name. Previous runs of the same scenario are kept as dated `.log.gz` files. The directory is gitignored.
+
 ```bash
 # Run all ATAF tests (API + UI)
 ./zmsautomation/zmsautomation-test -Pataf-api -Pataf-ui

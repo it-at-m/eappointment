@@ -21,8 +21,9 @@ Feature: Opening hours for the current week including Sunday can be created.
 		And I select Saturday and Sunday of the current week.
 		Then no error about weekdays that do not occur should be shown.
 		And the button "Alle Änderungen aktivieren" should be enabled for saving the opening hours.
-		And I enter in the field "Uhrzeit von" the text "08:00".
-		And I enter in the field "Uhrzeit bis" the text "17:00".
+		# Next full hour in Berlin. After 22:00 that hour no longer fits today, so the range moves to the following Sunday and the hour is 08:00–09:00.
+		And I enter in the field "Uhrzeit von" the text "<naechste_oeffnungszeit>".
+		And I enter in the field "Uhrzeit bis" the text "<oeffnungszeit_danach>".
 		And I select for appointment desks under "Insgesamt" the count 1.
 		And I select for appointment desks under "Internet" the count 1.
 		And I click the button "Alle Änderungen aktivieren" in the administration.
