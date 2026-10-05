@@ -1405,6 +1405,143 @@ public class CitizenViewPage extends BasePage {
                         + "(Kombinierbare Leistungen / Combinable services heading, or Leistung wechseln back button).");
     }
 
+    /**
+     * ZMSKVR-92 / ZMSKVR-164. A finished step keeps its own icon and is the only clickable one
+     * ({@code Zurück zu Schritt}). The active step is {@code aria-current=step}. A later step is not a button.
+     */
+    public void assertBookingStepperLabels() {
+        CONTEXT.set();
+        new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(d -> "Leistung".equals(bookingStepLabel(0))
+                        && "Termin".equals(bookingStepLabel(1))
+                        && "Kontakt".equals(bookingStepLabel(2))
+                        && "Übersicht".equals(bookingStepLabel(3)));
+        Assert.assertEquals(bookingStepLabel(0), "Leistung", "First booking step.");
+        Assert.assertEquals(bookingStepLabel(1), "Termin", "Second booking step.");
+        Assert.assertEquals(bookingStepLabel(2), "Kontakt", "Third booking step.");
+        Assert.assertEquals(bookingStepLabel(3), "Übersicht", "Fourth booking step.");
+    }
+
+    public void assertBookingStep(String label, String state, String icon) {
+        CONTEXT.set();
+        new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(d -> bookingStepMatches(label, state, icon));
+        Assert.assertTrue(
+                bookingStepMatches(label, state, icon),
+                "Booking step \"" + label + "\" should be " + state + " with icon " + icon
+                        + ". Steps: " + readBookingSteps());
+    }
+
+    public void goBackToBookingStep(String label) {
+        CONTEXT.set();
+        ScenarioLogManager.getLogger().info("zmscitizenview: go back to booking step {}", label);
+        new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(d -> clickFinishedBookingStep(label));
+        new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(d -> {
+                    JsonNode step = findBookingStep(label);
+                    return step != null && step.path("current").asBoolean() && !step.path("done").asBoolean();
+                });
+    }
+
+    public void assertAvailableAppointmentsShown() {
+        CONTEXT.set();
+        waitUntilShadowContains("Verfügbare Termine", DEFAULT_EXPLICIT_WAIT_TIME);
+        Assert.assertTrue(
+                shadowDomContainsText("Verfügbare Termine"),
+                "Expected Verfügbare Termine after an office is selected.");
+    }
+
+    private boolean bookingStepMatches(String label, String state, String icon) {
+        JsonNode step = findBookingStep(label);
+        if (step == null || !icon.equals(step.path("icon").asText())) {
+            return false;
+        }
+        boolean current = step.path("current").asBoolean();
+        boolean done = step.path("done").asBoolean();
+        return switch (state) {
+            case "current" -> current && !done;
+            case "finished" -> done && !current;
+            case "later" -> !done && !current;
+            default -> false;
+        };
+    }
+
+    private String bookingStepLabel(int index) {
+        JsonNode steps = readBookingSteps();
+        if (steps == null || index < 0 || index >= steps.size()) {
+            return "";
+        }
+        return steps.get(index).path("label").asText();
+    }
+
+    private JsonNode findBookingStep(String label) {
+        JsonNode steps = readBookingSteps();
+        if (steps == null) {
+            return null;
+        }
+        for (JsonNode step : steps) {
+            if (label.equals(step.path("label").asText())) {
+                return step;
+            }
+        }
+        return null;
+    }
+
+    private JsonNode readBookingSteps() {
+        String script =
+                "function norm(s){return (s||'').replace(/\\s+/g,' ').trim();}"
+                        + "function iconOf(li){var use=li.querySelector('use');if(!use)return '';"
+                        + "var href=use.getAttribute('href')||use.getAttribute('xlink:href')||'';"
+                        + "var mark=href.indexOf('#icon-');return mark>=0?href.substring(mark+6):href;}"
+                        + "var found=null;"
+                        + "function walk(n){if(!n||found)return;var tag=(n.tagName||'').toUpperCase();"
+                        + "if(tag==='OL'&&n.classList&&n.classList.contains('m-form-steps')){found=n;return;}"
+                        + "if(n.shadowRoot)walk(n.shadowRoot);"
+                        + "var c=n.children;if(c)for(var i=0;i<c.length;i++)walk(c[i]);}"
+                        + "walk(document.body);if(!found)return '[]';"
+                        + "var items=found.querySelectorAll('li.m-form-step');var steps=[];"
+                        + "for(var i=0;i<items.length;i++){var li=items[i];"
+                        + "var title=li.querySelector('.m-form-step__title');"
+                        + "var button=li.querySelector('button.m-form-step__button');"
+                        + "steps.push({label:norm(title?title.textContent:''),icon:iconOf(li),"
+                        + "current:li.getAttribute('aria-current')==='step',done:!!button});}"
+                        + "return JSON.stringify(steps);";
+        Object raw = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script);
+        if (!(raw instanceof String json) || json.isBlank()) {
+            return null;
+        }
+        try {
+            JsonNode node = new ObjectMapper().readTree(json);
+            return node.isArray() ? node : null;
+        } catch (Exception e) {
+            ScenarioLogManager.getLogger().warn("zmscitizenview: booking stepper could not be read", e);
+            return null;
+        }
+    }
+
+    private boolean clickFinishedBookingStep(String label) {
+        String script =
+                "var label=arguments[0];"
+                        + "function norm(s){return (s||'').replace(/\\s+/g,' ').trim();}"
+                        + "var found=null;"
+                        + "function walk(n){if(!n||found)return;var tag=(n.tagName||'').toUpperCase();"
+                        + "if(tag==='OL'&&n.classList&&n.classList.contains('m-form-steps')){found=n;return;}"
+                        + "if(n.shadowRoot)walk(n.shadowRoot);"
+                        + "var c=n.children;if(c)for(var i=0;i<c.length;i++)walk(c[i]);}"
+                        + "walk(document.body);if(!found)return false;"
+                        + "var items=found.querySelectorAll('li.m-form-step');"
+                        + "for(var i=0;i<items.length;i++){var li=items[i];"
+                        + "var title=li.querySelector('.m-form-step__title');"
+                        + "if(norm(title?title.textContent:'')!==label)continue;"
+                        + "var button=li.querySelector('button.m-form-step__button');"
+                        + "if(!button)return false;"
+                        + "button.scrollIntoView({block:'center'});button.click();return true;}"
+                        + "return false;";
+        Object clicked = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script, label);
+        return Boolean.TRUE.equals(clicked);
+    }
+
     /** Full entry: select service via \"Häufig gesuchte Leistungen\" link and navigate to combination step. */
     public void selectServiceByLabel(String serviceLabel) {
         CONTEXT.set();

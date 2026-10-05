@@ -94,6 +94,30 @@ public class CitizenViewSteps {
         page.clickWeiter();
     }
 
+    @Then("the booking stepper shows Leistung, Termin, Kontakt, and Übersicht")
+    public void theBookingStepperShowsTheFourSteps() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: booking stepper labels");
+        page.assertBookingStepperLabels();
+    }
+
+    @Then("the booking step {string} is {string} with the {string} icon")
+    public void theBookingStepIsWithTheIcon(String label, String state, String icon) {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: booking step {} is {} with icon {}", label, state, icon);
+        page.assertBookingStep(label, state, icon);
+    }
+
+    @When("I go back to the booking step {string}")
+    public void iGoBackToTheBookingStep(String label) {
+        page.goBackToBookingStep(label);
+    }
+
+    @Then("available appointments are shown in the citizen view")
+    public void availableAppointmentsAreShownInTheCitizenView() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: Verfügbare Termine");
+        page.assertAvailableAppointmentsShown();
+    }
+
     @When("I select service {string} from the service finder and continue")
     public void iSelectServiceFromTheServiceFinderAndContinue(String serviceLabel) {
         String label = TestDataHelper.transformTestData(serviceLabel);
