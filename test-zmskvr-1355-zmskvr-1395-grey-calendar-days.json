@@ -1,0 +1,35 @@
+{
+  "branch": "test-zmskvr-1355-zmskvr-1395-grey-calendar-days",
+  "branchSlug": "test-zmskvr-1355-zmskvr-1395-grey-calendar-days",
+  "runId": "37277180521",
+  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37277180521",
+  "runStartedAt": "2026-10-05T07:20:17Z",
+  "publishedAt": "2026-10-05T07:31:05.109Z",
+  "features": {
+    "feature-ui-zmscitizenview-calendar-zmskvr-1524-zmskvr-1457-zmskvr-1395-zmskvr-1355-calendar-day-fits-duration": {
+      "status": "passed",
+      "shard": "custom",
+      "browser": "chrome",
+      "browsers": {
+        "chrome": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "37277180521",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37277180521",
+          "runStartedAt": "2026-10-05T07:20:17Z"
+        },
+        "firefox": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "37277180521",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37277180521",
+          "runStartedAt": "2026-10-05T07:20:17Z"
+        }
+      },
+      "rel": "ui/zmscitizenview/calendar/zmskvr-1524_zmskvr-1457_zmskvr-1395_zmskvr-1355_calendar_day_fits_duration.feature",
+      "runId": "37277180521",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37277180521",
+      "runStartedAt": "2026-10-05T07:20:17Z"
+    }
+  }
+}
