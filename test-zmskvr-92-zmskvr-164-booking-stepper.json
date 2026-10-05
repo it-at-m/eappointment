@@ -1,35 +1,35 @@
 {
   "branch": "test-zmskvr-92-zmskvr-164-booking-stepper",
   "branchSlug": "test-zmskvr-92-zmskvr-164-booking-stepper",
-  "runId": "37373063162",
-  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37373063162",
-  "runStartedAt": "2026-10-05T20:58:53Z",
-  "publishedAt": "2026-10-05T22:08:25.401Z",
+  "runId": "37379917647",
+  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37379917647",
+  "runStartedAt": "2026-10-05T22:02:56Z",
+  "publishedAt": "2026-10-05T22:20:43.699Z",
   "features": {
     "feature-ui-zmscitizenview-booking-zmskvr-164-zmskvr-92-booking-stepper": {
-      "status": "failed",
+      "status": "passed",
       "shard": "custom",
       "browser": "chrome",
       "browsers": {
         "chrome": {
-          "status": "failed",
+          "status": "passed",
           "shard": "custom",
-          "runId": "37373063162",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37373063162",
-          "runStartedAt": "2026-10-05T20:58:53Z"
+          "runId": "37379917647",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37379917647",
+          "runStartedAt": "2026-10-05T22:02:56Z"
         },
         "firefox": {
-          "status": "failed",
+          "status": "passed",
           "shard": "custom",
-          "runId": "37373063162",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37373063162",
-          "runStartedAt": "2026-10-05T20:58:53Z"
+          "runId": "37379917647",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37379917647",
+          "runStartedAt": "2026-10-05T22:02:56Z"
         }
       },
       "rel": "ui/zmscitizenview/booking/zmskvr-164_zmskvr-92_booking_stepper.feature",
-      "runId": "37373063162",
-      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37373063162",
-      "runStartedAt": "2026-10-05T20:58:53Z"
+      "runId": "37379917647",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37379917647",
+      "runStartedAt": "2026-10-05T22:02:56Z"
     }
   }
 }
