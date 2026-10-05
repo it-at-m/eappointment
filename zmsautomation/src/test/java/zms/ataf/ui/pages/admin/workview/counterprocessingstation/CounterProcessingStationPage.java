@@ -642,6 +642,40 @@ public class CounterProcessingStationPage extends AdminPage {
                 select);
     }
 
+    /** A late button reload can drop Termin buchen after the slot is already selected. */
+    private WebElement waitForBookAppointmentButton(WebDriverWait wait) {
+        long[] lastRefresh = { 0L };
+        return wait.ignoring(StaleElementReferenceException.class).until(driver -> {
+            List<WebElement> buttons = driver.findElements(By.cssSelector("button.process-reserve"));
+            for (WebElement button : buttons) {
+                if (button.isDisplayed() && button.isEnabled()) {
+                    return button;
+                }
+            }
+            refreshAppointmentButtonsIfSlotSelected(lastRefresh);
+            return null;
+        });
+    }
+
+    private void refreshAppointmentButtonsIfSlotSelected(long[] lastRefresh) {
+        long now = System.currentTimeMillis();
+        if (now - lastRefresh[0] < 2000L) {
+            return;
+        }
+        List<WebElement> selects = DRIVER.findElements(By.id(APPOINTMENT_TIME_LOCATOR_ID));
+        if (selects.isEmpty()) {
+            return;
+        }
+        String value = selects.get(0).getAttribute("value");
+        if (value == null || value.isBlank() || "00-00".equals(value)) {
+            return;
+        }
+        lastRefresh[0] = now;
+        ScenarioLogManager.getLogger()
+                .warn("Termin buchen is missing while slot {} is selected; loading the booking button again.", value);
+        fireProcessTimeChange(selects.get(0));
+    }
+
     public void selectTimeInNewAppointmentDropDownList(String time) {
         selectTimeInNewAppointmentDropDownList(time, Set.of(), false);
     }
@@ -888,11 +922,7 @@ public class CounterProcessingStationPage extends AdminPage {
                 selectTimeInNewAppointmentDropDownList("<nächste>", skippedTimes);
             }
     
-            WebElement bookButton = wait.until(
-                    ExpectedConditions.elementToBeClickable(
-                            By.cssSelector("button.process-reserve")
-                    )
-            );
+            WebElement bookButton = waitForBookAppointmentButton(wait);
     
             bookingAttempted = false;
             try {
