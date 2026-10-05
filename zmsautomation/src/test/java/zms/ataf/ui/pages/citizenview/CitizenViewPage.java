@@ -2361,6 +2361,7 @@ public class CitizenViewPage extends BasePage {
                 + "  if(!skipped(slotTs(slots[n]))){target=slots[n];break;}"
                 + " }"
                 + "}"
+                + "if(!target)return false;"
                 + "function highlightSlot(node){"
                 + " if(!node)return;"
                 + " node.scrollIntoView({block:'center'});"
