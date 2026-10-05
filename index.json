@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-10-05T09:19:33.235Z",
+  "publishedAt": "2026-10-05T09:21:35.389Z",
   "branches": [
     {
       "name": "next",
@@ -114,6 +114,12 @@
       "slug": "feature-zmskvr-1319-allow-variant-overwrite",
       "runId": "37269822254",
       "runStartedAt": "2026-10-05T05:54:06Z"
+    },
+    {
+      "name": "feature-zmskvr-1396-email-autofill",
+      "slug": "feature-zmskvr-1396-email-autofill",
+      "runId": "37286665869",
+      "runStartedAt": "2026-10-05T08:55:20Z"
     },
     {
       "name": "feature-zmskvr-1440-captcha-restart-booking",
