@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-10-05T09:38:48.588Z",
+  "publishedAt": "2026-10-05T10:58:46.450Z",
   "branches": [
     {
       "name": "next",
@@ -480,6 +480,12 @@
       "slug": "test-zmskvr-1613-zmskvr-1621-overall-view-layout",
       "runId": "37092150207",
       "runStartedAt": "2026-10-03T03:07:34Z"
+    },
+    {
+      "name": "test-zmskvr-1613-zmskvr-1621-select-all-locations",
+      "slug": "test-zmskvr-1613-zmskvr-1621-select-all-locations",
+      "runId": "37297540783",
+      "runStartedAt": "2026-10-05T10:35:21Z"
     },
     {
       "name": "test-zmskvr-1617-zmskvr-1637-hide-unused-days",
