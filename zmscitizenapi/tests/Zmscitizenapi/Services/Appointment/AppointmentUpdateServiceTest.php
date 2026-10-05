@@ -324,7 +324,7 @@ class AppointmentUpdateServiceTest extends TestCase
         $process = new ThinnedProcess();
         $process->familyName = 'Jane Doe';
         $process->email = \App::getPlaceholderEmail();
-        $process->customTextfield = 'test@muenchen.de';
+        $process->customTextfield = 'noreply-terminvereinbarung@muenchen.de';
 
         $data = (object)[
             'familyName' => 'Jane Doe',
@@ -339,7 +339,7 @@ class AppointmentUpdateServiceTest extends TestCase
         $this->assertEquals('Jane Doe', $result->familyName);
         $this->assertEquals('jane@example.com', $result->email);
         $this->assertEquals('+491234567890', $result->telephone);
-        $this->assertEquals('test@muenchen.de', $result->customTextfield);
+        $this->assertEquals('noreply-terminvereinbarung@muenchen.de', $result->customTextfield);
         $this->assertNull($result->customTextfield2);
     }
 

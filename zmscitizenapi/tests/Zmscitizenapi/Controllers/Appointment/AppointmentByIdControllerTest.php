@@ -132,7 +132,8 @@ class AppointmentByIdControllerTest extends ControllerTestCase
             "serviceName" => "Gewerbe anmelden",
             "serviceCount" => 1,
             "slotCount" => 1,
-            "displayNumber" => null
+            "displayNumber" => null,
+            "placeholderEmail" => \App::getPlaceholderEmail(),
         ];
 
         $this->assertEquals(200, $response->getStatusCode());

@@ -1,19 +1,19 @@
-#language: de
-Funktionalität: Die Auswahl „Mit E-Mail-Bestätigung“ kann je Standort als Vorbelegung gesetzt werden, sodass sie beim Anlegen bereits vorausgewählt ist.
+#language: en
+Feature: The selection “Mit E-Mail-Bestätigung” can be set as the default per location so it is already selected when creating an appointment.
 
 	@web @zmsadmin @configuration @technical-admin @ZMS-3171 @ZMS-3162 @automatisiert @executeLocally
-	Szenario: [AUT] Vorbelegung von "Mit E-Mail Bestätigung" ist konfigurierbar
-		Wenn Sie zur Webseite der Administration navigieren.
-		Dann sollten Sie sich am Start des Zeitmanagementsystem befinden.
-		Wenn Sie im Zeitmanagementsystem auf die Schaltfläche "Anmelden" klicken.
-		Und Sie für "Standort" den Wert "Gewerbeamt (KVR-III/21) Meldungen" auswählen.
-		Wenn Sie im Zeitmanagementsystem auf die Schaltfläche "Auswahl bestätigen" klicken.
-		Und Sie unter dem Menü Administration auf den Eintrag "Behörden und Standorte" klicken.
-		Und Sie unter Behörden und Standorte auf den Standort "Gewerbeamt (KVR-III/21) Meldungen" klicken.
-		Und Sie für den Standort den Wert für die E-Mail-Bestätigung auf true setzen.
-		Und Sie die Änderungen an der Standortkonfiguration speichern.
-		Dann Für den Standort "Gewerbeamt (KVR-III/21) Meldungen" ist der Standardwert für die E-Mail-Bestätigung auf true gesetzt.
-		Wenn Sie im Zeitmanagementsystem in der Navigationsleite auf die Schaltfläche "Tresen" klicken.
-		Und Sie im Zeitmanagementsystem unter Termin erstellen die Zeit "<beliebig>" auswählen.
+	Scenario: [AUT] The default for "Mit E-Mail Bestätigung" is configurable
+		When I open the administration website.
+		Then I should be on the administration start page.
+		When I click the button "Anmelden" in the administration.
+		And I select for "Standort" the value "Gewerbeamt (KVR-III/21) Meldungen".
+		When I click the button "Auswahl bestätigen" in the administration.
+		And I click the entry "Behörden und Standorte" in the Administration menu.
+		And I click the location "Gewerbeamt (KVR-III/21) Meldungen" under authorities and locations.
+		And I set the email-confirmation value for the location to true.
+		And I save the changes to the location configuration.
+		Then the default email confirmation for location "Gewerbeamt (KVR-III/21) Meldungen" is set to true.
+		When I click the button "Tresen" in the administration navigation.
+		And I select the time "<beliebig>" under create appointment in the administration.
     	# ausgewählt / nicht ausgewählt
-		Dann ist die Checkbox Mit E-Mail Bestätigung "ausgewählt".
+		Then the email-confirmation checkbox is "ausgewählt".

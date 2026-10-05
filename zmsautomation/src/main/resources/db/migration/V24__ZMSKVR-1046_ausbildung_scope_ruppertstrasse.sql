@@ -46,24 +46,18 @@ INSERT INTO `preferences` (`entity`, `id`, `groupName`, `name`, `value`, `update
 -- ---------------------------------------------------------------------------
 -- Opening hours (same pattern as V19__ZMSKVR-1124_opening_hours_for_ruppertstasse)
 -- ---------------------------------------------------------------------------
+-- Same window as V19: rest of today until 23:55, or the whole next day when under three hours remain.
+SET @slot_seconds := 300;
+SET @latest_end := '23:55:00';
 SET @rounded_start :=
-  SEC_TO_TIME(CEILING(TIME_TO_SEC(CURTIME()) / 300) * 300);
+  SEC_TO_TIME(CEILING(TIME_TO_SEC(CURTIME()) / @slot_seconds) * @slot_seconds);
 
-SET @desired_end :=
-  ADDTIME(@rounded_start, '06:00:00');
-
-SET @rounded_end :=
-  LEAST(@desired_end, '23:55:00');
-
--- A same-day window shorter than 3 hours leaves shared booking with one timestamp
--- on one peer. Roll Ausbildung onto the next day together with V19.
 SET @start_sec := TIME_TO_SEC(@rounded_start);
-SET @end_sec := TIME_TO_SEC(@rounded_end);
-SET @use_next_day := (@end_sec <= @start_sec) OR ((@end_sec - @start_sec) < 3 * 3600);
+SET @end_sec := TIME_TO_SEC(@latest_end);
+SET @use_next_day := (@start_sec >= 24 * 3600) OR (@end_sec <= @start_sec) OR ((@end_sec - @start_sec) < 3 * 3600);
 
 SET @appt_start := IF(@use_next_day, '00:05:00', @rounded_start);
-SET @appt_end :=
-  IF(@use_next_day, LEAST(ADDTIME('00:05:00', '03:00:00'), '23:55:00'), @rounded_end);
+SET @appt_end := @latest_end;
 
 SET @range_start := IF(@use_next_day, DATE_ADD(CURDATE(), INTERVAL 1 DAY), CURDATE());
 SET @range_end :=

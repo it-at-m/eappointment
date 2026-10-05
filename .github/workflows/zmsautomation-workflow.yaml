@@ -1,17 +1,17 @@
 name: ⚙️ zmsautomation
 run-name: >-
   ${{
-    github.event_name == 'schedule' && 'zmsautomation | ⏰ scheduled | UI × chrome+firefox, API once | next'
+    github.event_name == 'schedule' && 'zmsautomation | ⏰ scheduled | UI × chrome+firefox+edge, API once | next'
     || (github.event_name == 'workflow_dispatch' && inputs.run_main_next_matrix
         && format(
-             'zmsautomation | ▶️ manual | full shard matrix | UI × chrome+firefox, API once | main + next{0}{1}',
+             'zmsautomation | ▶️ manual | full shard matrix | UI × chrome+firefox+edge, API once | next{0}{1}',
              inputs.ataf_version != '' && format(' | ATAF {0}', inputs.ataf_version) || '',
              inputs.serial_scenarios && ' | serial scenarios' || ''
            ))
     || format(
          'zmsautomation | ▶️ manual | {0} | {1}{2}{3}{4}',
          github.ref_name,
-         inputs.browser == 'firefox' && '🦊 firefox' || (inputs.browser == 'edge' && '🪟 edge' || '🌐 chrome'),
+         format('{0}{1}{2}', inputs.browser_chrome && '🌐 chrome' || '', inputs.browser_firefox && format('{0}🦊 firefox', inputs.browser_chrome && ' + ' || '') || '', inputs.browser_edge && format('{0}🪟 edge', (inputs.browser_chrome || inputs.browser_firefox) && ' + ' || '') || ''),
          inputs.cucumber_tag_expressions != '' && format(' | {0}', inputs.cucumber_tag_expressions) || (inputs.use_custom_tags && ' | custom tags' || ''),
          inputs.ataf_version != '' && format(' | ATAF {0}', inputs.ataf_version) || '',
          inputs.serial_scenarios && ' | serial scenarios' || ''
@@ -23,17 +23,17 @@ on:
     inputs:
       run_main_next_matrix:
         description: |
-          Run the full scheduled shard matrix: main + next; UI modules (zmsadmin,
-          zmscitizenview, zmsstatistic, zmsticketprinter) on chrome + firefox; API modules (zmsapi,
+          Run the full scheduled shard matrix: next; UI modules (zmsadmin,
+          zmscitizenview, zmsstatistic, zmsticketprinter, zmscalldisplay) on chrome + firefox + edge; API modules (zmsapi,
           zmscitizenapi) once each. Ignores module/browser inputs below.
         required: true
         type: boolean
         default: false
       run_all_in_one_job:
         description: |
-          Run the full suite in one sequential job instead of parallel module shards.
-          Default (disabled): all checked modules below run in parallel on the branch
-          selected via "Use workflow from" above.
+          Run the full suite in one sequential job per checked browser instead of
+          parallel module shards. Default (disabled): all checked modules below run
+          in parallel on the branch selected via "Use workflow from" above.
         required: true
         type: boolean
         default: false
@@ -62,6 +62,11 @@ on:
         default: true
       module_ticketprinter:
         description: "Ticketprinter UI tests (@zmsticketprinter)"
+        required: true
+        type: boolean
+        default: true
+      module_calldisplay:
+        description: "Call display UI tests (@zmscalldisplay)"
         required: true
         type: boolean
         default: true
@@ -101,15 +106,21 @@ on:
           Examples: @ZMSKVR-833, @smoke
         required: false
         default: ""
-      browser:
-        description: Browser for UI tests (ignored for API-only modules zmsapi / zmscitizenapi)
+      browser_chrome:
+        description: "Chrome for UI tests"
         required: true
-        type: choice
-        options:
-          - chrome
-          - firefox
-          - edge
-        default: chrome
+        type: boolean
+        default: true
+      browser_firefox:
+        description: "Firefox for UI tests"
+        required: true
+        type: boolean
+        default: false
+      browser_edge:
+        description: "Edge for UI tests"
+        required: true
+        type: boolean
+        default: false
       per_step_screenshots:
         description: Enable/disable per-step screenshots
         required: true
@@ -155,13 +166,9 @@ jobs:
           }
 
           FULL_MATRIX=false
-          # Nightly cron only needs next. main stays available on the manual matrix input.
           MATRIX_BRANCHES='["next"]'
-          if [[ "${{ github.event_name }}" == "schedule" ]]; then
+          if [[ "${{ github.event_name }}" == "schedule" || "${{ inputs.run_main_next_matrix }}" == "true" ]]; then
             FULL_MATRIX=true
-          elif [[ "${{ inputs.run_main_next_matrix }}" == "true" ]]; then
-            FULL_MATRIX=true
-            MATRIX_BRANCHES='["main","next"]'
           fi
 
           if [[ "$FULL_MATRIX" == true ]]; then
@@ -170,6 +177,7 @@ jobs:
               --arg citizenview "$(append_not_ignore '@zmscitizenview')" \
               --arg statistic "$(append_not_ignore '@zmsstatistic')" \
               --arg ticketprinter "$(append_not_ignore '@zmsticketprinter')" \
+              --arg calldisplay "$(append_not_ignore '@zmscalldisplay')" \
               --arg zmsapi "$(append_not_ignore '@zmsapi')" \
               --arg zmscitizenapi "$(append_not_ignore '@zmscitizenapi')" \
               --argjson branches "$MATRIX_BRANCHES" \
@@ -182,9 +190,10 @@ jobs:
                         {shard: "zmsadmin", test_layer: "ui", tag_filter: $admin},
                         {shard: "zmscitizenview", test_layer: "ui", tag_filter: $citizenview},
                         {shard: "zmsstatistic", test_layer: "ui", tag_filter: $statistic},
-                        {shard: "zmsticketprinter", test_layer: "ui", tag_filter: $ticketprinter}
+                        {shard: "zmsticketprinter", test_layer: "ui", tag_filter: $ticketprinter},
+                        {shard: "zmscalldisplay", test_layer: "ui", tag_filter: $calldisplay}
                       ][] as $shard
-                    | ["chrome", "firefox"][] as $browser
+                    | ["chrome", "firefox", "edge"][] as $browser
                     | $shard + {branch: $branch, browser: $browser, use_custom_tags: false}
                   ]
                   + [
@@ -202,69 +211,135 @@ jobs:
             echo "max_parallel=$MATRIX_SIZE" >> "$GITHUB_OUTPUT"
           else
             BRANCH="${{ github.ref_name }}"
-            BROWSER="${{ inputs.browser }}"
             TEST_LAYER="${{ inputs.test_layer }}"
             TAG_INPUT="${{ inputs.cucumber_tag_expressions }}"
             TAG_INPUT_TRIMMED="$(printf '%s' "$TAG_INPUT" | tr -d '[:space:]')"
+
+            BROWSERS_JSON='[]'
+            if [[ "${{ inputs.browser_chrome }}" == "true" ]]; then
+              BROWSERS_JSON="$(jq -c '. + ["chrome"]' <<<"$BROWSERS_JSON")"
+            fi
+            if [[ "${{ inputs.browser_firefox }}" == "true" ]]; then
+              BROWSERS_JSON="$(jq -c '. + ["firefox"]' <<<"$BROWSERS_JSON")"
+            fi
+            if [[ "${{ inputs.browser_edge }}" == "true" ]]; then
+              BROWSERS_JSON="$(jq -c '. + ["edge"]' <<<"$BROWSERS_JSON")"
+            fi
+            if [[ "$(jq 'length' <<<"$BROWSERS_JSON")" -eq 0 ]]; then
+              echo "Select at least one browser."
+              exit 1
+            fi
 
             # Filling the tag field is enough; the checkbox is optional.
             if [[ "${{ inputs.use_custom_tags }}" == "true" || -n "$TAG_INPUT_TRIMMED" ]]; then
               jq -n \
                 --arg branch "$BRANCH" \
-                --arg browser "$BROWSER" \
+                --argjson browsers "$BROWSERS_JSON" \
                 --arg test_layer "$TEST_LAYER" \
                 --arg tag_filter "$TAG_INPUT" \
-                '{include: [{branch: $branch, browser: $browser, shard: "custom", test_layer: $test_layer, tag_filter: $tag_filter, use_custom_tags: "true"}]}' \
-                > matrix.json
-              echo "max_parallel=1" >> "$GITHUB_OUTPUT"
+                '
+                {
+                  include: (
+                    if $test_layer == "api" then
+                      [{
+                        branch: $branch,
+                        browser: $browsers[0],
+                        shard: "custom",
+                        test_layer: $test_layer,
+                        tag_filter: $tag_filter,
+                        use_custom_tags: "true"
+                      }]
+                    else
+                      [
+                        $browsers[] as $browser
+                        | {
+                            branch: $branch,
+                            browser: $browser,
+                            shard: "custom",
+                            test_layer: $test_layer,
+                            tag_filter: $tag_filter,
+                            use_custom_tags: "true"
+                          }
+                      ]
+                    end
+                  )
+                }
+                ' > matrix.json
             elif [[ "${{ inputs.run_all_in_one_job }}" == "true" ]]; then
               TAG_FILTER="$(append_not_ignore '')"
               jq -n \
                 --arg branch "$BRANCH" \
-                --arg browser "$BROWSER" \
+                --argjson browsers "$BROWSERS_JSON" \
                 --arg tag_filter "$TAG_FILTER" \
-                '{include: [{branch: $branch, browser: $browser, shard: "all", test_layer: "both", tag_filter: $tag_filter, use_custom_tags: false}]}' \
-                > matrix.json
-              echo "max_parallel=1" >> "$GITHUB_OUTPUT"
+                '
+                {
+                  include: [
+                    $browsers[] as $browser
+                    | {
+                        branch: $branch,
+                        browser: $browser,
+                        shard: "all",
+                        test_layer: "both",
+                        tag_filter: $tag_filter,
+                        use_custom_tags: false
+                      }
+                  ]
+                }
+                ' > matrix.json
             else
               jq -n \
                 --arg branch "$BRANCH" \
-                --arg browser "$BROWSER" \
+                --argjson browsers "$BROWSERS_JSON" \
                 --arg admin "$(append_not_ignore '@zmsadmin')" \
                 --arg citizenview "$(append_not_ignore '@zmscitizenview')" \
                 --arg statistic "$(append_not_ignore '@zmsstatistic')" \
                 --arg ticketprinter "$(append_not_ignore '@zmsticketprinter')" \
+                --arg calldisplay "$(append_not_ignore '@zmscalldisplay')" \
                 --arg zmsapi "$(append_not_ignore '@zmsapi')" \
                 --arg zmscitizenapi "$(append_not_ignore '@zmscitizenapi')" \
                 --argjson module_admin "${{ inputs.module_admin }}" \
                 --argjson module_citizenview "${{ inputs.module_citizenview }}" \
                 --argjson module_statistic "${{ inputs.module_statistic }}" \
                 --argjson module_ticketprinter "${{ inputs.module_ticketprinter }}" \
+                --argjson module_calldisplay "${{ inputs.module_calldisplay }}" \
                 --argjson module_zmsapi "${{ inputs.module_zmsapi }}" \
                 --argjson module_zmscitizenapi "${{ inputs.module_zmscitizenapi }}" \
                 '
                 {
-                  include: [
-                    if $module_admin then
-                      {shard: "zmsadmin", test_layer: "ui", tag_filter: $admin, use_custom_tags: false}
-                    else empty end,
-                    if $module_citizenview then
-                      {shard: "zmscitizenview", test_layer: "ui", tag_filter: $citizenview, use_custom_tags: false}
-                    else empty end,
-                    if $module_statistic then
-                      {shard: "zmsstatistic", test_layer: "ui", tag_filter: $statistic, use_custom_tags: false}
-                    else empty end,
-                    if $module_ticketprinter then
-                      {shard: "zmsticketprinter", test_layer: "ui", tag_filter: $ticketprinter, use_custom_tags: false}
-                    else empty end,
-                    if $module_zmsapi then
-                      {shard: "zmsapi", test_layer: "api", tag_filter: $zmsapi, use_custom_tags: false}
-                    else empty end,
-                    if $module_zmscitizenapi then
-                      {shard: "zmscitizenapi", test_layer: "api", tag_filter: $zmscitizenapi, use_custom_tags: false}
-                    else empty end
-                  ]
-                  | map(. + {branch: $branch, browser: $browser})
+                  include: (
+                    [
+                      [
+                        if $module_admin then
+                          {shard: "zmsadmin", test_layer: "ui", tag_filter: $admin, use_custom_tags: false}
+                        else empty end,
+                        if $module_citizenview then
+                          {shard: "zmscitizenview", test_layer: "ui", tag_filter: $citizenview, use_custom_tags: false}
+                        else empty end,
+                        if $module_statistic then
+                          {shard: "zmsstatistic", test_layer: "ui", tag_filter: $statistic, use_custom_tags: false}
+                        else empty end,
+                        if $module_ticketprinter then
+                          {shard: "zmsticketprinter", test_layer: "ui", tag_filter: $ticketprinter, use_custom_tags: false}
+                        else empty end,
+                        if $module_calldisplay then
+                          {shard: "zmscalldisplay", test_layer: "ui", tag_filter: $calldisplay, use_custom_tags: false}
+                        else empty end
+                      ][] as $shard
+                      | $browsers[] as $browser
+                      | $shard + {branch: $branch, browser: $browser}
+                    ]
+                    + [
+                      [
+                        if $module_zmsapi then
+                          {shard: "zmsapi", test_layer: "api", tag_filter: $zmsapi, use_custom_tags: false}
+                        else empty end,
+                        if $module_zmscitizenapi then
+                          {shard: "zmscitizenapi", test_layer: "api", tag_filter: $zmscitizenapi, use_custom_tags: false}
+                        else empty end
+                      ][] as $shard
+                      | $shard + {branch: $branch, browser: $browsers[0]}
+                    ]
+                  )
                 }
                 ' > matrix.json
 
@@ -273,14 +348,14 @@ jobs:
                 echo "No modules selected. Enable run_all_in_one_job, use_custom_tags, or at least one module checkbox."
                 exit 1
               fi
-              echo "max_parallel=$SHARD_COUNT" >> "$GITHUB_OUTPUT"
             fi
+            echo "max_parallel=$(jq '.include | length' matrix.json)" >> "$GITHUB_OUTPUT"
           fi
 
           if [[ "$FULL_MATRIX" == true ]]; then
-            jq '.include |= map(. + {job_name: "\(.branch) · \(.shard) · \(.browser)"})' matrix.json > matrix.tmp.json
+            jq '.include |= map(. + {job_name: (if .test_layer == "api" then "\(.branch) · \(.shard)" else "\(.branch) · \(.shard) · \(.browser)" end)})' matrix.json > matrix.tmp.json
           else
-            jq '.include |= map(. + {job_name: "\(.shard) · \(.browser)"})' matrix.json > matrix.tmp.json
+            jq '.include |= map(. + {job_name: (if .test_layer == "api" then .shard else "\(.shard) · \(.browser)" end)})' matrix.json > matrix.tmp.json
           fi
           mv matrix.tmp.json matrix.json
 
@@ -337,10 +412,46 @@ jobs:
         run: |
           set -euo pipefail
           PHP_TAG="${{ steps.tags.outputs.php_tag }}"
+          FALLBACK_TAG="branch-next"
           modules=(zmsadmin zmsbackend zmscalldisplay zmscitizenapi zmsmessaging zmsstatistic zmsticketprinter)
+          tags_file="${RUNNER_TEMP}/module-image-tags"
+          : > "$tags_file"
+
+          # A branch image exists only after that module's PHP image build finishes.
+          # Until then, use the latest next image for that module.
+          pull_image() {
+            local ref="$1"
+            local log attempt
+            for attempt in 1 2 3; do
+              if log="$(docker pull --quiet "$ref" 2>&1)"; then
+                printf '%s\n' "$log"
+                return 0
+              fi
+              printf '%s\n' "$log" >&2
+              if grep -Eqi 'not found|manifest unknown|name unknown' <<<"$log"; then
+                return 2
+              fi
+              echo "Pull of ${ref} failed (attempt ${attempt}/3)." >&2
+              sleep $((attempt * 15))
+            done
+            return 1
+          }
+
           for m in "${modules[@]}"; do
-            echo "Pulling $m:$PHP_TAG"
-            docker pull "ghcr.io/${GITHUB_REPOSITORY}/${m}:$PHP_TAG"
+            image="ghcr.io/${GITHUB_REPOSITORY}/${m}"
+            tag="$PHP_TAG"
+            rc=0
+            pull_image "${image}:${tag}" || rc=$?
+            if [[ "$rc" -eq 2 && "$tag" != "$FALLBACK_TAG" ]]; then
+              echo "No image ${image}:${tag} yet; using ${FALLBACK_TAG}"
+              tag="$FALLBACK_TAG"
+              pull_image "${image}:${tag}"
+            elif [[ "$rc" -ne 0 ]]; then
+              echo "Failed to pull ${image}:${PHP_TAG}"
+              exit 1
+            fi
+            echo "${m} ${tag}" >> "$tags_file"
+            echo "Resolved ${m} -> ${tag}"
           done
 
       - name: Start required containers (stack once)
@@ -350,10 +461,29 @@ jobs:
 
           cd .devcontainer
 
-          docker compose -f docker-compose.yaml down -v --remove-orphans || true
-          docker compose -f docker-compose.yaml up -d \
-            web db citizenview refarch-gateway keycloak init-keycloak \
-            captcha-db captchaservice
+          # Ten shards pull these images at once. A dropped layer is "unexpected EOF"
+          # and used to fail the job before any test ran. Retry the pull; quiet
+          # progress so a redraw is not thousands of log lines.
+          compose() {
+            docker compose --progress quiet -f docker-compose.yaml "$@"
+          }
+          services=(web db citizenview refarch-gateway keycloak init-keycloak captcha-db captchaservice)
+          pulled=0
+          for attempt in 1 2 3; do
+            if compose pull "${services[@]}"; then
+              pulled=1
+              break
+            fi
+            echo "Stack image pull failed (attempt ${attempt}/3)."
+            sleep $((attempt * 15))
+          done
+          if [[ "$pulled" -ne 1 ]]; then
+            echo "Stack image pull failed after 3 attempts."
+            exit 1
+          fi
+
+          compose down -v --remove-orphans || true
+          compose up -d "${services[@]}"
 
           captcha_ready=""
           for _ in {1..60}; do
@@ -401,6 +531,25 @@ jobs:
 
           docker exec -u root -e TARGET_BROWSER="$TARGET_BROWSER" "$WEB_CONT" bash -lc '
             set -euo pipefail
+
+            fetch_url() {
+              local url="$1"
+              local dest="$2"
+              local attempt
+              for attempt in 1 2 3 4 5; do
+                if curl -fsSL -o "$dest" "$url"; then
+                  return 0
+                fi
+                echo "Download failed (attempt ${attempt}/5): ${url}" >&2
+                rm -f "$dest"
+                if [ "$attempt" -lt 5 ]; then
+                  sleep $((attempt * 5))
+                fi
+              done
+              echo "Download failed after 5 attempts: ${url}" >&2
+              return 1
+            }
+
             apt-get update
 
             # ATAF 0.3.4 ships Selenium 4.46, which speaks Chrome DevTools protocol
@@ -436,8 +585,9 @@ jobs:
             if [[ "${TARGET_BROWSER:-}" == "edge" ]]; then
               mkdir -p /etc/apt/keyrings
               rm -f /etc/apt/keyrings/microsoft.gpg
-              curl -fsSL https://packages.microsoft.com/keys/microsoft.asc \
-                | gpg --batch --yes --no-tty --dearmor -o /etc/apt/keyrings/microsoft.gpg
+              fetch_url https://packages.microsoft.com/keys/microsoft.asc /tmp/microsoft.asc
+              gpg --batch --yes --no-tty --dearmor -o /etc/apt/keyrings/microsoft.gpg /tmp/microsoft.asc
+              rm -f /tmp/microsoft.asc
               echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/microsoft.gpg] https://packages.microsoft.com/repos/edge stable main" \
                 > /etc/apt/sources.list.d/microsoft-edge.list
               apt-get update
@@ -445,8 +595,9 @@ jobs:
 
               EDGE_VERSION="$(microsoft-edge --version | awk "{print \$3}")"
               EDGE_VERSION="${EDGE_VERSION%%-*}"
-              curl -fsSL -o /tmp/msedgedriver.zip \
-                "https://msedgedriver.microsoft.com/${EDGE_VERSION}/edgedriver_linux64.zip"
+              fetch_url \
+                "https://msedgedriver.microsoft.com/${EDGE_VERSION}/edgedriver_linux64.zip" \
+                /tmp/msedgedriver.zip
               unzip -o /tmp/msedgedriver.zip -d /tmp
               mv /tmp/msedgedriver /usr/local/bin/msedgedriver
               chmod +x /usr/local/bin/msedgedriver
@@ -455,8 +606,9 @@ jobs:
 
             if ! command -v geckodriver >/dev/null 2>&1; then
               GECKODRIVER_VERSION="v0.36.0"
-              wget -O /tmp/geckodriver.tar.gz \
-                "https://github.com/mozilla/geckodriver/releases/download/${GECKODRIVER_VERSION}/geckodriver-${GECKODRIVER_VERSION}-linux64.tar.gz"
+              fetch_url \
+                "https://github.com/mozilla/geckodriver/releases/download/${GECKODRIVER_VERSION}/geckodriver-${GECKODRIVER_VERSION}-linux64.tar.gz" \
+                /tmp/geckodriver.tar.gz
               tar -xzf /tmp/geckodriver.tar.gz -C /tmp
               mv /tmp/geckodriver /usr/local/bin/geckodriver
               chmod +x /usr/local/bin/geckodriver
@@ -466,8 +618,9 @@ jobs:
             if ! command -v mvn >/dev/null 2>&1; then
               apt-get install -y --no-install-recommends gnupg
               rm -f /usr/share/keyrings/adoptium.gpg
-              curl -fsSL https://packages.adoptium.net/artifactory/api/gpg/key/public \
-                | gpg --batch --yes --no-tty --dearmor -o /usr/share/keyrings/adoptium.gpg
+              fetch_url https://packages.adoptium.net/artifactory/api/gpg/key/public /tmp/adoptium.asc
+              gpg --batch --yes --no-tty --dearmor -o /usr/share/keyrings/adoptium.gpg /tmp/adoptium.asc
+              rm -f /tmp/adoptium.asc
               echo "deb [signed-by=/usr/share/keyrings/adoptium.gpg] https://packages.adoptium.net/artifactory/deb $(. /etc/os-release && echo $VERSION_CODENAME) main" \
                 > /etc/apt/sources.list.d/adoptium.list
               apt-get update
@@ -477,10 +630,12 @@ jobs:
               export PATH="$JAVA_HOME/bin:$PATH"
 
               MAVEN_VERSION="3.9.12"
-              curl -fsSL -o /tmp/maven.tar.gz \
-                "https://archive.apache.org/dist/maven/maven-3/${MAVEN_VERSION}/binaries/apache-maven-${MAVEN_VERSION}-bin.tar.gz"
-              curl -fsSL -o /tmp/maven.tar.gz.sha512 \
-                "https://archive.apache.org/dist/maven/maven-3/${MAVEN_VERSION}/binaries/apache-maven-${MAVEN_VERSION}-bin.tar.gz.sha512"
+              fetch_url \
+                "https://archive.apache.org/dist/maven/maven-3/${MAVEN_VERSION}/binaries/apache-maven-${MAVEN_VERSION}-bin.tar.gz" \
+                /tmp/maven.tar.gz
+              fetch_url \
+                "https://archive.apache.org/dist/maven/maven-3/${MAVEN_VERSION}/binaries/apache-maven-${MAVEN_VERSION}-bin.tar.gz.sha512" \
+                /tmp/maven.tar.gz.sha512
               echo "$(cat /tmp/maven.tar.gz.sha512)  /tmp/maven.tar.gz" | sha512sum -c - \
                 && tar -xzf /tmp/maven.tar.gz -C /opt \
                 && ln -s /opt/apache-maven-${MAVEN_VERSION}/bin/mvn /usr/local/bin/mvn
@@ -495,9 +650,14 @@ jobs:
         run: |
           set -euo pipefail
           WEB_CONT="zms-web"
-          PHP_TAG="${{ steps.tags.outputs.php_tag }}"
+          tags_file="${RUNNER_TEMP}/module-image-tags"
           modules=(zmsadmin zmsbackend zmscalldisplay zmscitizenapi zmsmessaging zmsstatistic zmsticketprinter)
           layout_modules=(zmsadmin zmsstatistic)
+
+          tag_for() {
+            local module="$1"
+            awk -v module="$module" '$1 == module { print $2; exit }' "$tags_file"
+          }
 
           retry() {
             local max_attempts="$1"
@@ -526,13 +686,19 @@ jobs:
 
           inject_module() {
             local m="$1"
-            echo "Injecting $m from GHCR image tag $PHP_TAG into $WEB_CONT:/var/www/html/$m"
+            local tag
+            tag="$(tag_for "$m")"
+            if [[ -z "$tag" ]]; then
+              echo "No resolved image tag for ${m}"
+              return 1
+            fi
+            echo "Injecting $m from GHCR image tag $tag into $WEB_CONT:/var/www/html/$m"
             docker exec -u root "$WEB_CONT" bash -lc "mkdir -p /var/www/html/${m}"
 
             if [[ " ${layout_modules[*]} " == *" ${m} "* ]]; then
               docker run --rm \
                 -v "${GITHUB_WORKSPACE}/zmslayout:/var/www/zmslayout:ro" \
-                "ghcr.io/${GITHUB_REPOSITORY}/${m}:${PHP_TAG}" \
+                "ghcr.io/${GITHUB_REPOSITORY}/${m}:${tag}" \
                 bash -lc 'set -euo pipefail
                   cd /var/www/html
                   for spec in bo-zms-layout-js:js bo-zms-layout-scss:scss; do
@@ -546,7 +712,7 @@ jobs:
                   tar cf - -C /var/www/html .' \
                 | docker exec -i -u root "$WEB_CONT" tar -xf - -C "/var/www/html/${m}/"
             else
-              docker run --rm --entrypoint tar "ghcr.io/${GITHUB_REPOSITORY}/${m}:${PHP_TAG}" \
+              docker run --rm --entrypoint tar "ghcr.io/${GITHUB_REPOSITORY}/${m}:${tag}" \
                 -cf - -C /var/www/html . \
                 | docker exec -i -u root "$WEB_CONT" tar -xf - -C "/var/www/html/${m}/"
             fi

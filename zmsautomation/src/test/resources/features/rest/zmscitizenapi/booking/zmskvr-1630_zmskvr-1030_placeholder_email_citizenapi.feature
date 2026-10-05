@@ -1,4 +1,4 @@
-@rest @zmscitizenapi @booking @citizen @ZMSKVR-1630 @ZMSKVR-1030 @pickupCalendar
+@rest @zmscitizenapi @booking @citizen @ZMSKVR-1630 @ZMSKVR-1030 @ZMSKVR-1665 @ZMSKVR-1666 @pickupCalendar
 Feature: ZMSKVR-1630 / ZMSKVR-1030 Placeholder email and reserved-only update â€” Citizen API
   As a citizen API client
   I want reserve to keep an undeliverable placeholder email, update only while reserved, and confirm without preconfirm only for a logged-in reserved process
@@ -117,4 +117,13 @@ Feature: ZMSKVR-1630 / ZMSKVR-1030 Placeholder email and reserved-only update â€
     When I attempt to update the appointment with email "noreply-terminvereinbarung@muenchen.de"
     Then the response status code should be 400
     And the response errors should include errorCode "invalidEmail"
+    When I cancel the appointment
+
+  Scenario: Fetch after reserve reports the configured placeholder email
+    When I request available days for office 10492 and service 10295182
+    And I request available appointments for the first available day
+    And I reserve an appointment with the first available slot
+    Then the appointment status should be "reserved"
+    When I fetch the appointment for the current process
+    Then the fetched appointment should report placeholder email "noreply-terminvereinbarung@muenchen.de"
     When I cancel the appointment

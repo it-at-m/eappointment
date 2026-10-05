@@ -5,12 +5,38 @@ import type { ComputedRef, Ref } from "vue";
 
 import { nextTick, onUpdated, watch } from "vue";
 
-/** Placeholder set by reserve before real contact data is written. */
+/** Same default as zmscitizenapi when ZMS_CITIZENAPI_PLACEHOLDER_EMAIL is unset. */
 export const PLACEHOLDER_RESERVE_EMAIL =
   "noreply-terminvereinbarung@muenchen.de";
 
+/** Address from the appointment response, which the API read from the env var. */
+let placeholderFromApi: string | undefined;
+
+export function setPlaceholderReserveEmail(email?: string | null): void {
+  const trimmed = (email ?? "").trim();
+  placeholderFromApi = trimmed || undefined;
+}
+
+export function resetPlaceholderReserveEmail(): void {
+  placeholderFromApi = undefined;
+}
+
+export function getPlaceholderReserveEmail(): string {
+  if (placeholderFromApi) {
+    return placeholderFromApi;
+  }
+  const fromEnv = String(
+    import.meta.env.ZMS_CITIZENAPI_PLACEHOLDER_EMAIL ?? ""
+  ).trim();
+  return fromEnv || PLACEHOLDER_RESERVE_EMAIL;
+}
+
 export function isPlaceholderEmail(email?: string | null): boolean {
-  return (email ?? "").trim().toLowerCase() === PLACEHOLDER_RESERVE_EMAIL;
+  const placeholder = getPlaceholderReserveEmail().toLowerCase();
+  if (!placeholder) {
+    return false;
+  }
+  return (email ?? "").trim().toLowerCase() === placeholder;
 }
 
 export function isFilledContactValue(value?: string | null): boolean {
