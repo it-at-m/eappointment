@@ -6,6 +6,7 @@ use App;
 use BO\Slim\Formatter\JsonLogFormatter;
 use Monolog\Formatter\JsonFormatter;
 use Monolog\Handler\FormattableHandlerInterface;
+use Monolog\Handler\NullHandler;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 use Slim\HttpCache\CacheProvider;
@@ -177,15 +178,26 @@ class Bootstrap
     {
         App::$log = new Logger($identifier);
         $level = $this->parseDebugLevel($level);
-        // Cron/CLI: stdout so Kubernetes/CAP collectors parse JSON; web: stderr
-        $stream = PHP_SAPI === 'cli' ? 'php://stdout' : 'php://stderr';
-        $handler = new StreamHandler($stream, $level);
-        $handler->setFormatter(new JsonLogFormatter());
+        if (self::isLoggingDisabled()) {
+            $handler = new NullHandler($level);
+        } else {
+            // Cron/CLI: stdout so Kubernetes/CAP collectors parse JSON; web: stderr
+            $stream = PHP_SAPI === 'cli' ? 'php://stdout' : 'php://stderr';
+            $handler = new StreamHandler($stream, $level);
+            $handler->setFormatter(new JsonLogFormatter());
+        }
         App::$log->pushHandler($handler);
 
         App::$log = App::$log;
 
         PhpErrorHandler::register();
+    }
+
+    protected static function isLoggingDisabled(): bool
+    {
+        $value = getenv('ZMS_LOG_DISABLED');
+
+        return $value !== false && !in_array(strtolower($value), ['', '0', 'false', 'off', 'no'], true);
     }
 
     protected function configureSlim(): void

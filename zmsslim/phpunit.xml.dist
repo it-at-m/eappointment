@@ -15,6 +15,7 @@
   processIsolation="true"
 >
   <php>
+    <env name="ZMS_LOG_DISABLED" value="true" />
     <ini name="error_reporting" value="-1" />
     <ini name="xdebug.mode" value="coverage" />
     <env name="XDEBUG_MODE" value="coverage" />

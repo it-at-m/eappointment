@@ -3,6 +3,9 @@
          xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.5/phpunit.xsd" backupGlobals="false"
          bootstrap="tests/Zmscitizenapi/bootstrap.php" colors="true" stopOnFailure="false" processIsolation="false"
          cacheDirectory=".phpunit.cache" backupStaticProperties="false" requireCoverageMetadata="false">
+    <php>
+        <env name="ZMS_LOG_DISABLED" value="true"/>
+    </php>
     <testsuites>
         <testsuite name="Zmscititzenapi Test Suite">
             <directory>./tests/Zmscitizenapi/</directory>
