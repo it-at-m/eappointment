@@ -44,7 +44,7 @@
         "vimeo/psalm": "6.19.1",
         "phpunit/phpunit": "^13",
         "phpspec/prophecy-phpunit": "^2.4",
-        "phpmd/phpmd": "^2.3",
+        "phpmd/phpmd": "^3.0",
         "squizlabs/php_codesniffer": "^4.0",
         "roave/security-advisories": "dev-latest"
     },
