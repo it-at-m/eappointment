@@ -1,21 +1,28 @@
 /**
  * Privacy-safe booking analytics. Emits English, PII-free events that cross
  * Shadow DOM via document + composed CustomEvent. If etracker is present on
- * the host page, also forwards object/category/action. Each object and
- * action pair is emitted on every 10th occurrence. Never throws.
+ * the host page, also forwards object/category/action. One visit in ten
+ * is kept, and that visit emits every event in the chain. Never throws.
  */
 
 export const APPOINTMENT_TRACK_EVENT = "zms-appointment-track";
 
 export const APPOINTMENT_TRACK_CATEGORY = "appointment";
 
-/** Each object and action pair is forwarded once per this many occurrences. */
+/** One visit in this many is tracked for its whole chain. */
 export const APPOINTMENT_TRACK_SAMPLE_INTERVAL = 10;
 
-const trackedEventCounts = new Map<string, number>();
+const APPOINTMENT_TRACK_SAMPLE_KEY = "zms-appointment-track-sample";
 
-export function resetAppointmentTrackCounts(): void {
-  trackedEventCounts.clear();
+let memorySample: boolean | undefined;
+
+export function resetAppointmentTrackSample(): void {
+  memorySample = undefined;
+  try {
+    sessionStorage.removeItem(APPOINTMENT_TRACK_SAMPLE_KEY);
+  } catch {
+    // Storage can be blocked. The in-memory decision is already cleared.
+  }
 }
 
 export type AppointmentTrackObject =
@@ -93,20 +100,30 @@ export function trackWidgetView(widget: AppointmentTrackWidget): void {
   trackAppointmentEvent({ object: widget, action: "view" });
 }
 
-function eventSampleKey(payload: AppointmentTrackPayload): string {
-  return `${payload.object}:${payload.action}`;
+function rollVisitSample(): boolean {
+  return Math.floor(Math.random() * APPOINTMENT_TRACK_SAMPLE_INTERVAL) === 0;
 }
 
-function shouldEmit(payload: AppointmentTrackPayload): boolean {
-  const key = eventSampleKey(payload);
-  const count = (trackedEventCounts.get(key) ?? 0) + 1;
-  trackedEventCounts.set(key, count);
-  return count % APPOINTMENT_TRACK_SAMPLE_INTERVAL === 0;
+function visitIsTracked(): boolean {
+  try {
+    const stored = sessionStorage.getItem(APPOINTMENT_TRACK_SAMPLE_KEY);
+    if (stored === "1" || stored === "0") {
+      return stored === "1";
+    }
+    const keep = rollVisitSample();
+    sessionStorage.setItem(APPOINTMENT_TRACK_SAMPLE_KEY, keep ? "1" : "0");
+    return keep;
+  } catch {
+    if (memorySample === undefined) {
+      memorySample = rollVisitSample();
+    }
+    return memorySample;
+  }
 }
 
 export function trackAppointmentEvent(payload: AppointmentTrackPayload): void {
   try {
-    if (!shouldEmit(payload)) {
+    if (!visitIsTracked()) {
       return;
     }
     document.dispatchEvent(
