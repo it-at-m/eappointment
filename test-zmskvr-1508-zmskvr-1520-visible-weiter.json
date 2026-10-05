@@ -1,0 +1,35 @@
+{
+  "branch": "test-zmskvr-1508-zmskvr-1520-visible-weiter",
+  "branchSlug": "test-zmskvr-1508-zmskvr-1520-visible-weiter",
+  "runId": "37313399232",
+  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37313399232",
+  "runStartedAt": "2026-10-05T12:59:28Z",
+  "publishedAt": "2026-10-05T13:17:11.629Z",
+  "features": {
+    "feature-ui-zmscitizenview-booking-zmskvr-1520-zmskvr-1508-zmskvr-1518-zmskvr-1492-zmskvr-1513-zmskvr-1453-variant-place": {
+      "status": "passed",
+      "shard": "custom",
+      "browser": "chrome",
+      "browsers": {
+        "chrome": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "37313399232",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37313399232",
+          "runStartedAt": "2026-10-05T12:59:28Z"
+        },
+        "firefox": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "37313399232",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37313399232",
+          "runStartedAt": "2026-10-05T12:59:28Z"
+        }
+      },
+      "rel": "ui/zmscitizenview/booking/zmskvr-1520_zmskvr-1508_zmskvr-1518_zmskvr-1492_zmskvr-1513_zmskvr-1453_variant_place.feature",
+      "runId": "37313399232",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37313399232",
+      "runStartedAt": "2026-10-05T12:59:28Z"
+    }
+  }
+}
