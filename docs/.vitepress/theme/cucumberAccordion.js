@@ -505,6 +505,7 @@ const buildRemoteCatalog = async (branch, sha, paths) => {
       title: parsed.title || fileName,
       tags: parsed.tags,
       scenarioCount: parsed.scenarioCount,
+      mobileScenarioCount: parsed.mobileScenarioCount || 0,
       sourceUrl: cucumberFeatureSourceUrl(rel, branch),
       testType,
       module,

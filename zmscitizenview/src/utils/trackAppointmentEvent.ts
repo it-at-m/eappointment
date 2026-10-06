@@ -1,8 +1,10 @@
 /**
  * Privacy-safe booking analytics. Emits English, PII-free events that cross
  * Shadow DOM via document + composed CustomEvent. If etracker is present on
- * the host page, also forwards object/category/action. One visit in ten
- * is kept, and that visit emits every event in the chain. Never throws.
+ * the host page, also forwards object, category, action, and type. Type is
+ * the flow (new, rebooking) and the slot view (list, calendar) when set.
+ * One visit in ten is kept, and that visit emits every event in the chain.
+ * Never throws.
  */
 
 export const APPOINTMENT_TRACK_EVENT = "zms-appointment-track";
@@ -146,11 +148,30 @@ function sendToEtracker(payload: AppointmentTrackPayload): void {
     return;
   }
 
-  sendEvent(
-    new UserDefinedEvent(
-      payload.object,
-      APPOINTMENT_TRACK_CATEGORY,
-      payload.action
-    )
-  );
+  const type = etrackerType(payload);
+  const event = type
+    ? new UserDefinedEvent(
+        payload.object,
+        APPOINTMENT_TRACK_CATEGORY,
+        payload.action,
+        type
+      )
+    : new UserDefinedEvent(
+        payload.object,
+        APPOINTMENT_TRACK_CATEGORY,
+        payload.action
+      );
+  sendEvent(event);
+}
+
+/** etracker has one type field. Flow and slot view share it, flow first. */
+function etrackerType(payload: AppointmentTrackPayload): string | undefined {
+  const parts: string[] = [];
+  if (payload.flow) {
+    parts.push(payload.flow);
+  }
+  if (payload.slot_ui) {
+    parts.push(payload.slot_ui);
+  }
+  return parts.length > 0 ? parts.join("_") : undefined;
 }

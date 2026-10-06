@@ -12,10 +12,14 @@
 import { KEYCLOAK_AUTH_LEVEL1 } from "@/types/AuthorizationEventDetails";
 
 const AUTH_REQUEST = "authorization-request";
+/** Vue asks for the current session after it registers the authorization-event listener. */
+const AUTH_SUBSCRIBE = "authorization-event-subscribe";
 const AUTH_EVENT = "authorization-event";
 const STORAGE_STATE = "zms-local-oidc-state";
 const STORAGE_VERIFIER = "zms-local-oidc-verifier";
 const STORAGE_SESSION = "zms-local-oidc-session";
+/** Keep re-emitting until Vue mounts; busy ATAF shards can take well over 20s. */
+const PUBLISH_SESSION_MS = 120_000;
 
 type LoginConfig = {
   kcUrl: string;
@@ -192,7 +196,7 @@ function publishSession(accessToken: string, idToken?: string): void {
   }
   const started = Date.now();
   const tick = (): void => {
-    if (!loadSession() || Date.now() - started > 20000) {
+    if (!loadSession() || Date.now() - started > PUBLISH_SESSION_MS) {
       window.clearInterval(publishTimer);
       publishTimer = undefined;
       return;
@@ -201,6 +205,14 @@ function publishSession(accessToken: string, idToken?: string): void {
   };
   tick();
   publishTimer = window.setInterval(tick, 500);
+}
+
+function replayStoredSession(): void {
+  const session = loadSession();
+  if (!session?.accessToken) {
+    return;
+  }
+  emitAuthEvent(session.accessToken, session.idToken);
 }
 
 async function startLogin(config: LoginConfig): Promise<void> {
@@ -563,6 +575,11 @@ export async function initLocalDbsLogin(): Promise<void> {
         err
       );
     });
+  });
+
+  // Vue mounts after this module; reply immediately when it asks for the session.
+  document.addEventListener(AUTH_SUBSCRIBE, () => {
+    replayStoredSession();
   });
 
   renderHostChrome(config);
