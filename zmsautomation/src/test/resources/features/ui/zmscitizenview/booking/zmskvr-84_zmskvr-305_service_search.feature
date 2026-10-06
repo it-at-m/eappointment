@@ -10,6 +10,7 @@ Feature: CitizenView: search for a service
   # Reloading returns to the search.
   # Clicking the field, or tabbing to it and pressing Enter, opens the list underneath.
   # The list is alphabetical, and typing keeps only the services that contain the text.
+  # A single letter matches more services than the field shows, so Wohnsitzanmeldung is found with Wohnsitz.
   # Choosing a row opens Leistung. No appointment is booked.
 
   Scenario: Search, suggestion links, and choosing a service
@@ -29,6 +30,8 @@ Feature: CitizenView: search for a service
     Then the service list is open under the search field
     When I type "z" into the service search
     Then the service list only shows services containing "z"
+    When I type "Wohnsitz" into the service search
+    Then the service list only shows services containing "Wohnsitz"
     And the service list includes "Wohnsitzanmeldung" and not "Reisepass"
     When I type "Reise" into the service search
     Then the service list only shows services containing "Reise"
