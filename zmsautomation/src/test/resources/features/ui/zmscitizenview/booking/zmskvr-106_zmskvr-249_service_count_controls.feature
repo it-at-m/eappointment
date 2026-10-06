@@ -10,6 +10,7 @@ Feature: CitizenView: service counts use plus and minus
   # Personalausweis is combinable and starts at 0, so minus is off until it is raised.
   # Plus turns off at each service's own maximum.
   # The name links to the service description. No appointment is booked.
+  # Desktop keeps the count left of the name; @mobile puts it underneath.
 
   Scenario: Service counts, links, and layout on the Leistung step
     Given I open the zmscitizenview booking page
@@ -33,6 +34,14 @@ Feature: CitizenView: service counts use plus and minus
     When I decrease the selected service "Personalausweis"
     Then the service counter for "Personalausweis" should still be 0
     And the minus button for service "Personalausweis" is disabled
-    And the count for "Reisepass" sits beside the name on desktop and below it on a phone
+    And the count for "Reisepass" sits beside the name on desktop
     When I raise the service "Reisepass" until the plus button is disabled
     And I raise the service "Personalausweis" until the plus button is disabled
+
+  @mobile
+  Scenario: Service count sits below the name on a phone
+    Given I open the zmscitizenview booking page
+    Then the Service Finder should be visible on the start page
+    When I select service "Reisepass" from the service finder and continue
+    Then the service combination step should be visible
+    And the count for "Reisepass" sits below the name on a phone
