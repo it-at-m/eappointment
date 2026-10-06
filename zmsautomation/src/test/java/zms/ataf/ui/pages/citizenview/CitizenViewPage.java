@@ -258,6 +258,10 @@ public class CitizenViewPage extends BasePage {
 
     public void assertServiceListOpenUnderField() {
         CONTEXT.set();
+        // The dropdown closes when the step ends. Open it again, then check that it sits under the field.
+        if (!serviceSearch("read", "").path("open").asBoolean()) {
+            serviceSearch("click", "");
+        }
         JsonNode state = waitUntilServiceListOpen();
         Assert.assertTrue(
                 state.path("under").asBoolean(),
@@ -396,7 +400,7 @@ public class CitizenViewPage extends BasePage {
                         + "if(inner){inner.scrollIntoView({block:'center'});inner.click();}"
                         + "return JSON.stringify({open:isOpen(choices)});}"
                         + "if(mode==='close'){if(isOpen(choices)){var input=choices.querySelector('.choices__input--cloned');"
-                        + "if(input)input.dispatchEvent(new KeyboardEvent('keydown',{key:'Escape',bubbles:true,cancelable:true}));"
+                        + "if(input)input.dispatchEvent(new KeyboardEvent('keydown',{key:'Escape',code:'Escape',keyCode:27,which:27,bubbles:true,cancelable:true}));"
                         + "if(isOpen(choices)){var inner2=choices.querySelector('.choices__inner');if(inner2)inner2.click();}}"
                         + "return JSON.stringify({open:isOpen(choices)});}"
                         + "if(mode==='focus-heading'){var heading=null;walk(document.body,function(n){"
@@ -1914,19 +1918,27 @@ public class CitizenViewPage extends BasePage {
 
     public void selectVisibleTimeslot() {
         previousTimeslotId = markedTimeslotId;
-        JsonNode clicked = citizenJson(
-                "(function(){var skip=__args[0]==null?'':String(__args[0]);"
-                        + "var slots=cssAll('.timeslot');var target=null;"
-                        + "for(var i=0;i<slots.length;i++){var el=slots[i];if(!shown(el))continue;"
-                        + "var id=el.id||'';if(skip&&id===skip)continue;"
-                        + "if(isPrimary(el))continue;"
-                        + "var inner=el.shadowRoot&&el.shadowRoot.querySelector('button');"
-                        + "if(inner&&inner.disabled)continue;target=el;break;}"
-                        + "if(!target)return {clicked:false};target.scrollIntoView({block:'center'});"
-                        + "var press=target.shadowRoot&&target.shadowRoot.querySelector('button');"
-                        + "(press||target).click();return {clicked:true,id:target.id||''};})()",
-                markedTimeslotId == null ? "" : markedTimeslotId);
-        Assert.assertTrue(clicked.path("clicked").asBoolean(), "Could not select a visible timeslot");
+        String skip = markedTimeslotId == null ? "" : markedTimeslotId;
+        JsonNode clicked = new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(d -> {
+                    JsonNode node = citizenJson(
+                            "(function(){var skip=__args[0]==null?'':String(__args[0]);"
+                                    + "var open=cssAll('#listViewAccordion section.m-accordion__section-content.show')[0]||null;"
+                                    + "function inOpen(el){if(!open)return true;var n=el;while(n){if(n===open)return true;"
+                                    + "if(n.parentElement){n=n.parentElement;continue;}"
+                                    + "var root=n.getRootNode&&n.getRootNode();n=root&&root.host?root.host:null;}return false;}"
+                                    + "var slots=cssAll('.timeslot');var target=null;"
+                                    + "for(var i=0;i<slots.length;i++){var el=slots[i];if(!shown(el)||!inOpen(el))continue;"
+                                    + "var id=el.id||'';if(skip&&id===skip)continue;"
+                                    + "if(isPrimary(el))continue;"
+                                    + "var inner=el.shadowRoot&&el.shadowRoot.querySelector('button');"
+                                    + "if(inner&&inner.disabled)continue;target=el;break;}"
+                                    + "if(!target)return {clicked:false};target.scrollIntoView({block:'center'});"
+                                    + "var press=target.shadowRoot&&target.shadowRoot.querySelector('button');"
+                                    + "(press||target).click();return {clicked:true,id:target.id||''};})()",
+                            skip);
+                    return node.path("clicked").asBoolean() ? node : null;
+                });
         markedTimeslotId = clicked.path("id").asText();
         sleepQuiet(400L);
     }
@@ -5795,15 +5807,32 @@ public class CitizenViewPage extends BasePage {
     }
 
     private void waitUntilNeueTerminVisible() {
-        waitWithThreeWindows(
-                () -> shadowDomContainsText("Neuer Termin"), "Meine Termine finished loading");
-        if (shadowDomContainsText("Neuer Termin")) {
-            return;
+        String loadError = "Ihre Termine können zur Zeit nicht geladen werden.";
+        for (int attempt = 1; attempt <= 3; attempt++) {
+            long deadline = System.currentTimeMillis() + 25_000L;
+            while (System.currentTimeMillis() < deadline) {
+                if (shadowDomContainsText("Neuer Termin")) {
+                    return;
+                }
+                if (shadowDomContainsText(loadError)) {
+                    break;
+                }
+                try {
+                    Thread.sleep(250L);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    return;
+                }
+            }
+            if (shadowDomContainsText("Neuer Termin") || attempt == 3) {
+                return;
+            }
+            ScenarioLogManager.getLogger()
+                    .warn(
+                            "zmscitizenview: Meine Termine has no Neuer Termin (attempt {}/3)",
+                            attempt);
+            reloadMeineTermine();
         }
-        reloadMeineTermine();
-        waitWithThreeWindows(
-                () -> shadowDomContainsText("Neuer Termin"),
-                "Meine Termine finished loading after reload");
     }
 
     private String meineTermineOverviewUrl() {
