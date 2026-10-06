@@ -15,7 +15,9 @@ import java.util.function.BooleanSupplier;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.TimeoutException;
+import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -61,6 +63,17 @@ public class CitizenViewPage extends BasePage {
 
     public static final String DE_INVALID_JUMPIN_TEXT =
             "Der Link zu dieser Seite ist leider fehlerhaft. Starten Sie die Terminvereinbarung neu";
+
+    private static final String[] SERVICE_SUGGESTIONS = {
+        "Wohnsitzanmeldung",
+        "Reisepass",
+        "Personalausweis",
+        "Ausweis-Abholung",
+        "Führerschein-Abholung",
+        "eID-PIN",
+        "Kfz-Ummeldung",
+        "Kfz-Abmeldung"
+    };
 
     private static final String EN_INVALID_JUMPIN_HEADER = "This view cannot be loaded.";
     private static final String EN_INVALID_JUMPIN_TEXT =
@@ -183,6 +196,210 @@ public class CitizenViewPage extends BasePage {
                 "Service Finder copy (Leistung / Bürgerservice-Suche / Häufig gesuchte Leistungen) not found"
                         + " in page+shadow DOM within timeout.");
         ScenarioLogManager.getLogger().info("Service Finder is visible on the start page.");
+    }
+
+    /** ZMSKVR-84: the start page search box and the frequently requested service links. */
+    public void assertServiceSearchAndSuggestions() {
+        CONTEXT.set();
+        JsonNode state = serviceSearch("links", "");
+        Assert.assertTrue(state.path("hasField").asBoolean(), "The service search field is not on the start page.");
+        JsonNode links = state.path("links");
+        Assert.assertEquals(
+                links.size(),
+                SERVICE_SUGGESTIONS.length,
+                "Suggestion links were " + links);
+        for (int i = 0; i < SERVICE_SUGGESTIONS.length; i++) {
+            Assert.assertEquals(links.get(i).asText(), SERVICE_SUGGESTIONS[i], "Suggestion links were " + links);
+        }
+    }
+
+    public void reloadCitizenView() {
+        CONTEXT.set();
+        ScenarioLogManager.getLogger().info("zmscitizenview: reload the booking page");
+        DriverUtil.getDriver().navigate().refresh();
+        new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(d -> shadowDomContainsText("Bürgerservice-Suche"));
+    }
+
+    /** Click the search field. The list opens underneath it. */
+    public void clickServiceSearchField() {
+        CONTEXT.set();
+        waitUntilServiceLabelReadyForSelection("Reisepass", 20);
+        serviceSearch("click", "");
+        waitUntilServiceListOpen();
+    }
+
+    /**
+     * From the Leistung heading, Tab lands on the search field. Enter opens the list.
+     */
+    public void openServiceListWithTabAndEnter() {
+        CONTEXT.set();
+        waitUntilServiceLabelReadyForSelection("Reisepass", 20);
+        serviceSearch("close", "");
+        serviceSearch("focus-heading", "");
+        Actions actions = new Actions(DriverUtil.getDriver());
+        boolean focused = false;
+        for (int i = 0; i < 8; i++) {
+            if (serviceSearch("focused", "").path("focused").asBoolean()) {
+                focused = true;
+                break;
+            }
+            actions.sendKeys(Keys.TAB).perform();
+            sleepQuiet(150L);
+        }
+        Assert.assertTrue(focused, "Tab did not reach the service search field.");
+        actions.sendKeys(Keys.ENTER).perform();
+        waitUntilServiceListOpen();
+    }
+
+    public void assertServiceListOpenUnderField() {
+        CONTEXT.set();
+        JsonNode state = waitUntilServiceListOpen();
+        Assert.assertTrue(
+                state.path("under").asBoolean(),
+                "The service list should open under the search field: " + state);
+    }
+
+    public void assertServiceListAlphabetical() {
+        CONTEXT.set();
+        JsonNode state = waitUntilServiceListOpen();
+        Assert.assertTrue(
+                state.path("names").size() > 1,
+                "The service list has no choices: " + state);
+        Assert.assertTrue(
+                state.path("alphabetical").asBoolean(),
+                "The service list is not alphabetical: " + state.path("names"));
+    }
+
+    public void typeIntoServiceSearch(String query) {
+        CONTEXT.set();
+        String folded = query.toLowerCase(Locale.ROOT);
+        new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(d -> {
+                    serviceSearch("type", query);
+                    JsonNode names = serviceSearch("read", "").path("names");
+                    if (names.size() == 0) {
+                        return false;
+                    }
+                    for (JsonNode name : names) {
+                        if (!name.asText().toLowerCase(Locale.ROOT).contains(folded)) {
+                            return false;
+                        }
+                    }
+                    return true;
+                });
+    }
+
+    public void assertServiceListContainsOnly(String query) {
+        CONTEXT.set();
+        String folded = query.toLowerCase(Locale.ROOT);
+        JsonNode names = serviceSearch("read", "").path("names");
+        Assert.assertTrue(names.size() > 0, "The service list is empty for \"" + query + "\".");
+        for (JsonNode name : names) {
+            Assert.assertTrue(
+                    name.asText().toLowerCase(Locale.ROOT).contains(folded),
+                    "\"" + name.asText() + "\" does not contain \"" + query + "\". List: " + names);
+        }
+    }
+
+    public void assertServiceListIncludesAndNot(String present, String absent) {
+        CONTEXT.set();
+        JsonNode names = serviceSearch("read", "").path("names");
+        boolean found = false;
+        for (JsonNode name : names) {
+            String text = name.asText();
+            Assert.assertNotEquals(text, absent, "\"" + absent + "\" is still in the service list: " + names);
+            if (text.equals(present)) {
+                found = true;
+            }
+        }
+        Assert.assertTrue(found, "\"" + present + "\" is not in the service list: " + names);
+    }
+
+    /** Choose a row in the open list. That opens the Leistung step for the service. */
+    public void chooseServiceFromOpenList(String label) {
+        CONTEXT.set();
+        JsonNode state = serviceSearch("choose", label);
+        Assert.assertTrue(
+                state.path("chosen").asBoolean(),
+                "Could not choose \"" + label + "\" from the service list.");
+        assertCombinationStepVisible();
+    }
+
+    private JsonNode waitUntilServiceListOpen() {
+        new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(d -> serviceSearch("read", "").path("open").asBoolean());
+        JsonNode state = serviceSearch("read", "");
+        Assert.assertTrue(state.path("open").asBoolean(), "The service list did not open: " + state);
+        return state;
+    }
+
+    private JsonNode serviceSearch(String mode, String text) {
+        String script =
+                "var mode=arguments[0];var text=arguments[1]||'';"
+                        + "function norm(t){return (t||'').replace(/\\s+/g,' ').trim();}"
+                        + "function walk(n,fn){if(!n)return;fn(n);if(n.shadowRoot)walk(n.shadowRoot,fn);"
+                        + "var c=n.children;if(c)for(var i=0;i<c.length;i++)walk(c[i],fn);}"
+                        + "function up(n){if(!n)return null;if(n.parentElement)return n.parentElement;"
+                        + "var root=n.getRootNode&&n.getRootNode();return root&&root.host?root.host:null;}"
+                        + "function findSelect(){var found=null;walk(document.body,function(n){"
+                        + "if(!found&&(n.id||'')==='select-service-search')found=n;});return found;}"
+                        + "function choicesOf(select){var n=select;while(n){"
+                        + "if(n.classList&&n.classList.contains('choices'))return n;n=up(n);}return null;}"
+                        + "function dropdown(choices){return choices?choices.querySelector('.choices__list--dropdown'):null;}"
+                        + "function isOpen(choices){var d=dropdown(choices);return !!(d&&(d.getAttribute('aria-expanded')==='true'"
+                        + "||d.classList.contains('is-active')));}"
+                        + "function shown(el){if(!el||el.hidden)return false;var st=window.getComputedStyle(el);"
+                        + "return st.display!=='none'&&st.visibility!=='hidden'&&st.opacity!=='0';}"
+                        + "function namesOf(choices){var d=dropdown(choices);var names=[];if(!d)return names;"
+                        + "var items=d.querySelectorAll('.choices__item--choice');"
+                        + "for(var i=0;i<items.length;i++){var name=norm(items[i].textContent);"
+                        + "if(!shown(items[i])||!name||name==='Keine Leistung gefunden')continue;names.push(name);}return names;}"
+                        + "function deepActive(){var el=document.activeElement,guard=0;"
+                        + "while(el&&el.shadowRoot&&el.shadowRoot.activeElement&&guard++<10)el=el.shadowRoot.activeElement;return el;}"
+                        + "var select=findSelect();var choices=choicesOf(select);"
+                        + "if(mode==='links'){var links=[];walk(document.body,function(n){"
+                        + "if(!n.classList||!n.classList.contains('m-linklist-inline__list'))return;"
+                        + "var as=n.querySelectorAll('a');for(var i=0;i<as.length;i++)links.push(norm(as[i].textContent));});"
+                        + "return JSON.stringify({hasField:!!select,links:links});}"
+                        + "if(!choices)return JSON.stringify({open:false,hasField:false});"
+                        + "if(mode==='click'){var inner=choices.querySelector('.choices__inner');"
+                        + "if(inner){inner.scrollIntoView({block:'center'});inner.click();}"
+                        + "return JSON.stringify({open:isOpen(choices)});}"
+                        + "if(mode==='close'){if(isOpen(choices)){var input=choices.querySelector('.choices__input--cloned');"
+                        + "if(input)input.dispatchEvent(new KeyboardEvent('keydown',{key:'Escape',bubbles:true,cancelable:true}));"
+                        + "if(isOpen(choices)){var inner2=choices.querySelector('.choices__inner');if(inner2)inner2.click();}}"
+                        + "return JSON.stringify({open:isOpen(choices)});}"
+                        + "if(mode==='focus-heading'){var heading=null;walk(document.body,function(n){"
+                        + "if(!heading&&(n.tagName||'').toUpperCase()==='H2'&&norm(n.textContent)==='Leistung')heading=n;});"
+                        + "if(heading){heading.setAttribute('tabindex','-1');heading.focus();}"
+                        + "return JSON.stringify({focused:!!heading});}"
+                        + "if(mode==='focused'){var el=deepActive(),inside=false,n=el;"
+                        + "while(n){if(n===choices){inside=true;break;}n=up(n);}"
+                        + "return JSON.stringify({focused:inside});}"
+                        + "if(mode==='type'){var field=choices.querySelector('.choices__input--cloned');"
+                        + "if(field){field.focus();field.value=text;"
+                        + "field.dispatchEvent(new Event('input',{bubbles:true}));"
+                        + "field.dispatchEvent(new KeyboardEvent('keyup',{key:text.slice(-1)||'',bubbles:true}));}}"
+                        + "if(mode==='choose'){var picked=false;var d=dropdown(choices);"
+                        + "var items=d?d.querySelectorAll('.choices__item--choice'):[];"
+                        + "for(var i=0;i<items.length;i++){if(shown(items[i])&&norm(items[i].textContent)===norm(text)){"
+                        + "items[i].click();picked=true;break;}}"
+                        + "return JSON.stringify({chosen:picked});}"
+                        + "var list=namesOf(choices);"
+                        + "var sorted=list.slice().sort(function(a,b){return a.localeCompare(b,undefined,"
+                        + "{sensitivity:'base',ignorePunctuation:true,numeric:true});});"
+                        + "var innerBox=choices.querySelector('.choices__inner');var drop=dropdown(choices);"
+                        + "var under=false;if(innerBox&&drop){var ir=innerBox.getBoundingClientRect();"
+                        + "var dr=drop.getBoundingClientRect();under=dr.top>=ir.bottom-12;}"
+                        + "return JSON.stringify({open:isOpen(choices),under:under,names:list,"
+                        + "alphabetical:JSON.stringify(list)===JSON.stringify(sorted)});";
+        Object raw = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script, mode, text);
+        try {
+            return new ObjectMapper().readTree(raw == null ? "{}" : String.valueOf(raw));
+        } catch (Exception e) {
+            throw new AssertionError("Could not read the service search: " + raw, e);
+        }
     }
 
     /**
