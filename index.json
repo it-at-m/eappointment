@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-10-06T17:22:11.033Z",
+  "publishedAt": "2026-10-06T17:33:39.097Z",
   "branches": [
     {
       "name": "next",
@@ -250,8 +250,8 @@
     {
       "name": "refactor-citizenview-page-split",
       "slug": "refactor-citizenview-page-split",
-      "runId": "37501011621",
-      "runStartedAt": "2026-10-06T17:06:52Z"
+      "runId": "37502113264",
+      "runStartedAt": "2026-10-06T17:15:18Z"
     },
     {
       "name": "renovate/next-cucumber.version",
