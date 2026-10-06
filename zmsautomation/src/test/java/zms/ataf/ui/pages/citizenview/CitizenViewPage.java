@@ -48,6 +48,13 @@ public class CitizenViewPage extends BasePage {
     public static final String EN_INVALID_JUMPIN_TEXT =
             "The link to this page is unfortunately incorrect";
 
+    /** German appointment-not-available callout ({@code de-DE.json} apiErrorAppointmentNotAvailable*). */
+    public static final String DE_APPOINTMENT_NOT_AVAILABLE_HEADER =
+            "Ihr gewählter Termin ist nicht mehr verfügbar.";
+
+    public static final String DE_APPOINTMENT_NOT_AVAILABLE_TEXT =
+            "Leider hat inzwischen eine andere Person Ihren gewünschten Termin gebucht. Bitte wählen Sie einen neuen Termin aus.";
+
     private final CitizenViewPageContext CONTEXT;
 
     private final ShadowDom shadow;
@@ -1071,6 +1078,14 @@ public class CitizenViewPage extends BasePage {
 
     public void assertSelectedAppointmentCalloutVisible() {
         timeSlot.assertSelectedAppointmentCalloutVisible();
+    }
+
+    public void assertAppointmentNoLongerAvailableCalloutVisible() {
+        timeSlot.assertAppointmentNoLongerAvailableCalloutVisible();
+    }
+
+    public void assertStillOnAppointmentSelectionStep() {
+        timeSlot.assertStillOnAppointmentSelectionStep();
     }
 
     private JsonNode locationTitles() {

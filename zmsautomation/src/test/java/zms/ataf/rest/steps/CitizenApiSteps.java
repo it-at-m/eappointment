@@ -17,6 +17,7 @@ import org.assertj.core.api.Assertions;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 
+import ataf.core.helpers.TestDataHelper;
 import ataf.core.logging.ScenarioLogManager;
 import config.TestConfig;
 import io.cucumber.java.After;
@@ -599,6 +600,84 @@ public class CitizenApiSteps {
         if (lastReserveProcess != null) {
             setLastReserveProcess(lastReserveProcess);
         }
+    }
+
+    /**
+     * ZMSKVR-88 / ZMSKVR-472: second citizen snatches the exact epoch the UI selected (before Weiter/reserve).
+     * Prefer this over two browsers in CI — same race, one process to cancel afterwards.
+     */
+    @When("I reserve the remembered citizenview timeslot via the Citizen API for office {int} and service {int}")
+    public void iReserveTheRememberedCitizenviewTimeslotViaTheCitizenApi(int officeId, int serviceId) {
+        String raw = TestDataHelper.getTestData("citizenview_selected_slot_timestamp");
+        if (raw == null || raw.isBlank()) {
+            throw new IllegalStateException(
+                    "Remember the selected citizenview timeslot first (citizenview_selected_slot_timestamp).");
+        }
+        long timestamp;
+        try {
+            timestamp = Long.parseLong(raw.trim());
+        } catch (NumberFormatException e) {
+            throw new IllegalStateException(
+                    "citizenview_selected_slot_timestamp is not a long: \"" + raw + "\"", e);
+        }
+        if (timestamp <= 0) {
+            throw new IllegalStateException("Remembered timeslot timestamp must be > 0, got " + timestamp);
+        }
+        reserveExactTimeslot(timestamp, officeId, serviceId, 1);
+    }
+
+    private void reserveExactTimeslot(long timestamp, int officeId, int serviceId, int serviceCount) {
+        lastOfficeId = officeId;
+        lastServiceId = serviceId;
+        lastServiceCount = serviceCount;
+        ReserveAppointmentRequest body = new ReserveAppointmentRequest();
+        body.setTimestamp(timestamp);
+        body.setOfficeId(officeId);
+        body.setServiceId(List.of(serviceId));
+        body.setServiceCount(List.of(serviceCount));
+
+        ScenarioLogManager.getLogger().info(String.format(
+            "Citizen API /reserve-appointment/ exact timestamp=%d officeId=%d serviceId=%d (UI race snatch)",
+            timestamp,
+            officeId,
+            serviceId
+        ));
+
+        response = given()
+            .baseUri(baseUri != null ? baseUri : TestConfig.getCitizenApiBaseUri())
+            .contentType("application/json")
+            .body(body)
+        .when()
+            .post("/reserve-appointment/");
+        CommonApiSteps.setResponse(response);
+
+        String reserveBody = response.asString();
+        ScenarioLogManager.getLogger().info(String.format(
+            "Citizen API /reserve-appointment/ timestamp=%d status=%d body=%s",
+            timestamp,
+            response.getStatusCode(),
+            reserveBody.length() > 1250 ? reserveBody.substring(0, 1250) + "..." : reserveBody
+        ));
+        response.then().statusCode(200);
+
+        ThinnedProcess reserved;
+        try {
+            reserved = response.as(ThinnedProcess.class);
+        } catch (Exception e) {
+            reserved = parseDataResponse(response, ThinnedProcess.class);
+        }
+        Assertions.assertThat(reserved)
+            .as("reserve-appointment response payload must deserialize")
+            .isNotNull();
+        Assertions.assertThat(reserved.getProcessId()).isNotNull();
+        Assertions.assertThat(reserved.getAuthKey()).isNotNull();
+        Assertions.assertThat(reserved.getOfficeId()).isEqualTo(officeId);
+        Assertions.assertThat(reserved.getTimestamp())
+            .as("reserved timestamp must match the remembered UI slot")
+            .isEqualTo(timestamp);
+
+        lastReserveProcess = reserved;
+        setLastReserveProcess(lastReserveProcess);
     }
 
     /** Use the next calendar day that still has slots for the current office. */
