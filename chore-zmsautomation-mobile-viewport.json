@@ -1,0 +1,60 @@
+{
+  "branch": "chore-zmsautomation-mobile-viewport",
+  "branchSlug": "chore-zmsautomation-mobile-viewport",
+  "runId": "37479514976",
+  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37479514976",
+  "runStartedAt": "2026-10-06T14:30:18Z",
+  "publishedAt": "2026-10-06T14:41:02.429Z",
+  "features": {
+    "feature-ui-zmscitizenview-booking-zmskvr-106-zmskvr-249-service-count-controls": {
+      "status": "passed",
+      "shard": "custom",
+      "browser": "chrome",
+      "browsers": {
+        "chrome": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "37479514976",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37479514976",
+          "runStartedAt": "2026-10-06T14:30:18Z"
+        },
+        "firefox": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "37479514976",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37479514976",
+          "runStartedAt": "2026-10-06T14:30:18Z"
+        }
+      },
+      "rel": "ui/zmscitizenview/booking/zmskvr-106_zmskvr-249_service_count_controls.feature",
+      "runId": "37479514976",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37479514976",
+      "runStartedAt": "2026-10-06T14:30:18Z"
+    },
+    "feature-ui-zmscitizenview-calendar-zmskvr-236-zmskvr-701-zmskvr-739-zmskvr-110-zmskvr-513-zmskvr-707-calendar-list-view": {
+      "status": "passed",
+      "shard": "custom",
+      "browser": "chrome",
+      "browsers": {
+        "chrome": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "37479514976",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37479514976",
+          "runStartedAt": "2026-10-06T14:30:18Z"
+        },
+        "firefox": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "37479514976",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37479514976",
+          "runStartedAt": "2026-10-06T14:30:18Z"
+        }
+      },
+      "rel": "ui/zmscitizenview/calendar/zmskvr-236_zmskvr-701_zmskvr-739_zmskvr-110_zmskvr-513_zmskvr-707_calendar_list_view.feature",
+      "runId": "37479514976",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37479514976",
+      "runStartedAt": "2026-10-06T14:30:18Z"
+    }
+  }
+}

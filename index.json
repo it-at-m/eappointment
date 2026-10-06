@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-10-06T13:44:04.308Z",
+  "publishedAt": "2026-10-06T14:41:02.429Z",
   "branches": [
     {
       "name": "next",
@@ -48,6 +48,12 @@
       "slug": "chore-replace-10503-with-10313237",
       "runId": "34979562384",
       "runStartedAt": "2026-09-15T14:07:53Z"
+    },
+    {
+      "name": "chore-zmsautomation-mobile-viewport",
+      "slug": "chore-zmsautomation-mobile-viewport",
+      "runId": "37479514976",
+      "runStartedAt": "2026-10-06T14:30:18Z"
     },
     {
       "name": "chore-zmskvr-690-php-84-upgrade",
