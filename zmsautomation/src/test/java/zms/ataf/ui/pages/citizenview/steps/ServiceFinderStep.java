@@ -1,10 +1,11 @@
 package zms.ataf.ui.pages.citizenview.steps;
 
 import java.time.Duration;
-import java.util.List;
+import java.util.Locale;
 
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
+import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.remote.RemoteWebDriver;
@@ -19,8 +20,6 @@ import ataf.web.utils.DriverUtil;
 import zms.ataf.ui.pages.citizenview.CitizenViewPageContext;
 import zms.ataf.ui.pages.citizenview.support.CitizenViewWaits;
 import zms.ataf.ui.pages.citizenview.support.ShadowDom;
-import java.util.Locale;
-import org.openqa.selenium.TimeoutException;
 
 /**
  * Service Finder step: search field, suggestions, and Häufig gesuchte Leistungen.
