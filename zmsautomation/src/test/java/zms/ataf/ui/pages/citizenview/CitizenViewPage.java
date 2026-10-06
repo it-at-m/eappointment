@@ -1051,8 +1051,21 @@ public class CitizenViewPage extends BasePage {
                     + "return {present:true,disabled:isDisabled(found),lines:lineCount(found,word)};}"
                     + "function isPrimary(el){return !!el&&((el.getAttribute('variant')||'')==='primary'||(el.classList&&el.classList.contains('m-button--primary')));}";
 
+    private static final String[] OFFICE_FREQUENCY = {
+        "Bürgerbüro Ruppertstraße",
+        "Bürgerbüro Orleansplatz",
+        "Bürgerbüro Pasing",
+        "Bürgerbüro Riesenfeldstraße",
+        "Bürgerbüro Forstenrieder Allee",
+        "Bürgerbüro Leonrodstraße"
+    };
+
+    private static final String OFFICE_SCHEIDPLATZ = "Bürgerbüro Scheidplatz";
+
     private String listHourLabel;
     private String listHourBeforeMove;
+    private String calendarHourBeforeMove;
+    private int hiddenOfficeId = -1;
     private int listAccordionCount;
     private String openListHeading;
     private String markedTimeslotId;
@@ -1180,6 +1193,328 @@ public class CitizenViewPage extends BasePage {
         JsonNode state = new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
                 .until(d -> morningLabel(calendarSnapshot()));
         assertMorningLabels(state);
+    }
+
+    /**
+     * Ort checkboxes start selected. Ranked Bürgerbüros follow frequency order. Scheidplatz has no
+     * frequency rank in the catalog, so it follows them. Each checkbox also shows its address.
+     */
+    public void assertOfficesCheckedInFrequencyOrder() {
+        CONTEXT.set();
+        JsonNode offices;
+        try {
+            offices = new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                    .until(d -> {
+                        JsonNode node = providerCheckboxes().path("offices");
+                        return node.size() > 1 ? node : null;
+                    });
+        } catch (TimeoutException e) {
+            Assert.fail("Location checkboxes did not appear: " + providerCheckboxes());
+            return;
+        }
+        assertOfficeOrder(offices, true, true);
+    }
+
+    /** Open hour: each office that has a slot is a map-pin heading, in the same order as the checkboxes. */
+    public void assertOpenHourListsOfficesWithMapPin() {
+        CONTEXT.set();
+        JsonNode titles = new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(d -> {
+                    JsonNode node = locationTitles().path("titles");
+                    return node.size() > 1 ? node : null;
+                });
+        assertOfficeOrder(titles, false, false);
+    }
+
+    /** Früher is a disabled ghost button. Später is an enabled ghost button. */
+    public void assertCalendarGhostPagerStartsAtFirstGroup() {
+        CONTEXT.set();
+        JsonNode buttons = new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(d -> {
+                    JsonNode node = calendarGhostButtons();
+                    return node.path("earlier").path("present").asBoolean()
+                            && node.path("later").path("present").asBoolean()
+                            ? node
+                            : null;
+                });
+        assertGhostButton(buttons.path("earlier"), "Früher", "chevron-left", true);
+        assertGhostButton(buttons.path("later"), "Später", "chevron-right", false);
+    }
+
+    public void moveCalendarHour(boolean later) {
+        CONTEXT.set();
+        JsonNode before = calendarSnapshot();
+        String current = firstHourLabel(before);
+        if (later) {
+            calendarHourBeforeMove = current;
+        }
+        String word = later ? "Später" : "Früher";
+        JsonNode clicked = citizenJson(
+                "(function(){var btn=findButton(document.body,__args[0]);if(!btn)return {clicked:false};"
+                        + "if(isDisabled(btn))return {clicked:false,disabled:true};"
+                        + "var inner=btn.shadowRoot&&btn.shadowRoot.querySelector('button');"
+                        + "(inner||btn).click();return {clicked:true};})()",
+                word);
+        Assert.assertTrue(clicked.path("clicked").asBoolean(), "Could not click " + word + ": " + clicked);
+        String next = new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(d -> {
+                    String label = hourLabelOrEmpty(calendarSnapshot());
+                    return !label.isEmpty() && !label.equals(current) ? label : null;
+                });
+        if (!later) {
+            Assert.assertEquals(
+                    next,
+                    calendarHourBeforeMove,
+                    "Früher should return to " + calendarHourBeforeMove + " but showed " + next);
+        }
+    }
+
+    /** Clear the first office that is actually listed under the open hour. */
+    public void clearFirstShownOffice() {
+        CONTEXT.set();
+        JsonNode titles = locationTitles().path("titles");
+        Assert.assertTrue(titles.size() > 0, "No office heading to clear: " + titles);
+        String id = titles.get(0).path("id").asText();
+        Assert.assertTrue(id.startsWith("provider-"), "Office heading id: " + titles.get(0));
+        try {
+            hiddenOfficeId = Integer.parseInt(id.substring("provider-".length()));
+        } catch (NumberFormatException e) {
+            Assert.fail("Office heading id is not a number: " + titles.get(0) + " " + e.getMessage());
+            return;
+        }
+        deepClickRequired("#checkbox-provider-" + hiddenOfficeId);
+        waitUntilProviderToggleSettled(15);
+        new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(d -> !deepElementExists("#timeslot-grid-provider-" + hiddenOfficeId));
+    }
+
+    public void assertClearedOfficeIsHidden() {
+        CONTEXT.set();
+        Assert.assertTrue(hiddenOfficeId > 0, "No office was cleared");
+        Assert.assertFalse(
+                deepProviderCheckboxChecked(hiddenOfficeId),
+                "Office " + hiddenOfficeId + " should be unchecked");
+        Assert.assertFalse(
+                deepElementExists("#timeslot-grid-provider-" + hiddenOfficeId),
+                "Cleared office " + hiddenOfficeId + " should leave the available times");
+        JsonNode titles = new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(d -> {
+                    JsonNode node = locationTitles().path("titles");
+                    return node.size() > 0 ? node : null;
+                });
+        for (JsonNode title : titles) {
+            Assert.assertNotEquals(
+                    title.path("id").asText(),
+                    "provider-" + hiddenOfficeId,
+                    "Cleared office is still a heading: " + titles);
+        }
+    }
+
+    /** One bookable office: a contact tile, no location checkboxes. */
+    public void assertSingleOfficeTile(int officeId, String name, String street) {
+        CONTEXT.set();
+        JsonNode tile = new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(d -> {
+                    JsonNode node = officeTile(officeId);
+                    return node.path("name").asText().contains(name) ? node : null;
+                });
+        Assert.assertEquals(tile.path("checkboxes").asInt(), 0, "One office has no checkboxes: " + tile);
+        Assert.assertEquals(tile.path("name").asText(), name, "Tile name: " + tile);
+        Assert.assertTrue(tile.path("text").asText().contains(street), "Tile should show the street: " + tile);
+        String icons = tile.path("icons").asText();
+        Assert.assertTrue(icons.contains("icon-place"), "Tile should use the place icon: " + tile);
+        Assert.assertTrue(icons.contains("icon-map-pin"), "Tile should use the map pin: " + tile);
+    }
+
+    /** One office shows every group at once, with no location heading and no Früher or Später. */
+    public void assertSingleOfficeGroupsTimesWithoutLocationHeadings() {
+        CONTEXT.set();
+        JsonNode state = new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(d -> hourLabel(calendarSnapshot()));
+        assertHourLabels(state);
+        Assert.assertFalse(
+                state.path("earlier").path("present").asBoolean(),
+                "One office hides Früher: " + state.path("earlier"));
+        Assert.assertFalse(
+                state.path("later").path("present").asBoolean(),
+                "One office hides Später: " + state.path("later"));
+        Assert.assertEquals(
+                locationTitles().path("titles").size(),
+                0,
+                "One office has no location heading: " + locationTitles());
+    }
+
+    private JsonNode providerCheckboxes() {
+        return citizenJson(
+                "(function(){function inView(el){var n=el;var self=true;while(n&&n.nodeType===1){"
+                        + "var st=window.getComputedStyle(n);if(st.display==='none'||st.visibility==='hidden')return false;"
+                        + "if(!self&&st.opacity==='0')return false;self=false;"
+                        + "if(n.parentElement){n=n.parentElement;continue;}"
+                        + "var root=n.getRootNode&&n.getRootNode();n=root&&root.host?root.host:null;}return true;}"
+                        + "function officeText(el){var cur=el;var guard=0;var text='';"
+                        + "while(cur&&guard++<8){text=textOf(cur);var boxes=0;"
+                        + "if(cur.querySelectorAll){boxes=cur.querySelectorAll('[id^=\"checkbox-provider-\"]').length;}"
+                        + "if(text.indexOf('Bürgerbüro')>=0&&boxes<=1)return text;"
+                        + "if(cur.parentElement){cur=cur.parentElement;continue;}"
+                        + "var root=cur.getRootNode&&cur.getRootNode();cur=root&&root.host?root.host:null;}"
+                        + "return text;}"
+                        + "var nodes=cssAll('[id^=\"checkbox-provider-\"]');var seen={};var offices=[];"
+                        + "for(var i=0;i<nodes.length;i++){var el=nodes[i];var id=el.id||'';"
+                        + "if(!/^checkbox-provider-\\d+$/.test(id)||seen[id]||!inView(el))continue;seen[id]=true;"
+                        + "var checked=false;if(el.tagName==='INPUT'&&el.type==='checkbox')checked=!!el.checked;"
+                        + "else if(el.shadowRoot){var inp=el.shadowRoot.querySelector('input[type=checkbox]');"
+                        + "if(inp)checked=!!inp.checked;}if(!checked){var inp2=el.querySelector&&el.querySelector('input[type=checkbox]');"
+                        + "if(inp2)checked=!!inp2.checked;else checked=el.getAttribute('aria-checked')==='true'"
+                        + "||(el.classList&&el.classList.contains('is-selected'));}"
+                        + "offices.push({id:id,text:officeText(el),checked:!!checked});}"
+                        + "return {offices:offices};})()");
+    }
+
+    private JsonNode locationTitles() {
+        return citizenJson(
+                "(function(){var nodes=cssAll('h5.location-title');var seen={};var titles=[];"
+                        + "for(var i=0;i<nodes.length;i++){var el=nodes[i];if(!shown(el))continue;"
+                        + "var id=el.id||'';if(id&&seen[id])continue;if(id)seen[id]=true;"
+                        + "var href='';var uses=el.querySelectorAll('use');"
+                        + "for(var u=0;u<uses.length;u++){href+=' '+(uses[u].getAttribute('href')||'')"
+                        + "+' '+(uses[u].getAttribute('xlink:href')||'');}"
+                        + "titles.push({id:id,text:textOf(el),pin:href.indexOf('map-pin')>=0});}"
+                        + "return {titles:titles};})()");
+    }
+
+    private JsonNode calendarGhostButtons() {
+        return citizenJson(
+                "(function(){function paint(word){var el=findButton(document.body,word);if(!el)return {present:false};"
+                        + "var variant='';var icon='';var blob='';var cur=el;var guard=0;"
+                        + "while(cur&&guard++<8){if(cur.getAttribute){var v=cur.getAttribute('variant')||'';"
+                        + "var ic=cur.getAttribute('icon')||'';if(!variant&&v)variant=v;if(!icon&&ic)icon=ic;"
+                        + "blob+=' '+(typeof cur.className==='string'?cur.className:'');}"
+                        + "if(cur.querySelectorAll){var uses=cur.querySelectorAll('use');"
+                        + "for(var u=0;u<uses.length;u++){blob+=' '+(uses[u].getAttribute('href')||'')"
+                        + "+' '+(uses[u].getAttribute('xlink:href')||'');}}"
+                        + "if(cur.shadowRoot){var suses=cur.shadowRoot.querySelectorAll('use');"
+                        + "for(var s=0;s<suses.length;s++){blob+=' '+(suses[s].getAttribute('href')||'')"
+                        + "+' '+(suses[s].getAttribute('xlink:href')||'');}}"
+                        + "if(cur.parentElement)cur=cur.parentElement;else{var root=cur.getRootNode&&cur.getRootNode();"
+                        + "cur=root&&root.host?root.host:null;}}"
+                        + "return {present:true,disabled:isDisabled(el),variant:variant,icon:icon,blob:blob.toLowerCase()};}"
+                        + "return {earlier:paint('Früher'),later:paint('Später')};})()");
+    }
+
+    private JsonNode officeTile(int officeId) {
+        return citizenJson(
+                "(function(){var id='provider-'+__args[0];var boxes=cssAll('[id^=\"checkbox-provider-\"]');"
+                        + "var seen={};var checkboxCount=0;for(var i=0;i<boxes.length;i++){var box=boxes[i];"
+                        + "if(!shown(box)||seen[box.id]||!/^checkbox-provider-\\d+$/.test(box.id||''))continue;"
+                        + "seen[box.id]=true;checkboxCount++;}"
+                        + "var heads=cssAll('h3.m-teaser-contained-contact__headline');var h=null;"
+                        + "for(var n=0;n<heads.length;n++){if(heads[n].id===id&&shown(heads[n])){h=heads[n];break;}}"
+                        + "var teaser=h;while(teaser&&!(teaser.classList&&teaser.classList.contains('m-teaser-contained-contact'))){"
+                        + "if(teaser.parentElement)teaser=teaser.parentElement;else{var root=teaser.getRootNode&&teaser.getRootNode();"
+                        + "teaser=root&&root.host?root.host:null;}}"
+                        + "var icons='';if(teaser){var uses=teaser.querySelectorAll('use');"
+                        + "for(var u=0;u<uses.length;u++){icons+=' '+(uses[u].getAttribute('href')||'')"
+                        + "+' '+(uses[u].getAttribute('xlink:href')||'');}}"
+                        + "return {checkboxes:checkboxCount,name:h?textOf(h):'',text:teaser?textOf(teaser):'',icons:icons};})()",
+                officeId);
+    }
+
+    private void assertOfficeOrder(JsonNode offices, boolean requireChecked, boolean requireAllKnown) {
+        int lastRank = -1;
+        boolean scheidplatz = false;
+        Set<String> seen = new HashSet<>();
+        Assert.assertTrue(offices.size() >= 2, "Expected several offices: " + offices);
+        for (JsonNode office : offices) {
+            String text = office.path("text").asText();
+            if (requireChecked) {
+                Assert.assertTrue(office.path("checked").asBoolean(), "Checkbox starts selected: " + office);
+                Assert.assertTrue(text.matches(".*\\d.*"), "Checkbox should show the address: " + text);
+            } else {
+                Assert.assertTrue(office.path("pin").asBoolean(), "Location heading needs a map pin: " + office);
+            }
+            String name = frequencyName(text);
+            if (name == null) {
+                Assert.assertTrue(
+                        text.contains(OFFICE_SCHEIDPLATZ),
+                        "Unexpected office: " + text + " offices=" + offices);
+                Assert.assertFalse(scheidplatz, "Scheidplatz appears twice: " + offices);
+                if (requireAllKnown) {
+                    Assert.assertEquals(
+                            lastRank,
+                            OFFICE_FREQUENCY.length - 1,
+                            "Scheidplatz follows the ranked Bürgerbüros: " + offices);
+                }
+                scheidplatz = true;
+                continue;
+            }
+            Assert.assertFalse(scheidplatz, "A ranked office follows Scheidplatz: " + offices);
+            int rank = frequencyRank(name);
+            Assert.assertTrue(rank > lastRank, "Office order broke at " + name + ": " + offices);
+            lastRank = rank;
+            seen.add(name);
+        }
+        Assert.assertTrue(
+                seen.contains("Bürgerbüro Ruppertstraße"),
+                "Bürgerbüro Ruppertstraße should be listed: " + offices);
+        if (requireAllKnown) {
+            String[] required = {
+                "Bürgerbüro Ruppertstraße",
+                "Bürgerbüro Orleansplatz",
+                "Bürgerbüro Pasing",
+                "Bürgerbüro Forstenrieder Allee",
+                "Bürgerbüro Leonrodstraße"
+            };
+            for (String name : required) {
+                Assert.assertTrue(seen.contains(name), "Missing " + name + " in " + offices);
+            }
+            Assert.assertTrue(
+                    scheidplatz,
+                    "Bürgerbüro Scheidplatz should follow the ranked offices: " + offices);
+        }
+    }
+
+    private static void assertGhostButton(JsonNode button, String word, String icon, boolean disabled) {
+        Assert.assertTrue(button.path("present").asBoolean(), word + " should be shown: " + button);
+        Assert.assertEquals(button.path("disabled").asBoolean(), disabled, word + " disabled state: " + button);
+        String variant = button.path("variant").asText();
+        String blob = button.path("blob").asText();
+        Assert.assertTrue(
+                "ghost".equals(variant) || blob.contains("ghost"),
+                word + " should be a ghost button: " + button);
+        Assert.assertTrue(
+                icon.equals(button.path("icon").asText()) || blob.contains(icon),
+                word + " should use " + icon + ": " + button);
+    }
+
+    private static String hourLabelOrEmpty(JsonNode state) {
+        if (state.path("list").asBoolean()) {
+            return "";
+        }
+        for (JsonNode label : state.path("timeLabels")) {
+            if (label.asText().matches("\\d{1,2}:00-\\d{1,2}:59")) {
+                return label.asText();
+            }
+        }
+        return "";
+    }
+
+    private static String frequencyName(String text) {
+        String found = null;
+        for (String name : OFFICE_FREQUENCY) {
+            if (text.contains(name) && (found == null || name.length() > found.length())) {
+                found = name;
+            }
+        }
+        return found;
+    }
+
+    private static int frequencyRank(String name) {
+        for (int i = 0; i < OFFICE_FREQUENCY.length; i++) {
+            if (OFFICE_FREQUENCY[i].equals(name)) {
+                return i;
+            }
+        }
+        return -1;
     }
 
     private static JsonNode hourLabel(JsonNode node) {
