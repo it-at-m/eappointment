@@ -1,0 +1,35 @@
+{
+  "branch": "test-zmskvr-82-zmskvr-391-several-offices",
+  "branchSlug": "test-zmskvr-82-zmskvr-391-several-offices",
+  "runId": "37426358804",
+  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37426358804",
+  "runStartedAt": "2026-10-06T06:53:48Z",
+  "publishedAt": "2026-10-06T07:07:02.663Z",
+  "features": {
+    "feature-ui-zmscitizenview-calendar-zmskvr-82-zmskvr-391-several-offices": {
+      "status": "failed",
+      "shard": "custom",
+      "browser": "chrome",
+      "browsers": {
+        "chrome": {
+          "status": "failed",
+          "shard": "custom",
+          "runId": "37426358804",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37426358804",
+          "runStartedAt": "2026-10-06T06:53:48Z"
+        },
+        "firefox": {
+          "status": "failed",
+          "shard": "custom",
+          "runId": "37426358804",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37426358804",
+          "runStartedAt": "2026-10-06T06:53:48Z"
+        }
+      },
+      "rel": "ui/zmscitizenview/calendar/zmskvr-82_zmskvr-391_several_offices.feature",
+      "runId": "37426358804",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37426358804",
+      "runStartedAt": "2026-10-06T06:53:48Z"
+    }
+  }
+}
