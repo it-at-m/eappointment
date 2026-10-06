@@ -13,6 +13,9 @@ import zms.ataf.ui.pages.citizenview.CitizenViewPage;
 import zms.ataf.ui.pages.citizenview.CitizenViewPageContext;
 import zms.ataf.ui.pages.citizenview.support.CitizenViewWaits;
 import zms.ataf.ui.pages.citizenview.support.ShadowDom;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
+import zms.ataf.rest.dto.zmscitizenapi.ThinnedProcess;
 
 /** Übersicht / preconfirm: legal notices, reserve, confirmation callouts. */
 public final class OverviewStep {
@@ -207,10 +210,10 @@ public final class OverviewStep {
         Assert.assertTrue(
                 shadow.shadowDomHasHeading(4, "Nutzungsbedingungen Videoberatung"),
                 "Expected h4 Nutzungsbedingungen Videoberatung.");
-        assertShadowHref("https://stadt.muenchen.de/dam/jcr:26e72fa3-cec7-4628-9a0a-272c330a2bd2/23_07_Art_13_DSGVO.pdf");
-        assertShadowHref("https://stadt.muenchen.de/dam/DSGVO/Datenschutzhinweise-Videoberatung.pdf");
-        assertShadowHref("https://stadt.muenchen.de/infos/elektronische-kommunikation.html");
-        assertShadowHref("https://stadt.muenchen.de/dam/DSGVO/Nutzungsbedingungen-Videoberatung.pdf");
+        shadow.assertShadowHref("https://stadt.muenchen.de/dam/jcr:26e72fa3-cec7-4628-9a0a-272c330a2bd2/23_07_Art_13_DSGVO.pdf");
+        shadow.assertShadowHref("https://stadt.muenchen.de/dam/DSGVO/Datenschutzhinweise-Videoberatung.pdf");
+        shadow.assertShadowHref("https://stadt.muenchen.de/infos/elektronische-kommunikation.html");
+        shadow.assertShadowHref("https://stadt.muenchen.de/dam/DSGVO/Nutzungsbedingungen-Videoberatung.pdf");
     }
     public void assertReserveAppointmentButtonEnabled(boolean enabled) {
         context.set();
@@ -723,6 +726,6 @@ public final class OverviewStep {
             int currentHash = current.indexOf('#');
             base = currentHash >= 0 ? current.substring(0, currentHash) : current;
         }
-        return ensureAbsoluteCitizenViewUrl(base + "#/appointment/" + b64);
+        return MyAppointmentsStep.ensureAbsoluteCitizenViewUrl(base + "#/appointment/" + b64);
     }
 }

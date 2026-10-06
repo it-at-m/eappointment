@@ -1,7 +1,6 @@
 package zms.ataf.ui.pages.citizenview.steps;
 
 import java.time.Duration;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.openqa.selenium.JavascriptExecutor;
@@ -20,6 +19,8 @@ import ataf.web.utils.DriverUtil;
 import zms.ataf.ui.pages.citizenview.CitizenViewPageContext;
 import zms.ataf.ui.pages.citizenview.support.CitizenViewWaits;
 import zms.ataf.ui.pages.citizenview.support.ShadowDom;
+import java.util.Locale;
+import org.openqa.selenium.TimeoutException;
 
 /**
  * Service Finder step: search field, suggestions, and Häufig gesuchte Leistungen.
@@ -351,7 +352,7 @@ public final class ServiceFinderStep {
         }
     }
 
-    private WebElement serviceSearchInput() {
+    public WebElement serviceSearchInput() {
         Object raw = ((JavascriptExecutor) DriverUtil.getDriver())
                 .executeScript(
                         "function walk(n){if(!n)return null;"
@@ -362,7 +363,7 @@ public final class ServiceFinderStep {
         return raw instanceof WebElement ? (WebElement) raw : null;
     }
 
-    private JsonNode waitForFilteredServiceNames(String query) {
+    public JsonNode waitForFilteredServiceNames(String query) {
         String folded = query.toLowerCase(Locale.ROOT);
         return new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(defaultWaitSeconds))
                 .until(d -> {
@@ -414,7 +415,7 @@ public final class ServiceFinderStep {
         }
     }
 
-    private JsonNode currentServiceListNames() {
+    public JsonNode currentServiceListNames() {
         WebElement field = serviceSearchInput();
         String typed = null;
         try {
@@ -439,7 +440,7 @@ public final class ServiceFinderStep {
                 .until(d -> serviceSearch("options", "").path("count").asInt() > 1);
     }
 
-    private JsonNode waitUntilServiceListOpen() {
+    public JsonNode waitUntilServiceListOpen() {
         new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(defaultWaitSeconds))
                 .until(d -> serviceSearch("read", "").path("open").asBoolean());
         JsonNode state = serviceSearch("read", "");
@@ -447,7 +448,7 @@ public final class ServiceFinderStep {
         return state;
     }
 
-    private JsonNode serviceSearch(String mode, String text) {
+    public JsonNode serviceSearch(String mode, String text) {
         String script =
                 "var mode=arguments[0];var text=arguments[1]||'';"
                         + "function norm(t){return (t||'').replace(/\\s+/g,' ').trim();}"
@@ -573,7 +574,7 @@ public final class ServiceFinderStep {
         return Boolean.TRUE.equals(o);
     }
 
-    private void waitUntilServiceLabelReadyForSelection(String serviceLabel, int seconds) {
+    public void waitUntilServiceLabelReadyForSelection(String serviceLabel, int seconds) {
         context.set();
         new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(seconds))
                 .until(d -> serviceLabelReadyForSelection(serviceLabel));

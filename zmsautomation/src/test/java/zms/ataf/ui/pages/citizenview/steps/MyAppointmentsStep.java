@@ -13,7 +13,6 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.remote.RemoteWebDriver;
-import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 
@@ -31,6 +30,7 @@ import zms.ataf.ui.pages.citizenview.CitizenViewPageContext;
 import zms.ataf.ui.pages.citizenview.support.CitizenViewWaits;
 import zms.ataf.ui.pages.citizenview.support.ShadowDom;
 import zms.ataf.ui.pages.citizenview.support.SlotBookingState;
+import java.util.Objects;
 
 /** Meine Termine, ICS, deep links, booking-process capture for cleanup. */
 public final class MyAppointmentsStep {
@@ -59,7 +59,7 @@ public final class MyAppointmentsStep {
         this.defaultWaitSeconds = defaultWaitSeconds;
     }
 
-    static String ensureAbsoluteCitizenViewUrl(String url) {
+    public static String ensureAbsoluteCitizenViewUrl(String url) {
         if (url == null || url.isBlank()) {
             return url;
         }

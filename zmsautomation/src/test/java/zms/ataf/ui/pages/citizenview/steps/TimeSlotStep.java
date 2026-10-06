@@ -20,6 +20,9 @@ import zms.ataf.ui.pages.citizenview.support.CitizenViewScripts;
 import zms.ataf.ui.pages.citizenview.support.CitizenViewWaits;
 import zms.ataf.ui.pages.citizenview.support.ShadowDom;
 import zms.ataf.ui.pages.citizenview.support.SlotBookingState;
+import java.util.Objects;
+import java.util.Set;
+import java.util.HashSet;
 
 /**
  * Time-slot (Zeit) step: calendar/list toggle, hours, slot highlight/click, and reserve-from-slot.
@@ -284,7 +287,7 @@ public final class TimeSlotStep {
                     JsonNode node = locationTitles().path("titles");
                     return node.size() > 1 ? node : null;
                 });
-        assertOfficeOrder(titles, false, false);
+        providerLocation.assertOfficeOrder(titles, false, false);
     }
 
     /** Früher is a disabled ghost button. Später is an enabled ghost button. */
