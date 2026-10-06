@@ -1,35 +1,35 @@
 {
   "branch": "test-zmskvr-110-zmskvr-236-calendar-list-view",
   "branchSlug": "test-zmskvr-110-zmskvr-236-calendar-list-view",
-  "runId": "37388531797",
-  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37388531797",
-  "runStartedAt": "2026-10-05T23:26:51Z",
-  "publishedAt": "2026-10-05T23:38:39.055Z",
+  "runId": "37389472302",
+  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37389472302",
+  "runStartedAt": "2026-10-05T23:36:41Z",
+  "publishedAt": "2026-10-06T00:03:24.897Z",
   "features": {
     "feature-ui-zmscitizenview-calendar-zmskvr-236-zmskvr-701-zmskvr-739-zmskvr-110-zmskvr-513-zmskvr-707-calendar-list-view": {
-      "status": "failed",
+      "status": "passed",
       "shard": "custom",
       "browser": "chrome",
       "browsers": {
         "chrome": {
-          "status": "failed",
+          "status": "passed",
           "shard": "custom",
-          "runId": "37388531797",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37388531797",
-          "runStartedAt": "2026-10-05T23:26:51Z"
+          "runId": "37389472302",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37389472302",
+          "runStartedAt": "2026-10-05T23:36:41Z"
         },
         "firefox": {
-          "status": "failed",
+          "status": "passed",
           "shard": "custom",
-          "runId": "37388531797",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37388531797",
-          "runStartedAt": "2026-10-05T23:26:51Z"
+          "runId": "37389472302",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37389472302",
+          "runStartedAt": "2026-10-05T23:36:41Z"
         }
       },
       "rel": "ui/zmscitizenview/calendar/zmskvr-236_zmskvr-701_zmskvr-739_zmskvr-110_zmskvr-513_zmskvr-707_calendar_list_view.feature",
-      "runId": "37388531797",
-      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37388531797",
-      "runStartedAt": "2026-10-05T23:26:51Z"
+      "runId": "37389472302",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37389472302",
+      "runStartedAt": "2026-10-05T23:36:41Z"
     }
   }
 }
