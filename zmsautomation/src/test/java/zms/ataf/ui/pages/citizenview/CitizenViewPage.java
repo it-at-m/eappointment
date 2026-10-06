@@ -1197,11 +1197,17 @@ public class CitizenViewPage extends BasePage {
      */
     public void assertOfficesCheckedInFrequencyOrder() {
         CONTEXT.set();
-        JsonNode offices = new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
-                .until(d -> {
-                    JsonNode node = providerCheckboxes().path("offices");
-                    return node.size() > 1 ? node : null;
-                });
+        JsonNode offices;
+        try {
+            offices = new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                    .until(d -> {
+                        JsonNode node = providerCheckboxes().path("offices");
+                        return node.size() > 1 ? node : null;
+                    });
+        } catch (TimeoutException e) {
+            Assert.fail("Location checkboxes did not appear: " + providerCheckboxes());
+            return;
+        }
         assertOfficeOrder(offices, true, true);
     }
 
@@ -1331,15 +1337,27 @@ public class CitizenViewPage extends BasePage {
 
     private JsonNode providerCheckboxes() {
         return citizenJson(
-                "(function(){var nodes=cssAll('[id^=\"checkbox-provider-\"]');var seen={};var offices=[];"
+                "(function(){function inView(el){var n=el;var self=true;while(n&&n.nodeType===1){"
+                        + "var st=window.getComputedStyle(n);if(st.display==='none'||st.visibility==='hidden')return false;"
+                        + "if(!self&&st.opacity==='0')return false;self=false;"
+                        + "if(n.parentElement){n=n.parentElement;continue;}"
+                        + "var root=n.getRootNode&&n.getRootNode();n=root&&root.host?root.host:null;}return true;}"
+                        + "function officeText(el){var cur=el;var guard=0;var text='';"
+                        + "while(cur&&guard++<8){text=textOf(cur);var boxes=0;"
+                        + "if(cur.querySelectorAll){boxes=cur.querySelectorAll('[id^=\"checkbox-provider-\"]').length;}"
+                        + "if(text.indexOf('Bürgerbüro')>=0&&boxes<=1)return text;"
+                        + "if(cur.parentElement){cur=cur.parentElement;continue;}"
+                        + "var root=cur.getRootNode&&cur.getRootNode();cur=root&&root.host?root.host:null;}"
+                        + "return text;}"
+                        + "var nodes=cssAll('[id^=\"checkbox-provider-\"]');var seen={};var offices=[];"
                         + "for(var i=0;i<nodes.length;i++){var el=nodes[i];var id=el.id||'';"
-                        + "if(!/^checkbox-provider-\\d+$/.test(id)||seen[id]||!shown(el))continue;seen[id]=true;"
+                        + "if(!/^checkbox-provider-\\d+$/.test(id)||seen[id]||!inView(el))continue;seen[id]=true;"
                         + "var checked=false;if(el.tagName==='INPUT'&&el.type==='checkbox')checked=!!el.checked;"
                         + "else if(el.shadowRoot){var inp=el.shadowRoot.querySelector('input[type=checkbox]');"
                         + "if(inp)checked=!!inp.checked;}if(!checked){var inp2=el.querySelector&&el.querySelector('input[type=checkbox]');"
                         + "if(inp2)checked=!!inp2.checked;else checked=el.getAttribute('aria-checked')==='true'"
                         + "||(el.classList&&el.classList.contains('is-selected'));}"
-                        + "offices.push({id:id,text:textOf(el),checked:!!checked});}"
+                        + "offices.push({id:id,text:officeText(el),checked:!!checked});}"
                         + "return {offices:offices};})()");
     }
 
