@@ -15,7 +15,9 @@ import java.util.function.BooleanSupplier;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.TimeoutException;
+import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -65,6 +67,17 @@ public class CitizenViewPage extends BasePage {
 
     public static final String DE_INVALID_JUMPIN_TEXT =
             "Der Link zu dieser Seite ist leider fehlerhaft. Starten Sie die Terminvereinbarung neu";
+
+    private static final String[] SERVICE_SUGGESTIONS = {
+        "Wohnsitzanmeldung",
+        "Reisepass",
+        "Personalausweis",
+        "Ausweis-Abholung",
+        "Führerschein-Abholung",
+        "eID-PIN",
+        "Kfz-Ummeldung",
+        "Kfz-Abmeldung"
+    };
 
     private static final String EN_INVALID_JUMPIN_HEADER = "This view cannot be loaded.";
     private static final String EN_INVALID_JUMPIN_TEXT =
@@ -189,6 +202,242 @@ public class CitizenViewPage extends BasePage {
         ScenarioLogManager.getLogger().info("Service Finder is visible on the start page.");
     }
 
+    /** ZMSKVR-84: the start page search box and the frequently requested service links. */
+    public void assertServiceSearchAndSuggestions() {
+        CONTEXT.set();
+        JsonNode state = serviceSearch("links", "");
+        Assert.assertTrue(state.path("hasField").asBoolean(), "The service search field is not on the start page.");
+        JsonNode links = state.path("links");
+        Assert.assertEquals(
+                links.size(),
+                SERVICE_SUGGESTIONS.length,
+                "Suggestion links were " + links);
+        for (int i = 0; i < SERVICE_SUGGESTIONS.length; i++) {
+            Assert.assertEquals(links.get(i).asText(), SERVICE_SUGGESTIONS[i], "Suggestion links were " + links);
+        }
+    }
+
+    public void reloadCitizenView() {
+        CONTEXT.set();
+        ScenarioLogManager.getLogger().info("zmscitizenview: reload the booking page");
+        DriverUtil.getDriver().navigate().refresh();
+        new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(d -> shadowDomContainsText("Bürgerservice-Suche"));
+    }
+
+    /** Click the search field. The list opens underneath it. */
+    public void clickServiceSearchField() {
+        CONTEXT.set();
+        waitUntilServiceOptionsLoaded();
+        serviceSearch("click", "");
+        waitUntilServiceListOpen();
+    }
+
+    /**
+     * From the Leistung heading, Tab lands on the search field. Enter opens the list.
+     */
+    public void openServiceListWithTabAndEnter() {
+        CONTEXT.set();
+        waitUntilServiceOptionsLoaded();
+        serviceSearch("close", "");
+        serviceSearch("focus-heading", "");
+        Actions actions = new Actions(DriverUtil.getDriver());
+        boolean focused = false;
+        for (int i = 0; i < 8; i++) {
+            if (serviceSearch("focused", "").path("focused").asBoolean()) {
+                focused = true;
+                break;
+            }
+            actions.sendKeys(Keys.TAB).perform();
+            sleepQuiet(150L);
+        }
+        Assert.assertTrue(focused, "Tab did not reach the service search field.");
+        actions.sendKeys(Keys.ENTER).perform();
+        waitUntilServiceListOpen();
+    }
+
+    public void assertServiceListOpenUnderField() {
+        CONTEXT.set();
+        JsonNode state = waitUntilServiceListOpen();
+        Assert.assertTrue(
+                state.path("under").asBoolean(),
+                "The service list should open under the search field: " + state);
+    }
+
+    public void assertServiceListAlphabetical() {
+        CONTEXT.set();
+        JsonNode state = new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(d -> {
+                    JsonNode node = serviceSearch("read", "");
+                    if (node.path("names").size() > 1) {
+                        return node;
+                    }
+                    // An open list can still show the empty Choices notice until the services arrive.
+                    if (serviceSearch("options", "").path("count").asInt() > 1) {
+                        serviceSearch("close", "");
+                        serviceSearch("click", "");
+                        node = serviceSearch("read", "");
+                        if (node.path("names").size() > 1) {
+                            return node;
+                        }
+                    }
+                    return null;
+                });
+        Assert.assertTrue(
+                state.path("alphabetical").asBoolean(),
+                "The service list is not alphabetical: " + state.path("names"));
+    }
+
+    public void typeIntoServiceSearch(String query) {
+        CONTEXT.set();
+        String folded = query.toLowerCase(Locale.ROOT);
+        new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(d -> {
+                    serviceSearch("type", query);
+                    JsonNode names = serviceSearch("read", "").path("names");
+                    if (names.size() == 0) {
+                        return false;
+                    }
+                    for (JsonNode name : names) {
+                        if (!name.asText().toLowerCase(Locale.ROOT).contains(folded)) {
+                            return false;
+                        }
+                    }
+                    return true;
+                });
+    }
+
+    public void assertServiceListContainsOnly(String query) {
+        CONTEXT.set();
+        String folded = query.toLowerCase(Locale.ROOT);
+        JsonNode names = serviceSearch("read", "").path("names");
+        Assert.assertTrue(names.size() > 0, "The service list is empty for \"" + query + "\".");
+        for (JsonNode name : names) {
+            Assert.assertTrue(
+                    name.asText().toLowerCase(Locale.ROOT).contains(folded),
+                    "\"" + name.asText() + "\" does not contain \"" + query + "\". List: " + names);
+        }
+    }
+
+    public void assertServiceListIncludesAndNot(String present, String absent) {
+        CONTEXT.set();
+        JsonNode names = serviceSearch("read", "").path("names");
+        boolean found = false;
+        for (JsonNode name : names) {
+            String text = name.asText();
+            Assert.assertNotEquals(text, absent, "\"" + absent + "\" is still in the service list: " + names);
+            if (text.equals(present)) {
+                found = true;
+            }
+        }
+        Assert.assertTrue(found, "\"" + present + "\" is not in the service list: " + names);
+    }
+
+    /** Choose a row in the open list. That opens the Leistung step for the service. */
+    public void chooseServiceFromOpenList(String label) {
+        CONTEXT.set();
+        JsonNode state = serviceSearch("choose", label);
+        Assert.assertTrue(
+                state.path("chosen").asBoolean(),
+                "Could not choose \"" + label + "\" from the service list.");
+        assertCombinationStepVisible();
+    }
+
+    /** The search field stays empty until offices-and-services fills its options. */
+    private void waitUntilServiceOptionsLoaded() {
+        new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(d -> serviceSearch("options", "").path("count").asInt() > 1);
+    }
+
+    private JsonNode waitUntilServiceListOpen() {
+        new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(d -> serviceSearch("read", "").path("open").asBoolean());
+        JsonNode state = serviceSearch("read", "");
+        Assert.assertTrue(state.path("open").asBoolean(), "The service list did not open: " + state);
+        return state;
+    }
+
+    private JsonNode serviceSearch(String mode, String text) {
+        String script =
+                "var mode=arguments[0];var text=arguments[1]||'';"
+                        + "function norm(t){return (t||'').replace(/\\s+/g,' ').trim();}"
+                        + "function walk(n,fn){if(!n)return;fn(n);if(n.shadowRoot)walk(n.shadowRoot,fn);"
+                        + "var c=n.children;if(c)for(var i=0;i<c.length;i++)walk(c[i],fn);}"
+                        + "function up(n){if(!n)return null;if(n.parentElement)return n.parentElement;"
+                        + "var root=n.getRootNode&&n.getRootNode();return root&&root.host?root.host:null;}"
+                        + "function findSelect(){var found=null;walk(document.body,function(n){"
+                        + "if(!found&&(n.id||'')==='select-service-search')found=n;});return found;}"
+                        + "function choicesOf(select){var n=select;while(n){"
+                        + "if(n.classList&&n.classList.contains('choices'))return n;n=up(n);}return null;}"
+                        + "function dropdown(choices){return choices?choices.querySelector('.choices__list--dropdown'):null;}"
+                        + "function isOpen(choices){var d=dropdown(choices);return !!(d&&(d.getAttribute('aria-expanded')==='true'"
+                        + "||d.classList.contains('is-active')));}"
+                        + "function shown(el){if(!el||el.hidden)return false;var st=window.getComputedStyle(el);"
+                        + "return st.display!=='none'&&st.visibility!=='hidden'&&st.opacity!=='0';}"
+                        + "function placeholder(name){return name==='Keine Leistung gefunden'||name==='No service found'"
+                        + "||name==='No choices to choose from'||name==='No results found'"
+                        + "||name==='Leistung auswählen'||name==='Enter search term';}"
+                        + "function namesOf(choices){var d=dropdown(choices);var names=[];if(!d)return names;"
+                        + "var items=d.querySelectorAll('.choices__item--choice');"
+                        + "for(var i=0;i<items.length;i++){var name=norm(items[i].textContent);"
+                        + "if(!shown(items[i])||!name||placeholder(name))continue;names.push(name);}return names;}"
+                        + "function optionCount(select){var n=0;if(!select)return n;var opts=select.querySelectorAll('option');"
+                        + "for(var i=0;i<opts.length;i++){var name=norm(opts[i].textContent);if(name&&!placeholder(name))n++;}return n;}"
+                        + "function deepActive(){var el=document.activeElement,guard=0;"
+                        + "while(el&&el.shadowRoot&&el.shadowRoot.activeElement&&guard++<10)el=el.shadowRoot.activeElement;return el;}"
+                        + "var select=findSelect();var choices=choicesOf(select);"
+                        + "if(mode==='links'){var links=[];walk(document.body,function(n){"
+                        + "if(!n.classList||!n.classList.contains('m-linklist-inline__list'))return;"
+                        + "var as=n.querySelectorAll('a');for(var i=0;i<as.length;i++)links.push(norm(as[i].textContent));});"
+                        + "return JSON.stringify({hasField:!!select,links:links});}"
+                        + "if(mode==='options')return JSON.stringify({count:optionCount(select)});"
+                        + "if(!choices)return JSON.stringify({open:false,hasField:false});"
+                        + "if(mode==='click'){var inner=choices.querySelector('.choices__inner');"
+                        + "if(inner){inner.scrollIntoView({block:'center'});inner.click();}"
+                        + "return JSON.stringify({open:isOpen(choices)});}"
+                        + "if(mode==='close'){if(isOpen(choices)){var input=choices.querySelector('.choices__input--cloned');"
+                        + "if(input)input.dispatchEvent(new KeyboardEvent('keydown',{key:'Escape',bubbles:true,cancelable:true}));"
+                        + "if(isOpen(choices)){var inner2=choices.querySelector('.choices__inner');if(inner2)inner2.click();}}"
+                        + "return JSON.stringify({open:isOpen(choices)});}"
+                        + "if(mode==='focus-heading'){var heading=null;walk(document.body,function(n){"
+                        + "if(!heading&&(n.tagName||'').toUpperCase()==='H2'&&norm(n.textContent)==='Leistung')heading=n;});"
+                        + "if(heading){heading.setAttribute('tabindex','-1');heading.focus();}"
+                        + "return JSON.stringify({focused:!!heading});}"
+                        + "if(mode==='focused'){var el=deepActive(),inside=false,n=el;"
+                        + "while(n){if(n===choices){inside=true;break;}n=up(n);}"
+                        + "return JSON.stringify({focused:inside});}"
+                        + "if(mode==='type'){var field=choices.querySelector('.choices__input--cloned');"
+                        + "if(field){field.focus();field.value=text;"
+                        + "field.dispatchEvent(new Event('input',{bubbles:true}));"
+                        + "field.dispatchEvent(new KeyboardEvent('keyup',{key:text.slice(-1)||'',bubbles:true}));}}"
+                        + "if(mode==='choose'){var picked=false;var d=dropdown(choices);"
+                        + "var items=d?d.querySelectorAll('.choices__item--choice'):[];"
+                        + "for(var i=0;i<items.length;i++){if(shown(items[i])&&norm(items[i].textContent)===norm(text)){"
+                        + "var el=items[i].matches&&items[i].matches('[data-choice]')?items[i]"
+                        + ":(items[i].querySelector('[data-choice]')||items[i]);"
+                        + "var r=el.getBoundingClientRect();var x=r.left+Math.max(r.width,1)/2;var y=r.top+Math.max(r.height,1)/2;"
+                        + "var opts={bubbles:true,cancelable:true,view:window,clientX:x,clientY:y,button:0};"
+                        + "el.dispatchEvent(new MouseEvent('mousedown',opts));"
+                        + "el.dispatchEvent(new MouseEvent('mouseup',opts));"
+                        + "el.dispatchEvent(new MouseEvent('click',opts));"
+                        + "picked=true;break;}}"
+                        + "return JSON.stringify({chosen:picked});}"
+                        + "var list=namesOf(choices);"
+                        + "var sorted=list.slice().sort(function(a,b){return a.localeCompare(b,undefined,"
+                        + "{sensitivity:'base',ignorePunctuation:true,numeric:true});});"
+                        + "var innerBox=choices.querySelector('.choices__inner');var drop=dropdown(choices);"
+                        + "var under=false;if(innerBox&&drop){var ir=innerBox.getBoundingClientRect();"
+                        + "var dr=drop.getBoundingClientRect();under=dr.top>=ir.bottom-12;}"
+                        + "return JSON.stringify({open:isOpen(choices),under:under,names:list,"
+                        + "alphabetical:JSON.stringify(list)===JSON.stringify(sorted)});";
+        Object raw = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script, mode, text);
+        try {
+            return new ObjectMapper().readTree(raw == null ? "{}" : String.valueOf(raw));
+        } catch (Exception e) {
+            throw new AssertionError("Could not read the service search: " + raw, e);
+        }
+    }
+
     /**
      * True if substring appears anywhere in document + shadow DOM text.
      * Also walks slotted nodes and same-origin frames, and folds whitespace, so a painted
@@ -286,6 +535,7 @@ public class CitizenViewPage extends BasePage {
                         + "  for(var i=0;i<all.length;i++){"
                         + "    var el=all[i];"
                         + "    if(insideQuick(el))continue;"
+                        + "    if(el.querySelector&&el.querySelector('.m-linklist-inline__list'))continue;"
                         + "    var txt=norm(el.textContent);"
                         + "    if(txt&&txt.indexOf(label)>=0)return true;"
                         + "    if(el.shadowRoot&&has(el.shadowRoot))return true;"
