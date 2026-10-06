@@ -32,7 +32,7 @@ import zms.ataf.ui.pages.citizenview.support.ShadowDom;
 import zms.ataf.ui.pages.citizenview.support.SlotBookingState;
 import java.util.Objects;
 
-/** Meine Termine, ICS, deep links, booking-process capture for cleanup. */
+/** My appointments, ICS, deep links, booking-process capture for cleanup. */
 public final class MyAppointmentsStep {
 
     public static final String LOCALSTORAGE_APPOINTMENT_KEY = "lhm-appointment-data";
@@ -507,23 +507,23 @@ public final class MyAppointmentsStep {
         ScenarioLogManager.getLogger()
                 .info("zmscitizenview: remembered appointment time {}", slotState.rememberedAppointmentEpoch);
     }
-    public void openMeineTermine() {
+    public void openMyAppointments() {
         context.set();
         // Always cache-bust: Firefox/Edge treat navigate() to the same overview URL as a no-op,
         // and cancel can leave the DBS session showing only Anmelden on a blank overview.
-        String overview = meineTermineOverviewUrl() + "?r=" + System.currentTimeMillis();
+        String overview = myAppointmentsOverviewUrl() + "?r=" + System.currentTimeMillis();
         ScenarioLogManager.getLogger().info("zmscitizenview: open Meine Termine {}", overview);
-        navigateToMeineTermine(overview);
-        if (!browserIsOnMeineTermine()) {
+        navigateToMyAppointments(overview);
+        if (!browserIsOnMyAppointments()) {
             ScenarioLogManager.getLogger()
                     .warn(
                             "zmscitizenview: Meine Termine stayed on {}; opening it again",
                             DriverUtil.getDriver().getCurrentUrl());
-            navigateToMeineTermine(overview);
+            navigateToMyAppointments(overview);
         }
         waitUntilNeueTerminVisible();
     }
-    public void assertMeineTermineLists(String... serviceNames) {
+    public void assertMyAppointmentsLists(String... serviceNames) {
         context.set();
         waitUntilNeueTerminVisible();
         for (String serviceName : serviceNames) {
@@ -534,11 +534,11 @@ public final class MyAppointmentsStep {
                     "Meine Termine should list \"" + serviceName + "\" once.");
         }
     }
-    public void assertMeineTermineDoesNotList(String serviceName) {
+    public void assertMyAppointmentsDoesNotList(String serviceName) {
         context.set();
         waitUntilNeueTerminVisible();
         Assert.assertTrue(
-                meineTermineFinishedLoading(),
+                myAppointmentsFinishedLoading(),
                 "Meine Termine did not finish loading.");
         Assert.assertEquals(
                 countTeasers(serviceName),
@@ -553,15 +553,15 @@ public final class MyAppointmentsStep {
             // session republish and leaves a blank overview (no Neuer Termin, no Anmelden).
             long deadline = System.currentTimeMillis() + 45_000L;
             while (System.currentTimeMillis() < deadline) {
-                if (meineTermineFinishedLoading()) {
+                if (myAppointmentsFinishedLoading()) {
                     return;
                 }
-                if (meineTermineShowsLoggedOut()) {
+                if (myAppointmentsShowsLoggedOut()) {
                     ScenarioLogManager.getLogger()
                             .warn(
                                     "zmscitizenview: Meine Termine shows Anmelden (attempt {}/5); logging in again",
                                     attempt);
-                    reloginForMeineTermine();
+                    reloginForMyAppointments();
                     break;
                 }
                 if (shadow.shadowDomContainsText(loadError)) {
@@ -571,8 +571,8 @@ public final class MyAppointmentsStep {
                                     attempt);
                     break;
                 }
-                if (meineTermineAwaitingAuthOrSkeleton()) {
-                    requestMeineTermineAuthReplay();
+                if (myAppointmentsAwaitingAuthOrSkeleton()) {
+                    requestMyAppointmentsAuthReplay();
                 }
                 try {
                     Thread.sleep(250L);
@@ -581,7 +581,7 @@ public final class MyAppointmentsStep {
                     return;
                 }
             }
-            if (meineTermineFinishedLoading()) {
+            if (myAppointmentsFinishedLoading()) {
                 return;
             }
             if (attempt == 5) {
@@ -591,14 +591,14 @@ public final class MyAppointmentsStep {
                     .warn(
                             "zmscitizenview: Meine Termine has no Neuer Termin (attempt {}/5)",
                             attempt);
-            reloadMeineTermine();
+            reloadMyAppointments();
         }
         Assert.assertTrue(
-                meineTermineFinishedLoading(),
+                myAppointmentsFinishedLoading(),
                 "Meine Termine did not show Neuer Termin after opening the overview.");
     }
-    private boolean meineTermineAwaitingAuthOrSkeleton() {
-        if (!browserIsOnMeineTermine()) {
+    private boolean myAppointmentsAwaitingAuthOrSkeleton() {
+        if (!browserIsOnMyAppointments()) {
             return false;
         }
         if (shadow.deepElementExists(".skeleton-loader")) {
@@ -609,7 +609,7 @@ public final class MyAppointmentsStep {
                 && !shadow.shadowDomContainsText("Kommende Termine")
                 && !shadow.shadowDomContainsText("Anmelden");
     }
-    private void requestMeineTermineAuthReplay() {
+    private void requestMyAppointmentsAuthReplay() {
         try {
             ((JavascriptExecutor) DriverUtil.getDriver())
                     .executeScript(
@@ -618,21 +618,21 @@ public final class MyAppointmentsStep {
             // Best-effort; wait loop continues.
         }
     }
-    private boolean meineTermineFinishedLoading() {
+    private boolean myAppointmentsFinishedLoading() {
         if (shadow.shadowDomContainsText("Neuer Termin")) {
             return true;
         }
         // Empty overview still shows Kommende Termine (0) once the skeleton is gone.
         return shadow.shadowDomContainsText("Kommende Termine (0)") && !shadow.deepElementExists(".skeleton-loader");
     }
-    private boolean meineTermineShowsLoggedOut() {
-        return browserIsOnMeineTermine()
+    private boolean myAppointmentsShowsLoggedOut() {
+        return browserIsOnMyAppointments()
                 && shadow.shadowDomContainsText("Anmelden")
                 && !shadow.shadowDomContainsText("Mein Bereich")
                 && !shadow.shadowDomContainsText("Neuer Termin")
                 && !shadow.shadowDomContainsText("Kommende Termine");
     }
-    private void reloginForMeineTermine() {
+    private void reloginForMyAppointments() {
         try {
             if (!contact.clickInAppBuergerLoginAnmelden()) {
                 shadow.waitForAndClickButtonContaining("Anmelden", defaultWaitSeconds);
@@ -656,11 +656,11 @@ public final class MyAppointmentsStep {
         } catch (Exception e) {
             ScenarioLogManager.getLogger().warn("zmscitizenview: Meine Termine re-login failed", e);
         }
-        if (!browserIsOnMeineTermine() || !meineTermineFinishedLoading()) {
-            reloadMeineTermine();
+        if (!browserIsOnMyAppointments() || !myAppointmentsFinishedLoading()) {
+            reloadMyAppointments();
         }
     }
-    private String meineTermineOverviewUrl() {
+    private String myAppointmentsOverviewUrl() {
         String current = DriverUtil.getDriver().getCurrentUrl();
         Assert.assertTrue(current != null && !current.isBlank(), "Citizen view URL is missing.");
         int hash = current.indexOf('#');
@@ -673,49 +673,49 @@ public final class MyAppointmentsStep {
         int slash = withoutHash.lastIndexOf('/');
         return withoutHash.substring(0, slash + 1) + "appointment-overview.html";
     }
-    private boolean browserIsOnMeineTermine() {
+    private boolean browserIsOnMyAppointments() {
         String current = DriverUtil.getDriver().getCurrentUrl();
         return current != null && current.contains("appointment-overview");
     }
-    private void navigateToMeineTermine(String overview) {
+    private void navigateToMyAppointments(String overview) {
         try {
             DriverUtil.getDriver().navigate().to(overview);
         } catch (TimeoutException e) {
             ScenarioLogManager.getLogger().warn("Meine Termine navigation timed out, continuing.", e);
         }
     }
-    private void reloadMeineTermine() {
-        String overview = meineTermineOverviewUrl() + "?r=" + System.currentTimeMillis();
+    private void reloadMyAppointments() {
+        String overview = myAppointmentsOverviewUrl() + "?r=" + System.currentTimeMillis();
         ScenarioLogManager.getLogger()
                 .warn("zmscitizenview: opening Meine Termine again {}", overview);
-        navigateToMeineTermine(overview);
+        navigateToMyAppointments(overview);
     }
-    public void rememberMeineTermineAppointment(String serviceName) {
+    public void rememberMyAppointmentsAppointment(String serviceName) {
         context.set();
-        String number = appointmentNumberOnMeineTermine(serviceName);
+        String number = appointmentNumberOnMyAppointments(serviceName);
         Assert.assertFalse(number.isBlank(), "Meine Termine has no number for \"" + serviceName + "\".");
-        TestDataHelper.setTestData(meineTermineNumberKey(serviceName), number);
+        TestDataHelper.setTestData(myAppointmentsNumberKey(serviceName), number);
     }
-    public void assertMeineTermineAppointmentReplaced(String serviceName) {
+    public void assertMyAppointmentsAppointmentReplaced(String serviceName) {
         context.set();
-        String previous = TestDataHelper.getTestData(meineTermineNumberKey(serviceName));
-        String current = appointmentNumberOnMeineTermine(serviceName);
+        String previous = TestDataHelper.getTestData(myAppointmentsNumberKey(serviceName));
+        String current = appointmentNumberOnMyAppointments(serviceName);
         Assert.assertFalse(current.isBlank(), "Meine Termine has no number for \"" + serviceName + "\".");
         Assert.assertNotEquals(
                 current,
                 previous,
                 "Meine Termine still shows the original appointment for \"" + serviceName + "\".");
     }
-    public void assertMeineTermineAppointmentUnchanged(String serviceName) {
+    public void assertMyAppointmentsAppointmentUnchanged(String serviceName) {
         context.set();
-        String previous = TestDataHelper.getTestData(meineTermineNumberKey(serviceName));
-        String current = appointmentNumberOnMeineTermine(serviceName);
+        String previous = TestDataHelper.getTestData(myAppointmentsNumberKey(serviceName));
+        String current = appointmentNumberOnMyAppointments(serviceName);
         Assert.assertEquals(
                 current,
                 previous,
                 "Meine Termine changed the appointment for \"" + serviceName + "\".");
     }
-    private String appointmentNumberOnMeineTermine(String serviceName) {
+    private String appointmentNumberOnMyAppointments(String serviceName) {
         String script =
                 "var name=arguments[0];"
                         + "function textOf(n){var s='';if(!n)return s;if(n.nodeType===3)return n.nodeValue||'';"
@@ -732,8 +732,8 @@ public final class MyAppointmentsStep {
         Object raw = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script, serviceName);
         return raw == null ? "" : raw.toString();
     }
-    private static String meineTermineNumberKey(String serviceName) {
-        return "meine_termine_number_" + serviceName;
+    private static String myAppointmentsNumberKey(String serviceName) {
+        return "my_appointments_number_" + serviceName;
     }
     private int countTeasers(String serviceName) {
         String script =
@@ -752,7 +752,7 @@ public final class MyAppointmentsStep {
         }
         return 0;
     }
-    public void assertMeineTermineTeaser(String serviceName, String typeLabel, String locationText) {
+    public void assertMyAppointmentsTeaser(String serviceName, String typeLabel, String locationText) {
         context.set();
         Assert.assertNotNull(slotState.rememberedAppointmentEpoch, "Selected appointment time was not remembered.");
         ZonedDateTime when = Instant.ofEpochSecond(slotState.rememberedAppointmentEpoch).atZone(BERLIN);
@@ -783,10 +783,10 @@ public final class MyAppointmentsStep {
                 card.toUpperCase(Locale.GERMAN).contains(day) && card.toUpperCase(Locale.GERMAN).contains(monthStem),
                 "Teaser calendar leaf is missing " + day + " " + monthStem + ". Text: " + card);
     }
-    public void openMeineTermineTeaser(String serviceName) {
+    public void openMyAppointmentsTeaser(String serviceName) {
         context.set();
         ScenarioLogManager.getLogger().info("zmscitizenview: open teaser {}", serviceName);
-        // Match the teaser title ("1x …"), same as countTeasers / assertMeineTermineTeaser.
+        // Match the teaser title ("1x …"), same as countTeasers / assertMyAppointmentsTeaser.
         String needle = "1x " + serviceName;
         // Firefox often accepts a muc-card click without navigating. Prefer the card href.
         String findHref =
@@ -836,17 +836,17 @@ public final class MyAppointmentsStep {
                     ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(findHref, needle);
             String href = hrefRaw == null ? "" : String.valueOf(hrefRaw).trim();
             if (href.isEmpty()) {
-                if (meineTermineShowsLoggedOut()) {
+                if (myAppointmentsShowsLoggedOut()) {
                     ScenarioLogManager.getLogger()
                             .warn(
                                     "zmscitizenview: Meine Termine shows Anmelden before opening teaser; logging in again");
-                    reloginForMeineTermine();
-                } else if (!browserIsOnMeineTermine() || !meineTermineFinishedLoading()) {
+                    reloginForMyAppointments();
+                } else if (!browserIsOnMyAppointments() || !myAppointmentsFinishedLoading()) {
                     ScenarioLogManager.getLogger()
                             .warn(
                                     "zmscitizenview: returning to Meine Termine before opening teaser {}",
                                     serviceName);
-                    reloadMeineTermine();
+                    reloadMyAppointments();
                     waitUntilNeueTerminVisible();
                 } else {
                     waitForTeaserText(serviceName);
@@ -879,8 +879,8 @@ public final class MyAppointmentsStep {
                     .warn(
                             "zmscitizenview: teaser {} did not open detail; trying again",
                             serviceName);
-            if (!browserIsOnMeineTermine()) {
-                reloadMeineTermine();
+            if (!browserIsOnMyAppointments()) {
+                reloadMyAppointments();
                 waitUntilNeueTerminVisible();
             }
         }
