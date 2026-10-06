@@ -2,8 +2,14 @@ name: ☕ zmsautomation-maven-build
 
 on:
   pull_request:
+    paths:
+      - "zmsautomation/**"
+      - ".github/workflows/zmsautomation-maven-build.yml"
   push:
     branches: [main, next]
+    paths:
+      - "zmsautomation/**"
+      - ".github/workflows/zmsautomation-maven-build.yml"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref == 'refs/heads/next' && github.ref || github.run_id }}
