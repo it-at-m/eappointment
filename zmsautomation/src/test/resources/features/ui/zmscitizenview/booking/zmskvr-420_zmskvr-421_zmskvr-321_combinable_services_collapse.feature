@@ -1,19 +1,18 @@
 #language: en
-@web @zmscitizenview @booking @citizen @ZMSKVR-321 @ZMSKVR-420 @ZMSKVR-421 @executeLocally
+@web @zmscitizenview @booking @citizen @ZMSKVR-321 @ZMSKVR-420 @ZMSKVR-421 @executeLocally @jumpin
 Feature: Combinable services list collapses when it is long
   As a citizen on the Leistung step
   I want a long combinable list to stay short until I expand it
   So that I can reach Weiter without scrolling through every peer
 
   # ZMSKVR-321, tested by ZMSKVR-420 (desktop) and ZMSKVR-421 (phone).
-  # Meldebescheinigung has four combinable peers (≤5), so all stay visible without expand.
-  # Personalausweis has more than five peers, so only three show until Alle Leistungen anzeigen.
+  # Meldebescheinigung 1063576 has four combinable peers (≤5), so all stay visible without expand.
+  # Personalausweis 1063441 has more than five peers, so only three show until Alle Leistungen anzeigen.
+  # Meldebescheinigung is not in the Häufig gesuchte Leistungen quick links, so both open via jump-in.
   # No appointment is booked.
 
   Scenario: Short and long combinable lists on desktop
-    Given I open the zmscitizenview booking page
-    Then the Service Finder should be visible on the start page
-    When I select service "Meldebescheinigung" from the service finder and continue
+    Given I open zmscitizenview with jump-in service "1063576" and location "10489"
     Then the service combination step should be visible
     And the combinable services heading is visible
     And there are 4 combinable services shown
@@ -22,9 +21,7 @@ Feature: Combinable services list collapses when it is long
     Then the service counter for "Meldebescheinigung" should still be 1
     And the service counter for "Führungszeugnis" should still be 1
 
-    Given I open the zmscitizenview booking page
-    Then the Service Finder should be visible on the start page
-    When I select service "Personalausweis" from the service finder and continue
+    Given I open zmscitizenview with jump-in service "1063441" and location "10489"
     Then the service combination step should be visible
     And the combinable services heading is visible
     And there are 3 combinable services shown
@@ -35,9 +32,7 @@ Feature: Combinable services list collapses when it is long
 
   @mobile
   Scenario: Short and long combinable lists on a phone
-    Given I open the zmscitizenview booking page
-    Then the Service Finder should be visible on the start page
-    When I select service "Meldebescheinigung" from the service finder and continue
+    Given I open zmscitizenview with jump-in service "1063576" and location "10489"
     Then the service combination step should be visible
     And the combinable services heading is visible
     And there are 4 combinable services shown
@@ -46,9 +41,7 @@ Feature: Combinable services list collapses when it is long
     Then the service counter for "Meldebescheinigung" should still be 1
     And the service counter for "Führungszeugnis" should still be 1
 
-    Given I open the zmscitizenview booking page
-    Then the Service Finder should be visible on the start page
-    When I select service "Personalausweis" from the service finder and continue
+    Given I open zmscitizenview with jump-in service "1063441" and location "10489"
     Then the service combination step should be visible
     And the combinable services heading is visible
     And there are 3 combinable services shown
