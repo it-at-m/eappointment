@@ -225,6 +225,30 @@ public class CitizenViewPage extends BasePage {
         return Boolean.TRUE.equals(raw);
     }
 
+    /** Heading text that is actually painted. Hidden copies under {@code v-show} do not count. */
+    private boolean visibleHeadingShows(int level, String heading) {
+        String script =
+                "var tagName=arguments[0];var heading=arguments[1];"
+                        + "function textOf(n){var s='';if(!n)return s;if(n.nodeType===3)return n.nodeValue||'';"
+                        + "if(n.shadowRoot)s+=textOf(n.shadowRoot);var c=n.childNodes;if(c)for(var i=0;i<c.length;i++)s+=textOf(c[i]);return s;}"
+                        + "function shown(el){var n=el;while(n&&n.nodeType===1){"
+                        + "var st=window.getComputedStyle(n);"
+                        + "if(st.display==='none'||st.visibility==='hidden'||st.opacity==='0')return false;"
+                        + "if(n.parentElement){n=n.parentElement;continue;}"
+                        + "var root=n.getRootNode&&n.getRootNode();n=root&&root.host?root.host:null;}"
+                        + "return true;}"
+                        + "function walk(n){if(!n)return false;"
+                        + "var tag=(n.tagName||'').toUpperCase();"
+                        + "if(tag===tagName&&textOf(n).replace(/\\s+/g,' ').trim()===heading&&shown(n))return true;"
+                        + "if(n.shadowRoot&&walk(n.shadowRoot))return true;"
+                        + "var c=n.children;if(c)for(var i=0;i<c.length;i++)if(walk(c[i]))return true;return false;}"
+                        + "return walk(document.body);";
+        Object raw =
+                ((JavascriptExecutor) DriverUtil.getDriver())
+                        .executeScript(script, "H" + level, heading);
+        return Boolean.TRUE.equals(raw);
+    }
+
     public void waitUntilShadowContains(String substring, int seconds) {
         CONTEXT.set();
         new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(seconds))
@@ -299,6 +323,39 @@ public class CitizenViewPage extends BasePage {
                 "Expected estimated duration '" + minutesText + "' to be visible in " + context);
     }
 
+    /** Clock illustration beside Voraussichtliche Termindauer on the service combination step. */
+    public void assertEstimatedDurationShownWithClock(int minutes) {
+        assertEstimatedDurationMinutes(minutes, "service combination step");
+        Assert.assertTrue(
+                durationClockIsVisible(),
+                "Expected the clock beside Voraussichtliche Termindauer.");
+    }
+
+    private boolean durationClockIsVisible() {
+        String script =
+                "function shown(el){var n=el;while(n&&n.nodeType===1){"
+                        + "var st=window.getComputedStyle(n);"
+                        + "if(st.display==='none'||st.visibility==='hidden'||st.opacity==='0')return false;"
+                        + "if(n.parentElement){n=n.parentElement;continue;}"
+                        + "var root=n.getRootNode&&n.getRootNode();n=root&&root.host?root.host:null;}"
+                        + "return true;}"
+                        + "function textOf(n){var s='';if(!n)return s;if(n.nodeType===3)return n.nodeValue||'';"
+                        + "if(n.shadowRoot)s+=' '+textOf(n.shadowRoot);"
+                        + "var c=n.childNodes;if(c)for(var i=0;i<c.length;i++)s+=' '+textOf(c[i]);return s;}"
+                        + "function walk(n){if(!n)return false;"
+                        + "if((n.tagName||'').toUpperCase()==='SVG'&&(n.getAttribute('viewBox')||'')==='0 0 56 56'){"
+                        + "var host=n;while(host&&host.nodeType===1){"
+                        + "if(textOf(host).indexOf('Voraussichtliche Termindauer')>=0&&shown(n))return true;"
+                        + "if(host.parentElement){host=host.parentElement;continue;}"
+                        + "var root=host.getRootNode&&host.getRootNode();host=root&&root.host?root.host:null;}"
+                        + "}"
+                        + "if(n.shadowRoot&&walk(n.shadowRoot))return true;"
+                        + "var c=n.children;if(c)for(var i=0;i<c.length;i++)if(walk(c[i]))return true;return false;}"
+                        + "return walk(document.body);";
+        Object found = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script);
+        return Boolean.TRUE.equals(found);
+    }
+
     /** ZMSKVR-1501: the broken 15-minute mapping showed 135 minutes for a 45-minute service. */
     public void assertEstimatedDurationMinutesNot(int minutes) {
         CONTEXT.set();
@@ -334,6 +391,65 @@ public class CitizenViewPage extends BasePage {
                 Thread.currentThread().interrupt();
             }
         }
+    }
+
+    public void increaseSelectedService(String label) {
+        CONTEXT.set();
+        ScenarioLogManager.getLogger().info("zmscitizenview: increase service count for {}", label);
+        Assert.assertTrue(
+                pressServiceCounter(label, true),
+                "Could not increase the count for \"" + label + "\".");
+        sleepQuiet(500L);
+    }
+
+    public void decreaseSelectedService(String label) {
+        CONTEXT.set();
+        ScenarioLogManager.getLogger().info("zmscitizenview: decrease service count for {}", label);
+        Assert.assertTrue(
+                pressServiceCounter(label, false),
+                "Could not decrease the count for \"" + label + "\".");
+        sleepQuiet(500L);
+    }
+
+    /** The first selected service cannot be set to 0. */
+    public void assertSelectedServiceCannotDropBelowOne(String label) {
+        CONTEXT.set();
+        assertServiceCounter(label, 1);
+        String state = serviceCounterButtonState(label, false);
+        Assert.assertNotEquals(
+                "missing", state, "Minus for \"" + label + "\" was not on the service page.");
+        assertServiceCounter(label, 1);
+    }
+
+    private boolean pressServiceCounter(String label, boolean increase) {
+        return "clicked".equals(serviceCounterButtonState(label, increase));
+    }
+
+    private String serviceCounterButtonState(String label, boolean increase) {
+        String script =
+                "var label=arguments[0];var increase=arguments[1]===true;"
+                        + "function norm(t){return (t||'').replace(/\\s+/g,' ').trim();}"
+                        + "function key(t){return norm(t).replace(/-/g,'').toLowerCase();}"
+                        + "var labelKey=key(label);"
+                        + "function shown(el){var n=el;while(n&&n.nodeType===1){"
+                        + "var st=window.getComputedStyle(n);"
+                        + "if(st.display==='none'||st.visibility==='hidden'||st.opacity==='0')return false;"
+                        + "if(n.parentElement){n=n.parentElement;continue;}"
+                        + "var root=n.getRootNode&&n.getRootNode();n=root&&root.host?root.host:null;}return true;}"
+                        + "function matches(aria){if(!aria)return false;var lower=aria.toLowerCase();"
+                        + "var reduce=lower.indexOf('reduzier')>=0;"
+                        + "if(increase&&reduce)return false;if(!increase&&!reduce)return false;"
+                        + "return key(aria).indexOf(labelKey)>=0;}"
+                        + "var found=null;"
+                        + "function walk(n){if(!n||found)return;var tag=(n.tagName||'').toUpperCase();"
+                        + "if(tag==='BUTTON'&&matches(n.getAttribute('aria-label')||'')&&shown(n)){found=n;return;}"
+                        + "if(n.shadowRoot)walk(n.shadowRoot);"
+                        + "var c=n.children;if(c)for(var i=0;i<c.length;i++)walk(c[i]);}"
+                        + "walk(document.body);if(!found)return 'missing';"
+                        + "if(found.disabled||found.getAttribute('aria-disabled')==='true')return 'disabled';"
+                        + "found.scrollIntoView({block:'center'});found.click();return 'clicked';";
+        Object state = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script, label, increase);
+        return state == null ? "missing" : String.valueOf(state);
     }
 
     /**
@@ -1405,6 +1521,250 @@ public class CitizenViewPage extends BasePage {
                         + "(Kombinierbare Leistungen / Combinable services heading, or Leistung wechseln back button).");
     }
 
+    /**
+     * ZMSKVR-92 / ZMSKVR-164. A finished step keeps its own icon and is the only clickable one
+     * ({@code Zurück zu Schritt}). The active step is {@code aria-current=step}. A later step is not a button.
+     */
+    public void assertBookingStepperLabels() {
+        CONTEXT.set();
+        new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(d -> "Leistung".equals(bookingStepLabel(0))
+                        && "Termin".equals(bookingStepLabel(1))
+                        && "Kontakt".equals(bookingStepLabel(2))
+                        && "Übersicht".equals(bookingStepLabel(3)));
+        Assert.assertEquals(bookingStepLabel(0), "Leistung", "First booking step.");
+        Assert.assertEquals(bookingStepLabel(1), "Termin", "Second booking step.");
+        Assert.assertEquals(bookingStepLabel(2), "Kontakt", "Third booking step.");
+        Assert.assertEquals(bookingStepLabel(3), "Übersicht", "Fourth booking step.");
+    }
+
+    public void assertBookingStep(String label, String state, String icon) {
+        CONTEXT.set();
+        new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(d -> bookingStepMatches(label, state, icon));
+        Assert.assertTrue(
+                bookingStepMatches(label, state, icon),
+                "Booking step \"" + label + "\" should be " + state + " with icon " + icon
+                        + ". Steps: " + readBookingSteps());
+    }
+
+    /**
+     * Outline the finished step and leave it. The next step clicks it, so the screenshot after this
+     * step still shows the orange mark.
+     */
+    public void highlightFinishedBookingStep(String label) {
+        CONTEXT.set();
+        ScenarioLogManager.getLogger().info("zmscitizenview: highlight finished booking step {}", label);
+        new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(d -> paintFinishedBookingStep(label));
+        Assert.assertTrue(
+                paintFinishedBookingStep(label),
+                "Finished booking step \"" + label + "\" has no back button. Steps: " + readBookingSteps());
+        try {
+            Thread.sleep(200L);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+    }
+
+    public void clickHighlightedBookingStep() {
+        CONTEXT.set();
+        JavascriptExecutor js = (JavascriptExecutor) DriverUtil.getDriver();
+        Object stored = js.executeScript("return window.__zmsCitizenViewStepperLabel || '';");
+        String label = stored instanceof String text ? text : "";
+        Assert.assertFalse(label.isBlank(), "No highlighted booking step to click.");
+        ScenarioLogManager.getLogger().info("zmscitizenview: click highlighted booking step {}", label);
+        Object clicked =
+                js.executeScript(
+                        "var button=window.__zmsCitizenViewStepperTarget;"
+                                + "if(!button)return false;"
+                                + "button.scrollIntoView({block:'center'});"
+                                + "button.click();"
+                                + "window.__zmsCitizenViewStepperTarget=null;"
+                                + "return true;");
+        Assert.assertTrue(Boolean.TRUE.equals(clicked), "Highlighted booking step could not be clicked.");
+        new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(d -> {
+                    JsonNode step = findBookingStep(label);
+                    return step != null && step.path("current").asBoolean() && !step.path("done").asBoolean();
+                });
+    }
+
+    public void assertServiceCounter(String label, int count) {
+        CONTEXT.set();
+        new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(d -> serviceCounterShows(label, count));
+        Assert.assertTrue(
+                serviceCounterShows(label, count),
+                "Service counter for \"" + label + "\" should still be " + count + ".");
+    }
+
+    public void assertEnteredContactDetailsStillPresent() {
+        CONTEXT.set();
+        Assert.assertFalse(lastContactFirstName.isBlank(), "No contact details were entered.");
+        new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(d -> lastContactFirstName.equals(deepGetById("firstname")));
+        Assert.assertEquals(deepGetById("firstname"), lastContactFirstName, "Vorname was cleared.");
+        Assert.assertEquals(deepGetById("lastname"), lastContactLastName, "Nachname was cleared.");
+        String email = deepGetById("mailaddress");
+        Assert.assertNotNull(email, "E-Mail could not be read.");
+        Assert.assertTrue(
+                email.equalsIgnoreCase(lastContactEmail),
+                "E-Mail was cleared. expected=" + lastContactEmail + " actual=" + email);
+        if (deepContactPhoneFieldExists()) {
+            String phone = deepGetById("telephonenumber");
+            Assert.assertNotNull(phone, "Telephone could not be read.");
+            Assert.assertTrue(
+                    phone.contains(lastContactPhone) || phone.replaceAll("\\s+", "").contains("491234567890"),
+                    "Telephone was cleared. expected=" + lastContactPhone + " actual=" + phone);
+        }
+    }
+
+    /**
+     * Skip the slot that was already reserved so the next highlight is a different appointment.
+     */
+    public void highlightAnotherTimeslotForOffice(int officeId) {
+        CONTEXT.set();
+        long previous = readStoredSlotTimestamp();
+        Assert.assertTrue(previous > 0, "No previous timeslot to skip.");
+        rememberedAppointmentEpoch = previous;
+        try {
+            waitUntilAppointmentSlotsReady(Math.min(45, slotBookingWaitTimeoutSeconds()));
+        } catch (Exception e) {
+            ScenarioLogManager.getLogger()
+                    .warn("zmscitizenview: slots not ready before another timeslot: {}", e.toString());
+        }
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: highlight another timeslot for office {} skipping {}", officeId, previous);
+        Assert.assertTrue(
+                highlightPreferredTimeslotForOfficeOrAbsent(officeId, Long.toString(previous)),
+                "zmscitizenview: could not highlight another timeslot for provider " + officeId);
+    }
+
+    public void assertAvailableAppointmentsShown() {
+        CONTEXT.set();
+        new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(d -> visibleHeadingShows(3, "Verfügbare Termine"));
+        Assert.assertTrue(
+                visibleHeadingShows(3, "Verfügbare Termine"),
+                "Expected a visible Verfügbare Termine heading after an office is selected.");
+    }
+
+    private boolean serviceCounterShows(String label, int count) {
+        String script =
+                "var label=arguments[0];var count=String(arguments[1]);"
+                        + "function walk(n){var s='';if(!n)return s;if(n.nodeType===3)return n.nodeValue||'';"
+                        + "if(n.shadowRoot)s+=' '+walk(n.shadowRoot);"
+                        + "var c=n.childNodes;if(c)for(var i=0;i<c.length;i++)s+=' '+walk(c[i]);return s;}"
+                        + "var text=walk(document.body).replace(/\\s+/g,' ');"
+                        + "var needle='Aktuell ausgewählte Anzahl für ';var from=0;"
+                        + "while(true){var at=text.indexOf(needle,from);if(at<0)return false;"
+                        + "var rest=text.substring(at+needle.length);var ist=rest.indexOf(' ist ');"
+                        + "if(ist>=0){var name=rest.substring(0,ist);var num=rest.substring(ist+5).match(/^(\\d+)/);"
+                        + "if(name.indexOf(label)>=0&&num&&num[1]===count)return true;}"
+                        + "from=at+needle.length;}"
+                        + "return false;";
+        Object found = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script, label, count);
+        return Boolean.TRUE.equals(found);
+    }
+
+    private boolean bookingStepMatches(String label, String state, String icon) {
+        JsonNode step = findBookingStep(label);
+        if (step == null || !icon.equals(step.path("icon").asText())) {
+            return false;
+        }
+        boolean current = step.path("current").asBoolean();
+        boolean done = step.path("done").asBoolean();
+        return switch (state) {
+            case "current" -> current && !done;
+            case "finished" -> done && !current;
+            case "later" -> !done && !current;
+            default -> false;
+        };
+    }
+
+    private String bookingStepLabel(int index) {
+        JsonNode steps = readBookingSteps();
+        if (steps == null || index < 0 || index >= steps.size()) {
+            return "";
+        }
+        return steps.get(index).path("label").asText();
+    }
+
+    private JsonNode findBookingStep(String label) {
+        JsonNode steps = readBookingSteps();
+        if (steps == null) {
+            return null;
+        }
+        for (JsonNode step : steps) {
+            if (label.equals(step.path("label").asText())) {
+                return step;
+            }
+        }
+        return null;
+    }
+
+    private JsonNode readBookingSteps() {
+        String script =
+                "function norm(s){return (s||'').replace(/\\s+/g,' ').trim();}"
+                        + "function iconOf(li){var use=li.querySelector('use');if(!use)return '';"
+                        + "var href=use.getAttribute('href')||use.getAttribute('xlink:href')||'';"
+                        + "var mark=href.indexOf('#icon-');return mark>=0?href.substring(mark+6):href;}"
+                        + "var found=null;"
+                        + "function walk(n){if(!n||found)return;var tag=(n.tagName||'').toUpperCase();"
+                        + "if(tag==='OL'&&n.classList&&n.classList.contains('m-form-steps')){found=n;return;}"
+                        + "if(n.shadowRoot)walk(n.shadowRoot);"
+                        + "var c=n.children;if(c)for(var i=0;i<c.length;i++)walk(c[i]);}"
+                        + "walk(document.body);if(!found)return '[]';"
+                        + "var items=found.querySelectorAll('li.m-form-step');var steps=[];"
+                        + "for(var i=0;i<items.length;i++){var li=items[i];"
+                        + "var title=li.querySelector('.m-form-step__title');"
+                        + "var button=li.querySelector('button.m-form-step__button');"
+                        + "steps.push({label:norm(title?title.textContent:''),icon:iconOf(li),"
+                        + "current:li.getAttribute('aria-current')==='step',done:!!button});}"
+                        + "return JSON.stringify(steps);";
+        Object raw = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script);
+        if (!(raw instanceof String json) || json.isBlank()) {
+            return null;
+        }
+        try {
+            JsonNode node = new ObjectMapper().readTree(json);
+            return node.isArray() ? node : null;
+        } catch (Exception e) {
+            ScenarioLogManager.getLogger().warn("zmscitizenview: booking stepper could not be read", e);
+            return null;
+        }
+    }
+
+    private boolean paintFinishedBookingStep(String label) {
+        String script =
+                "var label=arguments[0];"
+                        + "function norm(s){return (s||'').replace(/\\s+/g,' ').trim();}"
+                        + "function paint(node){if(!node)return;node.scrollIntoView({block:'center'});"
+                        + "try{node.style.outline='4px solid #ffbf00';"
+                        + "node.style.outlineOffset='3px';"
+                        + "node.style.backgroundColor='rgba(255,191,0,0.25)';}catch(e){}}"
+                        + "var found=null;"
+                        + "function walk(n){if(!n||found)return;var tag=(n.tagName||'').toUpperCase();"
+                        + "if(tag==='OL'&&n.classList&&n.classList.contains('m-form-steps')){found=n;return;}"
+                        + "if(n.shadowRoot)walk(n.shadowRoot);"
+                        + "var c=n.children;if(c)for(var i=0;i<c.length;i++)walk(c[i]);}"
+                        + "walk(document.body);if(!found)return false;"
+                        + "var items=found.querySelectorAll('li.m-form-step');"
+                        + "for(var i=0;i<items.length;i++){var li=items[i];"
+                        + "var title=li.querySelector('.m-form-step__title');"
+                        + "if(norm(title?title.textContent:'')!==label)continue;"
+                        + "var button=li.querySelector('button.m-form-step__button');"
+                        + "if(!button)return false;"
+                        + "paint(li);paint(button);"
+                        + "window.__zmsCitizenViewStepperTarget=button;"
+                        + "window.__zmsCitizenViewStepperLabel=label;"
+                        + "return true;}"
+                        + "return false;";
+        Object painted = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script, label);
+        return Boolean.TRUE.equals(painted);
+    }
+
     /** Full entry: select service via \"Häufig gesuchte Leistungen\" link and navigate to combination step. */
     public void selectServiceByLabel(String serviceLabel) {
         CONTEXT.set();
@@ -1895,6 +2255,25 @@ public class CitizenViewPage extends BasePage {
                         + "return false;"
                         + "});"
                         + "if(!wrap)return false;"
+                        + "var days=[];"
+                        + "walk(wrap,function(el){"
+                        + "if(el.classList&&el.classList.contains('muc-calendar-item')&&el.getAttribute('role')==='button')days.push(el);"
+                        + "return false;"
+                        + "});"
+                        + "var selectedDay=-1;"
+                        + "for(var d=0;d<days.length;d++){"
+                        + "if(days[d].classList.contains('selected'))selectedDay=d;"
+                        + "}"
+                        + "if(selectedDay>=0){"
+                        + "for(var n=selectedDay+1;n<days.length;n++){"
+                        + "var tile=days[n];"
+                        + "if(tile.getAttribute('aria-disabled')==='true'||tile.classList.contains('disabled-tile')||tile.classList.contains('off-month'))continue;"
+                        + "var dayLabel=(tile.textContent||'').replace(/\\s+/g,' ').trim();"
+                        + "if(!/^\\d{1,2}$/.test(dayLabel))continue;"
+                        + "tile.click();"
+                        + "return true;"
+                        + "}"
+                        + "}"
                         + "var clicked=false;"
                         + "walk(wrap,function(el){"
                         + "if(clicked||el.tagName!=='BUTTON'||!enabled(el))return false;"
@@ -2074,6 +2453,7 @@ public class CitizenViewPage extends BasePage {
                 + "  if(!skipped(slotTs(slots[n]))){target=slots[n];break;}"
                 + " }"
                 + "}"
+                + "if(!target)return false;"
                 + "function highlightSlot(node){"
                 + " if(!node)return;"
                 + " node.scrollIntoView({block:'center'});"
@@ -2652,6 +3032,9 @@ public class CitizenViewPage extends BasePage {
         }
         String[] parts = RandomNameHelper.splitFullNameIntoFirstAndLast(fullName);
         String email = RandomNameHelper.getEmailConformName(fullName) + "@mailinator.com";
+        lastContactFirstName = parts[0];
+        lastContactLastName = parts[1];
+        lastContactEmail = email;
         zms.ataf.rest.steps.CitizenApiSteps.setBookingContactEmail(email);
         ScenarioLogManager.getLogger()
                 .info(
@@ -3445,7 +3828,10 @@ public class CitizenViewPage extends BasePage {
         return "http://" + u;
     }
 
-    /** Last Kontakt values filled by {@link #fillContactDetailsRandomWithoutContinue()} for later asserts. */
+    /** Last Kontakt values filled by {@link #fillContactDetailsRandom()} for later asserts. */
+    private String lastContactFirstName = "";
+    private String lastContactLastName = "";
+    private String lastContactEmail = "";
     private String lastContactPhone = CONTACT_PHONE_E2E;
     private String lastContactCustomText = CONTACT_LOREM_REQUIRED;
 
