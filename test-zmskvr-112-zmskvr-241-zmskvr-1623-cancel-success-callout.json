@@ -1,0 +1,35 @@
+{
+  "branch": "test-zmskvr-112-zmskvr-241-zmskvr-1623-cancel-success-callout",
+  "branchSlug": "test-zmskvr-112-zmskvr-241-zmskvr-1623-cancel-success-callout",
+  "runId": "37394906538",
+  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37394906538",
+  "runStartedAt": "2026-10-06T00:36:38Z",
+  "publishedAt": "2026-10-06T01:21:41.963Z",
+  "features": {
+    "feature-ui-zmscitizenview-booking-zmskvr-112-zmskvr-241-zmskvr-1623-cancel-success-callout": {
+      "status": "failed",
+      "shard": "custom",
+      "browser": "chrome",
+      "browsers": {
+        "chrome": {
+          "status": "failed",
+          "shard": "custom",
+          "runId": "37394906538",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37394906538",
+          "runStartedAt": "2026-10-06T00:36:38Z"
+        },
+        "firefox": {
+          "status": "failed",
+          "shard": "custom",
+          "runId": "37394906538",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37394906538",
+          "runStartedAt": "2026-10-06T00:36:38Z"
+        }
+      },
+      "rel": "ui/zmscitizenview/booking/zmskvr-112_zmskvr-241_zmskvr-1623_cancel_success_callout.feature",
+      "runId": "37394906538",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37394906538",
+      "runStartedAt": "2026-10-06T00:36:38Z"
+    }
+  }
+}
