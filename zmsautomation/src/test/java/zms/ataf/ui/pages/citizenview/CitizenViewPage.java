@@ -843,7 +843,8 @@ public class CitizenViewPage extends BasePage {
         Assert.assertTrue(
                 clickShowAllServicesButton(),
                 "Could not click Alle Leistungen anzeigen.");
-        sleepQuiet(400L);
+        new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(d -> countVisibleCombinableServices() > 3);
         Assert.assertTrue(
                 countVisibleCombinableServices() > 3,
                 "Combinable list did not expand after Alle Leistungen anzeigen.");
