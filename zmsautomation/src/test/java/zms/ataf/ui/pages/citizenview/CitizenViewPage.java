@@ -40,6 +40,9 @@ import zms.ataf.ui.pages.citizenview.support.CitizenViewWaits;
 import zms.ataf.ui.pages.citizenview.support.ShadowDom;
 import zms.ataf.ui.pages.citizenview.steps.CombinationStep;
 import zms.ataf.ui.pages.citizenview.steps.ServiceFinderStep;
+import zms.ataf.ui.pages.citizenview.steps.ProviderOrtStep;
+import zms.ataf.ui.pages.citizenview.support.CitizenViewJson;
+import zms.ataf.ui.pages.citizenview.support.SlotBookingState;
 
     /**
  * zmscitizenview booking flow: all meaningful DOM lives under Vue custom elements / shadow roots.
@@ -86,11 +89,12 @@ public class CitizenViewPage extends BasePage {
 
     private final ServiceFinderStep serviceFinder;
 
-    /**
-     * Last office chosen on the Ort step; used to scroll {@code #timeslot-grid-provider-{id}} into view before
-     * {@code @AfterStep} screenshots.
-     */
-    private int lastSlotBookingOfficeId = -1;
+    private final CitizenViewJson json;
+
+    private final SlotBookingState slotState;
+
+    private final ProviderOrtStep providerOrt;
+
 
     public CitizenViewPage(RemoteWebDriver driver) {
         super(driver);
@@ -98,6 +102,9 @@ public class CitizenViewPage extends BasePage {
         shadow = new ShadowDom(CONTEXT, DEFAULT_EXPLICIT_WAIT_TIME);
         combination = new CombinationStep(CONTEXT, shadow, DEFAULT_EXPLICIT_WAIT_TIME);
         serviceFinder = new ServiceFinderStep(CONTEXT, shadow, combination, DEFAULT_EXPLICIT_WAIT_TIME);
+        json = new CitizenViewJson(CONTEXT);
+        slotState = new SlotBookingState();
+        providerOrt = new ProviderOrtStep(CONTEXT, shadow, json, slotState, DEFAULT_EXPLICIT_WAIT_TIME);
     }
 
     public CitizenViewPageContext getContext() {
@@ -682,41 +689,9 @@ public class CitizenViewPage extends BasePage {
         return Boolean.TRUE.equals(found);
     }
 
-    public boolean ortStepShowsProvider(int officeId) {
-        CONTEXT.set();
-        return deepElementExists("#checkbox-provider-" + officeId)
-                || deepOrtSingleProviderTeaserPresent(officeId);
-    }
 
-    /** Single-provider layout: teaser headline {@code #provider-{id}} under Ort (no checkboxes). */
-    private boolean deepOrtSingleProviderTeaserPresent(int officeId) {
-        CONTEXT.set();
-        String script =
-                "var id='provider-'+arguments[0];function has(root){if(!root)return false;"
-                        + "var h=root.querySelector('h3#'+id+'.m-teaser-contained-contact__headline');"
-                        + "if(h)return true;var all=root.querySelectorAll('*');"
-                        + "for(var i=0;i<all.length;i++)if(all[i].shadowRoot&&has(all[i].shadowRoot))return true;return false;}"
-                        + "return has(document.body);";
-        return Boolean.TRUE.equals(
-                ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script, officeId));
-    }
 
-    public void assertProviderCheckboxPresent(int officeId) {
-        CONTEXT.set();
-        waitUntilOrtStepShowsProvider(officeId, DEFAULT_EXPLICIT_WAIT_TIME);
-        logOrtProviderResolution(officeId);
-        Assert.assertTrue(ortStepShowsProvider(officeId), "Ort must show provider " + officeId);
-    }
 
-    public void assertProviderCheckboxAbsent(int officeId) {
-        CONTEXT.set();
-        Assert.assertFalse(
-                deepElementExists("#checkbox-provider-" + officeId),
-                "Provider checkbox for office " + officeId + " must not appear for this jump-in/service.");
-        Assert.assertFalse(
-                deepOrtSingleProviderTeaserPresent(officeId),
-                "Single-provider Ort teaser for office " + officeId + " must not appear.");
-    }
 
     /**
      * True when at least one timeslot button for the real booking OfficeID is in the DOM
@@ -819,37 +794,9 @@ public class CitizenViewPage extends BasePage {
     }
 
 
-    private static final String[] OFFICE_FREQUENCY = {
-        "Bürgerbüro Ruppertstraße",
-        "Bürgerbüro Orleansplatz",
-        "Bürgerbüro Pasing",
-        "Bürgerbüro Riesenfeldstraße",
-        "Bürgerbüro Forstenrieder Allee",
-        "Bürgerbüro Leonrodstraße"
-    };
 
-    private static final String OFFICE_SCHEIDPLATZ = "Bürgerbüro Scheidplatz";
 
-    private String listHourLabel;
-    private String listHourBeforeMove;
-    private String calendarHourBeforeMove;
-    private int hiddenOfficeId = -1;
-    private int listAccordionCount;
-    private String openListHeading;
-    private String markedTimeslotId;
-    private String previousTimeslotId;
 
-    private JsonNode citizenJson(String expression, Object... args) {
-        CONTEXT.set();
-        // An IIFE has its own arguments object, so callers read the script arguments from __args.
-        String script = CitizenViewScripts.CITIZEN_DOM + "var __args=arguments;return JSON.stringify(" + expression + ");";
-        Object raw = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script, args);
-        try {
-            return new ObjectMapper().readTree(raw == null ? "null" : String.valueOf(raw));
-        } catch (Exception e) {
-            throw new AssertionError("Could not read the citizen view: " + raw, e);
-        }
-    }
 
     public void assertCalendarListToggleShows(String activeLabel) {
         CONTEXT.set();
@@ -905,8 +852,8 @@ public class CitizenViewPage extends BasePage {
     public void assertListDateAccordions(int expectedCount) {
         CONTEXT.set();
         JsonNode state = waitForListAccordionCount(expectedCount);
-        listAccordionCount = state.path("count").asInt();
-        Assert.assertEquals(listAccordionCount, expectedCount, "Date accordion count: " + state);
+        slotState.listAccordionCount = state.path("count").asInt();
+        Assert.assertEquals(slotState.listAccordionCount, expectedCount, "Date accordion count: " + state);
         Assert.assertEquals(state.path("expanded").get(0).asText(), "true", "The first date stays open: " + state);
         for (int i = 1; i < state.path("expanded").size(); i++) {
             Assert.assertEquals(
@@ -918,7 +865,7 @@ public class CitizenViewPage extends BasePage {
                             "(Montag|Dienstag|Mittwoch|Donnerstag|Freitag|Samstag|Sonntag), \\d{2}\\.\\d{2}\\.\\d{4}"),
                     "Date heading should be a weekday and a date: " + label.asText());
         }
-        openListHeading = state.path("labels").get(0).asText();
+        slotState.openListHeading = state.path("labels").get(0).asText();
     }
 
     public void assertOpenListGroupsByHour() {
@@ -933,7 +880,7 @@ public class CitizenViewPage extends BasePage {
                     return null;
                 });
         assertHourLabels(state);
-        listHourLabel = firstHourLabel(state);
+        slotState.listHourLabel = firstHourLabel(state);
     }
 
     public void assertCalendarGroupsByHour() {
@@ -962,25 +909,6 @@ public class CitizenViewPage extends BasePage {
         assertMorningLabels(state);
     }
 
-    /**
-     * Ort checkboxes start selected. Ranked Bürgerbüros follow frequency order. Scheidplatz has no
-     * frequency rank in the catalog, so it follows them. Each checkbox also shows its address.
-     */
-    public void assertOfficesCheckedInFrequencyOrder() {
-        CONTEXT.set();
-        JsonNode offices;
-        try {
-            offices = new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
-                    .until(d -> {
-                        JsonNode node = providerCheckboxes().path("offices");
-                        return node.size() > 1 ? node : null;
-                    });
-        } catch (TimeoutException e) {
-            Assert.fail("Location checkboxes did not appear: " + providerCheckboxes());
-            return;
-        }
-        assertOfficeOrder(offices, true, true);
-    }
 
     /** Open hour: each office that has a slot is a map-pin heading, in the same order as the checkboxes. */
     public void assertOpenHourListsOfficesWithMapPin() {
@@ -1013,7 +941,7 @@ public class CitizenViewPage extends BasePage {
         JsonNode before = calendarSnapshot();
         String current = firstHourLabel(before);
         if (later) {
-            calendarHourBeforeMove = current;
+            slotState.calendarHourBeforeMove = current;
         }
         String word = later ? "Später" : "Früher";
         JsonNode clicked = citizenJson(
@@ -1031,8 +959,8 @@ public class CitizenViewPage extends BasePage {
         if (!later) {
             Assert.assertEquals(
                     next,
-                    calendarHourBeforeMove,
-                    "Früher should return to " + calendarHourBeforeMove + " but showed " + next);
+                    slotState.calendarHourBeforeMove,
+                    "Früher should return to " + slotState.calendarHourBeforeMove + " but showed " + next);
         }
     }
 
@@ -1044,26 +972,26 @@ public class CitizenViewPage extends BasePage {
         String id = titles.get(0).path("id").asText();
         Assert.assertTrue(id.startsWith("provider-"), "Office heading id: " + titles.get(0));
         try {
-            hiddenOfficeId = Integer.parseInt(id.substring("provider-".length()));
+            slotState.hiddenOfficeId = Integer.parseInt(id.substring("provider-".length()));
         } catch (NumberFormatException e) {
             Assert.fail("Office heading id is not a number: " + titles.get(0) + " " + e.getMessage());
             return;
         }
-        deepClickRequired("#checkbox-provider-" + hiddenOfficeId);
+        deepClickRequired("#checkbox-provider-" + slotState.hiddenOfficeId);
         waitUntilProviderToggleSettled(15);
         new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
-                .until(d -> !deepElementExists("#timeslot-grid-provider-" + hiddenOfficeId));
+                .until(d -> !deepElementExists("#timeslot-grid-provider-" + slotState.hiddenOfficeId));
     }
 
     public void assertClearedOfficeIsHidden() {
         CONTEXT.set();
-        Assert.assertTrue(hiddenOfficeId > 0, "No office was cleared");
+        Assert.assertTrue(slotState.hiddenOfficeId > 0, "No office was cleared");
         Assert.assertFalse(
-                deepProviderCheckboxChecked(hiddenOfficeId),
-                "Office " + hiddenOfficeId + " should be unchecked");
+                deepProviderCheckboxChecked(slotState.hiddenOfficeId),
+                "Office " + slotState.hiddenOfficeId + " should be unchecked");
         Assert.assertFalse(
-                deepElementExists("#timeslot-grid-provider-" + hiddenOfficeId),
-                "Cleared office " + hiddenOfficeId + " should leave the available times");
+                deepElementExists("#timeslot-grid-provider-" + slotState.hiddenOfficeId),
+                "Cleared office " + slotState.hiddenOfficeId + " should leave the available times");
         JsonNode titles = new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
                 .until(d -> {
                     JsonNode node = locationTitles().path("titles");
@@ -1072,26 +1000,11 @@ public class CitizenViewPage extends BasePage {
         for (JsonNode title : titles) {
             Assert.assertNotEquals(
                     title.path("id").asText(),
-                    "provider-" + hiddenOfficeId,
+                    "provider-" + slotState.hiddenOfficeId,
                     "Cleared office is still a heading: " + titles);
         }
     }
 
-    /** One bookable office: a contact tile, no location checkboxes. */
-    public void assertSingleOfficeTile(int officeId, String name, String street) {
-        CONTEXT.set();
-        JsonNode tile = new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
-                .until(d -> {
-                    JsonNode node = officeTile(officeId);
-                    return node.path("name").asText().contains(name) ? node : null;
-                });
-        Assert.assertEquals(tile.path("checkboxes").asInt(), 0, "One office has no checkboxes: " + tile);
-        Assert.assertEquals(tile.path("name").asText(), name, "Tile name: " + tile);
-        Assert.assertTrue(tile.path("text").asText().contains(street), "Tile should show the street: " + tile);
-        String icons = tile.path("icons").asText();
-        Assert.assertTrue(icons.contains("icon-place"), "Tile should use the place icon: " + tile);
-        Assert.assertTrue(icons.contains("icon-map-pin"), "Tile should use the map pin: " + tile);
-    }
 
     /** One office shows every group at once, with no location heading and no Früher or Später. */
     public void assertSingleOfficeGroupsTimesWithoutLocationHeadings() {
@@ -1111,31 +1024,6 @@ public class CitizenViewPage extends BasePage {
                 "One office has no location heading: " + locationTitles());
     }
 
-    private JsonNode providerCheckboxes() {
-        return citizenJson(
-                "(function(){function inView(el){var n=el;var self=true;while(n&&n.nodeType===1){"
-                        + "var st=window.getComputedStyle(n);if(st.display==='none'||st.visibility==='hidden')return false;"
-                        + "if(!self&&st.opacity==='0')return false;self=false;"
-                        + "if(n.parentElement){n=n.parentElement;continue;}"
-                        + "var root=n.getRootNode&&n.getRootNode();n=root&&root.host?root.host:null;}return true;}"
-                        + "function officeText(el){var cur=el;var guard=0;var text='';"
-                        + "while(cur&&guard++<8){text=textOf(cur);var boxes=0;"
-                        + "if(cur.querySelectorAll){boxes=cur.querySelectorAll('[id^=\"checkbox-provider-\"]').length;}"
-                        + "if(text.indexOf('Bürgerbüro')>=0&&boxes<=1)return text;"
-                        + "if(cur.parentElement){cur=cur.parentElement;continue;}"
-                        + "var root=cur.getRootNode&&cur.getRootNode();cur=root&&root.host?root.host:null;}"
-                        + "return text;}"
-                        + "var nodes=cssAll('[id^=\"checkbox-provider-\"]');var seen={};var offices=[];"
-                        + "for(var i=0;i<nodes.length;i++){var el=nodes[i];var id=el.id||'';"
-                        + "if(!/^checkbox-provider-\\d+$/.test(id)||seen[id]||!inView(el))continue;seen[id]=true;"
-                        + "var checked=false;if(el.tagName==='INPUT'&&el.type==='checkbox')checked=!!el.checked;"
-                        + "else if(el.shadowRoot){var inp=el.shadowRoot.querySelector('input[type=checkbox]');"
-                        + "if(inp)checked=!!inp.checked;}if(!checked){var inp2=el.querySelector&&el.querySelector('input[type=checkbox]');"
-                        + "if(inp2)checked=!!inp2.checked;else checked=el.getAttribute('aria-checked')==='true'"
-                        + "||(el.classList&&el.classList.contains('is-selected'));}"
-                        + "offices.push({id:id,text:officeText(el),checked:!!checked});}"
-                        + "return {offices:offices};})()");
-    }
 
     private JsonNode locationTitles() {
         return citizenJson(
@@ -1168,77 +1056,7 @@ public class CitizenViewPage extends BasePage {
                         + "return {earlier:paint('Früher'),later:paint('Später')};})()");
     }
 
-    private JsonNode officeTile(int officeId) {
-        return citizenJson(
-                "(function(){var id='provider-'+__args[0];var boxes=cssAll('[id^=\"checkbox-provider-\"]');"
-                        + "var seen={};var checkboxCount=0;for(var i=0;i<boxes.length;i++){var box=boxes[i];"
-                        + "if(!shown(box)||seen[box.id]||!/^checkbox-provider-\\d+$/.test(box.id||''))continue;"
-                        + "seen[box.id]=true;checkboxCount++;}"
-                        + "var heads=cssAll('h3.m-teaser-contained-contact__headline');var h=null;"
-                        + "for(var n=0;n<heads.length;n++){if(heads[n].id===id&&shown(heads[n])){h=heads[n];break;}}"
-                        + "var teaser=h;while(teaser&&!(teaser.classList&&teaser.classList.contains('m-teaser-contained-contact'))){"
-                        + "if(teaser.parentElement)teaser=teaser.parentElement;else{var root=teaser.getRootNode&&teaser.getRootNode();"
-                        + "teaser=root&&root.host?root.host:null;}}"
-                        + "var icons='';if(teaser){var uses=teaser.querySelectorAll('use');"
-                        + "for(var u=0;u<uses.length;u++){icons+=' '+(uses[u].getAttribute('href')||'')"
-                        + "+' '+(uses[u].getAttribute('xlink:href')||'');}}"
-                        + "return {checkboxes:checkboxCount,name:h?textOf(h):'',text:teaser?textOf(teaser):'',icons:icons};})()",
-                officeId);
-    }
 
-    private void assertOfficeOrder(JsonNode offices, boolean requireChecked, boolean requireAllKnown) {
-        int lastRank = -1;
-        boolean scheidplatz = false;
-        Set<String> seen = new HashSet<>();
-        Assert.assertTrue(offices.size() >= 2, "Expected several offices: " + offices);
-        for (JsonNode office : offices) {
-            String text = office.path("text").asText();
-            if (requireChecked) {
-                Assert.assertTrue(office.path("checked").asBoolean(), "Checkbox starts selected: " + office);
-                Assert.assertTrue(text.matches(".*\\d.*"), "Checkbox should show the address: " + text);
-            } else {
-                Assert.assertTrue(office.path("pin").asBoolean(), "Location heading needs a map pin: " + office);
-            }
-            String name = frequencyName(text);
-            if (name == null) {
-                Assert.assertTrue(
-                        text.contains(OFFICE_SCHEIDPLATZ),
-                        "Unexpected office: " + text + " offices=" + offices);
-                Assert.assertFalse(scheidplatz, "Scheidplatz appears twice: " + offices);
-                if (requireAllKnown) {
-                    Assert.assertEquals(
-                            lastRank,
-                            OFFICE_FREQUENCY.length - 1,
-                            "Scheidplatz follows the ranked Bürgerbüros: " + offices);
-                }
-                scheidplatz = true;
-                continue;
-            }
-            Assert.assertFalse(scheidplatz, "A ranked office follows Scheidplatz: " + offices);
-            int rank = frequencyRank(name);
-            Assert.assertTrue(rank > lastRank, "Office order broke at " + name + ": " + offices);
-            lastRank = rank;
-            seen.add(name);
-        }
-        Assert.assertTrue(
-                seen.contains("Bürgerbüro Ruppertstraße"),
-                "Bürgerbüro Ruppertstraße should be listed: " + offices);
-        if (requireAllKnown) {
-            String[] required = {
-                "Bürgerbüro Ruppertstraße",
-                "Bürgerbüro Orleansplatz",
-                "Bürgerbüro Pasing",
-                "Bürgerbüro Forstenrieder Allee",
-                "Bürgerbüro Leonrodstraße"
-            };
-            for (String name : required) {
-                Assert.assertTrue(seen.contains(name), "Missing " + name + " in " + offices);
-            }
-            Assert.assertTrue(
-                    scheidplatz,
-                    "Bürgerbüro Scheidplatz should follow the ranked offices: " + offices);
-        }
-    }
 
     private static void assertGhostButton(JsonNode button, String word, String icon, boolean disabled) {
         Assert.assertTrue(button.path("present").asBoolean(), word + " should be shown: " + button);
@@ -1265,24 +1083,7 @@ public class CitizenViewPage extends BasePage {
         return "";
     }
 
-    private static String frequencyName(String text) {
-        String found = null;
-        for (String name : OFFICE_FREQUENCY) {
-            if (text.contains(name) && (found == null || name.length() > found.length())) {
-                found = name;
-            }
-        }
-        return found;
-    }
 
-    private static int frequencyRank(String name) {
-        for (int i = 0; i < OFFICE_FREQUENCY.length; i++) {
-            if (OFFICE_FREQUENCY[i].equals(name)) {
-                return i;
-            }
-        }
-        return -1;
-    }
 
     private static JsonNode hourLabel(JsonNode node) {
         if (node.path("list").asBoolean()) {
@@ -1357,9 +1158,9 @@ public class CitizenViewPage extends BasePage {
         JsonNode before = listSnapshot();
         String current = firstHourLabel(before);
         if (later) {
-            listHourBeforeMove = current;
+            slotState.listHourBeforeMove = current;
         }
-        listHourLabel = current;
+        slotState.listHourLabel = current;
         String word = later ? "Später" : "Früher";
         JsonNode clicked = citizenJson(
                 "(function(){var open=cssAll('#listViewAccordion section.m-accordion__section-content.show')[0];"
@@ -1372,25 +1173,25 @@ public class CitizenViewPage extends BasePage {
         CitizenViewWaits.sleepQuiet(500L);
         JsonNode after = listSnapshot();
         String next = firstHourLabel(after);
-        Assert.assertNotEquals(next, listHourLabel, word + " should show another hour. before=" + before + " after=" + after);
+        Assert.assertNotEquals(next, slotState.listHourLabel, word + " should show another hour. before=" + before + " after=" + after);
         if (!later) {
-            Assert.assertEquals(next, listHourBeforeMove, "Früher should return to " + listHourBeforeMove + " but showed " + next);
+            Assert.assertEquals(next, slotState.listHourBeforeMove, "Früher should return to " + slotState.listHourBeforeMove + " but showed " + next);
         }
-        listHourLabel = next;
+        slotState.listHourLabel = next;
     }
 
     public void loadMoreListDates() {
-        JsonNode before = waitForListAccordionCount(listAccordionCount);
-        openListHeading = before.path("labels").get(0).asText();
+        JsonNode before = waitForListAccordionCount(slotState.listAccordionCount);
+        slotState.openListHeading = before.path("labels").get(0).asText();
         Assert.assertTrue(clickButtonContaining("Mehr laden"), "Could not click Mehr laden");
         new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
-                .until(d -> listSnapshot().path("count").asInt() > listAccordionCount);
+                .until(d -> listSnapshot().path("count").asInt() > slotState.listAccordionCount);
         JsonNode after = listSnapshot();
         int count = after.path("count").asInt();
-        Assert.assertTrue(count > listAccordionCount && count <= listAccordionCount + 3, "Mehr laden adds at most three dates: " + after);
-        Assert.assertEquals(after.path("labels").get(0).asText(), openListHeading, "Mehr laden keeps the open date");
+        Assert.assertTrue(count > slotState.listAccordionCount && count <= slotState.listAccordionCount + 3, "Mehr laden adds at most three dates: " + after);
+        Assert.assertEquals(after.path("labels").get(0).asText(), slotState.openListHeading, "Mehr laden keeps the open date");
         Assert.assertEquals(after.path("expanded").get(0).asText(), "true", "The open date stays open after Mehr laden");
-        listAccordionCount = count;
+        slotState.listAccordionCount = count;
     }
 
     public void openTheNextListDate() {
@@ -1405,7 +1206,7 @@ public class CitizenViewPage extends BasePage {
                         + "target.scrollIntoView({block:'center'});target.click();"
                         + "return {clicked:true,openLabel:openLabel,targetLabel:targetLabel};})()");
         Assert.assertTrue(clicked.path("clicked").asBoolean(), "Could not open another date: " + clicked);
-        openListHeading = clicked.path("openLabel").asText();
+        slotState.openListHeading = clicked.path("openLabel").asText();
         String opened = clicked.path("targetLabel").asText();
         CitizenViewWaits.sleepQuiet(500L);
         JsonNode after = listSnapshot();
@@ -1417,7 +1218,7 @@ public class CitizenViewPage extends BasePage {
             if (expanded) {
                 openCount++;
             }
-            if (after.path("labels").get(i).asText().equals(openListHeading)) {
+            if (after.path("labels").get(i).asText().equals(slotState.openListHeading)) {
                 previousClosed = !expanded;
             }
             if (after.path("labels").get(i).asText().equals(opened)) {
@@ -1430,8 +1231,8 @@ public class CitizenViewPage extends BasePage {
     }
 
     public void selectVisibleTimeslot() {
-        previousTimeslotId = markedTimeslotId;
-        String skip = markedTimeslotId == null ? "" : markedTimeslotId;
+        slotState.previousTimeslotId = slotState.markedTimeslotId;
+        String skip = slotState.markedTimeslotId == null ? "" : slotState.markedTimeslotId;
         JsonNode clicked = new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
                 .until(d -> {
                     JsonNode node = citizenJson(
@@ -1452,7 +1253,7 @@ public class CitizenViewPage extends BasePage {
                             skip);
                     return node.path("clicked").asBoolean() ? node : null;
                 });
-        markedTimeslotId = clicked.path("id").asText();
+        slotState.markedTimeslotId = clicked.path("id").asText();
         CitizenViewWaits.sleepQuiet(400L);
     }
 
@@ -1460,7 +1261,7 @@ public class CitizenViewPage extends BasePage {
         CONTEXT.set();
         JsonNode slot = new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
                 .until(d -> {
-                    JsonNode node = timeslotStyle(markedTimeslotId);
+                    JsonNode node = timeslotStyle(slotState.markedTimeslotId);
                     if (!node.path("found").asBoolean()
                             || !"primary".equals(node.path("variant").asText())) {
                         return null;
@@ -1486,15 +1287,15 @@ public class CitizenViewPage extends BasePage {
     }
 
     public void assertPreviousTimeslotIsNotMarked() {
-        Assert.assertNotNull(previousTimeslotId, "No earlier timeslot was selected");
-        JsonNode previous = timeslotStyle(previousTimeslotId);
+        Assert.assertNotNull(slotState.previousTimeslotId, "No earlier timeslot was selected");
+        JsonNode previous = timeslotStyle(slotState.previousTimeslotId);
         if (previous.path("found").asBoolean()) {
             Assert.assertNotEquals(
                     previous.path("variant").asText(),
                     "primary",
                     "The previous time should no longer be marked: " + previous);
         }
-        JsonNode current = timeslotStyle(markedTimeslotId);
+        JsonNode current = timeslotStyle(slotState.markedTimeslotId);
         Assert.assertEquals(current.path("variant").asText(), "primary", "The new time should be marked: " + current);
     }
 
@@ -2295,48 +2096,7 @@ public class CitizenViewPage extends BasePage {
     }
 
 
-    /**
-     * Jump-in can pre-select the only provider; clicking again toggles off. True if that office is already on.
-     */
-    public boolean deepProviderCheckboxChecked(int officeId) {
-        CONTEXT.set();
-        String script =
-                "var id=arguments[0];function find(root,id){if(!root)return null;"
-                        + "var q=root.querySelector('#checkbox-provider-'+id);if(q)return q;"
-                        + "var all=root.querySelectorAll('*');for(var i=0;i<all.length;i++){if(all[i].shadowRoot){var f=find(all[i].shadowRoot,id);if(f)return f;}}return null;}"
-                        + "var e=document.querySelector('#checkbox-provider-'+id)||find(document.body,id);if(!e)return false;"
-                        + "if(e.tagName==='INPUT'&&e.type==='checkbox')return !!e.checked;"
-                        + "if(e.shadowRoot){var inp=e.shadowRoot.querySelector('input[type=checkbox]');if(inp)return !!inp.checked;}"
-                        + "var inp2=e.querySelector('input[type=checkbox]');if(inp2)return !!inp2.checked;"
-                        + "return e.getAttribute('aria-checked')==='true'||e.classList.contains('is-selected');";
-        Object o = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script, officeId);
-        return Boolean.TRUE.equals(o);
-    }
 
-    public void selectOfficeById(int officeId) {
-        CONTEXT.set();
-        logOrtProviderResolution(officeId);
-        if (deepElementExists("#checkbox-provider-" + officeId)) {
-            if (deepProviderCheckboxChecked(officeId)) {
-                ScenarioLogManager.getLogger()
-                        .info(
-                                "zmscitizenview: Ort checkbox provider {} already checked (jump-in); skip click",
-                                officeId);
-            } else {
-                deepClickRequired("#checkbox-provider-" + officeId);
-                ScenarioLogManager.getLogger()
-                        .info("zmscitizenview: clicked Ort checkbox provider {}", officeId);
-            }
-        } else if (deepOrtSingleProviderTeaserPresent(officeId)) {
-            ScenarioLogManager.getLogger()
-                    .info(
-                            "zmscitizenview: Ort single-provider teaser already selected provider {} (no checkbox)",
-                            officeId);
-        } else {
-            Assert.fail("Ort: no checkbox and no single-provider teaser for provider " + officeId);
-        }
-        lastSlotBookingOfficeId = officeId;
-    }
 
     /**
      * Scrolls the provider's time slot grid into the viewport center so {@code @AfterStep} full-page screenshots show
@@ -2345,7 +2105,7 @@ public class CitizenViewPage extends BasePage {
     public void scrollTimeSlotGridIntoViewForScreenshots() {
         CONTEXT.set();
         String script;
-        if (lastSlotBookingOfficeId < 0) {
+        if (slotState.lastSlotBookingOfficeId < 0) {
             script =
                     "function fg(r){if(!r)return null;var q=r.querySelector('[id^=\"timeslot-grid-provider-\"]');"
                             + "if(q)return q;var a=r.querySelectorAll('*');for(var i=0;i<a.length;i++)"
@@ -2362,13 +2122,97 @@ public class CitizenViewPage extends BasePage {
                         + "if(all[i].shadowRoot){var f=findGrid(all[i].shadowRoot,id);if(f)return f;}return null;}"
                         + "var grid=findGrid(document.body,oid);if(grid){grid.scrollIntoView({block:'center'});"
                         + "window.scrollBy(0,72);}return true;";
-        ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script, lastSlotBookingOfficeId);
+        ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script, slotState.lastSlotBookingOfficeId);
     }
 
     /**
      * Normalize Ort provider checkboxes so only {@code allowedOfficeIds} remain checked.
      * Single-provider teaser layouts have no checkboxes and are left unchanged.
      */
+    private JsonNode citizenJson(String expression, Object... args) {
+        return json.citizenJson(expression, args);
+    }
+
+    public boolean ortStepShowsProvider(int officeId) {
+        return providerOrt.ortStepShowsProvider(officeId);
+    }
+
+    /** Single-provider layout: teaser headline {@code #provider-{id}} under Ort (no checkboxes). */
+    private boolean deepOrtSingleProviderTeaserPresent(int officeId) {
+        return providerOrt.deepOrtSingleProviderTeaserPresent(officeId);
+    }
+
+    public void assertProviderCheckboxPresent(int officeId) {
+        providerOrt.assertProviderCheckboxPresent(officeId);
+    }
+
+    public void assertProviderCheckboxAbsent(int officeId) {
+        providerOrt.assertProviderCheckboxAbsent(officeId);
+    }
+
+    /**
+     * Ort checkboxes start selected. Ranked Bürgerbüros follow frequency order. Scheidplatz has no
+     * frequency rank in the catalog, so it follows them. Each checkbox also shows its address.
+     */
+    public void assertOfficesCheckedInFrequencyOrder() {
+        providerOrt.assertOfficesCheckedInFrequencyOrder();
+    }
+
+    /** One bookable office: a contact tile, no location checkboxes. */
+    public void assertSingleOfficeTile(int officeId, String name, String street) {
+        providerOrt.assertSingleOfficeTile(officeId, name, street);
+    }
+
+    /**
+     * Jump-in can pre-select the only provider; clicking again toggles off. True if that office is already on.
+     */
+    public boolean deepProviderCheckboxChecked(int officeId) {
+        return providerOrt.deepProviderCheckboxChecked(officeId);
+    }
+
+    public void selectOfficeById(int officeId) {
+        providerOrt.selectOfficeById(officeId);
+    }
+
+    /**
+     * Waits after combination → Ort/ Zeit: multi-provider checkboxes or single-provider teaser.
+     */
+    public void waitUntilOrtStepShowsProvider(int officeId, int maxSeconds) {
+        providerOrt.waitUntilOrtStepShowsProvider(officeId, maxSeconds);
+    }
+
+    /**
+     * Logs checkbox ids in DOM + whether single-provider teaser matches; asserts expected provider is shown in Ort.
+     */
+    public void logOrtProviderResolution(int expectedOfficeId) {
+        providerOrt.logOrtProviderResolution(expectedOfficeId);
+    }
+
+    private JsonNode providerCheckboxes() {
+        return providerOrt.providerCheckboxes();
+    }
+
+    private JsonNode officeTile(int officeId) {
+        return providerOrt.officeTile(officeId);
+    }
+
+    private void assertOfficeOrder(JsonNode offices, boolean requireChecked, boolean requireAllKnown) {
+        providerOrt.assertOfficeOrder(offices, requireChecked, requireAllKnown);
+    }
+
+    private String frequencyName(String text) {
+        return providerOrt.frequencyName(text);
+    }
+
+    private int frequencyRank(String name) {
+        return providerOrt.frequencyRank(name);
+    }
+
+    /** Wait until provider-toggle spinner activity has settled (best effort). */
+    private void waitUntilProviderToggleSettled(int maxSeconds) {
+        providerOrt.waitUntilProviderToggleSettled(maxSeconds);
+    }
+
     public void keepOnlyProviderCheckboxesChecked(Set<Integer> allowedOfficeIds) {
         CONTEXT.set();
         Set<Integer> allowed = new HashSet<>(allowedOfficeIds);
@@ -2426,7 +2270,7 @@ public class CitizenViewPage extends BasePage {
         }
 
         if (allowed.size() == 1) {
-            lastSlotBookingOfficeId = allowed.iterator().next();
+            slotState.lastSlotBookingOfficeId = allowed.iterator().next();
             waitUntilProviderToggleSettled(30);
             try {
                 waitUntilAppointmentSlotsReady(Math.min(60, slotBookingWaitTimeoutSeconds()));
@@ -2437,93 +2281,8 @@ public class CitizenViewPage extends BasePage {
         }
     }
 
-    /** Wait until provider-toggle spinner activity has settled (best effort). */
-    private void waitUntilProviderToggleSettled(int maxSeconds) {
-        CONTEXT.set();
-        long deadline = System.currentTimeMillis() + maxSeconds * 1000L;
-        while (System.currentTimeMillis() < deadline) {
-            if (!deepMucSpinnerVisible()) {
-                return;
-            }
-            try {
-                Thread.sleep(250L);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                return;
-            }
-        }
-    }
 
-    /**
-     * Waits after combination → Ort/ Zeit: multi-provider checkboxes or single-provider teaser.
-     */
-    public void waitUntilOrtStepShowsProvider(int officeId, int maxSeconds) {
-        CONTEXT.set();
-        ScenarioLogManager.getLogger()
-                .info(
-                        "zmscitizenview: Ort step — start waiting for provider {} (checkbox or single-provider teaser), up to {}s",
-                        officeId,
-                        maxSeconds);
-        long deadline = java.lang.System.currentTimeMillis() + maxSeconds * 1000L;
-        while (java.lang.System.currentTimeMillis() < deadline) {
-            if (ortStepShowsProvider(officeId)) {
-                ScenarioLogManager.getLogger()
-                        .info(
-                                "zmscitizenview: Ort step — provider {} found ({})",
-                                officeId,
-                                deepElementExists("#checkbox-provider-" + officeId)
-                                        ? "checkbox list"
-                                        : "single-provider teaser");
-                return;
-            }
-            try {
-                Thread.sleep(500L);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                break;
-            }
-        }
-        logOrtProviderResolution(officeId);
-        Assert.fail(
-                "Ort step did not show provider "
-                        + officeId
-                        + " within "
-                        + maxSeconds
-                        + "s (no checkbox-provider-"
-                        + officeId
-                        + " and no single-provider teaser)");
-    }
 
-    /**
-     * Logs checkbox ids in DOM + whether single-provider teaser matches; asserts expected provider is shown in Ort.
-     */
-    public void logOrtProviderResolution(int expectedOfficeId) {
-        CONTEXT.set();
-        String script =
-                "var ids=[];function collect(r){if(!r)return;var a=r.querySelectorAll('[id^=\"checkbox-provider-\"]');"
-                        + "for(var i=0;i<a.length;i++)ids.push(a[i].id);var q=r.querySelectorAll('*');"
-                        + "for(var j=0;j<q.length;j++)if(q[j].shadowRoot)collect(q[j].shadowRoot);}"
-                        + "collect(document.body);return ids.join(',');";
-        String found =
-                String.valueOf(((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script));
-        boolean checkboxOk = found.contains("checkbox-provider-" + expectedOfficeId);
-        boolean teaserOk = deepOrtSingleProviderTeaserPresent(expectedOfficeId);
-        ScenarioLogManager.getLogger()
-                .info(
-                        "zmscitizenview: Ort provider resolution — checkboxIds=[{}] checkboxHit={} singleProviderTeaser={} expected={}",
-                        found,
-                        checkboxOk,
-                        teaserOk,
-                        expectedOfficeId);
-        Assert.assertTrue(
-                checkboxOk || teaserOk,
-                "Ort must list provider "
-                        + expectedOfficeId
-                        + " (checkbox or single teaser); checkboxes=["
-                        + found
-                        + "] teaser="
-                        + teaserOk);
-    }
 
     /** True when at least one bookable slot control exists (list or calendar). */
     public boolean deepTimeslotClickablePresent() {
