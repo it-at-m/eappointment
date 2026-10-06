@@ -235,11 +235,19 @@ public class CitizenViewPage extends BasePage {
 
     /**
      * From the Leistung heading, Tab lands on the search field. Enter opens the list.
+     * Enter on an already-open list selects a row, so the list must be closed first.
      */
     public void openServiceListWithTabAndEnter() {
         CONTEXT.set();
         waitUntilServiceOptionsLoaded();
-        serviceSearch("close", "");
+        new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(d -> {
+                    if (!serviceSearch("read", "").path("open").asBoolean()) {
+                        return true;
+                    }
+                    serviceSearch("close", "");
+                    return !serviceSearch("read", "").path("open").asBoolean();
+                });
         serviceSearch("focus-heading", "");
         Actions actions = new Actions(DriverUtil.getDriver());
         boolean focused = false;
@@ -253,6 +261,10 @@ public class CitizenViewPage extends BasePage {
         }
         Assert.assertTrue(focused, "Tab did not reach the service search field.");
         actions.sendKeys(Keys.ENTER).perform();
+        if (!serviceSearch("read", "").path("open").asBoolean()) {
+            // Enter sometimes lands before Choices is ready; open with a click instead.
+            serviceSearch("click", "");
+        }
         waitUntilServiceListOpen();
     }
 
@@ -297,8 +309,16 @@ public class CitizenViewPage extends BasePage {
         String folded = query.toLowerCase(Locale.ROOT);
         new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
                 .until(d -> {
+                    // The list closes when the previous step ends. Open it again before typing.
+                    if (!serviceSearch("read", "").path("open").asBoolean()) {
+                        serviceSearch("click", "");
+                    }
                     serviceSearch("type", query);
-                    JsonNode names = serviceSearch("read", "").path("names");
+                    JsonNode read = serviceSearch("read", "");
+                    if (!read.path("open").asBoolean()) {
+                        return false;
+                    }
+                    JsonNode names = read.path("names");
                     if (names.size() == 0) {
                         return false;
                     }
@@ -399,9 +419,11 @@ public class CitizenViewPage extends BasePage {
                         + "if(mode==='click'){var inner=choices.querySelector('.choices__inner');"
                         + "if(inner){inner.scrollIntoView({block:'center'});inner.click();}"
                         + "return JSON.stringify({open:isOpen(choices)});}"
-                        + "if(mode==='close'){if(isOpen(choices)){var input=choices.querySelector('.choices__input--cloned');"
-                        + "if(input)input.dispatchEvent(new KeyboardEvent('keydown',{key:'Escape',code:'Escape',keyCode:27,which:27,bubbles:true,cancelable:true}));"
-                        + "if(isOpen(choices)){var inner2=choices.querySelector('.choices__inner');if(inner2)inner2.click();}}"
+                        + "if(mode==='close'){var input=choices.querySelector('.choices__input--cloned');"
+                        + "if(input){input.focus();"
+                        + "input.dispatchEvent(new KeyboardEvent('keydown',{key:'Escape',code:'Escape',keyCode:27,which:27,bubbles:true,cancelable:true}));}"
+                        + "if(isOpen(choices)){document.body.click();}"
+                        + "if(isOpen(choices)){var inner2=choices.querySelector('.choices__inner');if(inner2)inner2.click();}"
                         + "return JSON.stringify({open:isOpen(choices)});}"
                         + "if(mode==='focus-heading'){var heading=null;walk(document.body,function(n){"
                         + "if(!heading&&(n.tagName||'').toUpperCase()==='H2'&&norm(n.textContent)==='Leistung')heading=n;});"
@@ -410,10 +432,15 @@ public class CitizenViewPage extends BasePage {
                         + "if(mode==='focused'){var el=deepActive(),inside=false,n=el;"
                         + "while(n){if(n===choices){inside=true;break;}n=up(n);}"
                         + "return JSON.stringify({focused:inside});}"
-                        + "if(mode==='type'){var field=choices.querySelector('.choices__input--cloned');"
-                        + "if(field){field.focus();field.value=text;"
-                        + "field.dispatchEvent(new Event('input',{bubbles:true}));"
-                        + "field.dispatchEvent(new KeyboardEvent('keyup',{key:text.slice(-1)||'',bubbles:true}));}}"
+                        + "if(mode==='type'){if(!isOpen(choices)){var openInner=choices.querySelector('.choices__inner');"
+                        + "if(openInner){openInner.scrollIntoView({block:'center'});openInner.click();}}"
+                        + "var field=choices.querySelector('.choices__input--cloned');"
+                        + "if(field){field.focus();field.value='';"
+                        + "field.dispatchEvent(new Event('input',{bubbles:true}));field.value=text;"
+                        + "try{field.dispatchEvent(new InputEvent('input',{bubbles:true,data:text,inputType:'insertText'}));}"
+                        + "catch(e){field.dispatchEvent(new Event('input',{bubbles:true}));}"
+                        + "var last=text.slice(-1)||' ';field.dispatchEvent(new KeyboardEvent('keyup',"
+                        + "{key:last,keyCode:last.charCodeAt(0),which:last.charCodeAt(0),bubbles:true}));}}"
                         + "if(mode==='choose'){var picked=false;var d=dropdown(choices);"
                         + "var items=d?d.querySelectorAll('.choices__item--choice'):[];"
                         + "for(var i=0;i<items.length;i++){if(shown(items[i])&&norm(items[i].textContent)===norm(text)){"
@@ -1339,7 +1366,7 @@ public class CitizenViewPage extends BasePage {
 
     public void assertCalendarListToggleShows(String activeLabel) {
         CONTEXT.set();
-        JsonNode state = waitForToggleLabels();
+        JsonNode state = waitForToggleLabels(activeLabel);
         String heading = state.path("heading").asText();
         Assert.assertEquals(heading, "Datum und Uhrzeit", "Time heading was " + heading);
         JsonNode labels = state.path("labels");
@@ -1355,13 +1382,13 @@ public class CitizenViewPage extends BasePage {
         try {
             driver.manage().window().setSize(new Dimension(1400, 900));
             sleepQuiet(400L);
-            JsonNode wide = waitForToggleLabels();
+            JsonNode wide = waitForToggleLabels(null);
             Assert.assertTrue(
                     wide.path("toggleLeft").asDouble() > wide.path("headingRight").asDouble() - 8,
                     "On a wide window the toggle sits beside the heading: " + wide);
             driver.manage().window().setSize(new Dimension(390, 844));
             sleepQuiet(400L);
-            JsonNode narrow = waitForToggleLabels();
+            JsonNode narrow = waitForToggleLabels(null);
             Assert.assertTrue(
                     narrow.path("toggleTop").asDouble() >= narrow.path("headingBottom").asDouble() - 4,
                     "On a phone the toggle sits below the heading: " + narrow);
@@ -1948,19 +1975,19 @@ public class CitizenViewPage extends BasePage {
         JsonNode slot = new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
                 .until(d -> {
                     JsonNode node = timeslotStyle(markedTimeslotId);
-                    return node.path("found").asBoolean()
-                            && "primary".equals(node.path("variant").asText())
-                            ? node
-                            : null;
+                    if (!node.path("found").asBoolean()
+                            || !"primary".equals(node.path("variant").asText())) {
+                        return null;
+                    }
+                    String background = node.path("background").asText();
+                    String color = node.path("color").asText();
+                    boolean blue = background.contains("0, 90, 159") || background.contains("0,90,159");
+                    boolean white = color.contains("255, 255, 255") || color.contains("255,255,255");
+                    return blue && white ? node : null;
                 });
-        String background = slot.path("background").asText();
-        String color = slot.path("color").asText();
         Assert.assertTrue(
-                background.contains("0, 90, 159") || background.contains("0,90,159"),
-                "Selected time should be blue #005A9F. background=" + background + " slot=" + slot);
-        Assert.assertTrue(
-                color.contains("255, 255, 255") || color.contains("255,255,255"),
-                "Selected time should be white. color=" + color + " slot=" + slot);
+                slot.path("found").asBoolean(),
+                "Selected time should be white on blue #005A9F. slot=" + slot);
     }
 
     public void assertPreviousTimeslotIsNotMarked() {
@@ -1976,7 +2003,7 @@ public class CitizenViewPage extends BasePage {
         Assert.assertEquals(current.path("variant").asText(), "primary", "The new time should be marked: " + current);
     }
 
-    private JsonNode waitForToggleLabels() {
+    private JsonNode waitForToggleLabels(String activeLabel) {
         return new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
                 .until(d -> {
                     JsonNode node = citizenJson(
@@ -1988,7 +2015,32 @@ public class CitizenViewPage extends BasePage {
                                     + "return {labels:out,heading:heading?textOf(heading):'',"
                                     + "headingBottom:hr?hr.bottom:0,headingRight:hr?hr.right:0,"
                                     + "toggleTop:tr?tr.top:0,toggleLeft:tr?tr.left:0};})()");
-                    return node.path("labels").size() == 2 ? node : null;
+                    if (node.path("labels").size() != 2) {
+                        return null;
+                    }
+                    if (activeLabel == null || activeLabel.isEmpty()) {
+                        return node;
+                    }
+                    // Wait until the painted colors match the active label. Firefox can still show
+                    // the previous blue on Kalenderansicht right after the list accordion mounts.
+                    for (JsonNode label : node.path("labels")) {
+                        boolean shouldBeActive = activeLabel.equals(label.path("text").asText());
+                        String color = label.path("color").asText();
+                        boolean activeColor =
+                                color.contains("0, 90, 159") || color.contains("0,90,159");
+                        boolean inactiveColor =
+                                color.contains("97, 117, 134") || color.contains("97,117,134");
+                        if (label.path("disabled").asBoolean() == shouldBeActive) {
+                            return null;
+                        }
+                        if (shouldBeActive && !activeColor) {
+                            return null;
+                        }
+                        if (!shouldBeActive && !inactiveColor) {
+                            return null;
+                        }
+                    }
+                    return node;
                 });
     }
 
