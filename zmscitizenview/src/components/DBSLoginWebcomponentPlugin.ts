@@ -9,6 +9,12 @@ import AuthorizationEventDetails from "@/types/AuthorizationEventDetails";
 const AUTH_REFRESH_EVENT_NAME = "authorization-event";
 
 /**
+ * Local Keycloak shim listens for this so Vue can ask for the current session
+ * after registering the authorization-event listener (module vs onMounted race).
+ */
+const AUTH_SUBSCRIBE_EVENT_NAME = "authorization-event-subscribe";
+
+/**
  * Plugin to use for webcomponents which rely on the `dbs-login`-Webcomponent
  * This Plugin registers necessary event-handlers to get notified of authentication-changes
  * and checks predefined cookies of the active domain for access tokens to use.
@@ -38,6 +44,7 @@ export function useDBSLoginWebcomponentPlugin(
       );
       authChanged(ev.detail);
     });
+    document.dispatchEvent(new CustomEvent(AUTH_SUBSCRIBE_EVENT_NAME));
   });
 
   function authChanged(newAuthDetails: AuthorizationEventDetails | undefined) {
