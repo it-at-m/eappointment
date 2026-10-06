@@ -35,9 +35,20 @@ class MessagingTest extends Base
         self::assertStringContainsString('wir bestätigen Ihren Termin im 001', $result);
         self::assertStringContainsString('Datum: Mittwoch, 18. November 2015', $result);
         self::assertStringContainsString('Uhrzeit: 18:52 Uhr', $result);
+        self::assertStringContainsString('Termin ändern/stornieren', $result);
+
+        $disabledList = self::getExampleProcessList();
+        $disabledList->getFirst()->scope->preferences['appointment']['rebookingDisabled'] = 1;
+        $disabledConfirmation = strip_tags(Messaging::getMailContent($disabledList, $config, null, 'appointment'));
+        self::assertStringContainsString('Termin absagen', $disabledConfirmation);
+        self::assertStringNotContainsString('Termin ändern/stornieren', $disabledConfirmation);
+        $disabledReminder = strip_tags(Messaging::getMailContent($disabledList, $config, null, 'reminder'));
+        self::assertStringContainsString('Termin absagen', $disabledReminder);
+        self::assertStringNotContainsString('Termin ändern/stornieren', $disabledReminder);
 
         $result = strip_tags(Messaging::getMailContent($processList, $config, null, 'reminder'));
         self::assertStringContainsString('wir erinnern Sie an Ihren Termin', $result);
+        self::assertStringContainsString('Termin ändern/stornieren', $result);
         self::assertStringContainsString('Mittwoch, 18. November 2015 um 18:52 Uhr', $result);
         self::assertStringContainsString('Terminnummer: 123456', $result);
         self::assertStringContainsString('Bitte gehen Sie rechtzeitig zur "Unter den Linden 1"', $result);
