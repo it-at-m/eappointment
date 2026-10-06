@@ -6,8 +6,8 @@ Feature: Combinable services list collapses when it is long
   So that I can reach Weiter without scrolling through every peer
 
   # ZMSKVR-321, tested by ZMSKVR-420 (desktop) and ZMSKVR-421 (phone).
-  # Führungszeugnis 1063565 at Forstenrieder Allee 10286848 has four combinable peers (≤5),
-  # so all stay visible without expand. Same jump-in as ZMSKVR-1524; raise Lebensbescheinigung.
+  # Führungszeugnis 1063565 at Forstenrieder Allee 10286848 shows three combinable peers
+  # in the citizen catalog (≤5), so all stay visible without expand. Same jump-in as ZMSKVR-1524.
   # Personalausweis is among the Häufig gesuchte Leistungen quick links and has more than five
   # peers, so only three show until Alle Leistungen anzeigen.
   # No appointment is booked.
@@ -16,7 +16,7 @@ Feature: Combinable services list collapses when it is long
     Given I open zmscitizenview with jump-in service "1063565" and location "10286848"
     Then the service combination step should be visible
     And the combinable services heading is visible
-    And there are 4 combinable services shown
+    And there are 3 combinable services shown
     And the show all services button is not shown
     When I increase the selected service "Lebensbescheinigung"
     Then the service counter for "Führungszeugnis" should still be 1
@@ -38,7 +38,7 @@ Feature: Combinable services list collapses when it is long
     Given I open zmscitizenview with jump-in service "1063565" and location "10286848"
     Then the service combination step should be visible
     And the combinable services heading is visible
-    And there are 4 combinable services shown
+    And there are 3 combinable services shown
     And the show all services button is not shown
     When I increase the selected service "Lebensbescheinigung"
     Then the service counter for "Führungszeugnis" should still be 1
