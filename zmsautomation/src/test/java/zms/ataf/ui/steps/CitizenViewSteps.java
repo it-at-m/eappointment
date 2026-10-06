@@ -80,6 +80,32 @@ public class CitizenViewSteps {
         page.assertEstimatedDurationMinutes(minutes, "service combination step");
     }
 
+    @Then("the service duration is shown with a clock and is {int} minutes")
+    public void theServiceDurationIsShownWithAClockAndIsMinutes(int minutes) {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: assert clock and estimated duration {} minutes", minutes);
+        page.assertEstimatedDurationShownWithClock(minutes);
+    }
+
+    @When("I increase the selected service {string}")
+    public void iIncreaseTheSelectedService(String label) {
+        ScenarioLogManager.getLogger().info("zmscitizenview: increase selected service {}", label);
+        page.increaseSelectedService(TestDataHelper.transformTestData(label));
+    }
+
+    @When("I decrease the selected service {string}")
+    public void iDecreaseTheSelectedService(String label) {
+        ScenarioLogManager.getLogger().info("zmscitizenview: decrease selected service {}", label);
+        page.decreaseSelectedService(TestDataHelper.transformTestData(label));
+    }
+
+    @Then("the selected service {string} cannot be reduced below 1")
+    public void theSelectedServiceCannotBeReducedBelow1(String label) {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: selected service {} stays at least 1", label);
+        page.assertSelectedServiceCannotDropBelowOne(TestDataHelper.transformTestData(label));
+    }
+
     @When("I add subservice {string} with quantity {int} on the service combination step")
     public void iAddSubserviceWithQuantityOnTheServiceCombinationStep(String subserviceLabel, int quantity) {
         String label = TestDataHelper.transformTestData(subserviceLabel);
@@ -92,6 +118,55 @@ public class CitizenViewSteps {
     public void iContinueFromTheServiceCombinationStep() {
         ScenarioLogManager.getLogger().info("zmscitizenview: Weiter (combination → office/time)");
         page.clickWeiter();
+    }
+
+    @Then("the booking stepper shows Leistung, Termin, Kontakt, and Übersicht")
+    public void theBookingStepperShowsTheFourSteps() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: booking stepper labels");
+        page.assertBookingStepperLabels();
+    }
+
+    @Then("the booking step {string} is {string} with the {string} icon")
+    public void theBookingStepIsWithTheIcon(String label, String state, String icon) {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: booking step {} is {} with icon {}", label, state, icon);
+        page.assertBookingStep(label, state, icon);
+    }
+
+    @When("I highlight the finished booking step {string}")
+    public void iHighlightTheFinishedBookingStep(String label) {
+        page.highlightFinishedBookingStep(label);
+    }
+
+    @When("I click the highlighted booking step")
+    public void iClickTheHighlightedBookingStep() {
+        page.clickHighlightedBookingStep();
+    }
+
+    @Then("available appointments are shown in the citizen view")
+    public void availableAppointmentsAreShownInTheCitizenView() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: Verfügbare Termine");
+        page.assertAvailableAppointmentsShown();
+    }
+
+    @Then("the service counter for {string} should still be {int}")
+    public void theServiceCounterShouldStillBe(String label, int count) {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: service counter {} is still {}", label, count);
+        page.assertServiceCounter(label, count);
+    }
+
+    @Then("the entered contact details are still on the contact form in the citizen view")
+    public void theEnteredContactDetailsAreStillOnTheContactForm() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: contact details are still filled in");
+        page.assertEnteredContactDetailsStillPresent();
+    }
+
+    @When("I scroll to and highlight another timeslot for office {int} in the citizen view")
+    public void iScrollToAndHighlightAnotherTimeslot(int officeId) {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: highlight a different timeslot for office {}", officeId);
+        page.highlightAnotherTimeslotForOffice(officeId);
     }
 
     @When("I select service {string} from the service finder and continue")
