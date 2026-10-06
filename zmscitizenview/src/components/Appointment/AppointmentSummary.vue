@@ -237,57 +237,48 @@
               />
             </div>
             <div class="m-content">
-              <h4 class="m-checkbox-group__heading">
-                {{ t("communicationCheckboxLabel") }}
-              </h4>
-            </div>
-            <div class="m-content">
-              <div class="m-checkboxes">
-                <div class="m-checkboxes__item">
-                  <input
-                    id="checkbox-electronic-communication"
-                    class="m-checkboxes__input"
+              <muc-checkbox-group :heading="t('communicationCheckboxLabel')">
+                <template #checkboxes>
+                  <muc-checkbox
+                    id="electronic-communication"
                     name="checkbox-electronic-communication"
-                    type="checkbox"
-                    @click="clickElectronicCommunication"
-                    aria-required="true"
-                  />
-                  <label
-                    class="m-label m-checkboxes__label"
-                    for="checkbox-electronic-communication"
-                    v-html="sanitizeHtml(t('communicationCheckboxText'))"
-                  />
-                </div>
-              </div>
+                    required
+                    v-model="electronicCommunication"
+                  >
+                    <template #label>
+                      <span
+                        v-html="sanitizeHtml(t('communicationCheckboxText'))"
+                      />
+                    </template>
+                  </muc-checkbox>
+                </template>
+              </muc-checkbox-group>
             </div>
-            <template v-if="isVideoVariant">
-              <div class="m-content">
-                <h4 class="m-checkbox-group__heading">
-                  {{ t("termsOfUseForVideoConsultationLabel") }}
-                </h4>
-              </div>
-              <div class="m-content">
-                <div class="m-checkboxes">
-                  <div class="m-checkboxes__item">
-                    <input
-                      id="checkbox-video-consultation"
-                      class="m-checkboxes__input"
-                      name="checkbox-video-consultation"
-                      type="checkbox"
-                      @click="clickVideoConsultation"
-                      aria-required="true"
-                    />
-                    <label
-                      class="m-label m-checkboxes__label"
-                      for="checkbox-video-consultation"
-                      v-html="
-                        sanitizeHtml(t('termsOfUseForVideoConsultationText'))
-                      "
-                    />
-                  </div>
-                </div>
-              </div>
-            </template>
+            <div
+              v-if="isVideoVariant"
+              class="m-content"
+            >
+              <muc-checkbox-group
+                :heading="t('termsOfUseForVideoConsultationLabel')"
+              >
+                <template #checkboxes>
+                  <muc-checkbox
+                    id="video-consultation"
+                    name="checkbox-video-consultation"
+                    required
+                    v-model="videoConsultation"
+                  >
+                    <template #label>
+                      <span
+                        v-html="
+                          sanitizeHtml(t('termsOfUseForVideoConsultationText'))
+                        "
+                      />
+                    </template>
+                  </muc-checkbox>
+                </template>
+              </muc-checkbox-group>
+            </div>
           </div>
         </div>
       </div>
@@ -363,7 +354,13 @@
 <script setup lang="ts">
 import type { Ref } from "vue";
 
-import { MucBanner, MucButton, MucCallout } from "@muenchen/muc-patternlab-vue";
+import {
+  MucBanner,
+  MucButton,
+  MucCallout,
+  MucCheckbox,
+  MucCheckboxGroup,
+} from "@muenchen/muc-patternlab-vue";
 import { computed, inject, ref } from "vue";
 
 import {
@@ -461,12 +458,6 @@ const formatTime = (time: any) => {
   const date = new Date(time * 1000);
   return formatterDate.format(date) + ", " + formatterTime.format(date);
 };
-
-const clickElectronicCommunication = () =>
-  (electronicCommunication.value = !electronicCommunication.value);
-
-const clickVideoConsultation = () =>
-  (videoConsultation.value = !videoConsultation.value);
 
 const validForm = computed(
   () =>
