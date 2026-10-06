@@ -1,0 +1,35 @@
+{
+  "branch": "test-zmskvr-106-zmskvr-249-service-count-controls",
+  "branchSlug": "test-zmskvr-106-zmskvr-249-service-count-controls",
+  "runId": "37396626872",
+  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37396626872",
+  "runStartedAt": "2026-10-06T00:56:44Z",
+  "publishedAt": "2026-10-06T01:26:46.354Z",
+  "features": {
+    "feature-ui-zmscitizenview-booking-zmskvr-106-zmskvr-249-service-count-controls": {
+      "status": "passed",
+      "shard": "custom",
+      "browser": "chrome",
+      "browsers": {
+        "chrome": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "37396626872",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37396626872",
+          "runStartedAt": "2026-10-06T00:56:44Z"
+        },
+        "firefox": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "37396626872",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37396626872",
+          "runStartedAt": "2026-10-06T00:56:44Z"
+        }
+      },
+      "rel": "ui/zmscitizenview/booking/zmskvr-106_zmskvr-249_service_count_controls.feature",
+      "runId": "37396626872",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37396626872",
+      "runStartedAt": "2026-10-06T00:56:44Z"
+    }
+  }
+}

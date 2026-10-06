@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-10-06T01:21:41.963Z",
+  "publishedAt": "2026-10-06T01:26:46.354Z",
   "branches": [
     {
       "name": "next",
@@ -270,6 +270,12 @@
       "slug": "test-zms-opening-hours-holiday-dialog",
       "runId": "37127133211",
       "runStartedAt": "2026-10-03T13:43:10Z"
+    },
+    {
+      "name": "test-zmskvr-106-zmskvr-249-service-count-controls",
+      "slug": "test-zmskvr-106-zmskvr-249-service-count-controls",
+      "runId": "37396626872",
+      "runStartedAt": "2026-10-06T00:56:44Z"
     },
     {
       "name": "test-zmskvr-110-zmskvr-236-calendar-list-view",
