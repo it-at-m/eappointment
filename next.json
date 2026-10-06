@@ -1,10 +1,10 @@
 {
   "branch": "next",
   "branchSlug": "next",
-  "runId": "37452725318",
-  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37452725318",
-  "runStartedAt": "2026-10-06T10:53:06Z",
-  "publishedAt": "2026-10-06T11:18:19.970Z",
+  "runId": "37458458946",
+  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37458458946",
+  "runStartedAt": "2026-10-06T11:44:54Z",
+  "publishedAt": "2026-10-06T12:04:05.067Z",
   "features": {
     "feature-rest-zmsapi-zmskvr-1328": {
       "status": "passed",
@@ -1049,36 +1049,36 @@
       }
     },
     "feature-ui-zmscitizenview-booking-zmskvr-1630-zmskvr-1030-reserved-hash-resume": {
-      "status": "failed",
-      "shard": "zmscitizenview",
+      "status": "passed",
+      "shard": "custom",
       "browser": "chrome",
       "browsers": {
         "chrome": {
           "status": "passed",
-          "shard": "zmscitizenview",
-          "runId": "37452725318",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37452725318",
-          "runStartedAt": "2026-10-06T10:53:06Z"
+          "shard": "custom",
+          "runId": "37458458946",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37458458946",
+          "runStartedAt": "2026-10-06T11:44:54Z"
         },
         "edge": {
           "status": "passed",
-          "shard": "zmscitizenview",
-          "runId": "37452725318",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37452725318",
-          "runStartedAt": "2026-10-06T10:53:06Z"
+          "shard": "custom",
+          "runId": "37458458946",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37458458946",
+          "runStartedAt": "2026-10-06T11:44:54Z"
         },
         "firefox": {
-          "status": "failed",
-          "shard": "zmscitizenview",
-          "runId": "37452725318",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37452725318",
-          "runStartedAt": "2026-10-06T10:53:06Z"
+          "status": "passed",
+          "shard": "custom",
+          "runId": "37458458946",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37458458946",
+          "runStartedAt": "2026-10-06T11:44:54Z"
         }
       },
       "rel": "ui/zmscitizenview/booking/zmskvr-1630_zmskvr-1030_reserved_hash_resume.feature",
-      "runId": "37452725318",
-      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37452725318",
-      "runStartedAt": "2026-10-06T10:53:06Z"
+      "runId": "37458458946",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37458458946",
+      "runStartedAt": "2026-10-06T11:44:54Z"
     },
     "feature-rest-zmscitizenapi-booking-zmskvr-1630-zmskvr-1030-placeholder-email-citizenapi": {
       "status": "passed",
@@ -3163,36 +3163,36 @@
       }
     },
     "feature-ui-zmscitizenview-citizen-login-zmskvr-1576-zmskvr-1204-my-appointments-list": {
-      "status": "failed",
-      "shard": "zmscitizenview",
+      "status": "passed",
+      "shard": "custom",
       "browser": "chrome",
       "browsers": {
         "chrome": {
-          "status": "failed",
-          "shard": "zmscitizenview",
-          "runId": "37452725318",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37452725318",
-          "runStartedAt": "2026-10-06T10:53:06Z"
+          "status": "passed",
+          "shard": "custom",
+          "runId": "37458458946",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37458458946",
+          "runStartedAt": "2026-10-06T11:44:54Z"
         },
         "edge": {
-          "status": "failed",
-          "shard": "zmscitizenview",
-          "runId": "37452725318",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37452725318",
-          "runStartedAt": "2026-10-06T10:53:06Z"
+          "status": "passed",
+          "shard": "custom",
+          "runId": "37458458946",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37458458946",
+          "runStartedAt": "2026-10-06T11:44:54Z"
         },
         "firefox": {
-          "status": "failed",
-          "shard": "zmscitizenview",
-          "runId": "37452725318",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37452725318",
-          "runStartedAt": "2026-10-06T10:53:06Z"
+          "status": "passed",
+          "shard": "custom",
+          "runId": "37458458946",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37458458946",
+          "runStartedAt": "2026-10-06T11:44:54Z"
         }
       },
       "rel": "ui/zmscitizenview/citizen-login/zmskvr-1576_zmskvr-1204_my_appointments_list.feature",
-      "runId": "37452725318",
-      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37452725318",
-      "runStartedAt": "2026-10-06T10:53:06Z"
+      "runId": "37458458946",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37458458946",
+      "runStartedAt": "2026-10-06T11:44:54Z"
     },
     "feature-rest-zmsapi-mail-templates-zmskvr-1570-zmskvr-1557-estimated-duration": {
       "status": "passed",
@@ -3519,68 +3519,68 @@
       "runStartedAt": "2026-10-06T10:53:06Z"
     },
     "feature-ui-zmscitizenview-calendar-zmskvr-236-zmskvr-701-zmskvr-739-zmskvr-110-zmskvr-513-zmskvr-707-calendar-list-view": {
-      "status": "failed",
-      "shard": "zmscitizenview",
+      "status": "passed",
+      "shard": "custom",
       "browser": "chrome",
       "browsers": {
         "chrome": {
           "status": "passed",
-          "shard": "zmscitizenview",
-          "runId": "37452725318",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37452725318",
-          "runStartedAt": "2026-10-06T10:53:06Z"
+          "shard": "custom",
+          "runId": "37458458946",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37458458946",
+          "runStartedAt": "2026-10-06T11:44:54Z"
         },
         "edge": {
           "status": "passed",
-          "shard": "zmscitizenview",
-          "runId": "37452725318",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37452725318",
-          "runStartedAt": "2026-10-06T10:53:06Z"
+          "shard": "custom",
+          "runId": "37458458946",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37458458946",
+          "runStartedAt": "2026-10-06T11:44:54Z"
         },
         "firefox": {
-          "status": "failed",
-          "shard": "zmscitizenview",
-          "runId": "37452725318",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37452725318",
-          "runStartedAt": "2026-10-06T10:53:06Z"
+          "status": "passed",
+          "shard": "custom",
+          "runId": "37458458946",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37458458946",
+          "runStartedAt": "2026-10-06T11:44:54Z"
         }
       },
       "rel": "ui/zmscitizenview/calendar/zmskvr-236_zmskvr-701_zmskvr-739_zmskvr-110_zmskvr-513_zmskvr-707_calendar_list_view.feature",
-      "runId": "37452725318",
-      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37452725318",
-      "runStartedAt": "2026-10-06T10:53:06Z"
+      "runId": "37458458946",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37458458946",
+      "runStartedAt": "2026-10-06T11:44:54Z"
     },
     "feature-ui-zmscitizenview-booking-zmskvr-84-zmskvr-305-service-search": {
       "status": "failed",
-      "shard": "zmscitizenview",
+      "shard": "custom",
       "browser": "chrome",
       "browsers": {
         "chrome": {
-          "status": "failed",
-          "shard": "zmscitizenview",
-          "runId": "37452725318",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37452725318",
-          "runStartedAt": "2026-10-06T10:53:06Z"
+          "status": "passed",
+          "shard": "custom",
+          "runId": "37458458946",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37458458946",
+          "runStartedAt": "2026-10-06T11:44:54Z"
         },
         "edge": {
           "status": "failed",
-          "shard": "zmscitizenview",
-          "runId": "37452725318",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37452725318",
-          "runStartedAt": "2026-10-06T10:53:06Z"
+          "shard": "custom",
+          "runId": "37458458946",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37458458946",
+          "runStartedAt": "2026-10-06T11:44:54Z"
         },
         "firefox": {
           "status": "passed",
-          "shard": "zmscitizenview",
-          "runId": "37452725318",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37452725318",
-          "runStartedAt": "2026-10-06T10:53:06Z"
+          "shard": "custom",
+          "runId": "37458458946",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37458458946",
+          "runStartedAt": "2026-10-06T11:44:54Z"
         }
       },
       "rel": "ui/zmscitizenview/booking/zmskvr-84_zmskvr-305_service_search.feature",
-      "runId": "37452725318",
-      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37452725318",
-      "runStartedAt": "2026-10-06T10:53:06Z"
+      "runId": "37458458946",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37458458946",
+      "runStartedAt": "2026-10-06T11:44:54Z"
     },
     "feature-ui-zmscitizenview-calendar-zmskvr-82-zmskvr-391-several-offices": {
       "status": "passed",
