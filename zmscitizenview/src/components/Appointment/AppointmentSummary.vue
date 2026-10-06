@@ -238,7 +238,10 @@
               />
             </div>
             <div class="m-content">
-              <muc-checkbox-group :heading="t('communicationCheckboxLabel')">
+              <muc-checkbox-group
+                :heading="t('communicationCheckboxLabel')"
+                :heading-level="4"
+              >
                 <template #checkboxes>
                   <muc-checkbox
                     id="electronic-communication"
@@ -261,6 +264,7 @@
             >
               <muc-checkbox-group
                 :heading="t('termsOfUseForVideoConsultationLabel')"
+                :heading-level="4"
               >
                 <template #checkboxes>
                   <muc-checkbox
