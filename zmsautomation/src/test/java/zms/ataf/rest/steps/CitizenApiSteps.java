@@ -680,6 +680,52 @@ public class CitizenApiSteps {
         setLastReserveProcess(lastReserveProcess);
     }
 
+    /**
+     * ZMSKVR-88 / ZMSKVR-472: second citizen tries the same timestamp the previous reserve already took.
+     * Leaves {@code lastReserveProcess} untouched so cleanup still cancels the winning reservation.
+     */
+    @When("I attempt to reserve the same appointment slot again")
+    public void iAttemptToReserveTheSameAppointmentSlotAgain() {
+        ThinnedProcess first = lastReserveProcess != null ? lastReserveProcess : getBookingProcess();
+        if (first == null || first.getTimestamp() == null || first.getTimestamp() <= 0) {
+            throw new IllegalStateException("Reserve a slot first so the same timestamp can be attempted again.");
+        }
+        Integer officeId = first.getOfficeId() != null ? first.getOfficeId() : lastOfficeId;
+        Integer serviceId = first.getServiceId() != null ? first.getServiceId() : lastServiceId;
+        if (officeId == null || serviceId == null) {
+            throw new IllegalStateException("First reserve has no officeId/serviceId for the duplicate attempt.");
+        }
+        int serviceCount = lastServiceCount > 0 ? lastServiceCount : 1;
+
+        ReserveAppointmentRequest body = new ReserveAppointmentRequest();
+        body.setTimestamp(first.getTimestamp());
+        body.setOfficeId(officeId);
+        body.setServiceId(List.of(serviceId));
+        body.setServiceCount(List.of(serviceCount));
+
+        ScenarioLogManager.getLogger().info(String.format(
+            "Citizen API /reserve-appointment/ duplicate attempt timestamp=%d officeId=%d serviceId=%d",
+            first.getTimestamp(),
+            officeId,
+            serviceId
+        ));
+
+        response = given()
+            .baseUri(baseUri != null ? baseUri : TestConfig.getCitizenApiBaseUri())
+            .contentType("application/json")
+            .body(body)
+        .when()
+            .post("/reserve-appointment/");
+        CommonApiSteps.setResponse(response);
+
+        String reserveBody = response.asString();
+        ScenarioLogManager.getLogger().info(String.format(
+            "Citizen API /reserve-appointment/ duplicate status=%d body=%s",
+            response.getStatusCode(),
+            reserveBody.length() > 1250 ? reserveBody.substring(0, 1250) + "..." : reserveBody
+        ));
+    }
+
     /** Use the next calendar day that still has slots for the current office. */
     private boolean loadNextCalendarDayWithSlots() {
         if (lastAvailableCalendarResponse == null || lastAvailableCalendarResponse.getAvailableDays() == null) {
