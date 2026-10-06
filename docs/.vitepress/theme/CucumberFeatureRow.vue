@@ -69,10 +69,19 @@ const panelId = computed(() => `${props.id}-panel`);
 
 const scenarioLabel = computed(() => {
   const count = meta.value.scenarioCount;
-  if (isDe.value) {
-    return count === 1 ? "1 Szenario" : `${count} Szenarien`;
+  const mobile = Number(meta.value.mobileScenarioCount) || 0;
+  const base = isDe.value
+    ? count === 1
+      ? "1 Szenario"
+      : `${count} Szenarien`
+    : count === 1
+      ? "1 scenario"
+      : `${count} scenarios`;
+  if (!mobile) {
+    return base;
   }
-  return count === 1 ? "1 scenario" : `${count} scenarios`;
+  const desktop = Math.max(0, count - mobile);
+  return `${base} · 🖥️ ${desktop} · 📱 ${mobile}`;
 });
 
 const sourceLabel = computed(() => (isDe.value ? "Quelle" : "Source"));

@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -265,9 +266,16 @@ public class CustomerSearchPage extends AdminPage {
                 LocatorType.XPATH,
                 false,
                 CONTEXT);
-        new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME)).until(driver -> {
-            List<WebElement> fields = driver.findElements(By.id("search-query"));
-            return !fields.isEmpty() && query.equals(fields.get(0).getAttribute("value"));
-        });
+        // Übernehmen re-renders the Suche page. Edge can replace #search-query between
+        // findElements and getAttribute, so a stale node has to be polled again.
+        new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .ignoring(StaleElementReferenceException.class)
+                .until(driver -> {
+                    List<WebElement> fields = driver.findElements(By.id("search-query"));
+                    if (fields.isEmpty()) {
+                        return false;
+                    }
+                    return query.equals(fields.get(0).getAttribute("value"));
+                });
     }
 }

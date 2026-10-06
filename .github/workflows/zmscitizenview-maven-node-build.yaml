@@ -2,6 +2,11 @@ name: 📱 Frontend Build zmscitizenview
 
 on:
   push:
+    # Whole push. New branches always run (the tree includes zmscitizenview).
+    # Later pushes run only when citizenview or this workflow file changed.
+    paths:
+      - "zmscitizenview/**"
+      - ".github/workflows/zmscitizenview-maven-node-build.yaml"
   # Rebuild without a commit. In Actions, choose the branch under "Use workflow from",
   # the same way as the zmsautomation workflow.
   # next and feature branches install the npm "beta" dist-tag; main and tags keep the pin.
