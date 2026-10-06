@@ -1011,6 +1011,45 @@ public final class TimeSlotStep {
                 "Selected-appointment info callout not found after choosing slot.");
     }
 
+    /**
+     * ZMSKVR-88 / ZMSKVR-472: after reserve fails with appointmentNotAvailable, the error callout sits under the
+     * selected-appointment summary. Weiter stays usable so the citizen can pick another slot.
+     */
+    public void assertAppointmentNoLongerAvailableCalloutVisible() {
+        context.set();
+        String header = CitizenViewPage.DE_APPOINTMENT_NOT_AVAILABLE_HEADER;
+        String text = CitizenViewPage.DE_APPOINTMENT_NOT_AVAILABLE_TEXT;
+        int sec = Math.min(30, defaultWaitSeconds);
+        long deadline = System.currentTimeMillis() + sec * 1000L;
+        while (System.currentTimeMillis() < deadline) {
+            if (shadow.shadowDomContainsText(header) && shadow.shadowDomContainsText(text)) {
+                ScenarioLogManager.getLogger()
+                        .info("zmscitizenview: appointment-not-available callout visible");
+                return;
+            }
+            if (contactStepReached()) {
+                Assert.fail(
+                        "Expected appointment-not-available callout but reached Kontaktdaten (slot was still free).");
+            }
+            CitizenViewWaits.sleepQuiet(300L);
+        }
+        Assert.assertTrue(
+                shadow.shadowDomContainsText(header) && shadow.shadowDomContainsText(text),
+                "Expected callout \"" + header + "\" / \"" + text + "\" after the slot was taken.");
+    }
+
+    /** ZMSKVR-472: race loser stays on Termin selection and can choose another slot. */
+    public void assertStillOnAppointmentSelectionStep() {
+        context.set();
+        Assert.assertFalse(
+                contactStepReached(),
+                "Expected to stay on appointment selection after the slot was taken, not Kontaktdaten.");
+        Assert.assertTrue(
+                selectedAppointmentCalloutVisible()
+                        || shadow.shadowDomContainsText(CitizenViewPage.DE_APPOINTMENT_NOT_AVAILABLE_HEADER),
+                "Expected appointment selection (Ausgewählter Termin or not-available callout) after slot race.");
+    }
+
     public JsonNode locationTitles() {
         return json.citizenJson(
                 "(function(){var nodes=cssAll('h5.location-title');var seen={};var titles=[];"

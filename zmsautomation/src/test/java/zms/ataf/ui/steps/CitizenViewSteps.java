@@ -896,6 +896,26 @@ public class CitizenViewSteps {
         page.assertSelectedAppointmentCalloutVisible();
     }
 
+    @When("I try to reserve the selected timeslot with Weiter in the citizen view")
+    public void iTryToReserveTheSelectedTimeslotWithWeiter() {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: one-shot Weiter after slot selection (expect not-available if snatching won)");
+        page.clickWeiter();
+    }
+
+    @Then("the appointment no longer available callout should be visible in the citizen view")
+    public void theAppointmentNoLongerAvailableCalloutShouldBeVisible() {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: assert appointment-not-available callout (ZMSKVR-88 / ZMSKVR-472)");
+        page.assertAppointmentNoLongerAvailableCalloutVisible();
+    }
+
+    @Then("I should still be on the appointment selection step in the citizen view")
+    public void iShouldStillBeOnTheAppointmentSelectionStep() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: assert still on Termin selection after slot race");
+        page.assertStillOnAppointmentSelectionStep();
+    }
+
     @Then("the invalid jump-in callout should be visible in the citizen view")
     public void theInvalidJumpinCalloutShouldBeVisible() {
         ScenarioLogManager.getLogger().info("zmscitizenview: assert invalid jump-in error callout visible");
