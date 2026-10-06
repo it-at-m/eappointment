@@ -1,10 +1,10 @@
 {
   "branch": "test-zmskvr-84-zmskvr-305-service-search",
   "branchSlug": "test-zmskvr-84-zmskvr-305-service-search",
-  "runId": "37426984786",
-  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37426984786",
-  "runStartedAt": "2026-10-06T07:00:12Z",
-  "publishedAt": "2026-10-06T07:15:14.012Z",
+  "runId": "37430197692",
+  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37430197692",
+  "runStartedAt": "2026-10-06T07:31:31Z",
+  "publishedAt": "2026-10-06T07:44:58.782Z",
   "features": {
     "feature-ui-zmscitizenview-booking-zmskvr-84-zmskvr-305-service-search": {
       "status": "failed",
@@ -14,22 +14,22 @@
         "chrome": {
           "status": "failed",
           "shard": "custom",
-          "runId": "37426984786",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37426984786",
-          "runStartedAt": "2026-10-06T07:00:12Z"
+          "runId": "37430197692",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37430197692",
+          "runStartedAt": "2026-10-06T07:31:31Z"
         },
         "firefox": {
           "status": "failed",
           "shard": "custom",
-          "runId": "37426984786",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37426984786",
-          "runStartedAt": "2026-10-06T07:00:12Z"
+          "runId": "37430197692",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37430197692",
+          "runStartedAt": "2026-10-06T07:31:31Z"
         }
       },
       "rel": "ui/zmscitizenview/booking/zmskvr-84_zmskvr-305_service_search.feature",
-      "runId": "37426984786",
-      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37426984786",
-      "runStartedAt": "2026-10-06T07:00:12Z"
+      "runId": "37430197692",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37430197692",
+      "runStartedAt": "2026-10-06T07:31:31Z"
     }
   }
 }
