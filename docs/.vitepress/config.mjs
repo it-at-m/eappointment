@@ -168,6 +168,7 @@ const collectCucumberFeatures = () => {
       title: parsed.title || path.basename(rel),
       tags: parsed.tags,
       scenarioCount: parsed.scenarioCount,
+      mobileScenarioCount: parsed.mobileScenarioCount || 0,
       sourceUrl: `${FEATURE_SOURCE_BASE}/${rel}`,
       testType,
       module,
@@ -181,6 +182,7 @@ const collectCucumberFeatures = () => {
       category,
       submodule: submodule || "",
       scenarioCount: parsed.scenarioCount,
+      mobileScenarioCount: parsed.mobileScenarioCount || 0,
     };
   };
 

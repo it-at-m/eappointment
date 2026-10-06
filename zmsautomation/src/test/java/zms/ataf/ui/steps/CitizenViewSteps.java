@@ -198,11 +198,55 @@ public class CitizenViewSteps {
         page.assertServiceDescriptionLink(TestDataHelper.transformTestData(label), serviceId);
     }
 
-    @Then("the count for {string} sits beside the name on desktop and below it on a phone")
-    public void theCountSitsBesideTheNameOnDesktopAndBelowItOnAPhone(String label) {
+    @Then("the count for {string} sits beside the name on desktop")
+    public void theCountSitsBesideTheNameOnDesktop(String label) {
         ScenarioLogManager.getLogger()
-                .info("zmscitizenview: count placement for {} on desktop and phone", label);
-        page.assertCountBesideNameOnDesktopAndBelowOnPhone(TestDataHelper.transformTestData(label));
+                .info("zmscitizenview: count placement for {} on desktop", label);
+        page.assertCountBesideNameOnDesktop(TestDataHelper.transformTestData(label));
+    }
+
+    @Then("the count for {string} sits below the name on a phone")
+    public void theCountSitsBelowTheNameOnAPhone(String label) {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: count placement for {} on a phone", label);
+        page.assertCountBelowNameOnPhone(TestDataHelper.transformTestData(label));
+    }
+
+    @Then("the combinable services heading is visible")
+    public void theCombinableServicesHeadingIsVisible() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: combinable services heading visible");
+        page.assertCombinableServicesHeadingVisible();
+    }
+
+    @Then("there are {int} combinable services shown")
+    public void thereAreCombinableServicesShown(int count) {
+        ScenarioLogManager.getLogger().info("zmscitizenview: combinable services count is {}", count);
+        page.assertCombinableServiceCount(count);
+    }
+
+    @Then("there are more than {int} combinable services shown")
+    public void thereAreMoreThanCombinableServicesShown(int count) {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: combinable services count is greater than {}", count);
+        page.assertCombinableServiceCountGreaterThan(count);
+    }
+
+    @Then("the show all services button is shown")
+    public void theShowAllServicesButtonIsShown() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: Alle Leistungen anzeigen is shown");
+        page.assertShowAllServicesButtonVisible(true);
+    }
+
+    @Then("the show all services button is not shown")
+    public void theShowAllServicesButtonIsNotShown() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: Alle Leistungen anzeigen is hidden");
+        page.assertShowAllServicesButtonVisible(false);
+    }
+
+    @When("I show all combinable services")
+    public void iShowAllCombinableServices() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: click Alle Leistungen anzeigen");
+        page.showAllCombinableServices();
     }
 
     @When("I raise the service {string} until the plus button is disabled")
@@ -313,10 +357,16 @@ public class CitizenViewSteps {
         page.assertCalendarListToggleShows(activeLabel);
     }
 
+    @Then("the calendar and list toggle sits beside the time heading on desktop")
+    public void theCalendarAndListToggleSitsBesideTheTimeHeadingOnDesktop() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: toggle sits beside the time heading on desktop");
+        page.assertToggleSitsBesideHeadingOnDesktop();
+    }
+
     @Then("the calendar and list toggle sits below the time heading on a phone")
     public void theCalendarAndListToggleSitsBelowTheTimeHeadingOnAPhone() {
-        ScenarioLogManager.getLogger().info("zmscitizenview: toggle sits beside the heading, and below it on a phone");
-        page.assertToggleSitsWithTheHeading();
+        ScenarioLogManager.getLogger().info("zmscitizenview: toggle sits below the time heading on a phone");
+        page.assertToggleSitsBelowHeadingOnPhone();
     }
 
     @When("I switch to the list view in the citizen view")
@@ -726,9 +776,9 @@ public class CitizenViewSteps {
     }
 
     @When("I reschedule the appointment from Meine Termine in the citizen view")
-    public void iRescheduleTheAppointmentFromMeineTermine() {
+    public void iRescheduleTheAppointmentFromMyAppointments() {
         ScenarioLogManager.getLogger().info("zmscitizenview: reschedule from Meine Termine via Verschieben");
-        page.rescheduleFromMeineTermine();
+        page.rescheduleFromMyAppointments();
     }
 
     /** ZMSKVR-1500: rebooking confirm summary reached (Verschieben abbrechen shown). */
@@ -1075,52 +1125,52 @@ public class CitizenViewSteps {
     }
 
     @When("I open Meine Termine in the citizen view")
-    public void iOpenMeineTermine() {
+    public void iOpenMyAppointments() {
         ScenarioLogManager.getLogger().info("zmscitizenview: open Meine Termine");
-        page.openMeineTermine();
+        page.openMyAppointments();
     }
 
     @Then("Meine Termine lists {string} and {string}")
-    public void meineTermineListsBoth(String first, String second) {
-        page.assertMeineTermineLists(first, second);
+    public void myAppointmentsListsBoth(String first, String second) {
+        page.assertMyAppointmentsLists(first, second);
     }
 
     @Then("Meine Termine lists {string}")
-    public void meineTermineLists(String serviceName) {
-        page.assertMeineTermineLists(serviceName);
+    public void myAppointmentsLists(String serviceName) {
+        page.assertMyAppointmentsLists(serviceName);
     }
 
     @Then("I remember the Meine Termine appointment for {string}")
-    public void iRememberTheMeineTermineAppointment(String serviceName) {
-        page.rememberMeineTermineAppointment(serviceName);
+    public void iRememberTheMyAppointmentsAppointment(String serviceName) {
+        page.rememberMyAppointmentsAppointment(serviceName);
     }
 
     @Then("the Meine Termine appointment for {string} was replaced")
-    public void theMeineTermineAppointmentWasReplaced(String serviceName) {
-        page.assertMeineTermineAppointmentReplaced(serviceName);
+    public void theMyAppointmentsAppointmentWasReplaced(String serviceName) {
+        page.assertMyAppointmentsAppointmentReplaced(serviceName);
     }
 
     @Then("the Meine Termine appointment for {string} is unchanged")
-    public void theMeineTermineAppointmentIsUnchanged(String serviceName) {
-        page.assertMeineTermineAppointmentUnchanged(serviceName);
+    public void theMyAppointmentsAppointmentIsUnchanged(String serviceName) {
+        page.assertMyAppointmentsAppointmentUnchanged(serviceName);
     }
 
     @Then("Meine Termine does not list {string}")
-    public void meineTermineDoesNotList(String serviceName) {
-        page.assertMeineTermineDoesNotList(serviceName);
+    public void myAppointmentsDoesNotList(String serviceName) {
+        page.assertMyAppointmentsDoesNotList(serviceName);
     }
 
     @Then("the Meine Termine teaser for {string} should show type {string} and location {string}")
-    public void theMeineTermineTeaserShouldShowTypeAndLocation(String serviceName, String typeLabel, String locationText) {
+    public void theMyAppointmentsTeaserShouldShowTypeAndLocation(String serviceName, String typeLabel, String locationText) {
         ScenarioLogManager.getLogger()
                 .info("zmscitizenview: assert Meine Termine teaser for {}", serviceName);
-        page.assertMeineTermineTeaser(serviceName, typeLabel, locationText);
+        page.assertMyAppointmentsTeaser(serviceName, typeLabel, locationText);
     }
 
     @When("I open the Meine Termine teaser for {string}")
-    public void iOpenTheMeineTermineTeaser(String serviceName) {
+    public void iOpenTheMyAppointmentsTeaser(String serviceName) {
         ScenarioLogManager.getLogger().info("zmscitizenview: open Meine Termine teaser {}", serviceName);
-        page.openMeineTermineTeaser(serviceName);
+        page.openMyAppointmentsTeaser(serviceName);
     }
 
     @Then("the appointment detail should show {string} at {string} with {string}, {string} and {string}")

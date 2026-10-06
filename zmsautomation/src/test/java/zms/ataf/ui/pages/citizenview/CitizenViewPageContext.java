@@ -24,7 +24,7 @@ public class CitizenViewPageContext extends Context {
     public static final String TITLE = "Terminvereinbarung Bürgeransicht Webcomponent";
 
     private WindowType windowType;
-    String lastCitizenViewUrl;
+    public String lastCitizenViewUrl;
 
     CitizenViewPageContext(RemoteWebDriver driver) {
         super(driver);
