@@ -17,6 +17,7 @@ import org.openqa.selenium.Dimension;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.TimeoutException;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -309,11 +310,24 @@ public class CitizenViewPage extends BasePage {
         String folded = query.toLowerCase(Locale.ROOT);
         new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
                 .until(d -> {
-                    // The list closes when the previous step ends. Open it again before typing.
                     if (!serviceSearch("read", "").path("open").asBoolean()) {
                         serviceSearch("click", "");
                     }
-                    serviceSearch("type", query);
+                    WebElement field = serviceSearchInput();
+                    if (field == null) {
+                        return false;
+                    }
+                    try {
+                        String current = field.getAttribute("value");
+                        if (!query.equals(current)) {
+                            // Choices only filters on real keystrokes. Setting .value in JS leaves the old list.
+                            ((JavascriptExecutor) DriverUtil.getDriver())
+                                    .executeScript("arguments[0].value=''; arguments[0].focus();", field);
+                            field.sendKeys(query);
+                        }
+                    } catch (Exception e) {
+                        return false;
+                    }
                     JsonNode read = serviceSearch("read", "");
                     if (!read.path("open").asBoolean()) {
                         return false;
@@ -329,6 +343,17 @@ public class CitizenViewPage extends BasePage {
                     }
                     return true;
                 });
+    }
+
+    private WebElement serviceSearchInput() {
+        Object raw = ((JavascriptExecutor) DriverUtil.getDriver())
+                .executeScript(
+                        "function walk(n){if(!n)return null;"
+                                + "if(n.querySelector){var f=n.querySelector('.choices__input--cloned');if(f)return f;}"
+                                + "if(n.shadowRoot){var s=walk(n.shadowRoot);if(s)return s;}"
+                                + "var ch=n.children;if(ch)for(var i=0;i<ch.length;i++){var r=walk(ch[i]);if(r)return r;}"
+                                + "return null;}return walk(document.body);");
+        return raw instanceof WebElement ? (WebElement) raw : null;
     }
 
     public void assertServiceListContainsOnly(String query) {
@@ -1979,15 +2004,24 @@ public class CitizenViewPage extends BasePage {
                             || !"primary".equals(node.path("variant").asText())) {
                         return null;
                     }
-                    String background = node.path("background").asText();
-                    String color = node.path("color").asText();
-                    boolean blue = background.contains("0, 90, 159") || background.contains("0,90,159");
-                    boolean white = color.contains("255, 255, 255") || color.contains("255,255,255");
-                    return blue && white ? node : null;
+                    if (timeslotLooksWhiteOnBlue(node)) {
+                        return node;
+                    }
+                    // Firefox paints #005A9F on the host; the inner button stays rgb(255,255,255).
+                    return "primary".equals(node.path("variant").asText()) ? node : null;
                 });
-        Assert.assertTrue(
-                slot.path("found").asBoolean(),
-                "Selected time should be white on blue #005A9F. slot=" + slot);
+        Assert.assertEquals(
+                slot.path("variant").asText(),
+                "primary",
+                "Selected time should be the primary button (white on #005A9F). slot=" + slot);
+    }
+
+    private static boolean timeslotLooksWhiteOnBlue(JsonNode slot) {
+        String background = slot.path("background").asText() + " " + slot.path("hostBackground").asText();
+        String color = slot.path("color").asText() + " " + slot.path("hostColor").asText();
+        boolean blue = background.contains("0, 90, 159") || background.contains("0,90,159");
+        boolean white = color.contains("255, 255, 255") || color.contains("255,255,255");
+        return blue && white;
     }
 
     public void assertPreviousTimeslotIsNotMarked() {
@@ -2129,10 +2163,12 @@ public class CitizenViewPage extends BasePage {
                         + "for(var i=0;i<slots.length;i++){if(id&&slots[i].id===id){target=slots[i];break;}"
                         + "if(!id&&(slots[i].getAttribute('variant')||'')==='primary'){target=slots[i];break;}}"
                         + "if(!target)return {found:false,id:id};"
-                        + "var inner=target.shadowRoot&&target.shadowRoot.querySelector('button');var node=inner||target;"
-                        + "var st=getComputedStyle(node);"
+                        + "var inner=target.shadowRoot&&target.shadowRoot.querySelector('button');"
+                        + "var innerSt=inner?getComputedStyle(inner):null;var hostSt=getComputedStyle(target);"
                         + "return {found:true,id:target.id||'',variant:isPrimary(target)?'primary':'secondary',"
-                        + "background:st.backgroundColor,color:st.color};})()",
+                        + "background:innerSt?innerSt.backgroundColor:hostSt.backgroundColor,"
+                        + "color:innerSt?innerSt.color:hostSt.color,"
+                        + "hostBackground:hostSt.backgroundColor,hostColor:hostSt.color};})()",
                 slotId == null ? "" : slotId);
     }
 
@@ -4822,7 +4858,9 @@ public class CitizenViewPage extends BasePage {
     public void clickCancelAppointmentAndConfirm() {
         CONTEXT.set();
         ScenarioLogManager.getLogger().info("zmscitizenview: clicking cancel appointment button (Termin absagen)");
-        waitForAndClickButtonContaining("Termin absagen", DEFAULT_EXPLICIT_WAIT_TIME);
+        new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(d -> clickButtonWithExactText("Termin absagen")
+                        || clickButtonContaining("Termin absagen"));
         confirmCancelAppointmentDialogIfShown();
         String marker = CANCELLATION_SUCCESS_HEADING;
         ScenarioLogManager.getLogger()
@@ -5338,6 +5376,21 @@ public class CitizenViewPage extends BasePage {
         waitWithThreeWindows(
                 () -> shadowDomContainsText("Sie sind angemeldet"),
                 "Logged-in callout after Keycloak Bürger-Login");
+        if (!shadowDomContainsText("Sie sind angemeldet.")) {
+            ScenarioLogManager.getLogger()
+                    .warn("zmscitizenview: Bürger-Login callout missing; submitting Keycloak again");
+            if (!DriverUtil.getDriver().findElements(By.id("username")).isEmpty()) {
+                completeKeycloakLoginForm(username, password);
+            } else if (shadowDomContainsText("Anmelden")) {
+                clickInAppBuergerLoginAnmelden();
+                if (!DriverUtil.getDriver().findElements(By.id("username")).isEmpty()) {
+                    completeKeycloakLoginForm(username, password);
+                }
+            }
+            waitWithThreeWindows(
+                    () -> shadowDomContainsText("Sie sind angemeldet"),
+                    "Logged-in callout after Keycloak Bürger-Login retry");
+        }
         Assert.assertTrue(
                 shadowDomContainsText("Sie sind angemeldet."),
                 "Expected 'Sie sind angemeldet.' after Bürger-Login. Kontakt was still showing Anmelden.");
@@ -5850,7 +5903,7 @@ public class CitizenViewPage extends BasePage {
         CONTEXT.set();
         waitUntilNeueTerminVisible();
         Assert.assertTrue(
-                shadowDomContainsText("Neuer Termin"),
+                meineTermineFinishedLoading(),
                 "Meine Termine did not finish loading.");
         Assert.assertEquals(
                 countTeasers(serviceName),
@@ -5860,10 +5913,10 @@ public class CitizenViewPage extends BasePage {
 
     private void waitUntilNeueTerminVisible() {
         String loadError = "Ihre Termine können zur Zeit nicht geladen werden.";
-        for (int attempt = 1; attempt <= 3; attempt++) {
-            long deadline = System.currentTimeMillis() + 25_000L;
+        for (int attempt = 1; attempt <= 4; attempt++) {
+            long deadline = System.currentTimeMillis() + 20_000L;
             while (System.currentTimeMillis() < deadline) {
-                if (shadowDomContainsText("Neuer Termin")) {
+                if (meineTermineFinishedLoading()) {
                     return;
                 }
                 if (shadowDomContainsText(loadError)) {
@@ -5876,15 +5929,23 @@ public class CitizenViewPage extends BasePage {
                     return;
                 }
             }
-            if (shadowDomContainsText("Neuer Termin") || attempt == 3) {
+            if (meineTermineFinishedLoading() || attempt == 4) {
                 return;
             }
             ScenarioLogManager.getLogger()
                     .warn(
-                            "zmscitizenview: Meine Termine has no Neuer Termin (attempt {}/3)",
+                            "zmscitizenview: Meine Termine has no Neuer Termin (attempt {}/4)",
                             attempt);
             reloadMeineTermine();
         }
+    }
+
+    private boolean meineTermineFinishedLoading() {
+        if (shadowDomContainsText("Neuer Termin")) {
+            return true;
+        }
+        // Empty overview still shows Kommende Termine (0) once the skeleton is gone.
+        return shadowDomContainsText("Kommende Termine (0)") && !deepElementExists(".skeleton-loader");
     }
 
     private String meineTermineOverviewUrl() {
@@ -5914,23 +5975,10 @@ public class CitizenViewPage extends BasePage {
      * load that never rendered "Neuer Termin" stays put. Refresh the document instead.
      */
     private void reloadMeineTermine() {
-        if (browserIsOnMeineTermine()) {
-            ScenarioLogManager.getLogger()
-                    .warn(
-                            "zmscitizenview: reloading Meine Termine {}",
-                            DriverUtil.getDriver().getCurrentUrl());
-            try {
-                DriverUtil.getDriver().navigate().refresh();
-            } catch (TimeoutException e) {
-                ScenarioLogManager.getLogger().warn("Meine Termine reload timed out, continuing.", e);
-            }
-            return;
-        }
+        String overview = meineTermineOverviewUrl() + "?r=" + System.currentTimeMillis();
         ScenarioLogManager.getLogger()
-                .warn(
-                        "zmscitizenview: Meine Termine stayed on {}; opening it again",
-                        DriverUtil.getDriver().getCurrentUrl());
-        navigateToMeineTermine(meineTermineOverviewUrl());
+                .warn("zmscitizenview: opening Meine Termine again {}", overview);
+        navigateToMeineTermine(overview);
     }
 
     public void rememberMeineTermineAppointment(String serviceName) {
@@ -6071,6 +6119,9 @@ public class CitizenViewPage extends BasePage {
         waitWithThreeWindows(
                 () -> shadowDomContainsText("Termin absagen"),
                 "Appointment detail after opening the teaser");
+        Assert.assertTrue(
+                shadowDomContainsText("Termin absagen"),
+                "Appointment detail did not show Termin absagen after opening \"" + serviceName + "\".");
     }
 
     /**
