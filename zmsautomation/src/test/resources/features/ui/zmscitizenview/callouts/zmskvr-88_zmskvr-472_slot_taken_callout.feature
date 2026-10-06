@@ -1,5 +1,5 @@
 #language: en
-@web @zmscitizenview @booking @citizen @ZMSKVR-88 @ZMSKVR-472 @executeLocally @jumpin @passCalendar
+@web @zmscitizenview @callouts @citizen @ZMSKVR-88 @ZMSKVR-472 @executeLocally @jumpin @passCalendar
 Feature: CitizenView: slot already taken shows not-available callout
   As a citizen
   I want a clear error when my chosen timeslot was booked by someone else
