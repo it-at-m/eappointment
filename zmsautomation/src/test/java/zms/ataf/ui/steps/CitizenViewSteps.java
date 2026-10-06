@@ -106,6 +106,50 @@ public class CitizenViewSteps {
         page.assertSelectedServiceCannotDropBelowOne(TestDataHelper.transformTestData(label));
     }
 
+    @Then("the continue button on the service page says {string}")
+    public void theContinueButtonOnTheServicePageSays(String label) {
+        ScenarioLogManager.getLogger().info("zmscitizenview: continue button says {}", label);
+        page.assertWeiterButtonSays(label);
+    }
+
+    @Then("the service {string} uses secondary plus and minus buttons")
+    public void theServiceUsesSecondaryPlusAndMinusButtons(String label) {
+        ScenarioLogManager.getLogger().info("zmscitizenview: secondary plus and minus for {}", label);
+        page.assertSecondaryPlusAndMinus(TestDataHelper.transformTestData(label));
+    }
+
+    @Then("the minus button for service {string} is disabled")
+    public void theMinusButtonForServiceIsDisabled(String label) {
+        ScenarioLogManager.getLogger().info("zmscitizenview: minus disabled for {}", label);
+        page.assertMinusButton(TestDataHelper.transformTestData(label), true);
+    }
+
+    @Then("the minus button for service {string} is enabled")
+    public void theMinusButtonForServiceIsEnabled(String label) {
+        ScenarioLogManager.getLogger().info("zmscitizenview: minus enabled for {}", label);
+        page.assertMinusButton(TestDataHelper.transformTestData(label), false);
+    }
+
+    @Then("the service {string} links to service {string} on muenchen.de")
+    public void theServiceLinksToItsDescription(String label, String serviceId) {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: {} links to service {}", label, serviceId);
+        page.assertServiceDescriptionLink(TestDataHelper.transformTestData(label), serviceId);
+    }
+
+    @Then("the count for {string} sits beside the name on desktop and below it on a phone")
+    public void theCountSitsBesideTheNameOnDesktopAndBelowItOnAPhone(String label) {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: count placement for {} on desktop and phone", label);
+        page.assertCountBesideNameOnDesktopAndBelowOnPhone(TestDataHelper.transformTestData(label));
+    }
+
+    @When("I raise the service {string} until the plus button is disabled")
+    public void iRaiseTheServiceUntilThePlusButtonIsDisabled(String label) {
+        ScenarioLogManager.getLogger().info("zmscitizenview: raise {} until plus is disabled", label);
+        page.raiseServiceUntilPlusDisabled(TestDataHelper.transformTestData(label));
+    }
+
     @When("I add subservice {string} with quantity {int} on the service combination step")
     public void iAddSubserviceWithQuantityOnTheServiceCombinationStep(String subserviceLabel, int quantity) {
         String label = TestDataHelper.transformTestData(subserviceLabel);
