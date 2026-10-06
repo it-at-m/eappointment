@@ -778,6 +778,14 @@ public class CitizenViewSteps {
         page.assertCancellationSuccessCalloutVisible();
     }
 
+    /** ZMSKVR-112: heading plus thank-you text on the cancel success callout. */
+    @Then("the cancellation success callout should show the thank-you text in the citizen view")
+    public void theCancellationSuccessCalloutShouldShowTheThankYouText() {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: assert cancellation success callout heading and thank-you text");
+        page.assertCancellationSuccessDetailsVisible();
+    }
+
     @Then("the selected appointment callout should be visible in the citizen view")
     public void theSelectedAppointmentCalloutShouldBeVisible() {
         ScenarioLogManager.getLogger().info("zmscitizenview: assert 'Ausgewählter Termin' callout visible");
