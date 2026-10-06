@@ -1272,7 +1272,12 @@ public class CitizenViewPage extends BasePage {
         Assert.assertTrue(titles.size() > 0, "No office heading to clear: " + titles);
         String id = titles.get(0).path("id").asText();
         Assert.assertTrue(id.startsWith("provider-"), "Office heading id: " + titles.get(0));
-        hiddenOfficeId = Integer.parseInt(id.substring("provider-".length()));
+        try {
+            hiddenOfficeId = Integer.parseInt(id.substring("provider-".length()));
+        } catch (NumberFormatException e) {
+            Assert.fail("Office heading id is not a number: " + titles.get(0) + " " + e.getMessage());
+            return;
+        }
         deepClickRequired("#checkbox-provider-" + hiddenOfficeId);
         waitUntilProviderToggleSettled(15);
         new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
