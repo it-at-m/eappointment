@@ -1,4 +1,4 @@
-@rest @zmscitizenapi @booking @citizen @ZMSKVR-88 @ZMSKVR-472 @passCalendar
+@rest @zmscitizenapi @callouts @citizen @ZMSKVR-88 @ZMSKVR-472 @passCalendar
 Feature: Citizen API: second reserve of the same timeslot is rejected
   As a citizen API client
   I want reserve to fail when another process already holds the timeslot
