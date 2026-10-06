@@ -19,6 +19,7 @@ import zms.ataf.ui.pages.citizenview.CitizenViewPageContext;
 import zms.ataf.ui.pages.citizenview.support.CitizenViewJson;
 import zms.ataf.ui.pages.citizenview.support.ShadowDom;
 import zms.ataf.ui.pages.citizenview.support.SlotBookingState;
+import org.openqa.selenium.TimeoutException;
 
 /**
  * Location (Ort) step: provider checkboxes, single-provider teaser, office order.
@@ -253,7 +254,7 @@ public final class ProviderLocationStep {
                         + teaserOk);
     }
 
-    private JsonNode providerCheckboxes() {
+    public JsonNode providerCheckboxes() {
         return json.citizenJson(
                 "(function(){function inView(el){var n=el;var self=true;while(n&&n.nodeType===1){"
                         + "var st=window.getComputedStyle(n);if(st.display==='none'||st.visibility==='hidden')return false;"
@@ -279,7 +280,7 @@ public final class ProviderLocationStep {
                         + "return {offices:offices};})()");
     }
 
-    private JsonNode officeTile(int officeId) {
+    public JsonNode officeTile(int officeId) {
         return json.citizenJson(
                 "(function(){var id='provider-'+__args[0];var boxes=cssAll('[id^=\"checkbox-provider-\"]');"
                         + "var seen={};var checkboxCount=0;for(var i=0;i<boxes.length;i++){var box=boxes[i];"
@@ -297,7 +298,7 @@ public final class ProviderLocationStep {
                 officeId);
     }
 
-    private void assertOfficeOrder(JsonNode offices, boolean requireChecked, boolean requireAllKnown) {
+    public void assertOfficeOrder(JsonNode offices, boolean requireChecked, boolean requireAllKnown) {
         int lastRank = -1;
         boolean scheidplatz = false;
         Set<String> seen = new HashSet<>();
@@ -351,7 +352,7 @@ public final class ProviderLocationStep {
         }
     }
 
-    private static String frequencyName(String text) {
+    public static String frequencyName(String text) {
         String found = null;
         for (String name : OFFICE_FREQUENCY) {
             if (text.contains(name) && (found == null || name.length() > found.length())) {
@@ -361,7 +362,7 @@ public final class ProviderLocationStep {
         return found;
     }
 
-    private static int frequencyRank(String name) {
+    public static int frequencyRank(String name) {
         for (int i = 0; i < OFFICE_FREQUENCY.length; i++) {
             if (OFFICE_FREQUENCY[i].equals(name)) {
                 return i;
@@ -375,7 +376,7 @@ public final class ProviderLocationStep {
         context.set();
         long deadline = System.currentTimeMillis() + maxSeconds * 1000L;
         while (System.currentTimeMillis() < deadline) {
-            if (!deepMucSpinnerVisible()) {
+            if (spinnerVisible == null || !spinnerVisible.getAsBoolean()) {
                 return;
             }
             try {

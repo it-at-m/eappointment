@@ -308,7 +308,7 @@ public final class CombinationStep {
                 "Service counter for \"" + label + "\" should still be " + count + ".");
     }
 
-    private boolean durationClockIsVisible() {
+    public boolean durationClockIsVisible() {
         String script =
                 "function shown(el){var n=el;while(n&&n.nodeType===1){"
                         + "var st=window.getComputedStyle(n);"
@@ -333,7 +333,7 @@ public final class CombinationStep {
         return Boolean.TRUE.equals(found);
     }
 
-    private int countVisibleCombinableServices() {
+    public int countVisibleCombinableServices() {
         String script =
                 "function shown(el){var n=el;while(n&&n.nodeType===1){"
                         + "var st=window.getComputedStyle(n);"
@@ -360,7 +360,7 @@ public final class CombinationStep {
         return raw instanceof Number ? ((Number) raw).intValue() : 0;
     }
 
-    private boolean showAllServicesButtonVisible() {
+    public boolean showAllServicesButtonVisible() {
         String script =
                 "function shown(el){var n=el;while(n&&n.nodeType===1){"
                         + "var st=window.getComputedStyle(n);"
@@ -377,7 +377,7 @@ public final class CombinationStep {
         return Boolean.TRUE.equals(((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script));
     }
 
-    private boolean clickShowAllServicesButton() {
+    public boolean clickShowAllServicesButton() {
         String script =
                 "function shown(el){var n=el;while(n&&n.nodeType===1){"
                         + "var st=window.getComputedStyle(n);"
@@ -397,7 +397,7 @@ public final class CombinationStep {
         return Boolean.TRUE.equals(((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script));
     }
 
-    private int displayedServiceCount(String label) {
+    public int displayedServiceCount(String label) {
         for (int n = 0; n <= 8; n++) {
             if (serviceCounterShows(label, n)) {
                 return n;
@@ -407,7 +407,7 @@ public final class CombinationStep {
         return -1;
     }
 
-    private JsonNode waitForServiceCounter(String label) {
+    public JsonNode waitForServiceCounter(String label) {
         new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(defaultWaitSeconds))
                 .until(d -> !"missing".equals(queryServiceCounter(label).path("minus").asText()));
         JsonNode counter = queryServiceCounter(label);
@@ -418,7 +418,7 @@ public final class CombinationStep {
         return counter;
     }
 
-    private JsonNode queryServiceCounter(String label) {
+    public JsonNode queryServiceCounter(String label) {
         String script =
                 "var label=arguments[0];"
                         + "function norm(t){return (t||'').replace(/\\s+/g,' ').trim();}"
@@ -498,7 +498,7 @@ public final class CombinationStep {
         }
     }
 
-    private boolean weiterButtonIsExact(String label) {
+    public boolean weiterButtonIsExact(String label) {
         String script =
                 "var label=arguments[0];"
                         + "function norm(t){return (t||'').replace(/\\s+/g,' ').trim();}"
@@ -511,11 +511,11 @@ public final class CombinationStep {
         return Boolean.TRUE.equals(found);
     }
 
-    private boolean pressServiceCounter(String label, boolean increase) {
+    public boolean pressServiceCounter(String label, boolean increase) {
         return "clicked".equals(serviceCounterButtonState(label, increase));
     }
 
-    private String serviceCounterButtonState(String label, boolean increase) {
+    public String serviceCounterButtonState(String label, boolean increase) {
         String script =
                 "var label=arguments[0];var increase=arguments[1]===true;"
                         + "function norm(t){return (t||'').replace(/\\s+/g,' ').trim();}"
@@ -622,7 +622,7 @@ public final class CombinationStep {
         return Boolean.TRUE.equals(o);
     }
 
-    private boolean serviceCounterShows(String label, int count) {
+    public boolean serviceCounterShows(String label, int count) {
         String script =
                 "var label=arguments[0];var count=String(arguments[1]);"
                         + "function walk(n){var s='';if(!n)return s;if(n.nodeType===3)return n.nodeValue||'';"

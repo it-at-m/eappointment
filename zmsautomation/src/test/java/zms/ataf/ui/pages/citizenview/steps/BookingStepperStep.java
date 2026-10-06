@@ -12,6 +12,7 @@ import ataf.core.logging.ScenarioLogManager;
 import ataf.web.utils.DriverUtil;
 import zms.ataf.ui.pages.citizenview.CitizenViewPageContext;
 import zms.ataf.ui.pages.citizenview.support.ShadowDom;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /** Booking muc-stepper navigation and labels. */
 public final class BookingStepperStep {
@@ -92,7 +93,7 @@ public final class BookingStepperStep {
                 });
     }
 
-    private boolean bookingStepMatches(String label, String state, String icon) {
+    public boolean bookingStepMatches(String label, String state, String icon) {
         JsonNode step = findBookingStep(label);
         if (step == null || !icon.equals(step.path("icon").asText())) {
             return false;
@@ -107,7 +108,7 @@ public final class BookingStepperStep {
         };
     }
 
-    private String bookingStepLabel(int index) {
+    public String bookingStepLabel(int index) {
         JsonNode steps = readBookingSteps();
         if (steps == null || index < 0 || index >= steps.size()) {
             return "";
@@ -115,7 +116,7 @@ public final class BookingStepperStep {
         return steps.get(index).path("label").asText();
     }
 
-    private JsonNode findBookingStep(String label) {
+    public JsonNode findBookingStep(String label) {
         JsonNode steps = readBookingSteps();
         if (steps == null) {
             return null;
@@ -128,7 +129,7 @@ public final class BookingStepperStep {
         return null;
     }
 
-    private JsonNode readBookingSteps() {
+    public JsonNode readBookingSteps() {
         String script =
                 "function norm(s){return (s||'').replace(/\\s+/g,' ').trim();}"
                         + "function iconOf(li){var use=li.querySelector('use');if(!use)return '';"
@@ -160,7 +161,7 @@ public final class BookingStepperStep {
         }
     }
 
-    private boolean paintFinishedBookingStep(String label) {
+    public boolean paintFinishedBookingStep(String label) {
         String script =
                 "var label=arguments[0];"
                         + "function norm(s){return (s||'').replace(/\\s+/g,' ').trim();}"

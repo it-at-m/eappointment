@@ -1,42 +1,14 @@
 package zms.ataf.ui.pages.citizenview;
 
-import java.nio.charset.StandardCharsets;
-import java.time.Duration;
-import java.time.Instant;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Base64;
-import java.util.HashSet;
-import java.util.Locale;
-import java.util.Objects;
 import java.util.Set;
-import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.Keys;
-import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.remote.RemoteWebDriver;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
-import org.testng.Assert;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
-import ataf.core.helpers.TestDataHelper;
-import ataf.core.helpers.TestPropertiesHelper;
-import ataf.core.logging.ScenarioLogManager;
-import ataf.web.model.LocatorType;
 import ataf.web.pages.BasePage;
-import ataf.web.utils.DriverUtil;
-import zms.ataf.helpers.AccountCheckout;
-import zms.ataf.helpers.RandomNameHelper;
-import zms.ataf.helpers.ViewportSizes;
 import zms.ataf.rest.dto.zmscitizenapi.ThinnedProcess;
-import zms.ataf.ui.pages.citizenview.support.CitizenViewScripts;
-import zms.ataf.ui.pages.citizenview.support.CitizenViewWaits;
 import zms.ataf.ui.pages.citizenview.support.ShadowDom;
 import zms.ataf.ui.pages.citizenview.steps.CombinationStep;
 import zms.ataf.ui.pages.citizenview.steps.ServiceFinderStep;

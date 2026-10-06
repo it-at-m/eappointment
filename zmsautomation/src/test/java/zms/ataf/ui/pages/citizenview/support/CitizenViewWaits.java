@@ -70,7 +70,7 @@ public final class CitizenViewWaits {
         }
     }
 
-    private static void sleepQuiet(long millis) {
+    public static void sleepQuiet(long millis) {
         try {
             Thread.sleep(millis);
         } catch (InterruptedException e) {
