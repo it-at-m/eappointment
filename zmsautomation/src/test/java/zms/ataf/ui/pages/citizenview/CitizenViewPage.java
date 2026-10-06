@@ -307,42 +307,7 @@ public class CitizenViewPage extends BasePage {
 
     public void typeIntoServiceSearch(String query) {
         CONTEXT.set();
-        String folded = query.toLowerCase(Locale.ROOT);
-        new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
-                .until(d -> {
-                    if (!serviceSearch("read", "").path("open").asBoolean()) {
-                        serviceSearch("click", "");
-                    }
-                    WebElement field = serviceSearchInput();
-                    if (field == null) {
-                        return false;
-                    }
-                    try {
-                        String current = field.getAttribute("value");
-                        if (!query.equals(current)) {
-                            // Choices only filters on real keystrokes. Setting .value in JS leaves the old list.
-                            ((JavascriptExecutor) DriverUtil.getDriver())
-                                    .executeScript("arguments[0].value=''; arguments[0].focus();", field);
-                            field.sendKeys(query);
-                        }
-                    } catch (Exception e) {
-                        return false;
-                    }
-                    JsonNode read = serviceSearch("read", "");
-                    if (!read.path("open").asBoolean()) {
-                        return false;
-                    }
-                    JsonNode names = read.path("names");
-                    if (names.size() == 0) {
-                        return false;
-                    }
-                    for (JsonNode name : names) {
-                        if (!name.asText().toLowerCase(Locale.ROOT).contains(folded)) {
-                            return false;
-                        }
-                    }
-                    return true;
-                });
+        waitForFilteredServiceNames(query);
     }
 
     private WebElement serviceSearchInput() {
@@ -356,11 +321,82 @@ public class CitizenViewPage extends BasePage {
         return raw instanceof WebElement ? (WebElement) raw : null;
     }
 
+    private JsonNode waitForFilteredServiceNames(String query) {
+        String folded = query.toLowerCase(Locale.ROOT);
+        return new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(d -> {
+                    if (!applyServiceSearchQuery(query)) {
+                        return null;
+                    }
+                    JsonNode read = serviceSearch("read", "");
+                    if (!read.path("open").asBoolean()) {
+                        return null;
+                    }
+                    JsonNode names = read.path("names");
+                    if (names.size() == 0) {
+                        WebElement field = serviceSearchInput();
+                        if (field != null) {
+                            ((JavascriptExecutor) DriverUtil.getDriver())
+                                    .executeScript("arguments[0].value=''; arguments[0].focus();", field);
+                            field.sendKeys(query);
+                        }
+                        return null;
+                    }
+                    for (JsonNode name : names) {
+                        if (!name.asText().toLowerCase(Locale.ROOT).contains(folded)) {
+                            return null;
+                        }
+                    }
+                    return read;
+                });
+    }
+
+    /** Reopen the list if AfterStep closed it, then type {@code query} with sendKeys. */
+    private boolean applyServiceSearchQuery(String query) {
+        if (!serviceSearch("read", "").path("open").asBoolean()) {
+            serviceSearch("click", "");
+        }
+        WebElement field = serviceSearchInput();
+        if (field == null) {
+            return false;
+        }
+        try {
+            String current = field.getAttribute("value");
+            if (!query.equals(current)) {
+                ((JavascriptExecutor) DriverUtil.getDriver())
+                        .executeScript("arguments[0].value=''; arguments[0].focus();", field);
+                field.sendKeys(query);
+            }
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    private JsonNode currentServiceListNames() {
+        WebElement field = serviceSearchInput();
+        String typed = null;
+        try {
+            typed = field == null ? null : field.getAttribute("value");
+        } catch (Exception e) {
+            return null;
+        }
+        if (typed != null && !typed.isBlank()) {
+            if (!applyServiceSearchQuery(typed)) {
+                return null;
+            }
+        } else if (!serviceSearch("read", "").path("open").asBoolean()) {
+            serviceSearch("click", "");
+        }
+        JsonNode read = serviceSearch("read", "");
+        return read.path("open").asBoolean() ? read.path("names") : null;
+    }
+
     public void assertServiceListContainsOnly(String query) {
         CONTEXT.set();
-        String folded = query.toLowerCase(Locale.ROOT);
-        JsonNode names = serviceSearch("read", "").path("names");
+        JsonNode names = waitForFilteredServiceNames(query).path("names");
         Assert.assertTrue(names.size() > 0, "The service list is empty for \"" + query + "\".");
+        String folded = query.toLowerCase(Locale.ROOT);
         for (JsonNode name : names) {
             Assert.assertTrue(
                     name.asText().toLowerCase(Locale.ROOT).contains(folded),
@@ -370,7 +406,23 @@ public class CitizenViewPage extends BasePage {
 
     public void assertServiceListIncludesAndNot(String present, String absent) {
         CONTEXT.set();
-        JsonNode names = serviceSearch("read", "").path("names");
+        JsonNode names = new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(d -> {
+                    JsonNode list = currentServiceListNames();
+                    if (list == null || list.size() == 0) {
+                        return null;
+                    }
+                    boolean found = false;
+                    for (JsonNode name : list) {
+                        if (name.asText().equals(absent)) {
+                            return null;
+                        }
+                        if (name.asText().equals(present)) {
+                            found = true;
+                        }
+                    }
+                    return found ? list : null;
+                });
         boolean found = false;
         for (JsonNode name : names) {
             String text = name.asText();
@@ -385,7 +437,12 @@ public class CitizenViewPage extends BasePage {
     /** Choose a row in the open list. That opens the Leistung step for the service. */
     public void chooseServiceFromOpenList(String label) {
         CONTEXT.set();
-        JsonNode state = serviceSearch("choose", label);
+        JsonNode state = new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(d -> {
+                    currentServiceListNames();
+                    JsonNode chosen = serviceSearch("choose", label);
+                    return chosen.path("chosen").asBoolean() ? chosen : null;
+                });
         Assert.assertTrue(
                 state.path("chosen").asBoolean(),
                 "Could not choose \"" + label + "\" from the service list.");
