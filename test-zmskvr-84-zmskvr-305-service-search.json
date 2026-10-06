@@ -1,0 +1,35 @@
+{
+  "branch": "test-zmskvr-84-zmskvr-305-service-search",
+  "branchSlug": "test-zmskvr-84-zmskvr-305-service-search",
+  "runId": "37425049615",
+  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37425049615",
+  "runStartedAt": "2026-10-06T06:40:20Z",
+  "publishedAt": "2026-10-06T06:51:30.684Z",
+  "features": {
+    "feature-ui-zmscitizenview-booking-zmskvr-84-zmskvr-305-service-search": {
+      "status": "failed",
+      "shard": "custom",
+      "browser": "chrome",
+      "browsers": {
+        "chrome": {
+          "status": "failed",
+          "shard": "custom",
+          "runId": "37425049615",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37425049615",
+          "runStartedAt": "2026-10-06T06:40:20Z"
+        },
+        "firefox": {
+          "status": "failed",
+          "shard": "custom",
+          "runId": "37425049615",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37425049615",
+          "runStartedAt": "2026-10-06T06:40:20Z"
+        }
+      },
+      "rel": "ui/zmscitizenview/booking/zmskvr-84_zmskvr-305_service_search.feature",
+      "runId": "37425049615",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37425049615",
+      "runStartedAt": "2026-10-06T06:40:20Z"
+    }
+  }
+}
