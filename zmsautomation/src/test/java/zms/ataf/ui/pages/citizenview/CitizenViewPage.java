@@ -6198,6 +6198,8 @@ public class CitizenViewPage extends BasePage {
     public void openMeineTermineTeaser(String serviceName) {
         CONTEXT.set();
         ScenarioLogManager.getLogger().info("zmscitizenview: open teaser {}", serviceName);
+        // Match the teaser title ("1x …"), same as countTeasers / assertMeineTermineTeaser.
+        String needle = "1x " + serviceName;
         // Firefox often accepts a muc-card click without navigating. Prefer the card href.
         String findHref =
                 "var name=arguments[0];"
@@ -6209,12 +6211,13 @@ public class CitizenViewPage extends BasePage {
                         + "walk(document.body,function(n){"
                         + "var tag=(n.tagName||'').toUpperCase();"
                         + "if(tag!=='MUC-CARD'&&tag!=='A')return false;"
-                        + "if(textOf(n).indexOf(name)<0)return false;"
+                        + "if(textOf(n).replace(/\\s+/g,' ').indexOf(name)<0)return false;"
                         + "card=n;return true;});"
                         + "if(!card)return '';"
-                        + "var href=card.getAttribute&&card.getAttribute('href');"
-                        + "if(!href&&card.shadowRoot){var a=card.shadowRoot.querySelector('a[href]');if(a)href=a.getAttribute('href');}"
-                        + "if(!href&&(card.tagName||'').toUpperCase()==='A')href=card.getAttribute('href');"
+                        + "var href=(card.href&&String(card.href))||(card.getAttribute&&card.getAttribute('href'))||'';"
+                        + "if(!href&&card.shadowRoot){var a=card.shadowRoot.querySelector('a[href]');"
+                        + "if(a)href=a.href||a.getAttribute('href')||'';}"
+                        + "if(!href&&(card.tagName||'').toUpperCase()==='A')href=card.href||card.getAttribute('href')||'';"
                         + "return href||'';";
         String clickCard =
                 "var name=arguments[0];"
@@ -6226,13 +6229,15 @@ public class CitizenViewPage extends BasePage {
                         + "walk(document.body,function(n){"
                         + "var tag=(n.tagName||'').toUpperCase();"
                         + "if(tag!=='MUC-CARD'&&tag!=='A')return false;"
-                        + "if(textOf(n).indexOf(name)<0)return false;"
+                        + "if(textOf(n).replace(/\\s+/g,' ').indexOf(name)<0)return false;"
                         + "card=n;return true;});"
                         + "if(!card)return false;"
                         + "var hit=card;"
                         + "if(card.shadowRoot){var a=card.shadowRoot.querySelector('a[href]');if(a)hit=a;}"
                         + "hit.scrollIntoView({block:'center'});hit.click();return true;";
-        long deadline = System.currentTimeMillis() + Math.max(60, DEFAULT_EXPLICIT_WAIT_TIME) * 1000L;
+        // Detail can take well over 5s under a busy chrome shard; a short settle + immediate
+        // re-navigate reloads the page before Termin absagen appears.
+        long deadline = System.currentTimeMillis() + Math.max(90, DEFAULT_EXPLICIT_WAIT_TIME) * 1000L;
         boolean opened = false;
         while (System.currentTimeMillis() < deadline) {
             if (shadowDomContainsText("Termin absagen")) {
@@ -6240,8 +6245,27 @@ public class CitizenViewPage extends BasePage {
                 break;
             }
             Object hrefRaw =
-                    ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(findHref, serviceName);
+                    ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(findHref, needle);
             String href = hrefRaw == null ? "" : String.valueOf(hrefRaw).trim();
+            if (href.isEmpty()) {
+                if (meineTermineShowsLoggedOut()) {
+                    ScenarioLogManager.getLogger()
+                            .warn(
+                                    "zmscitizenview: Meine Termine shows Anmelden before opening teaser; logging in again");
+                    reloginForMeineTermine();
+                } else if (!browserIsOnMeineTermine() || !meineTermineFinishedLoading()) {
+                    ScenarioLogManager.getLogger()
+                            .warn(
+                                    "zmscitizenview: returning to Meine Termine before opening teaser {}",
+                                    serviceName);
+                    reloadMeineTermine();
+                    waitUntilNeueTerminVisible();
+                } else {
+                    waitForTeaserText(serviceName);
+                }
+                hrefRaw = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(findHref, needle);
+                href = hrefRaw == null ? "" : String.valueOf(hrefRaw).trim();
+            }
             if (!href.isEmpty()) {
                 try {
                     if (href.startsWith("/")) {
@@ -6254,28 +6278,23 @@ public class CitizenViewPage extends BasePage {
                     ScenarioLogManager.getLogger().warn("Meine Termine teaser navigation timed out", e);
                 }
             } else {
-                ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(clickCard, serviceName);
+                ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(clickCard, needle);
             }
-            long settle = System.currentTimeMillis() + 5_000L;
-            while (System.currentTimeMillis() < settle) {
-                if (shadowDomContainsText("Termin absagen")) {
-                    opened = true;
-                    break;
-                }
-                try {
-                    Thread.sleep(250L);
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                    break;
-                }
-            }
-            if (opened) {
+            waitWithThreeWindows(
+                    () -> shadowDomContainsText("Termin absagen"),
+                    "Appointment detail after opening teaser " + serviceName);
+            if (shadowDomContainsText("Termin absagen")) {
+                opened = true;
                 break;
             }
             ScenarioLogManager.getLogger()
                     .warn(
                             "zmscitizenview: teaser {} did not open detail; trying again",
                             serviceName);
+            if (!browserIsOnMeineTermine()) {
+                reloadMeineTermine();
+                waitUntilNeueTerminVisible();
+            }
         }
         Assert.assertTrue(
                 opened || shadowDomContainsText("Termin absagen"),
