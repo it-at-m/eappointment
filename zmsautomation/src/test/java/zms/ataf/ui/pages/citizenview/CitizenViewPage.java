@@ -2893,17 +2893,34 @@ public class CitizenViewPage extends BasePage {
         long previous = readStoredSlotTimestamp();
         Assert.assertTrue(previous > 0, "No previous timeslot to skip.");
         rememberedAppointmentEpoch = previous;
-        try {
-            waitUntilAppointmentSlotsReady(Math.min(45, slotBookingWaitTimeoutSeconds()));
-        } catch (Exception e) {
-            ScenarioLogManager.getLogger()
-                    .warn("zmscitizenview: slots not ready before another timeslot: {}", e.toString());
-        }
+        // Stepping back to Termin mounts the calendar again. Under a full shard the
+        // slot request can outlast the 45s wait while MucSpinner is still showing.
+        waitForSlotsAfterReturningToTermin();
         ScenarioLogManager.getLogger()
                 .info("zmscitizenview: highlight another timeslot for office {} skipping {}", officeId, previous);
         Assert.assertTrue(
                 highlightPreferredTimeslotForOfficeOrAbsent(officeId, Long.toString(previous)),
                 "zmscitizenview: could not highlight another timeslot for provider " + officeId);
+    }
+
+    /**
+     * The Termin step fetches days and slots again after a stepper click. The first wait uses the
+     * same budget as the initial calendar load. A spinner that is still up gets one more wait.
+     */
+    private void waitForSlotsAfterReturningToTermin() {
+        int timeout = slotBookingWaitTimeoutSeconds();
+        for (int attempt = 1; attempt <= 2; attempt++) {
+            try {
+                waitUntilAppointmentSlotsReady(timeout);
+                return;
+            } catch (Exception e) {
+                ScenarioLogManager.getLogger()
+                        .warn(
+                                "zmscitizenview: slots not ready before another timeslot (attempt {}): {}",
+                                attempt,
+                                e.toString());
+            }
+        }
     }
 
     public void assertAvailableAppointmentsShown() {
