@@ -21,9 +21,9 @@ import zms.ataf.ui.pages.citizenview.support.ShadowDom;
 import zms.ataf.ui.pages.citizenview.support.SlotBookingState;
 
 /**
- * Ort step: provider checkboxes, single-provider teaser, office order.
+ * Location (Ort) step: provider checkboxes, single-provider teaser, office order.
  */
-public final class ProviderOrtStep {
+public final class ProviderLocationStep {
 
     static final String[] OFFICE_FREQUENCY = {
         "Bürgerbüro Ruppertstraße",
@@ -45,7 +45,7 @@ public final class ProviderOrtStep {
     private IntSupplier slotBookingWaitTimeoutSeconds;
     private BooleanSupplier spinnerVisible;
 
-    public ProviderOrtStep(
+    public ProviderLocationStep(
             CitizenViewPageContext context,
             ShadowDom shadow,
             CitizenViewJson json,
@@ -58,7 +58,7 @@ public final class ProviderOrtStep {
         this.defaultWaitSeconds = defaultWaitSeconds;
     }
 
-    /** Wire slot waits after SlotZeitStep exists (avoids ctor cycles). */
+    /** Wire slot waits after TimeSlotStep exists (avoids ctor cycles). */
     public void setSlotWaitBridge(IntConsumer waitForSlots, IntSupplier slotBookingWaitTimeoutSeconds,
             BooleanSupplier spinnerVisible) {
         this.waitForSlots = waitForSlots;

@@ -22,9 +22,9 @@ import zms.ataf.ui.pages.citizenview.support.ShadowDom;
 import zms.ataf.ui.pages.citizenview.support.SlotBookingState;
 
 /**
- * Zeit step: calendar/list toggle, hours, slot highlight/click, and reserve-from-slot.
+ * Time-slot (Zeit) step: calendar/list toggle, hours, slot highlight/click, and reserve-from-slot.
  */
-public final class SlotZeitStep {
+public final class TimeSlotStep {
 
     private static final String NO_APPOINTMENT_CALLOUT = "Aktuell ist kein Termin verfügbar.";
 
@@ -45,23 +45,23 @@ public final class SlotZeitStep {
     private final CitizenViewPageContext context;
     private final ShadowDom shadow;
     private final CitizenViewJson json;
-    private final ProviderOrtStep providerOrt;
+    private final ProviderLocationStep providerLocation;
     private final SlotBookingState slotState;
     private final CitizenViewPage page;
     private final int defaultWaitSeconds;
 
-    public SlotZeitStep(
+    public TimeSlotStep(
             CitizenViewPageContext context,
             ShadowDom shadow,
             CitizenViewJson json,
-            ProviderOrtStep providerOrt,
+            ProviderLocationStep providerLocation,
             SlotBookingState slotState,
             CitizenViewPage page,
             int defaultWaitSeconds) {
         this.context = context;
         this.shadow = shadow;
         this.json = json;
-        this.providerOrt = providerOrt;
+        this.providerLocation = providerLocation;
         this.slotState = slotState;
         this.page = page;
         this.defaultWaitSeconds = defaultWaitSeconds;
@@ -344,7 +344,7 @@ public final class SlotZeitStep {
             return;
         }
         shadow.deepClickRequired("#checkbox-provider-" + slotState.hiddenOfficeId);
-        providerOrt.waitUntilProviderToggleSettled(15);
+        providerLocation.waitUntilProviderToggleSettled(15);
         new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(defaultWaitSeconds))
                 .until(d -> !shadow.deepElementExists("#timeslot-grid-provider-" + slotState.hiddenOfficeId));
     }
@@ -353,7 +353,7 @@ public final class SlotZeitStep {
         context.set();
         Assert.assertTrue(slotState.hiddenOfficeId > 0, "No office was cleared");
         Assert.assertFalse(
-                providerOrt.deepProviderCheckboxChecked(slotState.hiddenOfficeId),
+                providerLocation.deepProviderCheckboxChecked(slotState.hiddenOfficeId),
                 "Office " + slotState.hiddenOfficeId + " should be unchecked");
         Assert.assertFalse(
                 shadow.deepElementExists("#timeslot-grid-provider-" + slotState.hiddenOfficeId),
