@@ -1166,6 +1166,11 @@ const nextRescheduleAppointment = () => {
   clearContextErrors(errorStateMap.value);
 
   if (appointment.value?.scope?.rebookingDisabled === true) {
+    handleApiError(
+      "rebookingDisabled",
+      errorStateMap.value,
+      currentErrorData.value
+    );
     rebookOrCancelDialog.value = true;
     currentView.value = 3;
     return;
