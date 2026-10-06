@@ -1,10 +1,10 @@
 {
   "branch": "test-zmskvr-110-zmskvr-236-calendar-list-view",
   "branchSlug": "test-zmskvr-110-zmskvr-236-calendar-list-view",
-  "runId": "37389472302",
-  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37389472302",
-  "runStartedAt": "2026-10-05T23:36:41Z",
-  "publishedAt": "2026-10-06T00:03:24.897Z",
+  "runId": "37390532245",
+  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37390532245",
+  "runStartedAt": "2026-10-05T23:47:58Z",
+  "publishedAt": "2026-10-06T00:32:38.057Z",
   "features": {
     "feature-ui-zmscitizenview-calendar-zmskvr-236-zmskvr-701-zmskvr-739-zmskvr-110-zmskvr-513-zmskvr-707-calendar-list-view": {
       "status": "passed",
@@ -14,22 +14,22 @@
         "chrome": {
           "status": "passed",
           "shard": "custom",
-          "runId": "37389472302",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37389472302",
-          "runStartedAt": "2026-10-05T23:36:41Z"
+          "runId": "37390532245",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37390532245",
+          "runStartedAt": "2026-10-05T23:47:58Z"
         },
         "firefox": {
           "status": "passed",
           "shard": "custom",
-          "runId": "37389472302",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37389472302",
-          "runStartedAt": "2026-10-05T23:36:41Z"
+          "runId": "37390532245",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37390532245",
+          "runStartedAt": "2026-10-05T23:47:58Z"
         }
       },
       "rel": "ui/zmscitizenview/calendar/zmskvr-236_zmskvr-701_zmskvr-739_zmskvr-110_zmskvr-513_zmskvr-707_calendar_list_view.feature",
-      "runId": "37389472302",
-      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37389472302",
-      "runStartedAt": "2026-10-05T23:36:41Z"
+      "runId": "37390532245",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37390532245",
+      "runStartedAt": "2026-10-05T23:47:58Z"
     }
   }
 }
