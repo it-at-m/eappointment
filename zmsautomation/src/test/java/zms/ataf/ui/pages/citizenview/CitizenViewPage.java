@@ -800,6 +800,119 @@ public class CitizenViewPage extends BasePage {
     /**
      * ZMSKVR-106: Patternlab secondary buttons. Minus reduces, plus increases, each with its icon.
      */
+    /** ZMSKVR-321: heading above the optional combinable peers on the Leistung step. */
+    public void assertCombinableServicesHeadingVisible() {
+        CONTEXT.set();
+        waitUntilShadowContains("Kombinierbare Leistungen", DEFAULT_EXPLICIT_WAIT_TIME);
+        Assert.assertTrue(
+                shadowDomContainsText("Kombinierbare Leistungen"),
+                "Expected the Kombinierbare Leistungen heading on the service step.");
+    }
+
+    /** Visible rows under Kombinierbare Leistungen (not the main selected service above). */
+    public void assertCombinableServiceCount(int expected) {
+        CONTEXT.set();
+        int actual = countVisibleCombinableServices();
+        Assert.assertEquals(
+                actual,
+                expected,
+                "Expected " + expected + " combinable services, found " + actual + ".");
+    }
+
+    public void assertCombinableServiceCountGreaterThan(int minimum) {
+        CONTEXT.set();
+        int actual = countVisibleCombinableServices();
+        Assert.assertTrue(
+                actual > minimum,
+                "Expected more than " + minimum + " combinable services, found " + actual + ".");
+    }
+
+    public void assertShowAllServicesButtonVisible(boolean visible) {
+        CONTEXT.set();
+        boolean found = showAllServicesButtonVisible();
+        Assert.assertEquals(
+                found,
+                visible,
+                visible
+                        ? "Expected Alle Leistungen anzeigen on the service step."
+                        : "Alle Leistungen anzeigen should be hidden on the service step.");
+    }
+
+    public void showAllCombinableServices() {
+        CONTEXT.set();
+        Assert.assertTrue(
+                clickShowAllServicesButton(),
+                "Could not click Alle Leistungen anzeigen.");
+        sleepQuiet(400L);
+        Assert.assertTrue(
+                countVisibleCombinableServices() > 3,
+                "Combinable list did not expand after Alle Leistungen anzeigen.");
+    }
+
+    private int countVisibleCombinableServices() {
+        String script =
+                "function shown(el){var n=el;while(n&&n.nodeType===1){"
+                        + "var st=window.getComputedStyle(n);"
+                        + "if(st.display==='none'||st.visibility==='hidden'||st.opacity==='0')return false;"
+                        + "if(n.parentElement){n=n.parentElement;continue;}"
+                        + "var root=n.getRootNode&&n.getRootNode();n=root&&root.host?root.host:null;}return true;}"
+                        + "function textOf(n){var s='';if(!n)return s;if(n.nodeType===3)return n.nodeValue||'';"
+                        + "if(n.shadowRoot)s+=textOf(n.shadowRoot);var c=n.childNodes;if(c)for(var i=0;i<c.length;i++)s+=textOf(c[i]);return s;}"
+                        + "function walk(n,fn){if(!n)return null;if(n.nodeType===1){var hit=fn(n);if(hit)return hit;}"
+                        + "if(n.shadowRoot){var inner=walk(n.shadowRoot,fn);if(inner)return inner;}"
+                        + "var c=n.children;if(c)for(var i=0;i<c.length;i++){var next=walk(c[i],fn);if(next)return next;}return null;}"
+                        + "var list=walk(document.body,function(el){"
+                        + "if(!el.classList||!el.classList.contains('m-listing__list'))return null;"
+                        + "var host=el;while(host&&host.nodeType===1){"
+                        + "if(textOf(host).indexOf('Kombinierbare Leistungen')>=0)return el;"
+                        + "if(host.parentElement){host=host.parentElement;continue;}"
+                        + "var root=host.getRootNode&&host.getRootNode();host=root&&root.host?root.host:null;}"
+                        + "return null;});"
+                        + "if(!list)return 0;"
+                        + "var items=list.querySelectorAll(':scope > li.m-listing__list-item, :scope > .m-listing__list-item');"
+                        + "if(!items.length)items=list.querySelectorAll('li.m-listing__list-item');"
+                        + "var n=0;for(var i=0;i<items.length;i++)if(shown(items[i]))n++;return n;";
+        Object raw = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script);
+        return raw instanceof Number ? ((Number) raw).intValue() : 0;
+    }
+
+    private boolean showAllServicesButtonVisible() {
+        String script =
+                "function shown(el){var n=el;while(n&&n.nodeType===1){"
+                        + "var st=window.getComputedStyle(n);"
+                        + "if(st.display==='none'||st.visibility==='hidden'||st.opacity==='0')return false;"
+                        + "if(n.parentElement){n=n.parentElement;continue;}"
+                        + "var root=n.getRootNode&&n.getRootNode();n=root&&root.host?root.host:null;}return true;}"
+                        + "function norm(t){return (t||'').replace(/\\s+/g,' ').trim();}"
+                        + "function walk(n,fn){if(!n)return false;if(fn(n))return true;if(n.shadowRoot&&walk(n.shadowRoot,fn))return true;"
+                        + "var c=n.children;if(c)for(var i=0;i<c.length;i++)if(walk(c[i],fn))return true;return false;}"
+                        + "return walk(document.body,function(n){"
+                        + "var tag=(n.tagName||'').toUpperCase();"
+                        + "if(tag!=='BUTTON'&&tag!=='MUC-BUTTON')return false;"
+                        + "return norm(n.textContent||'').indexOf('Alle Leistungen anzeigen')>=0&&shown(n);});";
+        return Boolean.TRUE.equals(((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script));
+    }
+
+    private boolean clickShowAllServicesButton() {
+        String script =
+                "function shown(el){var n=el;while(n&&n.nodeType===1){"
+                        + "var st=window.getComputedStyle(n);"
+                        + "if(st.display==='none'||st.visibility==='hidden'||st.opacity==='0')return false;"
+                        + "if(n.parentElement){n=n.parentElement;continue;}"
+                        + "var root=n.getRootNode&&n.getRootNode();n=root&&root.host?root.host:null;}return true;}"
+                        + "function norm(t){return (t||'').replace(/\\s+/g,' ').trim();}"
+                        + "function walk(n,fn){if(!n)return null;if(n.nodeType===1){var hit=fn(n);if(hit)return hit;}"
+                        + "if(n.shadowRoot){var inner=walk(n.shadowRoot,fn);if(inner)return inner;}"
+                        + "var c=n.children;if(c)for(var i=0;i<c.length;i++){var next=walk(c[i],fn);if(next)return next;}return null;}"
+                        + "var btn=walk(document.body,function(n){"
+                        + "var tag=(n.tagName||'').toUpperCase();"
+                        + "if(tag!=='BUTTON'&&tag!=='MUC-BUTTON')return null;"
+                        + "if(norm(n.textContent||'').indexOf('Alle Leistungen anzeigen')<0||!shown(n))return null;"
+                        + "return n;});"
+                        + "if(!btn)return false;btn.scrollIntoView({block:'center'});btn.click();return true;";
+        return Boolean.TRUE.equals(((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script));
+    }
+
     public void assertSecondaryPlusAndMinus(String label) {
         CONTEXT.set();
         JsonNode counter = waitForServiceCounter(label);
