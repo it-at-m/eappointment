@@ -14,6 +14,7 @@ import java.util.Set;
 import java.util.function.BooleanSupplier;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.Dimension;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.remote.RemoteWebDriver;
@@ -806,6 +807,475 @@ public class CitizenViewPage extends BasePage {
         Assert.assertFalse(
                 deepAriaContains("Zur Listenansicht wechseln"),
                 "Calendar/list toggle must stay hidden when no day fits");
+    }
+
+    private static final String CITIZEN_DOM =
+            "function shown(el){var n=el;while(n&&n.nodeType===1){"
+                    + "var st=window.getComputedStyle(n);"
+                    + "if(st.display==='none'||st.visibility==='hidden'||st.opacity==='0')return false;"
+                    + "if(n.parentElement){n=n.parentElement;continue;}"
+                    + "var root=n.getRootNode&&n.getRootNode();n=root&&root.host?root.host:null;}return true;}"
+                    + "function textOf(n){var s='';if(!n)return s;if(n.nodeType===3)return n.nodeValue||'';"
+                    + "if(n.shadowRoot)s+=' '+textOf(n.shadowRoot);"
+                    + "var c=n.childNodes;if(c)for(var i=0;i<c.length;i++)s+=' '+textOf(c[i]);"
+                    + "return s.replace(/\\s+/g,' ').trim();}"
+                    + "function cssAll(sel){var out=[];function scan(root){if(!root||!root.querySelectorAll)return;"
+                    + "var nodes=root.querySelectorAll(sel);for(var i=0;i<nodes.length;i++)out.push(nodes[i]);"
+                    + "var all=root.querySelectorAll('*');for(var j=0;j<all.length;j++)if(all[j].shadowRoot)scan(all[j].shadowRoot);}"
+                    + "scan(document.body);return out;}"
+                    + "function byId(id){var all=cssAll('[id]');for(var i=0;i<all.length;i++)if(all[i].id===id)return all[i];return null;}"
+                    + "function findButton(root,word){var found=null;function visit(n){if(!n||found)return;"
+                    + "var tag=(n.tagName||'').toUpperCase();"
+                    + "if((tag==='MUC-BUTTON'||tag==='BUTTON')&&shown(n)){var t=textOf(n);"
+                    + "if(t.indexOf(word)>=0&&t.length<=word.length+2){found=n;return;}}"
+                    + "if(n.shadowRoot)visit(n.shadowRoot);var c=n.children;if(c)for(var i=0;i<c.length;i++)visit(c[i]);}"
+                    + "visit(root);return found;}"
+                    + "function lineCount(root,word){var node=null;function visit(n){if(!n||node)return;"
+                    + "if(n.nodeType===3&&(n.nodeValue||'').replace(/\\s+/g,' ').trim()===word){node=n;return;}"
+                    + "if(n.shadowRoot)visit(n.shadowRoot);var c=n.childNodes;if(c)for(var i=0;i<c.length;i++)visit(c[i]);}"
+                    + "visit(root);if(!node)return 0;var range=document.createRange();range.selectNodeContents(node);"
+                    + "return range.getClientRects().length;}"
+                    + "function isDisabled(el){if(!el)return false;var inner=el.shadowRoot&&el.shadowRoot.querySelector('button');"
+                    + "function flag(n){return !!(n&&(n.disabled||n.hasAttribute('disabled')||n.getAttribute('aria-disabled')==='true'||(n.classList&&n.classList.contains('disabled'))));}"
+                    + "return flag(el)||flag(inner);}"
+                    + "function btnState(root,word){var found=findButton(root,word);if(!found)return {present:false};"
+                    + "return {present:true,disabled:isDisabled(found),lines:lineCount(found,word)};}"
+                    + "function isPrimary(el){return !!el&&((el.getAttribute('variant')||'')==='primary'||(el.classList&&el.classList.contains('m-button--primary')));}";
+
+    private String listHourLabel;
+    private String listHourBeforeMove;
+    private int listAccordionCount;
+    private String openListHeading;
+    private String markedTimeslotId;
+    private String previousTimeslotId;
+
+    private JsonNode citizenJson(String expression, Object... args) {
+        CONTEXT.set();
+        // An IIFE has its own arguments object, so callers read the script arguments from __args.
+        String script = CITIZEN_DOM + "var __args=arguments;return JSON.stringify(" + expression + ");";
+        Object raw = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script, args);
+        try {
+            return new ObjectMapper().readTree(raw == null ? "null" : String.valueOf(raw));
+        } catch (Exception e) {
+            throw new AssertionError("Could not read the citizen view: " + raw, e);
+        }
+    }
+
+    public void assertCalendarListToggleShows(String activeLabel) {
+        CONTEXT.set();
+        JsonNode state = waitForToggleLabels();
+        String heading = state.path("heading").asText();
+        Assert.assertEquals(heading, "Datum und Uhrzeit", "Time heading was " + heading);
+        JsonNode labels = state.path("labels");
+        Assert.assertEquals(labels.size(), 2, "Expected Kalenderansicht and Listenansicht beside the toggle");
+        assertToggleColor(labels.get(0), "Kalenderansicht", "Kalenderansicht".equals(activeLabel));
+        assertToggleColor(labels.get(1), "Listenansicht", "Listenansicht".equals(activeLabel));
+    }
+
+    public void assertToggleSitsWithTheHeading() {
+        CONTEXT.set();
+        RemoteWebDriver driver = DriverUtil.getDriver();
+        Dimension original = driver.manage().window().getSize();
+        try {
+            driver.manage().window().setSize(new Dimension(1400, 900));
+            sleepQuiet(400L);
+            JsonNode wide = waitForToggleLabels();
+            Assert.assertTrue(
+                    wide.path("toggleLeft").asDouble() > wide.path("headingRight").asDouble() - 8,
+                    "On a wide window the toggle sits beside the heading: " + wide);
+            driver.manage().window().setSize(new Dimension(390, 844));
+            sleepQuiet(400L);
+            JsonNode narrow = waitForToggleLabels();
+            Assert.assertTrue(
+                    narrow.path("toggleTop").asDouble() >= narrow.path("headingBottom").asDouble() - 4,
+                    "On a phone the toggle sits below the heading: " + narrow);
+        } finally {
+            driver.manage().window().setSize(
+                    original.getWidth() >= 1200 ? original : new Dimension(1400, 900));
+        }
+    }
+
+    public void switchToListView() {
+        CONTEXT.set();
+        Assert.assertTrue(
+                deepClickButtonByAriaContains("Zur Listenansicht wechseln"),
+                "Could not switch to the list view");
+        new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(d -> deepElementExists("#listViewAccordion"));
+    }
+
+    public void switchToCalendarView() {
+        CONTEXT.set();
+        Assert.assertTrue(
+                deepClickButtonByAriaContains("Zur Kalenderansicht wechseln"),
+                "Could not switch to the calendar");
+        new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(d -> !deepElementExists("#listViewAccordion"));
+    }
+
+    public void assertListDateAccordions(int expectedCount) {
+        CONTEXT.set();
+        JsonNode state = waitForListAccordionCount(expectedCount);
+        listAccordionCount = state.path("count").asInt();
+        Assert.assertEquals(listAccordionCount, expectedCount, "Date accordion count: " + state);
+        Assert.assertEquals(state.path("expanded").get(0).asText(), "true", "The first date stays open: " + state);
+        for (int i = 1; i < state.path("expanded").size(); i++) {
+            Assert.assertEquals(
+                    state.path("expanded").get(i).asText(), "false", "Only the first date is open: " + state);
+        }
+        for (JsonNode label : state.path("labels")) {
+            Assert.assertTrue(
+                    label.asText().matches(
+                            "(Montag|Dienstag|Mittwoch|Donnerstag|Freitag|Samstag|Sonntag), \\d{2}\\.\\d{2}\\.\\d{4}"),
+                    "Date heading should be a weekday and a date: " + label.asText());
+        }
+        openListHeading = state.path("labels").get(0).asText();
+    }
+
+    public void assertOpenListGroupsByHour() {
+        JsonNode state = new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(d -> {
+                    JsonNode node = listSnapshot();
+                    for (JsonNode label : node.path("timeLabels")) {
+                        if (label.asText().matches("\\d{1,2}:00-\\d{1,2}:59")) {
+                            return node;
+                        }
+                    }
+                    return null;
+                });
+        assertHourLabels(state);
+        listHourLabel = firstHourLabel(state);
+    }
+
+    public void assertCalendarGroupsByHour() {
+        JsonNode state = new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(d -> hourLabel(calendarSnapshot()));
+        assertHourLabels(state);
+    }
+
+    public void assertOpenListGroupsByMorning() {
+        JsonNode state = new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(d -> {
+                    JsonNode node = listSnapshot();
+                    for (JsonNode label : node.path("timeLabels")) {
+                        if ("Vormittag".equals(label.asText())) {
+                            return node;
+                        }
+                    }
+                    return null;
+                });
+        assertMorningLabels(state);
+    }
+
+    public void assertCalendarGroupsByMorning() {
+        JsonNode state = new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(d -> morningLabel(calendarSnapshot()));
+        assertMorningLabels(state);
+    }
+
+    private static JsonNode hourLabel(JsonNode node) {
+        if (node.path("list").asBoolean()) {
+            return null;
+        }
+        for (JsonNode label : node.path("timeLabels")) {
+            if (label.asText().matches("\\d{1,2}:00-\\d{1,2}:59")) {
+                return node;
+            }
+        }
+        return null;
+    }
+
+    private static JsonNode morningLabel(JsonNode node) {
+        if (node.path("list").asBoolean()) {
+            return null;
+        }
+        for (JsonNode label : node.path("timeLabels")) {
+            if ("Vormittag".equals(label.asText())) {
+                return node;
+            }
+        }
+        return null;
+    }
+
+    private static void assertHourLabels(JsonNode state) {
+        for (JsonNode label : state.path("timeLabels")) {
+            String text = label.asText();
+            Assert.assertFalse(
+                    "Vormittag".equals(text) || "Nachmittag".equals(text),
+                    "A busy day groups by hour, not " + text);
+        }
+    }
+
+    private static void assertMorningLabels(JsonNode state) {
+        for (JsonNode label : state.path("timeLabels")) {
+            String text = label.asText();
+            Assert.assertFalse(text.matches("\\d{1,2}:00-\\d{1,2}:59"), "A short day is not grouped by hour: " + text);
+            if ("Nachmittag".equals(text)) {
+                Assert.fail("10:00 is still the morning: " + state);
+            }
+        }
+        Assert.assertTrue(
+                state.path("earlier").path("present").asBoolean(),
+                "Früher stays while several locations are offered: " + state.path("earlier"));
+        Assert.assertTrue(
+                state.path("later").path("present").asBoolean(),
+                "Später stays while several locations are offered: " + state.path("later"));
+        double labelLeft = state.path("labelLeft").asDouble();
+        double headingLeft = state.path("headingLeft").asDouble();
+        Assert.assertTrue(
+                Math.abs(labelLeft - headingLeft) <= 32,
+                "Vormittag should line up with Verfügbare Termine. label="
+                        + labelLeft
+                        + " heading="
+                        + headingLeft);
+    }
+
+    public void assertEarlierAndLaterAreEachOnOneLine() {
+        JsonNode state = waitForPagerButtons();
+        Assert.assertEquals(state.path("earlier").path("lines").asInt(), 1, "Früher should stay on one line: " + state.path("earlier"));
+        Assert.assertEquals(state.path("later").path("lines").asInt(), 1, "Später should stay on one line: " + state.path("later"));
+    }
+
+    public void assertListEarlierStartsDisabled() {
+        JsonNode state = waitForPagerButtons();
+        assertPagerButton(state.path("earlier"), "Früher", true);
+        assertPagerButton(state.path("later"), "Später", false);
+    }
+
+    public void moveOpenListHour(boolean later) {
+        JsonNode before = listSnapshot();
+        String current = firstHourLabel(before);
+        if (later) {
+            listHourBeforeMove = current;
+        }
+        listHourLabel = current;
+        String word = later ? "Später" : "Früher";
+        JsonNode clicked = citizenJson(
+                "(function(){var open=cssAll('#listViewAccordion section.m-accordion__section-content.show')[0];"
+                        + "var btn=findButton(open,__args[0]);if(!btn)return {clicked:false};"
+                        + "if(isDisabled(btn))return {clicked:false,disabled:true};"
+                        + "var inner=btn.shadowRoot&&btn.shadowRoot.querySelector('button');"
+                        + "(inner||btn).click();return {clicked:true};})()",
+                word);
+        Assert.assertTrue(clicked.path("clicked").asBoolean(), "Could not click " + word + ": " + clicked);
+        sleepQuiet(500L);
+        JsonNode after = listSnapshot();
+        String next = firstHourLabel(after);
+        Assert.assertNotEquals(next, listHourLabel, word + " should show another hour. before=" + before + " after=" + after);
+        if (!later) {
+            Assert.assertEquals(next, listHourBeforeMove, "Früher should return to " + listHourBeforeMove + " but showed " + next);
+        }
+        listHourLabel = next;
+    }
+
+    public void loadMoreListDates() {
+        JsonNode before = waitForListAccordionCount(listAccordionCount);
+        openListHeading = before.path("labels").get(0).asText();
+        Assert.assertTrue(clickButtonContaining("Mehr laden"), "Could not click Mehr laden");
+        new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(d -> listSnapshot().path("count").asInt() > listAccordionCount);
+        JsonNode after = listSnapshot();
+        int count = after.path("count").asInt();
+        Assert.assertTrue(count > listAccordionCount && count <= listAccordionCount + 3, "Mehr laden adds at most three dates: " + after);
+        Assert.assertEquals(after.path("labels").get(0).asText(), openListHeading, "Mehr laden keeps the open date");
+        Assert.assertEquals(after.path("expanded").get(0).asText(), "true", "The open date stays open after Mehr laden");
+        listAccordionCount = count;
+    }
+
+    public void openTheNextListDate() {
+        JsonNode clicked = citizenJson(
+                "(function(){var headers=cssAll('#listViewAccordion h4.m-accordion__section-header');"
+                        + "var openLabel='';var target=null;var targetLabel='';"
+                        + "for(var i=0;i<headers.length;i++){var b=headers[i].querySelector('button');"
+                        + "var label=textOf(b||headers[i]);"
+                        + "if(b&&b.getAttribute('aria-expanded')==='true')openLabel=label;"
+                        + "else if(!target&&b){target=b;targetLabel=label;}}"
+                        + "if(!target)return {clicked:false,openLabel:openLabel};"
+                        + "target.scrollIntoView({block:'center'});target.click();"
+                        + "return {clicked:true,openLabel:openLabel,targetLabel:targetLabel};})()");
+        Assert.assertTrue(clicked.path("clicked").asBoolean(), "Could not open another date: " + clicked);
+        openListHeading = clicked.path("openLabel").asText();
+        String opened = clicked.path("targetLabel").asText();
+        sleepQuiet(500L);
+        JsonNode after = listSnapshot();
+        int openCount = 0;
+        boolean previousClosed = false;
+        boolean nextOpen = false;
+        for (int i = 0; i < after.path("labels").size(); i++) {
+            boolean expanded = "true".equals(after.path("expanded").get(i).asText());
+            if (expanded) {
+                openCount++;
+            }
+            if (after.path("labels").get(i).asText().equals(openListHeading)) {
+                previousClosed = !expanded;
+            }
+            if (after.path("labels").get(i).asText().equals(opened)) {
+                nextOpen = expanded;
+            }
+        }
+        Assert.assertTrue(previousClosed, "The previous date should close: " + after);
+        Assert.assertTrue(nextOpen, "The chosen date should open: " + after);
+        Assert.assertEquals(openCount, 1, "One date stays open: " + after);
+    }
+
+    public void selectVisibleTimeslot() {
+        previousTimeslotId = markedTimeslotId;
+        JsonNode clicked = citizenJson(
+                "(function(){var skip=__args[0]==null?'':String(__args[0]);"
+                        + "var slots=cssAll('.timeslot');var target=null;"
+                        + "for(var i=0;i<slots.length;i++){var el=slots[i];if(!shown(el))continue;"
+                        + "var id=el.id||'';if(skip&&id===skip)continue;"
+                        + "if(isPrimary(el))continue;"
+                        + "var inner=el.shadowRoot&&el.shadowRoot.querySelector('button');"
+                        + "if(inner&&inner.disabled)continue;target=el;break;}"
+                        + "if(!target)return {clicked:false};target.scrollIntoView({block:'center'});"
+                        + "var press=target.shadowRoot&&target.shadowRoot.querySelector('button');"
+                        + "(press||target).click();return {clicked:true,id:target.id||''};})()",
+                markedTimeslotId == null ? "" : markedTimeslotId);
+        Assert.assertTrue(clicked.path("clicked").asBoolean(), "Could not select a visible timeslot");
+        markedTimeslotId = clicked.path("id").asText();
+        sleepQuiet(400L);
+    }
+
+    public void assertMarkedTimeslotIsWhiteOnBlue() {
+        CONTEXT.set();
+        JsonNode slot = new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(d -> {
+                    JsonNode node = timeslotStyle(markedTimeslotId);
+                    return node.path("found").asBoolean()
+                            && "primary".equals(node.path("variant").asText())
+                            ? node
+                            : null;
+                });
+        String background = slot.path("background").asText();
+        String color = slot.path("color").asText();
+        Assert.assertTrue(
+                background.contains("0, 90, 159") || background.contains("0,90,159"),
+                "Selected time should be blue #005A9F. background=" + background + " slot=" + slot);
+        Assert.assertTrue(
+                color.contains("255, 255, 255") || color.contains("255,255,255"),
+                "Selected time should be white. color=" + color + " slot=" + slot);
+    }
+
+    public void assertPreviousTimeslotIsNotMarked() {
+        Assert.assertNotNull(previousTimeslotId, "No earlier timeslot was selected");
+        JsonNode previous = timeslotStyle(previousTimeslotId);
+        if (previous.path("found").asBoolean()) {
+            Assert.assertNotEquals(
+                    previous.path("variant").asText(),
+                    "primary",
+                    "The previous time should no longer be marked: " + previous);
+        }
+        JsonNode current = timeslotStyle(markedTimeslotId);
+        Assert.assertEquals(current.path("variant").asText(), "primary", "The new time should be marked: " + current);
+    }
+
+    private JsonNode waitForToggleLabels() {
+        return new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(d -> {
+                    JsonNode node = citizenJson(
+                            "(function(){var labels=cssAll('.m-toggle-switch__label');var out=[];"
+                                    + "for(var i=0;i<labels.length;i++){var st=getComputedStyle(labels[i]);"
+                                    + "out.push({text:textOf(labels[i]),color:st.color,disabled:labels[i].classList.contains('disabled')});}"
+                                    + "var heading=byId('viewToggleLabel');var toggle=cssAll('button.m-toggle-switch')[0];"
+                                    + "var hr=heading?heading.getBoundingClientRect():null;var tr=toggle?toggle.getBoundingClientRect():null;"
+                                    + "return {labels:out,heading:heading?textOf(heading):'',"
+                                    + "headingBottom:hr?hr.bottom:0,headingRight:hr?hr.right:0,"
+                                    + "toggleTop:tr?tr.top:0,toggleLeft:tr?tr.left:0};})()");
+                    return node.path("labels").size() == 2 ? node : null;
+                });
+    }
+
+    private void assertToggleColor(JsonNode label, String text, boolean active) {
+        Assert.assertEquals(label.path("text").asText(), text, "Toggle label: " + label);
+        Assert.assertEquals(label.path("disabled").asBoolean(), !active, text + " active state: " + label);
+        String color = label.path("color").asText();
+        String expected = active ? "0, 90, 159" : "97, 117, 134";
+        String compact = active ? "0,90,159" : "97,117,134";
+        Assert.assertTrue(
+                color.contains(expected) || color.contains(compact),
+                text + " should be " + (active ? "#005A9F" : "#617586") + " but was " + color);
+    }
+
+    private JsonNode calendarSnapshot() {
+        return citizenJson(
+                "(function(){if(byId('listViewAccordion'))return {list:true,timeLabels:[]};"
+                        + "var timeLabels=[];var labelLeft=0;var ps=[];function collect(n){if(!n)return;"
+                        + "if(n.classList&&n.classList.contains('left-text'))ps.push(n);"
+                        + "if(n.shadowRoot)collect(n.shadowRoot);var c=n.children;if(c)for(var k=0;k<c.length;k++)collect(c[k]);}"
+                        + "collect(document.body);for(var p=0;p<ps.length;p++){if(!shown(ps[p]))continue;"
+                        + "timeLabels.push(textOf(ps[p]));if(!labelLeft)labelLeft=ps[p].getBoundingClientRect().left;}"
+                        + "var headingLeft=0;var h3s=cssAll('h3');for(var h=0;h<h3s.length;h++){"
+                        + "if(textOf(h3s[h])==='Verfügbare Termine'&&shown(h3s[h])){headingLeft=h3s[h].getBoundingClientRect().left;break;}}"
+                        + "return {list:false,timeLabels:timeLabels,labelLeft:labelLeft,headingLeft:headingLeft,"
+                        + "earlier:btnState(document.body,'Früher'),later:btnState(document.body,'Später')};})()");
+    }
+
+    private JsonNode listSnapshot() {
+        return citizenJson(
+                "(function(){var headers=cssAll('#listViewAccordion h4.m-accordion__section-header');"
+                        + "var expanded=[];var labels=[];"
+                        + "for(var i=0;i<headers.length;i++){var b=headers[i].querySelector('button');"
+                        + "expanded.push(b?b.getAttribute('aria-expanded'):'');labels.push(textOf(b||headers[i]));}"
+                        + "var open=cssAll('#listViewAccordion section.m-accordion__section-content.show')[0]||null;"
+                        + "var timeLabels=[];var labelLeft=0;if(open){var ps=[];function collect(n){if(!n)return;"
+                        + "if(n.classList&&n.classList.contains('left-text'))ps.push(n);"
+                        + "if(n.shadowRoot)collect(n.shadowRoot);var c=n.children;if(c)for(var k=0;k<c.length;k++)collect(c[k]);}"
+                        + "collect(open);for(var p=0;p<ps.length;p++){if(!shown(ps[p]))continue;timeLabels.push(textOf(ps[p]));"
+                        + "if(!labelLeft)labelLeft=ps[p].getBoundingClientRect().left;}}"
+                        + "var headingLeft=0;var h3s=cssAll('h3');for(var h=0;h<h3s.length;h++){"
+                        + "if(textOf(h3s[h])==='Verfügbare Termine'&&shown(h3s[h])){headingLeft=h3s[h].getBoundingClientRect().left;break;}}"
+                        + "var root=open||document.body;"
+                        + "return {count:headers.length,expanded:expanded,labels:labels,timeLabels:timeLabels,"
+                        + "labelLeft:labelLeft,headingLeft:headingLeft,earlier:btnState(root,'Früher'),later:btnState(root,'Später')};})()");
+    }
+
+    private JsonNode waitForListAccordionCount(int expected) {
+        return new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(d -> {
+                    JsonNode node = listSnapshot();
+                    return node.path("count").asInt() == expected ? node : null;
+                });
+    }
+
+    private static String firstHourLabel(JsonNode state) {
+        for (JsonNode label : state.path("timeLabels")) {
+            if (label.asText().matches("\\d{1,2}:00-\\d{1,2}:59")) {
+                return label.asText();
+            }
+        }
+        Assert.fail("No hour range in the open date: " + state);
+        return "";
+    }
+
+    private JsonNode waitForPagerButtons() {
+        return new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(d -> {
+                    JsonNode node = listSnapshot();
+                    return node.path("earlier").path("present").asBoolean()
+                            && node.path("later").path("present").asBoolean()
+                            ? node
+                            : null;
+                });
+    }
+
+    private static void assertPagerButton(JsonNode button, String word, boolean disabled) {
+        Assert.assertTrue(button.path("present").asBoolean(), word + " should be in the open date");
+        Assert.assertEquals(button.path("disabled").asBoolean(), disabled, word + " disabled state: " + button);
+        Assert.assertEquals(button.path("lines").asInt(), 1, word + " should stay on one line: " + button);
+    }
+
+    private JsonNode timeslotStyle(String slotId) {
+        return citizenJson(
+                "(function(){var id=__args[0]==null?'':String(__args[0]);var slots=cssAll('.timeslot');var target=null;"
+                        + "for(var i=0;i<slots.length;i++){if(id&&slots[i].id===id){target=slots[i];break;}"
+                        + "if(!id&&(slots[i].getAttribute('variant')||'')==='primary'){target=slots[i];break;}}"
+                        + "if(!target)return {found:false,id:id};"
+                        + "var inner=target.shadowRoot&&target.shadowRoot.querySelector('button');var node=inner||target;"
+                        + "var st=getComputedStyle(node);"
+                        + "return {found:true,id:target.id||'',variant:isPrimary(target)?'primary':'secondary',"
+                        + "background:st.backgroundColor,color:st.color};})()",
+                slotId == null ? "" : slotId);
     }
 
     private void waitUntilCalendarSettled(int officeId, boolean expectSlots) {
