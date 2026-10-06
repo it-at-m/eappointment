@@ -3,9 +3,11 @@ name: 🐘 Combined PHP Build with Documentation
 on:
   push:
     branches: [next]
-    # Whole push (before…after), not only HEAD. Skipped only if every file is under zmsautomation/.
+    # Whole push. New branches always run. Later pushes skip only if every file is
+    # zmsautomation or zmscitizenview (no PHP/admin JS).
     paths-ignore:
       - "zmsautomation/**"
+      - "zmscitizenview/**"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
