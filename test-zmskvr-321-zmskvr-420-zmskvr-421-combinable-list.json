@@ -1,10 +1,10 @@
 {
   "branch": "test-zmskvr-321-zmskvr-420-zmskvr-421-combinable-list",
   "branchSlug": "test-zmskvr-321-zmskvr-420-zmskvr-421-combinable-list",
-  "runId": "37484623826",
-  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37484623826",
-  "runStartedAt": "2026-10-06T15:06:47Z",
-  "publishedAt": "2026-10-06T15:15:26.604Z",
+  "runId": "37486377525",
+  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37486377525",
+  "runStartedAt": "2026-10-06T15:18:31Z",
+  "publishedAt": "2026-10-06T15:34:38.478Z",
   "features": {
     "feature-ui-zmscitizenview-booking-zmskvr-420-zmskvr-421-zmskvr-321-combinable-services-collapse": {
       "status": "failed",
@@ -14,22 +14,22 @@
         "chrome": {
           "status": "failed",
           "shard": "custom",
-          "runId": "37484623826",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37484623826",
-          "runStartedAt": "2026-10-06T15:06:47Z"
+          "runId": "37486377525",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37486377525",
+          "runStartedAt": "2026-10-06T15:18:31Z"
         },
         "firefox": {
           "status": "failed",
           "shard": "custom",
-          "runId": "37484623826",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37484623826",
-          "runStartedAt": "2026-10-06T15:06:47Z"
+          "runId": "37486377525",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37486377525",
+          "runStartedAt": "2026-10-06T15:18:31Z"
         }
       },
       "rel": "ui/zmscitizenview/booking/zmskvr-420_zmskvr-421_zmskvr-321_combinable_services_collapse.feature",
-      "runId": "37484623826",
-      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37484623826",
-      "runStartedAt": "2026-10-06T15:06:47Z"
+      "runId": "37486377525",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37486377525",
+      "runStartedAt": "2026-10-06T15:18:31Z"
     }
   }
 }
