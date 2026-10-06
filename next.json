@@ -1,10 +1,10 @@
 {
   "branch": "next",
   "branchSlug": "next",
-  "runId": "37481438521",
-  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37481438521",
-  "runStartedAt": "2026-10-06T14:44:02Z",
-  "publishedAt": "2026-10-06T15:13:57.696Z",
+  "runId": "37486031632",
+  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37486031632",
+  "runStartedAt": "2026-10-06T15:16:12Z",
+  "publishedAt": "2026-10-06T15:27:50.641Z",
   "features": {
     "feature-rest-zmsapi-zmskvr-1328": {
       "status": "passed",
@@ -1859,36 +1859,29 @@
       "runStartedAt": "2026-10-06T14:44:02Z"
     },
     "feature-ui-zmscitizenview-citizen-login-zmskvr-1552-zmskvr-1536-phone-video-teaser": {
-      "status": "failed",
-      "shard": "zmscitizenview",
+      "status": "passed",
+      "shard": "custom",
       "browser": "chrome",
       "browsers": {
         "chrome": {
-          "status": "failed",
-          "shard": "zmscitizenview",
-          "runId": "37481438521",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37481438521",
-          "runStartedAt": "2026-10-06T14:44:02Z"
-        },
-        "edge": {
           "status": "passed",
-          "shard": "zmscitizenview",
-          "runId": "37481438521",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37481438521",
-          "runStartedAt": "2026-10-06T14:44:02Z"
+          "shard": "custom",
+          "runId": "37486031632",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37486031632",
+          "runStartedAt": "2026-10-06T15:16:12Z"
         },
         "firefox": {
           "status": "passed",
-          "shard": "zmscitizenview",
-          "runId": "37481438521",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37481438521",
-          "runStartedAt": "2026-10-06T14:44:02Z"
+          "shard": "custom",
+          "runId": "37486031632",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37486031632",
+          "runStartedAt": "2026-10-06T15:16:12Z"
         }
       },
       "rel": "ui/zmscitizenview/citizen-login/zmskvr-1552_zmskvr-1536_phone_video_teaser.feature",
-      "runId": "37481438521",
-      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37481438521",
-      "runStartedAt": "2026-10-06T14:44:02Z"
+      "runId": "37486031632",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37486031632",
+      "runStartedAt": "2026-10-06T15:16:12Z"
     },
     "feature-ui-zmscitizenview-dldb-special-cases-zmskvr-1553-zmskvr-1500-already-activated-confirm-banner": {
       "status": "passed",
