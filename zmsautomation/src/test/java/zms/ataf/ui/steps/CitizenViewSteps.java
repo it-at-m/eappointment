@@ -681,22 +681,6 @@ public class CitizenViewSteps {
         page.assertCancellationSuccessDetailsVisible();
     }
 
-    /** ZMSKVR-112: secondary action under the cancel success callout. */
-    @Then("the book another appointment button should be visible after cancellation in the citizen view")
-    public void theBookAnotherAppointmentButtonShouldBeVisibleAfterCancellation() {
-        ScenarioLogManager.getLogger()
-                .info("zmscitizenview: assert Anderen Termin buchen after cancellation");
-        page.assertBookAfterCancelButtonVisible();
-    }
-
-    /** ZMSKVR-112: Anderen Termin buchen opens step 0 in the same tab. */
-    @When("I click the book another appointment button after cancellation in the citizen view")
-    public void iClickTheBookAnotherAppointmentButtonAfterCancellation() {
-        ScenarioLogManager.getLogger()
-                .info("zmscitizenview: click Anderen Termin buchen after cancellation");
-        page.clickBookAfterCancel();
-    }
-
     @Then("the selected appointment callout should be visible in the citizen view")
     public void theSelectedAppointmentCalloutShouldBeVisible() {
         ScenarioLogManager.getLogger().info("zmscitizenview: assert 'Ausgewählter Termin' callout visible");

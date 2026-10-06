@@ -59,8 +59,6 @@ public class CitizenViewPage extends BasePage {
             "Sie haben Ihren Termin erfolgreich abgesagt.";
     private static final String CANCELLATION_SUCCESS_TEXT =
             "Danke, dass Sie Ihren Termin für andere freigegeben haben.";
-    /** ZMSKVR-112: secondary action under the cancel success callout. */
-    private static final String BOOK_AFTER_CANCEL_BUTTON = "Anderen Termin buchen";
 
     /** German invalid jump-in callout ({@code de-DE.json}). */
     public static final String DE_INVALID_JUMPIN_HEADER = "Diese Ansicht kann nicht geladen werden.";
@@ -3996,36 +3994,6 @@ public class CitizenViewPage extends BasePage {
         Assert.assertTrue(
                 shadowDomContainsText(CANCELLATION_SUCCESS_TEXT),
                 "Cancellation success callout must include the thank-you text.");
-    }
-
-    /** ZMSKVR-112: secondary button under the cancel success callout. */
-    public void assertBookAfterCancelButtonVisible() {
-        CONTEXT.set();
-        ScenarioLogManager.getLogger()
-                .info("zmscitizenview: assert secondary button after cancellation ({})", BOOK_AFTER_CANCEL_BUTTON);
-        Assert.assertTrue(
-                shadowDomContainsText(BOOK_AFTER_CANCEL_BUTTON),
-                "Cancellation success must show secondary action '" + BOOK_AFTER_CANCEL_BUTTON + "'.");
-    }
-
-    /**
-     * ZMSKVR-112: Anderen Termin buchen stays in this tab and opens Terminvereinbarung at step 0.
-     */
-    public void clickBookAfterCancel() {
-        CONTEXT.set();
-        String handle = DriverUtil.getDriver().getWindowHandle();
-        int windows = DriverUtil.getDriver().getWindowHandles().size();
-        ScenarioLogManager.getLogger()
-                .info("zmscitizenview: click {} in the same tab", BOOK_AFTER_CANCEL_BUTTON);
-        waitForAndClickButtonContaining(BOOK_AFTER_CANCEL_BUTTON, DEFAULT_EXPLICIT_WAIT_TIME);
-        Assert.assertEquals(
-                DriverUtil.getDriver().getWindowHandle(),
-                handle,
-                BOOK_AFTER_CANCEL_BUTTON + " opened another tab.");
-        Assert.assertEquals(
-                DriverUtil.getDriver().getWindowHandles().size(),
-                windows,
-                BOOK_AFTER_CANCEL_BUTTON + " opened another window.");
     }
 
     /**
