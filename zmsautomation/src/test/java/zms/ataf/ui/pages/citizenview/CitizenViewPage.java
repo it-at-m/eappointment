@@ -40,13 +40,13 @@ import zms.ataf.ui.pages.citizenview.support.CitizenViewWaits;
 import zms.ataf.ui.pages.citizenview.support.ShadowDom;
 import zms.ataf.ui.pages.citizenview.steps.CombinationStep;
 import zms.ataf.ui.pages.citizenview.steps.ServiceFinderStep;
-import zms.ataf.ui.pages.citizenview.steps.ProviderOrtStep;
-import zms.ataf.ui.pages.citizenview.steps.SlotZeitStep;
+import zms.ataf.ui.pages.citizenview.steps.ProviderLocationStep;
+import zms.ataf.ui.pages.citizenview.steps.TimeSlotStep;
 import zms.ataf.ui.pages.citizenview.steps.BookingStepperStep;
 import zms.ataf.ui.pages.citizenview.steps.JumpInErrorStep;
 import zms.ataf.ui.pages.citizenview.steps.ContactStep;
 import zms.ataf.ui.pages.citizenview.steps.OverviewStep;
-import zms.ataf.ui.pages.citizenview.steps.MeineTermineStep;
+import zms.ataf.ui.pages.citizenview.steps.MyAppointmentsStep;
 import zms.ataf.ui.pages.citizenview.support.CitizenViewJson;
 import zms.ataf.ui.pages.citizenview.support.SlotBookingState;
 
@@ -88,9 +88,9 @@ public class CitizenViewPage extends BasePage {
 
     private final SlotBookingState slotState;
 
-    private final ProviderOrtStep providerOrt;
+    private final ProviderLocationStep providerLocation;
 
-    private final SlotZeitStep slotZeit;
+    private final TimeSlotStep timeSlot;
 
     private final BookingStepperStep bookingStepper;
 
@@ -100,7 +100,7 @@ public class CitizenViewPage extends BasePage {
 
     private final OverviewStep overview;
 
-    private final MeineTermineStep meineTermine;
+    private final MyAppointmentsStep myAppointments;
 
 
     public CitizenViewPage(RemoteWebDriver driver) {
@@ -111,17 +111,17 @@ public class CitizenViewPage extends BasePage {
         serviceFinder = new ServiceFinderStep(CONTEXT, shadow, combination, DEFAULT_EXPLICIT_WAIT_TIME);
         json = new CitizenViewJson(CONTEXT);
         slotState = new SlotBookingState();
-        providerOrt = new ProviderOrtStep(CONTEXT, shadow, json, slotState, DEFAULT_EXPLICIT_WAIT_TIME);
-        slotZeit = new SlotZeitStep(CONTEXT, shadow, json, providerOrt, slotState, this, DEFAULT_EXPLICIT_WAIT_TIME);
-        providerOrt.setSlotWaitBridge(
-                seconds -> slotZeit.waitUntilAppointmentSlotsReady(seconds),
-                () -> slotZeit.slotBookingWaitTimeoutSeconds(),
-                () -> slotZeit.deepMucSpinnerVisible());
+        providerLocation = new ProviderLocationStep(CONTEXT, shadow, json, slotState, DEFAULT_EXPLICIT_WAIT_TIME);
+        timeSlot = new TimeSlotStep(CONTEXT, shadow, json, providerLocation, slotState, this, DEFAULT_EXPLICIT_WAIT_TIME);
+        providerLocation.setSlotWaitBridge(
+                seconds -> timeSlot.waitUntilAppointmentSlotsReady(seconds),
+                () -> timeSlot.slotBookingWaitTimeoutSeconds(),
+                () -> timeSlot.deepMucSpinnerVisible());
         bookingStepper = new BookingStepperStep(CONTEXT, shadow, DEFAULT_EXPLICIT_WAIT_TIME);
         jumpInError = new JumpInErrorStep(CONTEXT, shadow, DEFAULT_EXPLICIT_WAIT_TIME);
         contact = new ContactStep(CONTEXT, shadow, this, DEFAULT_EXPLICIT_WAIT_TIME);
         overview = new OverviewStep(CONTEXT, shadow, this, DEFAULT_EXPLICIT_WAIT_TIME);
-        meineTermine = new MeineTermineStep(CONTEXT, shadow, slotState, this, contact, DEFAULT_EXPLICIT_WAIT_TIME);
+        myAppointments = new MyAppointmentsStep(CONTEXT, shadow, slotState, this, contact, DEFAULT_EXPLICIT_WAIT_TIME);
     }
 
     public CitizenViewPageContext getContext() {
@@ -319,7 +319,7 @@ public class CitizenViewPage extends BasePage {
     }
 
     public void keepOnlyProviderCheckboxesChecked(Set<Integer> allowedOfficeIds) {
-        providerOrt.keepOnlyProviderCheckboxesChecked(allowedOfficeIds);
+        providerLocation.keepOnlyProviderCheckboxesChecked(allowedOfficeIds);
     }
 
     public void assertServiceFinderHeadingVisible() {
@@ -759,20 +759,20 @@ public class CitizenViewPage extends BasePage {
     }
 
     public boolean ortStepShowsProvider(int officeId) {
-        return providerOrt.ortStepShowsProvider(officeId);
+        return providerLocation.ortStepShowsProvider(officeId);
     }
 
     /** Single-provider layout: teaser headline {@code #provider-{id}} under Ort (no checkboxes). */
     private boolean deepOrtSingleProviderTeaserPresent(int officeId) {
-        return providerOrt.deepOrtSingleProviderTeaserPresent(officeId);
+        return providerLocation.deepOrtSingleProviderTeaserPresent(officeId);
     }
 
     public void assertProviderCheckboxPresent(int officeId) {
-        providerOrt.assertProviderCheckboxPresent(officeId);
+        providerLocation.assertProviderCheckboxPresent(officeId);
     }
 
     public void assertProviderCheckboxAbsent(int officeId) {
-        providerOrt.assertProviderCheckboxAbsent(officeId);
+        providerLocation.assertProviderCheckboxAbsent(officeId);
     }
 
     /**
@@ -780,62 +780,62 @@ public class CitizenViewPage extends BasePage {
      * frequency rank in the catalog, so it follows them. Each checkbox also shows its address.
      */
     public void assertOfficesCheckedInFrequencyOrder() {
-        providerOrt.assertOfficesCheckedInFrequencyOrder();
+        providerLocation.assertOfficesCheckedInFrequencyOrder();
     }
 
     /** One bookable office: a contact tile, no location checkboxes. */
     public void assertSingleOfficeTile(int officeId, String name, String street) {
-        providerOrt.assertSingleOfficeTile(officeId, name, street);
+        providerLocation.assertSingleOfficeTile(officeId, name, street);
     }
 
     /**
      * Jump-in can pre-select the only provider; clicking again toggles off. True if that office is already on.
      */
     public boolean deepProviderCheckboxChecked(int officeId) {
-        return providerOrt.deepProviderCheckboxChecked(officeId);
+        return providerLocation.deepProviderCheckboxChecked(officeId);
     }
 
     public void selectOfficeById(int officeId) {
-        providerOrt.selectOfficeById(officeId);
+        providerLocation.selectOfficeById(officeId);
     }
 
     /**
      * Waits after combination → Ort/ Zeit: multi-provider checkboxes or single-provider teaser.
      */
     public void waitUntilOrtStepShowsProvider(int officeId, int maxSeconds) {
-        providerOrt.waitUntilOrtStepShowsProvider(officeId, maxSeconds);
+        providerLocation.waitUntilOrtStepShowsProvider(officeId, maxSeconds);
     }
 
     /**
      * Logs checkbox ids in DOM + whether single-provider teaser matches; asserts expected provider is shown in Ort.
      */
     public void logOrtProviderResolution(int expectedOfficeId) {
-        providerOrt.logOrtProviderResolution(expectedOfficeId);
+        providerLocation.logOrtProviderResolution(expectedOfficeId);
     }
 
     private JsonNode providerCheckboxes() {
-        return providerOrt.providerCheckboxes();
+        return providerLocation.providerCheckboxes();
     }
 
     private JsonNode officeTile(int officeId) {
-        return providerOrt.officeTile(officeId);
+        return providerLocation.officeTile(officeId);
     }
 
     private void assertOfficeOrder(JsonNode offices, boolean requireChecked, boolean requireAllKnown) {
-        providerOrt.assertOfficeOrder(offices, requireChecked, requireAllKnown);
+        providerLocation.assertOfficeOrder(offices, requireChecked, requireAllKnown);
     }
 
     private String frequencyName(String text) {
-        return providerOrt.frequencyName(text);
+        return providerLocation.frequencyName(text);
     }
 
     private int frequencyRank(String name) {
-        return providerOrt.frequencyRank(name);
+        return providerLocation.frequencyRank(name);
     }
 
     /** Wait until provider-toggle spinner activity has settled (best effort). */
     private void waitUntilProviderToggleSettled(int maxSeconds) {
-        providerOrt.waitUntilProviderToggleSettled(maxSeconds);
+        providerLocation.waitUntilProviderToggleSettled(maxSeconds);
     }
 
     /**
@@ -843,7 +843,7 @@ public class CitizenViewPage extends BasePage {
      * ({@code #provider-{officeId}-timeslot-*} or {@code [data-provider-id="{officeId}"]}).
      */
     public boolean deepTimeslotPresentForProvider(int officeId) {
-        return slotZeit.deepTimeslotPresentForProvider(officeId);
+        return timeSlot.deepTimeslotPresentForProvider(officeId);
     }
 
     /**
@@ -851,14 +851,14 @@ public class CitizenViewPage extends BasePage {
      * when the selected service is not offered there). Checks the current hour/day-part only.
      */
     public void assertTimeslotsAbsentForProviders(int... officeIds) {
-        slotZeit.assertTimeslotsAbsentForProviders(officeIds);
+        timeSlot.assertTimeslotsAbsentForProviders(officeIds);
     }
 
     /**
      * A fitting length shows slots, then the same day in the list, and does not show the empty-day callout.
      */
     public void assertBookableDayInCalendarAndList(int officeId) {
-        slotZeit.assertBookableDayInCalendarAndList(officeId);
+        timeSlot.assertBookableDayInCalendarAndList(officeId);
     }
 
     /**
@@ -866,122 +866,122 @@ public class CitizenViewPage extends BasePage {
      * and neither the calendar nor the list offers that day.
      */
     public void assertNoBookableDay(int officeId) {
-        slotZeit.assertNoBookableDay(officeId);
+        timeSlot.assertNoBookableDay(officeId);
     }
 
     public void assertCalendarListToggleShows(String activeLabel) {
-        slotZeit.assertCalendarListToggleShows(activeLabel);
+        timeSlot.assertCalendarListToggleShows(activeLabel);
     }
 
     public void assertToggleSitsBesideHeadingOnDesktop() {
-        slotZeit.assertToggleSitsBesideHeadingOnDesktop();
+        timeSlot.assertToggleSitsBesideHeadingOnDesktop();
     }
 
     public void assertToggleSitsBelowHeadingOnPhone() {
-        slotZeit.assertToggleSitsBelowHeadingOnPhone();
+        timeSlot.assertToggleSitsBelowHeadingOnPhone();
     }
 
     public void switchToListView() {
-        slotZeit.switchToListView();
+        timeSlot.switchToListView();
     }
 
     public void switchToCalendarView() {
-        slotZeit.switchToCalendarView();
+        timeSlot.switchToCalendarView();
     }
 
     public void assertListDateAccordions(int expectedCount) {
-        slotZeit.assertListDateAccordions(expectedCount);
+        timeSlot.assertListDateAccordions(expectedCount);
     }
 
     public void assertOpenListGroupsByHour() {
-        slotZeit.assertOpenListGroupsByHour();
+        timeSlot.assertOpenListGroupsByHour();
     }
 
     public void assertCalendarGroupsByHour() {
-        slotZeit.assertCalendarGroupsByHour();
+        timeSlot.assertCalendarGroupsByHour();
     }
 
     public void assertOpenListGroupsByMorning() {
-        slotZeit.assertOpenListGroupsByMorning();
+        timeSlot.assertOpenListGroupsByMorning();
     }
 
     public void assertCalendarGroupsByMorning() {
-        slotZeit.assertCalendarGroupsByMorning();
+        timeSlot.assertCalendarGroupsByMorning();
     }
 
     /** Open hour: each office that has a slot is a map-pin heading, in the same order as the checkboxes. */
     public void assertOpenHourListsOfficesWithMapPin() {
-        slotZeit.assertOpenHourListsOfficesWithMapPin();
+        timeSlot.assertOpenHourListsOfficesWithMapPin();
     }
 
     /** Früher is a disabled ghost button. Später is an enabled ghost button. */
     public void assertCalendarGhostPagerStartsAtFirstGroup() {
-        slotZeit.assertCalendarGhostPagerStartsAtFirstGroup();
+        timeSlot.assertCalendarGhostPagerStartsAtFirstGroup();
     }
 
     public void moveCalendarHour(boolean later) {
-        slotZeit.moveCalendarHour(later);
+        timeSlot.moveCalendarHour(later);
     }
 
     /** Clear the first office that is actually listed under the open hour. */
     public void clearFirstShownOffice() {
-        slotZeit.clearFirstShownOffice();
+        timeSlot.clearFirstShownOffice();
     }
 
     public void assertClearedOfficeIsHidden() {
-        slotZeit.assertClearedOfficeIsHidden();
+        timeSlot.assertClearedOfficeIsHidden();
     }
 
     /** One office shows every group at once, with no location heading and no Früher or Später. */
     public void assertSingleOfficeGroupsTimesWithoutLocationHeadings() {
-        slotZeit.assertSingleOfficeGroupsTimesWithoutLocationHeadings();
+        timeSlot.assertSingleOfficeGroupsTimesWithoutLocationHeadings();
     }
 
     public void assertEarlierAndLaterAreEachOnOneLine() {
-        slotZeit.assertEarlierAndLaterAreEachOnOneLine();
+        timeSlot.assertEarlierAndLaterAreEachOnOneLine();
     }
 
     public void assertListEarlierStartsDisabled() {
-        slotZeit.assertListEarlierStartsDisabled();
+        timeSlot.assertListEarlierStartsDisabled();
     }
 
     public void moveOpenListHour(boolean later) {
-        slotZeit.moveOpenListHour(later);
+        timeSlot.moveOpenListHour(later);
     }
 
     public void loadMoreListDates() {
-        slotZeit.loadMoreListDates();
+        timeSlot.loadMoreListDates();
     }
 
     public void openTheNextListDate() {
-        slotZeit.openTheNextListDate();
+        timeSlot.openTheNextListDate();
     }
 
     public void selectVisibleTimeslot() {
-        slotZeit.selectVisibleTimeslot();
+        timeSlot.selectVisibleTimeslot();
     }
 
     public void assertMarkedTimeslotIsWhiteOnBlue() {
-        slotZeit.assertMarkedTimeslotIsWhiteOnBlue();
+        timeSlot.assertMarkedTimeslotIsWhiteOnBlue();
     }
 
     public void assertPreviousTimeslotIsNotMarked() {
-        slotZeit.assertPreviousTimeslotIsNotMarked();
+        timeSlot.assertPreviousTimeslotIsNotMarked();
     }
 
     public void assertTimeslotsPresentForProviders(int... officeIds) {
-        slotZeit.assertTimeslotsPresentForProviders(officeIds);
+        timeSlot.assertTimeslotsPresentForProviders(officeIds);
     }
 
     public void assertAvailableAppointmentsShown() {
-        slotZeit.assertAvailableAppointmentsShown();
+        timeSlot.assertAvailableAppointmentsShown();
     }
 
     /**
      * Skip the slot that was already reserved so the next highlight is a different appointment.
      */
     public void highlightAnotherTimeslotForOffice(int officeId) {
-        slotZeit.highlightAnotherTimeslotForOffice(officeId);
+        timeSlot.highlightAnotherTimeslotForOffice(officeId);
     }
 
     /**
@@ -989,12 +989,12 @@ public class CitizenViewPage extends BasePage {
      * the slot area (not only the calendar above the fold). Safe to call after Ort selection when slots exist.
      */
     public void scrollTimeSlotGridIntoViewForScreenshots() {
-        slotZeit.scrollTimeSlotGridIntoViewForScreenshots();
+        timeSlot.scrollTimeSlotGridIntoViewForScreenshots();
     }
 
     /** True when at least one bookable slot control exists (list or calendar). */
     public boolean deepTimeslotClickablePresent() {
-        return slotZeit.deepTimeslotClickablePresent();
+        return timeSlot.deepTimeslotClickablePresent();
     }
 
     /**
@@ -1002,7 +1002,7 @@ public class CitizenViewPage extends BasePage {
      * until slot API returns ({@code CalendarView.vue}).
      */
     public boolean deepMucSpinnerVisible() {
-        return slotZeit.deepMucSpinnerVisible();
+        return timeSlot.deepMucSpinnerVisible();
     }
 
     /**
@@ -1010,7 +1010,7 @@ public class CitizenViewPage extends BasePage {
      * spinner runs).
      */
     public boolean deepTimeslotReadyNoSpinner() {
-        return slotZeit.deepTimeslotReadyNoSpinner();
+        return timeSlot.deepTimeslotReadyNoSpinner();
     }
 
     /**
@@ -1021,12 +1021,12 @@ public class CitizenViewPage extends BasePage {
      * @return {@code true} if a click was performed
      */
     public boolean clickCitizenViewLaterOnceIfAvailable() {
-        return slotZeit.clickCitizenViewLaterOnceIfAvailable();
+        return timeSlot.clickCitizenViewLaterOnceIfAvailable();
     }
 
     /** Wait until slot buttons exist and MucSpinner cleared (calendar day / office fetch). */
     public void waitUntilAppointmentSlotsReady(int maxSeconds) {
-        slotZeit.waitUntilAppointmentSlotsReady(maxSeconds);
+        timeSlot.waitUntilAppointmentSlotsReady(maxSeconds);
     }
 
     /**
@@ -1034,7 +1034,7 @@ public class CitizenViewPage extends BasePage {
      * {@link #waitUntilAppointmentSlotsReady(int)}).
      */
     public void waitUntilSlotsReadyForBooking() {
-        slotZeit.waitUntilSlotsReadyForBooking();
+        timeSlot.waitUntilSlotsReadyForBooking();
     }
 
     /**
@@ -1042,7 +1042,7 @@ public class CitizenViewPage extends BasePage {
      * (multi-provider), then wait for slots to reload. No-op if the button is absent or disabled.
      */
     public void clickSpäterIfAvailableAndReloadSlots() {
-        slotZeit.clickSpäterIfAvailableAndReloadSlots();
+        timeSlot.clickSpäterIfAvailableAndReloadSlots();
     }
 
     /**
@@ -1053,26 +1053,26 @@ public class CitizenViewPage extends BasePage {
      * from the Ort display id. Retries with Später when no matching slot is in the current hour/day-part.
      */
     public void highlightPreferredTimeslotForOffice(int officeId) {
-        slotZeit.highlightPreferredTimeslotForOffice(officeId);
+        timeSlot.highlightPreferredTimeslotForOffice(officeId);
     }
 
     /** Step 3b: click the slot stored by {@link #highlightPreferredTimeslotForOffice(int)}. */
     public void clickHighlightedTimeslotSelection() {
-        slotZeit.clickHighlightedTimeslotSelection();
+        timeSlot.clickHighlightedTimeslotSelection();
     }
 
     /**
      * Step 3 (combined): highlight + click — use split steps in features so {@code @AfterStep} captures the slot area.
      */
     public void selectPreferredTimeslotBelowCalendar(int officeId) {
-        slotZeit.selectPreferredTimeslotBelowCalendar(officeId);
+        timeSlot.selectPreferredTimeslotBelowCalendar(officeId);
     }
 
     /**
      * Step 4: assert {@code Ausgewählter Termin} callout for the office, then <strong>Weiter</strong> to reserve (API).
      */
     public void assertCalloutAndReserveAfterSlotSelection(int officeId) {
-        slotZeit.assertCalloutAndReserveAfterSlotSelection(officeId);
+        timeSlot.assertCalloutAndReserveAfterSlotSelection(officeId);
     }
 
     /**
@@ -1085,7 +1085,7 @@ public class CitizenViewPage extends BasePage {
      * @see #assertCalloutAndReserveAfterSlotSelection(int)
      */
     public void scrollClickFirstSlotAssertCalloutWeiter(int officeId) {
-        slotZeit.scrollClickFirstSlotAssertCalloutWeiter(officeId);
+        timeSlot.scrollClickFirstSlotAssertCalloutWeiter(officeId);
     }
 
     /**
@@ -1094,87 +1094,87 @@ public class CitizenViewPage extends BasePage {
      * @return false when the Kontakt step is already showing, so the caller must not click Weiter again
      */
     public boolean assertSelectedAppointmentCalloutShowsProvider(int officeId) {
-        return slotZeit.assertSelectedAppointmentCalloutShowsProvider(officeId);
+        return timeSlot.assertSelectedAppointmentCalloutShowsProvider(officeId);
     }
 
     public void assertSelectedAppointmentCalloutVisible() {
-        slotZeit.assertSelectedAppointmentCalloutVisible();
+        timeSlot.assertSelectedAppointmentCalloutVisible();
     }
 
     private JsonNode locationTitles() {
-        return slotZeit.locationTitles();
+        return timeSlot.locationTitles();
     }
 
     private JsonNode calendarGhostButtons() {
-        return slotZeit.calendarGhostButtons();
+        return timeSlot.calendarGhostButtons();
     }
 
     private void assertGhostButton(JsonNode button, String word, String icon, boolean disabled) {
-        slotZeit.assertGhostButton(button, word, icon, disabled);
+        timeSlot.assertGhostButton(button, word, icon, disabled);
     }
 
     private String hourLabelOrEmpty(JsonNode state) {
-        return slotZeit.hourLabelOrEmpty(state);
+        return timeSlot.hourLabelOrEmpty(state);
     }
 
     private JsonNode hourLabel(JsonNode node) {
-        return slotZeit.hourLabel(node);
+        return timeSlot.hourLabel(node);
     }
 
     private JsonNode morningLabel(JsonNode node) {
-        return slotZeit.morningLabel(node);
+        return timeSlot.morningLabel(node);
     }
 
     private void assertHourLabels(JsonNode state) {
-        slotZeit.assertHourLabels(state);
+        timeSlot.assertHourLabels(state);
     }
 
     private void assertMorningLabels(JsonNode state) {
-        slotZeit.assertMorningLabels(state);
+        timeSlot.assertMorningLabels(state);
     }
 
     private JsonNode waitForToggleLabels(String activeLabel) {
-        return slotZeit.waitForToggleLabels(activeLabel);
+        return timeSlot.waitForToggleLabels(activeLabel);
     }
 
     private void assertToggleColor(JsonNode label, String text, boolean active) {
-        slotZeit.assertToggleColor(label, text, active);
+        timeSlot.assertToggleColor(label, text, active);
     }
 
     private JsonNode calendarSnapshot() {
-        return slotZeit.calendarSnapshot();
+        return timeSlot.calendarSnapshot();
     }
 
     private JsonNode listSnapshot() {
-        return slotZeit.listSnapshot();
+        return timeSlot.listSnapshot();
     }
 
     private JsonNode waitForListAccordionCount(int expected) {
-        return slotZeit.waitForListAccordionCount(expected);
+        return timeSlot.waitForListAccordionCount(expected);
     }
 
     private String firstHourLabel(JsonNode state) {
-        return slotZeit.firstHourLabel(state);
+        return timeSlot.firstHourLabel(state);
     }
 
     private JsonNode waitForPagerButtons() {
-        return slotZeit.waitForPagerButtons();
+        return timeSlot.waitForPagerButtons();
     }
 
     private void assertPagerButton(JsonNode button, String word, boolean disabled) {
-        slotZeit.assertPagerButton(button, word, disabled);
+        timeSlot.assertPagerButton(button, word, disabled);
     }
 
     private JsonNode timeslotStyle(String slotId) {
-        return slotZeit.timeslotStyle(slotId);
+        return timeSlot.timeslotStyle(slotId);
     }
 
     private void waitUntilCalendarSettled(int officeId, boolean expectSlots) {
-        slotZeit.waitUntilCalendarSettled(officeId, expectSlots);
+        timeSlot.waitUntilCalendarSettled(officeId, expectSlots);
     }
 
     private boolean timeslotLooksWhiteOnBlue(JsonNode slot) {
-        return slotZeit.timeslotLooksWhiteOnBlue(slot);
+        return timeSlot.timeslotLooksWhiteOnBlue(slot);
     }
 
     /**
@@ -1182,7 +1182,7 @@ public class CitizenViewPage extends BasePage {
      * same budget as the initial calendar load. A spinner that is still up gets one more wait.
      */
     private void waitForSlotsAfterReturningToTermin() {
-        slotZeit.waitForSlotsAfterReturningToTermin();
+        timeSlot.waitForSlotsAfterReturningToTermin();
     }
 
     /**
@@ -1190,21 +1190,21 @@ public class CitizenViewPage extends BasePage {
      * so an empty evening grid uses the calendar's next-day control instead.
      */
     private boolean openNextCalendarDayAndWaitForSlots() {
-        return slotZeit.openNextCalendarDayAndWaitForSlots();
+        return timeSlot.openNextCalendarDayAndWaitForSlots();
     }
 
     private boolean clickNextBookableCalendarDay() {
-        return slotZeit.clickNextBookableCalendarDay();
+        return timeSlot.clickNextBookableCalendarDay();
     }
 
     /** Max wait for slot grid + spinner (calendar / office load). */
     private int slotBookingWaitTimeoutSeconds() {
-        return slotZeit.slotBookingWaitTimeoutSeconds();
+        return timeSlot.slotBookingWaitTimeoutSeconds();
     }
 
     /** @return false when the current calendar view has no highlightable slot for this office */
     private boolean highlightPreferredTimeslotForOfficeOrAbsent(int officeId, String skippedTimestamps) {
-        return slotZeit.highlightPreferredTimeslotForOfficeOrAbsent(officeId, skippedTimestamps);
+        return timeSlot.highlightPreferredTimeslotForOfficeOrAbsent(officeId, skippedTimestamps);
     }
 
     /**
@@ -1212,15 +1212,15 @@ public class CitizenViewPage extends BasePage {
      * and try the next timestamp instead of failing the 15s re-highlight wait.
      */
     private boolean clickHighlightedTimeslotSelectionOrGiveUp() {
-        return slotZeit.clickHighlightedTimeslotSelectionOrGiveUp();
+        return timeSlot.clickHighlightedTimeslotSelectionOrGiveUp();
     }
 
     private int resolveStoredSlotOfficeId(JavascriptExecutor js) {
-        return slotZeit.resolveStoredSlotOfficeId(js);
+        return timeSlot.resolveStoredSlotOfficeId(js);
     }
 
     private boolean performStoredTimeslotClick(JavascriptExecutor js) {
-        return slotZeit.performStoredTimeslotClick(js);
+        return timeSlot.performStoredTimeslotClick(js);
     }
 
     /**
@@ -1228,16 +1228,16 @@ public class CitizenViewPage extends BasePage {
      * is visible — i.e. Vue received {@code selectTimeSlot}.
      */
     private boolean isSlotSelectionVisibleForOffice(int officeId) {
-        return slotZeit.isSlotSelectionVisibleForOffice(officeId);
+        return timeSlot.isSlotSelectionVisibleForOffice(officeId);
     }
 
     /** {@code muc-button} with {@code data-variant="primary"} for {@code provider-{officeId}-timeslot-*}. */
     private boolean isTimeslotPrimarySelectedForOffice(int officeId) {
-        return slotZeit.isTimeslotPrimarySelectedForOffice(officeId);
+        return timeSlot.isTimeslotPrimarySelectedForOffice(officeId);
     }
 
     private boolean waitForSlotSelectionVisible(int officeId, int timeoutSeconds) {
-        return slotZeit.waitForSlotSelectionVisible(officeId, timeoutSeconds);
+        return timeSlot.waitForSlotSelectionVisible(officeId, timeoutSeconds);
     }
 
     /**
@@ -1245,11 +1245,11 @@ public class CitizenViewPage extends BasePage {
      * A slow reserve paints this page without a taken-slot error.
      */
     private boolean contactStepReached() {
-        return slotZeit.contactStepReached();
+        return timeSlot.contactStepReached();
     }
 
     private boolean selectedAppointmentCalloutVisible() {
-        return slotZeit.selectedAppointmentCalloutVisible();
+        return timeSlot.selectedAppointmentCalloutVisible();
     }
 
     /**
@@ -1257,24 +1257,24 @@ public class CitizenViewPage extends BasePage {
      * scenario; the caller continues on the contact form and must not click Weiter again.
      */
     private boolean stopBecauseContactStepIsVisible(int officeId) {
-        return slotZeit.stopBecauseContactStepIsVisible(officeId);
+        return timeSlot.stopBecauseContactStepIsVisible(officeId);
     }
 
     private void finishReserveOnContactStep() {
-        slotZeit.finishReserveOnContactStep();
+        timeSlot.finishReserveOnContactStep();
     }
 
-    private SlotZeitStep.ReserveOutcome waitForReserveOutcome() {
-        return slotZeit.waitForReserveOutcome();
+    private TimeSlotStep.ReserveOutcome waitForReserveOutcome() {
+        return timeSlot.waitForReserveOutcome();
     }
 
     /** Keep the slot whose Weiter reached Kontakt, not a later highlight. */
     private void keepReservedSlot(Long timestamp) {
-        slotZeit.keepReservedSlot(timestamp);
+        timeSlot.keepReservedSlot(timestamp);
     }
 
     public long readStoredSlotTimestamp() {
-        return slotZeit.readStoredSlotTimestamp();
+        return timeSlot.readStoredSlotTimestamp();
     }
 
     /**
@@ -1287,7 +1287,7 @@ public class CitizenViewPage extends BasePage {
      * despite a 200 reserve, increase this delay or check backend persistence (e.g. commit/replication).
      */
     private void waitForReserveToSettle() {
-        slotZeit.waitForReserveToSettle();
+        timeSlot.waitForReserveToSettle();
     }
 
 
@@ -1526,88 +1526,88 @@ public class CitizenViewPage extends BasePage {
     }
 
     static String ensureAbsoluteCitizenViewUrl(String url) {
-        return MeineTermineStep.ensureAbsoluteCitizenViewUrl(url);
+        return MyAppointmentsStep.ensureAbsoluteCitizenViewUrl(url);
     }
 
     public ThinnedProcess syncBookingProcessFromLocalStorage() throws Exception {
-        return meineTermine.syncBookingProcessFromLocalStorage();
+        return myAppointments.syncBookingProcessFromLocalStorage();
     }
 
     public void trySyncBookingProcessFromLocalStorageOnce() {
-        meineTermine.trySyncBookingProcessFromLocalStorageOnce();
+        myAppointments.trySyncBookingProcessFromLocalStorageOnce();
     }
 
     public void trySetBookingProcessFromPage() {
-        meineTermine.trySetBookingProcessFromPage();
+        myAppointments.trySetBookingProcessFromPage();
     }
 
     public void openConfirmationDeepLinkInBrowser() {
-        meineTermine.openConfirmationDeepLinkInBrowser();
+        myAppointments.openConfirmationDeepLinkInBrowser();
     }
 
     public void reopenConfirmationDeepLinkInBrowser() {
-        meineTermine.reopenConfirmationDeepLinkInBrowser();
+        myAppointments.reopenConfirmationDeepLinkInBrowser();
     }
 
     public void openAppointmentViewDeepLinkInBrowser() {
-        meineTermine.openAppointmentViewDeepLinkInBrowser();
+        myAppointments.openAppointmentViewDeepLinkInBrowser();
     }
 
     public void captureBookingProcessForCleanup() {
-        meineTermine.captureBookingProcessForCleanup();
+        myAppointments.captureBookingProcessForCleanup();
     }
 
     public void rememberSelectedAppointmentTime() {
-        meineTermine.rememberSelectedAppointmentTime();
+        myAppointments.rememberSelectedAppointmentTime();
     }
 
     public void openMeineTermine() {
-        meineTermine.openMeineTermine();
+        myAppointments.openMeineTermine();
     }
 
     public void assertMeineTermineLists(String... serviceNames) {
-        meineTermine.assertMeineTermineLists(serviceNames);
+        myAppointments.assertMeineTermineLists(serviceNames);
     }
 
     public void assertMeineTermineDoesNotList(String serviceName) {
-        meineTermine.assertMeineTermineDoesNotList(serviceName);
+        myAppointments.assertMeineTermineDoesNotList(serviceName);
     }
 
     public void rememberMeineTermineAppointment(String serviceName) {
-        meineTermine.rememberMeineTermineAppointment(serviceName);
+        myAppointments.rememberMeineTermineAppointment(serviceName);
     }
 
     public void assertMeineTermineAppointmentReplaced(String serviceName) {
-        meineTermine.assertMeineTermineAppointmentReplaced(serviceName);
+        myAppointments.assertMeineTermineAppointmentReplaced(serviceName);
     }
 
     public void assertMeineTermineAppointmentUnchanged(String serviceName) {
-        meineTermine.assertMeineTermineAppointmentUnchanged(serviceName);
+        myAppointments.assertMeineTermineAppointmentUnchanged(serviceName);
     }
 
     public void assertMeineTermineTeaser(String serviceName, String typeLabel, String locationText) {
-        meineTermine.assertMeineTermineTeaser(serviceName, typeLabel, locationText);
+        myAppointments.assertMeineTermineTeaser(serviceName, typeLabel, locationText);
     }
 
     public void openMeineTermineTeaser(String serviceName) {
-        meineTermine.openMeineTermineTeaser(serviceName);
+        myAppointments.openMeineTermineTeaser(serviceName);
     }
 
     public void assertAppointmentDetailLocation(
             String typeLabel, String place, String locationText, String preparationHint, String extra) {
-        meineTermine.assertAppointmentDetailLocation(typeLabel, place, locationText, preparationHint, extra);
+        myAppointments.assertAppointmentDetailLocation(typeLabel, place, locationText, preparationHint, extra);
     }
 
     public void assertIcsDownloadOfferedOnDetailIntro() {
-        meineTermine.assertIcsDownloadOfferedOnDetailIntro();
+        myAppointments.assertIcsDownloadOfferedOnDetailIntro();
     }
 
     public void downloadAppointmentIcs() {
-        meineTermine.downloadAppointmentIcs();
+        myAppointments.downloadAppointmentIcs();
     }
 
     public void assertDownloadedIcsContainsBookedAppointment() {
-        meineTermine.assertDownloadedIcsContainsBookedAppointment();
+        myAppointments.assertDownloadedIcsContainsBookedAppointment();
     }
 
 }

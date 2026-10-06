@@ -33,7 +33,7 @@ import zms.ataf.ui.pages.citizenview.support.ShadowDom;
 import zms.ataf.ui.pages.citizenview.support.SlotBookingState;
 
 /** Meine Termine, ICS, deep links, booking-process capture for cleanup. */
-public final class MeineTermineStep {
+public final class MyAppointmentsStep {
 
     public static final String LOCALSTORAGE_APPOINTMENT_KEY = "lhm-appointment-data";
 
@@ -44,7 +44,7 @@ public final class MeineTermineStep {
     private final ContactStep contact;
     private final int defaultWaitSeconds;
 
-    public MeineTermineStep(
+    public MyAppointmentsStep(
             CitizenViewPageContext context,
             ShadowDom shadow,
             SlotBookingState slotState,
@@ -101,7 +101,7 @@ public final class MeineTermineStep {
                 (String)
                         ((JavascriptExecutor) DriverUtil.getDriver())
                                 .executeScript(
-                                        "return localStorage.getItem('" + MeineTermineStep.LOCALSTORAGE_APPOINTMENT_KEY + "');");
+                                        "return localStorage.getItem('" + MyAppointmentsStep.LOCALSTORAGE_APPOINTMENT_KEY + "');");
         if (json == null || json.isBlank()) {
             captureBookingProcessForCleanup();
             ThinnedProcess captured = zms.ataf.rest.steps.CitizenApiSteps.getBookingProcess();
@@ -140,7 +140,7 @@ public final class MeineTermineStep {
                 (String)
                         ((JavascriptExecutor) DriverUtil.getDriver())
                                 .executeScript(
-                                        "return localStorage.getItem('" + MeineTermineStep.LOCALSTORAGE_APPOINTMENT_KEY + "');");
+                                        "return localStorage.getItem('" + MyAppointmentsStep.LOCALSTORAGE_APPOINTMENT_KEY + "');");
         if (json == null || json.isBlank()) {
             return false;
         }
