@@ -51,6 +51,67 @@ public class CitizenViewSteps {
         page.assertServiceFinderHeadingVisible();
     }
 
+    @Then("the service search shows a search field and suggestion links")
+    public void theServiceSearchShowsASearchFieldAndSuggestionLinks() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: service search field and suggestion links");
+        page.assertServiceSearchAndSuggestions();
+    }
+
+    @When("I reload the citizen view")
+    public void iReloadTheCitizenView() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: reload");
+        page.reloadCitizenView();
+    }
+
+    @When("I click the service search field")
+    public void iClickTheServiceSearchField() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: click the service search field");
+        page.clickServiceSearchField();
+    }
+
+    @When("I open the service list with tab and enter")
+    public void iOpenTheServiceListWithTabAndEnter() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: tab to the service search and press enter");
+        page.openServiceListWithTabAndEnter();
+    }
+
+    @Then("the service list is open under the search field")
+    public void theServiceListIsOpenUnderTheSearchField() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: service list is open under the field");
+        page.assertServiceListOpenUnderField();
+    }
+
+    @Then("the service list is alphabetical")
+    public void theServiceListIsAlphabetical() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: service list is alphabetical");
+        page.assertServiceListAlphabetical();
+    }
+
+    @When("I type {string} into the service search")
+    public void iTypeIntoTheServiceSearch(String query) {
+        ScenarioLogManager.getLogger().info("zmscitizenview: type {} into the service search", query);
+        page.typeIntoServiceSearch(query);
+    }
+
+    @Then("the service list only shows services containing {string}")
+    public void theServiceListOnlyShowsServicesContaining(String query) {
+        ScenarioLogManager.getLogger().info("zmscitizenview: service list contains {}", query);
+        page.assertServiceListContainsOnly(query);
+    }
+
+    @Then("the service list includes {string} and not {string}")
+    public void theServiceListIncludesAndNot(String present, String absent) {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: service list includes {} and not {}", present, absent);
+        page.assertServiceListIncludesAndNot(present, absent);
+    }
+
+    @When("I choose {string} from the service list")
+    public void iChooseFromTheServiceList(String label) {
+        ScenarioLogManager.getLogger().info("zmscitizenview: choose {} from the service list", label);
+        page.chooseServiceFromOpenList(TestDataHelper.transformTestData(label));
+    }
+
     @Given("I open zmscitizenview with jump-in service {string} and location {string}")
     public void iOpenZmscitizenviewWithJumpIn(String serviceId, String locationId) {
         String s = TestDataHelper.transformTestData(serviceId);
