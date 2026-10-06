@@ -197,7 +197,8 @@ The ATAF tests automatically run Flyway migrations before executing tests. The m
   - `@zmsapi` - REST API tests (`features/rest/zmsapi/**`; served by `zmsbackend`)
   - `@zmscitizenapi` - Citizen API tests (`features/rest/zmscitizenapi/**`)
 - **UI tags**
-  - `@web` - All web UI tests
+  - `@web` - All web UI tests (starts Selenium; not a screen-size tag)
+  - `@mobile` - Phone viewport `390×844` after ATAF window setup; use with `@web` on zmscitizenview scenarios only. Workflow checkbox **viewport_mobile_only** runs `@mobile`.
   - `@zmsadmin` - Admin UI features (`features/ui/zmsadmin/**`)
   - `@zmsstatistic` - Statistik UI features (`features/ui/zmsstatistic/**`)
   - `@capacity` - Terminkapazität (`ui/zmsstatistic/capacity/`)
@@ -220,7 +221,7 @@ The ATAF tests automatically run Flyway migrations before executing tests. The m
 - **Other**
   - `@smoke` - Smoke tests (critical path)
 
-`@executeLocally` is a UI-only tag (`@web` scenarios). Do not add it to pure REST scenarios (`@rest`), because they do not initialize Selenium/WebDriver.
+`@executeLocally` and `@mobile` are UI-only tags (`@web` scenarios). Do not add them to pure REST scenarios (`@rest`), because they do not initialize Selenium/WebDriver. Desktop citizenview scenarios omit `@mobile` and keep the ATAF default window (or set `1400×900` in an assertion).
 
 ## Feature Files
 
