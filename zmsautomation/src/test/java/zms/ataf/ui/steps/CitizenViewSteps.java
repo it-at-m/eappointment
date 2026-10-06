@@ -51,6 +51,67 @@ public class CitizenViewSteps {
         page.assertServiceFinderHeadingVisible();
     }
 
+    @Then("the service search shows a search field and suggestion links")
+    public void theServiceSearchShowsASearchFieldAndSuggestionLinks() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: service search field and suggestion links");
+        page.assertServiceSearchAndSuggestions();
+    }
+
+    @When("I reload the citizen view")
+    public void iReloadTheCitizenView() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: reload");
+        page.reloadCitizenView();
+    }
+
+    @When("I click the service search field")
+    public void iClickTheServiceSearchField() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: click the service search field");
+        page.clickServiceSearchField();
+    }
+
+    @When("I open the service list with tab and enter")
+    public void iOpenTheServiceListWithTabAndEnter() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: tab to the service search and press enter");
+        page.openServiceListWithTabAndEnter();
+    }
+
+    @Then("the service list is open under the search field")
+    public void theServiceListIsOpenUnderTheSearchField() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: service list is open under the field");
+        page.assertServiceListOpenUnderField();
+    }
+
+    @Then("the service list is alphabetical")
+    public void theServiceListIsAlphabetical() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: service list is alphabetical");
+        page.assertServiceListAlphabetical();
+    }
+
+    @When("I type {string} into the service search")
+    public void iTypeIntoTheServiceSearch(String query) {
+        ScenarioLogManager.getLogger().info("zmscitizenview: type {} into the service search", query);
+        page.typeIntoServiceSearch(query);
+    }
+
+    @Then("the service list only shows services containing {string}")
+    public void theServiceListOnlyShowsServicesContaining(String query) {
+        ScenarioLogManager.getLogger().info("zmscitizenview: service list contains {}", query);
+        page.assertServiceListContainsOnly(query);
+    }
+
+    @Then("the service list includes {string} and not {string}")
+    public void theServiceListIncludesAndNot(String present, String absent) {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: service list includes {} and not {}", present, absent);
+        page.assertServiceListIncludesAndNot(present, absent);
+    }
+
+    @When("I choose {string} from the service list")
+    public void iChooseFromTheServiceList(String label) {
+        ScenarioLogManager.getLogger().info("zmscitizenview: choose {} from the service list", label);
+        page.chooseServiceFromOpenList(TestDataHelper.transformTestData(label));
+    }
+
     @Given("I open zmscitizenview with jump-in service {string} and location {string}")
     public void iOpenZmscitizenviewWithJumpIn(String serviceId, String locationId) {
         String s = TestDataHelper.transformTestData(serviceId);
@@ -104,6 +165,50 @@ public class CitizenViewSteps {
         ScenarioLogManager.getLogger()
                 .info("zmscitizenview: selected service {} stays at least 1", label);
         page.assertSelectedServiceCannotDropBelowOne(TestDataHelper.transformTestData(label));
+    }
+
+    @Then("the continue button on the service page says {string}")
+    public void theContinueButtonOnTheServicePageSays(String label) {
+        ScenarioLogManager.getLogger().info("zmscitizenview: continue button says {}", label);
+        page.assertWeiterButtonSays(label);
+    }
+
+    @Then("the service {string} uses secondary plus and minus buttons")
+    public void theServiceUsesSecondaryPlusAndMinusButtons(String label) {
+        ScenarioLogManager.getLogger().info("zmscitizenview: secondary plus and minus for {}", label);
+        page.assertSecondaryPlusAndMinus(TestDataHelper.transformTestData(label));
+    }
+
+    @Then("the minus button for service {string} is disabled")
+    public void theMinusButtonForServiceIsDisabled(String label) {
+        ScenarioLogManager.getLogger().info("zmscitizenview: minus disabled for {}", label);
+        page.assertMinusButton(TestDataHelper.transformTestData(label), true);
+    }
+
+    @Then("the minus button for service {string} is enabled")
+    public void theMinusButtonForServiceIsEnabled(String label) {
+        ScenarioLogManager.getLogger().info("zmscitizenview: minus enabled for {}", label);
+        page.assertMinusButton(TestDataHelper.transformTestData(label), false);
+    }
+
+    @Then("the service {string} links to service {string} on muenchen.de")
+    public void theServiceLinksToItsDescription(String label, String serviceId) {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: {} links to service {}", label, serviceId);
+        page.assertServiceDescriptionLink(TestDataHelper.transformTestData(label), serviceId);
+    }
+
+    @Then("the count for {string} sits beside the name on desktop and below it on a phone")
+    public void theCountSitsBesideTheNameOnDesktopAndBelowItOnAPhone(String label) {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: count placement for {} on desktop and phone", label);
+        page.assertCountBesideNameOnDesktopAndBelowOnPhone(TestDataHelper.transformTestData(label));
+    }
+
+    @When("I raise the service {string} until the plus button is disabled")
+    public void iRaiseTheServiceUntilThePlusButtonIsDisabled(String label) {
+        ScenarioLogManager.getLogger().info("zmscitizenview: raise {} until plus is disabled", label);
+        page.raiseServiceUntilPlusDisabled(TestDataHelper.transformTestData(label));
     }
 
     @When("I add subservice {string} with quantity {int} on the service combination step")
@@ -254,6 +359,60 @@ public class CitizenViewSteps {
     public void theCalendarGroupsTheShortDayIntoVormittag() {
         ScenarioLogManager.getLogger().info("zmscitizenview: calendar groups the short day into Vormittag");
         page.assertCalendarGroupsByMorning();
+    }
+
+    @Then("the location checkboxes are selected in frequency order")
+    public void theLocationCheckboxesAreSelectedInFrequencyOrder() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: location checkboxes selected in frequency order");
+        page.assertOfficesCheckedInFrequencyOrder();
+    }
+
+    @Then("the open hour lists each selected office with a map pin")
+    public void theOpenHourListsEachSelectedOfficeWithAMapPin() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: open hour lists offices with a map pin");
+        page.assertOpenHourListsOfficesWithMapPin();
+    }
+
+    @Then("the calendar earlier button starts disabled and both are ghost buttons")
+    public void theCalendarEarlierButtonStartsDisabledAndBothAreGhostButtons() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: Früher starts disabled, both pager buttons are ghost");
+        page.assertCalendarGhostPagerStartsAtFirstGroup();
+    }
+
+    @When("I click Später in the calendar")
+    public void iClickLaterInTheCalendar() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: Später in the calendar");
+        page.moveCalendarHour(true);
+    }
+
+    @When("I click Früher in the calendar")
+    public void iClickEarlierInTheCalendar() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: Früher in the calendar");
+        page.moveCalendarHour(false);
+    }
+
+    @When("I clear the first shown office")
+    public void iClearTheFirstShownOffice() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: clear the first shown office");
+        page.clearFirstShownOffice();
+    }
+
+    @Then("the cleared office is left out of the available times")
+    public void theClearedOfficeIsLeftOutOfTheAvailableTimes() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: cleared office is left out of the available times");
+        page.assertClearedOfficeIsHidden();
+    }
+
+    @Then("the only office is a tile without checkboxes")
+    public void theOnlyOfficeIsATileWithoutCheckboxes() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: single office is a tile");
+        page.assertSingleOfficeTile(10492, "Bürgerbüro Ruppertstraße", "Ruppertstraße");
+    }
+
+    @Then("the single office groups its times without a location heading")
+    public void theSingleOfficeGroupsItsTimesWithoutALocationHeading() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: single office groups times without a location heading");
+        page.assertSingleOfficeGroupsTimesWithoutLocationHeadings();
     }
 
     @Then("the earlier and later buttons are each on one line")
@@ -671,6 +830,14 @@ public class CitizenViewSteps {
     public void theCancellationSuccessCalloutShouldBeVisible() {
         ScenarioLogManager.getLogger().info("zmscitizenview: assert cancellation success callout visible");
         page.assertCancellationSuccessCalloutVisible();
+    }
+
+    /** ZMSKVR-112: heading plus thank-you text on the cancel success callout. */
+    @Then("the cancellation success callout should show the thank-you text in the citizen view")
+    public void theCancellationSuccessCalloutShouldShowTheThankYouText() {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: assert cancellation success callout heading and thank-you text");
+        page.assertCancellationSuccessDetailsVisible();
     }
 
     @Then("the selected appointment callout should be visible in the citizen view")

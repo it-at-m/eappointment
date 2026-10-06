@@ -15,7 +15,9 @@ import java.util.function.BooleanSupplier;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.TimeoutException;
+import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -55,12 +57,27 @@ public class CitizenViewPage extends BasePage {
             "Eine Bestätigung und weitere Informationen zu Ihrem Termin erhalten Sie per E-Mail. Wir freuen uns auf Ihren Besuch.";
     private static final String VIEW_APPOINTMENT_BUTTON = "Termin ansehen";
     private static final String BOOK_ANOTHER_APPOINTMENT_BUTTON = "Weiteren Termin vereinbaren";
+    private static final String CANCELLATION_SUCCESS_HEADING =
+            "Sie haben Ihren Termin erfolgreich abgesagt.";
+    private static final String CANCELLATION_SUCCESS_TEXT =
+            "Danke, dass Sie Ihren Termin für andere freigegeben haben.";
 
     /** German invalid jump-in callout ({@code de-DE.json}). */
     public static final String DE_INVALID_JUMPIN_HEADER = "Diese Ansicht kann nicht geladen werden.";
 
     public static final String DE_INVALID_JUMPIN_TEXT =
             "Der Link zu dieser Seite ist leider fehlerhaft. Starten Sie die Terminvereinbarung neu";
+
+    private static final String[] SERVICE_SUGGESTIONS = {
+        "Wohnsitzanmeldung",
+        "Reisepass",
+        "Personalausweis",
+        "Ausweis-Abholung",
+        "Führerschein-Abholung",
+        "eID-PIN",
+        "Kfz-Ummeldung",
+        "Kfz-Abmeldung"
+    };
 
     private static final String EN_INVALID_JUMPIN_HEADER = "This view cannot be loaded.";
     private static final String EN_INVALID_JUMPIN_TEXT =
@@ -185,6 +202,242 @@ public class CitizenViewPage extends BasePage {
         ScenarioLogManager.getLogger().info("Service Finder is visible on the start page.");
     }
 
+    /** ZMSKVR-84: the start page search box and the frequently requested service links. */
+    public void assertServiceSearchAndSuggestions() {
+        CONTEXT.set();
+        JsonNode state = serviceSearch("links", "");
+        Assert.assertTrue(state.path("hasField").asBoolean(), "The service search field is not on the start page.");
+        JsonNode links = state.path("links");
+        Assert.assertEquals(
+                links.size(),
+                SERVICE_SUGGESTIONS.length,
+                "Suggestion links were " + links);
+        for (int i = 0; i < SERVICE_SUGGESTIONS.length; i++) {
+            Assert.assertEquals(links.get(i).asText(), SERVICE_SUGGESTIONS[i], "Suggestion links were " + links);
+        }
+    }
+
+    public void reloadCitizenView() {
+        CONTEXT.set();
+        ScenarioLogManager.getLogger().info("zmscitizenview: reload the booking page");
+        DriverUtil.getDriver().navigate().refresh();
+        new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(d -> shadowDomContainsText("Bürgerservice-Suche"));
+    }
+
+    /** Click the search field. The list opens underneath it. */
+    public void clickServiceSearchField() {
+        CONTEXT.set();
+        waitUntilServiceOptionsLoaded();
+        serviceSearch("click", "");
+        waitUntilServiceListOpen();
+    }
+
+    /**
+     * From the Leistung heading, Tab lands on the search field. Enter opens the list.
+     */
+    public void openServiceListWithTabAndEnter() {
+        CONTEXT.set();
+        waitUntilServiceOptionsLoaded();
+        serviceSearch("close", "");
+        serviceSearch("focus-heading", "");
+        Actions actions = new Actions(DriverUtil.getDriver());
+        boolean focused = false;
+        for (int i = 0; i < 8; i++) {
+            if (serviceSearch("focused", "").path("focused").asBoolean()) {
+                focused = true;
+                break;
+            }
+            actions.sendKeys(Keys.TAB).perform();
+            sleepQuiet(150L);
+        }
+        Assert.assertTrue(focused, "Tab did not reach the service search field.");
+        actions.sendKeys(Keys.ENTER).perform();
+        waitUntilServiceListOpen();
+    }
+
+    public void assertServiceListOpenUnderField() {
+        CONTEXT.set();
+        JsonNode state = waitUntilServiceListOpen();
+        Assert.assertTrue(
+                state.path("under").asBoolean(),
+                "The service list should open under the search field: " + state);
+    }
+
+    public void assertServiceListAlphabetical() {
+        CONTEXT.set();
+        JsonNode state = new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(d -> {
+                    JsonNode node = serviceSearch("read", "");
+                    if (node.path("names").size() > 1) {
+                        return node;
+                    }
+                    // An open list can still show the empty Choices notice until the services arrive.
+                    if (serviceSearch("options", "").path("count").asInt() > 1) {
+                        serviceSearch("close", "");
+                        serviceSearch("click", "");
+                        node = serviceSearch("read", "");
+                        if (node.path("names").size() > 1) {
+                            return node;
+                        }
+                    }
+                    return null;
+                });
+        Assert.assertTrue(
+                state.path("alphabetical").asBoolean(),
+                "The service list is not alphabetical: " + state.path("names"));
+    }
+
+    public void typeIntoServiceSearch(String query) {
+        CONTEXT.set();
+        String folded = query.toLowerCase(Locale.ROOT);
+        new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(d -> {
+                    serviceSearch("type", query);
+                    JsonNode names = serviceSearch("read", "").path("names");
+                    if (names.size() == 0) {
+                        return false;
+                    }
+                    for (JsonNode name : names) {
+                        if (!name.asText().toLowerCase(Locale.ROOT).contains(folded)) {
+                            return false;
+                        }
+                    }
+                    return true;
+                });
+    }
+
+    public void assertServiceListContainsOnly(String query) {
+        CONTEXT.set();
+        String folded = query.toLowerCase(Locale.ROOT);
+        JsonNode names = serviceSearch("read", "").path("names");
+        Assert.assertTrue(names.size() > 0, "The service list is empty for \"" + query + "\".");
+        for (JsonNode name : names) {
+            Assert.assertTrue(
+                    name.asText().toLowerCase(Locale.ROOT).contains(folded),
+                    "\"" + name.asText() + "\" does not contain \"" + query + "\". List: " + names);
+        }
+    }
+
+    public void assertServiceListIncludesAndNot(String present, String absent) {
+        CONTEXT.set();
+        JsonNode names = serviceSearch("read", "").path("names");
+        boolean found = false;
+        for (JsonNode name : names) {
+            String text = name.asText();
+            Assert.assertNotEquals(text, absent, "\"" + absent + "\" is still in the service list: " + names);
+            if (text.equals(present)) {
+                found = true;
+            }
+        }
+        Assert.assertTrue(found, "\"" + present + "\" is not in the service list: " + names);
+    }
+
+    /** Choose a row in the open list. That opens the Leistung step for the service. */
+    public void chooseServiceFromOpenList(String label) {
+        CONTEXT.set();
+        JsonNode state = serviceSearch("choose", label);
+        Assert.assertTrue(
+                state.path("chosen").asBoolean(),
+                "Could not choose \"" + label + "\" from the service list.");
+        assertCombinationStepVisible();
+    }
+
+    /** The search field stays empty until offices-and-services fills its options. */
+    private void waitUntilServiceOptionsLoaded() {
+        new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(d -> serviceSearch("options", "").path("count").asInt() > 1);
+    }
+
+    private JsonNode waitUntilServiceListOpen() {
+        new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(d -> serviceSearch("read", "").path("open").asBoolean());
+        JsonNode state = serviceSearch("read", "");
+        Assert.assertTrue(state.path("open").asBoolean(), "The service list did not open: " + state);
+        return state;
+    }
+
+    private JsonNode serviceSearch(String mode, String text) {
+        String script =
+                "var mode=arguments[0];var text=arguments[1]||'';"
+                        + "function norm(t){return (t||'').replace(/\\s+/g,' ').trim();}"
+                        + "function walk(n,fn){if(!n)return;fn(n);if(n.shadowRoot)walk(n.shadowRoot,fn);"
+                        + "var c=n.children;if(c)for(var i=0;i<c.length;i++)walk(c[i],fn);}"
+                        + "function up(n){if(!n)return null;if(n.parentElement)return n.parentElement;"
+                        + "var root=n.getRootNode&&n.getRootNode();return root&&root.host?root.host:null;}"
+                        + "function findSelect(){var found=null;walk(document.body,function(n){"
+                        + "if(!found&&(n.id||'')==='select-service-search')found=n;});return found;}"
+                        + "function choicesOf(select){var n=select;while(n){"
+                        + "if(n.classList&&n.classList.contains('choices'))return n;n=up(n);}return null;}"
+                        + "function dropdown(choices){return choices?choices.querySelector('.choices__list--dropdown'):null;}"
+                        + "function isOpen(choices){var d=dropdown(choices);return !!(d&&(d.getAttribute('aria-expanded')==='true'"
+                        + "||d.classList.contains('is-active')));}"
+                        + "function shown(el){if(!el||el.hidden)return false;var st=window.getComputedStyle(el);"
+                        + "return st.display!=='none'&&st.visibility!=='hidden'&&st.opacity!=='0';}"
+                        + "function placeholder(name){return name==='Keine Leistung gefunden'||name==='No service found'"
+                        + "||name==='No choices to choose from'||name==='No results found'"
+                        + "||name==='Leistung auswählen'||name==='Enter search term';}"
+                        + "function namesOf(choices){var d=dropdown(choices);var names=[];if(!d)return names;"
+                        + "var items=d.querySelectorAll('.choices__item--choice');"
+                        + "for(var i=0;i<items.length;i++){var name=norm(items[i].textContent);"
+                        + "if(!shown(items[i])||!name||placeholder(name))continue;names.push(name);}return names;}"
+                        + "function optionCount(select){var n=0;if(!select)return n;var opts=select.querySelectorAll('option');"
+                        + "for(var i=0;i<opts.length;i++){var name=norm(opts[i].textContent);if(name&&!placeholder(name))n++;}return n;}"
+                        + "function deepActive(){var el=document.activeElement,guard=0;"
+                        + "while(el&&el.shadowRoot&&el.shadowRoot.activeElement&&guard++<10)el=el.shadowRoot.activeElement;return el;}"
+                        + "var select=findSelect();var choices=choicesOf(select);"
+                        + "if(mode==='links'){var links=[];walk(document.body,function(n){"
+                        + "if(!n.classList||!n.classList.contains('m-linklist-inline__list'))return;"
+                        + "var as=n.querySelectorAll('a');for(var i=0;i<as.length;i++)links.push(norm(as[i].textContent));});"
+                        + "return JSON.stringify({hasField:!!select,links:links});}"
+                        + "if(mode==='options')return JSON.stringify({count:optionCount(select)});"
+                        + "if(!choices)return JSON.stringify({open:false,hasField:false});"
+                        + "if(mode==='click'){var inner=choices.querySelector('.choices__inner');"
+                        + "if(inner){inner.scrollIntoView({block:'center'});inner.click();}"
+                        + "return JSON.stringify({open:isOpen(choices)});}"
+                        + "if(mode==='close'){if(isOpen(choices)){var input=choices.querySelector('.choices__input--cloned');"
+                        + "if(input)input.dispatchEvent(new KeyboardEvent('keydown',{key:'Escape',bubbles:true,cancelable:true}));"
+                        + "if(isOpen(choices)){var inner2=choices.querySelector('.choices__inner');if(inner2)inner2.click();}}"
+                        + "return JSON.stringify({open:isOpen(choices)});}"
+                        + "if(mode==='focus-heading'){var heading=null;walk(document.body,function(n){"
+                        + "if(!heading&&(n.tagName||'').toUpperCase()==='H2'&&norm(n.textContent)==='Leistung')heading=n;});"
+                        + "if(heading){heading.setAttribute('tabindex','-1');heading.focus();}"
+                        + "return JSON.stringify({focused:!!heading});}"
+                        + "if(mode==='focused'){var el=deepActive(),inside=false,n=el;"
+                        + "while(n){if(n===choices){inside=true;break;}n=up(n);}"
+                        + "return JSON.stringify({focused:inside});}"
+                        + "if(mode==='type'){var field=choices.querySelector('.choices__input--cloned');"
+                        + "if(field){field.focus();field.value=text;"
+                        + "field.dispatchEvent(new Event('input',{bubbles:true}));"
+                        + "field.dispatchEvent(new KeyboardEvent('keyup',{key:text.slice(-1)||'',bubbles:true}));}}"
+                        + "if(mode==='choose'){var picked=false;var d=dropdown(choices);"
+                        + "var items=d?d.querySelectorAll('.choices__item--choice'):[];"
+                        + "for(var i=0;i<items.length;i++){if(shown(items[i])&&norm(items[i].textContent)===norm(text)){"
+                        + "var el=items[i].matches&&items[i].matches('[data-choice]')?items[i]"
+                        + ":(items[i].querySelector('[data-choice]')||items[i]);"
+                        + "var r=el.getBoundingClientRect();var x=r.left+Math.max(r.width,1)/2;var y=r.top+Math.max(r.height,1)/2;"
+                        + "var opts={bubbles:true,cancelable:true,view:window,clientX:x,clientY:y,button:0};"
+                        + "el.dispatchEvent(new MouseEvent('mousedown',opts));"
+                        + "el.dispatchEvent(new MouseEvent('mouseup',opts));"
+                        + "el.dispatchEvent(new MouseEvent('click',opts));"
+                        + "picked=true;break;}}"
+                        + "return JSON.stringify({chosen:picked});}"
+                        + "var list=namesOf(choices);"
+                        + "var sorted=list.slice().sort(function(a,b){return a.localeCompare(b,undefined,"
+                        + "{sensitivity:'base',ignorePunctuation:true,numeric:true});});"
+                        + "var innerBox=choices.querySelector('.choices__inner');var drop=dropdown(choices);"
+                        + "var under=false;if(innerBox&&drop){var ir=innerBox.getBoundingClientRect();"
+                        + "var dr=drop.getBoundingClientRect();under=dr.top>=ir.bottom-12;}"
+                        + "return JSON.stringify({open:isOpen(choices),under:under,names:list,"
+                        + "alphabetical:JSON.stringify(list)===JSON.stringify(sorted)});";
+        Object raw = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script, mode, text);
+        try {
+            return new ObjectMapper().readTree(raw == null ? "{}" : String.valueOf(raw));
+        } catch (Exception e) {
+            throw new AssertionError("Could not read the service search: " + raw, e);
+        }
+    }
+
     /**
      * True if substring appears anywhere in document + shadow DOM text.
      * Also walks slotted nodes and same-origin frames, and folds whitespace, so a painted
@@ -282,6 +535,7 @@ public class CitizenViewPage extends BasePage {
                         + "  for(var i=0;i<all.length;i++){"
                         + "    var el=all[i];"
                         + "    if(insideQuick(el))continue;"
+                        + "    if(el.querySelector&&el.querySelector('.m-linklist-inline__list'))continue;"
                         + "    var txt=norm(el.textContent);"
                         + "    if(txt&&txt.indexOf(label)>=0)return true;"
                         + "    if(el.shadowRoot&&has(el.shadowRoot))return true;"
@@ -420,6 +674,212 @@ public class CitizenViewPage extends BasePage {
         Assert.assertNotEquals(
                 "missing", state, "Minus for \"" + label + "\" was not on the service page.");
         assertServiceCounter(label, 1);
+    }
+
+    /** ZMSKVR-106: the service step continues with the label Weiter. */
+    public void assertWeiterButtonSays(String label) {
+        CONTEXT.set();
+        Assert.assertTrue(
+                weiterButtonIsExact(label),
+                "Expected the continue button on the service page to say " + label + ".");
+    }
+
+    /**
+     * ZMSKVR-106: Patternlab secondary buttons. Minus reduces, plus increases, each with its icon.
+     */
+    public void assertSecondaryPlusAndMinus(String label) {
+        CONTEXT.set();
+        JsonNode counter = waitForServiceCounter(label);
+        Assert.assertTrue(counter.path("minusSecondary").asBoolean(), "Minus for \"" + label + "\" is not secondary: " + counter);
+        Assert.assertTrue(counter.path("plusSecondary").asBoolean(), "Plus for \"" + label + "\" is not secondary: " + counter);
+        Assert.assertEquals(counter.path("minusIcon").asText(), "minus", "Minus icon for \"" + label + "\": " + counter);
+        Assert.assertEquals(counter.path("plusIcon").asText(), "plus", "Plus icon for \"" + label + "\": " + counter);
+    }
+
+    public void assertMinusButton(String label, boolean disabled) {
+        CONTEXT.set();
+        JsonNode counter = waitForServiceCounter(label);
+        String state = counter.path("minus").asText();
+        Assert.assertEquals(
+                state,
+                disabled ? "disabled" : "enabled",
+                "Minus for \"" + label + "\" was " + state);
+    }
+
+    /** ZMSKVR-106: the service name links to its description on muenchen.de. */
+    public void assertServiceDescriptionLink(String label, String serviceId) {
+        CONTEXT.set();
+        JsonNode counter = waitForServiceCounter(label);
+        String href = counter.path("href").asText();
+        Assert.assertTrue(
+                href.contains("stadt.muenchen.de/service/info/" + serviceId),
+                "\"" + label + "\" should link to its service description, href was " + href);
+    }
+
+    /**
+     * ZMSKVR-249: desktop keeps the count and buttons left of the name. A phone puts them underneath.
+     */
+    public void assertCountBesideNameOnDesktopAndBelowOnPhone(String label) {
+        CONTEXT.set();
+        RemoteWebDriver driver = DriverUtil.getDriver();
+        Dimension original = driver.manage().window().getSize();
+        try {
+            driver.manage().window().setSize(new Dimension(1400, 900));
+            sleepQuiet(400L);
+            JsonNode wide = waitForServiceCounter(label);
+            Assert.assertTrue(wide.path("nameLeft").asDouble() >= 0, "No service-name link for \"" + label + "\".");
+            Assert.assertTrue(
+                    wide.path("controlsRight").asDouble() <= wide.path("nameLeft").asDouble() + 12
+                            && wide.path("controlsBottom").asDouble() >= wide.path("nameTop").asDouble() - 8
+                            && wide.path("controlsTop").asDouble() <= wide.path("nameBottom").asDouble() + 8,
+                    "On a wide window the count sits left of \"" + label + "\": " + wide);
+            driver.manage().window().setSize(new Dimension(390, 844));
+            sleepQuiet(400L);
+            JsonNode narrow = waitForServiceCounter(label);
+            Assert.assertTrue(narrow.path("nameBottom").asDouble() >= 0, "No service-name link for \"" + label + "\".");
+            Assert.assertTrue(
+                    narrow.path("controlsTop").asDouble() >= narrow.path("nameBottom").asDouble() - 8,
+                    "On a phone the count sits below \"" + label + "\": " + narrow);
+        } finally {
+            driver.manage().window().setSize(
+                    original.getWidth() >= 1200 ? original : new Dimension(1400, 900));
+        }
+    }
+
+    /** Click plus until the service's own maximum disables it. */
+    public void raiseServiceUntilPlusDisabled(String label) {
+        CONTEXT.set();
+        for (int i = 0; i < 8; i++) {
+            JsonNode counter = waitForServiceCounter(label);
+            if ("disabled".equals(counter.path("plus").asText())) {
+                return;
+            }
+            Assert.assertEquals(
+                    counter.path("plus").asText(),
+                    "enabled",
+                    "Plus for \"" + label + "\" was " + counter.path("plus").asText());
+            int current = displayedServiceCount(label);
+            increaseSelectedService(label);
+            int next = current + 1;
+            new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                    .until(d -> serviceCounterShows(label, next)
+                            || "disabled".equals(queryServiceCounter(label).path("plus").asText()));
+        }
+        Assert.fail("Plus for \"" + label + "\" was still enabled after 8 increases.");
+    }
+
+    private int displayedServiceCount(String label) {
+        for (int n = 0; n <= 8; n++) {
+            if (serviceCounterShows(label, n)) {
+                return n;
+            }
+        }
+        Assert.fail("No displayed count for \"" + label + "\".");
+        return -1;
+    }
+
+    private JsonNode waitForServiceCounter(String label) {
+        new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(d -> !"missing".equals(queryServiceCounter(label).path("minus").asText()));
+        JsonNode counter = queryServiceCounter(label);
+        Assert.assertNotEquals(
+                "missing",
+                counter.path("minus").asText(),
+                "No count control for \"" + label + "\".");
+        return counter;
+    }
+
+    private JsonNode queryServiceCounter(String label) {
+        String script =
+                "var label=arguments[0];"
+                        + "function norm(t){return (t||'').replace(/\\s+/g,' ').trim();}"
+                        + "function key(t){return norm(t).replace(/-/g,'').toLowerCase();}"
+                        + "var labelKey=key(label);"
+                        + "function shown(el){var n=el;while(n&&n.nodeType===1){"
+                        + "var st=window.getComputedStyle(n);"
+                        + "if(st.display==='none'||st.visibility==='hidden'||st.opacity==='0')return false;"
+                        + "if(n.parentElement){n=n.parentElement;continue;}"
+                        + "var root=n.getRootNode&&n.getRootNode();n=root&&root.host?root.host:null;}return true;}"
+                        + "function isDisabled(el){if(!el)return true;"
+                        + "function off(node){return !!(node&&(node.disabled||node.hasAttribute&&node.hasAttribute('disabled')"
+                        + "||(node.getAttribute&&node.getAttribute('aria-disabled')==='true')));}"
+                        + "if(off(el))return true;"
+                        + "var host=el.getRootNode&&el.getRootNode().host;return off(host);}"
+                        + "function paint(n){var icon='',secondary=false,blob='';"
+                        + "function note(el){if(!el||!el.getAttribute)return;"
+                        + "var ic=el.getAttribute('icon')||'';"
+                        + "var href=el.getAttribute('href')||el.getAttribute('xlink:href')||'';"
+                        + "var cls=(typeof el.className==='string')?el.className:'';"
+                        + "var v=el.getAttribute('variant')||'';"
+                        + "if(!icon&&ic)icon=ic;"
+                        + "if(v==='secondary'||cls.indexOf('secondary')>=0)secondary=true;"
+                        + "blob+=' '+ic+' '+href+' '+cls;}"
+                        + "function scan(el,depth){if(!el||depth>8)return;note(el);"
+                        + "if(el.shadowRoot)scan(el.shadowRoot,depth+1);"
+                        + "var kids=el.children;if(kids)for(var i=0;i<kids.length;i++)scan(kids[i],depth+1);}"
+                        + "scan(n,0);var cur=n,guard=0;"
+                        + "while(cur&&guard++<6){note(cur);"
+                        + "if(cur.parentElement)cur=cur.parentElement;"
+                        + "else{var root=cur.getRootNode&&cur.getRootNode();cur=root&&root.host?root.host:null;}}"
+                        + "return {icon:icon,secondary:secondary,blob:blob.toLowerCase()};}"
+                        + "function walk(n,fn){if(!n)return;fn(n);if(n.shadowRoot)walk(n.shadowRoot,fn);"
+                        + "var c=n.children;if(c)for(var i=0;i<c.length;i++)walk(c[i],fn);}"
+                        + "function consider(best,btn){var aria=btn.getAttribute('aria-label')||'';"
+                        + "if(!shown(btn)||key(aria).indexOf(labelKey)<0)return best;"
+                        + "if(!best||aria.length<best.aria.length)return {btn:btn,aria:aria};return best;}"
+                        + "var minus=null,plus=null;"
+                        + "walk(document.body,function(n){var tag=(n.tagName||'').toUpperCase();"
+                        + "if(tag!=='BUTTON')return;var aria=(n.getAttribute('aria-label')||'').toLowerCase();"
+                        + "if(aria.indexOf('reduzier')>=0)minus=consider(minus,n);"
+                        + "else if(key(aria).indexOf(labelKey)>=0)plus=consider(plus,n);});"
+                        + "if(!minus){var show=null;walk(document.body,function(n){"
+                        + "var tag=(n.tagName||'').toUpperCase();"
+                        + "if((tag==='BUTTON'||tag==='MUC-BUTTON')&&norm(n.textContent||'').indexOf('Alle Leistungen anzeigen')>=0&&shown(n))show=n;});"
+                        + "if(show){show.click();return JSON.stringify({minus:'missing',revealed:true});}"
+                        + "return JSON.stringify({minus:'missing'});}"
+                        + "var link=null,linkLen=100000;walk(document.body,function(n){"
+                        + "if((n.tagName||'').toUpperCase()!=='A')return;"
+                        + "var href=n.getAttribute('href')||'';"
+                        + "if(href.indexOf('stadt.muenchen.de/service/info/')<0)return;"
+                        + "var nameKey=key(n.textContent||'');"
+                        + "if(nameKey.indexOf(labelKey)<0||nameKey.length>=linkLen)return;"
+                        + "link=n;linkLen=nameKey.length;});"
+                        + "function box(el){if(!el||!el.getBoundingClientRect)return null;var r=el.getBoundingClientRect();"
+                        + "return {left:r.left,right:r.right,top:r.top,bottom:r.bottom};}"
+                        + "var mb=box(minus.btn),pb=plus?box(plus.btn):mb,lb=box(link);"
+                        + "var mp=paint(minus.btn),pp=plus?paint(plus.btn):{icon:'',secondary:false,blob:''};"
+                        + "function iconName(p,word){"
+                        + "if((p.icon||'').indexOf(word)>=0||p.blob.indexOf(word)>=0)return word;return '';}"
+                        + "return JSON.stringify({"
+                        + "minus:isDisabled(minus.btn)?'disabled':'enabled',"
+                        + "plus:!plus?'missing':(isDisabled(plus.btn)?'disabled':'enabled'),"
+                        + "minusSecondary:mp.secondary,plusSecondary:pp.secondary,"
+                        + "minusIcon:iconName(mp,'minus'),plusIcon:iconName(pp,'plus'),"
+                        + "href:link?link.getAttribute('href'):'',"
+                        + "controlsRight:Math.max(mb.right,pb.right),controlsTop:Math.min(mb.top,pb.top),"
+                        + "controlsBottom:Math.max(mb.bottom,pb.bottom),"
+                        + "nameLeft:lb?lb.left:-1,nameTop:lb?lb.top:-1,nameBottom:lb?lb.bottom:-1"
+                        + "});";
+        Object raw = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script, label);
+        try {
+            return new com.fasterxml.jackson.databind.ObjectMapper()
+                    .readTree(raw == null ? "{\"minus\":\"missing\"}" : String.valueOf(raw));
+        } catch (Exception e) {
+            throw new AssertionError("Could not read the count for \"" + label + "\": " + raw, e);
+        }
+    }
+
+    private boolean weiterButtonIsExact(String label) {
+        String script =
+                "var label=arguments[0];"
+                        + "function norm(t){return (t||'').replace(/\\s+/g,' ').trim();}"
+                        + "function walk(n){if(!n)return false;var tag=(n.tagName||'').toUpperCase();"
+                        + "if((tag==='BUTTON'||tag==='MUC-BUTTON')&&norm(n.textContent)===label)return true;"
+                        + "if(n.shadowRoot&&walk(n.shadowRoot))return true;"
+                        + "var c=n.children;if(c)for(var i=0;i<c.length;i++)if(walk(c[i]))return true;return false;}"
+                        + "return walk(document.body);";
+        Object found = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script, label);
+        return Boolean.TRUE.equals(found);
     }
 
     private boolean pressServiceCounter(String label, boolean increase) {
@@ -841,8 +1301,21 @@ public class CitizenViewPage extends BasePage {
                     + "return {present:true,disabled:isDisabled(found),lines:lineCount(found,word)};}"
                     + "function isPrimary(el){return !!el&&((el.getAttribute('variant')||'')==='primary'||(el.classList&&el.classList.contains('m-button--primary')));}";
 
+    private static final String[] OFFICE_FREQUENCY = {
+        "Bürgerbüro Ruppertstraße",
+        "Bürgerbüro Orleansplatz",
+        "Bürgerbüro Pasing",
+        "Bürgerbüro Riesenfeldstraße",
+        "Bürgerbüro Forstenrieder Allee",
+        "Bürgerbüro Leonrodstraße"
+    };
+
+    private static final String OFFICE_SCHEIDPLATZ = "Bürgerbüro Scheidplatz";
+
     private String listHourLabel;
     private String listHourBeforeMove;
+    private String calendarHourBeforeMove;
+    private int hiddenOfficeId = -1;
     private int listAccordionCount;
     private String openListHeading;
     private String markedTimeslotId;
@@ -970,6 +1443,328 @@ public class CitizenViewPage extends BasePage {
         JsonNode state = new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
                 .until(d -> morningLabel(calendarSnapshot()));
         assertMorningLabels(state);
+    }
+
+    /**
+     * Ort checkboxes start selected. Ranked Bürgerbüros follow frequency order. Scheidplatz has no
+     * frequency rank in the catalog, so it follows them. Each checkbox also shows its address.
+     */
+    public void assertOfficesCheckedInFrequencyOrder() {
+        CONTEXT.set();
+        JsonNode offices;
+        try {
+            offices = new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                    .until(d -> {
+                        JsonNode node = providerCheckboxes().path("offices");
+                        return node.size() > 1 ? node : null;
+                    });
+        } catch (TimeoutException e) {
+            Assert.fail("Location checkboxes did not appear: " + providerCheckboxes());
+            return;
+        }
+        assertOfficeOrder(offices, true, true);
+    }
+
+    /** Open hour: each office that has a slot is a map-pin heading, in the same order as the checkboxes. */
+    public void assertOpenHourListsOfficesWithMapPin() {
+        CONTEXT.set();
+        JsonNode titles = new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(d -> {
+                    JsonNode node = locationTitles().path("titles");
+                    return node.size() > 1 ? node : null;
+                });
+        assertOfficeOrder(titles, false, false);
+    }
+
+    /** Früher is a disabled ghost button. Später is an enabled ghost button. */
+    public void assertCalendarGhostPagerStartsAtFirstGroup() {
+        CONTEXT.set();
+        JsonNode buttons = new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(d -> {
+                    JsonNode node = calendarGhostButtons();
+                    return node.path("earlier").path("present").asBoolean()
+                            && node.path("later").path("present").asBoolean()
+                            ? node
+                            : null;
+                });
+        assertGhostButton(buttons.path("earlier"), "Früher", "chevron-left", true);
+        assertGhostButton(buttons.path("later"), "Später", "chevron-right", false);
+    }
+
+    public void moveCalendarHour(boolean later) {
+        CONTEXT.set();
+        JsonNode before = calendarSnapshot();
+        String current = firstHourLabel(before);
+        if (later) {
+            calendarHourBeforeMove = current;
+        }
+        String word = later ? "Später" : "Früher";
+        JsonNode clicked = citizenJson(
+                "(function(){var btn=findButton(document.body,__args[0]);if(!btn)return {clicked:false};"
+                        + "if(isDisabled(btn))return {clicked:false,disabled:true};"
+                        + "var inner=btn.shadowRoot&&btn.shadowRoot.querySelector('button');"
+                        + "(inner||btn).click();return {clicked:true};})()",
+                word);
+        Assert.assertTrue(clicked.path("clicked").asBoolean(), "Could not click " + word + ": " + clicked);
+        String next = new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(d -> {
+                    String label = hourLabelOrEmpty(calendarSnapshot());
+                    return !label.isEmpty() && !label.equals(current) ? label : null;
+                });
+        if (!later) {
+            Assert.assertEquals(
+                    next,
+                    calendarHourBeforeMove,
+                    "Früher should return to " + calendarHourBeforeMove + " but showed " + next);
+        }
+    }
+
+    /** Clear the first office that is actually listed under the open hour. */
+    public void clearFirstShownOffice() {
+        CONTEXT.set();
+        JsonNode titles = locationTitles().path("titles");
+        Assert.assertTrue(titles.size() > 0, "No office heading to clear: " + titles);
+        String id = titles.get(0).path("id").asText();
+        Assert.assertTrue(id.startsWith("provider-"), "Office heading id: " + titles.get(0));
+        try {
+            hiddenOfficeId = Integer.parseInt(id.substring("provider-".length()));
+        } catch (NumberFormatException e) {
+            Assert.fail("Office heading id is not a number: " + titles.get(0) + " " + e.getMessage());
+            return;
+        }
+        deepClickRequired("#checkbox-provider-" + hiddenOfficeId);
+        waitUntilProviderToggleSettled(15);
+        new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(d -> !deepElementExists("#timeslot-grid-provider-" + hiddenOfficeId));
+    }
+
+    public void assertClearedOfficeIsHidden() {
+        CONTEXT.set();
+        Assert.assertTrue(hiddenOfficeId > 0, "No office was cleared");
+        Assert.assertFalse(
+                deepProviderCheckboxChecked(hiddenOfficeId),
+                "Office " + hiddenOfficeId + " should be unchecked");
+        Assert.assertFalse(
+                deepElementExists("#timeslot-grid-provider-" + hiddenOfficeId),
+                "Cleared office " + hiddenOfficeId + " should leave the available times");
+        JsonNode titles = new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(d -> {
+                    JsonNode node = locationTitles().path("titles");
+                    return node.size() > 0 ? node : null;
+                });
+        for (JsonNode title : titles) {
+            Assert.assertNotEquals(
+                    title.path("id").asText(),
+                    "provider-" + hiddenOfficeId,
+                    "Cleared office is still a heading: " + titles);
+        }
+    }
+
+    /** One bookable office: a contact tile, no location checkboxes. */
+    public void assertSingleOfficeTile(int officeId, String name, String street) {
+        CONTEXT.set();
+        JsonNode tile = new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(d -> {
+                    JsonNode node = officeTile(officeId);
+                    return node.path("name").asText().contains(name) ? node : null;
+                });
+        Assert.assertEquals(tile.path("checkboxes").asInt(), 0, "One office has no checkboxes: " + tile);
+        Assert.assertEquals(tile.path("name").asText(), name, "Tile name: " + tile);
+        Assert.assertTrue(tile.path("text").asText().contains(street), "Tile should show the street: " + tile);
+        String icons = tile.path("icons").asText();
+        Assert.assertTrue(icons.contains("icon-place"), "Tile should use the place icon: " + tile);
+        Assert.assertTrue(icons.contains("icon-map-pin"), "Tile should use the map pin: " + tile);
+    }
+
+    /** One office shows every group at once, with no location heading and no Früher or Später. */
+    public void assertSingleOfficeGroupsTimesWithoutLocationHeadings() {
+        CONTEXT.set();
+        JsonNode state = new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(d -> hourLabel(calendarSnapshot()));
+        assertHourLabels(state);
+        Assert.assertFalse(
+                state.path("earlier").path("present").asBoolean(),
+                "One office hides Früher: " + state.path("earlier"));
+        Assert.assertFalse(
+                state.path("later").path("present").asBoolean(),
+                "One office hides Später: " + state.path("later"));
+        Assert.assertEquals(
+                locationTitles().path("titles").size(),
+                0,
+                "One office has no location heading: " + locationTitles());
+    }
+
+    private JsonNode providerCheckboxes() {
+        return citizenJson(
+                "(function(){function inView(el){var n=el;var self=true;while(n&&n.nodeType===1){"
+                        + "var st=window.getComputedStyle(n);if(st.display==='none'||st.visibility==='hidden')return false;"
+                        + "if(!self&&st.opacity==='0')return false;self=false;"
+                        + "if(n.parentElement){n=n.parentElement;continue;}"
+                        + "var root=n.getRootNode&&n.getRootNode();n=root&&root.host?root.host:null;}return true;}"
+                        + "function officeText(el){var cur=el;var guard=0;var text='';"
+                        + "while(cur&&guard++<8){text=textOf(cur);var boxes=0;"
+                        + "if(cur.querySelectorAll){boxes=cur.querySelectorAll('[id^=\"checkbox-provider-\"]').length;}"
+                        + "if(text.indexOf('Bürgerbüro')>=0&&boxes<=1)return text;"
+                        + "if(cur.parentElement){cur=cur.parentElement;continue;}"
+                        + "var root=cur.getRootNode&&cur.getRootNode();cur=root&&root.host?root.host:null;}"
+                        + "return text;}"
+                        + "var nodes=cssAll('[id^=\"checkbox-provider-\"]');var seen={};var offices=[];"
+                        + "for(var i=0;i<nodes.length;i++){var el=nodes[i];var id=el.id||'';"
+                        + "if(!/^checkbox-provider-\\d+$/.test(id)||seen[id]||!inView(el))continue;seen[id]=true;"
+                        + "var checked=false;if(el.tagName==='INPUT'&&el.type==='checkbox')checked=!!el.checked;"
+                        + "else if(el.shadowRoot){var inp=el.shadowRoot.querySelector('input[type=checkbox]');"
+                        + "if(inp)checked=!!inp.checked;}if(!checked){var inp2=el.querySelector&&el.querySelector('input[type=checkbox]');"
+                        + "if(inp2)checked=!!inp2.checked;else checked=el.getAttribute('aria-checked')==='true'"
+                        + "||(el.classList&&el.classList.contains('is-selected'));}"
+                        + "offices.push({id:id,text:officeText(el),checked:!!checked});}"
+                        + "return {offices:offices};})()");
+    }
+
+    private JsonNode locationTitles() {
+        return citizenJson(
+                "(function(){var nodes=cssAll('h5.location-title');var seen={};var titles=[];"
+                        + "for(var i=0;i<nodes.length;i++){var el=nodes[i];if(!shown(el))continue;"
+                        + "var id=el.id||'';if(id&&seen[id])continue;if(id)seen[id]=true;"
+                        + "var href='';var uses=el.querySelectorAll('use');"
+                        + "for(var u=0;u<uses.length;u++){href+=' '+(uses[u].getAttribute('href')||'')"
+                        + "+' '+(uses[u].getAttribute('xlink:href')||'');}"
+                        + "titles.push({id:id,text:textOf(el),pin:href.indexOf('map-pin')>=0});}"
+                        + "return {titles:titles};})()");
+    }
+
+    private JsonNode calendarGhostButtons() {
+        return citizenJson(
+                "(function(){function paint(word){var el=findButton(document.body,word);if(!el)return {present:false};"
+                        + "var variant='';var icon='';var blob='';var cur=el;var guard=0;"
+                        + "while(cur&&guard++<8){if(cur.getAttribute){var v=cur.getAttribute('variant')||'';"
+                        + "var ic=cur.getAttribute('icon')||'';if(!variant&&v)variant=v;if(!icon&&ic)icon=ic;"
+                        + "blob+=' '+(typeof cur.className==='string'?cur.className:'');}"
+                        + "if(cur.querySelectorAll){var uses=cur.querySelectorAll('use');"
+                        + "for(var u=0;u<uses.length;u++){blob+=' '+(uses[u].getAttribute('href')||'')"
+                        + "+' '+(uses[u].getAttribute('xlink:href')||'');}}"
+                        + "if(cur.shadowRoot){var suses=cur.shadowRoot.querySelectorAll('use');"
+                        + "for(var s=0;s<suses.length;s++){blob+=' '+(suses[s].getAttribute('href')||'')"
+                        + "+' '+(suses[s].getAttribute('xlink:href')||'');}}"
+                        + "if(cur.parentElement)cur=cur.parentElement;else{var root=cur.getRootNode&&cur.getRootNode();"
+                        + "cur=root&&root.host?root.host:null;}}"
+                        + "return {present:true,disabled:isDisabled(el),variant:variant,icon:icon,blob:blob.toLowerCase()};}"
+                        + "return {earlier:paint('Früher'),later:paint('Später')};})()");
+    }
+
+    private JsonNode officeTile(int officeId) {
+        return citizenJson(
+                "(function(){var id='provider-'+__args[0];var boxes=cssAll('[id^=\"checkbox-provider-\"]');"
+                        + "var seen={};var checkboxCount=0;for(var i=0;i<boxes.length;i++){var box=boxes[i];"
+                        + "if(!shown(box)||seen[box.id]||!/^checkbox-provider-\\d+$/.test(box.id||''))continue;"
+                        + "seen[box.id]=true;checkboxCount++;}"
+                        + "var heads=cssAll('h3.m-teaser-contained-contact__headline');var h=null;"
+                        + "for(var n=0;n<heads.length;n++){if(heads[n].id===id&&shown(heads[n])){h=heads[n];break;}}"
+                        + "var teaser=h;while(teaser&&!(teaser.classList&&teaser.classList.contains('m-teaser-contained-contact'))){"
+                        + "if(teaser.parentElement)teaser=teaser.parentElement;else{var root=teaser.getRootNode&&teaser.getRootNode();"
+                        + "teaser=root&&root.host?root.host:null;}}"
+                        + "var icons='';if(teaser){var uses=teaser.querySelectorAll('use');"
+                        + "for(var u=0;u<uses.length;u++){icons+=' '+(uses[u].getAttribute('href')||'')"
+                        + "+' '+(uses[u].getAttribute('xlink:href')||'');}}"
+                        + "return {checkboxes:checkboxCount,name:h?textOf(h):'',text:teaser?textOf(teaser):'',icons:icons};})()",
+                officeId);
+    }
+
+    private void assertOfficeOrder(JsonNode offices, boolean requireChecked, boolean requireAllKnown) {
+        int lastRank = -1;
+        boolean scheidplatz = false;
+        Set<String> seen = new HashSet<>();
+        Assert.assertTrue(offices.size() >= 2, "Expected several offices: " + offices);
+        for (JsonNode office : offices) {
+            String text = office.path("text").asText();
+            if (requireChecked) {
+                Assert.assertTrue(office.path("checked").asBoolean(), "Checkbox starts selected: " + office);
+                Assert.assertTrue(text.matches(".*\\d.*"), "Checkbox should show the address: " + text);
+            } else {
+                Assert.assertTrue(office.path("pin").asBoolean(), "Location heading needs a map pin: " + office);
+            }
+            String name = frequencyName(text);
+            if (name == null) {
+                Assert.assertTrue(
+                        text.contains(OFFICE_SCHEIDPLATZ),
+                        "Unexpected office: " + text + " offices=" + offices);
+                Assert.assertFalse(scheidplatz, "Scheidplatz appears twice: " + offices);
+                if (requireAllKnown) {
+                    Assert.assertEquals(
+                            lastRank,
+                            OFFICE_FREQUENCY.length - 1,
+                            "Scheidplatz follows the ranked Bürgerbüros: " + offices);
+                }
+                scheidplatz = true;
+                continue;
+            }
+            Assert.assertFalse(scheidplatz, "A ranked office follows Scheidplatz: " + offices);
+            int rank = frequencyRank(name);
+            Assert.assertTrue(rank > lastRank, "Office order broke at " + name + ": " + offices);
+            lastRank = rank;
+            seen.add(name);
+        }
+        Assert.assertTrue(
+                seen.contains("Bürgerbüro Ruppertstraße"),
+                "Bürgerbüro Ruppertstraße should be listed: " + offices);
+        if (requireAllKnown) {
+            String[] required = {
+                "Bürgerbüro Ruppertstraße",
+                "Bürgerbüro Orleansplatz",
+                "Bürgerbüro Pasing",
+                "Bürgerbüro Forstenrieder Allee",
+                "Bürgerbüro Leonrodstraße"
+            };
+            for (String name : required) {
+                Assert.assertTrue(seen.contains(name), "Missing " + name + " in " + offices);
+            }
+            Assert.assertTrue(
+                    scheidplatz,
+                    "Bürgerbüro Scheidplatz should follow the ranked offices: " + offices);
+        }
+    }
+
+    private static void assertGhostButton(JsonNode button, String word, String icon, boolean disabled) {
+        Assert.assertTrue(button.path("present").asBoolean(), word + " should be shown: " + button);
+        Assert.assertEquals(button.path("disabled").asBoolean(), disabled, word + " disabled state: " + button);
+        String variant = button.path("variant").asText();
+        String blob = button.path("blob").asText();
+        Assert.assertTrue(
+                "ghost".equals(variant) || blob.contains("ghost"),
+                word + " should be a ghost button: " + button);
+        Assert.assertTrue(
+                icon.equals(button.path("icon").asText()) || blob.contains(icon),
+                word + " should use " + icon + ": " + button);
+    }
+
+    private static String hourLabelOrEmpty(JsonNode state) {
+        if (state.path("list").asBoolean()) {
+            return "";
+        }
+        for (JsonNode label : state.path("timeLabels")) {
+            if (label.asText().matches("\\d{1,2}:00-\\d{1,2}:59")) {
+                return label.asText();
+            }
+        }
+        return "";
+    }
+
+    private static String frequencyName(String text) {
+        String found = null;
+        for (String name : OFFICE_FREQUENCY) {
+            if (text.contains(name) && (found == null || name.length() > found.length())) {
+                found = name;
+            }
+        }
+        return found;
+    }
+
+    private static int frequencyRank(String name) {
+        for (int i = 0; i < OFFICE_FREQUENCY.length; i++) {
+            if (OFFICE_FREQUENCY[i].equals(name)) {
+                return i;
+            }
+        }
+        return -1;
     }
 
     private static JsonNode hourLabel(JsonNode node) {
@@ -2098,17 +2893,34 @@ public class CitizenViewPage extends BasePage {
         long previous = readStoredSlotTimestamp();
         Assert.assertTrue(previous > 0, "No previous timeslot to skip.");
         rememberedAppointmentEpoch = previous;
-        try {
-            waitUntilAppointmentSlotsReady(Math.min(45, slotBookingWaitTimeoutSeconds()));
-        } catch (Exception e) {
-            ScenarioLogManager.getLogger()
-                    .warn("zmscitizenview: slots not ready before another timeslot: {}", e.toString());
-        }
+        // Stepping back to Termin mounts the calendar again. Under a full shard the
+        // slot request can outlast the 45s wait while MucSpinner is still showing.
+        waitForSlotsAfterReturningToTermin();
         ScenarioLogManager.getLogger()
                 .info("zmscitizenview: highlight another timeslot for office {} skipping {}", officeId, previous);
         Assert.assertTrue(
                 highlightPreferredTimeslotForOfficeOrAbsent(officeId, Long.toString(previous)),
                 "zmscitizenview: could not highlight another timeslot for provider " + officeId);
+    }
+
+    /**
+     * The Termin step fetches days and slots again after a stepper click. The first wait uses the
+     * same budget as the initial calendar load. A spinner that is still up gets one more wait.
+     */
+    private void waitForSlotsAfterReturningToTermin() {
+        int timeout = slotBookingWaitTimeoutSeconds();
+        for (int attempt = 1; attempt <= 2; attempt++) {
+            try {
+                waitUntilAppointmentSlotsReady(timeout);
+                return;
+            } catch (Exception e) {
+                ScenarioLogManager.getLogger()
+                        .warn(
+                                "zmscitizenview: slots not ready before another timeslot (attempt {}): {}",
+                                attempt,
+                                e.toString());
+            }
+        }
     }
 
     public void assertAvailableAppointmentsShown() {
@@ -3948,7 +4760,7 @@ public class CitizenViewPage extends BasePage {
         ScenarioLogManager.getLogger().info("zmscitizenview: clicking cancel appointment button (Termin absagen)");
         waitForAndClickButtonContaining("Termin absagen", DEFAULT_EXPLICIT_WAIT_TIME);
         confirmCancelAppointmentDialogIfShown();
-        String marker = "Sie haben Ihren Termin erfolgreich abgesagt.";
+        String marker = CANCELLATION_SUCCESS_HEADING;
         ScenarioLogManager.getLogger()
                 .info("zmscitizenview: waiting in 5s + 10s + 15s windows (30s total) for cancellation success callout");
         waitWithThreeWindows(() -> shadowDomContainsText(marker), "Cancellation success callout");
@@ -3974,9 +4786,22 @@ public class CitizenViewPage extends BasePage {
     public void assertCancellationSuccessCalloutVisible() {
         ScenarioLogManager.getLogger().info("zmscitizenview: checking for cancellation success callout (Sie haben Ihren Termin erfolgreich abgesagt.)");
         assertShadowContains(
-                "Sie haben Ihren Termin erfolgreich abgesagt.",
+                CANCELLATION_SUCCESS_HEADING,
                 "Cancellation success callout not found after cancelling appointment.");
         ScenarioLogManager.getLogger().info("zmscitizenview: cancellation success callout found");
+    }
+
+    /**
+     * ZMSKVR-112 / ZMSKVR-241 / ZMSKVR-1623: success callout heading and thank-you text after Termin absagen.
+     */
+    public void assertCancellationSuccessDetailsVisible() {
+        CONTEXT.set();
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: assert cancellation success callout heading and thank-you text");
+        assertCancellationSuccessCalloutVisible();
+        Assert.assertTrue(
+                shadowDomContainsText(CANCELLATION_SUCCESS_TEXT),
+                "Cancellation success callout must include the thank-you text.");
     }
 
     /**
