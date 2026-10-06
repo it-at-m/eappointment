@@ -81,6 +81,32 @@ public class CitizenViewSteps {
         page.assertEstimatedDurationMinutes(minutes, "service combination step");
     }
 
+    @Then("the service duration is shown with a clock and is {int} minutes")
+    public void theServiceDurationIsShownWithAClockAndIsMinutes(int minutes) {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: assert clock and estimated duration {} minutes", minutes);
+        page.assertEstimatedDurationShownWithClock(minutes);
+    }
+
+    @When("I increase the selected service {string}")
+    public void iIncreaseTheSelectedService(String label) {
+        ScenarioLogManager.getLogger().info("zmscitizenview: increase selected service {}", label);
+        page.increaseSelectedService(TestDataHelper.transformTestData(label));
+    }
+
+    @When("I decrease the selected service {string}")
+    public void iDecreaseTheSelectedService(String label) {
+        ScenarioLogManager.getLogger().info("zmscitizenview: decrease selected service {}", label);
+        page.decreaseSelectedService(TestDataHelper.transformTestData(label));
+    }
+
+    @Then("the selected service {string} cannot be reduced below 1")
+    public void theSelectedServiceCannotBeReducedBelow1(String label) {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: selected service {} stays at least 1", label);
+        page.assertSelectedServiceCannotDropBelowOne(TestDataHelper.transformTestData(label));
+    }
+
     @When("I add subservice {string} with quantity {int} on the service combination step")
     public void iAddSubserviceWithQuantityOnTheServiceCombinationStep(String subserviceLabel, int quantity) {
         String label = TestDataHelper.transformTestData(subserviceLabel);
@@ -93,6 +119,55 @@ public class CitizenViewSteps {
     public void iContinueFromTheServiceCombinationStep() {
         ScenarioLogManager.getLogger().info("zmscitizenview: Weiter (combination → office/time)");
         page.clickWeiter();
+    }
+
+    @Then("the booking stepper shows Leistung, Termin, Kontakt, and Übersicht")
+    public void theBookingStepperShowsTheFourSteps() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: booking stepper labels");
+        page.assertBookingStepperLabels();
+    }
+
+    @Then("the booking step {string} is {string} with the {string} icon")
+    public void theBookingStepIsWithTheIcon(String label, String state, String icon) {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: booking step {} is {} with icon {}", label, state, icon);
+        page.assertBookingStep(label, state, icon);
+    }
+
+    @When("I highlight the finished booking step {string}")
+    public void iHighlightTheFinishedBookingStep(String label) {
+        page.highlightFinishedBookingStep(label);
+    }
+
+    @When("I click the highlighted booking step")
+    public void iClickTheHighlightedBookingStep() {
+        page.clickHighlightedBookingStep();
+    }
+
+    @Then("available appointments are shown in the citizen view")
+    public void availableAppointmentsAreShownInTheCitizenView() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: Verfügbare Termine");
+        page.assertAvailableAppointmentsShown();
+    }
+
+    @Then("the service counter for {string} should still be {int}")
+    public void theServiceCounterShouldStillBe(String label, int count) {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: service counter {} is still {}", label, count);
+        page.assertServiceCounter(label, count);
+    }
+
+    @Then("the entered contact details are still on the contact form in the citizen view")
+    public void theEnteredContactDetailsAreStillOnTheContactForm() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: contact details are still filled in");
+        page.assertEnteredContactDetailsStillPresent();
+    }
+
+    @When("I scroll to and highlight another timeslot for office {int} in the citizen view")
+    public void iScrollToAndHighlightAnotherTimeslot(int officeId) {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: highlight a different timeslot for office {}", officeId);
+        page.highlightAnotherTimeslotForOffice(officeId);
     }
 
     @When("I select service {string} from the service finder and continue")
@@ -126,6 +201,114 @@ public class CitizenViewSteps {
         ScenarioLogManager.getLogger()
                 .info("zmscitizenview: no bookable day for office {}", officeId);
         page.assertNoBookableDay(officeId);
+    }
+
+    @Then("the calendar and list toggle shows {string} as active")
+    public void theCalendarAndListToggleShowsAsActive(String activeLabel) {
+        ScenarioLogManager.getLogger().info("zmscitizenview: toggle active label {}", activeLabel);
+        page.assertCalendarListToggleShows(activeLabel);
+    }
+
+    @Then("the calendar and list toggle sits below the time heading on a phone")
+    public void theCalendarAndListToggleSitsBelowTheTimeHeadingOnAPhone() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: toggle sits beside the heading, and below it on a phone");
+        page.assertToggleSitsWithTheHeading();
+    }
+
+    @When("I switch to the list view in the citizen view")
+    public void iSwitchToTheListViewInTheCitizenView() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: switch to the list view");
+        page.switchToListView();
+    }
+
+    @When("I switch to the calendar view in the citizen view")
+    public void iSwitchToTheCalendarViewInTheCitizenView() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: switch to the calendar view");
+        page.switchToCalendarView();
+    }
+
+    @Then("the list view shows {int} date accordion(s) with the first one open")
+    public void theListViewShowsDateAccordionsWithTheFirstOneOpen(int count) {
+        ScenarioLogManager.getLogger().info("zmscitizenview: list shows {} date accordions", count);
+        page.assertListDateAccordions(count);
+    }
+
+    @Then("the open list accordion groups times by hour")
+    public void theOpenListAccordionGroupsTimesByHour() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: open date groups times by hour");
+        page.assertOpenListGroupsByHour();
+    }
+
+    @Then("the open list accordion groups the short day into Vormittag")
+    public void theOpenListAccordionGroupsTheShortDayIntoVormittag() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: open date groups the short day into Vormittag");
+        page.assertOpenListGroupsByMorning();
+    }
+
+    @Then("the calendar groups times by hour")
+    public void theCalendarGroupsTimesByHour() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: calendar groups times by hour");
+        page.assertCalendarGroupsByHour();
+    }
+
+    @Then("the calendar groups the short day into Vormittag")
+    public void theCalendarGroupsTheShortDayIntoVormittag() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: calendar groups the short day into Vormittag");
+        page.assertCalendarGroupsByMorning();
+    }
+
+    @Then("the earlier and later buttons are each on one line")
+    public void theEarlierAndLaterButtonsAreEachOnOneLine() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: Früher and Später stay on one line");
+        page.assertEarlierAndLaterAreEachOnOneLine();
+    }
+
+    @Then("the list earlier button starts disabled and both pager buttons are on one line")
+    public void theListEarlierButtonStartsDisabled() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: Früher starts disabled");
+        page.assertListEarlierStartsDisabled();
+    }
+
+    @When("I click Später in the open list date")
+    public void iClickLaterInTheOpenListDate() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: Später in the open list date");
+        page.moveOpenListHour(true);
+    }
+
+    @When("I click Früher in the open list date")
+    public void iClickEarlierInTheOpenListDate() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: Früher in the open list date");
+        page.moveOpenListHour(false);
+    }
+
+    @When("I load more list dates")
+    public void iLoadMoreListDates() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: Mehr laden");
+        page.loadMoreListDates();
+    }
+
+    @When("I open the next list date")
+    public void iOpenTheNextListDate() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: open the next list date");
+        page.openTheNextListDate();
+    }
+
+    @When("I select a visible timeslot in the citizen view")
+    public void iSelectAVisibleTimeslotInTheCitizenView() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: select a visible timeslot");
+        page.selectVisibleTimeslot();
+    }
+
+    @Then("the selected timeslot is white on blue in the citizen view")
+    public void theSelectedTimeslotIsWhiteOnBlueInTheCitizenView() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: selected timeslot is white on blue");
+        page.assertMarkedTimeslotIsWhiteOnBlue();
+    }
+
+    @Then("the previously selected timeslot is no longer marked in the citizen view")
+    public void thePreviouslySelectedTimeslotIsNoLongerMarked() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: previous timeslot is no longer marked");
+        page.assertPreviousTimeslotIsNotMarked();
     }
 
     @When("I wait for appointment slots to be ready in the citizen view")
