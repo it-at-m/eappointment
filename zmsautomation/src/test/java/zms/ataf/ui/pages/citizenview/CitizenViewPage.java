@@ -11,7 +11,6 @@ import java.util.HashSet;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.Set;
-import java.util.function.BooleanSupplier;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
@@ -36,6 +35,8 @@ import zms.ataf.helpers.AccountCheckout;
 import zms.ataf.helpers.RandomNameHelper;
 import zms.ataf.helpers.ViewportSizes;
 import zms.ataf.rest.dto.zmscitizenapi.ThinnedProcess;
+import zms.ataf.ui.pages.citizenview.support.CitizenViewScripts;
+import zms.ataf.ui.pages.citizenview.support.CitizenViewWaits;
 
 /**
  * zmscitizenview booking flow: all meaningful DOM lives under Vue custom elements / shadow roots.
@@ -109,63 +110,6 @@ public class CitizenViewPage extends BasePage {
         CONTEXT.navigateWithJumpIn(serviceId, locationId);
     }
 
-    /**
-     * Generic helper for asynchronous transitions after actions such as Weiter / confirm links.
-     * Waits in four windows: 5s, then +10s, then +15s, then +30s (total 60s) while polling {@code condition}.
-     */
-    private void waitWithThreeWindows(BooleanSupplier condition, String context) {
-        long deadlineFirst = System.currentTimeMillis() + 5000L;
-        while (!condition.getAsBoolean() && System.currentTimeMillis() < deadlineFirst) {
-            try {
-                Thread.sleep(250L);
-            } catch (InterruptedException ie) {
-                Thread.currentThread().interrupt();
-                return;
-            }
-        }
-        if (condition.getAsBoolean()) {
-            return;
-        }
-        ScenarioLogManager.getLogger()
-                .warn("{} not visible after first 5s window; retrying for additional 10s", context);
-        long deadlineSecond = System.currentTimeMillis() + 10000L;
-        while (!condition.getAsBoolean() && System.currentTimeMillis() < deadlineSecond) {
-            try {
-                Thread.sleep(250L);
-            } catch (InterruptedException ie) {
-                Thread.currentThread().interrupt();
-                return;
-            }
-        }
-        if (condition.getAsBoolean()) {
-            return;
-        }
-        ScenarioLogManager.getLogger()
-                .warn("{} not visible after first 15s window; retrying for additional 15s", context);
-        long deadlineThird = System.currentTimeMillis() + 15000L;
-        while (!condition.getAsBoolean() && System.currentTimeMillis() < deadlineThird) {
-            try {
-                Thread.sleep(250L);
-            } catch (InterruptedException ie) {
-                Thread.currentThread().interrupt();
-                return;
-            }
-        }
-        if (condition.getAsBoolean()) {
-            return;
-        }
-        ScenarioLogManager.getLogger()
-                .warn("{} still not visible after 30s; retrying for final 30s window", context);
-        long deadlineFourth = System.currentTimeMillis() + 30000L;
-        while (!condition.getAsBoolean() && System.currentTimeMillis() < deadlineFourth) {
-            try {
-                Thread.sleep(250L);
-            } catch (InterruptedException ie) {
-                Thread.currentThread().interrupt();
-                return;
-            }
-        }
-    }
 
     public void assertServiceFinderHeadingVisible() {
         CONTEXT.set();
@@ -258,7 +202,7 @@ public class CitizenViewPage extends BasePage {
                 break;
             }
             actions.sendKeys(Keys.TAB).perform();
-            sleepQuiet(150L);
+            CitizenViewWaits.sleepQuiet(150L);
         }
         Assert.assertTrue(focused, "Tab did not reach the service search field.");
         actions.sendKeys(Keys.ENTER).perform();
@@ -767,7 +711,7 @@ public class CitizenViewPage extends BasePage {
         Assert.assertTrue(
                 pressServiceCounter(label, true),
                 "Could not increase the count for \"" + label + "\".");
-        sleepQuiet(500L);
+        CitizenViewWaits.sleepQuiet(500L);
     }
 
     public void decreaseSelectedService(String label) {
@@ -776,7 +720,7 @@ public class CitizenViewPage extends BasePage {
         Assert.assertTrue(
                 pressServiceCounter(label, false),
                 "Could not decrease the count for \"" + label + "\".");
-        sleepQuiet(500L);
+        CitizenViewWaits.sleepQuiet(500L);
     }
 
     /** The first selected service cannot be set to 0. */
@@ -948,7 +892,7 @@ public class CitizenViewPage extends BasePage {
         CONTEXT.set();
         RemoteWebDriver driver = DriverUtil.getDriver();
         driver.manage().window().setSize(ViewportSizes.DESKTOP);
-        sleepQuiet(400L);
+        CitizenViewWaits.sleepQuiet(400L);
         JsonNode wide = waitForServiceCounter(label);
         Assert.assertTrue(wide.path("nameLeft").asDouble() >= 0, "No service-name link for \"" + label + "\".");
         Assert.assertTrue(
@@ -963,7 +907,7 @@ public class CitizenViewPage extends BasePage {
         CONTEXT.set();
         RemoteWebDriver driver = DriverUtil.getDriver();
         driver.manage().window().setSize(ViewportSizes.MOBILE);
-        sleepQuiet(400L);
+        CitizenViewWaits.sleepQuiet(400L);
         JsonNode narrow = waitForServiceCounter(label);
         Assert.assertTrue(narrow.path("nameBottom").asDouble() >= 0, "No service-name link for \"" + label + "\".");
         Assert.assertTrue(
@@ -1493,38 +1437,6 @@ public class CitizenViewPage extends BasePage {
                 "Calendar/list toggle must stay hidden when no day fits");
     }
 
-    private static final String CITIZEN_DOM =
-            "function shown(el){var n=el;while(n&&n.nodeType===1){"
-                    + "var st=window.getComputedStyle(n);"
-                    + "if(st.display==='none'||st.visibility==='hidden'||st.opacity==='0')return false;"
-                    + "if(n.parentElement){n=n.parentElement;continue;}"
-                    + "var root=n.getRootNode&&n.getRootNode();n=root&&root.host?root.host:null;}return true;}"
-                    + "function textOf(n){var s='';if(!n)return s;if(n.nodeType===3)return n.nodeValue||'';"
-                    + "if(n.shadowRoot)s+=' '+textOf(n.shadowRoot);"
-                    + "var c=n.childNodes;if(c)for(var i=0;i<c.length;i++)s+=' '+textOf(c[i]);"
-                    + "return s.replace(/\\s+/g,' ').trim();}"
-                    + "function cssAll(sel){var out=[];function scan(root){if(!root||!root.querySelectorAll)return;"
-                    + "var nodes=root.querySelectorAll(sel);for(var i=0;i<nodes.length;i++)out.push(nodes[i]);"
-                    + "var all=root.querySelectorAll('*');for(var j=0;j<all.length;j++)if(all[j].shadowRoot)scan(all[j].shadowRoot);}"
-                    + "scan(document.body);return out;}"
-                    + "function byId(id){var all=cssAll('[id]');for(var i=0;i<all.length;i++)if(all[i].id===id)return all[i];return null;}"
-                    + "function findButton(root,word){var found=null;function visit(n){if(!n||found)return;"
-                    + "var tag=(n.tagName||'').toUpperCase();"
-                    + "if((tag==='MUC-BUTTON'||tag==='BUTTON')&&shown(n)){var t=textOf(n);"
-                    + "if(t.indexOf(word)>=0&&t.length<=word.length+2){found=n;return;}}"
-                    + "if(n.shadowRoot)visit(n.shadowRoot);var c=n.children;if(c)for(var i=0;i<c.length;i++)visit(c[i]);}"
-                    + "visit(root);return found;}"
-                    + "function lineCount(root,word){var node=null;function visit(n){if(!n||node)return;"
-                    + "if(n.nodeType===3&&(n.nodeValue||'').replace(/\\s+/g,' ').trim()===word){node=n;return;}"
-                    + "if(n.shadowRoot)visit(n.shadowRoot);var c=n.childNodes;if(c)for(var i=0;i<c.length;i++)visit(c[i]);}"
-                    + "visit(root);if(!node)return 0;var range=document.createRange();range.selectNodeContents(node);"
-                    + "return range.getClientRects().length;}"
-                    + "function isDisabled(el){if(!el)return false;var inner=el.shadowRoot&&el.shadowRoot.querySelector('button');"
-                    + "function flag(n){return !!(n&&(n.disabled||n.hasAttribute('disabled')||n.getAttribute('aria-disabled')==='true'||(n.classList&&n.classList.contains('disabled'))));}"
-                    + "return flag(el)||flag(inner);}"
-                    + "function btnState(root,word){var found=findButton(root,word);if(!found)return {present:false};"
-                    + "return {present:true,disabled:isDisabled(found),lines:lineCount(found,word)};}"
-                    + "function isPrimary(el){return !!el&&((el.getAttribute('variant')||'')==='primary'||(el.classList&&el.classList.contains('m-button--primary')));}";
 
     private static final String[] OFFICE_FREQUENCY = {
         "Bürgerbüro Ruppertstraße",
@@ -1549,7 +1461,7 @@ public class CitizenViewPage extends BasePage {
     private JsonNode citizenJson(String expression, Object... args) {
         CONTEXT.set();
         // An IIFE has its own arguments object, so callers read the script arguments from __args.
-        String script = CITIZEN_DOM + "var __args=arguments;return JSON.stringify(" + expression + ");";
+        String script = CitizenViewScripts.CITIZEN_DOM + "var __args=arguments;return JSON.stringify(" + expression + ");";
         Object raw = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script, args);
         try {
             return new ObjectMapper().readTree(raw == null ? "null" : String.valueOf(raw));
@@ -1573,7 +1485,7 @@ public class CitizenViewPage extends BasePage {
         CONTEXT.set();
         RemoteWebDriver driver = DriverUtil.getDriver();
         driver.manage().window().setSize(ViewportSizes.DESKTOP);
-        sleepQuiet(400L);
+        CitizenViewWaits.sleepQuiet(400L);
         JsonNode wide = waitForToggleLabels(null);
         Assert.assertTrue(
                 wide.path("toggleLeft").asDouble() > wide.path("headingRight").asDouble() - 8,
@@ -1584,7 +1496,7 @@ public class CitizenViewPage extends BasePage {
         CONTEXT.set();
         RemoteWebDriver driver = DriverUtil.getDriver();
         driver.manage().window().setSize(ViewportSizes.MOBILE);
-        sleepQuiet(400L);
+        CitizenViewWaits.sleepQuiet(400L);
         JsonNode narrow = waitForToggleLabels(null);
         Assert.assertTrue(
                 narrow.path("toggleTop").asDouble() >= narrow.path("headingBottom").asDouble() - 4,
@@ -2076,7 +1988,7 @@ public class CitizenViewPage extends BasePage {
                         + "(inner||btn).click();return {clicked:true};})()",
                 word);
         Assert.assertTrue(clicked.path("clicked").asBoolean(), "Could not click " + word + ": " + clicked);
-        sleepQuiet(500L);
+        CitizenViewWaits.sleepQuiet(500L);
         JsonNode after = listSnapshot();
         String next = firstHourLabel(after);
         Assert.assertNotEquals(next, listHourLabel, word + " should show another hour. before=" + before + " after=" + after);
@@ -2114,7 +2026,7 @@ public class CitizenViewPage extends BasePage {
         Assert.assertTrue(clicked.path("clicked").asBoolean(), "Could not open another date: " + clicked);
         openListHeading = clicked.path("openLabel").asText();
         String opened = clicked.path("targetLabel").asText();
-        sleepQuiet(500L);
+        CitizenViewWaits.sleepQuiet(500L);
         JsonNode after = listSnapshot();
         int openCount = 0;
         boolean previousClosed = false;
@@ -2160,7 +2072,7 @@ public class CitizenViewPage extends BasePage {
                     return node.path("clicked").asBoolean() ? node : null;
                 });
         markedTimeslotId = clicked.path("id").asText();
-        sleepQuiet(400L);
+        CitizenViewWaits.sleepQuiet(400L);
     }
 
     public void assertMarkedTimeslotIsWhiteOnBlue() {
@@ -2353,7 +2265,7 @@ public class CitizenViewPage extends BasePage {
                     return;
                 }
             }
-            sleepQuiet(400L);
+            CitizenViewWaits.sleepQuiet(400L);
         }
     }
 
@@ -2459,7 +2371,7 @@ public class CitizenViewPage extends BasePage {
                             remaining,
                             attempt);
             if (clickCitizenViewLaterOnceIfAvailable()) {
-                sleepQuiet(1200L);
+                CitizenViewWaits.sleepQuiet(1200L);
                 try {
                     waitUntilAppointmentSlotsReady(Math.min(45, slotBookingWaitTimeoutSeconds()));
                 } catch (Exception e) {
@@ -2543,7 +2455,7 @@ public class CitizenViewPage extends BasePage {
     public void assertProviderSummaryVisible(int officeId, String expectedStandortLabel) {
         CONTEXT.set();
         String sel = "#provider-" + officeId;
-        waitWithThreeWindows(
+        CitizenViewWaits.waitWithThreeWindows(
                 () -> deepVisibleProviderSummaryExists(officeId), "Provider summary " + sel);
         if (!deepVisibleProviderSummaryExists(officeId)) {
             ScenarioLogManager.getLogger()
@@ -2711,7 +2623,7 @@ public class CitizenViewPage extends BasePage {
 
     private String visibleProviderSummaryOrFail(int officeId) {
         CONTEXT.set();
-        waitWithThreeWindows(
+        CitizenViewWaits.waitWithThreeWindows(
                 () -> deepVisibleProviderSummaryExists(officeId), "Provider summary #provider-" + officeId);
         String text = deepVisibleProviderSummaryText(officeId);
         Assert.assertNotNull(text, "Expected visible booking summary provider block #provider-" + officeId);
@@ -3025,7 +2937,7 @@ public class CitizenViewPage extends BasePage {
     public void waitForPreconfirmPageAfterUpdate() {
         CONTEXT.set();
         String sel = "#checkbox-electronic-communication";
-        waitWithThreeWindows(() -> deepElementExists(sel), "Preconfirm page " + sel);
+        CitizenViewWaits.waitWithThreeWindows(() -> deepElementExists(sel), "Preconfirm page " + sel);
         Assert.assertTrue(
                 deepElementExists(sel),
                 "Preconfirm page (electronic communication checkbox " + sel + ") not visible after Kontakt Weiter with retries.");
@@ -3774,7 +3686,7 @@ public class CitizenViewPage extends BasePage {
         if (!clickNextBookableCalendarDay()) {
             return false;
         }
-        sleepQuiet(1200L);
+        CitizenViewWaits.sleepQuiet(1200L);
         try {
             waitUntilAppointmentSlotsReady(Math.min(45, slotBookingWaitTimeoutSeconds()));
         } catch (Exception e) {
@@ -3939,120 +3851,7 @@ public class CitizenViewPage extends BasePage {
         scrollTimeSlotGridIntoViewForScreenshots();
     }
 
-    /**
-     * JS fragment: pick target slot + highlight + store in {@code window.__zmsCitizenViewSlotTarget} (no click).
-     * <p>
-     * Matches the <strong>real booking OfficeID</strong> via {@code provider-{oid}-timeslot-*} id or
-     * {@code data-provider-id} (shared booking: slots for peer 10313237 live under display grid 10489).
-     */
-    private static String buildScrollSlotHighlightScript() {
-        return "var oid=String(arguments[0]);"
-                + "var prefix='provider-'+oid+'-timeslot-';"
-                + "function collectSlots(root,arr,seen){"
-                + " if(!root)return;"
-                + " if(root.nodeType===1){"
-                + "  var id=root.id||'';"
-                + "  var dpi=root.getAttribute?root.getAttribute('data-provider-id'):null;"
-                + "  var match=id.indexOf(prefix)===0||String(dpi)===oid;"
-                + "  if(match){"
-                + "   var node=root;"
-                + "   if(!(id.indexOf(prefix)===0)&&root.classList&&root.classList.contains('grid-item')){"
-                + "    node=root.querySelector('[id^=\"'+prefix+'\"]')||root.querySelector('.timeslot')||root;"
-                + "   }"
-                + "   if(node&&!seen.has(node)){seen.add(node);arr.push(node);}"
-                + "  }"
-                + "  if(root.shadowRoot)collectSlots(root.shadowRoot,arr,seen);"
-                + " }"
-                + " var c=root.children;if(c)for(var i=0;i<c.length;i++)collectSlots(c[i],arr,seen);"
-                + "}"
-                + "var slots=[];collectSlots(document.body,slots,new Set());"
-                + "if(!slots.length)return false;"
-                + "function closestGrid(n){"
-                + " while(n){if(n.id&&String(n.id).indexOf('timeslot-grid-provider-')===0)return n;n=n.parentElement;}"
-                + " return null;}"
-                + "var grid=closestGrid(slots[0]);"
-                + "if(grid){grid.scrollIntoView({block:'start'});window.scrollBy(0,200);}"
-                + "else{slots[0].scrollIntoView({block:'start'});window.scrollBy(0,200);}"
-                + "var minTs=Math.floor(Date.now()/1000)+3600;"
-                + "function slotTs(node){"
-                + " if(!node||!node.id)return null;"
-                + " var m=node.id.match(/-timeslot-(\\d+)$/);"
-                + " return m?parseInt(m[1],10):null;}"
-                + "var skipArg=(arguments.length>1&&arguments[1]!=null)?String(arguments[1]):String(window.__zmsCitizenViewSkippedSlots||'');"
-                + "window.__zmsCitizenViewSkippedSlots=skipArg;"
-                + "var skip={};"
-                + "skipArg.split(',').forEach(function(s){if(s)skip[s]=1;});"
-                + "function skipped(ts){return ts!==null&&skip[String(ts)];}"
-                + "var target=null;"
-                + "for(var j=0;j<slots.length;j++){"
-                + " var ts=slotTs(slots[j]);"
-                + " if(ts!==null&&ts>=minTs&&!skipped(ts)){target=slots[j];break;}"
-                + "}"
-                + "if(!target){"
-                + " var nowSec=Math.floor(Date.now()/1000);"
-                + " var minSafe=nowSec+300;"
-                + " var best=null,bestTs=-1;"
-                + " for(var k=0;k<slots.length;k++){"
-                + "  var ts2=slotTs(slots[k]);"
-                + "  if(ts2!==null&&ts2>=minSafe&&!skipped(ts2)&&ts2>bestTs){best=slots[k];bestTs=ts2;}"
-                + " }"
-                + " target=best;"
-                + "}"
-                + "if(!target){"
-                + " for(var n=0;n<slots.length;n++){"
-                + "  if(!skipped(slotTs(slots[n]))){target=slots[n];break;}"
-                + " }"
-                + "}"
-                + "if(!target)return false;"
-                + "function highlightSlot(node){"
-                + " if(!node)return;"
-                + " node.scrollIntoView({block:'center'});"
-                + " try{"
-                + " node.style.outline='4px solid #ffbf00';"
-                + " node.style.outlineOffset='3px';"
-                + " node.style.backgroundColor='rgba(255,191,0,0.25)';"
-                + " if(node.shadowRoot){"
-                + "  var ib=node.shadowRoot.querySelector('button');"
-                + "  if(ib){"
-                + "   ib.style.outline='4px solid #ffbf00';"
-                + "   ib.style.outlineOffset='3px';"
-                + "   ib.style.backgroundColor='rgba(255,191,0,0.2)';"
-                + "  }"
-                + " }"
-                + " }catch(e){}"
-                + "}"
-                + "highlightSlot(target);"
-                + "window.__zmsCitizenViewSlotTarget=target;"
-                + "window.__zmsCitizenViewSlotId=(target&&target.id)?target.id:'';"
-                + "window.__zmsCitizenViewSlotOfficeId=parseInt(oid,10);"
-                + "return true;";
-    }
 
-    /** Clicks {@code window.__zmsCitizenViewSlotTarget}; falls back to {@link #deepClick} on stored slot id. */
-    private static final String CLICK_STORED_TIMESLOT_SCRIPT =
-            "var t=window.__zmsCitizenViewSlotTarget;"
-                    + "if(!t)return false;"
-                    + "function clickSlotNode(node){"
-                    + "if(!node)return false;"
-                    + "node.scrollIntoView({block:'center'});"
-                    + "if(node.shadowRoot){"
-                    + "var b=node.shadowRoot.querySelector('button:not([disabled])');"
-                    + "if(b){"
-                    + "b.scrollIntoView({block:'center'});"
-                    + "try{"
-                    + "['pointerdown','mousedown','mouseup','pointerup','click'].forEach(function(ev){"
-                    + "b.dispatchEvent(new MouseEvent(ev,{bubbles:true,cancelable:true,view:window}));"
-                    + "});"
-                    + "}catch(e){}"
-                    + "b.click();"
-                    + "return true;"
-                    + "}"
-                    + "}"
-                    + "try{node.click();return true;}catch(e){return false;}"
-                    + "}"
-                    + "var ok=clickSlotNode(t);"
-                    + "try{window.__zmsCitizenViewSlotTarget=null;}catch(e){}"
-                    + "return ok;";
 
     /**
      * Step 3a: scroll to grid and highlight the preferred timeslot (no click). The next Cucumber step’s
@@ -4071,7 +3870,7 @@ public class CitizenViewPage extends BasePage {
     /** @return false when the current calendar view has no highlightable slot for this office */
     private boolean highlightPreferredTimeslotForOfficeOrAbsent(int officeId, String skippedTimestamps) {
         CONTEXT.set();
-        String scrollSlotHighlight = buildScrollSlotHighlightScript();
+        String scrollSlotHighlight = CitizenViewScripts.buildScrollSlotHighlightScript();
         ScenarioLogManager.getLogger().info(
                 "zmscitizenview: highlight preferred slot (≥60min ahead; else ≥5min; else next free) office {} skip [{}]",
                 officeId,
@@ -4100,7 +3899,7 @@ public class CitizenViewPage extends BasePage {
                             officeId,
                             attempt);
             if (clickCitizenViewLaterOnceIfAvailable()) {
-                sleepQuiet(1200L);
+                CitizenViewWaits.sleepQuiet(1200L);
                 try {
                     waitUntilAppointmentSlotsReady(Math.min(45, slotBookingWaitTimeoutSeconds()));
                 } catch (Exception e) {
@@ -4117,9 +3916,9 @@ public class CitizenViewPage extends BasePage {
         if (!highlighted) {
             return false;
         }
-        sleepQuiet(200L);
+        CitizenViewWaits.sleepQuiet(200L);
         scrollTimeSlotGridIntoViewForScreenshots();
-        sleepQuiet(250L);
+        CitizenViewWaits.sleepQuiet(250L);
         return true;
     }
 
@@ -4156,7 +3955,7 @@ public class CitizenViewPage extends BasePage {
                                     d ->
                                             Boolean.TRUE.equals(
                                                     ((JavascriptExecutor) d)
-                                                            .executeScript(buildScrollSlotHighlightScript(), officeId)));
+                                                            .executeScript(CitizenViewScripts.buildScrollSlotHighlightScript(), officeId)));
                 } catch (TimeoutException e) {
                     ScenarioLogManager.getLogger()
                             .info(
@@ -4164,7 +3963,7 @@ public class CitizenViewPage extends BasePage {
                                     officeId);
                     return false;
                 }
-                sleepQuiet(250L);
+                CitizenViewWaits.sleepQuiet(250L);
             }
             if (!performStoredTimeslotClick(js)) {
                 ScenarioLogManager.getLogger()
@@ -4174,7 +3973,7 @@ public class CitizenViewPage extends BasePage {
             selected = waitForSlotSelectionVisible(officeId, attempt == 1 ? 12 : 20);
         }
         if (selected) {
-            sleepQuiet(400L);
+            CitizenViewWaits.sleepQuiet(400L);
         }
         return selected;
     }
@@ -4188,7 +3987,7 @@ public class CitizenViewPage extends BasePage {
     }
 
     private boolean performStoredTimeslotClick(JavascriptExecutor js) {
-        if (Boolean.TRUE.equals(js.executeScript(CLICK_STORED_TIMESLOT_SCRIPT))) {
+        if (Boolean.TRUE.equals(js.executeScript(CitizenViewScripts.CLICK_STORED_TIMESLOT_SCRIPT))) {
             return true;
         }
         Object sid = js.executeScript("return window.__zmsCitizenViewSlotId||'';");
@@ -4254,13 +4053,6 @@ public class CitizenViewPage extends BasePage {
         }
     }
 
-    private static void sleepQuiet(long millis) {
-        try {
-            Thread.sleep(millis);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
-    }
 
     /**
      * Step 3 (combined): highlight + click — use split steps in features so {@code @AfterStep} captures the slot area.
@@ -4413,7 +4205,7 @@ public class CitizenViewPage extends BasePage {
                     || shadowDomContainsText("Ein unbekannter Fehler ist aufgetreten.")) {
                 return ReserveOutcome.SLOT_TAKEN;
             }
-            sleepQuiet(400L);
+            CitizenViewWaits.sleepQuiet(400L);
         }
         if (contactStepReached()) {
             return ReserveOutcome.CONTACT;
@@ -4492,7 +4284,7 @@ public class CitizenViewPage extends BasePage {
     public boolean assertSelectedAppointmentCalloutShowsProvider(int officeId) {
         CONTEXT.set();
         String providerSelector = "#provider-" + officeId;
-        waitWithThreeWindows(
+        CitizenViewWaits.waitWithThreeWindows(
                 () -> contactStepReached()
                         || (selectedAppointmentCalloutVisible() && deepElementExists(providerSelector)),
                 "Selected appointment callout for office " + officeId);
@@ -4811,7 +4603,7 @@ public class CitizenViewPage extends BasePage {
         captureBookingProcessForCleanup();
         ScenarioLogManager.getLogger().info("zmscitizenview: preconfirm → Termin reservieren (activation callout)");
         waitForAndClickButtonContaining(DE_RESERVE, DEFAULT_EXPLICIT_WAIT_TIME);
-        waitWithThreeWindows(() -> shadowDomContainsText(ACTIVATION_CALLOUT_HEADING), "Activation callout");
+        CitizenViewWaits.waitWithThreeWindows(() -> shadowDomContainsText(ACTIVATION_CALLOUT_HEADING), "Activation callout");
         Assert.assertTrue(
                 shadowDomContainsText(ACTIVATION_CALLOUT_HEADING),
                 "Activation callout (Aktivieren Sie Ihren Termin.) not visible after Termin reservieren with retries.");
@@ -4826,7 +4618,7 @@ public class CitizenViewPage extends BasePage {
                 .info(
                         "zmscitizenview: waiting in 5s + 10s + 15s windows (30s total) for activation callout (Aktivieren Sie Ihren Termin., {} Minuten)",
                         activationMinutes);
-        waitWithThreeWindows(
+        CitizenViewWaits.waitWithThreeWindows(
                 () -> shadowDomContainsText(ACTIVATION_CALLOUT_HEADING), "Preconfirmation callout heading");
         Assert.assertTrue(
                 shadowDomContainsText(ACTIVATION_CALLOUT_HEADING),
@@ -4855,7 +4647,7 @@ public class CitizenViewPage extends BasePage {
         ScenarioLogManager.getLogger()
                 .info("zmscitizenview: logged-in summary → confirm (Termin reservieren)");
         waitForAndClickButtonContaining(DE_RESERVE, DEFAULT_EXPLICIT_WAIT_TIME);
-        waitWithThreeWindows(
+        CitizenViewWaits.waitWithThreeWindows(
                 () -> shadowDomContainsText(CONFIRMATION_SUCCESS_HEADING),
                 "Logged-in confirmation success");
         Assert.assertTrue(
@@ -4897,7 +4689,7 @@ public class CitizenViewPage extends BasePage {
         ScenarioLogManager.getLogger()
                 .info("zmscitizenview: rebooking summary → confirm (Termin verschieben)");
         waitForAndClickButtonContaining(RESCHEDULE_APPOINTMENT_BUTTON, DEFAULT_EXPLICIT_WAIT_TIME);
-        waitWithThreeWindows(
+        CitizenViewWaits.waitWithThreeWindows(
                 () -> shadowDomContainsText(CONFIRMATION_SUCCESS_HEADING), "Rebooking confirmation success");
         Assert.assertTrue(
                 shadowDomContainsText(CONFIRMATION_SUCCESS_HEADING),
@@ -4924,7 +4716,7 @@ public class CitizenViewPage extends BasePage {
                 .info(
                         "zmscitizenview: waiting for already-activated MucBanner success ({})",
                         ALREADY_ACTIVATED_BANNER_MARKER);
-        waitWithThreeWindows(
+        CitizenViewWaits.waitWithThreeWindows(
                 () -> shadowDomContainsText(ALREADY_ACTIVATED_BANNER_MARKER),
                 "Already-activated appointment banner");
         Assert.assertTrue(
@@ -4963,7 +4755,7 @@ public class CitizenViewPage extends BasePage {
     public void rescheduleFromMeineTermine() {
         CONTEXT.set();
         clickRescheduleAppointment();
-        waitWithThreeWindows(
+        CitizenViewWaits.waitWithThreeWindows(
                 () -> shadowDomContainsText("Verschiebung Ihres Termins"),
                 "Reschedule dialog");
         ScenarioLogManager.getLogger().info("zmscitizenview: confirm reschedule dialog (Verschieben)");
@@ -4976,7 +4768,7 @@ public class CitizenViewPage extends BasePage {
         CONTEXT.set();
         ScenarioLogManager.getLogger()
                 .info("zmscitizenview: waiting for cancel-reschedule button ({})", CANCEL_RESCHEDULE_BUTTON);
-        waitWithThreeWindows(
+        CitizenViewWaits.waitWithThreeWindows(
                 () -> shadowDomContainsText(CANCEL_RESCHEDULE_BUTTON), "Cancel reschedule button");
         Assert.assertTrue(
                 shadowDomContainsText(CANCEL_RESCHEDULE_BUTTON),
@@ -4993,7 +4785,7 @@ public class CitizenViewPage extends BasePage {
                 .info(
                         "zmscitizenview: waiting for reschedule and cancel actions ({} / Termin absagen)",
                         RESCHEDULE_APPOINTMENT_BUTTON);
-        waitWithThreeWindows(
+        CitizenViewWaits.waitWithThreeWindows(
                 () -> shadowDomContainsText(RESCHEDULE_APPOINTMENT_BUTTON)
                         && shadowDomContainsText("Termin absagen"),
                 "Reschedule or cancel actions");
@@ -5033,7 +4825,7 @@ public class CitizenViewPage extends BasePage {
         String marker = CANCELLATION_SUCCESS_HEADING;
         ScenarioLogManager.getLogger()
                 .info("zmscitizenview: waiting in 5s + 10s + 15s windows (30s total) for cancellation success callout");
-        waitWithThreeWindows(() -> shadowDomContainsText(marker), "Cancellation success callout");
+        CitizenViewWaits.waitWithThreeWindows(() -> shadowDomContainsText(marker), "Cancellation success callout");
         Assert.assertTrue(
                 shadowDomContainsText(marker),
                 "Cancellation success callout (Sie haben Ihren Termin erfolgreich abgesagt.) not visible after Termin absagen with retries.");
@@ -5541,7 +5333,7 @@ public class CitizenViewPage extends BasePage {
         username = AccountCheckout.assignCitizenLogin(username);
         completeKeycloakLoginForm(username, password);
 
-        waitWithThreeWindows(
+        CitizenViewWaits.waitWithThreeWindows(
                 () -> shadowDomContainsText("Sie sind angemeldet"),
                 "Logged-in callout after Keycloak Bürger-Login");
         if (!shadowDomContainsText("Sie sind angemeldet.")) {
@@ -5555,7 +5347,7 @@ public class CitizenViewPage extends BasePage {
                     completeKeycloakLoginForm(username, password);
                 }
             }
-            waitWithThreeWindows(
+            CitizenViewWaits.waitWithThreeWindows(
                     () -> shadowDomContainsText("Sie sind angemeldet"),
                     "Logged-in callout after Keycloak Bürger-Login retry");
         }
@@ -5591,7 +5383,7 @@ public class CitizenViewPage extends BasePage {
             String password = TestPropertiesHelper.getPropertyAsString("citizenUserPassword", true, "vorschau");
             completeKeycloakLoginForm(AccountCheckout.assignCitizenLogin(username), password);
         }
-        waitWithThreeWindows(() -> shadowDomContainsText("Sie sind angemeldet"), "Logged-in callout");
+        CitizenViewWaits.waitWithThreeWindows(() -> shadowDomContainsText("Sie sind angemeldet"), "Logged-in callout");
         Assert.assertTrue(shadowDomContainsText("Sie sind angemeldet."), "Expected 'Sie sind angemeldet.'.");
     }
 
@@ -5625,7 +5417,7 @@ public class CitizenViewPage extends BasePage {
         ScenarioLogManager.getLogger()
                 .info("zmscitizenview: return from Keycloak as cancelled login url={}", returnUrl);
         DriverUtil.getDriver().navigate().to(returnUrl);
-        waitWithThreeWindows(
+        CitizenViewWaits.waitWithThreeWindows(
                 () -> shadowDomContainsText("Kontaktdaten"),
                 "Kontakt after cancelled Bürger-Login");
         trySetBookingProcessFromPage();
@@ -5647,7 +5439,7 @@ public class CitizenViewPage extends BasePage {
 
     public void assertContactEmailFieldEmpty() {
         CONTEXT.set();
-        waitWithThreeWindows(
+        CitizenViewWaits.waitWithThreeWindows(
                 () -> shadowDomContainsText("Kontaktdaten"),
                 "Kontakt form for empty email assertion");
         String email = deepInputValue("mailaddress");
@@ -5688,7 +5480,7 @@ public class CitizenViewPage extends BasePage {
 
     public void assertCitizenLoggedInOnContactForm() {
         CONTEXT.set();
-        waitWithThreeWindows(
+        CitizenViewWaits.waitWithThreeWindows(
                 () -> shadowDomContainsText("Sie sind angemeldet"),
                 "Logged-in callout on Kontakt");
         Assert.assertTrue(
@@ -5741,7 +5533,7 @@ public class CitizenViewPage extends BasePage {
         } catch (Exception e) {
             ScenarioLogManager.getLogger().warn("Reload reserved appointment hash", e);
         }
-        waitWithThreeWindows(
+        CitizenViewWaits.waitWithThreeWindows(
                 () -> shadowDomContainsText("Kontaktdaten")
                         || deepElementExists("#checkbox-electronic-communication")
                         || shadowDomContainsText("Sie sind angemeldet"),
@@ -5760,7 +5552,7 @@ public class CitizenViewPage extends BasePage {
 
     public void assertElectronicCommunicationCheckboxVisible() {
         CONTEXT.set();
-        waitWithThreeWindows(
+        CitizenViewWaits.waitWithThreeWindows(
                 () -> deepElementExists("#checkbox-electronic-communication"),
                 "Electronic communication checkbox on book overview");
         Assert.assertTrue(
@@ -6201,7 +5993,7 @@ public class CitizenViewPage extends BasePage {
                         TestPropertiesHelper.getPropertyAsString("citizenUserPassword", true, "vorschau");
                 completeKeycloakLoginForm(AccountCheckout.assignCitizenLogin(username), password);
             }
-            waitWithThreeWindows(
+            CitizenViewWaits.waitWithThreeWindows(
                     () -> shadowDomContainsText("Mein Bereich")
                             || shadowDomContainsText("Neuer Termin")
                             || shadowDomContainsText("Kommende Termine"),
@@ -6438,7 +6230,7 @@ public class CitizenViewPage extends BasePage {
             } else {
                 ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(clickCard, needle);
             }
-            waitWithThreeWindows(
+            CitizenViewWaits.waitWithThreeWindows(
                     () -> shadowDomContainsText("Termin absagen"),
                     "Appointment detail after opening teaser " + serviceName);
             if (shadowDomContainsText("Termin absagen")) {
@@ -6468,7 +6260,7 @@ public class CitizenViewPage extends BasePage {
         CONTEXT.set();
         ScenarioLogManager.getLogger()
                 .info("zmscitizenview: assert appointment detail location for {}", typeLabel);
-        waitWithThreeWindows(
+        CitizenViewWaits.waitWithThreeWindows(
                 () -> shadowDomContainsText(locationText) && shadowDomHasHeading(2, "Ort"),
                 "Ort section on the appointment detail");
         Assert.assertTrue(shadowDomHasHeading(2, "Ort"), "The detail page is missing the Ort heading.");
@@ -6541,7 +6333,7 @@ public class CitizenViewPage extends BasePage {
     public void assertIcsDownloadOfferedOnDetailIntro() {
         CONTEXT.set();
         ScenarioLogManager.getLogger().info("zmscitizenview: assert ICS download in the detail intro");
-        waitWithThreeWindows(
+        CitizenViewWaits.waitWithThreeWindows(
                 () -> shadowDomContainsText(ICS_DOWNLOAD_LABEL),
                 "ICS download link in the appointment detail intro");
         Assert.assertTrue(
