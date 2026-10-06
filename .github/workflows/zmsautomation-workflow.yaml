@@ -51,7 +51,7 @@ on:
         type: boolean
         default: true
       module_citizenview:
-        description: "🖥️ Citizenview UI tests (@zmscitizenview), including @mobile"
+        description: "Citizenview UI tests (@zmscitizenview), including @mobile"
         required: true
         type: boolean
         default: true
