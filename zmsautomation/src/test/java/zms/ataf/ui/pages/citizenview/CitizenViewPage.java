@@ -422,6 +422,212 @@ public class CitizenViewPage extends BasePage {
         assertServiceCounter(label, 1);
     }
 
+    /** ZMSKVR-106: the service step continues with the label Weiter. */
+    public void assertWeiterButtonSays(String label) {
+        CONTEXT.set();
+        Assert.assertTrue(
+                weiterButtonIsExact(label),
+                "Expected the continue button on the service page to say " + label + ".");
+    }
+
+    /**
+     * ZMSKVR-106: Patternlab secondary buttons. Minus reduces, plus increases, each with its icon.
+     */
+    public void assertSecondaryPlusAndMinus(String label) {
+        CONTEXT.set();
+        JsonNode counter = waitForServiceCounter(label);
+        Assert.assertTrue(counter.path("minusSecondary").asBoolean(), "Minus for \"" + label + "\" is not secondary: " + counter);
+        Assert.assertTrue(counter.path("plusSecondary").asBoolean(), "Plus for \"" + label + "\" is not secondary: " + counter);
+        Assert.assertEquals(counter.path("minusIcon").asText(), "minus", "Minus icon for \"" + label + "\": " + counter);
+        Assert.assertEquals(counter.path("plusIcon").asText(), "plus", "Plus icon for \"" + label + "\": " + counter);
+    }
+
+    public void assertMinusButton(String label, boolean disabled) {
+        CONTEXT.set();
+        JsonNode counter = waitForServiceCounter(label);
+        String state = counter.path("minus").asText();
+        Assert.assertEquals(
+                state,
+                disabled ? "disabled" : "enabled",
+                "Minus for \"" + label + "\" was " + state);
+    }
+
+    /** ZMSKVR-106: the service name links to its description on muenchen.de. */
+    public void assertServiceDescriptionLink(String label, String serviceId) {
+        CONTEXT.set();
+        JsonNode counter = waitForServiceCounter(label);
+        String href = counter.path("href").asText();
+        Assert.assertTrue(
+                href.contains("stadt.muenchen.de/service/info/" + serviceId),
+                "\"" + label + "\" should link to its service description, href was " + href);
+    }
+
+    /**
+     * ZMSKVR-249: desktop keeps the count and buttons left of the name. A phone puts them underneath.
+     */
+    public void assertCountBesideNameOnDesktopAndBelowOnPhone(String label) {
+        CONTEXT.set();
+        RemoteWebDriver driver = DriverUtil.getDriver();
+        Dimension original = driver.manage().window().getSize();
+        try {
+            driver.manage().window().setSize(new Dimension(1400, 900));
+            sleepQuiet(400L);
+            JsonNode wide = waitForServiceCounter(label);
+            Assert.assertTrue(wide.path("nameLeft").asDouble() >= 0, "No service-name link for \"" + label + "\".");
+            Assert.assertTrue(
+                    wide.path("controlsRight").asDouble() <= wide.path("nameLeft").asDouble() + 12
+                            && wide.path("controlsBottom").asDouble() >= wide.path("nameTop").asDouble() - 8
+                            && wide.path("controlsTop").asDouble() <= wide.path("nameBottom").asDouble() + 8,
+                    "On a wide window the count sits left of \"" + label + "\": " + wide);
+            driver.manage().window().setSize(new Dimension(390, 844));
+            sleepQuiet(400L);
+            JsonNode narrow = waitForServiceCounter(label);
+            Assert.assertTrue(narrow.path("nameBottom").asDouble() >= 0, "No service-name link for \"" + label + "\".");
+            Assert.assertTrue(
+                    narrow.path("controlsTop").asDouble() >= narrow.path("nameBottom").asDouble() - 8,
+                    "On a phone the count sits below \"" + label + "\": " + narrow);
+        } finally {
+            driver.manage().window().setSize(
+                    original.getWidth() >= 1200 ? original : new Dimension(1400, 900));
+        }
+    }
+
+    /** Click plus until the service's own maximum disables it. */
+    public void raiseServiceUntilPlusDisabled(String label) {
+        CONTEXT.set();
+        for (int i = 0; i < 8; i++) {
+            JsonNode counter = waitForServiceCounter(label);
+            if ("disabled".equals(counter.path("plus").asText())) {
+                return;
+            }
+            Assert.assertEquals(
+                    counter.path("plus").asText(),
+                    "enabled",
+                    "Plus for \"" + label + "\" was " + counter.path("plus").asText());
+            int current = displayedServiceCount(label);
+            increaseSelectedService(label);
+            int next = current + 1;
+            new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                    .until(d -> serviceCounterShows(label, next)
+                            || "disabled".equals(queryServiceCounter(label).path("plus").asText()));
+        }
+        Assert.fail("Plus for \"" + label + "\" was still enabled after 8 increases.");
+    }
+
+    private int displayedServiceCount(String label) {
+        for (int n = 0; n <= 8; n++) {
+            if (serviceCounterShows(label, n)) {
+                return n;
+            }
+        }
+        Assert.fail("No displayed count for \"" + label + "\".");
+        return -1;
+    }
+
+    private JsonNode waitForServiceCounter(String label) {
+        new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(d -> !"missing".equals(queryServiceCounter(label).path("minus").asText()));
+        JsonNode counter = queryServiceCounter(label);
+        Assert.assertNotEquals(
+                "missing",
+                counter.path("minus").asText(),
+                "No count control for \"" + label + "\".");
+        return counter;
+    }
+
+    private JsonNode queryServiceCounter(String label) {
+        String script =
+                "var label=arguments[0];"
+                        + "function norm(t){return (t||'').replace(/\\s+/g,' ').trim();}"
+                        + "function key(t){return norm(t).replace(/-/g,'').toLowerCase();}"
+                        + "var labelKey=key(label);"
+                        + "function shown(el){var n=el;while(n&&n.nodeType===1){"
+                        + "var st=window.getComputedStyle(n);"
+                        + "if(st.display==='none'||st.visibility==='hidden'||st.opacity==='0')return false;"
+                        + "if(n.parentElement){n=n.parentElement;continue;}"
+                        + "var root=n.getRootNode&&n.getRootNode();n=root&&root.host?root.host:null;}return true;}"
+                        + "function isDisabled(el){if(!el)return true;"
+                        + "function off(node){return !!(node&&(node.disabled||node.hasAttribute&&node.hasAttribute('disabled')"
+                        + "||(node.getAttribute&&node.getAttribute('aria-disabled')==='true')));}"
+                        + "if(off(el))return true;"
+                        + "var host=el.getRootNode&&el.getRootNode().host;return off(host);}"
+                        + "function paint(n){var icon='',secondary=false,blob='';"
+                        + "function note(el){if(!el||!el.getAttribute)return;"
+                        + "var ic=el.getAttribute('icon')||'';"
+                        + "var href=el.getAttribute('href')||el.getAttribute('xlink:href')||'';"
+                        + "var cls=(typeof el.className==='string')?el.className:'';"
+                        + "var v=el.getAttribute('variant')||'';"
+                        + "if(!icon&&ic)icon=ic;"
+                        + "if(v==='secondary'||cls.indexOf('secondary')>=0)secondary=true;"
+                        + "blob+=' '+ic+' '+href+' '+cls;}"
+                        + "function scan(el,depth){if(!el||depth>8)return;note(el);"
+                        + "if(el.shadowRoot)scan(el.shadowRoot,depth+1);"
+                        + "var kids=el.children;if(kids)for(var i=0;i<kids.length;i++)scan(kids[i],depth+1);}"
+                        + "scan(n,0);var cur=n,guard=0;"
+                        + "while(cur&&guard++<6){note(cur);"
+                        + "if(cur.parentElement)cur=cur.parentElement;"
+                        + "else{var root=cur.getRootNode&&cur.getRootNode();cur=root&&root.host?root.host:null;}}"
+                        + "return {icon:icon,secondary:secondary,blob:blob.toLowerCase()};}"
+                        + "function walk(n,fn){if(!n)return;fn(n);if(n.shadowRoot)walk(n.shadowRoot,fn);"
+                        + "var c=n.children;if(c)for(var i=0;i<c.length;i++)walk(c[i],fn);}"
+                        + "function consider(best,btn){var aria=btn.getAttribute('aria-label')||'';"
+                        + "if(!shown(btn)||key(aria).indexOf(labelKey)<0)return best;"
+                        + "if(!best||aria.length<best.aria.length)return {btn:btn,aria:aria};return best;}"
+                        + "var minus=null,plus=null;"
+                        + "walk(document.body,function(n){var tag=(n.tagName||'').toUpperCase();"
+                        + "if(tag!=='BUTTON')return;var aria=(n.getAttribute('aria-label')||'').toLowerCase();"
+                        + "if(aria.indexOf('reduzier')>=0)minus=consider(minus,n);"
+                        + "else if(key(aria).indexOf(labelKey)>=0)plus=consider(plus,n);});"
+                        + "if(!minus){var show=null;walk(document.body,function(n){"
+                        + "var tag=(n.tagName||'').toUpperCase();"
+                        + "if((tag==='BUTTON'||tag==='MUC-BUTTON')&&norm(n.textContent||'').indexOf('Alle Leistungen anzeigen')>=0&&shown(n))show=n;});"
+                        + "if(show){show.click();return JSON.stringify({minus:'missing',revealed:true});}"
+                        + "return JSON.stringify({minus:'missing'});}"
+                        + "var link=null,linkLen=100000;walk(document.body,function(n){"
+                        + "if((n.tagName||'').toUpperCase()!=='A')return;"
+                        + "var href=n.getAttribute('href')||'';"
+                        + "if(href.indexOf('stadt.muenchen.de/service/info/')<0)return;"
+                        + "var nameKey=key(n.textContent||'');"
+                        + "if(nameKey.indexOf(labelKey)<0||nameKey.length>=linkLen)return;"
+                        + "link=n;linkLen=nameKey.length;});"
+                        + "function box(el){if(!el||!el.getBoundingClientRect)return null;var r=el.getBoundingClientRect();"
+                        + "return {left:r.left,right:r.right,top:r.top,bottom:r.bottom};}"
+                        + "var mb=box(minus.btn),pb=plus?box(plus.btn):mb,lb=box(link);"
+                        + "var mp=paint(minus.btn),pp=plus?paint(plus.btn):{icon:'',secondary:false,blob:''};"
+                        + "function iconName(p,word){"
+                        + "if((p.icon||'').indexOf(word)>=0||p.blob.indexOf(word)>=0)return word;return '';}"
+                        + "return JSON.stringify({"
+                        + "minus:isDisabled(minus.btn)?'disabled':'enabled',"
+                        + "plus:!plus?'missing':(isDisabled(plus.btn)?'disabled':'enabled'),"
+                        + "minusSecondary:mp.secondary,plusSecondary:pp.secondary,"
+                        + "minusIcon:iconName(mp,'minus'),plusIcon:iconName(pp,'plus'),"
+                        + "href:link?link.getAttribute('href'):'',"
+                        + "controlsRight:Math.max(mb.right,pb.right),controlsTop:Math.min(mb.top,pb.top),"
+                        + "controlsBottom:Math.max(mb.bottom,pb.bottom),"
+                        + "nameLeft:lb?lb.left:-1,nameTop:lb?lb.top:-1,nameBottom:lb?lb.bottom:-1"
+                        + "});";
+        Object raw = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script, label);
+        try {
+            return new com.fasterxml.jackson.databind.ObjectMapper()
+                    .readTree(raw == null ? "{\"minus\":\"missing\"}" : String.valueOf(raw));
+        } catch (Exception e) {
+            throw new AssertionError("Could not read the count for \"" + label + "\": " + raw, e);
+        }
+    }
+
+    private boolean weiterButtonIsExact(String label) {
+        String script =
+                "var label=arguments[0];"
+                        + "function norm(t){return (t||'').replace(/\\s+/g,' ').trim();}"
+                        + "function walk(n){if(!n)return false;var tag=(n.tagName||'').toUpperCase();"
+                        + "if((tag==='BUTTON'||tag==='MUC-BUTTON')&&norm(n.textContent)===label)return true;"
+                        + "if(n.shadowRoot&&walk(n.shadowRoot))return true;"
+                        + "var c=n.children;if(c)for(var i=0;i<c.length;i++)if(walk(c[i]))return true;return false;}"
+                        + "return walk(document.body);";
+        Object found = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script, label);
+        return Boolean.TRUE.equals(found);
+    }
+
     private boolean pressServiceCounter(String label, boolean increase) {
         return "clicked".equals(serviceCounterButtonState(label, increase));
     }
