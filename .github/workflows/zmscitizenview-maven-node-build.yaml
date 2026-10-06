@@ -2,6 +2,9 @@ name: 📱 Frontend Build zmscitizenview
 
 on:
   push:
+    # Whole push (before…after), not only HEAD. Skipped only if every file is under zmsautomation/.
+    paths-ignore:
+      - "zmsautomation/**"
   # Rebuild without a commit. In Actions, choose the branch under "Use workflow from",
   # the same way as the zmsautomation workflow.
   # next and feature branches install the npm "beta" dist-tag; main and tags keep the pin.
