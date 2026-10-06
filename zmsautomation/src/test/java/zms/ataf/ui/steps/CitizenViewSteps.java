@@ -300,6 +300,60 @@ public class CitizenViewSteps {
         page.assertCalendarGroupsByMorning();
     }
 
+    @Then("the location checkboxes are selected in frequency order")
+    public void theLocationCheckboxesAreSelectedInFrequencyOrder() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: location checkboxes selected in frequency order");
+        page.assertOfficesCheckedInFrequencyOrder();
+    }
+
+    @Then("the open hour lists each selected office with a map pin")
+    public void theOpenHourListsEachSelectedOfficeWithAMapPin() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: open hour lists offices with a map pin");
+        page.assertOpenHourListsOfficesWithMapPin();
+    }
+
+    @Then("the calendar earlier button starts disabled and both are ghost buttons")
+    public void theCalendarEarlierButtonStartsDisabledAndBothAreGhostButtons() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: Früher starts disabled, both pager buttons are ghost");
+        page.assertCalendarGhostPagerStartsAtFirstGroup();
+    }
+
+    @When("I click Später in the calendar")
+    public void iClickLaterInTheCalendar() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: Später in the calendar");
+        page.moveCalendarHour(true);
+    }
+
+    @When("I click Früher in the calendar")
+    public void iClickEarlierInTheCalendar() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: Früher in the calendar");
+        page.moveCalendarHour(false);
+    }
+
+    @When("I clear the first shown office")
+    public void iClearTheFirstShownOffice() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: clear the first shown office");
+        page.clearFirstShownOffice();
+    }
+
+    @Then("the cleared office is left out of the available times")
+    public void theClearedOfficeIsLeftOutOfTheAvailableTimes() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: cleared office is left out of the available times");
+        page.assertClearedOfficeIsHidden();
+    }
+
+    @Then("the only office is a tile without checkboxes")
+    public void theOnlyOfficeIsATileWithoutCheckboxes() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: single office is a tile");
+        page.assertSingleOfficeTile(10492, "Bürgerbüro Ruppertstraße", "Ruppertstraße");
+    }
+
+    @Then("the single office groups its times without a location heading")
+    public void theSingleOfficeGroupsItsTimesWithoutALocationHeading() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: single office groups times without a location heading");
+        page.assertSingleOfficeGroupsTimesWithoutLocationHeadings();
+    }
+
     @Then("the earlier and later buttons are each on one line")
     public void theEarlierAndLaterButtonsAreEachOnOneLine() {
         ScenarioLogManager.getLogger().info("zmscitizenview: Früher and Später stay on one line");
