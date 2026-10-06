@@ -41,7 +41,7 @@ public final class CitizenViewScripts {
                     + "return {present:true,disabled:isDisabled(found),lines:lineCount(found,word)};}"
                     + "function isPrimary(el){return !!el&&((el.getAttribute('variant')||'')==='primary'||(el.classList&&el.classList.contains('m-button--primary')));}";
 
-
+    /** Clicks {@code window.__zmsCitizenViewSlotTarget}; falls back to deep click on stored slot id. */
     public static final String CLICK_STORED_TIMESLOT_SCRIPT =
             "var t=window.__zmsCitizenViewSlotTarget;"
                     + "if(!t)return false;"
