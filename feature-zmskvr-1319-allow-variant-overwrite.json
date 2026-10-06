@@ -1,10 +1,10 @@
 {
   "branch": "feature-zmskvr-1319-allow-variant-overwrite",
   "branchSlug": "feature-zmskvr-1319-allow-variant-overwrite",
-  "runId": "37269822254",
-  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37269822254",
-  "runStartedAt": "2026-10-05T05:54:06Z",
-  "publishedAt": "2026-10-05T06:17:17.852Z",
+  "runId": "37503490612",
+  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37503490612",
+  "runStartedAt": "2026-10-06T17:25:56Z",
+  "publishedAt": "2026-10-06T17:50:38.944Z",
   "features": {
     "feature-ui-zmsadmin-booking-zmskvr-1049": {
       "status": "passed",
@@ -890,21 +890,28 @@
     },
     "feature-ui-zmscitizenview-booking-zmskvr-1520-zmskvr-1508-zmskvr-1518-zmskvr-1492-zmskvr-1513-zmskvr-1453-variant-place": {
       "status": "passed",
-      "shard": "zmscitizenview",
+      "shard": "custom",
       "browser": "chrome",
-      "rel": "ui/zmscitizenview/booking/zmskvr-1520_zmskvr-1508_zmskvr-1518_zmskvr-1492_zmskvr-1513_zmskvr-1453_variant_place.feature",
-      "runId": "37269822254",
-      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37269822254",
-      "runStartedAt": "2026-10-05T05:54:06Z",
       "browsers": {
         "chrome": {
           "status": "passed",
-          "shard": "zmscitizenview",
-          "runId": "37269822254",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37269822254",
-          "runStartedAt": "2026-10-05T05:54:06Z"
+          "shard": "custom",
+          "runId": "37503490612",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37503490612",
+          "runStartedAt": "2026-10-06T17:25:56Z"
+        },
+        "firefox": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "37503490612",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37503490612",
+          "runStartedAt": "2026-10-06T17:25:56Z"
         }
-      }
+      },
+      "rel": "ui/zmscitizenview/booking/zmskvr-1520_zmskvr-1508_zmskvr-1518_zmskvr-1492_zmskvr-1513_zmskvr-1453_variant_place.feature",
+      "runId": "37503490612",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37503490612",
+      "runStartedAt": "2026-10-06T17:25:56Z"
     },
     "feature-ui-zmscitizenview-booking-zmskvr-1571-scheidplatz-contact-location-back-login": {
       "status": "passed",
