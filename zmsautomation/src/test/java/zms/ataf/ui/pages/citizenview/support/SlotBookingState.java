@@ -16,4 +16,8 @@ public final class SlotBookingState {
     public String openListHeading;
     public String markedTimeslotId;
     public String previousTimeslotId;
+
+    /** Epoch seconds of the slot kept after reserve (Meine Termine / ICS). */
+    public long rememberedAppointmentEpoch;
 }
+
