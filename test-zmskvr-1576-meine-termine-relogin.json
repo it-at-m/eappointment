@@ -1,0 +1,42 @@
+{
+  "branch": "test-zmskvr-1576-meine-termine-relogin",
+  "branchSlug": "test-zmskvr-1576-meine-termine-relogin",
+  "runId": "37481248897",
+  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37481248897",
+  "runStartedAt": "2026-10-06T14:42:40Z",
+  "publishedAt": "2026-10-06T14:59:14.731Z",
+  "features": {
+    "feature-ui-zmscitizenview-citizen-login-zmskvr-1576-zmskvr-1204-my-appointments-list": {
+      "status": "passed",
+      "shard": "custom",
+      "browser": "chrome",
+      "browsers": {
+        "chrome": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "37481248897",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37481248897",
+          "runStartedAt": "2026-10-06T14:42:40Z"
+        },
+        "edge": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "37481248897",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37481248897",
+          "runStartedAt": "2026-10-06T14:42:40Z"
+        },
+        "firefox": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "37481248897",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37481248897",
+          "runStartedAt": "2026-10-06T14:42:40Z"
+        }
+      },
+      "rel": "ui/zmscitizenview/citizen-login/zmskvr-1576_zmskvr-1204_my_appointments_list.feature",
+      "runId": "37481248897",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37481248897",
+      "runStartedAt": "2026-10-06T14:42:40Z"
+    }
+  }
+}

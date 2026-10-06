@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-10-06T14:41:02.429Z",
+  "publishedAt": "2026-10-06T14:59:14.731Z",
   "branches": [
     {
       "name": "next",
@@ -522,6 +522,12 @@
       "slug": "test-zmskvr-1575-zmskvr-1604-my-profile",
       "runId": "37092145036",
       "runStartedAt": "2026-10-03T03:07:28Z"
+    },
+    {
+      "name": "test-zmskvr-1576-meine-termine-relogin",
+      "slug": "test-zmskvr-1576-meine-termine-relogin",
+      "runId": "37481248897",
+      "runStartedAt": "2026-10-06T14:42:40Z"
     },
     {
       "name": "test-zmskvr-1596-zmskvr-1612-display-number-search",
