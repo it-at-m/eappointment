@@ -5930,7 +5930,9 @@ public class CitizenViewPage extends BasePage {
 
     public void openMeineTermine() {
         CONTEXT.set();
-        String overview = meineTermineOverviewUrl();
+        // Always cache-bust: Firefox/Edge treat navigate() to the same overview URL as a no-op,
+        // and cancel can leave the DBS session showing only Anmelden on a blank overview.
+        String overview = meineTermineOverviewUrl() + "?r=" + System.currentTimeMillis();
         ScenarioLogManager.getLogger().info("zmscitizenview: open Meine Termine {}", overview);
         navigateToMeineTermine(overview);
         if (!browserIsOnMeineTermine()) {
@@ -5940,10 +5942,12 @@ public class CitizenViewPage extends BasePage {
                             DriverUtil.getDriver().getCurrentUrl());
             navigateToMeineTermine(overview);
         }
+        waitUntilNeueTerminVisible();
     }
 
     public void assertMeineTermineLists(String... serviceNames) {
         CONTEXT.set();
+        waitUntilNeueTerminVisible();
         for (String serviceName : serviceNames) {
             waitForTeaserText(serviceName);
             Assert.assertEquals(
@@ -5972,6 +5976,14 @@ public class CitizenViewPage extends BasePage {
             while (System.currentTimeMillis() < deadline) {
                 if (meineTermineFinishedLoading()) {
                     return;
+                }
+                if (meineTermineShowsLoggedOut()) {
+                    ScenarioLogManager.getLogger()
+                            .warn(
+                                    "zmscitizenview: Meine Termine shows Anmelden (attempt {}/4); logging in again",
+                                    attempt);
+                    reloginForMeineTermine();
+                    break;
                 }
                 if (shadowDomContainsText(loadError)) {
                     break;
@@ -6002,11 +6014,58 @@ public class CitizenViewPage extends BasePage {
         return shadowDomContainsText("Kommende Termine (0)") && !deepElementExists(".skeleton-loader");
     }
 
+    /** Overview only mounts content when logged in; cancel sometimes drops the DBS session. */
+    private boolean meineTermineShowsLoggedOut() {
+        return browserIsOnMeineTermine()
+                && shadowDomContainsText("Anmelden")
+                && !shadowDomContainsText("Mein Bereich")
+                && !shadowDomContainsText("Neuer Termin")
+                && !shadowDomContainsText("Kommende Termine");
+    }
+
+    /**
+     * Host {@code dbs-login} Anmelden on the overview (no Kontakt callout). Reuse the checked-out
+     * citizen so the same appointments stay visible after cancel.
+     */
+    private void reloginForMeineTermine() {
+        try {
+            if (!clickInAppBuergerLoginAnmelden()) {
+                waitForAndClickButtonContaining("Anmelden", DEFAULT_EXPLICIT_WAIT_TIME);
+            }
+            WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+            wait.until(d -> shadowDomContainsText("Mein Bereich")
+                    || shadowDomContainsText("Neuer Termin")
+                    || !d.findElements(By.id("username")).isEmpty());
+            if (!DriverUtil.getDriver().findElements(By.id("username")).isEmpty()) {
+                String username =
+                        TestPropertiesHelper.getPropertyAsString("citizenUserName", true, "citizen");
+                String password =
+                        TestPropertiesHelper.getPropertyAsString("citizenUserPassword", true, "vorschau");
+                completeKeycloakLoginForm(AccountCheckout.assignCitizenLogin(username), password);
+            }
+            waitWithThreeWindows(
+                    () -> shadowDomContainsText("Mein Bereich")
+                            || shadowDomContainsText("Neuer Termin")
+                            || shadowDomContainsText("Kommende Termine"),
+                    "Meine Termine after re-login");
+        } catch (Exception e) {
+            ScenarioLogManager.getLogger().warn("zmscitizenview: Meine Termine re-login failed", e);
+        }
+        if (!browserIsOnMeineTermine() || !meineTermineFinishedLoading()) {
+            reloadMeineTermine();
+        }
+    }
+
     private String meineTermineOverviewUrl() {
         String current = DriverUtil.getDriver().getCurrentUrl();
         Assert.assertTrue(current != null && !current.isBlank(), "Citizen view URL is missing.");
         int hash = current.indexOf('#');
         String withoutHash = hash >= 0 ? current.substring(0, hash) : current;
+        // Strip a previous cache-bust query so we always rebuild from the path.
+        int query = withoutHash.indexOf('?');
+        if (query >= 0) {
+            withoutHash = withoutHash.substring(0, query);
+        }
         int slash = withoutHash.lastIndexOf('/');
         return withoutHash.substring(0, slash + 1) + "appointment-overview.html";
     }
@@ -6026,7 +6085,7 @@ public class CitizenViewPage extends BasePage {
 
     /**
      * Opening the overview URL again does nothing when Firefox is already on that page, so a
-     * load that never rendered "Neuer Termin" stays put. Refresh the document instead.
+     * load that never rendered "Neuer Termin" stays put. Use a fresh query string instead.
      */
     private void reloadMeineTermine() {
         String overview = meineTermineOverviewUrl() + "?r=" + System.currentTimeMillis();
