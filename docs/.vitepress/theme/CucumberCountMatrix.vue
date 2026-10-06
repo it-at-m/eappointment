@@ -160,11 +160,12 @@ const totalLabel = computed(() => (isDe.value ? "Summe" : "Total"));
 
 const moduleLabel = computed(() => (isDe.value ? "Modul" : "Module"));
 
-const mobileHint = (mobile) => {
+const viewportHint = (total, mobile) => {
   if (!mobile) {
     return "";
   }
-  return isDe.value ? ` · ${mobile} mobil` : ` · ${mobile} mobile`;
+  const desktop = Math.max(0, total - mobile);
+  return ` · 🖥️ ${desktop} · 📱 ${mobile}`;
 };
 
 const loadingLabel = computed(() =>
@@ -215,7 +216,7 @@ const loadingLabel = computed(() =>
             :key="row.module"
           >
             <th scope="row">{{ row.module }}</th>
-            <td>{{ row.total }}{{ mobileHint(row.mobile) }}</td>
+            <td>{{ row.total }}{{ viewportHint(row.total, row.mobile) }}</td>
             <td
               v-for="(count, index) in row.cells"
               :key="`${row.module}-${section.categories[index]}`"
@@ -227,7 +228,10 @@ const loadingLabel = computed(() =>
         <tfoot>
           <tr>
             <th scope="row">{{ totalLabel }}</th>
-            <td>{{ section.total }}{{ mobileHint(section.mobile) }}</td>
+            <td>
+              {{ section.total
+              }}{{ viewportHint(section.total, section.mobile) }}
+            </td>
             <td
               v-for="(count, index) in section.columnTotals"
               :key="`total-${section.categories[index]}`"

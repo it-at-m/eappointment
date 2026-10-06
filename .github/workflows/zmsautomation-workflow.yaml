@@ -51,13 +51,13 @@ on:
         type: boolean
         default: true
       module_citizenview:
-        description: "Citizenview UI tests (@zmscitizenview)"
+        description: "🖥️ Citizenview UI tests (@zmscitizenview), including @mobile"
         required: true
         type: boolean
         default: true
       viewport_mobile_only:
         description: |
-          Run only @mobile UI scenarios (phone 390×844). Used by zmscitizenview.
+          📱 Run only @mobile UI scenarios (phone 390×844). Used by zmscitizenview.
           Ignores module checkboxes and run_all_in_one_job (same idea as custom tags).
           Ignored when cucumber_tag_expressions is set or use_custom_tags is enabled.
         required: true
