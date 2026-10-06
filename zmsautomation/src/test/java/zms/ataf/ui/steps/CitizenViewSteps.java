@@ -776,9 +776,9 @@ public class CitizenViewSteps {
     }
 
     @When("I reschedule the appointment from Meine Termine in the citizen view")
-    public void iRescheduleTheAppointmentFromMeineTermine() {
+    public void iRescheduleTheAppointmentFromMyAppointments() {
         ScenarioLogManager.getLogger().info("zmscitizenview: reschedule from Meine Termine via Verschieben");
-        page.rescheduleFromMeineTermine();
+        page.rescheduleFromMyAppointments();
     }
 
     /** ZMSKVR-1500: rebooking confirm summary reached (Verschieben abbrechen shown). */
@@ -1125,52 +1125,52 @@ public class CitizenViewSteps {
     }
 
     @When("I open Meine Termine in the citizen view")
-    public void iOpenMeineTermine() {
+    public void iOpenMyAppointments() {
         ScenarioLogManager.getLogger().info("zmscitizenview: open Meine Termine");
-        page.openMeineTermine();
+        page.openMyAppointments();
     }
 
     @Then("Meine Termine lists {string} and {string}")
-    public void meineTermineListsBoth(String first, String second) {
-        page.assertMeineTermineLists(first, second);
+    public void myAppointmentsListsBoth(String first, String second) {
+        page.assertMyAppointmentsLists(first, second);
     }
 
     @Then("Meine Termine lists {string}")
-    public void meineTermineLists(String serviceName) {
-        page.assertMeineTermineLists(serviceName);
+    public void myAppointmentsLists(String serviceName) {
+        page.assertMyAppointmentsLists(serviceName);
     }
 
     @Then("I remember the Meine Termine appointment for {string}")
-    public void iRememberTheMeineTermineAppointment(String serviceName) {
-        page.rememberMeineTermineAppointment(serviceName);
+    public void iRememberTheMyAppointmentsAppointment(String serviceName) {
+        page.rememberMyAppointmentsAppointment(serviceName);
     }
 
     @Then("the Meine Termine appointment for {string} was replaced")
-    public void theMeineTermineAppointmentWasReplaced(String serviceName) {
-        page.assertMeineTermineAppointmentReplaced(serviceName);
+    public void theMyAppointmentsAppointmentWasReplaced(String serviceName) {
+        page.assertMyAppointmentsAppointmentReplaced(serviceName);
     }
 
     @Then("the Meine Termine appointment for {string} is unchanged")
-    public void theMeineTermineAppointmentIsUnchanged(String serviceName) {
-        page.assertMeineTermineAppointmentUnchanged(serviceName);
+    public void theMyAppointmentsAppointmentIsUnchanged(String serviceName) {
+        page.assertMyAppointmentsAppointmentUnchanged(serviceName);
     }
 
     @Then("Meine Termine does not list {string}")
-    public void meineTermineDoesNotList(String serviceName) {
-        page.assertMeineTermineDoesNotList(serviceName);
+    public void myAppointmentsDoesNotList(String serviceName) {
+        page.assertMyAppointmentsDoesNotList(serviceName);
     }
 
     @Then("the Meine Termine teaser for {string} should show type {string} and location {string}")
-    public void theMeineTermineTeaserShouldShowTypeAndLocation(String serviceName, String typeLabel, String locationText) {
+    public void theMyAppointmentsTeaserShouldShowTypeAndLocation(String serviceName, String typeLabel, String locationText) {
         ScenarioLogManager.getLogger()
                 .info("zmscitizenview: assert Meine Termine teaser for {}", serviceName);
-        page.assertMeineTermineTeaser(serviceName, typeLabel, locationText);
+        page.assertMyAppointmentsTeaser(serviceName, typeLabel, locationText);
     }
 
     @When("I open the Meine Termine teaser for {string}")
-    public void iOpenTheMeineTermineTeaser(String serviceName) {
+    public void iOpenTheMyAppointmentsTeaser(String serviceName) {
         ScenarioLogManager.getLogger().info("zmscitizenview: open Meine Termine teaser {}", serviceName);
-        page.openMeineTermineTeaser(serviceName);
+        page.openMyAppointmentsTeaser(serviceName);
     }
 
     @Then("the appointment detail should show {string} at {string} with {string}, {string} and {string}")

@@ -730,13 +730,13 @@ public class CitizenViewPage extends BasePage {
         return json.citizenJson(expression, args);
     }
 
-    public boolean ortStepShowsProvider(int officeId) {
-        return providerLocation.ortStepShowsProvider(officeId);
+    public boolean locationStepShowsProvider(int officeId) {
+        return providerLocation.locationStepShowsProvider(officeId);
     }
 
     /** Single-provider layout: teaser headline {@code #provider-{id}} under Ort (no checkboxes). */
-    private boolean deepOrtSingleProviderTeaserPresent(int officeId) {
-        return providerLocation.deepOrtSingleProviderTeaserPresent(officeId);
+    private boolean deepLocationSingleProviderTeaserPresent(int officeId) {
+        return providerLocation.deepLocationSingleProviderTeaserPresent(officeId);
     }
 
     public void assertProviderCheckboxPresent(int officeId) {
@@ -774,15 +774,15 @@ public class CitizenViewPage extends BasePage {
     /**
      * Waits after combination → Ort/ Zeit: multi-provider checkboxes or single-provider teaser.
      */
-    public void waitUntilOrtStepShowsProvider(int officeId, int maxSeconds) {
-        providerLocation.waitUntilOrtStepShowsProvider(officeId, maxSeconds);
+    public void waitUntilLocationStepShowsProvider(int officeId, int maxSeconds) {
+        providerLocation.waitUntilLocationStepShowsProvider(officeId, maxSeconds);
     }
 
     /**
      * Logs checkbox ids in DOM + whether single-provider teaser matches; asserts expected provider is shown in Ort.
      */
-    public void logOrtProviderResolution(int expectedOfficeId) {
-        providerLocation.logOrtProviderResolution(expectedOfficeId);
+    public void logLocationProviderResolution(int expectedOfficeId) {
+        providerLocation.logLocationProviderResolution(expectedOfficeId);
     }
 
     private JsonNode providerCheckboxes() {
@@ -1445,8 +1445,8 @@ public class CitizenViewPage extends BasePage {
         overview.clickRescheduleAppointment();
     }
 
-    public void rescheduleFromMeineTermine() {
-        overview.rescheduleFromMeineTermine();
+    public void rescheduleFromMyAppointments() {
+        overview.rescheduleFromMyAppointments();
     }
 
     public void assertCancelRescheduleButtonVisible() {
@@ -1533,36 +1533,36 @@ public class CitizenViewPage extends BasePage {
         myAppointments.rememberSelectedAppointmentTime();
     }
 
-    public void openMeineTermine() {
-        myAppointments.openMeineTermine();
+    public void openMyAppointments() {
+        myAppointments.openMyAppointments();
     }
 
-    public void assertMeineTermineLists(String... serviceNames) {
-        myAppointments.assertMeineTermineLists(serviceNames);
+    public void assertMyAppointmentsLists(String... serviceNames) {
+        myAppointments.assertMyAppointmentsLists(serviceNames);
     }
 
-    public void assertMeineTermineDoesNotList(String serviceName) {
-        myAppointments.assertMeineTermineDoesNotList(serviceName);
+    public void assertMyAppointmentsDoesNotList(String serviceName) {
+        myAppointments.assertMyAppointmentsDoesNotList(serviceName);
     }
 
-    public void rememberMeineTermineAppointment(String serviceName) {
-        myAppointments.rememberMeineTermineAppointment(serviceName);
+    public void rememberMyAppointmentsAppointment(String serviceName) {
+        myAppointments.rememberMyAppointmentsAppointment(serviceName);
     }
 
-    public void assertMeineTermineAppointmentReplaced(String serviceName) {
-        myAppointments.assertMeineTermineAppointmentReplaced(serviceName);
+    public void assertMyAppointmentsAppointmentReplaced(String serviceName) {
+        myAppointments.assertMyAppointmentsAppointmentReplaced(serviceName);
     }
 
-    public void assertMeineTermineAppointmentUnchanged(String serviceName) {
-        myAppointments.assertMeineTermineAppointmentUnchanged(serviceName);
+    public void assertMyAppointmentsAppointmentUnchanged(String serviceName) {
+        myAppointments.assertMyAppointmentsAppointmentUnchanged(serviceName);
     }
 
-    public void assertMeineTermineTeaser(String serviceName, String typeLabel, String locationText) {
-        myAppointments.assertMeineTermineTeaser(serviceName, typeLabel, locationText);
+    public void assertMyAppointmentsTeaser(String serviceName, String typeLabel, String locationText) {
+        myAppointments.assertMyAppointmentsTeaser(serviceName, typeLabel, locationText);
     }
 
-    public void openMeineTermineTeaser(String serviceName) {
-        myAppointments.openMeineTermineTeaser(serviceName);
+    public void openMyAppointmentsTeaser(String serviceName) {
+        myAppointments.openMyAppointmentsTeaser(serviceName);
     }
 
     public void assertAppointmentDetailLocation(

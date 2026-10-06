@@ -547,7 +547,7 @@ public final class OverviewStep {
                 .info("zmscitizenview: clicking reschedule appointment button ({})", RESCHEDULE_APPOINTMENT_BUTTON);
         shadow.waitForAndClickButtonContaining(RESCHEDULE_APPOINTMENT_BUTTON, defaultWaitSeconds);
     }
-    public void rescheduleFromMeineTermine() {
+    public void rescheduleFromMyAppointments() {
         context.set();
         clickRescheduleAppointment();
         CitizenViewWaits.waitWithThreeWindows(

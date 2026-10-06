@@ -22,7 +22,7 @@ import zms.ataf.ui.pages.citizenview.support.SlotBookingState;
 import org.openqa.selenium.TimeoutException;
 
 /**
- * Location (Ort) step: provider checkboxes, single-provider teaser, office order.
+ * Location step: provider checkboxes, single-provider teaser, office order.
  */
 public final class ProviderLocationStep {
 
@@ -68,14 +68,14 @@ public final class ProviderLocationStep {
     }
 
 
-    public boolean ortStepShowsProvider(int officeId) {
+    public boolean locationStepShowsProvider(int officeId) {
         context.set();
         return shadow.deepElementExists("#checkbox-provider-" + officeId)
-                || deepOrtSingleProviderTeaserPresent(officeId);
+                || deepLocationSingleProviderTeaserPresent(officeId);
     }
 
     /** Single-provider layout: teaser headline {@code #provider-{id}} under Ort (no checkboxes). */
-    public boolean deepOrtSingleProviderTeaserPresent(int officeId) {
+    public boolean deepLocationSingleProviderTeaserPresent(int officeId) {
         context.set();
         String script =
                 "var id='provider-'+arguments[0];function has(root){if(!root)return false;"
@@ -89,9 +89,9 @@ public final class ProviderLocationStep {
 
     public void assertProviderCheckboxPresent(int officeId) {
         context.set();
-        waitUntilOrtStepShowsProvider(officeId, defaultWaitSeconds);
-        logOrtProviderResolution(officeId);
-        Assert.assertTrue(ortStepShowsProvider(officeId), "Ort must show provider " + officeId);
+        waitUntilLocationStepShowsProvider(officeId, defaultWaitSeconds);
+        logLocationProviderResolution(officeId);
+        Assert.assertTrue(locationStepShowsProvider(officeId), "Ort must show provider " + officeId);
     }
 
     public void assertProviderCheckboxAbsent(int officeId) {
@@ -100,7 +100,7 @@ public final class ProviderLocationStep {
                 shadow.deepElementExists("#checkbox-provider-" + officeId),
                 "Provider checkbox for office " + officeId + " must not appear for this jump-in/service.");
         Assert.assertFalse(
-                deepOrtSingleProviderTeaserPresent(officeId),
+                deepLocationSingleProviderTeaserPresent(officeId),
                 "Single-provider Ort teaser for office " + officeId + " must not appear.");
     }
 
@@ -160,7 +160,7 @@ public final class ProviderLocationStep {
 
     public void selectOfficeById(int officeId) {
         context.set();
-        logOrtProviderResolution(officeId);
+        logLocationProviderResolution(officeId);
         if (shadow.deepElementExists("#checkbox-provider-" + officeId)) {
             if (deepProviderCheckboxChecked(officeId)) {
                 ScenarioLogManager.getLogger()
@@ -172,7 +172,7 @@ public final class ProviderLocationStep {
                 ScenarioLogManager.getLogger()
                         .info("zmscitizenview: clicked Ort checkbox provider {}", officeId);
             }
-        } else if (deepOrtSingleProviderTeaserPresent(officeId)) {
+        } else if (deepLocationSingleProviderTeaserPresent(officeId)) {
             ScenarioLogManager.getLogger()
                     .info(
                             "zmscitizenview: Ort single-provider teaser already selected provider {} (no checkbox)",
@@ -186,7 +186,7 @@ public final class ProviderLocationStep {
     /**
      * Waits after combination → Ort/ Zeit: multi-provider checkboxes or single-provider teaser.
      */
-    public void waitUntilOrtStepShowsProvider(int officeId, int maxSeconds) {
+    public void waitUntilLocationStepShowsProvider(int officeId, int maxSeconds) {
         context.set();
         ScenarioLogManager.getLogger()
                 .info(
@@ -195,7 +195,7 @@ public final class ProviderLocationStep {
                         maxSeconds);
         long deadline = java.lang.System.currentTimeMillis() + maxSeconds * 1000L;
         while (java.lang.System.currentTimeMillis() < deadline) {
-            if (ortStepShowsProvider(officeId)) {
+            if (locationStepShowsProvider(officeId)) {
                 ScenarioLogManager.getLogger()
                         .info(
                                 "zmscitizenview: Ort step — provider {} found ({})",
@@ -212,7 +212,7 @@ public final class ProviderLocationStep {
                 break;
             }
         }
-        logOrtProviderResolution(officeId);
+        logLocationProviderResolution(officeId);
         Assert.fail(
                 "Ort step did not show provider "
                         + officeId
@@ -226,7 +226,7 @@ public final class ProviderLocationStep {
     /**
      * Logs checkbox ids in DOM + whether single-provider teaser matches; asserts expected provider is shown in Ort.
      */
-    public void logOrtProviderResolution(int expectedOfficeId) {
+    public void logLocationProviderResolution(int expectedOfficeId) {
         context.set();
         String script =
                 "var ids=[];function collect(r){if(!r)return;var a=r.querySelectorAll('[id^=\"checkbox-provider-\"]');"
@@ -236,7 +236,7 @@ public final class ProviderLocationStep {
         String found =
                 String.valueOf(((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script));
         boolean checkboxOk = found.contains("checkbox-provider-" + expectedOfficeId);
-        boolean teaserOk = deepOrtSingleProviderTeaserPresent(expectedOfficeId);
+        boolean teaserOk = deepLocationSingleProviderTeaserPresent(expectedOfficeId);
         ScenarioLogManager.getLogger()
                 .info(
                         "zmscitizenview: Ort provider resolution — checkboxIds=[{}] checkboxHit={} singleProviderTeaser={} expected={}",
