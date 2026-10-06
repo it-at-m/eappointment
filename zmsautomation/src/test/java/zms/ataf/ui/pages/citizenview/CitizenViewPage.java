@@ -55,6 +55,10 @@ public class CitizenViewPage extends BasePage {
             "Eine Bestätigung und weitere Informationen zu Ihrem Termin erhalten Sie per E-Mail. Wir freuen uns auf Ihren Besuch.";
     private static final String VIEW_APPOINTMENT_BUTTON = "Termin ansehen";
     private static final String BOOK_ANOTHER_APPOINTMENT_BUTTON = "Weiteren Termin vereinbaren";
+    private static final String CANCELLATION_SUCCESS_HEADING =
+            "Sie haben Ihren Termin erfolgreich abgesagt.";
+    private static final String CANCELLATION_SUCCESS_TEXT =
+            "Danke, dass Sie Ihren Termin für andere freigegeben haben.";
 
     /** German invalid jump-in callout ({@code de-DE.json}). */
     public static final String DE_INVALID_JUMPIN_HEADER = "Diese Ansicht kann nicht geladen werden.";
@@ -4154,7 +4158,7 @@ public class CitizenViewPage extends BasePage {
         ScenarioLogManager.getLogger().info("zmscitizenview: clicking cancel appointment button (Termin absagen)");
         waitForAndClickButtonContaining("Termin absagen", DEFAULT_EXPLICIT_WAIT_TIME);
         confirmCancelAppointmentDialogIfShown();
-        String marker = "Sie haben Ihren Termin erfolgreich abgesagt.";
+        String marker = CANCELLATION_SUCCESS_HEADING;
         ScenarioLogManager.getLogger()
                 .info("zmscitizenview: waiting in 5s + 10s + 15s windows (30s total) for cancellation success callout");
         waitWithThreeWindows(() -> shadowDomContainsText(marker), "Cancellation success callout");
@@ -4180,9 +4184,22 @@ public class CitizenViewPage extends BasePage {
     public void assertCancellationSuccessCalloutVisible() {
         ScenarioLogManager.getLogger().info("zmscitizenview: checking for cancellation success callout (Sie haben Ihren Termin erfolgreich abgesagt.)");
         assertShadowContains(
-                "Sie haben Ihren Termin erfolgreich abgesagt.",
+                CANCELLATION_SUCCESS_HEADING,
                 "Cancellation success callout not found after cancelling appointment.");
         ScenarioLogManager.getLogger().info("zmscitizenview: cancellation success callout found");
+    }
+
+    /**
+     * ZMSKVR-112 / ZMSKVR-241 / ZMSKVR-1623: success callout heading and thank-you text after Termin absagen.
+     */
+    public void assertCancellationSuccessDetailsVisible() {
+        CONTEXT.set();
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: assert cancellation success callout heading and thank-you text");
+        assertCancellationSuccessCalloutVisible();
+        Assert.assertTrue(
+                shadowDomContainsText(CANCELLATION_SUCCESS_TEXT),
+                "Cancellation success callout must include the thank-you text.");
     }
 
     /**
