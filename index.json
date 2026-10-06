@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-10-06T09:06:57.509Z",
+  "publishedAt": "2026-10-06T09:22:59.599Z",
   "branches": [
     {
       "name": "next",
@@ -610,8 +610,8 @@
     {
       "name": "test-zmskvr-84-zmskvr-305-service-search",
       "slug": "test-zmskvr-84-zmskvr-305-service-search",
-      "runId": "37430197692",
-      "runStartedAt": "2026-10-06T07:31:31Z"
+      "runId": "37438573122",
+      "runStartedAt": "2026-10-06T08:48:18Z"
     },
     {
       "name": "test-zmskvr-90-zmskvr-471-zmskvr-230-service-duration",

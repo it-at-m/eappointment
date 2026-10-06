@@ -1,35 +1,35 @@
 {
   "branch": "test-zmskvr-84-zmskvr-305-service-search",
   "branchSlug": "test-zmskvr-84-zmskvr-305-service-search",
-  "runId": "37430197692",
-  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37430197692",
-  "runStartedAt": "2026-10-06T07:31:31Z",
-  "publishedAt": "2026-10-06T07:44:58.782Z",
+  "runId": "37438573122",
+  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37438573122",
+  "runStartedAt": "2026-10-06T08:48:18Z",
+  "publishedAt": "2026-10-06T09:22:59.599Z",
   "features": {
     "feature-ui-zmscitizenview-booking-zmskvr-84-zmskvr-305-service-search": {
-      "status": "failed",
+      "status": "passed",
       "shard": "custom",
       "browser": "chrome",
       "browsers": {
         "chrome": {
-          "status": "failed",
+          "status": "passed",
           "shard": "custom",
-          "runId": "37430197692",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37430197692",
-          "runStartedAt": "2026-10-06T07:31:31Z"
+          "runId": "37438573122",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37438573122",
+          "runStartedAt": "2026-10-06T08:48:18Z"
         },
         "firefox": {
-          "status": "failed",
+          "status": "passed",
           "shard": "custom",
-          "runId": "37430197692",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37430197692",
-          "runStartedAt": "2026-10-06T07:31:31Z"
+          "runId": "37438573122",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37438573122",
+          "runStartedAt": "2026-10-06T08:48:18Z"
         }
       },
       "rel": "ui/zmscitizenview/booking/zmskvr-84_zmskvr-305_service_search.feature",
-      "runId": "37430197692",
-      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37430197692",
-      "runStartedAt": "2026-10-06T07:31:31Z"
+      "runId": "37438573122",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37438573122",
+      "runStartedAt": "2026-10-06T08:48:18Z"
     }
   }
 }
