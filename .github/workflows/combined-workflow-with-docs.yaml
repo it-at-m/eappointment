@@ -3,6 +3,9 @@ name: 🐘 Combined PHP Build with Documentation
 on:
   push:
     branches: [next]
+    # Whole push (before…after), not only HEAD. Skipped only if every file is under zmsautomation/.
+    paths-ignore:
+      - "zmsautomation/**"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}

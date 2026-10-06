@@ -4,6 +4,9 @@ on:
   push:
     branches-ignore: [next]
     tags: ['*']
+    # Whole push (before…after), not only HEAD. Skipped only if every file is under zmsautomation/.
+    paths-ignore:
+      - "zmsautomation/**"
   workflow_call:
 
 concurrency:
