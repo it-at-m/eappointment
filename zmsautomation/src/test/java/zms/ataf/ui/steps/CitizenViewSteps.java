@@ -212,6 +212,43 @@ public class CitizenViewSteps {
         page.assertCountBelowNameOnPhone(TestDataHelper.transformTestData(label));
     }
 
+    @Then("the combinable services heading is visible")
+    public void theCombinableServicesHeadingIsVisible() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: combinable services heading visible");
+        page.assertCombinableServicesHeadingVisible();
+    }
+
+    @Then("there are {int} combinable services shown")
+    public void thereAreCombinableServicesShown(int count) {
+        ScenarioLogManager.getLogger().info("zmscitizenview: combinable services count is {}", count);
+        page.assertCombinableServiceCount(count);
+    }
+
+    @Then("there are more than {int} combinable services shown")
+    public void thereAreMoreThanCombinableServicesShown(int count) {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: combinable services count is greater than {}", count);
+        page.assertCombinableServiceCountGreaterThan(count);
+    }
+
+    @Then("the show all services button is shown")
+    public void theShowAllServicesButtonIsShown() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: Alle Leistungen anzeigen is shown");
+        page.assertShowAllServicesButtonVisible(true);
+    }
+
+    @Then("the show all services button is not shown")
+    public void theShowAllServicesButtonIsNotShown() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: Alle Leistungen anzeigen is hidden");
+        page.assertShowAllServicesButtonVisible(false);
+    }
+
+    @When("I show all combinable services")
+    public void iShowAllCombinableServices() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: click Alle Leistungen anzeigen");
+        page.showAllCombinableServices();
+    }
+
     @When("I raise the service {string} until the plus button is disabled")
     public void iRaiseTheServiceUntilThePlusButtonIsDisabled(String label) {
         ScenarioLogManager.getLogger().info("zmscitizenview: raise {} until plus is disabled", label);
