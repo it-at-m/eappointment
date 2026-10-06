@@ -1180,6 +1180,10 @@ public class CitizenViewPage extends BasePage {
         return timeSlot.openNextCalendarDayAndWaitForSlots();
     }
 
+    public void selectSingleSeatDayAfterV19RangeAndWaitForSlots() {
+        timeSlot.selectSingleSeatDayAfterV19RangeAndWaitForSlots();
+    }
+
     private boolean clickNextBookableCalendarDay() {
         return timeSlot.clickNextBookableCalendarDay();
     }

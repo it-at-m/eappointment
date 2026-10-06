@@ -22,4 +22,21 @@ public final class BerlinTime {
     public static LocalTime now() {
         return LocalTime.now(ZONE);
     }
+
+    /**
+     * Day after {@code V19} Ruppertstraße {@code @range_end} — same math as
+     * {@code V42__ZMSKVR-88_ZMSKVR-472_single_seat_after_v19.sql} (one internet seat on Pass 172 / office 10502).
+     */
+    public static LocalDate singleSeatDayAfterV19RuppertstrasseRange() {
+        LocalTime latestEnd = LocalTime.of(23, 55);
+        long slotSeconds = 300L;
+        long nowSec = now().toSecondOfDay();
+        long roundedStartSec = ((nowSec + slotSeconds - 1) / slotSeconds) * slotSeconds;
+        boolean useNextDay =
+                roundedStartSec >= 24 * 3600
+                        || latestEnd.toSecondOfDay() <= roundedStartSec
+                        || (latestEnd.toSecondOfDay() - roundedStartSec) < 3 * 3600;
+        LocalDate v19RangeEnd = today().plusDays(useNextDay ? 8 : 7);
+        return v19RangeEnd.plusDays(1);
+    }
 }

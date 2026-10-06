@@ -1361,6 +1361,75 @@ public final class TimeSlotStep {
         return true;
     }
 
+    /**
+     * ZMSKVR-88 / ZMSKVR-472: land on the single-seat Passkalender day (V42, day after V19 range)
+     * so each UI grid time has only one internet seat behind it.
+     */
+    public void selectSingleSeatDayAfterV19RangeAndWaitForSlots() {
+        context.set();
+        java.time.LocalDate target = zms.ataf.helpers.BerlinTime.singleSeatDayAfterV19RuppertstrasseRange();
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: select single-seat Passkalender day {} (after V19 range)", target);
+        for (int attempt = 0; attempt < 16; attempt++) {
+            java.time.LocalDate shown = readSelectedCalendarDayFromSlots();
+            if (target.equals(shown)) {
+                ScenarioLogManager.getLogger()
+                        .info("zmscitizenview: calendar is on single-seat day {}", shown);
+                return;
+            }
+            if (shown != null && shown.isAfter(target)) {
+                Assert.fail(
+                        "zmscitizenview: calendar day "
+                                + shown
+                                + " is after single-seat day "
+                                + target
+                                + " without landing on it");
+            }
+            if (!openNextCalendarDayAndWaitForSlots()) {
+                Assert.fail(
+                        "zmscitizenview: could not open next calendar day while seeking single-seat day "
+                                + target
+                                + " (last shown="
+                                + shown
+                                + ")");
+            }
+        }
+        Assert.fail("zmscitizenview: did not reach single-seat day " + target + " within 16 day moves");
+    }
+
+    /**
+     * Infer the open calendar day from any timeslot button id ({@code …-timeslot-{epoch}}).
+     *
+     * @return Berlin local date, or null when no slot id is present yet
+     */
+    public java.time.LocalDate readSelectedCalendarDayFromSlots() {
+        Object raw =
+                ((JavascriptExecutor) DriverUtil.getDriver())
+                        .executeScript(
+                                "function walk(root,visit){if(!root||!root.querySelectorAll)return;"
+                                        + "var nodes=root.querySelectorAll('*');"
+                                        + "for(var i=0;i<nodes.length;i++){visit(nodes[i]);"
+                                        + "if(nodes[i].shadowRoot)walk(nodes[i].shadowRoot,visit);}}"
+                                        + "var found=null;"
+                                        + "walk(document,function(el){"
+                                        + "if(found||!el.id)return;"
+                                        + "var m=String(el.id).match(/-timeslot-(\\d+)$/);"
+                                        + "if(m)found=m[1];"
+                                        + "});"
+                                        + "return found;");
+        if (raw == null) {
+            return null;
+        }
+        try {
+            long epoch = Long.parseLong(String.valueOf(raw));
+            return java.time.Instant.ofEpochSecond(epoch)
+                    .atZone(zms.ataf.helpers.BerlinTime.ZONE)
+                    .toLocalDate();
+        } catch (NumberFormatException e) {
+            return null;
+        }
+    }
+
     public boolean clickNextBookableCalendarDay() {
         context.set();
         String script =
