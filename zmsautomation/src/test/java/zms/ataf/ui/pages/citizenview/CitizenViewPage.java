@@ -224,7 +224,7 @@ public class CitizenViewPage extends BasePage {
     /** Click the search field. The list opens underneath it. */
     public void clickServiceSearchField() {
         CONTEXT.set();
-        waitUntilServiceLabelReadyForSelection("Reisepass", 20);
+        waitUntilServiceOptionsLoaded();
         serviceSearch("click", "");
         waitUntilServiceListOpen();
     }
@@ -234,7 +234,7 @@ public class CitizenViewPage extends BasePage {
      */
     public void openServiceListWithTabAndEnter() {
         CONTEXT.set();
-        waitUntilServiceLabelReadyForSelection("Reisepass", 20);
+        waitUntilServiceOptionsLoaded();
         serviceSearch("close", "");
         serviceSearch("focus-heading", "");
         Actions actions = new Actions(DriverUtil.getDriver());
@@ -262,10 +262,23 @@ public class CitizenViewPage extends BasePage {
 
     public void assertServiceListAlphabetical() {
         CONTEXT.set();
-        JsonNode state = waitUntilServiceListOpen();
-        Assert.assertTrue(
-                state.path("names").size() > 1,
-                "The service list has no choices: " + state);
+        JsonNode state = new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(d -> {
+                    JsonNode node = serviceSearch("read", "");
+                    if (node.path("names").size() > 1) {
+                        return node;
+                    }
+                    // An open list can still show the empty Choices notice until the services arrive.
+                    if (serviceSearch("options", "").path("count").asInt() > 1) {
+                        serviceSearch("close", "");
+                        serviceSearch("click", "");
+                        node = serviceSearch("read", "");
+                        if (node.path("names").size() > 1) {
+                            return node;
+                        }
+                    }
+                    return null;
+                });
         Assert.assertTrue(
                 state.path("alphabetical").asBoolean(),
                 "The service list is not alphabetical: " + state.path("names"));
@@ -326,6 +339,12 @@ public class CitizenViewPage extends BasePage {
         assertCombinationStepVisible();
     }
 
+    /** The search field stays empty until offices-and-services fills its options. */
+    private void waitUntilServiceOptionsLoaded() {
+        new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(d -> serviceSearch("options", "").path("count").asInt() > 1);
+    }
+
     private JsonNode waitUntilServiceListOpen() {
         new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
                 .until(d -> serviceSearch("read", "").path("open").asBoolean());
@@ -351,10 +370,15 @@ public class CitizenViewPage extends BasePage {
                         + "||d.classList.contains('is-active')));}"
                         + "function shown(el){if(!el||el.hidden)return false;var st=window.getComputedStyle(el);"
                         + "return st.display!=='none'&&st.visibility!=='hidden'&&st.opacity!=='0';}"
+                        + "function placeholder(name){return name==='Keine Leistung gefunden'||name==='No service found'"
+                        + "||name==='No choices to choose from'||name==='No results found'"
+                        + "||name==='Leistung auswählen'||name==='Enter search term';}"
                         + "function namesOf(choices){var d=dropdown(choices);var names=[];if(!d)return names;"
                         + "var items=d.querySelectorAll('.choices__item--choice');"
                         + "for(var i=0;i<items.length;i++){var name=norm(items[i].textContent);"
-                        + "if(!shown(items[i])||!name||name==='Keine Leistung gefunden')continue;names.push(name);}return names;}"
+                        + "if(!shown(items[i])||!name||placeholder(name))continue;names.push(name);}return names;}"
+                        + "function optionCount(select){var n=0;if(!select)return n;var opts=select.querySelectorAll('option');"
+                        + "for(var i=0;i<opts.length;i++){var name=norm(opts[i].textContent);if(name&&!placeholder(name))n++;}return n;}"
                         + "function deepActive(){var el=document.activeElement,guard=0;"
                         + "while(el&&el.shadowRoot&&el.shadowRoot.activeElement&&guard++<10)el=el.shadowRoot.activeElement;return el;}"
                         + "var select=findSelect();var choices=choicesOf(select);"
@@ -362,6 +386,7 @@ public class CitizenViewPage extends BasePage {
                         + "if(!n.classList||!n.classList.contains('m-linklist-inline__list'))return;"
                         + "var as=n.querySelectorAll('a');for(var i=0;i<as.length;i++)links.push(norm(as[i].textContent));});"
                         + "return JSON.stringify({hasField:!!select,links:links});}"
+                        + "if(mode==='options')return JSON.stringify({count:optionCount(select)});"
                         + "if(!choices)return JSON.stringify({open:false,hasField:false});"
                         + "if(mode==='click'){var inner=choices.querySelector('.choices__inner');"
                         + "if(inner){inner.scrollIntoView({block:'center'});inner.click();}"
@@ -499,6 +524,7 @@ public class CitizenViewPage extends BasePage {
                         + "  for(var i=0;i<all.length;i++){"
                         + "    var el=all[i];"
                         + "    if(insideQuick(el))continue;"
+                        + "    if(el.querySelector&&el.querySelector('.m-linklist-inline__list'))continue;"
                         + "    var txt=norm(el.textContent);"
                         + "    if(txt&&txt.indexOf(label)>=0)return true;"
                         + "    if(el.shadowRoot&&has(el.shadowRoot))return true;"
