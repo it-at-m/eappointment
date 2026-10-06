@@ -1,6 +1,11 @@
 package zms.ataf.ui.pages.citizenview.steps;
 
 import java.time.Duration;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.function.BooleanSupplier;
+import java.util.function.IntConsumer;
+import java.util.function.IntSupplier;
 
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -36,6 +41,9 @@ public final class ProviderOrtStep {
     private final CitizenViewJson json;
     private final SlotBookingState slotState;
     private final int defaultWaitSeconds;
+    private IntConsumer waitForSlots;
+    private IntSupplier slotBookingWaitTimeoutSeconds;
+    private BooleanSupplier spinnerVisible;
 
     public ProviderOrtStep(
             CitizenViewPageContext context,
@@ -49,6 +57,15 @@ public final class ProviderOrtStep {
         this.slotState = slotState;
         this.defaultWaitSeconds = defaultWaitSeconds;
     }
+
+    /** Wire slot waits after SlotZeitStep exists (avoids ctor cycles). */
+    public void setSlotWaitBridge(IntConsumer waitForSlots, IntSupplier slotBookingWaitTimeoutSeconds,
+            BooleanSupplier spinnerVisible) {
+        this.waitForSlots = waitForSlots;
+        this.slotBookingWaitTimeoutSeconds = slotBookingWaitTimeoutSeconds;
+        this.spinnerVisible = spinnerVisible;
+    }
+
 
     public boolean ortStepShowsProvider(int officeId) {
         context.set();
@@ -366,6 +383,75 @@ public final class ProviderOrtStep {
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
                 return;
+            }
+        }
+    }
+
+
+    public void keepOnlyProviderCheckboxesChecked(Set<Integer> allowedOfficeIds) {
+        context.set();
+        Set<Integer> allowed = new HashSet<>(allowedOfficeIds);
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: keep only providers {} checked on Ort step", allowed);
+
+        String script =
+                "function collect(root,out){"
+                        + "  if(!root)return;"
+                        + "  var nodes=root.querySelectorAll('[id^=\"checkbox-provider-\"]');"
+                        + "  for(var i=0;i<nodes.length;i++){if(nodes[i]&&nodes[i].id)out.push(nodes[i].id);}"
+                        + "  var all=root.querySelectorAll('*');"
+                        + "  for(var j=0;j<all.length;j++)if(all[j].shadowRoot)collect(all[j].shadowRoot,out);"
+                        + "}"
+                        + "var ids=[];collect(document.body,ids);"
+                        + "return ids;";
+        String allowedCsv = allowed.stream().map(String::valueOf).reduce((a, b) -> a + "," + b).orElse("");
+        Object idsObj = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script, allowedCsv);
+        Set<Integer> presentIds = new HashSet<>();
+        if (idsObj instanceof java.util.List<?>) {
+            for (Object rawId : (java.util.List<?>) idsObj) {
+                String idStr = String.valueOf(rawId);
+                if (idStr.startsWith("checkbox-provider-")) {
+                    try {
+                        presentIds.add(Integer.parseInt(idStr.substring("checkbox-provider-".length())));
+                    } catch (NumberFormatException ignored) {
+                        // Ignore malformed provider ids.
+                    }
+                }
+            }
+        }
+        int checkboxCount = presentIds.size();
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: Ort provider checkbox count detected={}", checkboxCount);
+
+        if (checkboxCount == 0) {
+            ScenarioLogManager.getLogger()
+                    .info("zmscitizenview: no provider checkboxes found (single-provider teaser layout), nothing to normalize");
+            return;
+        }
+
+        for (Integer officeId : presentIds) {
+            boolean shouldBeChecked = allowed.contains(officeId);
+            boolean currentlyChecked = deepProviderCheckboxChecked(officeId);
+            if (shouldBeChecked != currentlyChecked) {
+                shadow.deepClickRequired("#checkbox-provider-" + officeId);
+                waitUntilProviderToggleSettled(15);
+            }
+        }
+
+        for (Integer officeId : allowed) {
+            Assert.assertTrue(
+                    deepProviderCheckboxChecked(officeId),
+                    "Expected provider checkbox " + officeId + " to be checked after provider normalization.");
+        }
+
+        if (allowed.size() == 1) {
+            slotState.lastSlotBookingOfficeId = allowed.iterator().next();
+            waitUntilProviderToggleSettled(30);
+            try {
+                waitForSlots.accept(Math.min(60, slotBookingWaitTimeoutSeconds.getAsInt()));
+            } catch (Exception e) {
+                ScenarioLogManager.getLogger()
+                        .warn("zmscitizenview: slot wait after provider normalization: {}", e.toString());
             }
         }
     }

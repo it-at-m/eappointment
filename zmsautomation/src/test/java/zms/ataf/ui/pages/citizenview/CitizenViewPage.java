@@ -43,6 +43,7 @@ import zms.ataf.ui.pages.citizenview.steps.ServiceFinderStep;
 import zms.ataf.ui.pages.citizenview.steps.ProviderOrtStep;
 import zms.ataf.ui.pages.citizenview.steps.SlotZeitStep;
 import zms.ataf.ui.pages.citizenview.steps.BookingStepperStep;
+import zms.ataf.ui.pages.citizenview.steps.JumpInErrorStep;
 import zms.ataf.ui.pages.citizenview.steps.ContactStep;
 import zms.ataf.ui.pages.citizenview.steps.OverviewStep;
 import zms.ataf.ui.pages.citizenview.steps.MeineTermineStep;
@@ -71,8 +72,8 @@ public class CitizenViewPage extends BasePage {
             "Der Link zu dieser Seite ist leider fehlerhaft. Starten Sie die Terminvereinbarung neu";
 
 
-    private static final String EN_INVALID_JUMPIN_HEADER = "This view cannot be loaded.";
-    private static final String EN_INVALID_JUMPIN_TEXT =
+    public static final String EN_INVALID_JUMPIN_HEADER = "This view cannot be loaded.";
+    public static final String EN_INVALID_JUMPIN_TEXT =
             "The link to this page is unfortunately incorrect";
 
     private final CitizenViewPageContext CONTEXT;
@@ -93,6 +94,8 @@ public class CitizenViewPage extends BasePage {
 
     private final BookingStepperStep bookingStepper;
 
+    private final JumpInErrorStep jumpInError;
+
     private final ContactStep contact;
 
     private final OverviewStep overview;
@@ -110,7 +113,12 @@ public class CitizenViewPage extends BasePage {
         slotState = new SlotBookingState();
         providerOrt = new ProviderOrtStep(CONTEXT, shadow, json, slotState, DEFAULT_EXPLICIT_WAIT_TIME);
         slotZeit = new SlotZeitStep(CONTEXT, shadow, json, providerOrt, slotState, this, DEFAULT_EXPLICIT_WAIT_TIME);
+        providerOrt.setSlotWaitBridge(
+                seconds -> slotZeit.waitUntilAppointmentSlotsReady(seconds),
+                () -> slotZeit.slotBookingWaitTimeoutSeconds(),
+                () -> slotZeit.deepMucSpinnerVisible());
         bookingStepper = new BookingStepperStep(CONTEXT, shadow, DEFAULT_EXPLICIT_WAIT_TIME);
+        jumpInError = new JumpInErrorStep(CONTEXT, shadow, DEFAULT_EXPLICIT_WAIT_TIME);
         contact = new ContactStep(CONTEXT, shadow, this, DEFAULT_EXPLICIT_WAIT_TIME);
         overview = new OverviewStep(CONTEXT, shadow, this, DEFAULT_EXPLICIT_WAIT_TIME);
         meineTermine = new MeineTermineStep(CONTEXT, shadow, slotState, this, contact, DEFAULT_EXPLICIT_WAIT_TIME);
@@ -262,6 +270,58 @@ public class CitizenViewPage extends BasePage {
      * Assert that the UI shows an estimated duration with the expected number of minutes. This is a generic shadow-DOM
      * text assertion used for the service combination step, selected-appointment callout, and booking summaries.
      */
+/**
+     * ZMSKVR-106: Patternlab secondary buttons. Minus reduces, plus increases, each with its icon.
+     */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    public void assertInvalidJumpinLinkCalloutVisible() {
+        jumpInError.assertInvalidJumpinLinkCalloutVisible();
+    }
+
+    public void assertInvalidJumpinRestartButtonVisible() {
+        jumpInError.assertInvalidJumpinRestartButtonVisible();
+    }
+
+    public void clickInvalidJumpinRestartButton() {
+        jumpInError.clickInvalidJumpinRestartButton();
+    }
+
+    public void assertAddressHasNoJumpIn() {
+        jumpInError.assertAddressHasNoJumpIn();
+    }
+
+/**
+     * Restart control on the invalid jump-in callout. The painted button can sit in the
+     * shadow root of {@code muc-button}, whose host has no box of its own.
+     */
+    private boolean invalidJumpinRestartButton(boolean click) {
+        return jumpInError.invalidJumpinRestartButton(click);
+    }
+
+    public void keepOnlyProviderCheckboxesChecked(Set<Integer> allowedOfficeIds) {
+        providerOrt.keepOnlyProviderCheckboxesChecked(allowedOfficeIds);
+    }
+
     public void assertServiceFinderHeadingVisible() {
         serviceFinder.assertServiceFinderHeadingVisible();
     }
@@ -548,125 +608,10 @@ public class CitizenViewPage extends BasePage {
 
 
 
-    /**
-     * ZMSKVR-106: Patternlab secondary buttons. Minus reduces, plus increases, each with its icon.
-     */
 
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    public void assertInvalidJumpinLinkCalloutVisible() {
-        CONTEXT.set();
-        int sec = Math.min(25, DEFAULT_EXPLICIT_WAIT_TIME);
-        long deadline = System.currentTimeMillis() + sec * 1000L;
-        while (System.currentTimeMillis() < deadline) {
-            if (shadowDomContainsText(DE_INVALID_JUMPIN_HEADER) && shadowDomContainsText(DE_INVALID_JUMPIN_TEXT)) {
-                return;
-            }
-            if (shadowDomContainsText(EN_INVALID_JUMPIN_HEADER) && shadowDomContainsText(EN_INVALID_JUMPIN_TEXT)) {
-                return;
-            }
-            try {
-                Thread.sleep(300L);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                break;
-            }
-        }
-        Assert.assertTrue(
-                (shadowDomContainsText(DE_INVALID_JUMPIN_HEADER) || shadowDomContainsText(EN_INVALID_JUMPIN_HEADER))
-                        && (shadowDomContainsText(DE_INVALID_JUMPIN_TEXT) || shadowDomContainsText(EN_INVALID_JUMPIN_TEXT)),
-                "Invalid jump-in callout not found (de or en). Expected for invalid service–office pairs only.");
-    }
-
-    public void assertInvalidJumpinRestartButtonVisible() {
-        CONTEXT.set();
-        int sec = Math.min(15, DEFAULT_EXPLICIT_WAIT_TIME);
-        long deadline = System.currentTimeMillis() + sec * 1000L;
-        while (System.currentTimeMillis() < deadline) {
-            if (invalidJumpinRestartButton(false)) {
-                return;
-            }
-            try {
-                Thread.sleep(300L);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                break;
-            }
-        }
-        Assert.assertTrue(
-                invalidJumpinRestartButton(false),
-                "Restart button \"Termin vereinbaren\" is not visible on the invalid jump-in callout.");
-    }
-
-    public void clickInvalidJumpinRestartButton() {
-        CONTEXT.set();
-        Assert.assertTrue(
-                invalidJumpinRestartButton(true),
-                "Could not click \"Termin vereinbaren\" on the invalid jump-in callout.");
-        new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
-                .until(d -> {
-                    String url = d.getCurrentUrl();
-                    return url != null && !url.contains("#/services/");
-                });
-    }
-
-    public void assertAddressHasNoJumpIn() {
-        CONTEXT.set();
-        String url = DriverUtil.getDriver().getCurrentUrl();
-        Assert.assertFalse(
-                url != null && url.contains("#/services/"),
-                "Jump-in route is still in the address: " + url);
-    }
-
-    /**
-     * Restart control on the invalid jump-in callout. The painted button can sit in the
-     * shadow root of {@code muc-button}, whose host has no box of its own.
-     */
-    private boolean invalidJumpinRestartButton(boolean click) {
-        String script =
-                "var click=arguments[0];"
-                        + "function box(el){if(!el||el.nodeType!==1||!el.getBoundingClientRect)return false;"
-                        + "var r=el.getBoundingClientRect();if(r.width<=0||r.height<=0)return false;"
-                        + "var st=window.getComputedStyle(el);return st.visibility!=='hidden'&&st.display!=='none'&&st.opacity!=='0';}"
-                        + "function painted(el){if(box(el))return el;var found=null;"
-                        + "function w(n){if(!n||found)return;if(n.nodeType===1&&n!==el&&box(n)){found=n;return;}"
-                        + "if(n.shadowRoot)w(n.shadowRoot);var c=n.children;if(c)for(var i=0;i<c.length;i++)w(c[i]);}"
-                        + "w(el);return found;}"
-                        + "function walk(n,fn){if(!n)return false;if(fn(n))return true;"
-                        + "if(n.shadowRoot&&walk(n.shadowRoot,fn))return true;"
-                        + "var c=n.children;if(c)for(var i=0;i<c.length;i++)if(walk(c[i],fn))return true;return false;}"
-                        + "var target=null;"
-                        + "walk(document.body,function(n){"
-                        + "var tag=(n.tagName||'').toUpperCase();"
-                        + "if(tag!=='MUC-BUTTON'&&tag!=='BUTTON'&&tag!=='A')return false;"
-                        + "var label=((n.innerText||n.textContent||'')+'').replace(/\\s+/g,' ').trim();"
-                        + "if(label.indexOf('Weiteren')>=0)return false;"
-                        + "if(label.indexOf('Termin vereinbaren')<0&&label.indexOf('Book appointment')<0)return false;"
-                        + "var hit=painted(n);if(!hit)return false;target=hit;return true;});"
-                        + "if(!target)return false;"
-                        + "if(click){target.scrollIntoView({block:'center'});target.click();}"
-                        + "return true;";
-        Object found = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script, click);
-        return Boolean.TRUE.equals(found);
-    }
 
 
 
@@ -1345,73 +1290,6 @@ public class CitizenViewPage extends BasePage {
         slotZeit.waitForReserveToSettle();
     }
 
-    public void keepOnlyProviderCheckboxesChecked(Set<Integer> allowedOfficeIds) {
-        CONTEXT.set();
-        Set<Integer> allowed = new HashSet<>(allowedOfficeIds);
-        ScenarioLogManager.getLogger()
-                .info("zmscitizenview: keep only providers {} checked on Ort step", allowed);
-
-        String script =
-                "function collect(root,out){"
-                        + "  if(!root)return;"
-                        + "  var nodes=root.querySelectorAll('[id^=\"checkbox-provider-\"]');"
-                        + "  for(var i=0;i<nodes.length;i++){if(nodes[i]&&nodes[i].id)out.push(nodes[i].id);}"
-                        + "  var all=root.querySelectorAll('*');"
-                        + "  for(var j=0;j<all.length;j++)if(all[j].shadowRoot)collect(all[j].shadowRoot,out);"
-                        + "}"
-                        + "var ids=[];collect(document.body,ids);"
-                        + "return ids;";
-        String allowedCsv = allowed.stream().map(String::valueOf).reduce((a, b) -> a + "," + b).orElse("");
-        Object idsObj = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script, allowedCsv);
-        Set<Integer> presentIds = new HashSet<>();
-        if (idsObj instanceof java.util.List<?>) {
-            for (Object rawId : (java.util.List<?>) idsObj) {
-                String idStr = String.valueOf(rawId);
-                if (idStr.startsWith("checkbox-provider-")) {
-                    try {
-                        presentIds.add(Integer.parseInt(idStr.substring("checkbox-provider-".length())));
-                    } catch (NumberFormatException ignored) {
-                        // Ignore malformed provider ids.
-                    }
-                }
-            }
-        }
-        int checkboxCount = presentIds.size();
-        ScenarioLogManager.getLogger()
-                .info("zmscitizenview: Ort provider checkbox count detected={}", checkboxCount);
-
-        if (checkboxCount == 0) {
-            ScenarioLogManager.getLogger()
-                    .info("zmscitizenview: no provider checkboxes found (single-provider teaser layout), nothing to normalize");
-            return;
-        }
-
-        for (Integer officeId : presentIds) {
-            boolean shouldBeChecked = allowed.contains(officeId);
-            boolean currentlyChecked = deepProviderCheckboxChecked(officeId);
-            if (shouldBeChecked != currentlyChecked) {
-                deepClickRequired("#checkbox-provider-" + officeId);
-                waitUntilProviderToggleSettled(15);
-            }
-        }
-
-        for (Integer officeId : allowed) {
-            Assert.assertTrue(
-                    deepProviderCheckboxChecked(officeId),
-                    "Expected provider checkbox " + officeId + " to be checked after provider normalization.");
-        }
-
-        if (allowed.size() == 1) {
-            slotState.lastSlotBookingOfficeId = allowed.iterator().next();
-            waitUntilProviderToggleSettled(30);
-            try {
-                waitUntilAppointmentSlotsReady(Math.min(60, slotBookingWaitTimeoutSeconds()));
-            } catch (Exception e) {
-                ScenarioLogManager.getLogger()
-                        .warn("zmscitizenview: slot wait after provider normalization: {}", e.toString());
-            }
-        }
-    }
 
     public static final String CONTACT_PHONE_E2E = ContactStep.CONTACT_PHONE_E2E;
 
