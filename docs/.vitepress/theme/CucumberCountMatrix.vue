@@ -39,11 +39,13 @@ const typeLabel = (testType) => {
 
 const sections = computed(() => {
   const byType = new Map();
+  const mobileByTypeModule = new Map();
   for (const entry of cucumberCatalogEntries()) {
     const testType = entry.testType || "other";
     const moduleName = entry.module || "misc";
     const category = categoryOf(entry);
     const count = Number(entry.scenarioCount) || 0;
+    const mobileCount = Number(entry.mobileScenarioCount) || 0;
     if (!byType.has(testType)) {
       byType.set(testType, new Map());
     }
@@ -53,6 +55,11 @@ const sections = computed(() => {
     }
     const counts = modules.get(moduleName);
     counts.set(category, (counts.get(category) || 0) + count);
+    const mobileKey = `${testType}\0${moduleName}`;
+    mobileByTypeModule.set(
+      mobileKey,
+      (mobileByTypeModule.get(mobileKey) || 0) + mobileCount
+    );
   }
 
   const typeOrder = ["rest", "ui"];
@@ -89,6 +96,7 @@ const sections = computed(() => {
             module: moduleName,
             cells,
             total: cells.reduce((sum, count) => sum + count, 0),
+            mobile: mobileByTypeModule.get(`${testType}\0${moduleName}`) || 0,
           };
         });
       const columnTotals = categories.map((_, index) =>
@@ -100,6 +108,7 @@ const sections = computed(() => {
         rows,
         columnTotals,
         total: columnTotals.reduce((sum, count) => sum + count, 0),
+        mobile: rows.reduce((sum, row) => sum + row.mobile, 0),
       };
     });
 });
@@ -151,6 +160,13 @@ const totalLabel = computed(() => (isDe.value ? "Summe" : "Total"));
 
 const moduleLabel = computed(() => (isDe.value ? "Modul" : "Module"));
 
+const mobileHint = (mobile) => {
+  if (!mobile) {
+    return "";
+  }
+  return isDe.value ? ` · ${mobile} mobil` : ` · ${mobile} mobile`;
+};
+
 const loadingLabel = computed(() =>
   isDe.value ? "Szenario-Anzahl wird geladen…" : "Loading scenario counts…"
 );
@@ -199,7 +215,7 @@ const loadingLabel = computed(() =>
             :key="row.module"
           >
             <th scope="row">{{ row.module }}</th>
-            <td>{{ row.total }}</td>
+            <td>{{ row.total }}{{ mobileHint(row.mobile) }}</td>
             <td
               v-for="(count, index) in row.cells"
               :key="`${row.module}-${section.categories[index]}`"
@@ -211,7 +227,7 @@ const loadingLabel = computed(() =>
         <tfoot>
           <tr>
             <th scope="row">{{ totalLabel }}</th>
-            <td>{{ section.total }}</td>
+            <td>{{ section.total }}{{ mobileHint(section.mobile) }}</td>
             <td
               v-for="(count, index) in section.columnTotals"
               :key="`total-${section.categories[index]}`"

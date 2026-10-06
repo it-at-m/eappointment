@@ -12,7 +12,7 @@ run-name: >-
          'zmsautomation | ▶️ manual | {0} | {1}{2}{3}{4}',
          github.ref_name,
          format('{0}{1}{2}', inputs.browser_chrome && '🌐 chrome' || '', inputs.browser_firefox && format('{0}🦊 firefox', inputs.browser_chrome && ' + ' || '') || '', inputs.browser_edge && format('{0}🪟 edge', (inputs.browser_chrome || inputs.browser_firefox) && ' + ' || '') || ''),
-         inputs.cucumber_tag_expressions != '' && format(' | {0}', inputs.cucumber_tag_expressions) || (inputs.use_custom_tags && ' | custom tags' || ''),
+         inputs.cucumber_tag_expressions != '' && format(' | {0}', inputs.cucumber_tag_expressions) || (inputs.use_custom_tags && ' | custom tags' || '') || (inputs.viewport_mobile_only && ' | 📱 @mobile' || ''),
          inputs.ataf_version != '' && format(' | ATAF {0}', inputs.ataf_version) || '',
          inputs.serial_scenarios && ' | serial scenarios' || ''
        )
@@ -55,6 +55,14 @@ on:
         required: true
         type: boolean
         default: true
+      viewport_mobile_only:
+        description: |
+          Run only @mobile UI scenarios (phone 390×844). Used by zmscitizenview.
+          Ignores module checkboxes and run_all_in_one_job (same idea as custom tags).
+          Ignored when cucumber_tag_expressions is set or use_custom_tags is enabled.
+        required: true
+        type: boolean
+        default: false
       module_statistic:
         description: "Statistic UI tests (@zmsstatistic)"
         required: true
@@ -263,6 +271,27 @@ jobs:
                       ]
                     end
                   )
+                }
+                ' > matrix.json
+            elif [[ "${{ inputs.viewport_mobile_only }}" == "true" ]]; then
+              MOBILE_TAG_FILTER="$(append_not_ignore '@mobile')"
+              jq -n \
+                --arg branch "$BRANCH" \
+                --argjson browsers "$BROWSERS_JSON" \
+                --arg tag_filter "$MOBILE_TAG_FILTER" \
+                '
+                {
+                  include: [
+                    $browsers[] as $browser
+                    | {
+                        branch: $branch,
+                        browser: $browser,
+                        shard: "mobile",
+                        test_layer: "ui",
+                        tag_filter: $tag_filter,
+                        use_custom_tags: false
+                      }
+                  ]
                 }
                 ' > matrix.json
             elif [[ "${{ inputs.run_all_in_one_job }}" == "true" ]]; then

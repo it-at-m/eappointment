@@ -198,11 +198,18 @@ public class CitizenViewSteps {
         page.assertServiceDescriptionLink(TestDataHelper.transformTestData(label), serviceId);
     }
 
-    @Then("the count for {string} sits beside the name on desktop and below it on a phone")
-    public void theCountSitsBesideTheNameOnDesktopAndBelowItOnAPhone(String label) {
+    @Then("the count for {string} sits beside the name on desktop")
+    public void theCountSitsBesideTheNameOnDesktop(String label) {
         ScenarioLogManager.getLogger()
-                .info("zmscitizenview: count placement for {} on desktop and phone", label);
-        page.assertCountBesideNameOnDesktopAndBelowOnPhone(TestDataHelper.transformTestData(label));
+                .info("zmscitizenview: count placement for {} on desktop", label);
+        page.assertCountBesideNameOnDesktop(TestDataHelper.transformTestData(label));
+    }
+
+    @Then("the count for {string} sits below the name on a phone")
+    public void theCountSitsBelowTheNameOnAPhone(String label) {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: count placement for {} on a phone", label);
+        page.assertCountBelowNameOnPhone(TestDataHelper.transformTestData(label));
     }
 
     @When("I raise the service {string} until the plus button is disabled")
@@ -313,10 +320,16 @@ public class CitizenViewSteps {
         page.assertCalendarListToggleShows(activeLabel);
     }
 
+    @Then("the calendar and list toggle sits beside the time heading on desktop")
+    public void theCalendarAndListToggleSitsBesideTheTimeHeadingOnDesktop() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: toggle sits beside the time heading on desktop");
+        page.assertToggleSitsBesideHeadingOnDesktop();
+    }
+
     @Then("the calendar and list toggle sits below the time heading on a phone")
     public void theCalendarAndListToggleSitsBelowTheTimeHeadingOnAPhone() {
-        ScenarioLogManager.getLogger().info("zmscitizenview: toggle sits beside the heading, and below it on a phone");
-        page.assertToggleSitsWithTheHeading();
+        ScenarioLogManager.getLogger().info("zmscitizenview: toggle sits below the time heading on a phone");
+        page.assertToggleSitsBelowHeadingOnPhone();
     }
 
     @When("I switch to the list view in the citizen view")

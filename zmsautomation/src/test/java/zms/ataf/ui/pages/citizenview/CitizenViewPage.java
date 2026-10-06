@@ -13,7 +13,6 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.function.BooleanSupplier;
 import org.openqa.selenium.By;
-import org.openqa.selenium.Dimension;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.TimeoutException;
@@ -35,6 +34,7 @@ import ataf.web.pages.BasePage;
 import ataf.web.utils.DriverUtil;
 import zms.ataf.helpers.AccountCheckout;
 import zms.ataf.helpers.RandomNameHelper;
+import zms.ataf.helpers.ViewportSizes;
 import zms.ataf.rest.dto.zmscitizenapi.ThinnedProcess;
 
 /**
@@ -829,34 +829,32 @@ public class CitizenViewPage extends BasePage {
                 "\"" + label + "\" should link to its service description, href was " + href);
     }
 
-    /**
-     * ZMSKVR-249: desktop keeps the count and buttons left of the name. A phone puts them underneath.
-     */
-    public void assertCountBesideNameOnDesktopAndBelowOnPhone(String label) {
+    /** ZMSKVR-249: on a wide window the count and buttons sit left of the service name. */
+    public void assertCountBesideNameOnDesktop(String label) {
         CONTEXT.set();
         RemoteWebDriver driver = DriverUtil.getDriver();
-        Dimension original = driver.manage().window().getSize();
-        try {
-            driver.manage().window().setSize(new Dimension(1400, 900));
-            sleepQuiet(400L);
-            JsonNode wide = waitForServiceCounter(label);
-            Assert.assertTrue(wide.path("nameLeft").asDouble() >= 0, "No service-name link for \"" + label + "\".");
-            Assert.assertTrue(
-                    wide.path("controlsRight").asDouble() <= wide.path("nameLeft").asDouble() + 12
-                            && wide.path("controlsBottom").asDouble() >= wide.path("nameTop").asDouble() - 8
-                            && wide.path("controlsTop").asDouble() <= wide.path("nameBottom").asDouble() + 8,
-                    "On a wide window the count sits left of \"" + label + "\": " + wide);
-            driver.manage().window().setSize(new Dimension(390, 844));
-            sleepQuiet(400L);
-            JsonNode narrow = waitForServiceCounter(label);
-            Assert.assertTrue(narrow.path("nameBottom").asDouble() >= 0, "No service-name link for \"" + label + "\".");
-            Assert.assertTrue(
-                    narrow.path("controlsTop").asDouble() >= narrow.path("nameBottom").asDouble() - 8,
-                    "On a phone the count sits below \"" + label + "\": " + narrow);
-        } finally {
-            driver.manage().window().setSize(
-                    original.getWidth() >= 1200 ? original : new Dimension(1400, 900));
-        }
+        driver.manage().window().setSize(ViewportSizes.DESKTOP);
+        sleepQuiet(400L);
+        JsonNode wide = waitForServiceCounter(label);
+        Assert.assertTrue(wide.path("nameLeft").asDouble() >= 0, "No service-name link for \"" + label + "\".");
+        Assert.assertTrue(
+                wide.path("controlsRight").asDouble() <= wide.path("nameLeft").asDouble() + 12
+                        && wide.path("controlsBottom").asDouble() >= wide.path("nameTop").asDouble() - 8
+                        && wide.path("controlsTop").asDouble() <= wide.path("nameBottom").asDouble() + 8,
+                "On a wide window the count sits left of \"" + label + "\": " + wide);
+    }
+
+    /** ZMSKVR-249: on a phone the count and buttons sit below the service name. */
+    public void assertCountBelowNameOnPhone(String label) {
+        CONTEXT.set();
+        RemoteWebDriver driver = DriverUtil.getDriver();
+        driver.manage().window().setSize(ViewportSizes.MOBILE);
+        sleepQuiet(400L);
+        JsonNode narrow = waitForServiceCounter(label);
+        Assert.assertTrue(narrow.path("nameBottom").asDouble() >= 0, "No service-name link for \"" + label + "\".");
+        Assert.assertTrue(
+                narrow.path("controlsTop").asDouble() >= narrow.path("nameBottom").asDouble() - 8,
+                "On a phone the count sits below \"" + label + "\": " + narrow);
     }
 
     /** Click plus until the service's own maximum disables it. */
@@ -1457,27 +1455,26 @@ public class CitizenViewPage extends BasePage {
         assertToggleColor(labels.get(1), "Listenansicht", "Listenansicht".equals(activeLabel));
     }
 
-    public void assertToggleSitsWithTheHeading() {
+    public void assertToggleSitsBesideHeadingOnDesktop() {
         CONTEXT.set();
         RemoteWebDriver driver = DriverUtil.getDriver();
-        Dimension original = driver.manage().window().getSize();
-        try {
-            driver.manage().window().setSize(new Dimension(1400, 900));
-            sleepQuiet(400L);
-            JsonNode wide = waitForToggleLabels(null);
-            Assert.assertTrue(
-                    wide.path("toggleLeft").asDouble() > wide.path("headingRight").asDouble() - 8,
-                    "On a wide window the toggle sits beside the heading: " + wide);
-            driver.manage().window().setSize(new Dimension(390, 844));
-            sleepQuiet(400L);
-            JsonNode narrow = waitForToggleLabels(null);
-            Assert.assertTrue(
-                    narrow.path("toggleTop").asDouble() >= narrow.path("headingBottom").asDouble() - 4,
-                    "On a phone the toggle sits below the heading: " + narrow);
-        } finally {
-            driver.manage().window().setSize(
-                    original.getWidth() >= 1200 ? original : new Dimension(1400, 900));
-        }
+        driver.manage().window().setSize(ViewportSizes.DESKTOP);
+        sleepQuiet(400L);
+        JsonNode wide = waitForToggleLabels(null);
+        Assert.assertTrue(
+                wide.path("toggleLeft").asDouble() > wide.path("headingRight").asDouble() - 8,
+                "On a wide window the toggle sits beside the heading: " + wide);
+    }
+
+    public void assertToggleSitsBelowHeadingOnPhone() {
+        CONTEXT.set();
+        RemoteWebDriver driver = DriverUtil.getDriver();
+        driver.manage().window().setSize(ViewportSizes.MOBILE);
+        sleepQuiet(400L);
+        JsonNode narrow = waitForToggleLabels(null);
+        Assert.assertTrue(
+                narrow.path("toggleTop").asDouble() >= narrow.path("headingBottom").asDouble() - 4,
+                "On a phone the toggle sits below the heading: " + narrow);
     }
 
     public void switchToListView() {
