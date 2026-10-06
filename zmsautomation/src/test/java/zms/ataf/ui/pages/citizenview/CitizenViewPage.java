@@ -5971,8 +5971,11 @@ public class CitizenViewPage extends BasePage {
 
     private void waitUntilNeueTerminVisible() {
         String loadError = "Ihre Termine können zur Zeit nicht geladen werden.";
-        for (int attempt = 1; attempt <= 4; attempt++) {
-            long deadline = System.currentTimeMillis() + 20_000L;
+        for (int attempt = 1; attempt <= 5; attempt++) {
+            // Full-page hop from booking: dbs-login may show Mein Bereich from localStorage
+            // while Vue still waits for authorization-event. Reloading that window kills the
+            // session republish and leaves a blank overview (no Neuer Termin, no Anmelden).
+            long deadline = System.currentTimeMillis() + 45_000L;
             while (System.currentTimeMillis() < deadline) {
                 if (meineTermineFinishedLoading()) {
                     return;
@@ -5980,13 +5983,20 @@ public class CitizenViewPage extends BasePage {
                 if (meineTermineShowsLoggedOut()) {
                     ScenarioLogManager.getLogger()
                             .warn(
-                                    "zmscitizenview: Meine Termine shows Anmelden (attempt {}/4); logging in again",
+                                    "zmscitizenview: Meine Termine shows Anmelden (attempt {}/5); logging in again",
                                     attempt);
                     reloginForMeineTermine();
                     break;
                 }
                 if (shadowDomContainsText(loadError)) {
+                    ScenarioLogManager.getLogger()
+                            .warn(
+                                    "zmscitizenview: Meine Termine appointment load error (attempt {}/5)",
+                                    attempt);
                     break;
+                }
+                if (meineTermineAwaitingAuthOrSkeleton()) {
+                    requestMeineTermineAuthReplay();
                 }
                 try {
                     Thread.sleep(250L);
@@ -5995,14 +6005,48 @@ public class CitizenViewPage extends BasePage {
                     return;
                 }
             }
-            if (meineTermineFinishedLoading() || attempt == 4) {
+            if (meineTermineFinishedLoading()) {
                 return;
+            }
+            if (attempt == 5) {
+                break;
             }
             ScenarioLogManager.getLogger()
                     .warn(
-                            "zmscitizenview: Meine Termine has no Neuer Termin (attempt {}/4)",
+                            "zmscitizenview: Meine Termine has no Neuer Termin (attempt {}/5)",
                             attempt);
             reloadMeineTermine();
+        }
+        Assert.assertTrue(
+                meineTermineFinishedLoading(),
+                "Meine Termine did not show Neuer Termin after opening the overview.");
+    }
+
+    /**
+     * Header already says Mein Bereich (or skeleton is painting) but the overview CE has not
+     * mounted "Neuer Termin" yet — wait, do not reload.
+     */
+    private boolean meineTermineAwaitingAuthOrSkeleton() {
+        if (!browserIsOnMeineTermine()) {
+            return false;
+        }
+        if (deepElementExists(".skeleton-loader")) {
+            return true;
+        }
+        return shadowDomContainsText("Mein Bereich")
+                && !shadowDomContainsText("Neuer Termin")
+                && !shadowDomContainsText("Kommende Termine")
+                && !shadowDomContainsText("Anmelden");
+    }
+
+    /** Ask local-dbs-login to re-emit authorization-event for a late Vue listener. */
+    private void requestMeineTermineAuthReplay() {
+        try {
+            ((JavascriptExecutor) DriverUtil.getDriver())
+                    .executeScript(
+                            "document.dispatchEvent(new CustomEvent('authorization-event-subscribe'));");
+        } catch (Exception ignored) {
+            // Best-effort; wait loop continues.
         }
     }
 
