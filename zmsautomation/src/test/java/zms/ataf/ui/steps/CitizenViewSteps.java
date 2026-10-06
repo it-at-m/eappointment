@@ -525,6 +525,13 @@ public class CitizenViewSteps {
         page.waitUntilSlotsReadyForBooking();
     }
 
+    @When("I select the single-seat Passkalender day after the V19 opening range in the citizen view")
+    public void iSelectTheSingleSeatPasskalenderDayAfterTheV19OpeningRange() {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: navigate to single-seat Passkalender day (V42 after V19 range)");
+        page.selectSingleSeatDayAfterV19RangeAndWaitForSlots();
+    }
+
     @When("I click Später in the time slot grid if available in the citizen view")
     public void iClickSpaeterInTheTimeSlotGridIfAvailableInTheCitizenView() {
         ScenarioLogManager.getLogger()

@@ -9,6 +9,8 @@ Feature: CitizenView: slot already taken shows not-available callout
   # Race: UI selects a free slot; Citizen API reserves that same timestamp (second citizen);
   # UI Weiter then gets appointmentNotAvailable and shows the callout under the summary.
   # One browser + API snatch is more reliable in CI than two tabs or browsers.
+  # V19 opens Passkalender 10502 with several seats per time; V42 adds one seat on the day
+  # after that range (Standort 172 only). The scenario navigates to that day first.
 
   Background:
     Given the Citizen API is available
@@ -23,6 +25,7 @@ Feature: CitizenView: slot already taken shows not-available callout
     Then provider checkbox 10502 should be visible in the citizen view
     When I select office 10502 in the citizen view
     And I wait for appointment slots to be ready in the citizen view
+    And I select the single-seat Passkalender day after the V19 opening range in the citizen view
     And I click Später in the time slot grid if available in the citizen view
     And I scroll to and highlight the preferred timeslot for office 10502 in the citizen view
     And I click the highlighted timeslot in the citizen view
