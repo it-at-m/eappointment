@@ -547,7 +547,21 @@ public class CitizenApiSteps {
                     break;
                 }
             }
-            reserveFirstAvailableSlot(false, true);
+            // Soft reserve: 404/noAppointment means the seat was taken (parallel browser) or gone.
+            reserveFirstAvailableSlot(false, false);
+            if (response == null || response.getStatusCode() != 200) {
+                ScenarioLogManager.getLogger()
+                        .info(
+                                "Citizen API reserve-every stopped for office {} after status {}",
+                                officeId,
+                                response == null ? null : response.getStatusCode());
+                iRequestAvailableDaysForOfficeAndService(officeId, serviceId, 1);
+                if (lastAvailableCalendarResponse == null
+                        || lastAvailableCalendarResponse.getFirstAvailableDayForOffice(officeId) == null) {
+                    break;
+                }
+                continue;
+            }
             iRememberTheCurrentAppointmentAs("feuerwache-bulk-" + reserved);
             reserved++;
             iRequestAvailableDaysForOfficeAndService(officeId, serviceId, 1);
