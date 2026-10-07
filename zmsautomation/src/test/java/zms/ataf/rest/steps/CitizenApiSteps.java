@@ -503,6 +503,81 @@ public class CitizenApiSteps {
         reserveFirstAvailableSlot(false, true);
     }
 
+    /**
+     * Book every free internet seat for the office/service (refetching the calendar between
+     * reserves). Used when chrome/firefox matrix jobs share one Feuerwache day and the UI must
+     * see a fully empty calendar.
+     */
+    @When("I reserve every available appointment for office {int} and service {int}")
+    public void iReserveEveryAvailableAppointmentForOfficeAndService(int officeId, int serviceId) {
+        iRequestAvailableDaysForOfficeAndService(officeId, serviceId, 1);
+        int reserved = 0;
+        for (int attempt = 0; attempt < 40; attempt++) {
+            if (lastAvailableCalendarResponse == null) {
+                iRequestAvailableDaysForOfficeAndService(officeId, serviceId, 1);
+            }
+            String date =
+                    lastAvailableCalendarResponse == null
+                            ? null
+                            : lastAvailableCalendarResponse.getFirstAvailableDayForOffice(officeId);
+            if (date == null) {
+                break;
+            }
+            iRequestAvailableAppointmentsForDateOfficeAndService(date, officeId, serviceId, 1);
+            List<Long> timestamps =
+                    lastAvailableAppointmentsResponse == null
+                            ? List.of()
+                            : new ArrayList<>(lastAvailableAppointmentsResponse.futureAppointmentTimestamps());
+            if (timestamps.isEmpty()) {
+                iRequestAvailableDaysForOfficeAndService(officeId, serviceId, 1);
+                String again =
+                        lastAvailableCalendarResponse == null
+                                ? null
+                                : lastAvailableCalendarResponse.getFirstAvailableDayForOffice(officeId);
+                if (again == null) {
+                    break;
+                }
+                iRequestAvailableAppointmentsForDateOfficeAndService(again, officeId, serviceId, 1);
+                timestamps =
+                        lastAvailableAppointmentsResponse == null
+                                ? List.of()
+                                : new ArrayList<>(
+                                        lastAvailableAppointmentsResponse.futureAppointmentTimestamps());
+                if (timestamps.isEmpty()) {
+                    break;
+                }
+            }
+            reserveFirstAvailableSlot(false, true);
+            iRememberTheCurrentAppointmentAs("feuerwache-bulk-" + reserved);
+            reserved++;
+            iRequestAvailableDaysForOfficeAndService(officeId, serviceId, 1);
+        }
+        if (reserved == 0) {
+            Assertions.assertThat(
+                            lastAvailableCalendarResponse == null
+                                    ? null
+                                    : lastAvailableCalendarResponse.getFirstAvailableDayForOffice(officeId))
+                    .as(
+                            "Office %d had no free seats to reserve (another matrix browser may have emptied it)",
+                            officeId)
+                    .isNull();
+        }
+        ScenarioLogManager.getLogger()
+                .info("Citizen API reserved {} appointment(s) for office {} service {}", reserved, officeId, serviceId);
+    }
+
+    @Then("office {int} infoForAllAppointments should contain {string}")
+    public void officeInfoForAllAppointmentsShouldContain(int officeId, String fragment) {
+        String needle = TestDataHelper.transformTestData(fragment);
+        Object raw = scopeValue(officeId, "infoForAllAppointments");
+        Assertions.assertThat(raw)
+                .as("office %d infoForAllAppointments", officeId)
+                .isNotNull();
+        Assertions.assertThat(String.valueOf(raw))
+                .as("office %d infoForAllAppointments", officeId)
+                .contains(needle);
+    }
+
     @When("I attempt to reserve an appointment with the first available slot")
     public void iAttemptToReserveAnAppointmentWithTheFirstAvailableSlot() {
         reserveFirstAvailableSlot(false, false);

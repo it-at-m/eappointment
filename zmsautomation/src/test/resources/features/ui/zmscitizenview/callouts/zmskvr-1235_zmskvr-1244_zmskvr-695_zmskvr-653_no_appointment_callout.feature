@@ -27,18 +27,15 @@ Feature: CitizenView: no appointment available info callout
   # Sibling features (same product area, other callout / calendar rules)
   #   ZMSKVR-614 / ZMSKVR-696 / ZMSKVR-475
   #     → ui/.../callouts/zmskvr-88_zmskvr-472_slot_taken_callout.feature
-  #       (only "Ihr gewählter Termin ist nicht mehr verfügbar.", not this info box)
   #   ZMSKVR-1457 / ZMSKVR-1524
   #     → ui/.../calendar/zmskvr-1524_…_calendar_day_fits_duration.feature
-  #       (+ REST twin) — long appointment no longer fits → same blue info callout
   #
   # Historical / out of Bürgeransicht-2 ATAF scope
   #   ZMSALT-1857  closed predecessor (zmsproxymuc era) — not retested here
   #
-  # Fixtures: V44 Föhring 10577 tomorrow one 90-min seat; Milbertshofen 10579 no OH
-  # + custom infoForAllAppointments. V45 Pasing 10585 day-after-tomorrow one seat.
-  # Callout colour is always info/blue (orange/red from old Testfälle is deprecated).
-  # Time H2 text is current product copy "Datum und Uhrzeit" (not legacy "Zeit").
+  # Fixtures: V44 Föhring 10577 tomorrow (V46: 8 seats for Ort toggle); Milbertshofen 10579
+  # no OH + custom infoForAllAppointments. V45/V46 Pasing 10585 day+2 (6 seats) for
+  # booked-out races so chrome/firefox do not starve Föhring display scenarios.
 
   Background:
     Given the Citizen API is available
@@ -72,10 +69,15 @@ Feature: CitizenView: no appointment available info callout
     Then the citizen calendar and list should show a bookable day for office 10577
 
   Scenario: Jump-in to Feuerwache 7 without opening hours shows the blue info callout and custom hint
+    When I request the offices and services endpoint
+    Then the response status code should be 200
+    And the response should contain offices and services
+    And office 10579 infoForAllAppointments should contain "ATAF Hinweis Feuerwache 7"
     Given I open zmscitizenview with jump-in service "10389330" and location "10579"
     Then the service combination step should be visible
     When I continue from the service combination step
     Then the no appointment available info callout should be visible in the citizen view
+    And the no appointment custom info link should be visible in the citizen view
     And the no appointment custom info should contain "ATAF Hinweis Feuerwache 7" in the citizen view
 
   Scenario: Jump-in to Pasing opens that office later day not Föhring tomorrow
@@ -87,27 +89,18 @@ Feature: CitizenView: no appointment available info callout
     And the no appointment available info callout should not be visible in the citizen view
 
   Scenario: Day booked out while on Termin refreshes to the blue info callout
-    Given I open zmscitizenview with jump-in service "10389330" and location "10577"
+    Given I open zmscitizenview with jump-in service "10389330" and location "10585"
     Then the service combination step should be visible
     When I continue from the service combination step
     And I wait for appointment slots to be ready in the citizen view
-    Then the citizen calendar and list should show a bookable day for office 10577
-    When I request available days for office 10577 and service 10389330 with service count 1
-    And I request available appointments for the first available day for office 10577
-    And I reserve an appointment with the first available slot
-    And I remember the current appointment as "feuerwache-day-race"
-    And I keep only providers "10577" checked in the citizen view
+    Then the citizen calendar and list should show a bookable day for office 10585
+    When I reserve every available appointment for office 10585 and service 10389330
+    And I keep only providers "10585" checked in the citizen view
     Then the no appointment available info callout should be visible in the citizen view
-    When I cancel the remembered "feuerwache-day-race" appointment
 
-  Scenario: Jump-in to Föhring after the only seat was reserved shows the blue info callout
-    When I request available days for office 10577 and service 10389330 with service count 1
-    Then the available calendar should include a bookable day for office 10577
-    When I request available appointments for the first available day for office 10577
-    And I reserve an appointment with the first available slot
-    And I remember the current appointment as "feuerwache-booked-out"
-    Given I open zmscitizenview with jump-in service "10389330" and location "10577"
+  Scenario: Jump-in to Pasing after every seat was reserved shows the blue info callout
+    When I reserve every available appointment for office 10585 and service 10389330
+    Given I open zmscitizenview with jump-in service "10389330" and location "10585"
     Then the service combination step should be visible
     When I continue from the service combination step
     Then the no appointment available info callout should be visible in the citizen view
-    When I cancel the remembered "feuerwache-booked-out" appointment
