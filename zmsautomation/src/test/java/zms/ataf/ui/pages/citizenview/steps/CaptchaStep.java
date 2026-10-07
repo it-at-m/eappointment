@@ -47,6 +47,16 @@ public final class CaptchaStep {
                 "Captcha session callout must offer Buchung neu starten.");
     }
 
+    public void assertCaptchaSessionCalloutNotVisible() {
+        context.set();
+        Assert.assertFalse(
+                shadow.shadowDomContainsText(DE_SESSION_TIMEOUT_HEADER),
+                "Captcha session callout header must not remain after a fresh captcha.");
+        Assert.assertFalse(
+                shadow.shadowDomContainsText(DE_SESSION_TIMEOUT_TEXT),
+                "Captcha session callout text must not remain after a fresh captcha.");
+    }
+
     /**
      * The load-error line is what Leistung shows until captcha details return and the widget mounts.
      * Weiter stays disabled until captcha verification finishes.

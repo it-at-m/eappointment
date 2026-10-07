@@ -253,6 +253,7 @@ Additional REST features (availability, offices-and-services, etc.) may be added
 - `booking/zmskvr-955_zmskvr-965_logged_in_booking_no_activation.feature` - Bürger-Login booking skips activation and shows the confirmation callout
 - `rebooking/zmskvr-353_rebooking_no_activation.feature` - guest Umbuchung confirms immediately without a second activation
 - `callouts/zmskvr-1440_zmskvr-1451_session_and_reservation_callouts.feature` - captcha session callout on Termin and reservation callout on Kontakt and Übersicht (office 10427)
+- `callouts/zmskvr-1448_zmskvr-1486_captcha_callout_clears_after_restart.feature` - captcha session callout does not stick after Buchung neu starten and a fresh captcha (office 10427)
 
 #### Statistik UI (`ui/zmsstatistic/`)
 - Features for the Statistik web UI (Dienstleistungsstatistik, Kundenstatistik, CSV export, etc.)

@@ -1160,6 +1160,12 @@ public class CitizenViewSteps {
         page.assertCaptchaSessionCalloutVisible();
     }
 
+    @Then("the captcha session callout should not be visible in the citizen view")
+    public void theCaptchaSessionCalloutShouldNotBeVisible() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: assert captcha session callout is gone");
+        page.assertCaptchaSessionCalloutNotVisible();
+    }
+
     @Then("the reservation expired callout should be visible in the citizen view")
     public void theReservationExpiredCalloutShouldBeVisible() {
         ScenarioLogManager.getLogger().info("zmscitizenview: assert reservation expired callout");
