@@ -1,5 +1,5 @@
 #language: en
-@rest @zmscitizenapi @citizen @ZMSKVR-1457 @ZMSKVR-1524
+@rest @zmscitizenapi @citizen @ZMSKVR-1457 @ZMSKVR-1524 @ZMSKVR-1235
 Feature: Calendar days follow the appointment length
   As a citizen
   I want a day to stay available only when the selected length still fits
@@ -10,6 +10,8 @@ Feature: Calendar days follow the appointment length
   # Führungszeugnis 1063565 and Lebensbescheinigung 10297413 are 1 slot.
   # Gewerbezentralregister, natürliche Person 1064033 is 2 slots.
   # Gewerbezentralregister, juristische Person 10225129 is 3 slots.
+  # Part of the no-appointment inventory (UI empty-state callout when no day fits):
+  #   ui/.../callouts/zmskvr-1235_zmskvr-1244_…_no_appointment_callout.feature
 
   Background:
     Given the Citizen API is available

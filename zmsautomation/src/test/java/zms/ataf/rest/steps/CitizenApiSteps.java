@@ -503,6 +503,101 @@ public class CitizenApiSteps {
         reserveFirstAvailableSlot(false, true);
     }
 
+    /**
+     * Book every free internet seat for the office/service (refetching the calendar between
+     * reserves) so the UI sees a fully empty calendar. Fails when nothing was reserved or a
+     * bookable day remains.
+     */
+    @When("I reserve every available appointment for office {int} and service {int}")
+    public void iReserveEveryAvailableAppointmentForOfficeAndService(int officeId, int serviceId) {
+        iRequestAvailableDaysForOfficeAndService(officeId, serviceId, 1);
+        int reserved = 0;
+        for (int attempt = 0; attempt < 40; attempt++) {
+            if (lastAvailableCalendarResponse == null) {
+                iRequestAvailableDaysForOfficeAndService(officeId, serviceId, 1);
+            }
+            String date =
+                    lastAvailableCalendarResponse == null
+                            ? null
+                            : lastAvailableCalendarResponse.getFirstAvailableDayForOffice(officeId);
+            if (date == null) {
+                break;
+            }
+            iRequestAvailableAppointmentsForDateOfficeAndService(date, officeId, serviceId, 1);
+            List<Long> timestamps =
+                    lastAvailableAppointmentsResponse == null
+                            ? List.of()
+                            : new ArrayList<>(lastAvailableAppointmentsResponse.futureAppointmentTimestamps());
+            if (timestamps.isEmpty()) {
+                iRequestAvailableDaysForOfficeAndService(officeId, serviceId, 1);
+                String again =
+                        lastAvailableCalendarResponse == null
+                                ? null
+                                : lastAvailableCalendarResponse.getFirstAvailableDayForOffice(officeId);
+                if (again == null) {
+                    break;
+                }
+                iRequestAvailableAppointmentsForDateOfficeAndService(again, officeId, serviceId, 1);
+                timestamps =
+                        lastAvailableAppointmentsResponse == null
+                                ? List.of()
+                                : new ArrayList<>(
+                                        lastAvailableAppointmentsResponse.futureAppointmentTimestamps());
+                if (timestamps.isEmpty()) {
+                    break;
+                }
+            }
+            // Soft reserve: 404/noAppointment means the seat was taken (parallel browser) or gone.
+            reserveFirstAvailableSlot(false, false);
+            if (response == null || response.getStatusCode() != 200) {
+                ScenarioLogManager.getLogger()
+                        .info(
+                                "Citizen API reserve-every stopped for office {} after status {}",
+                                officeId,
+                                response == null ? null : response.getStatusCode());
+                iRequestAvailableDaysForOfficeAndService(officeId, serviceId, 1);
+                if (lastAvailableCalendarResponse == null
+                        || lastAvailableCalendarResponse.getFirstAvailableDayForOffice(officeId) == null) {
+                    break;
+                }
+                continue;
+            }
+            iRememberTheCurrentAppointmentAs("feuerwache-bulk-" + reserved);
+            reserved++;
+            iRequestAvailableDaysForOfficeAndService(officeId, serviceId, 1);
+        }
+        String remainingDay =
+                lastAvailableCalendarResponse == null
+                        ? null
+                        : lastAvailableCalendarResponse.getFirstAvailableDayForOffice(officeId);
+        if (reserved == 0) {
+            Assertions.fail(
+                    "Office %d: reserved nothing; bookable day is %s",
+                    officeId,
+                    remainingDay == null ? "absent (calendar was already empty)" : remainingDay);
+        }
+        Assertions.assertThat(remainingDay)
+                .as(
+                        "Office %d still has a bookable day after reserving %d appointment(s)",
+                        officeId,
+                        reserved)
+                .isNull();
+        ScenarioLogManager.getLogger()
+                .info("Citizen API reserved {} appointment(s) for office {} service {}", reserved, officeId, serviceId);
+    }
+
+    @Then("office {int} infoForAllAppointments should contain {string}")
+    public void officeInfoForAllAppointmentsShouldContain(int officeId, String fragment) {
+        String needle = TestDataHelper.transformTestData(fragment);
+        Object raw = scopeValue(officeId, "infoForAllAppointments");
+        Assertions.assertThat(raw)
+                .as("office %d infoForAllAppointments", officeId)
+                .isNotNull();
+        Assertions.assertThat(String.valueOf(raw))
+                .as("office %d infoForAllAppointments", officeId)
+                .contains(needle);
+    }
+
     @When("I attempt to reserve an appointment with the first available slot")
     public void iAttemptToReserveAnAppointmentWithTheFirstAvailableSlot() {
         reserveFirstAvailableSlot(false, false);
