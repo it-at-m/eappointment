@@ -1,5 +1,5 @@
 #language: en
-@web @zmscitizenview @callouts @citizen @ZMSKVR-1440 @executeLocally @jumpin
+@web @zmscitizenview @callouts @citizen @ZMSKVR-1440 @ZMSKVR-1451 @executeLocally @jumpin
 Feature: CitizenView: captcha session and reservation callouts
   As a citizen booking at Kommunale Verkehrsüberwachung (office 10427, scope 74)
   I want an expired captcha session and an expired reservation to replace the step
