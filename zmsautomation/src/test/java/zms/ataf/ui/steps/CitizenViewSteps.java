@@ -1207,6 +1207,31 @@ public class CitizenViewSteps {
         }
     }
 
+    @When("I wait up to {int} seconds for the timeout warning banner in the citizen view")
+    public void iWaitUpToSecondsForTheTimeoutWarningBanner(int seconds) {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: wait up to {}s for timeout warning banner", seconds);
+        page.waitUntilTimeoutWarningBannerVisible(seconds);
+    }
+
+    @Then("the timeout warning banner should be visible in the citizen view")
+    public void theTimeoutWarningBannerShouldBeVisible() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: assert timeout warning banner visible");
+        page.assertTimeoutWarningBannerVisible();
+    }
+
+    @Then("the timeout warning banner should not be visible in the citizen view")
+    public void theTimeoutWarningBannerShouldNotBeVisible() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: assert timeout warning banner not visible");
+        page.assertTimeoutWarningBannerNotVisible();
+    }
+
+    @Then("the timeout warning countdown should tick down in the citizen view")
+    public void theTimeoutWarningCountdownShouldTickDown() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: assert timeout warning countdown ticks");
+        page.assertTimeoutWarningCountdownTicksDown();
+    }
+
     @Then("service {string} should still be selected with quantity {int} in the citizen view")
     public void serviceShouldStillBeSelectedWithQuantity(String serviceName, int quantity) {
         String label = TestDataHelper.transformTestData(serviceName);

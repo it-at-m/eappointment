@@ -17,6 +17,7 @@ import ataf.web.utils.DriverUtil;
 import zms.ataf.rest.dto.zmscitizenapi.ThinnedProcess;
 import zms.ataf.ui.pages.citizenview.support.ShadowDom;
 import zms.ataf.ui.pages.citizenview.steps.CaptchaStep;
+import zms.ataf.ui.pages.citizenview.steps.TimeoutWarningStep;
 import zms.ataf.ui.pages.citizenview.steps.CombinationStep;
 import zms.ataf.ui.pages.citizenview.steps.ServiceFinderStep;
 import zms.ataf.ui.pages.citizenview.steps.ProviderLocationStep;
@@ -95,6 +96,8 @@ public class CitizenViewPage extends BasePage {
 
     private final CaptchaStep captcha;
 
+    private final TimeoutWarningStep timeoutWarning;
+
 
     public CitizenViewPage(RemoteWebDriver driver) {
         super(driver);
@@ -116,6 +119,7 @@ public class CitizenViewPage extends BasePage {
         overview = new OverviewStep(CONTEXT, shadow, this, DEFAULT_EXPLICIT_WAIT_TIME);
         myAppointments = new MyAppointmentsStep(CONTEXT, shadow, slotState, this, contact, DEFAULT_EXPLICIT_WAIT_TIME);
         captcha = new CaptchaStep(CONTEXT, shadow, DEFAULT_EXPLICIT_WAIT_TIME);
+        timeoutWarning = new TimeoutWarningStep(CONTEXT, shadow, DEFAULT_EXPLICIT_WAIT_TIME);
     }
 
     public CitizenViewPageContext getContext() {
@@ -1616,6 +1620,22 @@ public class CitizenViewPage extends BasePage {
 
     public void waitUntilCaptchaCheckFinished(int widgetTimeoutSeconds, int solveTimeoutSeconds) {
         captcha.waitUntilCaptchaCheckFinished(widgetTimeoutSeconds, solveTimeoutSeconds);
+    }
+
+    public void waitUntilTimeoutWarningBannerVisible(int maxSeconds) {
+        timeoutWarning.waitUntilTimeoutWarningBannerVisible(maxSeconds);
+    }
+
+    public void assertTimeoutWarningBannerVisible() {
+        timeoutWarning.assertTimeoutWarningBannerVisible();
+    }
+
+    public void assertTimeoutWarningBannerNotVisible() {
+        timeoutWarning.assertTimeoutWarningBannerNotVisible();
+    }
+
+    public void assertTimeoutWarningCountdownTicksDown() {
+        timeoutWarning.assertTimeoutWarningCountdownTicksDown();
     }
 
     public void assertSelectedServiceQuantity(String serviceName, int quantity) {
