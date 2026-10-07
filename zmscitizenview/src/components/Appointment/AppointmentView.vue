@@ -73,6 +73,21 @@
         currentView < 4
       "
     >
+      <!-- ZMSKVR-501: last 60s of captcha (Termin) or reservation (Kontakt/Übersicht) -->
+      <muc-banner
+        v-if="showTimeoutWarning && !isAppointmentInPast"
+        variant="header"
+        type="warning"
+        class="timeout-warning-banner"
+        data-test="timeout-warning-banner"
+        role="status"
+        aria-live="polite"
+      >
+        {{ t("timeoutWarningLabel") }}
+        <strong>{{
+          t("timeoutWarningSeconds", { seconds: remainingTimeoutSeconds })
+        }}</strong>
+      </muc-banner>
       <muc-stepper
         v-if="!isAppointmentInPast"
         ref="stepperRef"
@@ -425,6 +440,7 @@ import type { ApiErrorTranslation, ErrorStateMap } from "@/utils/errorHandler";
 import type { AppointmentTrackSlotUi } from "@/utils/trackAppointmentEvent";
 
 import {
+  MucBanner,
   MucButton,
   MucCallout,
   MucStepper,
@@ -489,6 +505,7 @@ import {
 } from "@/utils/appointmentLoginStorage";
 import { getTokenData } from "@/utils/auth";
 import { toCalloutType } from "@/utils/callout";
+import { captchaTokenExpiryMs } from "@/utils/captchaTokenExpiry";
 import {
   APPOINTMENT_ACTION_TYPE,
   QUERY_PARAM_APPOINTMENT_DISPLAY_NUMBER,
@@ -522,6 +539,7 @@ import {
   trackAppointmentEvent,
   trackAppointmentScreenFromView,
 } from "@/utils/trackAppointmentEvent";
+import { useTimeoutWarning } from "@/utils/useTimeoutWarning";
 
 const props = defineProps<{
   globalState: GlobalState;
@@ -688,6 +706,25 @@ const isCancelingAppointment = ref<boolean>(false);
 const preselectedLocationId = ref<string | undefined>(props.locationId);
 
 const reservationStartMs = ref<number | null>(null);
+
+const captchaDeadlineMs = computed<number | null>(() =>
+  captchaTokenExpiryMs(captchaToken.value)
+);
+
+const reservationDeadlineMs = computed<number | null>(() => {
+  if (reservationStartMs.value == null) return null;
+  const raw: unknown = (appointment.value as any)?.scope?.reservationDuration;
+  const minutes = typeof raw === "number" ? raw : Number(raw);
+  if (!Number.isFinite(minutes)) return null;
+  return reservationStartMs.value + minutes * 60_000;
+});
+
+const { showTimeoutWarning, remainingSeconds: remainingTimeoutSeconds } =
+  useTimeoutWarning({
+    currentView,
+    captchaDeadlineMs,
+    reservationDeadlineMs,
+  });
 
 const activationMinutes = computed<number | undefined>(() => {
   const fromAppt = (appointment.value as any)?.scope?.activationDuration;
