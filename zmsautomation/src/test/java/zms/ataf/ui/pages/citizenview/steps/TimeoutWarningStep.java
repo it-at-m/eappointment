@@ -27,7 +27,7 @@ public final class TimeoutWarningStep {
     private final CitizenViewPageContext context;
     private final ShadowDom shadow;
 
-    public TimeoutWarningStep(CitizenViewPageContext context, ShadowDom shadow, int defaultWaitSeconds) {
+    public TimeoutWarningStep(CitizenViewPageContext context, ShadowDom shadow) {
         this.context = context;
         this.shadow = shadow;
     }
@@ -88,7 +88,12 @@ public final class TimeoutWarningStep {
         Assert.assertNotNull(text, "Timeout warning banner text missing");
         Matcher m = SECONDS.matcher(text);
         Assert.assertTrue(m.find(), "Could not parse seconds from banner: " + text);
-        return Integer.parseInt(m.group(1));
+        try {
+            return Integer.parseInt(m.group(1));
+        } catch (NumberFormatException e) {
+            Assert.fail("Countdown seconds were not a number in banner: " + text, e);
+            return -1;
+        }
     }
 
     private String bannerText() {

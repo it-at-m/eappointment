@@ -119,7 +119,7 @@ public class CitizenViewPage extends BasePage {
         overview = new OverviewStep(CONTEXT, shadow, this, DEFAULT_EXPLICIT_WAIT_TIME);
         myAppointments = new MyAppointmentsStep(CONTEXT, shadow, slotState, this, contact, DEFAULT_EXPLICIT_WAIT_TIME);
         captcha = new CaptchaStep(CONTEXT, shadow, DEFAULT_EXPLICIT_WAIT_TIME);
-        timeoutWarning = new TimeoutWarningStep(CONTEXT, shadow, DEFAULT_EXPLICIT_WAIT_TIME);
+        timeoutWarning = new TimeoutWarningStep(CONTEXT, shadow);
     }
 
     public CitizenViewPageContext getContext() {
