@@ -1,15 +1,22 @@
 package zms.ataf.ui.pages.citizenview;
 
+import java.time.Duration;
 import java.util.Set;
+
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.RemoteWebDriver;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import org.testng.Assert;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+import ataf.core.logging.ScenarioLogManager;
 import ataf.web.pages.BasePage;
+import ataf.web.utils.DriverUtil;
 import zms.ataf.rest.dto.zmscitizenapi.ThinnedProcess;
 import zms.ataf.ui.pages.citizenview.support.ShadowDom;
+import zms.ataf.ui.pages.citizenview.steps.CaptchaStep;
 import zms.ataf.ui.pages.citizenview.steps.CombinationStep;
 import zms.ataf.ui.pages.citizenview.steps.ServiceFinderStep;
 import zms.ataf.ui.pages.citizenview.steps.ProviderLocationStep;
@@ -28,6 +35,11 @@ public class CitizenViewPage extends BasePage {
     public static final String LOCALSTORAGE_APPOINTMENT_KEY = "lhm-appointment-data";
 
     private static final String DE_WEITER = "Weiter";
+    private static final String DE_BACK = "Zurück";
+    private static final String DE_RESTART_BOOKING = "Buchung neu starten";
+    private static final String DE_RESERVATION_EXPIRED_HEADER = "Ihr Termin kann nicht mehr reserviert werden.";
+    private static final String DE_RESERVATION_EXPIRED_TEXT =
+            "Leider ist die Zeit für die Reservierung Ihres Termins abgelaufen. Bitte vereinbaren Sie den Termin erneut.";
     private static final String ALREADY_ACTIVATED_BANNER_MARKER =
             "Sie haben Ihren Termin bereits aktiviert.";
     private static final String CONFIRMATION_SUCCESS_TEXT =
@@ -47,6 +59,13 @@ public class CitizenViewPage extends BasePage {
     public static final String EN_INVALID_JUMPIN_HEADER = "This view cannot be loaded.";
     public static final String EN_INVALID_JUMPIN_TEXT =
             "The link to this page is unfortunately incorrect";
+
+    /** German appointment-not-available callout ({@code de-DE.json} apiErrorAppointmentNotAvailable*). */
+    public static final String DE_APPOINTMENT_NOT_AVAILABLE_HEADER =
+            "Ihr gewählter Termin ist nicht mehr verfügbar.";
+
+    public static final String DE_APPOINTMENT_NOT_AVAILABLE_TEXT =
+            "Leider hat inzwischen eine andere Person Ihren gewünschten Termin gebucht. Bitte wählen Sie einen neuen Termin aus.";
 
     private final CitizenViewPageContext CONTEXT;
 
@@ -74,6 +93,8 @@ public class CitizenViewPage extends BasePage {
 
     private final MyAppointmentsStep myAppointments;
 
+    private final CaptchaStep captcha;
+
 
     public CitizenViewPage(RemoteWebDriver driver) {
         super(driver);
@@ -94,6 +115,7 @@ public class CitizenViewPage extends BasePage {
         contact = new ContactStep(CONTEXT, shadow, this, DEFAULT_EXPLICIT_WAIT_TIME);
         overview = new OverviewStep(CONTEXT, shadow, this, DEFAULT_EXPLICIT_WAIT_TIME);
         myAppointments = new MyAppointmentsStep(CONTEXT, shadow, slotState, this, contact, DEFAULT_EXPLICIT_WAIT_TIME);
+        captcha = new CaptchaStep(CONTEXT, shadow, DEFAULT_EXPLICIT_WAIT_TIME);
     }
 
     public CitizenViewPageContext getContext() {
@@ -192,6 +214,58 @@ public class CitizenViewPage extends BasePage {
      */
     public boolean clickButtonContaining(String text) {
         return shadow.clickButtonContaining(text);
+    }
+
+    /** True when a visible button's own text is exactly {@code label}, ignoring stepper "Zurück zu Schritt". */
+    private boolean visibleButtonTextEquals(String label) {
+        CONTEXT.set();
+        String esc = label.replace("\\", "\\\\").replace("'", "\\'");
+        String script =
+                "var label='" + esc + "';"
+                        + "function visible(el){if(!el||!el.getBoundingClientRect)return false;"
+                        + "var r=el.getBoundingClientRect();if(r.width<=0||r.height<=0)return false;"
+                        + "var st=window.getComputedStyle(el);return st.visibility!=='hidden'&&st.display!=='none'&&st.opacity!=='0';}"
+                        + "function walk(n){if(!n)return false;if(n.shadowRoot&&walk(n.shadowRoot))return true;"
+                        + "var tag=(n.tagName||'').toUpperCase();"
+                        + "if(tag==='BUTTON'||tag==='A'||tag==='MUC-BUTTON'){"
+                        + "var t=(n.innerText||n.textContent||'').trim();"
+                        + "if(t===label&&visible(n))return true;}"
+                        + "var c=n.children;if(c)for(var i=0;i<c.length;i++)if(walk(c[i]))return true;return false;}"
+                        + "return walk(document.body);";
+        Object o = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script);
+        return Boolean.TRUE.equals(o);
+    }
+
+    /**
+     * Quantity shown beside a selected service. The patternlab counter is a Vue component, so the DOM has the number
+     * and the service name as text (or an input value) inside the appointment shadow root, not a muc-counter tag.
+     */
+    private String counterValueBeside(String serviceName) {
+        CONTEXT.set();
+        String esc = serviceName.replace("\\", "\\\\").replace("'", "\\'");
+        String script =
+                "var name='" + esc + "';"
+                        + "function flat(n){var parts=[];"
+                        + "function rec(node){if(!node)return;"
+                        + "if(node.nodeType===3){parts.push(node.nodeValue||'');return;}"
+                        + "var tag=(node.tagName||'').toUpperCase();"
+                        + "if((tag==='INPUT'||tag==='TEXTAREA')&&node.value!=null)parts.push(' '+node.value+' ');"
+                        + "if(node.shadowRoot)rec(node.shadowRoot);"
+                        + "var c=node.childNodes;if(c)for(var i=0;i<c.length;i++)rec(c[i]);}"
+                        + "rec(n);return parts.join(' ');}"
+                        + "function walk(n, acc){if(!n||n.nodeType===3)return;"
+                        + "if(n.shadowRoot)walk(n.shadowRoot, acc);"
+                        + "var t=flat(n);if(t.indexOf(name)>=0)acc.push(t);"
+                        + "var c=n.children;if(c)for(var i=0;i<c.length;i++)walk(c[i], acc);}"
+                        + "var found=[];walk(document.body, found);"
+                        + "var best=null;var bestLen=1e15;"
+                        + "for(var i=0;i<found.length;i++){"
+                        + "var t=found[i];var rest=t.split(name).join(' ');"
+                        + "var m=rest.match(/\\b(\\d+)\\b/);"
+                        + "if(!m)continue;if(t.length<bestLen){bestLen=t.length;best=m[1];}}"
+                        + "return best;";
+        Object o = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script);
+        return o == null ? null : String.valueOf(o);
     }
 
     private boolean clickButtonWithExactText(String text) {
@@ -1073,6 +1147,14 @@ public class CitizenViewPage extends BasePage {
         timeSlot.assertSelectedAppointmentCalloutVisible();
     }
 
+    public void assertAppointmentNoLongerAvailableCalloutVisible() {
+        timeSlot.assertAppointmentNoLongerAvailableCalloutVisible();
+    }
+
+    public void assertStillOnAppointmentSelectionStep() {
+        timeSlot.assertStillOnAppointmentSelectionStep();
+    }
+
     private JsonNode locationTitles() {
         return timeSlot.locationTitles();
     }
@@ -1163,6 +1245,10 @@ public class CitizenViewPage extends BasePage {
      */
     private boolean openNextCalendarDayAndWaitForSlots() {
         return timeSlot.openNextCalendarDayAndWaitForSlots();
+    }
+
+    public void selectSingleSeatDayAfterV19RangeAndWaitForSlots() {
+        timeSlot.selectSingleSeatDayAfterV19RangeAndWaitForSlots();
     }
 
     private boolean clickNextBookableCalendarDay() {
@@ -1491,6 +1577,59 @@ public class CitizenViewPage extends BasePage {
 
     public void assertAppointmentManagementActionsNotVisible() {
         overview.assertAppointmentManagementActionsNotVisible();
+    }
+
+    public void assertCaptchaSessionCalloutVisible() {
+        captcha.assertCaptchaSessionCalloutVisible();
+    }
+
+    public void assertCaptchaSessionCalloutNotVisible() {
+        captcha.assertCaptchaSessionCalloutNotVisible();
+    }
+
+    public void assertReservationExpiredCalloutVisible() {
+        CONTEXT.set();
+        waitUntilShadowContains(DE_RESERVATION_EXPIRED_HEADER, DEFAULT_EXPLICIT_WAIT_TIME);
+        Assert.assertTrue(
+                shadowDomContainsText(DE_RESERVATION_EXPIRED_TEXT),
+                "Reservation expired callout text missing.");
+        Assert.assertTrue(
+                shadowDomContainsText(DE_RESTART_BOOKING),
+                "Reservation expired callout must offer Buchung neu starten.");
+    }
+
+    public void clickRestartBooking() {
+        waitForAndClickButtonContaining(DE_RESTART_BOOKING, DEFAULT_EXPLICIT_WAIT_TIME);
+    }
+
+    public void assertBackButtonNotVisible() {
+        CONTEXT.set();
+        Assert.assertFalse(
+                visibleButtonTextEquals(DE_BACK),
+                "Zurück must be hidden while the restart callout is showing.");
+    }
+
+    public void assertBackButtonVisible() {
+        CONTEXT.set();
+        Assert.assertTrue(visibleButtonTextEquals(DE_BACK), "Zurück should be visible.");
+    }
+
+    public void waitUntilCaptchaCheckFinished(int widgetTimeoutSeconds, int solveTimeoutSeconds) {
+        captcha.waitUntilCaptchaCheckFinished(widgetTimeoutSeconds, solveTimeoutSeconds);
+    }
+
+    public void assertSelectedServiceQuantity(String serviceName, int quantity) {
+        CONTEXT.set();
+        waitUntilShadowContains(serviceName, DEFAULT_EXPLICIT_WAIT_TIME);
+        Assert.assertTrue(shadowDomContainsText(serviceName), "Expected selected service " + serviceName);
+        new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .pollingEvery(Duration.ofMillis(500))
+                .until(driver -> counterValueBeside(serviceName) != null);
+        String counter = counterValueBeside(serviceName);
+        Assert.assertEquals(
+                counter,
+                String.valueOf(quantity),
+                "Expected quantity " + quantity + " for " + serviceName + " but the counter was " + counter);
     }
 
     public void assertElectronicCommunicationCheckboxVisible() {

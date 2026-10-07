@@ -481,30 +481,100 @@ public final class TimeSlotStep {
     }
 
     public void selectVisibleTimeslot() {
+        context.set();
         slotState.previousTimeslotId = slotState.markedTimeslotId;
         String skip = slotState.markedTimeslotId == null ? "" : slotState.markedTimeslotId;
-        JsonNode clicked = new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(defaultWaitSeconds))
-                .until(d -> {
-                    JsonNode node = json.citizenJson(
-                            "(function(){var skip=__args[0]==null?'':String(__args[0]);"
-                                    + "var open=cssAll('#listViewAccordion section.m-accordion__section-content.show')[0]||null;"
-                                    + "function inOpen(el){if(!open)return true;var n=el;while(n){if(n===open)return true;"
-                                    + "if(n.parentElement){n=n.parentElement;continue;}"
-                                    + "var root=n.getRootNode&&n.getRootNode();n=root&&root.host?root.host:null;}return false;}"
-                                    + "var slots=cssAll('.timeslot');var target=null;"
-                                    + "for(var i=0;i<slots.length;i++){var el=slots[i];if(!shown(el)||!inOpen(el))continue;"
-                                    + "var id=el.id||'';if(skip&&id===skip)continue;"
-                                    + "if(isPrimary(el))continue;"
-                                    + "var inner=el.shadowRoot&&el.shadowRoot.querySelector('button');"
-                                    + "if(inner&&inner.disabled)continue;target=el;break;}"
-                                    + "if(!target)return {clicked:false};target.scrollIntoView({block:'center'});"
-                                    + "var press=target.shadowRoot&&target.shadowRoot.querySelector('button');"
-                                    + "(press||target).click();return {clicked:true,id:target.id||''};})()",
-                            skip);
-                    return node.path("clicked").asBoolean() ? node : null;
-                });
-        slotState.markedTimeslotId = clicked.path("id").asText();
-        CitizenViewWaits.sleepQuiet(400L);
+        // Busy Passkalender days can leave a single free slot in the open hour (e.g. only 12:55).
+        // A second select must then advance Später or open the next list date — not time out.
+        for (int attempt = 0; attempt < 8; attempt++) {
+            JsonNode node = tryClickVisibleNonPrimaryTimeslot(skip);
+            if (node != null && node.path("clicked").asBoolean()) {
+                slotState.markedTimeslotId = node.path("id").asText("");
+                ScenarioLogManager.getLogger()
+                        .info(
+                                "zmscitizenview: selected timeslot id={} (attempt {}, skip={})",
+                                slotState.markedTimeslotId,
+                                attempt,
+                                skip.isEmpty() ? "(none)" : skip);
+                CitizenViewWaits.sleepQuiet(400L);
+                return;
+            }
+            ScenarioLogManager.getLogger()
+                    .info(
+                            "zmscitizenview: no free timeslot yet (attempt {}, skip={}); try Später / next list date",
+                            attempt,
+                            skip.isEmpty() ? "(none)" : skip);
+            if (tryAdvanceListOrCalendarLaterQuietly()) {
+                CitizenViewWaits.sleepQuiet(600L);
+                continue;
+            }
+            if (tryOpenAnotherListDateQuietly()) {
+                CitizenViewWaits.sleepQuiet(600L);
+                continue;
+            }
+            break;
+        }
+        Assert.fail(
+                "Could not select a visible timeslot"
+                        + (skip.isEmpty() ? "" : " other than " + skip)
+                        + " — open hour/date had no other free slot (Später and next list date unavailable).");
+    }
+
+    /** Clicks the first non-primary, enabled timeslot in the open list accordion (or anywhere if not in list). */
+    private JsonNode tryClickVisibleNonPrimaryTimeslot(String skip) {
+        return json.citizenJson(
+                "(function(){var skip=__args[0]==null?'':String(__args[0]);"
+                        + "var open=cssAll('#listViewAccordion section.m-accordion__section-content.show')[0]||null;"
+                        + "function inOpen(el){if(!open)return true;var n=el;while(n){if(n===open)return true;"
+                        + "if(n.parentElement){n=n.parentElement;continue;}"
+                        + "var root=n.getRootNode&&n.getRootNode();n=root&&root.host?root.host:null;}return false;}"
+                        + "var slots=cssAll('.timeslot');var target=null;"
+                        + "for(var i=0;i<slots.length;i++){var el=slots[i];if(!shown(el)||!inOpen(el))continue;"
+                        + "var id=el.id||'';if(skip&&id===skip)continue;"
+                        + "if(isPrimary(el))continue;"
+                        + "var inner=el.shadowRoot&&el.shadowRoot.querySelector('button');"
+                        + "if(inner&&inner.disabled)continue;target=el;break;}"
+                        + "if(!target)return {clicked:false};target.scrollIntoView({block:'center'});"
+                        + "var press=target.shadowRoot&&target.shadowRoot.querySelector('button');"
+                        + "(press||target).click();return {clicked:true,id:target.id||''};})()",
+                skip);
+    }
+
+    /** Soft Später in open list hour pager, else calendar/list float-right Später. */
+    private boolean tryAdvanceListOrCalendarLaterQuietly() {
+        JsonNode listLater = json.citizenJson(
+                "(function(){var open=cssAll('#listViewAccordion section.m-accordion__section-content.show')[0];"
+                        + "var btn=findButton(open,'Später');if(!btn)return {clicked:false};"
+                        + "if(isDisabled(btn))return {clicked:false,disabled:true};"
+                        + "var inner=btn.shadowRoot&&btn.shadowRoot.querySelector('button');"
+                        + "(inner||btn).click();return {clicked:true};})()");
+        if (listLater.path("clicked").asBoolean()) {
+            ScenarioLogManager.getLogger().info("zmscitizenview: advanced open list date with Später for another timeslot");
+            return true;
+        }
+        return clickCitizenViewLaterOnceIfAvailable();
+    }
+
+    /** Soft open of another list-date accordion when the current day has no remaining free slot. */
+    private boolean tryOpenAnotherListDateQuietly() {
+        JsonNode clicked = json.citizenJson(
+                "(function(){var headers=cssAll('#listViewAccordion h4.m-accordion__section-header');"
+                        + "if(!headers.length)return {clicked:false};"
+                        + "var target=null;var targetLabel='';"
+                        + "for(var i=0;i<headers.length;i++){var b=headers[i].querySelector('button');"
+                        + "if(!b||b.getAttribute('aria-expanded')==='true')continue;"
+                        + "target=b;targetLabel=textOf(b);break;}"
+                        + "if(!target)return {clicked:false};"
+                        + "target.scrollIntoView({block:'center'});target.click();"
+                        + "return {clicked:true,targetLabel:targetLabel};})()");
+        if (!clicked.path("clicked").asBoolean()) {
+            return false;
+        }
+        ScenarioLogManager.getLogger()
+                .info(
+                        "zmscitizenview: opened list date {} for another timeslot",
+                        clicked.path("targetLabel").asText(""));
+        return true;
     }
 
     public void assertMarkedTimeslotIsWhiteOnBlue() {
@@ -1011,6 +1081,99 @@ public final class TimeSlotStep {
                 "Selected-appointment info callout not found after choosing slot.");
     }
 
+    /**
+     * ZMSKVR-88 / ZMSKVR-472: after reserve fails with appointmentNotAvailable, the error callout sits under the
+     * selected-appointment summary. Weiter stays usable so the citizen can pick another slot.
+     */
+    public void assertAppointmentNoLongerAvailableCalloutVisible() {
+        context.set();
+        String header = CitizenViewPage.DE_APPOINTMENT_NOT_AVAILABLE_HEADER;
+        String text = CitizenViewPage.DE_APPOINTMENT_NOT_AVAILABLE_TEXT;
+        int sec = Math.min(30, defaultWaitSeconds);
+        long deadline = System.currentTimeMillis() + sec * 1000L;
+        while (System.currentTimeMillis() < deadline) {
+            if (appointmentNotAvailableCalloutBelowSummary(header, text)) {
+                ScenarioLogManager.getLogger()
+                        .info(
+                                "zmscitizenview: appointment-not-available error callout visible below Ausgewählter Termin");
+                return;
+            }
+            if (contactStepReached()) {
+                Assert.fail(
+                        "Expected appointment-not-available callout but reached Kontaktdaten (slot was still free).");
+            }
+            CitizenViewWaits.sleepQuiet(300L);
+        }
+        Assert.assertTrue(
+                appointmentNotAvailableCalloutBelowSummary(header, text),
+                "Expected error callout \""
+                        + header
+                        + "\" / \""
+                        + text
+                        + "\" below the selected-appointment summary after the slot was taken.");
+    }
+
+    /**
+     * True when a visible error muc-callout with header+body sits below the info callout that shows
+     * {@code Ausgewählter Termin} / {@code Selected Appointment}.
+     */
+    private boolean appointmentNotAvailableCalloutBelowSummary(String header, String text) {
+        Object result =
+                ((JavascriptExecutor) DriverUtil.getDriver())
+                        .executeScript(
+                                "var header=arguments[0], body=arguments[1];"
+                                        + "function textOf(n){return ((n&&(n.innerText||n.textContent))||'').replace(/\\s+/g,' ').trim();}"
+                                        + "function shown(el){"
+                                        + "if(!el||!el.getBoundingClientRect)return false;"
+                                        + "var r=el.getBoundingClientRect();"
+                                        + "if(r.width<=0||r.height<=0)return false;"
+                                        + "var st=window.getComputedStyle(el);"
+                                        + "return st.visibility!=='hidden'&&st.display!=='none'&&st.opacity!=='0';"
+                                        + "}"
+                                        + "function isErrorCallout(node){"
+                                        + "if(!node||!node.classList||!node.classList.contains('m-callout'))return false;"
+                                        + "var type=(node.getAttribute('data-type')||'').toLowerCase();"
+                                        + "if(type==='error'||type==='danger')return true;"
+                                        + "return node.className.indexOf('m-callout--error')>=0"
+                                        + "||node.className.indexOf('m-callout--danger')>=0;"
+                                        + "}"
+                                        + "function isInfoSummary(node){"
+                                        + "if(!node||!node.classList||!node.classList.contains('m-callout'))return false;"
+                                        + "var t=textOf(node);"
+                                        + "return t.indexOf('Ausgewählter Termin')>=0||t.indexOf('Selected Appointment')>=0;"
+                                        + "}"
+                                        + "var summary=null, error=null;"
+                                        + "function visit(node){"
+                                        + "if(!node||node.nodeType!==1)return;"
+                                        + "if(isInfoSummary(node)&&shown(node))summary=node;"
+                                        + "if(isErrorCallout(node)&&shown(node)){"
+                                        + "var t=textOf(node);"
+                                        + "if(t.indexOf(header)>=0&&t.indexOf(body)>=0)error=node;"
+                                        + "}"
+                                        + "if(node.shadowRoot){var s=node.shadowRoot.children;for(var i=0;i<s.length;i++)visit(s[i]);}"
+                                        + "var c=node.children;if(c)for(var j=0;j<c.length;j++)visit(c[j]);"
+                                        + "}"
+                                        + "visit(document.documentElement);"
+                                        + "if(!summary||!error)return false;"
+                                        + "var sr=summary.getBoundingClientRect(), er=error.getBoundingClientRect();"
+                                        + "return er.top+0.5>=sr.bottom;",
+                                header,
+                                text);
+        return Boolean.TRUE.equals(result);
+    }
+
+    /** ZMSKVR-472: race loser stays on Termin selection and can choose another slot. */
+    public void assertStillOnAppointmentSelectionStep() {
+        context.set();
+        Assert.assertFalse(
+                contactStepReached(),
+                "Expected to stay on appointment selection after the slot was taken, not Kontaktdaten.");
+        Assert.assertTrue(
+                selectedAppointmentCalloutVisible()
+                        || shadow.shadowDomContainsText(CitizenViewPage.DE_APPOINTMENT_NOT_AVAILABLE_HEADER),
+                "Expected appointment selection (Ausgewählter Termin or not-available callout) after slot race.");
+    }
+
     public JsonNode locationTitles() {
         return json.citizenJson(
                 "(function(){var nodes=cssAll('h5.location-title');var seen={};var titles=[];"
@@ -1320,6 +1483,75 @@ public final class TimeSlotStep {
                     .warn("zmscitizenview slot wait after next calendar day: {}", e.toString());
         }
         return true;
+    }
+
+    /**
+     * ZMSKVR-88 / ZMSKVR-472: land on the single-seat Passkalender day (V43, day after V19 range)
+     * so each UI grid time has only one internet seat behind it.
+     */
+    public void selectSingleSeatDayAfterV19RangeAndWaitForSlots() {
+        context.set();
+        java.time.LocalDate target = zms.ataf.helpers.BerlinTime.singleSeatDayAfterV19RuppertstrasseRange();
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: select single-seat Passkalender day {} (after V19 range)", target);
+        for (int attempt = 0; attempt < 16; attempt++) {
+            java.time.LocalDate shown = readSelectedCalendarDayFromSlots();
+            if (target.equals(shown)) {
+                ScenarioLogManager.getLogger()
+                        .info("zmscitizenview: calendar is on single-seat day {}", shown);
+                return;
+            }
+            if (shown != null && shown.isAfter(target)) {
+                Assert.fail(
+                        "zmscitizenview: calendar day "
+                                + shown
+                                + " is after single-seat day "
+                                + target
+                                + " without landing on it");
+            }
+            if (!openNextCalendarDayAndWaitForSlots()) {
+                Assert.fail(
+                        "zmscitizenview: could not open next calendar day while seeking single-seat day "
+                                + target
+                                + " (last shown="
+                                + shown
+                                + ")");
+            }
+        }
+        Assert.fail("zmscitizenview: did not reach single-seat day " + target + " within 16 day moves");
+    }
+
+    /**
+     * Infer the open calendar day from any timeslot button id ({@code …-timeslot-{epoch}}).
+     *
+     * @return Berlin local date, or null when no slot id is present yet
+     */
+    public java.time.LocalDate readSelectedCalendarDayFromSlots() {
+        Object raw =
+                ((JavascriptExecutor) DriverUtil.getDriver())
+                        .executeScript(
+                                "function walk(root,visit){if(!root||!root.querySelectorAll)return;"
+                                        + "var nodes=root.querySelectorAll('*');"
+                                        + "for(var i=0;i<nodes.length;i++){visit(nodes[i]);"
+                                        + "if(nodes[i].shadowRoot)walk(nodes[i].shadowRoot,visit);}}"
+                                        + "var found=null;"
+                                        + "walk(document,function(el){"
+                                        + "if(found||!el.id)return;"
+                                        + "var m=String(el.id).match(/-timeslot-(\\d+)$/);"
+                                        + "if(m)found=m[1];"
+                                        + "});"
+                                        + "return found;");
+        if (raw == null) {
+            return null;
+        }
+        try {
+            long epoch = Long.parseLong(String.valueOf(raw));
+            return java.time.Instant.ofEpochSecond(epoch)
+                    .atZone(zms.ataf.helpers.BerlinTime.ZONE)
+                    .toLocalDate();
+        } catch (NumberFormatException e) {
+            return null;
+        }
     }
 
     public boolean clickNextBookableCalendarDay() {

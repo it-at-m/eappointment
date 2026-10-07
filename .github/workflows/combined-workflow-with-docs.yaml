@@ -3,11 +3,8 @@ name: 🐘 Combined PHP Build with Documentation
 on:
   push:
     branches: [next]
-    # Whole push. New branches always run. Later pushes skip only if every file is
-    # zmsautomation or zmscitizenview (no PHP/admin JS).
-    paths-ignore:
-      - "zmsautomation/**"
-      - "zmscitizenview/**"
+    # No paths-ignore (same reason as combined-workflow.yaml). should-run skips
+    # zmsautomation/zmscitizenview-only pushes after next already has a success.
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -21,20 +18,58 @@ permissions:
   actions: write
 
 jobs:
+  should-run:
+    name: Decide Combined PHP with Docs
+    runs-on: ubuntu-latest
+    outputs:
+      run: ${{ steps.check.outputs.run }}
+    steps:
+      - name: Check out
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+
+      - name: Decide whether to run
+        id: check
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          REF_TYPE: ${{ github.ref_type }}
+          BEFORE: ${{ github.event.before }}
+          AFTER: ${{ github.sha }}
+          BRANCH: ${{ github.ref_name }}
+          THIS_RUN: ${{ github.run_id }}
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          WORKFLOW_FILE: combined-workflow-with-docs.yaml
+          MODE: ignore
+          PATH_PREFIXES: zmsautomation/ zmscitizenview/
+          # next is never a "new branch"; catch-up still applies if needed
+          ALWAYS_ON_NEW_BRANCH: "true"
+        run: bash .github/scripts/decide-push-ci-run.sh
+
   call-php-code-quality:
+    needs: should-run
+    if: needs.should-run.outputs.run == 'true'
     uses: ./.github/workflows/php-code-quality.yaml
 
   call-js-eslint:
+    needs: should-run
+    if: needs.should-run.outputs.run == 'true'
     uses: ./.github/workflows/js-eslint.yaml
 
   call-php-unit-tests:
+    needs: should-run
+    if: needs.should-run.outputs.run == 'true'
     uses: ./.github/workflows/php-unit-tests.yaml
 
   call-zmscitizenview-coverage:
+    needs: should-run
+    if: needs.should-run.outputs.run == 'true'
     uses: ./.github/workflows/zmscitizenview-coverage.yaml
 
   aggregate-reports:
-    needs: [call-php-unit-tests, call-zmscitizenview-coverage]
+    needs: [should-run, call-php-unit-tests, call-zmscitizenview-coverage]
+    if: needs.should-run.outputs.run == 'true'
     runs-on: ubuntu-latest
     steps:
       - name: Create directories
@@ -73,17 +108,31 @@ jobs:
           retention-days: 7
 
   call-build-api-docs:
+    needs: should-run
+    if: needs.should-run.outputs.run == 'true'
     uses: ./.github/workflows/build-api-docs.yaml
 
   generate-schema-diagrams:
+    needs: should-run
+    if: needs.should-run.outputs.run == 'true'
     uses: ./.github/workflows/generate-api-class-diagrams-from-zmsentities-schema.yaml
 
   generate-database-schema:
+    needs: should-run
+    if: needs.should-run.outputs.run == 'true'
     uses: ./.github/workflows/generate-database-er-model.yaml
 
   deploy-to-pages:
-    needs: [aggregate-reports, call-build-api-docs, generate-schema-diagrams, generate-database-schema]
+    needs:
+      [
+        should-run,
+        aggregate-reports,
+        call-build-api-docs,
+        generate-schema-diagrams,
+        generate-database-schema,
+      ]
     if: |
+      needs.should-run.outputs.run == 'true' &&
       needs.call-build-api-docs.result == 'success' &&
       needs.aggregate-reports.result == 'success' &&
       needs.generate-schema-diagrams.result == 'success' &&
@@ -96,9 +145,10 @@ jobs:
       git_branch: ${{ github.ref_name }}
 
   call-php-build-images:
-    needs: [call-php-code-quality, call-js-eslint, call-php-unit-tests]
+    needs: [should-run, call-php-code-quality, call-js-eslint, call-php-unit-tests]
     if: |
       always() &&
+      needs.should-run.outputs.run == 'true' &&
       needs.call-php-code-quality.result == 'success' &&
       needs.call-js-eslint.result == 'success' &&
       needs.call-php-unit-tests.result == 'success'

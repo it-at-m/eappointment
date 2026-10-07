@@ -1,5 +1,6 @@
 package zms.ataf.ui.steps;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -525,6 +526,13 @@ public class CitizenViewSteps {
         page.waitUntilSlotsReadyForBooking();
     }
 
+    @When("I select the single-seat Passkalender day after the V19 opening range in the citizen view")
+    public void iSelectTheSingleSeatPasskalenderDayAfterTheV19OpeningRange() {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: navigate to single-seat Passkalender day (V43 after V19 range)");
+        page.selectSingleSeatDayAfterV19RangeAndWaitForSlots();
+    }
+
     @When("I click Später in the time slot grid if available in the citizen view")
     public void iClickSpaeterInTheTimeSlotGridIfAvailableInTheCitizenView() {
         ScenarioLogManager.getLogger()
@@ -896,6 +904,26 @@ public class CitizenViewSteps {
         page.assertSelectedAppointmentCalloutVisible();
     }
 
+    @When("I try to reserve the selected timeslot with Weiter in the citizen view")
+    public void iTryToReserveTheSelectedTimeslotWithWeiter() {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: one-shot Weiter after slot selection (expect not-available if snatching won)");
+        page.clickWeiter();
+    }
+
+    @Then("the appointment no longer available callout should be visible in the citizen view")
+    public void theAppointmentNoLongerAvailableCalloutShouldBeVisible() {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: assert appointment-not-available callout (ZMSKVR-88 / ZMSKVR-472)");
+        page.assertAppointmentNoLongerAvailableCalloutVisible();
+    }
+
+    @Then("I should still be on the appointment selection step in the citizen view")
+    public void iShouldStillBeOnTheAppointmentSelectionStep() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: assert still on Termin selection after slot race");
+        page.assertStillOnAppointmentSelectionStep();
+    }
+
     @Then("the invalid jump-in callout should be visible in the citizen view")
     public void theInvalidJumpinCalloutShouldBeVisible() {
         ScenarioLogManager.getLogger().info("zmscitizenview: assert invalid jump-in error callout visible");
@@ -999,6 +1027,14 @@ public class CitizenViewSteps {
     public void theBookingSummaryShouldShowProvider(int officeId) {
         ScenarioLogManager.getLogger().info("zmscitizenview: assert booking summary shows provider {}", officeId);
         page.assertProviderSummaryVisible(officeId);
+    }
+
+    @Then("the booking summary should show {string} for provider {int} in the citizen view")
+    public void theBookingSummaryShouldShowLocationForProvider(String locationLabel, int officeId) {
+        String label = TestDataHelper.transformTestData(locationLabel);
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: assert booking summary shows '{}' for provider {}", label, officeId);
+        page.assertProviderSummaryVisible(officeId, label);
     }
 
     @Then("the booking summary should show provider {int} with label {string} in the citizen view")
@@ -1116,6 +1152,67 @@ public class CitizenViewSteps {
         ScenarioLogManager.getLogger()
                 .info("zmscitizenview: assert electronic communication checkbox on book overview");
         page.assertElectronicCommunicationCheckboxVisible();
+    }
+
+    @Then("the captcha session callout should be visible in the citizen view")
+    public void theCaptchaSessionCalloutShouldBeVisible() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: assert captcha session callout");
+        page.assertCaptchaSessionCalloutVisible();
+    }
+
+    @Then("the captcha session callout should not be visible in the citizen view")
+    public void theCaptchaSessionCalloutShouldNotBeVisible() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: assert captcha session callout is gone");
+        page.assertCaptchaSessionCalloutNotVisible();
+    }
+
+    @Then("the reservation expired callout should be visible in the citizen view")
+    public void theReservationExpiredCalloutShouldBeVisible() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: assert reservation expired callout");
+        page.assertReservationExpiredCalloutVisible();
+    }
+
+    @When("I restart the booking in the citizen view")
+    public void iRestartTheBooking() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: Buchung neu starten");
+        page.clickRestartBooking();
+    }
+
+    @Then("the Zurück button should not be visible in the citizen view")
+    public void theBackButtonShouldNotBeVisible() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: assert Zurück is hidden");
+        page.assertBackButtonNotVisible();
+    }
+
+    @Then("the Zurück button should be visible in the citizen view")
+    public void theBackButtonShouldBeVisible() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: assert Zurück is visible");
+        page.assertBackButtonVisible();
+    }
+
+    @When("I wait for the captcha check to finish in the citizen view")
+    public void iWaitForTheCaptchaCheckToFinish() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: wait for captcha widget, then for Weiter");
+        page.waitUntilCaptchaCheckFinished(180, 180);
+    }
+
+    @When("I wait {int} minutes in the citizen view")
+    public void iWaitMinutesInTheCitizenView(int minutes) {
+        ScenarioLogManager.getLogger().info("zmscitizenview: wait {} minutes", minutes);
+        try {
+            Thread.sleep(Duration.ofMinutes(minutes).toMillis());
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException("Wait for " + minutes + " minutes was interrupted", e);
+        }
+    }
+
+    @Then("service {string} should still be selected with quantity {int} in the citizen view")
+    public void serviceShouldStillBeSelectedWithQuantity(String serviceName, int quantity) {
+        String label = TestDataHelper.transformTestData(serviceName);
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: assert service '{}' still selected with quantity {}", label, quantity);
+        page.assertSelectedServiceQuantity(label, quantity);
     }
 
     @When("I remember the selected appointment time in the citizen view")
