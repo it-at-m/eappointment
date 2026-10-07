@@ -1,19 +1,44 @@
 #language: en
-@web @zmscitizenview @callouts @citizen @ZMSKVR-1235 @ZMSKVR-1244 @ZMSKVR-695 @ZMSKVR-653 @ZMSKVR-584 @ZMSKVR-1456 @ZMSKVR-805 @ZMSKVR-811 @ZMSKVR-652 @executeLocally @jumpin
+@web @zmscitizenview @callouts @citizen @ZMSKVR-1235 @ZMSKVR-1244 @ZMSKVR-695 @ZMSKVR-653 @ZMSKVR-584 @ZMSKVR-1456 @ZMSKVR-805 @ZMSKVR-811 @ZMSKVR-652 @ZMSKVR-564 @ZMSKVR-101 @ZMSKVR-94 @ZMSKVR-801 @ZMSKVR-730 @ZMSKVR-1528 @executeLocally @jumpin
 Feature: CitizenView: no appointment available info callout
   As a citizen
   I want a clear blue info callout when no appointment is available
   So that I understand why the calendar stays empty
 
-  # ZMSKVR-1235 (bug), tested by ZMSKVR-1244. Also covers uncheck-all stories
-  # ZMSKVR-695 / ZMSKVR-584 (test ZMSKVR-653), unified wording ZMSKVR-1456,
-  # jump-in empty/booked-out ZMSKVR-805 / ZMSKVR-811, heading a11y ZMSKVR-652.
-  # Sibling slot-taken callout is ZMSKVR-88 / ZMSKVR-472 (error, not this info box).
-  # Duration-fit empty days stay in ZMSKVR-1457 / ZMSKVR-1524.
+  # Ticket map (stories / bugs / Testfälle from the no-appointment search):
   #
-  # Feuerwache Führungen (10389330): V44 opens one 90-minute seat tomorrow on
-  # Föhring 10577; Milbertshofen 10579 has no opening hours and a custom
-  # infoForAllAppointments. Callout colour is always info/blue.
+  # This feature (primary: ZMSKVR-1235 tested by ZMSKVR-1244)
+  #   ZMSKVR-1235  bug     callout missing for noAppointmentForThisDay/Scope
+  #   ZMSKVR-1244  Testfall multi-provider empty / uncheck / restore
+  #   ZMSKVR-695   story   uncheck all locations → explain empty Termin
+  #   ZMSKVR-584   story   Ort error when all locations unchecked
+  #   ZMSKVR-653   Testfall uncheck all → red Ort text + callout
+  #   ZMSKVR-1456  bug     unified wording (always this header/body)
+  #   ZMSKVR-805   Testfall jump-in Feuerwache empty / booked-out
+  #   ZMSKVR-811   Testfall custom empty-state hint (infoForAllAppointments)
+  #   ZMSKVR-801   story   admin maintains that hint (display side here)
+  #   ZMSKVR-101   story   custom hint when no appointments
+  #   ZMSKVR-94    story   no-appointment callout content
+  #   ZMSKVR-652   Testfall callout title is a real heading
+  #   ZMSKVR-564   story   callout headlines H2/H3 (this callout)
+  #   ZMSKVR-730   bug     jump-in selects earliest day of THAT office
+  #   ZMSKVR-1528  bug     after empty Ort, restore providers → calendar back; blue not red
+  #
+  # Sibling features (same product area, other callout / calendar rules)
+  #   ZMSKVR-614 / ZMSKVR-696 / ZMSKVR-475
+  #     → ui/.../callouts/zmskvr-88_zmskvr-472_slot_taken_callout.feature
+  #       (only "Ihr gewählter Termin ist nicht mehr verfügbar.", not this info box)
+  #   ZMSKVR-1457 / ZMSKVR-1524
+  #     → ui/.../calendar/zmskvr-1524_…_calendar_day_fits_duration.feature
+  #       (+ REST twin) — long appointment no longer fits → same blue info callout
+  #
+  # Historical / out of Bürgeransicht-2 ATAF scope
+  #   ZMSALT-1857  closed predecessor (zmsproxymuc era) — not retested here
+  #
+  # Fixtures: V44 Föhring 10577 tomorrow one 90-min seat; Milbertshofen 10579 no OH
+  # + custom infoForAllAppointments. V45 Pasing 10585 day-after-tomorrow one seat.
+  # Callout colour is always info/blue (orange/red from old Testfälle is deprecated).
+  # Time H2 text is current product copy "Datum und Uhrzeit" (not legacy "Zeit").
 
   Background:
     Given the Citizen API is available
@@ -36,7 +61,7 @@ Feature: CitizenView: no appointment available info callout
     When I keep only providers "10579" checked in the citizen view
     Then the no appointment available info callout should be visible in the citizen view
 
-  Scenario: Checking Föhring again clears the callout and shows slots
+  Scenario: After empty Ort selection restoring Föhring shows calendar again and stays blue
     Given I open zmscitizenview with jump-in service "10389330" and location "10577"
     Then the service combination step should be visible
     When I continue from the service combination step
@@ -65,3 +90,24 @@ Feature: CitizenView: no appointment available info callout
     When I continue from the service combination step
     Then the no appointment available info callout should be visible in the citizen view
     When I cancel the appointment
+
+  Scenario: Day booked out while on Termin refreshes to the blue info callout
+    Given I open zmscitizenview with jump-in service "10389330" and location "10577"
+    Then the service combination step should be visible
+    When I continue from the service combination step
+    And I wait for appointment slots to be ready in the citizen view
+    Then the no appointment available info callout should not be visible in the citizen view
+    When I request available days for office 10577 and service 10389330 with service count 1
+    And I request available appointments for the first available day for office 10577
+    And I reserve an appointment with the first available slot
+    And I keep only providers "10577" checked in the citizen view
+    Then the no appointment available info callout should be visible in the citizen view
+    When I cancel the appointment
+
+  Scenario: Jump-in to Pasing opens that office later day not Föhring tomorrow
+    Given I open zmscitizenview with jump-in service "10389330" and location "10585"
+    Then the service combination step should be visible
+    When I continue from the service combination step
+    And I wait for appointment slots to be ready in the citizen view
+    Then the selected calendar day should be 2 Berlin days from today in the citizen view
+    And the no appointment available info callout should not be visible in the citizen view

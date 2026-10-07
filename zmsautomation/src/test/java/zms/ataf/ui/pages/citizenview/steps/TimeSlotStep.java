@@ -1656,6 +1656,38 @@ public final class TimeSlotStep {
         }
     }
 
+    /**
+     * Jump-in must open the earliest bookable day of the selected office (ZMSKVR-730), not an
+     * earlier day that only exists at another Feuerwache.
+     */
+    public void assertSelectedCalendarDayIsBerlinDaysFromToday(int daysFromToday) {
+        context.set();
+        java.time.LocalDate expected =
+                java.time.LocalDate.now(zms.ataf.helpers.BerlinTime.ZONE).plusDays(daysFromToday);
+        long deadline = System.currentTimeMillis() + Math.max(30, defaultWaitSeconds) * 1000L;
+        java.time.LocalDate actual = null;
+        while (System.currentTimeMillis() < deadline) {
+            if (!deepMucSpinnerVisible()) {
+                actual = readSelectedCalendarDayFromSlots();
+                if (expected.equals(actual)) {
+                    ScenarioLogManager.getLogger()
+                            .info(
+                                    "zmscitizenview: selected calendar day {} matches Berlin today+{}",
+                                    actual,
+                                    daysFromToday);
+                    return;
+                }
+            }
+            CitizenViewWaits.sleepQuiet(300L);
+        }
+        Assert.assertEquals(
+                actual,
+                expected,
+                "Jump-in calendar day must be Berlin today+"
+                        + daysFromToday
+                        + " for the selected office");
+    }
+
     public boolean clickNextBookableCalendarDay() {
         context.set();
         String script =
