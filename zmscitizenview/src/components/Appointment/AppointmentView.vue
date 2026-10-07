@@ -550,7 +550,7 @@ const props = defineProps<{
   confirmAppointmentHash?: string;
   appointmentDetailUrl?: string;
   showLoginOption: boolean;
-  t: (key: string) => string;
+  t: (key: string, values?: Record<string, unknown>) => string;
 }>();
 
 const STEPPER_ITEMS: StepperItem[] = [
@@ -736,7 +736,7 @@ const activationMinutes = computed<number | undefined>(() => {
 
 const confirmText = computed<string>(() => {
   const minutes = String(activationMinutes.value ?? 30);
-  return (props.t as any)("confirmAppointmentText", {
+  return props.t("confirmAppointmentText", {
     activationMinutes: minutes,
   });
 });
