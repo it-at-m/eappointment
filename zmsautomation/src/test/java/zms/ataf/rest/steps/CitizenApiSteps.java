@@ -18,6 +18,7 @@ import org.assertj.core.api.Assertions;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 
+import ataf.core.helpers.TestDataHelper;
 import ataf.core.logging.ScenarioLogManager;
 import config.TestConfig;
 import io.cucumber.java.After;
@@ -415,6 +416,21 @@ public class CitizenApiSteps {
         iRequestAvailableAppointmentsForDateOfficeAndService(date, officeId, lastServiceId, lastServiceCount);
     }
 
+    /**
+     * ZMSKVR-88 / ZMSKVR-472: day after V19 Ruppertstraße range (V43) has one internet seat on Pass 172.
+     */
+    @When("I request available appointments for the single-seat Passkalender day for office {int} and service {int}")
+    public void iRequestAvailableAppointmentsForTheSingleSeatPasskalenderDay(int officeId, int serviceId) {
+        String date = BerlinTime.singleSeatDayAfterV19RuppertstrasseRange().format(DATE_FORMAT);
+        ScenarioLogManager.getLogger().info(String.format(
+            "Citizen API using single-seat Passkalender day %s (after V19 range) officeId=%d serviceId=%d",
+            date,
+            officeId,
+            serviceId
+        ));
+        iRequestAvailableAppointmentsForDateOfficeAndService(date, officeId, serviceId, 1);
+    }
+
     @When("I request available appointments for date {string}, office {int} and service {int}")
     public void iRequestAvailableAppointmentsForDateOfficeAndService(String date, int officeId, int serviceId) {
         iRequestAvailableAppointmentsForDateOfficeAndService(date, officeId, serviceId, 1);
@@ -428,31 +444,24 @@ public class CitizenApiSteps {
         lastServiceCount = serviceCount;
         lastAppointmentDate = date;
 
-        String requestedKey = String.valueOf(officeId);
-        boolean cacheMatchesRequest = lastAvailableCalendarResponse != null
-            && cachedCalendarOfficeIds != null
-            && (cachedCalendarOfficeIds.equals(requestedKey)
-                || Arrays.asList(cachedCalendarOfficeIds.split(",")).contains(requestedKey))
-            && cachedCalendarServiceId != null
-            && cachedCalendarServiceId == serviceId
-            && cachedCalendarServiceCount != null
-            && cachedCalendarServiceCount == serviceCount
-            && Objects.equals(cachedCalendarCaptchaToken, captchaToken);
-        if (!cacheMatchesRequest) {
-            lastAvailableCalendarResponse =
-                fetchAvailableCalendar(List.of(officeId), serviceId, serviceCount);
-        }
+        // Free-slot timestamps are only inlined for slotsStartDate..slotsEndDate (often "today").
+        // Ask for this exact day so later bookable days (e.g. V43 single-seat) are hydrated.
+        lastAvailableCalendarResponse =
+            fetchAvailableCalendar(List.of(officeId), List.of(serviceId), List.of(serviceCount), date, date);
 
         AvailableAppointmentsResponse appointments =
             lastAvailableCalendarResponse.getAppointmentsForDayAndOffice(date, officeId);
         lastAvailableAppointmentsResponse = appointments;
 
+        int officeCount = appointments.getOffices() != null ? appointments.getOffices().size() : 0;
+        int timestampCount = appointments.futureAppointmentTimestamps().size();
         ScenarioLogManager.getLogger().info(String.format(
-            "Citizen API calendar slots for date=%s, officeId=%d, serviceId=%d: %d office(s) with slots",
+            "Citizen API calendar slots for date=%s, officeId=%d, serviceId=%d: %d office(s), %d timestamp(s)",
             date,
             officeId,
             serviceId,
-            appointments.getOffices() != null ? appointments.getOffices().size() : 0
+            officeCount,
+            timestampCount
         ));
     }
 
@@ -654,6 +663,136 @@ public class CitizenApiSteps {
         if (lastReserveProcess != null) {
             setLastReserveProcess(lastReserveProcess);
         }
+    }
+
+    /**
+     * ZMSKVR-88 / ZMSKVR-472: second citizen snatches the exact epoch the UI selected (before Weiter/reserve).
+     * Prefer this over two browsers in CI — same race, one process to cancel afterwards.
+     */
+    @When("I reserve the remembered citizenview timeslot via the Citizen API for office {int} and service {int}")
+    public void iReserveTheRememberedCitizenviewTimeslotViaTheCitizenApi(int officeId, int serviceId) {
+        String raw = TestDataHelper.getTestData("citizenview_selected_slot_timestamp");
+        if (raw == null || raw.isBlank()) {
+            throw new IllegalStateException(
+                    "Remember the selected citizenview timeslot first (citizenview_selected_slot_timestamp).");
+        }
+        long timestamp;
+        try {
+            timestamp = Long.parseLong(raw.trim());
+        } catch (NumberFormatException e) {
+            throw new IllegalStateException(
+                    "citizenview_selected_slot_timestamp is not a long: \"" + raw + "\"", e);
+        }
+        if (timestamp <= 0) {
+            throw new IllegalStateException("Remembered timeslot timestamp must be > 0, got " + timestamp);
+        }
+        reserveExactTimeslot(timestamp, officeId, serviceId, 1);
+    }
+
+    private void reserveExactTimeslot(long timestamp, int officeId, int serviceId, int serviceCount) {
+        lastOfficeId = officeId;
+        lastServiceId = serviceId;
+        lastServiceCount = serviceCount;
+        ReserveAppointmentRequest body = new ReserveAppointmentRequest();
+        body.setTimestamp(timestamp);
+        body.setOfficeId(officeId);
+        body.setServiceId(List.of(serviceId));
+        body.setServiceCount(List.of(serviceCount));
+        if (captchaToken != null && !captchaToken.isBlank()) {
+            body.setCaptchaToken(captchaToken);
+        }
+
+        ScenarioLogManager.getLogger().info(String.format(
+            "Citizen API /reserve-appointment/ exact timestamp=%d officeId=%d serviceId=%d (UI race snatch)",
+            timestamp,
+            officeId,
+            serviceId
+        ));
+
+        response = given()
+            .baseUri(baseUri != null ? baseUri : TestConfig.getCitizenApiBaseUri())
+            .contentType("application/json")
+            .body(body)
+        .when()
+            .post("/reserve-appointment/");
+        CommonApiSteps.setResponse(response);
+
+        String reserveBody = response.asString();
+        ScenarioLogManager.getLogger().info(String.format(
+            "Citizen API /reserve-appointment/ timestamp=%d status=%d body=%s",
+            timestamp,
+            response.getStatusCode(),
+            reserveBody.length() > 1250 ? reserveBody.substring(0, 1250) + "..." : reserveBody
+        ));
+        response.then().statusCode(200);
+
+        ThinnedProcess reserved;
+        try {
+            reserved = response.as(ThinnedProcess.class);
+        } catch (Exception e) {
+            reserved = parseDataResponse(response, ThinnedProcess.class);
+        }
+        Assertions.assertThat(reserved)
+            .as("reserve-appointment response payload must deserialize")
+            .isNotNull();
+        Assertions.assertThat(reserved.getProcessId()).isNotNull();
+        Assertions.assertThat(reserved.getAuthKey()).isNotNull();
+        Assertions.assertThat(reserved.getOfficeId()).isEqualTo(officeId);
+        Assertions.assertThat(reserved.getTimestamp())
+            .as("reserved timestamp must match the remembered UI slot")
+            .isEqualTo(timestamp);
+
+        lastReserveProcess = reserved;
+        setLastReserveProcess(lastReserveProcess);
+    }
+
+    /**
+     * ZMSKVR-88 / ZMSKVR-472: second citizen tries the same timestamp the previous reserve already took.
+     * Leaves {@code lastReserveProcess} untouched so cleanup still cancels the winning reservation.
+     */
+    @When("I attempt to reserve the same appointment slot again")
+    public void iAttemptToReserveTheSameAppointmentSlotAgain() {
+        ThinnedProcess first = lastReserveProcess != null ? lastReserveProcess : getBookingProcess();
+        if (first == null || first.getTimestamp() == null || first.getTimestamp() <= 0) {
+            throw new IllegalStateException("Reserve a slot first so the same timestamp can be attempted again.");
+        }
+        int officeId = first.getOfficeId() != null ? first.getOfficeId() : lastOfficeId;
+        int serviceId = first.getServiceId() != null ? first.getServiceId() : lastServiceId;
+        if (officeId <= 0 || serviceId <= 0) {
+            throw new IllegalStateException("First reserve has no officeId/serviceId for the duplicate attempt.");
+        }
+        int serviceCount = lastServiceCount > 0 ? lastServiceCount : 1;
+
+        ReserveAppointmentRequest body = new ReserveAppointmentRequest();
+        body.setTimestamp(first.getTimestamp());
+        body.setOfficeId(officeId);
+        body.setServiceId(List.of(serviceId));
+        body.setServiceCount(List.of(serviceCount));
+        if (captchaToken != null && !captchaToken.isBlank()) {
+            body.setCaptchaToken(captchaToken);
+        }
+
+        ScenarioLogManager.getLogger().info(String.format(
+            "Citizen API /reserve-appointment/ duplicate attempt timestamp=%d officeId=%d serviceId=%d",
+            first.getTimestamp(),
+            officeId,
+            serviceId
+        ));
+
+        response = given()
+            .baseUri(baseUri != null ? baseUri : TestConfig.getCitizenApiBaseUri())
+            .contentType("application/json")
+            .body(body)
+        .when()
+            .post("/reserve-appointment/");
+        CommonApiSteps.setResponse(response);
+
+        String reserveBody = response.asString();
+        ScenarioLogManager.getLogger().info(String.format(
+            "Citizen API /reserve-appointment/ duplicate status=%d body=%s",
+            response.getStatusCode(),
+            reserveBody.length() > 1250 ? reserveBody.substring(0, 1250) + "..." : reserveBody
+        ));
     }
 
     /**
@@ -1733,11 +1872,20 @@ public class CitizenApiSteps {
     /* Section: Response Parsing */
     private AvailableCalendarResponse fetchAvailableCalendar(
             List<Integer> officeIds, int serviceId, int serviceCount) {
-        return fetchAvailableCalendar(officeIds, List.of(serviceId), List.of(serviceCount));
+        return fetchAvailableCalendar(officeIds, List.of(serviceId), List.of(serviceCount), null, null);
     }
 
     private AvailableCalendarResponse fetchAvailableCalendar(
             List<Integer> officeIds, List<Integer> serviceIds, List<Integer> serviceCounts) {
+        return fetchAvailableCalendar(officeIds, serviceIds, serviceCounts, null, null);
+    }
+
+    private AvailableCalendarResponse fetchAvailableCalendar(
+            List<Integer> officeIds,
+            List<Integer> serviceIds,
+            List<Integer> serviceCounts,
+            String slotsStartDate,
+            String slotsEndDate) {
         Assertions.assertThat(officeIds).as("officeIds").isNotEmpty();
         Assertions.assertThat(serviceIds).as("serviceIds").isNotEmpty();
         Assertions.assertThat(serviceCounts)
@@ -1758,6 +1906,12 @@ public class CitizenApiSteps {
             .queryParam("startDate", startDate)
             .queryParam("endDate", endDate)
             .queryParam("serviceCounts", serviceCountsParam);
+        if (slotsStartDate != null && !slotsStartDate.isBlank()) {
+            calendarRequest = calendarRequest.queryParam("slotsStartDate", slotsStartDate);
+        }
+        if (slotsEndDate != null && !slotsEndDate.isBlank()) {
+            calendarRequest = calendarRequest.queryParam("slotsEndDate", slotsEndDate);
+        }
         if (captchaToken != null && !captchaToken.isBlank()) {
             calendarRequest = calendarRequest.queryParam("captchaToken", captchaToken);
         }
@@ -1766,9 +1920,11 @@ public class CitizenApiSteps {
 
         String calendarBody = response.asString();
         ScenarioLogManager.getLogger().info(String.format(
-            "Citizen API /available-calendar/ (officeIds=%s, serviceIds=%s) status=%d body=%s",
+            "Citizen API /available-calendar/ (officeIds=%s, serviceIds=%s, slots=%s..%s) status=%d body=%s",
             officeIdsParam,
             serviceIdsParam,
+            slotsStartDate != null ? slotsStartDate : "-",
+            slotsEndDate != null ? slotsEndDate : "-",
             response.getStatusCode(),
             calendarBody.length() > 1250 ? calendarBody.substring(0, 1250) + "..." : calendarBody
         ));

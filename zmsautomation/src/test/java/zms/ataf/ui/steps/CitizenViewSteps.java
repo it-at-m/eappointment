@@ -526,6 +526,13 @@ public class CitizenViewSteps {
         page.waitUntilSlotsReadyForBooking();
     }
 
+    @When("I select the single-seat Passkalender day after the V19 opening range in the citizen view")
+    public void iSelectTheSingleSeatPasskalenderDayAfterTheV19OpeningRange() {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: navigate to single-seat Passkalender day (V43 after V19 range)");
+        page.selectSingleSeatDayAfterV19RangeAndWaitForSlots();
+    }
+
     @When("I click Später in the time slot grid if available in the citizen view")
     public void iClickSpaeterInTheTimeSlotGridIfAvailableInTheCitizenView() {
         ScenarioLogManager.getLogger()
@@ -895,6 +902,26 @@ public class CitizenViewSteps {
     public void theSelectedAppointmentCalloutShouldBeVisible() {
         ScenarioLogManager.getLogger().info("zmscitizenview: assert 'Ausgewählter Termin' callout visible");
         page.assertSelectedAppointmentCalloutVisible();
+    }
+
+    @When("I try to reserve the selected timeslot with Weiter in the citizen view")
+    public void iTryToReserveTheSelectedTimeslotWithWeiter() {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: one-shot Weiter after slot selection (expect not-available if snatching won)");
+        page.clickWeiter();
+    }
+
+    @Then("the appointment no longer available callout should be visible in the citizen view")
+    public void theAppointmentNoLongerAvailableCalloutShouldBeVisible() {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: assert appointment-not-available callout (ZMSKVR-88 / ZMSKVR-472)");
+        page.assertAppointmentNoLongerAvailableCalloutVisible();
+    }
+
+    @Then("I should still be on the appointment selection step in the citizen view")
+    public void iShouldStillBeOnTheAppointmentSelectionStep() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: assert still on Termin selection after slot race");
+        page.assertStillOnAppointmentSelectionStep();
     }
 
     @Then("the invalid jump-in callout should be visible in the citizen view")
