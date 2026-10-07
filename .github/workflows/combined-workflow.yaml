@@ -4,12 +4,9 @@ on:
   push:
     branches-ignore: [next]
     tags: ["*"]
-    # Do not use paths-ignore here. GitHub skips the whole workflow when every
-    # file in the push matches paths-ignore — including the first push of a new
-    # branch that only touches zmscitizenview/ or zmsautomation/. The should-run
-    # job below implements the matrix: new branch / tags always run; later
-    # path-only pushes skip only after this branch already has a successful
-    # Combined PHP run (catch-up for branches created under the old ignore).
+    # No paths-ignore: GitHub would skip the whole workflow (including new branches)
+    # when every file matches. should-run implements the push matrix via
+    # .github/scripts/decide-push-ci-run.sh.
   workflow_call:
 
 concurrency:
@@ -26,15 +23,14 @@ jobs:
     name: Decide Combined PHP
     runs-on: ubuntu-latest
     outputs:
-      php: ${{ steps.check.outputs.php }}
+      run: ${{ steps.check.outputs.run }}
     steps:
-      - name: Check out (for push file list)
-        if: github.event_name == 'push' && github.ref_type != 'tag'
+      - name: Check out
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
 
-      - name: Decide whether to run Combined PHP
+      - name: Decide whether to run
         id: check
         env:
           EVENT_NAME: ${{ github.event_name }}
@@ -45,100 +41,31 @@ jobs:
           THIS_RUN: ${{ github.run_id }}
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
-        run: |
-          set -euo pipefail
-          ZERO="0000000000000000000000000000000000000000"
-
-          # Prior successful run of a workflow on this branch (excludes this run).
-          branch_has_success() {
-            local workflow_file="$1"
-            local count
-            count="$(
-              gh api \
-                "repos/${GH_REPO}/actions/workflows/${workflow_file}/runs?branch=${BRANCH}&status=completed&per_page=30" \
-                --jq "[.workflow_runs[] | select(.id != ${THIS_RUN} and .conclusion == \"success\")] | length"
-            )"
-            [ "${count}" -gt 0 ]
-          }
-
-          # workflow_call and tags always run
-          if [ "$EVENT_NAME" != "push" ] || [ "$REF_TYPE" = "tag" ]; then
-            echo "php=true" >> "$GITHUB_OUTPUT"
-            echo "Run: workflow_call or tag"
-            exit 0
-          fi
-
-          # First push of a new branch (before is all zeros) always runs
-          if [ -z "${BEFORE:-}" ] || [ "$BEFORE" = "$ZERO" ]; then
-            echo "php=true" >> "$GITHUB_OUTPUT"
-            echo "Run: new branch push"
-            exit 0
-          fi
-
-          # Later pushes: skip only if every changed file is under ignored dirs
-          if ! git cat-file -e "${BEFORE}^{commit}" 2>/dev/null; then
-            echo "php=true" >> "$GITHUB_OUTPUT"
-            echo "Run: before commit not reachable"
-            exit 0
-          fi
-
-          non_ignored=0
-          file_count=0
-          while IFS= read -r f; do
-            [ -z "$f" ] && continue
-            file_count=$((file_count + 1))
-            case "$f" in
-              zmsautomation/*|zmscitizenview/*) ;;
-              *)
-                non_ignored=1
-                break
-                ;;
-            esac
-          done < <(git diff --name-only "$BEFORE" "$AFTER")
-
-          if [ "$file_count" -eq 0 ]; then
-            echo "php=true" >> "$GITHUB_OUTPUT"
-            echo "Run: empty diff"
-            exit 0
-          fi
-
-          if [ "$non_ignored" -eq 1 ]; then
-            echo "php=true" >> "$GITHUB_OUTPUT"
-            echo "Run: PHP/admin JS (or other non-ignored) files changed"
-            exit 0
-          fi
-
-          # Path-only push: still run until this branch has a successful Combined PHP
-          # (branches created while paths-ignore ate the first push). Frontend and
-          # ATAF Maven are separate workflows; we only gate this one here.
-          if branch_has_success "combined-workflow.yaml"; then
-            echo "php=false" >> "$GITHUB_OUTPUT"
-            echo "Skip: only zmsautomation/ and/or zmscitizenview/ changed, and Combined PHP already succeeded on ${BRANCH}"
-          else
-            echo "php=true" >> "$GITHUB_OUTPUT"
-            echo "Run: path-only push but no prior successful Combined PHP on ${BRANCH}"
-          fi
+          WORKFLOW_FILE: combined-workflow.yaml
+          MODE: ignore
+          PATH_PREFIXES: zmsautomation/ zmscitizenview/
+        run: bash .github/scripts/decide-push-ci-run.sh
 
   call-php-code-quality:
     needs: should-run
-    if: needs.should-run.outputs.php == 'true'
+    if: needs.should-run.outputs.run == 'true'
     uses: ./.github/workflows/php-code-quality.yaml
 
   call-js-eslint:
     needs: should-run
-    if: needs.should-run.outputs.php == 'true'
+    if: needs.should-run.outputs.run == 'true'
     uses: ./.github/workflows/js-eslint.yaml
 
   call-php-unit-tests:
     needs: should-run
-    if: needs.should-run.outputs.php == 'true'
+    if: needs.should-run.outputs.run == 'true'
     uses: ./.github/workflows/php-unit-tests.yaml
 
   call-php-build-images:
     needs: [should-run, call-php-code-quality, call-js-eslint, call-php-unit-tests]
     if: |
       always() &&
-      needs.should-run.outputs.php == 'true' &&
+      needs.should-run.outputs.run == 'true' &&
       needs.call-php-code-quality.result == 'success' &&
       needs.call-js-eslint.result == 'success' &&
       needs.call-php-unit-tests.result == 'success'
