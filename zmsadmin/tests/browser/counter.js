@@ -114,7 +114,7 @@ test('ValidationAppointment', async t => {
         // Check mail validation
         .typeText('input[name=email]', "012345678901", {replace: true})
         .click('button.process-reserve')
-        .expect(Selector('.has-error input[type=text]').getAttribute('name')).eql('email')
+        .expect(Selector('.has-error input[type=email]').getAttribute('name')).eql('email')
         .typeText('input[name=email]', "test@example.com", {replace: true})
         .click('button.process-reserve')
         ;
