@@ -498,6 +498,20 @@ public class CitizenApiSteps {
             .isFalse();
     }
 
+    @Then("office {int} rebooking should be disabled")
+    public void officeRebookingShouldBeDisabled(int officeId) {
+        Assertions.assertThat(Boolean.TRUE.equals(scopeValue(officeId, "rebookingDisabled")))
+            .as("office %d scope.rebookingDisabled", officeId)
+            .isTrue();
+    }
+
+    @Then("office {int} rebooking should not be disabled")
+    public void officeRebookingShouldNotBeDisabled(int officeId) {
+        Assertions.assertThat(Boolean.TRUE.equals(scopeValue(officeId, "rebookingDisabled")))
+            .as("office %d scope.rebookingDisabled", officeId)
+            .isFalse();
+    }
+
     @When("I reserve an appointment with the first available slot")
     public void iReserveAnAppointmentWithTheFirstAvailableSlot() {
         reserveFirstAvailableSlot(false, true);
@@ -606,6 +620,11 @@ public class CitizenApiSteps {
     @When("I reserve an appointment with the first available slot using the current appointment as source")
     public void iReserveAnAppointmentWithTheFirstAvailableSlotUsingTheCurrentAppointmentAsSource() {
         reserveFirstAvailableSlot(true, true);
+    }
+
+    @When("I attempt to reserve an appointment with the first available slot using the current appointment as source")
+    public void iAttemptToReserveAnAppointmentWithTheFirstAvailableSlotUsingTheCurrentAppointmentAsSource() {
+        reserveFirstAvailableSlot(true, false);
     }
 
     private void reserveFirstAvailableSlot(boolean useCurrentAppointmentAsSource, boolean expectSuccess) {

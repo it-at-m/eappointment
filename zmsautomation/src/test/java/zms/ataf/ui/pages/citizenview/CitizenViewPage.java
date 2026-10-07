@@ -1603,6 +1603,14 @@ public class CitizenViewPage extends BasePage {
         overview.assertAppointmentManagementActionsNotVisible();
     }
 
+    public void assertRescheduleAppointmentButtonNotVisible() {
+        overview.assertRescheduleAppointmentButtonNotVisible();
+    }
+
+    public void assertCancelAppointmentButtonVisible() {
+        overview.assertCancelAppointmentButtonVisible();
+    }
+
     public void assertCaptchaSessionCalloutVisible() {
         captcha.assertCaptchaSessionCalloutVisible();
     }
