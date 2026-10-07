@@ -8,7 +8,8 @@ on:
     # file in the push matches paths-ignore — including the first push of a new
     # branch that only touches zmscitizenview/ or zmsautomation/. The should-run
     # job below implements the matrix: new branch / tags always run; later
-    # pushes skip only when every changed file is under those dirs.
+    # path-only pushes skip only after this branch already has a successful
+    # Combined PHP run (catch-up for branches created under the old ignore).
   workflow_call:
 
 concurrency:
@@ -40,9 +41,25 @@ jobs:
           REF_TYPE: ${{ github.ref_type }}
           BEFORE: ${{ github.event.before }}
           AFTER: ${{ github.sha }}
+          BRANCH: ${{ github.ref_name }}
+          THIS_RUN: ${{ github.run_id }}
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
         run: |
           set -euo pipefail
           ZERO="0000000000000000000000000000000000000000"
+
+          # Prior successful run of a workflow on this branch (excludes this run).
+          branch_has_success() {
+            local workflow_file="$1"
+            local count
+            count="$(
+              gh api \
+                "repos/${GH_REPO}/actions/workflows/${workflow_file}/runs?branch=${BRANCH}&status=completed&per_page=30" \
+                --jq "[.workflow_runs[] | select(.id != ${THIS_RUN} and .conclusion == \"success\")] | length"
+            )"
+            [ "${count}" -gt 0 ]
+          }
 
           # workflow_call and tags always run
           if [ "$EVENT_NAME" != "push" ] || [ "$REF_TYPE" = "tag" ]; then
@@ -88,9 +105,18 @@ jobs:
           if [ "$non_ignored" -eq 1 ]; then
             echo "php=true" >> "$GITHUB_OUTPUT"
             echo "Run: PHP/admin JS (or other non-ignored) files changed"
-          else
+            exit 0
+          fi
+
+          # Path-only push: still run until this branch has a successful Combined PHP
+          # (branches created while paths-ignore ate the first push). Frontend and
+          # ATAF Maven are separate workflows; we only gate this one here.
+          if branch_has_success "combined-workflow.yaml"; then
             echo "php=false" >> "$GITHUB_OUTPUT"
-            echo "Skip: only zmsautomation/ and/or zmscitizenview/ changed"
+            echo "Skip: only zmsautomation/ and/or zmscitizenview/ changed, and Combined PHP already succeeded on ${BRANCH}"
+          else
+            echo "php=true" >> "$GITHUB_OUTPUT"
+            echo "Run: path-only push but no prior successful Combined PHP on ${BRANCH}"
           fi
 
   call-php-code-quality:
