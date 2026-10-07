@@ -413,11 +413,14 @@ jobs:
         run: cp .devcontainer/.env.template .devcontainer/.env
 
       - name: Login to GitHub Container Registry
-        uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4
+        uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4
         with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          max_attempts: 5
+          retry_wait_seconds: 30
+          timeout_minutes: 5
+          command: |
+            echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io \
+              -u "${{ github.actor }}" --password-stdin
 
       - name: Compute image tags
         id: tags

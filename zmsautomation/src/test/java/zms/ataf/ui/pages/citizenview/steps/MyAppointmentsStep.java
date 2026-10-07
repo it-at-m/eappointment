@@ -504,6 +504,9 @@ public final class MyAppointmentsStep {
             Assert.assertTrue(timestamp > 0, "Selected timeslot id has no timestamp.");
             slotState.rememberedAppointmentEpoch = timestamp;
         }
+        TestDataHelper.setTestData(
+                "citizenview_selected_slot_timestamp",
+                String.valueOf(slotState.rememberedAppointmentEpoch));
         ScenarioLogManager.getLogger()
                 .info("zmscitizenview: remembered appointment time {}", slotState.rememberedAppointmentEpoch);
     }
