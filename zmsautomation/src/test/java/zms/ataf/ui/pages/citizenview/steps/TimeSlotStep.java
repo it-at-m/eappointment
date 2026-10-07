@@ -30,6 +30,10 @@ import java.util.HashSet;
 public final class TimeSlotStep {
 
     private static final String NO_APPOINTMENT_CALLOUT = "Aktuell ist kein Termin verfügbar.";
+    private static final String NO_APPOINTMENT_CALLOUT_TEXT =
+            "Bitte versuchen Sie es noch einmal zu einem späteren Zeitpunkt.";
+    private static final String TIME_HEADING = "Datum und Uhrzeit";
+    private static final String NEW_APPOINTMENTS_INFO_LINK = "Wann gibt es neue Termine?";
 
 
     /**
@@ -151,12 +155,7 @@ public final class TimeSlotStep {
     public void assertNoBookableDay(int officeId) {
         context.set();
         waitUntilCalendarSettled(officeId, false);
-        Assert.assertTrue(
-                shadow.shadowDomContainsText(NO_APPOINTMENT_CALLOUT),
-                "Expected the info callout '" + NO_APPOINTMENT_CALLOUT + "'");
-        Assert.assertTrue(
-                shadow.deepInfoCalloutContains(NO_APPOINTMENT_CALLOUT),
-                "Expected the blue info callout for '" + NO_APPOINTMENT_CALLOUT + "'");
+        assertNoAppointmentInfoCalloutVisible();
         Assert.assertFalse(
                 deepTimeslotPresentForProvider(officeId),
                 "A day that does not fit must not show a timeslot for office " + officeId);
@@ -166,6 +165,109 @@ public final class TimeSlotStep {
         Assert.assertFalse(
                 shadow.deepAriaContains("Zur Listenansicht wechseln"),
                 "Calendar/list toggle must stay hidden when no day fits");
+    }
+
+    /**
+     * Empty Ort/Zeit state: blue info callout for noAppointmentForThisScope / noAppointmentForThisDay
+     * (same German keys), H2 time heading, H3 callout title, fixed body text. Calendar toggle stays
+     * hidden while the spinner is gone.
+     */
+    public void assertNoAppointmentInfoCalloutVisible() {
+        context.set();
+        long deadline = System.currentTimeMillis() + Math.max(30, defaultWaitSeconds) * 1000L;
+        while (System.currentTimeMillis() < deadline) {
+            if (!deepMucSpinnerVisible()
+                    && shadow.deepInfoCalloutContains(NO_APPOINTMENT_CALLOUT)
+                    && shadow.shadowDomContainsText(NO_APPOINTMENT_CALLOUT_TEXT)) {
+                break;
+            }
+            CitizenViewWaits.sleepQuiet(300L);
+        }
+        Assert.assertFalse(deepMucSpinnerVisible(), "Spinner must finish before the empty-state callout");
+        Assert.assertTrue(
+                shadow.deepInfoCalloutContains(NO_APPOINTMENT_CALLOUT),
+                "Expected the blue info callout '" + NO_APPOINTMENT_CALLOUT + "'");
+        Assert.assertTrue(
+                shadow.shadowDomContainsText(NO_APPOINTMENT_CALLOUT_TEXT),
+                "Expected callout body '" + NO_APPOINTMENT_CALLOUT_TEXT + "'");
+        Assert.assertTrue(
+                shadow.visibleHeadingShows(2, TIME_HEADING),
+                "Expected H2 '" + TIME_HEADING + "' above the empty-state callout");
+        Assert.assertTrue(
+                shadow.visibleHeadingShows(3, NO_APPOINTMENT_CALLOUT),
+                "Expected H3 callout title '" + NO_APPOINTMENT_CALLOUT + "'");
+        Assert.assertFalse(
+                shadow.deepAriaContains("Zur Listenansicht wechseln"),
+                "Calendar/list toggle must stay hidden when no appointment is available");
+        Assert.assertFalse(
+                noAppointmentErrorCalloutVisible(),
+                "No-appointment callout must stay info/blue, not error/red");
+    }
+
+    public void assertNoAppointmentInfoCalloutNotVisible() {
+        context.set();
+        Assert.assertFalse(
+                shadow.deepInfoCalloutContains(NO_APPOINTMENT_CALLOUT),
+                "Did not expect the empty-state callout '" + NO_APPOINTMENT_CALLOUT + "'");
+    }
+
+    /**
+     * Custom scope infoForAllAppointments is offered via the ghost link on the empty-state callout.
+     */
+    public void assertNoAppointmentCustomInfoLinkVisible() {
+        context.set();
+        assertNoAppointmentInfoCalloutVisible();
+        Assert.assertTrue(
+                shadow.shadowDomContainsText(NEW_APPOINTMENTS_INFO_LINK),
+                "Expected '" + NEW_APPOINTMENTS_INFO_LINK + "' when the scope has custom empty-state info");
+    }
+
+    public void assertNoAppointmentCustomInfoContains(String fragment) {
+        context.set();
+        Objects.requireNonNull(fragment, "fragment");
+        assertNoAppointmentCustomInfoLinkVisible();
+        Assert.assertTrue(
+                shadow.clickButtonContaining(NEW_APPOINTMENTS_INFO_LINK),
+                "Could not open '" + NEW_APPOINTMENTS_INFO_LINK + "'");
+        long deadline = System.currentTimeMillis() + 15_000L;
+        while (System.currentTimeMillis() < deadline) {
+            if (shadow.shadowDomContainsText(fragment)) {
+                ScenarioLogManager.getLogger()
+                        .info("zmscitizenview: custom empty-state info shows '{}'", fragment);
+                return;
+            }
+            CitizenViewWaits.sleepQuiet(250L);
+        }
+        Assert.assertTrue(
+                shadow.shadowDomContainsText(fragment),
+                "Expected custom empty-state info to include \"" + fragment + "\"");
+    }
+
+    private boolean noAppointmentErrorCalloutVisible() {
+        String script =
+                "var needle=arguments[0];"
+                        + "function textOf(node){return (node.innerText||node.textContent||'');}"
+                        + "function isErrorCallout(node){"
+                        + " if(!node||!node.classList)return false;"
+                        + " if(!node.classList.contains('m-callout'))return false;"
+                        + " var err=node.classList.contains('m-callout--error')"
+                        + "  ||node.classList.contains('m-callout--danger')"
+                        + "  ||(node.getAttribute('data-type')||'')==='error';"
+                        + " return err&&textOf(node).indexOf(needle)>=0;"
+                        + "}"
+                        + "function walk(root){"
+                        + " if(!root)return false;"
+                        + " var nodes=root.querySelectorAll('.m-callout');"
+                        + " for(var i=0;i<nodes.length;i++){if(isErrorCallout(nodes[i]))return true;}"
+                        + " var all=root.querySelectorAll('*');"
+                        + " for(var j=0;j<all.length;j++){"
+                        + "  if(all[j].shadowRoot&&walk(all[j].shadowRoot))return true;"
+                        + " }"
+                        + " return false;"
+                        + "}"
+                        + "return walk(document.body);";
+        return Boolean.TRUE.equals(
+                ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script, NO_APPOINTMENT_CALLOUT));
     }
 
     public void assertCalendarListToggleShows(String activeLabel) {
