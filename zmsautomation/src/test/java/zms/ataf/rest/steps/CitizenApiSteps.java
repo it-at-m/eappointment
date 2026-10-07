@@ -444,31 +444,24 @@ public class CitizenApiSteps {
         lastServiceCount = serviceCount;
         lastAppointmentDate = date;
 
-        String requestedKey = String.valueOf(officeId);
-        boolean cacheMatchesRequest = lastAvailableCalendarResponse != null
-            && cachedCalendarOfficeIds != null
-            && (cachedCalendarOfficeIds.equals(requestedKey)
-                || Arrays.asList(cachedCalendarOfficeIds.split(",")).contains(requestedKey))
-            && cachedCalendarServiceId != null
-            && cachedCalendarServiceId == serviceId
-            && cachedCalendarServiceCount != null
-            && cachedCalendarServiceCount == serviceCount
-            && Objects.equals(cachedCalendarCaptchaToken, captchaToken);
-        if (!cacheMatchesRequest) {
-            lastAvailableCalendarResponse =
-                fetchAvailableCalendar(List.of(officeId), serviceId, serviceCount);
-        }
+        // Free-slot timestamps are only inlined for slotsStartDate..slotsEndDate (often "today").
+        // Ask for this exact day so later bookable days (e.g. V43 single-seat) are hydrated.
+        lastAvailableCalendarResponse =
+            fetchAvailableCalendar(List.of(officeId), List.of(serviceId), List.of(serviceCount), date, date);
 
         AvailableAppointmentsResponse appointments =
             lastAvailableCalendarResponse.getAppointmentsForDayAndOffice(date, officeId);
         lastAvailableAppointmentsResponse = appointments;
 
+        int officeCount = appointments.getOffices() != null ? appointments.getOffices().size() : 0;
+        int timestampCount = appointments.futureAppointmentTimestamps().size();
         ScenarioLogManager.getLogger().info(String.format(
-            "Citizen API calendar slots for date=%s, officeId=%d, serviceId=%d: %d office(s) with slots",
+            "Citizen API calendar slots for date=%s, officeId=%d, serviceId=%d: %d office(s), %d timestamp(s)",
             date,
             officeId,
             serviceId,
-            appointments.getOffices() != null ? appointments.getOffices().size() : 0
+            officeCount,
+            timestampCount
         ));
     }
 
@@ -1879,11 +1872,20 @@ public class CitizenApiSteps {
     /* Section: Response Parsing */
     private AvailableCalendarResponse fetchAvailableCalendar(
             List<Integer> officeIds, int serviceId, int serviceCount) {
-        return fetchAvailableCalendar(officeIds, List.of(serviceId), List.of(serviceCount));
+        return fetchAvailableCalendar(officeIds, List.of(serviceId), List.of(serviceCount), null, null);
     }
 
     private AvailableCalendarResponse fetchAvailableCalendar(
             List<Integer> officeIds, List<Integer> serviceIds, List<Integer> serviceCounts) {
+        return fetchAvailableCalendar(officeIds, serviceIds, serviceCounts, null, null);
+    }
+
+    private AvailableCalendarResponse fetchAvailableCalendar(
+            List<Integer> officeIds,
+            List<Integer> serviceIds,
+            List<Integer> serviceCounts,
+            String slotsStartDate,
+            String slotsEndDate) {
         Assertions.assertThat(officeIds).as("officeIds").isNotEmpty();
         Assertions.assertThat(serviceIds).as("serviceIds").isNotEmpty();
         Assertions.assertThat(serviceCounts)
@@ -1904,6 +1906,12 @@ public class CitizenApiSteps {
             .queryParam("startDate", startDate)
             .queryParam("endDate", endDate)
             .queryParam("serviceCounts", serviceCountsParam);
+        if (slotsStartDate != null && !slotsStartDate.isBlank()) {
+            calendarRequest = calendarRequest.queryParam("slotsStartDate", slotsStartDate);
+        }
+        if (slotsEndDate != null && !slotsEndDate.isBlank()) {
+            calendarRequest = calendarRequest.queryParam("slotsEndDate", slotsEndDate);
+        }
         if (captchaToken != null && !captchaToken.isBlank()) {
             calendarRequest = calendarRequest.queryParam("captchaToken", captchaToken);
         }
@@ -1912,9 +1920,11 @@ public class CitizenApiSteps {
 
         String calendarBody = response.asString();
         ScenarioLogManager.getLogger().info(String.format(
-            "Citizen API /available-calendar/ (officeIds=%s, serviceIds=%s) status=%d body=%s",
+            "Citizen API /available-calendar/ (officeIds=%s, serviceIds=%s, slots=%s..%s) status=%d body=%s",
             officeIdsParam,
             serviceIdsParam,
+            slotsStartDate != null ? slotsStartDate : "-",
+            slotsEndDate != null ? slotsEndDate : "-",
             response.getStatusCode(),
             calendarBody.length() > 1250 ? calendarBody.substring(0, 1250) + "..." : calendarBody
         ));
