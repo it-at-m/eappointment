@@ -32,34 +32,57 @@ public final class BerlinTime {
     }
 
     /**
-     * Startdatum seeded by {@code V43__ZMSKVR-88_ZMSKVR-472_single_seat_after_v19.sql} (row
+     * Start date seeded by {@code V43__ZMSKVR-88_ZMSKVR-472_single_seat_after_v19.sql} (row
      * {@value #SINGLE_SEAT_OPENING_HOURS_ID}). Read from the DB so API and UI share the same day Flyway
      * wrote at suite start, instead of recalculating after 20:55 / midnight.
+     *
+     * <p>After zmsbackend expand/contract migrations, {@code Startdatum} is dropped and only
+     * {@code start_date} remains. Prefer the English column when present.
      */
     public static LocalDate singleSeatDayAfterV19RuppertstrasseRange() {
-        try (Connection connection = openZmsConnection();
-                PreparedStatement statement =
-                        connection.prepareStatement(
-                                "SELECT Startdatum FROM oeffnungszeit WHERE OeffnungszeitID = ?")) {
-            statement.setInt(1, SINGLE_SEAT_OPENING_HOURS_ID);
-            try (ResultSet rows = statement.executeQuery()) {
-                if (!rows.next()) {
-                    throw new IllegalStateException(
-                            "V43 single-seat opening hours (OeffnungszeitID "
-                                    + SINGLE_SEAT_OPENING_HOURS_ID
-                                    + ") not found. Run Flyway migrate first.");
+        try (Connection connection = openZmsConnection()) {
+            String startColumn = columnExists(connection, "start_date") ? "start_date" : "Startdatum";
+            try (PreparedStatement statement =
+                    connection.prepareStatement(
+                            "SELECT "
+                                    + startColumn
+                                    + " FROM oeffnungszeit WHERE OeffnungszeitID = ?")) {
+                statement.setInt(1, SINGLE_SEAT_OPENING_HOURS_ID);
+                try (ResultSet rows = statement.executeQuery()) {
+                    if (!rows.next()) {
+                        throw new IllegalStateException(
+                                "V43 single-seat opening hours (OeffnungszeitID "
+                                        + SINGLE_SEAT_OPENING_HOURS_ID
+                                        + ") not found. Run Flyway migrate first.");
+                    }
+                    java.sql.Date start = rows.getDate(1);
+                    if (start == null) {
+                        throw new IllegalStateException(
+                                "V43 single-seat "
+                                        + startColumn
+                                        + " is null for OeffnungszeitID "
+                                        + SINGLE_SEAT_OPENING_HOURS_ID);
+                    }
+                    return start.toLocalDate();
                 }
-                java.sql.Date start = rows.getDate(1);
-                if (start == null) {
-                    throw new IllegalStateException(
-                            "V43 single-seat Startdatum is null for OeffnungszeitID "
-                                    + SINGLE_SEAT_OPENING_HOURS_ID);
-                }
-                return start.toLocalDate();
             }
         } catch (SQLException e) {
             throw new IllegalStateException(
-                    "Could not read V43 single-seat Startdatum from oeffnungszeit.", e);
+                    "Could not read V43 single-seat start date from oeffnungszeit.", e);
+        }
+    }
+
+    private static boolean columnExists(Connection connection, String column) throws SQLException {
+        try (PreparedStatement statement =
+                connection.prepareStatement(
+                        "SELECT COUNT(*) FROM information_schema.COLUMNS "
+                                + "WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'oeffnungszeit' "
+                                + "AND COLUMN_NAME = ?")) {
+            statement.setString(1, column);
+            try (ResultSet rows = statement.executeQuery()) {
+                rows.next();
+                return rows.getInt(1) > 0;
+            }
         }
     }
 
