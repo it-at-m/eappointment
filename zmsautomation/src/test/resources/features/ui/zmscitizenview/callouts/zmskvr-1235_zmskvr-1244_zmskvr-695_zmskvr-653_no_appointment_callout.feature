@@ -95,6 +95,7 @@ Feature: CitizenView: no appointment available info callout
     And I wait for appointment slots to be ready in the citizen view
     Then the citizen calendar and list should show a bookable day for office 10585
     When I reserve every available appointment for office 10585 and service 10389330
+    And I uncheck all provider checkboxes in the citizen view
     And I keep only providers "10585" checked in the citizen view
     Then the no appointment available info callout should be visible in the citizen view
 
