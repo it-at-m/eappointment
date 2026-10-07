@@ -3,12 +3,12 @@ name: 🐘 Combined PHP Build
 on:
   push:
     branches-ignore: [next]
-    tags: ['*']
-    # Whole push. New branches always run. Later pushes skip only if every file is
-    # zmsautomation or zmscitizenview (no PHP/admin JS).
-    paths-ignore:
-      - "zmsautomation/**"
-      - "zmscitizenview/**"
+    tags: ["*"]
+    # Do not use paths-ignore here. GitHub skips the whole workflow when every
+    # file in the push matches paths-ignore — including the first push of a new
+    # branch that only touches zmscitizenview/ or zmsautomation/. The should-run
+    # job below implements the matrix: new branch / tags always run; later
+    # pushes skip only when every changed file is under those dirs.
   workflow_call:
 
 concurrency:
@@ -21,19 +21,98 @@ permissions:
   actions: write
 
 jobs:
+  should-run:
+    name: Decide Combined PHP
+    runs-on: ubuntu-latest
+    outputs:
+      php: ${{ steps.check.outputs.php }}
+    steps:
+      - name: Check out (for push file list)
+        if: github.event_name == 'push' && github.ref_type != 'tag'
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+
+      - name: Decide whether to run Combined PHP
+        id: check
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          REF_TYPE: ${{ github.ref_type }}
+          BEFORE: ${{ github.event.before }}
+          AFTER: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          ZERO="0000000000000000000000000000000000000000"
+
+          # workflow_call and tags always run
+          if [ "$EVENT_NAME" != "push" ] || [ "$REF_TYPE" = "tag" ]; then
+            echo "php=true" >> "$GITHUB_OUTPUT"
+            echo "Run: workflow_call or tag"
+            exit 0
+          fi
+
+          # First push of a new branch (before is all zeros) always runs
+          if [ -z "${BEFORE:-}" ] || [ "$BEFORE" = "$ZERO" ]; then
+            echo "php=true" >> "$GITHUB_OUTPUT"
+            echo "Run: new branch push"
+            exit 0
+          fi
+
+          # Later pushes: skip only if every changed file is under ignored dirs
+          if ! git cat-file -e "${BEFORE}^{commit}" 2>/dev/null; then
+            echo "php=true" >> "$GITHUB_OUTPUT"
+            echo "Run: before commit not reachable"
+            exit 0
+          fi
+
+          non_ignored=0
+          file_count=0
+          while IFS= read -r f; do
+            [ -z "$f" ] && continue
+            file_count=$((file_count + 1))
+            case "$f" in
+              zmsautomation/*|zmscitizenview/*) ;;
+              *)
+                non_ignored=1
+                break
+                ;;
+            esac
+          done < <(git diff --name-only "$BEFORE" "$AFTER")
+
+          if [ "$file_count" -eq 0 ]; then
+            echo "php=true" >> "$GITHUB_OUTPUT"
+            echo "Run: empty diff"
+            exit 0
+          fi
+
+          if [ "$non_ignored" -eq 1 ]; then
+            echo "php=true" >> "$GITHUB_OUTPUT"
+            echo "Run: PHP/admin JS (or other non-ignored) files changed"
+          else
+            echo "php=false" >> "$GITHUB_OUTPUT"
+            echo "Skip: only zmsautomation/ and/or zmscitizenview/ changed"
+          fi
+
   call-php-code-quality:
+    needs: should-run
+    if: needs.should-run.outputs.php == 'true'
     uses: ./.github/workflows/php-code-quality.yaml
 
   call-js-eslint:
+    needs: should-run
+    if: needs.should-run.outputs.php == 'true'
     uses: ./.github/workflows/js-eslint.yaml
 
   call-php-unit-tests:
+    needs: should-run
+    if: needs.should-run.outputs.php == 'true'
     uses: ./.github/workflows/php-unit-tests.yaml
 
   call-php-build-images:
-    needs: [call-php-code-quality, call-js-eslint, call-php-unit-tests]
+    needs: [should-run, call-php-code-quality, call-js-eslint, call-php-unit-tests]
     if: |
       always() &&
+      needs.should-run.outputs.php == 'true' &&
       needs.call-php-code-quality.result == 'success' &&
       needs.call-js-eslint.result == 'success' &&
       needs.call-php-unit-tests.result == 'success'
