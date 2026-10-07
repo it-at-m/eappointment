@@ -1,10 +1,10 @@
 {
   "branch": "next",
   "branchSlug": "next",
-  "runId": "37600181706",
-  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37600181706",
-  "runStartedAt": "2026-10-07T09:22:40Z",
-  "publishedAt": "2026-10-07T09:48:48.576Z",
+  "runId": "37606875452",
+  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37606875452",
+  "runStartedAt": "2026-10-07T10:21:40Z",
+  "publishedAt": "2026-10-07T10:36:12.997Z",
   "features": {
     "feature-rest-zmsapi-zmskvr-1328": {
       "status": "passed",
@@ -3745,6 +3745,38 @@
       "runId": "37600181706",
       "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37600181706",
       "runStartedAt": "2026-10-07T09:22:40Z"
+    },
+    "feature-ui-zmscitizenview-callouts-zmskvr-1440-zmskvr-1451-session-and-reservation-callouts": {
+      "status": "passed",
+      "shard": "custom",
+      "browser": "chrome",
+      "browsers": {
+        "chrome": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "37606875452",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37606875452",
+          "runStartedAt": "2026-10-07T10:21:40Z"
+        },
+        "edge": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "37606875452",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37606875452",
+          "runStartedAt": "2026-10-07T10:21:40Z"
+        },
+        "firefox": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "37606875452",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37606875452",
+          "runStartedAt": "2026-10-07T10:21:40Z"
+        }
+      },
+      "rel": "ui/zmscitizenview/callouts/zmskvr-1440_zmskvr-1451_session_and_reservation_callouts.feature",
+      "runId": "37606875452",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37606875452",
+      "runStartedAt": "2026-10-07T10:21:40Z"
     }
   }
 }
