@@ -3,8 +3,9 @@ name: 🐘 Combined PHP Build with Documentation
 on:
   push:
     branches: [next]
-    # Whole push. New branches always run. Later pushes skip only if every file is
-    # zmsautomation or zmscitizenview (no PHP/admin JS).
+    # next only. Skip the whole workflow when every file in the push is under
+    # zmsautomation/ or zmscitizenview/ (no PHP/admin JS). Feature-branch
+    # "new branch always runs Combined PHP" lives in combined-workflow.yaml.
     paths-ignore:
       - "zmsautomation/**"
       - "zmscitizenview/**"

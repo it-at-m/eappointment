@@ -2,8 +2,8 @@ name: 📱 Frontend Build zmscitizenview
 
 on:
   push:
-    # Whole push. New branches always run (the tree includes zmscitizenview).
-    # Later pushes run only when citizenview or this workflow file changed.
+    # Runs when citizenview (or this workflow file) is in the push. A new branch
+    # whose first commits only touch zmscitizenview/ still matches and runs.
     paths:
       - "zmscitizenview/**"
       - ".github/workflows/zmscitizenview-maven-node-build.yaml"
