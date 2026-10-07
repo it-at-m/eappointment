@@ -14,6 +14,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import ataf.core.logging.ScenarioLogManager;
 import ataf.web.pages.BasePage;
 import ataf.web.utils.DriverUtil;
+import config.TestConfig;
+import zms.ataf.helpers.CaptchaClient;
 import zms.ataf.rest.dto.zmscitizenapi.ThinnedProcess;
 import zms.ataf.ui.pages.citizenview.support.ShadowDom;
 import zms.ataf.ui.pages.citizenview.steps.CombinationStep;
@@ -1640,21 +1642,31 @@ public class CitizenViewPage extends BasePage {
 
     /**
      * The load-error line is what Leistung shows until captcha details return and the widget mounts.
-     * Weiter stays disabled until Altcha then finishes.
+     * Weiter stays disabled until captcha verification finishes.
+     *
+     * <p>Altcha's in-browser proof-of-work needs WebCrypto ({@code isSecureContext}). ATAF opens
+     * {@code http://citizenview}, which Chrome often still solves but Firefox and Edge do not. Solve
+     * through CaptchaService (same JWT TTL as a real widget verify) and complete Altcha's
+     * {@code serververification} path so session-expiry callouts still arm on the token.
      */
     public void waitUntilCaptchaCheckFinished(int widgetTimeoutSeconds, int solveTimeoutSeconds) {
         CONTEXT.set();
         ScenarioLogManager.getLogger()
                 .info("zmscitizenview: waiting up to {}s for the captcha widget to load", widgetTimeoutSeconds);
         waitUntilShadowContains(DE_CAPTCHA_LABEL, widgetTimeoutSeconds);
+        clickCaptchaCheckboxIfUnchecked();
+        String token = CaptchaClient.solve(TestConfig.getCitizenApiBaseUri());
+        if (!injectCaptchaServerVerification(token)) {
+            throw new IllegalStateException(
+                    "altcha-widget not found after captcha label appeared; cannot inject verification");
+        }
         ScenarioLogManager.getLogger()
-                .info("zmscitizenview: click captcha checkbox, then wait up to {}s for Weiter", solveTimeoutSeconds);
+                .info(
+                        "zmscitizenview: injected CaptchaService JWT; waiting up to {}s for Weiter",
+                        solveTimeoutSeconds);
         new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(solveTimeoutSeconds))
-                .pollingEvery(Duration.ofSeconds(1))
-                .until(driver -> {
-                    clickCaptchaCheckboxIfUnchecked();
-                    return enabledVisibleButtonContains(DE_WEITER);
-                });
+                .pollingEvery(Duration.ofMillis(500))
+                .until(driver -> enabledVisibleButtonContains(DE_WEITER));
     }
 
     /** Altcha starts only after the checkbox is clicked. Repeated clicks are skipped once it is checked. */
@@ -1677,6 +1689,28 @@ public class CitizenViewPage extends BasePage {
                         + "return false;});"
                         + "return clicked;";
         Object o = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script);
+        return Boolean.TRUE.equals(o);
+    }
+
+    /**
+     * Completes the same Vue path as a successful Altcha {@code serververification} event
+     * ({@code validationResult=true} + captcha JWT).
+     */
+    private boolean injectCaptchaServerVerification(String token) {
+        CONTEXT.set();
+        String script =
+                "function walk(n, fn){if(!n)return false;if(fn(n))return true;"
+                        + "if(n.shadowRoot&&walk(n.shadowRoot, fn))return true;"
+                        + "var c=n.children;if(c)for(var i=0;i<c.length;i++)if(walk(c[i], fn))return true;return false;}"
+                        + "var widget=null;"
+                        + "walk(document.body, function(n){"
+                        + "if(n.tagName&&String(n.tagName).toLowerCase()==='altcha-widget'){widget=n;return true;}"
+                        + "return false;});"
+                        + "if(!widget)return false;"
+                        + "widget.dispatchEvent(new CustomEvent('serververification',{detail:{"
+                        + "meta:{success:true},data:{valid:true},token:arguments[0]}}));"
+                        + "return true;";
+        Object o = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script, token);
         return Boolean.TRUE.equals(o);
     }
 
