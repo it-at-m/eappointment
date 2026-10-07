@@ -226,9 +226,18 @@ public final class TimeSlotStep {
         context.set();
         Objects.requireNonNull(fragment, "fragment");
         assertNoAppointmentCustomInfoLinkVisible();
-        Assert.assertTrue(
-                shadow.clickButtonContaining(NEW_APPOINTMENTS_INFO_LINK),
-                "Could not open '" + NEW_APPOINTMENTS_INFO_LINK + "'");
+        try {
+            shadow.waitForAndClickButtonContaining(NEW_APPOINTMENTS_INFO_LINK, 20);
+        } catch (RuntimeException primary) {
+            ScenarioLogManager.getLogger()
+                    .warn(
+                            "zmscitizenview: muc-button click missed '{}', trying deep text click: {}",
+                            NEW_APPOINTMENTS_INFO_LINK,
+                            primary.toString());
+            Assert.assertTrue(
+                    shadow.deepClickByVisibleText(NEW_APPOINTMENTS_INFO_LINK),
+                    "Could not open '" + NEW_APPOINTMENTS_INFO_LINK + "'");
+        }
         long deadline = System.currentTimeMillis() + 15_000L;
         while (System.currentTimeMillis() < deadline) {
             if (shadow.shadowDomContainsText(fragment)) {
