@@ -1,7 +1,13 @@
 import type { SelectedAppointmentProvider } from "@/types/ProvideInjectTypes";
 import type { Ref } from "vue";
 
-import { computed, inject, onBeforeUnmount, onMounted, ref } from "vue";
+import { computed, inject } from "vue";
+
+import {
+  isInTimeoutWarningWindow,
+  remainingMsUntil,
+  useNowTicker,
+} from "@/utils/useTimeoutWarning";
 
 export function useReservationTimer() {
   const { appointment } = inject<SelectedAppointmentProvider>("appointment")!;
@@ -23,42 +29,38 @@ export function useReservationTimer() {
     return reservationStartMs.value + reservationDurationMinutes.value * 60_000;
   });
 
-  const nowMs = ref<number>(Date.now());
-  let timer: number | undefined;
-
-  onMounted(() => {
-    timer = window.setInterval(() => {
-      nowMs.value = Date.now();
-    }, 1000);
-  });
-
-  onBeforeUnmount(() => {
-    if (timer) window.clearInterval(timer);
-  });
+  const nowMs = useNowTicker();
 
   const remainingMs = computed<number | null>(() =>
-    deadlineMs.value == null
-      ? null
-      : Math.max(0, deadlineMs.value - nowMs.value)
+    remainingMsUntil(deadlineMs.value, nowMs.value)
   );
 
   const isReservationExpired = computed<boolean>(
     () => remainingMs.value !== null && remainingMs.value <= 0
   );
 
-  // Nachfolgendes kann für späteres Ticket ZMSKVR-501 zur Anzeige des restlichen Timers verwendet werden
+  /** ZMSKVR-501: last minute of the reservation on Kontakt / Übersicht. */
+  const showReservationTimeoutWarning = computed(() =>
+    isInTimeoutWarningWindow(remainingMs.value)
+  );
+
+  const remainingSeconds = computed(() => {
+    if (remainingMs.value == null) return 0;
+    return Math.max(0, Math.ceil(remainingMs.value / 1000));
+  });
 
   const timeLeftString = computed<string>(() => {
     if (remainingMs.value == null) return "";
-    const totalSeconds = Math.floor(remainingMs.value / 1000);
-    return `${totalSeconds} Sekunden`;
+    return `${remainingSeconds.value} Sekunden`;
   });
 
   return {
     isReservationExpired,
     remainingMs,
+    remainingSeconds,
     deadlineMs,
     nowMs,
     timeLeftString,
+    showReservationTimeoutWarning,
   };
 }
