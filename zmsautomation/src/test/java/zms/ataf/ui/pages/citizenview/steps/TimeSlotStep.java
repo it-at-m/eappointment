@@ -1362,7 +1362,7 @@ public final class TimeSlotStep {
     }
 
     /**
-     * ZMSKVR-88 / ZMSKVR-472: land on the single-seat Passkalender day (V42, day after V19 range)
+     * ZMSKVR-88 / ZMSKVR-472: land on the single-seat Passkalender day (V43, day after V19 range)
      * so each UI grid time has only one internet seat behind it.
      */
     public void selectSingleSeatDayAfterV19RangeAndWaitForSlots() {

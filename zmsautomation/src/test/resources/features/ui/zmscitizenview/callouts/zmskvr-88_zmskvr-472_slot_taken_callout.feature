@@ -9,7 +9,7 @@ Feature: CitizenView: slot already taken shows not-available callout
   # Race: UI selects a free slot; Citizen API reserves that same timestamp (second citizen);
   # UI Weiter then gets appointmentNotAvailable and shows the callout under the summary.
   # One browser + API snatch is more reliable in CI than two tabs or browsers.
-  # V19 opens Passkalender 10502 with several seats per time; V42 adds one seat on the day
+  # V19 opens Passkalender 10502 with several seats per time; V43 adds one seat on the day
   # after that range (Standort 172 only). The scenario navigates to that day first.
 
   Background:
