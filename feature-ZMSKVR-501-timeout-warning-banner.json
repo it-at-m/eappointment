@@ -1,0 +1,35 @@
+{
+  "branch": "feature-ZMSKVR-501-timeout-warning-banner",
+  "branchSlug": "feature-ZMSKVR-501-timeout-warning-banner",
+  "runId": "37627640295",
+  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37627640295",
+  "runStartedAt": "2026-10-07T13:19:54Z",
+  "publishedAt": "2026-10-07T13:42:33.604Z",
+  "features": {
+    "feature-ui-zmscitizenview-callouts-zmskvr-501-zmskvr-1682-timeout-warning-banner": {
+      "status": "passed",
+      "shard": "custom",
+      "browser": "chrome",
+      "browsers": {
+        "chrome": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "37627640295",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37627640295",
+          "runStartedAt": "2026-10-07T13:19:54Z"
+        },
+        "firefox": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "37627640295",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37627640295",
+          "runStartedAt": "2026-10-07T13:19:54Z"
+        }
+      },
+      "rel": "ui/zmscitizenview/callouts/zmskvr-501_zmskvr-1682_timeout_warning_banner.feature",
+      "runId": "37627640295",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37627640295",
+      "runStartedAt": "2026-10-07T13:19:54Z"
+    }
+  }
+}
