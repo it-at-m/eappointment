@@ -95,8 +95,11 @@ Feature: CitizenView: no appointment available info callout
     And I wait for appointment slots to be ready in the citizen view
     Then the citizen calendar and list should show a bookable day for office 10585
     When I reserve every available appointment for office 10585 and service 10389330
-    And I uncheck all provider checkboxes in the citizen view
-    And I keep only providers "10585" checked in the citizen view
+    # Ort toggle left stale timeslots in the DOM (keep-only waits for slots). Reload
+    # forces a clean availability fetch after parallel reserve-every emptied Pasing.
+    And I reload the citizen view
+    Then the service combination step should be visible
+    When I continue from the service combination step
     Then the no appointment available info callout should be visible in the citizen view
 
   Scenario: Jump-in to Pasing after every seat was reserved shows the blue info callout
