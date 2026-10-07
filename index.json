@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-10-07T20:57:37.550Z",
+  "publishedAt": "2026-10-07T21:13:35.634Z",
   "branches": [
     {
       "name": "next",
@@ -334,8 +334,8 @@
     {
       "name": "test-zmskvr-1235-zmskvr-1244-no-appointment-callout",
       "slug": "test-zmskvr-1235-zmskvr-1244-no-appointment-callout",
-      "runId": "37684314068",
-      "runStartedAt": "2026-10-07T20:44:26Z"
+      "runId": "37686334642",
+      "runStartedAt": "2026-10-07T21:00:53Z"
     },
     {
       "name": "test-zmskvr-1249-zmskvr-1583-opening-hour-any-time",
