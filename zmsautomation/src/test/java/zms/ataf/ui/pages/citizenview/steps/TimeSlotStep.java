@@ -1022,9 +1022,10 @@ public final class TimeSlotStep {
         int sec = Math.min(30, defaultWaitSeconds);
         long deadline = System.currentTimeMillis() + sec * 1000L;
         while (System.currentTimeMillis() < deadline) {
-            if (shadow.shadowDomContainsText(header) && shadow.shadowDomContainsText(text)) {
+            if (appointmentNotAvailableCalloutBelowSummary(header, text)) {
                 ScenarioLogManager.getLogger()
-                        .info("zmscitizenview: appointment-not-available callout visible");
+                        .info(
+                                "zmscitizenview: appointment-not-available error callout visible below Ausgewählter Termin");
                 return;
             }
             if (contactStepReached()) {
@@ -1034,8 +1035,61 @@ public final class TimeSlotStep {
             CitizenViewWaits.sleepQuiet(300L);
         }
         Assert.assertTrue(
-                shadow.shadowDomContainsText(header) && shadow.shadowDomContainsText(text),
-                "Expected callout \"" + header + "\" / \"" + text + "\" after the slot was taken.");
+                appointmentNotAvailableCalloutBelowSummary(header, text),
+                "Expected error callout \""
+                        + header
+                        + "\" / \""
+                        + text
+                        + "\" below the selected-appointment summary after the slot was taken.");
+    }
+
+    /**
+     * True when a visible error muc-callout with header+body sits below the info callout that shows
+     * {@code Ausgewählter Termin} / {@code Selected Appointment}.
+     */
+    private boolean appointmentNotAvailableCalloutBelowSummary(String header, String text) {
+        Object result =
+                ((JavascriptExecutor) DriverUtil.getDriver())
+                        .executeScript(
+                                "var header=arguments[0], body=arguments[1];"
+                                        + "function textOf(n){return ((n&&(n.innerText||n.textContent))||'').replace(/\\s+/g,' ').trim();}"
+                                        + "function shown(el){"
+                                        + "if(!el||!el.getBoundingClientRect)return false;"
+                                        + "var r=el.getBoundingClientRect();"
+                                        + "if(r.width<=0||r.height<=0)return false;"
+                                        + "var st=window.getComputedStyle(el);"
+                                        + "return st.visibility!=='hidden'&&st.display!=='none'&&st.opacity!=='0';"
+                                        + "}"
+                                        + "function isErrorCallout(node){"
+                                        + "if(!node||!node.classList||!node.classList.contains('m-callout'))return false;"
+                                        + "var type=(node.getAttribute('data-type')||'').toLowerCase();"
+                                        + "if(type==='error'||type==='danger')return true;"
+                                        + "return node.className.indexOf('m-callout--error')>=0"
+                                        + "||node.className.indexOf('m-callout--danger')>=0;"
+                                        + "}"
+                                        + "function isInfoSummary(node){"
+                                        + "if(!node||!node.classList||!node.classList.contains('m-callout'))return false;"
+                                        + "var t=textOf(node);"
+                                        + "return t.indexOf('Ausgewählter Termin')>=0||t.indexOf('Selected Appointment')>=0;"
+                                        + "}"
+                                        + "var summary=null, error=null;"
+                                        + "function visit(node){"
+                                        + "if(!node||node.nodeType!==1)return;"
+                                        + "if(isInfoSummary(node)&&shown(node))summary=node;"
+                                        + "if(isErrorCallout(node)&&shown(node)){"
+                                        + "var t=textOf(node);"
+                                        + "if(t.indexOf(header)>=0&&t.indexOf(body)>=0)error=node;"
+                                        + "}"
+                                        + "if(node.shadowRoot){var s=node.shadowRoot.children;for(var i=0;i<s.length;i++)visit(s[i]);}"
+                                        + "var c=node.children;if(c)for(var j=0;j<c.length;j++)visit(c[j]);"
+                                        + "}"
+                                        + "visit(document.documentElement);"
+                                        + "if(!summary||!error)return false;"
+                                        + "var sr=summary.getBoundingClientRect(), er=error.getBoundingClientRect();"
+                                        + "return er.top+0.5>=sr.bottom;",
+                                header,
+                                text);
+        return Boolean.TRUE.equals(result);
     }
 
     /** ZMSKVR-472: race loser stays on Termin selection and can choose another slot. */

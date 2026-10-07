@@ -756,9 +756,9 @@ public class CitizenApiSteps {
         if (first == null || first.getTimestamp() == null || first.getTimestamp() <= 0) {
             throw new IllegalStateException("Reserve a slot first so the same timestamp can be attempted again.");
         }
-        Integer officeId = first.getOfficeId() != null ? first.getOfficeId() : lastOfficeId;
-        Integer serviceId = first.getServiceId() != null ? first.getServiceId() : lastServiceId;
-        if (officeId == null || serviceId == null) {
+        int officeId = first.getOfficeId() != null ? first.getOfficeId() : lastOfficeId;
+        int serviceId = first.getServiceId() != null ? first.getServiceId() : lastServiceId;
+        if (officeId <= 0 || serviceId <= 0) {
             throw new IllegalStateException("First reserve has no officeId/serviceId for the duplicate attempt.");
         }
         int serviceCount = lastServiceCount > 0 ? lastServiceCount : 1;
