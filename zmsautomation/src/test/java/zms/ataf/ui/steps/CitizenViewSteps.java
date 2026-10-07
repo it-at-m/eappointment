@@ -1198,6 +1198,19 @@ public class CitizenViewSteps {
         page.assertAppointmentManagementActionsNotVisible();
     }
 
+    @Then("the reschedule appointment button should not be visible in the citizen view")
+    public void theRescheduleAppointmentButtonShouldNotBeVisible() {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: assert Termin verschieben hidden (rebookingDisabled)");
+        page.assertRescheduleAppointmentButtonNotVisible();
+    }
+
+    @Then("the cancel appointment button should be visible in the citizen view")
+    public void theCancelAppointmentButtonShouldBeVisible() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: assert Termin absagen still visible");
+        page.assertCancelAppointmentButtonVisible();
+    }
+
     @Then("the electronic communication checkbox should be visible in the citizen view")
     public void theElectronicCommunicationCheckboxShouldBeVisible() {
         ScenarioLogManager.getLogger()
