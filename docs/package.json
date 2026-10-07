@@ -26,7 +26,7 @@
   "// overrides.katex": "mermaid pins katex@^0.16.47; force 0.18.2 (CVE-2026-103923). No 0.16 patch.",
   "overrides": {
     "uuid": "^14.0.2",
-    "vite": "^8.3.2",
+    "vite": "^8.3.3",
     "dompurify": "^3.4.16",
     "postcss": "^8.5.29",
     "nanoid": "^6.0.1",
