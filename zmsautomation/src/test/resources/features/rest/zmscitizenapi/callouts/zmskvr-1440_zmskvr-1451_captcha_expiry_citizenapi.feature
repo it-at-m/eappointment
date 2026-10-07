@@ -1,4 +1,4 @@
-@rest @zmscitizenapi @callouts @citizen @ZMSKVR-1440
+@rest @zmscitizenapi @callouts @citizen @ZMSKVR-1440 @ZMSKVR-1451
 Feature: Citizen API: expired captcha
   As a citizen API client booking at Kommunale Verkehrsüberwachung (office 10427, scope 74)
   I want an expired captcha token to be rejected
