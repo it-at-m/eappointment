@@ -352,6 +352,51 @@ public class CitizenViewSteps {
         page.assertNoBookableDay(officeId);
     }
 
+    @Then("the no appointment available info callout should be visible in the citizen view")
+    public void theNoAppointmentAvailableInfoCalloutShouldBeVisible() {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: assert blue no-appointment info callout");
+        page.assertNoAppointmentInfoCalloutVisible();
+    }
+
+    @Then("the no appointment available info callout should not be visible in the citizen view")
+    public void theNoAppointmentAvailableInfoCalloutShouldNotBeVisible() {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: assert no-appointment info callout absent");
+        page.assertNoAppointmentInfoCalloutNotVisible();
+    }
+
+    @Then("the provider selection error should be visible in the citizen view")
+    public void theProviderSelectionErrorShouldBeVisible() {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: assert Ort provider-selection error");
+        page.assertProviderSelectionErrorVisible();
+    }
+
+    @Then("the no appointment custom info link should be visible in the citizen view")
+    public void theNoAppointmentCustomInfoLinkShouldBeVisible() {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: assert empty-state custom info link");
+        page.assertNoAppointmentCustomInfoLinkVisible();
+    }
+
+    @Then("the no appointment custom info should contain {string} in the citizen view")
+    public void theNoAppointmentCustomInfoShouldContain(String fragment) {
+        String text = TestDataHelper.transformTestData(fragment);
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: assert custom empty-state info contains '{}'", text);
+        page.assertNoAppointmentCustomInfoContains(text);
+    }
+
+    @Then("the selected calendar day should be {int} Berlin days from today in the citizen view")
+    public void theSelectedCalendarDayShouldBeBerlinDaysFromToday(int daysFromToday) {
+        ScenarioLogManager.getLogger()
+                .info(
+                        "zmscitizenview: assert selected calendar day is Berlin today+{}",
+                        daysFromToday);
+        page.assertSelectedCalendarDayIsBerlinDaysFromToday(daysFromToday);
+    }
+
     @Then("the calendar and list toggle shows {string} as active")
     public void theCalendarAndListToggleShowsAsActive(String activeLabel) {
         ScenarioLogManager.getLogger().info("zmscitizenview: toggle active label {}", activeLabel);
@@ -1013,6 +1058,12 @@ public class CitizenViewSteps {
         ScenarioLogManager.getLogger()
                 .info("zmscitizenview: keep only providers {} checked", allowedOfficeIds);
         page.keepOnlyProviderCheckboxesChecked(allowedOfficeIds);
+    }
+
+    @When("I uncheck all provider checkboxes in the citizen view")
+    public void iUncheckAllProviderCheckboxesInTheCitizenView() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: uncheck all Ort providers");
+        page.keepOnlyProviderCheckboxesChecked(Set.of());
     }
 
     private int parseIntOrFail(String value, String label) {
