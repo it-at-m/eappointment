@@ -25,7 +25,7 @@ public final class BerlinTime {
 
     /**
      * Day after {@code V19} Ruppertstraße {@code @range_end} — same math as
-     * {@code V42__ZMSKVR-88_ZMSKVR-472_single_seat_after_v19.sql} (one internet seat on Pass 172 / office 10502).
+     * {@code V43__ZMSKVR-88_ZMSKVR-472_single_seat_after_v19.sql} (one internet seat on Pass 172 / office 10502).
      */
     public static LocalDate singleSeatDayAfterV19RuppertstrasseRange() {
         LocalTime latestEnd = LocalTime.of(23, 55);

@@ -5,7 +5,7 @@ Feature: Citizen API: second reserve of the same timeslot is rejected
   So that only one citizen can claim that appointment
 
   # ZMSKVR-88, tested by ZMSKVR-472 (API layer).
-  # Reisepass 1063453 at Passkalender 10502. V42 opens one internet seat on the day after
+  # Reisepass 1063453 at Passkalender 10502. V43 opens one internet seat on the day after
   # the V19 Ruppertstraße range (Standort 172). First reserve wins; second gets
   # appointmentNotAvailable.
 

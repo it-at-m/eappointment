@@ -1,17 +1,29 @@
 <template>
-  <div
-    v-if="isExpired"
-    :id="`process-${appointment?.processId}-displayNumber-${appointment?.displayNumber}`"
-  >
+  <div v-if="isReservationExpired">
     <muc-callout type="error">
+      <template #header>{{
+        t("apiErrorProcessNotReservedAnymoreHeader")
+      }}</template>
       <template #content>
-        <p>{{ t("apiErrorSessionTimeoutText") }}</p>
+        <p>{{ t("apiErrorProcessNotReservedAnymoreText") }}</p>
       </template>
-      <template #header>{{ t("apiErrorSessionTimeoutHeader") }}</template>
+      <template #buttons>
+        <div
+          class="m-button-group"
+          style="margin-top: 1rem"
+        >
+          <muc-button
+            icon="arrow-right"
+            @click="restartBooking"
+          >
+            <template #default>{{ t("restartBooking") }}</template>
+          </muc-button>
+        </div>
+      </template>
     </muc-callout>
   </div>
   <div
-    v-if="!isExpired"
+    v-if="!isReservationExpired"
     class="m-component"
     :id="`process-${appointment?.processId}-displayNumber-${appointment?.displayNumber}`"
   >
@@ -294,7 +306,7 @@
     </div>
   </div>
   <div
-    v-if="!isExpired && rebookOrCancelDialog"
+    v-if="!isReservationExpired && rebookOrCancelDialog"
     class="m-button-group"
   >
     <muc-button
@@ -315,7 +327,7 @@
     </muc-button>
   </div>
   <div
-    v-if="!isExpired && isRebooking"
+    v-if="!isReservationExpired && isRebooking"
     class="m-button-group"
   >
     <muc-button
@@ -336,7 +348,7 @@
     </muc-button>
   </div>
   <div
-    v-if="!rebookOrCancelDialog && !isRebooking"
+    v-if="!isReservationExpired && !rebookOrCancelDialog && !isRebooking"
     class="m-button-group"
   >
     <muc-button
@@ -348,7 +360,7 @@
       <template #default>{{ t("back") }}</template>
     </muc-button>
     <muc-button
-      v-if="!isExpired"
+      v-if="!isReservationExpired"
       :disabled="!validForm || loadingStates.isBookingAppointment.value"
       :icon="'check'"
       @click="bookAppointment"
@@ -406,6 +418,7 @@ const emit =
         | "cancelAppointment"
         | "cancelReschedule"
         | "rescheduleAppointment"
+        | "restartBooking"
     ) => void
   >();
 
@@ -437,7 +450,7 @@ const { serviceLinkId } = inject<ServiceLinkProvider>(
   "serviceLinkProvider"
 ) as ServiceLinkProvider;
 
-const { isExpired } = useReservationTimer();
+const { isReservationExpired } = useReservationTimer();
 
 const electronicCommunication = ref<boolean>(false);
 
@@ -476,6 +489,7 @@ const validForm = computed(
 
 const bookAppointment = () => emit("bookAppointment");
 const previousStep = () => emit("back");
+const restartBooking = () => emit("restartBooking");
 const cancelAppointment = () => emit("cancelAppointment");
 const cancelReschedule = () => emit("cancelReschedule");
 const rescheduleAppointment = () => emit("rescheduleAppointment");
