@@ -8,8 +8,9 @@ Feature: CitizenView: captcha session and reservation callouts
   # Scope 74 only: captcha on, reservation duration 2 minutes, captcha JWT TTL 2 minutes.
   # Service 1072015 Parkausweis für Handelsvertretungen. Combinable only with itself, so the
   # restart check is that this service is still selected.
-  # Captcha sits on Leistung and keeps Weiter disabled until Altcha finishes. The test
-  # browser treats http://citizenview as a secure context so the widget can run.
+  # Captcha sits on Leistung and keeps Weiter disabled until verification finishes. ATAF
+  # solves CaptchaService and injects Altcha's serververification event because
+  # http://citizenview is not a secure context for WebCrypto in Firefox/Edge.
   # The client timer shows the reservation callout. The processNotReservedAnymore API callout
   # on Übersicht is covered by the Vue unit tests.
 
