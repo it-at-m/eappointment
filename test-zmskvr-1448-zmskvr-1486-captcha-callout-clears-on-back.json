@@ -1,0 +1,35 @@
+{
+  "branch": "test-zmskvr-1448-zmskvr-1486-captcha-callout-clears-on-back",
+  "branchSlug": "test-zmskvr-1448-zmskvr-1486-captcha-callout-clears-on-back",
+  "runId": "37609648665",
+  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37609648665",
+  "runStartedAt": "2026-10-07T10:46:47Z",
+  "publishedAt": "2026-10-07T11:00:42.680Z",
+  "features": {
+    "feature-ui-zmscitizenview-callouts-zmskvr-1448-zmskvr-1486-captcha-callout-clears-after-restart": {
+      "status": "passed",
+      "shard": "custom",
+      "browser": "chrome",
+      "browsers": {
+        "chrome": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "37609648665",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37609648665",
+          "runStartedAt": "2026-10-07T10:46:47Z"
+        },
+        "firefox": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "37609648665",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37609648665",
+          "runStartedAt": "2026-10-07T10:46:47Z"
+        }
+      },
+      "rel": "ui/zmscitizenview/callouts/zmskvr-1448_zmskvr-1486_captcha_callout_clears_after_restart.feature",
+      "runId": "37609648665",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37609648665",
+      "runStartedAt": "2026-10-07T10:46:47Z"
+    }
+  }
+}
