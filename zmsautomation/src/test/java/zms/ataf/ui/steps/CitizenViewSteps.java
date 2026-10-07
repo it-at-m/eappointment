@@ -388,6 +388,15 @@ public class CitizenViewSteps {
         page.assertNoAppointmentCustomInfoContains(text);
     }
 
+    @Then("the selected calendar day should be {int} Berlin days from today in the citizen view")
+    public void theSelectedCalendarDayShouldBeBerlinDaysFromToday(int daysFromToday) {
+        ScenarioLogManager.getLogger()
+                .info(
+                        "zmscitizenview: assert selected calendar day is Berlin today+{}",
+                        daysFromToday);
+        page.assertSelectedCalendarDayIsBerlinDaysFromToday(daysFromToday);
+    }
+
     @Then("the calendar and list toggle shows {string} as active")
     public void theCalendarAndListToggleShowsAsActive(String activeLabel) {
         ScenarioLogManager.getLogger().info("zmscitizenview: toggle active label {}", activeLabel);

@@ -388,6 +388,10 @@ public class CitizenViewPage extends BasePage {
         timeSlot.assertNoAppointmentCustomInfoContains(fragment);
     }
 
+    public void assertSelectedCalendarDayIsBerlinDaysFromToday(int daysFromToday) {
+        timeSlot.assertSelectedCalendarDayIsBerlinDaysFromToday(daysFromToday);
+    }
+
     public void assertServiceFinderHeadingVisible() {
         serviceFinder.assertServiceFinderHeadingVisible();
     }
