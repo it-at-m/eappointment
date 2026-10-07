@@ -505,8 +505,8 @@ public class CitizenApiSteps {
 
     /**
      * Book every free internet seat for the office/service (refetching the calendar between
-     * reserves). Used when chrome/firefox matrix jobs share one Feuerwache day and the UI must
-     * see a fully empty calendar.
+     * reserves) so the UI sees a fully empty calendar. Fails when nothing was reserved or a
+     * bookable day remains.
      */
     @When("I reserve every available appointment for office {int} and service {int}")
     public void iReserveEveryAvailableAppointmentForOfficeAndService(int officeId, int serviceId) {
@@ -566,16 +566,22 @@ public class CitizenApiSteps {
             reserved++;
             iRequestAvailableDaysForOfficeAndService(officeId, serviceId, 1);
         }
+        String remainingDay =
+                lastAvailableCalendarResponse == null
+                        ? null
+                        : lastAvailableCalendarResponse.getFirstAvailableDayForOffice(officeId);
         if (reserved == 0) {
-            Assertions.assertThat(
-                            lastAvailableCalendarResponse == null
-                                    ? null
-                                    : lastAvailableCalendarResponse.getFirstAvailableDayForOffice(officeId))
-                    .as(
-                            "Office %d had no free seats to reserve (another matrix browser may have emptied it)",
-                            officeId)
-                    .isNull();
+            Assertions.fail(
+                    "Office %d: reserved nothing; bookable day is %s",
+                    officeId,
+                    remainingDay == null ? "absent (calendar was already empty)" : remainingDay);
         }
+        Assertions.assertThat(remainingDay)
+                .as(
+                        "Office %d still has a bookable day after reserving %d appointment(s)",
+                        officeId,
+                        reserved)
+                .isNull();
         ScenarioLogManager.getLogger()
                 .info("Citizen API reserved {} appointment(s) for office {} service {}", reserved, officeId, serviceId);
     }

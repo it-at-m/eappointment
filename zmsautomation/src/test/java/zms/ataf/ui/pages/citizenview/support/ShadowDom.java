@@ -368,34 +368,6 @@ public final class ShadowDom {
     }
 
     /**
-     * Click the first painted node (any tag) whose visible text contains {@code text}. Used when
-     * {@code muc-button} host boxes are zero-sized so {@link #clickButtonContaining} misses.
-     */
-    public boolean deepClickByVisibleText(String text) {
-        context.set();
-        String script =
-                "var label=arguments[0];"
-                        + "function shown(el){var n=el;while(n&&n.nodeType===1){"
-                        + "var st=window.getComputedStyle(n);"
-                        + "if(st.display==='none'||st.visibility==='hidden'||st.opacity==='0')return false;"
-                        + "if(n.parentElement){n=n.parentElement;continue;}"
-                        + "var root=n.getRootNode&&n.getRootNode();n=root&&root.host?root.host:null;}"
-                        + "return true;}"
-                        + "function walk(n){if(!n)return null;"
-                        + "if(n.nodeType===1){var t=(n.innerText||n.textContent||'').replace(/\\s+/g,' ').trim();"
-                        + "if(t.indexOf(label)>=0&&shown(n)){"
-                        + "var hit=n;if(n.shadowRoot){var inner=walk(n.shadowRoot);if(inner)hit=inner;}"
-                        + "return hit;}}"
-                        + "if(n.shadowRoot){var s=walk(n.shadowRoot);if(s)return s;}"
-                        + "var c=n.children;if(c)for(var i=0;i<c.length;i++){var f=walk(c[i]);if(f)return f;}"
-                        + "return null;}"
-                        + "var el=walk(document.body);if(!el)return false;"
-                        + "el.scrollIntoView({block:'center'});el.click();return true;";
-        return Boolean.TRUE.equals(
-                ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script, text));
-    }
-
-    /**
      * After clicking Weiter on the Kontakt form: wait for the update-appointment response and for the preconfirm
      * page (electronic communication checkbox). The Kontakt Weiter is only disabled <em>after</em> click while the request runs.
      */

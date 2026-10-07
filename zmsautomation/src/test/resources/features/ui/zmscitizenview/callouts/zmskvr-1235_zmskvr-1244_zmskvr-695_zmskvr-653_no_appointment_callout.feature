@@ -34,8 +34,9 @@ Feature: CitizenView: no appointment available info callout
   #   ZMSALT-1857  closed predecessor (zmsproxymuc era) — not retested here
   #
   # Fixtures: V44 Föhring 10577 tomorrow (V46: 8 seats for Ort toggle); Milbertshofen 10579
-  # no OH + custom infoForAllAppointments. V45/V46 Pasing 10585 day+2 (6 seats) for
-  # booked-out races so chrome/firefox do not starve Föhring display scenarios.
+  # no OH + custom infoForAllAppointments. V45/V46 Pasing 10585 day+2 stays bookable for the
+  # later-day jump-in. V48 gives Neuperlach 10582 and Riem 10575 their own seat so the two
+  # booked-out scenarios do not share a calendar inside one browser job.
 
   Background:
     Given the Citizen API is available
@@ -89,22 +90,22 @@ Feature: CitizenView: no appointment available info callout
     And the no appointment available info callout should not be visible in the citizen view
 
   Scenario: Day booked out while on Termin refreshes to the blue info callout
-    Given I open zmscitizenview with jump-in service "10389330" and location "10585"
+    Given I open zmscitizenview with jump-in service "10389330" and location "10582"
     Then the service combination step should be visible
     When I continue from the service combination step
     And I wait for appointment slots to be ready in the citizen view
-    Then the citizen calendar and list should show a bookable day for office 10585
-    When I reserve every available appointment for office 10585 and service 10389330
+    Then the citizen calendar and list should show a bookable day for office 10582
+    When I reserve every available appointment for office 10582 and service 10389330
     # Ort toggle left stale timeslots in the DOM (keep-only waits for slots). Reload
-    # forces a clean availability fetch after parallel reserve-every emptied Pasing.
+    # forces a clean availability fetch after reserve-every emptied Neuperlach.
     And I reload the citizen view
     Then the service combination step should be visible
     When I continue from the service combination step
     Then the no appointment available info callout should be visible in the citizen view
 
-  Scenario: Jump-in to Pasing after every seat was reserved shows the blue info callout
-    When I reserve every available appointment for office 10585 and service 10389330
-    Given I open zmscitizenview with jump-in service "10389330" and location "10585"
+  Scenario: Jump-in to Riem after every seat was reserved shows the blue info callout
+    When I reserve every available appointment for office 10575 and service 10389330
+    Given I open zmscitizenview with jump-in service "10389330" and location "10575"
     Then the service combination step should be visible
     When I continue from the service combination step
     Then the no appointment available info callout should be visible in the citizen view
