@@ -5,9 +5,8 @@ Feature: Citizen API: Feuerwache calendar empty when no seats remain
   I want available-days to stay empty when a Feuerwache has no seats
   So that the Bürgerfrontend can show the no-appointment info callout
 
-  # V44: Föhring 10577 tomorrow one seat; Milbertshofen 10579 no opening hours.
-  # V45: Pasing 10585 day-after-tomorrow one seat (jump-in day ownership, ZMSKVR-730).
-  # Full ticket map: ui/.../callouts/zmskvr-1235_zmskvr-1244_…_no_appointment_callout.feature
+  # V44/V46: Föhring 10577 tomorrow (8 seats). V45/V46: Pasing 10585 day+2 (6 seats).
+  # Milbertshofen 10579: no opening hours. Full ticket map on the UI callout feature.
 
   Background:
     Given the Citizen API is available
