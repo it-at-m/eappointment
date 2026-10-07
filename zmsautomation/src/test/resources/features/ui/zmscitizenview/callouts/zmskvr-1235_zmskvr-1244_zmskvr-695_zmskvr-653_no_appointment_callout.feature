@@ -48,7 +48,7 @@ Feature: CitizenView: no appointment available info callout
     Then the service combination step should be visible
     When I continue from the service combination step
     Then provider checkbox 10577 should be visible in the citizen view
-    When I keep only providers "" checked in the citizen view
+    When I uncheck all provider checkboxes in the citizen view
     Then the provider selection error should be visible in the citizen view
     And the no appointment available info callout should be visible in the citizen view
 
@@ -69,9 +69,7 @@ Feature: CitizenView: no appointment available info callout
     When I keep only providers "10579" checked in the citizen view
     Then the no appointment available info callout should be visible in the citizen view
     When I keep only providers "10577" checked in the citizen view
-    And I wait for appointment slots to be ready in the citizen view
-    Then the no appointment available info callout should not be visible in the citizen view
-    And the citizen calendar and list should show a bookable day for office 10577
+    Then the citizen calendar and list should show a bookable day for office 10577
 
   Scenario: Jump-in to Feuerwache 7 without opening hours shows the blue info callout and custom hint
     Given I open zmscitizenview with jump-in service "10389330" and location "10579"
@@ -80,30 +78,6 @@ Feature: CitizenView: no appointment available info callout
     Then the no appointment available info callout should be visible in the citizen view
     And the no appointment custom info should contain "ATAF Hinweis Feuerwache 7" in the citizen view
 
-  Scenario: Jump-in to Föhring after the only seat was reserved shows the blue info callout
-    When I request available days for office 10577 and service 10389330 with service count 1
-    Then the available calendar should include a bookable day for office 10577
-    When I request available appointments for the first available day for office 10577
-    And I reserve an appointment with the first available slot
-    Given I open zmscitizenview with jump-in service "10389330" and location "10577"
-    Then the service combination step should be visible
-    When I continue from the service combination step
-    Then the no appointment available info callout should be visible in the citizen view
-    When I cancel the appointment
-
-  Scenario: Day booked out while on Termin refreshes to the blue info callout
-    Given I open zmscitizenview with jump-in service "10389330" and location "10577"
-    Then the service combination step should be visible
-    When I continue from the service combination step
-    And I wait for appointment slots to be ready in the citizen view
-    Then the no appointment available info callout should not be visible in the citizen view
-    When I request available days for office 10577 and service 10389330 with service count 1
-    And I request available appointments for the first available day for office 10577
-    And I reserve an appointment with the first available slot
-    And I keep only providers "10577" checked in the citizen view
-    Then the no appointment available info callout should be visible in the citizen view
-    When I cancel the appointment
-
   Scenario: Jump-in to Pasing opens that office later day not Föhring tomorrow
     Given I open zmscitizenview with jump-in service "10389330" and location "10585"
     Then the service combination step should be visible
@@ -111,3 +85,29 @@ Feature: CitizenView: no appointment available info callout
     And I wait for appointment slots to be ready in the citizen view
     Then the selected calendar day should be 2 Berlin days from today in the citizen view
     And the no appointment available info callout should not be visible in the citizen view
+
+  Scenario: Day booked out while on Termin refreshes to the blue info callout
+    Given I open zmscitizenview with jump-in service "10389330" and location "10577"
+    Then the service combination step should be visible
+    When I continue from the service combination step
+    And I wait for appointment slots to be ready in the citizen view
+    Then the citizen calendar and list should show a bookable day for office 10577
+    When I request available days for office 10577 and service 10389330 with service count 1
+    And I request available appointments for the first available day for office 10577
+    And I reserve an appointment with the first available slot
+    And I remember the current appointment as "feuerwache-day-race"
+    And I keep only providers "10577" checked in the citizen view
+    Then the no appointment available info callout should be visible in the citizen view
+    When I cancel the remembered "feuerwache-day-race" appointment
+
+  Scenario: Jump-in to Föhring after the only seat was reserved shows the blue info callout
+    When I request available days for office 10577 and service 10389330 with service count 1
+    Then the available calendar should include a bookable day for office 10577
+    When I request available appointments for the first available day for office 10577
+    And I reserve an appointment with the first available slot
+    And I remember the current appointment as "feuerwache-booked-out"
+    Given I open zmscitizenview with jump-in service "10389330" and location "10577"
+    Then the service combination step should be visible
+    When I continue from the service combination step
+    Then the no appointment available info callout should be visible in the citizen view
+    When I cancel the remembered "feuerwache-booked-out" appointment

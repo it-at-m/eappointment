@@ -1060,6 +1060,12 @@ public class CitizenViewSteps {
         page.keepOnlyProviderCheckboxesChecked(allowedOfficeIds);
     }
 
+    @When("I uncheck all provider checkboxes in the citizen view")
+    public void iUncheckAllProviderCheckboxesInTheCitizenView() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: uncheck all Ort providers");
+        page.keepOnlyProviderCheckboxesChecked(Set.of());
+    }
+
     private int parseIntOrFail(String value, String label) {
         try {
             return Integer.parseInt(value);
