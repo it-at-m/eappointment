@@ -22,6 +22,10 @@ import io.restassured.response.Response;
 /**
  * Solves the local CaptchaService challenge through the citizen API and can mint an already-expired
  * captcha JWT with the same secret the API uses.
+ *
+ * <p>The JWT {@code ip} claim is the client IP of this HTTP call. For UI inject, pass the same
+ * gateway base URI the Bürgeransicht browser uses; a direct zms-web URI stamps a different IP and
+ * available-calendar then returns {@code captchaInvalid}.
  */
 public final class CaptchaClient {
 
