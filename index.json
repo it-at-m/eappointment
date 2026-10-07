@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-10-07T21:53:16.880Z",
+  "publishedAt": "2026-10-07T23:14:36.692Z",
   "branches": [
     {
       "name": "next",
@@ -600,6 +600,12 @@
       "slug": "test-zmskvr-1619-zmskvr-1653-overall-opening-hours",
       "runId": "37085086155",
       "runStartedAt": "2026-10-03T01:10:43Z"
+    },
+    {
+      "name": "test-zmskvr-1620-zmskvr-1691-rebooking-disabled",
+      "slug": "test-zmskvr-1620-zmskvr-1691-rebooking-disabled",
+      "runId": "37696247517",
+      "runStartedAt": "2026-10-07T22:26:59Z"
     },
     {
       "name": "test-zmskvr-1629-zmskvr-1663-daily-capacity-total",

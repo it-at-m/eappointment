@@ -1,0 +1,60 @@
+{
+  "branch": "test-zmskvr-1620-zmskvr-1691-rebooking-disabled",
+  "branchSlug": "test-zmskvr-1620-zmskvr-1691-rebooking-disabled",
+  "runId": "37696247517",
+  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37696247517",
+  "runStartedAt": "2026-10-07T22:26:59Z",
+  "publishedAt": "2026-10-07T23:14:36.692Z",
+  "features": {
+    "feature-rest-zmscitizenapi-rebooking-zmskvr-1620-zmskvr-1691-rebooking-disabled-citizenapi": {
+      "status": "failed",
+      "shard": "custom",
+      "browser": "chrome",
+      "browsers": {
+        "chrome": {
+          "status": "failed",
+          "shard": "custom",
+          "runId": "37696247517",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37696247517",
+          "runStartedAt": "2026-10-07T22:26:59Z"
+        },
+        "firefox": {
+          "status": "failed",
+          "shard": "custom",
+          "runId": "37696247517",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37696247517",
+          "runStartedAt": "2026-10-07T22:26:59Z"
+        }
+      },
+      "rel": "rest/zmscitizenapi/rebooking/zmskvr-1620_zmskvr-1691_rebooking_disabled_citizenapi.feature",
+      "runId": "37696247517",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37696247517",
+      "runStartedAt": "2026-10-07T22:26:59Z"
+    },
+    "feature-ui-zmscitizenview-rebooking-zmskvr-1620-zmskvr-1691-rebooking-disabled": {
+      "status": "skipped",
+      "shard": "custom",
+      "browser": "chrome",
+      "browsers": {
+        "chrome": {
+          "status": "skipped",
+          "shard": "custom",
+          "runId": "37696247517",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37696247517",
+          "runStartedAt": "2026-10-07T22:26:59Z"
+        },
+        "firefox": {
+          "status": "skipped",
+          "shard": "custom",
+          "runId": "37696247517",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37696247517",
+          "runStartedAt": "2026-10-07T22:26:59Z"
+        }
+      },
+      "rel": "ui/zmscitizenview/rebooking/zmskvr-1620_zmskvr-1691_rebooking_disabled.feature",
+      "runId": "37696247517",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37696247517",
+      "runStartedAt": "2026-10-07T22:26:59Z"
+    }
+  }
+}
