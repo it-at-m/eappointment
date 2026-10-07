@@ -4,6 +4,10 @@
 -- hours from V36 and is not used by positive Umbuchung features (those use 10492 /
 -- Rente). Dual-write standort.rebooking_disabled and the preferences shadow row —
 -- Citizen API maps both via Scope::isRebookingDisabled().
+-- full-setup runs Flyway before bin/migrate, so the column may not exist yet.
+
+ALTER TABLE `standort`
+    ADD COLUMN IF NOT EXISTS `rebooking_disabled` int(5) NOT NULL DEFAULT 0;
 
 UPDATE `standort`
 SET `rebooking_disabled` = 1
