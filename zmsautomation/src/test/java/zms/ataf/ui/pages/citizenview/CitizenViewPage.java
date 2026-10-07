@@ -1583,6 +1583,10 @@ public class CitizenViewPage extends BasePage {
         captcha.assertCaptchaSessionCalloutVisible();
     }
 
+    public void assertCaptchaSessionCalloutNotVisible() {
+        captcha.assertCaptchaSessionCalloutNotVisible();
+    }
+
     public void assertReservationExpiredCalloutVisible() {
         CONTEXT.set();
         waitUntilShadowContains(DE_RESERVATION_EXPIRED_HEADER, DEFAULT_EXPLICIT_WAIT_TIME);
