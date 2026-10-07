@@ -1648,6 +1648,10 @@ public class CitizenViewPage extends BasePage {
      * {@code http://citizenview}, which Chrome often still solves but Firefox and Edge do not. Solve
      * through CaptchaService (same JWT TTL as a real widget verify) and complete Altcha's
      * {@code serververification} path so session-expiry callouts still arm on the token.
+     *
+     * <p>Solve via the gateway URL the browser uses ({@link TestConfig#getCitizenApiBrowserBaseUri()}),
+     * not the direct zms-web citizen API. Captcha JWTs bind to client IP; a token minted on the
+     * direct path is rejected as {@code captchaInvalid} on available-calendar.
      */
     public void waitUntilCaptchaCheckFinished(int widgetTimeoutSeconds, int solveTimeoutSeconds) {
         CONTEXT.set();
@@ -1655,7 +1659,10 @@ public class CitizenViewPage extends BasePage {
                 .info("zmscitizenview: waiting up to {}s for the captcha widget to load", widgetTimeoutSeconds);
         waitUntilShadowContains(DE_CAPTCHA_LABEL, widgetTimeoutSeconds);
         clickCaptchaCheckboxIfUnchecked();
-        String token = CaptchaClient.solve(TestConfig.getCitizenApiBaseUri());
+        String browserApi = TestConfig.getCitizenApiBrowserBaseUri();
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: solving captcha via browser API path {}", browserApi);
+        String token = CaptchaClient.solve(browserApi);
         if (!injectCaptchaServerVerification(token)) {
             throw new IllegalStateException(
                     "altcha-widget not found after captcha label appeared; cannot inject verification");
