@@ -222,6 +222,36 @@ class MapperServiceTest extends TestCase
         $this->assertEquals('confirmed', $result->status);
     }
 
+    /**
+     * Booked appointments keep serviceName even when the request is internal
+     * (public=false). Catalog listing still excludes those via mapServicesWithCombinations.
+     */
+    public function testProcessToThinnedProcessKeepsServiceNameForInternalRequest()
+    {
+        $process = new Process(['id' => 42, 'authKey' => 'abcd']);
+        $appointment = new class {
+            public $date = '1724907600';
+            public function hasTime() { return true; }
+        };
+        $process->appointments = [$appointment];
+        $process->queue = (object) ['status' => 'confirmed'];
+
+        $request = new Request();
+        $request->id = 1080784;
+        $request->name = 'Aufenthaltserlaubnis – Ausbildung oder Weiterbildung';
+        $request->data = ['public' => false, 'maxQuantity' => 1];
+        $process->requests = new RequestList([$request]);
+
+        $result = MapperService::processToThinnedProcess($process);
+
+        $this->assertSame(1080784, $result->serviceId);
+        $this->assertSame(
+            'Aufenthaltserlaubnis – Ausbildung oder Weiterbildung',
+            $result->serviceName
+        );
+        $this->assertSame(1, $result->serviceCount);
+    }
+
     public function testProcessToThinnedProcessSkipsIcsForDeletedStatus()
     {
         $process = new Process([
@@ -499,11 +529,16 @@ class MapperServiceTest extends TestCase
         $this->assertEquals($expectedResponse, $resultArray);
     }
 
+    /**
+     * Offices-and-services catalog must omit internal requests (public=false),
+     * e.g. SZE service 1080784. Booked appointments still expose the name via
+     * processToThinnedProcess.
+     */
     public function testDontReturnNotPublicServices()
     {
         $request1 = new Request();
-        $request1->id = 1;
-        $request1->name = 'Service 111';
+        $request1->id = 1080784;
+        $request1->name = 'Aufenthaltserlaubnis – Ausbildung oder Weiterbildung';
         $request1->data = [
             'maxQuantity' => 22,
             'public' => false
