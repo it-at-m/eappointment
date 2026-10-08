@@ -124,7 +124,7 @@ public class CitizenViewPage extends BasePage {
         bookingStepper = new BookingStepperStep(CONTEXT, shadow, DEFAULT_EXPLICIT_WAIT_TIME);
         jumpInError = new JumpInErrorStep(CONTEXT, shadow, DEFAULT_EXPLICIT_WAIT_TIME);
         contact = new ContactStep(CONTEXT, shadow, this, DEFAULT_EXPLICIT_WAIT_TIME);
-        overview = new OverviewStep(CONTEXT, shadow, this, DEFAULT_EXPLICIT_WAIT_TIME);
+        overview = new OverviewStep(CONTEXT, shadow, this, slotState, DEFAULT_EXPLICIT_WAIT_TIME);
         myAppointments = new MyAppointmentsStep(CONTEXT, shadow, slotState, this, contact, DEFAULT_EXPLICIT_WAIT_TIME);
         captcha = new CaptchaStep(CONTEXT, shadow, DEFAULT_EXPLICIT_WAIT_TIME);
     }
@@ -1188,6 +1188,38 @@ public class CitizenViewPage extends BasePage {
 
     public void assertSelectedAppointmentCalloutVisible() {
         timeSlot.assertSelectedAppointmentCalloutVisible();
+    }
+
+    public void assertSelectedAppointmentCalloutShowsRenderedRuppertstrasseHint() {
+        timeSlot.assertSelectedAppointmentCalloutShowsRenderedRuppertstrasseHint();
+    }
+
+    public void highlightRememberedTimeslotForOffice(int officeId) {
+        timeSlot.highlightRememberedTimeslotForOffice(officeId);
+    }
+
+    public String assertAndRememberMatchingRuppertstrasseWartezoneHint(int officeId) {
+        return overview.assertAndRememberMatchingRuppertstrasseWartezoneHint(officeId);
+    }
+
+    public void assertOtherRuppertstrasseWartezoneHint(int officeId) {
+        overview.assertOtherRuppertstrasseWartezoneHint(officeId);
+    }
+
+    public void assertOverviewScopeHintWrappedInParagraph() {
+        overview.assertOverviewScopeHintWrappedInParagraph();
+    }
+
+    public void assertOverviewScopeHintHtmlRendered() {
+        overview.assertOverviewScopeHintHtmlRendered();
+    }
+
+    public void assertAppointmentDetailMatchingRuppertstrasseWartezoneHint() {
+        myAppointments.assertAppointmentDetailMatchingRuppertstrasseWartezoneHint();
+    }
+
+    public void openAppointmentFromConfirmationSuccess() {
+        overview.openAppointmentFromConfirmationSuccess();
     }
 
     public void assertAppointmentNoLongerAvailableCalloutVisible() {

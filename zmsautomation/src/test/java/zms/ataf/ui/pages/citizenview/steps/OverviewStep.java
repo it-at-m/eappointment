@@ -12,7 +12,9 @@ import ataf.web.utils.DriverUtil;
 import zms.ataf.ui.pages.citizenview.CitizenViewPage;
 import zms.ataf.ui.pages.citizenview.CitizenViewPageContext;
 import zms.ataf.ui.pages.citizenview.support.CitizenViewWaits;
+import zms.ataf.ui.pages.citizenview.support.RuppertstrasseWartezoneHints;
 import zms.ataf.ui.pages.citizenview.support.ShadowDom;
+import zms.ataf.ui.pages.citizenview.support.SlotBookingState;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import zms.ataf.rest.dto.zmscitizenapi.ThinnedProcess;
@@ -23,12 +25,19 @@ public final class OverviewStep {
     private final CitizenViewPageContext context;
     private final ShadowDom shadow;
     private final CitizenViewPage page;
+    private final SlotBookingState slotState;
     private final int defaultWaitSeconds;
 
-    public OverviewStep(CitizenViewPageContext context, ShadowDom shadow, CitizenViewPage page, int defaultWaitSeconds) {
+    public OverviewStep(
+            CitizenViewPageContext context,
+            ShadowDom shadow,
+            CitizenViewPage page,
+            SlotBookingState slotState,
+            int defaultWaitSeconds) {
         this.context = context;
         this.shadow = shadow;
         this.page = page;
+        this.slotState = slotState;
         this.defaultWaitSeconds = defaultWaitSeconds;
     }
     private static final String DE_RESERVE = "Termin reservieren";
@@ -193,6 +202,127 @@ public final class OverviewStep {
         Assert.assertFalse(
                 text.contains(fragment),
                 "Place for office " + officeId + " should not contain: " + fragment + " actual=" + text);
+    }
+
+    /**
+     * ZMSKVR-1051 / ZMSKVR-1309: overview Ort Wartezone and Hinweis marker must belong to the same
+     * Ruppertstraße scope. Remembers the code for a later “other Wartebereich” booking.
+     */
+    public String assertAndRememberMatchingRuppertstrasseWartezoneHint(int officeId) {
+        context.set();
+        CitizenViewWaits.waitWithThreeWindows(
+                () -> {
+                    String t = deepDocumentText();
+                    return RuppertstrasseWartezoneHints.detectCode(t) != null
+                            && t.contains(RuppertstrasseWartezoneHints.OVERVIEW_HINT_HEADING);
+                },
+                "Overview Wartezone + ATAF scope hint");
+        String text = deepDocumentText();
+        String code = RuppertstrasseWartezoneHints.detectCode(text);
+        Assert.assertNotNull(
+                code,
+                "Overview must show a matching Wartebereich 03/04 with ATAF Hinweis WB03/WB04. Text: " + text);
+        Assert.assertTrue(
+                text.contains(RuppertstrasseWartezoneHints.zoneFor(code)),
+                "Overview Ort missing " + RuppertstrasseWartezoneHints.zoneFor(code) + ". Text: " + text);
+        Assert.assertTrue(
+                text.contains(RuppertstrasseWartezoneHints.hintFor(code)),
+                "Overview Hinweis missing " + RuppertstrasseWartezoneHints.hintFor(code) + ". Text: " + text);
+        Assert.assertFalse(
+                text.contains(RuppertstrasseWartezoneHints.hintFor(RuppertstrasseWartezoneHints.otherCode(code))),
+                "Overview must not mix the other Wartebereich hint. Text: " + text);
+        // Ort summary also carries the Wartezone for office 10489.
+        String place = visibleProviderSummaryOrFail(officeId);
+        Assert.assertTrue(
+                place.contains(RuppertstrasseWartezoneHints.zoneFor(code)),
+                "Provider summary missing Wartezone " + code + ". Text: " + place);
+        slotState.rememberedWartezoneCode = code;
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: overview matched Ruppertstraße Wartezone {} for office {}", code, officeId);
+        return code;
+    }
+
+    /** ZMSKVR-1051 / ZMSKVR-1309 step 10: second booking must land on the other Wartebereich. */
+    public void assertOtherRuppertstrasseWartezoneHint(int officeId) {
+        Assert.assertNotNull(
+                slotState.rememberedWartezoneCode,
+                "First Wartezone was not remembered before the second booking.");
+        String first = slotState.rememberedWartezoneCode;
+        String expected = RuppertstrasseWartezoneHints.otherCode(first);
+        String code = assertAndRememberMatchingRuppertstrasseWartezoneHint(officeId);
+        Assert.assertEquals(
+                code,
+                expected,
+                "Second same-time booking should switch Wartebereich from " + first + " to " + expected + ".");
+    }
+
+    /**
+     * ZMSKVR-843 / ZMSKVR-1014: overview Hinweis without embedded {@code <p>} is wrapped in a
+     * paragraph (same font path as duration text).
+     */
+    public void assertOverviewScopeHintWrappedInParagraph() {
+        context.set();
+        String code = slotState.rememberedWartezoneCode;
+        Assert.assertNotNull(code, "Need a remembered Wartezone before asserting overview <p> wrap.");
+        String needle = RuppertstrasseWartezoneHints.hintFor(code);
+        Object raw =
+                ((JavascriptExecutor) DriverUtil.getDriver())
+                        .executeScript(
+                                "var needle=arguments[0];"
+                                        + "function textOf(n){var s='';if(!n)return s;if(n.nodeType===3)return n.nodeValue||'';"
+                                        + "if(n.shadowRoot)s+=' '+textOf(n.shadowRoot);"
+                                        + "if(n.assignedNodes){var a=n.assignedNodes({flatten:true});"
+                                        + "for(var j=0;j<a.length;j++)s+=' '+textOf(a[j]);}"
+                                        + "var c=n.childNodes;if(c)for(var i=0;i<c.length;i++)s+=' '+textOf(c[i]);return s;}"
+                                        + "function walk(n,fn){if(!n)return null;var r=fn(n);if(r)return r;"
+                                        + "if(n.shadowRoot){r=walk(n.shadowRoot,fn);if(r)return r;}"
+                                        + "var c=n.children;if(c)for(var i=0;i<c.length;i++){r=walk(c[i],fn);if(r)return r;}"
+                                        + "return null;}"
+                                        + "return walk(document.body,function(n){"
+                                        + "if((n.tagName||'').toUpperCase()!=='P')return null;"
+                                        + "var t=textOf(n).replace(/\\s+/g,' ').trim();"
+                                        + "return t.indexOf(needle)>=0?t:null;"
+                                        + "});");
+        Assert.assertTrue(
+                raw instanceof String && ((String) raw).contains(needle),
+                "Overview Hinweis \"" + needle + "\" must sit inside a <p> (ZMSKVR-843).");
+    }
+
+    /** ZMSKVR-1530: overview Hinweis HTML is painted (link text, no raw tags). */
+    public void assertOverviewScopeHintHtmlRendered() {
+        context.set();
+        String code = slotState.rememberedWartezoneCode;
+        Assert.assertNotNull(code, "Need a remembered Wartezone before asserting overview HTML.");
+        String linkLabel = RuppertstrasseWartezoneHints.linkLabelFor(code);
+        CitizenViewWaits.waitWithThreeWindows(
+                () -> shadow.shadowDomContainsText(linkLabel), "Overview ATAF hint link label");
+        Assert.assertTrue(shadow.shadowDomContainsText(linkLabel), "Overview missing rendered link " + linkLabel);
+        Assert.assertTrue(
+                shadow.shadowHrefContains(RuppertstrasseWartezoneHints.HINT_HREF),
+                "Overview hint must expose href " + RuppertstrasseWartezoneHints.HINT_HREF);
+        Assert.assertFalse(
+                shadow.shadowDomContainsText("<a href"),
+                "Overview Hinweis must not show raw <a> markup.");
+        Assert.assertFalse(
+                shadow.shadowDomContainsText("<br>"),
+                "Overview Hinweis must not show raw <br> markup.");
+        Assert.assertFalse(
+                shadow.shadowDomContainsText("<em>") || shadow.shadowDomContainsText("<strong>"),
+                "Overview Hinweis must not show raw emphasis tags.");
+    }
+
+    private String deepDocumentText() {
+        Object o =
+                ((JavascriptExecutor) DriverUtil.getDriver())
+                        .executeScript(
+                                "function walk(n){var s='';if(!n)return s;if(n.nodeType===3)return n.nodeValue||'';"
+                                        + "if(n.shadowRoot)s+=' '+walk(n.shadowRoot);"
+                                        + "if(n.assignedNodes){var a=n.assignedNodes({flatten:true});"
+                                        + "for(var j=0;j<a.length;j++)s+=' '+walk(a[j]);}"
+                                        + "var c=n.childNodes;if(c)for(var i=0;i<c.length;i++)s+=' '+walk(c[i]);"
+                                        + "return s;}"
+                                        + "return walk(document.documentElement).replace(/\\s+/g,' ').trim();");
+        return o == null ? "" : o.toString();
     }
     public void assertVideoLegalNotices(String legal) {
         context.set();
@@ -542,6 +672,19 @@ public final class OverviewStep {
         Assert.assertTrue(
                 shadow.shadowDomContainsText(BOOK_ANOTHER_APPOINTMENT_BUTTON),
                 "Logged-in confirmation must show secondary action 'Weiteren Termin vereinbaren'.");
+    }
+
+    /** Opens Termin-Detail for the appointment just confirmed (logged-in success callout). */
+    public void openAppointmentFromConfirmationSuccess() {
+        context.set();
+        CitizenViewWaits.waitWithThreeWindows(
+                () -> shadow.shadowDomContainsText(VIEW_APPOINTMENT_BUTTON),
+                "Termin ansehen on confirmation success");
+        shadow.waitForAndClickButtonContaining(VIEW_APPOINTMENT_BUTTON, defaultWaitSeconds);
+        CitizenViewWaits.waitWithThreeWindows(
+                () -> shadow.shadowDomContainsText("Termin absagen")
+                        || shadow.shadowDomHasHeading(2, "Ort"),
+                "Appointment detail after Termin ansehen");
     }
     public void confirmRebookingFromSummary() {
         context.set();

@@ -18,6 +18,7 @@ import zms.ataf.ui.pages.citizenview.CitizenViewPageContext;
 import zms.ataf.ui.pages.citizenview.support.CitizenViewJson;
 import zms.ataf.ui.pages.citizenview.support.CitizenViewScripts;
 import zms.ataf.ui.pages.citizenview.support.CitizenViewWaits;
+import zms.ataf.ui.pages.citizenview.support.RuppertstrasseWartezoneHints;
 import zms.ataf.ui.pages.citizenview.support.ShadowDom;
 import zms.ataf.ui.pages.citizenview.support.SlotBookingState;
 import java.util.Objects;
@@ -1285,6 +1286,87 @@ public final class TimeSlotStep {
         shadow.assertShadowContains(
                 "Ausgewählter Termin",
                 "Selected-appointment info callout not found after choosing slot.");
+    }
+
+    /**
+     * ZMSKVR-1051 / ZMSKVR-1309 / ZMSKVR-1530: Ausgewählter Termin shows a rendered ATAF scope
+     * hint (HTML link, no raw tags). Offices-and-services attaches one scope per officeId, so the
+     * marker may be WB03 or WB04; overview/detail asserts match the booked scope.
+     */
+    public void assertSelectedAppointmentCalloutShowsRenderedRuppertstrasseHint() {
+        context.set();
+        CitizenViewWaits.waitWithThreeWindows(
+                () ->
+                        selectedAppointmentCalloutVisible()
+                                && (shadow.shadowDomContainsText(RuppertstrasseWartezoneHints.HINT_WB03)
+                                        || shadow.shadowDomContainsText(RuppertstrasseWartezoneHints.HINT_WB04)),
+                "Ausgewählter Termin ATAF scope hint");
+        Assert.assertTrue(
+                selectedAppointmentCalloutVisible(),
+                "Selected-appointment callout header missing after slot click");
+        Assert.assertTrue(
+                shadow.shadowDomContainsText(RuppertstrasseWartezoneHints.HINT_WB03)
+                        || shadow.shadowDomContainsText(RuppertstrasseWartezoneHints.HINT_WB04),
+                "Ausgewählter Termin must show ATAF Hinweis WB03 or WB04.");
+        Assert.assertTrue(
+                shadow.shadowDomContainsText(RuppertstrasseWartezoneHints.LINK_WB03)
+                        || shadow.shadowDomContainsText(RuppertstrasseWartezoneHints.LINK_WB04),
+                "Ausgewählter Termin must render the ATAF hint link label.");
+        Assert.assertTrue(
+                shadow.shadowHrefContains(RuppertstrasseWartezoneHints.HINT_HREF),
+                "Ausgewählter Termin hint must expose href " + RuppertstrasseWartezoneHints.HINT_HREF);
+        Assert.assertFalse(
+                shadow.shadowDomContainsText("<a href") || shadow.shadowDomContainsText("<br>"),
+                "Ausgewählter Termin must not show raw HTML tags for the scope hint.");
+    }
+
+    /** Highlight the previously remembered slot epoch for a provider (same-time WB switch). */
+    public void highlightRememberedTimeslotForOffice(int officeId) {
+        context.set();
+        Assert.assertNotNull(
+                slotState.rememberedAppointmentEpoch,
+                "No remembered timeslot epoch; call remember selected appointment time first.");
+        String epoch = Long.toString(slotState.rememberedAppointmentEpoch);
+        String script =
+                "var oid=arguments[0], epoch=arguments[1];"
+                        + "function find(root){if(!root)return null;"
+                        + "var id='provider-'+oid+'-timeslot-'+epoch;"
+                        + "var el=root.getElementById?root.getElementById(id):null;"
+                        + "if(!el&&root.querySelector)el=root.querySelector('[id=\"'+id+'\"],[data-provider-id=\"'+oid+'\"][id$=\"-timeslot-'+epoch+'\"]');"
+                        + "if(el)return el;"
+                        + "var all=root.querySelectorAll?root.querySelectorAll('*'):[];"
+                        + "for(var i=0;i<all.length;i++){if(all[i].shadowRoot){var f=find(all[i].shadowRoot);if(f)return f;}}"
+                        + "return null;}"
+                        + "var n=find(document);if(!n)return false;"
+                        + "n.scrollIntoView({block:'center'});"
+                        + "n.style.outline='3px solid orange';"
+                        + "window.__zmsCitizenViewSlotId=n.id||('provider-'+oid+'-timeslot-'+epoch);"
+                        + "return true;";
+        boolean highlighted = false;
+        for (int attempt = 1; attempt <= 6 && !highlighted; attempt++) {
+            highlighted =
+                    Boolean.TRUE.equals(
+                            ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script, officeId, epoch));
+            if (highlighted) {
+                break;
+            }
+            if (clickCitizenViewLaterOnceIfAvailable()) {
+                CitizenViewWaits.sleepQuiet(1200L);
+                try {
+                    waitUntilAppointmentSlotsReady(Math.min(45, slotBookingWaitTimeoutSeconds()));
+                } catch (Exception e) {
+                    ScenarioLogManager.getLogger()
+                            .warn("zmscitizenview slot wait after Später (remembered): {}", e.toString());
+                }
+            }
+        }
+        Assert.assertTrue(
+                highlighted,
+                "Could not highlight remembered timeslot "
+                        + epoch
+                        + " for provider "
+                        + officeId
+                        + " (same-time WB03/WB04 switch).");
     }
 
     /**
