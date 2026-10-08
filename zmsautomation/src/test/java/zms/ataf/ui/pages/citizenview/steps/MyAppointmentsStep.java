@@ -1251,7 +1251,6 @@ public final class MyAppointmentsStep {
         Assert.assertNotNull(code, "Need a remembered Wartezone from the booking overview.");
         String zone = RuppertstrasseWartezoneHints.zoneFor(code);
         String hint = RuppertstrasseWartezoneHints.hintFor(code);
-        String linkLabel = RuppertstrasseWartezoneHints.linkLabelFor(code);
         CitizenViewWaits.waitWithThreeWindows(
                 () ->
                         (shadow.shadowDomHasHeading(2, "Ort") || shadow.shadowDomContainsText("Termin absagen"))
@@ -1272,27 +1271,30 @@ public final class MyAppointmentsStep {
         Assert.assertTrue(shadow.shadowDomContainsText(hint), "Detail callout missing " + hint);
         Assert.assertFalse(
                 shadow.shadowDomContainsText(
-                        RuppertstrasseWartezoneHints.hintFor(RuppertstrasseWartezoneHints.otherCode(code))),
-                "Detail must not show the other Wartebereich hint.");
-        shadow.scrollTextIntoView(linkLabel);
-        Assert.assertTrue(shadow.shadowDomContainsText(linkLabel), "Detail missing rendered link " + linkLabel);
-        Assert.assertTrue(
-                shadow.shadowHrefContains(RuppertstrasseWartezoneHints.HINT_HREF),
-                "Detail hint must expose href " + RuppertstrasseWartezoneHints.HINT_HREF);
-        String italic = RuppertstrasseWartezoneHints.italicFor(code);
-        String bold = RuppertstrasseWartezoneHints.boldFor(code);
-        shadow.scrollTextIntoView(italic);
-        Assert.assertTrue(shadow.shadowDomContainsText(italic), "Detail missing rendered " + italic);
-        Assert.assertTrue(shadow.shadowDomContainsText(bold), "Detail missing rendered " + bold);
-        // Bare <strong> matches host <noscript> fallback text; probe ATAF-specific raw markers only.
-        Assert.assertFalse(
-                shadow.shadowDomContainsText("<a href")
-                        || shadow.shadowDomContainsText("<br>")
-                        || shadow.shadowDomContainsText("<em>kursiv")
-                        || shadow.shadowDomContainsText("<strong>fett"),
-                "Detail Hinweis callout must not show raw ATAF HTML tags.");
+                        RuppertstrasseWartezoneHints.zoneFor(RuppertstrasseWartezoneHints.otherCode(code))),
+                "Detail must not show the other Wartebereich.");
+        if (RuppertstrasseWartezoneHints.isAtafHtmlHint(code)) {
+            String linkLabel = RuppertstrasseWartezoneHints.linkLabelFor(code);
+            shadow.scrollTextIntoView(linkLabel);
+            Assert.assertTrue(shadow.shadowDomContainsText(linkLabel), "Detail missing rendered link " + linkLabel);
+            Assert.assertTrue(
+                    shadow.shadowHrefContains(RuppertstrasseWartezoneHints.HINT_HREF),
+                    "Detail hint must expose href " + RuppertstrasseWartezoneHints.HINT_HREF);
+            String italic = RuppertstrasseWartezoneHints.italicFor(code);
+            String bold = RuppertstrasseWartezoneHints.boldFor(code);
+            shadow.scrollTextIntoView(italic);
+            Assert.assertTrue(shadow.shadowDomContainsText(italic), "Detail missing rendered " + italic);
+            Assert.assertTrue(shadow.shadowDomContainsText(bold), "Detail missing rendered " + bold);
+            // Bare <strong> matches host <noscript> fallback text; probe ATAF-specific raw markers only.
+            Assert.assertFalse(
+                    shadow.shadowDomContainsText("<a href")
+                            || shadow.shadowDomContainsText("<br>")
+                            || shadow.shadowDomContainsText("<em>kursiv")
+                            || shadow.shadowDomContainsText("<strong>fett"),
+                    "Detail Hinweis callout must not show raw ATAF HTML tags.");
+        }
         ScenarioLogManager.getLogger()
-                .info("zmscitizenview: detail matched Ruppertstraße Wartezone {} and HTML callout", code);
+                .info("zmscitizenview: detail matched Ruppertstraße Wartezone {} callout", code);
     }
 
     public void assertAppointmentDetailLocation(

@@ -248,8 +248,14 @@ public final class OverviewStep {
         shadow.scrollTextIntoView(hint);
         Assert.assertTrue(text.contains(hint), "Overview Hinweis missing " + hint + ". Text: " + text);
         Assert.assertFalse(
-                text.contains(RuppertstrasseWartezoneHints.hintFor(RuppertstrasseWartezoneHints.otherCode(code))),
-                "Overview must not mix the other Wartebereich hint. Text: " + text);
+                text.contains(RuppertstrasseWartezoneHints.zoneFor(RuppertstrasseWartezoneHints.otherCode(code))),
+                "Overview must not mix the other Wartebereich. Text: " + text);
+        String otherHint = RuppertstrasseWartezoneHints.hintFor(RuppertstrasseWartezoneHints.otherCode(code));
+        if (!hint.equals(otherHint)) {
+            Assert.assertFalse(
+                    text.contains(otherHint),
+                    "Overview must not mix the other Wartebereich hint. Text: " + text);
+        }
         String place = visibleProviderSummaryOrFail(officeId);
         Assert.assertTrue(
                 place.contains(zone), "Provider summary missing Wartezone " + code + ". Text: " + place);
