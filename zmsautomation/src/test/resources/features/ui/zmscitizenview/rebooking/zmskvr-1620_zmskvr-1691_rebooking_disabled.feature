@@ -27,7 +27,8 @@ Feature: CitizenView: Termin verschieben hidden when rebooking is disabled
     And I send the confirmation mail for the current appointment
     Then the confirmation mail link offers only cancellation
     When I open the appointment view deep link in the browser
-    Then the reschedule appointment button should not be visible in the citizen view
+    Then the appointment overview should show service 1080784 named "Aufenthaltserlaubnis – Ausbildung oder Weiterbildung" in the citizen view
+    And the reschedule appointment button should not be visible in the citizen view
     And the cancel appointment button should be visible in the citizen view
     When I cancel the appointment in the citizen view
     Then the cancellation success callout should be visible in the citizen view

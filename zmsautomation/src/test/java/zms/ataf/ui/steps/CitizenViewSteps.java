@@ -1080,6 +1080,14 @@ public class CitizenViewSteps {
         page.assertProviderSummaryVisible(officeId);
     }
 
+    @Then("the appointment overview should show service {int} named {string} in the citizen view")
+    public void theAppointmentOverviewShouldShowServiceNamed(int serviceId, String serviceName) {
+        String label = TestDataHelper.transformTestData(serviceName);
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: assert overview shows service {} named {}", serviceId, label);
+        page.assertOverviewServiceVisible(serviceId, label);
+    }
+
     @Then("the booking summary should show {string} for provider {int} in the citizen view")
     public void theBookingSummaryShouldShowLocationForProvider(String locationLabel, int officeId) {
         String label = TestDataHelper.transformTestData(locationLabel);
