@@ -316,32 +316,68 @@ describe("AppointmentView", () => {
       expect(wrapper.find('[data-test="service-finder"]').exists()).toBe(true);
     });
 
-    it("restarts a reschedule by reloading the appointment jump-in", async () => {
+    it("restarts a reschedule on Übersicht and refetches a fresh captcha token", async () => {
+      const hash = buildAppointmentHash();
+      const replaceState = vi
+        .spyOn(history, "replaceState")
+        .mockImplementation(() => {});
       const originalLocation = window.location;
-      const reload = vi.fn();
       delete (window as any).location;
       (window as any).location = {
-        href: "http://localhost:8082/#/appointment/abc",
-        hash: "#/appointment/abc",
+        href: `http://localhost:8082/#/appointment/${hash}`,
+        hash: `#/appointment/${hash}`,
         origin: "http://localhost:8082",
         pathname: "/",
-        reload,
       };
 
-      const wrapper = createWrapper({ appointmentHash: "abc" });
-      wrapper.vm.currentView = 1;
-      wrapper.vm.isRebooking = true;
+      vi.mocked(ZMSAppointmentAPI.fetchAppointment).mockResolvedValue({
+        processId: 12345,
+        authKey: "test-auth-key",
+        captchaToken: "fresh-captcha-token",
+        officeId: 10427,
+        status: "confirmed",
+      } as any);
+      vi.mocked(globalThis.fetch).mockResolvedValue({
+        status: 200,
+        json: async () => ({ offices: [], services: [], relations: [] }),
+      } as any);
+
+      const wrapper = createWrapper({ appointmentHash: hash });
+      await nextTick();
+      await Promise.resolve();
       await nextTick();
 
+      wrapper.vm.currentView = 1;
+      wrapper.vm.isRebooking = true;
+      wrapper.vm.captchaToken = "expired-token";
+      wrapper.vm.rebookedAppointment = { processId: 12345 } as any;
+      await nextTick();
+
+      const fetchCallsBeforeRestart =
+        vi.mocked(ZMSAppointmentAPI.fetchAppointment).mock.calls.length;
       wrapper.vm.restartBookingToServices();
+      await nextTick();
+      await Promise.resolve();
+      await nextTick();
 
-      expect(reload).toHaveBeenCalled();
-      expect(wrapper.vm.currentView).toBe(1);
+      expect(wrapper.vm.currentView).toBe(3);
+      expect(wrapper.vm.isRebooking).toBe(false);
+      expect(wrapper.vm.rebookOrCancelDialog).toBe(true);
+      expect(wrapper.vm.captchaToken).toBe("fresh-captcha-token");
+      expect(replaceState).not.toHaveBeenCalled();
+      expect(
+        vi.mocked(ZMSAppointmentAPI.fetchAppointment).mock.calls.length
+      ).toBeGreaterThan(fetchCallsBeforeRestart);
 
+      replaceState.mockRestore();
       (window as any).location = originalLocation;
     });
 
-    it("restarts a reschedule by navigating to the appointment jump-in", async () => {
+    it("restarts a reschedule by replacing the hash to the appointment jump-in", async () => {
+      const hash = buildAppointmentHash();
+      const replaceState = vi
+        .spyOn(history, "replaceState")
+        .mockImplementation(() => {});
       const originalLocation = window.location;
       delete (window as any).location;
       (window as any).location = {
@@ -349,20 +385,41 @@ describe("AppointmentView", () => {
         hash: "#/services/1072015/locations/10427",
         origin: "http://localhost:8082",
         pathname: "/",
-        reload: vi.fn(),
       };
 
-      const wrapper = createWrapper({ appointmentHash: "abc" });
+      vi.mocked(ZMSAppointmentAPI.fetchAppointment).mockResolvedValue({
+        processId: 12345,
+        authKey: "test-auth-key",
+        captchaToken: "fresh-captcha-token",
+        officeId: 10427,
+        status: "confirmed",
+      } as any);
+      vi.mocked(globalThis.fetch).mockResolvedValue({
+        status: 200,
+        json: async () => ({ offices: [], services: [], relations: [] }),
+      } as any);
+
+      const wrapper = createWrapper({ appointmentHash: hash });
+      await nextTick();
+      await Promise.resolve();
+      await nextTick();
+
       wrapper.vm.currentView = 1;
       wrapper.vm.isRebooking = true;
       await nextTick();
 
       wrapper.vm.restartBookingToServices();
+      await nextTick();
 
-      expect(window.location.href).toBe(
-        "http://localhost:8082/#/appointment/abc"
+      expect(replaceState).toHaveBeenCalledWith(
+        null,
+        "",
+        `http://localhost:8082/#/appointment/${hash}`
       );
+      expect(wrapper.vm.currentView).toBe(3);
+      expect(wrapper.vm.isRebooking).toBe(false);
 
+      replaceState.mockRestore();
       (window as any).location = originalLocation;
     });
 
