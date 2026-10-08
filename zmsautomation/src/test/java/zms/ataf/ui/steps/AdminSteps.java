@@ -529,6 +529,44 @@ public class AdminSteps {
         COUNTER_PROCESSING_STATION_PAGE.deleteQueuedAppointmentByFamilyName(TestDataHelper.transformTestData(familyName));
     }
 
+    @When("I open the queue mail form for {string}.")
+    public void iOpenTheQueueMailFormFor(String familyName) {
+        COUNTER_PROCESSING_STATION_PAGE.openCustomMailForQueuedCustomer(
+                TestDataHelper.transformTestData(familyName));
+    }
+
+    @Then("the queue mail subject contains the booked display number.")
+    public void theQueueMailSubjectContainsTheBookedDisplayNumber() {
+        COUNTER_PROCESSING_STATION_PAGE.assertCustomMailSubjectContainsDisplayNumber();
+    }
+
+    @When("I close the queue mail form.")
+    public void iCloseTheQueueMailForm() {
+        COUNTER_PROCESSING_STATION_PAGE.closeCustomMailDialog();
+    }
+
+    @When("I enter {int} characters in the queue mail subject.")
+    public void iEnterCharactersInTheQueueMailSubject(int length) {
+        Assert.assertTrue(length >= 0, "subject length must be non-negative");
+        COUNTER_PROCESSING_STATION_PAGE.setCustomMailSubject("A".repeat(length));
+    }
+
+    @When("I submit the queue mail form.")
+    public void iSubmitTheQueueMailForm() {
+        COUNTER_PROCESSING_STATION_PAGE.submitCustomMailForm();
+    }
+
+    @Then("the queue mail form shows the error {string}.")
+    public void theQueueMailFormShowsTheError(String expectedMessage) {
+        COUNTER_PROCESSING_STATION_PAGE.assertCustomMailFormError(
+                TestDataHelper.transformTestData(expectedMessage));
+    }
+
+    @Then("the queue mail was sent successfully.")
+    public void theQueueMailWasSentSuccessfully() {
+        COUNTER_PROCESSING_STATION_PAGE.assertCustomMailSentSuccess();
+    }
+
     @When("I sign in to the administration as {string}.")
     public void sie_sich_als_im_zeitmanagementsystem_anmelden(String username) throws Exception {
         ADMIN_PAGE.loginWithKeycloakUser(

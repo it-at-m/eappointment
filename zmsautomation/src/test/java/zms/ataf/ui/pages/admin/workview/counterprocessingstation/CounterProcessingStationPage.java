@@ -1644,4 +1644,113 @@ public class CounterProcessingStationPage extends AdminPage {
         }
     }
 
+    /**
+     * Opens the queue envelope dialog for a Terminkunde row matched by family name.
+     * Subject defaults use {@code process.displayNumber} (prefix scopes and plain process id).
+     */
+    public void openCustomMailForQueuedCustomer(String familyName) {
+        CONTEXT.set();
+        CONTEXT.waitForSpinners();
+        ScenarioLogManager.getLogger().info("Opening queue custom-mail dialog for {}", familyName);
+        String mailLink = "//table[@id='table-queued-appointments']//tr["
+                + "td[contains(@class,'callnextclient') and normalize-space(.)='" + familyName + "']]"
+                + "//a[contains(@class,'process-custom-mail-send')]";
+        clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, mailLink, LocatorType.XPATH, false, CONTEXT);
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(
+                By.cssSelector(".dialog form[name='mail'] input[name='subject']")));
+    }
+
+    public String getCustomMailSubject() {
+        WebElement subject = findElementByLocatorType(
+                ".dialog form[name='mail'] input[name='subject']", LocatorType.CSSSELECTOR, false);
+        return subject.getAttribute("value");
+    }
+
+    public void assertCustomMailSubjectContainsDisplayNumber() {
+        String displayNumber = TestDataHelper.getTestData("new_appointment_number");
+        Assert.assertNotNull(displayNumber, "new_appointment_number was not set after booking");
+        Assert.assertFalse(displayNumber.isBlank(), "new_appointment_number is blank");
+        String subject = getCustomMailSubject();
+        ScenarioLogManager.getLogger().info(
+                "Custom-mail subject=\"{}\" expected displayNumber=\"{}\"", subject, displayNumber);
+        Assert.assertTrue(
+                subject.contains(displayNumber),
+                "Mail subject must contain display number " + displayNumber + ", was: " + subject);
+        Assert.assertFalse(
+                subject.matches("(?s).*\\b(Termin|Wartenummer)\\s+0\\b.*"),
+                "Mail subject must not fall back to display number 0, was: " + subject);
+        Assert.assertTrue(
+                subject.startsWith("Information zu Ihrem Termin " + displayNumber + " am ")
+                        || subject.startsWith("Information zu Ihrer Wartenummer " + displayNumber + " am "),
+                "Mail subject must lead with the appointment/waiting number, was: " + subject);
+    }
+
+    public void setCustomMailSubject(String subject) {
+        WebElement field = findElementByLocatorType(
+                ".dialog form[name='mail'] input[name='subject']", LocatorType.CSSSELECTOR, false);
+        field.click();
+        field.sendKeys(Keys.chord(Keys.CONTROL, "a"));
+        field.sendKeys(Keys.DELETE);
+        if (subject != null && !subject.isEmpty()) {
+            field.sendKeys(subject);
+        }
+        Assert.assertEquals(
+                field.getAttribute("value"),
+                subject == null ? "" : subject,
+                "Setting custom-mail subject failed");
+    }
+
+    public void submitCustomMailForm() {
+        ScenarioLogManager.getLogger().info("Submitting queue custom-mail form");
+        clickOnWebElement(
+                DEFAULT_EXPLICIT_WAIT_TIME,
+                ".dialog form[name='mail'] button.button-submit",
+                LocatorType.CSSSELECTOR,
+                false,
+                CONTEXT);
+        CONTEXT.waitForSpinners();
+    }
+
+    public void assertCustomMailFormError(String expectedMessage) {
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        WebElement error = wait.until(ExpectedConditions.visibilityOfElementLocated(
+                By.xpath("//div[contains(@class,'dialog')]//div[contains(@class,'message--error')]"
+                        + "[contains(.,'" + expectedMessage + "')]")));
+        Assert.assertTrue(
+                error.isDisplayed(),
+                "Expected custom-mail form error: " + expectedMessage);
+    }
+
+    public void assertCustomMailSentSuccess() {
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        WebElement heading = wait.until(ExpectedConditions.visibilityOfElementLocated(
+                By.xpath("//*[contains(@class,'message__heading') and contains(.,'E-Mail versendet')]")));
+        Assert.assertTrue(heading.isDisplayed(), "Custom-mail success heading missing");
+        WebElement body = wait.until(ExpectedConditions.visibilityOfElementLocated(
+                By.xpath("//*[contains(@class,'message__body')]"
+                        + "[contains(.,'Der Versand der E-Mail war erfolgreich.')]")));
+        Assert.assertTrue(body.isDisplayed(), "Custom-mail success body missing");
+        clickOnWebElement(
+                DEFAULT_EXPLICIT_WAIT_TIME,
+                "//*[contains(@class,'message--success')]//button[contains(@class,'button-ok')]",
+                LocatorType.XPATH,
+                false,
+                CONTEXT);
+        wait.until(ExpectedConditions.invisibilityOf(heading));
+    }
+
+    public void closeCustomMailDialog() {
+        ScenarioLogManager.getLogger().info("Closing queue custom-mail dialog");
+        clickOnWebElement(
+                DEFAULT_EXPLICIT_WAIT_TIME,
+                ".dialog form[name='mail'] button.button-abort",
+                LocatorType.CSSSELECTOR,
+                false,
+                CONTEXT);
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        wait.until(ExpectedConditions.invisibilityOfElementLocated(
+                By.cssSelector(".dialog form[name='mail']")));
+    }
+
 }
