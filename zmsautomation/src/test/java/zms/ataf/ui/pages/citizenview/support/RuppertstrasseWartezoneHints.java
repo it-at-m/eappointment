@@ -17,7 +17,18 @@ public final class RuppertstrasseWartezoneHints {
     public static final String OVERVIEW_HINT_HEADING = "Hinweis";
     public static final String SELECTED_APPOINTMENT_HEADER = "Ausgewählter Termin";
 
+    /** Shared between UI and Citizen API scenarios in the same JVM run. */
+    private static String rememberedApiWartezoneCode;
+
     private RuppertstrasseWartezoneHints() {}
+
+    public static void rememberApiWartezoneCode(String code) {
+        rememberedApiWartezoneCode = code;
+    }
+
+    public static String rememberedApiWartezoneCode() {
+        return rememberedApiWartezoneCode;
+    }
 
     public static String zoneFor(String code) {
         if ("WB03".equals(code)) {

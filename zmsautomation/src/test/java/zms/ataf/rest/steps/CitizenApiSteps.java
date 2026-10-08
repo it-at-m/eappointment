@@ -40,6 +40,7 @@ import zms.ataf.rest.dto.zmscitizenapi.OfficeServiceRelation;
 import zms.ataf.rest.dto.zmscitizenapi.ReserveAppointmentRequest;
 import zms.ataf.rest.dto.zmscitizenapi.ThinnedProcess;
 import zms.ataf.rest.dto.zmscitizenapi.collections.OfficesAndServicesResponse;
+import zms.ataf.ui.pages.citizenview.support.RuppertstrasseWartezoneHints;
 
 public class CitizenApiSteps {
 
@@ -639,6 +640,113 @@ public class CitizenApiSteps {
         Assertions.assertThat(String.valueOf(raw))
                 .as("office %d infoForAllAppointments", officeId)
                 .contains(needle);
+    }
+
+    /**
+     * ZMSKVR-1051 / ZMSKVR-1309: GET /appointment/ scope.hint + infoForAppointment belong to the
+     * same Ruppertstraße Wartebereich (WB03 or WB04).
+     */
+    @Then("the appointment scope hint and infoForAppointment should match a Ruppertstraße Wartezone")
+    public void theAppointmentScopeHintAndInfoForAppointmentShouldMatchARuppertstrasseWartezone() {
+        String hint = response.jsonPath().getString("scope.hint");
+        String info = response.jsonPath().getString("scope.infoForAppointment");
+        Assertions.assertThat(hint).as("scope.hint").isNotBlank();
+        Assertions.assertThat(info).as("scope.infoForAppointment").isNotBlank();
+        String combined = hint + " " + info;
+        String code = RuppertstrasseWartezoneHints.detectCode(combined);
+        Assertions.assertThat(code)
+                .as("scope.hint=%s infoForAppointment=%s", hint, info)
+                .isNotNull();
+        Assertions.assertThat(hint).contains(RuppertstrasseWartezoneHints.zoneFor(code));
+        Assertions.assertThat(info).contains(RuppertstrasseWartezoneHints.hintFor(code));
+        Assertions.assertThat(info)
+                .doesNotContain(RuppertstrasseWartezoneHints.hintFor(RuppertstrasseWartezoneHints.otherCode(code)));
+        Assertions.assertThat(info).contains("<a href=\"" + RuppertstrasseWartezoneHints.HINT_HREF + "\"");
+        RuppertstrasseWartezoneHints.rememberApiWartezoneCode(code);
+        ScenarioLogManager.getLogger()
+                .info("Citizen API appointment matched Ruppertstraße Wartezone {}", code);
+    }
+
+    /** ZMSKVR-1051 / ZMSKVR-1309: second same-timestamp reserve lands on the other Wartebereich. */
+    @Then("the appointment scope should be the other Ruppertstraße Wartezone")
+    public void theAppointmentScopeShouldBeTheOtherRuppertstrasseWartezone() {
+        String first = RuppertstrasseWartezoneHints.rememberedApiWartezoneCode();
+        Assertions.assertThat(first)
+                .as("first Wartezone must be remembered before the second reserve")
+                .isNotBlank();
+        String expected = RuppertstrasseWartezoneHints.otherCode(first);
+        String hint = response.jsonPath().getString("scope.hint");
+        String info = response.jsonPath().getString("scope.infoForAppointment");
+        String code = RuppertstrasseWartezoneHints.detectCode(hint + " " + info);
+        Assertions.assertThat(code)
+                .as("second reserve scope.hint=%s infoForAppointment=%s", hint, info)
+                .isEqualTo(expected);
+        Assertions.assertThat(info).contains(RuppertstrasseWartezoneHints.hintFor(expected));
+        RuppertstrasseWartezoneHints.rememberApiWartezoneCode(code);
+        ScenarioLogManager.getLogger()
+                .info("Citizen API second reserve switched Wartezone {} → {}", first, code);
+    }
+
+    /**
+     * ZMSKVR-1051 / ZMSKVR-1309: with one seat on WB03 and WB04, a second reserve of the same
+     * timestamp succeeds on the other scope (unlike the single-seat Passkalender race).
+     */
+    @When("I reserve the same appointment slot again for the other Wartebereich")
+    public void iReserveTheSameAppointmentSlotAgainForTheOtherWartebereich() {
+        ThinnedProcess first = lastReserveProcess != null ? lastReserveProcess : getBookingProcess();
+        if (first == null || first.getTimestamp() == null || first.getTimestamp() <= 0) {
+            throw new IllegalStateException("Reserve a slot first so the same timestamp can be reserved again.");
+        }
+        int officeId = first.getOfficeId() != null ? first.getOfficeId() : lastOfficeId;
+        int serviceId = first.getServiceId() != null ? first.getServiceId() : lastServiceId;
+        if (officeId <= 0 || serviceId <= 0) {
+            throw new IllegalStateException("First reserve has no officeId/serviceId for the second Wartebereich.");
+        }
+        int serviceCount = lastServiceCount > 0 ? lastServiceCount : 1;
+        long timestamp = first.getTimestamp();
+
+        ReserveAppointmentRequest body = new ReserveAppointmentRequest();
+        body.setTimestamp(timestamp);
+        body.setOfficeId(officeId);
+        body.setServiceId(List.of(serviceId));
+        body.setServiceCount(List.of(serviceCount));
+        if (captchaToken != null && !captchaToken.isBlank()) {
+            body.setCaptchaToken(captchaToken);
+        }
+
+        ScenarioLogManager.getLogger().info(String.format(
+                "Citizen API /reserve-appointment/ other Wartebereich timestamp=%d officeId=%d serviceId=%d",
+                timestamp,
+                officeId,
+                serviceId));
+
+        response = given()
+                .baseUri(baseUri != null ? baseUri : TestConfig.getCitizenApiBaseUri())
+                .contentType("application/json")
+                .body(body)
+                .when()
+                .post("/reserve-appointment/");
+        CommonApiSteps.setResponse(response);
+
+        String reserveBody = response.asString();
+        ScenarioLogManager.getLogger().info(String.format(
+                "Citizen API /reserve-appointment/ other Wartebereich status=%d body=%s",
+                response.getStatusCode(),
+                reserveBody.length() > 1250 ? reserveBody.substring(0, 1250) + "..." : reserveBody));
+        response.then().statusCode(200);
+
+        ThinnedProcess reserved;
+        try {
+            reserved = response.as(ThinnedProcess.class);
+        } catch (Exception e) {
+            reserved = parseDataResponse(response, ThinnedProcess.class);
+        }
+        Assertions.assertThat(reserved).as("second Wartebereich reserve").isNotNull();
+        Assertions.assertThat(reserved.getProcessId()).isNotNull();
+        Assertions.assertThat(reserved.getAuthKey()).isNotBlank();
+        Assertions.assertThat(reserved.getProcessId()).isNotEqualTo(first.getProcessId());
+        lastReserveProcess = reserved;
+        setLastReserveProcess(reserved);
     }
 
     @When("I attempt to reserve an appointment with the first available slot")
