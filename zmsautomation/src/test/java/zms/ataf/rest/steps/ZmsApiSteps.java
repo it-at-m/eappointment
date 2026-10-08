@@ -628,6 +628,40 @@ public class ZmsApiSteps {
         iDeleteTheProcessesCreatedInThisScenarioWithTheXAuthKey();
     }
 
+    @Then("the current process display number starts with {string} and is not {string}")
+    public void theCurrentProcessDisplayNumberStartsWithAndIsNot(String prefix, String forbidden) {
+        Assertions.assertThat(lastProcess)
+                .as("Book an appointment before asserting displayNumber")
+                .isNotNull();
+        String displayNumber = lastProcess.path("displayNumber").asText("");
+        int processId = lastProcess.path("id").asInt();
+        ScenarioLogManager.getLogger().info(
+                "process id={} displayNumber={}", processId, displayNumber);
+        Assertions.assertThat(displayNumber)
+                .as("displayNumber for process %d", processId)
+                .isNotBlank()
+                .startsWith(prefix)
+                .isNotEqualTo(forbidden);
+        Assertions.assertThat(displayNumber)
+                .as("prefixed displayNumber must not be only the process id")
+                .isNotEqualTo(Integer.toString(processId));
+    }
+
+    @Then("the current process display number equals the process id")
+    public void theCurrentProcessDisplayNumberEqualsTheProcessId() {
+        Assertions.assertThat(lastProcess)
+                .as("Book an appointment before asserting displayNumber")
+                .isNotNull();
+        String displayNumber = lastProcess.path("displayNumber").asText("");
+        int processId = lastProcess.path("id").asInt();
+        ScenarioLogManager.getLogger().info(
+                "process id={} displayNumber={}", processId, displayNumber);
+        Assertions.assertThat(processId).as("process id").isPositive();
+        Assertions.assertThat(displayNumber)
+                .as("displayNumber without prefix equals process id")
+                .isEqualTo(Integer.toString(processId));
+    }
+
     @When("I queue a walk-in at scope {int} with service {string}, name {string}, free text {string} and second free text {string} with the X-AuthKey")
     public void iQueueAWalkInWithFreeTextWithTheXAuthKey(
             int scopeId, String serviceName, String familyName, String freeText, String secondFreeText) {
