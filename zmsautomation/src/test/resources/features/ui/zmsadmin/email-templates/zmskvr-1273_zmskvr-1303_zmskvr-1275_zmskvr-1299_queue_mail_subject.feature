@@ -5,7 +5,7 @@ Feature: Queue custom mail subject uses the display number and enforces length
 	# process.displayNumber (prefix scopes such as Bürgerbüro Pasing P####, and
 	# scopes without a prefix such as Gewerbeamt Verkehr where it is the process id).
 	# ZMSKVR-1275 / ZMSKVR-1299: subject must be 2–150 characters; errors stay in the
-	# form and a valid subject still sends with the success message.
+	# form (not a backend PDO page) and a valid subject still sends with the success message.
 
 	@web @zmsadmin @email-templates @clerk @ZMSKVR-1273 @ZMSKVR-1303 @automatisiert @executeLocally
 	Scenario: Queue mail subject uses the prefixed display number
