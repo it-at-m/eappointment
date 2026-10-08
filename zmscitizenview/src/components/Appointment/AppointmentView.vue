@@ -471,7 +471,6 @@ import {
 } from "@/types/ProvideInjectTypes";
 import { ServiceImpl } from "@/types/ServiceImpl";
 import { StepperItem } from "@/types/StepperTypes";
-import { SubService } from "@/types/SubService";
 import {
   getApiStatusState,
   handleApiResponseForDownTime,
@@ -516,6 +515,7 @@ import {
   setPlaceholderReserveEmail,
 } from "@/utils/rebookingContact";
 import { resolveOfficeById, toOfficeImpl } from "@/utils/resolveOfficeById";
+import { serviceFromAppointment } from "@/utils/serviceFromAppointment";
 import { isExpired } from "@/utils/timestampInPast";
 import {
   bookingFlow,
@@ -1572,17 +1572,23 @@ const runAppointmentFromHash = (hash: string | undefined): void => {
           }
           appointment.value = data as AppointmentDTO;
           selectedServiceMap.value = new Map();
-          selectedService.value = (services.value ?? []).find(
-            (service) =>
-              String(service.id) === String(appointment.value?.serviceId)
+
+          preselectedLocationId.value = String(appointment.value.officeId);
+          const resolvedOffice = resolveOfficeById(appointment.value.officeId, {
+            offices: offices.value,
+            appointment: appointment.value,
+          });
+          if (resolvedOffice) {
+            selectedProvider.value = resolvedOffice;
+          }
+
+          selectedService.value = serviceFromAppointment(
+            appointment.value,
+            services.value,
+            (serviceId) => getProviders(serviceId, null),
+            resolvedOffice
           );
           if (selectedService.value) {
-            selectedService.value.count = appointment.value.serviceCount;
-            selectedService.value.providers = getProviders(
-              selectedService.value.id,
-              null
-            );
-
             updateServiceLinkId(
               String(
                 selectedService.value.rootParentId ??
@@ -1590,38 +1596,19 @@ const runAppointmentFromHash = (hash: string | undefined): void => {
                   ""
               )
             );
-
-            if ((appointment.value.subRequestCounts ?? []).length > 0) {
-              appointment.value.subRequestCounts.forEach((subRequestCount) => {
-                const subRequest = (services.value ?? []).find(
-                  (service) => String(service.id) === String(subRequestCount.id)
-                ) as Service | undefined;
-                if (!subRequest) {
-                  return;
+            if (selectedService.value.providers?.length) {
+              const officeFromProviders = resolveOfficeById(
+                appointment.value.officeId,
+                {
+                  offices: offices.value,
+                  providers: selectedService.value.providers,
+                  appointment: appointment.value,
                 }
-                const subService = new SubService(
-                  subRequest.id,
-                  subRequest.name,
-                  subRequest.maxQuantity,
-                  getProviders(subRequest.id, null),
-                  subRequestCount.count
-                );
-                if (!selectedService.value.subServices) {
-                  selectedService.value.subServices = [];
-                }
-                selectedService.value.subServices.push(subService);
-              });
+              );
+              if (officeFromProviders) {
+                selectedProvider.value = officeFromProviders;
+              }
             }
-          }
-
-          preselectedLocationId.value = String(appointment.value.officeId);
-          const resolvedOffice = resolveOfficeById(appointment.value.officeId, {
-            offices: offices.value,
-            providers: selectedService.value?.providers,
-            appointment: appointment.value,
-          });
-          if (resolvedOffice) {
-            selectedProvider.value = resolvedOffice;
           }
 
           if (

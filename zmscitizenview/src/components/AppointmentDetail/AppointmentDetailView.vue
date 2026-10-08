@@ -409,7 +409,6 @@ import { AppointmentImpl } from "@/types/AppointmentImpl";
 import { GlobalState } from "@/types/GlobalState";
 import { OfficeImpl } from "@/types/OfficeImpl";
 import { ServiceImpl } from "@/types/ServiceImpl";
-import { SubService } from "@/types/SubService";
 import {
   handleApiResponseForDownTime,
   isInMaintenanceMode,
@@ -435,6 +434,7 @@ import { formatAppointmentDateTime } from "@/utils/formatAppointmentDateTime";
 import { getProviders } from "@/utils/getProviders";
 import { resolveOfficeById } from "@/utils/resolveOfficeById";
 import sanitizeHtml from "@/utils/sanitizeHtml";
+import { serviceFromAppointment } from "@/utils/serviceFromAppointment";
 import { useVariant } from "@/utils/useVariant";
 
 const props = defineProps<{
@@ -665,20 +665,22 @@ const loadAppointment = () => {
                 appointment.value.processId
             );
 
-            selectedService.value = services.value.find(
-              (service) =>
-                String(service.id) === String(appointment.value?.serviceId)
+            selectedProvider.value = resolveOfficeById(
+              appointment.value.officeId,
+              {
+                offices: offices.value,
+                appointment: appointment.value,
+              }
             );
-            if (selectedService.value) {
-              selectedService.value.count = appointment.value.serviceCount;
 
-              selectedService.value.providers = getProviders(
-                selectedService.value?.id,
-                null,
-                relations.value,
-                offices.value
-              );
-
+            selectedService.value = serviceFromAppointment(
+              appointment.value,
+              services.value,
+              (serviceId) =>
+                getProviders(serviceId, null, relations.value, offices.value),
+              selectedProvider.value
+            );
+            if (selectedService.value?.providers?.length) {
               selectedProvider.value = resolveOfficeById(
                 appointment.value.officeId,
                 {
@@ -687,35 +689,6 @@ const loadAppointment = () => {
                   appointment: appointment.value,
                 }
               );
-
-              if (appointment.value.subRequestCounts.length > 0) {
-                appointment.value.subRequestCounts.forEach(
-                  (subRequestCount) => {
-                    const subRequest = services.value.find(
-                      (service) => service.id == subRequestCount.id
-                    ) as Service;
-                    const subService = new SubService(
-                      subRequest.id,
-                      subRequest.name,
-                      subRequest.maxQuantity,
-                      getProviders(
-                        subRequest.id,
-                        null,
-                        relations.value,
-                        offices.value
-                      ),
-                      subRequestCount.count
-                    );
-                    if (
-                      selectedService.value &&
-                      !selectedService.value.subServices
-                    ) {
-                      selectedService.value.subServices = [];
-                    }
-                    selectedService.value?.subServices?.push(subService);
-                  }
-                );
-              }
             }
             loading.value = false;
           } else {
