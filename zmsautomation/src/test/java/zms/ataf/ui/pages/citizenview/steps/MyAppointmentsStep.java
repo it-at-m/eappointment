@@ -1119,18 +1119,37 @@ public final class MyAppointmentsStep {
         return raw instanceof String ? (String) raw : "";
     }
 
-    /** Visible muc-intro title on the appointment detail (formatMultilineTitle). */
+    /**
+     * Service lines from the appointment-detail muc-intro (formatMultilineTitle). The title prop
+     * is not always reflected as a DOM attribute, so read rendered text inside muc-intro.
+     */
     private String detailIntroTitleText() {
         String script =
-                "function walk(n,fn){if(!n)return null;var r=fn(n);if(r)return r;"
+                "function textOf(n){var s='';if(!n)return s;if(n.nodeType===3)return n.nodeValue||'';"
+                        + "if(n.shadowRoot)s+=' '+textOf(n.shadowRoot);"
+                        + "if(n.assignedNodes){var a=n.assignedNodes({flatten:true});"
+                        + "for(var j=0;j<a.length;j++)s+=' '+textOf(a[j]);}"
+                        + "var c=n.childNodes;if(c)for(var i=0;i<c.length;i++)s+=' '+textOf(c[i]);"
+                        + "return s;}"
+                        + "function walk(n,fn){if(!n)return null;var r=fn(n);if(r)return r;"
                         + "if(n.shadowRoot){r=walk(n.shadowRoot,fn);if(r)return r;}"
-                        + "var c=n.children;if(c)for(var i=0;i<c.length;i++){r=walk(c[i],fn);if(r)return r;}return null;}"
-                        + "var title=walk(document.body,function(n){"
+                        + "var c=n.children;if(c)for(var i=0;i<c.length;i++){r=walk(c[i],fn);if(r)return r;}"
+                        + "return null;}"
+                        + "return walk(document.body,function(n){"
                         + "var tag=(n.tagName||'').toUpperCase();"
                         + "if(tag!=='MUC-INTRO')return null;"
-                        + "var t=n.getAttribute('title');"
-                        + "return t&&t.indexOf('1x ')>=0?t:null;});"
-                        + "return title||'';";
+                        + "var prop=n.title;var attr=n.getAttribute('title');"
+                        + "var raw=(typeof prop==='string'&&prop.indexOf('1x ')>=0)?prop:"
+                        + "(attr&&attr.indexOf('1x ')>=0?attr:'');"
+                        + "if(!raw){"
+                        + "var t=textOf(n).replace(/\\s+/g,' ').trim();"
+                        + "if(t.indexOf('1x ')<0||t.indexOf('Terminnummer')<0)return null;"
+                        + "var start=t.indexOf('1x ');"
+                        + "var end=t.indexOf('Terminnummer');"
+                        + "raw=end>start?t.substring(start,end):t.substring(start);"
+                        + "}"
+                        + "return raw.replace(/\\s+/g,' ').trim();"
+                        + "})||'';";
         Object raw = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script);
         return raw == null ? "" : raw.toString().replace('\n', ' ').replaceAll("\\s+", " ").trim();
     }
