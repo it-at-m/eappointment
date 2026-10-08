@@ -415,6 +415,14 @@ public class CitizenApiSteps {
         if (date == null) {
             throw new IllegalStateException("No available day in last response.");
         }
+        if (cachedCalendarServiceIds != null
+                && cachedCalendarServiceCounts != null
+                && cachedCalendarServiceIds.size() > 1
+                && cachedCalendarServiceIds.size() == cachedCalendarServiceCounts.size()) {
+            iRequestAvailableAppointmentsForDateOfficeAndServices(
+                    date, lastOfficeId, cachedCalendarServiceIds, cachedCalendarServiceCounts);
+            return;
+        }
         iRequestAvailableAppointmentsForDateOfficeAndService(date, lastOfficeId, lastServiceId, lastServiceCount);
     }
 
@@ -454,15 +462,21 @@ public class CitizenApiSteps {
     @When("I request available appointments for date {string}, office {int} and service {int} with service count {int}")
     public void iRequestAvailableAppointmentsForDateOfficeAndService(
             String date, int officeId, int serviceId, int serviceCount) {
+        iRequestAvailableAppointmentsForDateOfficeAndServices(
+                date, officeId, List.of(serviceId), List.of(serviceCount));
+    }
+
+    private void iRequestAvailableAppointmentsForDateOfficeAndServices(
+            String date, int officeId, List<Integer> serviceIds, List<Integer> serviceCounts) {
         lastOfficeId = officeId;
-        lastServiceId = serviceId;
-        lastServiceCount = serviceCount;
+        lastServiceId = serviceIds.get(0);
+        lastServiceCount = serviceCounts.get(0);
         lastAppointmentDate = date;
 
         // Free-slot timestamps are only inlined for slotsStartDate..slotsEndDate (often "today").
         // Ask for this exact day so later bookable days (e.g. V43 single-seat) are hydrated.
         lastAvailableCalendarResponse =
-            fetchAvailableCalendar(List.of(officeId), List.of(serviceId), List.of(serviceCount), date, date);
+            fetchAvailableCalendar(List.of(officeId), serviceIds, serviceCounts, date, date);
 
         AvailableAppointmentsResponse appointments =
             lastAvailableCalendarResponse.getAppointmentsForDayAndOffice(date, officeId);
@@ -471,10 +485,10 @@ public class CitizenApiSteps {
         int officeCount = appointments.getOffices() != null ? appointments.getOffices().size() : 0;
         int timestampCount = appointments.futureAppointmentTimestamps().size();
         ScenarioLogManager.getLogger().info(String.format(
-            "Citizen API calendar slots for date=%s, officeId=%d, serviceId=%d: %d office(s), %d timestamp(s)",
+            "Citizen API calendar slots for date=%s, officeId=%d, serviceIds=%s: %d office(s), %d timestamp(s)",
             date,
             officeId,
-            serviceId,
+            serviceIds,
             officeCount,
             timestampCount
         ));
@@ -682,8 +696,17 @@ public class CitizenApiSteps {
             ReserveAppointmentRequest body = new ReserveAppointmentRequest();
             body.setTimestamp(timestamp);
             body.setOfficeId(lastOfficeId);
-            body.setServiceId(List.of(lastServiceId));
-            body.setServiceCount(List.of(lastServiceCount));
+            List<Integer> reserveServiceIds =
+                    cachedCalendarServiceIds != null && !cachedCalendarServiceIds.isEmpty()
+                            ? cachedCalendarServiceIds
+                            : List.of(lastServiceId);
+            List<Integer> reserveServiceCounts =
+                    cachedCalendarServiceCounts != null
+                                    && cachedCalendarServiceCounts.size() == reserveServiceIds.size()
+                            ? cachedCalendarServiceCounts
+                            : List.of(lastServiceCount);
+            body.setServiceId(reserveServiceIds);
+            body.setServiceCount(reserveServiceCounts);
             if (useCurrentAppointmentAsSource) {
                 body.setSourceProcessId(sourceProcessId);
                 body.setSourceAuthKey(sourceAuthKey);
@@ -1984,6 +2007,54 @@ public class CitizenApiSteps {
         Assertions.assertThat(process.getServiceId())
             .as("Expected appointment to use service %d", serviceId)
             .isEqualTo(serviceId);
+    }
+
+    @Then("the appointment service title order should be {string}")
+    public void theAppointmentServiceTitleOrderShouldBe(String orderedNamesCsv) {
+        ThinnedProcess process =
+                lastReserveProcess != null ? lastReserveProcess : parseDataResponse(response, ThinnedProcess.class);
+        Assertions.assertThat(process).as("appointment process").isNotNull();
+        List<String> expected =
+                Arrays.stream(orderedNamesCsv.split(","))
+                        .map(String::trim)
+                        .filter(s -> !s.isEmpty())
+                        .collect(Collectors.toList());
+        Assertions.assertThat(expected).as("expected service title names").isNotEmpty();
+        Assertions.assertThat(process.getServiceName())
+                .as("main serviceName (first in booking order)")
+                .isEqualTo(expected.get(0));
+        List<String> actual = new ArrayList<>();
+        actual.add(process.getServiceName());
+        if (process.getSubRequestCounts() != null) {
+            for (ThinnedProcess.SubRequestCount sub : process.getSubRequestCounts()) {
+                if (sub != null && sub.getName() != null && !sub.getName().isBlank()) {
+                    actual.add(sub.getName());
+                }
+            }
+        }
+        Assertions.assertThat(actual)
+                .as("serviceName then subRequestCounts must keep booking order, not alphabetical")
+                .containsExactlyElementsOf(expected);
+        if (process.getIcsContent() != null && !process.getIcsContent().isBlank()) {
+            String summary = icsSummary(process.getIcsContent());
+            int previous = -1;
+            for (String name : expected) {
+                int idx = summary.indexOf(name);
+                Assertions.assertThat(idx)
+                        .as("ICS SUMMARY must list \"%s\" after earlier services. SUMMARY=%s", name, summary)
+                        .isGreaterThan(previous);
+                previous = idx;
+            }
+        }
+    }
+
+    private static String icsSummary(String icsContent) {
+        for (String line : icsContent.split("\\R")) {
+            if (line.startsWith("SUMMARY:")) {
+                return line.substring("SUMMARY:".length()).replace("\\n", "\n").replace("\\,", ",");
+            }
+        }
+        return icsContent;
     }
 
     @Then("the appointment status should be {string}")
