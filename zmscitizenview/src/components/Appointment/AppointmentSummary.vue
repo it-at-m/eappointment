@@ -310,6 +310,7 @@
     class="m-button-group"
   >
     <muc-button
+      v-if="!rebookingDisabled"
       icon="arrow-right"
       @click="rescheduleAppointment"
     >
@@ -451,6 +452,10 @@ const { serviceLinkId } = inject<ServiceLinkProvider>(
 ) as ServiceLinkProvider;
 
 const { isReservationExpired } = useReservationTimer();
+
+const rebookingDisabled = computed(
+  () => appointment.value?.scope?.rebookingDisabled === true
+);
 
 const electronicCommunication = ref<boolean>(false);
 

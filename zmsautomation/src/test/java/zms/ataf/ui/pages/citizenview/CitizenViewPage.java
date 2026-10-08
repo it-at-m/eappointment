@@ -372,6 +372,30 @@ public class CitizenViewPage extends BasePage {
         providerLocation.keepOnlyProviderCheckboxesChecked(allowedOfficeIds);
     }
 
+    public void assertProviderSelectionErrorVisible() {
+        providerLocation.assertProviderSelectionErrorVisible();
+    }
+
+    public void assertNoAppointmentInfoCalloutVisible() {
+        timeSlot.assertNoAppointmentInfoCalloutVisible();
+    }
+
+    public void assertNoAppointmentInfoCalloutNotVisible() {
+        timeSlot.assertNoAppointmentInfoCalloutNotVisible();
+    }
+
+    public void assertNoAppointmentCustomInfoLinkVisible() {
+        timeSlot.assertNoAppointmentCustomInfoLinkVisible();
+    }
+
+    public void assertNoAppointmentCustomInfoContains(String fragment) {
+        timeSlot.assertNoAppointmentCustomInfoContains(fragment);
+    }
+
+    public void assertSelectedCalendarDayIsBerlinDaysFromToday(int daysFromToday) {
+        timeSlot.assertSelectedCalendarDayIsBerlinDaysFromToday(daysFromToday);
+    }
+
     public void assertServiceFinderHeadingVisible() {
         serviceFinder.assertServiceFinderHeadingVisible();
     }
@@ -1581,6 +1605,14 @@ public class CitizenViewPage extends BasePage {
 
     public void assertAppointmentManagementActionsNotVisible() {
         overview.assertAppointmentManagementActionsNotVisible();
+    }
+
+    public void assertRescheduleAppointmentButtonNotVisible() {
+        overview.assertRescheduleAppointmentButtonNotVisible();
+    }
+
+    public void assertCancelAppointmentButtonVisible() {
+        overview.assertCancelAppointmentButtonVisible();
     }
 
     public void assertCaptchaSessionCalloutVisible() {

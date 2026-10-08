@@ -49,6 +49,7 @@
     </div>
     <div class="m-button-group">
       <muc-button
+        v-if="!rebookingDisabled"
         icon="arrow-right"
         @click="rescheduleAppointment"
       >
@@ -88,6 +89,10 @@ const props = defineProps<{
   variantId: number | null;
   t: (key: string) => string;
 }>();
+
+const rebookingDisabled = computed(
+  () => props.appointment?.scope?.rebookingDisabled === true
+);
 
 const introTagline = computed(() => {
   if (props.variantId === VARIANT_ID_TELEPHONE) {

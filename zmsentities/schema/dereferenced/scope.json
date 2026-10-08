@@ -23,6 +23,7 @@
                 "infoForAllAppointments": "",
                 "endInDaysDefault": "60",
                 "multipleSlotsEnabled": true,
+                "rebookingDisabled": false,
                 "reservationDuration": "5",
                 "startInDaysDefault": "2"
             },
@@ -347,6 +348,30 @@
                             ],
                             "description": "true if more than one timeslot per appointment is allowed",
                             "default": true
+                        },
+                        "rebookingDisabled": {
+                            "oneOf": [
+                                {
+                                    "type": "null"
+                                },
+                                {
+                                    "type": "number",
+                                    "enum": [0, 1]
+                                },
+                                {
+                                    "type": "boolean"
+                                },
+                                {
+                                    "type": "string",
+                                    "pattern": "^[01]$"
+                                },
+                                {
+                                    "type": "string",
+                                    "enum": ["true", "false"]
+                                }
+                            ],
+                            "description": "true if citizens cannot reschedule appointments in the citizen view for this scope",
+                            "default": false
                         },
                         "reservationDuration": {
                             "oneOf": [
