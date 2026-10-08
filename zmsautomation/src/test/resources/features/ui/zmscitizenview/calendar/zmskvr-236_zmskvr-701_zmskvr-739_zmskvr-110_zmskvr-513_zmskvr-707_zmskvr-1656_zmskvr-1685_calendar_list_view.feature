@@ -1,11 +1,12 @@
 #language: en
-@web @zmscitizenview @citizen @ZMSKVR-110 @ZMSKVR-513 @ZMSKVR-707 @ZMSKVR-236 @ZMSKVR-701 @ZMSKVR-739 @executeLocally
+@web @zmscitizenview @citizen @ZMSKVR-110 @ZMSKVR-513 @ZMSKVR-707 @ZMSKVR-1656 @ZMSKVR-236 @ZMSKVR-701 @ZMSKVR-739 @ZMSKVR-1685 @executeLocally
 Feature: Calendar and list views for available times
   As a citizen
   I want to switch between the calendar and the list and see which time I picked
   So that a busy day and a short day both stay readable
 
-  # ZMSKVR-110, ZMSKVR-513, ZMSKVR-707 and tests ZMSKVR-236, ZMSKVR-701, ZMSKVR-739.
+  # ZMSKVR-110, ZMSKVR-513, ZMSKVR-707, ZMSKVR-1656 and tests ZMSKVR-236, ZMSKVR-701,
+  # ZMSKVR-739, ZMSKVR-1685 (optimiertes Toggle-Pattern / Barrierefreiheit).
   # One feature, desktop and @mobile layout scenarios plus the busy and short day flows.
   # Personalausweis lists Passkalender 10502. That day is full, so the calendar and the list group times by hour.
   # Hauptkalender 10489 is not a checkbox until Wohnsitzanmeldung is added.
