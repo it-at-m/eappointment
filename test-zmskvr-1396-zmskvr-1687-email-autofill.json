@@ -1,0 +1,35 @@
+{
+  "branch": "test-zmskvr-1396-zmskvr-1687-email-autofill",
+  "branchSlug": "test-zmskvr-1396-zmskvr-1687-email-autofill",
+  "runId": "37860291269",
+  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37860291269",
+  "runStartedAt": "2026-10-08T23:35:34Z",
+  "publishedAt": "2026-10-08T23:50:51.545Z",
+  "features": {
+    "feature-ui-zmsadmin-booking-zmskvr-1396-zmskvr-1687-appointment-email-autofill": {
+      "status": "passed",
+      "shard": "custom",
+      "browser": "chrome",
+      "browsers": {
+        "chrome": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "37860291269",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37860291269",
+          "runStartedAt": "2026-10-08T23:35:34Z"
+        },
+        "firefox": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "37860291269",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37860291269",
+          "runStartedAt": "2026-10-08T23:35:34Z"
+        }
+      },
+      "rel": "ui/zmsadmin/booking/zmskvr-1396_zmskvr-1687_appointment_email_autofill.feature",
+      "runId": "37860291269",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37860291269",
+      "runStartedAt": "2026-10-08T23:35:34Z"
+    }
+  }
+}
