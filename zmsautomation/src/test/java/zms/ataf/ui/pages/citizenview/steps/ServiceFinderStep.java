@@ -146,6 +146,7 @@ public final class ServiceFinderStep {
         actions.sendKeys(Keys.ENTER).perform();
         if (!serviceSearch("read", "").path("open").asBoolean()) {
             // Enter sometimes lands before Choices is ready; open with a click instead.
+            serviceSearch("close", "");
             serviceSearch("click", "");
         }
         waitUntilServiceListOpen();
@@ -154,6 +155,7 @@ public final class ServiceFinderStep {
     public void assertServiceListOpenUnderField() {
         context.set();
         // The dropdown closes when the step ends. Open it again, then check that it sits under the field.
+        waitUntilServiceOptionsLoaded();
         if (!serviceSearch("read", "").path("open").asBoolean()) {
             serviceSearch("click", "");
         }
@@ -440,8 +442,23 @@ public final class ServiceFinderStep {
     }
 
     public JsonNode waitUntilServiceListOpen() {
+        // Edge/Choices can swallow the first click after tab+enter or leave the list closed
+        // between Cucumber steps. Re-click while waiting instead of sitting on a closed list.
+        final long[] lastOpenAttemptMs = {0L};
         new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(defaultWaitSeconds))
-                .until(d -> serviceSearch("read", "").path("open").asBoolean());
+                .until(
+                        d -> {
+                            if (serviceSearch("read", "").path("open").asBoolean()) {
+                                return true;
+                            }
+                            long now = System.currentTimeMillis();
+                            if (now - lastOpenAttemptMs[0] < 1500L) {
+                                return false;
+                            }
+                            lastOpenAttemptMs[0] = now;
+                            serviceSearch("click", "");
+                            return serviceSearch("read", "").path("open").asBoolean();
+                        });
         JsonNode state = serviceSearch("read", "");
         Assert.assertTrue(state.path("open").asBoolean(), "The service list did not open: " + state);
         return state;
