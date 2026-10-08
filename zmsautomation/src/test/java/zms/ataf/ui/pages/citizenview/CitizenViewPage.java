@@ -1510,6 +1510,10 @@ public class CitizenViewPage extends BasePage {
         overview.assertServiceLinkPointsToMunichDe();
     }
 
+    public void assertOverviewServiceVisible(int serviceId, String serviceName) {
+        overview.assertOverviewServiceVisible(serviceId, serviceName);
+    }
+
     public void waitForPreconfirmPageAfterUpdate() {
         overview.waitForPreconfirmPageAfterUpdate();
     }

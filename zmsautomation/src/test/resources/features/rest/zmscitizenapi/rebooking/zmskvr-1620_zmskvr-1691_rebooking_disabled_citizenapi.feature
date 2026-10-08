@@ -23,6 +23,12 @@ Feature: Citizen API: rebooking rejected when the scope disables Umbuchung
     And office 10502 rebooking should be disabled
     And office 10492 rebooking should not be disabled
 
+  Scenario: Internal SZE service stays out of the public catalog and cannot be booked
+    Then the offices and services response should not include service 1080784
+    When I request available days for office 10446 and service 1080784
+    Then the response status code should be 400
+    And the response errors should include errorCode "invalidLocationAndServiceCombination"
+
   Scenario: Reserve with a rebooking source is rejected when rebooking is disabled
     When I request available days for office 10502 and service 1063453
     And I request available appointments for the first available day

@@ -238,6 +238,53 @@ public final class OverviewStep {
                 shadow.shadowHrefContains("https://stadt.muenchen.de/service/info/"),
                 "Expected a service link to https://stadt.muenchen.de/service/info/.");
     }
+
+    /** Leistung block on Übersicht / rebook-or-cancel dialog (e.g. internal service from appointment). */
+    public void assertOverviewServiceVisible(int serviceId, String serviceName) {
+        context.set();
+        String sel = "#service-" + serviceId;
+        CitizenViewWaits.waitWithThreeWindows(
+                () -> deepVisibleServiceSummaryExists(serviceId), "Service summary " + sel);
+        String text = deepVisibleServiceSummaryText(serviceId);
+        Assert.assertNotNull(text, "Expected visible booking summary service block: " + sel);
+        Assert.assertTrue(
+                text.contains(serviceName),
+                "Expected service name in " + sel + ": " + serviceName + " actual=" + text);
+    }
+
+    private boolean deepVisibleServiceSummaryExists(int serviceId) {
+        Object raw =
+                ((JavascriptExecutor) DriverUtil.getDriver())
+                        .executeScript(
+                                "var id='service-'+" + serviceId + ";"
+                                        + "function shown(n){if(!n)return false;var s=getComputedStyle(n);"
+                                        + "return s&&s.display!='none'&&s.visibility!='hidden'&&n.offsetParent!==null;}"
+                                        + "function walk(root){if(!root)return null;if(root.id===id&&shown(root))return root;"
+                                        + "if(root.shadowRoot){var s=walk(root.shadowRoot);if(s)return s;}"
+                                        + "var c=root.children||[];for(var i=0;i<c.length;i++){var f=walk(c[i]);if(f)return f;}"
+                                        + "return null;}"
+                                        + "return !!walk(document.body);");
+        return Boolean.TRUE.equals(raw);
+    }
+
+    private String deepVisibleServiceSummaryText(int serviceId) {
+        Object raw =
+                ((JavascriptExecutor) DriverUtil.getDriver())
+                        .executeScript(
+                                "var id='service-'+" + serviceId + ";"
+                                        + "function shown(n){if(!n)return false;var s=getComputedStyle(n);"
+                                        + "return s&&s.display!='none'&&s.visibility!='hidden'&&n.offsetParent!==null;}"
+                                        + "function walk(root){if(!root)return null;if(root.id===id&&shown(root))return root;"
+                                        + "if(root.shadowRoot){var s=walk(root.shadowRoot);if(s)return s;}"
+                                        + "var c=root.children||[];for(var i=0;i<c.length;i++){var f=walk(c[i]);if(f)return f;}"
+                                        + "return null;}"
+                                        + "var n=walk(document.body);return n?((n.innerText||n.textContent||'')+''):null;");
+        if (raw == null) {
+            return null;
+        }
+        String text = String.valueOf(raw).replaceAll("\\s+", " ").trim();
+        return text.isEmpty() ? null : text;
+    }
     private String visibleProviderSummaryOrFail(int officeId) {
         context.set();
         CitizenViewWaits.waitWithThreeWindows(

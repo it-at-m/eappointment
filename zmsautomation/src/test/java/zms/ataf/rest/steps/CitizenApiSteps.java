@@ -173,6 +173,21 @@ public class CitizenApiSteps {
         lastOfficesAndServicesResponse = officesAndServices;
     }
 
+    @Then("the offices and services response should not include service {int}")
+    public void theOfficesAndServicesResponseShouldNotIncludeService(int serviceId) {
+        Assertions.assertThat(lastOfficesAndServicesResponse)
+            .as("Request offices-and-services first")
+            .isNotNull();
+        Assertions.assertThat(lastOfficesAndServicesResponse.getServices())
+            .as("offices-and-services services")
+            .isNotNull();
+        boolean present = lastOfficesAndServicesResponse.getServices().stream()
+            .anyMatch(service -> service != null && serviceId == (service.getId() == null ? -1 : service.getId()));
+        Assertions.assertThat(present)
+            .as("Service %d must stay out of the public offices-and-services catalog", serviceId)
+            .isFalse();
+    }
+
     @Then("office {int} should have sharedBookingOfficeIds {string}")
     public void officeShouldHaveSharedBookingOfficeIds(int officeId, String expectedIdsCsv) {
         Assertions.assertThat(lastOfficesAndServicesResponse)
