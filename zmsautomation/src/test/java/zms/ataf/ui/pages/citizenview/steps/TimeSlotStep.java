@@ -1773,7 +1773,7 @@ public final class TimeSlotStep {
         context.set();
         String scrollSlotHighlight = CitizenViewScripts.buildScrollSlotHighlightScript();
         ScenarioLogManager.getLogger().info(
-                "zmscitizenview: highlight preferred slot (≥60min ahead; else ≥5min; else next free) office {} skip [{}]",
+                "zmscitizenview: highlight preferred slot (≥60min ahead, else ≥5min ahead) office {} skip [{}]",
                 officeId,
                 skippedTimestamps);
         boolean highlighted = false;
