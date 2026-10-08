@@ -134,7 +134,8 @@ class ZmsApiFacadeService
                     whitelistedMails: ((string) $matchingScope->getWhitelistedMails() === '' ? null : (string) $matchingScope->getWhitelistedMails()),
                     activationDuration: MapperService::extractActivationDuration($matchingScope),
                     reservationDuration: (int) MapperService::extractReservationDuration($matchingScope),
-                    hint: ($matchingScope && trim((string) $matchingScope->getScopeHint()) !== '')  ? (string) $matchingScope->getScopeHint() : null
+                    hint: ($matchingScope && trim((string) $matchingScope->getScopeHint()) !== '')  ? (string) $matchingScope->getScopeHint() : null,
+                    rebookingDisabled: $matchingScope->isRebookingDisabled()
                 ) : null,
                 slotsPerAppointment: $matchingScope ? ((string) $matchingScope->getSlotsPerAppointment() === '' ? null : (string) $matchingScope->getSlotsPerAppointment()) : null
             );
@@ -196,7 +197,8 @@ class ZmsApiFacadeService
                     whitelistedMails: ((string) $matchingScope->getWhitelistedMails() === '' ? null : (string) $matchingScope->getWhitelistedMails()),
                     reservationDuration: (int) MapperService::extractReservationDuration($matchingScope),
                     activationDuration: MapperService::extractActivationDuration($matchingScope),
-                    hint: ($matchingScope && trim((string) $matchingScope->getScopeHint()) !== '') ? (string) $matchingScope->getScopeHint() : null
+                    hint: ($matchingScope && trim((string) $matchingScope->getScopeHint()) !== '') ? (string) $matchingScope->getScopeHint() : null,
+                    rebookingDisabled: $matchingScope->isRebookingDisabled()
                 );
             }
         }
@@ -369,7 +371,8 @@ class ZmsApiFacadeService
             whitelistedMails: ((string) $matchingScope->getWhitelistedMails() === '' ? null : (string) $matchingScope->getWhitelistedMails()),
             reservationDuration: MapperService::extractReservationDuration($matchingScope),
             activationDuration: MapperService::extractActivationDuration($matchingScope),
-            hint: ((string) $matchingScope->getScopeHint() === '' ? null : (string) $matchingScope->getScopeHint())
+            hint: ((string) $matchingScope->getScopeHint() === '' ? null : (string) $matchingScope->getScopeHint()),
+            rebookingDisabled: $matchingScope->isRebookingDisabled()
         );
     }
 

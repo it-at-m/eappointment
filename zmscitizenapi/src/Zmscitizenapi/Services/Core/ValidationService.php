@@ -596,6 +596,15 @@ class ValidationService
         return ['errors' => []];
     }
 
+    public static function validateRebookingAllowed(?ThinnedScope $scope): array
+    {
+        if ($scope instanceof ThinnedScope && $scope->isRebookingDisabled()) {
+            return ['errors' => [self::getError('rebookingDisabled')]];
+        }
+
+        return ['errors' => []];
+    }
+
     public static function validateAppointmentConfirm(
         ThinnedProcess $process,
         mixed $externalUserId,

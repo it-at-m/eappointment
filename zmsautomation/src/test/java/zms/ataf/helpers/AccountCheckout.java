@@ -1,8 +1,16 @@
 package zms.ataf.helpers;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -17,137 +25,151 @@ public final class AccountCheckout {
 
     private static final ConcurrentHashMap<String, ReentrantLock> LOCKS = new ConcurrentHashMap<>();
     private static final ThreadLocal<LinkedHashSet<String>> HELD = ThreadLocal.withInitial(LinkedHashSet::new);
+    private static final ThreadLocal<Integer> DEPARTMENT = new ThreadLocal<>();
 
-    /** UI default {@code ataf}. Sixteen threads plus one spare. */
+    /**
+     * Superuser nutzer accounts ({@code Berechtigung} 90). A feature that says {@code ataf} takes a free one.
+     * Sixteen UI threads plus one spare. Index 0 keeps the feature counter.
+     */
     private static final List<String> SUPERUSERS = List.of(
-            "ataf",
-            "ataf_2",
-            "ataf_3",
-            "ataf_4",
-            "ataf_5",
-            "ataf_6",
-            "ataf_7",
-            "ataf_8",
-            "ataf_9",
-            "ataf_10",
-            "ataf_11",
-            "ataf_12",
-            "ataf_13",
-            "ataf_14",
-            "ataf_15",
-            "ataf_16",
-            "ataf_17"
+            "ataf_superuser_1",
+            "ataf_superuser_2",
+            "ataf_superuser_3",
+            "ataf_superuser_4",
+            "ataf_superuser_5",
+            "ataf_superuser_6",
+            "ataf_superuser_7",
+            "ataf_superuser_8",
+            "ataf_superuser_9",
+            "ataf_superuser_10",
+            "ataf_superuser_11",
+            "ataf_superuser_12",
+            "ataf_superuser_13",
+            "ataf_superuser_14",
+            "ataf_superuser_15",
+            "ataf_superuser_16",
+            "ataf_superuser_17"
     );
 
-    /** API default {@code agent_queue}. Thirty-two threads plus one spare. */
-    private static final List<String> WORKSTATIONS = List.of(
-            "agent_queue",
-            "agent_queue_2",
-            "agent_queue_3",
-            "agent_queue_4",
-            "agent_queue_5",
-            "agent_queue_6",
-            "agent_queue_7",
-            "agent_queue_8",
-            "agent_queue_9",
-            "agent_queue_10",
-            "agent_queue_11",
-            "agent_queue_12",
-            "agent_queue_13",
-            "agent_queue_14",
-            "agent_queue_15",
-            "agent_queue_16",
-            "agent_queue_17",
-            "agent_queue_18",
-            "agent_queue_19",
-            "agent_queue_20",
-            "agent_queue_21",
-            "agent_queue_22",
-            "agent_queue_23",
-            "agent_queue_24",
-            "agent_queue_25",
-            "agent_queue_26",
-            "agent_queue_27",
-            "agent_queue_28",
-            "agent_queue_29",
-            "agent_queue_30",
-            "agent_queue_31",
-            "agent_queue_32",
-            "agent_queue_33"
+    /**
+     * Nutzer accounts with the role {@code agent_queue} (Sachbearbeitung Standard).
+     * Not workstations and not a permission. A feature that says {@code agent_queue} takes a free one.
+     * Thirty-two API threads plus one spare.
+     */
+    private static final List<String> AGENT_QUEUE_USERS = List.of(
+            "ataf_agent_queue_1",
+            "ataf_agent_queue_2",
+            "ataf_agent_queue_3",
+            "ataf_agent_queue_4",
+            "ataf_agent_queue_5",
+            "ataf_agent_queue_6",
+            "ataf_agent_queue_7",
+            "ataf_agent_queue_8",
+            "ataf_agent_queue_9",
+            "ataf_agent_queue_10",
+            "ataf_agent_queue_11",
+            "ataf_agent_queue_12",
+            "ataf_agent_queue_13",
+            "ataf_agent_queue_14",
+            "ataf_agent_queue_15",
+            "ataf_agent_queue_16",
+            "ataf_agent_queue_17",
+            "ataf_agent_queue_18",
+            "ataf_agent_queue_19",
+            "ataf_agent_queue_20",
+            "ataf_agent_queue_21",
+            "ataf_agent_queue_22",
+            "ataf_agent_queue_23",
+            "ataf_agent_queue_24",
+            "ataf_agent_queue_25",
+            "ataf_agent_queue_26",
+            "ataf_agent_queue_27",
+            "ataf_agent_queue_28",
+            "ataf_agent_queue_29",
+            "ataf_agent_queue_30",
+            "ataf_agent_queue_31",
+            "ataf_agent_queue_32",
+            "ataf_agent_queue_33"
     );
 
-    /** Mail login id is the raw nutzer name. Thirty-two API threads plus one spare. */
+    /**
+     * Mail nutzer accounts. The login id is the raw name. A feature that says {@code _system_messenger}
+     * takes a free one. Thirty-two API threads plus one spare.
+     */
     private static final List<String> MESSENGERS = List.of(
-            "_system_messenger",
-            "_system_messenger_2",
-            "_system_messenger_3",
-            "_system_messenger_4",
-            "_system_messenger_5",
-            "_system_messenger_6",
-            "_system_messenger_7",
-            "_system_messenger_8",
-            "_system_messenger_9",
-            "_system_messenger_10",
-            "_system_messenger_11",
-            "_system_messenger_12",
-            "_system_messenger_13",
-            "_system_messenger_14",
-            "_system_messenger_15",
-            "_system_messenger_16",
-            "_system_messenger_17",
-            "_system_messenger_18",
-            "_system_messenger_19",
-            "_system_messenger_20",
-            "_system_messenger_21",
-            "_system_messenger_22",
-            "_system_messenger_23",
-            "_system_messenger_24",
-            "_system_messenger_25",
-            "_system_messenger_26",
-            "_system_messenger_27",
-            "_system_messenger_28",
-            "_system_messenger_29",
-            "_system_messenger_30",
-            "_system_messenger_31",
-            "_system_messenger_32",
-            "_system_messenger_33"
+            "ataf__system_messenger_1",
+            "ataf__system_messenger_2",
+            "ataf__system_messenger_3",
+            "ataf__system_messenger_4",
+            "ataf__system_messenger_5",
+            "ataf__system_messenger_6",
+            "ataf__system_messenger_7",
+            "ataf__system_messenger_8",
+            "ataf__system_messenger_9",
+            "ataf__system_messenger_10",
+            "ataf__system_messenger_11",
+            "ataf__system_messenger_12",
+            "ataf__system_messenger_13",
+            "ataf__system_messenger_14",
+            "ataf__system_messenger_15",
+            "ataf__system_messenger_16",
+            "ataf__system_messenger_17",
+            "ataf__system_messenger_18",
+            "ataf__system_messenger_19",
+            "ataf__system_messenger_20",
+            "ataf__system_messenger_21",
+            "ataf__system_messenger_22",
+            "ataf__system_messenger_23",
+            "ataf__system_messenger_24",
+            "ataf__system_messenger_25",
+            "ataf__system_messenger_26",
+            "ataf__system_messenger_27",
+            "ataf__system_messenger_28",
+            "ataf__system_messenger_29",
+            "ataf__system_messenger_30",
+            "ataf__system_messenger_31",
+            "ataf__system_messenger_32",
+            "ataf__system_messenger_33"
     );
 
-    /** Citizen bookings are keyed by the Keycloak username. Thirty-two API threads plus one spare. */
+    /**
+     * Citizen Keycloak users. Bookings are keyed by this username. A feature that says {@code citizen}
+     * takes a free one. Thirty-two API threads plus one spare.
+     */
     private static final List<String> CITIZENS = List.of(
-            "citizen",
-            "citizen_2",
-            "citizen_3",
-            "citizen_4",
-            "citizen_5",
-            "citizen_6",
-            "citizen_7",
-            "citizen_8",
-            "citizen_9",
-            "citizen_10",
-            "citizen_11",
-            "citizen_12",
-            "citizen_13",
-            "citizen_14",
-            "citizen_15",
-            "citizen_16",
-            "citizen_17",
-            "citizen_18",
-            "citizen_19",
-            "citizen_20",
-            "citizen_21",
-            "citizen_22",
-            "citizen_23",
-            "citizen_24",
-            "citizen_25",
-            "citizen_26",
-            "citizen_27",
-            "citizen_28",
-            "citizen_29",
-            "citizen_30",
-            "citizen_31",
-            "citizen_32",
-            "citizen_33"
+            "ataf_citizen_1",
+            "ataf_citizen_2",
+            "ataf_citizen_3",
+            "ataf_citizen_4",
+            "ataf_citizen_5",
+            "ataf_citizen_6",
+            "ataf_citizen_7",
+            "ataf_citizen_8",
+            "ataf_citizen_9",
+            "ataf_citizen_10",
+            "ataf_citizen_11",
+            "ataf_citizen_12",
+            "ataf_citizen_13",
+            "ataf_citizen_14",
+            "ataf_citizen_15",
+            "ataf_citizen_16",
+            "ataf_citizen_17",
+            "ataf_citizen_18",
+            "ataf_citizen_19",
+            "ataf_citizen_20",
+            "ataf_citizen_21",
+            "ataf_citizen_22",
+            "ataf_citizen_23",
+            "ataf_citizen_24",
+            "ataf_citizen_25",
+            "ataf_citizen_26",
+            "ataf_citizen_27",
+            "ataf_citizen_28",
+            "ataf_citizen_29",
+            "ataf_citizen_30",
+            "ataf_citizen_31",
+            "ataf_citizen_32",
+            "ataf_citizen_33"
     );
 
     private AccountCheckout() {
@@ -169,7 +191,10 @@ public final class AccountCheckout {
     }
 
     /**
-     * Default {@code ataf} and {@code agent_queue} logins take a free member of that pool.
+     * {@code ataf} takes a free {@code ataf_superuser_*} account. {@code agent_queue} takes a free
+     * {@code ataf_agent_queue_*} account. {@code user_admin} takes a free {@code ataf_user_admin_*}
+     * account at random. Each of those accounts is Benutzerverwaltung for one department.
+     * The scenario uses that account's department. It waits while every such account is in use.
      * Any other name stays on that exact account. Returns the Keycloak username to type.
      */
     public static String assignWorkstationLogin(String loginName) {
@@ -178,10 +203,54 @@ public final class AccountCheckout {
             return checkoutFree(SUPERUSERS, true);
         }
         if ("agent_queue".equals(bare)) {
-            return checkoutFree(WORKSTATIONS, true);
+            return checkoutFree(AGENT_QUEUE_USERS, true);
+        }
+        if ("user_admin".equals(bare)) {
+            return assignRandomUserAdminLogin(userAdminDepartments());
         }
         checkoutWorkstation(bare);
         return bare;
+    }
+
+    /**
+     * Shuffles {@code loginToDepartment} and checks out the first free account.
+     * The remembered department is the one that account has.
+     */
+    public static String assignRandomUserAdminLogin(Map<String, Integer> loginToDepartment) {
+        if (loginToDepartment == null || loginToDepartment.isEmpty()) {
+            throw new IllegalStateException("No user_admin pool account has a department.");
+        }
+        List<String> logins = new ArrayList<>(loginToDepartment.keySet());
+        Collections.shuffle(logins);
+        Map<String, Integer> shuffled = new LinkedHashMap<>();
+        for (String login : logins) {
+            shuffled.put(login, loginToDepartment.get(login));
+        }
+        return assignUserAdminLogin(shuffled);
+    }
+
+    /**
+     * Checks out one of {@code loginToDepartment} and remembers that account's department.
+     * Waits until one of those accounts is free. An empty map means none of them has a department.
+     * Map order is the order in which free accounts are tried.
+     */
+    public static String assignUserAdminLogin(Map<String, Integer> loginToDepartment) {
+        if (loginToDepartment == null || loginToDepartment.isEmpty()) {
+            throw new IllegalStateException("No user_admin pool account has a department.");
+        }
+        String login = checkoutFree(new ArrayList<>(loginToDepartment.keySet()), true);
+        Integer departmentId = loginToDepartment.get(login);
+        if (departmentId == null || departmentId == 0) {
+            throw new IllegalStateException("Checked out " + login + " without a department.");
+        }
+        DEPARTMENT.set(departmentId);
+        log("Using department " + departmentId + " from " + login);
+        return login;
+    }
+
+    /** Department of the user-admin pool account this thread checked out, or null. */
+    public static Integer checkedOutDepartmentId() {
+        return DEPARTMENT.get();
     }
 
     /**
@@ -207,7 +276,7 @@ public final class AccountCheckout {
     }
 
     /**
-     * Feature counters stay as written for {@code ataf}. Spare superusers use the same counter
+     * {@code ataf_superuser_1} keeps the counter from the feature. Later superusers use that counter
      * plus 100 times their pool index, so two queue scenarios do not sit on one Platz.
      */
     public static String queueDesk(String requestedDesk) {
@@ -215,11 +284,11 @@ public final class AccountCheckout {
     }
 
     /**
-     * API workstation updates use the same counter string. Spare {@code agent_queue} users
+     * API updates for the {@code agent_queue} role use the same counter string. Spare users
      * take that counter plus 100 times their pool index.
      */
     public static String workstationCounter(String requestedCounter) {
-        return offsetDesk(requestedCounter, WORKSTATIONS, true);
+        return offsetDesk(requestedCounter, AGENT_QUEUE_USERS, true);
     }
 
     private static String offsetDesk(String requested, List<String> pool, boolean workstation) {
@@ -305,6 +374,7 @@ public final class AccountCheckout {
     }
 
     public static void releaseAll() {
+        DEPARTMENT.remove();
         LinkedHashSet<String> held = HELD.get();
         List<String> keys = new ArrayList<>(held);
         HELD.remove();
@@ -316,6 +386,52 @@ public final class AccountCheckout {
                 log("Released account " + accountId);
             }
         }
+    }
+
+    private static Map<String, Integer> userAdminDepartments() {
+        Map<String, Integer> byLogin = new LinkedHashMap<>();
+        String sql = "SELECT Name, BehoerdenID FROM nutzer "
+                + "WHERE Name LIKE 'ataf_user_admin_%@keycloak' AND BehoerdenID <> 0 "
+                + "ORDER BY NutzerID";
+        try (Connection connection = openConnection();
+                PreparedStatement statement = connection.prepareStatement(sql);
+                ResultSet rows = statement.executeQuery()) {
+            while (rows.next()) {
+                int departmentId = rows.getInt("BehoerdenID");
+                if (departmentId != 0) {
+                    byLogin.put(stripKeycloak(rows.getString("Name")), departmentId);
+                }
+            }
+        } catch (SQLException e) {
+            throw new IllegalStateException("Could not read the user_admin pool departments.", e);
+        }
+        return byLogin;
+    }
+
+    private static Connection openConnection() throws SQLException {
+        String host = envOrDefault("MYSQL_HOST", "db");
+        String port = mysqlPort(envOrDefault("MYSQL_PORT", "3306"));
+        String database = envOrDefault("MYSQL_DATABASE", "db");
+        String user = envOrDefault("MYSQL_USER", "db");
+        String url = "jdbc:mysql://" + host + ":" + port + "/" + database;
+        log("Opening suite database " + url + " as " + user);
+        return DriverManager.getConnection(url, user, envOrDefault("MYSQL_PASSWORD", "db"));
+    }
+
+    private static String mysqlPort(String raw) {
+        int colon = raw.lastIndexOf(':');
+        if (colon >= 0 && colon < raw.length() - 1) {
+            return raw.substring(colon + 1);
+        }
+        return raw;
+    }
+
+    private static String envOrDefault(String name, String fallback) {
+        String value = System.getenv(name);
+        if (value == null || value.isBlank()) {
+            return fallback;
+        }
+        return value.trim();
     }
 
     private static void log(String message) {

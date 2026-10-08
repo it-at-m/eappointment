@@ -410,7 +410,7 @@ class ValidationServiceTest extends TestCase
         $stored->familyName = 'Jane Doe';
         $stored->email = 'jane@example.com';
         $stored->telephone = '';
-        $stored->customTextfield = 'test@muenchen.de';
+        $stored->customTextfield = 'noreply-terminvereinbarung@muenchen.de';
         $stored->customTextfield2 = null;
 
         $result = ValidationService::validateUnchangedStoredContact(
@@ -653,5 +653,20 @@ class ValidationServiceTest extends TestCase
         $this->assertFalse(ValidationService::isPlaceholderEmail('max.mustermann@example.com'));
         $this->assertFalse(ValidationService::isFilledEmail(\App::getPlaceholderEmail()));
         $this->assertTrue(ValidationService::isFilledEmail('max.mustermann@example.com'));
+    }
+
+    public function testValidateRebookingAllowed(): void
+    {
+        $this->assertSame(['errors' => []], ValidationService::validateRebookingAllowed(null));
+        $this->assertSame(
+            ['errors' => []],
+            ValidationService::validateRebookingAllowed(new ThinnedScope(rebookingDisabled: false))
+        );
+
+        $disabled = ValidationService::validateRebookingAllowed(new ThinnedScope(rebookingDisabled: true));
+        $this->assertSame(
+            ['errors' => [ErrorMessages::get('rebookingDisabled')]],
+            $disabled
+        );
     }
 }

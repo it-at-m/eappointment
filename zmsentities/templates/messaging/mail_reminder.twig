@@ -44,7 +44,11 @@ Ihre Terminnummer wird im oben genannten Bereich auf dem Bildschirm bei Aufruf a
         Bei erhöhtem Kundenaufkommen können wir leider nicht ausschließen, dass Sie trotz Termins mit einer geringen Wartezeit rechnen müssen. Wir bitten Sie hierfür um Verständnis.
         <br><br>
         Falls Sie diesen Termin nicht benötigen oder wahrnehmen können, stornieren Sie bitte <b>umgehend</b> Ihren Termin und reservieren einen neuen Termin.
+        {% if process.scope.preferences.appointment.rebookingDisabled|default(false) %}
+        <a href="{{ config.appointments.urlAppointments }}#/appointment/{{ appointmentLink }}">Termin absagen</a><br />
+        {% else %}
         <a href="{{ config.appointments.urlAppointments }}#/appointment/{{ appointmentLink }}">Termin ändern/stornieren</a><br />
+        {% endif %}
         <br /><br />
 {{ block("sendoff_german") }}
 </div>

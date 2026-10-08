@@ -1,33 +1,33 @@
-#language: de
-Funktionalität: Über die Warteschlange werden Testdaten angelegt, aus denen sich die Kundenstatistik speist.
+#language: en
+Feature: The queue creates the test data that feeds the citizen statistics.
 
 	@web @zmsadmin @queue @clerk @ZMS-2389 @ZMS-1738 @ZMS-1557 @E2E @automatisiert @executeLocally
-	Szenario: Kundenstatistik -Dateninitialisierung
-		Wenn Sie zur Webseite der Administration navigieren.
-		Und  Sie im Zeitmanagementsystem auf die Schaltfläche "Anmelden" klicken.
-		Und  Sie für "Standort" den Wert "Gewerbeamt (KVR-III/23) Verkehr" auswählen.
-		Und  Sie in Feld "Platz-Nr. oder Tresen" den Text "13" eingeben.
-		Und  Sie im Zeitmanagementsystem auf die Schaltfläche "Auswahl bestätigen" klicken.
-		Dann wird die Seite Sachbearbeiterplatz angezeigt.
+	Scenario: Citizen statistics data setup
+		When I open the administration website.
+		And I click the button "Anmelden" in the administration.
+		And I select for "Standort" the value "Gewerbeamt (KVR-III/23) Verkehr".
+		And I enter in the field "Platz-Nr. oder Tresen" the text "13".
+		And I click the button "Auswahl bestätigen" in the administration.
+		Then the workstation page is displayed.
 #Kunde a Zulassung Taxi oder Mietwagen, Taxi oder Mietwagen – Unterlagen nachreichen
-		Wenn Sie einen Terminkunden mit der Dienstleistung "Zulassung Taxi oder Mietwagen, Taxi oder Mietwagen – Unterlagen nachreichen", Uhrzeit, name, gültige E-Mail-Adresse und die Anmerkung "Kundenstatistik1" buchen.
-		Dann Es erscheint ein Pop-Up-Fenster "Termin wurde erfolgreich eingetragen" und der Termin ist auch in der Warteschlange sichtbar.
-		Wenn Der Sachbearbeiter den Terminkunden mit der Anmerkung "Kundenstatistik1" aufruft.
-		Dann wird der wartende Kunde aufgerufen.
-		Dann sollte der Kunde erschienen sein und der Termin fertiggestellt.
+		When I book an appointment customer with service "Zulassung Taxi oder Mietwagen, Taxi oder Mietwagen – Unterlagen nachreichen", time, name, a valid email address and the note "Kundenstatistik1".
+		Then a popup "Termin wurde erfolgreich eingetragen" appears and the appointment is also visible in the queue.
+		When the clerk calls the appointment customer with the note "Kundenstatistik1".
+		Then the waiting customer is called.
+		Then the customer should have arrived and the appointment should be finished.
 #Kunde b Güterkraftverkehr (Gemeinschaftslizenz) – Erstantrag oder erneuter Antrag
-		Wenn Sie einen Spontankunden für die Dienstleistung "Güterkraftverkehr (Gemeinschaftslizenz) – Erstantrag oder erneuter Antrag" buchen.
-		Dann wird der Spontankunden in der Warteschlange angezeigt.
-		Wenn Der Sachbearbeiter den wartenden Kunden aufruft.
-		Dann sollte der Kunde erschienen sein und der Termin fertiggestellt.
+		When I book a walk-in customer for the service "Güterkraftverkehr (Gemeinschaftslizenz) – Erstantrag oder erneuter Antrag".
+		Then the walk-in customer is shown in the queue.
+		When the clerk calls the waiting customer.
+		Then the customer should have arrived and the appointment should be finished.
 #Kunde d Güterkraftverkehr (Gemeinschaftslizenz) – Erstantrag oder erneuter Antrag
-		Wenn Sie einen Spontankunden für die Dienstleistung "Güterkraftverkehr (Gemeinschaftslizenz) – Erstantrag oder erneuter Antrag" buchen.
-		Dann wird der Spontankunden in der Warteschlange angezeigt.
-		Wenn Der Sachbearbeiter den wartenden Kunden aufruft.
-		Dann sollte der Kunde nicht erschienen sein.
+		When I book a walk-in customer for the service "Güterkraftverkehr (Gemeinschaftslizenz) – Erstantrag oder erneuter Antrag".
+		Then the walk-in customer is shown in the queue.
+		When the clerk calls the waiting customer.
+		Then the customer should not have arrived.
 #Kunde c Zulassung Taxi oder Mietwagen
-		Wenn Sie einen Terminkunden mit der Dienstleistung "Zulassung Taxi oder Mietwagen", Uhrzeit, name, gültige E-Mail-Adresse und die Anmerkung "Kundenstatistik2" buchen.
-		Dann Es erscheint ein Pop-Up-Fenster "Termin wurde erfolgreich eingetragen" und der Termin ist auch in der Warteschlange sichtbar.
-		Wenn Der Sachbearbeiter den Terminkunden mit der Anmerkung "Kundenstatistik2" aufruft.
-		Dann wird der wartende Kunde aufgerufen.
-		Dann sollte der Kunde nicht erschienen sein.
+		When I book an appointment customer with service "Zulassung Taxi oder Mietwagen", time, name, a valid email address and the note "Kundenstatistik2".
+		Then a popup "Termin wurde erfolgreich eingetragen" appears and the appointment is also visible in the queue.
+		When the clerk calls the appointment customer with the note "Kundenstatistik2".
+		Then the waiting customer is called.
+		Then the customer should not have arrived.

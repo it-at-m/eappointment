@@ -168,6 +168,7 @@ const collectCucumberFeatures = () => {
       title: parsed.title || path.basename(rel),
       tags: parsed.tags,
       scenarioCount: parsed.scenarioCount,
+      mobileScenarioCount: parsed.mobileScenarioCount || 0,
       sourceUrl: `${FEATURE_SOURCE_BASE}/${rel}`,
       testType,
       module,
@@ -181,6 +182,7 @@ const collectCucumberFeatures = () => {
       category,
       submodule: submodule || "",
       scenarioCount: parsed.scenarioCount,
+      mobileScenarioCount: parsed.mobileScenarioCount || 0,
     };
   };
 
@@ -879,6 +881,112 @@ const buildAbsoluteUrl = (urlPath) => `${SITE_HOSTNAME}${SITE_BASE}${urlPath}`;
 
 const localeOfUrl = (urlPath) => (urlPath.startsWith("de/") ? "de" : "en");
 
+// VitePress names each page chunk after the markdown file and then asks the
+// browser for a ".lean.js" copy. Vite 8 drops that copy, and GitHub Pages will
+// not serve a path that contains ".md", so both the real chunk and the lean
+// copy are published without ".md".
+const STATIC_STRIP_RE = /['"`]__VP_STATIC_START__[^]*?__VP_STATIC_END__['"`]/g;
+
+const emitLeanPageChunks = () => ({
+  name: "emit-lean-page-chunks",
+  enforce: "pre",
+  generateBundle(_options, bundle) {
+    for (const chunk of Object.values(bundle)) {
+      if (chunk.type !== "chunk" || !chunk.fileName.includes(".md.")) {
+        continue;
+      }
+      if (chunk.fileName.endsWith(".lean.js")) {
+        continue;
+      }
+      this.emitFile({
+        type: "asset",
+        fileName: chunk.fileName.replace(/\.js$/, ".lean.js"),
+        source: chunk.code.replace(STATIC_STRIP_RE, '""'),
+      });
+    }
+  },
+});
+
+const walkFiles = (dir, files = []) => {
+  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+    const full = path.join(dir, entry.name);
+    if (entry.isDirectory()) {
+      walkFiles(full, files);
+    } else {
+      files.push(full);
+    }
+  }
+  return files;
+};
+
+const publishAssetsWithoutMdNames = (outDir) => {
+  if (!outDir || !fs.existsSync(outDir)) {
+    return;
+  }
+  const files = walkFiles(outDir);
+  const replacements = [];
+  const renames = [];
+  for (const file of files) {
+    const base = path.basename(file);
+    const match = base.match(/^(.*)\.md\.([-\w]+)\.js$/);
+    if (!match) {
+      continue;
+    }
+    const published = `${match[1]}.${match[2]}.js`;
+    const leanFrom = `${match[1]}.md.${match[2]}.lean.js`;
+    const leanTo = `${match[1]}.${match[2]}.lean.js`;
+    replacements.push([leanFrom, leanTo]);
+    replacements.push([base, published]);
+    renames.push([file, path.join(path.dirname(file), published)]);
+    const leanFile = path.join(path.dirname(file), leanFrom);
+    if (fs.existsSync(leanFile)) {
+      renames.push([leanFile, path.join(path.dirname(file), leanTo)]);
+    }
+  }
+  replacements.sort((a, b) => b[0].length - a[0].length);
+  const textFiles = new Set(files);
+  for (const [, dest] of renames) {
+    if (dest.endsWith(".lean.js")) {
+      textFiles.add(dest);
+    }
+  }
+  for (const file of textFiles) {
+    if (!fs.existsSync(file) || !/\.(html|js|css|json|map)$/.test(file)) {
+      continue;
+    }
+    let text = fs.readFileSync(file, "utf8");
+    let changed = false;
+    for (const [from, to] of replacements) {
+      if (text.includes(from)) {
+        text = text.split(from).join(to);
+        changed = true;
+      }
+    }
+    // The router does not store "index.md.<hash>.js". It builds
+    // `/assets/${page}.md.${hash}.js` and then swaps in ".lean.js".
+    // Renaming the file is not enough; the built URL has to drop ".md" too.
+    if (file.endsWith(".js")) {
+      const patched = text.replace(
+        /\/assets\/\$\{([A-Za-z_$][\w$]*)\}\.\$\{([A-Za-z_$][\w$]*)\}\.js/g,
+        (_match, pageVar, hashVar) =>
+          `/assets/\${${pageVar}.replace(/\\.md$/, "")}.\${${hashVar}}.js`
+      );
+      if (patched !== text) {
+        text = patched;
+        changed = true;
+      }
+    }
+    if (changed) {
+      fs.writeFileSync(file, text);
+    }
+  }
+  for (const [from, to] of renames) {
+    if (from !== to && fs.existsSync(from)) {
+      fs.renameSync(from, to);
+    }
+  }
+};
+
 export default {
   title: "eAppointment Docs",
   description: "Technical documentation for it-at-m/eappointment",
@@ -887,6 +995,7 @@ export default {
   // Local-dev URLs (e.g. Vite on :8082) are not reachable during CI docs builds.
   ignoreDeadLinks: [/^https?:\/\/localhost(?::\d+)?(?:\/|$)/],
   vite: {
+    plugins: [emitLeanPageChunks()],
     esbuild: {
       target: "es2022",
     },
@@ -904,6 +1013,9 @@ export default {
     // hostname must include the base path so emitted <loc> URLs are absolute
     // and resolve to the actual GitHub Pages location.
     hostname: `${SITE_HOSTNAME}${SITE_BASE}`,
+  },
+  buildEnd(siteConfig) {
+    publishAssetsWithoutMdNames(siteConfig.outDir);
   },
   transformHead({ pageData, siteConfig }) {
     const tags = [];

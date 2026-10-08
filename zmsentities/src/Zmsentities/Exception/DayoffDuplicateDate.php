@@ -2,7 +2,7 @@
 
 namespace BO\Zmsentities\Exception;
 
-class DayoffDuplicateDate extends \Exception
+final class DayoffDuplicateDate extends \Exception
 {
     protected $code = 400;
 

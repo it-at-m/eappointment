@@ -33,6 +33,8 @@ The `zmsautomation-test` script handles database setup, migrations, and test exe
 
 Each log line starts with the worker thread in brackets, for example `[29]`. TestNG reuses that thread for the next scenario, so lines with the same number belong to one scenario until that thread logs `Starting scenario`. Scroll up to the latest `Starting scenario` line with that number to see which test those lines belong to.
 
+A local run also writes one log file per scenario to `zmsautomation/logs`. The file name comes from the scenario name. Previous runs of the same scenario are kept as dated `.log.gz` files. The directory is gitignored.
+
 ```bash
 # Run all ATAF tests (API + UI)
 ./zmsautomation/zmsautomation-test -Pataf-api -Pataf-ui
@@ -148,6 +150,7 @@ Required environment variables for ATAF tests:
 - `ZMS_CONFIG_SECURE_TOKEN` - Token for `X-Token` on protected API calls such as `GET /status/` (default: `hash`, same as local `.env`). Required for zmsbackend health checks after ZMSKVR-1349.
 - `ADMIN_BASE_URI` / `STATISTIC_BASE_URI` - Defaults use `http://localhost/terminvereinbarung/.../` (typical when tests run inside the `web` container).
 - `TICKETPRINTER_BASE_URI` - Ticketprinter / kiosk base (default: `http://localhost/terminvereinbarung/ticketprinter/`).
+- `CALLDISPLAY_BASE_URI` - Call display base (default: `http://localhost/terminvereinbarung/calldisplay/`).
 - `CITIZEN_VIEW_BASE_URI` / `CITIZENVIEW_PORT` - CitizenView / Vite dev server (defaults: port `8082`, base `http://citizenview:8082/`). Override if your stack uses another port (e.g. prebuilt nginx image on `8080`).
 - `REFARCH_GATEWAY_OFFICES_URL` - Optional override for the extra health ping that hits the gateway (default: `http://refarch-gateway:8080/buergeransicht/api/citizen/offices-and-services/`). Same URL path the browser uses; produces lines in gateway logs.
 - `SKIP_REFARCH_GATEWAY_HEALTH=1` - Skip gateway ping (e.g. no refarch-gateway container).
@@ -167,7 +170,7 @@ Required environment variables for ATAF tests:
 ### UI tests (SSO)
 For local UI tests (Statistik, Admin), the default SSO user is the Keycloak `ataf` user (password `vorschau`), created by Keycloak migration `.resources/keycloak/migration/07_add-system-users.yml` and related DB data in Flyway (e.g. `V16__add_keycloak_system_users.sql`). Credentials are set in `testautomation.properties` (`testautomation.userName` / `testautomation.userPassword`) or via ATAF environment variables. For other environments (e.g. ssodev.muenchen.de), override with the appropriate credentials.
 
-For role-specific local dev and API tests, use Keycloak users named after the role (password `vorschau`), e.g. `agent_basic`, from `.resources/keycloak/migration/08_add-role-test-users.yml` with matching ZMS accounts `<role>@keycloak` in Flyway `V22__add_role_test_users.sql`. Roles: `agent_basic`, `agent_queue`, `agent_queue_plus`, `appointment_admin`, `reporting_viewer`, `user_admin`, `audit_viewer`, `system_admin`.
+For role-specific local dev and API tests, use Keycloak users named after the role (password `vorschau`), e.g. `agent_basic`, from `.resources/keycloak/migration/08_add-role-test-users.yml` with matching ZMS accounts `<role>@keycloak` in Flyway `V22__add_role_test_users.sql`. Roles: `agent_basic`, `agent_queue`, `agent_queue_plus`, `appointment_admin`, `reporting_viewer`, `user_admin`, `audit_viewer`, `system_admin`. A feature that says `user_admin` does not use that single account. There is one `ataf_user_admin_*` account per department. The scenario takes a free one at random, uses that account's department, and waits if every such account is in use. Those accounts have the ZMS role `user_admin` (Benutzerverwaltung). Technische Administration is `system_admin`. Terminadministration is `appointment_admin`. Keycloak only gives the pool the client role `user`.
 
 ### Example
 
@@ -194,13 +197,19 @@ The ATAF tests automatically run Flyway migrations before executing tests. The m
   - `@zmsapi` - REST API tests (`features/rest/zmsapi/**`; served by `zmsbackend`)
   - `@zmscitizenapi` - Citizen API tests (`features/rest/zmscitizenapi/**`)
 - **UI tags**
-  - `@web` - All web UI tests
+  - `@web` - All web UI tests (starts Selenium; not a screen-size tag)
+  - `@mobile` - Phone viewport `390×844` after ATAF window setup; use with `@web` on zmscitizenview scenarios only. Workflow checkbox **viewport_mobile_only** runs `@mobile`.
   - `@zmsadmin` - Admin UI features (`features/ui/zmsadmin/**`)
   - `@zmsstatistic` - Statistik UI features (`features/ui/zmsstatistic/**`)
+  - `@capacity` - Terminkapazität (`ui/zmsstatistic/capacity/`)
   - `@zmscitizenview` - Citizen view webcomponent UI (`features/ui/zmscitizenview/**`)
   - `@zmsticketprinter` - Ticketprinter / kiosk UI (`features/ui/zmsticketprinter/**`) and matching zmsbackend REST (`rest/zmsapi/**/zmsticketprinter/`)
+  - `@zmscalldisplay` - Call display UI (`features/ui/zmscalldisplay/**`) and matching zmsbackend REST (`rest/zmsapi/calldisplay/`)
   - `@booking` - Booking / waiting-number flows (UI: `zmsadmin/booking`, `zmscitizenview/booking`, `zmsticketprinter/booking`; REST: `rest/zmsapi/booking/{frontend}/`, `rest/zmscitizenapi/booking/`)
   - `@rebooking` - Umbuchung / Weiterleiten (UI: `zmscitizenview/rebooking`, `zmsadmin/rebooking`; REST: `rest/zmscitizenapi/rebooking/`)
+  - `@callouts` - Booking restart callouts (UI: `zmscitizenview/callouts`)
+  - `@user-administration` - Nutzer*innen (UI: `zmsadmin/user-administration`)
+  - `@mail-templates` - Confirmation and reminder mail content (`rest/zmsapi/mail-templates/`)
   - `@citizen-login` - Bürger-Login (DBS) actor for logged-in citizen scenarios
   - `@jumpin` - Booking scenarios that open jump-in URL (combination step first)
   - `@ruppertstrasse` - Ruppertstraße Passkalender (10502) style flows
@@ -212,7 +221,7 @@ The ATAF tests automatically run Flyway migrations before executing tests. The m
 - **Other**
   - `@smoke` - Smoke tests (critical path)
 
-`@executeLocally` is a UI-only tag (`@web` scenarios). Do not add it to pure REST scenarios (`@rest`), because they do not initialize Selenium/WebDriver.
+`@executeLocally` and `@mobile` are UI-only tags (`@web` scenarios). Do not add them to pure REST scenarios (`@rest`), because they do not initialize Selenium/WebDriver. Desktop citizenview scenarios omit `@mobile` and keep the ATAF default window (or set `1400×900` in an assertion).
 
 ## Feature Files
 
@@ -220,14 +229,17 @@ The ATAF tests automatically run Flyway migrations before executing tests. The m
 
 #### REST API (`rest/zmsapi/`, served by `zmsbackend`)
 - `status.feature` / `workstation-login.feature` - health and login
-- `booking/zmsadmin/ZMSKVR-1049.feature` - intern counter booking of a Mandanten variant missing from `provider.data.services`
-- `booking/zmsticketprinter/ZMSKVR-167.feature` - Orleansplatz KP Abholung (scope 127): Spontankunden hours, `POST /ticketprinter/` (`s127` and `s999,s127`), waiting numbers, then disabled buttons after hours are deleted
-- `customer-call/zmsadmin/ZMSKVR-1328.feature` - book, call and finish a scheduled appointment at the counter
+- `booking/zmsadmin/zmskvr-1610_zmskvr-1049_variant_counter_booking.feature` - intern counter booking of a Mandanten variant missing from `provider.data.services`
+- `booking/zmsticketprinter/zmskvr-1652_zmskvr-167_waiting_number.feature` - Orleansplatz KP Abholung (scope 127): Spontankunden hours, `POST /ticketprinter/` (`s127` and `s999,s127`), waiting numbers, then disabled buttons after hours are deleted
+- `calldisplay/zmskvr-1581_zmskvr-166_missing_scope.feature` - `POST /calldisplay/` with scopes 999 and 142 returns the existing location and omits the missing one
+- `citizen-call/zmsadmin/ZMSKVR-1328.feature` - book, call and finish a scheduled appointment at the counter
+- `mail-templates/zmskvr-1570_zmskvr-1557_estimated_duration.feature` - today's appointment: confirmation and reminder mails show the estimated duration on the line after the time under Zeit
 
 #### Citizen API (`rest/zmscitizenapi/`)
 - `dldb-special-cases/zmskvr-1124_booking_ruppertstrasse_pass_calendar_jumpin_links_citizenapi.feature` - Ruppertstraße Citizen API booking (10502 / 10489 / 10492, jump-in)
 - `booking/zmskvr-955_zmskvr-965_logged_in_booking_no_activation_citizenapi.feature` - logged-in confirm without preconfirm / activation mail
 - `rebooking/zmskvr-353_rebooking_no_activation_citizenapi.feature` - guest rebooking confirm with original process, no second activation
+- `callouts/zmskvr-1440_zmskvr-1451_captcha_expiry_citizenapi.feature` - expired captcha token (`captchaExpired`) on the calendar and on reserve
 
 Additional REST features (availability, offices-and-services, etc.) may be added over time; this list reflects files currently present under `features/rest/`.
 
@@ -240,12 +252,18 @@ Additional REST features (availability, offices-and-services, etc.) may be added
 - `dldb-special-cases/zmskvr-1124_booking_ruppertstrasse_pass_calendar_jumpin_links.feature` - zmscitizenview Ruppertstraße UI booking (Kalenderansicht); Ort = checkbox list or single-provider teaser; slot wait until **MucSpinner** (`.m-spinner-container`) cleared after day load + timeslot in DOM; `#provider-*` on reserve, preconfirm, confirm
 - `booking/zmskvr-955_zmskvr-965_logged_in_booking_no_activation.feature` - Bürger-Login booking skips activation and shows the confirmation callout
 - `rebooking/zmskvr-353_rebooking_no_activation.feature` - guest Umbuchung confirms immediately without a second activation
+- `callouts/zmskvr-1440_zmskvr-1451_session_and_reservation_callouts.feature` - captcha session callout on Termin and reservation callout on Kontakt and Übersicht (office 10427)
+- `callouts/zmskvr-1448_zmskvr-1486_captcha_callout_clears_after_restart.feature` - captcha session callout does not stick after Buchung neu starten and a fresh captcha (office 10427)
 
 #### Statistik UI (`ui/zmsstatistic/`)
 - Features for the Statistik web UI (Dienstleistungsstatistik, Kundenstatistik, CSV export, etc.)
+- `capacity/zmskvr-1663_zmskvr-1629_daily_capacity_total.feature` - one-day Tagessumme, then Ansicht, Kanal, and Einheit stay after a new date range and location
 
 #### Ticketprinter UI (`ui/zmsticketprinter/booking/`)
-- `ZMSKVR-167.feature` - one local Chrome session for Orleansplatz KP Abholung (scope 127): Spontankunden hours, Standort (`s127`), Dienstleistung (`r127-10295182`), mixed button list (`s999,s127` skips the missing scope), then delete hours so the kiosk shows closed
+- `zmskvr-1652_zmskvr-167_waiting_number.feature` - one local Chrome session for Orleansplatz KP Abholung (scope 127): Spontankunden hours, Standort (`s127`), Dienstleistung (`r127-10295182`), mixed button list (`s999,s127` skips the missing scope), then delete hours so the kiosk shows closed
+
+#### Call display UI (`ui/zmscalldisplay/`)
+- `zmskvr-1581_zmskvr-166_missing_scope.feature` - locations 142 and 148 open the display; replacing 148 with missing scope 999 and reloading still shows location 142
 
 ## CI/CD
 

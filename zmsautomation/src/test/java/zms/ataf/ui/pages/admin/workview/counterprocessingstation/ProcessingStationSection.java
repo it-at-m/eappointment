@@ -117,8 +117,14 @@ public class ProcessingStationSection extends CounterProcessingStationPage {
 
     public void callCustomerFromQueueWithName(String name) {
         ScenarioLogManager.getLogger().info("Trying to call customer from queue with name \"" + name + "\"...");
-        WebElement link = getTableCellElement("table-queued-appointments", LocatorType.ID, "Name (Aufrufe)", name);
-        link.findElement(By.cssSelector("a")).click();
+        // A repeat call shows the count beside the name, so the cell text is no longer only the name.
+        By callLink = By.xpath(
+                "//table[@id='table-queued-appointments']//td[contains(@class,'callnextclient')]"
+                        + "//a[normalize-space(.)='" + name + "']");
+        WebElement link = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(ExpectedConditions.elementToBeClickable(callLink));
+        scrollToCenterByVisibleElement(link);
+        link.click();
     }
 
     public void callCustomerFromParkingTableWithNumber(String number) {
@@ -507,6 +513,76 @@ public class ProcessingStationSection extends CounterProcessingStationPage {
     public void clickFinishAndCallSelectedInConfirmDialog() {
         ScenarioLogManager.getLogger().info("Clicking \"Aktuellen Termin fertig stellen und Kunden aufrufen\"...");
         clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "section.board.dialog a.button-ok", LocatorType.CSSSELECTOR, false, CONTEXT);
+    }
+
+    public void assertStatisticToggleLabel(String label) {
+        ScenarioLogManager.getLogger().info("Checking the statistics toggle label \"{}\"...", label);
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        WebElement toggleLabel = wait.until(ExpectedConditions.visibilityOfElementLocated(
+                By.cssSelector(".statistic-additional-department-requests__label")));
+        Assert.assertEquals(toggleLabel.getText().trim(), label,
+                "Statistics toggle has the wrong label.");
+    }
+
+    public void clickStatisticToggle(String label) {
+        ScenarioLogManager.getLogger().info("Clicking the statistics toggle \"{}\"...", label);
+        assertStatisticToggleLabel(label);
+        clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME,
+                "button.statistic-additional-department-requests__toggle",
+                LocatorType.CSSSELECTOR, false, CONTEXT);
+        CONTEXT.waitForSpinners();
+    }
+
+    public void assertScopeStatisticServiceVisible(String service) {
+        ScenarioLogManager.getLogger().info("Checking scope service \"{}\" on the finish form...", service);
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(scopeStatisticService(service)));
+    }
+
+    public void assertAdditionalStatisticServiceDisplayed(String service, boolean displayed) {
+        ScenarioLogManager.getLogger().info(
+                "Checking additional service \"{}\" displayed={}...", service, displayed);
+        By locator = additionalStatisticService(service);
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        if (displayed) {
+            wait.until(ExpectedConditions.visibilityOfElementLocated(locator));
+            return;
+        }
+        wait.withMessage("Additional service \"" + service + "\" is still visible.")
+                .until(driver -> driver.findElements(locator).stream().noneMatch(WebElement::isDisplayed));
+    }
+
+    public void increaseAdditionalStatisticService(String service, int times) {
+        ScenarioLogManager.getLogger().info(
+                "Increasing additional service \"{}\" by {}", service, times);
+        By increment = By.xpath(
+                "//div[contains(@class,'statistic-additional-department-requests__panel')]"
+                        + "//div[contains(@class,'form-input-counter')][.//label[normalize-space()='"
+                        + service + "']]//button[contains(@class,'increment')]");
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        for (int i = 0; i < times; i++) {
+            wait.until(ExpectedConditions.elementToBeClickable(increment)).click();
+        }
+    }
+
+    public void submitStatisticsFinish() {
+        ScenarioLogManager.getLogger().info("Submitting the statistics finish form...");
+        By submit = By.xpath(
+                "//form[contains(@class,'form--base')]//button[@type='submit' and contains(normalize-space(.),'Bearbeitung abschließen')]");
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        WebElement button = wait.until(ExpectedConditions.elementToBeClickable(submit));
+        button.click();
+        CONTEXT.waitForSpinners();
+    }
+
+    private By scopeStatisticService(String service) {
+        return By.xpath("//legend[normalize-space()='Dienstleistungen Erfassen']/ancestor::fieldset[1]"
+                + "//label[normalize-space()='" + service + "']");
+    }
+
+    private By additionalStatisticService(String service) {
+        return By.xpath("//div[contains(@class,'statistic-additional-department-requests__panel')]"
+                + "//label[normalize-space()='" + service + "']");
     }
 
     public void completeStatisticsFinishIfPresent() {

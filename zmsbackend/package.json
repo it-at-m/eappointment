@@ -16,9 +16,13 @@
   "license": "SEE LICENSE IN LICENSE FILE",
   "// overrides.brace-expansion": "Force 5.0.8 for CVE-2026-14257 (DoS via unbounded expansion length); no 1.x/2.x backport.",
   "// overrides.fast-uri": "Force ^4.1.2 for CVE-2026-18446 (host confusion via backslash authority).",
+  "// overrides.js-yaml": "@apidevtools/swagger-cli pins js-yaml@3.14, which pulls argparse@1 and sprintf-js (CVE-2026-97058, no patched release). Force 4.3.2; swagger-cli only calls dump().",
   "overrides": {
     "fast-uri": "^4.2.1",
-    "brace-expansion": "5.0.12"
+    "brace-expansion": "5.0.12",
+    "@apidevtools/swagger-cli": {
+      "js-yaml": "5.4.3"
+    }
   },
   "dependencies": {
     "@apidevtools/swagger-cli": "^4.0.4"

@@ -16,19 +16,21 @@
     "@muenchen/prettier-codeformat": "^1.0.2",
     "esbuild": "^0.28.2",
     "markdown-it": "^15.0.0",
-    "mermaid": "12.0.0",
+    "mermaid": "12.1.0",
     "prettier": "^3.5.3",
     "vitepress": "^1.6.3"
   },
   "// overrides.postcss": "Force ^8.5.23 for CVE-2026-69153.",
   "// overrides.nanoid": "postcss pins nanoid@3.3.16; force ^3.3.18 (CVE-2026-67213).",
   "// overrides.lodash-es": "mermaid -> chevrotain pins lodash-es@4.17.23; force ^4.18.0 (CVE-2026-4800, CVE-2026-2950).",
+  "// overrides.katex": "mermaid pins katex@^0.16.47; force 0.18.2 (CVE-2026-103923). No 0.16 patch.",
   "overrides": {
     "uuid": "^14.0.2",
-    "vite": "^8.3.1",
+    "vite": "^8.3.3",
     "dompurify": "^3.4.16",
-    "postcss": "^8.5.28",
-    "nanoid": "^6.0.1",
-    "lodash-es": "^4.18.0"
+    "postcss": "^8.5.29",
+    "nanoid": "^6.0.2",
+    "lodash-es": "^4.18.0",
+    "katex": "0.19.0"
   }
 }
