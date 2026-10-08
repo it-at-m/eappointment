@@ -316,13 +316,16 @@ describe("AppointmentView", () => {
       expect(wrapper.find('[data-test="service-finder"]').exists()).toBe(true);
     });
 
-    it("restarts a reschedule at the clean appointment start", async () => {
+    it("restarts a reschedule by reloading the appointment jump-in", async () => {
       const originalLocation = window.location;
+      const reload = vi.fn();
       delete (window as any).location;
       (window as any).location = {
         href: "http://localhost:8082/#/appointment/abc",
+        hash: "#/appointment/abc",
         origin: "http://localhost:8082",
         pathname: "/",
+        reload,
       };
 
       const wrapper = createWrapper({ appointmentHash: "abc" });
@@ -332,8 +335,33 @@ describe("AppointmentView", () => {
 
       wrapper.vm.restartBookingToServices();
 
-      expect(window.location.href).toBe("http://localhost:8082/");
+      expect(reload).toHaveBeenCalled();
       expect(wrapper.vm.currentView).toBe(1);
+
+      (window as any).location = originalLocation;
+    });
+
+    it("restarts a reschedule by navigating to the appointment jump-in", async () => {
+      const originalLocation = window.location;
+      delete (window as any).location;
+      (window as any).location = {
+        href: "http://localhost:8082/#/services/1072015/locations/10427",
+        hash: "#/services/1072015/locations/10427",
+        origin: "http://localhost:8082",
+        pathname: "/",
+        reload: vi.fn(),
+      };
+
+      const wrapper = createWrapper({ appointmentHash: "abc" });
+      wrapper.vm.currentView = 1;
+      wrapper.vm.isRebooking = true;
+      await nextTick();
+
+      wrapper.vm.restartBookingToServices();
+
+      expect(window.location.href).toBe(
+        "http://localhost:8082/#/appointment/abc"
+      );
 
       (window as any).location = originalLocation;
     });
