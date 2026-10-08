@@ -27,7 +27,7 @@ class WorkstationProcessRemoveTest extends \BO\Zmsbackend\Tests\Api\Base
 
         $process = (new \BO\Zmsbackend\Process\Service\Process())->readEntity(self::CALLED_PROCESS_ID, self::CALLED_AUTHKEY, 1);
         $this->assertNotEquals(\BO\Zmsentities\Process::STATUS_MISSED, $process->status);
-        $this->assertFalse($process->getWasMissed());
+        $this->assertFalse($process->isWasMissed());
     }
 
     public function testRequeueAndSkipToNextMarksProcessMissedWhenCallCountExceedsMax()
@@ -40,7 +40,7 @@ class WorkstationProcessRemoveTest extends \BO\Zmsbackend\Tests\Api\Base
 
         $process = (new \BO\Zmsbackend\Process\Service\Process())->readEntity(self::CALLED_PROCESS_ID, self::CALLED_AUTHKEY, 1);
         $this->assertEquals(\BO\Zmsentities\Process::STATUS_MISSED, $process->status);
-        $this->assertTrue($process->getWasMissed());
+        $this->assertTrue($process->isWasMissed());
     }
 
     #[\Override]

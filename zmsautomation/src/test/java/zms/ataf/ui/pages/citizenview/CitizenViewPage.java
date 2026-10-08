@@ -16,6 +16,7 @@ import ataf.web.pages.BasePage;
 import ataf.web.utils.DriverUtil;
 import zms.ataf.rest.dto.zmscitizenapi.ThinnedProcess;
 import zms.ataf.ui.pages.citizenview.support.ShadowDom;
+import zms.ataf.ui.pages.citizenview.steps.CaptchaStep;
 import zms.ataf.ui.pages.citizenview.steps.CombinationStep;
 import zms.ataf.ui.pages.citizenview.steps.ServiceFinderStep;
 import zms.ataf.ui.pages.citizenview.steps.ProviderLocationStep;
@@ -34,12 +35,8 @@ public class CitizenViewPage extends BasePage {
     public static final String LOCALSTORAGE_APPOINTMENT_KEY = "lhm-appointment-data";
 
     private static final String DE_WEITER = "Weiter";
-    private static final String DE_CAPTCHA_LABEL = "Ich bin kein Bot";
     private static final String DE_BACK = "Zurück";
     private static final String DE_RESTART_BOOKING = "Buchung neu starten";
-    private static final String DE_SESSION_TIMEOUT_HEADER = "Ihre Sitzung ist abgelaufen.";
-    private static final String DE_SESSION_TIMEOUT_TEXT =
-            "Seit Ihrer Bot-Überprüfung ist zu viel Zeit vergangen. Bitte starten Sie erneut mit der Terminbuchung, um die Prüfung zu aktualisieren.";
     private static final String DE_RESERVATION_EXPIRED_HEADER = "Ihr Termin kann nicht mehr reserviert werden.";
     private static final String DE_RESERVATION_EXPIRED_TEXT =
             "Leider ist die Zeit für die Reservierung Ihres Termins abgelaufen. Bitte vereinbaren Sie den Termin erneut.";
@@ -62,6 +59,13 @@ public class CitizenViewPage extends BasePage {
     public static final String EN_INVALID_JUMPIN_HEADER = "This view cannot be loaded.";
     public static final String EN_INVALID_JUMPIN_TEXT =
             "The link to this page is unfortunately incorrect";
+
+    /** German appointment-not-available callout ({@code de-DE.json} apiErrorAppointmentNotAvailable*). */
+    public static final String DE_APPOINTMENT_NOT_AVAILABLE_HEADER =
+            "Ihr gewählter Termin ist nicht mehr verfügbar.";
+
+    public static final String DE_APPOINTMENT_NOT_AVAILABLE_TEXT =
+            "Leider hat inzwischen eine andere Person Ihren gewünschten Termin gebucht. Bitte wählen Sie einen neuen Termin aus.";
 
     private final CitizenViewPageContext CONTEXT;
 
@@ -89,6 +93,8 @@ public class CitizenViewPage extends BasePage {
 
     private final MyAppointmentsStep myAppointments;
 
+    private final CaptchaStep captcha;
+
 
     public CitizenViewPage(RemoteWebDriver driver) {
         super(driver);
@@ -109,6 +115,7 @@ public class CitizenViewPage extends BasePage {
         contact = new ContactStep(CONTEXT, shadow, this, DEFAULT_EXPLICIT_WAIT_TIME);
         overview = new OverviewStep(CONTEXT, shadow, this, DEFAULT_EXPLICIT_WAIT_TIME);
         myAppointments = new MyAppointmentsStep(CONTEXT, shadow, slotState, this, contact, DEFAULT_EXPLICIT_WAIT_TIME);
+        captcha = new CaptchaStep(CONTEXT, shadow, DEFAULT_EXPLICIT_WAIT_TIME);
     }
 
     public CitizenViewPageContext getContext() {
@@ -223,27 +230,6 @@ public class CitizenViewPage extends BasePage {
                         + "if(tag==='BUTTON'||tag==='A'||tag==='MUC-BUTTON'){"
                         + "var t=(n.innerText||n.textContent||'').trim();"
                         + "if(t===label&&visible(n))return true;}"
-                        + "var c=n.children;if(c)for(var i=0;i<c.length;i++)if(walk(c[i]))return true;return false;}"
-                        + "return walk(document.body);";
-        Object o = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script);
-        return Boolean.TRUE.equals(o);
-    }
-
-    private boolean enabledVisibleButtonContains(String label) {
-        CONTEXT.set();
-        String esc = label.replace("\\", "\\\\").replace("'", "\\'");
-        String script =
-                "var label='" + esc + "';"
-                        + "function visible(el){if(!el||!el.getBoundingClientRect)return false;"
-                        + "var r=el.getBoundingClientRect();if(r.width<=0||r.height<=0)return false;"
-                        + "var st=window.getComputedStyle(el);return st.visibility!=='hidden'&&st.display!=='none'&&st.opacity!=='0';}"
-                        + "function walk(n){if(!n)return false;if(n.shadowRoot&&walk(n.shadowRoot))return true;"
-                        + "var tag=(n.tagName||'').toUpperCase();"
-                        + "if(tag==='BUTTON'||tag==='A'||tag==='MUC-BUTTON'){"
-                        + "var t=(n.innerText||n.textContent||'').trim();"
-                        + "if(t.indexOf('Zurück zu Schritt')<0&&t.indexOf(label)>=0&&visible(n)"
-                        + "&&!n.disabled&&!(n.hasAttribute&&n.hasAttribute('disabled'))"
-                        + "&&n.getAttribute&&n.getAttribute('aria-disabled')!=='true')return true;}"
                         + "var c=n.children;if(c)for(var i=0;i<c.length;i++)if(walk(c[i]))return true;return false;}"
                         + "return walk(document.body);";
         Object o = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script);
@@ -380,6 +366,30 @@ public class CitizenViewPage extends BasePage {
 
     public void keepOnlyProviderCheckboxesChecked(Set<Integer> allowedOfficeIds) {
         providerLocation.keepOnlyProviderCheckboxesChecked(allowedOfficeIds);
+    }
+
+    public void assertProviderSelectionErrorVisible() {
+        providerLocation.assertProviderSelectionErrorVisible();
+    }
+
+    public void assertNoAppointmentInfoCalloutVisible() {
+        timeSlot.assertNoAppointmentInfoCalloutVisible();
+    }
+
+    public void assertNoAppointmentInfoCalloutNotVisible() {
+        timeSlot.assertNoAppointmentInfoCalloutNotVisible();
+    }
+
+    public void assertNoAppointmentCustomInfoLinkVisible() {
+        timeSlot.assertNoAppointmentCustomInfoLinkVisible();
+    }
+
+    public void assertNoAppointmentCustomInfoContains(String fragment) {
+        timeSlot.assertNoAppointmentCustomInfoContains(fragment);
+    }
+
+    public void assertSelectedCalendarDayIsBerlinDaysFromToday(int daysFromToday) {
+        timeSlot.assertSelectedCalendarDayIsBerlinDaysFromToday(daysFromToday);
     }
 
     public void assertServiceFinderHeadingVisible() {
@@ -1161,6 +1171,14 @@ public class CitizenViewPage extends BasePage {
         timeSlot.assertSelectedAppointmentCalloutVisible();
     }
 
+    public void assertAppointmentNoLongerAvailableCalloutVisible() {
+        timeSlot.assertAppointmentNoLongerAvailableCalloutVisible();
+    }
+
+    public void assertStillOnAppointmentSelectionStep() {
+        timeSlot.assertStillOnAppointmentSelectionStep();
+    }
+
     private JsonNode locationTitles() {
         return timeSlot.locationTitles();
     }
@@ -1251,6 +1269,10 @@ public class CitizenViewPage extends BasePage {
      */
     private boolean openNextCalendarDayAndWaitForSlots() {
         return timeSlot.openNextCalendarDayAndWaitForSlots();
+    }
+
+    public void selectSingleSeatDayAfterV19RangeAndWaitForSlots() {
+        timeSlot.selectSingleSeatDayAfterV19RangeAndWaitForSlots();
     }
 
     private boolean clickNextBookableCalendarDay() {
@@ -1581,15 +1603,20 @@ public class CitizenViewPage extends BasePage {
         overview.assertAppointmentManagementActionsNotVisible();
     }
 
+    public void assertRescheduleAppointmentButtonNotVisible() {
+        overview.assertRescheduleAppointmentButtonNotVisible();
+    }
+
+    public void assertCancelAppointmentButtonVisible() {
+        overview.assertCancelAppointmentButtonVisible();
+    }
+
     public void assertCaptchaSessionCalloutVisible() {
-        CONTEXT.set();
-        waitUntilShadowContains(DE_SESSION_TIMEOUT_HEADER, DEFAULT_EXPLICIT_WAIT_TIME);
-        Assert.assertTrue(
-                shadowDomContainsText(DE_SESSION_TIMEOUT_TEXT),
-                "Captcha session callout text missing.");
-        Assert.assertTrue(
-                shadowDomContainsText(DE_RESTART_BOOKING),
-                "Captcha session callout must offer Buchung neu starten.");
+        captcha.assertCaptchaSessionCalloutVisible();
+    }
+
+    public void assertCaptchaSessionCalloutNotVisible() {
+        captcha.assertCaptchaSessionCalloutNotVisible();
     }
 
     public void assertReservationExpiredCalloutVisible() {
@@ -1619,46 +1646,8 @@ public class CitizenViewPage extends BasePage {
         Assert.assertTrue(visibleButtonTextEquals(DE_BACK), "Zurück should be visible.");
     }
 
-    /**
-     * The load-error line is what Leistung shows until captcha details return and the widget mounts.
-     * Weiter stays disabled until Altcha then finishes.
-     */
     public void waitUntilCaptchaCheckFinished(int widgetTimeoutSeconds, int solveTimeoutSeconds) {
-        CONTEXT.set();
-        ScenarioLogManager.getLogger()
-                .info("zmscitizenview: waiting up to {}s for the captcha widget to load", widgetTimeoutSeconds);
-        waitUntilShadowContains(DE_CAPTCHA_LABEL, widgetTimeoutSeconds);
-        ScenarioLogManager.getLogger()
-                .info("zmscitizenview: click captcha checkbox, then wait up to {}s for Weiter", solveTimeoutSeconds);
-        new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(solveTimeoutSeconds))
-                .pollingEvery(Duration.ofSeconds(1))
-                .until(driver -> {
-                    clickCaptchaCheckboxIfUnchecked();
-                    return enabledVisibleButtonContains(DE_WEITER);
-                });
-    }
-
-    /** Altcha starts only after the checkbox is clicked. Repeated clicks are skipped once it is checked. */
-    private boolean clickCaptchaCheckboxIfUnchecked() {
-        CONTEXT.set();
-        String script =
-                "function walk(n, fn){if(!n)return false;if(fn(n))return true;"
-                        + "if(n.shadowRoot&&walk(n.shadowRoot, fn))return true;"
-                        + "var c=n.children;if(c)for(var i=0;i<c.length;i++)if(walk(c[i], fn))return true;return false;}"
-                        + "var clicked=false;"
-                        + "walk(document.body, function(n){"
-                        + "if(!n.querySelectorAll)return false;"
-                        + "var text=(n.textContent||'');"
-                        + "if(text.indexOf('Ich bin kein Bot')<0)return false;"
-                        + "var inputs=n.querySelectorAll('input[type=checkbox]');"
-                        + "for(var i=0;i<inputs.length;i++){"
-                        + "var input=inputs[i];"
-                        + "if(input.checked){clicked=true;return true;}"
-                        + "input.click();clicked=true;return true;}"
-                        + "return false;});"
-                        + "return clicked;";
-        Object o = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script);
-        return Boolean.TRUE.equals(o);
+        captcha.waitUntilCaptchaCheckFinished(widgetTimeoutSeconds, solveTimeoutSeconds);
     }
 
     public void assertSelectedServiceQuantity(String serviceName, int quantity) {

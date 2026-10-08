@@ -373,14 +373,39 @@ public class ZmsApiSteps {
     @When("for scope {int} and service {string} an appointment customer {string} is created at the next minute.")
     public void fuerStandortWirdEinTerminkundeZurNaechstenMinuteAngelegt(
             int scopeId, String serviceName, String familyName) {
+        bookAppointmentCustomer(scopeId, serviceName, familyName, 0, false);
+    }
+
+    /**
+     * Same intern booking as the next-minute step, but the slot stays far enough ahead that
+     * a later citizen cancel is still in the future, and today may already be closed.
+     */
+    @When("for scope {int} and service {string} an appointment customer {string} is created at least {int} minutes ahead.")
+    public void fuerStandortWirdEinTerminkundeMitVorlaufAngelegt(
+            int scopeId, String serviceName, String familyName, int minutesAhead) {
+        bookAppointmentCustomer(scopeId, serviceName, familyName, minutesAhead, true);
+    }
+
+    private void bookAppointmentCustomer(
+            int scopeId, String serviceName, String familyName, int minutesAhead, boolean requireServiceName) {
         iAmLoggedInToTheZmsApiAs("agent_queue");
         String authKey = getOrLoginXAuthKey();
         JsonNode request = findScopeRequestByName(scopeId, serviceName, authKey);
-        JsonNode freeList = fetchFreeProcesses(scopeId, request, authKey);
+        if (requireServiceName) {
+            Assertions.assertThat(request.path("name").asText("").toLowerCase(Locale.ROOT))
+                    .as("scope %d request list should include %s", scopeId, serviceName)
+                    .contains(serviceName.toLowerCase(Locale.ROOT));
+        }
+        JsonNode freeList = minutesAhead > 0
+                ? fetchFreeProcessesLookingAhead(scopeId, request, authKey)
+                : fetchFreeProcesses(scopeId, request, authKey);
 
         long now = Instant.now().getEpochSecond();
         long currentMinute = now - (now % 60);
         long earliest = (now % 60 > 40) ? currentMinute + 60 : currentMinute;
+        if (minutesAhead > 0) {
+            earliest = Math.max(earliest, now + minutesAhead * 60L);
+        }
         long soon = now + 6 * 60;
         // Department 2 reminds 1440 minutes ahead, so a later slot today is still due.
         long reminderHorizon = now + 24 * 60 * 60;

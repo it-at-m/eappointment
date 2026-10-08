@@ -654,4 +654,19 @@ class ValidationServiceTest extends TestCase
         $this->assertFalse(ValidationService::isFilledEmail(\App::getPlaceholderEmail()));
         $this->assertTrue(ValidationService::isFilledEmail('max.mustermann@example.com'));
     }
+
+    public function testValidateRebookingAllowed(): void
+    {
+        $this->assertSame(['errors' => []], ValidationService::validateRebookingAllowed(null));
+        $this->assertSame(
+            ['errors' => []],
+            ValidationService::validateRebookingAllowed(new ThinnedScope(rebookingDisabled: false))
+        );
+
+        $disabled = ValidationService::validateRebookingAllowed(new ThinnedScope(rebookingDisabled: true));
+        $this->assertSame(
+            ['errors' => [ErrorMessages::get('rebookingDisabled')]],
+            $disabled
+        );
+    }
 }

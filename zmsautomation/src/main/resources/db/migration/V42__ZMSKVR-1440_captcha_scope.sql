@@ -5,7 +5,7 @@
 -- Not a Bürgerbüro, and no other ATAF feature books it.
 --
 -- Captcha JWT TTL is not stored per scope. The stack uses
--- CAPTCHA_TOKEN_TTL=120 (2 minutes) from .devcontainer/.env.template.
+-- CAPTCHA_TOKEN_TTL=300 (5 minutes) from .devcontainer/.env.template.
 -- V14 turns captcha off for every location; this migration turns it back on
 -- for scope 74 only.
 --
