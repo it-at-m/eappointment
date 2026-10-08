@@ -247,6 +247,32 @@ public final class OverviewStep {
                     "Overview must show Wartebereich 03 or 04 with Passfoto Hinweis. Text: " + text);
             return assertRuppertstrasseWartezoneHint(officeId, resolved);
         }
+        if ("ATAF".equals(code)) {
+            CitizenViewWaits.waitWithThreeWindows(
+                    () -> {
+                        String t = deepDocumentText();
+                        return RuppertstrasseWartezoneHints.detectCode(t) != null
+                                && t.contains(RuppertstrasseWartezoneHints.OVERVIEW_HINT_HEADING);
+                    },
+                    "Overview Wartezone + ATAF scope hint");
+            String text = deepDocumentText();
+            String resolved = RuppertstrasseWartezoneHints.detectCode(text);
+            Assert.assertNotNull(
+                    resolved,
+                    "Overview must show Wartebereich 03/04 with ATAF Hinweis WB03/WB04. Text: " + text);
+            Assert.assertNotNull(
+                    slotState.rememberedCalloutWartezoneCode,
+                    "Ausgewählter Termin ATAF marker was not remembered before overview.");
+            Assert.assertEquals(
+                    resolved,
+                    slotState.rememberedCalloutWartezoneCode,
+                    "ZMSKVR-1051: Übersicht Wartezone/Hinweis must match Ausgewählter Termin (callout="
+                            + slotState.rememberedCalloutWartezoneCode
+                            + ", overview="
+                            + resolved
+                            + ").");
+            return assertRuppertstrasseWartezoneHint(officeId, resolved);
+        }
         String zone = RuppertstrasseWartezoneHints.zoneFor(code);
         String hint = RuppertstrasseWartezoneHints.hintFor(code);
         CitizenViewWaits.waitWithThreeWindows(
