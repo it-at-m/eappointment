@@ -14457,7 +14457,7 @@
                 }
             ],
             "leika": "99030007000000",
-            "public": false,
+            "public": true,
             "links": [
                 {
                     "name": "Datenschutzgrundverordnung",

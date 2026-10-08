@@ -8,6 +8,8 @@ Feature: CitizenView: Termin verschieben hidden when rebooking is disabled
   # ZMSKVR-1620 tested by ZMSKVR-1691.
   # Fixture: V49 disables rebooking on SZE scopes 205, 208 and 211 (provider 10446)
   # and opens hours on scope 205. Service 1080784 is only offered there.
+  # The DLDB row is unpublished. The test catalog marks it public, because the
+  # citizen API and the jump-in reject an unpublished service.
   # Guest path uses the confirm-link overview; logged-in path uses Meine Termine detail.
   # Mail "oder verschieben" copy is out of scope (separate ticket per the story).
 
