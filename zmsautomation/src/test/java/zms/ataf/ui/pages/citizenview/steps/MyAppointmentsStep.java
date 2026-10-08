@@ -1049,42 +1049,90 @@ public final class MyAppointmentsStep {
     }
     /**
      * ZMSKVR-1088 / ZMSKVR-1342: teaser H3 lists main service then combined services in booking
-     * order (not alphabetical).
+     * order (not alphabetical). Bound to the process just booked via Terminnummer.
      */
     public void assertMyAppointmentsTeaserServiceTitleOrder(String orderedNamesCsv) {
         context.set();
         List<String> expected = splitOrderedServiceNames(orderedNamesCsv);
         Assert.assertFalse(expected.isEmpty(), "Expected at least one service name in the title order.");
-        String card = waitForTeaserText(expected.get(0));
+        trySetBookingProcessFromPage();
+        ThinnedProcess booked = zms.ataf.rest.steps.CitizenApiSteps.getBookingProcess();
+        Assert.assertNotNull(booked, "Need the booked process to bind the teaser card.");
+        Assert.assertNotNull(booked.getProcessId(), "Booked processId required for teaser card.");
+        String card = waitForTeaserTextContaining("Terminnummer: " + booked.getProcessId());
         assertServiceTitleOrder(card, expected, "Meine Termine teaser");
     }
 
     /**
-     * ZMSKVR-1088 / ZMSKVR-1342: detail H1 lists main service then combined services in booking
-     * order (not alphabetical).
+     * ZMSKVR-1088 / ZMSKVR-1342: detail muc-intro title lists main service then combined services
+     * in booking order (not alphabetical).
      */
     public void assertAppointmentDetailServiceTitleOrder(String orderedNamesCsv) {
         context.set();
         List<String> expected = splitOrderedServiceNames(orderedNamesCsv);
         Assert.assertFalse(expected.isEmpty(), "Expected at least one service name in the title order.");
         CitizenViewWaits.waitWithThreeWindows(
-                () -> shadow.shadowDomContainsText("1x " + expected.get(0)),
+                () -> {
+                    String title = detailIntroTitleText();
+                    return title.contains("1x " + expected.get(0));
+                },
                 "Appointment detail title with main service");
-        String pageText = deepDocumentText();
-        assertServiceTitleOrder(pageText, expected, "appointment detail");
+        String title = detailIntroTitleText();
+        assertServiceTitleOrder(title, expected, "appointment detail");
     }
 
-    private String deepDocumentText() {
+    private String waitForTeaserTextContaining(String fragment) {
+        long deadline = System.currentTimeMillis() + Math.max(30, defaultWaitSeconds) * 1000L;
+        String last = "";
+        while (System.currentTimeMillis() < deadline) {
+            last = teaserTextContaining(fragment);
+            if (last.contains(fragment) && last.contains("Terminnummer")) {
+                return last;
+            }
+            try {
+                Thread.sleep(400L);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                break;
+            }
+        }
+        Assert.fail("Meine Termine teaser containing \"" + fragment + "\" did not appear. Last text: " + last);
+        return last;
+    }
+
+    private String teaserTextContaining(String fragment) {
         String script =
-                "function walk(n){var s='';if(!n)return s;if(n.nodeType===3)return n.nodeValue||'';"
-                        + "if(n.shadowRoot)s+=' '+walk(n.shadowRoot);"
-                        + "if(n.assignedNodes){var a=n.assignedNodes({flatten:true});"
-                        + "for(var j=0;j<a.length;j++)s+=' '+walk(a[j]);}"
-                        + "var c=n.childNodes;if(c)for(var i=0;i<c.length;i++)s+=' '+walk(c[i]);"
-                        + "return s;}"
-                        + "return walk(document.documentElement).replace(/\\s+/g,' ').trim();";
+                "var needle=arguments[0];"
+                        + "function textOf(n){var s='';if(!n)return s;if(n.nodeType===3)return n.nodeValue||'';"
+                        + "if(n.shadowRoot)s+=textOf(n.shadowRoot);var c=n.childNodes;if(c)for(var i=0;i<c.length;i++)s+=textOf(c[i]);return s;}"
+                        + "function walk(n,fn){if(!n)return false;if(fn(n))return true;if(n.shadowRoot&&walk(n.shadowRoot,fn))return true;"
+                        + "var c=n.children;if(c)for(var i=0;i<c.length;i++)if(walk(c[i],fn))return true;return false;}"
+                        + "var best='';"
+                        + "walk(document.body,function(n){"
+                        + "if(n.nodeType!==1)return false;"
+                        + "var t=textOf(n);"
+                        + "if(t.indexOf(needle)<0||t.indexOf('Terminnummer')<0)return false;"
+                        + "if(!best||t.length<best.length)best=t;"
+                        + "return false;});"
+                        + "return best;";
+        Object raw = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script, fragment);
+        return raw instanceof String ? (String) raw : "";
+    }
+
+    /** Visible muc-intro title on the appointment detail (formatMultilineTitle). */
+    private String detailIntroTitleText() {
+        String script =
+                "function walk(n,fn){if(!n)return null;var r=fn(n);if(r)return r;"
+                        + "if(n.shadowRoot){r=walk(n.shadowRoot,fn);if(r)return r;}"
+                        + "var c=n.children;if(c)for(var i=0;i<c.length;i++){r=walk(c[i],fn);if(r)return r;}return null;}"
+                        + "var title=walk(document.body,function(n){"
+                        + "var tag=(n.tagName||'').toUpperCase();"
+                        + "if(tag!=='MUC-INTRO')return null;"
+                        + "var t=n.getAttribute('title');"
+                        + "return t&&t.indexOf('1x ')>=0?t:null;});"
+                        + "return title||'';";
         Object raw = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script);
-        return raw == null ? "" : raw.toString();
+        return raw == null ? "" : raw.toString().replace('\n', ' ').replaceAll("\\s+", " ").trim();
     }
 
     private static List<String> splitOrderedServiceNames(String orderedNamesCsv) {
