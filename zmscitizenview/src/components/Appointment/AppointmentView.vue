@@ -1514,19 +1514,50 @@ const redirectToAppointmentStart = () => {
 const redirectToAppointmentJumpIn = (): void => {
   const hash =
     props.appointmentHash ?? loadedAppointmentHash.value ?? undefined;
-  const baseUrl = window.location.origin + window.location.pathname;
   if (!hash) {
-    window.location.href = baseUrl;
+    redirectToAppointmentStart();
     return;
   }
+
   const targetHash = `#/appointment/${hash}`;
-  // Already on the appointment jump-in during rebooking — reload so the
-  // overview remounts and AppointmentById issues a new captcha JWT.
-  if (window.location.hash === targetHash) {
-    window.location.reload();
+  if (window.location.hash !== targetHash) {
+    const baseUrl = window.location.origin + window.location.pathname;
+    history.replaceState(null, "", `${baseUrl}${targetHash}`);
+  }
+
+  // Stay on Übersicht — no full reload (that flashes Leistung at currentView 0).
+  // Re-fetch so AppointmentById mints a fresh captchaToken for the next attempt.
+  isRebooking.value = false;
+  rebookedAppointment.value = undefined;
+  captchaToken.value = undefined;
+  reservationStartMs.value = null;
+  rebookOrCancelDialog.value = true;
+  currentView.value = 3;
+
+  const appointmentData = parseAppointmentHash(hash);
+  if (!appointmentData) {
+    handleApiError(
+      "appointmentNotFound",
+      errorStateMap.value,
+      currentErrorData.value
+    );
     return;
   }
-  window.location.href = `${baseUrl}${targetHash}`;
+
+  fetchAppointment(props.globalState, appointmentData).then((data) => {
+    if ((data as AppointmentDTO).processId == undefined) {
+      handleApiError(
+        "appointmentNotFound",
+        errorStateMap.value,
+        currentErrorData.value
+      );
+      return;
+    }
+    if ("captchaToken" in data && (data as any).captchaToken) {
+      captchaToken.value = (data as any).captchaToken as string;
+    }
+    appointment.value = data as AppointmentDTO;
+  });
 };
 
 const downloadIcsAppointment = () => {
