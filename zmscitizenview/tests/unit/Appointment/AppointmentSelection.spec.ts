@@ -449,7 +449,7 @@ describe("AppointmentSelection", () => {
             },
           ],
         },
-        isRebooking: true,
+        props: { isRebooking: true },
       });
 
       await flushPromises();

@@ -46,6 +46,7 @@ Feature: CitizenView: Termin verschieben hidden when rebooking is disabled
     When I reschedule the appointment in the citizen view
     Then the cancel reschedule button should be visible in the citizen view
     And the invalid location and service combination callout should be visible in the citizen view
+    When I cancel the reschedule in the citizen view
     When I cancel the appointment in the citizen view
     Then the cancellation success callout should be visible in the citizen view
     When the appointments created in this scenario are deleted.
