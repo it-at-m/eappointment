@@ -1290,34 +1290,118 @@ public final class TimeSlotStep {
 
     /**
      * ZMSKVR-1051 / ZMSKVR-1309 / ZMSKVR-1530: Ausgewählter Termin shows a rendered ATAF scope
-     * hint (HTML link, no raw tags). Offices-and-services attaches one scope per officeId, so the
-     * marker may be WB03 or WB04; overview/detail asserts match the booked scope.
+     * hint (HTML link, no raw tags) for the remembered WB03/WB04 code.
      */
     public void assertSelectedAppointmentCalloutShowsRenderedRuppertstrasseHint() {
+        String code = slotState.rememberedWartezoneCode;
+        Assert.assertNotNull(code, "Need a remembered Wartezone before asserting Ausgewählter Termin.");
+        assertSelectedAppointmentCalloutShowsRenderedRuppertstrasseHint(code);
+    }
+
+    /**
+     * Click timeslots for {@code officeId} until Ausgewählter Termin shows the requested
+     * Ruppertstraße Wartezone (WB03 or WB04). Skips timestamps that paint the other scope.
+     */
+    public void selectTimeslotWithRuppertstrasseWartezone(int officeId, String code) {
         context.set();
+        RuppertstrasseWartezoneHints.zoneFor(code); // validate code
+        String expectedHint = RuppertstrasseWartezoneHints.hintFor(code);
+        String otherHint = RuppertstrasseWartezoneHints.hintFor(RuppertstrasseWartezoneHints.otherCode(code));
+        Set<Long> skipped = new HashSet<>();
+        for (int attempt = 1; attempt <= 24; attempt++) {
+            String skippedTimestamps =
+                    skipped.stream().map(String::valueOf).reduce((a, b) -> a + "," + b).orElse("");
+            if (!highlightPreferredTimeslotForOfficeOrAbsent(officeId, skippedTimestamps, 5)) {
+                Assert.fail(
+                        "zmscitizenview: no more timeslots for office "
+                                + officeId
+                                + " while looking for "
+                                + code
+                                + " (skipped="
+                                + skippedTimestamps
+                                + ")");
+            }
+            if (!clickHighlightedTimeslotSelectionOrGiveUp()) {
+                long missed = readStoredSlotTimestamp();
+                if (missed > 0) {
+                    skipped.add(missed);
+                }
+                ScenarioLogManager.getLogger()
+                        .info(
+                                "zmscitizenview: slot timestamp={} could not be selected while seeking {}; try next",
+                                missed,
+                                code);
+                continue;
+            }
+            CitizenViewWaits.waitWithThreeWindows(
+                    () ->
+                            selectedAppointmentCalloutVisible()
+                                    && (shadow.shadowDomContainsText(RuppertstrasseWartezoneHints.HINT_WB03)
+                                            || shadow.shadowDomContainsText(
+                                                    RuppertstrasseWartezoneHints.HINT_WB04)),
+                    "Ausgewählter Termin ATAF scope hint after slot click");
+            boolean match = shadow.shadowDomContainsText(expectedHint);
+            boolean other = shadow.shadowDomContainsText(otherHint);
+            long timestamp = readStoredSlotTimestamp();
+            if (match && !other) {
+                slotState.rememberedWartezoneCode = code;
+                if (timestamp > 0) {
+                    slotState.rememberedAppointmentEpoch = timestamp;
+                }
+                ScenarioLogManager.getLogger()
+                        .info(
+                                "zmscitizenview: selected timeslot timestamp={} with Wartezone {}",
+                                timestamp,
+                                code);
+                return;
+            }
+            if (timestamp > 0) {
+                skipped.add(timestamp);
+            }
+            ScenarioLogManager.getLogger()
+                    .info(
+                            "zmscitizenview: timeslot timestamp={} painted {} (want {}); skip",
+                            timestamp,
+                            other ? RuppertstrasseWartezoneHints.otherCode(code) : "unknown",
+                            code);
+        }
+        Assert.fail(
+                "zmscitizenview: could not find a timeslot for office "
+                        + officeId
+                        + " with Ausgewählter Termin "
+                        + code
+                        + " after trying "
+                        + skipped.size()
+                        + " slots");
+    }
+
+    public void assertSelectedAppointmentCalloutShowsRenderedRuppertstrasseHint(String code) {
+        context.set();
+        String hint = RuppertstrasseWartezoneHints.hintFor(code);
+        String linkLabel = RuppertstrasseWartezoneHints.linkLabelFor(code);
         CitizenViewWaits.waitWithThreeWindows(
-                () ->
-                        selectedAppointmentCalloutVisible()
-                                && (shadow.shadowDomContainsText(RuppertstrasseWartezoneHints.HINT_WB03)
-                                        || shadow.shadowDomContainsText(RuppertstrasseWartezoneHints.HINT_WB04)),
-                "Ausgewählter Termin ATAF scope hint");
+                () -> selectedAppointmentCalloutVisible() && shadow.shadowDomContainsText(hint),
+                "Ausgewählter Termin ATAF scope hint " + code);
         Assert.assertTrue(
                 selectedAppointmentCalloutVisible(),
                 "Selected-appointment callout header missing after slot click");
         Assert.assertTrue(
-                shadow.shadowDomContainsText(RuppertstrasseWartezoneHints.HINT_WB03)
-                        || shadow.shadowDomContainsText(RuppertstrasseWartezoneHints.HINT_WB04),
-                "Ausgewählter Termin must show ATAF Hinweis WB03 or WB04.");
+                shadow.shadowDomContainsText(hint),
+                "Ausgewählter Termin must show " + hint + ".");
+        Assert.assertFalse(
+                shadow.shadowDomContainsText(
+                        RuppertstrasseWartezoneHints.hintFor(RuppertstrasseWartezoneHints.otherCode(code))),
+                "Ausgewählter Termin must not show the other Wartebereich hint.");
         Assert.assertTrue(
-                shadow.shadowDomContainsText(RuppertstrasseWartezoneHints.LINK_WB03)
-                        || shadow.shadowDomContainsText(RuppertstrasseWartezoneHints.LINK_WB04),
-                "Ausgewählter Termin must render the ATAF hint link label.");
+                shadow.shadowDomContainsText(linkLabel),
+                "Ausgewählter Termin must render the ATAF hint link label " + linkLabel + ".");
         Assert.assertTrue(
                 shadow.shadowHrefContains(RuppertstrasseWartezoneHints.HINT_HREF),
                 "Ausgewählter Termin hint must expose href " + RuppertstrasseWartezoneHints.HINT_HREF);
         Assert.assertFalse(
                 shadow.shadowDomContainsText("<a href") || shadow.shadowDomContainsText("<br>"),
                 "Ausgewählter Termin must not show raw HTML tags for the scope hint.");
+        slotState.rememberedWartezoneCode = code;
     }
 
     /**
