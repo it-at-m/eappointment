@@ -2,16 +2,23 @@
   <div class="m-component m-component-form">
     <!-- Maintenance Page -->
     <div
-      v-if="isInMaintenanceModeComputed"
-      class="container"
+      role="status"
+      aria-live="polite"
+      aria-atomic="true"
     >
-      <div class="m-component__grid">
-        <div class="m-component__column">
-          <error-alert
-            :message="t('maintenancePageText')"
-            :header="t('maintenancePageHeader')"
-            type="warning"
-          />
+      <div
+        v-if="isInMaintenanceModeComputed"
+        class="container"
+      >
+        <div class="m-component__grid">
+          <div class="m-component__column">
+            <error-alert
+              :message="t('maintenancePageText')"
+              :header="t('maintenancePageHeader')"
+              type="warning"
+              :live="false"
+            />
+          </div>
         </div>
       </div>
     </div>
@@ -131,6 +138,7 @@
                 @cancel-reschedule="nextCancelReschedule"
                 @clearBookingError="clearBookingError"
                 @next="nextReserveAppointment"
+                @restart-booking="restartBookingToServices"
               />
             </div>
             <div v-if="currentView === 2">
@@ -146,6 +154,7 @@
                 @back="decreaseCurrentView"
                 @next="nextUpdateAppointment"
                 @login="requestLogin"
+                @restart-booking="restartBookingToServices"
               />
             </div>
             <div v-if="currentView === 3">
@@ -161,6 +170,7 @@
                 :t="t"
                 @back="decreaseCurrentView"
                 @book-appointment="nextBookAppointment"
+                @restart-booking="restartBookingToServices"
                 @cancel-appointment="nextCancelAppointment"
                 @cancel-reschedule="nextCancelReschedule"
                 @reschedule-appointment="nextRescheduleAppointment"
@@ -188,6 +198,18 @@
                 >
                   <template #content>
                     <p>{{ t(apiErrorTranslation.textKey) }}</p>
+                    <div
+                      v-if="canRestartFromError"
+                      class="m-button-group"
+                      style="margin-top: 1rem"
+                    >
+                      <muc-button
+                        icon="arrow-right"
+                        @click="restartBookingToServices"
+                      >
+                        <template #default>{{ t("restartBooking") }}</template>
+                      </muc-button>
+                    </div>
                   </template>
 
                   <template #header>
@@ -201,6 +223,18 @@
                 >
                   <template #content>
                     <p>{{ t(apiErrorTranslation.textKey) }}</p>
+                    <div
+                      v-if="canRestartFromError"
+                      class="m-button-group"
+                      style="margin-top: 1rem"
+                    >
+                      <muc-button
+                        icon="arrow-right"
+                        @click="restartBookingToServices"
+                      >
+                        <template #default>{{ t("restartBooking") }}</template>
+                      </muc-button>
+                    </div>
                   </template>
 
                   <template #header>
@@ -223,6 +257,42 @@
       <div class="container">
         <div class="m-component__grid">
           <div class="m-component__column">
+            <div
+              role="status"
+              aria-live="polite"
+              aria-atomic="true"
+            >
+              <muc-callout
+                v-if="currentView === 4 && cancelAppointmentSuccess"
+                type="success"
+              >
+                <template #content>
+                  <p>{{ t("appointmentSuccessfullyCanceledText") }}</p>
+                </template>
+                <template #header>
+                  {{ t("appointmentSuccessfullyCanceledHeader") }}
+                </template>
+              </muc-callout>
+            </div>
+
+            <div
+              role="status"
+              aria-live="polite"
+              aria-atomic="true"
+            >
+              <muc-callout
+                v-if="currentView !== 4 && confirmAppointmentSuccess"
+                type="success"
+              >
+                <template #content>
+                  <p>{{ t("appointmentSuccessfullyBookedText") }}</p>
+                </template>
+                <template #header>
+                  {{ t("appointmentSuccessfullyBookedHeader") }}
+                </template>
+              </muc-callout>
+            </div>
+
             <template v-if="currentView === 4">
               <muc-callout
                 v-if="!cancelAppointmentSuccess"
@@ -236,44 +306,26 @@
                 </template>
               </muc-callout>
 
-              <muc-callout
-                v-if="cancelAppointmentSuccess"
-                type="success"
-              >
-                <template #content>
-                  <p>{{ t("appointmentSuccessfullyCanceledText") }}</p>
-                </template>
-                <template #header>
-                  {{ t("appointmentSuccessfullyCanceledHeader") }}
-                </template>
-              </muc-callout>
-
-              <muc-callout
+              <div
                 v-if="hasCancelAppointmentError"
-                :type="toCalloutType(apiErrorTranslation.errorType)"
+                role="alert"
+                aria-live="assertive"
+                aria-atomic="true"
               >
-                <template #content>
-                  <p>{{ t(apiErrorTranslation.textKey) }}</p>
-                </template>
-                <template #header>
-                  {{ t(apiErrorTranslation.headerKey) }}
-                </template>
-              </muc-callout>
+                <muc-callout
+                  :type="toCalloutType(apiErrorTranslation.errorType)"
+                >
+                  <template #content>
+                    <p>{{ t(apiErrorTranslation.textKey) }}</p>
+                  </template>
+                  <template #header>
+                    {{ t(apiErrorTranslation.headerKey) }}
+                  </template>
+                </muc-callout>
+              </div>
             </template>
 
             <template v-else>
-              <muc-callout
-                v-if="confirmAppointmentSuccess"
-                type="success"
-              >
-                <template #content>
-                  <p>{{ t("appointmentSuccessfullyBookedText") }}</p>
-                </template>
-                <template #header>
-                  {{ t("appointmentSuccessfullyBookedHeader") }}
-                </template>
-              </muc-callout>
-
               <div
                 v-if="confirmAppointmentSuccess"
                 class="m-button-group"
@@ -301,21 +353,27 @@
                 </muc-button>
               </div>
 
-              <muc-callout
+              <div
                 v-if="
                   !confirmAppointmentSuccess &&
                   !appointmentAlreadyActivated &&
                   hasConfirmAppointmentError
                 "
-                :type="toCalloutType(apiErrorTranslation.errorType)"
+                role="alert"
+                aria-live="assertive"
+                aria-atomic="true"
               >
-                <template #content>
-                  <p>{{ t(apiErrorTranslation.textKey) }}</p>
-                </template>
-                <template #header>
-                  {{ t(apiErrorTranslation.headerKey) }}
-                </template>
-              </muc-callout>
+                <muc-callout
+                  :type="toCalloutType(apiErrorTranslation.errorType)"
+                >
+                  <template #content>
+                    <p>{{ t(apiErrorTranslation.textKey) }}</p>
+                  </template>
+                  <template #header>
+                    {{ t(apiErrorTranslation.headerKey) }}
+                  </template>
+                </muc-callout>
+              </div>
 
               <muc-callout
                 v-if="hasInitializationError"
@@ -455,6 +513,7 @@ import {
   hasMissingRequiredContact,
   isReservedProcessStatus,
   joinFamilyName,
+  setPlaceholderReserveEmail,
 } from "@/utils/rebookingContact";
 import { resolveOfficeById, toOfficeImpl } from "@/utils/resolveOfficeById";
 import { isExpired } from "@/utils/timestampInPast";
@@ -652,6 +711,17 @@ const apiErrorTranslation = computed<ApiErrorTranslation>(() => {
   );
 });
 
+const canRestartFromError = computed(() =>
+  [
+    "apiErrorSessionTimeoutText",
+    "apiErrorProcessNotReservedAnymoreText",
+    "apiErrorCaptchaExpiredText",
+    "apiErrorCaptchaInvalidText",
+    "apiErrorCaptchaMissingText",
+    "altcha.invalidCaptchaText",
+  ].includes(apiErrorTranslation.value.textKey)
+);
+
 type StepperInstance = ComponentPublicInstance | HTMLElement | null;
 const stepperRef = ref<StepperInstance>(null);
 
@@ -757,6 +827,18 @@ const decreaseCurrentView = (): void => {
   currentView.value--;
 };
 
+const restartBookingToServices = (): void => {
+  clearAllErrors();
+  // A reschedule or confirmed-appointment link cannot show Leistung at view 0.
+  if (isRebooking.value || isExistingAppointmentDeepLink.value) {
+    redirectToAppointmentStart();
+    return;
+  }
+  captchaToken.value = undefined;
+  reservationStartMs.value = null;
+  currentView.value = 0;
+};
+
 /**
  * Adjusts the current view to the active step in the stepper
  */
@@ -829,6 +911,15 @@ const rebuildSelectedServiceMapFromAppointment = (): void => {
   });
 };
 
+const rememberConfiguredPlaceholder = (
+  loaded?: AppointmentDTO | null
+): void => {
+  const configured = loaded?.placeholderEmail?.trim();
+  if (configured) {
+    setPlaceholderReserveEmail(configured);
+  }
+};
+
 const resumeReservedBookingFromHash = (): void => {
   rebookOrCancelDialog.value = false;
   currentContext.value = "update";
@@ -839,6 +930,7 @@ const resumeReservedBookingFromHash = (): void => {
     }
     return;
   }
+  rememberConfiguredPlaceholder(appointment.value);
   applyAppointmentContactToCustomerData(customerData.value, appointment.value);
   selectedTimeslot.value = Number(appointment.value.timestamp) || 0;
   rebuildSelectedServiceMapFromAppointment();
@@ -860,6 +952,7 @@ const fillCustomerDataFromRebookedAppointment = () => {
   if (!rebookedAppointment.value) {
     return;
   }
+  rememberConfiguredPlaceholder(rebookedAppointment.value);
   applyAppointmentContactToCustomerData(
     customerData.value,
     rebookedAppointment.value
@@ -971,6 +1064,7 @@ const nextUpdateAppointment = () => {
     isUpdatingAppointment.value = true;
     clearContextErrors(errorStateMap.value);
     if (isRebooking.value && rebookedAppointment.value) {
+      rememberConfiguredPlaceholder(rebookedAppointment.value);
       applyAppointmentContactToCustomerData(
         customerData.value,
         rebookedAppointment.value
@@ -1120,6 +1214,17 @@ const nextCancelAppointment = () => {
 
 const nextRescheduleAppointment = () => {
   clearContextErrors(errorStateMap.value);
+
+  if (appointment.value?.scope?.rebookingDisabled === true) {
+    handleApiError(
+      "rebookingDisabled",
+      errorStateMap.value,
+      currentErrorData.value
+    );
+    rebookOrCancelDialog.value = true;
+    currentView.value = 3;
+    return;
+  }
 
   if (isExpired((appointment.value as any)?.timestamp)) {
     forcedPast.value = true;

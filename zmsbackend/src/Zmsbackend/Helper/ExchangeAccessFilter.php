@@ -14,7 +14,7 @@ class ExchangeAccessFilter
         'scope.id' => 'getFilteredEntityByScope',
         'department.id' => 'getFilteredEntityByDepartment',
         'organisation.id' => 'getFilteredEntityByOrganisation',
-        'useraccount.permissions' => 'getFilteredEntityByUseraccountPermissions',
+        'useraccount.permissions' => 'getFilteredEntityByUserPermissions',
         'useraccount.permissions.superuser' => 'getFilteredEntityByUseraccountSuperuser',
     ];
 
@@ -67,7 +67,7 @@ class ExchangeAccessFilter
     /**
      * @psalm-api
      */
-    protected static function getFilteredEntityByUseraccountPermissions($permission, $filteredKey): void
+    protected static function getFilteredEntityByUserPermissions($permission, $filteredKey): void
     {
         if (! static::$workstation->getUseraccount()->hasPermissions([$permission])) {
             unset(static::$filteredEntity->data[$filteredKey]);

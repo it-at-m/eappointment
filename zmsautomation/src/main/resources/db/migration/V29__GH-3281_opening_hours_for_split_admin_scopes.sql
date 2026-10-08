@@ -2,6 +2,8 @@
 --
 -- CURDATE()/CURTIME() follow zms-db TZ=Europe/Berlin (same calendar day as zms-web).
 -- Same window as V19: rest of today until 23:55, or the whole next day when under three hours remain.
+-- The next-day row does not replace today. While one 5-minute slot still fits, a same-day
+-- row keeps that remainder so a queue and the overall view still have today.
 --
 -- Terminkunden features moved off a shared Standort. Each scope already offers the
 -- service the feature books:
@@ -81,3 +83,74 @@ VALUES
    0, 5,
    0, 30,
    NOW());
+
+-- The multi-day row starts tomorrow once fewer than three hours remain.
+-- Keep the slots that still fit today. After 23:50 this insert adds nothing.
+SET @keep_today := (@use_next_day = 1)
+  AND (@start_sec < @end_sec)
+  AND ((@end_sec - @start_sec) >= @slot_seconds);
+
+INSERT IGNORE INTO `oeffnungszeit`
+(
+  `OeffnungszeitID`,
+  `StandortID`,
+  `Startdatum`,
+  `Endedatum`,
+  `allexWochen`,
+  `jedexteWoche`,
+  `Wochentag`,
+  `Anfangszeit`,
+  `Terminanfangszeit`,
+  `Endzeit`,
+  `Terminendzeit`,
+  `Timeslot`,
+  `Anzahlarbeitsplaetze`,
+  `Anzahlterminarbeitsplaetze`,
+  `kommentar`,
+  `reduktionTermineImInternet`,
+  `erlaubemehrfachslots`,
+  `Offen_ab`,
+  `Offen_bis`,
+  `updateTimestamp`
+)
+SELECT
+  136213, 136, CURDATE(), CURDATE(),
+  1, 0, 127,
+  '00:00:00', @rounded_start,
+  '00:00:00', @appt_end,
+  '00:05:00',
+  0, 5,
+  'GH-3281 Pasing Öffnungszeit heute',
+  0, 5,
+  0, 30,
+  NOW()
+FROM DUAL
+WHERE @keep_today = 1
+UNION ALL
+SELECT
+  136214, 154, CURDATE(), CURDATE(),
+  1, 0, 127,
+  '00:00:00', @rounded_start,
+  '00:00:00', @appt_end,
+  '00:05:00',
+  0, 5,
+  'GH-3281 Leonrodstraße Öffnungszeit heute',
+  0, 5,
+  0, 30,
+  NOW()
+FROM DUAL
+WHERE @keep_today = 1
+UNION ALL
+SELECT
+  136215, 133, CURDATE(), CURDATE(),
+  1, 0, 127,
+  '00:00:00', @rounded_start,
+  '00:00:00', @appt_end,
+  '00:05:00',
+  0, 5,
+  'GH-3281 Orleansplatz Öffnungszeit heute',
+  0, 5,
+  0, 30,
+  NOW()
+FROM DUAL
+WHERE @keep_today = 1;

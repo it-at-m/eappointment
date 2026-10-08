@@ -3,7 +3,10 @@ name: 🐘 Combined PHP Build
 on:
   push:
     branches-ignore: [next]
-    tags: ['*']
+    tags: ["*"]
+    # No paths-ignore: GitHub would skip the whole workflow (including new branches)
+    # when every file matches. should-run implements the push matrix via
+    # .github/scripts/decide-push-ci-run.sh.
   workflow_call:
 
 concurrency:
@@ -16,19 +19,53 @@ permissions:
   actions: write
 
 jobs:
+  should-run:
+    name: Decide Combined PHP
+    runs-on: ubuntu-latest
+    outputs:
+      run: ${{ steps.check.outputs.run }}
+    steps:
+      - name: Check out
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+
+      - name: Decide whether to run
+        id: check
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          REF_TYPE: ${{ github.ref_type }}
+          BEFORE: ${{ github.event.before }}
+          AFTER: ${{ github.sha }}
+          BRANCH: ${{ github.ref_name }}
+          THIS_RUN: ${{ github.run_id }}
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          WORKFLOW_FILE: combined-workflow.yaml
+          MODE: ignore
+          PATH_PREFIXES: zmsautomation/ zmscitizenview/
+        run: bash .github/scripts/decide-push-ci-run.sh
+
   call-php-code-quality:
+    needs: should-run
+    if: needs.should-run.outputs.run == 'true'
     uses: ./.github/workflows/php-code-quality.yaml
 
   call-js-eslint:
+    needs: should-run
+    if: needs.should-run.outputs.run == 'true'
     uses: ./.github/workflows/js-eslint.yaml
 
   call-php-unit-tests:
+    needs: should-run
+    if: needs.should-run.outputs.run == 'true'
     uses: ./.github/workflows/php-unit-tests.yaml
 
   call-php-build-images:
-    needs: [call-php-code-quality, call-js-eslint, call-php-unit-tests]
+    needs: [should-run, call-php-code-quality, call-js-eslint, call-php-unit-tests]
     if: |
       always() &&
+      needs.should-run.outputs.run == 'true' &&
       needs.call-php-code-quality.result == 'success' &&
       needs.call-js-eslint.result == 'success' &&
       needs.call-php-unit-tests.result == 'success'

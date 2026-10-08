@@ -29,7 +29,7 @@ class AppointmentConfirmService
         }
 
         $sourceProcess = $this->loadSourceProcessForRebooking($clientData);
-        if (is_array($sourceProcess) && !empty($sourceProcess['errors'])) {
+        if (is_array($sourceProcess) && ($sourceProcess['errors'] ?? []) !== []) {
             return $sourceProcess;
         }
 
@@ -104,11 +104,21 @@ class AppointmentConfirmService
             return null;
         }
 
-        return ZmsApiFacadeService::getThinnedProcessById(
+        $sourceProcess = ZmsApiFacadeService::getThinnedProcessById(
             $clientData->sourceProcessId,
             $clientData->sourceAuthKey,
             null
         );
+        if (!$sourceProcess instanceof ThinnedProcess) {
+            return $sourceProcess;
+        }
+
+        $rebookingErrors = ValidationService::validateRebookingAllowed($sourceProcess->scope ?? null);
+        if ($rebookingErrors['errors'] !== []) {
+            return $rebookingErrors;
+        }
+
+        return $sourceProcess;
     }
 
     private function getReservedProcess(

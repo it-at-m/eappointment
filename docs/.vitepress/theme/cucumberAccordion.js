@@ -505,6 +505,7 @@ const buildRemoteCatalog = async (branch, sha, paths) => {
       title: parsed.title || fileName,
       tags: parsed.tags,
       scenarioCount: parsed.scenarioCount,
+      mobileScenarioCount: parsed.mobileScenarioCount || 0,
       sourceUrl: cucumberFeatureSourceUrl(rel, branch),
       testType,
       module,
@@ -848,7 +849,9 @@ export function cucumberGhRunCommand(entry) {
     ["use_custom_tags", "true"],
     ["test_layer", testLayer],
     ["cucumber_tag_expressions", tags],
-    ["browser", "chrome"],
+    ["browser_chrome", "true"],
+    ["browser_firefox", "false"],
+    ["browser_edge", "false"],
     ["per_step_screenshots", "true"],
   ];
   const lines = [

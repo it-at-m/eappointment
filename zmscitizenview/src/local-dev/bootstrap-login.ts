@@ -6,13 +6,17 @@
  * SHOW_CITIZEN_LOGIN (runtime-config.json or env) disables the host-page chrome
  * on zms-* /buergeransicht shells. Magnolia embeds never include these shells.
  *
- * Keycloak / BayernID attributes stay on <dbs-login> from the built HTML
- * (VITE_KC_*). Do not overwrite them from gateway SSO_* — that is a different client.
+ * Built HTML kc-* (VITE_KC_*) is the image default (ssodev / A61 / dbs-fragments).
+ * runtime-config.json may set kcUrl, kcRealm, and kcClientId for environments
+ * whose gateway trusts a different realm (ssotest on zms-demo and zms-load).
  */
 
 type RuntimeConfig = {
   showCitizenLogin?: unknown;
   SHOW_CITIZEN_LOGIN?: unknown;
+  kcUrl?: unknown;
+  kcRealm?: unknown;
+  kcClientId?: unknown;
 };
 
 function parseBool(value: unknown, fallback: boolean): boolean {
@@ -66,6 +70,33 @@ function removeLoginHostChrome(): void {
   document.querySelector("dbs-login")?.remove();
 }
 
+function runtimeString(value: unknown): string | undefined {
+  if (typeof value !== "string") {
+    return undefined;
+  }
+  const trimmed = value.trim();
+  return trimmed === "" ? undefined : trimmed;
+}
+
+function applyRuntimeKeycloak(runtime: RuntimeConfig | undefined): void {
+  const el = document.querySelector("dbs-login");
+  if (!el || !runtime) {
+    return;
+  }
+  const url = runtimeString(runtime.kcUrl);
+  const realm = runtimeString(runtime.kcRealm);
+  const clientId = runtimeString(runtime.kcClientId);
+  if (url) {
+    el.setAttribute("kc-url", url);
+  }
+  if (realm) {
+    el.setAttribute("kc-realm", realm);
+  }
+  if (clientId) {
+    el.setAttribute("kc-client-id", clientId);
+  }
+}
+
 async function bootstrapLogin(): Promise<void> {
   const runtime = await readRuntimeConfig();
 
@@ -73,6 +104,8 @@ async function bootstrapLogin(): Promise<void> {
     removeLoginHostChrome();
     return;
   }
+
+  applyRuntimeKeycloak(runtime);
 
   const useLocal =
     String(import.meta.env.VITE_USE_LOCAL_CITIZEN_LOGIN || "").toLowerCase() ===

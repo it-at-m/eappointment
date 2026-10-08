@@ -46,15 +46,15 @@ class TwigExtension extends \Twig\Extension\AbstractExtension
             new \Twig\TwigFunction('formatPhoneNumber', array($this, 'formatPhoneNumber')),
             new \Twig\TwigFunction('getOSMOptions', array($this, 'getOSMOptions')),
             new \Twig\TwigFunction('getOSMAccessToken', array($this, 'getOSMAccessToken')),
-            new \Twig\TwigFunction('getD115Enabeld', array($this, 'getD115Enabeld')),
+            new \Twig\TwigFunction('getD115Enabeld', array($this, 'isD115Enabled')),
             new \Twig\TwigFunction('getD115OpeningTimes', array($this, 'getD115OpeningTimes')),
             new \Twig\TwigFunction('getD115Text', array($this, 'getD115Text')),
-            new \Twig\TwigFunction('getBobbiChatButtonEnabeld', array($this, 'getBobbiChatButtonEnabeld')),
+            new \Twig\TwigFunction('getBobbiChatButtonEnabeld', array($this, 'isBobbiChatButtonEnabled')),
             new \Twig\TwigFunction('currentRoute', array($this, 'currentRoute')),
             new \Twig\TwigFunction('dump', array($this, 'dump')),
             new \Twig\TwigFunction(
                 'getAppointmentForLocationFromServiceAppointmentLocations',
-                array($this, 'getAppointmentForLocationFromServiceAppointmentLocations')
+                array($this, 'appointmentForLocation')
             ),
         );
     }
@@ -95,7 +95,7 @@ class TwigExtension extends \Twig\Extension\AbstractExtension
     }
 
 
-    public function getD115Enabeld(): bool
+    public function isD115Enabled(): bool
     {
         /** @psalm-suppress UndefinedPropertyFetch */
         $settingsRepository = \App::$repository->fromSetting();
@@ -123,7 +123,7 @@ class TwigExtension extends \Twig\Extension\AbstractExtension
         return $text;
     }
 
-    public function getBobbiChatButtonEnabeld(): bool
+    public function isBobbiChatButtonEnabled(): bool
     {
         /** @psalm-suppress UndefinedPropertyFetch */
         $settingsRepository = \App::$repository->fromSetting();
@@ -311,7 +311,7 @@ class TwigExtension extends \Twig\Extension\AbstractExtension
     /**
      * @SuppressWarnings(PHPMD.LongVariable)
      */
-    public function getAppointmentForLocationFromServiceAppointmentLocations(
+    public function appointmentForLocation(
         array $serviceAppointmentLocationList,
         mixed $locationId
     ): mixed {

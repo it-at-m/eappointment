@@ -15,10 +15,10 @@ jobs:
   generate:
     runs-on: ubuntu-latest
     container:
-      image: "ghcr.io/it-at-m/eappointment/zmsbase:8.4-dev@sha256:39fa5ce4b22791e56d4c7d723190301748f2df7839dc1d79470a2c44008ff1fa"
+      image: "ghcr.io/it-at-m/eappointment/zmsbase:8.4-dev@sha256:3ba315e310cf72a0b0d5ad14390d82212c6dd8c78e954cbd0061a834d8bbcb31"
     services:
       mariadb:
-        image: mariadb:10.11@sha256:7f22313fc130a377a44999965bcb0a08dd5b21e8502824c1b864f792f9bc66ab
+        image: mariadb:10.11@sha256:7db29378d4fdab73f8123bbc2b48905c90d1a4b00cf848b028f1e81e623257f2
         env:
           MYSQL_ROOT_PASSWORD: zmsbackend
           MYSQL_DATABASE: zmsbo
@@ -551,7 +551,7 @@ jobs:
         run: .venv/bin/python generate_schema.py
 
       - name: Upload database schema diagrams artifact
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: database-schema-diagrams
           path: public/diagrams/database-er-model.html

@@ -2,6 +2,8 @@ name: 📱 Frontend Build zmscitizenview
 
 on:
   push:
+    # No paths: filter — would skip new branches that only touch PHP/ATAF.
+    # should-run: new branch always; later only zmscitizenview/ (or catch-up).
   # Rebuild without a commit. In Actions, choose the branch under "Use workflow from",
   # the same way as the zmsautomation workflow.
   # next and feature branches install the npm "beta" dist-tag; main and tags keep the pin.
@@ -14,9 +16,39 @@ concurrency:
 permissions:
   contents: read
   packages: write
+  actions: read
 
 jobs:
+  should-run:
+    name: Decide Frontend Build
+    runs-on: ubuntu-latest
+    outputs:
+      run: ${{ steps.check.outputs.run }}
+    steps:
+      - name: Check out
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+
+      - name: Decide whether to run
+        id: check
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          REF_TYPE: ${{ github.ref_type }}
+          BEFORE: ${{ github.event.before }}
+          AFTER: ${{ github.sha }}
+          BRANCH: ${{ github.ref_name }}
+          THIS_RUN: ${{ github.run_id }}
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          WORKFLOW_FILE: zmscitizenview-maven-node-build.yaml
+          MODE: include
+          PATH_PREFIXES: zmscitizenview/ .github/workflows/zmscitizenview-maven-node-build.yaml
+        run: bash .github/scripts/decide-push-ci-run.sh
+
   build:
+    needs: should-run
+    if: needs.should-run.outputs.run == 'true'
     runs-on: ubuntu-latest
     env:
       TZ: Europe/Berlin # timezone

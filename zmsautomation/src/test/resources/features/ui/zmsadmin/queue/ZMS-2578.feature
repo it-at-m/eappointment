@@ -1,44 +1,44 @@
-#language: de
-Funktionalität: Ein aufgerufener Termin kann geparkt werden, damit er den Ablauf der Warteschlange nicht blockiert, und später fortgesetzt werden.
+#language: en
+Feature: A called appointment can be parked so it does not block the queue, and resumed later.
 
 	@web @zmsadmin @queue @clerk @ZMS-2578 @automatisiert @executeLocally
-	Szenario: [AUT] Test Parken aufgerufener Termine
+	Scenario: [AUT] Park a called appointment
 		#überprüfen, ob bereits für den Standort und den Monat dienstleistungen gebucht wurden.
-		Wenn Sie zur Webseite der Administration navigieren.
-		Und  Sie im Zeitmanagementsystem auf die Schaltfläche "Anmelden" klicken.
-		Und  Sie für "Standort" den Wert "Bürgerbüro Orleansplatz (KVR-II/231 KP) Abholung" auswählen.
-		Und  Sie in Feld "Platz-Nr. oder Tresen" den Text "13" eingeben.
-		Und  Sie im Zeitmanagementsystem auf die Schaltfläche "Auswahl bestätigen" klicken.
-		Dann wird die Seite Sachbearbeiterplatz angezeigt.
-		Wenn die bereits wartenden Kunden als nicht erschienen abgeschlossen werden.
-		Gegeben seien Sie einen Spontankunden für die Dienstleistung buchen:
+		When I open the administration website.
+		And I click the button "Anmelden" in the administration.
+		And I select for "Standort" the value "Bürgerbüro Orleansplatz (KVR-II/231 KP) Abholung".
+		And I enter in the field "Platz-Nr. oder Tresen" the text "13".
+		And I click the button "Auswahl bestätigen" in the administration.
+		Then the workstation page is displayed.
+		When the customers already waiting are finished as no-shows.
+		Given I book a walk-in customer for the service:
 			| Dienstleistung       						| Termin name    |	Kunde	|
 			| Abholung Personalausweis, Reisepass oder eID-Karte 	| Termin1        |	Kunde1	|
 			| Abholung Personalausweis, Reisepass oder eID-Karte 	| Termin2        |	Kunde2	|
-		Wenn Der Sachbearbeiter "<TestData.Termin1>" aus der Warteliste aufruft.
-		Dann wird der wartende Kunde "<TestData.Termin1>" aufgerufen.
-		Wenn Sie im Zeitmanagementsystem auf die Schaltfläche "Ja, Kunde erschienen" klicken.
-		Wenn Sie für "120000" Millisekunden warten.
-		Und  Sie den Termin parken.
-		Dann erscheint der Termin "<TestData.Termin1>" unter geparkte Termine.
-		Wenn  Sie im Zeitmanagementsystem auf die Schaltfläche "Aufruf nächster Kunde" klicken.
-		Und   Sie im Zeitmanagementsystem auf die Schaltfläche "Ja, Kunden jetzt aufrufen" klicken.
-		Dann wird der wartende Kunde "<TestData.Termin2>" aufgerufen.
-		Wenn  Sie im Zeitmanagementsystem auf die Schaltfläche "Ja, Kunde erschienen" klicken.
-		Und  Sie für "60000" Millisekunden warten.
-		Und  Sie im Zeitmanagementsystem auf die Schaltfläche "Fertig stellen" klicken.
-		Dann Sollte der Kunde "<TestData.Kunde2>" unter abgeschlossene Termine erscheinen.
-		Wenn Der Sachbearbeiter "<TestData.Termin1>" aus den geparkten Terminen aufruft.
-		Dann wird der wartende Kunde "<TestData.Termin1>" aufgerufen.
-		Wenn  Sie im Zeitmanagementsystem auf die Schaltfläche "Ja, Kunde erschienen" klicken.
-		Und  Sie für "30000" Millisekunden warten.
-		Und  Sie im Zeitmanagementsystem auf die Schaltfläche "Fertig stellen" klicken.
-		Dann Sollte der Kunde "<TestData.Kunde1>" unter abgeschlossene Termine erscheinen.
-		Angenommen Die fertige Termintabelle angezeigt.
-		Dann Die Wartezeit-H:mm:ss für "<TestData.Kunde1>" sollte zwischen "00:00:01" und "00:01:00" liegen.
-		Dann Die Wartezeit-H:mm:ss für "<TestData.Kunde2>" sollte zwischen "00:02:00" und "00:03:00" liegen.
-		Dann Die Bearbeitungszeit-H:mm:ss für "<TestData.Kunde1>" sollte zwischen "00:00:01" und "00:01:10" liegen.
-		Dann Die Bearbeitungszeit-H:mm:ss für "<TestData.Kunde2>" sollte zwischen "00:00:01" und "00:01:10" liegen.
+		When the clerk calls "<TestData.Termin1>" from the waiting list.
+		Then the waiting customer "<TestData.Termin1>" is called.
+		When I click the button "Ja, Kunde erschienen" in the administration.
+		When I wait "120000" milliseconds.
+		And I park the appointment.
+		Then the appointment "<TestData.Termin1>" appears under parked appointments.
+		When I click the button "Aufruf nächster Kunde" in the administration.
+		And I click the button "Ja, Kunden jetzt aufrufen" in the administration.
+		Then the waiting customer "<TestData.Termin2>" is called.
+		When I click the button "Ja, Kunde erschienen" in the administration.
+		And I wait "60000" milliseconds.
+		And I click the button "Fertig stellen" in the administration.
+		Then the customer "<TestData.Kunde2>" should appear under finished appointments.
+		When the clerk calls "<TestData.Termin1>" from the parked appointments.
+		Then the waiting customer "<TestData.Termin1>" is called.
+		When I click the button "Ja, Kunde erschienen" in the administration.
+		And I wait "30000" milliseconds.
+		And I click the button "Fertig stellen" in the administration.
+		Then the customer "<TestData.Kunde1>" should appear under finished appointments.
+		Given the finished appointment table is displayed.
+		Then the waiting time H:mm:ss for "<TestData.Kunde1>" should be between "00:00:01" and "00:01:00".
+		Then the waiting time H:mm:ss for "<TestData.Kunde2>" should be between "00:02:00" and "00:03:00".
+		Then the processing time H:mm:ss for "<TestData.Kunde1>" should be between "00:00:01" and "00:01:10".
+		Then the processing time H:mm:ss for "<TestData.Kunde2>" should be between "00:00:01" and "00:01:10".
 
 
 

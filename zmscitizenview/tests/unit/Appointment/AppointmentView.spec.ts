@@ -18,6 +18,7 @@ import {
   SESSIONSTORAGE_PARAM_APPOINTMENT_AUTH_HASH,
 } from "@/utils/Constants";
 import de from "@/utils/de-DE.json";
+import { resetPlaceholderReserveEmail } from "@/utils/rebookingContact";
 // beforeEach is already imported from vitest on line 2
 import { nowUnixSeconds } from "@/utils/timestampInPast";
 import {
@@ -297,6 +298,67 @@ describe("AppointmentView", () => {
       );
     });
 
+    it("returns to the service step and keeps the selected services", async () => {
+      const wrapper = createWrapper({ appointmentHash: undefined });
+      wrapper.vm.currentView = 3;
+      wrapper.vm.captchaToken = "expired-token";
+      wrapper.vm.reservationStartMs = Date.now();
+      wrapper.vm.selectedServiceMap = new Map([["service1", 2]]);
+      await nextTick();
+
+      wrapper.vm.restartBookingToServices();
+      await nextTick();
+
+      expect(wrapper.vm.currentView).toBe(0);
+      expect(wrapper.vm.captchaToken).toBeUndefined();
+      expect(wrapper.vm.reservationStartMs).toBeNull();
+      expect(wrapper.vm.selectedServiceMap.get("service1")).toBe(2);
+      expect(wrapper.find('[data-test="service-finder"]').exists()).toBe(true);
+    });
+
+    it("restarts a reschedule at the clean appointment start", async () => {
+      const originalLocation = window.location;
+      delete (window as any).location;
+      (window as any).location = {
+        href: "http://localhost:8082/#/appointment/abc",
+        origin: "http://localhost:8082",
+        pathname: "/",
+      };
+
+      const wrapper = createWrapper({ appointmentHash: "abc" });
+      wrapper.vm.currentView = 1;
+      wrapper.vm.isRebooking = true;
+      await nextTick();
+
+      wrapper.vm.restartBookingToServices();
+
+      expect(window.location.href).toBe("http://localhost:8082/");
+      expect(wrapper.vm.currentView).toBe(1);
+
+      (window as any).location = originalLocation;
+    });
+
+    it("offers restart booking when the reservation is no longer reserved", async () => {
+      const wrapper = createWrapper({ appointmentHash: undefined });
+      wrapper.vm.currentView = 3;
+      wrapper.vm.currentContext = "preconfirm";
+      wrapper.vm.captchaToken = "expired-token";
+      wrapper.vm.reservationStartMs = Date.now();
+      wrapper.vm.errorStates.errorStateMap.apiErrorProcessNotReservedAnymore.value = true;
+      await nextTick();
+
+      const callout = wrapper.find('[data-test="muc-callout"]');
+      expect(callout.text()).toContain(
+        de.apiErrorProcessNotReservedAnymoreText
+      );
+      expect(callout.text()).toContain(de.restartBooking);
+
+      await callout.find('[data-test="muc-button"]').trigger("click");
+      expect(wrapper.vm.currentView).toBe(0);
+      expect(wrapper.vm.captchaToken).toBeUndefined();
+      expect(wrapper.vm.reservationStartMs).toBeNull();
+    });
+
     it("shows customer info after calendar selection", async () => {
       const wrapper = createWrapper({ appointmentHash: undefined });
       wrapper.vm.currentView = 2;
@@ -483,7 +545,7 @@ describe("AppointmentView", () => {
   });
 
   describe("appointment tracking", () => {
-    it("tracks appointment_selection when the view changes to Termin", async () => {
+    it("tracks timestamp_selection when the view changes to Termin", async () => {
       const wrapper = createWrapper({ appointmentHash: undefined });
       vi.mocked(trackAppointmentScreenFromView).mockClear();
 
@@ -580,6 +642,29 @@ describe("AppointmentView", () => {
   });
 
   describe("Rebooking Flow", () => {
+    it("explains a disabled reschedule link and keeps the appointment summary", async () => {
+      const wrapper = createWrapperWithAppointmentHash();
+      wrapper.vm.appointment = {
+        timestamp: nowUnixSeconds() + 3600,
+        scope: { rebookingDisabled: true },
+      } as any;
+
+      wrapper.vm.nextRescheduleAppointment();
+      await nextTick();
+
+      expect(wrapper.vm.isRebooking).toBe(false);
+      expect(wrapper.vm.rebookOrCancelDialog).toBe(true);
+      expect(wrapper.vm.currentView).toBe(3);
+      expect(wrapper.vm.errorStates.apiErrorRebookingDisabled.value).toBe(
+        true
+      );
+      expect(wrapper.find('[data-test="appointment-summary"]').exists()).toBe(
+        true
+      );
+      expect(wrapper.text()).toContain(de.apiErrorRebookingDisabledHeader);
+      expect(wrapper.text()).toContain(de.apiErrorRebookingDisabledText);
+    });
+
     it("starts at summary and disables previous steps when appointmentHash is present", async () => {
       const wrapper = createWrapperWithAppointmentHash();
       wrapper.vm.currentView = 3;
@@ -2910,6 +2995,7 @@ describe("AppointmentView", () => {
     beforeEach(() => {
       localStorage.clear();
       sessionStorage.clear();
+      resetPlaceholderReserveEmail();
       vi.mocked(ZMSAppointmentAPI.fetchAppointment).mockReset();
       vi.stubGlobal(
         "fetch",
@@ -2945,6 +3031,43 @@ describe("AppointmentView", () => {
       expect(wrapper.vm.currentView).toBe(2);
       expect(wrapper.vm.rebookOrCancelDialog).toBe(false);
       expect(wrapper.vm.customerData.mailAddress).toBe("");
+      expect(wrapper.find('[data-test="customer-info"]').exists()).toBe(true);
+      expect(wrapper.find('[data-test="appointment-summary"]').exists()).toBe(
+        false
+      );
+      expect(
+        wrapper
+          .find('[data-test="muc-stepper"]')
+          .attributes("data-disable-previous-steps")
+      ).toBe("false");
+    });
+
+    it("leaves the contact form empty when a cancelled login resumes the reserve placeholder", async () => {
+      vi.mocked(ZMSAppointmentAPI.fetchAppointment).mockResolvedValue({
+        processId: "100318",
+        authKey: "test-auth-key",
+        timestamp: futureTimestamp,
+        familyName: "",
+        email: "noreply-terminvereinbarung@muenchen.de",
+        placeholderEmail: "noreply-terminvereinbarung@muenchen.de",
+        officeId: "789",
+        scope: {},
+        subRequestCounts: [],
+        serviceId: "123",
+        serviceName: "Test Service",
+        serviceCount: 1,
+        status: "reserved",
+      } as any);
+
+      const wrapper = createWrapper({ appointmentHash: validHash });
+
+      await vi.waitFor(() => {
+        expect(wrapper.vm.appointment?.processId).toBe("100318");
+      });
+
+      expect(wrapper.vm.currentView).toBe(2);
+      expect(wrapper.vm.customerData.mailAddress).toBe("");
+      expect(wrapper.vm.customerData.firstName).toBe("");
       expect(wrapper.find('[data-test="customer-info"]').exists()).toBe(true);
       expect(wrapper.find('[data-test="appointment-summary"]').exists()).toBe(
         false

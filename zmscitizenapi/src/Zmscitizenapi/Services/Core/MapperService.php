@@ -187,7 +187,8 @@ class MapperService
                     whitelistedMails: isset($providerScope->whitelistedMails) ? ($providerScope->whitelistedMails === '' ? null : $providerScope->whitelistedMails) : null,
                     reservationDuration: (int) self::extractReservationDuration($providerScope),
                     activationDuration: self::extractActivationDuration($providerScope),
-                    hint: isset($providerScope->hint) ? (trim($providerScope->hint) === '' ? null : $providerScope->hint) : null
+                    hint: isset($providerScope->hint) ? (trim($providerScope->hint) === '' ? null : $providerScope->hint) : null,
+                    rebookingDisabled: $providerScope->isRebookingDisabled()
                 ) : null,
                 slotsPerAppointment: isset($providerScope) && !isset($providerScope['errors']) && isset($providerScope->slotsPerAppointment) ? ($providerScope->slotsPerAppointment === '' ? null : $providerScope->slotsPerAppointment) : null,
                 parentId: isset($provider->parent_id) ? (int) $provider->parent_id : null,
@@ -373,7 +374,8 @@ class MapperService
                 : (string) $scope->getWhitelistedMails(),
             reservationDuration: MapperService::extractReservationDuration($scope),
             activationDuration: MapperService::extractActivationDuration($scope),
-            hint: (trim((string) ($scope->getScopeHint() ?? '')) === '') ? null : (string) $scope->getScopeHint()
+            hint: (trim((string) ($scope->getScopeHint() ?? '')) === '') ? null : (string) $scope->getScopeHint(),
+            rebookingDisabled: $scope->isRebookingDisabled()
         );
     }
 
@@ -500,14 +502,14 @@ class MapperService
                     'slotsPerAppointment' => $thinnedProcess->scope->getSlotsPerAppointment() ?? null,
                     "whitelistedMails" => $thinnedProcess->scope->getWhitelistedMails() ?? null,
                     'emailFrom' => $thinnedProcess->scope->getEmailFrom() ?? null,
-                    'emailRequired' => $thinnedProcess->scope->getEmailRequired() ?? false,
-                    'telephoneActivated' => $thinnedProcess->scope->getTelephoneActivated() ?? false,
-                    'telephoneRequired' => $thinnedProcess->scope->getTelephoneRequired() ?? false,
-                    'customTextfieldActivated' => $thinnedProcess->scope->getCustomTextfieldActivated() ?? false,
-                    'customTextfieldRequired' => $thinnedProcess->scope->getCustomTextfieldRequired() ?? false,
+                    'emailRequired' => $thinnedProcess->scope->isEmailRequired() ?? false,
+                    'telephoneActivated' => $thinnedProcess->scope->isTelephoneActivated() ?? false,
+                    'telephoneRequired' => $thinnedProcess->scope->isTelephoneRequired() ?? false,
+                    'customTextfieldActivated' => $thinnedProcess->scope->isCustomTextfieldActivated() ?? false,
+                    'customTextfieldRequired' => $thinnedProcess->scope->isCustomTextfieldRequired() ?? false,
                     'customTextfieldLabel' => $thinnedProcess->scope->getCustomTextfieldLabel() ?? null,
-                    'customTextfield2Activated' => $thinnedProcess->scope->getCustomTextfield2Activated() ?? false,
-                    'customTextfield2Required' => $thinnedProcess->scope->getCustomTextfield2Required() ?? false,
+                    'customTextfield2Activated' => $thinnedProcess->scope->isCustomTextfield2Activated() ?? false,
+                    'customTextfield2Required' => $thinnedProcess->scope->isCustomTextfield2Required() ?? false,
                     'customTextfield2Label' => $thinnedProcess->scope->getCustomTextfield2Label() ?? null
                 ]
             ];

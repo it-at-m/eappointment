@@ -23,7 +23,6 @@ import org.openqa.selenium.Keys;
 import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -37,6 +36,7 @@ import ataf.core.logging.ScenarioLogManager;
 import ataf.core.properties.DefaultValues;
 import ataf.web.model.LocatorType;
 import zms.ataf.helpers.AppointmentCountHelper;
+import zms.ataf.helpers.BerlinTime;
 import zms.ataf.ui.pages.admin.AdminPage;
 import zms.ataf.ui.pages.admin.AdminPageContext;
 
@@ -191,10 +191,13 @@ public class CounterProcessingStationPage extends AdminPage {
     
         scrollToCenterByVisibleElement(table);
     
-        // Wait for specific row with transaction number
+        // The queue shows the display number. Briefbüro prints a prefix (X0723);
+        // other scopes print the process id. Match either form.
+        String shown = transactionNumber == null ? "" : transactionNumber.trim();
         By rowByNumber = By.xpath(
                 "//table[@id='table-queued-appointments']" +
-                "//tbody/tr[.//td[normalize-space()='" + numOnly + "']]"
+                "//tbody/tr[.//td[normalize-space()='" + shown + "'" +
+                " or normalize-space()='" + numOnly + "']]"
         );
     
         WebElement row = wait.until(
@@ -276,6 +279,98 @@ public class CounterProcessingStationPage extends AdminPage {
         showSpontaneousCustomers(isSpontaneousCustomer);
         // Use the transaction number to verify its presence in the 'Nr.' column
         checkForValuesInMissedTableColumn("Nr.", transactionNumber);
+    }
+
+    /**
+     * "wieder aufnehmen" has no OK button, so the success lightbox stays open.
+     * The status change is already saved; a reload shows the queue without that dialog.
+     */
+    public void resumeMissedAppointment(String displayNumber, String familyName) {
+        ScenarioLogManager.getLogger().info("Resuming missed appointment \"" + displayNumber + "\"...");
+        CONTEXT.waitForSpinners();
+        By resumeLink = By.xpath(appointmentRow(APPOINTMENT_MISSED_TABLE_LOCATOR_ID, displayNumber, familyName)
+                + "//a[contains(@class,'process-reset')]");
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        WebElement link = wait.until(ExpectedConditions.elementToBeClickable(resumeLink));
+        scrollToCenterByVisibleElement(link);
+        link.click();
+        WebElement heading = wait.until(ExpectedConditions.visibilityOfElementLocated(
+                By.xpath("//*[contains(@class,'message__heading') and contains(., 'Erfolgreiche Wiederaufnahme')]")));
+        Assert.assertTrue(heading.isDisplayed(), "The resume success message is not visible.");
+        String body = DRIVER.findElement(By.cssSelector(".message--success .message__body")).getText();
+        Assert.assertTrue(body.contains("erfolgreich zum Aufruf zurückgesetzt"),
+                "The resume message does not confirm the appointment is back in the queue: " + body);
+        DRIVER.navigate().refresh();
+        CONTEXT.waitForSpinners();
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id(APPOINTMENT_QUEUE_TABLE_LOCATOR_ID)));
+    }
+
+    /** The queue replaces this link while a row comes back, and a loader can cover it, so the click is retried. */
+    public void reloadQueueLists() {
+        By reloadLink = By.cssSelector(".queue-table a.reload");
+        By loader = By.cssSelector("div.loader");
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        wait.ignoring(StaleElementReferenceException.class, ElementClickInterceptedException.class);
+        wait.until(driver -> {
+            if (driver.findElements(loader).stream().anyMatch(WebElement::isDisplayed)) {
+                return false;
+            }
+            List<WebElement> links = driver.findElements(reloadLink);
+            if (links.isEmpty() || !links.get(0).isDisplayed()) {
+                return false;
+            }
+            scrollToCenterByVisibleElement(links.get(0));
+            links.get(0).click();
+            return true;
+        });
+        CONTEXT.waitForSpinners();
+    }
+
+    /** After a no-show the row returns without a call link until the lockout ends. */
+    public void waitUntilCustomerIsBackInQueue(String familyName) {
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        wait.ignoring(StaleElementReferenceException.class);
+        wait.until(driver -> {
+            List<WebElement> tables = driver.findElements(By.id(APPOINTMENT_QUEUE_TABLE_LOCATOR_ID));
+            return !tables.isEmpty() && tables.get(0).getText().contains(familyName);
+        });
+    }
+
+    public void assertResumedAppointmentShowsOnlyItsTime(String displayNumber, String familyName) {
+        String text = queueTimeText(displayNumber, familyName);
+        Assert.assertTrue(text.matches("\\d{2}:\\d{2}"),
+                "In the first minute Uhrzeit should be only the appointment time, but was: " + text);
+        Assert.assertFalse(text.contains("+00:00"),
+                "Uhrzeit shows a zero waiting time: " + text);
+    }
+
+    public void assertResumedAppointmentShowsWholeMinutes(String displayNumber, String familyName) {
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        wait.ignoring(StaleElementReferenceException.class);
+        String[] seen = {""};
+        wait.withMessage(() -> "Uhrzeit does not show the waiting time as whole minutes, but was: " + seen[0]);
+        String text = wait.until(driver -> {
+            String value = queueTimeText(displayNumber, familyName);
+            seen[0] = value;
+            if (value.matches("\\d{2}:\\d{2} \\+[1-9]\\d* Min\\.")) {
+                return value;
+            }
+            return null;
+        });
+        Assert.assertNotNull(text, "Uhrzeit does not show the waiting time as whole minutes.");
+    }
+
+    private String queueTimeText(String displayNumber, String familyName) {
+        By cell = By.xpath(appointmentRow(APPOINTMENT_QUEUE_TABLE_LOCATOR_ID, displayNumber, familyName) + "/td[2]");
+        WebElement time = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .ignoring(StaleElementReferenceException.class)
+                .until(ExpectedConditions.visibilityOfElementLocated(cell));
+        return time.getText().replace('\u00a0', ' ').replaceAll("\\s+", " ").trim();
+    }
+
+    private static String appointmentRow(String tableId, String displayNumber, String familyName) {
+        return "//table[@id='" + tableId + "']//tr[td[normalize-space(.)='" + displayNumber
+                + "'] and td[contains(normalize-space(.), \"" + familyName + "\")]]";
     }
 
     public void isCustomerVisibleInFinishedTable(String customer) {
@@ -393,38 +488,117 @@ public class CounterProcessingStationPage extends AdminPage {
         AppointmentCountHelper.incrementAppointmentCanceledCount();
     }
 
+    /**
+     * Deletes the queue row for a customer just booked in this scenario.
+     * The trash icon uses the internal process id, which is not the number shown as Termin-Nr.
+     */
+    /**
+     * A forwarded Terminkunde is queued without an appointment time, so the Prio field is visible.
+     * Mittel is the selected option when the stored priority is 2.
+     */
+    public void assertQueuedCustomerPriority(String familyName, String priorityLabel) {
+        CONTEXT.set();
+        showSpontaneousCustomers(true);
+        CONTEXT.waitForSpinners();
+        String editLink = "//table[@id='table-queued-appointments']//tr["
+                + "td[contains(@class,'callnextclient') and normalize-space(.)='" + familyName + "']]"
+                + "//a[contains(@class,'process-edit')]";
+        clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, editLink, LocatorType.XPATH, false, CONTEXT);
+        WebElement priority = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("select[name='priority']")));
+        String selected = new Select(priority).getFirstSelectedOption().getText().trim();
+        Assert.assertEquals(selected, priorityLabel,
+                "Expected priority \"" + priorityLabel + "\" for " + familyName + ", but found \"" + selected + "\".");
+    }
+
+    public void deleteQueuedAppointmentByFamilyName(String familyName) {
+        CONTEXT.set();
+        if ("true".equals(TestDataHelper.getTestData("appointment_booked_as_walk_in"))) {
+            showSpontaneousCustomers(true);
+            CONTEXT.waitForSpinners();
+        }
+        ScenarioLogManager.getLogger().info("Deleting queued appointment for {}", familyName);
+        String deleteLink = "//table[@id='table-queued-appointments']//tr["
+                + "td[contains(@class,'callnextclient') and normalize-space(.)='" + familyName + "']]"
+                + "//a[contains(@class,'process-delete')]";
+        clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, deleteLink, LocatorType.XPATH, false, CONTEXT);
+        WebElement messageTitleElement = findElementByLocatorType("section.board.dialog h2.board__heading", LocatorType.CSSSELECTOR, false);
+        Assert.assertTrue(
+                messageTitleElement.getText().contains("Eintrag löschen"),
+                "Delete confirmation did not open for " + familyName);
+        clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "a.button.button--destructive.button-ok", LocatorType.CSSSELECTOR, false, CONTEXT);
+        messageTitleElement = findElementByLocatorType("h2.message__heading.title", LocatorType.CSSSELECTOR, false);
+        Assert.assertEquals(messageTitleElement.getText(), "Vorgang gelöscht",
+                "Deleting the appointment for " + familyName + " did not succeed.");
+        clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "button.button-ok", LocatorType.CSSSELECTOR, false);
+    }
+
     public void enterDateInNewAppointmentTextField(String date) {
         ScenarioLogManager.getLogger().info("Trying to enter date \"" + date + "\" in new appointment text field...");
 
-        // Check if date has opening hours
+        // process_date is a React datepicker. The old calendar tile (div[data-date]) is not on this form.
         LocalDate dateDesired = LocalDate.parse(date, DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.GERMAN));
-        WebElement calendarElementOfDesiredDate;
-        int count = 0;
-        do {
+        int maxDays = TestPropertiesHelper.getPropertyAsInteger("numberOfRetries", true, 3) * 3;
+        for (int count = 0; count <= maxDays; count++) {
             if (count > 0) {
-                // While the desired date has no opening hours try next day...
-                ScenarioLogManager.getLogger().info("The desired date \"" + date + "\" has no opening hours! Trying next day...");
                 dateDesired = dateDesired.plusDays(1L);
                 date = dateDesired.format(DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.GERMAN));
+                ScenarioLogManager.getLogger().info("The day is not selectable. Trying {}", date);
             }
-            calendarElementOfDesiredDate = findElementByLocatorType(
-                    "//div[@data-date='" + dateDesired.format(DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.GERMAN)) + "']", LocatorType.XPATH, true);
-            count++;
-        } while (calendarElementOfDesiredDate.getAttribute("title")
-                .contains("an diesem Tag sind keine Termine möglich") && count <= TestPropertiesHelper.getPropertyAsInteger(
-                "numberOfRetries", true, 3) * 3);
+            if (chooseDateInAppointmentPicker(dateDesired, date)) {
+                TestDataHelper.setTestData("new_appointment_date", date);
+                return;
+            }
+        }
+        Assert.fail("No selectable appointment day found from " + date);
+    }
 
-        //TODO remove NullPointerException workaround after fix https://jira.muenchen.de/browse/ZMS-1891
-        WebElement newAppointmentDateTextField = findElementByLocatorType("process_date", LocatorType.ID, true);
-        new Actions(DRIVER)
-                .sendKeys(newAppointmentDateTextField, Keys.BACK_SPACE, Keys.BACK_SPACE, Keys.BACK_SPACE, Keys.BACK_SPACE, Keys.BACK_SPACE, Keys.BACK_SPACE,
-                        Keys.BACK_SPACE, Keys.BACK_SPACE)
-                .sendKeys(newAppointmentDateTextField, date)
-                .perform();
+    /** @return false when the day is shown but disabled, so the caller can try the next day. */
+    private boolean chooseDateInAppointmentPicker(LocalDate target, String date) {
+        WebElement dateField = findElementByLocatorType("process_date", LocatorType.ID, true);
+        dateField.sendKeys(Keys.ESCAPE);
+        WebElement opener = findElementByLocatorType("#appointment-datepicker a.calendar-placement", LocatorType.CSSSELECTOR, true);
+        ((JavascriptExecutor) DRIVER).executeScript("arguments[0].click();", opener);
+
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        By monthHeader = By.cssSelector(".react-datepicker__current-month");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(monthHeader));
+
+        DateTimeFormatter monthYear = DateTimeFormatter.ofPattern("MMMM yyyy", Locale.GERMAN);
+        String targetMonth = target.format(monthYear);
+        DateTimeFormatter shownMonth = DateTimeFormatter.ofPattern("d MMMM yyyy", Locale.GERMAN);
+        String shown = "";
+        boolean reachedMonth = false;
+        for (int step = 0; step < 14; step++) {
+            shown = DRIVER.findElement(monthHeader).getText().replace('\u00a0', ' ').trim();
+            if (shown.equalsIgnoreCase(targetMonth)) {
+                reachedMonth = true;
+                break;
+            }
+            LocalDate shownDate = LocalDate.parse("1 " + shown, shownMonth);
+            String navigation = shownDate.isBefore(target.withDayOfMonth(1))
+                    ? ".react-datepicker__navigation--next"
+                    : ".react-datepicker__navigation--previous";
+            DRIVER.findElement(By.cssSelector(navigation)).click();
+        }
+        if (!reachedMonth) {
+            Assert.fail("Appointment calendar did not reach " + targetMonth + ". It still shows " + shown + ".");
+        }
+
+        String dayText = Integer.toString(target.getDayOfMonth());
+        By day = By.xpath("//div[contains(@class,'react-datepicker__day')"
+                + " and not(contains(@class,'outside-month'))"
+                + " and normalize-space(.)='" + dayText + "']");
+        WebElement dayElement = wait.until(ExpectedConditions.presenceOfElementLocated(day));
+        String dayClass = dayElement.getAttribute("class");
+        if (dayClass != null && dayClass.contains("disabled")) {
+            dateField.sendKeys(Keys.ESCAPE);
+            return false;
+        }
+        wait.until(ExpectedConditions.elementToBeClickable(dayElement)).click();
+        wait.until(ExpectedConditions.attributeToBe(By.id("process_date"), "value", date));
         CONTEXT.waitForSpinners();
-        Assert.assertEquals(findElementByLocatorType("process_date", LocatorType.ID, true).getAttribute("value"), date,
-                "Entering date \"" + date + "\" in new appointment text field has failed...");
-        TestDataHelper.setTestData("new_appointment_date", date);
+        return true;
     }
 
     /**
@@ -468,6 +642,40 @@ public class CounterProcessingStationPage extends AdminPage {
                 select);
     }
 
+    /** A late button reload can drop Termin buchen after the slot is already selected. */
+    private WebElement waitForBookAppointmentButton(WebDriverWait wait) {
+        long[] lastRefresh = { 0L };
+        return wait.ignoring(StaleElementReferenceException.class).until(driver -> {
+            List<WebElement> buttons = driver.findElements(By.cssSelector("button.process-reserve"));
+            for (WebElement button : buttons) {
+                if (button.isDisplayed() && button.isEnabled()) {
+                    return button;
+                }
+            }
+            refreshAppointmentButtonsIfSlotSelected(lastRefresh);
+            return null;
+        });
+    }
+
+    private void refreshAppointmentButtonsIfSlotSelected(long[] lastRefresh) {
+        long now = System.currentTimeMillis();
+        if (now - lastRefresh[0] < 2000L) {
+            return;
+        }
+        List<WebElement> selects = DRIVER.findElements(By.id(APPOINTMENT_TIME_LOCATOR_ID));
+        if (selects.isEmpty()) {
+            return;
+        }
+        String value = selects.get(0).getAttribute("value");
+        if (value == null || value.isBlank() || "00-00".equals(value)) {
+            return;
+        }
+        lastRefresh[0] = now;
+        ScenarioLogManager.getLogger()
+                .warn("Termin buchen is missing while slot {} is selected; loading the booking button again.", value);
+        fireProcessTimeChange(selects.get(0));
+    }
+
     public void selectTimeInNewAppointmentDropDownList(String time) {
         selectTimeInNewAppointmentDropDownList(time, Set.of(), false);
     }
@@ -477,6 +685,11 @@ public class CounterProcessingStationPage extends AdminPage {
     }
 
     public void selectTimeInNewAppointmentDropDownList(String time, Set<String> excludedTimes, boolean fallBackToWalkIn) {
+        selectTimeInNewAppointmentDropDownList(time, excludedTimes, fallBackToWalkIn, true);
+    }
+
+    public void selectTimeInNewAppointmentDropDownList(
+            String time, Set<String> excludedTimes, boolean fallBackToWalkIn, boolean allowNextDay) {
         TestDataHelper.setTestData("appointment_booked_as_walk_in", "false");
         ScenarioLogManager.getLogger().info("Trying to select time \"" + time + "\" in new appointment drop down list...");
         Pattern timeSlotPattern = Pattern.compile("([0-9][0-9]:[0-9][0-9]) \\(noch ([0-9]) frei\\)");
@@ -484,6 +697,7 @@ public class CounterProcessingStationPage extends AdminPage {
         wait.ignoring(StaleElementReferenceException.class, ElementClickInterceptedException.class);
         wait.pollingEvery(Duration.ofMillis(1000L));
         wait.withMessage("Could not locate any time slot elements in time!");
+        int[] daysAhead = { 0 };
         try {
             wait.until((ExpectedCondition<Boolean>) waitDriver -> {
                 TestDataHelper.setTestData("appointment_booked_as_walk_in", "false");
@@ -507,7 +721,7 @@ public class CounterProcessingStationPage extends AdminPage {
                             if (fallBackToWalkIn && selectWalkInOption(newAppointmentTimeDropDownListSelections, newAppointmentTimeDropDownList)) {
                                 break;
                             }
-                            return false;
+                            return nextDayOrFail(daysAhead, allowNextDay);
                         }
                         WebElement webElement;
                         if (time.equals("<beliebig>")) {
@@ -552,12 +766,35 @@ public class CounterProcessingStationPage extends AdminPage {
                     }
                     return true;
                 } else {
-                    return false;
+                    return nextDayOrFail(daysAhead, allowNextDay);
                 }
             });
         } catch (Exception e) {
             Assert.fail("Selecting time \"" + TestDataHelper.getTestData("new_appointment_time") + "\" in new appointment drop down list has failed,", e);
         }
+    }
+
+    /**
+     * Today's Terminkunde list is empty once fewer than three hours remain until 23:55.
+     * The next day is opened for the whole day, so the form moves there and the time list is read again.
+     */
+    private boolean nextDayOrFail(int[] daysAhead, boolean allowNextDay) {
+        if (!allowNextDay) {
+            Assert.fail("No appointment slot is left today.");
+        }
+        return moveToNextDayWithSlots(daysAhead);
+    }
+
+    private boolean moveToNextDayWithSlots(int[] daysAhead) {
+        if (daysAhead[0] >= 7) {
+            return false;
+        }
+        daysAhead[0]++;
+        LocalDate day = BerlinTime.today().plusDays(daysAhead[0]);
+        String date = day.format(DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.GERMAN));
+        ScenarioLogManager.getLogger().info("No Terminkunde slot left; opening {}", date);
+        enterDateInNewAppointmentTextField(date);
+        return false;
     }
 
     public void enterNameInNewAppointmentTextField(String name) {
@@ -620,6 +857,41 @@ public class CounterProcessingStationPage extends AdminPage {
         TestDataHelper.setTestData("new_appointment_service", service);
     }
 
+    public void increaseSelectedServiceCount(String service, int times) {
+        ScenarioLogManager.getLogger().info("Increasing the count of selected service \"{}\" by {}", service, times);
+        By plus = By.xpath(selectedServiceRow(service) + "//input[@class='plus']");
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        for (int i = 0; i < times; i++) {
+            wait.until(ExpectedConditions.elementToBeClickable(plus)).click();
+            CONTEXT.waitForSpinners();
+        }
+    }
+
+    public void clearSelectedServiceList() {
+        ScenarioLogManager.getLogger().info("Clearing the selected service list...");
+        clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "button.clear-list", LocatorType.CSSSELECTOR, false);
+        CONTEXT.waitForSpinners();
+    }
+
+    public void assertSelectedServiceCount(String service, int expectedCount) {
+        By count = By.xpath(selectedServiceRow(service) + "//span[@class='request-count']");
+        WebElement countElement = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(ExpectedConditions.visibilityOfElementLocated(count));
+        Assert.assertEquals(countElement.getText().trim(), Integer.toString(expectedCount),
+                "Selected service \"" + service + "\" has the wrong count.");
+    }
+
+    public void assertSelectedServiceHidden(String service) {
+        By row = By.xpath(selectedServiceRow(service));
+        new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .withMessage("Service \"" + service + "\" is still in the selected list.")
+                .until(driver -> driver.findElements(row).stream().noneMatch(WebElement::isDisplayed));
+    }
+
+    private String selectedServiceRow(String service) {
+        return "//ul[@aria-label='Dienstleistungen Abwahlliste']//li[.//span[normalize-space(.)='" + service + "']]";
+    }
+
     public void clickOnBookAppointmentButton(boolean assertErrors) {
         ScenarioLogManager.getLogger().info("Trying to click on \"book appointment\" button...");
     
@@ -650,11 +922,7 @@ public class CounterProcessingStationPage extends AdminPage {
                 selectTimeInNewAppointmentDropDownList("<nächste>", skippedTimes);
             }
     
-            WebElement bookButton = wait.until(
-                    ExpectedConditions.elementToBeClickable(
-                            By.cssSelector("button.process-reserve")
-                    )
-            );
+            WebElement bookButton = waitForBookAppointmentButton(wait);
     
             bookingAttempted = false;
             try {
@@ -673,17 +941,13 @@ public class CounterProcessingStationPage extends AdminPage {
                 wait.until(driver -> {
                     CONTEXT.waitForSpinners();
     
-                    List<WebElement> errorElements = driver.findElements(By.xpath(
-                            "//li[@data-key='familyName'] | " +
-                            "//li[@data-key='email'] | " +
-                            "//li[@data-key='requests'] | " +
-                            "//li[@data-key='customTextfield'] | " +
-                            "//li[@data-key='customTextfield2']"
-                    ));
+                    List<WebElement> errorElements = driver.findElements(By.cssSelector("ul.error-list li[data-key]"));
     
                     if (!errorElements.isEmpty()) {
                         for (WebElement element : errorElements) {
                             String key = element.getAttribute("data-key");
+                            ScenarioLogManager.getLogger()
+                                    .error("Booking rejected ({}): {}", key, element.getText());
                             switch (key) {
                             case "familyName":
                                 TestDataHelper.setTestData(
@@ -726,7 +990,7 @@ public class CounterProcessingStationPage extends AdminPage {
                         WebElement dtElement = driver.findElement(
                                 By.xpath("//dt[starts-with(normalize-space(), 'Termin-Nr.')]")
                         );
-                        Matcher matcher = Pattern.compile("Termin-Nr\\.\\s*([0-9]+)").matcher(dtElement.getText());
+                        Matcher matcher = Pattern.compile("Termin-Nr\\.\\s*([A-Za-z]*[0-9]+)").matcher(dtElement.getText());
                         if (matcher.find()) {
                             newAppointmentNumber.set(matcher.group(1));
                             return true;
@@ -807,18 +1071,42 @@ public class CounterProcessingStationPage extends AdminPage {
         }
     }
 
+    public void fillCustomTextfield(String fieldName, String value) {
+        if (value == null || value.isBlank()) {
+            return;
+        }
+        CONTEXT.set();
+        WebElement textarea = findElementByLocatorType("//textarea[@name='" + fieldName + "']", LocatorType.XPATH, true);
+        enterTextInWebElement(DEFAULT_EXPLICIT_WAIT_TIME, value, textarea);
+    }
+
     public String clickOnAddSpontaneousCustomer() {
         ScenarioLogManager.getLogger().info("Trying to click on \"Add spontaneous customer\"  button...");
         fillCustomTextfieldsForSpontaneousCustomerIfNeeded();
         clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME * 2, "//button[text()='Spontankunden hinzufügen']", LocatorType.XPATH, false, CONTEXT);
         Assert.assertTrue(isWebElementVisible(DEFAULT_EXPLICIT_WAIT_TIME * 2, "//h2[text()='Spontankunde wurde erfolgreich eingetragen']", LocatorType.XPATH, false, CONTEXT),
                 "Click on \"Add spontaneous customer\"  button has failed! Success message is not displayed!");
-        Pattern appointmentNumberPattern = Pattern.compile("^Termin-Nr\\.\\s*([0-9]+).*");
+        Pattern appointmentNumberPattern = Pattern.compile("^Termin-Nr\\.\\s*([A-Za-z]*[0-9]+).*");
         Matcher appointmentNumberMatcher = appointmentNumberPattern.matcher(
                 getWebElementText(DEFAULT_EXPLICIT_WAIT_TIME * 2, "//dt[starts-with(normalize-space(), 'Termin-Nr.')]", LocatorType.XPATH, CONTEXT));
         Assert.assertTrue(appointmentNumberMatcher.find(), "Click on \"Add spontaneous customer\"  button has failed! Waiting number is not displayed!");
         TestDataHelper.setTestData("new_waiting_number", appointmentNumberMatcher.group(1));
         return appointmentNumberMatcher.group(1);
+    }
+
+    public void saveAppointmentWithOneMoreSlot() {
+        CONTEXT.set();
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        WebElement slotCount = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("appointmentForm_slotCount")));
+        new Select(slotCount).selectByValue("2");
+        WebElement note = DRIVER.findElement(By.name("amendment"));
+        note.clear();
+        note.sendKeys("Muster Hinweis");
+        clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "//button[contains(@class,'process-save')]", LocatorType.XPATH, false, CONTEXT);
+        WebElement dialog = wait.until(ExpectedConditions.visibilityOfElementLocated(
+                By.xpath("//*[contains(@class,'dialog')][contains(.,'erfolgreich aktualisiert')]")));
+        dialog.findElement(By.cssSelector("button.button-ok")).click();
+        wait.until(ExpectedConditions.invisibilityOf(dialog));
     }
 
     public void clickOnEditProcessButton() {
@@ -1124,6 +1412,52 @@ public class CounterProcessingStationPage extends AdminPage {
         areValuesVisibleInTableColumn(APPOINTMENT_FINISHED_TABLE_LOCATOR_ID, LocatorType.ID, column, searchStrings);
     }
 
+    private static final By WAITING_CLIENTS_EFFECTIVE =
+            By.cssSelector("span.waiting-count[data-waiting-clients-effective]");
+
+    /** Visible Wartende count. Does not reload the page. */
+    public int readWaitingClientsEffective() {
+        CONTEXT.set();
+        WebElement count = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(ExpectedConditions.visibilityOfElementLocated(WAITING_CLIENTS_EFFECTIVE));
+        String text = count.getText().trim();
+        try {
+            return Integer.parseInt(text);
+        } catch (NumberFormatException e) {
+            throw new AssertionError("Wartende count is not a number: \"" + text + "\"", e);
+        }
+    }
+
+    /**
+     * The workstation reloads the queue itself every 60 seconds and copies the new count into Wartende.
+     * Poll the number already on the page. Do not call refresh.
+     */
+    public void waitUntilWaitingClientsEffectiveAtLeast(int expected, int timeoutSeconds) {
+        CONTEXT.set();
+        long deadline = System.currentTimeMillis() + timeoutSeconds * 1000L;
+        int latest = -1;
+        while (System.currentTimeMillis() < deadline) {
+            try {
+                latest = Integer.parseInt(DRIVER.findElement(WAITING_CLIENTS_EFFECTIVE).getText().trim());
+                if (latest >= expected) {
+                    ScenarioLogManager.getLogger()
+                            .info("Wartende reached {} (expected at least {}) without a page reload", latest, expected);
+                    return;
+                }
+            } catch (StaleElementReferenceException | NumberFormatException ignored) {
+                // The queue partial is being replaced by its own reload.
+            }
+            try {
+                Thread.sleep(1000L);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                break;
+            }
+        }
+        Assert.fail("Wartende stayed at " + latest + ". Expected at least " + expected
+                + " within " + timeoutSeconds + " seconds, without reloading the page.");
+    }
+
     public void checkForValuesInMissedTableColumn(String column, String... searchStrings) {
         ScenarioLogManager.getLogger().info("Checking for values to be visible in '{}' column of the missed table...", column);
         CONTEXT.waitForSpinners();
@@ -1131,4 +1465,183 @@ public class CounterProcessingStationPage extends AdminPage {
         areValuesVisibleInTableColumn(APPOINTMENT_MISSED_TABLE_LOCATOR_ID, LocatorType.ID, column, searchStrings);
 
     }
+
+    private WebElement queueBoard() {
+        CONTEXT.set();
+        return new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".queue-table")));
+    }
+
+    /** Blue Terminübersicht bar above the tables. */
+    private WebElement queueBar() {
+        return queueBoard().findElement(By.cssSelector(".board__actions"));
+    }
+
+    public void assertQueueBarDateVisible() {
+        WebElement date = queueBar().findElement(By.cssSelector("strong.date"));
+        Assert.assertTrue(date.isDisplayed(), "Das Datum in der blauen Warteschlangenleiste ist nicht sichtbar.");
+        Assert.assertFalse(date.getText().trim().isEmpty(), "Das Datum in der blauen Warteschlangenleiste ist leer.");
+    }
+
+    public void assertListenNeuLadenVisible() {
+        WebElement reload = queueBar().findElement(By.cssSelector("a.reload"));
+        Assert.assertTrue(reload.isDisplayed(), "Listen neu laden in der blauen Leiste ist nicht sichtbar.");
+        Assert.assertEquals(
+                reload.getAttribute("title"),
+                "Listen neu laden",
+                "Die Schaltfläche in der blauen Leiste ist nicht mit Listen neu laden beschriftet.");
+    }
+
+    /** The button under the queue tables, not the reload control in the blue bar. */
+    public void assertWarteschlangeAktualisierenHidden() {
+        Assert.assertTrue(
+                queueBoard().findElements(By.cssSelector("button.button-reload")).isEmpty(),
+                "Der Button Warteschlange aktualisieren unter der Warteschlange ist sichtbar.");
+    }
+
+    public void assertQueueBarDayNavigationHidden() {
+        Assert.assertTrue(
+                queueBar().findElements(By.cssSelector(".calendar-navigation")).isEmpty(),
+                "Heute einschließlich Zurück- und Weiter-Pfeile ist in der Warteschlangenleiste sichtbar.");
+    }
+
+    public void assertSpontankundenEinblendenHidden() {
+        Assert.assertTrue(
+                queueBar().findElements(By.xpath(".//label[contains(.,'Spontankunden einblenden')]")).isEmpty(),
+                "Spontankunden einblenden ist in der Warteschlangenleiste sichtbar.");
+    }
+
+    public void assertQueueDownloadHidden() {
+        Assert.assertTrue(
+                queueBar().findElements(By.cssSelector("a.download")).isEmpty(),
+                "Der Download der Warteschlange ist sichtbar.");
+    }
+
+    public void assertQueuePrintHidden() {
+        Assert.assertTrue(
+                queueBar().findElements(By.cssSelector("a.print")).isEmpty(),
+                "Die Druckfunktion der Warteschlange ist sichtbar.");
+    }
+
+    public void assertClusterScopeDropdownVisible() {
+        WebElement dropdown = queueBar().findElement(By.cssSelector(".switchcluster select[name='scope']"));
+        Assert.assertTrue(dropdown.isDisplayed(), "Das Standort-Dropdown in der blauen Leiste ist nicht sichtbar.");
+    }
+
+    /**
+     * The create form shows each service as "name (N min)". Editing a walk-in used to double N
+     * in that list and in Termindauer. The values are stored here and checked again on the edit form.
+     */
+    public void noteServiceAndAnotherDuration(String serviceFragment) {
+        CONTEXT.set();
+        CONTEXT.waitForSpinners();
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        By spans = By.cssSelector("ul[aria-label='Dienstleistungen Auswahlliste'] span");
+        wait.until(ExpectedConditions.numberOfElementsToBeMoreThan(spans, 1));
+        String serviceText = shortestDurationLabel(serviceFragment, true);
+        String otherText = shortestDurationLabel(serviceFragment, false);
+        Assert.assertNotNull(serviceText, "Service \"" + serviceFragment + "\" has no duration on the form.");
+        Assert.assertNotNull(otherText, "No second service duration is visible on the form.");
+        Matcher matcher = Pattern.compile("\\((\\d+) min\\)").matcher(serviceText);
+        Assert.assertTrue(matcher.find(), "No minute count on \"" + serviceText + "\".");
+        TestDataHelper.setTestData("noted_service_minutes", matcher.group(1));
+        TestDataHelper.setTestData("noted_service_fragment", serviceFragment);
+        TestDataHelper.setTestData("noted_other_service_text", otherText);
+    }
+
+    public void assertNotedDurationsStillShown() {
+        CONTEXT.set();
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        wait.until(ExpectedConditions.textToBePresentInElementValue(
+                By.name("familyName"), TestDataHelper.getTestData("customer_name")));
+        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("button.process-save")));
+        String minutes = TestDataHelper.getTestData("noted_service_minutes");
+        String fragment = TestDataHelper.getTestData("noted_service_fragment");
+        String serviceText = shortestDurationLabel(fragment, true);
+        Assert.assertNotNull(serviceText, "Service \"" + fragment + "\" is missing on the edit form.");
+        Assert.assertTrue(serviceText.contains("(" + minutes + " min)"),
+                "Service duration changed. expected (" + minutes + " min). actual=" + serviceText);
+        int doubled = Integer.parseInt(minutes) * 2;
+        Assert.assertFalse(serviceText.contains("(" + doubled + " min)"),
+                "Service duration was doubled. actual=" + serviceText);
+        WebElement slotCount = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("appointmentForm_slotCount")));
+        String selected = new Select(slotCount).getFirstSelectedOption().getText().trim();
+        Assert.assertEquals(selected, minutes,
+                "Termindauer was " + selected + " minutes instead of " + minutes + ".");
+        String other = TestDataHelper.getTestData("noted_other_service_text");
+        boolean otherUnchanged = durationLabels().stream().anyMatch(other::equals);
+        Assert.assertTrue(otherUnchanged, "Another service duration changed. expected \"" + other + "\".");
+    }
+
+    public void saveWalkInAppointmentWithNote(String note) {
+        CONTEXT.set();
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        WebElement amendment = wait.until(ExpectedConditions.visibilityOfElementLocated(By.name("amendment")));
+        amendment.clear();
+        amendment.sendKeys(note);
+        clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "//button[contains(@class,'process-save')]", LocatorType.XPATH, false, CONTEXT);
+        WebElement dialog = wait.until(ExpectedConditions.visibilityOfElementLocated(
+                By.xpath("//*[contains(@class,'dialog')][contains(.,'erfolgreich aktualisiert')]")));
+        dialog.findElement(By.cssSelector("button.button-ok")).click();
+        wait.until(ExpectedConditions.invisibilityOf(dialog));
+    }
+
+    private String shortestDurationLabel(String serviceFragment, boolean matchingFragment) {
+        String best = null;
+        for (String text : durationLabels()) {
+            boolean matches = text.contains(serviceFragment);
+            if (matches != matchingFragment) {
+                continue;
+            }
+            if (best == null || text.length() < best.length()) {
+                best = text;
+            }
+        }
+        return best;
+    }
+
+    private List<String> durationLabels() {
+        return DRIVER.findElements(By.cssSelector("ul[aria-label='Dienstleistungen Auswahlliste'] span")).stream()
+                .map(this::normalizedText)
+                .filter(text -> text.matches(".*\\(\\d+ min\\).*"))
+                .collect(Collectors.toList());
+    }
+
+    private String normalizedText(WebElement element) {
+        return String.valueOf(((JavascriptExecutor) DRIVER).executeScript(
+                "return (arguments[0].textContent || '').replace(/\\s+/g, ' ').trim();", element));
+    }
+
+    /**
+     * The Auswahlliste label is "name (45 min)". Selecting the service hides that row and moves
+     * the plain name to the Abwahlliste, so the label is read from text content.
+     * Termindauer then shows the same number. The broken mapping showed 135.
+     */
+    public void assertAppointmentFormDuration(String serviceFragment, int minutes, int wrongMinutes) {
+        CONTEXT.set();
+        CONTEXT.waitForSpinners();
+        By label = By.xpath(
+                "//ul[@aria-label='Dienstleistungen Auswahlliste']//span[contains(.,'" + serviceFragment + "')]");
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        WebElement span = wait.until(ExpectedConditions.presenceOfElementLocated(label));
+        String text = String.valueOf(((JavascriptExecutor) DRIVER)
+                        .executeScript("return (arguments[0].textContent || '').replace(/\\s+/g, ' ').trim();", span));
+        Assert.assertTrue(
+                text.contains("(" + minutes + " min)"),
+                "Expected (" + minutes + " min) on the service. actual=" + text);
+        Assert.assertFalse(
+                text.contains("(" + wrongMinutes + " min)"),
+                "Service duration must not be (" + wrongMinutes + " min). actual=" + text);
+        WebElement slotCount = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("appointmentForm_slotCount")));
+        String selected = new Select(slotCount).getFirstSelectedOption().getText().trim();
+        Assert.assertEquals(selected, String.valueOf(minutes), "Termindauer select. actual=" + selected);
+        List<WebElement> dates = DRIVER.findElements(By.id("process_selected_date"));
+        if (!dates.isEmpty()) {
+            String iso = dates.get(0).getAttribute("value");
+            if (iso != null && !iso.isBlank()) {
+                TestDataHelper.setTestData("new_appointment_iso_date", iso);
+            }
+        }
+    }
+
 }
