@@ -1,0 +1,60 @@
+{
+  "branch": "test-zmskvr-1273-zmskvr-1303-queue-mail-subject",
+  "branchSlug": "test-zmskvr-1273-zmskvr-1303-queue-mail-subject",
+  "runId": "37851804399",
+  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37851804399",
+  "runStartedAt": "2026-10-08T22:10:46Z",
+  "publishedAt": "2026-10-08T22:26:57.972Z",
+  "features": {
+    "feature-rest-zmsapi-mail-templates-zmskvr-1273-zmskvr-1303-queue-mail-display-number": {
+      "status": "passed",
+      "shard": "custom",
+      "browser": "chrome",
+      "browsers": {
+        "chrome": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "37851804399",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37851804399",
+          "runStartedAt": "2026-10-08T22:10:46Z"
+        },
+        "firefox": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "37851804399",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37851804399",
+          "runStartedAt": "2026-10-08T22:10:46Z"
+        }
+      },
+      "rel": "rest/zmsapi/mail-templates/zmskvr-1273_zmskvr-1303_queue_mail_display_number.feature",
+      "runId": "37851804399",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37851804399",
+      "runStartedAt": "2026-10-08T22:10:46Z"
+    },
+    "feature-ui-zmsadmin-email-templates-zmskvr-1273-zmskvr-1303-zmskvr-1275-zmskvr-1299-queue-mail-subject": {
+      "status": "failed",
+      "shard": "custom",
+      "browser": "chrome",
+      "browsers": {
+        "chrome": {
+          "status": "failed",
+          "shard": "custom",
+          "runId": "37851804399",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37851804399",
+          "runStartedAt": "2026-10-08T22:10:46Z"
+        },
+        "firefox": {
+          "status": "failed",
+          "shard": "custom",
+          "runId": "37851804399",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37851804399",
+          "runStartedAt": "2026-10-08T22:10:46Z"
+        }
+      },
+      "rel": "ui/zmsadmin/email-templates/zmskvr-1273_zmskvr-1303_zmskvr-1275_zmskvr-1299_queue_mail_subject.feature",
+      "runId": "37851804399",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37851804399",
+      "runStartedAt": "2026-10-08T22:10:46Z"
+    }
+  }
+}
