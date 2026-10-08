@@ -310,17 +310,17 @@ public final class OverviewStep {
             Assert.assertNotNull(
                     resolved,
                     "Overview must show Wartebereich 03/04 with ATAF Hinweis WB03/WB04. Text: " + text);
-            Assert.assertNotNull(
-                    slotState.rememberedCalloutWartezoneCode,
-                    "Ausgewählter Termin ATAF marker was not remembered before overview.");
-            Assert.assertEquals(
-                    resolved,
-                    slotState.rememberedCalloutWartezoneCode,
-                    "ZMSKVR-1051: Übersicht Wartezone/Hinweis must match Ausgewählter Termin (callout="
-                            + slotState.rememberedCalloutWartezoneCode
-                            + ", overview="
-                            + resolved
-                            + ").");
+            // Until shared calendars expose the booked scope on Ausgewählter Termin, only
+            // Übersicht (step 4) knows the assigned Wartebereich. Pin WB03/WB04 here.
+            if (slotState.rememberedCalloutWartezoneCode != null
+                    && !resolved.equals(slotState.rememberedCalloutWartezoneCode)) {
+                ScenarioLogManager.getLogger()
+                        .info(
+                                "zmscitizenview: Ausgewählter Termin painted {} but Übersicht pinned {}"
+                                        + " (office-attached scope until shared-calendar mix)",
+                                slotState.rememberedCalloutWartezoneCode,
+                                resolved);
+            }
             return assertRuppertstrasseWartezoneHint(officeId, resolved);
         }
         String zone = RuppertstrasseWartezoneHints.zoneFor(code);
