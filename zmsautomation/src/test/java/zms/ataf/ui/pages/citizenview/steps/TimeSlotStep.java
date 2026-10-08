@@ -123,7 +123,7 @@ public final class TimeSlotStep {
      */
     public void assertBookableDayInCalendarAndList(int officeId) {
         context.set();
-        waitUntilCalendarSettled(officeId, true);
+        ensureBookableTimeslotVisible(officeId);
         Assert.assertTrue(
                 deepTimeslotPresentForProvider(officeId),
                 "Expected a timeslot for office " + officeId);
@@ -142,10 +142,63 @@ public final class TimeSlotStep {
         Assert.assertTrue(
                 shadow.deepClickButtonByAriaContains("Zur Kalenderansicht wechseln"),
                 "Could not switch back to the calendar");
-        waitUntilCalendarSettled(officeId, true);
+        ensureBookableTimeslotVisible(officeId);
         Assert.assertTrue(
                 deepTimeslotPresentForProvider(officeId),
                 "Calendar should still show a timeslot for office " + officeId + " after the list");
+    }
+
+    /**
+     * After an Ort toggle from an empty office, the calendar can stay on the blue callout or an
+     * empty hour. Page Später / the next day, and re-check the office once if the callout sticks.
+     */
+    private void ensureBookableTimeslotVisible(int officeId) {
+        waitUntilCalendarSettled(officeId, true);
+        if (deepTimeslotPresentForProvider(officeId)) {
+            return;
+        }
+        if (shadow.shadowDomContainsText(NO_APPOINTMENT_CALLOUT)
+                && providerLocation.deepProviderCheckboxChecked(officeId)) {
+            ScenarioLogManager.getLogger()
+                    .info(
+                            "zmscitizenview: re-toggle provider {} after empty Ort left the blue callout",
+                            officeId);
+            shadow.deepClickRequired("#checkbox-provider-" + officeId);
+            providerLocation.waitUntilProviderToggleSettled(15);
+            shadow.deepClickRequired("#checkbox-provider-" + officeId);
+            providerLocation.waitUntilProviderToggleSettled(30);
+            waitUntilCalendarSettled(officeId, true);
+            if (deepTimeslotPresentForProvider(officeId)) {
+                return;
+            }
+        }
+        int dayMoves = 0;
+        for (int attempt = 1; attempt <= 10; attempt++) {
+            if (deepTimeslotPresentForProvider(officeId)) {
+                return;
+            }
+            ScenarioLogManager.getLogger()
+                    .info(
+                            "zmscitizenview: no timeslot for office {} yet (attempt {}); try Später",
+                            officeId,
+                            attempt);
+            if (clickCitizenViewLaterOnceIfAvailable()) {
+                CitizenViewWaits.sleepQuiet(1200L);
+                try {
+                    waitUntilAppointmentSlotsReady(Math.min(45, slotBookingWaitTimeoutSeconds()));
+                } catch (Exception e) {
+                    ScenarioLogManager.getLogger()
+                            .warn(
+                                    "zmscitizenview slot wait after Später (bookable day): {}",
+                                    e.toString());
+                }
+                continue;
+            }
+            if (dayMoves >= 3 || !openNextCalendarDayAndWaitForSlots()) {
+                return;
+            }
+            dayMoves++;
+        }
     }
 
     /**
