@@ -16,7 +16,8 @@ Feature: CitizenView: captcha session and reservation callouts
   # The client timer shows the reservation callout. The processNotReservedAnymore API callout
   # on Übersicht is covered by the Vue unit tests.
   # Rebooking skips Leistung/captcha UI: GET /appointment/ mints captchaToken. After the
-  # session callout, Buchung neu starten must reload #/appointment/{hash}, not Leistung.
+  # session callout, Buchung neu starten must return to Übersicht (#/appointment/{hash}),
+  # not Leistung.
 
   Background:
     Given the Citizen API is available
@@ -117,4 +118,3 @@ Feature: CitizenView: captcha session and reservation callouts
     Then the reschedule and cancel actions for the existing appointment should be visible in the citizen view
     When I cancel the appointment in the citizen view
     Then the cancellation success callout should be visible in the citizen view
-    When the appointments created in this scenario are deleted.
