@@ -185,6 +185,18 @@ describe("AppointmentDetailHeader", () => {
     expect(wrapper.text()).not.toContain(mockProvider.address.street);
   });
 
+  it("hides the reschedule button when rebooking is disabled", async () => {
+    const wrapper = createWrapper({
+      appointment: {
+        ...mockAppointment,
+        scope: { rebookingDisabled: true },
+      },
+    });
+    await nextTick();
+
+    expect(wrapper.findAll('[data-test="muc-button"]')).toHaveLength(1);
+  });
+
   it("renders header without appointment", async () => {
     const wrapper = createWrapper({ appointment: undefined });
     await nextTick();

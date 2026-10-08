@@ -599,6 +599,23 @@ class MapperServiceTest extends TestCase
         $this->assertEquals('Test Provider', $result->provider->name);
         $this->assertNotNull($result->provider->contact);
         $this->assertEquals('Test Contact', $result->provider->contact->name);
+        $this->assertFalse($result->isRebookingDisabled());
+    }
+
+    public function testScopeToThinnedScopeRebookingDisabled(): void
+    {
+        $scope = new Scope();
+        $scope->id = 1;
+        $scope->preferences = [
+            'appointment' => [
+                'rebookingDisabled' => 1,
+            ],
+        ];
+
+        $result = MapperService::scopeToThinnedScope($scope);
+
+        $this->assertTrue($result->isRebookingDisabled());
+        $this->assertTrue($result->toArray()['rebookingDisabled']);
     }
 
     public function testMapRelations()
@@ -829,6 +846,7 @@ class MapperServiceTest extends TestCase
         $this->assertNull($result->infoForAppointment);
         $this->assertNull($result->infoForAllAppointments);
         $this->assertNull($result->slotsPerAppointment);
+        $this->assertFalse($result->isRebookingDisabled());
     }
 
 }

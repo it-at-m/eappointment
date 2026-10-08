@@ -99,6 +99,7 @@
     </div>
     <div v-else-if="!loading">
       <muc-modal
+        v-if="!rebookingDisabled"
         :open="rescheduleModalOpen"
         @close="rescheduleModalOpen = false"
         @cancel="rescheduleModalOpen = false"
@@ -477,6 +478,10 @@ const isRemoteVariant = computed(
 
 const timeTitleElement = ref<HTMLElement | null>(null);
 const locationTitleElement = ref<HTMLElement | null>(null);
+
+const rebookingDisabled = computed(
+  () => appointment.value?.scope?.rebookingDisabled === true
+);
 
 const rescheduleModalOpen = ref(false);
 const cancelModalOpen = ref(false);
