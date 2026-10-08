@@ -435,6 +435,28 @@ install_dldb_bundled_fixtures() {
   return 0
 }
 
+# ZMSKVR-1620 / ZMSKVR-1691 books service 1080784 at provider 10446.
+# Live SADB marks that service unpublished, and this import runs after Flyway,
+# so the citizen API and the jump-in reject the combination until it is public.
+publish_sze_rebooking_service() {
+  info "Publishing DLDB service 1080784 at provider 10446..."
+  exec_sql <<'SQL'
+UPDATE `request`
+SET `data` = JSON_SET(`data`, '$.public', CAST('true' AS JSON))
+WHERE `source` = 'dldb'
+  AND `id` = '1080784'
+  AND JSON_VALID(`data`);
+
+UPDATE `request_provider`
+SET `public_visibility` = 1,
+    `bookable` = 1,
+    `slots` = IF(`slots` IS NULL OR `slots` = 0, 1, `slots`)
+WHERE `source` = 'dldb'
+  AND `request__id` = '1080784'
+  AND `provider__id` = '10446';
+SQL
+}
+
 run_hourly_with_retries() {
   # Run hourly cronjob with up to 5 retries (6 attempts total).
   # Munich index fetch uses a 45s HTTP timeout — short delays rarely help; use longer backoff.
@@ -545,6 +567,7 @@ if ! run_hourly_with_retries; then
   warn "Live Munich SADB import failed; falling back to bundled DLDB fixtures."
   install_dldb_bundled_fixtures || exit 1
 fi
+publish_sze_rebooking_service
 clear_caches
 
 section "8. Minutly Cronjob"
