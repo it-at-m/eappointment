@@ -57,35 +57,35 @@ describe("trackAppointmentEvent", () => {
     document.removeEventListener(APPOINTMENT_TRACK_EVENT, handler);
   });
 
-  it("forwards object, category, action, and type to etracker", () => {
+  it("names reserve and confirm events for the etracker events report", () => {
     keepThisVisit();
     const sendEvent = vi.fn();
     class FakeUserDefinedEvent {
       objectName: string;
       category: string;
       action?: string;
-      type?: string;
-      constructor(
-        objectName: string,
-        category: string,
-        action?: string,
-        type?: string
-      ) {
+      constructor(objectName: string, category: string, action?: string) {
         this.objectName = objectName;
         this.category = category;
         this.action = action;
-        this.type = type;
       }
     }
     window._etracker = { sendEvent };
     window.et_UserDefinedEvent = FakeUserDefinedEvent;
 
+    trackAppointmentEvent(reserved);
     trackAppointmentEvent({
-      object: "preconfirmed",
+      object: "reserved",
+      action: "success",
+      flow: "new",
+      slot_ui: "list",
+    });
+    trackAppointmentEvent({
+      object: "reserved",
       action: "success",
       flow: "rebooking",
+      slot_ui: "calendar",
     });
-    trackAppointmentEvent(reserved);
     trackAppointmentEvent({
       object: "reserved",
       action: "success",
@@ -97,21 +97,27 @@ describe("trackAppointmentEvent", () => {
       action: "success",
       flow: "new",
     });
+    trackAppointmentEvent({
+      object: "confirmed",
+      action: "success",
+      flow: "rebooking",
+    });
     trackAppointmentEvent({ object: "rebooking", action: "started" });
 
     const forwarded = sendEvent.mock.calls.map(
       (call) => call[0] as FakeUserDefinedEvent
     );
-    expect(forwarded.map((event) => event.type)).toEqual([
-      "rebooking",
+    expect(forwarded.map((event) => event.objectName)).toEqual([
       "new_calendar",
+      "new_list",
+      "rebooking_calendar",
       "rebooking_list",
-      "new",
-      undefined,
+      "new_confirmed",
+      "rebooking_confirmed",
+      "rebooking",
     ]);
-    expect(forwarded[1].objectName).toBe("reserved");
-    expect(forwarded[1].category).toBe(APPOINTMENT_TRACK_CATEGORY);
-    expect(forwarded[1].action).toBe("success");
+    expect(forwarded[0].category).toBe(APPOINTMENT_TRACK_CATEGORY);
+    expect(forwarded[0].action).toBe("success");
   });
 
   it("does not throw when etracker is missing", () => {
