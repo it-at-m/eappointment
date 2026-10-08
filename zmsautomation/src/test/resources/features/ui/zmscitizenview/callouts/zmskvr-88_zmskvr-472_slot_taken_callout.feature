@@ -1,11 +1,17 @@
 #language: en
-@web @zmscitizenview @callouts @citizen @ZMSKVR-88 @ZMSKVR-472 @executeLocally @jumpin @passCalendar
+@web @zmscitizenview @callouts @citizen @ZMSKVR-88 @ZMSKVR-472 @ZMSKVR-614 @ZMSKVR-696 @ZMSKVR-475 @ZMSKVR-564 @ZMSKVR-652 @executeLocally @jumpin @passCalendar
 Feature: CitizenView: slot already taken shows not-available callout
   As a citizen
   I want a clear error when my chosen timeslot was booked by someone else
   So that I can pick another appointment
 
   # ZMSKVR-88, tested by ZMSKVR-472.
+  # Also: ZMSKVR-614 / ZMSKVR-696 / ZMSKVR-475 — must show only
+  # "Ihr gewählter Termin ist nicht mehr verfügbar." (error), never the blue
+  # "Aktuell ist kein Termin verfügbar." empty-state info box. Heading a11y:
+  # ZMSKVR-564 / ZMSKVR-652 (H2 on this error callout via page assert).
+  # Sibling empty-state info callout inventory:
+  #   ui/.../callouts/zmskvr-1235_zmskvr-1244_…_no_appointment_callout.feature
   # Race: UI selects a free slot; Citizen API reserves that same timestamp (second citizen);
   # UI Weiter then gets appointmentNotAvailable and shows the callout under the summary.
   # One browser + API snatch is more reliable in CI than two tabs or browsers.

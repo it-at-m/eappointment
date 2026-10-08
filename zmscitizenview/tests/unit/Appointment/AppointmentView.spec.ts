@@ -642,6 +642,29 @@ describe("AppointmentView", () => {
   });
 
   describe("Rebooking Flow", () => {
+    it("explains a disabled reschedule link and keeps the appointment summary", async () => {
+      const wrapper = createWrapperWithAppointmentHash();
+      wrapper.vm.appointment = {
+        timestamp: nowUnixSeconds() + 3600,
+        scope: { rebookingDisabled: true },
+      } as any;
+
+      wrapper.vm.nextRescheduleAppointment();
+      await nextTick();
+
+      expect(wrapper.vm.isRebooking).toBe(false);
+      expect(wrapper.vm.rebookOrCancelDialog).toBe(true);
+      expect(wrapper.vm.currentView).toBe(3);
+      expect(wrapper.vm.errorStates.apiErrorRebookingDisabled.value).toBe(
+        true
+      );
+      expect(wrapper.find('[data-test="appointment-summary"]').exists()).toBe(
+        true
+      );
+      expect(wrapper.text()).toContain(de.apiErrorRebookingDisabledHeader);
+      expect(wrapper.text()).toContain(de.apiErrorRebookingDisabledText);
+    });
+
     it("starts at summary and disables previous steps when appointmentHash is present", async () => {
       const wrapper = createWrapperWithAppointmentHash();
       wrapper.vm.currentView = 3;

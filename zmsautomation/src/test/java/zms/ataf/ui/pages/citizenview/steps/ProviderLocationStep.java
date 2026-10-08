@@ -17,6 +17,7 @@ import ataf.core.logging.ScenarioLogManager;
 import ataf.web.utils.DriverUtil;
 import zms.ataf.ui.pages.citizenview.CitizenViewPageContext;
 import zms.ataf.ui.pages.citizenview.support.CitizenViewJson;
+import zms.ataf.ui.pages.citizenview.support.CitizenViewWaits;
 import zms.ataf.ui.pages.citizenview.support.ShadowDom;
 import zms.ataf.ui.pages.citizenview.support.SlotBookingState;
 import org.openqa.selenium.TimeoutException;
@@ -388,6 +389,27 @@ public final class ProviderLocationStep {
         }
     }
 
+
+    /**
+     * Red MucCheckboxGroup error under Ort when no location is selected
+     * ({@code errorMessageProviderSelection}).
+     */
+    public void assertProviderSelectionErrorVisible() {
+        context.set();
+        String message = "Bitte wählen Sie mindestens einen Ort aus, um passende Termine zu sehen.";
+        long deadline = System.currentTimeMillis() + 20_000L;
+        while (System.currentTimeMillis() < deadline) {
+            if (shadow.shadowDomContainsText(message)) {
+                ScenarioLogManager.getLogger()
+                        .info("zmscitizenview: Ort provider-selection error visible");
+                return;
+            }
+            CitizenViewWaits.sleepQuiet(250L);
+        }
+        Assert.assertTrue(
+                shadow.shadowDomContainsText(message),
+                "Expected Ort error \"" + message + "\" after unchecking all providers");
+    }
 
     public void keepOnlyProviderCheckboxesChecked(Set<Integer> allowedOfficeIds) {
         context.set();

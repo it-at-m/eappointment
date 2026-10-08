@@ -107,7 +107,18 @@ public class CitizenViewPage extends BasePage {
         providerLocation = new ProviderLocationStep(CONTEXT, shadow, json, slotState, DEFAULT_EXPLICIT_WAIT_TIME);
         timeSlot = new TimeSlotStep(CONTEXT, shadow, json, providerLocation, slotState, this, DEFAULT_EXPLICIT_WAIT_TIME);
         providerLocation.setSlotWaitBridge(
-                seconds -> timeSlot.waitUntilAppointmentSlotsReady(seconds),
+                seconds -> {
+                    try {
+                        timeSlot.waitUntilAppointmentSlotsReady(seconds);
+                    } catch (Exception first) {
+                        // Keep-only after an empty Ort can land on a day/hour with no grid yet.
+                        ScenarioLogManager.getLogger()
+                                .warn(
+                                        "zmscitizenview: first slot wait after Ort toggle failed; page days: {}",
+                                        first.toString());
+                        timeSlot.waitUntilSlotsReadyForBooking();
+                    }
+                },
                 () -> timeSlot.slotBookingWaitTimeoutSeconds(),
                 () -> timeSlot.deepMucSpinnerVisible());
         bookingStepper = new BookingStepperStep(CONTEXT, shadow, DEFAULT_EXPLICIT_WAIT_TIME);
@@ -366,6 +377,30 @@ public class CitizenViewPage extends BasePage {
 
     public void keepOnlyProviderCheckboxesChecked(Set<Integer> allowedOfficeIds) {
         providerLocation.keepOnlyProviderCheckboxesChecked(allowedOfficeIds);
+    }
+
+    public void assertProviderSelectionErrorVisible() {
+        providerLocation.assertProviderSelectionErrorVisible();
+    }
+
+    public void assertNoAppointmentInfoCalloutVisible() {
+        timeSlot.assertNoAppointmentInfoCalloutVisible();
+    }
+
+    public void assertNoAppointmentInfoCalloutNotVisible() {
+        timeSlot.assertNoAppointmentInfoCalloutNotVisible();
+    }
+
+    public void assertNoAppointmentCustomInfoLinkVisible() {
+        timeSlot.assertNoAppointmentCustomInfoLinkVisible();
+    }
+
+    public void assertNoAppointmentCustomInfoContains(String fragment) {
+        timeSlot.assertNoAppointmentCustomInfoContains(fragment);
+    }
+
+    public void assertSelectedCalendarDayIsBerlinDaysFromToday(int daysFromToday) {
+        timeSlot.assertSelectedCalendarDayIsBerlinDaysFromToday(daysFromToday);
     }
 
     public void assertServiceFinderHeadingVisible() {
@@ -1577,6 +1612,14 @@ public class CitizenViewPage extends BasePage {
 
     public void assertAppointmentManagementActionsNotVisible() {
         overview.assertAppointmentManagementActionsNotVisible();
+    }
+
+    public void assertRescheduleAppointmentButtonNotVisible() {
+        overview.assertRescheduleAppointmentButtonNotVisible();
+    }
+
+    public void assertCancelAppointmentButtonVisible() {
+        overview.assertCancelAppointmentButtonVisible();
     }
 
     public void assertCaptchaSessionCalloutVisible() {
