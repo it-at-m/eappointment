@@ -42,7 +42,7 @@ Feature: Ruppertstraße Wartezone and scope hints stay consistent through bookin
     When I select office 10489 in the citizen view
     And I wait for appointment slots to be ready in the citizen view
     And I click Später in the time slot grid if available in the citizen view
-    And I scroll to and highlight the preferred timeslot for office 10489 in the citizen view
+    And I scroll to and highlight a timeslot at least 180 minutes ahead for office 10489 in the citizen view
     And I click the highlighted timeslot in the citizen view
     Then the selected appointment callout should show a rendered Ruppertstraße scope hint in the citizen view
     When I continue after slot selection with Weiter for office 10489 in the citizen view
