@@ -30,6 +30,7 @@ import zms.ataf.rest.dto.zmscitizenapi.ThinnedProcess;
 import zms.ataf.ui.pages.citizenview.CitizenViewPage;
 import zms.ataf.ui.pages.citizenview.CitizenViewPageContext;
 import zms.ataf.ui.pages.citizenview.support.CitizenViewWaits;
+import zms.ataf.ui.pages.citizenview.support.RuppertstrasseWartezoneHints;
 import zms.ataf.ui.pages.citizenview.support.ShadowDom;
 import zms.ataf.ui.pages.citizenview.support.SlotBookingState;
 import java.util.Objects;
@@ -1187,6 +1188,47 @@ public final class MyAppointmentsStep {
                             + normalized);
             previous = idx;
         }
+    }
+
+    /**
+     * ZMSKVR-1087 / ZMSKVR-1311 / ZMSKVR-1530 / ZMSKVR-1541: Termin-Detail Ort Wartezone +
+     * Callout „Hinweis zu Ihrem Termin“ with matching ATAF marker and rendered HTML.
+     */
+    public void assertAppointmentDetailMatchingRuppertstrasseWartezoneHint() {
+        context.set();
+        String code = slotState.rememberedWartezoneCode;
+        Assert.assertNotNull(code, "Need a remembered Wartezone from the booking overview.");
+        String zone = RuppertstrasseWartezoneHints.zoneFor(code);
+        String hint = RuppertstrasseWartezoneHints.hintFor(code);
+        String linkLabel = RuppertstrasseWartezoneHints.linkLabelFor(code);
+        CitizenViewWaits.waitWithThreeWindows(
+                () ->
+                        shadow.shadowDomContainsText(zone)
+                                && shadow.shadowDomContainsText(RuppertstrasseWartezoneHints.DETAIL_CALLOUT_HEADER)
+                                && shadow.shadowDomContainsText(hint),
+                "Appointment detail Wartezone + Hinweis callout");
+        Assert.assertTrue(shadow.shadowDomHasHeading(2, "Ort"), "Detail missing Ort heading.");
+        Assert.assertTrue(shadow.shadowDomContainsText(zone), "Detail Ort missing " + zone);
+        Assert.assertTrue(
+                shadow.shadowDomContainsText(RuppertstrasseWartezoneHints.DETAIL_CALLOUT_HEADER),
+                "Detail missing callout header Hinweis zu Ihrem Termin.");
+        Assert.assertTrue(shadow.shadowDomContainsText(hint), "Detail callout missing " + hint);
+        Assert.assertFalse(
+                shadow.shadowDomContainsText(
+                        RuppertstrasseWartezoneHints.hintFor(RuppertstrasseWartezoneHints.otherCode(code))),
+                "Detail must not show the other Wartebereich hint.");
+        Assert.assertTrue(shadow.shadowDomContainsText(linkLabel), "Detail missing rendered link " + linkLabel);
+        Assert.assertTrue(
+                shadow.shadowHrefContains(RuppertstrasseWartezoneHints.HINT_HREF),
+                "Detail hint must expose href " + RuppertstrasseWartezoneHints.HINT_HREF);
+        Assert.assertFalse(
+                shadow.shadowDomContainsText("<a href")
+                        || shadow.shadowDomContainsText("<br>")
+                        || shadow.shadowDomContainsText("<em>")
+                        || shadow.shadowDomContainsText("<strong>"),
+                "Detail Hinweis callout must not show raw HTML tags.");
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: detail matched Ruppertstraße Wartezone {} and HTML callout", code);
     }
 
     public void assertAppointmentDetailLocation(
