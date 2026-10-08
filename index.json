@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-10-08T23:05:23.218Z",
+  "publishedAt": "2026-10-08T23:13:35.278Z",
   "branches": [
     {
       "name": "next",
@@ -724,8 +724,8 @@
     {
       "name": "test-zmskvr-924-zmskvr-1019-fuehrerschein-scope-hints",
       "slug": "test-zmskvr-924-zmskvr-1019-fuehrerschein-scope-hints",
-      "runId": "37855038157",
-      "runStartedAt": "2026-10-08T22:41:25Z"
+      "runId": "37857081719",
+      "runStartedAt": "2026-10-08T23:01:47Z"
     },
     {
       "name": "zmskvr-1631-fix-previous-step-button",
