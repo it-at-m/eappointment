@@ -835,6 +835,12 @@ public class CitizenViewSteps {
         page.openAppointmentViewDeepLinkInBrowser();
     }
 
+    @When("I open the appointment detail deep link in the browser")
+    public void iOpenTheAppointmentDetailDeepLinkInTheBrowser() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: open appointment-detail deep link in browser");
+        page.openAppointmentDetailDeepLinkInBrowser();
+    }
+
     @Then("the confirmation success callout should be visible in the citizen view")
     public void theConfirmationSuccessCalloutShouldBeVisible() {
         ScenarioLogManager.getLogger().info("zmscitizenview: assert confirmation success callout visible");

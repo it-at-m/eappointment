@@ -1777,6 +1777,10 @@ public class CitizenViewPage extends BasePage {
         myAppointments.openAppointmentViewDeepLinkInBrowser();
     }
 
+    public void openAppointmentDetailDeepLinkInBrowser() {
+        myAppointments.openAppointmentDetailDeepLinkInBrowser();
+    }
+
     public void captureBookingProcessForCleanup() {
         myAppointments.captureBookingProcessForCleanup();
     }
