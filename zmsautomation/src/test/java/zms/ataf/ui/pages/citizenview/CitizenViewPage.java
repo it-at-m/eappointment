@@ -141,6 +141,14 @@ public class CitizenViewPage extends BasePage {
         CONTEXT.navigateWithJumpIn(serviceId, locationId);
     }
 
+    public void navigateWithJumpInService(String serviceId) {
+        CONTEXT.navigateWithJumpInService(serviceId);
+    }
+
+    public void clickChangeService() {
+        serviceFinder.clickChangeService();
+    }
+
     /**
      * True if substring appears anywhere in document + shadow DOM text.
      * Also walks slotted nodes and same-origin frames, and folds whitespace, so a painted

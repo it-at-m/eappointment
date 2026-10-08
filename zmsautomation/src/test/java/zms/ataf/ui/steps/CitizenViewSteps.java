@@ -121,6 +121,19 @@ public class CitizenViewSteps {
         page.navigateWithJumpIn(s, l);
     }
 
+    @Given("I open zmscitizenview with jump-in service {string}")
+    public void iOpenZmscitizenviewWithJumpInService(String serviceId) {
+        String s = TestDataHelper.transformTestData(serviceId);
+        ScenarioLogManager.getLogger().info("zmscitizenview: jump-in service={}", s);
+        page.navigateWithJumpInService(s);
+    }
+
+    @When("I click Leistung wechseln in the citizen view")
+    public void iClickLeistungWechselnInTheCitizenView() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: Leistung wechseln");
+        page.clickChangeService();
+    }
+
     @Then("the service combination step should be visible")
     public void theServiceCombinationStepShouldBeVisible() {
         ScenarioLogManager.getLogger().info("zmscitizenview: assert service combination step visible");
