@@ -1764,6 +1764,14 @@ public class CitizenViewPage extends BasePage {
         myAppointments.assertAppointmentDetailLocation(typeLabel, place, locationText, preparationHint, extra);
     }
 
+    public void assertMyAppointmentsTeaserServiceTitleOrder(String orderedNamesCsv) {
+        myAppointments.assertMyAppointmentsTeaserServiceTitleOrder(orderedNamesCsv);
+    }
+
+    public void assertAppointmentDetailServiceTitleOrder(String orderedNamesCsv) {
+        myAppointments.assertAppointmentDetailServiceTitleOrder(orderedNamesCsv);
+    }
+
     public void assertIcsDownloadOfferedOnDetailIntro() {
         myAppointments.assertIcsDownloadOfferedOnDetailIntro();
     }
