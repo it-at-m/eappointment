@@ -229,9 +229,24 @@ public final class OverviewStep {
         return assertRuppertstrasseWartezoneHint(officeId, code);
     }
 
-    /** Overview must show the explicit Ruppertstraße Wartezone (WB03 or WB04). */
+    /** Overview must show the explicit Ruppertstraße Wartezone (WB03 or WB04) + hint. */
     public String assertRuppertstrasseWartezoneHint(int officeId, String code) {
         context.set();
+        if ("PASSFOTO".equals(code)) {
+            CitizenViewWaits.waitWithThreeWindows(
+                    () -> {
+                        String t = deepDocumentText();
+                        return RuppertstrasseWartezoneHints.detectPassfotoCode(t) != null
+                                && t.contains(RuppertstrasseWartezoneHints.OVERVIEW_HINT_HEADING);
+                    },
+                    "Overview Wartezone + Passfoto scope hint");
+            String text = deepDocumentText();
+            String resolved = RuppertstrasseWartezoneHints.detectPassfotoCode(text);
+            Assert.assertNotNull(
+                    resolved,
+                    "Overview must show Wartebereich 03 or 04 with Passfoto Hinweis. Text: " + text);
+            return assertRuppertstrasseWartezoneHint(officeId, resolved);
+        }
         String zone = RuppertstrasseWartezoneHints.zoneFor(code);
         String hint = RuppertstrasseWartezoneHints.hintFor(code);
         CitizenViewWaits.waitWithThreeWindows(
@@ -241,7 +256,7 @@ public final class OverviewStep {
                             && t.contains(hint)
                             && t.contains(RuppertstrasseWartezoneHints.OVERVIEW_HINT_HEADING);
                 },
-                "Overview Wartezone + ATAF scope hint " + code);
+                "Overview Wartezone + scope hint " + code);
         String text = deepDocumentText();
         shadow.scrollTextIntoView(zone);
         Assert.assertTrue(text.contains(zone), "Overview Ort missing " + zone + ". Text: " + text);
@@ -250,10 +265,11 @@ public final class OverviewStep {
         Assert.assertFalse(
                 text.contains(RuppertstrasseWartezoneHints.zoneFor(RuppertstrasseWartezoneHints.otherCode(code))),
                 "Overview must not mix the other Wartebereich. Text: " + text);
-        String otherHint = RuppertstrasseWartezoneHints.hintFor(RuppertstrasseWartezoneHints.otherCode(code));
-        if (!hint.equals(otherHint)) {
+        if (RuppertstrasseWartezoneHints.isAtafHtmlHint(code)) {
             Assert.assertFalse(
-                    text.contains(otherHint),
+                    text.contains(
+                            RuppertstrasseWartezoneHints.hintFor(
+                                    RuppertstrasseWartezoneHints.otherCode(code))),
                     "Overview must not mix the other Wartebereich hint. Text: " + text);
         }
         String place = visibleProviderSummaryOrFail(officeId);
