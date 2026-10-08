@@ -1,11 +1,11 @@
 #language: en
-@web @zmscitizenview @callouts @citizen @ZMSKVR-1448 @ZMSKVR-1486 @executeLocally @jumpin
+@web @zmscitizenview @callouts @citizen @ZMSKVR-1448 @ZMSKVR-1486 @ZMSKVR-1498 @executeLocally @jumpin
 Feature: CitizenView: captcha session callout clears after restart
   As a citizen booking at Kommunale Verkehrsüberwachung (office 10427, scope 74)
   I want the captcha session callout to disappear after I restart and verify again
   So that a fixed captcha does not leave a stale error on Termin
 
-  # ZMSKVR-1448, tested by ZMSKVR-1486.
+  # ZMSKVR-1448, tested by ZMSKVR-1486 / ZMSKVR-1498.
   # Scope 74: captcha on, CAPTCHA_TOKEN_TTL=300. After the session callout, Zurück is hidden;
   # Buchung neu starten returns to Leistung (same recovery the product offers). A fresh captcha
   # and a new Termin visit must not show the expired-session callout again.
