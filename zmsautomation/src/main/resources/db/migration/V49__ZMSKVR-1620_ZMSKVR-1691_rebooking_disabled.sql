@@ -2,11 +2,12 @@
 --
 -- Standort 205, 208 and 211 are Ausländerbehörde counters (Behörde 64, SZE
 -- Abteilung 2) and share provider 10446. The offices payload keeps whichever
--- of those scopes it sees last; 208 and 211 stay disabled so office 10446
--- still reports rebookingDisabled. Scope 205 keeps Umbuchung on so a clerk
--- booking of internal service 1080784 there can open Termin verschieben and
--- hit invalidLocationAndServiceCombination on the calendar. Slots open on
--- 205 and 208. That service stays unpublished. Citizens cannot book it from
+-- of those scopes it sees last, so mixed rebooking flags on 205/208/211 do not
+-- yield a stable office-level rebookingDisabled for 10446. Scope 205 keeps
+-- Umbuchung on so a clerk booking of internal service 1080784 there can open
+-- Termin verschieben and hit invalidLocationAndServiceCombination on the
+-- calendar. 208 and 211 stay disabled for the hidden-button path. Slots open
+-- on 205 and 208. That service stays unpublished. Citizens cannot book it from
 -- the public page. Passkalender scopes 172, 184 and 342 share public provider
 -- 10502 (Reisepass). They are disabled too, so a logged-in citizen can book
 -- that public service and still see no Termin verschieben. 10492 stays enabled.

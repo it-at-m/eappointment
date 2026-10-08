@@ -8,8 +8,10 @@ Feature: CitizenView: Termin verschieben hidden when rebooking is disabled
   # ZMSKVR-1620 tested by ZMSKVR-1691.
   # Service 1080784 at SZE provider 10446 is internal.
   # Scope 205 keeps Umbuchung on (slots + callout path). Scopes 208 and 211 stay
-  # disabled so office 10446 still reports rebookingDisabled. Clerk books on 208
-  # for the hidden-button path and on 205 for invalidLocationAndServiceCombination.
+  # disabled for clerk bookings that must hide Termin verschieben. Office 10446
+  # is not asserted here: last-wins scope mapping can surface 205 and report
+  # rebookingDisabled false. Clerk books on 208 for the hidden-button path and
+  # on 205 for invalidLocationAndServiceCombination.
   # Meine Termine uses public Reisepass 1063453 at Passkalender 10502.
   # V49 disables rebooking on scopes 172, 184 and 342, which share that provider.
   # 10492 stays enabled.
@@ -19,7 +21,6 @@ Feature: CitizenView: Termin verschieben hidden when rebooking is disabled
     When I request the offices and services endpoint
     Then the response status code should be 200
     And the response should contain offices and services
-    And office 10446 rebooking should be disabled
     And office 10502 rebooking should be disabled
 
   @clerk
