@@ -91,27 +91,27 @@ class ThinnedScope extends Entity implements JsonSerializable
         return $this->emailFrom;
     }
 
-    public function getEmailRequired(): ?bool
+    public function isEmailRequired(): ?bool
     {
         return $this->emailRequired;
     }
 
-    public function getTelephoneActivated(): ?bool
+    public function isTelephoneActivated(): ?bool
     {
         return $this->telephoneActivated;
     }
 
-    public function getTelephoneRequired(): ?bool
+    public function isTelephoneRequired(): ?bool
     {
         return $this->telephoneRequired;
     }
 
-    public function getCustomTextfieldActivated(): ?bool
+    public function isCustomTextfieldActivated(): ?bool
     {
         return $this->customTextfieldActivated;
     }
 
-    public function getCustomTextfieldRequired(): ?bool
+    public function isCustomTextfieldRequired(): ?bool
     {
         return $this->customTextfieldRequired;
     }
@@ -121,12 +121,12 @@ class ThinnedScope extends Entity implements JsonSerializable
         return $this->customTextfieldLabel;
     }
 
-    public function getCustomTextfield2Activated(): ?bool
+    public function isCustomTextfield2Activated(): ?bool
     {
         return $this->customTextfield2Activated;
     }
 
-    public function getCustomTextfield2Required(): ?bool
+    public function isCustomTextfield2Required(): ?bool
     {
         return $this->customTextfield2Required;
     }
@@ -137,7 +137,7 @@ class ThinnedScope extends Entity implements JsonSerializable
     }
 
     /** @psalm-api */
-    public function getCaptchaActivatedRequired(): ?bool
+    public function isCaptchaActivatedRequired(): ?bool
     {
         return $this->captchaActivatedRequired;
     }
