@@ -20,7 +20,7 @@ Feature: Logged-in appointment payloads keep booking service order
     When I request available days for office 10489 and services "1063475,1063453,1063441" with service counts "1,1,1"
     And I request available appointments for the first available day
     And I reserve an appointment with the first available slot
-    And I update the appointment with contact details and telephone "+491234567890" as the logged-in citizen
+    And I update the appointment with contact details and customTextfield "ATAF Bemerkung" as the logged-in citizen
     And I confirm the reserved appointment as the logged-in citizen
     Then the appointment status should be "confirmed"
     When I fetch the appointment for the current process
