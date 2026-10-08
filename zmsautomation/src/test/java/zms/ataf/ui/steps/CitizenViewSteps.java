@@ -835,10 +835,11 @@ public class CitizenViewSteps {
         page.openAppointmentViewDeepLinkInBrowser();
     }
 
-    @When("I open the appointment detail deep link in the browser")
-    public void iOpenTheAppointmentDetailDeepLinkInTheBrowser() {
-        ScenarioLogManager.getLogger().info("zmscitizenview: open appointment-detail deep link in browser");
-        page.openAppointmentDetailDeepLinkInBrowser();
+    @When("I open the appointment detail for the current process in the citizen view")
+    public void iOpenTheAppointmentDetailForTheCurrentProcessInTheCitizenView() {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: open appointment-detail.html?ap-id= for current process");
+        page.openAppointmentDetailForCurrentProcess();
     }
 
     @Then("the confirmation success callout should be visible in the citizen view")

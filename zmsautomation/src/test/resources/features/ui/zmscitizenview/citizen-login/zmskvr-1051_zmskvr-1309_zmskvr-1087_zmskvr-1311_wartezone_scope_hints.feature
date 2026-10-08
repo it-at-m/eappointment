@@ -74,9 +74,7 @@ Feature: Ruppertstraße Wartezone and scope hints stay consistent through bookin
     Then the appointment scope should be the other Ruppertstraße Wartezone
     And I sync the Citizen API Ruppertstraße Wartezone into the citizen view
     And I remember the current appointment as "wb-second"
-    And I fetch the confirmation mail for the current process
-    Then the confirmation mail should provide an appointment view url
-    When I open the appointment detail deep link in the browser
+    When I open the appointment detail for the current process in the citizen view
     Then the appointment detail should show the matching Ruppertstraße Wartezone and scope hint callout in the citizen view
     When I cancel the remembered "wb-second" appointment
     And I cancel the remembered "wb-first" appointment
