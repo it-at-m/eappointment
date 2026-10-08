@@ -269,6 +269,7 @@ public final class OverviewStep {
         String code = slotState.rememberedWartezoneCode;
         Assert.assertNotNull(code, "Need a remembered Wartezone before asserting overview hint wrap.");
         String needle = RuppertstrasseWartezoneHints.hintFor(code);
+        shadow.scrollTextIntoView(needle);
         Object raw =
                 ((JavascriptExecutor) DriverUtil.getDriver())
                         .executeScript(
@@ -324,6 +325,7 @@ public final class OverviewStep {
         String bold = RuppertstrasseWartezoneHints.boldFor(code);
         CitizenViewWaits.waitWithThreeWindows(
                 () -> shadow.shadowDomContainsText(linkLabel), "Overview ATAF hint link label");
+        shadow.scrollTextIntoView(linkLabel);
         Assert.assertTrue(shadow.shadowDomContainsText(linkLabel), "Overview missing rendered link " + linkLabel);
         Assert.assertTrue(
                 shadow.shadowHrefContains(RuppertstrasseWartezoneHints.HINT_HREF),
