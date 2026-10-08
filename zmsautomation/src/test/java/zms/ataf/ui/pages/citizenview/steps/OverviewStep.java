@@ -206,9 +206,13 @@ public final class OverviewStep {
 
     /**
      * ZMSKVR-1051 / ZMSKVR-1309: overview Ort Wartezone and Hinweis marker must belong to the same
-     * Ruppertstraße scope. Remembers the code for a later “other Wartebereich” booking.
+     * Ruppertstraße scope. Remembers the detected code when none was selected up front.
      */
     public String assertAndRememberMatchingRuppertstrasseWartezoneHint(int officeId) {
+        String expected = slotState.rememberedWartezoneCode;
+        if (expected != null && !expected.isBlank()) {
+            return assertRuppertstrasseWartezoneHint(officeId, expected);
+        }
         context.set();
         CitizenViewWaits.waitWithThreeWindows(
                 () -> {
@@ -222,40 +226,37 @@ public final class OverviewStep {
         Assert.assertNotNull(
                 code,
                 "Overview must show a matching Wartebereich 03/04 with ATAF Hinweis WB03/WB04. Text: " + text);
-        shadow.scrollTextIntoView(RuppertstrasseWartezoneHints.zoneFor(code));
-        Assert.assertTrue(
-                text.contains(RuppertstrasseWartezoneHints.zoneFor(code)),
-                "Overview Ort missing " + RuppertstrasseWartezoneHints.zoneFor(code) + ". Text: " + text);
-        shadow.scrollTextIntoView(RuppertstrasseWartezoneHints.hintFor(code));
-        Assert.assertTrue(
-                text.contains(RuppertstrasseWartezoneHints.hintFor(code)),
-                "Overview Hinweis missing " + RuppertstrasseWartezoneHints.hintFor(code) + ". Text: " + text);
+        return assertRuppertstrasseWartezoneHint(officeId, code);
+    }
+
+    /** Overview must show the explicit Ruppertstraße Wartezone (WB03 or WB04). */
+    public String assertRuppertstrasseWartezoneHint(int officeId, String code) {
+        context.set();
+        String zone = RuppertstrasseWartezoneHints.zoneFor(code);
+        String hint = RuppertstrasseWartezoneHints.hintFor(code);
+        CitizenViewWaits.waitWithThreeWindows(
+                () -> {
+                    String t = deepDocumentText();
+                    return t.contains(zone)
+                            && t.contains(hint)
+                            && t.contains(RuppertstrasseWartezoneHints.OVERVIEW_HINT_HEADING);
+                },
+                "Overview Wartezone + ATAF scope hint " + code);
+        String text = deepDocumentText();
+        shadow.scrollTextIntoView(zone);
+        Assert.assertTrue(text.contains(zone), "Overview Ort missing " + zone + ". Text: " + text);
+        shadow.scrollTextIntoView(hint);
+        Assert.assertTrue(text.contains(hint), "Overview Hinweis missing " + hint + ". Text: " + text);
         Assert.assertFalse(
                 text.contains(RuppertstrasseWartezoneHints.hintFor(RuppertstrasseWartezoneHints.otherCode(code))),
                 "Overview must not mix the other Wartebereich hint. Text: " + text);
-        // Ort summary also carries the Wartezone for office 10489.
         String place = visibleProviderSummaryOrFail(officeId);
         Assert.assertTrue(
-                place.contains(RuppertstrasseWartezoneHints.zoneFor(code)),
-                "Provider summary missing Wartezone " + code + ". Text: " + place);
+                place.contains(zone), "Provider summary missing Wartezone " + code + ". Text: " + place);
         slotState.rememberedWartezoneCode = code;
         ScenarioLogManager.getLogger()
                 .info("zmscitizenview: overview matched Ruppertstraße Wartezone {} for office {}", code, officeId);
         return code;
-    }
-
-    /** ZMSKVR-1051 / ZMSKVR-1309 step 10: second booking must land on the other Wartebereich. */
-    public void assertOtherRuppertstrasseWartezoneHint(int officeId) {
-        Assert.assertNotNull(
-                slotState.rememberedWartezoneCode,
-                "First Wartezone was not remembered before the second booking.");
-        String first = slotState.rememberedWartezoneCode;
-        String expected = RuppertstrasseWartezoneHints.otherCode(first);
-        String code = assertAndRememberMatchingRuppertstrasseWartezoneHint(officeId);
-        Assert.assertEquals(
-                code,
-                expected,
-                "Second same-time booking should switch Wartebereich from " + first + " to " + expected + ".");
     }
 
     /**
