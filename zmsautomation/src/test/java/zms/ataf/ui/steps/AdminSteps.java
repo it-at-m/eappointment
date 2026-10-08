@@ -961,6 +961,11 @@ public class AdminSteps {
         COUNTER_PROCESSING_STATION_PAGE.enterEmailInNewAppointmentTextField(TestDataHelper.transformTestData(email));
     }
 
+    @Then("the appointment email field supports browser autofill in the administration.")
+    public void theAppointmentEmailFieldSupportsBrowserAutofillInTheAdministration() {
+        COUNTER_PROCESSING_STATION_PAGE.assertNewAppointmentEmailFieldSupportsAutofill();
+    }
+
     @And("I enter the note {string} under create appointment in the administration.")
     public void wenn_sie_im_zeitmanagementsystem_unter_terminvereinbarung_neu_die_anmerkung_string_eingeben(String note) {
         COUNTER_PROCESSING_STATION_PAGE.enterNoteInNewAppointmentTextField(TestDataHelper.transformTestData(note));
