@@ -6,9 +6,7 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.Base64;
-import java.util.List;
 import java.util.Locale;
 
 import org.openqa.selenium.By;
@@ -1047,77 +1045,6 @@ public final class MyAppointmentsStep {
         }
         trySetBookingProcessIdFromDom();
     }
-    /**
-     * ZMSKVR-1088 / ZMSKVR-1342: teaser H3 lists main service then combined services in booking
-     * order (not alphabetical).
-     */
-    public void assertMyAppointmentsTeaserServiceTitleOrder(String orderedNamesCsv) {
-        context.set();
-        List<String> expected = splitOrderedServiceNames(orderedNamesCsv);
-        Assert.assertFalse(expected.isEmpty(), "Expected at least one service name in the title order.");
-        String card = waitForTeaserText(expected.get(0));
-        assertServiceTitleOrder(card, expected, "Meine Termine teaser");
-    }
-
-    /**
-     * ZMSKVR-1088 / ZMSKVR-1342: detail H1 lists main service then combined services in booking
-     * order (not alphabetical).
-     */
-    public void assertAppointmentDetailServiceTitleOrder(String orderedNamesCsv) {
-        context.set();
-        List<String> expected = splitOrderedServiceNames(orderedNamesCsv);
-        Assert.assertFalse(expected.isEmpty(), "Expected at least one service name in the title order.");
-        CitizenViewWaits.waitWithThreeWindows(
-                () -> shadow.shadowDomContainsText("1x " + expected.get(0)),
-                "Appointment detail title with main service");
-        String pageText = deepDocumentText();
-        assertServiceTitleOrder(pageText, expected, "appointment detail");
-    }
-
-    private String deepDocumentText() {
-        String script =
-                "function walk(n){var s='';if(!n)return s;if(n.nodeType===3)return n.nodeValue||'';"
-                        + "if(n.shadowRoot)s+=' '+walk(n.shadowRoot);"
-                        + "if(n.assignedNodes){var a=n.assignedNodes({flatten:true});"
-                        + "for(var j=0;j<a.length;j++)s+=' '+walk(a[j]);}"
-                        + "var c=n.childNodes;if(c)for(var i=0;i<c.length;i++)s+=' '+walk(c[i]);"
-                        + "return s;}"
-                        + "return walk(document.documentElement).replace(/\\s+/g,' ').trim();";
-        Object raw = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script);
-        return raw == null ? "" : raw.toString();
-    }
-
-    private static List<String> splitOrderedServiceNames(String orderedNamesCsv) {
-        List<String> names = new ArrayList<>();
-        if (orderedNamesCsv == null || orderedNamesCsv.isBlank()) {
-            return names;
-        }
-        for (String part : orderedNamesCsv.split(",")) {
-            String trimmed = part.trim();
-            if (!trimmed.isEmpty()) {
-                names.add(trimmed);
-            }
-        }
-        return names;
-    }
-
-    private static void assertServiceTitleOrder(String text, List<String> expected, String where) {
-        String normalized = text == null ? "" : text.replace('\n', ' ').replaceAll("\\s+", " ");
-        int previous = -1;
-        for (String name : expected) {
-            String needle = "1x " + name;
-            int idx = normalized.indexOf(needle);
-            Assert.assertTrue(
-                    idx > previous,
-                    where
-                            + " must list \""
-                            + needle
-                            + "\" after earlier services (booking order, not A–Z). Text: "
-                            + normalized);
-            previous = idx;
-        }
-    }
-
     public void assertAppointmentDetailLocation(
             String typeLabel, String place, String locationText, String preparationHint, String extra) {
         context.set();

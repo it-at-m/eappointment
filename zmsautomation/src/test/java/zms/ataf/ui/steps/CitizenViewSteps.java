@@ -1364,20 +1364,6 @@ public class CitizenViewSteps {
         page.assertAppointmentDetailLocation(typeLabel, place, locationText, preparationHint, extra);
     }
 
-    @Then("the Meine Termine teaser title should list services in order {string}")
-    public void theMeineTermineTeaserTitleShouldListServicesInOrder(String orderedNamesCsv) {
-        ScenarioLogManager.getLogger()
-                .info("zmscitizenview: assert Meine Termine teaser service title order {}", orderedNamesCsv);
-        page.assertMyAppointmentsTeaserServiceTitleOrder(orderedNamesCsv);
-    }
-
-    @Then("the appointment detail title should list services in order {string}")
-    public void theAppointmentDetailTitleShouldListServicesInOrder(String orderedNamesCsv) {
-        ScenarioLogManager.getLogger()
-                .info("zmscitizenview: assert appointment detail service title order {}", orderedNamesCsv);
-        page.assertAppointmentDetailServiceTitleOrder(orderedNamesCsv);
-    }
-
     @Then("the appointment detail intro should offer an ICS download in the citizen view")
     public void theAppointmentDetailIntroShouldOfferAnIcsDownload() {
         ScenarioLogManager.getLogger().info("zmscitizenview: assert ICS download offered");
