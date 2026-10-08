@@ -1,8 +1,11 @@
 package zms.ataf.ui.pages.citizenview.support;
 
 /**
- * ATAF markers for Ruppertstraße Hauptkalender scopes 160 (WB04) and 181 (WB03).
- * See Flyway {@code V50__ZMSKVR-1051_ZMSKVR-1309_wb03_wb04_scope_hints.sql}.
+ * ATAF markers for Ruppertstraße scopes:
+ * <ul>
+ *   <li>Hauptkalender 10489: 160 (WB04) / 181 (WB03) with distinct ATAF HTML — Flyway V50</li>
+ *   <li>Passkalender 10502: 172 (WB04) / 184 (WB03) with plain Passfoto Hinweis — Flyway V5/V6</li>
+ * </ul>
  */
 public final class RuppertstrasseWartezoneHints {
 
@@ -10,6 +13,7 @@ public final class RuppertstrasseWartezoneHints {
     public static final String ZONE_WB04 = "Wartebereich 04";
     public static final String HINT_WB03 = "ATAF Hinweis WB03";
     public static final String HINT_WB04 = "ATAF Hinweis WB04";
+    public static final String HINT_PASSFOTO = "Hinweis zum Passfoto";
     public static final String LINK_WB03 = "ATAF Link WB03";
     public static final String LINK_WB04 = "ATAF Link WB04";
     public static final String ITALIC_WB03 = "kursiv WB03";
@@ -34,11 +38,16 @@ public final class RuppertstrasseWartezoneHints {
         return rememberedApiWartezoneCode;
     }
 
+    /** {@code true} for ATAF HTML markers (WB03/WB04); {@code false} for plain Passfoto codes. */
+    public static boolean isAtafHtmlHint(String code) {
+        return "WB03".equals(code) || "WB04".equals(code);
+    }
+
     public static String zoneFor(String code) {
-        if ("WB03".equals(code)) {
+        if ("WB03".equals(code) || "WB03-PASSFOTO".equals(code)) {
             return ZONE_WB03;
         }
-        if ("WB04".equals(code)) {
+        if ("WB04".equals(code) || "WB04-PASSFOTO".equals(code)) {
             return ZONE_WB04;
         }
         throw new IllegalArgumentException("Unknown Wartezone code: " + code);
@@ -51,6 +60,9 @@ public final class RuppertstrasseWartezoneHints {
         if ("WB04".equals(code)) {
             return HINT_WB04;
         }
+        if ("WB03-PASSFOTO".equals(code) || "WB04-PASSFOTO".equals(code)) {
+            return HINT_PASSFOTO;
+        }
         throw new IllegalArgumentException("Unknown Wartezone code: " + code);
     }
 
@@ -61,7 +73,7 @@ public final class RuppertstrasseWartezoneHints {
         if ("WB04".equals(code)) {
             return LINK_WB04;
         }
-        throw new IllegalArgumentException("Unknown Wartezone code: " + code);
+        throw new IllegalArgumentException("No ATAF link label for Wartezone code: " + code);
     }
 
     public static String italicFor(String code) {
@@ -71,7 +83,7 @@ public final class RuppertstrasseWartezoneHints {
         if ("WB04".equals(code)) {
             return ITALIC_WB04;
         }
-        throw new IllegalArgumentException("Unknown Wartezone code: " + code);
+        throw new IllegalArgumentException("No ATAF italic for Wartezone code: " + code);
     }
 
     public static String boldFor(String code) {
@@ -81,7 +93,7 @@ public final class RuppertstrasseWartezoneHints {
         if ("WB04".equals(code)) {
             return BOLD_WB04;
         }
-        throw new IllegalArgumentException("Unknown Wartezone code: " + code);
+        throw new IllegalArgumentException("No ATAF bold for Wartezone code: " + code);
     }
 
     public static String otherCode(String code) {
@@ -90,6 +102,12 @@ public final class RuppertstrasseWartezoneHints {
         }
         if ("WB04".equals(code)) {
             return "WB03";
+        }
+        if ("WB03-PASSFOTO".equals(code)) {
+            return "WB04-PASSFOTO";
+        }
+        if ("WB04-PASSFOTO".equals(code)) {
+            return "WB03-PASSFOTO";
         }
         throw new IllegalArgumentException("Unknown Wartezone code: " + code);
     }
