@@ -681,6 +681,9 @@ public class CitizenApiSteps {
         Assertions.assertThat(code)
                 .as("second reserve scope.hint=%s infoForAppointment=%s", hint, info)
                 .isEqualTo(expected);
+        Assertions.assertThat(hint)
+                .as("second reserve scope.hint=%s", hint)
+                .contains(RuppertstrasseWartezoneHints.zoneFor(expected));
         Assertions.assertThat(info).contains(RuppertstrasseWartezoneHints.hintFor(expected));
         RuppertstrasseWartezoneHints.rememberApiWartezoneCode(code);
         ScenarioLogManager.getLogger()

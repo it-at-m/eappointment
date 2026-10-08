@@ -629,6 +629,13 @@ public class CitizenViewSteps {
         page.syncApiWartezoneIntoCitizenView();
     }
 
+    @When("I select a timeslot with Ruppertstraße Wartezone {string} for office {int} in the citizen view")
+    public void iSelectATimeslotWithRuppertstrasseWartezoneForOfficeInTheCitizenView(String code, int officeId) {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: select timeslot with Wartezone {} for office {}", code, officeId);
+        page.selectTimeslotWithRuppertstrasseWartezone(officeId, code);
+    }
+
     @When("I click the highlighted timeslot in the citizen view")
     public void iClickTheHighlightedTimeslotInTheCitizenView() {
         ScenarioLogManager.getLogger()
@@ -999,6 +1006,13 @@ public class CitizenViewSteps {
         page.assertSelectedAppointmentCalloutShowsRenderedRuppertstrasseHint();
     }
 
+    @Then("the selected appointment callout should show the rendered Ruppertstraße {string} scope hint in the citizen view")
+    public void theSelectedAppointmentCalloutShouldShowTheRenderedRuppertstrasseScopeHint(String code) {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: assert Ausgewählter Termin ATAF {} hint HTML", code);
+        page.assertSelectedAppointmentCalloutShowsRenderedRuppertstrasseHint(code);
+    }
+
     @When("I scroll to and highlight the remembered timeslot for office {int} in the citizen view")
     public void iScrollToAndHighlightTheRememberedTimeslotForOffice(int officeId) {
         ScenarioLogManager.getLogger()
@@ -1013,11 +1027,12 @@ public class CitizenViewSteps {
         page.assertAndRememberMatchingRuppertstrasseWartezoneHint(officeId);
     }
 
-    @Then("the booking overview should show the other Ruppertstraße Wartezone and scope hint for office {int} in the citizen view")
-    public void theBookingOverviewShouldShowTheOtherRuppertstrasseWartezoneAndScopeHint(int officeId) {
+    @Then("the booking overview should show Ruppertstraße Wartezone {string} and scope hint for office {int} in the citizen view")
+    public void theBookingOverviewShouldShowRuppertstrasseWartezoneAndScopeHint(
+            String code, int officeId) {
         ScenarioLogManager.getLogger()
-                .info("zmscitizenview: assert overview other Wartezone after second booking office={}", officeId);
-        page.assertOtherRuppertstrasseWartezoneHint(officeId);
+                .info("zmscitizenview: assert overview Wartezone {} + hint office={}", code, officeId);
+        page.assertRuppertstrasseWartezoneHint(officeId, code);
     }
 
     @Then("the booking overview scope hint should be wrapped in a paragraph in the citizen view")
@@ -1037,6 +1052,13 @@ public class CitizenViewSteps {
         ScenarioLogManager.getLogger()
                 .info("zmscitizenview: assert detail Wartezone + Hinweis zu Ihrem Termin");
         page.assertAppointmentDetailMatchingRuppertstrasseWartezoneHint();
+    }
+
+    @Then("the appointment detail should show the Ruppertstraße {string} Wartezone and scope hint callout in the citizen view")
+    public void theAppointmentDetailShouldShowTheRuppertstrasseWartezoneAndScopeHintCallout(String code) {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: assert detail Wartezone {} + Hinweis zu Ihrem Termin", code);
+        page.assertAppointmentDetailRuppertstrasseWartezoneHint(code);
     }
 
     @When("I open the appointment from the confirmation success callout in the citizen view")

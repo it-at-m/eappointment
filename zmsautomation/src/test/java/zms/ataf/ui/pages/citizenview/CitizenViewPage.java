@@ -1195,6 +1195,14 @@ public class CitizenViewPage extends BasePage {
         timeSlot.assertSelectedAppointmentCalloutShowsRenderedRuppertstrasseHint();
     }
 
+    public void assertSelectedAppointmentCalloutShowsRenderedRuppertstrasseHint(String code) {
+        timeSlot.assertSelectedAppointmentCalloutShowsRenderedRuppertstrasseHint(code);
+    }
+
+    public void selectTimeslotWithRuppertstrasseWartezone(int officeId, String code) {
+        timeSlot.selectTimeslotWithRuppertstrasseWartezone(officeId, code);
+    }
+
     public void highlightRememberedTimeslotForOffice(int officeId) {
         timeSlot.highlightRememberedTimeslotForOffice(officeId);
     }
@@ -1220,8 +1228,8 @@ public class CitizenViewPage extends BasePage {
         return overview.assertAndRememberMatchingRuppertstrasseWartezoneHint(officeId);
     }
 
-    public void assertOtherRuppertstrasseWartezoneHint(int officeId) {
-        overview.assertOtherRuppertstrasseWartezoneHint(officeId);
+    public String assertRuppertstrasseWartezoneHint(int officeId, String code) {
+        return overview.assertRuppertstrasseWartezoneHint(officeId, code);
     }
 
     public void assertOverviewScopeHintWrappedInParagraph() {
@@ -1233,6 +1241,11 @@ public class CitizenViewPage extends BasePage {
     }
 
     public void assertAppointmentDetailMatchingRuppertstrasseWartezoneHint() {
+        myAppointments.assertAppointmentDetailMatchingRuppertstrasseWartezoneHint();
+    }
+
+    public void assertAppointmentDetailRuppertstrasseWartezoneHint(String code) {
+        slotState.rememberedWartezoneCode = code;
         myAppointments.assertAppointmentDetailMatchingRuppertstrasseWartezoneHint();
     }
 

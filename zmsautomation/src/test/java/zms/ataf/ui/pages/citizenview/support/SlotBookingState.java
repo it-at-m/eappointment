@@ -20,10 +20,7 @@ public final class SlotBookingState {
     /** Epoch seconds of the slot kept after reserve (Meine Termine / ICS). */
     public Long rememberedAppointmentEpoch;
 
-    /**
-     * ATAF marker from the first Ruppertstraße WB03/WB04 booking ({@code WB03} or {@code WB04}).
-     * Used to assert the second same-time booking lands on the other Wartebereich.
-     */
+    /** ATAF marker for the booked Ruppertstraße scope ({@code WB03} or {@code WB04}). */
     public String rememberedWartezoneCode;
 }
 
