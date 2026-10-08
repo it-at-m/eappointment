@@ -1,10 +1,10 @@
 {
   "branch": "test-zmskvr-1051-zmskvr-1309-scope-hint-callouts",
   "branchSlug": "test-zmskvr-1051-zmskvr-1309-scope-hint-callouts",
-  "runId": "37842603489",
-  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37842603489",
-  "runStartedAt": "2026-10-08T20:51:50Z",
-  "publishedAt": "2026-10-08T21:02:52.881Z",
+  "runId": "37844377276",
+  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37844377276",
+  "runStartedAt": "2026-10-08T21:06:17Z",
+  "publishedAt": "2026-10-08T21:17:15.122Z",
   "features": {
     "feature-ui-zmscitizenview-citizen-login-zmskvr-1051-zmskvr-1309-zmskvr-1087-zmskvr-1311-wartezone-scope-hints": {
       "status": "failed",
@@ -14,22 +14,22 @@
         "chrome": {
           "status": "failed",
           "shard": "custom",
-          "runId": "37842603489",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37842603489",
-          "runStartedAt": "2026-10-08T20:51:50Z"
+          "runId": "37844377276",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37844377276",
+          "runStartedAt": "2026-10-08T21:06:17Z"
         },
         "firefox": {
           "status": "failed",
           "shard": "custom",
-          "runId": "37842603489",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37842603489",
-          "runStartedAt": "2026-10-08T20:51:50Z"
+          "runId": "37844377276",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37844377276",
+          "runStartedAt": "2026-10-08T21:06:17Z"
         }
       },
       "rel": "ui/zmscitizenview/citizen-login/zmskvr-1051_zmskvr-1309_zmskvr-1087_zmskvr-1311_wartezone_scope_hints.feature",
-      "runId": "37842603489",
-      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37842603489",
-      "runStartedAt": "2026-10-08T20:51:50Z"
+      "runId": "37844377276",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37844377276",
+      "runStartedAt": "2026-10-08T21:06:17Z"
     },
     "feature-rest-zmscitizenapi-citizen-login-zmskvr-1051-zmskvr-1309-wartezone-scope-hints-citizenapi": {
       "status": "passed",
