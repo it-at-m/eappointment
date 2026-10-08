@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-10-08T09:33:12.662Z",
+  "publishedAt": "2026-10-08T12:08:54.089Z",
   "branches": [
     {
       "name": "next",
@@ -30,6 +30,12 @@
       "slug": "bugfix-zmskvr-157-redirect-disable-client-actions",
       "runId": "35877798946",
       "runStartedAt": "2026-09-23T14:55:51Z"
+    },
+    {
+      "name": "bugfix-zmskvr-1620-internal-service-visibility",
+      "slug": "bugfix-zmskvr-1620-internal-service-visibility",
+      "runId": "37772764611",
+      "runStartedAt": "2026-10-08T11:50:47Z"
     },
     {
       "name": "bugfix-zmskvr-167-ticketprinter-missing-scope-ids",
