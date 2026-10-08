@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-10-08T20:07:17.262Z",
+  "publishedAt": "2026-10-08T20:32:55.206Z",
   "branches": [
     {
       "name": "next",
@@ -310,8 +310,8 @@
     {
       "name": "test-zmskvr-1051-zmskvr-1309-scope-hint-callouts",
       "slug": "test-zmskvr-1051-zmskvr-1309-scope-hint-callouts",
-      "runId": "37835186434",
-      "runStartedAt": "2026-10-08T19:52:22Z"
+      "runId": "37838543240",
+      "runStartedAt": "2026-10-08T20:19:10Z"
     },
     {
       "name": "test-zmskvr-106-zmskvr-249-service-count-controls",
