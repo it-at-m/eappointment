@@ -636,6 +636,34 @@ public class CitizenViewSteps {
         page.selectTimeslotWithRuppertstrasseWartezone(officeId, code);
     }
 
+    @When("I select a timeslot with Führerscheinstelle Schalter for office {int} in the citizen view")
+    public void iSelectATimeslotWithFuehrerscheinstelleSchalterForOfficeInTheCitizenView(int officeId) {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: select timeslot with Führerscheinstelle Schalter for office {}", officeId);
+        page.selectTimeslotWithFuehrerscheinstelleSchalter(officeId);
+    }
+
+    @Then("the selected appointment callout should show a Führerscheinstelle Schalter hint in the citizen view")
+    public void theSelectedAppointmentCalloutShouldShowAFuehrerscheinstelleSchalterHint() {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: assert Ausgewählter Termin Führerscheinstelle Schalter hint");
+        page.assertSelectedAppointmentCalloutShowsFuehrerscheinstelleSchalterHint();
+    }
+
+    @Then("the booking overview should show Führerscheinstelle Schalter and matching Kundenhinweis for office {int} in the citizen view")
+    public void theBookingOverviewShouldShowFuehrerscheinstelleSchalterAndKundenhinweis(int officeId) {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: assert overview Schalter + Kundenhinweis office={}", officeId);
+        page.assertFuehrerscheinstelleSchalterAndKundenhinweis(officeId);
+    }
+
+    @Then("the appointment detail should show the matching Führerscheinstelle Schalter and Kundenhinweis in the citizen view")
+    public void theAppointmentDetailShouldShowTheMatchingFuehrerscheinstelleSchalterAndKundenhinweis() {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: assert detail Führerscheinstelle Schalter + Kundenhinweis");
+        page.assertAppointmentDetailMatchingFuehrerscheinstelleSchalter();
+    }
+
     @When("I click the highlighted timeslot in the citizen view")
     public void iClickTheHighlightedTimeslotInTheCitizenView() {
         ScenarioLogManager.getLogger()

@@ -40,6 +40,7 @@ import zms.ataf.rest.dto.zmscitizenapi.OfficeServiceRelation;
 import zms.ataf.rest.dto.zmscitizenapi.ReserveAppointmentRequest;
 import zms.ataf.rest.dto.zmscitizenapi.ThinnedProcess;
 import zms.ataf.rest.dto.zmscitizenapi.collections.OfficesAndServicesResponse;
+import zms.ataf.ui.pages.citizenview.support.FuehrerscheinstelleScopeHints;
 import zms.ataf.ui.pages.citizenview.support.RuppertstrasseWartezoneHints;
 
 public class CitizenApiSteps {
@@ -665,6 +666,54 @@ public class CitizenApiSteps {
         RuppertstrasseWartezoneHints.rememberApiWartezoneCode(code);
         ScenarioLogManager.getLogger()
                 .info("Citizen API appointment matched Ruppertstraße Wartezone {}", code);
+    }
+
+    /**
+     * ZMSKVR-924 / ZMSKVR-1019: GET /appointment/ scope.hint + infoForAppointment belong to the
+     * same Führerscheinstelle Schalter (FS-A or FS-B).
+     */
+    @Then("the appointment scope hint and infoForAppointment should match a Führerscheinstelle Schalter")
+    public void theAppointmentScopeHintAndInfoForAppointmentShouldMatchAFuehrerscheinstelleSchalter() {
+        String hint = response.jsonPath().getString("scope.hint");
+        String info = response.jsonPath().getString("scope.infoForAppointment");
+        Assertions.assertThat(hint).as("scope.hint").isNotBlank();
+        Assertions.assertThat(info).as("scope.infoForAppointment").isNotBlank();
+        String code = FuehrerscheinstelleScopeHints.detectCode(hint + " " + info);
+        Assertions.assertThat(code)
+                .as("scope.hint=%s infoForAppointment=%s", hint, info)
+                .isNotNull();
+        Assertions.assertThat(hint).contains(FuehrerscheinstelleScopeHints.zoneFor(code));
+        Assertions.assertThat(info).contains(FuehrerscheinstelleScopeHints.hintFor(code));
+        Assertions.assertThat(info)
+                .doesNotContain(
+                        FuehrerscheinstelleScopeHints.hintFor(
+                                FuehrerscheinstelleScopeHints.otherCode(code)));
+        FuehrerscheinstelleScopeHints.rememberApiSchalterCode(code);
+        ScenarioLogManager.getLogger()
+                .info("Citizen API appointment matched Führerscheinstelle Schalter {}", code);
+    }
+
+    /** ZMSKVR-924 / ZMSKVR-1019: second same-timestamp reserve lands on the other Schalter. */
+    @Then("the appointment scope should be the other Führerscheinstelle Schalter")
+    public void theAppointmentScopeShouldBeTheOtherFuehrerscheinstelleSchalter() {
+        String first = FuehrerscheinstelleScopeHints.rememberedApiSchalterCode();
+        Assertions.assertThat(first)
+                .as("first Schalter must be remembered before the second reserve")
+                .isNotBlank();
+        String expected = FuehrerscheinstelleScopeHints.otherCode(first);
+        String hint = response.jsonPath().getString("scope.hint");
+        String info = response.jsonPath().getString("scope.infoForAppointment");
+        String code = FuehrerscheinstelleScopeHints.detectCode(hint + " " + info);
+        Assertions.assertThat(code)
+                .as("second reserve scope.hint=%s infoForAppointment=%s", hint, info)
+                .isEqualTo(expected);
+        Assertions.assertThat(hint)
+                .as("second reserve scope.hint=%s", hint)
+                .contains(FuehrerscheinstelleScopeHints.zoneFor(expected));
+        Assertions.assertThat(info).contains(FuehrerscheinstelleScopeHints.hintFor(expected));
+        FuehrerscheinstelleScopeHints.rememberApiSchalterCode(code);
+        ScenarioLogManager.getLogger()
+                .info("Citizen API second reserve switched Schalter {} → {}", first, code);
     }
 
     /** ZMSKVR-1051 / ZMSKVR-1309: second same-timestamp reserve lands on the other Wartebereich. */
