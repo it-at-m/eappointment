@@ -6,76 +6,22 @@ on:
       - "zmsautomation/**"
       - ".github/workflows/zmsautomation-maven-build.yml"
   push:
-    # All branches. No paths: filter — new feature branches must run once even
-    # without zmsautomation/ changes. should-run gates later pushes. When the
-    # branch already has an open PR, pull_request covers the build so push skips.
+    branches:
+      - next
+    paths:
+      - "zmsautomation/**"
+      - ".github/workflows/zmsautomation-maven-build.yml"
 
 concurrency:
-  # One group per branch so a push and its matching pull_request do not both
-  # run Maven for the same tip. next keeps cancelling superseded pushes.
-  group: ${{ github.workflow }}-${{ github.head_ref || github.ref_name }}
+  group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 permissions:
   contents: read
-  actions: read
-  pull-requests: read
 
 jobs:
-  should-run:
-    name: Decide ATAF Maven
-    runs-on: ubuntu-latest
-    outputs:
-      run: ${{ steps.check.outputs.run }}
-    steps:
-      - name: Check out
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          fetch-depth: 0
-
-      - name: Decide whether to run
-        id: check
-        env:
-          EVENT_NAME: ${{ github.event_name }}
-          REF_TYPE: ${{ github.ref_type }}
-          BEFORE: ${{ github.event.before }}
-          AFTER: ${{ github.sha }}
-          BRANCH: ${{ github.ref_name }}
-          THIS_RUN: ${{ github.run_id }}
-          GH_TOKEN: ${{ github.token }}
-          GH_REPO: ${{ github.repository }}
-          WORKFLOW_FILE: zmsautomation-maven-build.yml
-          MODE: include
-          PATH_PREFIXES: zmsautomation/ .github/workflows/zmsautomation-maven-build.yml
-        run: |
-          # PRs keep path filtering via on.pull_request.paths; always build.
-          if [ "${EVENT_NAME}" = "pull_request" ]; then
-            echo "run=true" >> "$GITHUB_OUTPUT"
-            echo "Run: pull_request"
-            exit 0
-          fi
-
-          # Push on a branch that already has an open PR is covered by pull_request.
-          OWNER="${GH_REPO%%/*}"
-          OPEN_PRS="$(
-            gh api \
-              "repos/${GH_REPO}/pulls?head=${OWNER}:${BRANCH}&state=open&per_page=1" \
-              --jq 'length'
-          )"
-          if [ "${OPEN_PRS}" != "0" ]; then
-            echo "run=false" >> "$GITHUB_OUTPUT"
-            echo "Skip: open PR already covers ${BRANCH}"
-            exit 0
-          fi
-
-          bash .github/scripts/decide-push-ci-run.sh
-
   build:
-    needs: should-run
-    if: needs.should-run.outputs.run == 'true'
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
     env:
       TZ: Europe/Berlin
     steps:
