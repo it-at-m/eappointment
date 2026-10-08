@@ -689,6 +689,26 @@ public final class OverviewStep {
                 shadow.shadowDomContainsText(CANCEL_RESCHEDULE_BUTTON),
                 "Reserved hash resume must not show Verschieben abbrechen (rebooking).");
     }
+
+    /** ZMSKVR-1620 / ZMSKVR-1691: Umbuchung deaktiviert — Termin verschieben hidden, Termin absagen stays. */
+    public void assertRescheduleAppointmentButtonNotVisible() {
+        context.set();
+        CitizenViewWaits.waitWithThreeWindows(
+                () -> shadow.shadowDomContainsText("Termin absagen"),
+                "Cancel appointment button with rebooking disabled");
+        Assert.assertFalse(
+                shadow.visibleButtonContaining(RESCHEDULE_APPOINTMENT_BUTTON),
+                "Termin verschieben must stay hidden when scope.rebookingDisabled is true.");
+    }
+
+    public void assertCancelAppointmentButtonVisible() {
+        context.set();
+        CitizenViewWaits.waitWithThreeWindows(
+                () -> shadow.shadowDomContainsText("Termin absagen"), "Cancel appointment button");
+        Assert.assertTrue(
+                shadow.shadowDomContainsText("Termin absagen"),
+                "Termin absagen must remain visible when rebooking is disabled.");
+    }
     public void assertElectronicCommunicationCheckboxVisible() {
         context.set();
         CitizenViewWaits.waitWithThreeWindows(

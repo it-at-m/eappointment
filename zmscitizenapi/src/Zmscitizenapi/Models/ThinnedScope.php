@@ -34,8 +34,9 @@ class ThinnedScope extends Entity implements JsonSerializable
     public ?int $reservationDuration;
     public ?int $activationDuration;
     public ?string $hint;
+    public ?bool $rebookingDisabled;
 
-    public function __construct(int $id = 0, ?ThinnedProvider $provider = null, ?string $shortName = null, ?string $emailFrom = null, ?bool $emailRequired = null, ?bool $telephoneActivated = null, ?bool $telephoneRequired = null, ?bool $customTextfieldActivated = null, ?bool $customTextfieldRequired = null, ?string $customTextfieldLabel = null, ?bool $customTextfield2Activated = null, ?bool $customTextfield2Required = null, ?string $customTextfield2Label = null, ?bool $captchaActivatedRequired = null, ?string $infoForAppointment = null, ?string $infoForAllAppointments = null, ?string $slotsPerAppointment = null, ?string $appointmentsPerMail = null, ?string $whitelistedMails = null, ?int $reservationDuration = null, ?int $activationDuration = null, ?string $hint = null)
+    public function __construct(int $id = 0, ?ThinnedProvider $provider = null, ?string $shortName = null, ?string $emailFrom = null, ?bool $emailRequired = null, ?bool $telephoneActivated = null, ?bool $telephoneRequired = null, ?bool $customTextfieldActivated = null, ?bool $customTextfieldRequired = null, ?string $customTextfieldLabel = null, ?bool $customTextfield2Activated = null, ?bool $customTextfield2Required = null, ?string $customTextfield2Label = null, ?bool $captchaActivatedRequired = null, ?string $infoForAppointment = null, ?string $infoForAllAppointments = null, ?string $slotsPerAppointment = null, ?string $appointmentsPerMail = null, ?string $whitelistedMails = null, ?int $reservationDuration = null, ?int $activationDuration = null, ?string $hint = null, ?bool $rebookingDisabled = null)
     {
         $this->id = $id;
         $this->provider = $provider;
@@ -59,6 +60,7 @@ class ThinnedScope extends Entity implements JsonSerializable
         $this->reservationDuration = $reservationDuration;
         $this->activationDuration = $activationDuration;
         $this->hint = $hint;
+        $this->rebookingDisabled = $rebookingDisabled;
         $this->ensureValid();
     }
 
@@ -89,27 +91,27 @@ class ThinnedScope extends Entity implements JsonSerializable
         return $this->emailFrom;
     }
 
-    public function getEmailRequired(): ?bool
+    public function isEmailRequired(): ?bool
     {
         return $this->emailRequired;
     }
 
-    public function getTelephoneActivated(): ?bool
+    public function isTelephoneActivated(): ?bool
     {
         return $this->telephoneActivated;
     }
 
-    public function getTelephoneRequired(): ?bool
+    public function isTelephoneRequired(): ?bool
     {
         return $this->telephoneRequired;
     }
 
-    public function getCustomTextfieldActivated(): ?bool
+    public function isCustomTextfieldActivated(): ?bool
     {
         return $this->customTextfieldActivated;
     }
 
-    public function getCustomTextfieldRequired(): ?bool
+    public function isCustomTextfieldRequired(): ?bool
     {
         return $this->customTextfieldRequired;
     }
@@ -119,12 +121,12 @@ class ThinnedScope extends Entity implements JsonSerializable
         return $this->customTextfieldLabel;
     }
 
-    public function getCustomTextfield2Activated(): ?bool
+    public function isCustomTextfield2Activated(): ?bool
     {
         return $this->customTextfield2Activated;
     }
 
-    public function getCustomTextfield2Required(): ?bool
+    public function isCustomTextfield2Required(): ?bool
     {
         return $this->customTextfield2Required;
     }
@@ -135,7 +137,7 @@ class ThinnedScope extends Entity implements JsonSerializable
     }
 
     /** @psalm-api */
-    public function getCaptchaActivatedRequired(): ?bool
+    public function isCaptchaActivatedRequired(): ?bool
     {
         return $this->captchaActivatedRequired;
     }
@@ -183,6 +185,11 @@ class ThinnedScope extends Entity implements JsonSerializable
         return $this->hint;
     }
 
+    public function isRebookingDisabled(): bool
+    {
+        return $this->rebookingDisabled === true;
+    }
+
     public function toArray(): array
     {
         return [
@@ -207,7 +214,8 @@ class ThinnedScope extends Entity implements JsonSerializable
             'whitelistedMails' => $this->whitelistedMails,
             'reservationDuration' => $this->reservationDuration,
             'activationDuration' => $this->activationDuration,
-            'hint' => $this->hint
+            'hint' => $this->hint,
+            'rebookingDisabled' => $this->rebookingDisabled,
         ];
     }
 

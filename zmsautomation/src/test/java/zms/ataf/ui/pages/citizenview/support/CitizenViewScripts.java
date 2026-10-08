@@ -72,6 +72,8 @@ public final class CitizenViewScripts {
      * <p>
      * Matches the <strong>real booking OfficeID</strong> via {@code provider-{oid}-timeslot-*} id or
      * {@code data-provider-id} (shared booking: slots for peer 10313237 live under display grid 10489).
+     * A slot inside the next five minutes is left alone: cancel returns 406 once that time is no longer
+     * in the future, and the caller then opens the next day.
      */
     public static String buildScrollSlotHighlightScript() {
         return "var oid=String(arguments[0]);"
@@ -125,11 +127,6 @@ public final class CitizenViewScripts {
                 + "  if(ts2!==null&&ts2>=minSafe&&!skipped(ts2)&&ts2>bestTs){best=slots[k];bestTs=ts2;}"
                 + " }"
                 + " target=best;"
-                + "}"
-                + "if(!target){"
-                + " for(var n=0;n<slots.length;n++){"
-                + "  if(!skipped(slotTs(slots[n]))){target=slots[n];break;}"
-                + " }"
                 + "}"
                 + "if(!target)return false;"
                 + "function highlightSlot(node){"

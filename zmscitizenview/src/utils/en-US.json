@@ -17,6 +17,8 @@
   "am": "Morning",
   "apiErrorAppointmentCanNotBeCanceledHeader": "Your appointment cannot be cancelled.",
   "apiErrorAppointmentCanNotBeCanceledText": "Unfortunately, your appointment cannot be cancelled. Please contact the service that offered you the appointment.",
+  "apiErrorRebookingDisabledHeader": "This appointment cannot be rescheduled.",
+  "apiErrorRebookingDisabledText": "Rescheduling is not available for this location. You can still cancel the appointment.",
   "apiErrorAppointmentNotAvailableHeader": "Your selected date is no longer available.",
   "apiErrorAppointmentNotAvailableText": "Unfortunately, another person has now booked your desired appointment. Please select a new date.",
   "apiErrorAppointmentNotFoundHeader": "We could not find your appointment.",
