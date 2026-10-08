@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-10-08T06:14:52.184Z",
+  "publishedAt": "2026-10-08T07:14:10.326Z",
   "branches": [
     {
       "name": "next",
@@ -604,8 +604,8 @@
     {
       "name": "test-zmskvr-1620-zmskvr-1691-rebooking-disabled",
       "slug": "test-zmskvr-1620-zmskvr-1691-rebooking-disabled",
-      "runId": "37735462822",
-      "runStartedAt": "2026-10-08T06:02:32Z"
+      "runId": "37740995189",
+      "runStartedAt": "2026-10-08T07:02:13Z"
     },
     {
       "name": "test-zmskvr-1629-zmskvr-1663-daily-capacity-total",
