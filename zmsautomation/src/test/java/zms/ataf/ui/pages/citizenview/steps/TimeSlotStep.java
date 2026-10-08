@@ -1320,36 +1320,38 @@ public final class TimeSlotStep {
                 "Ausgewählter Termin must not show raw HTML tags for the scope hint.");
     }
 
-    /** Highlight the previously remembered slot epoch for a provider (same-time WB switch). */
+    /**
+     * Highlight the previously remembered slot epoch for a provider (same-time WB switch).
+     * Retries in the current view before Später — paging past the hour hides today's slot.
+     */
     public void highlightRememberedTimeslotForOffice(int officeId) {
         context.set();
         Assert.assertNotNull(
                 slotState.rememberedAppointmentEpoch,
                 "No remembered timeslot epoch; call remember selected appointment time first.");
         String epoch = Long.toString(slotState.rememberedAppointmentEpoch);
-        String script =
-                "var oid=arguments[0], epoch=arguments[1];"
-                        + "function find(root){if(!root)return null;"
-                        + "var id='provider-'+oid+'-timeslot-'+epoch;"
-                        + "var el=root.getElementById?root.getElementById(id):null;"
-                        + "if(!el&&root.querySelector)el=root.querySelector('[id=\"'+id+'\"],[data-provider-id=\"'+oid+'\"][id$=\"-timeslot-'+epoch+'\"]');"
-                        + "if(el)return el;"
-                        + "var all=root.querySelectorAll?root.querySelectorAll('*'):[];"
-                        + "for(var i=0;i<all.length;i++){if(all[i].shadowRoot){var f=find(all[i].shadowRoot);if(f)return f;}}"
-                        + "return null;}"
-                        + "var n=find(document);if(!n)return false;"
-                        + "n.scrollIntoView({block:'center'});"
-                        + "n.style.outline='3px solid orange';"
-                        + "window.__zmsCitizenViewSlotId=n.id||('provider-'+oid+'-timeslot-'+epoch);"
-                        + "return true;";
+        String script = CitizenViewScripts.buildHighlightTimeslotByEpochScript();
+        JavascriptExecutor js = (JavascriptExecutor) DriverUtil.getDriver();
+        try {
+            waitUntilAppointmentSlotsReady(Math.min(45, slotBookingWaitTimeoutSeconds()));
+        } catch (Exception e) {
+            ScenarioLogManager.getLogger()
+                    .warn("zmscitizenview slot wait before remembered highlight: {}", e.toString());
+        }
         boolean highlighted = false;
-        for (int attempt = 1; attempt <= 6 && !highlighted; attempt++) {
-            highlighted =
-                    Boolean.TRUE.equals(
-                            ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script, officeId, epoch));
-            if (highlighted) {
-                break;
+        for (int settle = 1; settle <= 8 && !highlighted; settle++) {
+            highlighted = Boolean.TRUE.equals(js.executeScript(script, officeId, epoch));
+            if (!highlighted) {
+                CitizenViewWaits.sleepQuiet(400L);
             }
+        }
+        int dayMoves = 0;
+        for (int attempt = 1; attempt <= 10 && !highlighted; attempt++) {
+            ScenarioLogManager.getLogger()
+                    .info(
+                            "zmscitizenview: remembered timeslot {} not in view (attempt {}); try Später",
+                            epoch,
+                            attempt);
             if (clickCitizenViewLaterOnceIfAvailable()) {
                 CitizenViewWaits.sleepQuiet(1200L);
                 try {
@@ -1358,7 +1360,14 @@ public final class TimeSlotStep {
                     ScenarioLogManager.getLogger()
                             .warn("zmscitizenview slot wait after Später (remembered): {}", e.toString());
                 }
+                highlighted = Boolean.TRUE.equals(js.executeScript(script, officeId, epoch));
+                continue;
             }
+            if (dayMoves >= 3 || !openNextCalendarDayAndWaitForSlots()) {
+                break;
+            }
+            dayMoves++;
+            highlighted = Boolean.TRUE.equals(js.executeScript(script, officeId, epoch));
         }
         Assert.assertTrue(
                 highlighted,
@@ -1367,6 +1376,19 @@ public final class TimeSlotStep {
                         + " for provider "
                         + officeId
                         + " (same-time WB03/WB04 switch).");
+    }
+
+    /**
+     * Like {@link #highlightPreferredTimeslotForOffice(int)} but requires the slot to be at least
+     * {@code minLeadMinutes} ahead so a later same-timestamp rebook still sees it.
+     */
+    public void highlightPreferredTimeslotForOfficeWithMinLeadMinutes(int officeId, int minLeadMinutes) {
+        Assert.assertTrue(
+                highlightPreferredTimeslotForOfficeOrAbsent(officeId, "", minLeadMinutes),
+                "zmscitizenview: could not find/highlight timeslot ≥"
+                        + minLeadMinutes
+                        + "min ahead for provider "
+                        + officeId);
     }
 
     /**
@@ -1962,14 +1984,26 @@ public final class TimeSlotStep {
 
     /** @return false when the current calendar view has no highlightable slot for this office */
     public boolean highlightPreferredTimeslotForOfficeOrAbsent(int officeId, String skippedTimestamps) {
+        return highlightPreferredTimeslotForOfficeOrAbsent(officeId, skippedTimestamps, 60);
+    }
+
+    /**
+     * @param minLeadMinutes prefer slots at least this far ahead (fallback remains ≥5 minutes)
+     * @return false when the current calendar view has no highlightable slot for this office
+     */
+    public boolean highlightPreferredTimeslotForOfficeOrAbsent(
+            int officeId, String skippedTimestamps, int minLeadMinutes) {
         context.set();
+        int leadMinutes = Math.max(5, minLeadMinutes);
         String scrollSlotHighlight = CitizenViewScripts.buildScrollSlotHighlightScript();
         ScenarioLogManager.getLogger().info(
-                "zmscitizenview: highlight preferred slot (≥60min ahead, else ≥5min ahead) office {} skip [{}]",
+                "zmscitizenview: highlight preferred slot (≥{}min ahead, else ≥5min ahead) office {} skip [{}]",
+                leadMinutes,
                 officeId,
                 skippedTimestamps);
         boolean highlighted = false;
         int dayMoves = 0;
+        int leadSeconds = leadMinutes * 60;
         for (int attempt = 1; attempt <= 8 && !highlighted; attempt++) {
             if (contactStepReached()) {
                 return false;
@@ -1978,7 +2012,8 @@ public final class TimeSlotStep {
                 highlighted =
                         Boolean.TRUE.equals(
                                 ((JavascriptExecutor) DriverUtil.getDriver())
-                                        .executeScript(scrollSlotHighlight, officeId, skippedTimestamps));
+                                        .executeScript(
+                                                scrollSlotHighlight, officeId, skippedTimestamps, leadSeconds));
             } catch (Exception e) {
                 ScenarioLogManager.getLogger()
                         .warn("zmscitizenview: highlight script attempt {} failed: {}", attempt, e.toString());

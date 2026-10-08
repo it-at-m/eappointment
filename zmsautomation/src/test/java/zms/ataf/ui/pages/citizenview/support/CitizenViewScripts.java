@@ -103,7 +103,8 @@ public final class CitizenViewScripts {
                 + "var grid=closestGrid(slots[0]);"
                 + "if(grid){grid.scrollIntoView({block:'start'});window.scrollBy(0,200);}"
                 + "else{slots[0].scrollIntoView({block:'start'});window.scrollBy(0,200);}"
-                + "var minTs=Math.floor(Date.now()/1000)+3600;"
+                + "var leadSec=(arguments.length>2&&arguments[2]!=null&&arguments[2]>0)?parseInt(arguments[2],10):3600;"
+                + "var minTs=Math.floor(Date.now()/1000)+leadSec;"
                 + "function slotTs(node){"
                 + " if(!node||!node.id)return null;"
                 + " var m=node.id.match(/-timeslot-(\\d+)$/);"
@@ -149,6 +150,48 @@ public final class CitizenViewScripts {
                 + "highlightSlot(target);"
                 + "window.__zmsCitizenViewSlotTarget=target;"
                 + "window.__zmsCitizenViewSlotId=(target&&target.id)?target.id:'';"
+                + "window.__zmsCitizenViewSlotOfficeId=parseInt(oid,10);"
+                + "return true;";
+    }
+
+    /**
+     * Highlight {@code provider-{oid}-timeslot-{epoch}} via the same deep slot walk as
+     * {@link #buildScrollSlotHighlightScript()} (document.getElementById misses shadow DOM).
+     */
+    public static String buildHighlightTimeslotByEpochScript() {
+        return "var oid=String(arguments[0]);var epoch=String(arguments[1]);"
+                + "var want='provider-'+oid+'-timeslot-'+epoch;"
+                + "function collectSlots(root,arr,seen){"
+                + " if(!root)return;"
+                + " if(root.nodeType===1){"
+                + "  var id=root.id||'';"
+                + "  var dpi=root.getAttribute?root.getAttribute('data-provider-id'):null;"
+                + "  var match=id.indexOf('provider-'+oid+'-timeslot-')===0||String(dpi)===oid;"
+                + "  if(match){"
+                + "   var node=root;"
+                + "   if(id!==want&&root.classList&&root.classList.contains('grid-item')){"
+                + "    node=root.querySelector('[id=\"'+want+'\"]')||root.querySelector('[id$=\"-timeslot-'+epoch+'\"]')||null;"
+                + "   }"
+                + "   if(node&&(node.id===want||(node.id||'').indexOf('-timeslot-'+epoch)>0)&&!seen.has(node)){"
+                + "    seen.add(node);arr.push(node);}"
+                + "  }"
+                + "  if(root.shadowRoot)collectSlots(root.shadowRoot,arr,seen);"
+                + " }"
+                + " var c=root.children;if(c)for(var i=0;i<c.length;i++)collectSlots(c[i],arr,seen);"
+                + "}"
+                + "var slots=[];collectSlots(document.body,slots,new Set());"
+                + "var target=null;"
+                + "for(var j=0;j<slots.length;j++){if((slots[j].id||'')===want){target=slots[j];break;}}"
+                + "if(!target){"
+                + " for(var k=0;k<slots.length;k++){"
+                + "  if((slots[k].id||'').indexOf('-timeslot-'+epoch)>=0){target=slots[k];break;}"
+                + " }"
+                + "}"
+                + "if(!target)return false;"
+                + "target.scrollIntoView({block:'center'});"
+                + "try{target.style.outline='3px solid orange';}catch(e){}"
+                + "window.__zmsCitizenViewSlotTarget=target;"
+                + "window.__zmsCitizenViewSlotId=target.id||want;"
                 + "window.__zmsCitizenViewSlotOfficeId=parseInt(oid,10);"
                 + "return true;";
     }

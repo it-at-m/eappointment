@@ -1198,6 +1198,10 @@ public class CitizenViewPage extends BasePage {
         timeSlot.highlightRememberedTimeslotForOffice(officeId);
     }
 
+    public void highlightPreferredTimeslotForOfficeWithMinLeadMinutes(int officeId, int minLeadMinutes) {
+        timeSlot.highlightPreferredTimeslotForOfficeWithMinLeadMinutes(officeId, minLeadMinutes);
+    }
+
     public String assertAndRememberMatchingRuppertstrasseWartezoneHint(int officeId) {
         return overview.assertAndRememberMatchingRuppertstrasseWartezoneHint(officeId);
     }
