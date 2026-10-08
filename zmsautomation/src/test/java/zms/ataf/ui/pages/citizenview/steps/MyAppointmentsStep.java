@@ -1120,8 +1120,10 @@ public final class MyAppointmentsStep {
     }
 
     /**
-     * Service lines from the appointment-detail muc-intro (formatMultilineTitle). The title prop
-     * is not always reflected as a DOM attribute, so read rendered text inside muc-intro.
+     * Service lines from the appointment-detail intro (formatMultilineTitle). MucIntro is a Vue
+     * SFC that renders {@code div.m-intro > h1}, not a {@code muc-intro} custom element, so the
+     * title prop is never a DOM attribute — read the painted h1 (fallback: text before
+     * Terminnummer), same deep walk as teaser asserts.
      */
     private String detailIntroTitleText() {
         String script =
@@ -1135,21 +1137,23 @@ public final class MyAppointmentsStep {
                         + "if(n.shadowRoot){r=walk(n.shadowRoot,fn);if(r)return r;}"
                         + "var c=n.children;if(c)for(var i=0;i<c.length;i++){r=walk(c[i],fn);if(r)return r;}"
                         + "return null;}"
-                        + "return walk(document.body,function(n){"
-                        + "var tag=(n.tagName||'').toUpperCase();"
-                        + "if(tag!=='MUC-INTRO')return null;"
-                        + "var prop=n.title;var attr=n.getAttribute('title');"
-                        + "var raw=(typeof prop==='string'&&prop.indexOf('1x ')>=0)?prop:"
-                        + "(attr&&attr.indexOf('1x ')>=0?attr:'');"
-                        + "if(!raw){"
+                        + "var fromH1=walk(document.body,function(n){"
+                        + "if((n.tagName||'').toUpperCase()!=='H1')return null;"
+                        + "var t=textOf(n).replace(/\\s+/g,' ').trim();"
+                        + "return t.indexOf('1x ')>=0?t:null;"
+                        + "});"
+                        + "if(fromH1)return fromH1;"
+                        + "var best='';"
+                        + "walk(document.body,function(n){"
+                        + "if(n.nodeType!==1)return null;"
                         + "var t=textOf(n).replace(/\\s+/g,' ').trim();"
                         + "if(t.indexOf('1x ')<0||t.indexOf('Terminnummer')<0)return null;"
-                        + "var start=t.indexOf('1x ');"
-                        + "var end=t.indexOf('Terminnummer');"
-                        + "raw=end>start?t.substring(start,end):t.substring(start);"
-                        + "}"
-                        + "return raw.replace(/\\s+/g,' ').trim();"
-                        + "})||'';";
+                        + "if(!best||t.length<best.length)best=t;"
+                        + "return null;});"
+                        + "if(!best)return '';"
+                        + "var start=best.indexOf('1x ');"
+                        + "var end=best.indexOf('Terminnummer');"
+                        + "return (end>start?best.substring(start,end):best.substring(start)).trim();";
         Object raw = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script);
         return raw == null ? "" : raw.toString().replace('\n', ' ').replaceAll("\\s+", " ").trim();
     }
