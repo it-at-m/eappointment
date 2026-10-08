@@ -13,8 +13,12 @@ Feature: Ruppertstraße Wartezone and scope hints stay consistent through bookin
   #   ZMSKVR-1311  Testfall login booking → Meine Termine detail
   #   ZMSKVR-1530  bug     HTML in Termin-Detail callout (links, em, strong)
   #   ZMSKVR-1541  Testfall HTML rendering under Hinweis zu Ihrem Termin
-  #   ZMSKVR-843   bug     overview Hinweis wrapped in <p>
-  #   ZMSKVR-1014  Testfall overview Hinweis paragraph formatting
+  #   ZMSKVR-843   bug     overview Hinweis in a dedicated block (<p> for plain text;
+  #                        HTML markers use <div> because containsParagraphTag/DOMParser
+  #                        treats inline HTML as already containing <p>)
+  #   ZMSKVR-1014  Testfall overview Hinweis block formatting
+  #
+  # API sibling: rest/.../citizen-login/zmskvr-1051_zmskvr-1309_wartezone_scope_hints_citizenapi.feature
   #
   # ZMSKVR-801 / ZMSKVR-811 (infoForAllAppointments empty-state) stays in
   # ui/.../callouts/zmskvr-1235_zmskvr-1244_…_no_appointment_callout.feature.
