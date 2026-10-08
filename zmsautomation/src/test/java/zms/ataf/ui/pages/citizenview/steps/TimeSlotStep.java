@@ -18,6 +18,7 @@ import zms.ataf.ui.pages.citizenview.CitizenViewPageContext;
 import zms.ataf.ui.pages.citizenview.support.CitizenViewJson;
 import zms.ataf.ui.pages.citizenview.support.CitizenViewScripts;
 import zms.ataf.ui.pages.citizenview.support.CitizenViewWaits;
+import zms.ataf.ui.pages.citizenview.support.FuehrerscheinstelleScopeHints;
 import zms.ataf.ui.pages.citizenview.support.RuppertstrasseWartezoneHints;
 import zms.ataf.ui.pages.citizenview.support.ShadowDom;
 import zms.ataf.ui.pages.citizenview.support.SlotBookingState;
@@ -1304,8 +1305,9 @@ public final class TimeSlotStep {
      */
     public void selectTimeslotWithRuppertstrasseWartezone(int officeId, String code) {
         context.set();
-        boolean family = RuppertstrasseWartezoneHints.isSelectionFamily(code);
-        if (!family) {
+        boolean family = RuppertstrasseWartezoneHints.isSelectionFamily(code)
+                || FuehrerscheinstelleScopeHints.isSelectionFamily(code);
+        if (!family && !FuehrerscheinstelleScopeHints.isConcrete(code)) {
             RuppertstrasseWartezoneHints.hintFor(code); // validate concrete codes still supported
         }
         Set<Long> skipped = new HashSet<>();
@@ -1375,6 +1377,17 @@ public final class TimeSlotStep {
         if ("PASSFOTO".equals(code) || RuppertstrasseWartezoneHints.isPassfotoHint(code)) {
             return shadow.shadowDomContainsText(RuppertstrasseWartezoneHints.HINT_PASSFOTO);
         }
+        if ("FS".equals(code) || FuehrerscheinstelleScopeHints.isConcrete(code)) {
+            if ("FS".equals(code)) {
+                return shadow.shadowDomContainsText(FuehrerscheinstelleScopeHints.HINT_A)
+                        || shadow.shadowDomContainsText(FuehrerscheinstelleScopeHints.HINT_B);
+            }
+            String hint = FuehrerscheinstelleScopeHints.hintFor(code);
+            return shadow.shadowDomContainsText(hint)
+                    && !shadow.shadowDomContainsText(
+                            FuehrerscheinstelleScopeHints.hintFor(
+                                    FuehrerscheinstelleScopeHints.otherCode(code)));
+        }
         String hint = RuppertstrasseWartezoneHints.hintFor(code);
         boolean has = shadow.shadowDomContainsText(hint);
         if (!RuppertstrasseWartezoneHints.isAtafHtmlHint(code)) {
@@ -1383,6 +1396,39 @@ public final class TimeSlotStep {
         return has
                 && !shadow.shadowDomContainsText(
                         RuppertstrasseWartezoneHints.hintFor(RuppertstrasseWartezoneHints.otherCode(code)));
+    }
+
+    /**
+     * ZMSKVR-924 / ZMSKVR-1019: click until Ausgewählter Termin shows a Führerscheinstelle
+     * Schalter infoForAppointment marker. Concrete FS-A/FS-B is pinned on Übersicht.
+     */
+    public void selectTimeslotWithFuehrerscheinstelleSchalter(int officeId) {
+        selectTimeslotWithRuppertstrasseWartezone(officeId, "FS");
+    }
+
+    public void assertSelectedAppointmentCalloutShowsFuehrerscheinstelleSchalterHint() {
+        context.set();
+        CitizenViewWaits.waitWithThreeWindows(
+                () -> selectedAppointmentCalloutVisible() && calloutShowsHintFamily("FS"),
+                "Ausgewählter Termin Führerscheinstelle Schalter hint");
+        Assert.assertTrue(
+                selectedAppointmentCalloutVisible(),
+                "Selected-appointment callout header missing after slot click");
+        Assert.assertTrue(
+                calloutShowsHintFamily("FS"),
+                "Ausgewählter Termin must show a Führerscheinstelle Schalter hint.");
+        String resolved =
+                shadow.shadowDomContainsText(FuehrerscheinstelleScopeHints.HINT_A) ? "FS-A" : "FS-B";
+        Assert.assertTrue(
+                shadow.shadowDomContainsText(FuehrerscheinstelleScopeHints.hintFor(resolved)),
+                "Ausgewählter Termin must show " + FuehrerscheinstelleScopeHints.hintFor(resolved));
+        Assert.assertFalse(
+                shadow.shadowDomContainsText(
+                        FuehrerscheinstelleScopeHints.hintFor(
+                                FuehrerscheinstelleScopeHints.otherCode(resolved))),
+                "Ausgewählter Termin must not mix both Schalter hints.");
+        slotState.rememberedCalloutWartezoneCode = resolved;
+        slotState.rememberedWartezoneCode = "FS";
     }
 
     public void assertSelectedAppointmentCalloutShowsRenderedRuppertstrasseHint(String code) {

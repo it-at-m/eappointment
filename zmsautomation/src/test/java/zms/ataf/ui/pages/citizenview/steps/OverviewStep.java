@@ -12,6 +12,7 @@ import ataf.web.utils.DriverUtil;
 import zms.ataf.ui.pages.citizenview.CitizenViewPage;
 import zms.ataf.ui.pages.citizenview.CitizenViewPageContext;
 import zms.ataf.ui.pages.citizenview.support.CitizenViewWaits;
+import zms.ataf.ui.pages.citizenview.support.FuehrerscheinstelleScopeHints;
 import zms.ataf.ui.pages.citizenview.support.RuppertstrasseWartezoneHints;
 import zms.ataf.ui.pages.citizenview.support.ShadowDom;
 import zms.ataf.ui.pages.citizenview.support.SlotBookingState;
@@ -227,6 +228,55 @@ public final class OverviewStep {
                 code,
                 "Overview must show a matching Wartebereich 03/04 with ATAF Hinweis WB03/WB04. Text: " + text);
         return assertRuppertstrasseWartezoneHint(officeId, code);
+    }
+
+    /**
+     * ZMSKVR-924 / ZMSKVR-1019: overview Ort Kundenhinweis and Hinweis must belong to the same
+     * Führerscheinstelle Schalter. Pins FS-A / FS-B from page text when the selection family was FS.
+     */
+    public String assertFuehrerscheinstelleSchalterAndKundenhinweis(int officeId) {
+        context.set();
+        CitizenViewWaits.waitWithThreeWindows(
+                () -> {
+                    String t = deepDocumentText();
+                    return FuehrerscheinstelleScopeHints.detectCode(t) != null
+                            && t.contains(FuehrerscheinstelleScopeHints.OVERVIEW_HINT_HEADING);
+                },
+                "Overview Führerscheinstelle Schalter + Kundenhinweis");
+        String text = deepDocumentText();
+        String resolved = FuehrerscheinstelleScopeHints.detectCode(text);
+        Assert.assertNotNull(
+                resolved,
+                "Overview must show matching Schalter Kundenhinweis + Termin Hinweis. Text: " + text);
+        // Ausgewählter Termin may still paint the office-attached scope from
+        // offices-and-services; pin FS-A/FS-B from Übersicht Ort + Hinweis (ZMSKVR-924).
+        String zone = FuehrerscheinstelleScopeHints.zoneFor(resolved);
+        String hint = FuehrerscheinstelleScopeHints.hintFor(resolved);
+        shadow.scrollTextIntoView(zone);
+        Assert.assertTrue(text.contains(zone), "Overview Ort missing " + zone + ". Text: " + text);
+        shadow.scrollTextIntoView(hint);
+        Assert.assertTrue(text.contains(hint), "Overview Hinweis missing " + hint + ". Text: " + text);
+        Assert.assertFalse(
+                text.contains(
+                        FuehrerscheinstelleScopeHints.zoneFor(
+                                FuehrerscheinstelleScopeHints.otherCode(resolved))),
+                "Overview must not mix the other Schalter. Text: " + text);
+        Assert.assertFalse(
+                text.contains(
+                        FuehrerscheinstelleScopeHints.hintFor(
+                                FuehrerscheinstelleScopeHints.otherCode(resolved))),
+                "Overview must not mix the other Schalter hint. Text: " + text);
+        String place = visibleProviderSummaryOrFail(officeId);
+        Assert.assertTrue(
+                place.contains(zone),
+                "Provider summary missing Kundenhinweis " + resolved + ". Text: " + place);
+        slotState.rememberedWartezoneCode = resolved;
+        ScenarioLogManager.getLogger()
+                .info(
+                        "zmscitizenview: overview matched Führerscheinstelle Schalter {} for office {}",
+                        resolved,
+                        officeId);
+        return resolved;
     }
 
     /** Overview must show the explicit Ruppertstraße Wartezone (WB03 or WB04) + hint. */
