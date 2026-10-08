@@ -1,5 +1,5 @@
 #language: en
-@web @zmscitizenview @citizen @ZMSKVR-1457 @ZMSKVR-1524 @ZMSKVR-1355 @ZMSKVR-1395 @executeLocally
+@web @zmscitizenview @citizen @ZMSKVR-1457 @ZMSKVR-1524 @ZMSKVR-1355 @ZMSKVR-1395 @ZMSKVR-1235 @executeLocally
 Feature: Calendar and list hide a day that the appointment no longer fits
   As a citizen
   I want the calendar and the list to show a day only when the selected length still fits
@@ -8,8 +8,11 @@ Feature: Calendar and list hide a day that the appointment no longer fits
   # Same office as the API feature: Bürgerbüro Forstenrieder Allee (KVR-II/234 Team 1),
   # location 10286848. Tomorrow 10:00–10:10 is two 5-minute slots.
   # A fitting length shows slots in the calendar and the same day in the list.
-  # A length that does not fit leaves the day unselected and shows the blue info callout.
+  # A length that does not fit leaves the day unselected and shows the blue info callout
+  # ("Aktuell ist kein Termin verfügbar.") — same empty-state family as ZMSKVR-1235/1244.
   # ZMSKVR-1355 / ZMSKVR-1395. A day that cannot be booked stays unselected instead of looking available.
+  # Full no-appointment ticket inventory:
+  #   ui/.../callouts/zmskvr-1235_zmskvr-1244_…_no_appointment_callout.feature
 
   Scenario: one five minute appointment shows the day in the calendar and the list
     Given I open zmscitizenview with jump-in service "1063565" and location "10286848"
