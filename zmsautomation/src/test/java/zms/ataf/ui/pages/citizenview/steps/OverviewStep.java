@@ -310,18 +310,26 @@ public final class OverviewStep {
         }
     }
 
-    /** ZMSKVR-1530: overview Hinweis HTML is painted (link text, no raw tags). */
+    /**
+     * ZMSKVR-1530: overview Hinweis HTML is painted (link + emphasis text, no raw ATAF tags).
+     * Do not probe bare {@code <strong>} — host {@code <noscript>} keeps that markup as text
+     * when JS is on, which is unrelated to the scope hint.
+     */
     public void assertOverviewScopeHintHtmlRendered() {
         context.set();
         String code = slotState.rememberedWartezoneCode;
         Assert.assertNotNull(code, "Need a remembered Wartezone before asserting overview HTML.");
         String linkLabel = RuppertstrasseWartezoneHints.linkLabelFor(code);
+        String italic = RuppertstrasseWartezoneHints.italicFor(code);
+        String bold = RuppertstrasseWartezoneHints.boldFor(code);
         CitizenViewWaits.waitWithThreeWindows(
                 () -> shadow.shadowDomContainsText(linkLabel), "Overview ATAF hint link label");
         Assert.assertTrue(shadow.shadowDomContainsText(linkLabel), "Overview missing rendered link " + linkLabel);
         Assert.assertTrue(
                 shadow.shadowHrefContains(RuppertstrasseWartezoneHints.HINT_HREF),
                 "Overview hint must expose href " + RuppertstrasseWartezoneHints.HINT_HREF);
+        Assert.assertTrue(shadow.shadowDomContainsText(italic), "Overview missing rendered " + italic);
+        Assert.assertTrue(shadow.shadowDomContainsText(bold), "Overview missing rendered " + bold);
         Assert.assertFalse(
                 shadow.shadowDomContainsText("<a href"),
                 "Overview Hinweis must not show raw <a> markup.");
@@ -329,8 +337,8 @@ public final class OverviewStep {
                 shadow.shadowDomContainsText("<br>"),
                 "Overview Hinweis must not show raw <br> markup.");
         Assert.assertFalse(
-                shadow.shadowDomContainsText("<em>") || shadow.shadowDomContainsText("<strong>"),
-                "Overview Hinweis must not show raw emphasis tags.");
+                shadow.shadowDomContainsText("<em>kursiv") || shadow.shadowDomContainsText("<strong>fett"),
+                "Overview Hinweis must not show raw ATAF emphasis markup.");
     }
 
     private String deepDocumentText() {

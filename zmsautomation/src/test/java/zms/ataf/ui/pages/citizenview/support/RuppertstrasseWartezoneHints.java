@@ -12,6 +12,10 @@ public final class RuppertstrasseWartezoneHints {
     public static final String HINT_WB04 = "ATAF Hinweis WB04";
     public static final String LINK_WB03 = "ATAF Link WB03";
     public static final String LINK_WB04 = "ATAF Link WB04";
+    public static final String ITALIC_WB03 = "kursiv WB03";
+    public static final String ITALIC_WB04 = "kursiv WB04";
+    public static final String BOLD_WB03 = "fett WB03";
+    public static final String BOLD_WB04 = "fett WB04";
     public static final String HINT_HREF = "https://www.wikipedia.de/";
     public static final String DETAIL_CALLOUT_HEADER = "Hinweis zu Ihrem Termin";
     public static final String OVERVIEW_HINT_HEADING = "Hinweis";
@@ -56,6 +60,26 @@ public final class RuppertstrasseWartezoneHints {
         }
         if ("WB04".equals(code)) {
             return LINK_WB04;
+        }
+        throw new IllegalArgumentException("Unknown Wartezone code: " + code);
+    }
+
+    public static String italicFor(String code) {
+        if ("WB03".equals(code)) {
+            return ITALIC_WB03;
+        }
+        if ("WB04".equals(code)) {
+            return ITALIC_WB04;
+        }
+        throw new IllegalArgumentException("Unknown Wartezone code: " + code);
+    }
+
+    public static String boldFor(String code) {
+        if ("WB03".equals(code)) {
+            return BOLD_WB03;
+        }
+        if ("WB04".equals(code)) {
+            return BOLD_WB04;
         }
         throw new IllegalArgumentException("Unknown Wartezone code: " + code);
     }
