@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-10-08T12:26:23.900Z",
+  "publishedAt": "2026-10-08T12:40:23.088Z",
   "branches": [
     {
       "name": "next",
@@ -34,8 +34,8 @@
     {
       "name": "bugfix-zmskvr-1620-internal-service-visibility",
       "slug": "bugfix-zmskvr-1620-internal-service-visibility",
-      "runId": "37774980841",
-      "runStartedAt": "2026-10-08T12:10:12Z"
+      "runId": "37776502505",
+      "runStartedAt": "2026-10-08T12:23:22Z"
     },
     {
       "name": "bugfix-zmskvr-167-ticketprinter-missing-scope-ids",
