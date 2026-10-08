@@ -696,15 +696,8 @@ public class CitizenApiSteps {
             ReserveAppointmentRequest body = new ReserveAppointmentRequest();
             body.setTimestamp(timestamp);
             body.setOfficeId(lastOfficeId);
-            List<Integer> reserveServiceIds =
-                    cachedCalendarServiceIds != null && !cachedCalendarServiceIds.isEmpty()
-                            ? cachedCalendarServiceIds
-                            : List.of(lastServiceId);
-            List<Integer> reserveServiceCounts =
-                    cachedCalendarServiceCounts != null
-                                    && cachedCalendarServiceCounts.size() == reserveServiceIds.size()
-                            ? cachedCalendarServiceCounts
-                            : List.of(lastServiceCount);
+            List<Integer> reserveServiceIds = reserveServiceIds();
+            List<Integer> reserveServiceCounts = reserveServiceCounts();
             body.setServiceId(reserveServiceIds);
             body.setServiceCount(reserveServiceCounts);
             if (useCurrentAppointmentAsSource) {
@@ -1007,15 +1000,17 @@ public class CitizenApiSteps {
             current,
             lastOfficeId,
             nextDate));
-        iRequestAvailableAppointmentsForDateOfficeAndService(
-            nextDate, lastOfficeId, lastServiceId, lastServiceCount);
+        // Keep the original multi-service selection; a single-service refetch would
+        // overwrite cachedCalendarServiceIds and shrink the later reserve.
+        iRequestAvailableAppointmentsForDateOfficeAndServices(
+            nextDate, lastOfficeId, reserveServiceIds(), reserveServiceCounts());
         return true;
     }
 
     /** Ask the calendar again and append timestamps this scenario has not tried yet. */
     private int appendFreshTimestamps(List<Long> timestamps) {
         AvailableCalendarResponse calendar =
-            fetchAvailableCalendar(List.of(lastOfficeId), lastServiceId, lastServiceCount);
+            fetchAvailableCalendar(List.of(lastOfficeId), reserveServiceIds(), reserveServiceCounts());
         if (calendar == null || calendar.getAvailableDays() == null) {
             return 0;
         }
@@ -1038,6 +1033,30 @@ public class CitizenApiSteps {
             }
         }
         return added;
+    }
+
+    /** Service ids for reserve / calendar retries — prefer the full multi-service selection. */
+    private List<Integer> reserveServiceIds() {
+        if (cachedCalendarServiceIds != null && !cachedCalendarServiceIds.isEmpty()) {
+            return cachedCalendarServiceIds;
+        }
+        return List.of(lastServiceId);
+    }
+
+    private List<Integer> reserveServiceCounts() {
+        List<Integer> ids = reserveServiceIds();
+        if (cachedCalendarServiceCounts != null
+                && cachedCalendarServiceCounts.size() == ids.size()) {
+            return cachedCalendarServiceCounts;
+        }
+        if (ids.size() == 1) {
+            return List.of(lastServiceCount);
+        }
+        List<Integer> counts = new ArrayList<>(ids.size());
+        for (int i = 0; i < ids.size(); i++) {
+            counts.add(1);
+        }
+        return counts;
     }
 
     /** Parallel scenarios share the calendar, so the first slot can already be reserved. */
@@ -2037,24 +2056,28 @@ public class CitizenApiSteps {
                 .containsExactlyElementsOf(expected);
         if (process.getIcsContent() != null && !process.getIcsContent().isBlank()) {
             String summary = icsSummary(process.getIcsContent());
-            int previous = -1;
-            for (String name : expected) {
-                int idx = summary.indexOf(name);
-                Assertions.assertThat(idx)
-                        .as("ICS SUMMARY must list \"%s\" after earlier services. SUMMARY=%s", name, summary)
-                        .isGreaterThan(previous);
-                previous = idx;
+            if (summary != null) {
+                int previous = -1;
+                for (String name : expected) {
+                    int idx = summary.indexOf(name);
+                    Assertions.assertThat(idx)
+                            .as("ICS SUMMARY must list \"%s\" after earlier services. SUMMARY=%s", name, summary)
+                            .isGreaterThan(previous);
+                    previous = idx;
+                }
             }
         }
     }
 
+    /** Unfolded ICS SUMMARY value, or null when the property is absent. */
     private static String icsSummary(String icsContent) {
-        for (String line : icsContent.split("\\R")) {
+        String unfolded = icsContent.replaceAll("\\R[ \\t]", "");
+        for (String line : unfolded.split("\\R")) {
             if (line.startsWith("SUMMARY:")) {
                 return line.substring("SUMMARY:".length()).replace("\\n", "\n").replace("\\,", ",");
             }
         }
-        return icsContent;
+        return null;
     }
 
     @Then("the appointment status should be {string}")
