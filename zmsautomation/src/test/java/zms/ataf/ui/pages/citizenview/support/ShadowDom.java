@@ -299,6 +299,37 @@ public final class ShadowDom {
 
 
     /**
+     * True when a rendered action control (BUTTON, A, or MUC-BUTTON) contains the label.
+     * Same match as {@link #clickButtonContaining(String)} without scrolling or clicking.
+     * Skips muc-stepper items ("Zurück zu Schritt: …").
+     */
+    public boolean visibleButtonContaining(String text) {
+        context.set();
+        String esc = text.replace("\\", "\\\\").replace("'", "\\'");
+        String script =
+                "var label='" + esc + "';"
+                        + "function shown(el){var n=el;while(n&&n.nodeType===1){"
+                        + "var st=window.getComputedStyle(n);"
+                        + "if(st.display==='none'||st.visibility==='hidden'||st.opacity==='0')return false;"
+                        + "if(n.parentElement){n=n.parentElement;continue;}"
+                        + "var root=n.getRootNode&&n.getRootNode();n=root&&root.host?root.host:null;}"
+                        + "return true;}"
+                        + "function visible(el){if(!el||!el.getBoundingClientRect)return false;"
+                        + "var r=el.getBoundingClientRect();if(r.width<=0||r.height<=0)return false;"
+                        + "return shown(el);}"
+                        + "function walk(n){if(!n)return false;if(n.shadowRoot&&walk(n.shadowRoot))return true;"
+                        + "var tag=(n.tagName||'').toUpperCase();var isBtn=(tag==='BUTTON'||tag==='A'||tag==='MUC-BUTTON');"
+                        + "if(isBtn){var t=(n.textContent||'').trim();"
+                        + "if(t.indexOf('Zurück zu Schritt')>=0)return false;"
+                        + "if(t.indexOf(label)>=0&&!n.disabled&&!(n.hasAttribute&&n.hasAttribute('disabled'))"
+                        + "&&n.getAttribute&&n.getAttribute('aria-disabled')!=='true'&&visible(n))return true;}"
+                        + "var c=n.children;if(c)for(var i=0;i<c.length;i++)if(walk(c[i]))return true;return false;}"
+                        + "return walk(document.body);";
+        Object o = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script);
+        return Boolean.TRUE.equals(o);
+    }
+
+    /**
      * Click first button whose visible text includes label (shadow-safe). Includes BUTTON, A, and MUC-BUTTON (modal confirm/cancel).
      * Skips muc-stepper items ("Zurück zu Schritt: …"); those are not the form Zurück.
      */
