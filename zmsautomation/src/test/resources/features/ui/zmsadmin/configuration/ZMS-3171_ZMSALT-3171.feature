@@ -1,7 +1,7 @@
 #language: en
 Feature: The selection “Mit E-Mail-Bestätigung” can be set as the default per location so it is already selected when creating an appointment.
 
-	@web @zmsadmin @configuration @technical-admin @ZMS-3171 @ZMS-3162 @automatisiert @executeLocally
+	@web @zmsadmin @configuration @technical-admin @ZMS-3171 @ZMSALT-3171 @ZMS-3162 @ZMSALT-3162 @automatisiert @executeLocally
 	Scenario: [AUT] The default for "Mit E-Mail Bestätigung" is configurable
 		When I open the administration website.
 		Then I should be on the administration start page.

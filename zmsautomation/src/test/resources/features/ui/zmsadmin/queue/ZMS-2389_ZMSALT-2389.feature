@@ -1,7 +1,7 @@
 #language: en
 Feature: The queue creates the test data that feeds the citizen statistics.
 
-	@web @zmsadmin @queue @clerk @ZMS-2389 @ZMS-1738 @ZMS-1557 @E2E @automatisiert @executeLocally
+	@web @zmsadmin @queue @clerk @ZMS-2389 @ZMSALT-2389 @ZMS-1738 @ZMSALT-1738 @ZMS-1557 @ZMSALT-1557 @E2E @automatisiert @executeLocally
 	Scenario: Citizen statistics data setup
 		When I open the administration website.
 		And I click the button "Anmelden" in the administration.

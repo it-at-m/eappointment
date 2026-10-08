@@ -1,7 +1,7 @@
 #language: en
 Feature: A called appointment can be parked so it does not block the queue, and resumed later.
 
-	@web @zmsadmin @queue @clerk @ZMS-2578 @automatisiert @executeLocally
+	@web @zmsadmin @queue @clerk @ZMS-2578 @ZMSALT-2578 @automatisiert @executeLocally
 	Scenario: [AUT] Park a called appointment
 		#überprüfen, ob bereits für den Standort und den Monat dienstleistungen gebucht wurden.
 		When I open the administration website.
