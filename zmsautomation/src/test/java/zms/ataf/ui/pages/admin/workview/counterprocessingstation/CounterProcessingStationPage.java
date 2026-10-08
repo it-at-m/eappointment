@@ -1690,8 +1690,7 @@ public class CounterProcessingStationPage extends AdminPage {
         WebElement field = findElementByLocatorType(
                 ".dialog form[name='mail'] input[name='subject']", LocatorType.CSSSELECTOR, false);
         field.click();
-        field.sendKeys(Keys.chord(Keys.CONTROL, "a"));
-        field.sendKeys(Keys.DELETE);
+        field.clear();
         if (subject != null && !subject.isEmpty()) {
             field.sendKeys(subject);
         }
