@@ -1,35 +1,35 @@
 {
   "branch": "test-zmskvr-1620-zmskvr-1691-rebooking-disabled",
   "branchSlug": "test-zmskvr-1620-zmskvr-1691-rebooking-disabled",
-  "runId": "37707797337",
-  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37707797337",
-  "runStartedAt": "2026-10-08T00:26:41Z",
-  "publishedAt": "2026-10-08T00:46:52.298Z",
+  "runId": "37733976530",
+  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37733976530",
+  "runStartedAt": "2026-10-08T05:45:24Z",
+  "publishedAt": "2026-10-08T05:56:58.705Z",
   "features": {
     "feature-rest-zmscitizenapi-rebooking-zmskvr-1620-zmskvr-1691-rebooking-disabled-citizenapi": {
-      "status": "failed",
+      "status": "passed",
       "shard": "custom",
       "browser": "chrome",
       "browsers": {
         "chrome": {
-          "status": "failed",
+          "status": "passed",
           "shard": "custom",
-          "runId": "37707797337",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37707797337",
-          "runStartedAt": "2026-10-08T00:26:41Z"
+          "runId": "37733976530",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37733976530",
+          "runStartedAt": "2026-10-08T05:45:24Z"
         },
         "firefox": {
-          "status": "failed",
+          "status": "passed",
           "shard": "custom",
-          "runId": "37707797337",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37707797337",
-          "runStartedAt": "2026-10-08T00:26:41Z"
+          "runId": "37733976530",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37733976530",
+          "runStartedAt": "2026-10-08T05:45:24Z"
         }
       },
       "rel": "rest/zmscitizenapi/rebooking/zmskvr-1620_zmskvr-1691_rebooking_disabled_citizenapi.feature",
-      "runId": "37707797337",
-      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37707797337",
-      "runStartedAt": "2026-10-08T00:26:41Z"
+      "runId": "37733976530",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37733976530",
+      "runStartedAt": "2026-10-08T05:45:24Z"
     },
     "feature-ui-zmscitizenview-rebooking-zmskvr-1620-zmskvr-1691-rebooking-disabled": {
       "status": "failed",
@@ -39,22 +39,22 @@
         "chrome": {
           "status": "failed",
           "shard": "custom",
-          "runId": "37707797337",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37707797337",
-          "runStartedAt": "2026-10-08T00:26:41Z"
+          "runId": "37733976530",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37733976530",
+          "runStartedAt": "2026-10-08T05:45:24Z"
         },
         "firefox": {
           "status": "failed",
           "shard": "custom",
-          "runId": "37707797337",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37707797337",
-          "runStartedAt": "2026-10-08T00:26:41Z"
+          "runId": "37733976530",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37733976530",
+          "runStartedAt": "2026-10-08T05:45:24Z"
         }
       },
       "rel": "ui/zmscitizenview/rebooking/zmskvr-1620_zmskvr-1691_rebooking_disabled.feature",
-      "runId": "37707797337",
-      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37707797337",
-      "runStartedAt": "2026-10-08T00:26:41Z"
+      "runId": "37733976530",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37733976530",
+      "runStartedAt": "2026-10-08T05:45:24Z"
     }
   }
 }
