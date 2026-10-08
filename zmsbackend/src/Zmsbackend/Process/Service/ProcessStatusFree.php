@@ -69,7 +69,7 @@ class ProcessStatusFree extends Process
         return array_values($daysByDate);
     }
 
-    public function readFreeProcessesMinimalFromPreparedCalendar(
+    public function readMinimalFreeProcessesFromCalendar(
         \BO\Zmsentities\Calendar $calendar,
         string $slotType = 'public',
         ?int $slotsRequired = null,
