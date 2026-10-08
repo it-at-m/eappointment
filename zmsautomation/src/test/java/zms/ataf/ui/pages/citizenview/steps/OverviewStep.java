@@ -697,7 +697,7 @@ public final class OverviewStep {
                 () -> shadow.shadowDomContainsText("Termin absagen"),
                 "Cancel appointment button with rebooking disabled");
         Assert.assertFalse(
-                shadow.shadowDomContainsText(RESCHEDULE_APPOINTMENT_BUTTON),
+                shadow.visibleButtonContaining(RESCHEDULE_APPOINTMENT_BUTTON),
                 "Termin verschieben must stay hidden when scope.rebookingDisabled is true.");
     }
 
