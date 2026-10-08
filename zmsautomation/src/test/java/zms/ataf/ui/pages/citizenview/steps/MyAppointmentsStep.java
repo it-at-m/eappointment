@@ -297,17 +297,62 @@ public final class MyAppointmentsStep {
         }
         waitForAppointmentDetailShellAfterNavigation();
     }
+
+    /**
+     * Opens Termin-Detail ({@code appointment-detail.html}) from the confirmation-mail link.
+     * Mail URLs often point at the booking origin with only a hash; that stays on Übersicht.
+     */
+    public void openAppointmentDetailDeepLinkInBrowser() {
+        context.openCitizenViewIfNotAlreadyOpen();
+        String url = zms.ataf.rest.steps.CitizenApiSteps.getBookingAppointmentUrl();
+        Assert.assertNotNull(url, "No appointment view URL; fetch the confirmation mail first.");
+        url = rewriteCitizenViewUrlToAppointmentDetail(ensureAbsoluteCitizenViewUrl(url));
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: navigating to appointment-detail URL (from confirmation mail): {}", url);
+        try {
+            DriverUtil.getDriver().navigate().to(url);
+        } catch (Exception e) {
+            ScenarioLogManager.getLogger().warn("Navigate to appointment-detail URL", e);
+        }
+        waitForAppointmentDetailShellAfterNavigation();
+        CitizenViewWaits.waitWithThreeWindows(
+                () ->
+                        shadow.shadowDomContainsText("Termin absagen")
+                                || shadow.shadowDomHasHeading(2, "Ort"),
+                "Appointment detail after detail deep link");
+    }
+
+    /** Booking-origin mail links → {@code appointment-detail.html} keeping the appointment hash. */
+    public static String rewriteCitizenViewUrlToAppointmentDetail(String url) {
+        if (url == null || url.isBlank()) {
+            return url;
+        }
+        String u = url.trim();
+        int hashIdx = u.indexOf('#');
+        String base = hashIdx >= 0 ? u.substring(0, hashIdx) : u;
+        String hash = hashIdx >= 0 ? u.substring(hashIdx) : "";
+        base = base.replaceAll("(?i)/appointment-(?:view|detail|overview)\\.html/?$", "/");
+        if (!base.endsWith("/")) {
+            base = base + "/";
+        }
+        return base + "appointment-detail.html" + hash;
+    }
+
     private void waitForAppointmentDetailShellAfterNavigation() {
         context.set();
         try {
             new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(defaultWaitSeconds))
-                    .until(d -> shadow.deepVisibleCssExists(".m-contact") || shadow.deepVisibleCssExists("#timeTitleElement"));
+                    .until(
+                            d ->
+                                    shadow.deepVisibleCssExists("#timeTitleElement")
+                                            || shadow.shadowDomContainsText("Termin absagen")
+                                            || shadow.shadowDomHasHeading(2, "Ort"));
             ScenarioLogManager.getLogger()
-                    .info("zmscitizenview: visible appointment shell (.m-contact or #timeTitleElement)");
+                    .info("zmscitizenview: visible appointment-detail shell (#timeTitleElement / Termin absagen / Ort)");
         } catch (TimeoutException e) {
             ScenarioLogManager.getLogger()
                     .warn(
-                            "zmscitizenview: visible appointment shell not found after {}s; provider assertion will retry",
+                            "zmscitizenview: appointment-detail shell not found after {}s; assertion will retry",
                             defaultWaitSeconds);
         }
     }
@@ -1203,26 +1248,34 @@ public final class MyAppointmentsStep {
         String linkLabel = RuppertstrasseWartezoneHints.linkLabelFor(code);
         CitizenViewWaits.waitWithThreeWindows(
                 () ->
-                        shadow.shadowDomContainsText(zone)
+                        (shadow.shadowDomHasHeading(2, "Ort") || shadow.shadowDomContainsText("Termin absagen"))
+                                && shadow.shadowDomContainsText(zone)
                                 && shadow.shadowDomContainsText(RuppertstrasseWartezoneHints.DETAIL_CALLOUT_HEADER)
                                 && shadow.shadowDomContainsText(hint),
                 "Appointment detail Wartezone + Hinweis callout");
-        Assert.assertTrue(shadow.shadowDomHasHeading(2, "Ort"), "Detail missing Ort heading.");
+        Assert.assertTrue(
+                shadow.shadowDomHasHeading(2, "Ort") || shadow.shadowDomContainsText("Termin absagen"),
+                "Detail missing Ort heading / Termin absagen (still on booking Übersicht?).");
+        shadow.scrollTextIntoView(zone);
         Assert.assertTrue(shadow.shadowDomContainsText(zone), "Detail Ort missing " + zone);
+        shadow.scrollTextIntoView(RuppertstrasseWartezoneHints.DETAIL_CALLOUT_HEADER);
         Assert.assertTrue(
                 shadow.shadowDomContainsText(RuppertstrasseWartezoneHints.DETAIL_CALLOUT_HEADER),
                 "Detail missing callout header Hinweis zu Ihrem Termin.");
+        shadow.scrollTextIntoView(hint);
         Assert.assertTrue(shadow.shadowDomContainsText(hint), "Detail callout missing " + hint);
         Assert.assertFalse(
                 shadow.shadowDomContainsText(
                         RuppertstrasseWartezoneHints.hintFor(RuppertstrasseWartezoneHints.otherCode(code))),
                 "Detail must not show the other Wartebereich hint.");
+        shadow.scrollTextIntoView(linkLabel);
         Assert.assertTrue(shadow.shadowDomContainsText(linkLabel), "Detail missing rendered link " + linkLabel);
         Assert.assertTrue(
                 shadow.shadowHrefContains(RuppertstrasseWartezoneHints.HINT_HREF),
                 "Detail hint must expose href " + RuppertstrasseWartezoneHints.HINT_HREF);
         String italic = RuppertstrasseWartezoneHints.italicFor(code);
         String bold = RuppertstrasseWartezoneHints.boldFor(code);
+        shadow.scrollTextIntoView(italic);
         Assert.assertTrue(shadow.shadowDomContainsText(italic), "Detail missing rendered " + italic);
         Assert.assertTrue(shadow.shadowDomContainsText(bold), "Detail missing rendered " + bold);
         // Bare <strong> matches host <noscript> fallback text; probe ATAF-specific raw markers only.
