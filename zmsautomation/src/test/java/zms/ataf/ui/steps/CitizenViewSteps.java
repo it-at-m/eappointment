@@ -617,6 +617,18 @@ public class CitizenViewSteps {
         page.highlightPreferredTimeslotForOfficeWithMinLeadMinutes(officeId, minLeadMinutes);
     }
 
+    @When("I publish the remembered Ruppertstraße Wartezone to the Citizen API marker")
+    public void iPublishTheRememberedRuppertstrasseWartezoneToTheCitizenApiMarker() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: publish remembered Wartezone to API marker");
+        page.publishRememberedWartezoneToApiMarker();
+    }
+
+    @When("I sync the Citizen API Ruppertstraße Wartezone into the citizen view")
+    public void iSyncTheCitizenApiRuppertstrasseWartezoneIntoTheCitizenView() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: sync API Wartezone into citizen view state");
+        page.syncApiWartezoneIntoCitizenView();
+    }
+
     @When("I click the highlighted timeslot in the citizen view")
     public void iClickTheHighlightedTimeslotInTheCitizenView() {
         ScenarioLogManager.getLogger()

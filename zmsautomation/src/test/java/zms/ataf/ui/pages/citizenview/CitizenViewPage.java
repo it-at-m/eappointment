@@ -27,6 +27,7 @@ import zms.ataf.ui.pages.citizenview.steps.ContactStep;
 import zms.ataf.ui.pages.citizenview.steps.OverviewStep;
 import zms.ataf.ui.pages.citizenview.steps.MyAppointmentsStep;
 import zms.ataf.ui.pages.citizenview.support.CitizenViewJson;
+import zms.ataf.ui.pages.citizenview.support.RuppertstrasseWartezoneHints;
 import zms.ataf.ui.pages.citizenview.support.SlotBookingState;
 
 public class CitizenViewPage extends BasePage {
@@ -1200,6 +1201,19 @@ public class CitizenViewPage extends BasePage {
 
     public void highlightPreferredTimeslotForOfficeWithMinLeadMinutes(int officeId, int minLeadMinutes) {
         timeSlot.highlightPreferredTimeslotForOfficeWithMinLeadMinutes(officeId, minLeadMinutes);
+    }
+
+    public void publishRememberedWartezoneToApiMarker() {
+        Assert.assertNotNull(
+                slotState.rememberedWartezoneCode,
+                "Need a remembered Wartezone from the booking overview first.");
+        RuppertstrasseWartezoneHints.rememberApiWartezoneCode(slotState.rememberedWartezoneCode);
+    }
+
+    public void syncApiWartezoneIntoCitizenView() {
+        String code = RuppertstrasseWartezoneHints.rememberedApiWartezoneCode();
+        Assert.assertNotNull(code, "Citizen API Wartezone marker is empty.");
+        slotState.rememberedWartezoneCode = code;
     }
 
     public String assertAndRememberMatchingRuppertstrasseWartezoneHint(int officeId) {
