@@ -3,8 +3,8 @@
   "branchSlug": "test-zmskvr-1088-zmskvr-1342-service-title-order",
   "runId": "37794274143",
   "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37794274143",
-  "runStartedAt": "2026-10-08T14:39:37Z",
-  "publishedAt": "2026-10-08T14:51:56.255Z",
+  "runStartedAt": "2026-10-08T14:59:48Z",
+  "publishedAt": "2026-10-08T15:11:05.416Z",
   "features": {
     "feature-rest-zmscitizenapi-citizen-login-zmskvr-1342-zmskvr-1088-service-title-order-citizenapi": {
       "status": "passed",
@@ -16,20 +16,20 @@
           "shard": "custom",
           "runId": "37794274143",
           "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37794274143",
-          "runStartedAt": "2026-10-08T14:39:37Z"
+          "runStartedAt": "2026-10-08T14:59:48Z"
         },
         "firefox": {
           "status": "passed",
           "shard": "custom",
           "runId": "37794274143",
           "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37794274143",
-          "runStartedAt": "2026-10-08T14:39:37Z"
+          "runStartedAt": "2026-10-08T14:59:48Z"
         }
       },
       "rel": "rest/zmscitizenapi/citizen-login/zmskvr-1342_zmskvr-1088_service_title_order_citizenapi.feature",
       "runId": "37794274143",
       "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37794274143",
-      "runStartedAt": "2026-10-08T14:39:37Z"
+      "runStartedAt": "2026-10-08T14:59:48Z"
     },
     "feature-ui-zmscitizenview-citizen-login-zmskvr-1342-zmskvr-1088-service-title-order": {
       "status": "failed",
@@ -41,20 +41,20 @@
           "shard": "custom",
           "runId": "37794274143",
           "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37794274143",
-          "runStartedAt": "2026-10-08T14:39:37Z"
+          "runStartedAt": "2026-10-08T14:59:48Z"
         },
         "firefox": {
           "status": "failed",
           "shard": "custom",
           "runId": "37794274143",
           "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37794274143",
-          "runStartedAt": "2026-10-08T14:39:37Z"
+          "runStartedAt": "2026-10-08T14:59:48Z"
         }
       },
       "rel": "ui/zmscitizenview/citizen-login/zmskvr-1342_zmskvr-1088_service_title_order.feature",
       "runId": "37794274143",
       "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37794274143",
-      "runStartedAt": "2026-10-08T14:39:37Z"
+      "runStartedAt": "2026-10-08T14:59:48Z"
     }
   }
 }
