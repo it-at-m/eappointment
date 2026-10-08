@@ -38,20 +38,32 @@ public final class RuppertstrasseWartezoneHints {
         return rememberedApiWartezoneCode;
     }
 
-    /** {@code true} for ATAF HTML markers (WB03/WB04); {@code false} for plain Passfoto. */
+    /** {@code true} for concrete ATAF HTML markers (WB03/WB04). */
     public static boolean isAtafHtmlHint(String code) {
         return "WB03".equals(code) || "WB04".equals(code);
     }
 
     /**
-     * Ausgewählter Termin only paints {@code infoForAppointment}, not {@code scope.hint}
-     * (Wartebereich). Passfoto scopes share one hint, so selection uses {@code PASSFOTO};
-     * overview/detail then pin the concrete WB03/WB04-PASSFOTO code from Ort.
+     * Selection codes before Übersicht pins the concrete Wartebereich:
+     * <ul>
+     *   <li>{@code ATAF} — Hauptkalender 10489 (offices-and-services attaches one scope per
+     *       officeId, so Ausgewählter Termin always shows that scope’s marker)</li>
+     *   <li>{@code PASSFOTO} — Passkalender 10502 shared plain Passfoto text</li>
+     * </ul>
      */
+    public static boolean isSelectionFamily(String code) {
+        return "ATAF".equals(code) || "PASSFOTO".equals(code);
+    }
+
     public static boolean isPassfotoHint(String code) {
         return "PASSFOTO".equals(code)
                 || "WB03-PASSFOTO".equals(code)
                 || "WB04-PASSFOTO".equals(code);
+    }
+
+    /** Any ATAF HTML marker painted on Ausgewählter Termin / Übersicht. */
+    public static boolean paintsAtafHint(String text) {
+        return text != null && (text.contains(HINT_WB03) || text.contains(HINT_WB04));
     }
 
     public static String zoneFor(String code) {
@@ -75,6 +87,17 @@ public final class RuppertstrasseWartezoneHints {
             return HINT_PASSFOTO;
         }
         throw new IllegalArgumentException("Unknown Wartezone code: " + code);
+    }
+
+    /** Needle for waiting on Ausgewählter Termin when {@code code} is a selection family. */
+    public static String selectionHintNeedle(String code) {
+        if ("ATAF".equals(code)) {
+            return HINT_WB03; // wait condition also accepts WB04
+        }
+        if ("PASSFOTO".equals(code)) {
+            return HINT_PASSFOTO;
+        }
+        return hintFor(code);
     }
 
     public static String linkLabelFor(String code) {
