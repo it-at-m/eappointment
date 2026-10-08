@@ -1,0 +1,35 @@
+{
+  "branch": "test-zmskvr-1305-zmskvr-1316-leistung-wechseln-jumpin",
+  "branchSlug": "test-zmskvr-1305-zmskvr-1316-leistung-wechseln-jumpin",
+  "runId": "37799397778",
+  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37799397778",
+  "runStartedAt": "2026-10-08T15:16:39Z",
+  "publishedAt": "2026-10-08T15:24:33.449Z",
+  "features": {
+    "feature-ui-zmscitizenview-booking-zmskvr-1305-zmskvr-1316-leistung-wechseln-clears-jumpin": {
+      "status": "passed",
+      "shard": "custom",
+      "browser": "chrome",
+      "browsers": {
+        "chrome": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "37799397778",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37799397778",
+          "runStartedAt": "2026-10-08T15:16:39Z"
+        },
+        "firefox": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "37799397778",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37799397778",
+          "runStartedAt": "2026-10-08T15:16:39Z"
+        }
+      },
+      "rel": "ui/zmscitizenview/booking/zmskvr-1305_zmskvr-1316_leistung_wechseln_clears_jumpin.feature",
+      "runId": "37799397778",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37799397778",
+      "runStartedAt": "2026-10-08T15:16:39Z"
+    }
+  }
+}

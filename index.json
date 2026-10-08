@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-10-08T15:14:15.381Z",
+  "publishedAt": "2026-10-08T15:24:33.449Z",
   "branches": [
     {
       "name": "next",
@@ -372,6 +372,12 @@
       "slug": "test-zmskvr-1249-zmskvr-1583-sunday-opening-hours-range",
       "runId": "37194954540",
       "runStartedAt": "2026-10-04T10:18:41Z"
+    },
+    {
+      "name": "test-zmskvr-1305-zmskvr-1316-leistung-wechseln-jumpin",
+      "slug": "test-zmskvr-1305-zmskvr-1316-leistung-wechseln-jumpin",
+      "runId": "37799397778",
+      "runStartedAt": "2026-10-08T15:16:39Z"
     },
     {
       "name": "test-zmskvr-1334-appointment-ics-download",
