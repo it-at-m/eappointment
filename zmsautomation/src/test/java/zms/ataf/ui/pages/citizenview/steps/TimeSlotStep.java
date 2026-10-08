@@ -673,8 +673,37 @@ public final class TimeSlotStep {
         return true;
     }
 
+    /**
+     * Several locations show only the current hour. Switching back to the calendar reloads that hour
+     * to the earliest one, so a slot picked after Später in the list is not in the DOM until Später
+     * is opened again.
+     */
+    private void revealMarkedTimeslot() {
+        String slotId = slotState.markedTimeslotId;
+        if (slotId == null || slotId.isEmpty()) {
+            return;
+        }
+        long deadline = System.currentTimeMillis() + Math.min(defaultWaitSeconds, 30) * 1000L;
+        int pages = 0;
+        while (System.currentTimeMillis() < deadline && pages < 6) {
+            if (timeslotStyle(slotId).path("found").asBoolean()) {
+                return;
+            }
+            if (deepMucSpinnerVisible() || !deepTimeslotClickablePresent()) {
+                CitizenViewWaits.sleepQuiet(400L);
+                continue;
+            }
+            if (!clickCitizenViewLaterOnceIfAvailable()) {
+                return;
+            }
+            pages++;
+            CitizenViewWaits.sleepQuiet(500L);
+        }
+    }
+
     public void assertMarkedTimeslotIsWhiteOnBlue() {
         context.set();
+        revealMarkedTimeslot();
         JsonNode slot = new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(defaultWaitSeconds))
                 .until(d -> {
                     JsonNode node = timeslotStyle(slotState.markedTimeslotId);

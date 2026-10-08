@@ -1138,20 +1138,6 @@ const onListViewToggle = async (nextIsListView: boolean) => {
   }
   calendarKey.value++;
 
-  // List paging keeps its own hour. The calendar only renders the current hour
-  // when several locations are offered, so land on the hour of the picked slot.
-  if (selectedTimeslot.value) {
-    const hour = parseInt(
-      berlinHourFormatter.format(new Date(selectedTimeslot.value * 1000)),
-      10
-    );
-    if (!Number.isNaN(hour)) {
-      const berlinHour = hour === 24 ? 0 : hour;
-      selectedHour.value = berlinHour;
-      selectedDayPart.value = berlinHour >= 12 ? "pm" : "am";
-    }
-  }
-
   if (selectedDay.value) {
     await handleDaySelection(selectedDay.value);
   }
@@ -2340,14 +2326,10 @@ watch(appointmentTimestampsByOffice, () => {
       return hours.filter((hour) => typeof hour === "number" && hour >= 0);
     });
     if (allHours.length > 0) {
-      const current = selectedHour.value;
-      if (current === null || !allHours.includes(current)) {
-        selectedHour.value = Math.min(...(allHours as number[]));
-      }
+      selectedHour.value = Math.min(...(allHours as number[]));
     }
   }
-  // For am/pm view. Keep the half-day already open; a refresh used to jump back to morning
-  // and hide a selected afternoon slot.
+  // For am/pm view
   else if (selectedDay.value && timeSlotsInDayPartByOffice.value.size > 0) {
     const allDayParts = Array.from(
       timeSlotsInDayPartByOffice.value.values()
@@ -2355,10 +2337,6 @@ watch(appointmentTimestampsByOffice, () => {
       const dayParts = Array.from((office as any).appointments.keys());
       return dayParts.filter((part) => part === "am" || part === "pm");
     });
-    const currentPart = selectedDayPart.value;
-    if (currentPart && allDayParts.includes(currentPart)) {
-      return;
-    }
     if (allDayParts.includes("am")) {
       selectedDayPart.value = "am";
     } else if (allDayParts.includes("pm")) {
