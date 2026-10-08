@@ -45,8 +45,12 @@ public final class CaptchaClient {
         } catch (Exception e) {
             throw new IllegalStateException("Could not solve captcha challenge", e);
         }
+        if (solution == null) {
+            throw new IllegalStateException("Could not solve captcha challenge: solve timed out");
+        }
 
-        long solveTime = solution.time() == null ? 0L : solution.time();
+        // altcha 2.1.x uses fractional seconds (Double), matching the JS library.
+        Number solveTime = solution.time() == null ? 0 : solution.time();
         String payloadJson = "{\"challenge\":" + challengeJson
                 + ",\"solution\":{\"counter\":" + solution.counter()
                 + ",\"derivedKey\":\"" + solution.derivedKey()
@@ -108,7 +112,7 @@ public final class CaptchaClient {
                     textOrNull(params.get("keySignature")),
                     intOrNull(params.get("memoryCost")),
                     intOrNull(params.get("parallelism")),
-                    longOrNull(params.get("expiresAt")),
+                    numberOrNull(params.get("expiresAt")),
                     null);
             String signature = textOrNull(challenge.get("signature"));
             return new Challenge(parameters, signature);
@@ -131,10 +135,13 @@ public final class CaptchaClient {
         return node.intValue();
     }
 
-    private static Long longOrNull(JsonNode node) {
+    private static Number numberOrNull(JsonNode node) {
         if (node == null || node.isNull() || node.isMissingNode() || !node.isNumber()) {
             return null;
         }
-        return node.longValue();
+        if (node.isIntegralNumber()) {
+            return node.longValue();
+        }
+        return node.doubleValue();
     }
 }
