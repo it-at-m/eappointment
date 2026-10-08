@@ -281,6 +281,33 @@ public class ZmsApiMailSteps {
                 .isTrue();
     }
 
+    /**
+     * ZMSKVR-1620: a scope with rebooking disabled keeps the cancel link and drops "verschieben".
+     * Also stores the appointment view URL so the citizen page can open that mail link.
+     */
+    @Then("the confirmation mail link offers only cancellation")
+    public void theConfirmationMailLinkOffersOnlyCancellation() {
+        String processId = TestDataHelper.getTestData("mail_process_id");
+        Assertions.assertThat(processId)
+                .as("send the confirmation mail before checking its link")
+                .matches("[1-9]\\d*");
+        String html = htmlForProcessContaining(processId.trim(), "Termin absagen");
+        String lower = html.toLowerCase(java.util.Locale.ROOT);
+        Assertions.assertThat(lower)
+                .as("confirmation mail for process %s should keep Termin absagen. html=%s", processId, abbreviate(html))
+                .contains("termin absagen");
+        Assertions.assertThat(lower)
+                .as("confirmation mail for process %s must not offer verschieben. html=%s", processId, abbreviate(html))
+                .doesNotContain("verschieben");
+        String url = extractAppointmentViewUrlFromHtml(html);
+        Assertions.assertThat(url)
+                .as("confirmation mail for process %s should link to the appointment view", processId)
+                .isNotBlank();
+        CitizenApiSteps.setBookingAppointmentUrl(url);
+        ScenarioLogManager.getLogger().info(
+                "Confirmation mail for process {} offers only cancellation -> {}", processId, url);
+    }
+
     @Then("the confirmation mail shows the estimated duration on the line after the time")
     public void theConfirmationMailShowsTheEstimatedDurationOnTheLineAfterTheTime() {
         assertEstimatedDurationAfterTime("folgenden Termin bei uns gebucht");
