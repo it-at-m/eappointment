@@ -30,10 +30,11 @@ Feature: Ruppertstraße Wartezone and scope hints stay consistent through bookin
   #   Hauptkalender 10489 — V50 ATAF HTML on 160 (WB04) / 181 (WB03)
   #   Passkalender 10502 — V5/V6 Passfoto plain text on 172/184
   #   Führerscheinstelle 10308174 — V51 Kundenhinweis + openings on 6 (A) / 256 (B)
-  # Ausgewählter Termin paints offices-and-services scope.infoForAppointment for the
-  # officeId (one scope per office), not Wartebereich. UI scenarios book any matching
-  # hint family and pin WB03/WB04 (or FS-A/FS-B) from Übersicht Ort + Hinweis.
-  # Scope switch stays API.
+  # Ausgewählter Termin (step 2) still paints offices-and-services scope.infoForAppointment
+  # for the officeId (one scope per office), so the Hinweis there can be the wrong
+  # Wartebereich / Schalter until shared calendars get the Ruppertstraße mix. Only
+  # Übersicht (step 4) knows the assigned Standort — pin WB03/WB04 (or FS-A/FS-B) from
+  # Übersicht Ort + Hinweis. Scope switch stays API.
 
   Background:
     Given the Citizen API is available
@@ -114,7 +115,7 @@ Feature: Ruppertstraße Wartezone and scope hints stay consistent through bookin
     Then I should be logged in on the contact form in the citizen view
     When I fill contact details without continuing in the citizen view
     And I continue from the contact form in the citizen view
-    Then the booking summary should show provider 10308174 in the citizen view
+    Then the booking summary should show provider 10308174 with label "Führerscheinstelle" in the citizen view
     And the booking overview should show Führerscheinstelle Schalter and matching Kundenhinweis for office 10308174 in the citizen view
     And the booking overview scope hint should be wrapped in a paragraph in the citizen view
     When I accept communication in the citizen view
