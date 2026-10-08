@@ -7,15 +7,19 @@ on:
       - ".github/workflows/zmsautomation-maven-build.yml"
   push:
     # All branches. No paths: filter — new feature branches must run once even
-    # without zmsautomation/ changes. should-run gates later pushes.
+    # without zmsautomation/ changes. should-run gates later pushes. When the
+    # branch already has an open PR, pull_request covers the build so push skips.
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref == 'refs/heads/next' && github.ref || github.run_id }}
+  # One group per branch so a push and its matching pull_request do not both
+  # run Maven for the same tip. next keeps cancelling superseded pushes.
+  group: ${{ github.workflow }}-${{ github.head_ref || github.ref_name }}
   cancel-in-progress: true
 
 permissions:
   contents: read
   actions: read
+  pull-requests: read
 
 jobs:
   should-run:
@@ -50,6 +54,20 @@ jobs:
             echo "Run: pull_request"
             exit 0
           fi
+
+          # Push on a branch that already has an open PR is covered by pull_request.
+          OWNER="${GH_REPO%%/*}"
+          OPEN_PRS="$(
+            gh api \
+              "repos/${GH_REPO}/pulls?head=${OWNER}:${BRANCH}&state=open&per_page=1" \
+              --jq 'length'
+          )"
+          if [ "${OPEN_PRS}" != "0" ]; then
+            echo "run=false" >> "$GITHUB_OUTPUT"
+            echo "Skip: open PR already covers ${BRANCH}"
+            exit 0
+          fi
+
           bash .github/scripts/decide-push-ci-run.sh
 
   build:
