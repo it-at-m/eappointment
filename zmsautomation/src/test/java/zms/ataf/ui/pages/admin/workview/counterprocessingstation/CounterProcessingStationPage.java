@@ -824,6 +824,20 @@ public class CounterProcessingStationPage extends AdminPage {
         TestDataHelper.setTestData("new_appointment_customer_email", email);
     }
 
+    /** ZMSKVR-1396 / ZMSKVR-1687: appointment form E-Mail must expose browser autofill hints. */
+    public void assertNewAppointmentEmailFieldSupportsAutofill() {
+        ScenarioLogManager.getLogger().info("Asserting new-appointment email input type and autocomplete");
+        WebElement emailField = findElementByLocatorType("email", LocatorType.NAME, true);
+        Assert.assertEquals(
+                emailField.getAttribute("type"),
+                "email",
+                "Appointment E-Mail field must use type=\"email\"");
+        Assert.assertEquals(
+                emailField.getAttribute("autocomplete"),
+                "email",
+                "Appointment E-Mail field must use autocomplete=\"email\"");
+    }
+
     public void enterNoteInNewAppointmentTextField(String note) {
         ScenarioLogManager.getLogger().info("Trying to enter note \"" + note + "\" in new appointment text area...");
         WebElement newAppointmentNoteTextArea = findElementByLocatorType("amendment", LocatorType.NAME, true);
