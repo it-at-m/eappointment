@@ -27,7 +27,9 @@ Feature: Ruppertstraße Wartezone and scope hints stay consistent through bookin
   #
   # Fixtures:
   #   Hauptkalender 10489 — V50 ATAF HTML on 160 (WB04) / 181 (WB03), service Wohnsitzanmeldung
-  #   Passkalender 10502 — V5/V6 Passfoto plain text on 172 (WB04) / 184 (WB03), service Personalausweis
+  #   Passkalender 10502 — V5/V6 Passfoto plain text on 172/184, service Personalausweis
+  # Ausgewählter Termin only paints infoForAppointment (not Wartebereich). ATAF scopes are
+  # selected by distinct markers; Passfoto is one scenario and pins WB03/WB04 on Übersicht.
 
   Background:
     Given the Citizen API is available
@@ -69,7 +71,7 @@ Feature: Ruppertstraße Wartezone and scope hints stay consistent through bookin
       | WB03 | wb03 |
       | WB04 | wb04 |
 
-  Scenario Outline: <code> Passfoto hints match from Ausgewählter Termin through Übersicht and Mein Bereich
+  Scenario: Passfoto hints match from Ausgewählter Termin through Übersicht and Mein Bereich
     Given I open zmscitizenview with jump-in service "1063441" and location "10502"
     Then the service combination step should be visible
     When I continue from the service combination step
@@ -77,8 +79,8 @@ Feature: Ruppertstraße Wartezone and scope hints stay consistent through bookin
     When I select office 10502 in the citizen view
     And I wait for appointment slots to be ready in the citizen view
     And I click Später in the time slot grid if available in the citizen view
-    When I select a timeslot with Ruppertstraße Wartezone "<code>" for office 10502 in the citizen view
-    Then the selected appointment callout should show the rendered Ruppertstraße "<code>" scope hint in the citizen view
+    When I select a timeslot with Ruppertstraße Wartezone "PASSFOTO" for office 10502 in the citizen view
+    Then the selected appointment callout should show the rendered Ruppertstraße "PASSFOTO" scope hint in the citizen view
     When I continue after slot selection with Weiter for office 10502 in the citizen view
     And I remember the selected appointment time in the citizen view
     When I log in via Bürger-Login with Keycloak in the citizen view
@@ -86,18 +88,13 @@ Feature: Ruppertstraße Wartezone and scope hints stay consistent through bookin
     When I fill contact details without continuing in the citizen view
     And I continue from the contact form in the citizen view
     Then the booking summary should show provider 10502 in the citizen view
-    And the booking overview should show Ruppertstraße Wartezone "<code>" and scope hint for office 10502 in the citizen view
+    And the booking overview should show Ruppertstraße Wartezone "PASSFOTO" and scope hint for office 10502 in the citizen view
     And the booking overview scope hint should be wrapped in a paragraph in the citizen view
     When I accept communication in the citizen view
     And I confirm the logged-in booking from the summary in the citizen view
     Then the confirmation success callout should be visible in the citizen view
     When I sync the booking process from citizen view localStorage
-    And I remember the current appointment as "<tag>"
+    And I remember the current appointment as "wb-passfoto"
     When I open the appointment from the confirmation success callout in the citizen view
-    Then the appointment detail should show the Ruppertstraße "<code>" Wartezone and scope hint callout in the citizen view
-    When I cancel the remembered "<tag>" appointment
-
-    Examples:
-      | code          | tag           |
-      | WB03-PASSFOTO | wb03-passfoto |
-      | WB04-PASSFOTO | wb04-passfoto |
+    Then the appointment detail should show the matching Ruppertstraße Wartezone and scope hint callout in the citizen view
+    When I cancel the remembered "wb-passfoto" appointment
