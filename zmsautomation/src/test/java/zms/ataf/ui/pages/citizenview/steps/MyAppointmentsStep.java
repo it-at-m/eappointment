@@ -299,16 +299,18 @@ public final class MyAppointmentsStep {
     }
 
     /**
-     * Opens Termin-Detail ({@code appointment-detail.html}) from the confirmation-mail link.
-     * Mail URLs often point at the booking origin with only a hash; that stays on Übersicht.
+     * Opens Termin-Detail the same way as „Termin ansehen“:
+     * {@code appointment-detail.html?ap-id={processId}}. Hash-only mail links
+     * ({@code #/appointment/...}) are for the booking widget and leave detail blank.
      */
-    public void openAppointmentDetailDeepLinkInBrowser() {
+    public void openAppointmentDetailForCurrentProcess() {
         context.openCitizenViewIfNotAlreadyOpen();
-        String url = zms.ataf.rest.steps.CitizenApiSteps.getBookingAppointmentUrl();
-        Assert.assertNotNull(url, "No appointment view URL; fetch the confirmation mail first.");
-        url = rewriteCitizenViewUrlToAppointmentDetail(ensureAbsoluteCitizenViewUrl(url));
+        ThinnedProcess process = zms.ataf.rest.steps.CitizenApiSteps.getBookingProcess();
+        Assert.assertNotNull(process, "No booking process; confirm/reserve first.");
+        Assert.assertNotNull(process.getProcessId(), "Booking process has no processId.");
+        String url = appointmentDetailUrlForProcess(process.getProcessId(), process.getDisplayNumber());
         ScenarioLogManager.getLogger()
-                .info("zmscitizenview: navigating to appointment-detail URL (from confirmation mail): {}", url);
+                .info("zmscitizenview: navigating to appointment-detail ?ap-id={}: {}", process.getProcessId(), url);
         try {
             DriverUtil.getDriver().navigate().to(url);
         } catch (Exception e) {
@@ -319,23 +321,27 @@ public final class MyAppointmentsStep {
                 () ->
                         shadow.shadowDomContainsText("Termin absagen")
                                 || shadow.shadowDomHasHeading(2, "Ort"),
-                "Appointment detail after detail deep link");
+                "Appointment detail after ?ap-id open");
+        shadow.scrollTextIntoView(RuppertstrasseWartezoneHints.DETAIL_CALLOUT_HEADER);
     }
 
-    /** Booking-origin mail links → {@code appointment-detail.html} keeping the appointment hash. */
-    public static String rewriteCitizenViewUrlToAppointmentDetail(String url) {
-        if (url == null || url.isBlank()) {
-            return url;
+    /** Same URL shape as AppointmentView.viewAppointment (ap-id / ap-display query params). */
+    public static String appointmentDetailUrlForProcess(Integer processId, String displayNumber) {
+        Assert.assertNotNull(processId, "processId required for appointment-detail URL");
+        String origin = Objects.requireNonNullElse(
+                        System.getenv("CITIZEN_VIEW_BASE_URI"), "http://localhost:8082/")
+                .trim();
+        if (!origin.endsWith("/")) {
+            origin = origin + "/";
         }
-        String u = url.trim();
-        int hashIdx = u.indexOf('#');
-        String base = hashIdx >= 0 ? u.substring(0, hashIdx) : u;
-        String hash = hashIdx >= 0 ? u.substring(hashIdx) : "";
-        base = base.replaceAll("(?i)/appointment-(?:view|detail|overview)\\.html/?$", "/");
-        if (!base.endsWith("/")) {
-            base = base + "/";
+        StringBuilder url =
+                new StringBuilder(origin)
+                        .append("appointment-detail.html?ap-id=")
+                        .append(processId);
+        if (displayNumber != null && !displayNumber.isBlank()) {
+            url.append("&ap-display=").append(displayNumber);
         }
-        return base + "appointment-detail.html" + hash;
+        return url.toString();
     }
 
     private void waitForAppointmentDetailShellAfterNavigation() {
