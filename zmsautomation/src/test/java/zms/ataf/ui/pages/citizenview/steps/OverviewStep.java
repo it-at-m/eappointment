@@ -257,13 +257,15 @@ public final class OverviewStep {
     }
 
     /**
-     * ZMSKVR-843 / ZMSKVR-1014: overview Hinweis without embedded {@code <p>} is wrapped in a
-     * paragraph (same font path as duration text).
+     * ZMSKVR-843 / ZMSKVR-1014: overview Hinweis is in a dedicated block under the Hinweis heading.
+     * Plain text is wrapped in {@code <p>}. HTML markers (ATAF links) go through
+     * {@code containsParagraphTag} + DOMParser, which treats inline HTML as a {@code <p>} and
+     * therefore paint a {@code <div>} host — both are accepted as the overview block wrapper.
      */
     public void assertOverviewScopeHintWrappedInParagraph() {
         context.set();
         String code = slotState.rememberedWartezoneCode;
-        Assert.assertNotNull(code, "Need a remembered Wartezone before asserting overview <p> wrap.");
+        Assert.assertNotNull(code, "Need a remembered Wartezone before asserting overview hint wrap.");
         String needle = RuppertstrasseWartezoneHints.hintFor(code);
         Object raw =
                 ((JavascriptExecutor) DriverUtil.getDriver())
@@ -274,18 +276,24 @@ public final class OverviewStep {
                                         + "if(n.assignedNodes){var a=n.assignedNodes({flatten:true});"
                                         + "for(var j=0;j<a.length;j++)s+=' '+textOf(a[j]);}"
                                         + "var c=n.childNodes;if(c)for(var i=0;i<c.length;i++)s+=' '+textOf(c[i]);return s;}"
-                                        + "function walk(n,fn){if(!n)return null;var r=fn(n);if(r)return r;"
-                                        + "if(n.shadowRoot){r=walk(n.shadowRoot,fn);if(r)return r;}"
-                                        + "var c=n.children;if(c)for(var i=0;i<c.length;i++){r=walk(c[i],fn);if(r)return r;}"
-                                        + "return null;}"
-                                        + "return walk(document.body,function(n){"
-                                        + "if((n.tagName||'').toUpperCase()!=='P')return null;"
+                                        + "var best=null,bestLen=1e9;"
+                                        + "function consider(n){if(!n||n.nodeType!==1)return;"
+                                        + "var tag=(n.tagName||'').toUpperCase();"
+                                        + "if(tag!=='P'&&tag!=='DIV')return;"
                                         + "var t=textOf(n).replace(/\\s+/g,' ').trim();"
-                                        + "return t.indexOf(needle)>=0?t:null;"
-                                        + "});");
+                                        + "if(t.indexOf(needle)<0)return;"
+                                        + "if(t.length<bestLen){bestLen=t.length;best=tag;}}"
+                                        + "function walk(n){if(!n)return;consider(n);"
+                                        + "if(n.shadowRoot)walk(n.shadowRoot);"
+                                        + "var c=n.children;if(c)for(var i=0;i<c.length;i++)walk(c[i]);}"
+                                        + "walk(document.body);return best||'';");
+        String tag = raw == null ? "" : raw.toString();
         Assert.assertTrue(
-                raw instanceof String && ((String) raw).contains(needle),
-                "Overview Hinweis \"" + needle + "\" must sit inside a <p> (ZMSKVR-843).");
+                "P".equals(tag) || "DIV".equals(tag),
+                "Overview Hinweis \""
+                        + needle
+                        + "\" must sit in a dedicated <p> or <div> block (ZMSKVR-843). Found: "
+                        + tag);
     }
 
     /** ZMSKVR-1530: overview Hinweis HTML is painted (link text, no raw tags). */
