@@ -1,10 +1,11 @@
 /**
  * Privacy-safe booking analytics. Emits English, PII-free events that cross
  * Shadow DOM via document + composed CustomEvent. If etracker is present on
- * the host page, also forwards object, category, action, and type. Type is
- * the flow (new, rebooking) and the slot view (list, calendar) when set.
- * One visit in ten is kept, and that visit emits every event in the chain.
- * Never throws.
+ * the host page, also forwards object, category, and action. The Events
+ * report lists the object, so a reserved slot is new_calendar, new_list,
+ * rebooking_calendar, or rebooking_list, and a confirmation is
+ * new_confirmed or rebooking_confirmed. One visit in ten is kept, and that
+ * visit emits every event in the chain. Never throws.
  */
 
 export const APPOINTMENT_TRACK_EVENT = "zms-appointment-track";
@@ -148,30 +149,25 @@ function sendToEtracker(payload: AppointmentTrackPayload): void {
     return;
   }
 
-  const type = etrackerType(payload);
-  const event = type
-    ? new UserDefinedEvent(
-        payload.object,
-        APPOINTMENT_TRACK_CATEGORY,
-        payload.action,
-        type
-      )
-    : new UserDefinedEvent(
-        payload.object,
-        APPOINTMENT_TRACK_CATEGORY,
-        payload.action
-      );
-  sendEvent(event);
+  sendEvent(
+    new UserDefinedEvent(
+      etrackerObject(payload),
+      APPOINTMENT_TRACK_CATEGORY,
+      payload.action
+    )
+  );
 }
 
-/** etracker has one type field. Flow and slot view share it, flow first. */
-function etrackerType(payload: AppointmentTrackPayload): string | undefined {
-  const parts: string[] = [];
-  if (payload.flow) {
-    parts.push(payload.flow);
+/**
+ * The etracker Events report shows this string in the object column.
+ * Reserved slots and confirmations are named so flow and view are visible there.
+ */
+function etrackerObject(payload: AppointmentTrackPayload): string {
+  if (payload.object === "reserved" && payload.flow && payload.slot_ui) {
+    return `${payload.flow}_${payload.slot_ui}`;
   }
-  if (payload.slot_ui) {
-    parts.push(payload.slot_ui);
+  if (payload.object === "confirmed" && payload.flow) {
+    return `${payload.flow}_confirmed`;
   }
-  return parts.length > 0 ? parts.join("_") : undefined;
+  return payload.object;
 }
