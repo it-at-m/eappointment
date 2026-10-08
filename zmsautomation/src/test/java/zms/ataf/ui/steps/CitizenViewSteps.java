@@ -606,6 +606,17 @@ public class CitizenViewSteps {
         page.highlightPreferredTimeslotForOffice(officeId);
     }
 
+    @When("I scroll to and highlight a timeslot at least {int} minutes ahead for office {int} in the citizen view")
+    public void iScrollToAndHighlightATimeslotAtLeastMinutesAheadForOfficeInTheCitizenView(
+            int minLeadMinutes, int officeId) {
+        ScenarioLogManager.getLogger()
+                .info(
+                        "zmscitizenview: scroll + highlight timeslot ≥{}min ahead for office {}",
+                        minLeadMinutes,
+                        officeId);
+        page.highlightPreferredTimeslotForOfficeWithMinLeadMinutes(officeId, minLeadMinutes);
+    }
+
     @When("I click the highlighted timeslot in the citizen view")
     public void iClickTheHighlightedTimeslotInTheCitizenView() {
         ScenarioLogManager.getLogger()
