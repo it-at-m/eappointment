@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-10-08T22:26:57.972Z",
+  "publishedAt": "2026-10-08T22:39:21.712Z",
   "branches": [
     {
       "name": "next",
@@ -720,6 +720,12 @@
       "slug": "test-zmskvr-92-zmskvr-164-booking-stepper",
       "runId": "37382099981",
       "runStartedAt": "2026-10-05T22:22:57Z"
+    },
+    {
+      "name": "test-zmskvr-924-zmskvr-1019-fuehrerschein-scope-hints",
+      "slug": "test-zmskvr-924-zmskvr-1019-fuehrerschein-scope-hints",
+      "runId": "37853384772",
+      "runStartedAt": "2026-10-08T22:25:34Z"
     },
     {
       "name": "zmskvr-1631-fix-previous-step-button",
