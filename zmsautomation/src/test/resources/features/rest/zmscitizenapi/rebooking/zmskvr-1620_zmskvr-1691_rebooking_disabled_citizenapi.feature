@@ -6,8 +6,9 @@ Feature: Citizen API: rebooking rejected when the scope disables Umbuchung
   So that the Bürgerfrontend can hide Termin verschieben for that office
 
   # ZMSKVR-1620 tested by ZMSKVR-1691.
-  # SZE provider 10446 stays rebooking disabled. Its service 1080784 is internal,
-  # so this API books public Reisepass 1063453 at Passkalender 10502 instead.
+  # SZE scopes 208/211 stay rebooking disabled (office 10446 still reports that).
+  # Scope 205 keeps Umbuchung on for the UI callout path. Service 1080784 is
+  # internal, so this API books public Reisepass 1063453 at Passkalender 10502.
   # V49 disables scopes 172, 184 and 342, which share that provider.
   # The Passkalender requires the custom text field, so the update sends one.
   # 10492 stays enabled.

@@ -34,6 +34,10 @@ public final class TimeSlotStep {
             "Bitte versuchen Sie es noch einmal zu einem späteren Zeitpunkt.";
     private static final String TIME_HEADING = "Datum und Uhrzeit";
     private static final String NEW_APPOINTMENTS_INFO_LINK = "Wann gibt es neue Termine?";
+    private static final String INVALID_LOCATION_SERVICE_CALLOUT =
+            "Ungültige Kombination aus Ort und Leistung.";
+    private static final String INVALID_LOCATION_SERVICE_CALLOUT_TEXT =
+            "Die angegebene Dienstleistung ist an diesem Standort nicht verfügbar.";
 
 
     /**
@@ -262,6 +266,30 @@ public final class TimeSlotStep {
         Assert.assertFalse(
                 shadow.deepInfoCalloutContains(NO_APPOINTMENT_CALLOUT),
                 "Did not expect the empty-state callout '" + NO_APPOINTMENT_CALLOUT + "'");
+    }
+
+    /**
+     * Rebooking an unpublished/internal service: available-calendar returns
+     * invalidLocationAndServiceCombination and the Termin step shows that warning.
+     */
+    public void assertInvalidLocationAndServiceCombinationCalloutVisible() {
+        context.set();
+        long deadline = System.currentTimeMillis() + Math.max(30, defaultWaitSeconds) * 1000L;
+        while (System.currentTimeMillis() < deadline) {
+            if (!deepMucSpinnerVisible()
+                    && shadow.deepWarningCalloutContains(INVALID_LOCATION_SERVICE_CALLOUT)
+                    && shadow.shadowDomContainsText(INVALID_LOCATION_SERVICE_CALLOUT_TEXT)) {
+                break;
+            }
+            CitizenViewWaits.sleepQuiet(300L);
+        }
+        Assert.assertFalse(deepMucSpinnerVisible(), "Spinner must finish before the invalid-combo callout");
+        Assert.assertTrue(
+                shadow.deepWarningCalloutContains(INVALID_LOCATION_SERVICE_CALLOUT),
+                "Expected the warning callout '" + INVALID_LOCATION_SERVICE_CALLOUT + "'");
+        Assert.assertTrue(
+                shadow.shadowDomContainsText(INVALID_LOCATION_SERVICE_CALLOUT_TEXT),
+                "Expected callout body '" + INVALID_LOCATION_SERVICE_CALLOUT_TEXT + "'");
     }
 
     /**
