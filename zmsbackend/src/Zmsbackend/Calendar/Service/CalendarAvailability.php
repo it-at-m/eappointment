@@ -192,7 +192,7 @@ class CalendarAvailability extends \BO\Zmsbackend\Base
         $processList = [];
         if (count($slotDays) > 0) {
             $processList = (new \BO\Zmsbackend\Process\Service\ProcessStatusFree())
-                ->readFreeProcessesMinimalFromPreparedCalendar(
+                ->readMinimalFreeProcessesFromCalendar(
                     $calendar,
                     $slotType,
                     $slotsRequired,
