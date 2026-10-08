@@ -174,8 +174,8 @@ public class CitizenViewPageContext extends Context {
         ScenarioLogManager.getLogger().warn("Jump-in DOM still unsettled after 25s (half-blank risk).");
     }
 
-    /** A mail link can be the first citizen page in the scenario. Register the window before switching to it. */
-    public void ensureWindow() {
+    /** A mail link can be the first citizen page. Open it when no window is registered, otherwise switch to the open one. */
+    public void openCitizenViewIfNotAlreadyOpen() {
         if (windowType == null) {
             navigateToPage();
         } else {

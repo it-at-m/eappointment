@@ -278,7 +278,7 @@ public final class MyAppointmentsStep {
         return ensureAbsoluteCitizenViewUrl(url);
     }
     public void openAppointmentViewDeepLinkInBrowser() {
-        context.ensureWindow();
+        context.openCitizenViewIfNotAlreadyOpen();
         String url = zms.ataf.rest.steps.CitizenApiSteps.getBookingAppointmentUrl();
         if (url == null || url.isBlank()) {
             ScenarioLogManager.getLogger().warn("zmscitizenview: no appointment view URL set; fetch the confirmation mail (second mail) first.");
