@@ -1221,12 +1221,17 @@ public final class MyAppointmentsStep {
         Assert.assertTrue(
                 shadow.shadowHrefContains(RuppertstrasseWartezoneHints.HINT_HREF),
                 "Detail hint must expose href " + RuppertstrasseWartezoneHints.HINT_HREF);
+        String italic = RuppertstrasseWartezoneHints.italicFor(code);
+        String bold = RuppertstrasseWartezoneHints.boldFor(code);
+        Assert.assertTrue(shadow.shadowDomContainsText(italic), "Detail missing rendered " + italic);
+        Assert.assertTrue(shadow.shadowDomContainsText(bold), "Detail missing rendered " + bold);
+        // Bare <strong> matches host <noscript> fallback text; probe ATAF-specific raw markers only.
         Assert.assertFalse(
                 shadow.shadowDomContainsText("<a href")
                         || shadow.shadowDomContainsText("<br>")
-                        || shadow.shadowDomContainsText("<em>")
-                        || shadow.shadowDomContainsText("<strong>"),
-                "Detail Hinweis callout must not show raw HTML tags.");
+                        || shadow.shadowDomContainsText("<em>kursiv")
+                        || shadow.shadowDomContainsText("<strong>fett"),
+                "Detail Hinweis callout must not show raw ATAF HTML tags.");
         ScenarioLogManager.getLogger()
                 .info("zmscitizenview: detail matched Ruppertstraße Wartezone {} and HTML callout", code);
     }
