@@ -424,6 +424,51 @@ describe("AppointmentSelection", () => {
       expect(wrapper.text()).toContain("apiErrorNoAppointmentForThisScopeText");
     });
 
+    it("shows API error callout when calendar rejects invalid location/service combo", async () => {
+      (fetchAvailableCalendar as Mock).mockResolvedValue({
+        errors: [
+          {
+            errorCode: "invalidLocationAndServiceCombination",
+            errorMessage:
+              "The provided service(s) do not exist at the given location.",
+            statusCode: 400,
+            errorType: "warning",
+          },
+        ],
+      });
+
+      const wrapper = createWrapper({
+        selectedService: {
+          id: "1080784",
+          providers: [
+            {
+              name: "SZE",
+              id: 10446,
+              address: { street: "Ruppertstraße", house_number: "19" },
+              scope: { id: "205" },
+            },
+          ],
+        },
+        props: { isRebooking: true },
+      });
+
+      await flushPromises();
+      await nextTick();
+
+      expect(wrapper.vm.availableDaysFetched).toBe(true);
+      expect(wrapper.vm.isSwitchingProvider).toBe(false);
+      expect(wrapper.vm.error).toBe(true);
+      expect(wrapper.text()).toContain(
+        "apiErrorInvalidLocationAndServiceCombinationHeader"
+      );
+      expect(wrapper.text()).toContain(
+        "apiErrorInvalidLocationAndServiceCombinationText"
+      );
+      expect(wrapper.text()).not.toContain(
+        "apiErrorNoAppointmentForThisScopeHeader"
+      );
+    });
+
     it("shows newAppointmentsInfoLink on empty calendar when selected locations have info", async () => {
       (fetchAvailableCalendar as Mock).mockResolvedValue(calendarResponse([]));
 

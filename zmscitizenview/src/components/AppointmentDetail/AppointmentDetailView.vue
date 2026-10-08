@@ -182,6 +182,7 @@
         :appointment="appointment"
         :selected-provider="selectedProvider"
         :variant-id="variantId"
+        :variant-overwrite="selectedService?.variantOverwrite"
         :t="t"
         @cancel-appointment="openCancelModal"
         @focus-location="focusLocationTitle"
@@ -237,7 +238,7 @@
               >
                 <template v-if="isVideoVariant">
                   <p>
-                    <strong>{{ t("appointmentTypes.3") }}</strong
+                    <strong>{{ variant?.name }}</strong
                     ><br />
                     {{ t("appointmentDetailVideoLocationText") }}
                   </p>
@@ -260,7 +261,7 @@
 
                 <template v-else-if="isTelephoneVariant">
                   <p>
-                    <strong>{{ t("appointmentTypes.2") }}</strong
+                    <strong>{{ variant?.name }}</strong
                     ><br />
                     {{ t("appointmentDetailTelephoneLocationText") }}<br />
                     <br />
@@ -408,7 +409,6 @@ import { AppointmentImpl } from "@/types/AppointmentImpl";
 import { GlobalState } from "@/types/GlobalState";
 import { OfficeImpl } from "@/types/OfficeImpl";
 import { ServiceImpl } from "@/types/ServiceImpl";
-import { SubService } from "@/types/SubService";
 import {
   handleApiResponseForDownTime,
   isInMaintenanceMode,
@@ -434,6 +434,8 @@ import { formatAppointmentDateTime } from "@/utils/formatAppointmentDateTime";
 import { getProviders } from "@/utils/getProviders";
 import { resolveOfficeById } from "@/utils/resolveOfficeById";
 import sanitizeHtml from "@/utils/sanitizeHtml";
+import { serviceFromAppointment } from "@/utils/serviceFromAppointment";
+import { useVariant } from "@/utils/useVariant";
 
 const props = defineProps<{
   globalState: GlobalState;
@@ -441,6 +443,8 @@ const props = defineProps<{
   rescheduleAppointmentUrl: string;
   t: (key: string) => string;
 }>();
+
+const getVariant = useVariant(props.t);
 
 const services = ref<Service[]>([]);
 const relations = ref<Relation[]>([]);
@@ -457,6 +461,9 @@ const isMobile = ref(false);
 
 const variantId = computed<number | null>(
   () => selectedService.value?.variantId ?? null
+);
+const variant = computed(() =>
+  getVariant(variantId.value, selectedService.value?.variantOverwrite)
 );
 
 const isTelephoneVariant = computed(
@@ -658,20 +665,22 @@ const loadAppointment = () => {
                 appointment.value.processId
             );
 
-            selectedService.value = services.value.find(
-              (service) =>
-                String(service.id) === String(appointment.value?.serviceId)
+            selectedProvider.value = resolveOfficeById(
+              appointment.value.officeId,
+              {
+                offices: offices.value,
+                appointment: appointment.value,
+              }
             );
-            if (selectedService.value) {
-              selectedService.value.count = appointment.value.serviceCount;
 
-              selectedService.value.providers = getProviders(
-                selectedService.value?.id,
-                null,
-                relations.value,
-                offices.value
-              );
-
+            selectedService.value = serviceFromAppointment(
+              appointment.value,
+              services.value,
+              (serviceId) =>
+                getProviders(serviceId, null, relations.value, offices.value),
+              selectedProvider.value
+            );
+            if (selectedService.value?.providers?.length) {
               selectedProvider.value = resolveOfficeById(
                 appointment.value.officeId,
                 {
@@ -680,35 +689,6 @@ const loadAppointment = () => {
                   appointment: appointment.value,
                 }
               );
-
-              if (appointment.value.subRequestCounts.length > 0) {
-                appointment.value.subRequestCounts.forEach(
-                  (subRequestCount) => {
-                    const subRequest = services.value.find(
-                      (service) => service.id == subRequestCount.id
-                    ) as Service;
-                    const subService = new SubService(
-                      subRequest.id,
-                      subRequest.name,
-                      subRequest.maxQuantity,
-                      getProviders(
-                        subRequest.id,
-                        null,
-                        relations.value,
-                        offices.value
-                      ),
-                      subRequestCount.count
-                    );
-                    if (
-                      selectedService.value &&
-                      !selectedService.value.subServices
-                    ) {
-                      selectedService.value.subServices = [];
-                    }
-                    selectedService.value?.subServices?.push(subService);
-                  }
-                );
-              }
             }
             loading.value = false;
           } else {

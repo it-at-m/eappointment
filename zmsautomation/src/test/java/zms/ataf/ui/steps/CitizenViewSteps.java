@@ -1080,6 +1080,14 @@ public class CitizenViewSteps {
         page.assertProviderSummaryVisible(officeId);
     }
 
+    @Then("the appointment overview should show service {int} named {string} in the citizen view")
+    public void theAppointmentOverviewShouldShowServiceNamed(int serviceId, String serviceName) {
+        String label = TestDataHelper.transformTestData(serviceName);
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: assert overview shows service {} named {}", serviceId, label);
+        page.assertOverviewServiceVisible(serviceId, label);
+    }
+
     @Then("the booking summary should show {string} for provider {int} in the citizen view")
     public void theBookingSummaryShouldShowLocationForProvider(String locationLabel, int officeId) {
         String label = TestDataHelper.transformTestData(locationLabel);
@@ -1198,11 +1206,25 @@ public class CitizenViewSteps {
         page.assertAppointmentManagementActionsNotVisible();
     }
 
+    @Then("the reschedule appointment button should be visible in the citizen view")
+    public void theRescheduleAppointmentButtonShouldBeVisible() {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: assert Termin verschieben visible (rebooking enabled)");
+        page.assertRescheduleAppointmentButtonVisible();
+    }
+
     @Then("the reschedule appointment button should not be visible in the citizen view")
     public void theRescheduleAppointmentButtonShouldNotBeVisible() {
         ScenarioLogManager.getLogger()
                 .info("zmscitizenview: assert Termin verschieben hidden (rebookingDisabled)");
         page.assertRescheduleAppointmentButtonNotVisible();
+    }
+
+    @Then("the invalid location and service combination callout should be visible in the citizen view")
+    public void theInvalidLocationAndServiceCombinationCalloutShouldBeVisible() {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: assert invalidLocationAndServiceCombination warning callout");
+        page.assertInvalidLocationAndServiceCombinationCalloutVisible();
     }
 
     @Then("the cancel appointment button should be visible in the citizen view")

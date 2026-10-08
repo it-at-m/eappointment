@@ -15,6 +15,9 @@ Feature: CitizenView: captcha session and reservation callouts
   # http://citizenview is not a secure context for WebCrypto in Firefox/Edge.
   # The client timer shows the reservation callout. The processNotReservedAnymore API callout
   # on Übersicht is covered by the Vue unit tests.
+  # Rebooking skips Leistung/captcha UI: GET /appointment/ mints captchaToken. After the
+  # session callout, Buchung neu starten must return to Übersicht (#/appointment/{hash}),
+  # not Leistung.
 
   Background:
     Given the Citizen API is available
@@ -79,3 +82,39 @@ Feature: CitizenView: captcha session and reservation callouts
     When I restart the booking in the citizen view
     Then the service combination step should be visible
     And service "Parkausweis für Handelsvertretungen" should still be selected with quantity 1 in the citizen view
+
+  @rebooking
+  Scenario: Expired captcha session during rebooking restarts at the appointment jump-in
+    Given I open zmscitizenview with jump-in service "1072015" and location "10427"
+    Then the service combination step should be visible
+    When I wait for the captcha check to finish in the citizen view
+    And I continue from the service combination step
+    Then provider checkbox 10427 should be visible in the citizen view
+    When I select office 10427 in the citizen view
+    And I wait for appointment slots to be ready in the citizen view
+    And I click Später in the time slot grid if available in the citizen view
+    And I scroll to and highlight the preferred timeslot for office 10427 in the citizen view
+    And I click the highlighted timeslot in the citizen view
+    And I continue after slot selection with Weiter for office 10427 in the citizen view
+    When I enter default contact details in the citizen view
+    Then the booking summary should show "Kommunale Verkehrsüberwachung" for provider 10427 in the citizen view
+    When I accept communication in the citizen view
+    And I continue from the preconfirm step in the citizen view
+    Then the preconfirmation callout should be visible with activation time 60 minutes in the citizen view
+    When I sync the booking process from citizen view localStorage
+    And I fetch the preconfirmation mail for the current process
+    And I open the confirmation deep link in the browser
+    Then the confirmation success callout should be visible in the citizen view
+    When I sync the booking process from citizen view localStorage
+    And I fetch the confirmation mail for the current process
+    And I open the appointment view deep link in the browser
+    Then the reschedule appointment button should be visible in the citizen view
+    When I reschedule the appointment in the citizen view
+    Then the cancel reschedule button should be visible in the citizen view
+    When I wait 5 minutes in the citizen view
+    Then the captcha session callout should be visible in the citizen view
+    And the Zurück button should not be visible in the citizen view
+    When I restart the booking in the citizen view
+    Then the reschedule and cancel actions for the existing appointment should be visible in the citizen view
+    When I cancel the appointment in the citizen view
+    Then the cancellation success callout should be visible in the citizen view
