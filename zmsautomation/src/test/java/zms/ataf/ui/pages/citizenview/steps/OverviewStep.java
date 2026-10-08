@@ -222,9 +222,11 @@ public final class OverviewStep {
         Assert.assertNotNull(
                 code,
                 "Overview must show a matching Wartebereich 03/04 with ATAF Hinweis WB03/WB04. Text: " + text);
+        shadow.scrollTextIntoView(RuppertstrasseWartezoneHints.zoneFor(code));
         Assert.assertTrue(
                 text.contains(RuppertstrasseWartezoneHints.zoneFor(code)),
                 "Overview Ort missing " + RuppertstrasseWartezoneHints.zoneFor(code) + ". Text: " + text);
+        shadow.scrollTextIntoView(RuppertstrasseWartezoneHints.hintFor(code));
         Assert.assertTrue(
                 text.contains(RuppertstrasseWartezoneHints.hintFor(code)),
                 "Overview Hinweis missing " + RuppertstrasseWartezoneHints.hintFor(code) + ". Text: " + text);
