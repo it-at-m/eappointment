@@ -6,10 +6,11 @@ Feature: Citizen API: rebooking rejected when the scope disables Umbuchung
   So that the Bürgerfrontend can hide Termin verschieben for that office
 
   # ZMSKVR-1620 tested by ZMSKVR-1691.
-  # V49: SZE scopes 205, 208, 211 / provider 10446 / service 1080784.
-  # The service is published after the SADB import. Unpublished services are
-  # rejected as invalidLocationAndServiceCombination.
-  # Scope 205 requires the custom text field, so the update sends one.
+  # SZE provider 10446 stays rebooking disabled. Its service 1080784 is internal,
+  # so this API books public Reisepass 1063453 at Passkalender 10502 instead.
+  # V49 disables scopes 172, 184 and 342, which share that provider.
+  # The Passkalender requires the custom text field, so the update sends one.
+  # 10492 stays enabled.
 
   Background:
     Given the Citizen API is available
@@ -17,12 +18,13 @@ Feature: Citizen API: rebooking rejected when the scope disables Umbuchung
     Then the response status code should be 200
     And the response should contain offices and services
 
-  Scenario: Offices payload marks the SZE location as rebooking disabled
+  Scenario: Offices payload marks SZE and the Passkalender as rebooking disabled
     Then office 10446 rebooking should be disabled
+    And office 10502 rebooking should be disabled
     And office 10492 rebooking should not be disabled
 
   Scenario: Reserve with a rebooking source is rejected when rebooking is disabled
-    When I request available days for office 10446 and service 1080784
+    When I request available days for office 10502 and service 1063453
     And I request available appointments for the first available day
     And I reserve an appointment with the first available slot
     Then the appointment status should be "reserved"
@@ -34,7 +36,7 @@ Feature: Citizen API: rebooking rejected when the scope disables Umbuchung
     Then the preconfirmation mail should provide confirm credentials
     And I confirm the appointment
     And the appointment status should be "confirmed"
-    When I request available days for office 10446 and service 1080784
+    When I request available days for office 10502 and service 1063453
     And I request available appointments for the first available day
     And I attempt to reserve an appointment with the first available slot using the current appointment as source
     Then the response status code should be 406

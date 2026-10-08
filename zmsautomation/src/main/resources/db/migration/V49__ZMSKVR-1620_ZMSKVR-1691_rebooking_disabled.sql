@@ -1,10 +1,13 @@
--- ZMSKVR-1620 / ZMSKVR-1691: disable citizen rescheduling for one bookable SZE scope.
+-- ZMSKVR-1620 / ZMSKVR-1691: disable citizen rescheduling.
 --
 -- Standort 205, 208 and 211 are Ausländerbehörde counters (Behörde 64, SZE
 -- Abteilung 2) and share provider 10446. The offices payload keeps whichever
 -- of those scopes it sees last, so all three are disabled. Slots are only
--- opened on 205, for service 1080784 (only offered at 10446).
--- 10492 stays enabled for the positive Umbuchung cases.
+-- opened on 205, so a clerk can book internal service 1080784 there.
+-- That service stays unpublished. Citizens cannot book it from the public page.
+-- Passkalender scopes 172, 184 and 342 share public provider 10502 (Reisepass).
+-- They are disabled too, so a logged-in citizen can book that public service
+-- and still see no Termin verschieben. 10492 stays enabled.
 -- full-setup runs Flyway before bin/migrate, so the column may not exist yet.
 -- Hours follow Berlin now: stay on today while four hours remain, otherwise
 -- open the next day. CURDATE()/CURTIME() use zms-db TZ=Europe/Berlin.
@@ -14,13 +17,16 @@ ALTER TABLE `standort`
 
 UPDATE `standort`
 SET `rebooking_disabled` = 1
-WHERE `StandortID` IN (205, 208, 211);
+WHERE `StandortID` IN (205, 208, 211, 172, 184, 342);
 
 INSERT INTO `preferences` (`entity`, `id`, `groupName`, `name`, `value`, `updateTimestamp`)
 VALUES
   ('scope', 205, 'appointment', 'rebookingDisabled', '1', NOW()),
   ('scope', 208, 'appointment', 'rebookingDisabled', '1', NOW()),
-  ('scope', 211, 'appointment', 'rebookingDisabled', '1', NOW())
+  ('scope', 211, 'appointment', 'rebookingDisabled', '1', NOW()),
+  ('scope', 172, 'appointment', 'rebookingDisabled', '1', NOW()),
+  ('scope', 184, 'appointment', 'rebookingDisabled', '1', NOW()),
+  ('scope', 342, 'appointment', 'rebookingDisabled', '1', NOW())
 ON DUPLICATE KEY UPDATE
   `value` = VALUES(`value`),
   `updateTimestamp` = VALUES(`updateTimestamp`);
