@@ -7,7 +7,7 @@ Feature: Citizen API: rebooking rejected when the scope disables Umbuchung
 
   # ZMSKVR-1620 tested by ZMSKVR-1691.
   # V49: SZE scopes 205, 208, 211 / provider 10446 / service 1080784.
-  # The service is marked public in the test catalog. Unpublished services are
+  # The service is published after the SADB import. Unpublished services are
   # rejected as invalidLocationAndServiceCombination.
   # Scope 205 requires the custom text field, so the update sends one.
 
