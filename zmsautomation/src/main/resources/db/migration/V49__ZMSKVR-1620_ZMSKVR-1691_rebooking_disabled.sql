@@ -2,12 +2,14 @@
 --
 -- Standort 205, 208 and 211 are Ausländerbehörde counters (Behörde 64, SZE
 -- Abteilung 2) and share provider 10446. The offices payload keeps whichever
--- of those scopes it sees last, so all three are disabled. Slots are only
--- opened on 205, so a clerk can book internal service 1080784 there.
--- That service stays unpublished. Citizens cannot book it from the public page.
--- Passkalender scopes 172, 184 and 342 share public provider 10502 (Reisepass).
--- They are disabled too, so a logged-in citizen can book that public service
--- and still see no Termin verschieben. 10492 stays enabled.
+-- of those scopes it sees last; 208 and 211 stay disabled so office 10446
+-- still reports rebookingDisabled. Scope 205 keeps Umbuchung on so a clerk
+-- booking of internal service 1080784 there can open Termin verschieben and
+-- hit invalidLocationAndServiceCombination on the calendar. Slots open on
+-- 205 and 208. That service stays unpublished. Citizens cannot book it from
+-- the public page. Passkalender scopes 172, 184 and 342 share public provider
+-- 10502 (Reisepass). They are disabled too, so a logged-in citizen can book
+-- that public service and still see no Termin verschieben. 10492 stays enabled.
 -- full-setup runs Flyway before bin/migrate, so the column may not exist yet.
 -- Hours follow Berlin now: stay on today while four hours remain, otherwise
 -- open the next day. CURDATE()/CURTIME() use zms-db TZ=Europe/Berlin.
@@ -17,11 +19,15 @@ ALTER TABLE `standort`
 
 UPDATE `standort`
 SET `rebooking_disabled` = 1
-WHERE `StandortID` IN (205, 208, 211, 172, 184, 342);
+WHERE `StandortID` IN (208, 211, 172, 184, 342);
+
+UPDATE `standort`
+SET `rebooking_disabled` = 0
+WHERE `StandortID` = 205;
 
 INSERT INTO `preferences` (`entity`, `id`, `groupName`, `name`, `value`, `updateTimestamp`)
 VALUES
-  ('scope', 205, 'appointment', 'rebookingDisabled', '1', NOW()),
+  ('scope', 205, 'appointment', 'rebookingDisabled', '0', NOW()),
   ('scope', 208, 'appointment', 'rebookingDisabled', '1', NOW()),
   ('scope', 211, 'appointment', 'rebookingDisabled', '1', NOW()),
   ('scope', 172, 'appointment', 'rebookingDisabled', '1', NOW()),
@@ -77,7 +83,13 @@ SET @hours_sql := (
       '''ZMSKVR-1620 ZMSKVR-1691 SZE scope 205'',0,60,0,60,NOW(),',
       '205,''', @range_start, ''',''', @range_end, ''',1,0,127,''00:00:00'',''', @appt_start,
       ''',''00:00:00'',''', @appt_end, ''',''00:05:00'',0,5,',
-      '''ZMSKVR-1620 ZMSKVR-1691 SZE scope 205'',0,60,0,60,NOW())'
+      '''ZMSKVR-1620 ZMSKVR-1691 SZE scope 205'',0,60,0,60,NOW()),',
+      '(136531,208,''', @range_start, ''',''', @range_end, ''',1,0,127,''00:00:00'',''', @appt_start,
+      ''',''00:00:00'',''', @appt_end, ''',''00:05:00'',0,5,',
+      '''ZMSKVR-1620 ZMSKVR-1691 SZE scope 208'',0,60,0,60,NOW(),',
+      '208,''', @range_start, ''',''', @range_end, ''',1,0,127,''00:00:00'',''', @appt_start,
+      ''',''00:00:00'',''', @appt_end, ''',''00:05:00'',0,5,',
+      '''ZMSKVR-1620 ZMSKVR-1691 SZE scope 208'',0,60,0,60,NOW())'
     )
     WHEN @has_en > 0 THEN CONCAT(
       'INSERT IGNORE INTO `oeffnungszeit` (',
@@ -87,7 +99,10 @@ SET @hours_sql := (
       '`multiple_slots_allowed`,`open_from_days`,`open_until_days`,`updated_at`) VALUES ',
       '(136530,205,''', @range_start, ''',''', @range_end, ''',1,0,127,''00:00:00'',''', @appt_start,
       ''',''00:00:00'',''', @appt_end, ''',''00:05:00'',0,5,',
-      '''ZMSKVR-1620 ZMSKVR-1691 SZE scope 205'',0,60,0,60,NOW())'
+      '''ZMSKVR-1620 ZMSKVR-1691 SZE scope 205'',0,60,0,60,NOW()),',
+      '(136531,208,''', @range_start, ''',''', @range_end, ''',1,0,127,''00:00:00'',''', @appt_start,
+      ''',''00:00:00'',''', @appt_end, ''',''00:05:00'',0,5,',
+      '''ZMSKVR-1620 ZMSKVR-1691 SZE scope 208'',0,60,0,60,NOW())'
     )
     ELSE CONCAT(
       'INSERT IGNORE INTO `oeffnungszeit` (',
@@ -97,7 +112,10 @@ SET @hours_sql := (
       '`Offen_ab`,`Offen_bis`,`updateTimestamp`) VALUES ',
       '(136530,205,''', @range_start, ''',''', @range_end, ''',1,0,127,''00:00:00'',''', @appt_start,
       ''',''00:00:00'',''', @appt_end, ''',''00:05:00'',0,5,',
-      '''ZMSKVR-1620 ZMSKVR-1691 SZE scope 205'',0,60,0,60,NOW())'
+      '''ZMSKVR-1620 ZMSKVR-1691 SZE scope 205'',0,60,0,60,NOW()),',
+      '(136531,208,''', @range_start, ''',''', @range_end, ''',1,0,127,''00:00:00'',''', @appt_start,
+      ''',''00:00:00'',''', @appt_end, ''',''00:05:00'',0,5,',
+      '''ZMSKVR-1620 ZMSKVR-1691 SZE scope 208'',0,60,0,60,NOW())'
     )
   END
 );
