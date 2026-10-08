@@ -502,14 +502,14 @@ class MapperService
                     'slotsPerAppointment' => $thinnedProcess->scope->getSlotsPerAppointment() ?? null,
                     "whitelistedMails" => $thinnedProcess->scope->getWhitelistedMails() ?? null,
                     'emailFrom' => $thinnedProcess->scope->getEmailFrom() ?? null,
-                    'emailRequired' => $thinnedProcess->scope->getEmailRequired() ?? false,
-                    'telephoneActivated' => $thinnedProcess->scope->getTelephoneActivated() ?? false,
-                    'telephoneRequired' => $thinnedProcess->scope->getTelephoneRequired() ?? false,
-                    'customTextfieldActivated' => $thinnedProcess->scope->getCustomTextfieldActivated() ?? false,
-                    'customTextfieldRequired' => $thinnedProcess->scope->getCustomTextfieldRequired() ?? false,
+                    'emailRequired' => $thinnedProcess->scope->isEmailRequired() ?? false,
+                    'telephoneActivated' => $thinnedProcess->scope->isTelephoneActivated() ?? false,
+                    'telephoneRequired' => $thinnedProcess->scope->isTelephoneRequired() ?? false,
+                    'customTextfieldActivated' => $thinnedProcess->scope->isCustomTextfieldActivated() ?? false,
+                    'customTextfieldRequired' => $thinnedProcess->scope->isCustomTextfieldRequired() ?? false,
                     'customTextfieldLabel' => $thinnedProcess->scope->getCustomTextfieldLabel() ?? null,
-                    'customTextfield2Activated' => $thinnedProcess->scope->getCustomTextfield2Activated() ?? false,
-                    'customTextfield2Required' => $thinnedProcess->scope->getCustomTextfield2Required() ?? false,
+                    'customTextfield2Activated' => $thinnedProcess->scope->isCustomTextfield2Activated() ?? false,
+                    'customTextfield2Required' => $thinnedProcess->scope->isCustomTextfield2Required() ?? false,
                     'customTextfield2Label' => $thinnedProcess->scope->getCustomTextfield2Label() ?? null
                 ]
             ];
