@@ -38,9 +38,20 @@ public final class RuppertstrasseWartezoneHints {
         return rememberedApiWartezoneCode;
     }
 
-    /** {@code true} for ATAF HTML markers (WB03/WB04); {@code false} for plain Passfoto codes. */
+    /** {@code true} for ATAF HTML markers (WB03/WB04); {@code false} for plain Passfoto. */
     public static boolean isAtafHtmlHint(String code) {
         return "WB03".equals(code) || "WB04".equals(code);
+    }
+
+    /**
+     * Ausgewählter Termin only paints {@code infoForAppointment}, not {@code scope.hint}
+     * (Wartebereich). Passfoto scopes share one hint, so selection uses {@code PASSFOTO};
+     * overview/detail then pin the concrete WB03/WB04-PASSFOTO code from Ort.
+     */
+    public static boolean isPassfotoHint(String code) {
+        return "PASSFOTO".equals(code)
+                || "WB03-PASSFOTO".equals(code)
+                || "WB04-PASSFOTO".equals(code);
     }
 
     public static String zoneFor(String code) {
@@ -60,7 +71,7 @@ public final class RuppertstrasseWartezoneHints {
         if ("WB04".equals(code)) {
             return HINT_WB04;
         }
-        if ("WB03-PASSFOTO".equals(code) || "WB04-PASSFOTO".equals(code)) {
+        if (isPassfotoHint(code)) {
             return HINT_PASSFOTO;
         }
         throw new IllegalArgumentException("Unknown Wartezone code: " + code);
@@ -110,6 +121,22 @@ public final class RuppertstrasseWartezoneHints {
             return "WB03-PASSFOTO";
         }
         throw new IllegalArgumentException("Unknown Wartezone code: " + code);
+    }
+
+    /** Resolve WB03-PASSFOTO / WB04-PASSFOTO from overview/detail Ort text + Passfoto hint. */
+    public static String detectPassfotoCode(String text) {
+        if (text == null || !text.contains(HINT_PASSFOTO)) {
+            return null;
+        }
+        boolean zone03 = text.contains(ZONE_WB03);
+        boolean zone04 = text.contains(ZONE_WB04);
+        if (zone03 && !zone04) {
+            return "WB03-PASSFOTO";
+        }
+        if (zone04 && !zone03) {
+            return "WB04-PASSFOTO";
+        }
+        return null;
     }
 
     /** Detect WB03/WB04 from painted page text that includes both Wartezone and ATAF hint. */
