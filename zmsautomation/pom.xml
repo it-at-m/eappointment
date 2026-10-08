@@ -22,7 +22,7 @@
     <!-- Cucumber 8 removed GlueDiscoverySelectorResolver. ATAF 0.3.4 still starts through the Cucumber 7 TestNG runner. See GH-3465. -->
     <cucumber.version>7.34.9</cucumber.version>
     <testng.version>7.12.0</testng.version>
-    <flyway.version>13.9.0</flyway.version>
+    <flyway.version>13.10.0</flyway.version>
     <log4j.version>2.26.1</log4j.version>
     <lombok.version>1.18.48</lombok.version>
     <!-- Local ATAF: cd ../agile-test-automation-framework && mvn clean install -DskipTests -->
