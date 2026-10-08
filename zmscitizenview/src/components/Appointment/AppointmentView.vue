@@ -829,9 +829,11 @@ const decreaseCurrentView = (): void => {
 
 const restartBookingToServices = (): void => {
   clearAllErrors();
-  // A reschedule or confirmed-appointment link cannot show Leistung at view 0.
+  // Reschedule / appointment deep links cannot show Leistung at view 0.
+  // Captcha-session and reservation callouts must return to the appointment
+  // jump-in so GET /appointment/ mints a fresh captchaToken.
   if (isRebooking.value || isExistingAppointmentDeepLink.value) {
-    redirectToAppointmentStart();
+    redirectToAppointmentJumpIn();
     return;
   }
   captchaToken.value = undefined;
@@ -1507,6 +1509,24 @@ const redirectToAppointmentStart = () => {
   // This keeps users within our application instead of redirecting to external site
   const baseUrl = window.location.origin + window.location.pathname;
   window.location.href = baseUrl;
+};
+
+const redirectToAppointmentJumpIn = (): void => {
+  const hash =
+    props.appointmentHash ?? loadedAppointmentHash.value ?? undefined;
+  const baseUrl = window.location.origin + window.location.pathname;
+  if (!hash) {
+    window.location.href = baseUrl;
+    return;
+  }
+  const targetHash = `#/appointment/${hash}`;
+  // Already on the appointment jump-in during rebooking — reload so the
+  // overview remounts and AppointmentById issues a new captcha JWT.
+  if (window.location.hash === targetHash) {
+    window.location.reload();
+    return;
+  }
+  window.location.href = `${baseUrl}${targetHash}`;
 };
 
 const downloadIcsAppointment = () => {
