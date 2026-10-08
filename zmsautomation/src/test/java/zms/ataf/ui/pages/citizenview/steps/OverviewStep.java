@@ -369,7 +369,10 @@ public final class OverviewStep {
         context.set();
         String code = slotState.rememberedWartezoneCode;
         Assert.assertNotNull(code, "Need a remembered Wartezone before asserting overview hint wrap.");
-        String needle = RuppertstrasseWartezoneHints.hintFor(code);
+        String needle =
+                FuehrerscheinstelleScopeHints.isConcrete(code)
+                        ? FuehrerscheinstelleScopeHints.hintFor(code)
+                        : RuppertstrasseWartezoneHints.hintFor(code);
         shadow.scrollTextIntoView(needle);
         Object raw =
                 ((JavascriptExecutor) DriverUtil.getDriver())
