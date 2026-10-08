@@ -93,4 +93,15 @@ class RequestTest extends \BO\Zmsbackend\Tests\Service\Base
         $this->assertEquals(120335, $entity->getId());
         $this->assertEquals('test', $entity->group);
     }
+
+    public function testWriteImportRejectsMalformedVariantOverwrite(): void
+    {
+        $query = new Query();
+        $repository = (new \BO\Zmsdldb\FileAccess())->loadFromPath(\BO\Zmsbackend\Source\Zmsdldb::$importPath);
+        $importInput = $repository->fromService()->fetchId(120335);
+        $importInput['data']['variantOverwrite'] = 'invalid';
+
+        $this->expectException(\BO\Zmsentities\Exception\SchemaValidation::class);
+        $query->writeImportEntity($importInput, 'dldb');
+    }
 }

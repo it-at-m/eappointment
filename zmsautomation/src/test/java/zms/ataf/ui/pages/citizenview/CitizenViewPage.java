@@ -1514,6 +1514,10 @@ public class CitizenViewPage extends BasePage {
         overview.assertServiceLinkPointsToMunichDe();
     }
 
+    public void assertOverviewServiceVisible(int serviceId, String serviceName) {
+        overview.assertOverviewServiceVisible(serviceId, serviceName);
+    }
+
     public void waitForPreconfirmPageAfterUpdate() {
         overview.waitForPreconfirmPageAfterUpdate();
     }
@@ -1618,8 +1622,16 @@ public class CitizenViewPage extends BasePage {
         overview.assertAppointmentManagementActionsNotVisible();
     }
 
+    public void assertRescheduleAppointmentButtonVisible() {
+        overview.assertRescheduleAppointmentButtonVisible();
+    }
+
     public void assertRescheduleAppointmentButtonNotVisible() {
         overview.assertRescheduleAppointmentButtonNotVisible();
+    }
+
+    public void assertInvalidLocationAndServiceCombinationCalloutVisible() {
+        timeSlot.assertInvalidLocationAndServiceCombinationCalloutVisible();
     }
 
     public void assertCancelAppointmentButtonVisible() {

@@ -451,29 +451,38 @@ public final class ShadowDom {
 
 
     public boolean deepInfoCalloutContains(String text) {
+        return deepCalloutContains(text, "info");
+    }
+
+    public boolean deepWarningCalloutContains(String text) {
+        return deepCalloutContains(text, "warning");
+    }
+
+    private boolean deepCalloutContains(String text, String type) {
         context.set();
         String script =
-                "var needle=arguments[0];"
+                "var needle=arguments[0], want=arguments[1];"
                         + "function textOf(node){return (node.innerText||node.textContent||'');}"
-                        + "function isInfoCallout(node){"
+                        + "function isTypedCallout(node){"
                         + " if(!node||!node.classList)return false;"
                         + " if(!node.classList.contains('m-callout'))return false;"
-                        + " var info=node.classList.contains('m-callout--default')"
-                        + "  ||node.classList.contains('m-callout--info')"
-                        + "  ||(node.getAttribute('data-type')||'')==='info'"
-                        + "  ||(node.getAttribute('type')||'')==='info';"
-                        + " return info&&textOf(node).indexOf(needle)>=0;"
+                        + " var dtype=(node.getAttribute('data-type')||node.getAttribute('type')||'').toLowerCase();"
+                        + " var typed=dtype===want"
+                        + "  ||node.classList.contains('m-callout--'+want)"
+                        + "  ||(want==='info'&&(node.classList.contains('m-callout--default')"
+                        + "     ||node.classList.contains('m-callout--info')));"
+                        + " return typed&&textOf(node).indexOf(needle)>=0;"
                         + "}"
                         + "function walk(root){"
                         + " if(!root)return false;"
                         + " var nodes=root.querySelectorAll('.m-callout');"
-                        + " for(var i=0;i<nodes.length;i++){if(isInfoCallout(nodes[i]))return true;}"
+                        + " for(var i=0;i<nodes.length;i++){if(isTypedCallout(nodes[i]))return true;}"
                         + " var hosts=root.querySelectorAll('muc-callout');"
                         + " for(var h=0;h<hosts.length;h++){"
                         + "  var host=hosts[h];"
-                        + "  var dtype=host.getAttribute('type')||host.getAttribute('data-type')||'';"
-                        + "  if(dtype==='info'&&textOf(host).indexOf(needle)>=0)return true;"
-                        + "  if(host.shadowRoot&&isInfoCallout(host.shadowRoot.querySelector('.m-callout')))return true;"
+                        + "  var dtype=(host.getAttribute('type')||host.getAttribute('data-type')||'').toLowerCase();"
+                        + "  if(dtype===want&&textOf(host).indexOf(needle)>=0)return true;"
+                        + "  if(host.shadowRoot&&isTypedCallout(host.shadowRoot.querySelector('.m-callout')))return true;"
                         + " }"
                         + " var all=root.querySelectorAll('*');"
                         + " for(var j=0;j<all.length;j++){"
@@ -483,7 +492,7 @@ public final class ShadowDom {
                         + "}"
                         + "return walk(document.body);";
         return Boolean.TRUE.equals(
-                ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script, text));
+                ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script, text, type));
     }
 
     /**
