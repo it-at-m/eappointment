@@ -362,7 +362,7 @@ public final class TimeSlotStep {
         context.set();
         RemoteWebDriver driver = DriverUtil.getDriver();
         driver.manage().window().setSize(ViewportSizes.DESKTOP);
-        CitizenViewWaits.sleepQuiet(400L);
+        CitizenViewWaits.sleepQuiet(800L);
         JsonNode wide = waitForToggleLabels(null);
         Assert.assertTrue(
                 wide.path("toggleLeft").asDouble() > wide.path("headingRight").asDouble() - 8,
@@ -373,7 +373,8 @@ public final class TimeSlotStep {
         context.set();
         RemoteWebDriver driver = DriverUtil.getDriver();
         driver.manage().window().setSize(ViewportSizes.MOBILE);
-        CitizenViewWaits.sleepQuiet(400L);
+        // Viewport change remounts the toggle; wait past the color transition + layout settle.
+        CitizenViewWaits.sleepQuiet(800L);
         JsonNode narrow = waitForToggleLabels(null);
         Assert.assertTrue(
                 narrow.path("toggleTop").asDouble() >= narrow.path("headingBottom").asDouble() - 4,
@@ -1751,7 +1752,10 @@ public final class TimeSlotStep {
     }
 
     public JsonNode waitForToggleLabels(String activeLabel) {
-        return new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(defaultWaitSeconds))
+        // Color transition is 200ms, but under shard load Firefox/Chrome can keep the previous
+        // label paint while the list accordion mounts or the viewport settles after resize.
+        return new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(slotBookingWaitTimeoutSeconds()))
+                .pollingEvery(Duration.ofMillis(250))
                 .until(d -> {
                     JsonNode node = json.citizenJson(
                             "(function(){var labels=cssAll('.m-toggle-switch__label');var out=[];"
@@ -1768,22 +1772,16 @@ public final class TimeSlotStep {
                     if (activeLabel == null || activeLabel.isEmpty()) {
                         return node;
                     }
-                    // Wait until the painted colors match the active label. Firefox can still show
-                    // the previous blue on Kalenderansicht right after the list accordion mounts.
                     for (JsonNode label : node.path("labels")) {
                         boolean shouldBeActive = activeLabel.equals(label.path("text").asText());
                         String color = label.path("color").asText();
-                        boolean activeColor =
-                                color.contains("0, 90, 159") || color.contains("0,90,159");
-                        boolean inactiveColor =
-                                color.contains("97, 117, 134") || color.contains("97,117,134");
                         if (label.path("disabled").asBoolean() == shouldBeActive) {
                             return null;
                         }
-                        if (shouldBeActive && !activeColor) {
+                        if (shouldBeActive && !isToggleBlue(color)) {
                             return null;
                         }
-                        if (!shouldBeActive && !inactiveColor) {
+                        if (!shouldBeActive && !isToggleGrey(color)) {
                             return null;
                         }
                     }
@@ -1795,11 +1793,26 @@ public final class TimeSlotStep {
         Assert.assertEquals(label.path("text").asText(), text, "Toggle label: " + label);
         Assert.assertEquals(label.path("disabled").asBoolean(), !active, text + " active state: " + label);
         String color = label.path("color").asText();
-        String expected = active ? "0, 90, 159" : "97, 117, 134";
-        String compact = active ? "0,90,159" : "97,117,134";
         Assert.assertTrue(
-                color.contains(expected) || color.contains(compact),
+                active ? isToggleBlue(color) : isToggleGrey(color),
                 text + " should be " + (active ? "#005A9F" : "#617586") + " but was " + color);
+    }
+
+    /** Accepts rgb()/rgba() with commas or modern space-separated components. */
+    private static boolean isToggleBlue(String color) {
+        return colorMatchesChannels(color, 0, 90, 159);
+    }
+
+    private static boolean isToggleGrey(String color) {
+        return colorMatchesChannels(color, 97, 117, 134);
+    }
+
+    private static boolean colorMatchesChannels(String color, int r, int g, int b) {
+        if (color == null || color.isBlank()) {
+            return false;
+        }
+        String compact = color.replace(" ", "");
+        return compact.contains(r + "," + g + "," + b) || color.contains(r + " " + g + " " + b);
     }
 
     public JsonNode calendarSnapshot() {
