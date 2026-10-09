@@ -456,6 +456,22 @@ public class CitizenApiSteps {
         iRequestAvailableAppointmentsForDateOfficeAndService(date, officeId, serviceId, 1);
     }
 
+    /**
+     * ZMSKVR-1051 / ZMSKVR-1309: day after V19 range (V52) has one internet seat per Wartebereich /
+     * Schalter so a second same-timestamp reserve switches scope without the shared calendar.
+     */
+    @When("I request available appointments for the scope-switch day for office {int} and service {int}")
+    public void iRequestAvailableAppointmentsForTheScopeSwitchDay(int officeId, int serviceId) {
+        String date = BerlinTime.scopeSwitchDayAfterV19RuppertstrasseRange().format(DATE_FORMAT);
+        ScenarioLogManager.getLogger().info(String.format(
+            "Citizen API using scope-switch day %s (after V19 range) officeId=%d serviceId=%d",
+            date,
+            officeId,
+            serviceId
+        ));
+        iRequestAvailableAppointmentsForDateOfficeAndService(date, officeId, serviceId, 1);
+    }
+
     @When("I request available appointments for date {string}, office {int} and service {int}")
     public void iRequestAvailableAppointmentsForDateOfficeAndService(String date, int officeId, int serviceId) {
         iRequestAvailableAppointmentsForDateOfficeAndService(date, officeId, serviceId, 1);
@@ -741,9 +757,9 @@ public class CitizenApiSteps {
 
     /**
      * ZMSKVR-1051 / ZMSKVR-1309 (and Führerscheinstelle twin): with one internet seat per
-     * Wartebereich/Schalter, a second reserve of the same timestamp lands on the other scope.
-     * Parallel scenarios can already hold that other seat — then retry the pair on the next
-     * free timestamp (same pattern as {@link #reserveFirstAvailableSlot}).
+     * Wartebereich/Schalter on the V52 scope-switch day, a second reserve of the same timestamp
+     * lands on the other scope. Cap pair retries on the current day only — walking the shared
+     * calendar burns into rateLimitExceeded under parallel load.
      */
     @When("I reserve the same appointment slot again for the other Wartebereich")
     public void iReserveTheSameAppointmentSlotAgainForTheOtherWartebereich() {
@@ -763,57 +779,50 @@ public class CitizenApiSteps {
             acceptSecondSameTimestampReserve(first, response);
             return;
         }
+        if (rateLimitExceeded(response)) {
+            Assertions.fail(
+                    "Citizen API rate-limited while reserving the other Wartebereich/Schalter (status=429)");
+        }
         if (!slotNoLongerAvailable(response)) {
             response.then().statusCode(200);
             return;
         }
 
         ScenarioLogManager.getLogger().info(String.format(
-                "Citizen API other Wartebereich seat gone at timestamp=%d; retrying pair on later slots",
+                "Citizen API other Wartebereich seat gone at timestamp=%d; retrying pair on later slots of the same day",
                 first.getTimestamp()));
         Integer abandonedFirstId = first.getProcessId();
         cancelProcessQuietly(first.getProcessId(), first.getAuthKey());
 
         List<Long> timestamps = new ArrayList<>();
         long failedTimestamp = first.getTimestamp();
-        // Refresh the calendar so we are not walking a stale list from before parallel load.
-        appendFreshTimestamps(timestamps);
         if (lastAvailableAppointmentsResponse != null) {
             for (Long ts : lastAvailableAppointmentsResponse.futureAppointmentTimestamps()) {
-                if (ts != null && !timestamps.contains(ts)) {
+                if (ts != null && !ts.equals(failedTimestamp) && !timestamps.contains(ts)) {
                     timestamps.add(ts);
                 }
             }
         }
-        timestamps.removeIf(ts -> ts == null || ts.equals(failedTimestamp));
-        if (timestamps.isEmpty() && loadNextCalendarDayWithSlots()) {
-            appendFreshTimestamps(timestamps);
-            timestamps.removeIf(ts -> ts == null || ts.equals(failedTimestamp));
-        }
-        int refetches = 0;
-        for (int i = 0; i < timestamps.size(); ) {
-            long timestamp = timestamps.get(i);
-            i++;
+        final int maxPairAttempts = 5;
+        int attempts = 0;
+        for (long timestamp : timestamps) {
+            if (attempts >= maxPairAttempts) {
+                break;
+            }
+            attempts++;
             Response firstResponse = postReserveForOfficeService(timestamp, officeId, serviceId, serviceCount);
+            if (rateLimitExceeded(firstResponse)) {
+                Assertions.fail(
+                        "Citizen API rate-limited while retrying Wartebereich/Schalter pair (status=429)");
+            }
             if (firstResponse.getStatusCode() != 200) {
-                if (i >= timestamps.size() && refetches < 3) {
-                    refetches++;
-                    int added = appendFreshTimestamps(timestamps);
-                    if (added == 0 && loadNextCalendarDayWithSlots()) {
-                        added = appendFreshTimestamps(timestamps);
-                    }
-                    timestamps.removeIf(ts -> ts == null || ts.equals(failedTimestamp));
-                    if (added == 0) {
-                        break;
-                    }
-                }
                 continue;
             }
             ThinnedProcess newFirst = parseReserveProcess(firstResponse);
             if (newFirst == null || newFirst.getProcessId() == null || newFirst.getAuthKey() == null) {
                 continue;
             }
-            // Reserve the pair back-to-back. A GET in between lets parallel scenarios take the
+            // Reserve the pair back-to-back. A GET in between lets another runner take the
             // other Wartebereich/Schalter seat (ZMSKVR-1051 / ZMSKVR-1309 flake).
             Response secondResponse = postReserveForOfficeService(timestamp, officeId, serviceId, serviceCount);
             if (secondResponse.getStatusCode() == 200) {
@@ -822,26 +831,22 @@ public class CitizenApiSteps {
                 acceptSecondSameTimestampReserve(newFirst, secondResponse);
                 return;
             }
+            if (rateLimitExceeded(secondResponse)) {
+                cancelProcessQuietly(newFirst.getProcessId(), newFirst.getAuthKey());
+                Assertions.fail(
+                        "Citizen API rate-limited on second Wartebereich/Schalter reserve (status=429)");
+            }
             ScenarioLogManager.getLogger().info(String.format(
                     "Citizen API other Wartebereich still unavailable at timestamp=%d status=%d; trying next",
                     timestamp,
                     secondResponse.getStatusCode()));
             cancelProcessQuietly(newFirst.getProcessId(), newFirst.getAuthKey());
-            if (i >= timestamps.size() && refetches < 3) {
-                refetches++;
-                int added = appendFreshTimestamps(timestamps);
-                if (added == 0 && loadNextCalendarDayWithSlots()) {
-                    added = appendFreshTimestamps(timestamps);
-                }
-                timestamps.removeIf(ts -> ts == null || ts.equals(failedTimestamp));
-                if (added == 0) {
-                    break;
-                }
-            }
         }
 
         Assertions.fail(
-                "Could not reserve the same timestamp on the other Wartebereich/Schalter after retries");
+                "Could not reserve the same timestamp on the other Wartebereich/Schalter after "
+                        + attempts
+                        + " same-day pair attempt(s)");
     }
 
     private Response postReserveForOfficeService(
@@ -1372,6 +1377,11 @@ public class CitizenApiSteps {
     private static boolean slotNoLongerAvailable(Response reserveResponse) {
         String body = reserveResponse.asString();
         return body.contains("appointmentNotAvailable") || body.contains("unknownError");
+    }
+
+    private static boolean rateLimitExceeded(Response reserveResponse) {
+        return reserveResponse.getStatusCode() == 429
+                || reserveResponse.asString().contains("rateLimitExceeded");
     }
 
     @When("I preconfirm the appointment")
