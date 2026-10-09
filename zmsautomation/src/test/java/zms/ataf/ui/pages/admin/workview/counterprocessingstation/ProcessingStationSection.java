@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.RemoteWebDriver;
@@ -170,10 +171,24 @@ public class ProcessingStationSection extends CounterProcessingStationPage {
         By callLink = By.xpath(
                 "//table[@id='table-queued-appointments']//td[contains(@class,'callnextclient')]"
                         + "//a[normalize-space(.)='" + name + "']");
-        WebElement link = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
-                .until(ExpectedConditions.elementToBeClickable(callLink));
-        scrollToCenterByVisibleElement(link);
-        link.click();
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        wait.ignoring(StaleElementReferenceException.class);
+        wait.until(driver -> {
+            List<WebElement> links = driver.findElements(callLink);
+            for (WebElement link : links) {
+                try {
+                    if (!link.isDisplayed()) {
+                        continue;
+                    }
+                    scrollToCenterByVisibleElement(link);
+                    link.click();
+                    return true;
+                } catch (StaleElementReferenceException ignored) {
+                    // Cluster / queue reload replaced the row — find again.
+                }
+            }
+            return false;
+        });
     }
 
     public void callCustomerFromParkingTableWithNumber(String number) {

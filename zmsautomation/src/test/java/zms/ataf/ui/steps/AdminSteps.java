@@ -1601,8 +1601,14 @@ public class AdminSteps {
 
     @Then("the customer {string} should appear in the waiting list.")
     public void sollte_der_kunde_in_der_warteliste_erscheinen(String kunde) {
-        COUNTER_PROCESSING_STATION_PAGE.assertCustomerVisibleInQueueByName(
-                TestDataHelper.transformTestData(kunde));
+        String resolved = TestDataHelper.transformTestData(kunde);
+        // Walk-in / forward scenarios store display or process numbers in TestData;
+        // concurrent-call scenarios assert the family name after an API queue.
+        if (resolved != null && resolved.trim().matches("\\d+")) {
+            COUNTER_PROCESSING_STATION_PAGE.isCustomerVisibleInQueue(resolved.trim(), true);
+        } else {
+            COUNTER_PROCESSING_STATION_PAGE.assertCustomerVisibleInQueueByName(resolved);
+        }
     }
 
     @Then("the waiting time H:mm:ss for {string} should be between {string} and {string}.")
