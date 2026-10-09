@@ -54,12 +54,12 @@ public class CitizenViewPage extends BasePage {
     public static final String DE_INVALID_JUMPIN_HEADER = "Diese Ansicht kann nicht geladen werden.";
 
     public static final String DE_INVALID_JUMPIN_TEXT =
-            "Der Link zu dieser Seite ist leider fehlerhaft. Starten Sie die Terminvereinbarung neu";
+            "Der Link zu dieser Seite ist leider fehlerhaft. Starten Sie die Terminvereinbarung neu, um eine Leistung zu wählen.";
 
 
     public static final String EN_INVALID_JUMPIN_HEADER = "This view cannot be loaded.";
     public static final String EN_INVALID_JUMPIN_TEXT =
-            "The link to this page is unfortunately incorrect";
+            "The link to this page is unfortunately incorrect. Please restart the appointment booking and select a service.";
 
     /** German appointment-not-available callout ({@code de-DE.json} apiErrorAppointmentNotAvailable*). */
     public static final String DE_APPOINTMENT_NOT_AVAILABLE_HEADER =

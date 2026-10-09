@@ -163,11 +163,12 @@ public final class TimeSlotStep {
         if (deepTimeslotPresentForProvider(officeId)) {
             return;
         }
-        if (shadow.shadowDomContainsText(NO_APPOINTMENT_CALLOUT)
-                && providerLocation.deepProviderCheckboxChecked(officeId)) {
+        // After an empty-office Ort toggle the calendar can stick without the blue callout text;
+        // re-check the restored office once so available-calendar is fetched again.
+        if (providerLocation.deepProviderCheckboxChecked(officeId)) {
             ScenarioLogManager.getLogger()
                     .info(
-                            "zmscitizenview: re-toggle provider {} after empty Ort left the blue callout",
+                            "zmscitizenview: re-toggle provider {} after empty Ort left no timeslots",
                             officeId);
             shadow.deepClickRequired("#checkbox-provider-" + officeId);
             providerLocation.waitUntilProviderToggleSettled(15);
@@ -179,7 +180,7 @@ public final class TimeSlotStep {
             }
         }
         int dayMoves = 0;
-        for (int attempt = 1; attempt <= 10; attempt++) {
+        for (int attempt = 1; attempt <= 12; attempt++) {
             if (deepTimeslotPresentForProvider(officeId)) {
                 return;
             }
@@ -200,7 +201,7 @@ public final class TimeSlotStep {
                 }
                 continue;
             }
-            if (dayMoves >= 3 || !openNextCalendarDayAndWaitForSlots()) {
+            if (dayMoves >= 5 || !openNextCalendarDayAndWaitForSlots()) {
                 return;
             }
             dayMoves++;
