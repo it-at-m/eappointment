@@ -1580,6 +1580,8 @@ public class AdminSteps {
         COUNTER_PROCESSING_STATION_PAGE.waitUntilCustomerIsBackInQueue(name);
         endNoShowLockout(name);
         COUNTER_PROCESSING_STATION_PAGE.reloadQueueLists();
+        // Name text is already visible during lockout; wait for the call <a> after timeoutTime is moved back.
+        PROCESSING_STATION_SECTION.waitUntilCustomerCallLinkVisible(name);
     }
 
     /**

@@ -168,25 +168,35 @@ public class ProcessingStationSection extends CounterProcessingStationPage {
 
     public void callCustomerFromQueueWithName(String name) {
         ScenarioLogManager.getLogger().info("Trying to call customer from queue with name \"" + name + "\"...");
-        // A repeat call shows the count beside the name, so the cell text is no longer only the name.
-        By callLink = By.xpath(
+        clickQueueCallLinkWhenReady(queueCallLinkByName(name));
+    }
+
+    /** After the no-show lockout ends, the bold lockout text is replaced by the call link. */
+    public void waitUntilCustomerCallLinkVisible(String name) {
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        wait.ignoring(StaleElementReferenceException.class);
+        wait.withMessage("Call link for \"" + name + "\" did not return after ending the no-show lockout.");
+        wait.until(driver -> driver.findElements(queueCallLinkByName(name)).stream()
+                .anyMatch(WebElement::isDisplayed));
+    }
+
+    private static By queueCallLinkByName(String name) {
+        // Repeat calls keep the count in a sibling <small>; the <a> text stays the family name.
+        // During the five-minute no-show lockout there is no <a> — only bold text.
+        return By.xpath(
                 "//table[@id='table-queued-appointments']//td[contains(@class,'callnextclient')]"
-                        + "//a[normalize-space(.)='" + name + "']");
-        clickQueueCallLinkWhenReady(callLink);
+                        + "//a[@title='Diesen Bürger aufrufen' and normalize-space(.)='" + name + "']");
     }
 
     /**
-     * Cluster view refreshes under a full-page loader; a bare click loses to {@code div.loader}.
-     * Same race as {@link CounterProcessingStationPage#reloadQueueLists()}.
+     * Queue / cluster refresh can cover the call link with {@code div.loader}. Static loader
+     * nodes also sit in the page, so we retry on intercept instead of requiring every loader gone.
      */
     private void clickQueueCallLinkWhenReady(By callLink) {
-        By loader = By.cssSelector("div.loader");
         WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
         wait.ignoring(StaleElementReferenceException.class, ElementClickInterceptedException.class);
+        wait.withMessage("Call link not clickable (lockout still on, or loader covering the row): " + callLink);
         wait.until(driver -> {
-            if (driver.findElements(loader).stream().anyMatch(WebElement::isDisplayed)) {
-                return false;
-            }
             List<WebElement> links = driver.findElements(callLink);
             for (WebElement link : links) {
                 try {
@@ -599,14 +609,10 @@ public class ProcessingStationSection extends CounterProcessingStationPage {
         Assert.assertTrue(processId != null && processId.matches("\\d+"),
                 "Expected numeric process id, got: " + processId);
         By callLink = By.cssSelector("a[data-process='" + processId + "']");
-        By loader = By.cssSelector("div.loader");
         WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(Math.min(DEFAULT_EXPLICIT_WAIT_TIME, 15)));
         wait.ignoring(StaleElementReferenceException.class, ElementClickInterceptedException.class);
         try {
             wait.until(driver -> {
-                if (driver.findElements(loader).stream().anyMatch(WebElement::isDisplayed)) {
-                    return false;
-                }
                 List<WebElement> links = driver.findElements(callLink);
                 if (links.isEmpty() || !links.get(0).isDisplayed()) {
                     return false;
@@ -616,7 +622,7 @@ public class ProcessingStationSection extends CounterProcessingStationPage {
                 return true;
             });
             return;
-        } catch (TimeoutException ignored) {
+        } catch (TimeoutException | ElementClickInterceptedException ignored) {
             // Fall through to direct navigation when the queue row never becomes clickable.
         }
         String current = DRIVER.getCurrentUrl();
