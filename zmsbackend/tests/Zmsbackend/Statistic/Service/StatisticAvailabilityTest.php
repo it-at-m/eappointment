@@ -56,4 +56,14 @@ class StatisticAvailabilityTest extends \BO\Zmsbackend\Tests\Service\Base
         $this->assertSame('141', $result['missing'][0]['scopeId']);
         
     }
+
+    public function testAvailableClientStatisticIsHealthy(): void
+    {
+        $date = new \DateTimeImmutable('2016-04-01');
+
+        $result = (new StatisticAvailability())->check($date);
+
+        $this->assertSame('ok', $result['status']);
+        $this->assertSame(0, $result['statisticsMissing']);
+    }
 }

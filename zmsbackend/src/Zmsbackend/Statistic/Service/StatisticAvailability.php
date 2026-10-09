@@ -61,7 +61,7 @@ class StatisticAvailability extends \BO\Zmsbackend\Base
 
             try {
                 $report = $exchange->readEntity($scopeId, $date, $date, 'day');
-                if (empty($report->data)) {
+                if ($statistic === 'waitingscope' && empty($report->data)) {
                     $this->addMissing($result, $statistic, $scopeId, (string) ($subject[3] ?? ''));
                 }
             } catch (\Throwable $exception) {

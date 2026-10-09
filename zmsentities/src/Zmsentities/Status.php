@@ -37,7 +37,15 @@ class Status extends Schema\Entity
                 'queueCount' => 0,
                 'oldestSeconds' => 0,
                 'newestSeconds' => 0,
-            )
+            ),
+            'statistics' => array (
+                'status' => 'unknown',
+                'checkedDate' => '',
+                'checkedAt' => '',
+                'statisticsChecked' => 0,
+                'statisticsMissing' => 0,
+                'missing' => [],
+            ),
         ];
     }
 }
