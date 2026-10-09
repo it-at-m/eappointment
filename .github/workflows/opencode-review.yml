@@ -1,0 +1,48 @@
+# Reviewer agent (comment only). Free OpenCode model via OpenRouter free router.
+# Enable with repo variable OPENCODE_REVIEW_ENABLED=true and secret OPENROUTER_API_KEY.
+# Without those, the job skips. Prefer local `opencode run` + .agents/modes/review.md when quota is tight.
+name: opencode-review
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+concurrency:
+  group: opencode-review-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  review:
+    if: >
+      github.event.pull_request.draft == false &&
+      vars.OPENCODE_REVIEW_ENABLED == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+      issues: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Run OpenCode Reviewer
+        uses: anomalyco/opencode/github@v1.18.35
+        env:
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          model: openrouter/openrouter/free
+          use_github_token: true
+          prompt: |
+            You are the Reviewer for this repository. Follow root AGENTS.md and
+            .agents/modes/review.md exactly.
+
+            Comment on this pull request once with:
+            1. A verdict line: Verdict: merge | request_changes | split
+            2. Short evidence bullets (path + why)
+
+            Do not push commits, do not open follow-up PRs, do not approve the PR,
+            and do not rewrite the code. Comment only.
