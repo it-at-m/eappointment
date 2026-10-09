@@ -74,21 +74,45 @@ public class UseraccountPage extends BasePage {
 
     public void saveNewUser() {
         ScenarioLogManager.getLogger().info("Saving the new user without a department...");
+        waitForAdminLoaderGone();
         WebElement save = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
                 .until(ExpectedConditions.elementToBeClickable(By.xpath("//button[normalize-space(.)='Nutzer anlegen']")));
         save.click();
     }
 
     public void assertDepartmentIsRequired() {
+        By departmentError = By.xpath("//*[contains(., '" + DEPARTMENT_REQUIRED + "')]");
+        By departmentGroupError = By.cssSelector("select[name='departments[][id]']");
         WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
-        wait.until(ExpectedConditions.visibilityOfElementLocated(
-                By.xpath("//*[contains(., '" + DEPARTMENT_REQUIRED + "')]")));
+        wait.until(driver -> {
+            if (driver.getCurrentUrl().contains("useraccount_added")) {
+                return true;
+            }
+            if (driver.findElements(By.cssSelector("div.loader")).stream().anyMatch(WebElement::isDisplayed)) {
+                return false;
+            }
+            if (!driver.findElements(departmentError).isEmpty()) {
+                return true;
+            }
+            List<WebElement> selects = driver.findElements(departmentGroupError);
+            if (selects.isEmpty()) {
+                return false;
+            }
+            try {
+                WebElement group = selects.get(0).findElement(By.xpath("ancestor::*[contains(@class,'form-group')][1]"));
+                String groupClass = group.getAttribute("class");
+                return groupClass != null && groupClass.contains("has-error");
+            } catch (org.openqa.selenium.NoSuchElementException ignored) {
+                return false;
+            }
+        });
+        Assert.assertFalse(DRIVER.getCurrentUrl().contains("useraccount_added"),
+                "The account was created without a department.");
+
         String page = DRIVER.findElement(By.tagName("body")).getText();
         Assert.assertTrue(page.contains(INPUT_ERROR), "The standard input error is missing.");
         Assert.assertTrue(page.contains(DEPARTMENT_REQUIRED), "The department error is missing.");
         Assert.assertFalse(page.contains(MISSING_RIGHTS), "The old missing-rights error is shown: " + page);
-        Assert.assertFalse(DRIVER.getCurrentUrl().contains("useraccount_added"),
-                "The account was created without a department.");
 
         WebElement select = DRIVER.findElement(By.cssSelector("select[name='departments[][id]']"));
         String signedInDepartment = TestDataHelper.getTestData("signed_in_department");
@@ -116,5 +140,11 @@ public class UseraccountPage extends BasePage {
         Assert.assertTrue(color != null && color.contains("213, 47, 46"),
                 "Behörde is not outlined in red: " + color);
         Assert.assertEquals(width, "5px", "Behörde does not have the error border.");
+    }
+
+    private void waitForAdminLoaderGone() {
+        By loader = By.cssSelector("div.loader");
+        new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME)).until(driver ->
+                driver.findElements(loader).stream().noneMatch(WebElement::isDisplayed));
     }
 }
