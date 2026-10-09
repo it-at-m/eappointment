@@ -212,6 +212,49 @@ public class CounterProcessingStationPage extends AdminPage {
         );
     }
 
+    /**
+     * After an API walk-in the Warteschlange can stay empty until the queue table is
+     * reloaded. Match the name cell (not digits stripped from "Zmskvr1341…").
+     */
+    public void assertCustomerVisibleInQueueByName(String familyName) {
+        ScenarioLogManager.getLogger().info(
+                "Checking for customer \"{}\" by name in waiting list...", familyName);
+        CONTEXT.waitForSpinners();
+        showSpontaneousCustomers(true);
+        By nameCell = By.xpath(
+                "//table[@id='table-queued-appointments']"
+                        + "//td[contains(@class,'callnextclient') and normalize-space(.)='"
+                        + familyName
+                        + "']");
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        wait.ignoring(StaleElementReferenceException.class);
+        long[] lastReload = { 0L };
+        WebElement cell = wait.withMessage(
+                        "Customer \"" + familyName + "\" did not appear in the waiting list.")
+                .until(driver -> {
+                    List<WebElement> found = driver.findElements(nameCell);
+                    for (WebElement element : found) {
+                        if (element.isDisplayed()) {
+                            return element;
+                        }
+                    }
+                    long now = System.currentTimeMillis();
+                    if (now - lastReload[0] >= 2000L) {
+                        lastReload[0] = now;
+                        try {
+                            reloadQueueLists();
+                        } catch (RuntimeException ignored) {
+                            // loader or missing reload link — next poll retries
+                        }
+                        showSpontaneousCustomers(true);
+                    }
+                    return null;
+                });
+        Assert.assertTrue(
+                cell.isDisplayed(),
+                "Customer \"" + familyName + "\" is not visible in queue!");
+    }
+
     public void isCustomerVisibleInParkingTableByNumber(String number) {
         String numOnly = number == null ? "" : number.replaceAll("\\D+", "");
         ScenarioLogManager.getLogger().info("Checking parked list by Nr. (" + numOnly + ")...");
@@ -916,15 +959,16 @@ public class CounterProcessingStationPage extends AdminPage {
         CONTEXT.waitForSpinners();
     
         WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME * 2L));
+        // Cap each Termin-buchen poll so a vanished slot can reselect instead of burning 120s.
+        WebDriverWait bookButtonWait = new WebDriverWait(DRIVER, Duration.ofSeconds(20));
         AtomicReference<String> newAppointmentNumber = new AtomicReference<>("");
         AtomicBoolean validationErrorsVisible = new AtomicBoolean(false);
         Set<String> skippedTimes = new HashSet<>();
         final int maxBookingAttempts = 6;
-        boolean bookingAttempted = false;
         fillCustomTextfieldsForSpontaneousCustomerIfNeeded();
     
         for (int attempt = 1; attempt <= maxBookingAttempts; attempt++) {
-            if (attempt > 1 && bookingAttempted) {
+            if (attempt > 1) {
                 String previousTime = TestDataHelper.getTestData("new_appointment_time");
                 if (previousTime != null && !previousTime.isBlank()) {
                     skippedTimes.add(previousTime);
@@ -934,15 +978,22 @@ public class CounterProcessingStationPage extends AdminPage {
                                 + attempt + "/" + maxBookingAttempts + ")...");
                 CONTEXT.waitForSpinners();
                 selectTimeInNewAppointmentDropDownList("<nächste>", skippedTimes);
+                fillCustomTextfieldsForSpontaneousCustomerIfNeeded();
             }
     
-            WebElement bookButton = waitForBookAppointmentButton(wait);
+            WebElement bookButton;
+            try {
+                bookButton = waitForBookAppointmentButton(bookButtonWait);
+            } catch (TimeoutException e) {
+                ScenarioLogManager.getLogger().warn(
+                        "Termin buchen not ready (attempt " + attempt + "/" + maxBookingAttempts
+                                + "); will try another slot.");
+                continue;
+            }
     
-            bookingAttempted = false;
             try {
                 ((JavascriptExecutor) DRIVER).executeScript("arguments[0].scrollIntoView({block:'center'});", bookButton);
                 ((JavascriptExecutor) DRIVER).executeScript("arguments[0].click();", bookButton);
-                bookingAttempted = true;
             } catch (StaleElementReferenceException | ElementClickInterceptedException | TimeoutException e) {
                 ScenarioLogManager.getLogger().warn(
                         "Book click did not complete (attempt " + attempt + "/" + maxBookingAttempts + ").");

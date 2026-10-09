@@ -1601,7 +1601,8 @@ public class AdminSteps {
 
     @Then("the customer {string} should appear in the waiting list.")
     public void sollte_der_kunde_in_der_warteliste_erscheinen(String kunde) {
-        COUNTER_PROCESSING_STATION_PAGE.isCustomerVisibleInQueue(TestDataHelper.transformTestData(kunde), true);
+        COUNTER_PROCESSING_STATION_PAGE.assertCustomerVisibleInQueueByName(
+                TestDataHelper.transformTestData(kunde));
     }
 
     @Then("the waiting time H:mm:ss for {string} should be between {string} and {string}.")
