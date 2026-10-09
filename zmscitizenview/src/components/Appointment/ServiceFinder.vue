@@ -579,7 +579,17 @@ const changeAppointmentCountOfSubservice = (id: string, count: number) => {
       minSlotsPerAppointment.value
     );
 
+    // ZMSKVR-1088: keep list order; record click order for reserve only.
+    const wasUnselected = (subservice.count || 0) <= 0;
     subservice.count = adjustedCount;
+    const order = (service.value!.subServiceSelectionOrder ??= []);
+    if (wasUnselected && adjustedCount > 0 && !order.includes(String(id))) {
+      order.push(String(id));
+    } else if (adjustedCount <= 0) {
+      service.value!.subServiceSelectionOrder = order.filter(
+        (selectedId) => selectedId !== String(id)
+      );
+    }
     currentSlots.value = totalSlots;
   }
 };

@@ -112,6 +112,42 @@ public final class ShadowDom {
     }
 
     /**
+     * Scroll the smallest painted node containing {@code substring} into the viewport center and
+     * outline it so {@code @AfterStep} screenshots show the asserted text.
+     *
+     * @return true when a node was found and scrolled
+     */
+    public boolean scrollTextIntoView(String substring) {
+        context.set();
+        Object o =
+                ((JavascriptExecutor) DriverUtil.getDriver())
+                        .executeScript(
+                                "var needle=arguments[0];"
+                                        + "function shown(el){var n=el;while(n&&n.nodeType===1){"
+                                        + "var st=window.getComputedStyle(n);"
+                                        + "if(st.display==='none'||st.visibility==='hidden'||st.opacity==='0')return false;"
+                                        + "if(n.parentElement){n=n.parentElement;continue;}"
+                                        + "var root=n.getRootNode&&n.getRootNode();n=root&&root.host?root.host:null;}"
+                                        + "return true;}"
+                                        + "var best=null,bestLen=1e9;"
+                                        + "function visit(n){if(!n)return;"
+                                        + "if(n.nodeType===1&&shown(n)){"
+                                        + "var t=((n.innerText||n.textContent||'')+'').replace(/\\s+/g,' ').trim();"
+                                        + "if(t.indexOf(needle)>=0&&t.length<bestLen){bestLen=t.length;best=n;}}"
+                                        + "if(n.shadowRoot)visit(n.shadowRoot);"
+                                        + "if(n.assignedNodes){try{var a=n.assignedNodes({flatten:true});"
+                                        + "for(var j=0;j<a.length;j++)visit(a[j]);}catch(e){}}"
+                                        + "var c=n.childNodes;if(c)for(var i=0;i<c.length;i++)visit(c[i]);}"
+                                        + "visit(document.documentElement);"
+                                        + "if(!best)return false;"
+                                        + "best.scrollIntoView({block:'center',inline:'nearest'});"
+                                        + "try{best.style.outline='3px solid #ffbf00';best.style.outlineOffset='2px';}catch(e){}"
+                                        + "return true;",
+                                substring);
+        return Boolean.TRUE.equals(o);
+    }
+
+    /**
      * Find first element matching CSS in document or any shadow root; click via JS.
      */
 

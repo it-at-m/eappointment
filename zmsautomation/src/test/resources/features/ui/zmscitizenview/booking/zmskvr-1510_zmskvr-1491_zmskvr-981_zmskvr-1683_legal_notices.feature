@@ -1,5 +1,5 @@
 #language: en
-@web @zmscitizenview @booking @citizen @ZMSKVR-1491 @ZMSKVR-1510 @executeLocally @jumpin
+@web @zmscitizenview @booking @citizen @ZMSKVR-1491 @ZMSKVR-1510 @ZMSKVR-981 @ZMSKVR-1683 @executeLocally @jumpin
 Feature: CitizenView: legal notices on the last booking step
   As a citizen reserving an appointment
   I want the legal notices instead of a privacy consent checkbox
@@ -8,6 +8,8 @@ Feature: CitizenView: legal notices on the last booking step
   # ZMSKVR-1491 / ZMSKVR-1510. Phone (service 2, location 2, scope 369) has no
   # video terms, so the privacy section is only the link. The privacy href is the
   # one shipped in de-DE.json. Preconfirm creates the process; the scenario cancels it.
+  # ZMSKVR-981 / ZMSKVR-1683: checkbox titles Datenschutz and Elektronische
+  # Kommunikation are h4 headings (assertStandardLegalNotices).
 
   Background:
     Given the Citizen API is available

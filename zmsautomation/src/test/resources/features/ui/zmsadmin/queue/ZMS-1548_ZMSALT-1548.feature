@@ -1,7 +1,7 @@
 #language: en
 Feature: The counter always shows which customers are currently in the queue.
 
-	@web @zmsadmin @queue @clerk @ZMS-1548 @ZMS-1547 @E2E @automatisiert @executeLocally
+	@web @zmsadmin @queue @clerk @ZMS-1548 @ZMSALT-1548 @ZMS-1547 @ZMSALT-1547 @E2E @automatisiert @executeLocally
 	Scenario: Counter overview of the current queue
 		When I open the administration website.
 		Then I should be on the administration start page.

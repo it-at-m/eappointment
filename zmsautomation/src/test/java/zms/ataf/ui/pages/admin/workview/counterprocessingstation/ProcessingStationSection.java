@@ -99,6 +99,55 @@ public class ProcessingStationSection extends CounterProcessingStationPage {
                 + "'Ja, Kunde erschienen' became visible after clicking 'Aufruf nächster Kunde'.");
     }
 
+    /**
+     * Precall Kundeninformationen board (only via Aufruf nächster Kunde when the process has Anmerkung).
+     */
+    public void assertPrecallConfirmationVisible() {
+        ScenarioLogManager.getLogger().info("Checking precall Kundeninformationen confirmation...");
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        wait.withMessage("Precall Kundeninformationen heading is not visible!");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(
+                "//section[contains(@class,'client-precall')]//h2[contains(.,'Kundeninformationen')]"
+                        + " | //*[contains(@class,'client-precall')]//*[contains(.,'Kundeninformationen')]"
+        )));
+        wait.withMessage("Precall question 'Möchten Sie den Kunden aufrufen?' is not visible!");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(
+                "//*[contains(.,'Möchten Sie den Kunden aufrufen?')]"
+        )));
+        wait.withMessage("Precall button 'Ja, Kunden jetzt aufrufen' is not visible!");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(
+                "//button[text()='Ja, Kunden jetzt aufrufen' and contains(@class, 'client-precall_button-success')]"
+        )));
+    }
+
+    /**
+     * After another clerk already called the process, confirming precall must not assign it here.
+     * Wait for a settled failure signal (has_called_process, ProcessNotCallable, or client-next
+     * after cancel fallback). Do not treat a blank mid-load panel as success.
+     */
+    public void assertPrecallConfirmDidNotTakeCustomer() {
+        ScenarioLogManager.getLogger().info(
+                "Checking that precall confirm did not take a customer already held elsewhere...");
+        By alreadyCalled = By.xpath(
+                "//section[contains(@class,'message--error')]//*[contains(text(),"
+                        + "'Bitte schließen Sie den aktuellen Vorgang zuerst ab.')]");
+        By notCallable = By.xpath(
+                "//*[contains(@class,'exceptionData-headline') and contains(.,"
+                        + "'Termin kann nicht aufgerufen oder bearbeitet werden')]");
+        // client-next replaces client-precall after cancel fallback; not the queue-table call button.
+        By settledClientNext = By.cssSelector("section.client-next, section.board.client-next");
+        By calledSuccess = By.xpath("//button[contains(@class,'client-called_button-success')]");
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        wait.withMessage(
+                "Expected has_called_process, ProcessNotCallable, or settled client-next after precall confirm!");
+        wait.until(driver -> !driver.findElements(alreadyCalled).isEmpty()
+                || !driver.findElements(notCallable).isEmpty()
+                || !driver.findElements(settledClientNext).isEmpty());
+        Assert.assertTrue(
+                DRIVER.findElements(calledSuccess).isEmpty(),
+                "UI must not show 'Ja, Kunde erschienen' after losing the precall race.");
+    }
+
     public void callCustomerWithSpecificNote(String note) {
         ScenarioLogManager.getLogger().info("Trying to call customer with note \"" + note + "\"...");
         final String CUSTOMER_NR_USING_NOTE_XPATH = "//tr[td[contains(., '" + note + "')]]/td[@class='callnextclient']/a";
@@ -492,6 +541,47 @@ public class ProcessingStationSection extends CounterProcessingStationPage {
                 "//section[contains(@class,'message--error')]//*[contains(text(),"
                         + "'Bitte schließen Sie den aktuellen Vorgang zuerst ab.')]"
         )));
+    }
+
+    /**
+     * Queue pick after another workstation already called the process
+     * ({@code processnotcallable.twig} via GET /process/{id}/).
+     */
+    public void assertProcessNotCallableByOtherWorkstationVisible() {
+        ScenarioLogManager.getLogger().info(
+            "Checking ProcessNotCallable error (already handled by another workstation)...");
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        wait.withMessage("ProcessNotCallable headline is not visible!");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(
+                "//*[contains(@class,'exceptionData-headline') and contains(.,"
+                        + "'Termin kann nicht aufgerufen oder bearbeitet werden')]"
+        )));
+        wait.withMessage("ProcessNotCallable body about another workstation is not visible!");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(
+                "//*[contains(.,'bereits von einem anderen Arbeitsplatz bearbeitet wird')]"
+        )));
+        wait.withMessage("ProcessNotCallable status 'aufgerufen' is not visible!");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(
+                "//*[contains(.,'Aktueller Status') and contains(.,'aufgerufen')]"
+        )));
+    }
+
+    public void openWorkstationCallForProcessId(String processId) {
+        ScenarioLogManager.getLogger().info("Opening workstation call for process {}...", processId);
+        Assert.assertTrue(processId != null && processId.matches("\\d+"),
+                "Expected numeric process id, got: " + processId);
+        List<WebElement> links = DRIVER.findElements(By.cssSelector("a[data-process='" + processId + "']"));
+        if (!links.isEmpty() && links.get(0).isDisplayed()) {
+            scrollToCenterByVisibleElement(links.get(0));
+            links.get(0).click();
+            return;
+        }
+        String current = DRIVER.getCurrentUrl();
+        String base = current.replaceAll("[?#].*$", "");
+        if (!base.endsWith("/")) {
+            base = base + "/";
+        }
+        DRIVER.navigate().to(base + "?calledprocess=" + processId);
     }
 
     public void assertCustomerAppearedButtonVisible() {

@@ -1,7 +1,7 @@
 #language: en
 Feature: Walk-in customers can be added to the queue at the counter just like appointment customers.
 
-	@web @zmsadmin @queue @clerk @ZMS-1549 @ZMS-1547 @E2E @automatisiert @executeLocally
+	@web @zmsadmin @queue @clerk @ZMS-1549 @ZMSALT-1549 @ZMS-1547 @ZMSALT-1547 @E2E @automatisiert @executeLocally
 	Scenario: Add a test counter customer
 		When I open the administration website.
 		And I click the button "Anmelden" in the administration.
