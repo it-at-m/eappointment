@@ -434,9 +434,16 @@ public class ZmsApiSteps {
                     .as("scope %d request list should include %s", scopeId, serviceName)
                     .contains(serviceName.toLowerCase(Locale.ROOT));
         }
+        // Prefer today; if the day has no free intern slots yet (early morning / walk-in scopes),
+        // look ahead so night CI can still book a same-horizon Terminkunde.
         JsonNode freeList = minutesAhead > 0
                 ? fetchFreeProcessesLookingAhead(scopeId, request, authKey)
-                : fetchFreeProcesses(scopeId, request, authKey);
+                : fetchFreeProcessesAllowEmpty(scopeId, request, authKey);
+        if (minutesAhead <= 0 && (freeList == null || freeList.isEmpty())) {
+            ScenarioLogManager.getLogger().info(
+                    "No intern slots on {} for scope {}; looking ahead", BerlinTime.today(), scopeId);
+            freeList = fetchFreeProcessesLookingAhead(scopeId, request, authKey);
+        }
 
         long now = Instant.now().getEpochSecond();
         long currentMinute = now - (now % 60);
@@ -447,12 +454,22 @@ public class ZmsApiSteps {
         long soon = now + 6 * 60;
         // Department 2 reminds 1440 minutes ahead, so a later slot today is still due.
         long reminderHorizon = now + 24 * 60 * 60;
-        List<JsonNode> candidates = slotsBetween(freeList, earliest, soon);
+        long endOfToday = BerlinTime.today().atStartOfDay(java.time.ZoneId.of("Europe/Berlin")).toEpochSecond()
+                + 86_400L;
+        List<JsonNode> candidates = slotsBetween(freeList, earliest, Math.min(soon, endOfToday));
+        if (candidates.isEmpty()) {
+            candidates = slotsBetween(freeList, earliest, endOfToday);
+            if (!candidates.isEmpty()) {
+                ScenarioLogManager.getLogger().info(
+                        "No intern slot in the next minutes for scope {}; using a later slot today",
+                        scopeId);
+            }
+        }
         if (candidates.isEmpty()) {
             candidates = slotsBetween(freeList, earliest, reminderHorizon);
             if (!candidates.isEmpty()) {
                 ScenarioLogManager.getLogger().info(
-                        "No intern slot in the next minutes for scope {}; using the next slot inside the reminder window",
+                        "No intern slot today for scope {}; using the next slot inside the reminder window",
                         scopeId);
             }
         }
@@ -1126,6 +1143,7 @@ public class ZmsApiSteps {
         Assertions.assertThat(authKey)
             .as("Remember clerk %s before calling", clerk)
             .isNotBlank();
+        replaceFutureAppointmentWithWalkIn();
         response = postProcessCalled(authKey, Boolean.parseBoolean(allowClusterWideCall), lastProcess);
         CommonApiSteps.setResponse(response);
         if (response.getStatusCode() == 200) {
@@ -1146,6 +1164,7 @@ public class ZmsApiSteps {
         Assertions.assertThat(firstKey).as("Remember clerk %s", firstClerk).isNotBlank();
         Assertions.assertThat(secondKey).as("Remember clerk %s", secondClerk).isNotBlank();
         boolean allow = Boolean.parseBoolean(allowClusterWideCall);
+        replaceFutureAppointmentWithWalkIn();
         JsonNode processBody = lastProcess.deepCopy();
 
         CountDownLatch ready = new CountDownLatch(2);
@@ -1432,15 +1451,34 @@ public class ZmsApiSteps {
         ObjectNode body = process.deepCopy();
         body.put("status", "finished");
 
-        response = given()
+        response = postFinished(authKey, body);
+        if (response.getStatusCode() == 500 && response.asString().toLowerCase(Locale.ROOT).contains("deadlock")) {
+            ScenarioLogManager.getLogger().warn(
+                    "Finish hit a MySQL deadlock; retrying once. body={}",
+                    truncate(response.asString(), 300));
+            try {
+                Thread.sleep(400);
+            } catch (InterruptedException ie) {
+                Thread.currentThread().interrupt();
+            }
+            process = refreshAssignedProcessFromWorkstation(authKey);
+            Assertions.assertThat(process).isNotNull();
+            body = process.deepCopy();
+            body.put("status", "finished");
+            response = postFinished(authKey, body);
+        }
+        CommonApiSteps.setResponse(response);
+        rememberProcess(parseDataNode(response));
+    }
+
+    private Response postFinished(String authKey, JsonNode body) {
+        return given()
             .baseUri(baseUri != null ? baseUri : TestConfig.getBaseUri())
             .header("X-AuthKey", authKey)
             .contentType("application/json")
             .body(toJson(body))
         .when()
             .post("/process/status/finished/");
-        CommonApiSteps.setResponse(response);
-        rememberProcess(parseDataNode(response));
     }
 
     @Then("the response should contain process information")
@@ -2222,41 +2260,26 @@ public class ZmsApiSteps {
     }
 
     private JsonNode fetchFreeProcesses(int scopeId, JsonNode request, String authKey) {
+        JsonNode freeList = fetchFreeProcessesAllowEmpty(scopeId, request, authKey);
+        Assertions.assertThat(freeList)
+            .as("POST /process/status/free/ for scope %d on %s", scopeId, BerlinTime.today())
+            .isNotNull()
+            .isNotEmpty();
+        return freeList;
+    }
+
+    private JsonNode fetchFreeProcessesAllowEmpty(int scopeId, JsonNode request, String authKey) {
         LocalDate today = BerlinTime.today();
-        ObjectNode calendar = MAPPER.createObjectNode();
-        ObjectNode firstDay = MAPPER.createObjectNode();
-        firstDay.put("year", today.getYear());
-        firstDay.put("month", today.getMonthValue());
-        firstDay.put("day", today.getDayOfMonth());
-        calendar.set("firstDay", firstDay);
-        calendar.set("lastDay", firstDay.deepCopy());
-
-        ArrayNode scopes = MAPPER.createArrayNode();
-        ObjectNode scope = MAPPER.createObjectNode();
-        scope.put("id", scopeId);
-        scopes.add(scope);
-        calendar.set("scopes", scopes);
-
-        ArrayNode requests = MAPPER.createArrayNode();
-        requests.add(request.deepCopy());
-        calendar.set("requests", requests);
-
         Response freeResponse = given()
             .baseUri(baseUri != null ? baseUri : TestConfig.getBaseUri())
             .header("X-AuthKey", authKey)
             .contentType("application/json")
             .queryParam("slotType", "intern")
             .queryParam("slotsRequired", 0)
-            .body(toJson(calendar))
+            .body(toJson(freeProcessCalendar(scopeId, request, today)))
         .when()
             .post("/process/status/free/");
-
-        JsonNode freeList = parseDataArray(freeResponse);
-        Assertions.assertThat(freeList)
-            .as("POST /process/status/free/ for scope %d on %s", scopeId, today)
-            .isNotNull()
-            .isNotEmpty();
-        return freeList;
+        return parseDataArray(freeResponse);
     }
 
     private JsonNode fetchFreeProcessesLookingAhead(int scopeId, JsonNode request, String authKey) {
