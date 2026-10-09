@@ -1795,6 +1795,19 @@ public class AdminSteps {
         PROCESSING_STATION_SECTION.assertAlreadyCalledProcessErrorVisible();
     }
 
+    @When("the clerk opens the call for the last ZMS API process.")
+    public void theClerkOpensTheCallForTheLastZmsApiProcess() {
+        String processId = TestDataHelper.getTestData("zmsapi_last_process_id");
+        Assert.assertTrue(processId != null && !processId.isBlank(),
+                "Queue or reserve a process via ZMS API before opening its call in the UI");
+        PROCESSING_STATION_SECTION.openWorkstationCallForProcessId(processId);
+    }
+
+    @Then("the error that the process cannot be called because another workstation holds it appears.")
+    public void theErrorThatTheProcessCannotBeCalledBecauseAnotherWorkstationHoldsItAppears() {
+        PROCESSING_STATION_SECTION.assertProcessNotCallableByOtherWorkstationVisible();
+    }
+
     @And("the button {string} is visible.")
     public void ist_die_schaltflaeche_sichtbar(String button) {
         if ("Ja, Kunde erschienen".equals(button)) {
