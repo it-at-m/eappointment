@@ -229,6 +229,7 @@ describe("AppointmentSummary", () => {
       );
       expect(wrapper.text()).toContain("privacyText");
       expect(wrapper.text()).not.toContain("privacyVideoConsultationText");
+      expect(wrapper.find("h4.m-checkbox-group__heading").exists()).toBe(true);
       expect(wrapper.text()).not.toContain(
         "termsOfUseForVideoConsultationLabel"
       );
