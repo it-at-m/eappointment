@@ -8,36 +8,29 @@ use BO\Zmscitizenapi\Models\ThinnedProcess;
 use BO\Zmscitizenapi\Utils\ErrorMessages;
 use BO\Zmsentities\Process;
 
-/**
- * Citizen-side replacement for the former zmsapi validateProcessLimits checks.
- * Keeps spa/maxQuantity enforcement off shared admin ProcessUpdate/Preconfirm/Confirm.
- */
 class AppointmentProcessLimitsValidationService
 {
-    /** Must match {@see \BO\Zmsbackend\Slot\Service\Slot::MAX_SLOTS} / citizenview MAX_SLOTS */
-    private const int MAX_SLOTS_PER_APPOINTMENT_FALLBACK = 25;
+    /** Must match Slot::MAX_SLOTS / citizenview MAX_SLOTS */
+    private const int MAX_SLOTS_FALLBACK = 25;
 
     private static function getError(string $key): array
     {
         return ErrorMessages::get($key);
     }
 
-    /**
-     * @param array<int|string, int> $serviceIdToCount
-     */
-    public static function validateAppointmentProcessLimits(
+    public static function validateProcessLimits(
         ?int $slotCount,
         mixed $slotsPerAppointment,
         array $serviceIdToCount,
         int $officeId
     ): array {
-        $errors = self::validateAppointmentSlotLimit($slotCount, $slotsPerAppointment)['errors'];
+        $errors = self::validateSlotLimit($slotCount, $slotsPerAppointment)['errors'];
         if ($officeId > 0 && $serviceIdToCount !== []) {
             $errors = array_merge(
                 $errors,
                 self::validateServiceQuantityLimits(
                     $serviceIdToCount,
-                    self::readMaxQuantityByServiceIdForOffice($officeId)
+                    self::readMaxQuantityByOffice($officeId)
                 )['errors']
             );
         }
@@ -45,23 +38,15 @@ class AppointmentProcessLimitsValidationService
         return ['errors' => $errors];
     }
 
-    /**
-     * Preconfirm/confirm only re-check spa. Service mix is fixed after reserve, and
-     * maxQuantity needs a source/relation load that those steps otherwise skip.
-     */
-    public static function validateAppointmentLimitsForThinnedProcess(ThinnedProcess $process): array
+    public static function validateThinnedProcessLimits(ThinnedProcess $process): array
     {
-        return self::validateAppointmentSlotLimit(
+        return self::validateSlotLimit(
             $process->slotCount,
             $process->scope?->getSlotsPerAppointment()
         );
     }
 
-    /**
-     * @param list<int|string> $serviceIds
-     * @param list<int|string> $serviceCounts
-     */
-    public static function validateAppointmentLimitsForReserve(
+    public static function validateReserveLimits(
         Process $process,
         array $serviceIds,
         array $serviceCounts,
@@ -78,7 +63,7 @@ class AppointmentProcessLimitsValidationService
             $slotsPerAppointment = $process->scope->getSlotsPerAppointment();
         }
 
-        return self::validateAppointmentProcessLimits(
+        return self::validateProcessLimits(
             $slotCount,
             $slotsPerAppointment,
             self::buildServiceCountMap($serviceIds, $serviceCounts),
@@ -86,11 +71,6 @@ class AppointmentProcessLimitsValidationService
         );
     }
 
-    /**
-     * @param list<int|string> $serviceIds
-     * @param list<int|string> $serviceCounts
-     * @return array<int, int>
-     */
     public static function buildServiceCountMap(array $serviceIds, array $serviceCounts): array
     {
         $map = [];
@@ -102,36 +82,13 @@ class AppointmentProcessLimitsValidationService
         return $map;
     }
 
-    /**
-     * @return array<int, int>
-     */
-    public static function serviceCountMapFromThinnedProcess(ThinnedProcess $process): array
-    {
-        $map = [];
-        if ($process->serviceId !== null && $process->serviceId > 0 && $process->serviceCount > 0) {
-            $map[(int) $process->serviceId] = (int) $process->serviceCount;
-        }
-        foreach ($process->subRequestCounts as $subRequest) {
-            if (!is_array($subRequest)) {
-                continue;
-            }
-            $id = isset($subRequest['id']) ? (int) $subRequest['id'] : 0;
-            $count = isset($subRequest['count']) ? (int) $subRequest['count'] : 0;
-            if ($id > 0 && $count > 0) {
-                $map[$id] = ($map[$id] ?? 0) + $count;
-            }
-        }
-
-        return $map;
-    }
-
-    public static function validateAppointmentSlotLimit(?int $slotCount, mixed $slotsPerAppointment): array
+    public static function validateSlotLimit(?int $slotCount, mixed $slotsPerAppointment): array
     {
         if ($slotCount === null || $slotCount <= 0) {
             return ['errors' => []];
         }
 
-        $maxSlots = self::resolveMaxSlotsPerAppointment($slotsPerAppointment);
+        $maxSlots = self::resolveMaxSlots($slotsPerAppointment);
         if ($slotCount > $maxSlots) {
             return ['errors' => [self::getError('tooManySlotsPerAppointment')]];
         }
@@ -139,10 +96,6 @@ class AppointmentProcessLimitsValidationService
         return ['errors' => []];
     }
 
-    /**
-     * @param array<int, int> $serviceIdToCount
-     * @param array<int, int|null> $maxQuantityByServiceId
-     */
     public static function validateServiceQuantityLimits(array $serviceIdToCount, array $maxQuantityByServiceId): array
     {
         foreach ($serviceIdToCount as $serviceId => $count) {
@@ -158,23 +111,20 @@ class AppointmentProcessLimitsValidationService
         return ['errors' => []];
     }
 
-    private static function resolveMaxSlotsPerAppointment(mixed $slotsPerAppointment): int
+    private static function resolveMaxSlots(mixed $slotsPerAppointment): int
     {
         if ($slotsPerAppointment === null || $slotsPerAppointment === '') {
-            return self::MAX_SLOTS_PER_APPOINTMENT_FALLBACK;
+            return self::MAX_SLOTS_FALLBACK;
         }
         $parsed = (int) $slotsPerAppointment;
         if ($parsed < 1) {
-            return self::MAX_SLOTS_PER_APPOINTMENT_FALLBACK;
+            return self::MAX_SLOTS_FALLBACK;
         }
 
         return $parsed;
     }
 
-    /**
-     * @return array<int, int|null>
-     */
-    private static function readMaxQuantityByServiceIdForOffice(int $officeId): array
+    private static function readMaxQuantityByOffice(int $officeId): array
     {
         $maxQuantityByServiceId = [];
         $relationList = ZmsApiClientService::getRequestRelationList();
