@@ -45,8 +45,8 @@ Feature: Logged-in my appointments still lists every booked appointment
     And I update the appointment with contact details and telephone "+491234567890" as the logged-in citizen
     And I confirm the reserved appointment using the rebooking source
     Then the appointment status should be "confirmed"
-    When I cancel the remembered "phone" appointment
-    And I remember the current appointment as "phone"
+    # Confirm with source already cancels the old phone process (406 if cancelled again).
+    When I remember the current appointment as "phone"
     And I request my appointments as the logged-in citizen
     Then my appointments include the remembered "phone" appointment for service 2
     And the remembered "phone" appointment was replaced
