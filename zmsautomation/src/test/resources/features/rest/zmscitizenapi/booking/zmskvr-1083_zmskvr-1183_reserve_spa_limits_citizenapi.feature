@@ -25,8 +25,10 @@ Feature: ZMSKVR-1083 / ZMSKVR-1183 Reserve spa validation — Citizen API
     When I cancel the appointment
 
   Scenario: Over-spa reserve for three Ausfuhr units is rejected
-    When I request available days for office 10416 and service 1064268 with service count 3
+    # Discover a timestamp under spa (count 2), then reserve with count 3.
+    # Request-side spa validation rejects before free-slot lookup (400, not 404).
+    When I request available days for office 10416 and service 1064268 with service count 2
     And I request available appointments for the first available day
-    And I attempt to reserve an appointment with the first available slot
+    And I attempt to reserve an appointment with the first available slot and service count 3
     Then the response status code should be 400
     And the response errors should include errorCode "tooManySlotsPerAppointment"

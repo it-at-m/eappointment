@@ -1093,6 +1093,28 @@ public class CitizenApiSteps {
         reserveFirstAvailableSlot(false, false);
     }
 
+    /**
+     * Use timestamps from the last appointments fetch, but send a different serviceCount
+     * (e.g. discover under spa, then attempt over spa for validation).
+     */
+    @When("I attempt to reserve an appointment with the first available slot and service count {int}")
+    public void iAttemptToReserveAnAppointmentWithTheFirstAvailableSlotAndServiceCount(int serviceCount) {
+        int previousCount = lastServiceCount;
+        List<Integer> previousCounts = cachedCalendarServiceCounts;
+        lastServiceCount = serviceCount;
+        if (cachedCalendarServiceIds != null && !cachedCalendarServiceIds.isEmpty()) {
+            cachedCalendarServiceCounts = cachedCalendarServiceIds.stream()
+                    .map(id -> serviceCount)
+                    .collect(Collectors.toList());
+        }
+        try {
+            reserveFirstAvailableSlot(false, false);
+        } finally {
+            lastServiceCount = previousCount;
+            cachedCalendarServiceCounts = previousCounts;
+        }
+    }
+
     @When("I reserve an appointment with the first available slot using the current appointment as source")
     public void iReserveAnAppointmentWithTheFirstAvailableSlotUsingTheCurrentAppointmentAsSource() {
         reserveFirstAvailableSlot(true, true);
