@@ -100,7 +100,7 @@ describe("AppointmentSummary", () => {
         stubs: {
           "muc-button": {
             template:
-              '<button class="muc-button" :data-icon="icon" :disabled="disabled" @click="$emit(\'click\')"><slot /></button>',
+              '<button class="muc-button" :data-icon="icon" :data-variant="variant" :disabled="disabled" @click="$emit(\'click\')"><slot /></button>',
             props: ["icon", "iconShownLeft", "variant", "disabled"],
           },
           "muc-banner": {
@@ -363,7 +363,16 @@ describe("AppointmentSummary", () => {
       mockAppointment.value.scope.rebookingDisabled = true;
       const wrapper = createWrapper({ rebookOrCancelDialog: true });
       expect(findButtonByIcon(wrapper, "arrow-right")).toBeFalsy();
-      expect(findButtonByIcon(wrapper, "close")).toBeTruthy();
+      const cancel = findButtonByIcon(wrapper, "close");
+      expect(cancel).toBeTruthy();
+      expect(cancel!.attributes("data-variant")).toBe("primary");
+    });
+
+    it("keeps cancel secondary when reschedule is shown", () => {
+      const wrapper = createWrapper({ rebookOrCancelDialog: true });
+      const cancel = findButtonByIcon(wrapper, "close");
+      expect(cancel).toBeTruthy();
+      expect(cancel!.attributes("data-variant")).toBe("secondary");
     });
 
     it("emits rescheduleAppointment when reschedule is clicked", async () => {
