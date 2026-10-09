@@ -426,7 +426,11 @@ public class ZmsApiSteps {
 
     private void bookAppointmentCustomer(
             int scopeId, String serviceName, String familyName, int minutesAhead, boolean requireServiceName) {
-        iAmLoggedInToTheZmsApiAs("agent_queue");
+        // Keep the current API session (and its workstation). A fresh agent_queue login here
+        // would drop the clerk's scope and invalidate remembered clerk X-AuthKeys (401 / MatchScopeFailed).
+        if (cachedXAuthKey == null || cachedXAuthKey.isBlank()) {
+            iAmLoggedInToTheZmsApiAs("agent_queue");
+        }
         String authKey = getOrLoginXAuthKey();
         JsonNode request = findScopeRequestByName(scopeId, serviceName, authKey);
         if (requireServiceName) {

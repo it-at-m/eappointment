@@ -1800,6 +1800,11 @@ public class AdminSteps {
         PROCESSING_STATION_SECTION.assertPrecallConfirmationVisible();
     }
 
+    @Then("the precall confirm does not take the customer already held by another clerk.")
+    public void thePrecallConfirmDoesNotTakeTheCustomerAlreadyHeldByAnotherClerk() {
+        PROCESSING_STATION_SECTION.assertPrecallConfirmDidNotTakeCustomer();
+    }
+
     @When("the clerk opens the call for the last ZMS API process.")
     public void theClerkOpensTheCallForTheLastZmsApiProcess() {
         String processId = TestDataHelper.getTestData("zmsapi_last_process_id");
