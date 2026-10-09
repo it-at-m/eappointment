@@ -46,6 +46,40 @@ class AppointmentProcessLimitsValidationService
         );
     }
 
+    /**
+     * Request-side check before free-slot lookup. Uses relation slots × counts so over-spa
+     * rejects with tooManySlotsPerAppointment even when no free hole of that size exists.
+     */
+    public static function validateReserveRequestLimits(
+        array $serviceIds,
+        array $serviceCounts,
+        int $officeId
+    ): array {
+        $serviceIdToCount = self::buildServiceCountMap($serviceIds, $serviceCounts);
+        $slotsPerAppointment = $officeId > 0 ? self::readSlotsPerAppointmentByOffice($officeId) : null;
+        $requiredSlotCount = $officeId > 0
+            ? self::computeRequiredSlotCount($serviceIdToCount, self::readSlotsByOffice($officeId))
+            : null;
+
+        if ($requiredSlotCount !== null) {
+            return self::validateProcessLimits(
+                $requiredSlotCount,
+                $slotsPerAppointment,
+                $serviceIdToCount,
+                $officeId
+            );
+        }
+
+        if ($officeId > 0 && $serviceIdToCount !== []) {
+            return self::validateServiceQuantityLimits(
+                $serviceIdToCount,
+                self::readMaxQuantityByOffice($officeId)
+            );
+        }
+
+        return ['errors' => []];
+    }
+
     public static function validateReserveLimits(
         Process $process,
         array $serviceIds,
@@ -66,6 +100,31 @@ class AppointmentProcessLimitsValidationService
             self::buildServiceCountMap($serviceIds, $serviceCounts),
             $officeId
         );
+    }
+
+    public static function computeRequiredSlotCount(array $serviceIdToCount, array $slotsByServiceId): ?int
+    {
+        if ($serviceIdToCount === []) {
+            return null;
+        }
+
+        $total = 0;
+        foreach ($serviceIdToCount as $serviceId => $count) {
+            if ($count <= 0) {
+                continue;
+            }
+            $sid = (int) $serviceId;
+            if (!array_key_exists($sid, $slotsByServiceId)) {
+                return null;
+            }
+            $slots = (int) $slotsByServiceId[$sid];
+            if ($slots < 1) {
+                return null;
+            }
+            $total += $slots * (int) $count;
+        }
+
+        return $total > 0 ? $total : null;
     }
 
     private static function readSlotsPerAppointmentFromProcess(Process $process): mixed
@@ -168,16 +227,7 @@ class AppointmentProcessLimitsValidationService
     private static function readMaxQuantityByOffice(int $officeId): array
     {
         $maxQuantityByServiceId = [];
-        $relationList = ZmsApiClientService::getRequestRelationList();
-        if (!$relationList) {
-            return $maxQuantityByServiceId;
-        }
-
-        foreach ($relationList as $relation) {
-            $providerId = isset($relation->provider->id) ? (int) $relation->provider->id : 0;
-            if ($providerId !== $officeId) {
-                continue;
-            }
+        foreach (self::relationsForOffice($officeId) as $relation) {
             $serviceId = isset($relation->request->id) ? (int) $relation->request->id : 0;
             if ($serviceId <= 0) {
                 continue;
@@ -189,5 +239,37 @@ class AppointmentProcessLimitsValidationService
         }
 
         return $maxQuantityByServiceId;
+    }
+
+    private static function readSlotsByOffice(int $officeId): array
+    {
+        $slotsByServiceId = [];
+        foreach (self::relationsForOffice($officeId) as $relation) {
+            $serviceId = isset($relation->request->id) ? (int) $relation->request->id : 0;
+            if ($serviceId <= 0) {
+                continue;
+            }
+            $slotsByServiceId[$serviceId] = (int) $relation->slots;
+        }
+
+        return $slotsByServiceId;
+    }
+
+    private static function relationsForOffice(int $officeId): array
+    {
+        $relationList = ZmsApiClientService::getRequestRelationList();
+        if (!$relationList) {
+            return [];
+        }
+
+        $matches = [];
+        foreach ($relationList as $relation) {
+            $providerId = isset($relation->provider->id) ? (int) $relation->provider->id : 0;
+            if ($providerId === $officeId) {
+                $matches[] = $relation;
+            }
+        }
+
+        return $matches;
     }
 }
