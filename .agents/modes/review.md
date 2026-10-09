@@ -17,6 +17,7 @@ Use when reviewing a pull request or diff. **Comment only. Do not rewrite the PR
 5. **Personal or internal data** in the diff? → `request_changes` and cite file/line (see root `AGENTS.md`).
 6. **Branch target?** Feature/bugfix/test/docs → `next`. Hotfix → `main`. Wrong base → `request_changes`.
 7. **Docs/process?** Branch name and commits roughly match `docs/en/setup-and-development/`? Flag clear violations only.
+8. **Existing review threads?** When asked to handle CodeRabbit or GitHub security comments: check them against current code. Relevant → smallest fix only. Not relevant → reply with evidence; do not resolve a thread with no reply. Do not widen scope past the finding.
 
 ## Output shape
 

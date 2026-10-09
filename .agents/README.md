@@ -51,3 +51,21 @@ Assume **free** OpenCode use only: local models (e.g. Ollama) and/or free cloud 
 ## Ownership
 
 Rotate an **agent mayor** every four weeks: owns `AGENTS.md` drift and inbox triage (or delegates triage weekly).
+
+## Monthly retro metrics
+
+Track in a simple sheet (or your analytics tool):
+
+| Metric | Healthy signal |
+|--------|----------------|
+| PRs opened vs merged per week | Gap does not explode |
+| Median time-to-first-human-review | Stable or improving |
+| % of PRs sent back for split / remove refactor | Falls after Reviewer + Plumber habits stick |
+| Inbox items promoted vs abandoned | Triage is happening |
+| Personal/internal data near-misses | Stay at zero |
+
+Adjust the constitution or modes when review is drowning; do not add always-on rules that only increase agent bureaucracy.
+
+## Optional CI Reviewer
+
+Workflow: `.github/workflows/opencode-review.yml`. Off by default. Set repository variable `OPENCODE_REVIEW_ENABLED=true` and secret `OPENROUTER_API_KEY` (or equivalent free-capable key) only when free quota can cover PR traffic. The job comments only; it never pushes or approves.

@@ -18,8 +18,11 @@ This repository is the ZMS / eAppointment monorepo. Human process lives in `docs
 | Mode | File | Role |
 |------|------|------|
 | review | `.agents/modes/review.md` | Reviewer — checklist only; comment, do not rewrite |
-| feature / bugfix / test / plumber | `.agents/modes/` | Added in later phases; until then follow docs and this constitution |
+| feature | `.agents/modes/feature.md` | Builder — ticketed feature |
+| bugfix | `.agents/modes/bugfix.md` | Builder — ticketed bug |
+| test | `.agents/modes/test.md` | Sentinel — zmsautomation / behavioral tests |
+| plumber | `.agents/modes/plumber.md` | Plumber — debt after a ticket |
 
-Personal taste stays outside the repo (`~/.config/opencode/AGENTS.md`, Cursor User Rules, `~/.codex/AGENTS.md`). Never auto-load `.agents/museum/`.
+Personal taste stays outside the repo (`~/.config/opencode/AGENTS.md`, Cursor User Rules, `~/.codex/AGENTS.md`). Never auto-load `.agents/museum/`. Model policy: **free only** (see `.agents/README.md`).
 
 Team guide: `.agents/README.md`. Tracking issue: https://github.com/it-at-m/eappointment/issues/3668
