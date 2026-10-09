@@ -2,6 +2,10 @@ package zms.ataf.rest.steps;
 
 import static io.restassured.RestAssured.given;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
@@ -234,6 +238,101 @@ public class CitizenApiSteps {
         Assertions.assertThat(relation.getSlots())
             .as("service %d slots at office %d", serviceId, officeId)
             .isEqualTo(slots);
+    }
+
+    @Then("office {int} should have slotsPerAppointment {string}")
+    public void officeShouldHaveSlotsPerAppointment(int officeId, String expected) {
+        Assertions.assertThat(lastOfficesAndServicesResponse)
+            .as("Request offices-and-services first")
+            .isNotNull();
+        Office office = findOfficeById(lastOfficesAndServicesResponse, officeId);
+        Assertions.assertThat(office)
+            .as("Expected office %d in offices-and-services", officeId)
+            .isNotNull();
+        Assertions.assertThat(office.getSlotsPerAppointment())
+            .as("office %d slotsPerAppointment", officeId)
+            .isEqualTo(expected);
+    }
+
+    @Then("office {int} and service {int} should take {int} slots")
+    public void officeAndServiceShouldTakeSlots(int officeId, int serviceId, int slots) {
+        Assertions.assertThat(lastOfficesAndServicesResponse)
+            .as("Request offices-and-services first")
+            .isNotNull();
+        OfficeServiceRelation relation = null;
+        if (lastOfficesAndServicesResponse.getRelations() != null) {
+            for (OfficeServiceRelation candidate : lastOfficesAndServicesResponse.getRelations()) {
+                if (candidate != null
+                        && officeId == (candidate.getOfficeId() == null ? -1 : candidate.getOfficeId())
+                        && serviceId == (candidate.getServiceId() == null ? -1 : candidate.getServiceId())) {
+                    relation = candidate;
+                    break;
+                }
+            }
+        }
+        relation = java.util.Objects.requireNonNull(
+                relation, "relation office " + officeId + " service " + serviceId);
+        Assertions.assertThat(relation.getSlots())
+            .as("service %d slots at office %d", serviceId, officeId)
+            .isEqualTo(slots);
+    }
+
+    /**
+     * Raise stored slotCount above scope spa so preconfirm/confirm validation can reject.
+     * {@code hatFolgetermine + 1} is appointments.0.slotCount in the process mapper.
+     */
+    @When("I plant slotCount {int} on the current appointment in the database")
+    public void iPlantSlotCountOnTheCurrentAppointmentInTheDatabase(int slotCount) {
+        if (slotCount < 1) {
+            throw new IllegalArgumentException("slotCount must be >= 1");
+        }
+        ThinnedProcess process = requireCurrentProcess();
+        int processId = process.getProcessId();
+        int hatFolgetermine = slotCount - 1;
+        String sql = "UPDATE buerger SET hatFolgetermine = ? WHERE BuergerID = ?";
+        try (Connection connection = openZmsConnection();
+                PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setInt(1, hatFolgetermine);
+            statement.setInt(2, processId);
+            int updated = statement.executeUpdate();
+            if (updated != 1) {
+                throw new IllegalStateException(
+                        "Process " + processId + " was not updated for planted slotCount (rows=" + updated + ").");
+            }
+        } catch (SQLException e) {
+            throw new IllegalStateException(
+                    "Could not plant slotCount " + slotCount + " on process " + processId + ".", e);
+        }
+        ScenarioLogManager.getLogger().info(
+                "Planted slotCount={} (hatFolgetermine={}) on process {}",
+                slotCount,
+                hatFolgetermine,
+                processId);
+    }
+
+    private static Connection openZmsConnection() throws SQLException {
+        String host = envOrDefault("MYSQL_HOST", "db");
+        String port = mysqlPort(envOrDefault("MYSQL_PORT", "3306"));
+        String database = envOrDefault("MYSQL_DATABASE", "db");
+        String user = envOrDefault("MYSQL_USER", "db");
+        String url = "jdbc:mysql://" + host + ":" + port + "/" + database;
+        return DriverManager.getConnection(url, user, envOrDefault("MYSQL_PASSWORD", "db"));
+    }
+
+    private static String mysqlPort(String raw) {
+        int colon = raw.lastIndexOf(':');
+        if (colon >= 0 && colon < raw.length() - 1) {
+            return raw.substring(colon + 1);
+        }
+        return raw;
+    }
+
+    private static String envOrDefault(String name, String fallback) {
+        String value = System.getenv(name);
+        if (value == null || value.isBlank()) {
+            return fallback;
+        }
+        return value.trim();
     }
 
     @When("I request available days for office {int} and service {int}")
