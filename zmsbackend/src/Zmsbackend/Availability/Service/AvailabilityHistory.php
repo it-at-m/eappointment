@@ -38,9 +38,16 @@ class AvailabilityHistory extends \BO\Zmsbackend\Base
         $this->write(self::ACTION_DELETED, $availability, $changedBy);
     }
 
+    public const string AUTOMATED_SLOT_COMMENT = 'Automatische Anpassung der Slotdauer';
+
     public function writeDldbSlotUpdate(Availability $availability): void
     {
-        $this->write(self::ACTION_DLDB_SLOT_UPDATE, $availability, 'dldb');
+        $this->write(
+            self::ACTION_DLDB_SLOT_UPDATE,
+            $availability,
+            'dldb',
+            self::AUTOMATED_SLOT_COMMENT
+        );
     }
 
     public function readListByScopeId(
@@ -136,8 +143,12 @@ class AvailabilityHistory extends \BO\Zmsbackend\Base
         return $value;
     }
 
-    protected function write(string $action, Availability $availability, ?string $changedBy): void
-    {
+    protected function write(
+        string $action,
+        Availability $availability,
+        ?string $changedBy,
+        ?string $comment = null
+    ): void {
         try {
             $scopeId = (int) ($availability->scope['id'] ?? 0);
             if ($scopeId < 1) {
@@ -149,6 +160,12 @@ class AvailabilityHistory extends \BO\Zmsbackend\Base
             }
 
             $snapshot = $this->buildSnapshot($availability);
+            if ($comment !== null && $comment !== '') {
+                if (mb_strlen($comment) > self::COMMENT_MAX_LENGTH) {
+                    $comment = mb_substr($comment, 0, self::COMMENT_MAX_LENGTH - 3) . '...';
+                }
+                $snapshot['comment'] = $comment;
+            }
             $query = new AvailabilityHistoryQuery(\BO\Zmsbackend\Query\Base::INSERT);
             $query->addValues($query->reverseEntityMapping(array_merge($snapshot, [
                 'scope_id' => $scopeId,

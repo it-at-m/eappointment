@@ -18,6 +18,55 @@ class Availability extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Q
         SELECT OeffnungszeitID FROM oeffnungszeit WHERE OeffnungszeitID = :availabilityId FOR UPDATE
     ';
 
+    const string QUERY_OPEN_ROWS_BY_SCOPE = '
+        SELECT
+            OeffnungszeitID AS id,
+            start_date,
+            end_date,
+            start_time,
+            end_time,
+            appointment_start_time,
+            appointment_end_time,
+            TIME_TO_SEC(time_slot) DIV 60 AS slot_minutes
+        FROM oeffnungszeit
+        WHERE scope_id = :scopeId
+          AND end_date >= :today
+    ';
+
+    const string QUERY_UPDATE_END_DATE = '
+        UPDATE oeffnungszeit
+        SET end_date = :endDate,
+            version = version + 1
+        WHERE OeffnungszeitID = :id
+    ';
+
+    const string QUERY_UPDATE_SLOT_WINDOW = '
+        UPDATE oeffnungszeit
+        SET time_slot = :timeSlot,
+            start_time = :startTime,
+            end_time = :endTime,
+            appointment_start_time = :appointmentStartTime,
+            appointment_end_time = :appointmentEndTime,
+            version = version + 1
+        WHERE OeffnungszeitID = :id
+    ';
+
+    const string QUERY_INSERT_SLOT_COPY = '
+        INSERT INTO oeffnungszeit (
+            scope_id, start_date, end_date, every_x_weeks, every_other_week, weekday,
+            start_time, appointment_start_time, end_time, appointment_end_time, time_slot,
+            workstation_count, appointment_workstation_count, comment, internet_reduction,
+            multiple_slots_allowed, open_from_days, open_until_days, version
+        )
+        SELECT
+            scope_id, :startDate, :endDate, every_x_weeks, every_other_week, weekday,
+            :startTime, :appointmentStartTime, :endTime, :appointmentEndTime, :timeSlot,
+            workstation_count, appointment_workstation_count, comment, internet_reduction,
+            multiple_slots_allowed, open_from_days, open_until_days, 1
+        FROM oeffnungszeit
+        WHERE OeffnungszeitID = :id
+    ';
+
     /**
      * @return void
      */
