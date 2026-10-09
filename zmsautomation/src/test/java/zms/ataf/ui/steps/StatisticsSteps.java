@@ -259,6 +259,29 @@ public class StatisticsSteps {
         SERVICE_STATISTICS_PAGE.clickDownloadButton();
     }
 
+    @When("I filter the citizen statistics across the last December to January boundary.")
+    public void iFilterTheCitizenStatisticsAcrossTheLastDecemberToJanuaryBoundary() {
+        LocalDate today = BerlinTime.today();
+        LocalDate from = LocalDate.of(today.getYear() - 1, 12, 20);
+        LocalDate to = LocalDate.of(today.getYear(), 1, 10);
+        STATISTICS_PAGE.applyDateRangeFilter(from, to);
+    }
+
+    @Then("the citizen statistics list each calendar day at most once.")
+    public void theCitizenStatisticsListEachCalendarDayAtMostOnce() {
+        CUSTOMER_STATISTICS_PAGE.assertEachCalendarDayAtMostOnce();
+    }
+
+    @When("I click the download button in the citizen statistics.")
+    public void iClickTheDownloadButtonInTheCitizenStatistics() {
+        CUSTOMER_STATISTICS_PAGE.clickCitizenStatisticDownload();
+    }
+
+    @Then("the downloaded citizen statistics list each calendar day at most once.")
+    public void theDownloadedCitizenStatisticsListEachCalendarDayAtMostOnce() throws Exception {
+        CUSTOMER_STATISTICS_PAGE.assertDownloadedEachCalendarDayAtMostOnce();
+    }
+
     @Then("the citizen statistics are downloaded.")
     public void wird_die_kundenstatistik_heruntergeladen() {
         // For UI tests we only verify that the download button is present and clickable.
