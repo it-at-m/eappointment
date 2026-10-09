@@ -54,8 +54,6 @@ class AppointmentUpdateService
         }
 
         if ($this->isRebookingUpdate($data)) {
-            // Same as reserve/confirm: Umbuchung is gated by the source appointment's
-            // scope, not the target slot (Scheidplatz → Ruppertstraße must stay allowed).
             $sourceProcess = $this->loadSourceProcessForRebooking($data);
             if (is_array($sourceProcess)) {
                 return $sourceProcess;
