@@ -438,17 +438,6 @@ public class ZmsApiSteps {
                     .as("scope %d request list should include %s", scopeId, serviceName)
                     .contains(serviceName.toLowerCase(Locale.ROOT));
         }
-        // Prefer today; if the day has no free intern slots yet (early morning / walk-in scopes),
-        // look ahead so night CI can still book a same-horizon Terminkunde.
-        JsonNode freeList = minutesAhead > 0
-                ? fetchFreeProcessesLookingAhead(scopeId, request, authKey)
-                : fetchFreeProcessesAllowEmpty(scopeId, request, authKey);
-        if (minutesAhead <= 0 && (freeList == null || freeList.isEmpty())) {
-            ScenarioLogManager.getLogger().info(
-                    "No intern slots on {} for scope {}; looking ahead", BerlinTime.today(), scopeId);
-            freeList = fetchFreeProcessesLookingAhead(scopeId, request, authKey);
-        }
-
         long now = Instant.now().getEpochSecond();
         long currentMinute = now - (now % 60);
         long earliest = (now % 60 > 40) ? currentMinute + 60 : currentMinute;
@@ -456,10 +445,23 @@ public class ZmsApiSteps {
             earliest = Math.max(earliest, now + minutesAhead * 60L);
         }
         long soon = now + 6 * 60;
-        // Department 2 reminds 1440 minutes ahead, so a later slot today is still due.
-        long reminderHorizon = now + 24 * 60 * 60;
         long endOfToday = BerlinTime.today().atStartOfDay(java.time.ZoneId.of("Europe/Berlin")).toEpochSecond()
                 + 86_400L;
+        // free/ is day-scoped: a nonempty today list can be only past slots. Skip those and look ahead.
+        JsonNode freeList = minutesAhead > 0
+                ? fetchFreeProcessesLookingAhead(scopeId, request, authKey, earliest)
+                : fetchFreeProcessesAllowEmpty(scopeId, request, authKey);
+        if (minutesAhead <= 0
+                && (freeList == null
+                        || freeList.isEmpty()
+                        || slotsBetween(freeList, earliest, endOfToday).isEmpty())) {
+            ScenarioLogManager.getLogger().info(
+                    "No eligible intern slots left today on {} for scope {}; looking ahead",
+                    BerlinTime.today(),
+                    scopeId);
+            freeList = fetchFreeProcessesLookingAhead(scopeId, request, authKey, earliest);
+        }
+
         List<JsonNode> candidates = slotsBetween(freeList, earliest, Math.min(soon, endOfToday));
         if (candidates.isEmpty()) {
             candidates = slotsBetween(freeList, earliest, endOfToday);
@@ -469,7 +471,8 @@ public class ZmsApiSteps {
                         scopeId);
             }
         }
-        if (candidates.isEmpty()) {
+        if (minutesAhead > 0 && candidates.isEmpty()) {
+            long reminderHorizon = now + 24 * 60 * 60;
             candidates = slotsBetween(freeList, earliest, reminderHorizon);
             if (!candidates.isEmpty()) {
                 ScenarioLogManager.getLogger().info(
@@ -478,7 +481,11 @@ public class ZmsApiSteps {
             }
         }
         Assertions.assertThat(candidates)
-                .as("scope %d should have an intern slot between epoch %d and %d", scopeId, earliest, reminderHorizon)
+                .as(minutesAhead <= 0
+                        ? "scope %d needs a callable same-day intern slot from epoch %d (Terminkunde collision)"
+                        : "scope %d should have an intern slot from epoch %d",
+                        scopeId,
+                        earliest)
                 .isNotEmpty();
 
         JsonNode reserved = null;
@@ -533,9 +540,19 @@ public class ZmsApiSteps {
         trackProcess(confirmed.path("id").asInt(), scopeId);
 
         long appointment = confirmed.path("appointments").path(0).path("date").asLong(0);
-        Assertions.assertThat(appointment)
-                .as("confirmed appointment time")
-                .isBetween(earliest, reminderHorizon);
+        if (minutesAhead <= 0) {
+            Assertions.assertThat(appointmentIsToday(confirmed))
+                    .as("Terminkunde collision needs a same-day appointment; got epoch %d", appointment)
+                    .isTrue();
+            Assertions.assertThat(appointment)
+                    .as("confirmed same-day appointment time")
+                    .isBetween(earliest, endOfToday);
+        } else {
+            long reminderHorizon = now + 24 * 60 * 60;
+            Assertions.assertThat(appointment)
+                    .as("confirmed appointment time")
+                    .isBetween(earliest, reminderHorizon);
+        }
         TestDataHelper.setTestData("appointment_epoch", Long.toString(appointment));
         ScenarioLogManager.getLogger().info(
                 "Terminkunde {} booked at epoch {} for scope {}", familyName, appointment, scopeId);
@@ -1147,7 +1164,7 @@ public class ZmsApiSteps {
         Assertions.assertThat(authKey)
             .as("Remember clerk %s before calling", clerk)
             .isNotBlank();
-        replaceFutureAppointmentWithWalkIn();
+        assertLastProcessCallableWithoutWalkInFallback();
         response = postProcessCalled(authKey, Boolean.parseBoolean(allowClusterWideCall), lastProcess);
         CommonApiSteps.setResponse(response);
         if (response.getStatusCode() == 200) {
@@ -1168,7 +1185,7 @@ public class ZmsApiSteps {
         Assertions.assertThat(firstKey).as("Remember clerk %s", firstClerk).isNotBlank();
         Assertions.assertThat(secondKey).as("Remember clerk %s", secondClerk).isNotBlank();
         boolean allow = Boolean.parseBoolean(allowClusterWideCall);
-        replaceFutureAppointmentWithWalkIn();
+        assertLastProcessCallableWithoutWalkInFallback();
         JsonNode processBody = lastProcess.deepCopy();
 
         CountDownLatch ready = new CountDownLatch(2);
@@ -1269,6 +1286,25 @@ public class ZmsApiSteps {
             .body(toJson(process))
         .when()
             .post("/workstation/process/called/");
+    }
+
+    /**
+     * Concurrent / second-clerk collision paths must keep the booked process (Terminkunde stays confirmed).
+     * Do not silently replace a later-day appointment with a walk-in.
+     */
+    private void assertLastProcessCallableWithoutWalkInFallback() {
+        Assertions.assertThat(lastProcess)
+                .as("Queue or reserve a process before calling it")
+                .isNotNull();
+        String status = lastProcess.path("status").asText("");
+        if ("queued".equals(status)) {
+            return;
+        }
+        Assertions.assertThat(appointmentIsToday(lastProcess))
+                .as("Collision call needs a same-day appointment or walk-in; got status=%s appointment=%s",
+                        status,
+                        lastProcess.path("appointments").path(0).path("date").asText())
+                .isTrue();
     }
 
     /**
@@ -2287,6 +2323,11 @@ public class ZmsApiSteps {
     }
 
     private JsonNode fetchFreeProcessesLookingAhead(int scopeId, JsonNode request, String authKey) {
+        return fetchFreeProcessesLookingAhead(scopeId, request, authKey, Instant.now().getEpochSecond());
+    }
+
+    private JsonNode fetchFreeProcessesLookingAhead(
+            int scopeId, JsonNode request, String authKey, long earliestEpoch) {
         LocalDate start = BerlinTime.today();
         JsonNode lastEmpty = null;
         for (int offset = 0; offset < 8; offset++) {
@@ -2302,9 +2343,21 @@ public class ZmsApiSteps {
                 .post("/process/status/free/");
             JsonNode freeList = parseDataArray(freeResponse);
             if (freeList != null && !freeList.isEmpty()) {
+                long dayStart = day.atStartOfDay(java.time.ZoneId.of("Europe/Berlin")).toEpochSecond();
+                long dayEnd = dayStart + 86_400L;
+                long from = offset == 0 ? Math.max(earliestEpoch, dayStart) : dayStart;
+                if (slotsBetween(freeList, from, dayEnd).isEmpty()) {
+                    ScenarioLogManager.getLogger().info(
+                            "Intern free list for {} on scope {} has no slot at/after epoch {}; skipping",
+                            day,
+                            scopeId,
+                            from);
+                    lastEmpty = freeList;
+                    continue;
+                }
                 if (offset > 0) {
                     ScenarioLogManager.getLogger().info(
-                        "No intern slot left on {}; using {}", start, day);
+                        "No eligible intern slot left on {}; using {}", start, day);
                 }
                 return freeList;
             }
