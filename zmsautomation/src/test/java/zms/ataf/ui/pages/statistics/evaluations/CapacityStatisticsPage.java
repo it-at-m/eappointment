@@ -15,6 +15,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 
 import ataf.core.logging.ScenarioLogManager;
+import zms.ataf.helpers.BerlinTime;
 import zms.ataf.ui.pages.statistics.StatisticsPage;
 import zms.ataf.ui.pages.statistics.StatisticsPageContext;
 
@@ -101,5 +102,31 @@ public class CapacityStatisticsPage extends StatisticsPage {
                 DRIVER.findElement(By.id("calendar-date-until")).getAttribute("value"),
                 until.format(DateTimeFormatter.ISO_LOCAL_DATE),
                 "The end date changed.");
+    }
+
+    /**
+     * ZMSKVR-1495 / ZMSKVR-1671: year period sum row is {@code Summe · YYYY}, not
+     * {@code Summe · Januar 1970} from formatting a 4-digit period as a month date.
+     */
+    public void assertYearSumRowShowsSelectedYear() {
+        int year = BerlinTime.today().getYear();
+        String expected = "Summe · " + year;
+        ScenarioLogManager.getLogger()
+                .info("Checking capacity year sum label is \"{}\" (not Januar 1970).", expected);
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        WebElement label = wait.until(ExpectedConditions.visibilityOfElementLocated(
+                By.cssSelector(".report-board--capacity-summary-label")));
+        String actual = label.getText().trim();
+        Assert.assertEquals(actual, expected, "Year sum row label is wrong.");
+        Assert.assertFalse(
+                actual.contains("Januar"),
+                "Year sum row must show only the year, not a month name: " + actual);
+        String page = DRIVER.getPageSource();
+        Assert.assertFalse(page.contains("Januar 1970"), "Page still shows Januar 1970.");
+        Assert.assertFalse(page.contains("Summe · Januar"), "Page still shows Summe · Januar.");
+        List<WebElement> headings = DRIVER.findElements(By.cssSelector("h2.board__heading"));
+        boolean calendarYear = headings.stream()
+                .anyMatch(h2 -> h2.getText().contains("Kalenderjahr " + year));
+        Assert.assertTrue(calendarYear, "Board heading should contain Kalenderjahr " + year);
     }
 }
