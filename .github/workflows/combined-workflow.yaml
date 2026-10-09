@@ -7,6 +7,9 @@ on:
     # No paths-ignore: GitHub would skip the whole workflow (including new branches)
     # when every file matches. should-run implements the push matrix via
     # .github/scripts/decide-push-ci-run.sh.
+  # Rebuild without a commit. In Actions, choose the branch under "Use workflow from",
+  # the same way as the zmscitizenview frontend build.
+  workflow_dispatch:
   workflow_call:
 
 concurrency:

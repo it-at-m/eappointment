@@ -5,6 +5,9 @@ on:
     branches: [next]
     # No paths-ignore (same reason as combined-workflow.yaml). should-run skips
     # zmsautomation/zmscitizenview-only pushes after next already has a success.
+  # Rebuild next (incl. Pages) without a commit. Manual runs must use "Use workflow
+  # from: next" — other branches use Combined PHP Build instead.
+  workflow_dispatch:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -24,6 +27,12 @@ jobs:
     outputs:
       run: ${{ steps.check.outputs.run }}
     steps:
+      - name: Manual runs only from next
+        if: github.event_name == 'workflow_dispatch' && github.ref != 'refs/heads/next'
+        run: |
+          echo "::error::Combined PHP Build with Documentation can only be run manually from next. Use Combined PHP Build and pick your branch under Use workflow from."
+          exit 1
+
       - name: Check out
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
