@@ -73,6 +73,24 @@ public class AccountCheckoutTest {
     }
 
     @Test
+    public void sameThreadSecondAgentQueueLoginReusesHeldAccount() {
+        String first = AccountCheckout.assignWorkstationLogin("agent_queue");
+        String again = AccountCheckout.assignWorkstationLogin("agent_queue");
+        Assert.assertEquals(again, first);
+    }
+
+    @Test
+    public void sameThreadCanHoldTwoAgentQueueAccountsForTwoClerks() {
+        String first = AccountCheckout.assignWorkstationLogin("agent_queue");
+        String second = AccountCheckout.assignAnotherWorkstationLogin("agent_queue");
+        Assert.assertNotEquals(second, first);
+        int secondIndex = Integer.parseInt(second.replace("ataf_agent_queue_", "")) - 1;
+        Assert.assertEquals(
+            AccountCheckout.workstationCounter("5"),
+            Integer.toString(5 + secondIndex * 100));
+    }
+
+    @Test
     public void spareSuperuserGetsItsOwnQueueDesk() {
         AccountCheckout.assignWorkstationLogin("ataf");
         AccountCheckout.releaseAll();

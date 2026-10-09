@@ -15,7 +15,7 @@ Feature: ZMS API: only one clerk can take a process when two call it at once
     Then the response status code should be 200
     And the process status should be "queued"
     And I remember the current ZMS API login as clerk "A"
-    Given I am logged in to the ZMS API as "agent_queue"
+    Given I am logged in to the ZMS API as another "agent_queue"
     When I update the workstation with scope 121 and counter "5" with the X-AuthKey
     Then the response status code should be 200
     And I remember the current ZMS API login as clerk "B"
@@ -36,7 +36,7 @@ Feature: ZMS API: only one clerk can take a process when two call it at once
     Then the response status code should be 200
     And the process status should be "queued"
     And I remember the current ZMS API login as clerk "A"
-    Given I am logged in to the ZMS API as "agent_queue"
+    Given I am logged in to the ZMS API as another "agent_queue"
     When I update the workstation with scope 160 and counter "5" with the X-AuthKey
     Then the response status code should be 200
     And I remember the current ZMS API login as clerk "B"
