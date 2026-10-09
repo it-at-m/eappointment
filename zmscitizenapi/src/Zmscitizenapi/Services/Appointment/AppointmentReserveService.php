@@ -150,7 +150,8 @@ class AppointmentReserveService
 
                     $processData = [
                         'requests' => $requestIds,
-                        'appointments' => [$appointment]
+                        'appointments' => [$appointment],
+                        'slotCount' => (int) $appointment->getSlotCount(),
                     ];
                     $process->withUpdatedData($processData, new \DateTime("@$timestamp"), $process->scope);
                     return $process;

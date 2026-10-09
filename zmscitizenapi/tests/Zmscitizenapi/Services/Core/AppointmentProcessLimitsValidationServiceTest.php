@@ -18,11 +18,11 @@ class AppointmentProcessLimitsValidationServiceTest extends TestCase
     public function testValidateSlotLimit(): void
     {
         $this->assertSame(
-            ['errors' => []],
+            ['errors' => [ErrorMessages::get('processInvalid')]],
             AppointmentProcessLimitsValidationService::validateSlotLimit(null, '2')
         );
         $this->assertSame(
-            ['errors' => []],
+            ['errors' => [ErrorMessages::get('processInvalid')]],
             AppointmentProcessLimitsValidationService::validateSlotLimit(0, '2')
         );
         $this->assertSame(
