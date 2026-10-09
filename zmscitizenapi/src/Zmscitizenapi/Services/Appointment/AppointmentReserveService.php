@@ -8,6 +8,7 @@ use BO\Zmscitizenapi\Utils\DateTimeFormatHelper;
 use BO\Zmscitizenapi\Models\ThinnedProcess;
 use BO\Zmscitizenapi\Services\Captcha\CaptchaRequirementTrait;
 use BO\Zmscitizenapi\Services\Captcha\TokenValidationService;
+use BO\Zmscitizenapi\Services\Core\AppointmentProcessLimitsValidationService;
 use BO\Zmscitizenapi\Services\Core\MapperService;
 use BO\Zmscitizenapi\Services\Core\ValidationService;
 use BO\Zmscitizenapi\Services\Core\ZmsApiFacadeService;
@@ -65,6 +66,16 @@ class AppointmentReserveService
         $errors = ValidationService::validateGetProcessNotFound($selectedProcess);
         if (!empty($errors['errors'])) {
             return $errors;
+        }
+
+        $limitErrors = AppointmentProcessLimitsValidationService::validateAppointmentLimitsForReserve(
+            $selectedProcess,
+            $clientData->serviceIds,
+            $clientData->serviceCounts,
+            $clientData->officeId
+        );
+        if (!empty($limitErrors['errors'])) {
+            return $limitErrors;
         }
 
         $sourceProcess = $this->loadSourceProcessForRebooking($clientData);
