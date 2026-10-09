@@ -221,21 +221,25 @@ public class CounterProcessingStationPage extends AdminPage {
                 "Checking for customer \"{}\" by name in waiting list...", familyName);
         CONTEXT.waitForSpinners();
         showSpontaneousCustomers(true);
+        // Name may sit in an <a> with a sibling call-count <small>; match the cell text flexibly.
         By nameCell = By.xpath(
                 "//table[@id='table-queued-appointments']"
-                        + "//td[contains(@class,'callnextclient') and normalize-space(.)='"
-                        + familyName
-                        + "']");
+                        + "//td[contains(@class,'callnextclient')]"
+                        + "[contains(normalize-space(.),'" + familyName + "')]");
         WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
         wait.ignoring(StaleElementReferenceException.class);
         long[] lastReload = { 0L };
-        WebElement cell = wait.withMessage(
-                        "Customer \"" + familyName + "\" did not appear in the waiting list.")
+        // Return boolean only — a held WebElement goes stale when the queue reloads under us.
+        wait.withMessage("Customer \"" + familyName + "\" did not appear in the waiting list.")
                 .until(driver -> {
                     List<WebElement> found = driver.findElements(nameCell);
                     for (WebElement element : found) {
-                        if (element.isDisplayed()) {
-                            return element;
+                        try {
+                            if (element.isDisplayed()) {
+                                return true;
+                            }
+                        } catch (StaleElementReferenceException ignored) {
+                            // row replaced mid-poll
                         }
                     }
                     long now = System.currentTimeMillis();
@@ -248,11 +252,8 @@ public class CounterProcessingStationPage extends AdminPage {
                         }
                         showSpontaneousCustomers(true);
                     }
-                    return null;
+                    return false;
                 });
-        Assert.assertTrue(
-                cell.isDisplayed(),
-                "Customer \"" + familyName + "\" is not visible in queue!");
     }
 
     public void isCustomerVisibleInParkingTableByNumber(String number) {
