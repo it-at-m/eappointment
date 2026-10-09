@@ -6,8 +6,8 @@ Feature: CitizenView: Ausfuhr quantity follows spa, not only maxQuantity
   So that maxQuantity alone cannot push the booking over the spa budget
 
   # ZMSKVR-1083, tested with ZMSKVR-1183 (validation in zmscitizenapi).
-  # Office 10416 / scope 70: spa=8, slotTime=5.
-  # Ausfuhrkennzeichen 1064268: slots=3, maxQuantity=3 → UI max min(3, floor(8/3))=2.
+  # Covers the #1865 table on the UI: slotTimeInMinutes=5, slots=3/4, spa=8, maxQuantity=3.
+  # Ausfuhrkennzeichen 1064268: UI max min(maxQuantity=3, floor(spa/slots)=2) → 2.
   # Rotes Dauerkennzeichen Handel 1064374: slots=4. 1+1 uses 7 of 8; another unit is blocked.
   # No appointment is booked.
 

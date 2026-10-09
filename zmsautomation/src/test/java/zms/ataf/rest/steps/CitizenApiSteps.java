@@ -42,6 +42,7 @@ import zms.ataf.rest.dto.zmscitizenapi.AvailableCalendarResponse;
 import zms.ataf.rest.dto.zmscitizenapi.Office;
 import zms.ataf.rest.dto.zmscitizenapi.OfficeServiceRelation;
 import zms.ataf.rest.dto.zmscitizenapi.ReserveAppointmentRequest;
+import zms.ataf.rest.dto.zmscitizenapi.Service;
 import zms.ataf.rest.dto.zmscitizenapi.ThinnedProcess;
 import zms.ataf.rest.dto.zmscitizenapi.collections.OfficesAndServicesResponse;
 import zms.ataf.ui.pages.citizenview.support.FuehrerscheinstelleScopeHints;
@@ -256,6 +257,42 @@ public class CitizenApiSteps {
 
     @Then("office {int} and service {int} should take {int} slots")
     public void officeAndServiceShouldTakeSlots(int officeId, int serviceId, int slots) {
+        OfficeServiceRelation relation = requireRelation(officeId, serviceId);
+        Assertions.assertThat(relation.getSlots())
+            .as("service %d slots at office %d", serviceId, officeId)
+            .isEqualTo(slots);
+    }
+
+    @Then("service {int} should have maxQuantity {int}")
+    public void serviceShouldHaveMaxQuantity(int serviceId, int maxQuantity) {
+        Assertions.assertThat(lastOfficesAndServicesResponse)
+            .as("Request offices-and-services first")
+            .isNotNull();
+        Service service = null;
+        if (lastOfficesAndServicesResponse.getServices() != null) {
+            for (Service candidate : lastOfficesAndServicesResponse.getServices()) {
+                if (candidate != null
+                        && serviceId == (candidate.getId() == null ? -1 : candidate.getId())) {
+                    service = candidate;
+                    break;
+                }
+            }
+        }
+        service = java.util.Objects.requireNonNull(service, "service " + serviceId);
+        Assertions.assertThat(service.getMaxQuantity())
+            .as("service %d maxQuantity", serviceId)
+            .isEqualTo(maxQuantity);
+    }
+
+    @Then("office {int} and service {int} should have relation maxQuantity {int}")
+    public void officeAndServiceShouldHaveRelationMaxQuantity(int officeId, int serviceId, int maxQuantity) {
+        OfficeServiceRelation relation = requireRelation(officeId, serviceId);
+        Assertions.assertThat(relation.getMaxQuantity())
+            .as("relation office %d service %d maxQuantity", officeId, serviceId)
+            .isEqualTo(maxQuantity);
+    }
+
+    private OfficeServiceRelation requireRelation(int officeId, int serviceId) {
         Assertions.assertThat(lastOfficesAndServicesResponse)
             .as("Request offices-and-services first")
             .isNotNull();
@@ -270,11 +307,8 @@ public class CitizenApiSteps {
                 }
             }
         }
-        relation = java.util.Objects.requireNonNull(
+        return java.util.Objects.requireNonNull(
                 relation, "relation office " + officeId + " service " + serviceId);
-        Assertions.assertThat(relation.getSlots())
-            .as("service %d slots at office %d", serviceId, officeId)
-            .isEqualTo(slots);
     }
 
     /**
