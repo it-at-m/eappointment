@@ -2318,6 +2318,10 @@ public class ZmsApiSteps {
     private void rememberProcess(JsonNode process) {
         if (process != null && !process.isMissingNode() && !process.isNull()) {
             lastProcess = process;
+            int processId = process.path("id").asInt();
+            if (processId > 0) {
+                TestDataHelper.setTestData("zmsapi_last_process_id", Integer.toString(processId));
+            }
         }
     }
 

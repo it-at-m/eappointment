@@ -494,6 +494,47 @@ public class ProcessingStationSection extends CounterProcessingStationPage {
         )));
     }
 
+    /**
+     * Queue pick after another workstation already called the process
+     * ({@code processnotcallable.twig} via GET /process/{id}/).
+     */
+    public void assertProcessNotCallableByOtherWorkstationVisible() {
+        ScenarioLogManager.getLogger().info(
+            "Checking ProcessNotCallable error (already handled by another workstation)...");
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        wait.withMessage("ProcessNotCallable headline is not visible!");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(
+                "//*[contains(@class,'exceptionData-headline') and contains(.,"
+                        + "'Termin kann nicht aufgerufen oder bearbeitet werden')]"
+        )));
+        wait.withMessage("ProcessNotCallable body about another workstation is not visible!");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(
+                "//*[contains(.,'bereits von einem anderen Arbeitsplatz bearbeitet wird')]"
+        )));
+        wait.withMessage("ProcessNotCallable status 'aufgerufen' is not visible!");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(
+                "//*[contains(.,'Aktueller Status') and contains(.,'aufgerufen')]"
+        )));
+    }
+
+    public void openWorkstationCallForProcessId(String processId) {
+        ScenarioLogManager.getLogger().info("Opening workstation call for process {}...", processId);
+        Assert.assertTrue(processId != null && processId.matches("\\d+"),
+                "Expected numeric process id, got: " + processId);
+        List<WebElement> links = DRIVER.findElements(By.cssSelector("a[data-process='" + processId + "']"));
+        if (!links.isEmpty() && links.get(0).isDisplayed()) {
+            scrollToCenterByVisibleElement(links.get(0));
+            links.get(0).click();
+            return;
+        }
+        String current = DRIVER.getCurrentUrl();
+        String base = current.replaceAll("[?#].*$", "");
+        if (!base.endsWith("/")) {
+            base = base + "/";
+        }
+        DRIVER.navigate().to(base + "?calledprocess=" + processId);
+    }
+
     public void assertCustomerAppearedButtonVisible() {
         ScenarioLogManager.getLogger().info("Checking that \"Ja, Kunde erschienen\" is visible...");
         Assert.assertTrue(isWebElementVisible(
