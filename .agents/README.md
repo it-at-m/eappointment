@@ -50,8 +50,8 @@ Assume **free** OpenCode use only: local models (e.g. Ollama) and/or free cloud 
 | [`../CLAUDE.md`](../CLAUDE.md) | Claude Code (`@AGENTS.md`) |
 | [`../GEMINI.md`](../GEMINI.md) | Gemini Code Assist / Gemini CLI (`@AGENTS.md`) |
 | [`.cursor/rules/`](../.cursor/rules/) | Cursor thin pointers into `.agents/modes/` |
-| [`../opencode.json`](../opencode.json) | OpenCode extra `instructions` globs |
+| [`../opencode.json`](../opencode.json) | OpenCode extra `instructions` (team guide + local rules; modes opened on demand via `AGENTS.md`) |
 
 ## Optional CI Reviewer
 
-Workflow: `.github/workflows/opencode-review.yml`. Off by default. Set repository variable `OPENCODE_REVIEW_ENABLED=true` and secret `OPENROUTER_API_KEY` (or equivalent free-capable key) only when free quota can cover PR traffic. The job comments only; it never pushes or approves.
+Workflow: `.github/workflows/opencode-review.yml`. Off by default. Set repository variable `OPENCODE_REVIEW_ENABLED=true` to activate the job; pass secret `OPENROUTER_API_KEY` to the action for the model. Same-repo PRs only (forks are skipped). The job comments only; it never pushes or approves.
