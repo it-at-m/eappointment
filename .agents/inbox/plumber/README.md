@@ -16,6 +16,6 @@ Debt and refactor candidates. Agents and humans may append. **Humans** promote n
 - **Risk if ignored:**
 - **Suggested small PR shape:** (one theme; behavior unchanged unless ticket says otherwise)
 - **Proof idea:** (which tests or checks)
-- **Reporter:**
+- **Reporter:** role or non-personal alias only
 - **Date:**
 ```

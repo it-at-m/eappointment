@@ -1,6 +1,8 @@
 # Reviewer agent (comment only). Free OpenCode model via OpenRouter free router.
-# Enable with repo variable OPENCODE_REVIEW_ENABLED=true and secret OPENROUTER_API_KEY.
-# Without those, the job skips. Prefer local `opencode run` + .agents/modes/review.md when quota is tight.
+# Enable with repo variable OPENCODE_REVIEW_ENABLED=true.
+# Pass secret OPENROUTER_API_KEY to the action (required for the model; not part of the job if-condition).
+# Same-repo PRs only: fork PRs do not receive secrets and cannot post with a writable token here.
+# Prefer local `opencode run` + .agents/modes/review.md when quota is tight or for forks.
 name: opencode-review
 
 on:
@@ -15,7 +17,8 @@ jobs:
   review:
     if: >
       github.event.pull_request.draft == false &&
-      vars.OPENCODE_REVIEW_ENABLED == 'true'
+      vars.OPENCODE_REVIEW_ENABLED == 'true' &&
+      github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -23,13 +26,13 @@ jobs:
       issues: write
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 1
           persist-credentials: false
 
       - name: Run OpenCode Reviewer
-        uses: anomalyco/opencode/github@v1.18.35
+        uses: anomalyco/opencode/github@53d1eabb61e21162157817bf677da0a4ad3332e3 # v1.18.35
         env:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

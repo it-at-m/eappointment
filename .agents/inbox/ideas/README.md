@@ -15,6 +15,6 @@ Unticketed product or process ideas. Agents and humans may append. **Humans** pr
 - **Why it matters:**
 - **Suggested mode/role:** Builder | Sentinel | other
 - **Non-goals:**
-- **Reporter:**
+- **Reporter:** role or non-personal alias only
 - **Date:**
 ```

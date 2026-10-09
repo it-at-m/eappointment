@@ -19,7 +19,7 @@ When everyone on a small team uses agents, coding volume rises faster than revie
 
 ## Model policy
 
-**Free only** with OpenCode: local models and/or free cloud quotas. The optional GitHub Actions Reviewer (`.github/workflows/opencode-review.yml`) stays off until the repository variable `OPENCODE_REVIEW_ENABLED=true` and a free-capable API secret are set. Otherwise run Reviewer locally.
+**Free only** with OpenCode: local models and/or free cloud quotas. The optional GitHub Actions Reviewer (`.github/workflows/opencode-review.yml`) stays off until the repository variable `OPENCODE_REVIEW_ENABLED=true`. That variable activates the job; secret `OPENROUTER_API_KEY` is passed to the action for the model. Same-repo pull requests only (forks are skipped). Otherwise run Reviewer locally.
 
 ## How to work
 

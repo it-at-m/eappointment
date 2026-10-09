@@ -19,7 +19,7 @@ Wenn alle in einem kleinen Team Agenten nutzen, steigt das Codevolumen schneller
 
 ## Modellpolitik
 
-**Nur kostenlos** mit OpenCode: lokale Modelle und/oder kostenlose Cloud-Kontingente. Der optionale GitHub-Actions-Reviewer (`.github/workflows/opencode-review.yml`) bleibt aus, bis die Repository-Variable `OPENCODE_REVIEW_ENABLED=true` und ein für Free-Modelle geeignetes API-Secret gesetzt sind. Sonst Reviewer lokal ausführen.
+**Nur kostenlos** mit OpenCode: lokale Modelle und/oder kostenlose Cloud-Kontingente. Der optionale GitHub-Actions-Reviewer (`.github/workflows/opencode-review.yml`) bleibt aus, bis die Repository-Variable `OPENCODE_REVIEW_ENABLED=true` gesetzt ist. Die Variable aktiviert den Job; das Secret `OPENROUTER_API_KEY` wird an die Action für das Modell übergeben. Nur Pull Requests aus demselben Repository (Forks werden übersprungen). Sonst Reviewer lokal ausführen.
 
 ## So arbeiten
 
