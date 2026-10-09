@@ -363,6 +363,16 @@ public class ZmsApiSteps {
     @When("I queue a walk-in at scope {int} with service {string} and name {string} with the X-AuthKey")
     public void iQueueAWalkInAtScopeWithServiceAndNameWithTheXAuthKey(
             int scopeId, String serviceName, String familyName) {
+        queueWalkIn(scopeId, serviceName, familyName, null);
+    }
+
+    @When("I queue a walk-in at scope {int} with service {string}, name {string} and amendment {string} with the X-AuthKey")
+    public void iQueueAWalkInAtScopeWithServiceNameAndAmendmentWithTheXAuthKey(
+            int scopeId, String serviceName, String familyName, String amendment) {
+        queueWalkIn(scopeId, serviceName, familyName, amendment);
+    }
+
+    private void queueWalkIn(int scopeId, String serviceName, String familyName, String amendment) {
         String authKey = getOrLoginXAuthKey();
         JsonNode request = findScopeRequestByName(scopeId, serviceName, authKey);
         ObjectNode scope = MAPPER.createObjectNode();
@@ -376,6 +386,9 @@ public class ZmsApiSteps {
         client.put("surveyAccepted", 1);
         ObjectNode process = MAPPER.createObjectNode();
         process.put("status", "queued");
+        if (amendment != null && !amendment.isBlank()) {
+            process.put("amendment", amendment);
+        }
         process.set("scope", scope);
         process.set("appointments", MAPPER.createArrayNode().add(appointment));
         process.set("requests", MAPPER.createArrayNode().add(request.deepCopy()));

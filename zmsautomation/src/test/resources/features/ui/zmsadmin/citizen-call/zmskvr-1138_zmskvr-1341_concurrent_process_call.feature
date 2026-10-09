@@ -6,7 +6,40 @@ Feature: A second clerk cannot take a process that was already called
 	#    info (Aufruf nächster Kunde).
 	# B) UI wins first: a distinct agent_queue clerk gets 404 ProcessAlreadyCalled.
 	# C) Terminkunde UI-first on Pasing (same collision as Spontankunde).
+	# D) Precall: Aufruf nächster Kunde with Anmerkung shows Kundeninformationen before
+	#    assign; queue pick uses direct=1 and skips precall.
 	# Without Clusteransicht on Pasing; with Alle Clusterstandorte on Ruppertstraße WB04.
+
+	@web @zmsadmin @citizen-call @clerk @ZMSKVR-1138 @ZMSKVR-1341 @executeLocally
+	Scenario: Without cluster after precall another clerk takes the process
+		# Precall does not assign; API can still call, then Ja maps ProcessAlreadyCalled → has_called_process.
+		Given the ZMS API is available
+		And I am logged in to the ZMS API as "agent_queue"
+		When I update the workstation with scope 121 and counter "14" with the X-AuthKey
+		Then the response status code should be 200
+		And I remember the current ZMS API login as clerk "first"
+		When I open the administration website.
+		Then I should be on the administration start page.
+		When I click the button "Anmelden" in the administration.
+		And I select for "Standort" the value "Bürgerbüro Pasing (KVR-II/235 Team 1) Serviceschalter".
+		And I enter in the field "Platz-Nr. oder Tresen" the text "4".
+		And I click the button "Auswahl bestätigen" in the administration.
+		Then the workstation page is displayed.
+		When the customers already waiting are finished as no-shows.
+		When I queue a walk-in at scope 121 with service "Führungszeugnis", name "Muster Zmskvr1341p" and amendment "ZMSKVR-1341 precall" with the X-AuthKey
+		Then the response status code should be 200
+		Then the customer "Muster Zmskvr1341p" should appear in the waiting list.
+		When I click the button "Aufruf nächster Kunde" in the administration.
+		Then the precall confirmation with Kundeninformationen is shown.
+		When clerk "first" calls the last process with allowClusterWideCall false
+		Then the response status code should be 200
+		When I click the button "Ja, Kunden jetzt aufrufen" in the administration.
+		Then the error that a process is already called appears.
+		When I set the assigned process status to processing with the X-AuthKey
+		Then the response status code should be 200
+		When I finish the assigned process with the X-AuthKey
+		Then the response status code should be 200
+
 
 	@web @zmsadmin @citizen-call @clerk @ZMSKVR-1138 @ZMSKVR-1341 @executeLocally
 	Scenario: Without cluster after UI call on Terminkunde the API clerk gets ProcessAlreadyCalled

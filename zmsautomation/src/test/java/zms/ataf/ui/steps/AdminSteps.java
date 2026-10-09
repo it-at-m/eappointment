@@ -1795,6 +1795,11 @@ public class AdminSteps {
         PROCESSING_STATION_SECTION.assertAlreadyCalledProcessErrorVisible();
     }
 
+    @Then("the precall confirmation with Kundeninformationen is shown.")
+    public void thePrecallConfirmationWithKundeninformationenIsShown() {
+        PROCESSING_STATION_SECTION.assertPrecallConfirmationVisible();
+    }
+
     @When("the clerk opens the call for the last ZMS API process.")
     public void theClerkOpensTheCallForTheLastZmsApiProcess() {
         String processId = TestDataHelper.getTestData("zmsapi_last_process_id");
