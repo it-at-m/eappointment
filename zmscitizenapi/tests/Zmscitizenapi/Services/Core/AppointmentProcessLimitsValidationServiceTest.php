@@ -100,6 +100,30 @@ class AppointmentProcessLimitsValidationServiceTest extends TestCase
         );
     }
 
+    public function testComputeRequiredSlotCount(): void
+    {
+        $this->assertSame(
+            9,
+            AppointmentProcessLimitsValidationService::computeRequiredSlotCount(
+                [1064268 => 3],
+                [1064268 => 3]
+            )
+        );
+        $this->assertSame(
+            7,
+            AppointmentProcessLimitsValidationService::computeRequiredSlotCount(
+                [1064268 => 1, 1064374 => 1],
+                [1064268 => 3, 1064374 => 4]
+            )
+        );
+        $this->assertNull(
+            AppointmentProcessLimitsValidationService::computeRequiredSlotCount(
+                [1064268 => 3],
+                []
+            )
+        );
+    }
+
     public function testValidateThinnedProcessLimits(): void
     {
         $allowed = new ThinnedProcess(
