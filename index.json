@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-10-09T20:37:25.329Z",
+  "publishedAt": "2026-10-09T22:03:26.268Z",
   "branches": [
     {
       "name": "next",
@@ -390,6 +390,12 @@
       "slug": "test-zmskvr-1249-zmskvr-1583-sunday-opening-hours-range",
       "runId": "37194954540",
       "runStartedAt": "2026-10-04T10:18:41Z"
+    },
+    {
+      "name": "test-zmskvr-1266-zmskvr-1519-citizen-stats-year-boundary",
+      "slug": "test-zmskvr-1266-zmskvr-1519-citizen-stats-year-boundary",
+      "runId": "37991279025",
+      "runStartedAt": "2026-10-09T21:53:06Z"
     },
     {
       "name": "test-zmskvr-1273-zmskvr-1303-queue-mail-subject",

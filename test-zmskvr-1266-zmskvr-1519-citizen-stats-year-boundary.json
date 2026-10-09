@@ -1,0 +1,35 @@
+{
+  "branch": "test-zmskvr-1266-zmskvr-1519-citizen-stats-year-boundary",
+  "branchSlug": "test-zmskvr-1266-zmskvr-1519-citizen-stats-year-boundary",
+  "runId": "37991279025",
+  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37991279025",
+  "runStartedAt": "2026-10-09T21:53:06Z",
+  "publishedAt": "2026-10-09T22:03:26.268Z",
+  "features": {
+    "feature-ui-zmsstatistic-citizen-stats-zmskvr-1519-zmskvr-1266-citizen-stats-year-boundary": {
+      "status": "passed",
+      "shard": "custom",
+      "browser": "chrome",
+      "browsers": {
+        "chrome": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "37991279025",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37991279025",
+          "runStartedAt": "2026-10-09T21:53:06Z"
+        },
+        "firefox": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "37991279025",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37991279025",
+          "runStartedAt": "2026-10-09T21:53:06Z"
+        }
+      },
+      "rel": "ui/zmsstatistic/citizen-stats/zmskvr-1519_zmskvr-1266_citizen_stats_year_boundary.feature",
+      "runId": "37991279025",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37991279025",
+      "runStartedAt": "2026-10-09T21:53:06Z"
+    }
+  }
+}
