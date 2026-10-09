@@ -199,6 +199,16 @@ public class StatisticsSteps {
         STATISTICS_PAGE.clickOnCurrentMonthName();
     }
 
+    @When("I select the current year in the statistics.")
+    public void iSelectTheCurrentYearInTheStatistics() {
+        STATISTICS_PAGE.clickOnCurrentYear();
+    }
+
+    @Then("the capacity statistics year sum row shows the selected year.")
+    public void theCapacityStatisticsYearSumRowShowsTheSelectedYear() {
+        CAPACITY_STATISTICS_PAGE.assertYearSumRowShowsSelectedYear();
+    }
+
     @Then("the statistics page {string} is displayed.")
     public void wird_die_statistik_seite_angezeigt(String pageName) {
         STATISTICS_PAGE.checkIfStatisticsPageIsOpen(pageName);
