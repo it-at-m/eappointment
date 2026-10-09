@@ -1,0 +1,60 @@
+{
+  "branch": "test-zmskvr-1138-zmskvr-1341-concurrent-process-call",
+  "branchSlug": "test-zmskvr-1138-zmskvr-1341-concurrent-process-call",
+  "runId": "37864281391",
+  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37864281391",
+  "runStartedAt": "2026-10-09T00:20:38Z",
+  "publishedAt": "2026-10-09T00:32:23.822Z",
+  "features": {
+    "feature-rest-zmsapi-citizen-call-zmsadmin-zmskvr-1138-zmskvr-1341-concurrent-process-call": {
+      "status": "failed",
+      "shard": "custom",
+      "browser": "chrome",
+      "browsers": {
+        "chrome": {
+          "status": "failed",
+          "shard": "custom",
+          "runId": "37864281391",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37864281391",
+          "runStartedAt": "2026-10-09T00:20:38Z"
+        },
+        "firefox": {
+          "status": "failed",
+          "shard": "custom",
+          "runId": "37864281391",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37864281391",
+          "runStartedAt": "2026-10-09T00:20:38Z"
+        }
+      },
+      "rel": "rest/zmsapi/citizen-call/zmsadmin/zmskvr-1138_zmskvr-1341_concurrent_process_call.feature",
+      "runId": "37864281391",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37864281391",
+      "runStartedAt": "2026-10-09T00:20:38Z"
+    },
+    "feature-ui-zmsadmin-citizen-call-zmskvr-1138-zmskvr-1341-concurrent-process-call": {
+      "status": "passed",
+      "shard": "custom",
+      "browser": "chrome",
+      "browsers": {
+        "chrome": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "37864281391",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37864281391",
+          "runStartedAt": "2026-10-09T00:20:38Z"
+        },
+        "firefox": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "37864281391",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37864281391",
+          "runStartedAt": "2026-10-09T00:20:38Z"
+        }
+      },
+      "rel": "ui/zmsadmin/citizen-call/zmskvr-1138_zmskvr-1341_concurrent_process_call.feature",
+      "runId": "37864281391",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37864281391",
+      "runStartedAt": "2026-10-09T00:20:38Z"
+    }
+  }
+}
