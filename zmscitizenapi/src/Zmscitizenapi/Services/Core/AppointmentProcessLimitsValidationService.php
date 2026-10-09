@@ -85,7 +85,7 @@ class AppointmentProcessLimitsValidationService
     public static function validateSlotLimit(?int $slotCount, mixed $slotsPerAppointment): array
     {
         if ($slotCount === null || $slotCount <= 0) {
-            return ['errors' => []];
+            return ['errors' => [self::getError('processInvalid')]];
         }
 
         $maxSlots = self::resolveMaxSlots($slotsPerAppointment);
