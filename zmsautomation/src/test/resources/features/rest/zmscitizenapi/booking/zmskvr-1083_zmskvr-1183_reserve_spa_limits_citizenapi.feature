@@ -5,8 +5,10 @@ Feature: ZMSKVR-1083 / ZMSKVR-1183 Reserve spa validation — Citizen API
   So that slotsPerAppointment is enforced before a process is kept
 
   # Office 10416 / scope 70 spa=8. Ausfuhrkennzeichen 1064268 slots=3.
-  # Under spa: serviceCount 2 → slotCount 6. Over spa: serviceCount 3 → slotCount 9.
+  # Under spa: serviceCount 2 → slotCount 6. Over spa: serviceCount 3 → slotCount 9
+  #   → tooManySlotsPerAppointment (service maxQuantity is 3, so quantity alone would allow 3).
   # V53 gives scope 70 a bookable window. Finish or cancel every reserved process.
+  # maxQuantity / tooManyServicesPerAppointment: see reserve_max_quantity feature.
 
   Background:
     Given the Citizen API is available
