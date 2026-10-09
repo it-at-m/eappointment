@@ -740,8 +740,10 @@ public class CitizenApiSteps {
     }
 
     /**
-     * ZMSKVR-1051 / ZMSKVR-1309: with one seat on WB03 and WB04, a second reserve of the same
-     * timestamp succeeds on the other scope (unlike the single-seat Passkalender race).
+     * ZMSKVR-1051 / ZMSKVR-1309 (and Führerscheinstelle twin): with one internet seat per
+     * Wartebereich/Schalter, a second reserve of the same timestamp lands on the other scope.
+     * Parallel scenarios can already hold that other seat — then retry the pair on the next
+     * free timestamp (same pattern as {@link #reserveFirstAvailableSlot}).
      */
     @When("I reserve the same appointment slot again for the other Wartebereich")
     public void iReserveTheSameAppointmentSlotAgainForTheOtherWartebereich() {
@@ -755,8 +757,94 @@ public class CitizenApiSteps {
             throw new IllegalStateException("First reserve has no officeId/serviceId for the second Wartebereich.");
         }
         int serviceCount = lastServiceCount > 0 ? lastServiceCount : 1;
-        long timestamp = first.getTimestamp();
 
+        response = postReserveForOfficeService(first.getTimestamp(), officeId, serviceId, serviceCount);
+        if (response.getStatusCode() == 200) {
+            acceptSecondSameTimestampReserve(first, response);
+            return;
+        }
+        if (!slotNoLongerAvailable(response)) {
+            response.then().statusCode(200);
+            return;
+        }
+
+        ScenarioLogManager.getLogger().info(String.format(
+                "Citizen API other Wartebereich seat gone at timestamp=%d; retrying pair on later slots",
+                first.getTimestamp()));
+        Integer abandonedFirstId = first.getProcessId();
+        cancelProcessQuietly(first.getProcessId(), first.getAuthKey());
+
+        List<Long> timestamps = new ArrayList<>();
+        if (lastAvailableAppointmentsResponse != null) {
+            timestamps.addAll(lastAvailableAppointmentsResponse.futureAppointmentTimestamps());
+        }
+        long failedTimestamp = first.getTimestamp();
+        timestamps.removeIf(ts -> ts == null || ts.equals(failedTimestamp));
+        if (timestamps.isEmpty()) {
+            appendFreshTimestamps(timestamps);
+            if (timestamps.isEmpty() && loadNextCalendarDayWithSlots()) {
+                appendFreshTimestamps(timestamps);
+            }
+            timestamps.removeIf(ts -> ts == null || ts.equals(failedTimestamp));
+        }
+        int refetches = 0;
+        for (int i = 0; i < timestamps.size(); ) {
+            long timestamp = timestamps.get(i);
+            i++;
+            Response firstResponse = postReserveForOfficeService(timestamp, officeId, serviceId, serviceCount);
+            if (firstResponse.getStatusCode() != 200) {
+                if (i >= timestamps.size() && refetches < 3) {
+                    refetches++;
+                    int added = appendFreshTimestamps(timestamps);
+                    if (added == 0 && loadNextCalendarDayWithSlots()) {
+                        added = appendFreshTimestamps(timestamps);
+                    }
+                    timestamps.removeIf(ts -> ts == null || ts.equals(failedTimestamp));
+                    if (added == 0) {
+                        break;
+                    }
+                }
+                continue;
+            }
+            ThinnedProcess newFirst = parseReserveProcess(firstResponse);
+            if (newFirst == null || newFirst.getProcessId() == null || newFirst.getAuthKey() == null) {
+                continue;
+            }
+            replaceRememberedProcess(abandonedFirstId, newFirst);
+            abandonedFirstId = newFirst.getProcessId();
+            lastReserveProcess = newFirst;
+            setLastReserveProcess(newFirst);
+            rememberScopeFamilyFromProcess(newFirst);
+
+            Response secondResponse = postReserveForOfficeService(timestamp, officeId, serviceId, serviceCount);
+            if (secondResponse.getStatusCode() == 200) {
+                acceptSecondSameTimestampReserve(newFirst, secondResponse);
+                return;
+            }
+            ScenarioLogManager.getLogger().info(String.format(
+                    "Citizen API other Wartebereich still unavailable at timestamp=%d status=%d; trying next",
+                    timestamp,
+                    secondResponse.getStatusCode()));
+            cancelProcessQuietly(newFirst.getProcessId(), newFirst.getAuthKey());
+            if (i >= timestamps.size() && refetches < 3) {
+                refetches++;
+                int added = appendFreshTimestamps(timestamps);
+                if (added == 0 && loadNextCalendarDayWithSlots()) {
+                    added = appendFreshTimestamps(timestamps);
+                }
+                timestamps.removeIf(ts -> ts == null || ts.equals(failedTimestamp));
+                if (added == 0) {
+                    break;
+                }
+            }
+        }
+
+        Assertions.fail(
+                "Could not reserve the same timestamp on the other Wartebereich/Schalter after retries");
+    }
+
+    private Response postReserveForOfficeService(
+            long timestamp, int officeId, int serviceId, int serviceCount) {
         ReserveAppointmentRequest body = new ReserveAppointmentRequest();
         body.setTimestamp(timestamp);
         body.setOfficeId(officeId);
@@ -772,33 +860,93 @@ public class CitizenApiSteps {
                 officeId,
                 serviceId));
 
-        response = given()
+        Response reserveResponse = given()
                 .baseUri(baseUri != null ? baseUri : TestConfig.getCitizenApiBaseUri())
                 .contentType("application/json")
                 .body(body)
                 .when()
                 .post("/reserve-appointment/");
-        CommonApiSteps.setResponse(response);
+        response = reserveResponse;
+        CommonApiSteps.setResponse(reserveResponse);
 
-        String reserveBody = response.asString();
+        String reserveBody = reserveResponse.asString();
         ScenarioLogManager.getLogger().info(String.format(
                 "Citizen API /reserve-appointment/ other Wartebereich status=%d body=%s",
-                response.getStatusCode(),
+                reserveResponse.getStatusCode(),
                 reserveBody.length() > 1250 ? reserveBody.substring(0, 1250) + "..." : reserveBody));
-        response.then().statusCode(200);
+        return reserveResponse;
+    }
 
-        ThinnedProcess reserved;
-        try {
-            reserved = response.as(ThinnedProcess.class);
-        } catch (Exception e) {
-            reserved = parseDataResponse(response, ThinnedProcess.class);
-        }
+    private void acceptSecondSameTimestampReserve(ThinnedProcess first, Response secondResponse) {
+        response = secondResponse;
+        CommonApiSteps.setResponse(secondResponse);
+        secondResponse.then().statusCode(200);
+        ThinnedProcess reserved = parseReserveProcess(secondResponse);
         Assertions.assertThat(reserved).as("second Wartebereich reserve").isNotNull();
         Assertions.assertThat(reserved.getProcessId()).isNotNull();
         Assertions.assertThat(reserved.getAuthKey()).isNotBlank();
         Assertions.assertThat(reserved.getProcessId()).isNotEqualTo(first.getProcessId());
         lastReserveProcess = reserved;
         setLastReserveProcess(reserved);
+    }
+
+    private ThinnedProcess parseReserveProcess(Response reserveResponse) {
+        try {
+            return reserveResponse.as(ThinnedProcess.class);
+        } catch (Exception e) {
+            return parseDataResponse(reserveResponse, ThinnedProcess.class);
+        }
+    }
+
+    /** Keep remembered labels (e.g. wb-first) pointing at the process that still exists. */
+    private void replaceRememberedProcess(Integer oldProcessId, ThinnedProcess replacement) {
+        if (oldProcessId == null || replacement == null || replacement.getProcessId() == null) {
+            return;
+        }
+        for (Map.Entry<String, RememberedAppointment> entry : rememberedAppointments.entrySet()) {
+            RememberedAppointment current = entry.getValue();
+            if (current.processId == oldProcessId) {
+                entry.setValue(new RememberedAppointment(
+                        replacement.getProcessId(),
+                        replacement.getAuthKey(),
+                        oldProcessId));
+                ScenarioLogManager.getLogger().info(String.format(
+                        "Updated remembered \"%s\" processId %d → %d after Wartebereich retry",
+                        entry.getKey(),
+                        oldProcessId,
+                        replacement.getProcessId()));
+            }
+        }
+    }
+
+    /**
+     * After rebooking the first seat of a same-timestamp pair, refresh WB/Schalter memory so
+     * the following "other Wartebereich/Schalter" Then still matches.
+     */
+    private void rememberScopeFamilyFromProcess(ThinnedProcess process) {
+        if (process == null || process.getProcessId() == null || process.getAuthKey() == null) {
+            return;
+        }
+        Response appointmentResponse = given()
+                .baseUri(baseUri != null ? baseUri : TestConfig.getCitizenApiBaseUri())
+                .queryParam("processId", process.getProcessId())
+                .queryParam("authKey", process.getAuthKey())
+                .when()
+                .get("/appointment/");
+        if (appointmentResponse.getStatusCode() != 200) {
+            return;
+        }
+        String hint = appointmentResponse.jsonPath().getString("scope.hint");
+        String info = appointmentResponse.jsonPath().getString("scope.infoForAppointment");
+        String combined = (hint == null ? "" : hint) + " " + (info == null ? "" : info);
+        String wartezone = RuppertstrasseWartezoneHints.detectCode(combined);
+        if (wartezone != null) {
+            RuppertstrasseWartezoneHints.rememberApiWartezoneCode(wartezone);
+        }
+        String schalter = FuehrerscheinstelleScopeHints.detectCode(combined);
+        if (schalter != null) {
+            FuehrerscheinstelleScopeHints.rememberApiSchalterCode(schalter);
+        }
     }
 
     @When("I attempt to reserve an appointment with the first available slot")
