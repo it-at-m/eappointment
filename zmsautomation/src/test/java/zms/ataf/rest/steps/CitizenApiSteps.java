@@ -1645,23 +1645,8 @@ public class CitizenApiSteps {
             .as("remember \"%s\" again after moving it", label)
             .isNotNull();
         Assertions.assertThat(remembered.processId).isNotEqualTo(remembered.previousProcessId);
-        // Confirm-with-source can leave the cancelled source in /my-appointments/ for a short window.
-        long deadline = System.currentTimeMillis() + 30_000L;
-        while (System.currentTimeMillis() < deadline) {
-            iRequestMyAppointmentsAsTheLoggedInCitizen();
-            if (findMyAppointment(remembered.previousProcessId) == null
-                    && findMyAppointment(remembered.processId) != null) {
-                return;
-            }
-            try {
-                Thread.sleep(1000L);
-            } catch (InterruptedException interrupted) {
-                Thread.currentThread().interrupt();
-                break;
-            }
-        }
         Assertions.assertThat(findMyAppointment(remembered.previousProcessId))
-            .as("my appointments should drop previous process %s after rebook", remembered.previousProcessId)
+            .as("my appointments should drop previous process %s after the source cancel", remembered.previousProcessId)
             .isNull();
         Assertions.assertThat(findMyAppointment(remembered.processId))
             .as("my appointments should include replacement process %s", remembered.processId)
