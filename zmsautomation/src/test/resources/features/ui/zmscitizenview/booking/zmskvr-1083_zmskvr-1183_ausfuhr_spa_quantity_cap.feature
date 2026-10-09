@@ -21,8 +21,8 @@ Feature: CitizenView: Ausfuhr quantity follows spa, not only maxQuantity
   Scenario: One Ausfuhr and one Rotes Handel fit under spa
     Given I open zmscitizenview with jump-in service "1064268" and location "10416"
     Then the service combination step should be visible
-    When I show all combinable services
-    And I add subservice "Rotes Dauerkennzeichen für Handel, Werkstätten und Hersteller" with quantity 1 on the service combination step
+    # Jump-in already lists the combinable services; Alle Leistungen anzeigen is absent.
+    When I add subservice "Rotes Dauerkennzeichen für Handel, Werkstätten und Hersteller" with quantity 1 on the service combination step
     Then the service counter for "Ausfuhrkennzeichen" should still be 1
     And the service counter for "Rotes Dauerkennzeichen für Handel, Werkstätten und Hersteller" should still be 1
     And the estimated duration on the service combination step should be 35 minutes
@@ -32,8 +32,7 @@ Feature: CitizenView: Ausfuhr quantity follows spa, not only maxQuantity
   Scenario: Another multi-slot unit is blocked when spa is already almost full
     Given I open zmscitizenview with jump-in service "1064268" and location "10416"
     Then the service combination step should be visible
-    When I show all combinable services
-    And I add subservice "Rotes Dauerkennzeichen für Handel, Werkstätten und Hersteller" with quantity 1 on the service combination step
+    When I add subservice "Rotes Dauerkennzeichen für Handel, Werkstätten und Hersteller" with quantity 1 on the service combination step
     Then the plus button for service "Ausfuhrkennzeichen" is disabled
     And the plus button for service "Rotes Dauerkennzeichen für Handel, Werkstätten und Hersteller" is disabled
     And the service counter for "Ausfuhrkennzeichen" should still be 1
