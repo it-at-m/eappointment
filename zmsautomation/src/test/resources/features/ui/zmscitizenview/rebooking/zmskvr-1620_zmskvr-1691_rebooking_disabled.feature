@@ -85,6 +85,7 @@ Feature: CitizenView: Termin verschieben hidden when rebooking is disabled
 
   # Scheidplatz → Passkalender: source allows Umbuchen; target disabled must not block.
   # Scheidplatz has no email activation, so the source booking uses Bürger-Login.
+  # Bemerkung is already stored on the source, so rebooking skips Kontakt (like ZMSKVR-353).
   @citizen-login @jumpin @scheidplatz
   Scenario: Rebooking from Scheidplatz to Passkalender completes without activation
     Given I open zmscitizenview with jump-in service "1063453" and location "102524"
@@ -116,11 +117,6 @@ Feature: CitizenView: Termin verschieben hidden when rebooking is disabled
     And I scroll to and highlight the preferred timeslot for office 10502 in the citizen view
     And I click the highlighted timeslot in the citizen view
     And I continue after slot selection with Weiter for office 10502 in the citizen view
-    Then the contact form should be visible in the citizen view
-    And the filled name and email fields should be locked on the contact form in the citizen view
-    And the required custom text field should be editable on the contact form in the citizen view
-    When I fill required custom text fields on the contact form in the citizen view
-    And I continue from the contact form in the citizen view
     Then the cancel reschedule button should be visible in the citizen view
     And the booking summary should show provider 10502 in the citizen view
     When I accept communication in the citizen view
