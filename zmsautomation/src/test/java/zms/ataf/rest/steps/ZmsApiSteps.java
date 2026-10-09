@@ -246,6 +246,21 @@ public class ZmsApiSteps {
         cachedXAuthKey = loginAndExtractAuthKey(workstationLoginCredentials());
     }
 
+    /**
+     * Second concurrent workstation session in the same scenario. Uses
+     * {@link AccountCheckout#assignAnotherWorkstationLogin} so the first clerk keeps a valid SessionID.
+     */
+    @Given("I am logged in to the ZMS API as another {string}")
+    public void iAmLoggedInToTheZmsApiAsAnother(String usernameOrRole) {
+        theZmsApiWorkstationUserIs(usernameOrRole);
+        String password = scenarioLoginPassword != null && !scenarioLoginPassword.isBlank()
+            ? scenarioLoginPassword
+            : defaultWorkstationPassword();
+        String login = AccountCheckout.assignAnotherWorkstationLogin(usernameOrRole);
+        cachedXAuthKey = loginAndExtractAuthKey(
+            new String[] { resolveWorkstationUsername(login), password });
+    }
+
     @When("I make a POST request to {string} with valid id and password")
     public void iMakeAPostRequestToWithValidIdAndPassword(String endpoint) {
         postWorkstationLogin(endpoint);
