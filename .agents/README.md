@@ -10,8 +10,8 @@ Tracking: [issue #3668](https://github.com/it-at-m/eappointment/issues/3668).
 |------|---------|
 | [`../AGENTS.md`](../AGENTS.md) | Always-on constitution (keep short) |
 | [`modes/`](modes/) | One mode per session; open on demand |
-| [`inbox/ideas/`](inbox/ideas/) | Unticketed ideas — agents may append; humans triage |
-| [`inbox/plumber/`](inbox/plumber/) | Debt / refactor notes — same triage rules |
+| [`inbox/ideas/`](inbox/ideas/) | Unticketed ideas — agents may append; humans promote to a ticket, defer, or delete |
+| [`inbox/plumber/`](inbox/plumber/) | Debt / refactor notes — same promotion rules |
 | [`museum/`](museum/) | Examples and dead ideas — **never** auto-loaded |
 
 Human depth stays in `docs/en/setup-and-development/`. Do not copy the handbook into always-on agent context.
@@ -33,13 +33,6 @@ Every developer can wear any role.
 
 Assume **free** OpenCode use only: local models (e.g. Ollama) and/or free cloud quotas. No paid API tier is required for this system. CI Reviewer jobs run only if they can use free quota or a self-hosted free model; otherwise run Reviewer locally with `opencode run`.
 
-## Rituals
-
-- **Daily:** announce mode; open only review-sized PRs.
-- **Twice weekly (~15 min):** triage `.agents/inbox/` — promote to a ticket, defer, or delete.
-- **Weekly:** one Plumber scan (manual until automation exists).
-- **Monthly:** retro on PRs opened vs merged, review wait, and send-backs for “too large” or “mixed refactor”.
-
 ## Bureaucracy budget
 
 - Always-on constitution under ~80 lines.
@@ -47,24 +40,6 @@ Assume **free** OpenCode use only: local models (e.g. Ollama) and/or free cloud 
 - A new shared rule needs a PR, an owner, and a failure mode it prevents.
 - If a rule does not reduce review cost, safety incidents, or wrong-branch mistakes — delete it.
 - Personal rules stay off-repo and must not contradict the constitution.
-
-## Ownership
-
-Rotate an **agent mayor** every four weeks: owns `AGENTS.md` drift and inbox triage (or delegates triage weekly).
-
-## Monthly retro metrics
-
-Track in a simple sheet (or your analytics tool):
-
-| Metric | Healthy signal |
-|--------|----------------|
-| PRs opened vs merged per week | Gap does not explode |
-| Median time-to-first-human-review | Stable or improving |
-| % of PRs sent back for split / remove refactor | Falls after Reviewer + Plumber habits stick |
-| Inbox items promoted vs abandoned | Triage is happening |
-| Personal/internal data near-misses | Stay at zero |
-
-Adjust the constitution or modes when review is drowning; do not add always-on rules that only increase agent bureaucracy.
 
 ## Optional CI Reviewer
 
