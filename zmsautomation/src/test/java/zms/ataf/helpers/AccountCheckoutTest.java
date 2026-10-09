@@ -84,7 +84,16 @@ public class AccountCheckoutTest {
         String first = AccountCheckout.assignWorkstationLogin("agent_queue");
         String second = AccountCheckout.assignAnotherWorkstationLogin("agent_queue");
         Assert.assertNotEquals(second, first);
-        int secondIndex = Integer.parseInt(second.replace("ataf_agent_queue_", "")) - 1;
+        Assert.assertTrue(
+            second.startsWith("ataf_agent_queue_"),
+            "expected pool login, got " + second);
+        int secondIndex;
+        try {
+            secondIndex = Integer.parseInt(second.substring("ataf_agent_queue_".length())) - 1;
+        } catch (NumberFormatException e) {
+            Assert.fail("expected numeric pool suffix on " + second);
+            return;
+        }
         Assert.assertEquals(
             AccountCheckout.workstationCounter("5"),
             Integer.toString(5 + secondIndex * 100));
