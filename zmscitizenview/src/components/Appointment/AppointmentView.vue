@@ -471,7 +471,6 @@ import {
 } from "@/types/ProvideInjectTypes";
 import { ServiceImpl } from "@/types/ServiceImpl";
 import { StepperItem } from "@/types/StepperTypes";
-import { SubService } from "@/types/SubService";
 import {
   getApiStatusState,
   handleApiResponseForDownTime,
@@ -516,6 +515,7 @@ import {
   setPlaceholderReserveEmail,
 } from "@/utils/rebookingContact";
 import { resolveOfficeById, toOfficeImpl } from "@/utils/resolveOfficeById";
+import { serviceFromAppointment } from "@/utils/serviceFromAppointment";
 import { isExpired } from "@/utils/timestampInPast";
 import {
   bookingFlow,
@@ -829,9 +829,11 @@ const decreaseCurrentView = (): void => {
 
 const restartBookingToServices = (): void => {
   clearAllErrors();
-  // A reschedule or confirmed-appointment link cannot show Leistung at view 0.
+  // Reschedule / appointment deep links cannot show Leistung at view 0.
+  // Captcha-session and reservation callouts must return to the appointment
+  // jump-in so GET /appointment/ mints a fresh captchaToken.
   if (isRebooking.value || isExistingAppointmentDeepLink.value) {
-    redirectToAppointmentStart();
+    redirectToAppointmentJumpIn();
     return;
   }
   captchaToken.value = undefined;
@@ -866,15 +868,20 @@ const setServices = () => {
       );
     }
 
-    if (selectedService.value.subServices) {
-      selectedService.value.subServices.forEach((subservice) => {
-        if (subservice.count > 0) {
-          selectedServiceMap.value.set(
-            subservice.id.toString(),
-            subservice.count
-          );
-        }
-      });
+    const subs = selectedService.value.subServices ?? [];
+    const order = selectedService.value.subServiceSelectionOrder ?? [];
+    const added = new Set<string>();
+    for (const id of order) {
+      const sub = subs.find((s) => String(s.id) === String(id));
+      if (sub && sub.count > 0) {
+        selectedServiceMap.value.set(String(sub.id), sub.count);
+        added.add(String(sub.id));
+      }
+    }
+    for (const sub of subs) {
+      if (sub.count > 0 && !added.has(String(sub.id))) {
+        selectedServiceMap.value.set(String(sub.id), sub.count);
+      }
     }
     increaseCurrentView();
   }
@@ -1509,6 +1516,55 @@ const redirectToAppointmentStart = () => {
   window.location.href = baseUrl;
 };
 
+const redirectToAppointmentJumpIn = (): void => {
+  const hash =
+    props.appointmentHash ?? loadedAppointmentHash.value ?? undefined;
+  if (!hash) {
+    redirectToAppointmentStart();
+    return;
+  }
+
+  const targetHash = `#/appointment/${hash}`;
+  if (window.location.hash !== targetHash) {
+    const baseUrl = window.location.origin + window.location.pathname;
+    history.replaceState(null, "", `${baseUrl}${targetHash}`);
+  }
+
+  // Stay on Übersicht — no full reload (that flashes Leistung at currentView 0).
+  // Re-fetch so AppointmentById mints a fresh captchaToken for the next attempt.
+  isRebooking.value = false;
+  rebookedAppointment.value = undefined;
+  captchaToken.value = undefined;
+  reservationStartMs.value = null;
+  rebookOrCancelDialog.value = true;
+  currentView.value = 3;
+
+  const appointmentData = parseAppointmentHash(hash);
+  if (!appointmentData) {
+    handleApiError(
+      "appointmentNotFound",
+      errorStateMap.value,
+      currentErrorData.value
+    );
+    return;
+  }
+
+  fetchAppointment(props.globalState, appointmentData).then((data) => {
+    if ((data as AppointmentDTO).processId == undefined) {
+      handleApiError(
+        "appointmentNotFound",
+        errorStateMap.value,
+        currentErrorData.value
+      );
+      return;
+    }
+    if ("captchaToken" in data && (data as any).captchaToken) {
+      captchaToken.value = (data as any).captchaToken as string;
+    }
+    appointment.value = data as AppointmentDTO;
+  });
+};
+
 const downloadIcsAppointment = () => {
   downloadIcsFile(appointment.value?.icsContent);
 };
@@ -1572,17 +1628,23 @@ const runAppointmentFromHash = (hash: string | undefined): void => {
           }
           appointment.value = data as AppointmentDTO;
           selectedServiceMap.value = new Map();
-          selectedService.value = (services.value ?? []).find(
-            (service) =>
-              String(service.id) === String(appointment.value?.serviceId)
+
+          preselectedLocationId.value = String(appointment.value.officeId);
+          const resolvedOffice = resolveOfficeById(appointment.value.officeId, {
+            offices: offices.value,
+            appointment: appointment.value,
+          });
+          if (resolvedOffice) {
+            selectedProvider.value = resolvedOffice;
+          }
+
+          selectedService.value = serviceFromAppointment(
+            appointment.value,
+            services.value,
+            (serviceId) => getProviders(serviceId, null),
+            resolvedOffice
           );
           if (selectedService.value) {
-            selectedService.value.count = appointment.value.serviceCount;
-            selectedService.value.providers = getProviders(
-              selectedService.value.id,
-              null
-            );
-
             updateServiceLinkId(
               String(
                 selectedService.value.rootParentId ??
@@ -1590,38 +1652,19 @@ const runAppointmentFromHash = (hash: string | undefined): void => {
                   ""
               )
             );
-
-            if ((appointment.value.subRequestCounts ?? []).length > 0) {
-              appointment.value.subRequestCounts.forEach((subRequestCount) => {
-                const subRequest = (services.value ?? []).find(
-                  (service) => String(service.id) === String(subRequestCount.id)
-                ) as Service | undefined;
-                if (!subRequest) {
-                  return;
+            if (selectedService.value.providers?.length) {
+              const officeFromProviders = resolveOfficeById(
+                appointment.value.officeId,
+                {
+                  offices: offices.value,
+                  providers: selectedService.value.providers,
+                  appointment: appointment.value,
                 }
-                const subService = new SubService(
-                  subRequest.id,
-                  subRequest.name,
-                  subRequest.maxQuantity,
-                  getProviders(subRequest.id, null),
-                  subRequestCount.count
-                );
-                if (!selectedService.value.subServices) {
-                  selectedService.value.subServices = [];
-                }
-                selectedService.value.subServices.push(subService);
-              });
+              );
+              if (officeFromProviders) {
+                selectedProvider.value = officeFromProviders;
+              }
             }
-          }
-
-          preselectedLocationId.value = String(appointment.value.officeId);
-          const resolvedOffice = resolveOfficeById(appointment.value.officeId, {
-            offices: offices.value,
-            providers: selectedService.value?.providers,
-            appointment: appointment.value,
-          });
-          if (resolvedOffice) {
-            selectedProvider.value = resolvedOffice;
           }
 
           if (

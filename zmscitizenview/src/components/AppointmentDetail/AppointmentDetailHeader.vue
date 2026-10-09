@@ -69,6 +69,8 @@
 </template>
 
 <script setup lang="ts">
+import type { VariantOverwrite } from "@/api/models/Service";
+
 import { MucButton, MucIntro, MucLink } from "@muenchen/muc-patternlab-vue";
 import { computed } from "vue";
 
@@ -82,29 +84,27 @@ import {
 import { downloadIcsFile } from "@/utils/downloadIcsFile";
 import { formatAppointmentDateTime } from "@/utils/formatAppointmentDateTime";
 import { formatMultilineTitle } from "@/utils/formatMultilineTitle";
+import { useVariant } from "@/utils/useVariant";
 
 const props = defineProps<{
   appointment: AppointmentImpl | undefined;
   selectedProvider: OfficeImpl | undefined;
   variantId: number | null;
+  variantOverwrite?: VariantOverwrite;
   t: (key: string) => string;
 }>();
+
+const getVariant = useVariant(props.t);
 
 const rebookingDisabled = computed(
   () => props.appointment?.scope?.rebookingDisabled === true
 );
 
-const introTagline = computed(() => {
-  if (props.variantId === VARIANT_ID_TELEPHONE) {
-    return props.t(`appointmentTypes.${VARIANT_ID_TELEPHONE}`);
-  }
-
-  if (props.variantId === VARIANT_ID_VIDEO) {
-    return props.t(`appointmentTypes.${VARIANT_ID_VIDEO}`);
-  }
-
-  return props.t(`appointmentTypes.${VARIANT_ID_PRESENCE}`);
-});
+const introTagline = computed(
+  () =>
+    getVariant(props.variantId ?? VARIANT_ID_PRESENCE, props.variantOverwrite)
+      ?.name
+);
 
 const introLocation = computed(() => {
   if (props.variantId === VARIANT_ID_VIDEO) {

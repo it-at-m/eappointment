@@ -85,6 +85,24 @@ public final class ServiceFinderStep {
         ScenarioLogManager.getLogger().info("Service Finder is visible on the start page.");
     }
 
+    /**
+     * ZMSKVR-1305 / ZMSKVR-1316: Leistung wechseln clears the jump-in hash and reloads the start
+     * page (path only, no {@code #/services/...}).
+     */
+    public void clickChangeService() {
+        context.set();
+        ScenarioLogManager.getLogger().info("zmscitizenview: click Leistung wechseln");
+        Assert.assertTrue(
+                shadow.clickButtonContaining("Leistung wechseln"),
+                "Could not click \"Leistung wechseln\".");
+        new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(defaultWaitSeconds))
+                .until(
+                        d -> {
+                            String url = d.getCurrentUrl();
+                            return url != null && !url.contains("#/services/");
+                        });
+    }
+
     /** ZMSKVR-84: the start page search box and the frequently requested service links. */
     public void assertServiceSearchAndSuggestions() {
         context.set();

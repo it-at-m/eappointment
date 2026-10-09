@@ -1,7 +1,7 @@
 #language: en
 Feature: A customer who did not show up can be marked after the call so the process can continue.
 
-  @web @zmsadmin @citizen-call @clerk @ZMS-2851 @ZMS-1795 @executeLocally
+  @web @zmsadmin @citizen-call @clerk @ZMS-2851 @ZMSALT-2851 @ZMS-1795 @ZMSALT-1795 @executeLocally
   Scenario: [AUT] Customer did not show up after the call
     When I open the administration website.
     And I click the button "Anmelden" in the administration.
