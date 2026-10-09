@@ -57,7 +57,7 @@
       </muc-button>
       <muc-button
         icon="trash"
-        variant="secondary"
+        :variant="rebookingDisabled ? 'primary' : 'secondary'"
         @click="cancelAppointment"
       >
         <template #default>
