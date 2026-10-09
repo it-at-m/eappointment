@@ -20,7 +20,9 @@
             class="m-teaser-contained-contact__summary"
           >
             <span v-if="isTelephoneOrVideoVariant">
-              {{ t(`appointmentTypes.${variantId}`) }}
+              {{
+                getVariant(variantId, selectedService?.variantOverwrite)?.name
+              }}
             </span>
             <span v-else>
               {{ selectedProvider.name }}
@@ -74,6 +76,7 @@ import {
   formatTimeFromUnix,
 } from "@/utils/formatAppointmentDateTime";
 import { sanitizeHtml } from "@/utils/sanitizeHtml";
+import { useVariant } from "@/utils/useVariant";
 
 const props = defineProps<{
   t: (key: string) => string;
@@ -82,6 +85,8 @@ const props = defineProps<{
   selectedTimeslot: number;
   selectedService: any;
 }>();
+
+const getVariant = useVariant(props.t);
 
 const summary = ref<HTMLElement | null>(null);
 

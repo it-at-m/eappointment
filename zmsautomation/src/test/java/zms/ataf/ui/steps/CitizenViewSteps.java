@@ -121,6 +121,19 @@ public class CitizenViewSteps {
         page.navigateWithJumpIn(s, l);
     }
 
+    @Given("I open zmscitizenview with jump-in service {string}")
+    public void iOpenZmscitizenviewWithJumpInService(String serviceId) {
+        String s = TestDataHelper.transformTestData(serviceId);
+        ScenarioLogManager.getLogger().info("zmscitizenview: jump-in service={}", s);
+        page.navigateWithJumpInService(s);
+    }
+
+    @When("I click Leistung wechseln in the citizen view")
+    public void iClickLeistungWechselnInTheCitizenView() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: Leistung wechseln");
+        page.clickChangeService();
+    }
+
     @Then("the service combination step should be visible")
     public void theServiceCombinationStepShouldBeVisible() {
         ScenarioLogManager.getLogger().info("zmscitizenview: assert service combination step visible");
@@ -593,6 +606,64 @@ public class CitizenViewSteps {
         page.highlightPreferredTimeslotForOffice(officeId);
     }
 
+    @When("I scroll to and highlight a timeslot at least {int} minutes ahead for office {int} in the citizen view")
+    public void iScrollToAndHighlightATimeslotAtLeastMinutesAheadForOfficeInTheCitizenView(
+            int minLeadMinutes, int officeId) {
+        ScenarioLogManager.getLogger()
+                .info(
+                        "zmscitizenview: scroll + highlight timeslot ≥{}min ahead for office {}",
+                        minLeadMinutes,
+                        officeId);
+        page.highlightPreferredTimeslotForOfficeWithMinLeadMinutes(officeId, minLeadMinutes);
+    }
+
+    @When("I publish the remembered Ruppertstraße Wartezone to the Citizen API marker")
+    public void iPublishTheRememberedRuppertstrasseWartezoneToTheCitizenApiMarker() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: publish remembered Wartezone to API marker");
+        page.publishRememberedWartezoneToApiMarker();
+    }
+
+    @When("I sync the Citizen API Ruppertstraße Wartezone into the citizen view")
+    public void iSyncTheCitizenApiRuppertstrasseWartezoneIntoTheCitizenView() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: sync API Wartezone into citizen view state");
+        page.syncApiWartezoneIntoCitizenView();
+    }
+
+    @When("I select a timeslot with Ruppertstraße Wartezone {string} for office {int} in the citizen view")
+    public void iSelectATimeslotWithRuppertstrasseWartezoneForOfficeInTheCitizenView(String code, int officeId) {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: select timeslot with Wartezone {} for office {}", code, officeId);
+        page.selectTimeslotWithRuppertstrasseWartezone(officeId, code);
+    }
+
+    @When("I select a timeslot with Führerscheinstelle Schalter for office {int} in the citizen view")
+    public void iSelectATimeslotWithFuehrerscheinstelleSchalterForOfficeInTheCitizenView(int officeId) {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: select timeslot with Führerscheinstelle Schalter for office {}", officeId);
+        page.selectTimeslotWithFuehrerscheinstelleSchalter(officeId);
+    }
+
+    @Then("the selected appointment callout should show a Führerscheinstelle Schalter hint in the citizen view")
+    public void theSelectedAppointmentCalloutShouldShowAFuehrerscheinstelleSchalterHint() {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: assert Ausgewählter Termin Führerscheinstelle Schalter hint");
+        page.assertSelectedAppointmentCalloutShowsFuehrerscheinstelleSchalterHint();
+    }
+
+    @Then("the booking overview should show Führerscheinstelle Schalter and matching Kundenhinweis for office {int} in the citizen view")
+    public void theBookingOverviewShouldShowFuehrerscheinstelleSchalterAndKundenhinweis(int officeId) {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: assert overview Schalter + Kundenhinweis office={}", officeId);
+        page.assertFuehrerscheinstelleSchalterAndKundenhinweis(officeId);
+    }
+
+    @Then("the appointment detail should show the matching Führerscheinstelle Schalter and Kundenhinweis in the citizen view")
+    public void theAppointmentDetailShouldShowTheMatchingFuehrerscheinstelleSchalterAndKundenhinweis() {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: assert detail Führerscheinstelle Schalter + Kundenhinweis");
+        page.assertAppointmentDetailMatchingFuehrerscheinstelleSchalter();
+    }
+
     @When("I click the highlighted timeslot in the citizen view")
     public void iClickTheHighlightedTimeslotInTheCitizenView() {
         ScenarioLogManager.getLogger()
@@ -799,6 +870,13 @@ public class CitizenViewSteps {
         page.openAppointmentViewDeepLinkInBrowser();
     }
 
+    @When("I open the appointment detail for the current process in the citizen view")
+    public void iOpenTheAppointmentDetailForTheCurrentProcessInTheCitizenView() {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: open appointment-detail.html?ap-id= for current process");
+        page.openAppointmentDetailForCurrentProcess();
+    }
+
     @Then("the confirmation success callout should be visible in the citizen view")
     public void theConfirmationSuccessCalloutShouldBeVisible() {
         ScenarioLogManager.getLogger().info("zmscitizenview: assert confirmation success callout visible");
@@ -949,6 +1027,74 @@ public class CitizenViewSteps {
         page.assertSelectedAppointmentCalloutVisible();
     }
 
+    @Then("the selected appointment callout should show a rendered Ruppertstraße scope hint in the citizen view")
+    public void theSelectedAppointmentCalloutShouldShowARenderedRuppertstrasseScopeHint() {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: assert Ausgewählter Termin ATAF WB03/WB04 hint HTML");
+        page.assertSelectedAppointmentCalloutShowsRenderedRuppertstrasseHint();
+    }
+
+    @Then("the selected appointment callout should show the rendered Ruppertstraße {string} scope hint in the citizen view")
+    public void theSelectedAppointmentCalloutShouldShowTheRenderedRuppertstrasseScopeHint(String code) {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: assert Ausgewählter Termin ATAF {} hint HTML", code);
+        page.assertSelectedAppointmentCalloutShowsRenderedRuppertstrasseHint(code);
+    }
+
+    @When("I scroll to and highlight the remembered timeslot for office {int} in the citizen view")
+    public void iScrollToAndHighlightTheRememberedTimeslotForOffice(int officeId) {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: highlight remembered timeslot for office {}", officeId);
+        page.highlightRememberedTimeslotForOffice(officeId);
+    }
+
+    @Then("the booking overview should show a matching Ruppertstraße Wartezone and scope hint for office {int} in the citizen view")
+    public void theBookingOverviewShouldShowAMatchingRuppertstrasseWartezoneAndScopeHint(int officeId) {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: assert overview matching Wartezone + hint office={}", officeId);
+        page.assertAndRememberMatchingRuppertstrasseWartezoneHint(officeId);
+    }
+
+    @Then("the booking overview should show Ruppertstraße Wartezone {string} and scope hint for office {int} in the citizen view")
+    public void theBookingOverviewShouldShowRuppertstrasseWartezoneAndScopeHint(
+            String code, int officeId) {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: assert overview Wartezone {} + hint office={}", code, officeId);
+        page.assertRuppertstrasseWartezoneHint(officeId, code);
+    }
+
+    @Then("the booking overview scope hint should be wrapped in a paragraph in the citizen view")
+    public void theBookingOverviewScopeHintShouldBeWrappedInAParagraph() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: assert overview Hinweis <p> wrap");
+        page.assertOverviewScopeHintWrappedInParagraph();
+    }
+
+    @Then("the booking overview scope hint should render HTML in the citizen view")
+    public void theBookingOverviewScopeHintShouldRenderHtml() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: assert overview Hinweis HTML rendered");
+        page.assertOverviewScopeHintHtmlRendered();
+    }
+
+    @Then("the appointment detail should show the matching Ruppertstraße Wartezone and scope hint callout in the citizen view")
+    public void theAppointmentDetailShouldShowTheMatchingRuppertstrasseWartezoneAndScopeHintCallout() {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: assert detail Wartezone + Hinweis zu Ihrem Termin");
+        page.assertAppointmentDetailMatchingRuppertstrasseWartezoneHint();
+    }
+
+    @Then("the appointment detail should show the Ruppertstraße {string} Wartezone and scope hint callout in the citizen view")
+    public void theAppointmentDetailShouldShowTheRuppertstrasseWartezoneAndScopeHintCallout(String code) {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: assert detail Wartezone {} + Hinweis zu Ihrem Termin", code);
+        page.assertAppointmentDetailRuppertstrasseWartezoneHint(code);
+    }
+
+    @When("I open the appointment from the confirmation success callout in the citizen view")
+    public void iOpenTheAppointmentFromTheConfirmationSuccessCallout() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: Termin ansehen from confirmation success");
+        page.openAppointmentFromConfirmationSuccess();
+    }
+
     @When("I try to reserve the selected timeslot with Weiter in the citizen view")
     public void iTryToReserveTheSelectedTimeslotWithWeiter() {
         ScenarioLogManager.getLogger()
@@ -1080,6 +1226,14 @@ public class CitizenViewSteps {
         page.assertProviderSummaryVisible(officeId);
     }
 
+    @Then("the appointment overview should show service {int} named {string} in the citizen view")
+    public void theAppointmentOverviewShouldShowServiceNamed(int serviceId, String serviceName) {
+        String label = TestDataHelper.transformTestData(serviceName);
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: assert overview shows service {} named {}", serviceId, label);
+        page.assertOverviewServiceVisible(serviceId, label);
+    }
+
     @Then("the booking summary should show {string} for provider {int} in the citizen view")
     public void theBookingSummaryShouldShowLocationForProvider(String locationLabel, int officeId) {
         String label = TestDataHelper.transformTestData(locationLabel);
@@ -1198,11 +1352,25 @@ public class CitizenViewSteps {
         page.assertAppointmentManagementActionsNotVisible();
     }
 
+    @Then("the reschedule appointment button should be visible in the citizen view")
+    public void theRescheduleAppointmentButtonShouldBeVisible() {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: assert Termin verschieben visible (rebooking enabled)");
+        page.assertRescheduleAppointmentButtonVisible();
+    }
+
     @Then("the reschedule appointment button should not be visible in the citizen view")
     public void theRescheduleAppointmentButtonShouldNotBeVisible() {
         ScenarioLogManager.getLogger()
                 .info("zmscitizenview: assert Termin verschieben hidden (rebookingDisabled)");
         page.assertRescheduleAppointmentButtonNotVisible();
+    }
+
+    @Then("the invalid location and service combination callout should be visible in the citizen view")
+    public void theInvalidLocationAndServiceCombinationCalloutShouldBeVisible() {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: assert invalidLocationAndServiceCombination warning callout");
+        page.assertInvalidLocationAndServiceCombinationCalloutVisible();
     }
 
     @Then("the cancel appointment button should be visible in the citizen view")
@@ -1340,6 +1508,20 @@ public class CitizenViewSteps {
         ScenarioLogManager.getLogger()
                 .info("zmscitizenview: assert appointment detail location for {}", typeLabel);
         page.assertAppointmentDetailLocation(typeLabel, place, locationText, preparationHint, extra);
+    }
+
+    @Then("the Meine Termine teaser title should list services in order {string}")
+    public void theMeineTermineTeaserTitleShouldListServicesInOrder(String orderedNamesCsv) {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: assert Meine Termine teaser service title order {}", orderedNamesCsv);
+        page.assertMyAppointmentsTeaserServiceTitleOrder(orderedNamesCsv);
+    }
+
+    @Then("the appointment detail title should list services in order {string}")
+    public void theAppointmentDetailTitleShouldListServicesInOrder(String orderedNamesCsv) {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: assert appointment detail service title order {}", orderedNamesCsv);
+        page.assertAppointmentDetailServiceTitleOrder(orderedNamesCsv);
     }
 
     @Then("the appointment detail intro should offer an ICS download in the citizen view")

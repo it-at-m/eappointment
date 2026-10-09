@@ -6,9 +6,12 @@ Feature: CitizenView: Termin verschieben hidden when rebooking is disabled
   So that I can only cancel when the admin turned rebooking off
 
   # ZMSKVR-1620 tested by ZMSKVR-1691.
-  # Service 1080784 at SZE provider 10446 is internal. A clerk books it on scope 205.
-  # The confirmation mail then says Termin absagen and no longer says verschieben.
-  # The citizen opens that mail link. Termin verschieben stays hidden. Termin absagen stays.
+  # Service 1080784 at SZE provider 10446 is internal.
+  # Scope 205 keeps Umbuchung on (slots + callout path). Scopes 208 and 211 stay
+  # disabled for clerk bookings that must hide Termin verschieben. Office 10446
+  # is not asserted here: last-wins scope mapping can surface 205 and report
+  # rebookingDisabled false. Clerk books on 208 for the hidden-button path and
+  # on 205 for invalidLocationAndServiceCombination.
   # Meine Termine uses public Reisepass 1063453 at Passkalender 10502.
   # V49 disables rebooking on scopes 172, 184 and 342, which share that provider.
   # 10492 stays enabled.
@@ -18,17 +21,33 @@ Feature: CitizenView: Termin verschieben hidden when rebooking is disabled
     When I request the offices and services endpoint
     Then the response status code should be 200
     And the response should contain offices and services
-    And office 10446 rebooking should be disabled
     And office 10502 rebooking should be disabled
 
   @clerk
-  Scenario: Clerk books the internal SZE service, the mail drops verschieben, and the citizen cannot reschedule
-    When for scope 205 and service "Aufenthaltserlaubnis – Ausbildung oder Weiterbildung" an appointment customer "Muster Zmskvr1691" is created at least 10 minutes ahead.
+  Scenario: Clerk books the internal SZE service on a disabled scope, the mail drops verschieben, and the citizen cannot reschedule
+    When for scope 208 and service "Aufenthaltserlaubnis – Ausbildung oder Weiterbildung" an appointment customer "Muster Zmskvr1691" is created at least 10 minutes ahead.
     And I send the confirmation mail for the current appointment
     Then the confirmation mail link offers only cancellation
     When I open the appointment view deep link in the browser
-    Then the reschedule appointment button should not be visible in the citizen view
+    Then the appointment overview should show service 1080784 named "Aufenthaltserlaubnis – Ausbildung oder Weiterbildung" in the citizen view
+    And the reschedule appointment button should not be visible in the citizen view
     And the cancel appointment button should be visible in the citizen view
+    When I cancel the appointment in the citizen view
+    Then the cancellation success callout should be visible in the citizen view
+    When the appointments created in this scenario are deleted.
+
+  @clerk
+  Scenario: Clerk books the internal SZE service on rebooking-enabled scope 205 and Termin shows the invalid combo callout
+    When for scope 205 and service "Aufenthaltserlaubnis – Ausbildung oder Weiterbildung" an appointment customer "Muster Zmskvr1691 Callout" is created at least 10 minutes ahead.
+    And I send the confirmation mail for the current appointment
+    Then the confirmation mail link offers cancellation and rescheduling
+    When I open the appointment view deep link in the browser
+    Then the appointment overview should show service 1080784 named "Aufenthaltserlaubnis – Ausbildung oder Weiterbildung" in the citizen view
+    And the reschedule appointment button should be visible in the citizen view
+    When I reschedule the appointment in the citizen view
+    Then the cancel reschedule button should be visible in the citizen view
+    And the invalid location and service combination callout should be visible in the citizen view
+    When I cancel the reschedule in the citizen view
     When I cancel the appointment in the citizen view
     Then the cancellation success callout should be visible in the citizen view
     When the appointments created in this scenario are deleted.

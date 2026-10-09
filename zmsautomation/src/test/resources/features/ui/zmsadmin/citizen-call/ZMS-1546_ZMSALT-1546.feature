@@ -1,7 +1,7 @@
 #language: en
 Feature: A clerk signals readiness and the appointment system finds the next waiting number, in this case the due appointment customer, and shows it on the call display.
 
-	@web @zmsadmin @citizen-call @clerk @ZMS-1546 @ZMS-1545 @E2E @automatisiert @executeLocally
+	@web @zmsadmin @citizen-call @clerk @ZMS-1546 @ZMSALT-1546 @ZMS-1545 @ZMSALT-1545 @E2E @automatisiert @executeLocally
 	Scenario: A clerk signals readiness and the appointment system finds the next waiting number
 		When I open the administration website.
 		And I click the button "Anmelden" in the administration.

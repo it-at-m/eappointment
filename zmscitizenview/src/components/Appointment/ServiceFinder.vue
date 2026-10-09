@@ -71,8 +71,12 @@
             :key="variant.variantId ?? ''"
             :id="'variant-' + variant.variantId"
             :value="variant.variantId?.toString() ?? ''"
-            :label="t(`appointmentTypes.${variant.variantId}`)"
-            :hint="getVariantHint(variant.variantId ?? 0, t)"
+            :label="
+              getVariant(variant.variantId, variant.variantOverwrite)?.name
+            "
+            :hint="
+              getVariant(variant.variantId, variant.variantOverwrite)?.hint
+            "
           />
         </muc-radio-button-group>
       </div>
@@ -217,7 +221,6 @@ import { handleApiResponseForDownTime } from "@/utils/apiStatusService";
 import { calculateEstimatedDuration } from "@/utils/calculateEstimatedDuration";
 import {
   getServiceBaseURL,
-  getVariantHint,
   OFTEN_SEARCHED_SERVICES,
   shouldAddImplicitPresenceVariant,
   VARIANT_ID_PRESENCE,
@@ -237,6 +240,7 @@ import {
   getMaxSlotOfProvider,
 } from "@/utils/slotCalculations";
 import { trackAppointmentEvent } from "@/utils/trackAppointmentEvent";
+import { useVariant } from "@/utils/useVariant";
 
 const isCaptchaValid = ref<boolean>(false);
 const servicesRef = ref(null);
@@ -249,6 +253,8 @@ const props = defineProps<{
   exclusiveLocation: string | undefined;
   t: (key: string) => string;
 }>();
+
+const getVariant = useVariant(props.t);
 
 const emit = defineEmits<{
   (e: "next"): void;
@@ -573,7 +579,17 @@ const changeAppointmentCountOfSubservice = (id: string, count: number) => {
       minSlotsPerAppointment.value
     );
 
+    // ZMSKVR-1088: keep list order; record click order for reserve only.
+    const wasUnselected = (subservice.count || 0) <= 0;
     subservice.count = adjustedCount;
+    const order = (service.value!.subServiceSelectionOrder ??= []);
+    if (wasUnselected && adjustedCount > 0 && !order.includes(String(id))) {
+      order.push(String(id));
+    } else if (adjustedCount <= 0) {
+      service.value!.subServiceSelectionOrder = order.filter(
+        (selectedId) => selectedId !== String(id)
+      );
+    }
     currentSlots.value = totalSlots;
   }
 };

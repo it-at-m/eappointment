@@ -124,32 +124,21 @@
                 ></span>
               </p>
               <p class="no-bottom-margin smaller-front-size">
-                <strong>{{
-                  getAppointmentLocationVariantLabel(variantId, t)
-                }}</strong
+                <strong>{{ variant?.name }}</strong
                 ><br />
               </p>
-              <p v-if="getAppointmentLocationVariantHint(variantId, t)">
-                {{ getAppointmentLocationVariantHint(variantId, t) }}
+              <p v-if="variant?.hint">
+                {{ variant.hint }}
               </p>
-            </template>
-
-            <template v-else-if="isVariantWithHint(variantId)">
-              <p class="no-bottom-margin smaller-front-size">
-                <strong>{{
-                  getAppointmentLocationVariantLabel(variantId, t)
-                }}</strong
-                ><br />
-              </p>
-              <p>{{ getAppointmentLocationVariantHint(variantId, t) }}</p>
             </template>
 
             <template v-else>
-              <p>
-                <strong>{{
-                  getAppointmentLocationVariantLabel(variantId, t)
-                }}</strong
+              <p class="no-bottom-margin smaller-front-size">
+                <strong>{{ variant?.name }}</strong
                 ><br />
+              </p>
+              <p v-if="variant?.hint">
+                {{ variant.hint }}
               </p>
             </template>
           </div>
@@ -388,18 +377,16 @@ import {
 } from "@/types/ProvideInjectTypes";
 import { calculateEstimatedDuration } from "@/utils/calculateEstimatedDuration";
 import {
-  getAppointmentLocationVariantHint,
-  getAppointmentLocationVariantLabel,
   getServiceBaseURL,
   isVariantWithAddress,
-  isVariantWithHint,
   VARIANT_ID_VIDEO,
 } from "@/utils/Constants";
 import { containsParagraphTag } from "@/utils/containsParagraphTag";
 import { sanitizeHtml } from "@/utils/sanitizeHtml";
 import { useReservationTimer } from "@/utils/useReservationTimer";
+import { useVariant } from "@/utils/useVariant";
 
-withDefaults(
+const props = withDefaults(
   defineProps<{
     appointmentAlreadyActivated?: boolean;
     isRebooking: boolean;
@@ -410,6 +397,8 @@ withDefaults(
     appointmentAlreadyActivated: false,
   }
 );
+
+const getVariant = useVariant(props.t);
 
 const emit =
   defineEmits<
@@ -509,6 +498,10 @@ const variantId = computed<number | null>(() => {
   const id = (selectedService.value as any)?.variantId;
   return typeof id === "number" && Number.isFinite(id) ? id : null;
 });
+
+const variant = computed(() =>
+  getVariant(variantId.value, selectedService.value?.variantOverwrite)
+);
 
 const isVideoVariant = computed(() => variantId.value === VARIANT_ID_VIDEO);
 

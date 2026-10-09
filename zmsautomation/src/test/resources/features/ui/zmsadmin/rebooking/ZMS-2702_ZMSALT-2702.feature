@@ -1,7 +1,7 @@
 #language: en
 Feature: After the call the appointment can be forwarded to another location so the customer is served there.
 
-	@web @zmsadmin @rebooking @clerk @ZMS-2702 @ZMS-1808 @executeLocally
+	@web @zmsadmin @rebooking @clerk @ZMS-2702 @ZMSALT-2702 @ZMS-1808 @ZMSALT-1808 @executeLocally
 	Scenario: [AUT] Forward an appointment [zms-test]
 		When I open the administration website.
 		And I click the button "Anmelden" in the administration.

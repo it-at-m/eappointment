@@ -1,5 +1,5 @@
 import { Combinable } from "@/api/models/Combinable";
-import { Service } from "@/api/models/Service";
+import { Service, VariantOverwrite } from "@/api/models/Service";
 import { OfficeImpl } from "@/types/OfficeImpl";
 import { SubService } from "@/types/SubService";
 
@@ -16,11 +16,15 @@ export class ServiceImpl implements Service {
 
   subServices?: SubService[];
 
+  /** Click order for reserve payload; display list stays stable (ZMSKVR-1088). */
+  subServiceSelectionOrder?: string[];
+
   count?: number;
 
   parentId: string | number | null;
   rootParentId?: string | number | null;
   variantId: number | null;
+  variantOverwrite?: VariantOverwrite;
 
   showOnStartPage?: boolean;
 
@@ -34,7 +38,8 @@ export class ServiceImpl implements Service {
     count: number | undefined,
     parentId: string | number | null,
     variantId: number | null,
-    showOnStartPage: boolean | undefined
+    showOnStartPage: boolean | undefined,
+    variantOverwrite?: VariantOverwrite
   ) {
     this.id = id;
     this.name = name;
@@ -46,5 +51,6 @@ export class ServiceImpl implements Service {
     this.parentId = parentId;
     this.variantId = variantId;
     this.showOnStartPage = showOnStartPage;
+    this.variantOverwrite = variantOverwrite;
   }
 }

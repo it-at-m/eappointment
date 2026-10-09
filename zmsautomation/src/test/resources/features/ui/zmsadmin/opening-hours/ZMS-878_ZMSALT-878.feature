@@ -1,7 +1,7 @@
 #language: en
 Feature: The appointment administrator can define working hours and their validity periods.
 
-	@web @zmsadmin @opening-hours @appointment-admin @ZMS-878 @ZMS-811 @ZMS-1910 @ZMS-2228 @ZMS-2561 @ZMS-2385 @ZMS-2479 @ZMS-2290 @ZMS-2202 @automatisiert @executeLocally
+	@web @zmsadmin @opening-hours @appointment-admin @ZMS-878 @ZMSALT-878 @ZMS-811 @ZMSALT-811 @ZMS-1910 @ZMSALT-1910 @ZMS-2228 @ZMSALT-2228 @ZMS-2561 @ZMSALT-2561 @ZMS-2385 @ZMSALT-2385 @ZMS-2479 @ZMSALT-2479 @ZMS-2290 @ZMSALT-2290 @ZMS-2202 @ZMSALT-2202 @automatisiert @executeLocally
 	Scenario: [AUT] Working hours are configurable
 		When I open the administration website.
 		Then I should be on the administration start page.

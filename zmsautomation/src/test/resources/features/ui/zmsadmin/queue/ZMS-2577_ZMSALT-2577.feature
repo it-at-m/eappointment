@@ -1,7 +1,7 @@
 #language: en
 Feature: Clerks can also show cluster locations and call customers from the cluster.
 
-	@web @zmsadmin @queue @clerk @ZMS-2577 @automatisiert @executeLocally
+	@web @zmsadmin @queue @clerk @ZMS-2577 @ZMSALT-2577 @automatisiert @executeLocally
 		Scenario: [AUT] "Alle Clusterstandorte" is available for clerks
 		When I open the administration website.
 		And I click the button "Anmelden" in the administration.

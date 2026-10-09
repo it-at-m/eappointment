@@ -1,18 +1,21 @@
 #language: en
-@web @zmscitizenview @booking @citizen @ZMSKVR-1508 @ZMSKVR-1520 @ZMSKVR-1492 @ZMSKVR-1518 @ZMSKVR-1453 @ZMSKVR-1513 @executeLocally @jumpin
+@web @zmscitizenview @booking @citizen @ZMSKVR-1508 @ZMSKVR-1520 @ZMSKVR-1492 @ZMSKVR-1518 @ZMSKVR-1453 @ZMSKVR-1513 @ZMSKVR-981 @ZMSKVR-1683 @executeLocally @jumpin
 Feature: CitizenView: variant place on the booking overview and the mail link
   As a citizen booking an appointment
-  I want the place block to describe how I attend
-  So that Kleinkunde and Großkunde read as an on-site visit, and video shows its legal notices
+  I want the place block to show my appointment type and location
+  So that each appointment type shows its own place text, and video shows its legal notices
 
   # ZMSKVR-1508 / ZMSKVR-1520: Kleinkunde (service 6, location 5) and Großkunde
-  # (service 7, location 6, catalog name Gewerbe) show the on-site place text.
+  # (service 7, location 6, catalog name Gewerbe) show their variant names and address,
+  # without the generic on-site variant name or hint.
   # ZMSKVR-1492 / ZMSKVR-1518: Videoberatung (service 1, location 1) callout is only
   # the variant label, and the overview requires both legal checkboxes.
   # ZMSKVR-1453 / ZMSKVR-1513: after the mail link, Ort is the variant text and the
   # service link goes to stadt.muenchen.de. Phone (service 2, location 2) covers
   # the telephone sentence. Each example cancels the appointment it books.
   # The privacy link is the one shipped in de-DE.json.
+  # ZMSKVR-981 / ZMSKVR-1683: video path asserts h4 headings for Datenschutz,
+  # Elektronische Kommunikation, and Nutzungsbedingungen Videoberatung.
 
   Background:
     Given the Citizen API is available
@@ -37,6 +40,7 @@ Feature: CitizenView: variant place on the booking overview and the mail link
     And the booking overview place for office <location> should include "<street>" in the citizen view
     And the booking overview place for office <location> should include "<postal>" in the citizen view
     And the booking overview place for office <location> should not include "<forbidden>" in the citizen view
+    And the booking overview place for office <location> should not include "<absentHint>" in the citizen view
     And the video consultation legal notices should match "<legal>" in the citizen view
     And the reserve appointment button should be disabled in the citizen view
     When I accept communication in the citizen view
@@ -55,13 +59,14 @@ Feature: CitizenView: variant place on the booking overview and the mail link
     And the booking overview place for office <location> should show "<heading>" and "<hint>" in the citizen view
     And the booking overview place for office <location> should include "<street>" in the citizen view
     And the booking overview place for office <location> should not include "<forbidden>" in the citizen view
+    And the booking overview place for office <location> should not include "<absentHint>" in the citizen view
     And the service link should point to muenchen.de in the citizen view
     When I cancel the appointment in the citizen view
     Then the cancellation success callout should be visible in the citizen view
 
     Examples:
-      | service | location | heading        | hint                                                    | street           | postal | exclusive | legal | forbidden                    | activation |
-      | 6       | 5        | Vor-Ort-Termin | Sie kommen persönlich an unserem Standort vorbei.      | Friedenstraße 40 | 81671  | no        | no    | Termin für einen Kleinkunden | 30         |
-      | 7       | 6        | Vor-Ort-Termin | Sie kommen persönlich an unserem Standort vorbei.      | Friedenstraße 40 | 81671  | no        | no    | Termin für einen Großkunden  | 30         |
-      | 1       | 1        | Videoberatung  | Sie erhalten einen Einwahllink für ein Online-Meeting. |                  |        | yes       | yes   | Implerstraße                 | 60         |
-      | 2       | 2        | Telefon-Termin | Wir rufen Sie unter Ihrer gewünschten Nummer an.       |                  |        | yes       | no    | Implerstraße                 | 60         |
+      | service | location | heading                      | hint                                                   | street           | postal | exclusive | legal | forbidden      | absentHint                                        | activation |
+      | 6       | 5        | Termin für einen Kleinkunden |                                                        | Friedenstraße 40 | 81671  | no        | no    | Vor-Ort-Termin | Sie kommen persönlich an unserem Standort vorbei. | 30         |
+      | 7       | 6        | Termin für einen Großkunden  |                                                        | Friedenstraße 40 | 81671  | no        | no    | Vor-Ort-Termin | Sie kommen persönlich an unserem Standort vorbei. | 30         |
+      | 1       | 1        | Videoberatung                | Sie erhalten einen Einwahllink für ein Online-Meeting. |                  |        | yes       | yes   | Implerstraße   |                                                   | 60         |
+      | 2       | 2        | Telefon-Termin               | Wir rufen Sie unter Ihrer gewünschten Nummer an.       |                  |        | yes       | no    | Implerstraße   |                                                   | 60         |

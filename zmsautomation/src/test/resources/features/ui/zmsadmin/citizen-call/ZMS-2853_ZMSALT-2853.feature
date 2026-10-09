@@ -1,7 +1,7 @@
 #language: en
 Feature: Right after the call the system shows the customer information at the workstation.
 
-	@web @zmsadmin @citizen-call @clerk @ZMS-2853 @ZMS-1499 @ZMS-3162 @executeLocally
+	@web @zmsadmin @citizen-call @clerk @ZMS-2853 @ZMSALT-2853 @ZMS-1499 @ZMSALT-1499 @ZMS-3162 @ZMSALT-3162 @executeLocally
 	Scenario: [AUT] Show customer information immediately after the call
 		When I open the administration website.
 		Then I should be on the administration start page.

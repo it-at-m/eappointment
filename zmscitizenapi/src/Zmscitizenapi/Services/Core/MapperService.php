@@ -256,6 +256,7 @@ class MapperService
             $extra = $service->getAdditionalData() ?? [];
             $parentId  = isset($service->parent_id)  ? (int)$service->parent_id  : (isset($extra['parent_id'])  ? (int)$extra['parent_id']  : null);
             $variantId = isset($service->variant_id) ? (int)$service->variant_id : (isset($extra['variant_id']) ? (int)$extra['variant_id'] : null);
+            $variantOverwrite = $extra['variantOverwrite'] ?? null;
 
             if (!empty($servicesProviderIds[$service->getId()])) {
                 $services[] = new Service(
@@ -267,6 +268,7 @@ class MapperService
                     variantId: $variantId,
                     showOnStartPage: $service->getAdditionalData()['showOnStartPage'] ?? true,
                     rootParentId: (int) $service->getRootParentId(),
+                    variantOverwrite: $variantOverwrite,
                 );
             }
         }
