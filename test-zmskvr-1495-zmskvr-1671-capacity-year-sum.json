@@ -1,0 +1,35 @@
+{
+  "branch": "test-zmskvr-1495-zmskvr-1671-capacity-year-sum",
+  "branchSlug": "test-zmskvr-1495-zmskvr-1671-capacity-year-sum",
+  "runId": "37987079652",
+  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37987079652",
+  "runStartedAt": "2026-10-09T20:27:10Z",
+  "publishedAt": "2026-10-09T20:37:25.329Z",
+  "features": {
+    "feature-ui-zmsstatistic-capacity-zmskvr-1671-zmskvr-1495-capacity-year-sum": {
+      "status": "passed",
+      "shard": "custom",
+      "browser": "chrome",
+      "browsers": {
+        "chrome": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "37987079652",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37987079652",
+          "runStartedAt": "2026-10-09T20:27:10Z"
+        },
+        "firefox": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "37987079652",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37987079652",
+          "runStartedAt": "2026-10-09T20:27:10Z"
+        }
+      },
+      "rel": "ui/zmsstatistic/capacity/zmskvr-1671_zmskvr-1495_capacity_year_sum.feature",
+      "runId": "37987079652",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37987079652",
+      "runStartedAt": "2026-10-09T20:27:10Z"
+    }
+  }
+}

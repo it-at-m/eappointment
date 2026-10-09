@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-10-09T18:35:16.408Z",
+  "publishedAt": "2026-10-09T20:37:25.329Z",
   "branches": [
     {
       "name": "next",
@@ -516,6 +516,12 @@
       "slug": "test-zmskvr-1493-zmskvr-1531-appointment-waiting-count",
       "runId": "37072254610",
       "runStartedAt": "2026-10-02T22:23:46Z"
+    },
+    {
+      "name": "test-zmskvr-1495-zmskvr-1671-capacity-year-sum",
+      "slug": "test-zmskvr-1495-zmskvr-1671-capacity-year-sum",
+      "runId": "37987079652",
+      "runStartedAt": "2026-10-09T20:27:10Z"
     },
     {
       "name": "test-zmskvr-1496-zmskvr-1550-zmskvr-1573-service-statistic",
