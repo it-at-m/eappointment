@@ -40,6 +40,8 @@ import zms.ataf.rest.dto.zmscitizenapi.OfficeServiceRelation;
 import zms.ataf.rest.dto.zmscitizenapi.ReserveAppointmentRequest;
 import zms.ataf.rest.dto.zmscitizenapi.ThinnedProcess;
 import zms.ataf.rest.dto.zmscitizenapi.collections.OfficesAndServicesResponse;
+import zms.ataf.ui.pages.citizenview.support.FuehrerscheinstelleScopeHints;
+import zms.ataf.ui.pages.citizenview.support.RuppertstrasseWartezoneHints;
 
 public class CitizenApiSteps {
 
@@ -415,6 +417,14 @@ public class CitizenApiSteps {
         if (date == null) {
             throw new IllegalStateException("No available day in last response.");
         }
+        if (cachedCalendarServiceIds != null
+                && cachedCalendarServiceCounts != null
+                && cachedCalendarServiceIds.size() > 1
+                && cachedCalendarServiceIds.size() == cachedCalendarServiceCounts.size()) {
+            iRequestAvailableAppointmentsForDateOfficeAndServices(
+                    date, lastOfficeId, cachedCalendarServiceIds, cachedCalendarServiceCounts);
+            return;
+        }
         iRequestAvailableAppointmentsForDateOfficeAndService(date, lastOfficeId, lastServiceId, lastServiceCount);
     }
 
@@ -454,15 +464,21 @@ public class CitizenApiSteps {
     @When("I request available appointments for date {string}, office {int} and service {int} with service count {int}")
     public void iRequestAvailableAppointmentsForDateOfficeAndService(
             String date, int officeId, int serviceId, int serviceCount) {
+        iRequestAvailableAppointmentsForDateOfficeAndServices(
+                date, officeId, List.of(serviceId), List.of(serviceCount));
+    }
+
+    private void iRequestAvailableAppointmentsForDateOfficeAndServices(
+            String date, int officeId, List<Integer> serviceIds, List<Integer> serviceCounts) {
         lastOfficeId = officeId;
-        lastServiceId = serviceId;
-        lastServiceCount = serviceCount;
+        lastServiceId = serviceIds.get(0);
+        lastServiceCount = serviceCounts.get(0);
         lastAppointmentDate = date;
 
         // Free-slot timestamps are only inlined for slotsStartDate..slotsEndDate (often "today").
         // Ask for this exact day so later bookable days (e.g. V43 single-seat) are hydrated.
         lastAvailableCalendarResponse =
-            fetchAvailableCalendar(List.of(officeId), List.of(serviceId), List.of(serviceCount), date, date);
+            fetchAvailableCalendar(List.of(officeId), serviceIds, serviceCounts, date, date);
 
         AvailableAppointmentsResponse appointments =
             lastAvailableCalendarResponse.getAppointmentsForDayAndOffice(date, officeId);
@@ -471,10 +487,10 @@ public class CitizenApiSteps {
         int officeCount = appointments.getOffices() != null ? appointments.getOffices().size() : 0;
         int timestampCount = appointments.futureAppointmentTimestamps().size();
         ScenarioLogManager.getLogger().info(String.format(
-            "Citizen API calendar slots for date=%s, officeId=%d, serviceId=%d: %d office(s), %d timestamp(s)",
+            "Citizen API calendar slots for date=%s, officeId=%d, serviceIds=%s: %d office(s), %d timestamp(s)",
             date,
             officeId,
-            serviceId,
+            serviceIds,
             officeCount,
             timestampCount
         ));
@@ -627,6 +643,164 @@ public class CitizenApiSteps {
                 .contains(needle);
     }
 
+    /**
+     * ZMSKVR-1051 / ZMSKVR-1309: GET /appointment/ scope.hint + infoForAppointment belong to the
+     * same Ruppertstraße Wartebereich (WB03 or WB04).
+     */
+    @Then("the appointment scope hint and infoForAppointment should match a Ruppertstraße Wartezone")
+    public void theAppointmentScopeHintAndInfoForAppointmentShouldMatchARuppertstrasseWartezone() {
+        String hint = response.jsonPath().getString("scope.hint");
+        String info = response.jsonPath().getString("scope.infoForAppointment");
+        Assertions.assertThat(hint).as("scope.hint").isNotBlank();
+        Assertions.assertThat(info).as("scope.infoForAppointment").isNotBlank();
+        String combined = hint + " " + info;
+        String code = RuppertstrasseWartezoneHints.detectCode(combined);
+        Assertions.assertThat(code)
+                .as("scope.hint=%s infoForAppointment=%s", hint, info)
+                .isNotNull();
+        Assertions.assertThat(hint).contains(RuppertstrasseWartezoneHints.zoneFor(code));
+        Assertions.assertThat(info).contains(RuppertstrasseWartezoneHints.hintFor(code));
+        Assertions.assertThat(info)
+                .doesNotContain(RuppertstrasseWartezoneHints.hintFor(RuppertstrasseWartezoneHints.otherCode(code)));
+        Assertions.assertThat(info).contains("<a href=\"" + RuppertstrasseWartezoneHints.HINT_HREF + "\"");
+        RuppertstrasseWartezoneHints.rememberApiWartezoneCode(code);
+        ScenarioLogManager.getLogger()
+                .info("Citizen API appointment matched Ruppertstraße Wartezone {}", code);
+    }
+
+    /**
+     * ZMSKVR-924 / ZMSKVR-1019: GET /appointment/ scope.hint + infoForAppointment belong to the
+     * same Führerscheinstelle Schalter (FS-A or FS-B).
+     */
+    @Then("the appointment scope hint and infoForAppointment should match a Führerscheinstelle Schalter")
+    public void theAppointmentScopeHintAndInfoForAppointmentShouldMatchAFuehrerscheinstelleSchalter() {
+        String hint = response.jsonPath().getString("scope.hint");
+        String info = response.jsonPath().getString("scope.infoForAppointment");
+        Assertions.assertThat(hint).as("scope.hint").isNotBlank();
+        Assertions.assertThat(info).as("scope.infoForAppointment").isNotBlank();
+        String code = FuehrerscheinstelleScopeHints.detectCode(hint + " " + info);
+        Assertions.assertThat(code)
+                .as("scope.hint=%s infoForAppointment=%s", hint, info)
+                .isNotNull();
+        Assertions.assertThat(hint).contains(FuehrerscheinstelleScopeHints.zoneFor(code));
+        Assertions.assertThat(info).contains(FuehrerscheinstelleScopeHints.hintFor(code));
+        Assertions.assertThat(info)
+                .doesNotContain(
+                        FuehrerscheinstelleScopeHints.hintFor(
+                                FuehrerscheinstelleScopeHints.otherCode(code)));
+        FuehrerscheinstelleScopeHints.rememberApiSchalterCode(code);
+        ScenarioLogManager.getLogger()
+                .info("Citizen API appointment matched Führerscheinstelle Schalter {}", code);
+    }
+
+    /** ZMSKVR-924 / ZMSKVR-1019: second same-timestamp reserve lands on the other Schalter. */
+    @Then("the appointment scope should be the other Führerscheinstelle Schalter")
+    public void theAppointmentScopeShouldBeTheOtherFuehrerscheinstelleSchalter() {
+        String first = FuehrerscheinstelleScopeHints.rememberedApiSchalterCode();
+        Assertions.assertThat(first)
+                .as("first Schalter must be remembered before the second reserve")
+                .isNotBlank();
+        String expected = FuehrerscheinstelleScopeHints.otherCode(first);
+        String hint = response.jsonPath().getString("scope.hint");
+        String info = response.jsonPath().getString("scope.infoForAppointment");
+        String code = FuehrerscheinstelleScopeHints.detectCode(hint + " " + info);
+        Assertions.assertThat(code)
+                .as("second reserve scope.hint=%s infoForAppointment=%s", hint, info)
+                .isEqualTo(expected);
+        Assertions.assertThat(hint)
+                .as("second reserve scope.hint=%s", hint)
+                .contains(FuehrerscheinstelleScopeHints.zoneFor(expected));
+        Assertions.assertThat(info).contains(FuehrerscheinstelleScopeHints.hintFor(expected));
+        FuehrerscheinstelleScopeHints.rememberApiSchalterCode(code);
+        ScenarioLogManager.getLogger()
+                .info("Citizen API second reserve switched Schalter {} → {}", first, code);
+    }
+
+    /** ZMSKVR-1051 / ZMSKVR-1309: second same-timestamp reserve lands on the other Wartebereich. */
+    @Then("the appointment scope should be the other Ruppertstraße Wartezone")
+    public void theAppointmentScopeShouldBeTheOtherRuppertstrasseWartezone() {
+        String first = RuppertstrasseWartezoneHints.rememberedApiWartezoneCode();
+        Assertions.assertThat(first)
+                .as("first Wartezone must be remembered before the second reserve")
+                .isNotBlank();
+        String expected = RuppertstrasseWartezoneHints.otherCode(first);
+        String hint = response.jsonPath().getString("scope.hint");
+        String info = response.jsonPath().getString("scope.infoForAppointment");
+        String code = RuppertstrasseWartezoneHints.detectCode(hint + " " + info);
+        Assertions.assertThat(code)
+                .as("second reserve scope.hint=%s infoForAppointment=%s", hint, info)
+                .isEqualTo(expected);
+        Assertions.assertThat(hint)
+                .as("second reserve scope.hint=%s", hint)
+                .contains(RuppertstrasseWartezoneHints.zoneFor(expected));
+        Assertions.assertThat(info).contains(RuppertstrasseWartezoneHints.hintFor(expected));
+        RuppertstrasseWartezoneHints.rememberApiWartezoneCode(code);
+        ScenarioLogManager.getLogger()
+                .info("Citizen API second reserve switched Wartezone {} → {}", first, code);
+    }
+
+    /**
+     * ZMSKVR-1051 / ZMSKVR-1309: with one seat on WB03 and WB04, a second reserve of the same
+     * timestamp succeeds on the other scope (unlike the single-seat Passkalender race).
+     */
+    @When("I reserve the same appointment slot again for the other Wartebereich")
+    public void iReserveTheSameAppointmentSlotAgainForTheOtherWartebereich() {
+        ThinnedProcess first = lastReserveProcess != null ? lastReserveProcess : getBookingProcess();
+        if (first == null || first.getTimestamp() == null || first.getTimestamp() <= 0) {
+            throw new IllegalStateException("Reserve a slot first so the same timestamp can be reserved again.");
+        }
+        int officeId = first.getOfficeId() != null ? first.getOfficeId() : lastOfficeId;
+        int serviceId = first.getServiceId() != null ? first.getServiceId() : lastServiceId;
+        if (officeId <= 0 || serviceId <= 0) {
+            throw new IllegalStateException("First reserve has no officeId/serviceId for the second Wartebereich.");
+        }
+        int serviceCount = lastServiceCount > 0 ? lastServiceCount : 1;
+        long timestamp = first.getTimestamp();
+
+        ReserveAppointmentRequest body = new ReserveAppointmentRequest();
+        body.setTimestamp(timestamp);
+        body.setOfficeId(officeId);
+        body.setServiceId(List.of(serviceId));
+        body.setServiceCount(List.of(serviceCount));
+        if (captchaToken != null && !captchaToken.isBlank()) {
+            body.setCaptchaToken(captchaToken);
+        }
+
+        ScenarioLogManager.getLogger().info(String.format(
+                "Citizen API /reserve-appointment/ other Wartebereich timestamp=%d officeId=%d serviceId=%d",
+                timestamp,
+                officeId,
+                serviceId));
+
+        response = given()
+                .baseUri(baseUri != null ? baseUri : TestConfig.getCitizenApiBaseUri())
+                .contentType("application/json")
+                .body(body)
+                .when()
+                .post("/reserve-appointment/");
+        CommonApiSteps.setResponse(response);
+
+        String reserveBody = response.asString();
+        ScenarioLogManager.getLogger().info(String.format(
+                "Citizen API /reserve-appointment/ other Wartebereich status=%d body=%s",
+                response.getStatusCode(),
+                reserveBody.length() > 1250 ? reserveBody.substring(0, 1250) + "..." : reserveBody));
+        response.then().statusCode(200);
+
+        ThinnedProcess reserved;
+        try {
+            reserved = response.as(ThinnedProcess.class);
+        } catch (Exception e) {
+            reserved = parseDataResponse(response, ThinnedProcess.class);
+        }
+        Assertions.assertThat(reserved).as("second Wartebereich reserve").isNotNull();
+        Assertions.assertThat(reserved.getProcessId()).isNotNull();
+        Assertions.assertThat(reserved.getAuthKey()).isNotBlank();
+        Assertions.assertThat(reserved.getProcessId()).isNotEqualTo(first.getProcessId());
+        lastReserveProcess = reserved;
+        setLastReserveProcess(reserved);
+    }
+
     @When("I attempt to reserve an appointment with the first available slot")
     public void iAttemptToReserveAnAppointmentWithTheFirstAvailableSlot() {
         reserveFirstAvailableSlot(false, false);
@@ -682,8 +856,10 @@ public class CitizenApiSteps {
             ReserveAppointmentRequest body = new ReserveAppointmentRequest();
             body.setTimestamp(timestamp);
             body.setOfficeId(lastOfficeId);
-            body.setServiceId(List.of(lastServiceId));
-            body.setServiceCount(List.of(lastServiceCount));
+            List<Integer> reserveServiceIds = reserveServiceIds();
+            List<Integer> reserveServiceCounts = reserveServiceCounts();
+            body.setServiceId(reserveServiceIds);
+            body.setServiceCount(reserveServiceCounts);
             if (useCurrentAppointmentAsSource) {
                 body.setSourceProcessId(sourceProcessId);
                 body.setSourceAuthKey(sourceAuthKey);
@@ -984,15 +1160,17 @@ public class CitizenApiSteps {
             current,
             lastOfficeId,
             nextDate));
-        iRequestAvailableAppointmentsForDateOfficeAndService(
-            nextDate, lastOfficeId, lastServiceId, lastServiceCount);
+        // Keep the original multi-service selection; a single-service refetch would
+        // overwrite cachedCalendarServiceIds and shrink the later reserve.
+        iRequestAvailableAppointmentsForDateOfficeAndServices(
+            nextDate, lastOfficeId, reserveServiceIds(), reserveServiceCounts());
         return true;
     }
 
     /** Ask the calendar again and append timestamps this scenario has not tried yet. */
     private int appendFreshTimestamps(List<Long> timestamps) {
         AvailableCalendarResponse calendar =
-            fetchAvailableCalendar(List.of(lastOfficeId), lastServiceId, lastServiceCount);
+            fetchAvailableCalendar(List.of(lastOfficeId), reserveServiceIds(), reserveServiceCounts());
         if (calendar == null || calendar.getAvailableDays() == null) {
             return 0;
         }
@@ -1015,6 +1193,30 @@ public class CitizenApiSteps {
             }
         }
         return added;
+    }
+
+    /** Service ids for reserve / calendar retries — prefer the full multi-service selection. */
+    private List<Integer> reserveServiceIds() {
+        if (cachedCalendarServiceIds != null && !cachedCalendarServiceIds.isEmpty()) {
+            return cachedCalendarServiceIds;
+        }
+        return List.of(lastServiceId);
+    }
+
+    private List<Integer> reserveServiceCounts() {
+        List<Integer> ids = reserveServiceIds();
+        if (cachedCalendarServiceCounts != null
+                && cachedCalendarServiceCounts.size() == ids.size()) {
+            return cachedCalendarServiceCounts;
+        }
+        if (ids.size() == 1) {
+            return List.of(lastServiceCount);
+        }
+        List<Integer> counts = new ArrayList<>(ids.size());
+        for (int i = 0; i < ids.size(); i++) {
+            counts.add(1);
+        }
+        return counts;
     }
 
     /** Parallel scenarios share the calendar, so the first slot can already be reserved. */
@@ -1984,6 +2186,58 @@ public class CitizenApiSteps {
         Assertions.assertThat(process.getServiceId())
             .as("Expected appointment to use service %d", serviceId)
             .isEqualTo(serviceId);
+    }
+
+    @Then("the appointment service title order should be {string}")
+    public void theAppointmentServiceTitleOrderShouldBe(String orderedNamesCsv) {
+        ThinnedProcess process =
+                lastReserveProcess != null ? lastReserveProcess : parseDataResponse(response, ThinnedProcess.class);
+        Assertions.assertThat(process).as("appointment process").isNotNull();
+        List<String> expected =
+                Arrays.stream(orderedNamesCsv.split(","))
+                        .map(String::trim)
+                        .filter(s -> !s.isEmpty())
+                        .collect(Collectors.toList());
+        Assertions.assertThat(expected).as("expected service title names").isNotEmpty();
+        Assertions.assertThat(process.getServiceName())
+                .as("main serviceName (first in booking order)")
+                .isEqualTo(expected.get(0));
+        List<String> actual = new ArrayList<>();
+        actual.add(process.getServiceName());
+        if (process.getSubRequestCounts() != null) {
+            for (ThinnedProcess.SubRequestCount sub : process.getSubRequestCounts()) {
+                if (sub != null && sub.getName() != null && !sub.getName().isBlank()) {
+                    actual.add(sub.getName());
+                }
+            }
+        }
+        Assertions.assertThat(actual)
+                .as("serviceName then subRequestCounts must keep booking order, not alphabetical")
+                .containsExactlyElementsOf(expected);
+        if (process.getIcsContent() != null && !process.getIcsContent().isBlank()) {
+            String summary = icsSummary(process.getIcsContent());
+            if (summary != null) {
+                int previous = -1;
+                for (String name : expected) {
+                    int idx = summary.indexOf(name);
+                    Assertions.assertThat(idx)
+                            .as("ICS SUMMARY must list \"%s\" after earlier services. SUMMARY=%s", name, summary)
+                            .isGreaterThan(previous);
+                    previous = idx;
+                }
+            }
+        }
+    }
+
+    /** Unfolded ICS SUMMARY value, or null when the property is absent. */
+    private static String icsSummary(String icsContent) {
+        String unfolded = icsContent.replaceAll("\\R[ \\t]", "");
+        for (String line : unfolded.split("\\R")) {
+            if (line.startsWith("SUMMARY:")) {
+                return line.substring("SUMMARY:".length()).replace("\\n", "\n").replace("\\,", ",");
+            }
+        }
+        return null;
     }
 
     @Then("the appointment status should be {string}")

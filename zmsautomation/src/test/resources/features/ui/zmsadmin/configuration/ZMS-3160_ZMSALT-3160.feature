@@ -1,7 +1,7 @@
 #language: en
 Feature: Before deleting an authority or a location the system asks for a final confirmation.
 
-	@web @zmsadmin @configuration @technical-admin @ZMS-3160 @ZMS-3162 @automatisiert @executeLocally
+	@web @zmsadmin @configuration @technical-admin @ZMS-3160 @ZMSALT-3160 @ZMS-3162 @ZMSALT-3162 @automatisiert @executeLocally
 	Scenario: [AUT] Deleting authorities and locations requires confirmation
 		When I open the administration website.
 		Then I should be on the administration start page.

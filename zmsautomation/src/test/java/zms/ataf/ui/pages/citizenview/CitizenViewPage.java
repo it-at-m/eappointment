@@ -28,6 +28,7 @@ import zms.ataf.ui.pages.citizenview.steps.ContactStep;
 import zms.ataf.ui.pages.citizenview.steps.OverviewStep;
 import zms.ataf.ui.pages.citizenview.steps.MyAppointmentsStep;
 import zms.ataf.ui.pages.citizenview.support.CitizenViewJson;
+import zms.ataf.ui.pages.citizenview.support.RuppertstrasseWartezoneHints;
 import zms.ataf.ui.pages.citizenview.support.SlotBookingState;
 
 public class CitizenViewPage extends BasePage {
@@ -127,7 +128,7 @@ public class CitizenViewPage extends BasePage {
         bookingStepper = new BookingStepperStep(CONTEXT, shadow, DEFAULT_EXPLICIT_WAIT_TIME);
         jumpInError = new JumpInErrorStep(CONTEXT, shadow, DEFAULT_EXPLICIT_WAIT_TIME);
         contact = new ContactStep(CONTEXT, shadow, this, DEFAULT_EXPLICIT_WAIT_TIME);
-        overview = new OverviewStep(CONTEXT, shadow, this, DEFAULT_EXPLICIT_WAIT_TIME);
+        overview = new OverviewStep(CONTEXT, shadow, this, slotState, DEFAULT_EXPLICIT_WAIT_TIME);
         myAppointments = new MyAppointmentsStep(CONTEXT, shadow, slotState, this, contact, DEFAULT_EXPLICIT_WAIT_TIME);
         captcha = new CaptchaStep(CONTEXT, shadow, DEFAULT_EXPLICIT_WAIT_TIME);
         timeoutWarning = new TimeoutWarningStep(CONTEXT, shadow);
@@ -143,6 +144,14 @@ public class CitizenViewPage extends BasePage {
 
     public void navigateWithJumpIn(String serviceId, String locationId) {
         CONTEXT.navigateWithJumpIn(serviceId, locationId);
+    }
+
+    public void navigateWithJumpInService(String serviceId) {
+        CONTEXT.navigateWithJumpInService(serviceId);
+    }
+
+    public void clickChangeService() {
+        serviceFinder.clickChangeService();
     }
 
     /**
@@ -1186,6 +1195,84 @@ public class CitizenViewPage extends BasePage {
         timeSlot.assertSelectedAppointmentCalloutVisible();
     }
 
+    public void assertSelectedAppointmentCalloutShowsRenderedRuppertstrasseHint() {
+        timeSlot.assertSelectedAppointmentCalloutShowsRenderedRuppertstrasseHint();
+    }
+
+    public void assertSelectedAppointmentCalloutShowsRenderedRuppertstrasseHint(String code) {
+        timeSlot.assertSelectedAppointmentCalloutShowsRenderedRuppertstrasseHint(code);
+    }
+
+    public void selectTimeslotWithRuppertstrasseWartezone(int officeId, String code) {
+        timeSlot.selectTimeslotWithRuppertstrasseWartezone(officeId, code);
+    }
+
+    public void selectTimeslotWithFuehrerscheinstelleSchalter(int officeId) {
+        timeSlot.selectTimeslotWithFuehrerscheinstelleSchalter(officeId);
+    }
+
+    public void assertSelectedAppointmentCalloutShowsFuehrerscheinstelleSchalterHint() {
+        timeSlot.assertSelectedAppointmentCalloutShowsFuehrerscheinstelleSchalterHint();
+    }
+
+    public String assertFuehrerscheinstelleSchalterAndKundenhinweis(int officeId) {
+        return overview.assertFuehrerscheinstelleSchalterAndKundenhinweis(officeId);
+    }
+
+    public void assertAppointmentDetailMatchingFuehrerscheinstelleSchalter() {
+        myAppointments.assertAppointmentDetailMatchingFuehrerscheinstelleSchalter();
+    }
+
+    public void highlightRememberedTimeslotForOffice(int officeId) {
+        timeSlot.highlightRememberedTimeslotForOffice(officeId);
+    }
+
+    public void highlightPreferredTimeslotForOfficeWithMinLeadMinutes(int officeId, int minLeadMinutes) {
+        timeSlot.highlightPreferredTimeslotForOfficeWithMinLeadMinutes(officeId, minLeadMinutes);
+    }
+
+    public void publishRememberedWartezoneToApiMarker() {
+        Assert.assertNotNull(
+                slotState.rememberedWartezoneCode,
+                "Need a remembered Wartezone from the booking overview first.");
+        RuppertstrasseWartezoneHints.rememberApiWartezoneCode(slotState.rememberedWartezoneCode);
+    }
+
+    public void syncApiWartezoneIntoCitizenView() {
+        String code = RuppertstrasseWartezoneHints.rememberedApiWartezoneCode();
+        Assert.assertNotNull(code, "Citizen API Wartezone marker is empty.");
+        slotState.rememberedWartezoneCode = code;
+    }
+
+    public String assertAndRememberMatchingRuppertstrasseWartezoneHint(int officeId) {
+        return overview.assertAndRememberMatchingRuppertstrasseWartezoneHint(officeId);
+    }
+
+    public String assertRuppertstrasseWartezoneHint(int officeId, String code) {
+        return overview.assertRuppertstrasseWartezoneHint(officeId, code);
+    }
+
+    public void assertOverviewScopeHintWrappedInParagraph() {
+        overview.assertOverviewScopeHintWrappedInParagraph();
+    }
+
+    public void assertOverviewScopeHintHtmlRendered() {
+        overview.assertOverviewScopeHintHtmlRendered();
+    }
+
+    public void assertAppointmentDetailMatchingRuppertstrasseWartezoneHint() {
+        myAppointments.assertAppointmentDetailMatchingRuppertstrasseWartezoneHint();
+    }
+
+    public void assertAppointmentDetailRuppertstrasseWartezoneHint(String code) {
+        slotState.rememberedWartezoneCode = code;
+        myAppointments.assertAppointmentDetailMatchingRuppertstrasseWartezoneHint();
+    }
+
+    public void openAppointmentFromConfirmationSuccess() {
+        overview.openAppointmentFromConfirmationSuccess();
+    }
+
     public void assertAppointmentNoLongerAvailableCalloutVisible() {
         timeSlot.assertAppointmentNoLongerAvailableCalloutVisible();
     }
@@ -1739,6 +1826,10 @@ public class CitizenViewPage extends BasePage {
         myAppointments.openAppointmentViewDeepLinkInBrowser();
     }
 
+    public void openAppointmentDetailForCurrentProcess() {
+        myAppointments.openAppointmentDetailForCurrentProcess();
+    }
+
     public void captureBookingProcessForCleanup() {
         myAppointments.captureBookingProcessForCleanup();
     }
@@ -1782,6 +1873,14 @@ public class CitizenViewPage extends BasePage {
     public void assertAppointmentDetailLocation(
             String typeLabel, String place, String locationText, String preparationHint, String extra) {
         myAppointments.assertAppointmentDetailLocation(typeLabel, place, locationText, preparationHint, extra);
+    }
+
+    public void assertMyAppointmentsTeaserServiceTitleOrder(String orderedNamesCsv) {
+        myAppointments.assertMyAppointmentsTeaserServiceTitleOrder(orderedNamesCsv);
+    }
+
+    public void assertAppointmentDetailServiceTitleOrder(String orderedNamesCsv) {
+        myAppointments.assertAppointmentDetailServiceTitleOrder(orderedNamesCsv);
     }
 
     public void assertIcsDownloadOfferedOnDetailIntro() {

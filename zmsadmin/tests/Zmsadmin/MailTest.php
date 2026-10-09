@@ -170,4 +170,76 @@ class MailTest extends Base
         $this->assertStringContainsString('Es muss eine aussagekräftige Nachricht eingegeben werden', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
+
+    public function testFormFailedSubjectTooLong()
+    {
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture("GET_Workstation_Resolved2.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/process/'. $this->selectedProcess .'/',
+                    'response' => $this->readFixture("GET_process_82252_12a2.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/department/',
+                    'response' => $this->readFixture("GET_department_74.json")
+                ]
+            ]
+        );
+        $response = $this->render($this->arguments, [
+            'selectedprocess' => 82252,
+            'subject' => str_repeat('A', 151),
+            'message' => 'This is a test body message',
+            'submit' => 'form'
+        ], [], 'POST');
+        $this->assertStringContainsString('has-error', (string)$response->getBody());
+        $this->assertStringContainsString(
+            'Der Betreff darf maximal 150 Zeichen lang sein.',
+            (string)$response->getBody()
+        );
+        $this->assertEquals(200, $response->getStatusCode());
+    }
+
+    public function testFormFailedSubjectTooShort()
+    {
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture("GET_Workstation_Resolved2.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/process/'. $this->selectedProcess .'/',
+                    'response' => $this->readFixture("GET_process_82252_12a2.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/scope/141/department/',
+                    'response' => $this->readFixture("GET_department_74.json")
+                ]
+            ]
+        );
+        $response = $this->render($this->arguments, [
+            'selectedprocess' => 82252,
+            'subject' => 'A',
+            'message' => 'This is a test body message',
+            'submit' => 'form'
+        ], [], 'POST');
+        $this->assertStringContainsString('has-error', (string)$response->getBody());
+        $this->assertStringContainsString(
+            'Der Betreff muss mindestens zwei Zeichen lang sein.',
+            (string)$response->getBody()
+        );
+        $this->assertEquals(200, $response->getStatusCode());
+    }
 }

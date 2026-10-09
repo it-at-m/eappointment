@@ -1,7 +1,7 @@
 #language: en
 Feature: Controlling can open and evaluate the service statistics in the statistics UI.
 
-	@web @zmsstatistic @service-stats @controlling @ZMS-1559 @ZMS-1557 @E2E @automatisiert @executeLocally
+	@web @zmsstatistic @service-stats @controlling @ZMS-1559 @ZMSALT-1559 @ZMS-1557 @ZMSALT-1557 @E2E @automatisiert @executeLocally
 	Scenario: Service statistics
 		When I open the statistics website.
 		And I click the button "Anmelden" in the statistics.

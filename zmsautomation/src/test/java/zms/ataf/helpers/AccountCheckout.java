@@ -26,6 +26,8 @@ public final class AccountCheckout {
     private static final ConcurrentHashMap<String, ReentrantLock> LOCKS = new ConcurrentHashMap<>();
     private static final ThreadLocal<LinkedHashSet<String>> HELD = ThreadLocal.withInitial(LinkedHashSet::new);
     private static final ThreadLocal<Integer> DEPARTMENT = new ThreadLocal<>();
+    /** Bare login last taken by {@link #assignWorkstationLogin} / {@link #assignAnotherWorkstationLogin}. */
+    private static final ThreadLocal<String> LAST_ASSIGNED_LOGIN = new ThreadLocal<>();
 
     /**
      * Superuser nutzer accounts ({@code Berechtigung} 90). A feature that says {@code ataf} takes a free one.
@@ -196,20 +198,38 @@ public final class AccountCheckout {
      * account at random. Each of those accounts is Benutzerverwaltung for one department.
      * The scenario uses that account's department. It waits while every such account is in use.
      * Any other name stays on that exact account. Returns the Keycloak username to type.
+     * A second call for the same role on this thread returns the account already held (one SessionID).
      */
     public static String assignWorkstationLogin(String loginName) {
         String bare = stripKeycloak(loginName);
         if ("ataf".equals(bare)) {
-            return checkoutFree(SUPERUSERS, true);
+            return rememberAssigned(checkoutFree(SUPERUSERS, true));
         }
         if ("agent_queue".equals(bare)) {
-            return checkoutFree(AGENT_QUEUE_USERS, true);
+            return rememberAssigned(checkoutFree(AGENT_QUEUE_USERS, true));
         }
         if ("user_admin".equals(bare)) {
-            return assignRandomUserAdminLogin(userAdminDepartments());
+            return rememberAssigned(assignRandomUserAdminLogin(userAdminDepartments()));
         }
         checkoutWorkstation(bare);
-        return bare;
+        return rememberAssigned(bare);
+    }
+
+    /**
+     * Takes another free pool member while keeping accounts already held by this thread.
+     * Use when one scenario needs two concurrent workstation sessions (two clerks).
+     * Does not change the one-account-per-parallel-scenario rule across threads.
+     */
+    public static String assignAnotherWorkstationLogin(String loginName) {
+        String bare = stripKeycloak(loginName);
+        if ("ataf".equals(bare)) {
+            return rememberAssigned(checkoutAnotherFree(SUPERUSERS, true));
+        }
+        if ("agent_queue".equals(bare)) {
+            return rememberAssigned(checkoutAnotherFree(AGENT_QUEUE_USERS, true));
+        }
+        throw new IllegalArgumentException(
+            "assignAnotherWorkstationLogin only supports pool roles ataf and agent_queue, not " + bare);
     }
 
     /**
@@ -292,12 +312,21 @@ public final class AccountCheckout {
     }
 
     private static String offsetDesk(String requested, List<String> pool, boolean workstation) {
-        LinkedHashSet<String> held = HELD.get();
         int index = 0;
-        for (int i = 0; i < pool.size(); i++) {
-            if (held.contains(accountId(pool.get(i), workstation))) {
-                index = i;
-                break;
+        String last = LAST_ASSIGNED_LOGIN.get();
+        if (last != null) {
+            int lastIndex = pool.indexOf(last);
+            if (lastIndex >= 0) {
+                index = lastIndex;
+            }
+        }
+        if (index == 0) {
+            LinkedHashSet<String> held = HELD.get();
+            for (int i = 0; i < pool.size(); i++) {
+                if (held.contains(accountId(pool.get(i), workstation))) {
+                    index = i;
+                    break;
+                }
             }
         }
         if (index == 0 || requested == null) {
@@ -339,9 +368,21 @@ public final class AccountCheckout {
                 return login;
             }
         }
+        return lockNextFree(logins, workstation, held);
+    }
+
+    /** Like {@link #checkoutFree} but never returns an account this thread already holds. */
+    private static String checkoutAnotherFree(List<String> logins, boolean workstation) {
+        return lockNextFree(logins, workstation, HELD.get());
+    }
+
+    private static String lockNextFree(List<String> logins, boolean workstation, LinkedHashSet<String> held) {
         while (true) {
             for (String login : logins) {
                 String accountId = accountId(login, workstation);
+                if (held.contains(accountId)) {
+                    continue;
+                }
                 ReentrantLock lock = LOCKS.computeIfAbsent(accountId, ignored -> new ReentrantLock(true));
                 if (lock.tryLock()) {
                     held.add(accountId);
@@ -349,17 +390,33 @@ public final class AccountCheckout {
                     return login;
                 }
             }
-            String first = logins.get(0);
-            String firstId = accountId(first, workstation);
-            log("Waiting for a free account among " + logins);
-            LOCKS.get(firstId).lock();
-            if (!held.contains(firstId)) {
-                held.add(firstId);
-                log("Checked out account " + firstId);
-                return first;
+            String waitLogin = null;
+            for (String login : logins) {
+                if (!held.contains(accountId(login, workstation))) {
+                    waitLogin = login;
+                    break;
+                }
             }
-            LOCKS.get(firstId).unlock();
+            if (waitLogin == null) {
+                throw new IllegalStateException(
+                    "This scenario already holds every account in the pool; cannot check out another.");
+            }
+            String waitId = accountId(waitLogin, workstation);
+            log("Waiting for a free account among " + logins);
+            ReentrantLock waitLock = LOCKS.computeIfAbsent(waitId, ignored -> new ReentrantLock(true));
+            waitLock.lock();
+            if (!held.contains(waitId)) {
+                held.add(waitId);
+                log("Checked out account " + waitId);
+                return waitLogin;
+            }
+            waitLock.unlock();
         }
+    }
+
+    private static String rememberAssigned(String login) {
+        LAST_ASSIGNED_LOGIN.set(login);
+        return login;
     }
 
     private static String accountId(String login, boolean workstation) {
@@ -375,6 +432,7 @@ public final class AccountCheckout {
 
     public static void releaseAll() {
         DEPARTMENT.remove();
+        LAST_ASSIGNED_LOGIN.remove();
         LinkedHashSet<String> held = HELD.get();
         List<String> keys = new ArrayList<>(held);
         HELD.remove();

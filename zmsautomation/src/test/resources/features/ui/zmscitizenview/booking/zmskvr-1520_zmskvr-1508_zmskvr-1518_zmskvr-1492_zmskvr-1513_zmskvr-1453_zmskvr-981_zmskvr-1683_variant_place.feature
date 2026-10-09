@@ -1,5 +1,5 @@
 #language: en
-@web @zmscitizenview @booking @citizen @ZMSKVR-1508 @ZMSKVR-1520 @ZMSKVR-1492 @ZMSKVR-1518 @ZMSKVR-1453 @ZMSKVR-1513 @executeLocally @jumpin
+@web @zmscitizenview @booking @citizen @ZMSKVR-1508 @ZMSKVR-1520 @ZMSKVR-1492 @ZMSKVR-1518 @ZMSKVR-1453 @ZMSKVR-1513 @ZMSKVR-981 @ZMSKVR-1683 @executeLocally @jumpin
 Feature: CitizenView: variant place on the booking overview and the mail link
   As a citizen booking an appointment
   I want the place block to show my appointment type and location
@@ -14,6 +14,8 @@ Feature: CitizenView: variant place on the booking overview and the mail link
   # service link goes to stadt.muenchen.de. Phone (service 2, location 2) covers
   # the telephone sentence. Each example cancels the appointment it books.
   # The privacy link is the one shipped in de-DE.json.
+  # ZMSKVR-981 / ZMSKVR-1683: video path asserts h4 headings for Datenschutz,
+  # Elektronische Kommunikation, and Nutzungsbedingungen Videoberatung.
 
   Background:
     Given the Citizen API is available

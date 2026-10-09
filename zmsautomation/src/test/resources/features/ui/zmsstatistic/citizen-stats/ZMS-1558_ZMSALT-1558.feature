@@ -1,7 +1,7 @@
 #language: en
 Feature: Controlling can open and check the citizen statistics in the statistics UI.
 
-	@web @zmsstatistic @citizen-stats @controlling @ZMS-1558 @ZMS-1738 @ZMS-1557 @E2E @automatisiert @executeLocally
+	@web @zmsstatistic @citizen-stats @controlling @ZMS-1558 @ZMSALT-1558 @ZMS-1738 @ZMSALT-1738 @ZMS-1557 @ZMSALT-1557 @E2E @automatisiert @executeLocally
 	Scenario: Citizen statistics
 		When I open the statistics website.
 		And I click the button "Anmelden" in the statistics.

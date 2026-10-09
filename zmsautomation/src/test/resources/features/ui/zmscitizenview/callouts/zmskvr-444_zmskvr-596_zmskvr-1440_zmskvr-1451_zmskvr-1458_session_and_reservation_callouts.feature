@@ -1,13 +1,16 @@
 #language: en
-@web @zmscitizenview @callouts @citizen @ZMSKVR-1440 @ZMSKVR-1451 @executeLocally @jumpin
+@web @zmscitizenview @callouts @citizen @ZMSKVR-444 @ZMSKVR-596 @ZMSKVR-1440 @ZMSKVR-1451 @ZMSKVR-1458 @executeLocally @jumpin
 Feature: CitizenView: captcha session and reservation callouts
   As a citizen booking at Kommunale Verkehrsüberwachung (office 10427, scope 74)
   I want an expired captcha session and an expired reservation to replace the step
   So that I can restart the booking without a stale hold
 
+  # ZMSKVR-444 / ZMSKVR-596: captcha session timeout callout (automatic after TTL) and
+  # Buchung neu starten back to Leistung. Covered here without clicking Weiter.
   # Scope 74 only: captcha on, reservation duration 2 minutes, captcha JWT TTL 5 minutes
   # (CAPTCHA_TOKEN_TTL=300). Five minutes leaves room to reach Kontakt/Übersicht under
   # parallel Firefox/Edge load before the session callout replaces Termin.
+  # ZMSKVR-1458: captcha session callout after the TTL on Termin (and rebooking).
   # Service 1072015 Parkausweis für Handelsvertretungen. Combinable only with itself, so the
   # restart check is that this service is still selected.
   # Captcha sits on Leistung and keeps Weiter disabled until verification finishes. ATAF
