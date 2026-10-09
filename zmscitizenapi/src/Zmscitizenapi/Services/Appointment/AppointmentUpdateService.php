@@ -54,9 +54,11 @@ class AppointmentUpdateService
         }
 
         if ($this->isRebookingUpdate($data)) {
-            $rebookingErrors = ValidationService::validateRebookingAllowed($reservedProcess->scope ?? null);
-            if ($rebookingErrors['errors'] !== []) {
-                return $rebookingErrors;
+            // Same as reserve/confirm: Umbuchung is gated by the source appointment's
+            // scope, not the target slot (Scheidplatz → Ruppertstraße must stay allowed).
+            $sourceProcess = $this->loadSourceProcessForRebooking($data);
+            if (is_array($sourceProcess)) {
+                return $sourceProcess;
             }
 
             $lockErrors = ValidationService::validateUnchangedStoredContact(
@@ -115,6 +117,29 @@ class AppointmentUpdateService
     {
         return ($data->sourceProcessId ?? null) !== null
             && ($data->sourceAuthKey ?? null) !== null;
+    }
+
+    private function loadSourceProcessForRebooking(object $clientData): ThinnedProcess|array|null
+    {
+        if (!$this->isRebookingUpdate($clientData)) {
+            return null;
+        }
+
+        $sourceProcess = ZmsApiFacadeService::getThinnedProcessById(
+            $clientData->sourceProcessId,
+            $clientData->sourceAuthKey,
+            null
+        );
+        if (!$sourceProcess instanceof ThinnedProcess) {
+            return $sourceProcess;
+        }
+
+        $rebookingErrors = ValidationService::validateRebookingAllowed($sourceProcess->scope ?? null);
+        if ($rebookingErrors['errors'] !== []) {
+            return $rebookingErrors;
+        }
+
+        return $sourceProcess;
     }
 
     private function getReservedProcess(int $processId, ?string $authKey, ?AuthenticatedUser $user): ThinnedProcess|array
