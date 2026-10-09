@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.ElementClickInterceptedException;
 import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebElement;
@@ -171,9 +172,21 @@ public class ProcessingStationSection extends CounterProcessingStationPage {
         By callLink = By.xpath(
                 "//table[@id='table-queued-appointments']//td[contains(@class,'callnextclient')]"
                         + "//a[normalize-space(.)='" + name + "']");
+        clickQueueCallLinkWhenReady(callLink);
+    }
+
+    /**
+     * Cluster view refreshes under a full-page loader; a bare click loses to {@code div.loader}.
+     * Same race as {@link CounterProcessingStationPage#reloadQueueLists()}.
+     */
+    private void clickQueueCallLinkWhenReady(By callLink) {
+        By loader = By.cssSelector("div.loader");
         WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
-        wait.ignoring(StaleElementReferenceException.class);
+        wait.ignoring(StaleElementReferenceException.class, ElementClickInterceptedException.class);
         wait.until(driver -> {
+            if (driver.findElements(loader).stream().anyMatch(WebElement::isDisplayed)) {
+                return false;
+            }
             List<WebElement> links = driver.findElements(callLink);
             for (WebElement link : links) {
                 try {
@@ -183,8 +196,8 @@ public class ProcessingStationSection extends CounterProcessingStationPage {
                     scrollToCenterByVisibleElement(link);
                     link.click();
                     return true;
-                } catch (StaleElementReferenceException ignored) {
-                    // Cluster / queue reload replaced the row — find again.
+                } catch (StaleElementReferenceException | ElementClickInterceptedException ignored) {
+                    // Cluster / queue reload or loader covered the row — try again.
                 }
             }
             return false;
@@ -585,11 +598,26 @@ public class ProcessingStationSection extends CounterProcessingStationPage {
         ScenarioLogManager.getLogger().info("Opening workstation call for process {}...", processId);
         Assert.assertTrue(processId != null && processId.matches("\\d+"),
                 "Expected numeric process id, got: " + processId);
-        List<WebElement> links = DRIVER.findElements(By.cssSelector("a[data-process='" + processId + "']"));
-        if (!links.isEmpty() && links.get(0).isDisplayed()) {
-            scrollToCenterByVisibleElement(links.get(0));
-            links.get(0).click();
+        By callLink = By.cssSelector("a[data-process='" + processId + "']");
+        By loader = By.cssSelector("div.loader");
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(Math.min(DEFAULT_EXPLICIT_WAIT_TIME, 15)));
+        wait.ignoring(StaleElementReferenceException.class, ElementClickInterceptedException.class);
+        try {
+            wait.until(driver -> {
+                if (driver.findElements(loader).stream().anyMatch(WebElement::isDisplayed)) {
+                    return false;
+                }
+                List<WebElement> links = driver.findElements(callLink);
+                if (links.isEmpty() || !links.get(0).isDisplayed()) {
+                    return false;
+                }
+                scrollToCenterByVisibleElement(links.get(0));
+                links.get(0).click();
+                return true;
+            });
             return;
+        } catch (TimeoutException ignored) {
+            // Fall through to direct navigation when the queue row never becomes clickable.
         }
         String current = DRIVER.getCurrentUrl();
         String base = current.replaceAll("[?#].*$", "");
