@@ -205,6 +205,18 @@ public class CitizenViewSteps {
         page.assertMinusButton(TestDataHelper.transformTestData(label), false);
     }
 
+    @Then("the plus button for service {string} is disabled")
+    public void thePlusButtonForServiceIsDisabled(String label) {
+        ScenarioLogManager.getLogger().info("zmscitizenview: plus disabled for {}", label);
+        page.assertPlusButton(TestDataHelper.transformTestData(label), true);
+    }
+
+    @Then("the plus button for service {string} is enabled")
+    public void thePlusButtonForServiceIsEnabled(String label) {
+        ScenarioLogManager.getLogger().info("zmscitizenview: plus enabled for {}", label);
+        page.assertPlusButton(TestDataHelper.transformTestData(label), false);
+    }
+
     @Then("the service {string} links to service {string} on muenchen.de")
     public void theServiceLinksToItsDescription(String label, String serviceId) {
         ScenarioLogManager.getLogger()
