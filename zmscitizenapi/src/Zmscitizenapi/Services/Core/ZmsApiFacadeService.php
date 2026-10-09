@@ -230,7 +230,12 @@ class ZmsApiFacadeService
                 continue;
             }
 
-            $services[] = new Service(id: (int) $request->getId(), name: $request->getName(), maxQuantity: $additionalData['maxQuantity'] ?? 1);
+            $services[] = new Service(
+                id: (int) $request->getId(),
+                name: $request->getName(),
+                maxQuantity: $additionalData['maxQuantity'] ?? 1,
+                variantOverwrite: $additionalData['variantOverwrite'] ?? null
+            );
         }
 
         $result = new ServiceList($services);
@@ -406,7 +411,13 @@ class ZmsApiFacadeService
                 $requestId = $relation->request->id;
                 if (isset($requestMap[$requestId])) {
                     $request = $requestMap[$requestId];
-                    $services[] = new Service(id: (int) $request->id, name: $request->name, maxQuantity: $request->getAdditionalData()['maxQuantity'] ?? 1);
+                    $additionalData = $request->getAdditionalData();
+                    $services[] = new Service(
+                        id: (int) $request->id,
+                        name: $request->name,
+                        maxQuantity: $additionalData['maxQuantity'] ?? 1,
+                        variantOverwrite: $additionalData['variantOverwrite'] ?? null
+                    );
                 }
             }
         }

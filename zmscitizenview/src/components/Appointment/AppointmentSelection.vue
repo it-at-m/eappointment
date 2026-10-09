@@ -32,6 +32,7 @@
     <div
       v-if="
         !isCaptchaSessionExpired &&
+        !error &&
         availableDaysFetched &&
         (noProviderSelected || !hasSelectedProviderWithAppointments) &&
         !isSwitchingProvider
@@ -1695,13 +1696,22 @@ const reloadCalendarAvailability = async (options?: {
     }
 
     if (data && typeof data === "object" && "errors" in data) {
+      // Finalize the Termin step so rebooking/internal-service API errors
+      // (e.g. invalidLocationAndServiceCombination) show a callout instead of
+      // an empty Ort with a stuck spinner state.
       handleError(data);
+      availableDays.value = [];
+      availableDaysFetched.value = true;
+      isSwitchingProvider.value = false;
       return false;
     }
 
     const calendar = data as AvailableCalendarDTO;
     if (!applyCalendarResponse(calendar)) {
       handleError(data);
+      availableDays.value = [];
+      availableDaysFetched.value = true;
+      isSwitchingProvider.value = false;
       return false;
     }
 

@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it } from "vitest";
 import { nextTick, ref } from "vue";
 
 import AppointmentSummary from "@/components/Appointment/AppointmentSummary.vue";
+import de from "@/utils/de-DE.json";
 
 describe("AppointmentSummary", () => {
   let mockSelectedService: any;
@@ -66,7 +67,17 @@ describe("AppointmentSummary", () => {
         appointmentAlreadyActivated: false,
         isRebooking: false,
         rebookOrCancelDialog: false,
-        t: (key: string) => key,
+        t: (key: string) => {
+          const [, id, field] = key.split(".");
+          if (key.startsWith("variants.")) {
+            const variant = de.variants[id as keyof typeof de.variants] as {
+              name: string;
+              hint?: string;
+            };
+            return variant?.[field as "name" | "hint"] ?? key;
+          }
+          return key;
+        },
         ...props,
       },
       global: {
@@ -510,14 +521,26 @@ describe("AppointmentSummary", () => {
   });
 
   describe("Location variants", () => {
+    it("shows a custom name and hint for a variant without a standard hint", () => {
+      mockSelectedService.value.variantId = 4;
+      mockSelectedService.value.variantOverwrite = {
+        de: { name: "Einzeltermin", hint: "Unterlagen mitbringen" },
+      };
+
+      const wrapper = createWrapper();
+      expect(wrapper.text()).toContain("Einzeltermin");
+      expect(wrapper.text()).toContain("Unterlagen mitbringen");
+      expect(wrapper.text()).not.toContain(de.variants["4"].name);
+    });
+
     it("should show address/hint and base text when no variant is set (variantId null)", () => {
       const wrapper = createWrapper();
 
       expect(wrapper.text()).toContain("Test Street 123");
       expect(wrapper.text()).toContain("12345 Test City");
       expect(wrapper.text()).toContain("Test Info Scope");
-      expect(wrapper.text()).not.toContain("appointmentTypes.1");
-      expect(wrapper.text()).not.toContain("locationVariantText.1");
+      expect(wrapper.text()).not.toContain(de.variants["1"].name);
+      expect(wrapper.text()).not.toContain(de.variants["1"].hint);
     });
 
     it("should show address/hint and base text for variant 1", async () => {
@@ -529,8 +552,8 @@ describe("AppointmentSummary", () => {
       expect(wrapper.text()).toContain("12345 Test City");
       expect(wrapper.text()).toContain("Test Info Scope");
 
-      expect(wrapper.text()).toContain("appointmentTypes.1");
-      expect(wrapper.text()).toContain("locationVariantText.1");
+      expect(wrapper.text()).toContain(de.variants["1"].name);
+      expect(wrapper.text()).toContain(de.variants["1"].hint);
     });
 
     it("should hide address/hint and show variant text for variant 2", async () => {
@@ -542,15 +565,15 @@ describe("AppointmentSummary", () => {
       expect(wrapper.text()).not.toContain("12345 Test City");
 
       const borderBlocks = wrapper.findAll(".m-content.border-bottom");
-      const locationBlock = borderBlocks.find((b) =>
-        b.text().includes("appointmentTypes.2")
+      const locationBlock = borderBlocks.find(b =>
+        b.text().includes(de.variants["2"].name)
       );
       expect(locationBlock).toBeTruthy();
 
       expect(locationBlock!.text()).not.toContain("Test Info Scope");
 
-      expect(wrapper.text()).toContain("appointmentTypes.2");
-      expect(wrapper.text()).toContain("locationVariantText.2");
+      expect(wrapper.text()).toContain(de.variants["2"].name);
+      expect(wrapper.text()).toContain(de.variants["2"].hint);
     });
 
     it.each([4, 5, 6, 7])(
@@ -568,10 +591,10 @@ describe("AppointmentSummary", () => {
     );
 
     it.each([
-      [4, "appointmentTypes.4"],
-      [5, "appointmentTypes.5"],
-      [6, "appointmentTypes.1"],
-      [7, "appointmentTypes.1"],
+      [4, de.variants["4"].name],
+      [5, de.variants["5"].name],
+      [6, de.variants["6"].name],
+      [7, de.variants["7"].name],
     ])(
       "should show the correct appointment type label for variant %i",
       async (variantId, expectedAppointmentTypeLabel) => {
@@ -590,8 +613,8 @@ describe("AppointmentSummary", () => {
       await nextTick();
 
       expect(wrapper.text()).not.toContain("Test Street 123");
-      expect(wrapper.text()).toContain("appointmentTypes.3");
-      expect(wrapper.text()).toContain("locationVariantText.3");
+      expect(wrapper.text()).toContain(de.variants["3"].name);
+      expect(wrapper.text()).toContain(de.variants["3"].hint);
     });
   });
 });

@@ -1,11 +1,11 @@
 #language: en
-@web @zmscitizenview @callouts @citizen @ZMSKVR-88 @ZMSKVR-472 @ZMSKVR-614 @ZMSKVR-696 @ZMSKVR-475 @ZMSKVR-564 @ZMSKVR-652 @executeLocally @jumpin @passCalendar
+@web @zmscitizenview @callouts @citizen @ZMSKVR-88 @ZMSKVR-472 @ZMSKVR-614 @ZMSKVR-696 @ZMSKVR-475 @ZMSKVR-564 @ZMSKVR-652 @ZMSKVR-1458 @executeLocally @jumpin @passCalendar
 Feature: CitizenView: slot already taken shows not-available callout
   As a citizen
   I want a clear error when my chosen timeslot was booked by someone else
   So that I can pick another appointment
 
-  # ZMSKVR-88, tested by ZMSKVR-472.
+  # ZMSKVR-88, tested by ZMSKVR-472 / ZMSKVR-1458.
   # Also: ZMSKVR-614 / ZMSKVR-696 / ZMSKVR-475 — must show only
   # "Ihr gewählter Termin ist nicht mehr verfügbar." (error), never the blue
   # "Aktuell ist kein Termin verfügbar." empty-state info box. Heading a11y:

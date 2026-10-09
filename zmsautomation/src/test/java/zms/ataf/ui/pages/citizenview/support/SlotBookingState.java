@@ -19,5 +19,14 @@ public final class SlotBookingState {
 
     /** Epoch seconds of the slot kept after reserve (Meine Termine / ICS). */
     public Long rememberedAppointmentEpoch;
+
+    /** ATAF marker for the booked Ruppertstraße scope ({@code WB03} or {@code WB04}). */
+    public String rememberedWartezoneCode;
+
+    /**
+     * Concrete ATAF marker painted on Ausgewählter Termin (office-attached scope). Overview must
+     * match this after booking (ZMSKVR-1051).
+     */
+    public String rememberedCalloutWartezoneCode;
 }
 

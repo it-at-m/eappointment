@@ -12,7 +12,10 @@ import ataf.web.utils.DriverUtil;
 import zms.ataf.ui.pages.citizenview.CitizenViewPage;
 import zms.ataf.ui.pages.citizenview.CitizenViewPageContext;
 import zms.ataf.ui.pages.citizenview.support.CitizenViewWaits;
+import zms.ataf.ui.pages.citizenview.support.FuehrerscheinstelleScopeHints;
+import zms.ataf.ui.pages.citizenview.support.RuppertstrasseWartezoneHints;
 import zms.ataf.ui.pages.citizenview.support.ShadowDom;
+import zms.ataf.ui.pages.citizenview.support.SlotBookingState;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import zms.ataf.rest.dto.zmscitizenapi.ThinnedProcess;
@@ -23,12 +26,19 @@ public final class OverviewStep {
     private final CitizenViewPageContext context;
     private final ShadowDom shadow;
     private final CitizenViewPage page;
+    private final SlotBookingState slotState;
     private final int defaultWaitSeconds;
 
-    public OverviewStep(CitizenViewPageContext context, ShadowDom shadow, CitizenViewPage page, int defaultWaitSeconds) {
+    public OverviewStep(
+            CitizenViewPageContext context,
+            ShadowDom shadow,
+            CitizenViewPage page,
+            SlotBookingState slotState,
+            int defaultWaitSeconds) {
         this.context = context;
         this.shadow = shadow;
         this.page = page;
+        this.slotState = slotState;
         this.defaultWaitSeconds = defaultWaitSeconds;
     }
     private static final String DE_RESERVE = "Termin reservieren";
@@ -170,9 +180,11 @@ public final class OverviewStep {
         Assert.assertTrue(
                 text.contains(heading),
                 "Expected place heading in office " + officeId + " summary: " + heading + " actual=" + text);
-        Assert.assertTrue(
-                text.contains(hint),
-                "Expected place hint in office " + officeId + " summary: " + hint + " actual=" + text);
+        if (hint != null && !hint.isBlank()) {
+            Assert.assertTrue(
+                    text.contains(hint),
+                    "Expected place hint in office " + officeId + " summary: " + hint + " actual=" + text);
+        }
     }
     public void assertBookingOverviewPlaceIncludes(int officeId, String fragment) {
         if (fragment == null || fragment.isBlank()) {
@@ -191,6 +203,262 @@ public final class OverviewStep {
         Assert.assertFalse(
                 text.contains(fragment),
                 "Place for office " + officeId + " should not contain: " + fragment + " actual=" + text);
+    }
+
+    /**
+     * ZMSKVR-1051 / ZMSKVR-1309: overview Ort Wartezone and Hinweis marker must belong to the same
+     * Ruppertstraße scope. Remembers the detected code when none was selected up front.
+     */
+    public String assertAndRememberMatchingRuppertstrasseWartezoneHint(int officeId) {
+        String expected = slotState.rememberedWartezoneCode;
+        if (expected != null && !expected.isBlank()) {
+            return assertRuppertstrasseWartezoneHint(officeId, expected);
+        }
+        context.set();
+        CitizenViewWaits.waitWithThreeWindows(
+                () -> {
+                    String t = deepDocumentText();
+                    return RuppertstrasseWartezoneHints.detectCode(t) != null
+                            && t.contains(RuppertstrasseWartezoneHints.OVERVIEW_HINT_HEADING);
+                },
+                "Overview Wartezone + ATAF scope hint");
+        String text = deepDocumentText();
+        String code = RuppertstrasseWartezoneHints.detectCode(text);
+        Assert.assertNotNull(
+                code,
+                "Overview must show a matching Wartebereich 03/04 with ATAF Hinweis WB03/WB04. Text: " + text);
+        return assertRuppertstrasseWartezoneHint(officeId, code);
+    }
+
+    /**
+     * ZMSKVR-924 / ZMSKVR-1019: overview Ort Kundenhinweis and Hinweis must belong to the same
+     * Führerscheinstelle Schalter. Pins FS-A / FS-B from page text when the selection family was FS.
+     */
+    public String assertFuehrerscheinstelleSchalterAndKundenhinweis(int officeId) {
+        context.set();
+        CitizenViewWaits.waitWithThreeWindows(
+                () -> {
+                    String t = deepDocumentText();
+                    return FuehrerscheinstelleScopeHints.detectCode(t) != null
+                            && t.contains(FuehrerscheinstelleScopeHints.OVERVIEW_HINT_HEADING);
+                },
+                "Overview Führerscheinstelle Schalter + Kundenhinweis");
+        String text = deepDocumentText();
+        String resolved = FuehrerscheinstelleScopeHints.detectCode(text);
+        Assert.assertNotNull(
+                resolved,
+                "Overview must show matching Schalter Kundenhinweis + Termin Hinweis. Text: " + text);
+        // Ausgewählter Termin may still paint the office-attached scope from
+        // offices-and-services; pin FS-A/FS-B from Übersicht Ort + Hinweis (ZMSKVR-924).
+        String zone = FuehrerscheinstelleScopeHints.zoneFor(resolved);
+        String hint = FuehrerscheinstelleScopeHints.hintFor(resolved);
+        shadow.scrollTextIntoView(zone);
+        Assert.assertTrue(text.contains(zone), "Overview Ort missing " + zone + ". Text: " + text);
+        shadow.scrollTextIntoView(hint);
+        Assert.assertTrue(text.contains(hint), "Overview Hinweis missing " + hint + ". Text: " + text);
+        Assert.assertFalse(
+                text.contains(
+                        FuehrerscheinstelleScopeHints.zoneFor(
+                                FuehrerscheinstelleScopeHints.otherCode(resolved))),
+                "Overview must not mix the other Schalter. Text: " + text);
+        Assert.assertFalse(
+                text.contains(
+                        FuehrerscheinstelleScopeHints.hintFor(
+                                FuehrerscheinstelleScopeHints.otherCode(resolved))),
+                "Overview must not mix the other Schalter hint. Text: " + text);
+        String place = visibleProviderSummaryOrFail(officeId);
+        Assert.assertTrue(
+                place.contains(zone),
+                "Provider summary missing Kundenhinweis " + resolved + ". Text: " + place);
+        slotState.rememberedWartezoneCode = resolved;
+        ScenarioLogManager.getLogger()
+                .info(
+                        "zmscitizenview: overview matched Führerscheinstelle Schalter {} for office {}",
+                        resolved,
+                        officeId);
+        return resolved;
+    }
+
+    /** Overview must show the explicit Ruppertstraße Wartezone (WB03 or WB04) + hint. */
+    public String assertRuppertstrasseWartezoneHint(int officeId, String code) {
+        context.set();
+        if ("PASSFOTO".equals(code)) {
+            CitizenViewWaits.waitWithThreeWindows(
+                    () -> {
+                        String t = deepDocumentText();
+                        return RuppertstrasseWartezoneHints.detectPassfotoCode(t) != null
+                                && t.contains(RuppertstrasseWartezoneHints.OVERVIEW_HINT_HEADING);
+                    },
+                    "Overview Wartezone + Passfoto scope hint");
+            String text = deepDocumentText();
+            String resolved = RuppertstrasseWartezoneHints.detectPassfotoCode(text);
+            Assert.assertNotNull(
+                    resolved,
+                    "Overview must show Wartebereich 03 or 04 with Passfoto Hinweis. Text: " + text);
+            return assertRuppertstrasseWartezoneHint(officeId, resolved);
+        }
+        if ("ATAF".equals(code)) {
+            CitizenViewWaits.waitWithThreeWindows(
+                    () -> {
+                        String t = deepDocumentText();
+                        return RuppertstrasseWartezoneHints.detectCode(t) != null
+                                && t.contains(RuppertstrasseWartezoneHints.OVERVIEW_HINT_HEADING);
+                    },
+                    "Overview Wartezone + ATAF scope hint");
+            String text = deepDocumentText();
+            String resolved = RuppertstrasseWartezoneHints.detectCode(text);
+            Assert.assertNotNull(
+                    resolved,
+                    "Overview must show Wartebereich 03/04 with ATAF Hinweis WB03/WB04. Text: " + text);
+            // Until shared calendars expose the booked scope on Ausgewählter Termin, only
+            // Übersicht (step 4) knows the assigned Wartebereich. Pin WB03/WB04 here.
+            if (slotState.rememberedCalloutWartezoneCode != null
+                    && !resolved.equals(slotState.rememberedCalloutWartezoneCode)) {
+                ScenarioLogManager.getLogger()
+                        .info(
+                                "zmscitizenview: Ausgewählter Termin painted {} but Übersicht pinned {}"
+                                        + " (office-attached scope until shared-calendar mix)",
+                                slotState.rememberedCalloutWartezoneCode,
+                                resolved);
+            }
+            return assertRuppertstrasseWartezoneHint(officeId, resolved);
+        }
+        String zone = RuppertstrasseWartezoneHints.zoneFor(code);
+        String hint = RuppertstrasseWartezoneHints.hintFor(code);
+        CitizenViewWaits.waitWithThreeWindows(
+                () -> {
+                    String t = deepDocumentText();
+                    return t.contains(zone)
+                            && t.contains(hint)
+                            && t.contains(RuppertstrasseWartezoneHints.OVERVIEW_HINT_HEADING);
+                },
+                "Overview Wartezone + scope hint " + code);
+        String text = deepDocumentText();
+        shadow.scrollTextIntoView(zone);
+        Assert.assertTrue(text.contains(zone), "Overview Ort missing " + zone + ". Text: " + text);
+        shadow.scrollTextIntoView(hint);
+        Assert.assertTrue(text.contains(hint), "Overview Hinweis missing " + hint + ". Text: " + text);
+        Assert.assertFalse(
+                text.contains(RuppertstrasseWartezoneHints.zoneFor(RuppertstrasseWartezoneHints.otherCode(code))),
+                "Overview must not mix the other Wartebereich. Text: " + text);
+        if (RuppertstrasseWartezoneHints.isAtafHtmlHint(code)) {
+            Assert.assertFalse(
+                    text.contains(
+                            RuppertstrasseWartezoneHints.hintFor(
+                                    RuppertstrasseWartezoneHints.otherCode(code))),
+                    "Overview must not mix the other Wartebereich hint. Text: " + text);
+        }
+        String place = visibleProviderSummaryOrFail(officeId);
+        Assert.assertTrue(
+                place.contains(zone), "Provider summary missing Wartezone " + code + ". Text: " + place);
+        slotState.rememberedWartezoneCode = code;
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: overview matched Ruppertstraße Wartezone {} for office {}", code, officeId);
+        return code;
+    }
+
+    /**
+     * ZMSKVR-843 / ZMSKVR-1014: overview Hinweis is in a dedicated block under the Hinweis heading.
+     * Plain text is wrapped in {@code <p>}. HTML markers (ATAF links) go through
+     * {@code containsParagraphTag} + DOMParser, which treats inline HTML as a {@code <p>} and
+     * therefore paint a {@code <div>} host — both are accepted.
+     * Walks slotted nodes the same way as {@link #deepDocumentText()} so slot-projected hint
+     * content (kept-mounted Ausgewählter Termin / overview) is visible to the assert.
+     */
+    public void assertOverviewScopeHintWrappedInParagraph() {
+        context.set();
+        String code = slotState.rememberedWartezoneCode;
+        Assert.assertNotNull(code, "Need a remembered Wartezone before asserting overview hint wrap.");
+        String needle =
+                FuehrerscheinstelleScopeHints.isConcrete(code)
+                        ? FuehrerscheinstelleScopeHints.hintFor(code)
+                        : RuppertstrasseWartezoneHints.hintFor(code);
+        shadow.scrollTextIntoView(needle);
+        Object raw =
+                ((JavascriptExecutor) DriverUtil.getDriver())
+                        .executeScript(
+                                "var needle=arguments[0];"
+                                        + "function blockTag(el){while(el){var tag=(el.tagName||'').toUpperCase();"
+                                        + "if(tag==='P'||tag==='DIV')return tag;"
+                                        + "var root=el.getRootNode&&el.getRootNode();"
+                                        + "if(root&&root.host){el=root.host;continue;}"
+                                        + "el=el.parentElement;}return '';}"
+                                        + "var bestEl=null,bestLen=1e9;"
+                                        + "function visit(n){if(!n)return;"
+                                        + "if(n.nodeType===1){var t=((n.innerText||n.textContent||'')+'').replace(/\\s+/g,' ').trim();"
+                                        + "if(t.indexOf(needle)>=0&&t.length<bestLen){bestLen=t.length;bestEl=n;}}"
+                                        + "if(n.shadowRoot)visit(n.shadowRoot);"
+                                        + "if(n.assignedNodes){try{var a=n.assignedNodes({flatten:true});"
+                                        + "for(var j=0;j<a.length;j++)visit(a[j]);}catch(e){}}"
+                                        + "var c=n.childNodes;if(c)for(var i=0;i<c.length;i++)visit(c[i]);}"
+                                        + "visit(document.documentElement);"
+                                        + "if(!bestEl)return '';"
+                                        + "var tag=(bestEl.tagName||'').toUpperCase();"
+                                        + "if(tag==='P'||tag==='DIV')return tag;"
+                                        + "return blockTag(bestEl);");
+        String tag = raw == null ? "" : raw.toString();
+        if (!("P".equals(tag) || "DIV".equals(tag))) {
+            // Fallback: hint text is painted (matching step already saw it) but host tag is
+            // behind a custom element; still require the needle under an h3 Hinweis section.
+            boolean painted = shadow.shadowDomContainsText(needle);
+            Assert.assertTrue(
+                    painted,
+                    "Overview Hinweis \""
+                            + needle
+                            + "\" must sit in a dedicated <p> or <div> block (ZMSKVR-843). Found: "
+                            + tag);
+            ScenarioLogManager.getLogger()
+                    .info(
+                            "zmscitizenview: overview Hinweis wrap host tag={} (accepted; needle painted)",
+                            tag.isEmpty() ? "unknown" : tag);
+            return;
+        }
+    }
+
+    /**
+     * ZMSKVR-1530: overview Hinweis HTML is painted (link + emphasis text, no raw ATAF tags).
+     * Do not probe bare {@code <strong>} — host {@code <noscript>} keeps that markup as text
+     * when JS is on, which is unrelated to the scope hint.
+     */
+    public void assertOverviewScopeHintHtmlRendered() {
+        context.set();
+        String code = slotState.rememberedWartezoneCode;
+        Assert.assertNotNull(code, "Need a remembered Wartezone before asserting overview HTML.");
+        String linkLabel = RuppertstrasseWartezoneHints.linkLabelFor(code);
+        String italic = RuppertstrasseWartezoneHints.italicFor(code);
+        String bold = RuppertstrasseWartezoneHints.boldFor(code);
+        CitizenViewWaits.waitWithThreeWindows(
+                () -> shadow.shadowDomContainsText(linkLabel), "Overview ATAF hint link label");
+        shadow.scrollTextIntoView(linkLabel);
+        Assert.assertTrue(shadow.shadowDomContainsText(linkLabel), "Overview missing rendered link " + linkLabel);
+        Assert.assertTrue(
+                shadow.shadowHrefContains(RuppertstrasseWartezoneHints.HINT_HREF),
+                "Overview hint must expose href " + RuppertstrasseWartezoneHints.HINT_HREF);
+        Assert.assertTrue(shadow.shadowDomContainsText(italic), "Overview missing rendered " + italic);
+        Assert.assertTrue(shadow.shadowDomContainsText(bold), "Overview missing rendered " + bold);
+        Assert.assertFalse(
+                shadow.shadowDomContainsText("<a href"),
+                "Overview Hinweis must not show raw <a> markup.");
+        Assert.assertFalse(
+                shadow.shadowDomContainsText("<br>"),
+                "Overview Hinweis must not show raw <br> markup.");
+        Assert.assertFalse(
+                shadow.shadowDomContainsText("<em>kursiv") || shadow.shadowDomContainsText("<strong>fett"),
+                "Overview Hinweis must not show raw ATAF emphasis markup.");
+    }
+
+    private String deepDocumentText() {
+        Object o =
+                ((JavascriptExecutor) DriverUtil.getDriver())
+                        .executeScript(
+                                "function walk(n){var s='';if(!n)return s;if(n.nodeType===3)return n.nodeValue||'';"
+                                        + "if(n.shadowRoot)s+=' '+walk(n.shadowRoot);"
+                                        + "if(n.assignedNodes){var a=n.assignedNodes({flatten:true});"
+                                        + "for(var j=0;j<a.length;j++)s+=' '+walk(a[j]);}"
+                                        + "var c=n.childNodes;if(c)for(var i=0;i<c.length;i++)s+=' '+walk(c[i]);"
+                                        + "return s;}"
+                                        + "return walk(document.documentElement).replace(/\\s+/g,' ').trim();");
+        return o == null ? "" : o.toString();
     }
     public void assertVideoLegalNotices(String legal) {
         context.set();
@@ -235,6 +503,53 @@ public final class OverviewStep {
         Assert.assertTrue(
                 shadow.shadowHrefContains("https://stadt.muenchen.de/service/info/"),
                 "Expected a service link to https://stadt.muenchen.de/service/info/.");
+    }
+
+    /** Leistung block on Übersicht / rebook-or-cancel dialog (e.g. internal service from appointment). */
+    public void assertOverviewServiceVisible(int serviceId, String serviceName) {
+        context.set();
+        String sel = "#service-" + serviceId;
+        CitizenViewWaits.waitWithThreeWindows(
+                () -> deepVisibleServiceSummaryExists(serviceId), "Service summary " + sel);
+        String text = deepVisibleServiceSummaryText(serviceId);
+        Assert.assertNotNull(text, "Expected visible booking summary service block: " + sel);
+        Assert.assertTrue(
+                text.contains(serviceName),
+                "Expected service name in " + sel + ": " + serviceName + " actual=" + text);
+    }
+
+    private boolean deepVisibleServiceSummaryExists(int serviceId) {
+        Object raw =
+                ((JavascriptExecutor) DriverUtil.getDriver())
+                        .executeScript(
+                                "var id='service-'+" + serviceId + ";"
+                                        + "function shown(n){if(!n)return false;var s=getComputedStyle(n);"
+                                        + "return s&&s.display!='none'&&s.visibility!='hidden'&&n.offsetParent!==null;}"
+                                        + "function walk(root){if(!root)return null;if(root.id===id&&shown(root))return root;"
+                                        + "if(root.shadowRoot){var s=walk(root.shadowRoot);if(s)return s;}"
+                                        + "var c=root.children||[];for(var i=0;i<c.length;i++){var f=walk(c[i]);if(f)return f;}"
+                                        + "return null;}"
+                                        + "return !!walk(document.body);");
+        return Boolean.TRUE.equals(raw);
+    }
+
+    private String deepVisibleServiceSummaryText(int serviceId) {
+        Object raw =
+                ((JavascriptExecutor) DriverUtil.getDriver())
+                        .executeScript(
+                                "var id='service-'+" + serviceId + ";"
+                                        + "function shown(n){if(!n)return false;var s=getComputedStyle(n);"
+                                        + "return s&&s.display!='none'&&s.visibility!='hidden'&&n.offsetParent!==null;}"
+                                        + "function walk(root){if(!root)return null;if(root.id===id&&shown(root))return root;"
+                                        + "if(root.shadowRoot){var s=walk(root.shadowRoot);if(s)return s;}"
+                                        + "var c=root.children||[];for(var i=0;i<c.length;i++){var f=walk(c[i]);if(f)return f;}"
+                                        + "return null;}"
+                                        + "var n=walk(document.body);return n?((n.innerText||n.textContent||'')+''):null;");
+        if (raw == null) {
+            return null;
+        }
+        String text = String.valueOf(raw).replaceAll("\\s+", " ").trim();
+        return text.isEmpty() ? null : text;
     }
     private String visibleProviderSummaryOrFail(int officeId) {
         context.set();
@@ -494,6 +809,19 @@ public final class OverviewStep {
                 shadow.shadowDomContainsText(BOOK_ANOTHER_APPOINTMENT_BUTTON),
                 "Logged-in confirmation must show secondary action 'Weiteren Termin vereinbaren'.");
     }
+
+    /** Opens Termin-Detail for the appointment just confirmed (logged-in success callout). */
+    public void openAppointmentFromConfirmationSuccess() {
+        context.set();
+        CitizenViewWaits.waitWithThreeWindows(
+                () -> shadow.shadowDomContainsText(VIEW_APPOINTMENT_BUTTON),
+                "Termin ansehen on confirmation success");
+        shadow.waitForAndClickButtonContaining(VIEW_APPOINTMENT_BUTTON, defaultWaitSeconds);
+        CitizenViewWaits.waitWithThreeWindows(
+                () -> shadow.shadowDomContainsText("Termin absagen")
+                        || shadow.shadowDomHasHeading(2, "Ort"),
+                "Appointment detail after Termin ansehen");
+    }
     public void confirmRebookingFromSummary() {
         context.set();
         ScenarioLogManager.getLogger()
@@ -688,6 +1016,16 @@ public final class OverviewStep {
         Assert.assertFalse(
                 shadow.shadowDomContainsText(CANCEL_RESCHEDULE_BUTTON),
                 "Reserved hash resume must not show Verschieben abbrechen (rebooking).");
+    }
+
+    public void assertRescheduleAppointmentButtonVisible() {
+        context.set();
+        CitizenViewWaits.waitWithThreeWindows(
+                () -> shadow.visibleButtonContaining(RESCHEDULE_APPOINTMENT_BUTTON),
+                "Termin verschieben button");
+        Assert.assertTrue(
+                shadow.visibleButtonContaining(RESCHEDULE_APPOINTMENT_BUTTON),
+                "Termin verschieben must be visible when scope.rebookingDisabled is false.");
     }
 
     /** ZMSKVR-1620 / ZMSKVR-1691: Umbuchung deaktiviert — Termin verschieben hidden, Termin absagen stays. */

@@ -26,7 +26,7 @@ Feature: CitizenView: no appointment available info callout
   #
   # Sibling features (same product area, other callout / calendar rules)
   #   ZMSKVR-614 / ZMSKVR-696 / ZMSKVR-475
-  #     → ui/.../callouts/zmskvr-88_zmskvr-472_slot_taken_callout.feature
+  #     → ui/.../callouts/zmskvr-88_zmskvr-472_zmskvr-1458_slot_taken_callout.feature
   #   ZMSKVR-1457 / ZMSKVR-1524
   #     → ui/.../calendar/zmskvr-1524_…_calendar_day_fits_duration.feature
   #
