@@ -669,4 +669,5 @@ class ValidationServiceTest extends TestCase
             $disabled
         );
     }
+
 }
