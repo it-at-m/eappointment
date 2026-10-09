@@ -6,7 +6,9 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Base64;
+import java.util.List;
 import java.util.Locale;
 
 import org.openqa.selenium.By;
@@ -28,6 +30,8 @@ import zms.ataf.rest.dto.zmscitizenapi.ThinnedProcess;
 import zms.ataf.ui.pages.citizenview.CitizenViewPage;
 import zms.ataf.ui.pages.citizenview.CitizenViewPageContext;
 import zms.ataf.ui.pages.citizenview.support.CitizenViewWaits;
+import zms.ataf.ui.pages.citizenview.support.FuehrerscheinstelleScopeHints;
+import zms.ataf.ui.pages.citizenview.support.RuppertstrasseWartezoneHints;
 import zms.ataf.ui.pages.citizenview.support.ShadowDom;
 import zms.ataf.ui.pages.citizenview.support.SlotBookingState;
 import java.util.Objects;
@@ -294,17 +298,68 @@ public final class MyAppointmentsStep {
         }
         waitForAppointmentDetailShellAfterNavigation();
     }
+
+    /**
+     * Opens Termin-Detail the same way as „Termin ansehen“:
+     * {@code appointment-detail.html?ap-id={processId}}. Hash-only mail links
+     * ({@code #/appointment/...}) are for the booking widget and leave detail blank.
+     */
+    public void openAppointmentDetailForCurrentProcess() {
+        context.openCitizenViewIfNotAlreadyOpen();
+        ThinnedProcess process = zms.ataf.rest.steps.CitizenApiSteps.getBookingProcess();
+        Assert.assertNotNull(process, "No booking process; confirm/reserve first.");
+        Assert.assertNotNull(process.getProcessId(), "Booking process has no processId.");
+        String url = appointmentDetailUrlForProcess(process.getProcessId(), process.getDisplayNumber());
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: navigating to appointment-detail ?ap-id={}: {}", process.getProcessId(), url);
+        try {
+            DriverUtil.getDriver().navigate().to(url);
+        } catch (Exception e) {
+            ScenarioLogManager.getLogger().warn("Navigate to appointment-detail URL", e);
+        }
+        waitForAppointmentDetailShellAfterNavigation();
+        CitizenViewWaits.waitWithThreeWindows(
+                () ->
+                        shadow.shadowDomContainsText("Termin absagen")
+                                || shadow.shadowDomHasHeading(2, "Ort"),
+                "Appointment detail after ?ap-id open");
+        shadow.scrollTextIntoView(RuppertstrasseWartezoneHints.DETAIL_CALLOUT_HEADER);
+    }
+
+    /** Same URL shape as AppointmentView.viewAppointment (ap-id / ap-display query params). */
+    public static String appointmentDetailUrlForProcess(Integer processId, String displayNumber) {
+        Assert.assertNotNull(processId, "processId required for appointment-detail URL");
+        String origin = Objects.requireNonNullElse(
+                        System.getenv("CITIZEN_VIEW_BASE_URI"), "http://localhost:8082/")
+                .trim();
+        if (!origin.endsWith("/")) {
+            origin = origin + "/";
+        }
+        StringBuilder url =
+                new StringBuilder(origin)
+                        .append("appointment-detail.html?ap-id=")
+                        .append(processId);
+        if (displayNumber != null && !displayNumber.isBlank()) {
+            url.append("&ap-display=").append(displayNumber);
+        }
+        return url.toString();
+    }
+
     private void waitForAppointmentDetailShellAfterNavigation() {
         context.set();
         try {
             new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(defaultWaitSeconds))
-                    .until(d -> shadow.deepVisibleCssExists(".m-contact") || shadow.deepVisibleCssExists("#timeTitleElement"));
+                    .until(
+                            d ->
+                                    shadow.deepVisibleCssExists("#timeTitleElement")
+                                            || shadow.shadowDomContainsText("Termin absagen")
+                                            || shadow.shadowDomHasHeading(2, "Ort"));
             ScenarioLogManager.getLogger()
-                    .info("zmscitizenview: visible appointment shell (.m-contact or #timeTitleElement)");
+                    .info("zmscitizenview: visible appointment-detail shell (#timeTitleElement / Termin absagen / Ort)");
         } catch (TimeoutException e) {
             ScenarioLogManager.getLogger()
                     .warn(
-                            "zmscitizenview: visible appointment shell not found after {}s; provider assertion will retry",
+                            "zmscitizenview: appointment-detail shell not found after {}s; assertion will retry",
                             defaultWaitSeconds);
         }
     }
@@ -1045,6 +1100,244 @@ public final class MyAppointmentsStep {
         }
         trySetBookingProcessIdFromDom();
     }
+    /**
+     * ZMSKVR-1088 / ZMSKVR-1342: teaser H3 lists main service then combined services in booking
+     * order (not alphabetical). Bound to the process just booked via Terminnummer.
+     */
+    public void assertMyAppointmentsTeaserServiceTitleOrder(String orderedNamesCsv) {
+        context.set();
+        List<String> expected = splitOrderedServiceNames(orderedNamesCsv);
+        Assert.assertFalse(expected.isEmpty(), "Expected at least one service name in the title order.");
+        trySetBookingProcessFromPage();
+        ThinnedProcess booked = zms.ataf.rest.steps.CitizenApiSteps.getBookingProcess();
+        Assert.assertNotNull(booked, "Need the booked process to bind the teaser card.");
+        Assert.assertNotNull(booked.getProcessId(), "Booked processId required for teaser card.");
+        String card = waitForTeaserTextContaining("Terminnummer: " + booked.getProcessId());
+        assertServiceTitleOrder(card, expected, "Meine Termine teaser");
+    }
+
+    /**
+     * ZMSKVR-1088 / ZMSKVR-1342: detail muc-intro title lists main service then combined services
+     * in booking order (not alphabetical).
+     */
+    public void assertAppointmentDetailServiceTitleOrder(String orderedNamesCsv) {
+        context.set();
+        List<String> expected = splitOrderedServiceNames(orderedNamesCsv);
+        Assert.assertFalse(expected.isEmpty(), "Expected at least one service name in the title order.");
+        CitizenViewWaits.waitWithThreeWindows(
+                () -> {
+                    String title = detailIntroTitleText();
+                    return title.contains("1x " + expected.get(0));
+                },
+                "Appointment detail title with main service");
+        String title = detailIntroTitleText();
+        assertServiceTitleOrder(title, expected, "appointment detail");
+    }
+
+    private String waitForTeaserTextContaining(String fragment) {
+        long deadline = System.currentTimeMillis() + Math.max(30, defaultWaitSeconds) * 1000L;
+        String last = "";
+        while (System.currentTimeMillis() < deadline) {
+            last = teaserTextContaining(fragment);
+            if (last.contains(fragment) && last.contains("Terminnummer")) {
+                return last;
+            }
+            try {
+                Thread.sleep(400L);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                break;
+            }
+        }
+        Assert.fail("Meine Termine teaser containing \"" + fragment + "\" did not appear. Last text: " + last);
+        return last;
+    }
+
+    private String teaserTextContaining(String fragment) {
+        String script =
+                "var needle=arguments[0];"
+                        + "function textOf(n){var s='';if(!n)return s;if(n.nodeType===3)return n.nodeValue||'';"
+                        + "if(n.shadowRoot)s+=textOf(n.shadowRoot);var c=n.childNodes;if(c)for(var i=0;i<c.length;i++)s+=textOf(c[i]);return s;}"
+                        + "function walk(n,fn){if(!n)return false;if(fn(n))return true;if(n.shadowRoot&&walk(n.shadowRoot,fn))return true;"
+                        + "var c=n.children;if(c)for(var i=0;i<c.length;i++)if(walk(c[i],fn))return true;return false;}"
+                        + "var best='';"
+                        + "walk(document.body,function(n){"
+                        + "if(n.nodeType!==1)return false;"
+                        + "var t=textOf(n);"
+                        + "if(t.indexOf(needle)<0||t.indexOf('Terminnummer')<0)return false;"
+                        + "if(!best||t.length<best.length)best=t;"
+                        + "return false;});"
+                        + "return best;";
+        Object raw = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script, fragment);
+        return raw instanceof String ? (String) raw : "";
+    }
+
+    /**
+     * Service lines from the appointment-detail intro (formatMultilineTitle). MucIntro is a Vue
+     * SFC that renders {@code div.m-intro > h1}, not a {@code muc-intro} custom element, so the
+     * title prop is never a DOM attribute — read the painted h1 (fallback: text before
+     * Terminnummer), same deep walk as teaser asserts.
+     */
+    private String detailIntroTitleText() {
+        String script =
+                "function textOf(n){var s='';if(!n)return s;if(n.nodeType===3)return n.nodeValue||'';"
+                        + "if(n.shadowRoot)s+=' '+textOf(n.shadowRoot);"
+                        + "if(n.assignedNodes){var a=n.assignedNodes({flatten:true});"
+                        + "for(var j=0;j<a.length;j++)s+=' '+textOf(a[j]);}"
+                        + "var c=n.childNodes;if(c)for(var i=0;i<c.length;i++)s+=' '+textOf(c[i]);"
+                        + "return s;}"
+                        + "function walk(n,fn){if(!n)return null;var r=fn(n);if(r)return r;"
+                        + "if(n.shadowRoot){r=walk(n.shadowRoot,fn);if(r)return r;}"
+                        + "var c=n.children;if(c)for(var i=0;i<c.length;i++){r=walk(c[i],fn);if(r)return r;}"
+                        + "return null;}"
+                        + "var fromH1=walk(document.body,function(n){"
+                        + "if((n.tagName||'').toUpperCase()!=='H1')return null;"
+                        + "var t=textOf(n).replace(/\\s+/g,' ').trim();"
+                        + "return t.indexOf('1x ')>=0?t:null;"
+                        + "});"
+                        + "if(fromH1)return fromH1;"
+                        + "var best='';"
+                        + "walk(document.body,function(n){"
+                        + "if(n.nodeType!==1)return null;"
+                        + "var t=textOf(n).replace(/\\s+/g,' ').trim();"
+                        + "if(t.indexOf('1x ')<0||t.indexOf('Terminnummer')<0)return null;"
+                        + "if(!best||t.length<best.length)best=t;"
+                        + "return null;});"
+                        + "if(!best)return '';"
+                        + "var start=best.indexOf('1x ');"
+                        + "var end=best.indexOf('Terminnummer');"
+                        + "return (end>start?best.substring(start,end):best.substring(start)).trim();";
+        Object raw = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script);
+        return raw == null ? "" : raw.toString().replace('\n', ' ').replaceAll("\\s+", " ").trim();
+    }
+
+    private static List<String> splitOrderedServiceNames(String orderedNamesCsv) {
+        List<String> names = new ArrayList<>();
+        if (orderedNamesCsv == null || orderedNamesCsv.isBlank()) {
+            return names;
+        }
+        for (String part : orderedNamesCsv.split(",")) {
+            String trimmed = part.trim();
+            if (!trimmed.isEmpty()) {
+                names.add(trimmed);
+            }
+        }
+        return names;
+    }
+
+    private static void assertServiceTitleOrder(String text, List<String> expected, String where) {
+        String normalized = text == null ? "" : text.replace('\n', ' ').replaceAll("\\s+", " ");
+        int previous = -1;
+        for (String name : expected) {
+            String needle = "1x " + name;
+            int idx = normalized.indexOf(needle);
+            Assert.assertTrue(
+                    idx > previous,
+                    where
+                            + " must list \""
+                            + needle
+                            + "\" after earlier services (booking order, not A–Z). Text: "
+                            + normalized);
+            previous = idx;
+        }
+    }
+
+    /**
+     * ZMSKVR-924 / ZMSKVR-1019: Termin-Detail Ort Kundenhinweis + Callout „Hinweis zu Ihrem Termin“
+     * for Führerscheinstelle Schalter A/B.
+     */
+    public void assertAppointmentDetailMatchingFuehrerscheinstelleSchalter() {
+        context.set();
+        String code = slotState.rememberedWartezoneCode;
+        Assert.assertNotNull(code, "Need a remembered Schalter from the booking overview.");
+        Assert.assertTrue(
+                FuehrerscheinstelleScopeHints.isConcrete(code),
+                "Expected FS-A or FS-B from overview, was: " + code);
+        String zone = FuehrerscheinstelleScopeHints.zoneFor(code);
+        String hint = FuehrerscheinstelleScopeHints.hintFor(code);
+        CitizenViewWaits.waitWithThreeWindows(
+                () ->
+                        (shadow.shadowDomHasHeading(2, "Ort") || shadow.shadowDomContainsText("Termin absagen"))
+                                && shadow.shadowDomContainsText(zone)
+                                && shadow.shadowDomContainsText(FuehrerscheinstelleScopeHints.DETAIL_CALLOUT_HEADER)
+                                && shadow.shadowDomContainsText(hint),
+                "Appointment detail Schalter + Hinweis callout");
+        Assert.assertTrue(
+                shadow.shadowDomHasHeading(2, "Ort") || shadow.shadowDomContainsText("Termin absagen"),
+                "Detail missing Ort heading / Termin absagen (still on booking Übersicht?).");
+        shadow.scrollTextIntoView(zone);
+        Assert.assertTrue(shadow.shadowDomContainsText(zone), "Detail Ort missing " + zone);
+        shadow.scrollTextIntoView(FuehrerscheinstelleScopeHints.DETAIL_CALLOUT_HEADER);
+        Assert.assertTrue(
+                shadow.shadowDomContainsText(FuehrerscheinstelleScopeHints.DETAIL_CALLOUT_HEADER),
+                "Detail missing callout header Hinweis zu Ihrem Termin.");
+        shadow.scrollTextIntoView(hint);
+        Assert.assertTrue(shadow.shadowDomContainsText(hint), "Detail callout missing " + hint);
+        Assert.assertFalse(
+                shadow.shadowDomContainsText(
+                        FuehrerscheinstelleScopeHints.zoneFor(
+                                FuehrerscheinstelleScopeHints.otherCode(code))),
+                "Detail must not show the other Schalter.");
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: detail matched Führerscheinstelle Schalter {} callout", code);
+    }
+
+    /**
+     * ZMSKVR-1087 / ZMSKVR-1311 / ZMSKVR-1530 / ZMSKVR-1541: Termin-Detail Ort Wartezone +
+     * Callout „Hinweis zu Ihrem Termin“ with matching ATAF marker and rendered HTML.
+     */
+    public void assertAppointmentDetailMatchingRuppertstrasseWartezoneHint() {
+        context.set();
+        String code = slotState.rememberedWartezoneCode;
+        Assert.assertNotNull(code, "Need a remembered Wartezone from the booking overview.");
+        String zone = RuppertstrasseWartezoneHints.zoneFor(code);
+        String hint = RuppertstrasseWartezoneHints.hintFor(code);
+        CitizenViewWaits.waitWithThreeWindows(
+                () ->
+                        (shadow.shadowDomHasHeading(2, "Ort") || shadow.shadowDomContainsText("Termin absagen"))
+                                && shadow.shadowDomContainsText(zone)
+                                && shadow.shadowDomContainsText(RuppertstrasseWartezoneHints.DETAIL_CALLOUT_HEADER)
+                                && shadow.shadowDomContainsText(hint),
+                "Appointment detail Wartezone + Hinweis callout");
+        Assert.assertTrue(
+                shadow.shadowDomHasHeading(2, "Ort") || shadow.shadowDomContainsText("Termin absagen"),
+                "Detail missing Ort heading / Termin absagen (still on booking Übersicht?).");
+        shadow.scrollTextIntoView(zone);
+        Assert.assertTrue(shadow.shadowDomContainsText(zone), "Detail Ort missing " + zone);
+        shadow.scrollTextIntoView(RuppertstrasseWartezoneHints.DETAIL_CALLOUT_HEADER);
+        Assert.assertTrue(
+                shadow.shadowDomContainsText(RuppertstrasseWartezoneHints.DETAIL_CALLOUT_HEADER),
+                "Detail missing callout header Hinweis zu Ihrem Termin.");
+        shadow.scrollTextIntoView(hint);
+        Assert.assertTrue(shadow.shadowDomContainsText(hint), "Detail callout missing " + hint);
+        Assert.assertFalse(
+                shadow.shadowDomContainsText(
+                        RuppertstrasseWartezoneHints.zoneFor(RuppertstrasseWartezoneHints.otherCode(code))),
+                "Detail must not show the other Wartebereich.");
+        if (RuppertstrasseWartezoneHints.isAtafHtmlHint(code)) {
+            String linkLabel = RuppertstrasseWartezoneHints.linkLabelFor(code);
+            shadow.scrollTextIntoView(linkLabel);
+            Assert.assertTrue(shadow.shadowDomContainsText(linkLabel), "Detail missing rendered link " + linkLabel);
+            Assert.assertTrue(
+                    shadow.shadowHrefContains(RuppertstrasseWartezoneHints.HINT_HREF),
+                    "Detail hint must expose href " + RuppertstrasseWartezoneHints.HINT_HREF);
+            String italic = RuppertstrasseWartezoneHints.italicFor(code);
+            String bold = RuppertstrasseWartezoneHints.boldFor(code);
+            shadow.scrollTextIntoView(italic);
+            Assert.assertTrue(shadow.shadowDomContainsText(italic), "Detail missing rendered " + italic);
+            Assert.assertTrue(shadow.shadowDomContainsText(bold), "Detail missing rendered " + bold);
+            // Bare <strong> matches host <noscript> fallback text; probe ATAF-specific raw markers only.
+            Assert.assertFalse(
+                    shadow.shadowDomContainsText("<a href")
+                            || shadow.shadowDomContainsText("<br>")
+                            || shadow.shadowDomContainsText("<em>kursiv")
+                            || shadow.shadowDomContainsText("<strong>fett"),
+                    "Detail Hinweis callout must not show raw ATAF HTML tags.");
+        }
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: detail matched Ruppertstraße Wartezone {} callout", code);
+    }
+
     public void assertAppointmentDetailLocation(
             String typeLabel, String place, String locationText, String preparationHint, String extra) {
         context.set();

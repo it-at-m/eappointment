@@ -19,6 +19,10 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 import org.assertj.core.api.Assertions;
@@ -57,6 +61,9 @@ public class ZmsApiSteps {
     private JsonNode lastProcess;
     private final List<Integer> scenarioProcessIds = new ArrayList<>();
     private final Map<Integer, Integer> processScopeById = new HashMap<>();
+    private final Map<String, String> clerkAuthKeys = new HashMap<>();
+    private Response firstClerkCallResponse;
+    private Response secondClerkCallResponse;
     private int workstationScopeId;
     private JsonNode departmentServices;
     private String ticketprinterHash;
@@ -70,6 +77,9 @@ public class ZmsApiSteps {
         lastProcess = null;
         scenarioProcessIds.clear();
         processScopeById.clear();
+        clerkAuthKeys.clear();
+        firstClerkCallResponse = null;
+        secondClerkCallResponse = null;
         workstationScopeId = 0;
         departmentServices = null;
         cachedXAuthKey = null;
@@ -236,6 +246,21 @@ public class ZmsApiSteps {
         cachedXAuthKey = loginAndExtractAuthKey(workstationLoginCredentials());
     }
 
+    /**
+     * Second concurrent workstation session in the same scenario. Uses
+     * {@link AccountCheckout#assignAnotherWorkstationLogin} so the first clerk keeps a valid SessionID.
+     */
+    @Given("I am logged in to the ZMS API as another {string}")
+    public void iAmLoggedInToTheZmsApiAsAnother(String usernameOrRole) {
+        theZmsApiWorkstationUserIs(usernameOrRole);
+        String password = scenarioLoginPassword != null && !scenarioLoginPassword.isBlank()
+            ? scenarioLoginPassword
+            : defaultWorkstationPassword();
+        String login = AccountCheckout.assignAnotherWorkstationLogin(usernameOrRole);
+        cachedXAuthKey = loginAndExtractAuthKey(
+            new String[] { resolveWorkstationUsername(login), password });
+    }
+
     @When("I make a POST request to {string} with valid id and password")
     public void iMakeAPostRequestToWithValidIdAndPassword(String endpoint) {
         postWorkstationLogin(endpoint);
@@ -338,6 +363,16 @@ public class ZmsApiSteps {
     @When("I queue a walk-in at scope {int} with service {string} and name {string} with the X-AuthKey")
     public void iQueueAWalkInAtScopeWithServiceAndNameWithTheXAuthKey(
             int scopeId, String serviceName, String familyName) {
+        queueWalkIn(scopeId, serviceName, familyName, null);
+    }
+
+    @When("I queue a walk-in at scope {int} with service {string}, name {string} and amendment {string} with the X-AuthKey")
+    public void iQueueAWalkInAtScopeWithServiceNameAndAmendmentWithTheXAuthKey(
+            int scopeId, String serviceName, String familyName, String amendment) {
+        queueWalkIn(scopeId, serviceName, familyName, amendment);
+    }
+
+    private void queueWalkIn(int scopeId, String serviceName, String familyName, String amendment) {
         String authKey = getOrLoginXAuthKey();
         JsonNode request = findScopeRequestByName(scopeId, serviceName, authKey);
         ObjectNode scope = MAPPER.createObjectNode();
@@ -351,6 +386,9 @@ public class ZmsApiSteps {
         client.put("surveyAccepted", 1);
         ObjectNode process = MAPPER.createObjectNode();
         process.put("status", "queued");
+        if (amendment != null && !amendment.isBlank()) {
+            process.put("amendment", amendment);
+        }
         process.set("scope", scope);
         process.set("appointments", MAPPER.createArrayNode().add(appointment));
         process.set("requests", MAPPER.createArrayNode().add(request.deepCopy()));
@@ -388,7 +426,11 @@ public class ZmsApiSteps {
 
     private void bookAppointmentCustomer(
             int scopeId, String serviceName, String familyName, int minutesAhead, boolean requireServiceName) {
-        iAmLoggedInToTheZmsApiAs("agent_queue");
+        // Keep the current API session (and its workstation). A fresh agent_queue login here
+        // would drop the clerk's scope and invalidate remembered clerk X-AuthKeys (401 / MatchScopeFailed).
+        if (cachedXAuthKey == null || cachedXAuthKey.isBlank()) {
+            iAmLoggedInToTheZmsApiAs("agent_queue");
+        }
         String authKey = getOrLoginXAuthKey();
         JsonNode request = findScopeRequestByName(scopeId, serviceName, authKey);
         if (requireServiceName) {
@@ -396,10 +438,6 @@ public class ZmsApiSteps {
                     .as("scope %d request list should include %s", scopeId, serviceName)
                     .contains(serviceName.toLowerCase(Locale.ROOT));
         }
-        JsonNode freeList = minutesAhead > 0
-                ? fetchFreeProcessesLookingAhead(scopeId, request, authKey)
-                : fetchFreeProcesses(scopeId, request, authKey);
-
         long now = Instant.now().getEpochSecond();
         long currentMinute = now - (now % 60);
         long earliest = (now % 60 > 40) ? currentMinute + 60 : currentMinute;
@@ -407,19 +445,47 @@ public class ZmsApiSteps {
             earliest = Math.max(earliest, now + minutesAhead * 60L);
         }
         long soon = now + 6 * 60;
-        // Department 2 reminds 1440 minutes ahead, so a later slot today is still due.
-        long reminderHorizon = now + 24 * 60 * 60;
-        List<JsonNode> candidates = slotsBetween(freeList, earliest, soon);
+        long endOfToday = BerlinTime.today().atStartOfDay(java.time.ZoneId.of("Europe/Berlin")).toEpochSecond()
+                + 86_400L;
+        // free/ is day-scoped: a nonempty today list can be only past slots. Skip those and look ahead.
+        JsonNode freeList = minutesAhead > 0
+                ? fetchFreeProcessesLookingAhead(scopeId, request, authKey, earliest)
+                : fetchFreeProcessesAllowEmpty(scopeId, request, authKey);
+        if (minutesAhead <= 0
+                && (freeList == null
+                        || freeList.isEmpty()
+                        || slotsBetween(freeList, earliest, endOfToday).isEmpty())) {
+            ScenarioLogManager.getLogger().info(
+                    "No eligible intern slots left today on {} for scope {}; looking ahead",
+                    BerlinTime.today(),
+                    scopeId);
+            freeList = fetchFreeProcessesLookingAhead(scopeId, request, authKey, earliest);
+        }
+
+        List<JsonNode> candidates = slotsBetween(freeList, earliest, Math.min(soon, endOfToday));
         if (candidates.isEmpty()) {
+            candidates = slotsBetween(freeList, earliest, endOfToday);
+            if (!candidates.isEmpty()) {
+                ScenarioLogManager.getLogger().info(
+                        "No intern slot in the next minutes for scope {}; using a later slot today",
+                        scopeId);
+            }
+        }
+        if (minutesAhead > 0 && candidates.isEmpty()) {
+            long reminderHorizon = now + 24 * 60 * 60;
             candidates = slotsBetween(freeList, earliest, reminderHorizon);
             if (!candidates.isEmpty()) {
                 ScenarioLogManager.getLogger().info(
-                        "No intern slot in the next minutes for scope {}; using the next slot inside the reminder window",
+                        "No intern slot today for scope {}; using the next slot inside the reminder window",
                         scopeId);
             }
         }
         Assertions.assertThat(candidates)
-                .as("scope %d should have an intern slot between epoch %d and %d", scopeId, earliest, reminderHorizon)
+                .as(minutesAhead <= 0
+                        ? "scope %d needs a callable same-day intern slot from epoch %d (Terminkunde collision)"
+                        : "scope %d should have an intern slot from epoch %d",
+                        scopeId,
+                        earliest)
                 .isNotEmpty();
 
         JsonNode reserved = null;
@@ -474,9 +540,19 @@ public class ZmsApiSteps {
         trackProcess(confirmed.path("id").asInt(), scopeId);
 
         long appointment = confirmed.path("appointments").path(0).path("date").asLong(0);
-        Assertions.assertThat(appointment)
-                .as("confirmed appointment time")
-                .isBetween(earliest, reminderHorizon);
+        if (minutesAhead <= 0) {
+            Assertions.assertThat(appointmentIsToday(confirmed))
+                    .as("Terminkunde collision needs a same-day appointment; got epoch %d", appointment)
+                    .isTrue();
+            Assertions.assertThat(appointment)
+                    .as("confirmed same-day appointment time")
+                    .isBetween(earliest, endOfToday);
+        } else {
+            long reminderHorizon = now + 24 * 60 * 60;
+            Assertions.assertThat(appointment)
+                    .as("confirmed appointment time")
+                    .isBetween(earliest, reminderHorizon);
+        }
         TestDataHelper.setTestData("appointment_epoch", Long.toString(appointment));
         ScenarioLogManager.getLogger().info(
                 "Terminkunde {} booked at epoch {} for scope {}", familyName, appointment, scopeId);
@@ -626,6 +702,40 @@ public class ZmsApiSteps {
     @When("the appointments created in this scenario are deleted.")
     public void dieInDiesemSzenarioAngelegtenTermineGeloeschtWerden() {
         iDeleteTheProcessesCreatedInThisScenarioWithTheXAuthKey();
+    }
+
+    @Then("the current process display number starts with {string} and is not {string}")
+    public void theCurrentProcessDisplayNumberStartsWithAndIsNot(String prefix, String forbidden) {
+        Assertions.assertThat(lastProcess)
+                .as("Book an appointment before asserting displayNumber")
+                .isNotNull();
+        String displayNumber = lastProcess.path("displayNumber").asText("");
+        int processId = lastProcess.path("id").asInt();
+        ScenarioLogManager.getLogger().info(
+                "process id={} displayNumber={}", processId, displayNumber);
+        Assertions.assertThat(displayNumber)
+                .as("displayNumber for process %d", processId)
+                .isNotBlank()
+                .startsWith(prefix)
+                .isNotEqualTo(forbidden);
+        Assertions.assertThat(displayNumber)
+                .as("prefixed displayNumber must not be only the process id")
+                .isNotEqualTo(Integer.toString(processId));
+    }
+
+    @Then("the current process display number equals the process id")
+    public void theCurrentProcessDisplayNumberEqualsTheProcessId() {
+        Assertions.assertThat(lastProcess)
+                .as("Book an appointment before asserting displayNumber")
+                .isNotNull();
+        String displayNumber = lastProcess.path("displayNumber").asText("");
+        int processId = lastProcess.path("id").asInt();
+        ScenarioLogManager.getLogger().info(
+                "process id={} displayNumber={}", processId, displayNumber);
+        Assertions.assertThat(processId).as("process id").isPositive();
+        Assertions.assertThat(displayNumber)
+                .as("displayNumber without prefix equals process id")
+                .isEqualTo(Integer.toString(processId));
     }
 
     @When("I queue a walk-in at scope {int} with service {string}, name {string}, free text {string} and second free text {string} with the X-AuthKey")
@@ -1027,23 +1137,174 @@ public class ZmsApiSteps {
 
     @When("I call the last process at the workstation with the X-AuthKey")
     public void iCallTheLastProcessAtTheWorkstationWithTheXAuthKey() {
+        iCallTheLastProcessAtTheWorkstationWithAllowClusterWideCall(true);
+    }
+
+    @When("I call the last process at the workstation with allowClusterWideCall {word}")
+    public void iCallTheLastProcessAtTheWorkstationWithAllowClusterWideCall(String allowClusterWideCall) {
+        iCallTheLastProcessAtTheWorkstationWithAllowClusterWideCall(Boolean.parseBoolean(allowClusterWideCall));
+    }
+
+    @When("I remember the current ZMS API login as clerk {string}")
+    public void iRememberTheCurrentZmsApiLoginAsClerk(String clerk) {
+        String authKey = getOrLoginXAuthKey();
+        Assertions.assertThat(authKey)
+            .as("Login before remembering clerk %s", clerk)
+            .isNotBlank();
+        clerkAuthKeys.put(clerk, authKey);
+        ScenarioLogManager.getLogger().info("Remembered ZMS API clerk {} auth key", clerk);
+    }
+
+    @When("clerk {string} calls the last process with allowClusterWideCall {word}")
+    public void clerkCallsTheLastProcessWithAllowClusterWideCall(String clerk, String allowClusterWideCall) {
+        Assertions.assertThat(lastProcess)
+            .as("Queue or reserve a process before calling it")
+            .isNotNull();
+        String authKey = clerkAuthKeys.get(clerk);
+        Assertions.assertThat(authKey)
+            .as("Remember clerk %s before calling", clerk)
+            .isNotBlank();
+        assertLastProcessCallableWithoutWalkInFallback();
+        response = postProcessCalled(authKey, Boolean.parseBoolean(allowClusterWideCall), lastProcess);
+        CommonApiSteps.setResponse(response);
+        if (response.getStatusCode() == 200) {
+            JsonNode workstation = parseDataNode(response);
+            rememberProcess(workstation != null ? workstation.path("process") : null);
+            cachedXAuthKey = authKey;
+        }
+    }
+
+    @When("both clerks {string} and {string} call the last process concurrently with allowClusterWideCall {word}")
+    public void bothClerksCallTheLastProcessConcurrently(
+            String firstClerk, String secondClerk, String allowClusterWideCall) throws Exception {
+        Assertions.assertThat(lastProcess)
+            .as("Queue or reserve a process before calling it")
+            .isNotNull();
+        String firstKey = clerkAuthKeys.get(firstClerk);
+        String secondKey = clerkAuthKeys.get(secondClerk);
+        Assertions.assertThat(firstKey).as("Remember clerk %s", firstClerk).isNotBlank();
+        Assertions.assertThat(secondKey).as("Remember clerk %s", secondClerk).isNotBlank();
+        boolean allow = Boolean.parseBoolean(allowClusterWideCall);
+        assertLastProcessCallableWithoutWalkInFallback();
+        JsonNode processBody = lastProcess.deepCopy();
+
+        CountDownLatch ready = new CountDownLatch(2);
+        CountDownLatch go = new CountDownLatch(1);
+        ExecutorService pool = Executors.newFixedThreadPool(2);
+        try {
+            Future<Response> firstFuture = pool.submit(() -> {
+                ready.countDown();
+                if (!go.await(30, TimeUnit.SECONDS)) {
+                    throw new IllegalStateException("Timed out waiting to start concurrent call");
+                }
+                return postProcessCalled(firstKey, allow, processBody);
+            });
+            Future<Response> secondFuture = pool.submit(() -> {
+                ready.countDown();
+                if (!go.await(30, TimeUnit.SECONDS)) {
+                    throw new IllegalStateException("Timed out waiting to start concurrent call");
+                }
+                return postProcessCalled(secondKey, allow, processBody);
+            });
+            Assertions.assertThat(ready.await(30, TimeUnit.SECONDS))
+                .as("Both clerk call threads should be ready")
+                .isTrue();
+            go.countDown();
+            firstClerkCallResponse = firstFuture.get(60, TimeUnit.SECONDS);
+            secondClerkCallResponse = secondFuture.get(60, TimeUnit.SECONDS);
+        } finally {
+            pool.shutdownNow();
+        }
+
+        ScenarioLogManager.getLogger().info(
+            "Concurrent call clerk {} status={} clerk {} status={}",
+            firstClerk,
+            firstClerkCallResponse.getStatusCode(),
+            secondClerk,
+            secondClerkCallResponse.getStatusCode());
+        response = firstClerkCallResponse.getStatusCode() == 200
+            ? firstClerkCallResponse
+            : secondClerkCallResponse;
+        CommonApiSteps.setResponse(response);
+        if (response != null && response.getStatusCode() == 200) {
+            JsonNode workstation = parseDataNode(response);
+            rememberProcess(workstation != null ? workstation.path("process") : null);
+            cachedXAuthKey = firstClerkCallResponse.getStatusCode() == 200 ? firstKey : secondKey;
+        }
+    }
+
+    @Then("exactly one clerk call succeeded and the other failed with ProcessAlreadyCalled")
+    public void exactlyOneClerkCallSucceededAndTheOtherFailedWithProcessAlreadyCalled() {
+        Assertions.assertThat(firstClerkCallResponse)
+            .as("Run a concurrent two-clerk call first")
+            .isNotNull();
+        Assertions.assertThat(secondClerkCallResponse)
+            .as("Run a concurrent two-clerk call first")
+            .isNotNull();
+
+        int firstStatus = firstClerkCallResponse.getStatusCode();
+        int secondStatus = secondClerkCallResponse.getStatusCode();
+        Assertions.assertThat(List.of(firstStatus, secondStatus))
+            .as("one call must be 200 and the other 404; got %d and %d (%s / %s)",
+                firstStatus,
+                secondStatus,
+                truncate(firstClerkCallResponse.asString(), 300),
+                truncate(secondClerkCallResponse.asString(), 300))
+            .containsExactlyInAnyOrder(200, 404);
+
+        Response failed = firstStatus == 404 ? firstClerkCallResponse : secondClerkCallResponse;
+        response = failed;
+        CommonApiSteps.setResponse(failed);
+        theResponseMetaShouldContainException("ProcessAlreadyCalled");
+
+        Response succeeded = firstStatus == 200 ? firstClerkCallResponse : secondClerkCallResponse;
+        response = succeeded;
+        CommonApiSteps.setResponse(succeeded);
+        JsonNode workstation = parseDataNode(succeeded);
+        rememberProcess(workstation != null ? workstation.path("process") : null);
+    }
+
+    private void iCallTheLastProcessAtTheWorkstationWithAllowClusterWideCall(boolean allowClusterWideCall) {
         Assertions.assertThat(lastProcess)
             .as("Reserve an appointment before calling it")
             .isNotNull();
 
         replaceFutureAppointmentWithWalkIn();
         String authKey = getOrLoginXAuthKey();
-        response = given()
-            .baseUri(baseUri != null ? baseUri : TestConfig.getBaseUri())
-            .header("X-AuthKey", authKey)
-            .contentType("application/json")
-            .queryParam("allowClusterWideCall", true)
-            .body(toJson(lastProcess))
-        .when()
-            .post("/workstation/process/called/");
+        response = postProcessCalled(authKey, allowClusterWideCall, lastProcess);
         CommonApiSteps.setResponse(response);
         JsonNode workstation = parseDataNode(response);
         rememberProcess(workstation != null ? workstation.path("process") : null);
+    }
+
+    private Response postProcessCalled(String authKey, boolean allowClusterWideCall, JsonNode process) {
+        return given()
+            .baseUri(baseUri != null ? baseUri : TestConfig.getBaseUri())
+            .header("X-AuthKey", authKey)
+            .contentType("application/json")
+            .queryParam("allowClusterWideCall", allowClusterWideCall)
+            .body(toJson(process))
+        .when()
+            .post("/workstation/process/called/");
+    }
+
+    /**
+     * Concurrent / second-clerk collision paths must keep the booked process (Terminkunde stays confirmed).
+     * Do not silently replace a later-day appointment with a walk-in.
+     */
+    private void assertLastProcessCallableWithoutWalkInFallback() {
+        Assertions.assertThat(lastProcess)
+                .as("Queue or reserve a process before calling it")
+                .isNotNull();
+        String status = lastProcess.path("status").asText("");
+        if ("queued".equals(status)) {
+            return;
+        }
+        Assertions.assertThat(appointmentIsToday(lastProcess))
+                .as("Collision call needs a same-day appointment or walk-in; got status=%s appointment=%s",
+                        status,
+                        lastProcess.path("appointments").path(0).path("date").asText())
+                .isTrue();
     }
 
     /**
@@ -1230,15 +1491,34 @@ public class ZmsApiSteps {
         ObjectNode body = process.deepCopy();
         body.put("status", "finished");
 
-        response = given()
+        response = postFinished(authKey, body);
+        if (response.getStatusCode() == 500 && response.asString().toLowerCase(Locale.ROOT).contains("deadlock")) {
+            ScenarioLogManager.getLogger().warn(
+                    "Finish hit a MySQL deadlock; retrying once. body={}",
+                    truncate(response.asString(), 300));
+            try {
+                Thread.sleep(400);
+            } catch (InterruptedException ie) {
+                Thread.currentThread().interrupt();
+            }
+            process = refreshAssignedProcessFromWorkstation(authKey);
+            Assertions.assertThat(process).isNotNull();
+            body = process.deepCopy();
+            body.put("status", "finished");
+            response = postFinished(authKey, body);
+        }
+        CommonApiSteps.setResponse(response);
+        rememberProcess(parseDataNode(response));
+    }
+
+    private Response postFinished(String authKey, JsonNode body) {
+        return given()
             .baseUri(baseUri != null ? baseUri : TestConfig.getBaseUri())
             .header("X-AuthKey", authKey)
             .contentType("application/json")
             .body(toJson(body))
         .when()
             .post("/process/status/finished/");
-        CommonApiSteps.setResponse(response);
-        rememberProcess(parseDataNode(response));
     }
 
     @Then("the response should contain process information")
@@ -2020,44 +2300,34 @@ public class ZmsApiSteps {
     }
 
     private JsonNode fetchFreeProcesses(int scopeId, JsonNode request, String authKey) {
+        JsonNode freeList = fetchFreeProcessesAllowEmpty(scopeId, request, authKey);
+        Assertions.assertThat(freeList)
+            .as("POST /process/status/free/ for scope %d on %s", scopeId, BerlinTime.today())
+            .isNotNull()
+            .isNotEmpty();
+        return freeList;
+    }
+
+    private JsonNode fetchFreeProcessesAllowEmpty(int scopeId, JsonNode request, String authKey) {
         LocalDate today = BerlinTime.today();
-        ObjectNode calendar = MAPPER.createObjectNode();
-        ObjectNode firstDay = MAPPER.createObjectNode();
-        firstDay.put("year", today.getYear());
-        firstDay.put("month", today.getMonthValue());
-        firstDay.put("day", today.getDayOfMonth());
-        calendar.set("firstDay", firstDay);
-        calendar.set("lastDay", firstDay.deepCopy());
-
-        ArrayNode scopes = MAPPER.createArrayNode();
-        ObjectNode scope = MAPPER.createObjectNode();
-        scope.put("id", scopeId);
-        scopes.add(scope);
-        calendar.set("scopes", scopes);
-
-        ArrayNode requests = MAPPER.createArrayNode();
-        requests.add(request.deepCopy());
-        calendar.set("requests", requests);
-
         Response freeResponse = given()
             .baseUri(baseUri != null ? baseUri : TestConfig.getBaseUri())
             .header("X-AuthKey", authKey)
             .contentType("application/json")
             .queryParam("slotType", "intern")
             .queryParam("slotsRequired", 0)
-            .body(toJson(calendar))
+            .body(toJson(freeProcessCalendar(scopeId, request, today)))
         .when()
             .post("/process/status/free/");
-
-        JsonNode freeList = parseDataArray(freeResponse);
-        Assertions.assertThat(freeList)
-            .as("POST /process/status/free/ for scope %d on %s", scopeId, today)
-            .isNotNull()
-            .isNotEmpty();
-        return freeList;
+        return parseDataArray(freeResponse);
     }
 
     private JsonNode fetchFreeProcessesLookingAhead(int scopeId, JsonNode request, String authKey) {
+        return fetchFreeProcessesLookingAhead(scopeId, request, authKey, Instant.now().getEpochSecond());
+    }
+
+    private JsonNode fetchFreeProcessesLookingAhead(
+            int scopeId, JsonNode request, String authKey, long earliestEpoch) {
         LocalDate start = BerlinTime.today();
         JsonNode lastEmpty = null;
         for (int offset = 0; offset < 8; offset++) {
@@ -2073,9 +2343,21 @@ public class ZmsApiSteps {
                 .post("/process/status/free/");
             JsonNode freeList = parseDataArray(freeResponse);
             if (freeList != null && !freeList.isEmpty()) {
+                long dayStart = day.atStartOfDay(java.time.ZoneId.of("Europe/Berlin")).toEpochSecond();
+                long dayEnd = dayStart + 86_400L;
+                long from = offset == 0 ? Math.max(earliestEpoch, dayStart) : dayStart;
+                if (slotsBetween(freeList, from, dayEnd).isEmpty()) {
+                    ScenarioLogManager.getLogger().info(
+                            "Intern free list for {} on scope {} has no slot at/after epoch {}; skipping",
+                            day,
+                            scopeId,
+                            from);
+                    lastEmpty = freeList;
+                    continue;
+                }
                 if (offset > 0) {
                     ScenarioLogManager.getLogger().info(
-                        "No intern slot left on {}; using {}", start, day);
+                        "No eligible intern slot left on {}; using {}", start, day);
                 }
                 return freeList;
             }
@@ -2129,6 +2411,10 @@ public class ZmsApiSteps {
     private void rememberProcess(JsonNode process) {
         if (process != null && !process.isMissingNode() && !process.isNull()) {
             lastProcess = process;
+            int processId = process.path("id").asInt();
+            if (processId > 0) {
+                TestDataHelper.setTestData("zmsapi_last_process_id", Integer.toString(processId));
+            }
         }
     }
 

@@ -1,7 +1,7 @@
 #language: en
 Feature: When nobody is waiting in the queue, the clerk gets a notice on calling the next customer.
 
-	@web @zmsadmin @citizen-call @clerk @ZMS-2850 @ZMS-1566 @executeLocally
+	@web @zmsadmin @citizen-call @clerk @ZMS-2850 @ZMSALT-2850 @ZMS-1566 @ZMSALT-1566 @executeLocally
 	Scenario: [AUT] Call notice when 0 customers are waiting
 		When I open the administration website.
 		And I click the button "Anmelden" in the administration.
