@@ -16,6 +16,9 @@ export class ServiceImpl implements Service {
 
   subServices?: SubService[];
 
+  /** Click order for reserve payload; display list stays stable (ZMSKVR-1088). */
+  subServiceSelectionOrder?: string[];
+
   count?: number;
 
   parentId: string | number | null;

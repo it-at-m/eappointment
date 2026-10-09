@@ -868,15 +868,20 @@ const setServices = () => {
       );
     }
 
-    if (selectedService.value.subServices) {
-      selectedService.value.subServices.forEach((subservice) => {
-        if (subservice.count > 0) {
-          selectedServiceMap.value.set(
-            subservice.id.toString(),
-            subservice.count
-          );
-        }
-      });
+    const subs = selectedService.value.subServices ?? [];
+    const order = selectedService.value.subServiceSelectionOrder ?? [];
+    const added = new Set<string>();
+    for (const id of order) {
+      const sub = subs.find((s) => String(s.id) === String(id));
+      if (sub && sub.count > 0) {
+        selectedServiceMap.value.set(String(sub.id), sub.count);
+        added.add(String(sub.id));
+      }
+    }
+    for (const sub of subs) {
+      if (sub.count > 0 && !added.has(String(sub.id))) {
+        selectedServiceMap.value.set(String(sub.id), sub.count);
+      }
     }
     increaseCurrentView();
   }
