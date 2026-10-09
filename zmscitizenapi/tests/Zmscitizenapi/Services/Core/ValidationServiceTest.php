@@ -580,46 +580,46 @@ class ValidationServiceTest extends TestCase
 
     public function testValidateAppointmentConfirm(): void
     {
-        $preconfirmed = new ThinnedProcess(processId: 1, authKey: 'fb43', familyName: 'Doe', email: 'doe@example.com', status: 'preconfirmed');
+        $preconfirmed = new ThinnedProcess(processId: 1, authKey: 'fb43', familyName: 'Doe', email: 'doe@example.com', status: 'preconfirmed', slotCount: 1);
         $this->assertEmpty(ValidationService::validateAppointmentConfirm($preconfirmed, null)['errors']);
 
-        $reservedLoggedIn = new ThinnedProcess(processId: 1, authKey: 'fb43', familyName: 'Doe', email: 'doe@example.com', status: 'reserved');
+        $reservedLoggedIn = new ThinnedProcess(processId: 1, authKey: 'fb43', familyName: 'Doe', email: 'doe@example.com', status: 'reserved', slotCount: 1);
         $this->assertEmpty(ValidationService::validateAppointmentConfirm($reservedLoggedIn, 'ext-1')['errors']);
 
-        $reservedGuest = new ThinnedProcess(processId: 1, authKey: 'fb43', familyName: 'Doe', email: 'doe@example.com', status: 'reserved');
+        $reservedGuest = new ThinnedProcess(processId: 1, authKey: 'fb43', familyName: 'Doe', email: 'doe@example.com', status: 'reserved', slotCount: 1);
         $this->assertContains(
             ErrorMessages::get('processNotPreconfirmedAnymore'),
             ValidationService::validateAppointmentConfirm($reservedGuest, null)['errors']
         );
 
-        $confirmedSource = new ThinnedProcess(processId: 2, authKey: 'abcd', familyName: 'Doe', email: 'doe@example.com', status: 'confirmed');
+        $confirmedSource = new ThinnedProcess(processId: 2, authKey: 'abcd', familyName: 'Doe', email: 'doe@example.com', status: 'confirmed', slotCount: 1);
         $this->assertEmpty(ValidationService::validateAppointmentConfirm($reservedGuest, null, $confirmedSource)['errors']);
 
-        $sameProcessSource = new ThinnedProcess(processId: 1, authKey: 'abcd', familyName: 'Doe', email: 'doe@example.com', status: 'confirmed');
+        $sameProcessSource = new ThinnedProcess(processId: 1, authKey: 'abcd', familyName: 'Doe', email: 'doe@example.com', status: 'confirmed', slotCount: 1);
         $this->assertContains(
             ErrorMessages::get('processNotPreconfirmedAnymore'),
             ValidationService::validateAppointmentConfirm($reservedGuest, null, $sameProcessSource)['errors']
         );
 
-        $unconfirmedSource = new ThinnedProcess(processId: 2, authKey: 'abcd', familyName: 'Doe', email: 'doe@example.com', status: 'reserved');
+        $unconfirmedSource = new ThinnedProcess(processId: 2, authKey: 'abcd', familyName: 'Doe', email: 'doe@example.com', status: 'reserved', slotCount: 1);
         $this->assertContains(
             ErrorMessages::get('processNotPreconfirmedAnymore'),
             ValidationService::validateAppointmentConfirm($reservedGuest, null, $unconfirmedSource)['errors']
         );
 
-        $placeholderSource = new ThinnedProcess(processId: 2, authKey: 'abcd', familyName: 'Doe', email: \App::getPlaceholderEmail(), status: 'confirmed');
+        $placeholderSource = new ThinnedProcess(processId: 2, authKey: 'abcd', familyName: 'Doe', email: \App::getPlaceholderEmail(), status: 'confirmed', slotCount: 1);
         $this->assertContains(
             ErrorMessages::get('processNotPreconfirmedAnymore'),
             ValidationService::validateAppointmentConfirm($reservedGuest, null, $placeholderSource)['errors']
         );
 
-        $changedEmailSource = new ThinnedProcess(processId: 2, authKey: 'abcd', familyName: 'Doe', email: 'other@example.com', status: 'confirmed');
+        $changedEmailSource = new ThinnedProcess(processId: 2, authKey: 'abcd', familyName: 'Doe', email: 'other@example.com', status: 'confirmed', slotCount: 1);
         $this->assertContains(
             ErrorMessages::get('processNotPreconfirmedAnymore'),
             ValidationService::validateAppointmentConfirm($reservedGuest, null, $changedEmailSource)['errors']
         );
 
-        $placeholder = new ThinnedProcess(processId: 1, authKey: 'fb43', familyName: 'Doe', email: \App::getPlaceholderEmail(), status: 'preconfirmed');
+        $placeholder = new ThinnedProcess(processId: 1, authKey: 'fb43', familyName: 'Doe', email: \App::getPlaceholderEmail(), status: 'preconfirmed', slotCount: 1);
         $this->assertContains(
             ErrorMessages::get('placeholderEmailNotAllowed'),
             ValidationService::validateAppointmentConfirm($placeholder, null)['errors']
@@ -628,17 +628,17 @@ class ValidationServiceTest extends TestCase
 
     public function testValidateAppointmentReservedStatusAndPreconfirm(): void
     {
-        $reserved = new ThinnedProcess(processId: 1, authKey: 'fb43', familyName: 'Doe', email: 'doe@example.com', status: 'reserved');
+        $reserved = new ThinnedProcess(processId: 1, authKey: 'fb43', familyName: 'Doe', email: 'doe@example.com', status: 'reserved', slotCount: 1);
         $this->assertEmpty(ValidationService::validateAppointmentReservedStatus($reserved)['errors']);
         $this->assertEmpty(ValidationService::validateAppointmentPreconfirm($reserved)['errors']);
 
-        $confirmed = new ThinnedProcess(processId: 1, authKey: 'fb43', familyName: 'Doe', email: 'doe@example.com', status: 'confirmed');
+        $confirmed = new ThinnedProcess(processId: 1, authKey: 'fb43', familyName: 'Doe', email: 'doe@example.com', status: 'confirmed', slotCount: 1);
         $this->assertContains(
             ErrorMessages::get('processNotReservedAnymore'),
             ValidationService::validateAppointmentReservedStatus($confirmed)['errors']
         );
 
-        $placeholder = new ThinnedProcess(processId: 1, authKey: 'fb43', familyName: 'Doe', email: \App::getPlaceholderEmail(), status: 'reserved');
+        $placeholder = new ThinnedProcess(processId: 1, authKey: 'fb43', familyName: 'Doe', email: \App::getPlaceholderEmail(), status: 'reserved', slotCount: 1);
         $this->assertContains(
             ErrorMessages::get('placeholderEmailNotAllowed'),
             ValidationService::validateAppointmentPreconfirm($placeholder)['errors']
