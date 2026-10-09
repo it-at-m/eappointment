@@ -12,7 +12,8 @@ Feature: A second clerk cannot take a process that was already called
 
 	@web @zmsadmin @citizen-call @clerk @ZMSKVR-1138 @ZMSKVR-1341 @executeLocally
 	Scenario: Without cluster after precall another clerk takes the process
-		# Precall does not assign; API can still call, then Ja maps ProcessAlreadyCalled → has_called_process.
+		# Precall does not assign; API can still call. Confirming Ja must not take the customer
+		# (has_called_process, ProcessNotCallable, or panel cleared after failed call redirect).
 		Given the ZMS API is available
 		And I am logged in to the ZMS API as "agent_queue"
 		When I update the workstation with scope 121 and counter "14" with the X-AuthKey
@@ -34,7 +35,7 @@ Feature: A second clerk cannot take a process that was already called
 		When clerk "first" calls the last process with allowClusterWideCall false
 		Then the response status code should be 200
 		When I click the button "Ja, Kunden jetzt aufrufen" in the administration.
-		Then the error that a process is already called appears.
+		Then the precall confirm does not take the customer already held by another clerk.
 		When I set the assigned process status to processing with the X-AuthKey
 		Then the response status code should be 200
 		When I finish the assigned process with the X-AuthKey
@@ -44,11 +45,11 @@ Feature: A second clerk cannot take a process that was already called
 	@web @zmsadmin @citizen-call @clerk @ZMSKVR-1138 @ZMSKVR-1341 @executeLocally
 	Scenario: Without cluster after UI call on Terminkunde the API clerk gets ProcessAlreadyCalled
 		# Scope 136 has appointment capacity; 121 Team-1 Serviceschalter often has none overnight.
+		# Remember API clerk after booking so the Terminkunde step does not invalidate the X-AuthKey.
 		Given the ZMS API is available
 		And I am logged in to the ZMS API as "agent_queue"
 		When I update the workstation with scope 136 and counter "14" with the X-AuthKey
 		Then the response status code should be 200
-		And I remember the current ZMS API login as clerk "second"
 		When I open the administration website.
 		Then I should be on the administration start page.
 		When I click the button "Anmelden" in the administration.
@@ -59,6 +60,10 @@ Feature: A second clerk cannot take a process that was already called
 		When the customers already waiting are finished as no-shows.
 		When for scope 136 and service "Führungszeugnis" an appointment customer "Muster Zmskvr1341t" is created at the next minute.
 		Then the response status code should be 200
+		Given I am logged in to the ZMS API as another "agent_queue"
+		When I update the workstation with scope 136 and counter "15" with the X-AuthKey
+		Then the response status code should be 200
+		And I remember the current ZMS API login as clerk "second"
 		Then the customer "Muster Zmskvr1341t" should appear in the waiting list.
 		When the clerk calls the customer "Muster Zmskvr1341t" from the waiting list.
 		Then the waiting customer is called.

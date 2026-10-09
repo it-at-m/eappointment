@@ -120,6 +120,37 @@ public class ProcessingStationSection extends CounterProcessingStationPage {
         )));
     }
 
+    /**
+     * After another clerk already called the process, confirming precall must not assign it here.
+     * Admin may show has_called_process, ProcessNotCallable, or clear the panel after a failed call redirect.
+     */
+    public void assertPrecallConfirmDidNotTakeCustomer() {
+        ScenarioLogManager.getLogger().info(
+                "Checking that precall confirm did not take a customer already held elsewhere...");
+        By alreadyCalled = By.xpath(
+                "//section[contains(@class,'message--error')]//*[contains(text(),"
+                        + "'Bitte schließen Sie den aktuellen Vorgang zuerst ab.')]");
+        By notCallable = By.xpath(
+                "//*[contains(@class,'exceptionData-headline') and contains(.,"
+                        + "'Termin kann nicht aufgerufen oder bearbeitet werden')]");
+        By calledSuccess = By.xpath("//button[contains(@class,'client-called_button-success')]");
+        By precallStill = By.xpath(
+                "//button[text()='Ja, Kunden jetzt aufrufen' and contains(@class, 'client-precall_button-success')]");
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        wait.withMessage(
+                "Expected has_called_process, ProcessNotCallable, or no successful called view after precall confirm!");
+        wait.until(driver -> {
+            boolean lost = !driver.findElements(alreadyCalled).isEmpty()
+                    || !driver.findElements(notCallable).isEmpty()
+                    || (driver.findElements(calledSuccess).isEmpty()
+                            && driver.findElements(precallStill).isEmpty());
+            return lost;
+        });
+        Assert.assertTrue(
+                DRIVER.findElements(calledSuccess).isEmpty(),
+                "UI must not show 'Ja, Kunde erschienen' after losing the precall race.");
+    }
+
     public void callCustomerWithSpecificNote(String note) {
         ScenarioLogManager.getLogger().info("Trying to call customer with note \"" + note + "\"...");
         final String CUSTOMER_NR_USING_NOTE_XPATH = "//tr[td[contains(., '" + note + "')]]/td[@class='callnextclient']/a";

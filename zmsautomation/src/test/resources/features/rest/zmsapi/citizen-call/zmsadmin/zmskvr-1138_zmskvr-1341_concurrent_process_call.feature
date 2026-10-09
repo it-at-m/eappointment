@@ -74,13 +74,14 @@ Feature: ZMS API: only one clerk can take a process when two call it at once
 
   Scenario: Without cluster two clerks call the same appointment customer concurrently
     # Scope 136 (Pasing) has appointment slots; Team-1 Serviceschalter 121 is walk-in oriented.
+    # Book while clerk A keeps the workstation session (no fresh login mid-scenario).
     Given I am logged in to the ZMS API as "agent_queue"
     When I update the workstation with scope 136 and counter "4" with the X-AuthKey
     Then the response status code should be 200
+    And I remember the current ZMS API login as clerk "A"
     When for scope 136 and service "Führungszeugnis" an appointment customer "Muster Zmskvr1341t" is created at the next minute.
     Then the response status code should be 200
     And the process status should be "confirmed"
-    And I remember the current ZMS API login as clerk "A"
     Given I am logged in to the ZMS API as another "agent_queue"
     When I update the workstation with scope 136 and counter "5" with the X-AuthKey
     Then the response status code should be 200
