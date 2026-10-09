@@ -99,6 +99,27 @@ public class ProcessingStationSection extends CounterProcessingStationPage {
                 + "'Ja, Kunde erschienen' became visible after clicking 'Aufruf nächster Kunde'.");
     }
 
+    /**
+     * Precall Kundeninformationen board (only via Aufruf nächster Kunde when the process has Anmerkung).
+     */
+    public void assertPrecallConfirmationVisible() {
+        ScenarioLogManager.getLogger().info("Checking precall Kundeninformationen confirmation...");
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        wait.withMessage("Precall Kundeninformationen heading is not visible!");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(
+                "//section[contains(@class,'client-precall')]//h2[contains(.,'Kundeninformationen')]"
+                        + " | //*[contains(@class,'client-precall')]//*[contains(.,'Kundeninformationen')]"
+        )));
+        wait.withMessage("Precall question 'Möchten Sie den Kunden aufrufen?' is not visible!");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(
+                "//*[contains(.,'Möchten Sie den Kunden aufrufen?')]"
+        )));
+        wait.withMessage("Precall button 'Ja, Kunden jetzt aufrufen' is not visible!");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(
+                "//button[text()='Ja, Kunden jetzt aufrufen' and contains(@class, 'client-precall_button-success')]"
+        )));
+    }
+
     public void callCustomerWithSpecificNote(String note) {
         ScenarioLogManager.getLogger().info("Trying to call customer with note \"" + note + "\"...");
         final String CUSTOMER_NR_USING_NOTE_XPATH = "//tr[td[contains(., '" + note + "')]]/td[@class='callnextclient']/a";
