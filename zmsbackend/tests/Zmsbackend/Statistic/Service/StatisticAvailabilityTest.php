@@ -41,7 +41,7 @@ class StatisticAvailabilityTest extends \BO\Zmsbackend\Tests\Service\Base
     {
         $date = new \DateTimeImmutable('2016-03-01');
 
-        \BO\Zmsbackend\Cli\Db::executeSql(
+        \BO\Zmsbackend\Connection\Select::getWriteConnection()->exec(
             "DELETE FROM wartenrstatistik
             WHERE standortid = 141
             AND datum = '2016-03-01'"
@@ -51,15 +51,9 @@ class StatisticAvailabilityTest extends \BO\Zmsbackend\Tests\Service\Base
 
         $this->assertSame('error', $result['status']);
         $this->assertSame(1, $result['statisticsMissing']);
-
-        $this->assertContains(
-            [
-                'statistic' => 'waitingscope',
-                'scopeId' => '141',
-                'scopeName'=> $result['missing'][0]['scopeName'],
-            ],
-            $result['missing']
-        );
+        $this->assertCount(1, $result['missing']);
+        $this->assertSame('waitingscope', $result['missing'][0]['statistic']);
+        $this->assertSame('141', $result['missing'][0]['scopeId']);
         
     }
 }
