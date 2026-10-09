@@ -23,6 +23,6 @@ This repository is the ZMS / eAppointment monorepo. Human process lives in `docs
 | test | `.agents/modes/test.md` | Sentinel — zmsautomation / behavioral tests |
 | plumber | `.agents/modes/plumber.md` | Plumber — debt after a ticket |
 
-Personal taste stays outside the repo (`~/.config/opencode/AGENTS.md`, Cursor User Rules, `~/.codex/AGENTS.md`). Never auto-load `.agents/museum/`. Model policy: **free only** (see `.agents/README.md`).
+Personal taste: if `.agents/local/rules/` contains `*.md` files, read them after this constitution. They must not contradict shared law. That folder is gitignored (see `.agents/local/README.md`). Optional tool homes: `~/.config/opencode/AGENTS.md`, Cursor User Rules, `~/.codex/AGENTS.md`, `~/.claude/CLAUDE.md`, `~/.gemini/GEMINI.md`. Never auto-load `.agents/museum/`. Model policy: **free only** (see `.agents/README.md`).
 
 Team guide: `.agents/README.md`. Tracking issue: https://github.com/it-at-m/eappointment/issues/3668

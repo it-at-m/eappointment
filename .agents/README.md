@@ -13,6 +13,7 @@ Tracking: [issue #3668](https://github.com/it-at-m/eappointment/issues/3668).
 | [`inbox/ideas/`](inbox/ideas/) | Unticketed ideas — agents may append; humans promote to a ticket, defer, or delete |
 | [`inbox/plumber/`](inbox/plumber/) | Debt / refactor notes — same promotion rules |
 | [`museum/`](museum/) | Examples and dead ideas — **never** auto-loaded |
+| [`local/`](local/) | Personal rules scaffold — contents of `local/rules/` are gitignored; see [`local/README.md`](local/README.md) |
 
 Human depth stays in `docs/en/setup-and-development/`. Do not copy the handbook into always-on agent context.
 
@@ -39,7 +40,7 @@ Assume **free** OpenCode use only: local models (e.g. Ollama) and/or free cloud 
 - One concern per mode file; link to `docs/` for depth.
 - A new shared rule needs a PR, an owner, and a failure mode it prevents.
 - If a rule does not reduce review cost, safety incidents, or wrong-branch mistakes — delete it.
-- Personal rules stay off-repo and must not contradict the constitution.
+- Personal rules stay in `.agents/local/rules/` (gitignored) or tool home dirs, and must not contradict the constitution.
 
 ## Harness adapters
 
