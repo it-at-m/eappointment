@@ -68,7 +68,7 @@ class AppointmentReserveService
             return $errors;
         }
 
-        $limitErrors = AppointmentProcessLimitsValidationService::validateAppointmentLimitsForReserve(
+        $limitErrors = AppointmentProcessLimitsValidationService::validateReserveLimits(
             $selectedProcess,
             $clientData->serviceIds,
             $clientData->serviceCounts,
