@@ -33,17 +33,27 @@ class StatisticAvailability extends \BO\Zmsbackend\Base
     }
     private function checkStatistic(string $statistic, DateTimeImmutable $date, array &$result): void
     {
-        if ($statistic !== 'waitingscope') {
+
+
+        $exchange = match ($statistic) {
+            'waitingscope' => new \BO\Zmsbackend\Exchange\Service\ExchangeWaitingscope(),
+            'clientscope' => new \BO\Zmsbackend\Exchange\Service\ExchangeClientscope(),
+            default => null,
+        };
+
+        if ($exchange === null) {
             return;
         }
-
-        $exchange = new \BO\Zmsbackend\Exchange\Service\ExchangeWaitingscope();
         $subjectList = $exchange->readSubjectList();
 
         foreach ($subjectList->data as $subject) {
             $scopeId = (string) ($subject[0] ?? '');
 
             if ($scopeId === '') {
+                continue;
+            }
+
+            if (!$this->isDateWithinSubjectPeriod($subject, $date)) {
                 continue;
             }
 
@@ -67,5 +77,20 @@ class StatisticAvailability extends \BO\Zmsbackend\Base
             'scopeId' => $scopeId,
             'scopeName' => $scopeName
         ];
+    }
+
+    private function isDateWithinSubjectPeriod(array $subject, DateTimeImmutable $date): bool
+    {
+        $periodStart = $subject[1] ?? null;
+        $periodEnd = $subject[2] ?? null;
+
+        if (!$periodStart || !$periodEnd) {
+            return true;
+        }
+
+        $start = new DateTimeImmutable((string) $periodStart);
+        $end = new DateTimeImmutable((string) $periodEnd);
+
+        return $date >= $start && $date <= $end;
     }
 }

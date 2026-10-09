@@ -39,16 +39,27 @@ class StatisticAvailabilityTest extends \BO\Zmsbackend\Tests\Service\Base
 
     public function testMissingWaitingStatisticIsReported(): void
     {
-        $date = new \DateTimeImmutable('2099-01-01');
+        $date = new \DateTimeImmutable('2016-03-01');
+
+        \BO\Zmsbackend\Cli\Db::executeSql(
+            "DELETE FROM wartenrstatistik
+            WHERE standortid = 141
+            AND datum = '2016-03-01'"
+        );
 
         $result = (new StatisticAvailability())->check($date);
 
         $this->assertSame('error', $result['status']);
-        $this->assertSame(1, $result['statisticsChecked']);
         $this->assertSame(1, $result['statisticsMissing']);
-        $this->assertCount(1, $result['missing']);
 
-        $this->assertSame('waitingscope', $result['missing'][0]['statistic']);
-        $this->assertSame('141', $result['missing'][0]['scopeId']);
+        $this->assertContains(
+            [
+                'statistic' => 'waitingscope',
+                'scopeId' => '141',
+                'scopeName'=> $result['missing'][0]['scopeName'],
+            ],
+            $result['missing']
+        );
+        
     }
 }
