@@ -466,39 +466,46 @@ public final class ServiceFinderStep {
 
     /**
      * After reload / tab+enter, Choices often needs more than one click before the dropdown
-     * shows real service names (open:true with an empty list is still a miss).
+     * shows real service names (open:true with an empty list is still a miss). Return the
+     * successful read from the wait — a second read can see a closed list a tick later.
      */
     public JsonNode waitUntilServiceListOpen() {
         final long[] lastOpenAttemptMs = {0L};
         final int[] attempt = {0};
-        new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(Math.max(defaultWaitSeconds, 20)))
-                .until(
-                        d -> {
-                            JsonNode state = serviceSearch("read", "");
-                            if (state.path("open").asBoolean() && state.path("names").size() > 0) {
-                                return true;
-                            }
-                            long now = System.currentTimeMillis();
-                            if (now - lastOpenAttemptMs[0] < 700L) {
-                                return false;
-                            }
-                            lastOpenAttemptMs[0] = now;
-                            attempt[0]++;
-                            // Half-open or stale dropdown: close, then open with a fuller click sequence.
-                            if (state.path("open").asBoolean() || attempt[0] % 3 == 0) {
-                                serviceSearch("close", "");
-                                CitizenViewWaits.sleepQuiet(100L);
-                            }
-                            serviceSearch("click", "");
-                            CitizenViewWaits.sleepQuiet(150L);
-                            state = serviceSearch("read", "");
-                            return state.path("open").asBoolean() && state.path("names").size() > 0;
-                        });
-        JsonNode state = serviceSearch("read", "");
+        JsonNode opened =
+                new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(Math.max(defaultWaitSeconds, 30)))
+                        .until(
+                                d -> {
+                                    JsonNode state = serviceSearch("read", "");
+                                    if (serviceListShowsNames(state)) {
+                                        return state;
+                                    }
+                                    long now = System.currentTimeMillis();
+                                    if (now - lastOpenAttemptMs[0] < 700L) {
+                                        return null;
+                                    }
+                                    lastOpenAttemptMs[0] = now;
+                                    attempt[0]++;
+                                    // Half-open or stale dropdown: close, then open with a fuller click sequence.
+                                    if (state.path("open").asBoolean() || attempt[0] % 3 == 0) {
+                                        serviceSearch("close", "");
+                                        CitizenViewWaits.sleepQuiet(100L);
+                                    }
+                                    serviceSearch("click", "");
+                                    CitizenViewWaits.sleepQuiet(200L);
+                                    state = serviceSearch("read", "");
+                                    return serviceListShowsNames(state) ? state : null;
+                                });
         Assert.assertTrue(
-                state.path("open").asBoolean() && state.path("names").size() > 0,
-                "The service list did not open: " + state);
-        return state;
+                serviceListShowsNames(opened),
+                "The service list did not open: " + opened);
+        return opened;
+    }
+
+    private static boolean serviceListShowsNames(JsonNode state) {
+        return state != null
+                && state.path("open").asBoolean()
+                && state.path("names").size() > 0;
     }
 
     public JsonNode serviceSearch(String mode, String text) {
