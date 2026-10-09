@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-10-09T16:03:19.302Z",
+  "publishedAt": "2026-10-09T16:18:53.474Z",
   "branches": [
     {
       "name": "next",
@@ -40,8 +40,8 @@
     {
       "name": "bugfix-zmskvr-1620-rebooking-update-source-scope",
       "slug": "bugfix-zmskvr-1620-rebooking-update-source-scope",
-      "runId": "37954763954",
-      "runStartedAt": "2026-10-09T15:50:55Z"
+      "runId": "37956815109",
+      "runStartedAt": "2026-10-09T16:07:34Z"
     },
     {
       "name": "bugfix-zmskvr-167-ticketprinter-missing-scope-ids",
