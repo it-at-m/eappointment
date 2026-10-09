@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-10-09T14:25:51.647Z",
+  "publishedAt": "2026-10-09T15:14:24.214Z",
   "branches": [
     {
       "name": "next",
@@ -36,6 +36,12 @@
       "slug": "bugfix-zmskvr-1620-internal-service-visibility",
       "runId": "37779858391",
       "runStartedAt": "2026-10-08T12:51:11Z"
+    },
+    {
+      "name": "bugfix-zmskvr-1620-rebooking-update-source-scope",
+      "slug": "bugfix-zmskvr-1620-rebooking-update-source-scope",
+      "runId": "37947079625",
+      "runStartedAt": "2026-10-09T15:02:58Z"
     },
     {
       "name": "bugfix-zmskvr-167-ticketprinter-missing-scope-ids",
