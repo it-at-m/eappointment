@@ -54,13 +54,10 @@ class AppointmentProcessLimitsValidationService
     ): array {
         $appointment = $process->getFirstAppointment();
         $slotCount = $appointment ? (int) $appointment->getSlotCount() : null;
-        $slotsPerAppointment = null;
-        if (
-            isset($process->scope)
-            && is_object($process->scope)
-            && method_exists($process->scope, 'getSlotsPerAppointment')
-        ) {
-            $slotsPerAppointment = $process->scope->getSlotsPerAppointment();
+        $slotsPerAppointment = self::readSlotsPerAppointmentFromProcess($process);
+        // Free-process payloads often omit client.slotsPerAppointment; fall back to the office scope.
+        if (($slotsPerAppointment === null || $slotsPerAppointment === '') && $officeId > 0) {
+            $slotsPerAppointment = self::readSlotsPerAppointmentByOffice($officeId);
         }
 
         return self::validateProcessLimits(
@@ -69,6 +66,50 @@ class AppointmentProcessLimitsValidationService
             self::buildServiceCountMap($serviceIds, $serviceCounts),
             $officeId
         );
+    }
+
+    private static function readSlotsPerAppointmentFromProcess(Process $process): mixed
+    {
+        if (
+            !isset($process->scope)
+            || !is_object($process->scope)
+            || !method_exists($process->scope, 'getSlotsPerAppointment')
+        ) {
+            return null;
+        }
+
+        return $process->scope->getSlotsPerAppointment();
+    }
+
+    private static function readSlotsPerAppointmentByOffice(int $officeId): mixed
+    {
+        $scopeList = ZmsApiClientService::getScopes();
+        if (!$scopeList) {
+            return null;
+        }
+
+        $minSlots = null;
+        foreach ($scopeList as $scope) {
+            try {
+                $provider = $scope->getProvider();
+            } catch (\Throwable) {
+                continue;
+            }
+            if (!$provider || (int) $provider->id !== $officeId) {
+                continue;
+            }
+            $slotsPerAppointment = $scope->getSlotsPerAppointment();
+            if ($slotsPerAppointment === null || $slotsPerAppointment === '') {
+                continue;
+            }
+            $parsed = (int) $slotsPerAppointment;
+            if ($parsed < 1) {
+                continue;
+            }
+            $minSlots = $minSlots === null ? $parsed : min($minSlots, $parsed);
+        }
+
+        return $minSlots;
     }
 
     public static function buildServiceCountMap(array $serviceIds, array $serviceCounts): array
