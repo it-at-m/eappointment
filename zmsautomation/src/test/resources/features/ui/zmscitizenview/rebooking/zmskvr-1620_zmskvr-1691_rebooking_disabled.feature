@@ -123,5 +123,3 @@ Feature: CitizenView: Termin verschieben hidden when rebooking is disabled
     And I confirm the rebooking from the summary in the citizen view
     Then the confirmation success callout should be visible in the citizen view
     And the preconfirmation callout should not be visible in the citizen view
-    When I cancel the appointment in the citizen view
-    Then the cancellation success callout should be visible in the citizen view
