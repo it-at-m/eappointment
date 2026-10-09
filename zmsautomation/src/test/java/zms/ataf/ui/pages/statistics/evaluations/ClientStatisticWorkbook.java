@@ -70,7 +70,13 @@ final class ClientStatisticWorkbook {
     private static String cellText(Element cell, String[] shared) throws IOException {
         String type = cell.getAttribute("t");
         if ("s".equals(type)) {
-            int sharedIndex = Integer.parseInt(directValue(cell));
+            String index = directValue(cell);
+            int sharedIndex;
+            try {
+                sharedIndex = Integer.parseInt(index);
+            } catch (NumberFormatException exception) {
+                throw new IOException("Workbook shared string index is not a number: " + index, exception);
+            }
             return sharedIndex >= 0 && sharedIndex < shared.length ? shared[sharedIndex] : "";
         }
         if ("inlineStr".equals(type)) {
