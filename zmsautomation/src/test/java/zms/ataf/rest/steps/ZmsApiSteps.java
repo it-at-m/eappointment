@@ -19,6 +19,10 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 import org.assertj.core.api.Assertions;
@@ -57,6 +61,9 @@ public class ZmsApiSteps {
     private JsonNode lastProcess;
     private final List<Integer> scenarioProcessIds = new ArrayList<>();
     private final Map<Integer, Integer> processScopeById = new HashMap<>();
+    private final Map<String, String> clerkAuthKeys = new HashMap<>();
+    private Response firstClerkCallResponse;
+    private Response secondClerkCallResponse;
     private int workstationScopeId;
     private JsonNode departmentServices;
     private String ticketprinterHash;
@@ -70,6 +77,9 @@ public class ZmsApiSteps {
         lastProcess = null;
         scenarioProcessIds.clear();
         processScopeById.clear();
+        clerkAuthKeys.clear();
+        firstClerkCallResponse = null;
+        secondClerkCallResponse = null;
         workstationScopeId = 0;
         departmentServices = null;
         cachedXAuthKey = null;
@@ -1061,23 +1071,153 @@ public class ZmsApiSteps {
 
     @When("I call the last process at the workstation with the X-AuthKey")
     public void iCallTheLastProcessAtTheWorkstationWithTheXAuthKey() {
+        iCallTheLastProcessAtTheWorkstationWithAllowClusterWideCall(true);
+    }
+
+    @When("I call the last process at the workstation with allowClusterWideCall {word}")
+    public void iCallTheLastProcessAtTheWorkstationWithAllowClusterWideCall(String allowClusterWideCall) {
+        iCallTheLastProcessAtTheWorkstationWithAllowClusterWideCall(Boolean.parseBoolean(allowClusterWideCall));
+    }
+
+    @When("I remember the current ZMS API login as clerk {string}")
+    public void iRememberTheCurrentZmsApiLoginAsClerk(String clerk) {
+        String authKey = getOrLoginXAuthKey();
+        Assertions.assertThat(authKey)
+            .as("Login before remembering clerk %s", clerk)
+            .isNotBlank();
+        clerkAuthKeys.put(clerk, authKey);
+        ScenarioLogManager.getLogger().info("Remembered ZMS API clerk {} auth key", clerk);
+    }
+
+    @When("clerk {string} calls the last process with allowClusterWideCall {word}")
+    public void clerkCallsTheLastProcessWithAllowClusterWideCall(String clerk, String allowClusterWideCall) {
+        Assertions.assertThat(lastProcess)
+            .as("Queue or reserve a process before calling it")
+            .isNotNull();
+        String authKey = clerkAuthKeys.get(clerk);
+        Assertions.assertThat(authKey)
+            .as("Remember clerk %s before calling", clerk)
+            .isNotBlank();
+        response = postProcessCalled(authKey, Boolean.parseBoolean(allowClusterWideCall), lastProcess);
+        CommonApiSteps.setResponse(response);
+        if (response.getStatusCode() == 200) {
+            JsonNode workstation = parseDataNode(response);
+            rememberProcess(workstation != null ? workstation.path("process") : null);
+            cachedXAuthKey = authKey;
+        }
+    }
+
+    @When("both clerks {string} and {string} call the last process concurrently with allowClusterWideCall {word}")
+    public void bothClerksCallTheLastProcessConcurrently(
+            String firstClerk, String secondClerk, String allowClusterWideCall) throws Exception {
+        Assertions.assertThat(lastProcess)
+            .as("Queue or reserve a process before calling it")
+            .isNotNull();
+        String firstKey = clerkAuthKeys.get(firstClerk);
+        String secondKey = clerkAuthKeys.get(secondClerk);
+        Assertions.assertThat(firstKey).as("Remember clerk %s", firstClerk).isNotBlank();
+        Assertions.assertThat(secondKey).as("Remember clerk %s", secondClerk).isNotBlank();
+        boolean allow = Boolean.parseBoolean(allowClusterWideCall);
+        JsonNode processBody = lastProcess.deepCopy();
+
+        CountDownLatch ready = new CountDownLatch(2);
+        CountDownLatch go = new CountDownLatch(1);
+        ExecutorService pool = Executors.newFixedThreadPool(2);
+        try {
+            Future<Response> firstFuture = pool.submit(() -> {
+                ready.countDown();
+                if (!go.await(30, TimeUnit.SECONDS)) {
+                    throw new IllegalStateException("Timed out waiting to start concurrent call");
+                }
+                return postProcessCalled(firstKey, allow, processBody);
+            });
+            Future<Response> secondFuture = pool.submit(() -> {
+                ready.countDown();
+                if (!go.await(30, TimeUnit.SECONDS)) {
+                    throw new IllegalStateException("Timed out waiting to start concurrent call");
+                }
+                return postProcessCalled(secondKey, allow, processBody);
+            });
+            Assertions.assertThat(ready.await(30, TimeUnit.SECONDS))
+                .as("Both clerk call threads should be ready")
+                .isTrue();
+            go.countDown();
+            firstClerkCallResponse = firstFuture.get(60, TimeUnit.SECONDS);
+            secondClerkCallResponse = secondFuture.get(60, TimeUnit.SECONDS);
+        } finally {
+            pool.shutdownNow();
+        }
+
+        ScenarioLogManager.getLogger().info(
+            "Concurrent call clerk {} status={} clerk {} status={}",
+            firstClerk,
+            firstClerkCallResponse.getStatusCode(),
+            secondClerk,
+            secondClerkCallResponse.getStatusCode());
+        response = firstClerkCallResponse.getStatusCode() == 200
+            ? firstClerkCallResponse
+            : secondClerkCallResponse;
+        CommonApiSteps.setResponse(response);
+        if (response != null && response.getStatusCode() == 200) {
+            JsonNode workstation = parseDataNode(response);
+            rememberProcess(workstation != null ? workstation.path("process") : null);
+            cachedXAuthKey = firstClerkCallResponse.getStatusCode() == 200 ? firstKey : secondKey;
+        }
+    }
+
+    @Then("exactly one clerk call succeeded and the other failed with ProcessAlreadyCalled")
+    public void exactlyOneClerkCallSucceededAndTheOtherFailedWithProcessAlreadyCalled() {
+        Assertions.assertThat(firstClerkCallResponse)
+            .as("Run a concurrent two-clerk call first")
+            .isNotNull();
+        Assertions.assertThat(secondClerkCallResponse)
+            .as("Run a concurrent two-clerk call first")
+            .isNotNull();
+
+        int firstStatus = firstClerkCallResponse.getStatusCode();
+        int secondStatus = secondClerkCallResponse.getStatusCode();
+        Assertions.assertThat(List.of(firstStatus, secondStatus))
+            .as("one call must be 200 and the other 404; got %d and %d (%s / %s)",
+                firstStatus,
+                secondStatus,
+                truncate(firstClerkCallResponse.asString(), 300),
+                truncate(secondClerkCallResponse.asString(), 300))
+            .containsExactlyInAnyOrder(200, 404);
+
+        Response failed = firstStatus == 404 ? firstClerkCallResponse : secondClerkCallResponse;
+        response = failed;
+        CommonApiSteps.setResponse(failed);
+        theResponseMetaShouldContainException("ProcessAlreadyCalled");
+
+        Response succeeded = firstStatus == 200 ? firstClerkCallResponse : secondClerkCallResponse;
+        response = succeeded;
+        CommonApiSteps.setResponse(succeeded);
+        JsonNode workstation = parseDataNode(succeeded);
+        rememberProcess(workstation != null ? workstation.path("process") : null);
+    }
+
+    private void iCallTheLastProcessAtTheWorkstationWithAllowClusterWideCall(boolean allowClusterWideCall) {
         Assertions.assertThat(lastProcess)
             .as("Reserve an appointment before calling it")
             .isNotNull();
 
         replaceFutureAppointmentWithWalkIn();
         String authKey = getOrLoginXAuthKey();
-        response = given()
-            .baseUri(baseUri != null ? baseUri : TestConfig.getBaseUri())
-            .header("X-AuthKey", authKey)
-            .contentType("application/json")
-            .queryParam("allowClusterWideCall", true)
-            .body(toJson(lastProcess))
-        .when()
-            .post("/workstation/process/called/");
+        response = postProcessCalled(authKey, allowClusterWideCall, lastProcess);
         CommonApiSteps.setResponse(response);
         JsonNode workstation = parseDataNode(response);
         rememberProcess(workstation != null ? workstation.path("process") : null);
+    }
+
+    private Response postProcessCalled(String authKey, boolean allowClusterWideCall, JsonNode process) {
+        return given()
+            .baseUri(baseUri != null ? baseUri : TestConfig.getBaseUri())
+            .header("X-AuthKey", authKey)
+            .contentType("application/json")
+            .queryParam("allowClusterWideCall", allowClusterWideCall)
+            .body(toJson(process))
+        .when()
+            .post("/workstation/process/called/");
     }
 
     /**
