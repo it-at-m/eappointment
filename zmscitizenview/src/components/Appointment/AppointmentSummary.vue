@@ -303,7 +303,7 @@
     <muc-button
       :disabled="loadingStates.isCancelingAppointment.value"
       :icon="'close'"
-      variant="secondary"
+      :variant="rebookingDisabled ? 'primary' : 'secondary'"
       @click="cancelAppointment"
     >
       <template #default>

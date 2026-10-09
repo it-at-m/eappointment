@@ -68,7 +68,8 @@ describe("AppointmentDetailHeader", () => {
             props: ["tagline", "title"],
           },
           'muc-button': {
-            template: "<div data-test='muc-button'></div>",
+            template:
+              "<div data-test='muc-button' :data-variant='variant' :data-icon='icon'></div>",
             props: ["icon", "variant"],
           },
           "muc-link": {
@@ -194,7 +195,20 @@ describe("AppointmentDetailHeader", () => {
     });
     await nextTick();
 
-    expect(wrapper.findAll('[data-test="muc-button"]')).toHaveLength(1);
+    const buttons = wrapper.findAll('[data-test="muc-button"]');
+    expect(buttons).toHaveLength(1);
+    expect(buttons[0].attributes("data-icon")).toBe("trash");
+    expect(buttons[0].attributes("data-variant")).toBe("primary");
+  });
+
+  it("keeps cancel secondary when reschedule is shown", async () => {
+    const wrapper = createWrapper();
+    await nextTick();
+
+    const buttons = wrapper.findAll('[data-test="muc-button"]');
+    expect(buttons).toHaveLength(2);
+    expect(buttons[1].attributes("data-icon")).toBe("trash");
+    expect(buttons[1].attributes("data-variant")).toBe("secondary");
   });
 
   it("renders header without appointment", async () => {
