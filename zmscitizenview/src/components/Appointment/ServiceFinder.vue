@@ -579,17 +579,16 @@ const changeAppointmentCountOfSubservice = (id: string, count: number) => {
       minSlotsPerAppointment.value
     );
 
-    // ZMSKVR-1088: first selection appends to the end so setServices / reserve keep
-    // click order (not combinable-list / A–Z order) in BuergeranliegenID sequence.
+    // ZMSKVR-1088: keep list order; record click order for reserve only.
     const wasUnselected = (subservice.count || 0) <= 0;
     subservice.count = adjustedCount;
-    if (wasUnselected && adjustedCount > 0 && service.value?.subServices) {
-      const list = service.value.subServices;
-      const index = list.indexOf(subservice);
-      if (index >= 0 && index !== list.length - 1) {
-        list.splice(index, 1);
-        list.push(subservice);
-      }
+    const order = (service.value!.subServiceSelectionOrder ??= []);
+    if (wasUnselected && adjustedCount > 0 && !order.includes(String(id))) {
+      order.push(String(id));
+    } else if (adjustedCount <= 0) {
+      service.value!.subServiceSelectionOrder = order.filter(
+        (selectedId) => selectedId !== String(id)
+      );
     }
     currentSlots.value = totalSlots;
   }

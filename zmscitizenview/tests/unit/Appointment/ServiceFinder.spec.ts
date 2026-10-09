@@ -1240,4 +1240,20 @@ describe("ServiceFinder", () => {
       });
     });
   });
+
+  describe("ZMSKVR-1088 subservice selection order", () => {
+    it("keeps list order and records click order separately", async () => {
+      const service = makeService(6);
+      const wrapper = createWrapper(service);
+      await nextTick();
+
+      const idsBefore = service.subServices!.map((s: any) => s.id);
+      wrapper.vm.changeAppointmentCountOfSubservice("sub-5", 1);
+      wrapper.vm.changeAppointmentCountOfSubservice("sub-1", 1);
+      await nextTick();
+
+      expect(service.subServices!.map((s: any) => s.id)).toEqual(idsBefore);
+      expect(service.subServiceSelectionOrder).toEqual(["sub-5", "sub-1"]);
+    });
+  });
 });
