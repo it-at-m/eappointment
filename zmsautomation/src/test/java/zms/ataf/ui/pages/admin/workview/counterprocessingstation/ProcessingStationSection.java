@@ -122,7 +122,8 @@ public class ProcessingStationSection extends CounterProcessingStationPage {
 
     /**
      * After another clerk already called the process, confirming precall must not assign it here.
-     * Admin may show has_called_process, ProcessNotCallable, or clear the panel after a failed call redirect.
+     * Wait for a settled failure signal (has_called_process, ProcessNotCallable, or client-next
+     * after cancel fallback). Do not treat a blank mid-load panel as success.
      */
     public void assertPrecallConfirmDidNotTakeCustomer() {
         ScenarioLogManager.getLogger().info(
@@ -133,19 +134,15 @@ public class ProcessingStationSection extends CounterProcessingStationPage {
         By notCallable = By.xpath(
                 "//*[contains(@class,'exceptionData-headline') and contains(.,"
                         + "'Termin kann nicht aufgerufen oder bearbeitet werden')]");
+        // client-next replaces client-precall after cancel fallback; not the queue-table call button.
+        By settledClientNext = By.cssSelector("section.client-next, section.board.client-next");
         By calledSuccess = By.xpath("//button[contains(@class,'client-called_button-success')]");
-        By precallStill = By.xpath(
-                "//button[text()='Ja, Kunden jetzt aufrufen' and contains(@class, 'client-precall_button-success')]");
         WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
         wait.withMessage(
-                "Expected has_called_process, ProcessNotCallable, or no successful called view after precall confirm!");
-        wait.until(driver -> {
-            boolean lost = !driver.findElements(alreadyCalled).isEmpty()
-                    || !driver.findElements(notCallable).isEmpty()
-                    || (driver.findElements(calledSuccess).isEmpty()
-                            && driver.findElements(precallStill).isEmpty());
-            return lost;
-        });
+                "Expected has_called_process, ProcessNotCallable, or settled client-next after precall confirm!");
+        wait.until(driver -> !driver.findElements(alreadyCalled).isEmpty()
+                || !driver.findElements(notCallable).isEmpty()
+                || !driver.findElements(settledClientNext).isEmpty());
         Assert.assertTrue(
                 DRIVER.findElements(calledSuccess).isEmpty(),
                 "UI must not show 'Ja, Kunde erschienen' after losing the precall race.");
