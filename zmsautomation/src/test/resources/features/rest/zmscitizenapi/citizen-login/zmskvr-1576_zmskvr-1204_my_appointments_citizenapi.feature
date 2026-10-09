@@ -10,7 +10,8 @@ Feature: Logged-in my appointments still lists every booked appointment
   #   service 2 / office 2 — Auskunft zur Rente Telefon
   #   service 1 / office 1 — Auskunft zur Rente Video
   # GET /my-appointments/ is the list Meine Termine reads.
-  # Moving the phone appointment confirms a new process and cancels the old one.
+  # Moving the phone appointment confirms a new process; the client cancels the
+  # source afterwards (same as zmscitizenview after confirm-with-source).
   # Both appointments are cancelled at the end.
 
   Background:
@@ -45,8 +46,8 @@ Feature: Logged-in my appointments still lists every booked appointment
     And I update the appointment with contact details and telephone "+491234567890" as the logged-in citizen
     And I confirm the reserved appointment using the rebooking source
     Then the appointment status should be "confirmed"
-    # Confirm with source already cancels the old phone process (406 if cancelled again).
-    When I remember the current appointment as "phone"
+    When I cancel the rebooking source appointment
+    And I remember the current appointment as "phone"
     And I request my appointments as the logged-in citizen
     Then my appointments include the remembered "phone" appointment for service 2
     And the remembered "phone" appointment was replaced
