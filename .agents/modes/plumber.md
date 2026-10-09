@@ -13,9 +13,5 @@ Use for debt cleanup after a ticket. Announce: `mode: plumber`.
 ## Do not
 
 - Mix plumber cleanup into a Builder feature/bugfix PR.
-- Open scheduled or autonomous refactor PRs without triage.
+- Open scheduled or autonomous refactor PRs without a ticket.
 - Expand scope mid-flight; park extras back in the plumber inbox.
-
-## Weekly scan (manual)
-
-Once per week, one person (or a free local OpenCode session) scans one hotspot and appends at most a few inbox notes. Triage promotes at most **one** plumber ticket per week for the team until review load is stable.

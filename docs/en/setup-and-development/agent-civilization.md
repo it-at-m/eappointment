@@ -30,6 +30,4 @@ When everyone on a small team uses agents, coding volume rises faster than revie
 
 Branching, commits, and stack order remain in the existing handbook pages under [Setup and development](/setup-and-development/getting-started/getting-started-with-docs).
 
-## Rituals and metrics
-
-See [`.agents/README.md`](https://github.com/it-at-m/eappointment/blob/next/.agents/README.md) for triage cadence, the rotating agent mayor, and the monthly retro metrics (PRs opened vs merged, review wait, split/refactor send-backs, inbox promotion, PII near-misses).
+Team process details (meetings, ownership rotation, metrics) stay outside this handbook for now. See [`.agents/README.md`](https://github.com/it-at-m/eappointment/blob/next/.agents/README.md) for roles, modes, and the free-only model policy.

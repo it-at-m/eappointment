@@ -1,6 +1,6 @@
 # Plumber inbox
 
-Debt and refactor candidates. Agents and humans may append. **Humans** promote at most a small number of tickets (start with one plumber ticket per week for the team) so review is not flooded. Do not land cleanup inside an unrelated product PR.
+Debt and refactor candidates. Agents and humans may append. **Humans** promote notes to tickets when review capacity allows. Do not land cleanup inside an unrelated product PR.
 
 ## File name
 
