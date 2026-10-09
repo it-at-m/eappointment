@@ -1,0 +1,10 @@
+---
+description: eAppointment agent constitution — always apply shared AGENTS.md borders
+alwaysApply: true
+---
+
+# Constitution
+
+Follow the repository root `AGENTS.md` and the team guide `.agents/README.md`.
+
+Announce one mode per session and open the matching file under `.agents/modes/` when it exists. Personal taste stays in Cursor User Rules, not here.
