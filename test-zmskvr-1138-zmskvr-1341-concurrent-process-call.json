@@ -1,60 +1,60 @@
 {
   "branch": "test-zmskvr-1138-zmskvr-1341-concurrent-process-call",
   "branchSlug": "test-zmskvr-1138-zmskvr-1341-concurrent-process-call",
-  "runId": "37875701718",
-  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37875701718",
-  "runStartedAt": "2026-10-09T02:40:41Z",
-  "publishedAt": "2026-10-09T02:55:33.671Z",
+  "runId": "37880892301",
+  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37880892301",
+  "runStartedAt": "2026-10-09T03:47:37Z",
+  "publishedAt": "2026-10-09T04:01:40.765Z",
   "features": {
     "feature-rest-zmsapi-citizen-call-zmsadmin-zmskvr-1138-zmskvr-1341-concurrent-process-call": {
-      "status": "failed",
+      "status": "passed",
       "shard": "custom",
       "browser": "chrome",
       "browsers": {
         "chrome": {
-          "status": "failed",
+          "status": "passed",
           "shard": "custom",
-          "runId": "37875701718",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37875701718",
-          "runStartedAt": "2026-10-09T02:40:41Z"
+          "runId": "37880892301",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37880892301",
+          "runStartedAt": "2026-10-09T03:47:37Z"
         },
         "firefox": {
-          "status": "failed",
+          "status": "passed",
           "shard": "custom",
-          "runId": "37875701718",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37875701718",
-          "runStartedAt": "2026-10-09T02:40:41Z"
+          "runId": "37880892301",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37880892301",
+          "runStartedAt": "2026-10-09T03:47:37Z"
         }
       },
       "rel": "rest/zmsapi/citizen-call/zmsadmin/zmskvr-1138_zmskvr-1341_concurrent_process_call.feature",
-      "runId": "37875701718",
-      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37875701718",
-      "runStartedAt": "2026-10-09T02:40:41Z"
+      "runId": "37880892301",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37880892301",
+      "runStartedAt": "2026-10-09T03:47:37Z"
     },
     "feature-ui-zmsadmin-citizen-call-zmskvr-1138-zmskvr-1341-concurrent-process-call": {
-      "status": "failed",
+      "status": "passed",
       "shard": "custom",
       "browser": "chrome",
       "browsers": {
         "chrome": {
-          "status": "failed",
+          "status": "passed",
           "shard": "custom",
-          "runId": "37875701718",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37875701718",
-          "runStartedAt": "2026-10-09T02:40:41Z"
+          "runId": "37880892301",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37880892301",
+          "runStartedAt": "2026-10-09T03:47:37Z"
         },
         "firefox": {
-          "status": "failed",
+          "status": "passed",
           "shard": "custom",
-          "runId": "37875701718",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37875701718",
-          "runStartedAt": "2026-10-09T02:40:41Z"
+          "runId": "37880892301",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37880892301",
+          "runStartedAt": "2026-10-09T03:47:37Z"
         }
       },
       "rel": "ui/zmsadmin/citizen-call/zmskvr-1138_zmskvr-1341_concurrent_process_call.feature",
-      "runId": "37875701718",
-      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37875701718",
-      "runStartedAt": "2026-10-09T02:40:41Z"
+      "runId": "37880892301",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37880892301",
+      "runStartedAt": "2026-10-09T03:47:37Z"
     }
   }
 }
