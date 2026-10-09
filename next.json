@@ -1,10 +1,10 @@
 {
   "branch": "next",
   "branchSlug": "next",
-  "runId": "37930876762",
-  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37930876762",
-  "runStartedAt": "2026-10-09T12:33:59Z",
-  "publishedAt": "2026-10-09T13:02:41.212Z",
+  "runId": "37934823182",
+  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37934823182",
+  "runStartedAt": "2026-10-09T13:09:13Z",
+  "publishedAt": "2026-10-09T13:19:43.868Z",
   "features": {
     "feature-rest-zmsapi-zmskvr-1328": {
       "status": "passed",
@@ -3551,36 +3551,29 @@
       "runStartedAt": "2026-10-08T13:20:16Z"
     },
     "feature-ui-zmscitizenview-booking-zmskvr-84-zmskvr-305-service-search": {
-      "status": "failed",
-      "shard": "zmscitizenview",
+      "status": "passed",
+      "shard": "custom",
       "browser": "chrome",
       "browsers": {
         "chrome": {
-          "status": "failed",
-          "shard": "zmscitizenview",
-          "runId": "37930876762",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37930876762",
-          "runStartedAt": "2026-10-09T12:33:59Z"
-        },
-        "edge": {
           "status": "passed",
-          "shard": "zmscitizenview",
-          "runId": "37930876762",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37930876762",
-          "runStartedAt": "2026-10-09T12:33:59Z"
+          "shard": "custom",
+          "runId": "37934823182",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37934823182",
+          "runStartedAt": "2026-10-09T13:09:13Z"
         },
         "firefox": {
           "status": "passed",
-          "shard": "zmscitizenview",
-          "runId": "37930876762",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37930876762",
-          "runStartedAt": "2026-10-09T12:33:59Z"
+          "shard": "custom",
+          "runId": "37934823182",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37934823182",
+          "runStartedAt": "2026-10-09T13:09:13Z"
         }
       },
       "rel": "ui/zmscitizenview/booking/zmskvr-84_zmskvr-305_service_search.feature",
-      "runId": "37930876762",
-      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37930876762",
-      "runStartedAt": "2026-10-09T12:33:59Z"
+      "runId": "37934823182",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/37934823182",
+      "runStartedAt": "2026-10-09T13:09:13Z"
     },
     "feature-ui-zmscitizenview-calendar-zmskvr-82-zmskvr-391-several-offices": {
       "status": "passed",
