@@ -775,16 +775,19 @@ public class CitizenApiSteps {
         cancelProcessQuietly(first.getProcessId(), first.getAuthKey());
 
         List<Long> timestamps = new ArrayList<>();
-        if (lastAvailableAppointmentsResponse != null) {
-            timestamps.addAll(lastAvailableAppointmentsResponse.futureAppointmentTimestamps());
-        }
         long failedTimestamp = first.getTimestamp();
-        timestamps.removeIf(ts -> ts == null || ts.equals(failedTimestamp));
-        if (timestamps.isEmpty()) {
-            appendFreshTimestamps(timestamps);
-            if (timestamps.isEmpty() && loadNextCalendarDayWithSlots()) {
-                appendFreshTimestamps(timestamps);
+        // Refresh the calendar so we are not walking a stale list from before parallel load.
+        appendFreshTimestamps(timestamps);
+        if (lastAvailableAppointmentsResponse != null) {
+            for (Long ts : lastAvailableAppointmentsResponse.futureAppointmentTimestamps()) {
+                if (ts != null && !timestamps.contains(ts)) {
+                    timestamps.add(ts);
+                }
             }
+        }
+        timestamps.removeIf(ts -> ts == null || ts.equals(failedTimestamp));
+        if (timestamps.isEmpty() && loadNextCalendarDayWithSlots()) {
+            appendFreshTimestamps(timestamps);
             timestamps.removeIf(ts -> ts == null || ts.equals(failedTimestamp));
         }
         int refetches = 0;
@@ -810,14 +813,12 @@ public class CitizenApiSteps {
             if (newFirst == null || newFirst.getProcessId() == null || newFirst.getAuthKey() == null) {
                 continue;
             }
-            replaceRememberedProcess(abandonedFirstId, newFirst);
-            abandonedFirstId = newFirst.getProcessId();
-            lastReserveProcess = newFirst;
-            setLastReserveProcess(newFirst);
-            rememberScopeFamilyFromProcess(newFirst);
-
+            // Reserve the pair back-to-back. A GET in between lets parallel scenarios take the
+            // other Wartebereich/Schalter seat (ZMSKVR-1051 / ZMSKVR-1309 flake).
             Response secondResponse = postReserveForOfficeService(timestamp, officeId, serviceId, serviceCount);
             if (secondResponse.getStatusCode() == 200) {
+                replaceRememberedProcess(abandonedFirstId, newFirst);
+                rememberScopeFamilyFromProcess(newFirst);
                 acceptSecondSameTimestampReserve(newFirst, secondResponse);
                 return;
             }
