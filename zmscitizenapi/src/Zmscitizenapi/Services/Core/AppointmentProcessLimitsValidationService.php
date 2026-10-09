@@ -45,13 +45,15 @@ class AppointmentProcessLimitsValidationService
         return ['errors' => $errors];
     }
 
+    /**
+     * Preconfirm/confirm only re-check spa. Service mix is fixed after reserve, and
+     * maxQuantity needs a source/relation load that those steps otherwise skip.
+     */
     public static function validateAppointmentLimitsForThinnedProcess(ThinnedProcess $process): array
     {
-        return self::validateAppointmentProcessLimits(
+        return self::validateAppointmentSlotLimit(
             $process->slotCount,
-            $process->scope?->getSlotsPerAppointment(),
-            self::serviceCountMapFromThinnedProcess($process),
-            (int) ($process->officeId ?? 0)
+            $process->scope?->getSlotsPerAppointment()
         );
     }
 
