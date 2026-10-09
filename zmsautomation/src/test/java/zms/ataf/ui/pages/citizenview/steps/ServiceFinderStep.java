@@ -456,29 +456,48 @@ public final class ServiceFinderStep {
     /** The search field stays empty until offices-and-services fills its options. */
     public void waitUntilServiceOptionsLoaded() {
         new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(defaultWaitSeconds))
-                .until(d -> serviceSearch("options", "").path("count").asInt() > 1);
-    }
-
-    public JsonNode waitUntilServiceListOpen() {
-        // Edge/Choices can swallow the first click after tab+enter or leave the list closed
-        // between Cucumber steps. Re-click while waiting instead of sitting on a closed list.
-        final long[] lastOpenAttemptMs = {0L};
-        new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(defaultWaitSeconds))
                 .until(
                         d -> {
-                            if (serviceSearch("read", "").path("open").asBoolean()) {
+                            JsonNode options = serviceSearch("options", "");
+                            return options.path("count").asInt() > 1
+                                    && options.path("choicesReady").asBoolean();
+                        });
+    }
+
+    /**
+     * After reload / tab+enter, Choices often needs more than one click before the dropdown
+     * shows real service names (open:true with an empty list is still a miss).
+     */
+    public JsonNode waitUntilServiceListOpen() {
+        final long[] lastOpenAttemptMs = {0L};
+        final int[] attempt = {0};
+        new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(Math.max(defaultWaitSeconds, 20)))
+                .until(
+                        d -> {
+                            JsonNode state = serviceSearch("read", "");
+                            if (state.path("open").asBoolean() && state.path("names").size() > 0) {
                                 return true;
                             }
                             long now = System.currentTimeMillis();
-                            if (now - lastOpenAttemptMs[0] < 1500L) {
+                            if (now - lastOpenAttemptMs[0] < 700L) {
                                 return false;
                             }
                             lastOpenAttemptMs[0] = now;
+                            attempt[0]++;
+                            // Half-open or stale dropdown: close, then open with a fuller click sequence.
+                            if (state.path("open").asBoolean() || attempt[0] % 3 == 0) {
+                                serviceSearch("close", "");
+                                CitizenViewWaits.sleepQuiet(100L);
+                            }
                             serviceSearch("click", "");
-                            return serviceSearch("read", "").path("open").asBoolean();
+                            CitizenViewWaits.sleepQuiet(150L);
+                            state = serviceSearch("read", "");
+                            return state.path("open").asBoolean() && state.path("names").size() > 0;
                         });
         JsonNode state = serviceSearch("read", "");
-        Assert.assertTrue(state.path("open").asBoolean(), "The service list did not open: " + state);
+        Assert.assertTrue(
+                state.path("open").asBoolean() && state.path("names").size() > 0,
+                "The service list did not open: " + state);
         return state;
     }
 
@@ -511,18 +530,32 @@ public final class ServiceFinderStep {
                         + "function deepActive(){var el=document.activeElement,guard=0;"
                         + "while(el&&el.shadowRoot&&el.shadowRoot.activeElement&&guard++<10)el=el.shadowRoot.activeElement;return el;}"
                         + "var select=findSelect();var choices=choicesOf(select);"
+                        + "function pointerClick(el){if(!el)return;"
+                        + "el.scrollIntoView({block:'center'});"
+                        + "var r=el.getBoundingClientRect();var x=r.left+Math.max(r.width,1)/2;var y=r.top+Math.max(r.height,1)/2;"
+                        + "var opts={bubbles:true,cancelable:true,view:window,clientX:x,clientY:y,button:0};"
+                        + "el.dispatchEvent(new MouseEvent('pointerdown',opts));"
+                        + "el.dispatchEvent(new MouseEvent('mousedown',opts));"
+                        + "el.dispatchEvent(new MouseEvent('pointerup',opts));"
+                        + "el.dispatchEvent(new MouseEvent('mouseup',opts));"
+                        + "el.dispatchEvent(new MouseEvent('click',opts));}"
                         + "if(mode==='links'){var links=[];walk(document.body,function(n){"
                         + "if(!n.classList||!n.classList.contains('m-linklist-inline__list'))return;"
                         + "var as=n.querySelectorAll('a');for(var i=0;i<as.length;i++)links.push(norm(as[i].textContent));});"
                         + "return JSON.stringify({hasField:!!select,links:links});}"
-                        + "if(mode==='options')return JSON.stringify({count:optionCount(select)});"
+                        + "if(mode==='options'){var ready=!!(select&&choicesOf(select)"
+                        + "&&choicesOf(select).querySelector('.choices__inner')&&optionCount(select)>1);"
+                        + "return JSON.stringify({count:optionCount(select),choicesReady:ready});}"
                         + "if(!choices)return JSON.stringify({open:false,hasField:false});"
                         + "if(mode==='click'){var inner=choices.querySelector('.choices__inner');"
-                        + "if(inner){inner.scrollIntoView({block:'center'});inner.click();}"
+                        + "var input=choices.querySelector('.choices__input--cloned');"
+                        + "pointerClick(inner);"
+                        + "if(!isOpen(choices)&&input){pointerClick(input);try{input.focus();}catch(e){}}"
+                        + "if(!isOpen(choices)&&inner){try{inner.click();}catch(e2){}}"
                         + "return JSON.stringify({open:isOpen(choices)});}"
-                        + "if(mode==='close'){var input=choices.querySelector('.choices__input--cloned');"
-                        + "if(input){input.focus();"
-                        + "input.dispatchEvent(new KeyboardEvent('keydown',{key:'Escape',code:'Escape',keyCode:27,which:27,bubbles:true,cancelable:true}));}"
+                        + "if(mode==='close'){var inputClose=choices.querySelector('.choices__input--cloned');"
+                        + "if(inputClose){inputClose.focus();"
+                        + "inputClose.dispatchEvent(new KeyboardEvent('keydown',{key:'Escape',code:'Escape',keyCode:27,which:27,bubbles:true,cancelable:true}));}"
                         + "if(isOpen(choices)){document.body.click();}"
                         + "if(isOpen(choices)){var inner2=choices.querySelector('.choices__inner');if(inner2)inner2.click();}"
                         + "return JSON.stringify({open:isOpen(choices)});}"
