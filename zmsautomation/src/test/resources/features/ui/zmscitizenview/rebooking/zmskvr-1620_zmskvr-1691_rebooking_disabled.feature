@@ -106,8 +106,6 @@ Feature: CitizenView: Termin verschieben hidden when rebooking is disabled
     And I confirm the logged-in booking from the summary in the citizen view
     Then the confirmation success callout should be visible in the citizen view
     And the preconfirmation callout should not be visible in the citizen view
-    When I open Meine Termine in the citizen view
-    And I open the Meine Termine teaser for "Reisepass"
     Then the reschedule appointment button should be visible in the citizen view
     When I reschedule the appointment in the citizen view
     Then provider checkbox 10502 should be visible in the citizen view
