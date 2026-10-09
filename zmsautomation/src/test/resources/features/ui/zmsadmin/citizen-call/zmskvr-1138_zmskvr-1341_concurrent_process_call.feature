@@ -43,20 +43,21 @@ Feature: A second clerk cannot take a process that was already called
 
 	@web @zmsadmin @citizen-call @clerk @ZMSKVR-1138 @ZMSKVR-1341 @executeLocally
 	Scenario: Without cluster after UI call on Terminkunde the API clerk gets ProcessAlreadyCalled
+		# Scope 136 has appointment capacity; 121 Team-1 Serviceschalter often has none overnight.
 		Given the ZMS API is available
 		And I am logged in to the ZMS API as "agent_queue"
-		When I update the workstation with scope 121 and counter "14" with the X-AuthKey
+		When I update the workstation with scope 136 and counter "14" with the X-AuthKey
 		Then the response status code should be 200
 		And I remember the current ZMS API login as clerk "second"
 		When I open the administration website.
 		Then I should be on the administration start page.
 		When I click the button "Anmelden" in the administration.
-		And I select for "Standort" the value "Bürgerbüro Pasing (KVR-II/235 Team 1) Serviceschalter".
+		And I select for "Standort" the value "Bürgerbüro Pasing (KVR-II/235)".
 		And I enter in the field "Platz-Nr. oder Tresen" the text "4".
 		And I click the button "Auswahl bestätigen" in the administration.
 		Then the workstation page is displayed.
 		When the customers already waiting are finished as no-shows.
-		When for scope 121 and service "Führungszeugnis" an appointment customer "Muster Zmskvr1341t" is created at the next minute.
+		When for scope 136 and service "Führungszeugnis" an appointment customer "Muster Zmskvr1341t" is created at the next minute.
 		Then the response status code should be 200
 		Then the customer "Muster Zmskvr1341t" should appear in the waiting list.
 		When the clerk calls the customer "Muster Zmskvr1341t" from the waiting list.

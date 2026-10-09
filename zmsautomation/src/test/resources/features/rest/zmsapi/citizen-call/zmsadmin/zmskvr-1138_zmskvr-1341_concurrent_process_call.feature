@@ -73,15 +73,16 @@ Feature: ZMS API: only one clerk can take a process when two call it at once
     And the process status should be "finished"
 
   Scenario: Without cluster two clerks call the same appointment customer concurrently
+    # Scope 136 (Pasing) has appointment slots; Team-1 Serviceschalter 121 is walk-in oriented.
     Given I am logged in to the ZMS API as "agent_queue"
-    When I update the workstation with scope 121 and counter "4" with the X-AuthKey
+    When I update the workstation with scope 136 and counter "4" with the X-AuthKey
     Then the response status code should be 200
-    When for scope 121 and service "Führungszeugnis" an appointment customer "Muster Zmskvr1341t" is created at the next minute.
+    When for scope 136 and service "Führungszeugnis" an appointment customer "Muster Zmskvr1341t" is created at the next minute.
     Then the response status code should be 200
     And the process status should be "confirmed"
     And I remember the current ZMS API login as clerk "A"
     Given I am logged in to the ZMS API as another "agent_queue"
-    When I update the workstation with scope 121 and counter "5" with the X-AuthKey
+    When I update the workstation with scope 136 and counter "5" with the X-AuthKey
     Then the response status code should be 200
     And I remember the current ZMS API login as clerk "B"
     When both clerks "A" and "B" call the last process concurrently with allowClusterWideCall false
