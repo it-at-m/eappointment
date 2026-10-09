@@ -593,7 +593,7 @@ class ValidationService
             return ['errors' => [self::getError('placeholderEmailNotAllowed')]];
         }
 
-        return AppointmentProcessLimitsValidationService::validateAppointmentLimitsForThinnedProcess($process);
+        return AppointmentProcessLimitsValidationService::validateThinnedProcessLimits($process);
     }
 
     public static function validateRebookingAllowed(?ThinnedScope $scope): array
@@ -615,16 +615,16 @@ class ValidationService
         }
 
         if ($process->status === 'preconfirmed') {
-            return AppointmentProcessLimitsValidationService::validateAppointmentLimitsForThinnedProcess($process);
+            return AppointmentProcessLimitsValidationService::validateThinnedProcessLimits($process);
         }
 
         $hasExternalUserId = is_string($externalUserId) && trim($externalUserId) !== '';
         if ($process->status === 'reserved' && $hasExternalUserId) {
-            return AppointmentProcessLimitsValidationService::validateAppointmentLimitsForThinnedProcess($process);
+            return AppointmentProcessLimitsValidationService::validateThinnedProcessLimits($process);
         }
 
         if ($process->status === 'reserved' && self::isConfirmedRebookingSource($process, $sourceProcess)) {
-            return AppointmentProcessLimitsValidationService::validateAppointmentLimitsForThinnedProcess($process);
+            return AppointmentProcessLimitsValidationService::validateThinnedProcessLimits($process);
         }
 
         return ['errors' => [self::getError('processNotPreconfirmedAnymore')]];
