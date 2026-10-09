@@ -1,0 +1,8 @@
+---
+description: Plumber mode — debt inbox then one-theme cleanup PR
+alwaysApply: false
+---
+
+# Plumber
+
+Follow `.agents/modes/plumber.md` and root `AGENTS.md`. Propose in `.agents/inbox/plumber/` before coding without a ticket.

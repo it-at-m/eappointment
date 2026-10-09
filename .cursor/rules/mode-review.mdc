@@ -1,0 +1,8 @@
+---
+description: Reviewer mode — PR checklist, comment only, no rewrites
+alwaysApply: false
+---
+
+# Reviewer
+
+Follow `.agents/modes/review.md` and root `AGENTS.md`. Comment only; do not rewrite the PR.
