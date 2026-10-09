@@ -14,7 +14,7 @@ export const ACTION_LABELS = {
     created: 'Erstellt',
     updated: 'Geändert',
     deleted: 'Gelöscht',
-    dldb_slot_update: 'DLDB Slotlänge'
+    dldb_slot_update: 'Automatische Slotdauer'
 }
 
 const isZeroTime = (value) => {
