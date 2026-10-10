@@ -875,69 +875,6 @@ class Process extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfaces\R
         return true;
     }
 
-    public function isAppointmentSlotCountAllowed(Entity $entity): bool
-    {
-        if (empty($entity->scope)) {
-            return true;
-        }
-
-        $maxSlotsPerAppointment = $entity->scope->getSlotsPerAppointment();
-
-        if ($maxSlotsPerAppointment === null || $maxSlotsPerAppointment < 1) {
-            $maxSlotsPerAppointment = \BO\Zmsbackend\Slot\Service\Slot::MAX_SLOTS;
-        }
-
-        $appointment = $entity->getAppointments()->getFirst();
-        if (!$appointment) {
-            return true;
-        }
-
-        $slotCount = (int) ($appointment->slotCount ?? 0);
-        if ($slotCount <= 0) {
-            return true;
-        }
-
-        return $slotCount <= (int) $maxSlotsPerAppointment;
-    }
-
-    public function isServiceQuantityAllowed(Entity $entity): bool
-    {
-        if (empty($entity->scope) || empty($entity->requests)) {
-            return true;
-        }
-
-        try {
-            $providerId = $entity->scope->getProviderId();
-        } catch (\Exception $e) {
-            return true;
-        }
-        if (!$providerId) {
-            return true;
-        }
-
-        $requestCounts = [];
-        foreach ($entity->requests as $request) {
-            $requestId = $request->getId();
-            if (!isset($requestCounts[$requestId])) {
-                $requestCounts[$requestId] = 0;
-            }
-            $requestCounts[$requestId]++;
-        }
-
-        $requestRelationDb = new \BO\Zmsbackend\RequestRelation\Service\RequestRelation();
-        foreach ($requestCounts as $requestId => $count) {
-            $requestRelation = $requestRelationDb->readEntity($requestId, $providerId, 0);
-            if ($requestRelation) {
-                $maxQuantity = $requestRelation->getMaxQuantity();
-                if ($maxQuantity !== null && $maxQuantity > 0 && $count > (int) $maxQuantity) {
-                    return false;
-                }
-            }
-        }
-
-        return true;
-    }
-
     protected function isMailWhitelisted(string $email, ScopeEntity $scope): bool
     {
         $emailsWithNoLimit = explode(',', $scope->getWhitelistedMails());

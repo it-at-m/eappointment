@@ -205,6 +205,16 @@ public final class CombinationStep {
                 "Minus for \"" + label + "\" was " + state);
     }
 
+    public void assertPlusButton(String label, boolean disabled) {
+        context.set();
+        JsonNode counter = waitForServiceCounter(label);
+        String state = counter.path("plus").asText();
+        Assert.assertEquals(
+                state,
+                disabled ? "disabled" : "enabled",
+                "Plus for \"" + label + "\" was " + state);
+    }
+
     /** ZMSKVR-106: the service name links to its description on muenchen.de. */
     public void assertServiceDescriptionLink(String label, String serviceId) {
         context.set();

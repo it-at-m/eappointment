@@ -220,7 +220,7 @@
               <h3>{{ t("termsOfUse") }}</h3>
             </div>
             <div class="m-content">
-              <h4 class="smaller-front-size">{{ t("privacyLabel") }}</h4>
+              <h4 class="m-checkbox-group__heading">{{ t("privacyLabel") }}</h4>
             </div>
             <div class="m-content">
               <p
@@ -303,7 +303,7 @@
     <muc-button
       :disabled="loadingStates.isCancelingAppointment.value"
       :icon="'close'"
-      variant="secondary"
+      :variant="rebookingDisabled ? 'primary' : 'secondary'"
       @click="cancelAppointment"
     >
       <template #default>

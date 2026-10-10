@@ -49,13 +49,11 @@ public final class JumpInErrorStep {
 
     public void assertInvalidJumpinLinkCalloutVisible() {
         context.set();
-        int sec = Math.min(25, defaultWaitSeconds);
+        // Offices-and-services can outlast 25s under a full shard before the invalid relation is known.
+        int sec = Math.max(60, defaultWaitSeconds);
         long deadline = System.currentTimeMillis() + sec * 1000L;
         while (System.currentTimeMillis() < deadline) {
-            if (shadow.shadowDomContainsText(CitizenViewPage.DE_INVALID_JUMPIN_HEADER) && shadow.shadowDomContainsText(CitizenViewPage.DE_INVALID_JUMPIN_TEXT)) {
-                return;
-            }
-            if (shadow.shadowDomContainsText(CitizenViewPage.EN_INVALID_JUMPIN_HEADER) && shadow.shadowDomContainsText(CitizenViewPage.EN_INVALID_JUMPIN_TEXT)) {
+            if (invalidJumpinCalloutVisible()) {
                 return;
             }
             try {
@@ -66,9 +64,16 @@ public final class JumpInErrorStep {
             }
         }
         Assert.assertTrue(
-                (shadow.shadowDomContainsText(CitizenViewPage.DE_INVALID_JUMPIN_HEADER) || shadow.shadowDomContainsText(CitizenViewPage.EN_INVALID_JUMPIN_HEADER))
-                        && (shadow.shadowDomContainsText(CitizenViewPage.DE_INVALID_JUMPIN_TEXT) || shadow.shadowDomContainsText(CitizenViewPage.EN_INVALID_JUMPIN_TEXT)),
+                invalidJumpinCalloutVisible(),
                 "Invalid jump-in callout not found (de or en). Expected for invalid service–office pairs only.");
+    }
+
+    private boolean invalidJumpinCalloutVisible() {
+        boolean de = shadow.shadowDomContainsText(CitizenViewPage.DE_INVALID_JUMPIN_HEADER)
+                && shadow.shadowDomContainsText(CitizenViewPage.DE_INVALID_JUMPIN_TEXT);
+        boolean en = shadow.shadowDomContainsText(CitizenViewPage.EN_INVALID_JUMPIN_HEADER)
+                && shadow.shadowDomContainsText(CitizenViewPage.EN_INVALID_JUMPIN_TEXT);
+        return de || en;
     }
 
     public void assertInvalidJumpinRestartButtonVisible() {
