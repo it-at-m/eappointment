@@ -54,12 +54,12 @@ public class CitizenViewPage extends BasePage {
     public static final String DE_INVALID_JUMPIN_HEADER = "Diese Ansicht kann nicht geladen werden.";
 
     public static final String DE_INVALID_JUMPIN_TEXT =
-            "Der Link zu dieser Seite ist leider fehlerhaft. Starten Sie die Terminvereinbarung neu";
+            "Der Link zu dieser Seite ist leider fehlerhaft. Starten Sie die Terminvereinbarung neu, um eine Leistung zu wählen.";
 
 
     public static final String EN_INVALID_JUMPIN_HEADER = "This view cannot be loaded.";
     public static final String EN_INVALID_JUMPIN_TEXT =
-            "The link to this page is unfortunately incorrect";
+            "The link to this page is unfortunately incorrect. Please restart the appointment booking and select a service.";
 
     /** German appointment-not-available callout ({@code de-DE.json} apiErrorAppointmentNotAvailable*). */
     public static final String DE_APPOINTMENT_NOT_AVAILABLE_HEADER =
@@ -109,14 +109,11 @@ public class CitizenViewPage extends BasePage {
         timeSlot = new TimeSlotStep(CONTEXT, shadow, json, providerLocation, slotState, this, DEFAULT_EXPLICIT_WAIT_TIME);
         providerLocation.setSlotWaitBridge(
                 seconds -> {
-                    try {
-                        timeSlot.waitUntilAppointmentSlotsReady(seconds);
-                    } catch (Exception first) {
-                        // Keep-only after an empty Ort can land on a day/hour with no grid yet.
+                    // Keep-only / Ort toggle often lands on an empty day-part; page quietly.
+                    if (!timeSlot.waitUntilAppointmentSlotsReadyQuiet(seconds)) {
                         ScenarioLogManager.getLogger()
-                                .warn(
-                                        "zmscitizenview: first slot wait after Ort toggle failed; page days: {}",
-                                        first.toString());
+                                .info(
+                                        "zmscitizenview: Ort toggle had no timeslot yet; paging calendar days");
                         timeSlot.waitUntilSlotsReadyForBooking();
                     }
                 },
@@ -581,6 +578,10 @@ public class CitizenViewPage extends BasePage {
 
     public void assertMinusButton(String label, boolean disabled) {
         combination.assertMinusButton(label, disabled);
+    }
+
+    public void assertPlusButton(String label, boolean disabled) {
+        combination.assertPlusButton(label, disabled);
     }
 
     /** ZMSKVR-106: the service name links to its description on muenchen.de. */
@@ -1271,6 +1272,16 @@ public class CitizenViewPage extends BasePage {
 
     public void assertAppointmentNoLongerAvailableCalloutVisible() {
         timeSlot.assertAppointmentNoLongerAvailableCalloutVisible();
+    }
+
+    /** Soft probe for the slot-taken Weiter retry (no assert). */
+    public boolean appointmentNotAvailableCalloutLikelyVisible() {
+        return timeSlot.appointmentNotAvailableCalloutLikelyVisible();
+    }
+
+    /** Soft probe: Kontakt step already reached after Weiter. */
+    public boolean contactStepLikelyReached() {
+        return timeSlot.contactStepReached();
     }
 
     public void assertStillOnAppointmentSelectionStep() {

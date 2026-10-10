@@ -41,13 +41,20 @@ public class AvailableAppointmentsResponse {
     }
 
     /**
+     * Minimum lead so confirm/rebook/cancel still see a future appointment under shard load.
+     * A 60s buffer let ZMSKVR-1576 book a near-now slot that was already past when canceling
+     * the rebooking source ({@code appointmentCanNotBeCanceled}).
+     */
+    private static final long MIN_LEAD_SECONDS = 20L * 60L;
+
+    /**
      * Returns the first appointment timestamp that is in the future (avoids "Ihr Termin liegt in der Vergangenheit").
-     * Timestamps are seconds since epoch. Uses a 60s buffer past now.
+     * Timestamps are seconds since epoch. Uses a {@link #MIN_LEAD_SECONDS} buffer past now.
      * Falls back to {@link #getFirstAppointmentTimestamp()} if no future slot is found.
      */
     public Long getFirstFutureAppointmentTimestamp() {
         long nowSeconds = System.currentTimeMillis() / 1000;
-        long minFuture = nowSeconds + 60;
+        long minFuture = nowSeconds + MIN_LEAD_SECONDS;
         if (appointmentTimestamps != null) {
             for (Long ts : appointmentTimestamps) {
                 if (ts != null && ts > minFuture) {
@@ -71,7 +78,7 @@ public class AvailableAppointmentsResponse {
 
     /** Future slots in calendar order, so a taken one can be skipped for the next. */
     public List<Long> futureAppointmentTimestamps() {
-        long minFuture = System.currentTimeMillis() / 1000 + 60;
+        long minFuture = System.currentTimeMillis() / 1000 + MIN_LEAD_SECONDS;
         List<Long> timestamps = new ArrayList<>();
         if (appointmentTimestamps != null) {
             for (Long ts : appointmentTimestamps) {

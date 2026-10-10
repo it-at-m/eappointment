@@ -826,9 +826,25 @@ public final class OverviewStep {
         context.set();
         ScenarioLogManager.getLogger()
                 .info("zmscitizenview: rebooking summary → confirm (Termin verschieben)");
-        shadow.waitForAndClickButtonContaining(RESCHEDULE_APPOINTMENT_BUTTON, defaultWaitSeconds);
-        CitizenViewWaits.waitWithThreeWindows(
-                () -> shadow.shadowDomContainsText(CONFIRMATION_SUCCESS_HEADING), "Rebooking confirmation success");
+        for (int attempt = 1; attempt <= 3; attempt++) {
+            if (shadow.shadowDomContainsText(CONFIRMATION_SUCCESS_HEADING)) {
+                break;
+            }
+            if (shadow.visibleButtonContaining(RESCHEDULE_APPOINTMENT_BUTTON)
+                    || shadow.shadowDomContainsText(RESCHEDULE_APPOINTMENT_BUTTON)) {
+                shadow.waitForAndClickButtonContaining(RESCHEDULE_APPOINTMENT_BUTTON, defaultWaitSeconds);
+            }
+            try {
+                new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(25))
+                        .until(d -> shadow.shadowDomContainsText(CONFIRMATION_SUCCESS_HEADING));
+                break;
+            } catch (TimeoutException e) {
+                ScenarioLogManager.getLogger()
+                        .warn(
+                                "zmscitizenview: rebooking confirmation missing after attempt {}; retrying",
+                                attempt);
+            }
+        }
         Assert.assertTrue(
                 shadow.shadowDomContainsText(CONFIRMATION_SUCCESS_HEADING),
                 "Confirmation success callout (Ihr Termin wurde gebucht.) not visible after guest rebooking.");
@@ -920,30 +936,108 @@ public final class OverviewStep {
     }
     public void clickCancelAppointmentAndConfirm() {
         context.set();
-        ScenarioLogManager.getLogger().info("zmscitizenview: clicking cancel appointment button (Termin absagen)");
-        new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(defaultWaitSeconds))
-                .until(d -> shadow.clickButtonWithExactText("Termin absagen")
-                        || shadow.clickButtonContaining("Termin absagen"));
-        confirmCancelAppointmentDialogIfShown();
         String marker = CANCELLATION_SUCCESS_HEADING;
-        ScenarioLogManager.getLogger()
-                .info("zmscitizenview: waiting in 5s + 10s + 15s windows (30s total) for cancellation success callout");
-        CitizenViewWaits.waitWithThreeWindows(() -> shadow.shadowDomContainsText(marker), "Cancellation success callout");
-        Assert.assertTrue(
-                shadow.shadowDomContainsText(marker),
+        String cancelLabel = "Termin absagen";
+        String rateLimit = "Zu viele Anfragen";
+        for (int attempt = 1; attempt <= 5; attempt++) {
+            ScenarioLogManager.getLogger()
+                    .info("zmscitizenview: Termin absagen attempt {}/5", attempt);
+            if (shadow.shadowDomContainsText(marker)) {
+                return;
+            }
+            if (shadow.shadowDomContainsText(rateLimit)
+                    || shadow.shadowDomContainsText("maximale Anzahl an Anfragen")) {
+                ScenarioLogManager.getLogger()
+                        .warn(
+                                "zmscitizenview: rate limit on cancel (attempt {}); waiting 65s",
+                                attempt);
+                CitizenViewWaits.sleepQuiet(65_000L);
+                continue;
+            }
+            try {
+                new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(20))
+                        .until(
+                                d -> shadow.shadowDomContainsText(marker)
+                                        || shadow.shadowDomContainsText(cancelLabel)
+                                        || shadow.shadowDomContainsText(rateLimit));
+            } catch (TimeoutException e) {
+                ScenarioLogManager.getLogger()
+                        .warn(
+                                "zmscitizenview: Termin absagen not in DOM yet (attempt {}); retrying",
+                                attempt);
+                continue;
+            }
+            if (shadow.shadowDomContainsText(marker)) {
+                return;
+            }
+            if (shadow.shadowDomContainsText(rateLimit)
+                    || shadow.shadowDomContainsText("maximale Anzahl an Anfragen")) {
+                ScenarioLogManager.getLogger()
+                        .warn(
+                                "zmscitizenview: rate limit while waiting for cancel (attempt {}); waiting 65s",
+                                attempt);
+                CitizenViewWaits.sleepQuiet(65_000L);
+                continue;
+            }
+            shadow.scrollTextIntoView(cancelLabel);
+            boolean clicked = false;
+            try {
+                clicked =
+                        Boolean.TRUE.equals(
+                                new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(15))
+                                        .until(
+                                                d -> shadow.clickButtonWithExactText(cancelLabel)
+                                                        || shadow.clickButtonContaining(cancelLabel)));
+            } catch (TimeoutException e) {
+                ScenarioLogManager.getLogger()
+                        .warn(
+                                "zmscitizenview: could not click Termin absagen (attempt {})",
+                                attempt);
+            }
+            if (clicked) {
+                confirmCancelAppointmentDialogIfShown();
+            }
+            try {
+                new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(25))
+                        .until(
+                                d -> shadow.shadowDomContainsText(marker)
+                                        || shadow.shadowDomContainsText(rateLimit));
+                if (shadow.shadowDomContainsText(marker)) {
+                    return;
+                }
+                if (shadow.shadowDomContainsText(rateLimit)
+                        || shadow.shadowDomContainsText("maximale Anzahl an Anfragen")) {
+                    ScenarioLogManager.getLogger()
+                            .warn(
+                                    "zmscitizenview: rate limit after Absagen (attempt {}); waiting 65s",
+                                    attempt);
+                    CitizenViewWaits.sleepQuiet(65_000L);
+                    continue;
+                }
+            } catch (TimeoutException e) {
+                ScenarioLogManager.getLogger()
+                        .warn(
+                                "zmscitizenview: cancellation success callout missing after attempt {}; retrying",
+                                attempt);
+            }
+        }
+        Assert.fail(
                 "Cancellation success callout (Sie haben Ihren Termin erfolgreich abgesagt.) not visible after Termin absagen with retries.");
     }
     private void confirmCancelAppointmentDialogIfShown() {
         String heading = "Absage Ihres Termins";
         try {
-            new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(5))
+            new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(8))
                     .until(d -> shadow.shadowDomContainsText(heading));
         } catch (TimeoutException e) {
             ScenarioLogManager.getLogger().info("zmscitizenview: cancel dialog was not shown");
             return;
         }
         ScenarioLogManager.getLogger().info("zmscitizenview: confirm cancel dialog (Absagen)");
-        shadow.waitForAndClickButtonContaining("Absagen", defaultWaitSeconds);
+        if (!shadow.clickButtonWithExactText("Absagen")
+                && !shadow.clickButtonContaining("Absagen")) {
+            shadow.waitForAndClickButtonContaining("Absagen", defaultWaitSeconds);
+        }
     }
     public void assertCancellationSuccessCalloutVisible() {
         ScenarioLogManager.getLogger().info("zmscitizenview: checking for cancellation success callout (Sie haben Ihren Termin erfolgreich abgesagt.)");

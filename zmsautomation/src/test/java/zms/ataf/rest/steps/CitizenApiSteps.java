@@ -2,6 +2,10 @@ package zms.ataf.rest.steps;
 
 import static io.restassured.RestAssured.given;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
@@ -38,6 +42,7 @@ import zms.ataf.rest.dto.zmscitizenapi.AvailableCalendarResponse;
 import zms.ataf.rest.dto.zmscitizenapi.Office;
 import zms.ataf.rest.dto.zmscitizenapi.OfficeServiceRelation;
 import zms.ataf.rest.dto.zmscitizenapi.ReserveAppointmentRequest;
+import zms.ataf.rest.dto.zmscitizenapi.Service;
 import zms.ataf.rest.dto.zmscitizenapi.ThinnedProcess;
 import zms.ataf.rest.dto.zmscitizenapi.collections.OfficesAndServicesResponse;
 import zms.ataf.ui.pages.citizenview.support.FuehrerscheinstelleScopeHints;
@@ -234,6 +239,134 @@ public class CitizenApiSteps {
         Assertions.assertThat(relation.getSlots())
             .as("service %d slots at office %d", serviceId, officeId)
             .isEqualTo(slots);
+    }
+
+    @Then("office {int} should have slotsPerAppointment {string}")
+    public void officeShouldHaveSlotsPerAppointment(int officeId, String expected) {
+        Assertions.assertThat(lastOfficesAndServicesResponse)
+            .as("Request offices-and-services first")
+            .isNotNull();
+        Office office = findOfficeById(lastOfficesAndServicesResponse, officeId);
+        Assertions.assertThat(office)
+            .as("Expected office %d in offices-and-services", officeId)
+            .isNotNull();
+        Assertions.assertThat(office.getSlotsPerAppointment())
+            .as("office %d slotsPerAppointment", officeId)
+            .isEqualTo(expected);
+    }
+
+    @Then("office {int} and service {int} should take {int} slots")
+    public void officeAndServiceShouldTakeSlots(int officeId, int serviceId, int slots) {
+        OfficeServiceRelation relation = requireRelation(officeId, serviceId);
+        Assertions.assertThat(relation.getSlots())
+            .as("service %d slots at office %d", serviceId, officeId)
+            .isEqualTo(slots);
+    }
+
+    @Then("service {int} should have maxQuantity {int}")
+    public void serviceShouldHaveMaxQuantity(int serviceId, int maxQuantity) {
+        Assertions.assertThat(lastOfficesAndServicesResponse)
+            .as("Request offices-and-services first")
+            .isNotNull();
+        Service service = null;
+        if (lastOfficesAndServicesResponse.getServices() != null) {
+            for (Service candidate : lastOfficesAndServicesResponse.getServices()) {
+                if (candidate != null
+                        && serviceId == (candidate.getId() == null ? -1 : candidate.getId())) {
+                    service = candidate;
+                    break;
+                }
+            }
+        }
+        service = java.util.Objects.requireNonNull(service, "service " + serviceId);
+        Assertions.assertThat(service.getMaxQuantity())
+            .as("service %d maxQuantity", serviceId)
+            .isEqualTo(maxQuantity);
+    }
+
+    @Then("office {int} and service {int} should have relation maxQuantity {int}")
+    public void officeAndServiceShouldHaveRelationMaxQuantity(int officeId, int serviceId, int maxQuantity) {
+        OfficeServiceRelation relation = requireRelation(officeId, serviceId);
+        Assertions.assertThat(relation.getMaxQuantity())
+            .as("relation office %d service %d maxQuantity", officeId, serviceId)
+            .isEqualTo(maxQuantity);
+    }
+
+    private OfficeServiceRelation requireRelation(int officeId, int serviceId) {
+        Assertions.assertThat(lastOfficesAndServicesResponse)
+            .as("Request offices-and-services first")
+            .isNotNull();
+        OfficeServiceRelation relation = null;
+        if (lastOfficesAndServicesResponse.getRelations() != null) {
+            for (OfficeServiceRelation candidate : lastOfficesAndServicesResponse.getRelations()) {
+                if (candidate != null
+                        && officeId == (candidate.getOfficeId() == null ? -1 : candidate.getOfficeId())
+                        && serviceId == (candidate.getServiceId() == null ? -1 : candidate.getServiceId())) {
+                    relation = candidate;
+                    break;
+                }
+            }
+        }
+        return java.util.Objects.requireNonNull(
+                relation, "relation office " + officeId + " service " + serviceId);
+    }
+
+    /**
+     * Raise stored slotCount above scope spa so preconfirm/confirm validation can reject.
+     * {@code hatFolgetermine + 1} is appointments.0.slotCount in the process mapper.
+     */
+    @When("I plant slotCount {int} on the current appointment in the database")
+    public void iPlantSlotCountOnTheCurrentAppointmentInTheDatabase(int slotCount) {
+        if (slotCount < 1) {
+            throw new IllegalArgumentException("slotCount must be >= 1");
+        }
+        ThinnedProcess process = requireCurrentProcess();
+        int processId = process.getProcessId();
+        int hatFolgetermine = slotCount - 1;
+        String sql = "UPDATE buerger SET hatFolgetermine = ? WHERE BuergerID = ?";
+        try (Connection connection = openZmsConnection();
+                PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setInt(1, hatFolgetermine);
+            statement.setInt(2, processId);
+            int updated = statement.executeUpdate();
+            if (updated != 1) {
+                throw new IllegalStateException(
+                        "Process " + processId + " was not updated for planted slotCount (rows=" + updated + ").");
+            }
+        } catch (SQLException e) {
+            throw new IllegalStateException(
+                    "Could not plant slotCount " + slotCount + " on process " + processId + ".", e);
+        }
+        ScenarioLogManager.getLogger().info(
+                "Planted slotCount={} (hatFolgetermine={}) on process {}",
+                slotCount,
+                hatFolgetermine,
+                processId);
+    }
+
+    private static Connection openZmsConnection() throws SQLException {
+        String host = envOrDefault("MYSQL_HOST", "db");
+        String port = mysqlPort(envOrDefault("MYSQL_PORT", "3306"));
+        String database = envOrDefault("MYSQL_DATABASE", "db");
+        String user = envOrDefault("MYSQL_USER", "db");
+        String url = "jdbc:mysql://" + host + ":" + port + "/" + database;
+        return DriverManager.getConnection(url, user, envOrDefault("MYSQL_PASSWORD", "db"));
+    }
+
+    private static String mysqlPort(String raw) {
+        int colon = raw.lastIndexOf(':');
+        if (colon >= 0 && colon < raw.length() - 1) {
+            return raw.substring(colon + 1);
+        }
+        return raw;
+    }
+
+    private static String envOrDefault(String name, String fallback) {
+        String value = System.getenv(name);
+        if (value == null || value.isBlank()) {
+            return fallback;
+        }
+        return value.trim();
     }
 
     @When("I request available days for office {int} and service {int}")
@@ -960,6 +1093,28 @@ public class CitizenApiSteps {
         reserveFirstAvailableSlot(false, false);
     }
 
+    /**
+     * Use timestamps from the last appointments fetch, but send a different serviceCount
+     * (e.g. discover under spa, then attempt over spa for validation).
+     */
+    @When("I attempt to reserve an appointment with the first available slot and service count {int}")
+    public void iAttemptToReserveAnAppointmentWithTheFirstAvailableSlotAndServiceCount(int serviceCount) {
+        int previousCount = lastServiceCount;
+        List<Integer> previousCounts = cachedCalendarServiceCounts;
+        lastServiceCount = serviceCount;
+        if (cachedCalendarServiceIds != null && !cachedCalendarServiceIds.isEmpty()) {
+            cachedCalendarServiceCounts = cachedCalendarServiceIds.stream()
+                    .map(id -> serviceCount)
+                    .collect(Collectors.toList());
+        }
+        try {
+            reserveFirstAvailableSlot(false, false);
+        } finally {
+            lastServiceCount = previousCount;
+            cachedCalendarServiceCounts = previousCounts;
+        }
+    }
+
     @When("I reserve an appointment with the first available slot using the current appointment as source")
     public void iReserveAnAppointmentWithTheFirstAvailableSlotUsingTheCurrentAppointmentAsSource() {
         reserveFirstAvailableSlot(true, true);
@@ -1645,8 +1800,12 @@ public class CitizenApiSteps {
             .as("remember \"%s\" again after moving it", label)
             .isNotNull();
         Assertions.assertThat(remembered.processId).isNotEqualTo(remembered.previousProcessId);
-        Assertions.assertThat(findMyAppointment(remembered.previousProcessId)).isNull();
-        Assertions.assertThat(findMyAppointment(remembered.processId)).isNotNull();
+        Assertions.assertThat(findMyAppointment(remembered.previousProcessId))
+            .as("my appointments should drop previous process %s after the source cancel", remembered.previousProcessId)
+            .isNull();
+        Assertions.assertThat(findMyAppointment(remembered.processId))
+            .as("my appointments should include replacement process %s", remembered.processId)
+            .isNotNull();
     }
 
     @Then("the remembered {string} appointment is unchanged")
@@ -2168,6 +2327,18 @@ public class CitizenApiSteps {
             response.getStatusCode(),
             cancelBody.length() > 1250 ? cancelBody.substring(0, 1250) + "..." : cancelBody
         ));
+        int status = response.getStatusCode();
+        if (status == 200) {
+            return;
+        }
+        // Product refuses cancel once appointmentTime <= App::$now. Under shard load the
+        // source can pass that line between book and cancel; the rebooked process is already
+        // confirmed, so a past-slot 406 is an acceptable cleanup outcome.
+        if (status == 406 && cancelBody.contains("appointmentCanNotBeCanceled")) {
+            ScenarioLogManager.getLogger().info(
+                    "Citizen API rebooking source already not cancelable (appointmentCanNotBeCanceled); continuing");
+            return;
+        }
         response.then().statusCode(200);
     }
 

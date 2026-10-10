@@ -757,7 +757,18 @@ public final class MyAppointmentsStep {
     public void assertMyAppointmentsAppointmentReplaced(String serviceName) {
         context.set();
         String previous = TestDataHelper.getTestData(myAppointmentsNumberKey(serviceName));
-        String current = appointmentNumberOnMyAppointments(serviceName);
+        String current = new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(30))
+                .pollingEvery(Duration.ofMillis(500))
+                .until(d -> {
+                    String number = appointmentNumberOnMyAppointments(serviceName);
+                    if (number == null || number.isBlank()) {
+                        return null;
+                    }
+                    if (previous != null && previous.equals(number)) {
+                        return null;
+                    }
+                    return number;
+                });
         Assert.assertFalse(current.isBlank(), "Meine Termine has no number for \"" + serviceName + "\".");
         Assert.assertNotEquals(
                 current,
