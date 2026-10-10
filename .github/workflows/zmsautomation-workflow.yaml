@@ -2,7 +2,7 @@ name: ⚙️ zmsautomation
 run-name: >-
   ${{
     github.event_name == 'schedule' && 'zmsautomation | ⏰ scheduled | UI × chrome+firefox+edge, API once | next'
-    || (github.event_name == 'workflow_dispatch' && inputs.run_main_next_matrix
+    || (github.event_name == 'workflow_dispatch' && inputs.run_next_matrix
         && format(
              'zmsautomation | ▶️ manual | full shard matrix | UI × chrome+firefox+edge, API once | next{0}{1}',
              inputs.ataf_version != '' && format(' | ATAF {0}', inputs.ataf_version) || '',
@@ -21,7 +21,7 @@ run-name: >-
 on:
   workflow_dispatch:
     inputs:
-      run_main_next_matrix:
+      run_next_matrix:
         description: |
           Run the full scheduled shard matrix: next; UI modules (zmsadmin,
           zmscitizenview, zmsstatistic, zmsticketprinter, zmscalldisplay) on chrome + firefox + edge; API modules (zmsapi,
@@ -177,7 +177,7 @@ jobs:
 
           FULL_MATRIX=false
           MATRIX_BRANCHES='["next"]'
-          if [[ "${{ github.event_name }}" == "schedule" || "${{ inputs.run_main_next_matrix }}" == "true" ]]; then
+          if [[ "${{ github.event_name }}" == "schedule" || "${{ inputs.run_next_matrix }}" == "true" ]]; then
             FULL_MATRIX=true
           fi
 
