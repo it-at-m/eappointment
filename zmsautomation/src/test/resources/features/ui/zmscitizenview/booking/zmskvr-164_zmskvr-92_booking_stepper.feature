@@ -67,7 +67,8 @@ Feature: CitizenView: booking stepper at the top of the page
     And I click the highlighted timeslot in the citizen view
     Then the estimated duration in the booking summary should be 30 minutes in the citizen view
     When I continue after slot selection with Weiter for office 10489 in the citizen view
-    Then the contact form should be visible in the citizen view
+    # Re-reserve can race onto Übersicht when contact is already known; open Kontakt if needed.
+    Then the contact form should be reachable after reserve in the citizen view
     And the entered contact details are still on the contact form in the citizen view
     When I sync the booking process from citizen view localStorage
     Then I cancel the appointment
