@@ -410,11 +410,9 @@ watch(countOfService, (newCountOfService) => {
 });
 
 const setServiceData = (selectedService: ServiceImpl) => {
-  // Jump-in / exclusive office: only that office's slots and slotsPerAppointment.
-  service.value!.providers = getProviders(
-    selectedService.id,
-    props.preselectedOfficeId ? [String(props.preselectedOfficeId)] : null
-  );
+  // Keep every office that offers the service. Jump-in only preselects Ort;
+  // narrowing providers here collapsed shared-booking peers into a single tile.
+  service.value!.providers = getProviders(selectedService.id, null);
   service.value!.count = countOfService.value > 0 ? countOfService.value : 1;
 
   minSlotsPerAppointment.value = getEffectiveMinSlotsPerAppointment(
