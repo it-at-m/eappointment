@@ -1112,6 +1112,26 @@ public class CitizenViewSteps {
         ScenarioLogManager.getLogger()
                 .info("zmscitizenview: one-shot Weiter after slot selection (expect not-available if snatching won)");
         page.clickWeiter();
+        // Slow API snatch (Firefox) can leave the first Weiter with a stale selection and no
+        // callout; one retry after a short settle covers that without advancing to Kontakt.
+        long settleUntil = System.currentTimeMillis() + 8_000L;
+        while (System.currentTimeMillis() < settleUntil) {
+            if (page.appointmentNotAvailableCalloutLikelyVisible()) {
+                return;
+            }
+            if (page.contactStepLikelyReached()) {
+                return;
+            }
+            try {
+                Thread.sleep(400L);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                return;
+            }
+        }
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: no taken-slot callout yet after first Weiter; retrying once");
+        page.clickWeiter();
     }
 
     @Then("the appointment no longer available callout should be visible in the citizen view")
