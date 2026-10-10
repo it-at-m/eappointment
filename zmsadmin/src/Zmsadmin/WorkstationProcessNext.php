@@ -9,28 +9,9 @@ namespace BO\Zmsadmin;
 
 use BO\Slim\Render;
 use BO\Zmsadmin\Helper\ExcludeIds;
-use BO\Zmsentities\Collection\ProcessList;
 
 class WorkstationProcessNext extends BaseController
 {
-    /**
-     * @SuppressWarnings(Param)
-     * @return int|null
-     */
-    public function timeToUnix($timeValue): ?int
-    {
-        if ($timeValue === null) {
-            return null;
-        }
-        $timeString = trim((string) $timeValue);
-        if ($timeString === '') {
-            return null;
-        }
-        $unixTimestamp = strtotime($timeString);
-
-        return $unixTimestamp !== false ? $unixTimestamp : null;
-    }
-
     #[\Override]
     public function readResponse(
         \Psr\Http\Message\RequestInterface $request,
@@ -46,36 +27,9 @@ class WorkstationProcessNext extends BaseController
             $validator->getParameter('exclude')->isString()->getValue()
         );
 
-        $selectedDateTime = \App::$now;
-        $selectedDateTime = ($selectedDateTime < \App::$now) ? \App::$now : $selectedDateTime;
-
-        $workstationRequest = new \BO\Zmsclient\WorkstationRequests(\App::$http, $workstation);
-
-        $processList = $workstationRequest->readProcessListByDate(
-            $selectedDateTime,
-            Helper\GraphDefaults::getProcess()
-        );
-
-        $filteredProcessList = new ProcessList();
-
-        foreach ($processList as $process) {
-            if ($process->status === "queued" || $process->status === "confirmed") {
-                $timeoutTimeUnix = $this->timeToUnix($process->timeoutTime ?? null);
-                $currentTimeUnix = time();
-
-                if (!isset($process->timeoutTime)) {
-                    $filteredProcessList->addEntity(clone $process);
-                } elseif ($timeoutTimeUnix !== null && !($process->queue->callCount > 0 && ($currentTimeUnix - $timeoutTimeUnix) < 300)) {
-                    $filteredProcessList->addEntity(clone $process);
-                } else {
-                    $excludedIds[] = $process->queue->number;
-                }
-            }
-        }
-
         $process = (new Helper\ClusterHelper($workstation))->getNextProcess($excludedIds);
 
-        if (!$process || ! $process->hasId() || $process->getFirstAppointment()->date > \App::$now->getTimestamp()) {
+        if (!$process || ! $process->hasId()) {
             return Render::withHtml(
                 $response,
                 'block/process/next.twig',
