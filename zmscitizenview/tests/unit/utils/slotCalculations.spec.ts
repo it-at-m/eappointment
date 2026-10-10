@@ -238,12 +238,20 @@ describe("slotCalculations", () => {
       expect(result.totalSlots).toBe(9);
     });
 
-    it("ensures minimum count of 1", () => {
+    it("allows count of 0 when even quantity 1 exceeds the slot cap", () => {
       const providers = [{ slots: 5 }] as any[];
       // requested: 3, subSlots: 8, limit: 10
-      // available = 10-8 = 2, max = floor(2/5) = 0, but min is 1
+      // available = 10-8 = 2, max = floor(2/5) = 0
       const result = adjustMainServiceCount(3, providers, 8, 10);
-      expect(result.adjustedCount).toBe(1);
+      expect(result.adjustedCount).toBe(0);
+      expect(result.totalSlots).toBe(8);
+    });
+
+    it("allows count of 0 when service slots alone exceed slotsPerAppointment", () => {
+      const providers = [{ slots: 3 }] as any[];
+      const result = adjustMainServiceCount(1, providers, 0, 1);
+      expect(result.adjustedCount).toBe(0);
+      expect(result.totalSlots).toBe(0);
     });
 
     it("accounts for subservice slots", () => {

@@ -144,7 +144,8 @@ export const adjustMainServiceCount = (
   const maxMainCount = Math.floor(
     (minSlotsPerAppointment - subServiceSlots) / mainServiceSlots
   );
-  const adjustedCount = Math.max(1, Math.min(requestedCount, maxMainCount));
+  // 0 when even quantity 1 exceeds slotsPerAppointment (Weiter must stay disabled).
+  const adjustedCount = Math.max(0, Math.min(requestedCount, maxMainCount));
   const adjustedTotalSlots = mainServiceSlots * adjustedCount + subServiceSlots;
 
   return { adjustedCount, totalSlots: adjustedTotalSlots };
