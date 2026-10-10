@@ -12,6 +12,9 @@ Feature: CitizenView: quantity follows slotsPerAppointment
   # services (Alle Leistungen anzeigen is absent).
   # Office 10308013: spa=2; Wechselkennzeichen 1080502 slots=2, maxQuantity=2
   # → UI max min(2, floor(2/2))=1 (1226 Wechselkennzeichen case).
+  # Feuerwache (V58): Föhring 10577 spa=8, Milbertshofen 10579 spa=2. Führungen
+  # 10389330 is 1 slot with maxQuantity 5. Jump-in Föhring still loads every
+  # Feuerwache for the combination budget, so min spa is 2 → plus stops at 2, not 5.
   # No appointment is booked.
 
   Scenario: Ausfuhr quantity stops at 2 because spa is tighter than maxQuantity
@@ -61,3 +64,10 @@ Feature: CitizenView: quantity follows slotsPerAppointment
     When I raise the service "Wechselkennzeichen" until the plus button is disabled
     Then the service counter for "Wechselkennzeichen" should still be 1
     And the plus button for service "Wechselkennzeichen" is disabled
+
+  Scenario: Führungen quantity stops at 2 because peer spa is tighter than Föhring
+    Given I open zmscitizenview with jump-in service "10389330" and location "10577"
+    Then the service combination step should be visible
+    When I raise the service "Führungen auf den Feuerwachen" until the plus button is disabled
+    Then the service counter for "Führungen auf den Feuerwachen" should still be 2
+    And the plus button for service "Führungen auf den Feuerwachen" is disabled
