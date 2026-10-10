@@ -1,0 +1,190 @@
+{
+  "branch": "bugfix-zmskvr-1440-calendar-slot-limit-perf",
+  "branchSlug": "bugfix-zmskvr-1440-calendar-slot-limit-perf",
+  "runId": "38084336230",
+  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38084336230",
+  "runStartedAt": "2026-10-10T20:35:22Z",
+  "publishedAt": "2026-10-10T20:54:38.157Z",
+  "features": {
+    "feature-ui-zmscitizenview-booking-zmskvr-164-zmskvr-92-booking-stepper": {
+      "status": "passed",
+      "shard": "custom",
+      "browser": "chrome",
+      "rel": "ui/zmscitizenview/booking/zmskvr-164_zmskvr-92_booking_stepper.feature",
+      "runId": "38084336230",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38084336230",
+      "runStartedAt": "2026-10-10T20:35:22Z",
+      "browsers": {
+        "chrome": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "38084336230",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38084336230",
+          "runStartedAt": "2026-10-10T20:35:22Z"
+        }
+      }
+    },
+    "feature-ui-zmscitizenview-calendar-zmskvr-1524-zmskvr-1457-zmskvr-1395-zmskvr-1355-zmskvr-1340-zmskvr-1458-zmskvr-1446-calendar-day-fits-duration": {
+      "status": "passed",
+      "shard": "custom",
+      "browser": "chrome",
+      "rel": "ui/zmscitizenview/calendar/zmskvr-1524_zmskvr-1457_zmskvr-1395_zmskvr-1355_zmskvr-1340_zmskvr-1458_zmskvr-1446_calendar_day_fits_duration.feature",
+      "runId": "38084336230",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38084336230",
+      "runStartedAt": "2026-10-10T20:35:22Z",
+      "browsers": {
+        "chrome": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "38084336230",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38084336230",
+          "runStartedAt": "2026-10-10T20:35:22Z"
+        }
+      }
+    },
+    "feature-ui-zmscitizenview-calendar-zmskvr-236-zmskvr-701-zmskvr-739-zmskvr-110-zmskvr-513-zmskvr-707-zmskvr-1656-zmskvr-1685-calendar-list-view": {
+      "status": "failed",
+      "shard": "custom",
+      "browser": "chrome",
+      "rel": "ui/zmscitizenview/calendar/zmskvr-236_zmskvr-701_zmskvr-739_zmskvr-110_zmskvr-513_zmskvr-707_zmskvr-1656_zmskvr-1685_calendar_list_view.feature",
+      "runId": "38084336230",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38084336230",
+      "runStartedAt": "2026-10-10T20:35:22Z",
+      "browsers": {
+        "chrome": {
+          "status": "failed",
+          "shard": "custom",
+          "runId": "38084336230",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38084336230",
+          "runStartedAt": "2026-10-10T20:35:22Z"
+        }
+      }
+    },
+    "feature-ui-zmscitizenview-calendar-zmskvr-82-zmskvr-391-several-offices": {
+      "status": "failed",
+      "shard": "custom",
+      "browser": "chrome",
+      "rel": "ui/zmscitizenview/calendar/zmskvr-82_zmskvr-391_several_offices.feature",
+      "runId": "38084336230",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38084336230",
+      "runStartedAt": "2026-10-10T20:35:22Z",
+      "browsers": {
+        "chrome": {
+          "status": "failed",
+          "shard": "custom",
+          "runId": "38084336230",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38084336230",
+          "runStartedAt": "2026-10-10T20:35:22Z"
+        }
+      }
+    },
+    "feature-ui-zmscitizenview-callouts-zmskvr-1235-zmskvr-1244-zmskvr-695-zmskvr-653-no-appointment-callout": {
+      "status": "failed",
+      "shard": "custom",
+      "browser": "chrome",
+      "rel": "ui/zmscitizenview/callouts/zmskvr-1235_zmskvr-1244_zmskvr-695_zmskvr-653_no_appointment_callout.feature",
+      "runId": "38084336230",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38084336230",
+      "runStartedAt": "2026-10-10T20:35:22Z",
+      "browsers": {
+        "chrome": {
+          "status": "failed",
+          "shard": "custom",
+          "runId": "38084336230",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38084336230",
+          "runStartedAt": "2026-10-10T20:35:22Z"
+        }
+      }
+    },
+    "feature-ui-zmscitizenview-citizen-login-zmskvr-1576-zmskvr-1204-my-appointments-list": {
+      "status": "passed",
+      "shard": "custom",
+      "browser": "chrome",
+      "rel": "ui/zmscitizenview/citizen-login/zmskvr-1576_zmskvr-1204_my_appointments_list.feature",
+      "runId": "38084336230",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38084336230",
+      "runStartedAt": "2026-10-10T20:35:22Z",
+      "browsers": {
+        "chrome": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "38084336230",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38084336230",
+          "runStartedAt": "2026-10-10T20:35:22Z"
+        }
+      }
+    },
+    "feature-ui-zmscitizenview-dldb-special-cases-zmskvr-1046-booking-ruppertstrasse-shared-booking-ausbildung": {
+      "status": "failed",
+      "shard": "custom",
+      "browser": "chrome",
+      "rel": "ui/zmscitizenview/dldb-special-cases/zmskvr-1046_booking_ruppertstrasse_shared_booking_ausbildung.feature",
+      "runId": "38084336230",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38084336230",
+      "runStartedAt": "2026-10-10T20:35:22Z",
+      "browsers": {
+        "chrome": {
+          "status": "failed",
+          "shard": "custom",
+          "runId": "38084336230",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38084336230",
+          "runStartedAt": "2026-10-10T20:35:22Z"
+        }
+      }
+    },
+    "feature-ui-zmscitizenview-dldb-special-cases-zmskvr-1124-booking-ruppertstrasse-pass-calendar-jumpin-links": {
+      "status": "failed",
+      "shard": "custom",
+      "browser": "chrome",
+      "rel": "ui/zmscitizenview/dldb-special-cases/zmskvr-1124_booking_ruppertstrasse_pass_calendar_jumpin_links.feature",
+      "runId": "38084336230",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38084336230",
+      "runStartedAt": "2026-10-10T20:35:22Z",
+      "browsers": {
+        "chrome": {
+          "status": "failed",
+          "shard": "custom",
+          "runId": "38084336230",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38084336230",
+          "runStartedAt": "2026-10-10T20:35:22Z"
+        }
+      }
+    },
+    "feature-ui-zmscitizenview-dldb-special-cases-zmskvr-1553-zmskvr-1500-already-activated-confirm-banner": {
+      "status": "passed",
+      "shard": "custom",
+      "browser": "chrome",
+      "rel": "ui/zmscitizenview/dldb-special-cases/zmskvr-1553_zmskvr-1500_already_activated_confirm_banner.feature",
+      "runId": "38084336230",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38084336230",
+      "runStartedAt": "2026-10-10T20:35:22Z",
+      "browsers": {
+        "chrome": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "38084336230",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38084336230",
+          "runStartedAt": "2026-10-10T20:35:22Z"
+        }
+      }
+    },
+    "feature-ui-zmscitizenview-dldb-special-cases-zmskvr-1648-zmskvr-1647-zmskvr-1638-zmskvr-1602-zmskvr-833-zmskvr-1025-rebooking-required-fields": {
+      "status": "failed",
+      "shard": "custom",
+      "browser": "chrome",
+      "rel": "ui/zmscitizenview/dldb-special-cases/zmskvr-1648_zmskvr-1647_zmskvr-1638_zmskvr-1602_zmskvr-833_zmskvr-1025_rebooking_required_fields.feature",
+      "runId": "38084336230",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38084336230",
+      "runStartedAt": "2026-10-10T20:35:22Z",
+      "browsers": {
+        "chrome": {
+          "status": "failed",
+          "shard": "custom",
+          "runId": "38084336230",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38084336230",
+          "runStartedAt": "2026-10-10T20:35:22Z"
+        }
+      }
+    }
+  }
+}
