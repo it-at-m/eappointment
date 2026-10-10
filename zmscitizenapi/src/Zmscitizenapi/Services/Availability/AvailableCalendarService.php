@@ -7,6 +7,7 @@ namespace BO\Zmscitizenapi\Services\Availability;
 use BO\Zmscitizenapi\Models\AvailableCalendar;
 use BO\Zmscitizenapi\Services\Captcha\CaptchaRequirementTrait;
 use BO\Zmscitizenapi\Services\Captcha\TokenValidationService;
+use BO\Zmscitizenapi\Services\Core\AppointmentProcessLimitsValidationService;
 use BO\Zmscitizenapi\Services\Core\ValidationService;
 use BO\Zmscitizenapi\Services\Core\ZmsApiFacadeService;
 
@@ -40,8 +41,17 @@ class AvailableCalendarService
             return $errors;
         }
 
-        return ZmsApiFacadeService::getCalendarAvailability(
+        $eligibleOffices = $this->filterOfficesWithinSlotLimits(
             $clientData->officeIds,
+            $clientData->serviceIds,
+            $clientData->serviceCounts
+        );
+        if (!empty($eligibleOffices['errors'])) {
+            return $eligibleOffices;
+        }
+
+        return ZmsApiFacadeService::getCalendarAvailability(
+            $eligibleOffices['officeIds'],
             $clientData->serviceIds,
             $clientData->serviceCounts,
             $clientData->startDate,
@@ -49,6 +59,47 @@ class AvailableCalendarService
             $clientData->slotsStartDate,
             $clientData->slotsEndDate
         );
+    }
+
+    /**
+     * Drop offices where relation slots × counts exceed that office's slotsPerAppointment.
+     * If none remain, return the same tooManySlotsPerAppointment error as reserve.
+     *
+     * @param list<string> $officeIds
+     * @param list<string> $serviceIds
+     * @param list<string> $serviceCounts
+     * @return array{officeIds?: list<string>, errors?: list<array>}
+     */
+    private function filterOfficesWithinSlotLimits(
+        array $officeIds,
+        array $serviceIds,
+        array $serviceCounts
+    ): array {
+        $eligible = [];
+        $lastErrors = ['errors' => []];
+
+        foreach ($officeIds as $officeIdRaw) {
+            $officeId = (int) $officeIdRaw;
+            if ($officeId <= 0) {
+                continue;
+            }
+            $limitErrors = AppointmentProcessLimitsValidationService::validateReserveRequestLimits(
+                $serviceIds,
+                $serviceCounts,
+                $officeId
+            );
+            if (!empty($limitErrors['errors'])) {
+                $lastErrors = $limitErrors;
+                continue;
+            }
+            $eligible[] = (string) $officeIdRaw;
+        }
+
+        if ($eligible === []) {
+            return $lastErrors;
+        }
+
+        return ['officeIds' => $eligible];
     }
 
     private function extractClientData(array $queryParams): object
