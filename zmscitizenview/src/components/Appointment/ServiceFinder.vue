@@ -56,7 +56,7 @@
         :id="`service-${service?.id}`"
         :link="serviceInfoLink"
         :max="maxValueOfService"
-        :min="1"
+        :min="minValueOfService"
       />
       <div
         v-if="variantServices.length > 1"
@@ -410,7 +410,8 @@ watch(countOfService, (newCountOfService) => {
 
 const setServiceData = (selectedService: ServiceImpl) => {
   service.value!.providers = getProviders(selectedService.id, null);
-  service.value!.count = Math.max(1, countOfService.value || 1);
+  // Keep 0 when slotsPerAppointment already blocked quantity 1.
+  service.value!.count = countOfService.value ?? 1;
 
   minSlotsPerAppointment.value = getEffectiveMinSlotsPerAppointment(
     service.value!.providers
@@ -473,19 +474,21 @@ const setServiceData = (selectedService: ServiceImpl) => {
     currentSlots.value > minSlotsPerAppointment.value &&
     minSlotsPerAppointment.value > 0
   ) {
-    // Reduce counts to fit within the limit
     let remainingSlots = minSlotsPerAppointment.value;
-
-    // First, ensure main service has at least 1
     const mainServiceSlots = getMaxSlotOfProvider(service.value!.providers);
-    if (remainingSlots >= mainServiceSlots) {
+
+    if (remainingSlots >= mainServiceSlots && mainServiceSlots > 0) {
       const maxMainCount = Math.floor(remainingSlots / mainServiceSlots);
       service.value!.count = Math.min(service.value!.count || 1, maxMainCount);
       countOfService.value = service.value!.count;
       remainingSlots -= mainServiceSlots * service.value!.count;
+    } else {
+      // Service does not fit even once under this scope's slotsPerAppointment.
+      service.value!.count = 0;
+      countOfService.value = 0;
+      remainingSlots = 0;
     }
 
-    // Then adjust subservices
     if (service.value!.subServices && remainingSlots > 0) {
       service.value!.subServices.forEach((subservice) => {
         const subServiceSlots = getMaxSlotOfProvider(subservice.providers);
@@ -498,13 +501,11 @@ const setServiceData = (selectedService: ServiceImpl) => {
         }
       });
     } else if (service.value!.subServices) {
-      // No remaining slots, set all subservices to 0
       service.value!.subServices.forEach((subservice) => {
         subservice.count = 0;
       });
     }
 
-    // Recalculate currentSlots after adjustments
     currentSlots.value = calculateTotalSlots(
       service.value!.providers,
       service.value!.count || 0,
@@ -611,11 +612,8 @@ const showEstimatedDuration = computed(() => {
 });
 
 /**
- * Calculates the maximum count of the selected service, considering both:
- * - maxQuantity: the service's own limit on how many can be selected
- * - minSlotsPerAppointment: the minimum slot limit across all providers (main + sub)
- *
- * The effective max is the minimum of these two constraints.
+ * Maximum count for the selected service from maxQuantity and slotsPerAppointment.
+ * 0 when the service does not fit even once (counter stays at 0, Weiter disabled).
  */
 const maxValueOfService = computed(() => {
   if (!service.value) return 0;
@@ -623,17 +621,16 @@ const maxValueOfService = computed(() => {
   const mainServiceSlots = getMaxSlotOfProvider(service.value.providers || []);
   const subServiceSlots = calculateSubserviceSlots(service.value.subServices);
 
-  // Main service must have at least 1, so use Math.max(1, ...)
-  return Math.max(
-    1,
-    calculateMaxCountBySlots(
-      mainServiceSlots,
-      service.value.maxQuantity,
-      minSlotsPerAppointment.value,
-      subServiceSlots
-    )
+  return calculateMaxCountBySlots(
+    mainServiceSlots,
+    service.value.maxQuantity,
+    minSlotsPerAppointment.value,
+    subServiceSlots
   );
 });
+
+/** Counter min is 1 when a booking is possible; 0 when slotsPerAppointment blocks qty 1. */
+const minValueOfService = computed(() => (maxValueOfService.value > 0 ? 1 : 0));
 
 const setOftenSearchedService = (serviceId: string) => {
   const foundService = services.value.find(
@@ -915,7 +912,16 @@ const needsVariantSelection = computed(
 );
 const isNextDisabled = computed(() => {
   const captchaBlocks = showCaptcha.value && !isCaptchaValid.value;
-  return captchaBlocks || needsVariantSelection.value;
+  const noBookableQuantity = (countOfService.value ?? 0) < 1;
+  const overSlotCap =
+    minSlotsPerAppointment.value > 0 &&
+    currentSlots.value > minSlotsPerAppointment.value;
+  return (
+    captchaBlocks ||
+    needsVariantSelection.value ||
+    noBookableQuantity ||
+    overSlotCap
+  );
 });
 </script>
 
