@@ -26770,7 +26770,7 @@
             "appointment": {
                 "link": "https://stadt.muenchen.de/en/buergerservice/terminvereinbarung.html/#/services/{serviceId}"
             },
-            "maxQuantity": 1,
+            "maxQuantity": 5,
             "showOnStartPage": true,
             "duration": 90,
             "combinable": [
