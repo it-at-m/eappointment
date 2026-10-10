@@ -112,7 +112,7 @@ on:
           one filter so the job runs Flyway/setup once. Module checkboxes are ignored
           when this field is set. @ignore is excluded automatically.
           Examples: @ZMSKVR-833
-                    @ZMSKVR-1083
+                    @ZMSKVR-1083 or @ZMSKVR-1226
                     @ZMSKVR-1440
         required: false
         default: ""
