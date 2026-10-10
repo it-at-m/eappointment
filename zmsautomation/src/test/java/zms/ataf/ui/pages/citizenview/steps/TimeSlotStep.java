@@ -1342,10 +1342,10 @@ public final class TimeSlotStep {
                                                 || (selectedAppointmentCalloutVisible()
                                                         && shadow.deepElementExists(providerSelector)));
             } catch (TimeoutException e) {
-                if (paintTry == 0
-                        && !contactStepReached()
-                        && !rebookingOverviewReached()
-                        && clickHighlightedTimeslotSelectionOrGiveUp()) {
+                if (stopBecauseContactStepIsVisible(officeId) || stopBecauseRebookingOverview(officeId)) {
+                    return false;
+                }
+                if (paintTry == 0 && clickHighlightedTimeslotSelectionOrGiveUp()) {
                     ScenarioLogManager.getLogger()
                             .warn(
                                     "zmscitizenview: Ausgewählter Termin missing for office {}; re-clicked timeslot",
@@ -1357,9 +1357,13 @@ public final class TimeSlotStep {
             if (stopBecauseContactStepIsVisible(officeId) || stopBecauseRebookingOverview(officeId)) {
                 return false;
             }
-            Assert.assertTrue(
-                    selectedAppointmentCalloutVisible(),
-                    "Selected-appointment callout header missing after slot click");
+            // Callout can vanish between the wait and this check when reserve already opened Kontakt.
+            if (!selectedAppointmentCalloutVisible()) {
+                if (stopBecauseContactStepIsVisible(officeId) || stopBecauseRebookingOverview(officeId)) {
+                    return false;
+                }
+                Assert.fail("Selected-appointment callout header missing after slot click");
+            }
             if (!shadow.deepElementExists(providerSelector)) {
                 if (stopBecauseContactStepIsVisible(officeId) || stopBecauseRebookingOverview(officeId)) {
                     return false;
@@ -1371,6 +1375,9 @@ public final class TimeSlotStep {
                             "zmscitizenview: callout OK — Ausgewählter Termin includes provider {}",
                             officeId);
             return true;
+        }
+        if (stopBecauseContactStepIsVisible(officeId) || stopBecauseRebookingOverview(officeId)) {
+            return false;
         }
         Assert.fail("Selected-appointment callout for office " + officeId + " did not appear");
         return false;
