@@ -384,7 +384,7 @@ public final class ServiceFinderStep {
 
     public JsonNode waitForFilteredServiceNames(String query) {
         String folded = query.toLowerCase(Locale.ROOT);
-        // Edge Choices can lag behind sendKeys; give the filter more than the default wait.
+        // Choices filter (esp. Edge / short queries like "z") can lag under shard load.
         int waitSeconds = Math.max(defaultWaitSeconds, 90);
         return new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(waitSeconds))
                 .until(d -> {
@@ -402,6 +402,8 @@ public final class ServiceFinderStep {
                     }
                     for (JsonNode name : names) {
                         if (!name.asText().toLowerCase(Locale.ROOT).contains(folded)) {
+                            // Stale unfiltered list — retype so Choices reapplies the filter.
+                            typeServiceSearchQuery(query, true);
                             return null;
                         }
                     }
@@ -430,26 +432,38 @@ public final class ServiceFinderStep {
     }
 
     /**
-     * Clear via select-all/delete (Edge ignores JS value='' on Choices), type, then fire input.
+     * Clear Choices search (JS value + native select-all), then type with real key events.
+     * Avoid synthetic keyup after sendKeys — that regressed short queries like {@code z} on Chromium.
      */
     private void typeServiceSearchQuery(String query, boolean forceRetype) {
         WebElement field = serviceSearchInput();
         if (field == null) {
             return;
         }
+        String current = null;
+        try {
+            current = field.getAttribute("value");
+        } catch (Exception ignored) {
+            // stale input; continue with clear + type
+        }
+        if (!forceRetype && query.equals(current)) {
+            return;
+        }
         JavascriptExecutor js = (JavascriptExecutor) DriverUtil.getDriver();
         js.executeScript("arguments[0].focus();", field);
-        field.sendKeys(Keys.chord(Keys.CONTROL, "a"));
-        field.sendKeys(Keys.DELETE);
-        if (forceRetype || !query.equals(field.getAttribute("value"))) {
-            field.sendKeys(query);
+        try {
+            field.sendKeys(Keys.chord(Keys.CONTROL, "a"));
+            field.sendKeys(Keys.BACK_SPACE);
+        } catch (Exception e) {
+            ScenarioLogManager.getLogger().warn("service search native clear failed: {}", e.toString());
         }
+        // Edge often keeps Choices state when only sendKeys clear; Chromium needs value='' too.
         js.executeScript(
-                "arguments[0].dispatchEvent(new Event('input',{bubbles:true}));"
-                        + "arguments[0].dispatchEvent(new Event('keyup',{bubbles:true}));",
+                "arguments[0].value='';"
+                        + "arguments[0].dispatchEvent(new Event('input',{bubbles:true}));",
                 field);
-        // Choices filter debounce is slower under Edge shard load.
-        CitizenViewWaits.sleepQuiet(350L);
+        field.sendKeys(query);
+        CitizenViewWaits.sleepQuiet(400L);
     }
 
     public JsonNode currentServiceListNames() {

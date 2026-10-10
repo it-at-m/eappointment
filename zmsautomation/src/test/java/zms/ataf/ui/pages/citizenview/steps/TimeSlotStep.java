@@ -1148,7 +1148,7 @@ public final class TimeSlotStep {
         Set<Long> skipped = new HashSet<>();
         Long pendingReserveTimestamp = null;
         int unfinishedReserves = 0;
-        for (int attempt = 1; attempt <= 8; attempt++) {
+        for (int attempt = 1; attempt <= 12; attempt++) {
             if (contactStepReached()) {
                 keepReservedSlot(pendingReserveTimestamp);
                 finishReserveOnContactStep();
@@ -1163,9 +1163,13 @@ public final class TimeSlotStep {
                         finishReserveOnContactStep();
                         return;
                     }
-                    Assert.fail(
-                            "zmscitizenview: could not find/highlight timeslot for provider " + officeId
-                                    + " (shared booking uses data-provider-id / provider-{id}-timeslot-*)");
+                    // Exhausted current views under parallel 10427 load — advance once more then fail.
+                    clickSpäterIfAvailableAndReloadSlots();
+                    if (!highlightPreferredTimeslotForOfficeOrAbsent(officeId, skippedTimestamps)) {
+                        Assert.fail(
+                                "zmscitizenview: could not find/highlight timeslot for provider " + officeId
+                                        + " (shared booking uses data-provider-id / provider-{id}-timeslot-*)");
+                    }
                 }
                 if (!clickHighlightedTimeslotSelectionOrGiveUp()) {
                     long missed = readStoredSlotTimestamp();
@@ -1220,7 +1224,7 @@ public final class TimeSlotStep {
                                     timestamp);
                     // Parallel 10427 (and similar short-hold scopes) often leave Weiter hanging
                     // without Kontakt or taken-slot text; allow more skips before failing.
-                    if (unfinishedReserves >= 5) {
+                    if (unfinishedReserves >= 8) {
                         Assert.fail(
                                 "zmscitizenview: reserve did not reach Kontaktdaten and did not report a taken slot for office "
                                         + officeId);
@@ -1319,14 +1323,18 @@ public final class TimeSlotStep {
             String skippedTimestamps =
                     skipped.stream().map(String::valueOf).reduce((a, b) -> a + "," + b).orElse("");
             if (!highlightPreferredTimeslotForOfficeOrAbsent(officeId, skippedTimestamps, 5)) {
-                Assert.fail(
-                        "zmscitizenview: no more timeslots for office "
-                                + officeId
-                                + " while looking for "
-                                + code
-                                + " (skipped="
-                                + skippedTimestamps
-                                + ")");
+                // PASSFOTO / Wartezone seats get drained under full shard; Später + more days.
+                clickSpäterIfAvailableAndReloadSlots();
+                if (!highlightPreferredTimeslotForOfficeOrAbsent(officeId, skippedTimestamps, 5)) {
+                    Assert.fail(
+                            "zmscitizenview: no more timeslots for office "
+                                    + officeId
+                                    + " while looking for "
+                                    + code
+                                    + " (skipped="
+                                    + skippedTimestamps
+                                    + ")");
+                }
             }
             if (!clickHighlightedTimeslotSelectionOrGiveUp()) {
                 long missed = readStoredSlotTimestamp();
@@ -2189,7 +2197,7 @@ public final class TimeSlotStep {
         boolean highlighted = false;
         int dayMoves = 0;
         int leadSeconds = leadMinutes * 60;
-        for (int attempt = 1; attempt <= 8 && !highlighted; attempt++) {
+        for (int attempt = 1; attempt <= 12 && !highlighted; attempt++) {
             if (contactStepReached()) {
                 return false;
             }
@@ -2221,7 +2229,7 @@ public final class TimeSlotStep {
                 }
                 continue;
             }
-            if (dayMoves >= 3 || !openNextCalendarDayAndWaitForSlots()) {
+            if (dayMoves >= 6 || !openNextCalendarDayAndWaitForSlots()) {
                 break;
             }
             dayMoves++;
