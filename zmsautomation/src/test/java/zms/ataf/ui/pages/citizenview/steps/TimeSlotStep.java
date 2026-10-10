@@ -1042,8 +1042,12 @@ public final class TimeSlotStep {
         return Boolean.TRUE.equals(clicked);
     }
 
-    /** Wait until slot buttons exist and MucSpinner cleared (calendar day / office fetch). */
-    public void waitUntilAppointmentSlotsReady(int maxSeconds) {
+    /**
+     * Wait until slot buttons exist and MucSpinner cleared (calendar day / office fetch).
+     *
+     * @return false when the current view stayed empty — callers may page the calendar
+     */
+    public boolean waitUntilAppointmentSlotsReadyQuiet(int maxSeconds) {
         context.set();
         ScenarioLogManager.getLogger()
                 .info(
@@ -1053,18 +1057,28 @@ public final class TimeSlotStep {
         try {
             new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(maxSeconds))
                     .until(d -> deepTimeslotReadyNoSpinner());
-        } catch (org.openqa.selenium.TimeoutException e) {
-            boolean spin = deepMucSpinnerVisible();
-            boolean slot = deepTimeslotClickablePresent();
             ScenarioLogManager.getLogger()
-                    .warn(
-                            "zmscitizenview: slot wait timeout — spinnerVisible={} timeslotInDom={} after {}ms",
-                            spin,
-                            slot,
-                            java.lang.System.currentTimeMillis() - t0);
-            throw e;
+                    .info("zmscitizenview: slots ready (spinner cleared, timeslot clickable)");
+            return true;
+        } catch (org.openqa.selenium.TimeoutException e) {
+            // Empty day/hour after Ort toggle is expected under parallel load — recover by paging.
+            // Log a one-liner; do not dump the Selenium TimeoutException stack into WARNs.
+            ScenarioLogManager.getLogger()
+                    .info(
+                            "zmscitizenview: no timeslot yet after {}ms (spinnerVisible={} timeslotInDom={})",
+                            java.lang.System.currentTimeMillis() - t0,
+                            deepMucSpinnerVisible(),
+                            deepTimeslotClickablePresent());
+            return false;
         }
-        ScenarioLogManager.getLogger().info("zmscitizenview: slots ready (spinner cleared, timeslot clickable)");
+    }
+
+    /** Wait until slot buttons exist and MucSpinner cleared (calendar day / office fetch). */
+    public void waitUntilAppointmentSlotsReady(int maxSeconds) {
+        if (!waitUntilAppointmentSlotsReadyQuiet(maxSeconds)) {
+            throw new org.openqa.selenium.TimeoutException(
+                    "zmscitizenview: timeslot not ready within " + maxSeconds + "s");
+        }
     }
 
     /**
@@ -1074,16 +1088,16 @@ public final class TimeSlotStep {
     public void waitUntilSlotsReadyForBooking() {
         context.set();
         int timeout = slotBookingWaitTimeoutSeconds();
-        for (int day = 0; day < 4; day++) {
-            try {
-                waitUntilAppointmentSlotsReady(day == 0 ? timeout : Math.min(45, timeout));
+        for (int day = 0; day < 8; day++) {
+            int waitSec = day == 0 ? timeout : Math.min(45, timeout);
+            if (waitUntilAppointmentSlotsReadyQuiet(waitSec)) {
                 break;
-            } catch (Exception e) {
-                ScenarioLogManager.getLogger().warn("zmscitizenview slot wait: {}", e.toString());
-                if (deepTimeslotClickablePresent() || !openNextCalendarDayAndWaitForSlots()) {
-                    break;
-                }
             }
+            if (deepTimeslotClickablePresent() || !openNextCalendarDayAndWaitForSlots()) {
+                break;
+            }
+            ScenarioLogManager.getLogger()
+                    .info("zmscitizenview: empty slot view; advanced calendar day ({}/7)", day + 1);
         }
         scrollTimeSlotGridIntoViewForScreenshots();
     }
