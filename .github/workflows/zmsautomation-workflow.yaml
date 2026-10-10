@@ -108,10 +108,12 @@ on:
         default: both
       cucumber_tag_expressions:
         description: |
-          Optional. Newline-separated Cucumber tag expressions; each line runs sequentially.
-          If this field is set, only those tags run (module checkboxes are ignored).
-          @ignore is excluded automatically.
-          Examples: @ZMSKVR-833, @smoke
+          Optional. Cucumber tag expression(s). Newlines (or commas) join with OR into
+          one filter so the job runs Flyway/setup once. Module checkboxes are ignored
+          when this field is set. @ignore is excluded automatically.
+          Examples: @ZMSKVR-833
+                    @ZMSKVR-1083
+                    @ZMSKVR-1440
         required: false
         default: ""
       browser_chrome:
@@ -846,10 +848,32 @@ jobs:
               TAG_LINES=("")
             else
               while IFS= read -r line; do
-                line="$(printf '%s' "$line" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
-                [[ -n "$line" ]] && TAG_LINES+=("$line")
+                line="$(printf '%s' "$line" | tr -d '\r' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
+                # Allow comma-separated tags on one line as well as newlines.
+                if [[ "$line" == *","* ]]; then
+                  IFS=',' read -r -a parts <<< "$line"
+                  for part in "${parts[@]}"; do
+                    part="$(printf '%s' "$part" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
+                    [[ -n "$part" ]] && TAG_LINES+=("$part")
+                  done
+                elif [[ -n "$line" ]]; then
+                  TAG_LINES+=("$line")
+                fi
               done <<< "$CUSTOM_SOURCE"
               [[ ${#TAG_LINES[@]} -eq 0 ]] && TAG_LINES=("")
+            fi
+            # One OR expression → one zmsautomation-test (Flyway/setup once).
+            if [[ ${#TAG_LINES[@]} -gt 1 ]]; then
+              combined=""
+              for part in "${TAG_LINES[@]}"; do
+                [[ -z "$part" ]] && continue
+                if [[ -z "$combined" ]]; then
+                  combined="$part"
+                else
+                  combined="$combined or $part"
+                fi
+              done
+              TAG_LINES=("$combined")
             fi
           else
             TAG_LINES=("$MATRIX_TAG_FILTER")
