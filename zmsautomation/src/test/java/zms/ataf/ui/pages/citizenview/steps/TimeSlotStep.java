@@ -437,6 +437,22 @@ public final class TimeSlotStep {
     }
 
     public void assertCalendarGroupsByHour() {
+        // Midnight / next-day opening-hour windows can land on a short day (Vormittag only).
+        // Advance until a busy day shows HH:00-HH:59 groups, then assert.
+        for (int day = 0; day < 10; day++) {
+            JsonNode snap = calendarSnapshot();
+            if (hourLabel(snap) != null) {
+                assertHourLabels(snap);
+                ScenarioLogManager.getLogger()
+                        .info("zmscitizenview: calendar groups by hour after {} day move(s)", day);
+                return;
+            }
+            if (day == 9 || !openNextCalendarDayAndWaitForSlots()) {
+                break;
+            }
+            ScenarioLogManager.getLogger()
+                    .info("zmscitizenview: no hour groups yet; opened next calendar day (move {})", day + 1);
+        }
         JsonNode state = new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(defaultWaitSeconds))
                 .until(d -> hourLabel(calendarSnapshot()));
         assertHourLabels(state);
