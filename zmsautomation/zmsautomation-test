@@ -987,6 +987,33 @@ fi
 info "  - JSON: $PROJECT_ROOT/zmsautomation/target/cucumber.json"
 info "  - HTML: $PROJECT_ROOT/zmsautomation/target/site/cucumber-pretty/index.html"
 
+# Failed-screenshot gallery (open target/index.html — failed shot first, click for all steps)
+section "Failed screenshot gallery"
+GALLERY_SCRIPT="$PROJECT_ROOT/zmsautomation/scripts/generate-failed-screenshot-gallery.py"
+if [[ -f "$GALLERY_SCRIPT" ]] && command -v python3 >/dev/null 2>&1; then
+  GALLERY_JSON_ARGS=()
+  [[ -f "$PROJECT_ROOT/zmsautomation/target/cucumber.json" ]] \
+    && GALLERY_JSON_ARGS+=(--cucumber-json "$PROJECT_ROOT/zmsautomation/target/cucumber.json")
+  [[ -f "$PROJECT_ROOT/zmsautomation/target/cucumber-api.json" ]] \
+    && GALLERY_JSON_ARGS+=(--cucumber-json "$PROJECT_ROOT/zmsautomation/target/cucumber-api.json")
+  if [[ ${#GALLERY_JSON_ARGS[@]} -gt 0 ]]; then
+    python3 "$GALLERY_SCRIPT" \
+      "${GALLERY_JSON_ARGS[@]}" \
+      --screenshots-dir "$PROJECT_ROOT/zmsautomation/target/screenshots" \
+      --out-dir "$PROJECT_ROOT/zmsautomation/target" \
+      --failures-subdir "screenshots/_failures" \
+      --title "ATAF failed screenshots" \
+      || warn "Failed screenshot gallery generation failed (non-fatal)"
+    if [[ -f "$PROJECT_ROOT/zmsautomation/target/index.html" ]]; then
+      info "  - Failed screenshots: $PROJECT_ROOT/zmsautomation/target/index.html"
+    fi
+  else
+    info "No cucumber.json for failed-screenshot gallery"
+  fi
+else
+  warn "python3 or gallery script missing; skipped failed-screenshot gallery"
+fi
+
 # 13. Final Cache Clearing
 section "13. Final Cache Clearing"
 clear_caches

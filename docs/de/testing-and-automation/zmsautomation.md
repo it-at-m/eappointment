@@ -285,6 +285,8 @@ Manuelle Läufe (`workflow_dispatch`) bieten die üblichen Modul-/Browser-/Tag-E
 
 Geplante Nightly-Läufe nutzen immer die POM-Version (kein Override) und machen nach jedem Schritt einen Screenshot. Die Version muss auf Maven Central existieren. Ein manueller Lauf macht diese Screenshots nur, wenn „per-step screenshots“ angehakt ist.
 
+Nach einem UI-Lauf: **`ATAF-FAILED-SCREENSHOTS.html`** im Root des Artifacts `zmsautomation-ataf-reports-…` öffnen (lokal `zmsautomation/target/index.html`). Jede Karte zeigt fehlgeschlagenen Schritt, Fehler und letzten Screenshot. Klick öffnet alle Schritt-Screenshots des Szenarios, der fehlgeschlagene zuerst.
+
 ## zmsautomation in Safari unter macOS außerhalb des Containers
 
 Safari-basierte Automatisierung kann unter macOS bereits außerhalb des Containers ausgeführt werden.

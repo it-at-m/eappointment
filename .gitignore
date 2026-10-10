@@ -25,6 +25,10 @@ coverage/
 # Python
 __pycache__/
 
+# ATAF failed-screenshot gallery promoted to workspace root in CI (artifact zip root)
+/ATAF-FAILED-SCREENSHOTS.html
+/failed-screenshot-galleries/
+
 # =============== PHP =================
 vendor/
 vendor.zmsbase
