@@ -439,24 +439,35 @@ public final class ServiceFinderStep {
     }
 
     /**
-     * Prefer the in-page Choices {@code type} mode (sets value + InputEvent in the shadow tree).
-     * Selenium sendKeys alone is flaky for short queries under Chromium/Edge shard load.
+     * Clear + {@code sendKeys} (stable on Chrome/Firefox). Edge also gets Choices {@code type}
+     * so the filter applies when native key events are ignored.
      */
     private void typeServiceSearchQuery(String query, boolean forceRetype) {
-        if (!forceRetype) {
-            WebElement field = serviceSearchInput();
-            try {
-                if (field != null && query.equals(field.getAttribute("value"))) {
-                    return;
-                }
-            } catch (Exception ignored) {
-                // fall through to type
-            }
-        }
         if (!serviceSearch("read", "").path("open").asBoolean()) {
             serviceSearch("click", "");
         }
-        serviceSearch("type", query);
+        WebElement field = serviceSearchInput();
+        if (field == null) {
+            serviceSearch("type", query);
+            CitizenViewWaits.sleepQuiet(450L);
+            return;
+        }
+        try {
+            if (!forceRetype && query.equals(field.getAttribute("value"))) {
+                return;
+            }
+        } catch (Exception ignored) {
+            // continue
+        }
+        JavascriptExecutor js = (JavascriptExecutor) DriverUtil.getDriver();
+        js.executeScript("arguments[0].value=''; arguments[0].focus();", field);
+        field.sendKeys(query);
+        String browser =
+                String.valueOf(((RemoteWebDriver) DriverUtil.getDriver()).getCapabilities().getBrowserName())
+                        .toLowerCase(Locale.ROOT);
+        if (browser.contains("edge") || browser.contains("msedge")) {
+            serviceSearch("type", query);
+        }
         CitizenViewWaits.sleepQuiet(450L);
     }
 
