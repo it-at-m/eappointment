@@ -17,6 +17,7 @@ import html
 import json
 import os
 import re
+import shutil
 import sys
 from pathlib import Path
 from typing import Any, Iterable
@@ -131,7 +132,9 @@ def failed_step_info(element: dict[str, Any]) -> tuple[str, str]:
     return "", ""
 
 
-def find_screenshot_dir(screenshots_root: Path, module: str, folder: str) -> Path | None:
+def find_screenshot_dir(
+    screenshots_root: Path, module: str, folder: str, scenario_name: str
+) -> Path | None:
     direct = screenshots_root / module / folder
     if direct.is_dir():
         return direct
@@ -140,11 +143,11 @@ def find_screenshot_dir(screenshots_root: Path, module: str, folder: str) -> Pat
     if len(matches) == 1 and matches[0].is_dir():
         return matches[0]
     # Loose match on scenario name suffix (ticket order / truncation drift).
-    suffix = folder.split("_", 1)[-1] if "_" in folder else folder
+    suffix = scenario_name_part(scenario_name)
     candidates = [
         p
         for p in screenshots_root.glob("*/*")
-        if p.is_dir() and (p.name == folder or p.name.endswith(suffix) or suffix in p.name)
+        if p.is_dir() and (p.name == folder or p.name.endswith(suffix))
     ]
     if len(candidates) == 1:
         return candidates[0]
@@ -212,7 +215,7 @@ def collect_failures(
                 module = resolve_module(tags, uri)
                 folder = folder_name_for(name, tags)
                 shot_dir = (
-                    find_screenshot_dir(screenshots_root, module, folder)
+                    find_screenshot_dir(screenshots_root, module, folder, name)
                     if screenshots_root.is_dir()
                     else None
                 )
@@ -246,10 +249,12 @@ def write_gallery(
 ) -> Path:
     out_dir.mkdir(parents=True, exist_ok=True)
     failures_root = out_dir / failures_subdir
+    out_resolved = out_dir.resolve()
+    failures_resolved = failures_root.resolve()
+    if failures_resolved == out_resolved or out_resolved not in failures_resolved.parents:
+        raise ValueError(f"--failures-subdir must be a subdirectory of {out_dir}")
     if failures_root.exists():
-        for old in failures_root.rglob("*"):
-            if old.is_file():
-                old.unlink()
+        shutil.rmtree(failures_root)
     failures_root.mkdir(parents=True, exist_ok=True)
     index_path = out_dir / index_name
 
