@@ -1,9 +1,9 @@
 START TRANSACTION;
 
 -- ZMSKVR-1440: When slotsPerAppointment is set to a positive cap, it must allow
--- every bookable service at that scope at least once (relation slots × quantity 1).
--- Leave NULL and 0 unchanged (unset / treated as unlimited). Do not lower values
--- that are already at or above the required minimum.
+-- every public bookable service at that scope at least once (relation slots × quantity 1).
+-- Non-public relations are ignored (citizen API hides them). Leave NULL and 0 unchanged
+-- (unset / treated as unlimited). Do not lower values that are already high enough.
 
 UPDATE `standort` AS `s`
 INNER JOIN (
@@ -13,6 +13,7 @@ INNER JOIN (
         CEIL(MAX(`rp`.`slots`)) AS `min_slots_needed`
     FROM `request_provider` AS `rp`
     WHERE `rp`.`bookable` = 1
+      AND `rp`.`public_visibility` = 1
       AND `rp`.`slots` > 0
     GROUP BY `rp`.`provider__id`, `rp`.`source`
 ) AS `req`
@@ -33,6 +34,7 @@ INNER JOIN (
         CEIL(MAX(`rp`.`slots`)) AS `min_slots_needed`
     FROM `request_provider` AS `rp`
     WHERE `rp`.`bookable` = 1
+      AND `rp`.`public_visibility` = 1
       AND `rp`.`slots` > 0
     GROUP BY `rp`.`provider__id`, `rp`.`source`
 ) AS `req`
