@@ -948,6 +948,32 @@ jobs:
             '{branch: $branch, branchSlug: $slug, shard: $shard, browser: $browser}' \
             > branch-meta.json
 
+      # Zip root: ATAF-FAILED-SCREENSHOTS.html (failed shot + step + error). Click → all step shots.
+      - name: Promote failed-screenshot gallery to artifact root
+        if: always()
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -euo pipefail
+          SCRIPT=zmsautomation/scripts/generate-failed-screenshot-gallery.py
+          SHOTS=zmsautomation/target/screenshots
+          [[ -f "$SCRIPT" ]] || { echo "Gallery script missing"; exit 0; }
+          JSON_ARGS=()
+          [[ -f zmsautomation/target/cucumber.json ]] && JSON_ARGS+=(--cucumber-json zmsautomation/target/cucumber.json)
+          [[ -f zmsautomation/target/cucumber-api.json ]] && JSON_ARGS+=(--cucumber-json zmsautomation/target/cucumber-api.json)
+          if [[ ${#JSON_ARGS[@]} -eq 0 ]]; then
+            echo "No cucumber.json; skip gallery promote"
+            exit 0
+          fi
+          rm -rf failed-screenshot-galleries ATAF-FAILED-SCREENSHOTS.html
+          python3 "$SCRIPT" \
+            "${JSON_ARGS[@]}" \
+            --screenshots-dir "$SHOTS" \
+            --out-dir . \
+            --failures-subdir failed-screenshot-galleries \
+            --index-name ATAF-FAILED-SCREENSHOTS.html \
+            --title "ATAF failed screenshots (${{ matrix.shard }} · ${{ matrix.browser }})"
+
       - name: Upload test reports (best effort)
         id: upload-test-reports
         if: always()
@@ -956,6 +982,9 @@ jobs:
         with:
           name: zmsautomation-ataf-reports-${{ github.run_id }}-${{ github.run_attempt }}-${{ steps.tags.outputs.branch_slug }}-${{ matrix.shard }}-${{ matrix.browser }}
           path: |
+            ATAF-FAILED-SCREENSHOTS.html
+            failed-screenshot-galleries/**
+            zmsautomation/target/index.html
             zmsautomation/target/cucumber.json
             zmsautomation/target/cucumber-api.json
             branch-meta.json
@@ -978,6 +1007,9 @@ jobs:
         with:
           name: zmsautomation-ataf-reports-${{ github.run_id }}-${{ github.run_attempt }}-${{ steps.tags.outputs.branch_slug }}-${{ matrix.shard }}-${{ matrix.browser }}
           path: |
+            ATAF-FAILED-SCREENSHOTS.html
+            failed-screenshot-galleries/**
+            zmsautomation/target/index.html
             zmsautomation/target/cucumber.json
             zmsautomation/target/cucumber-api.json
             branch-meta.json
@@ -1000,6 +1032,9 @@ jobs:
         with:
           name: zmsautomation-ataf-reports-${{ github.run_id }}-${{ github.run_attempt }}-${{ steps.tags.outputs.branch_slug }}-${{ matrix.shard }}-${{ matrix.browser }}
           path: |
+            ATAF-FAILED-SCREENSHOTS.html
+            failed-screenshot-galleries/**
+            zmsautomation/target/index.html
             zmsautomation/target/cucumber.json
             zmsautomation/target/cucumber-api.json
             branch-meta.json
@@ -1021,6 +1056,9 @@ jobs:
         with:
           name: zmsautomation-ataf-reports-${{ github.run_id }}-${{ github.run_attempt }}-${{ steps.tags.outputs.branch_slug }}-${{ matrix.shard }}-${{ matrix.browser }}
           path: |
+            ATAF-FAILED-SCREENSHOTS.html
+            failed-screenshot-galleries/**
+            zmsautomation/target/index.html
             zmsautomation/target/cucumber.json
             zmsautomation/target/cucumber-api.json
             branch-meta.json
