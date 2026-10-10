@@ -74,11 +74,15 @@ public class UseraccountPage extends BasePage {
         }
     }
 
+    /** Wall time of the last new-user form submit (initial save or validation retry). */
+    private long lastNewUserSubmission;
+
     public void saveNewUser() {
         ScenarioLogManager.getLogger().info("Saving the new user without a department...");
         waitForAdminLoaderGone();
         // Firefox often reports a successful native click without submitting this form.
         // requestSubmit keeps the save button value; form.submit() is the last resort.
+        lastNewUserSubmission = System.currentTimeMillis();
         submitNewUserForm();
         waitForAdminLoaderGone();
     }
@@ -88,7 +92,8 @@ public class UseraccountPage extends BasePage {
         By departmentFieldError = By.cssSelector(".form-group.has-error .message--error");
         WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
         wait.ignoring(StaleElementReferenceException.class);
-        final long[] lastResubmit = { 0L };
+        // Seed from saveNewUser so the first poll cannot immediately double-submit.
+        final long[] lastResubmit = { lastNewUserSubmission };
         wait.until(driver -> {
             String url = driver.getCurrentUrl();
             if (url != null && url.contains("useraccount_added")) {
@@ -126,6 +131,7 @@ public class UseraccountPage extends BasePage {
             long now = System.currentTimeMillis();
             if (now - lastResubmit[0] > 5000L) {
                 lastResubmit[0] = now;
+                lastNewUserSubmission = now;
                 ScenarioLogManager.getLogger()
                         .warn("Department validation still missing after save; submitting the new-user form again.");
                 submitNewUserForm();
