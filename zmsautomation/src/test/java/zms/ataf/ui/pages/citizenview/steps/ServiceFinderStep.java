@@ -386,84 +386,78 @@ public final class ServiceFinderStep {
         String folded = query.toLowerCase(Locale.ROOT);
         // Choices filter (esp. Edge / short queries like "z") can lag under shard load.
         int waitSeconds = Math.max(defaultWaitSeconds, 90);
+        final long[] lastTypeMs = {0L};
+        typeServiceSearchQuery(query, true);
+        lastTypeMs[0] = System.currentTimeMillis();
         return new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(waitSeconds))
                 .until(d -> {
-                    if (!applyServiceSearchQuery(query)) {
+                    if (!serviceSearch("read", "").path("open").asBoolean()) {
+                        serviceSearch("click", "");
                         return null;
                     }
                     JsonNode read = serviceSearch("read", "");
-                    if (!read.path("open").asBoolean()) {
-                        return null;
-                    }
                     JsonNode names = read.path("names");
-                    if (names.size() == 0) {
-                        typeServiceSearchQuery(query, true);
-                        return null;
-                    }
+                    boolean allMatch = names.size() > 0;
                     for (JsonNode name : names) {
                         if (!name.asText().toLowerCase(Locale.ROOT).contains(folded)) {
-                            // Stale unfiltered list — retype so Choices reapplies the filter.
-                            typeServiceSearchQuery(query, true);
-                            return null;
+                            allMatch = false;
+                            break;
                         }
                     }
-                    return read;
+                    if (allMatch) {
+                        return read;
+                    }
+                    // Retype at most every 2s — retyping every poll resets Choices debounce forever.
+                    long now = System.currentTimeMillis();
+                    if (now - lastTypeMs[0] >= 2000L) {
+                        typeServiceSearchQuery(query, true);
+                        lastTypeMs[0] = now;
+                    }
+                    return null;
                 });
     }
 
-    /** Reopen the list if AfterStep closed it, then type {@code query} with sendKeys. */
+    /** Reopen the list if AfterStep closed it, then type {@code query} via Choices JS {@code type}. */
     public boolean applyServiceSearchQuery(String query) {
         if (!serviceSearch("read", "").path("open").asBoolean()) {
             serviceSearch("click", "");
         }
         WebElement field = serviceSearchInput();
-        if (field == null) {
+        if (field == null && !serviceSearch("options", "").path("choicesReady").asBoolean()) {
             return false;
         }
         try {
-            String current = field.getAttribute("value");
+            String current = field == null ? null : field.getAttribute("value");
             if (!query.equals(current)) {
                 typeServiceSearchQuery(query, false);
             }
             return true;
         } catch (Exception e) {
-            return false;
+            typeServiceSearchQuery(query, true);
+            return true;
         }
     }
 
     /**
-     * Clear Choices search (JS value + native select-all), then type with real key events.
-     * Avoid synthetic keyup after sendKeys — that regressed short queries like {@code z} on Chromium.
+     * Prefer the in-page Choices {@code type} mode (sets value + InputEvent in the shadow tree).
+     * Selenium sendKeys alone is flaky for short queries under Chromium/Edge shard load.
      */
     private void typeServiceSearchQuery(String query, boolean forceRetype) {
-        WebElement field = serviceSearchInput();
-        if (field == null) {
-            return;
+        if (!forceRetype) {
+            WebElement field = serviceSearchInput();
+            try {
+                if (field != null && query.equals(field.getAttribute("value"))) {
+                    return;
+                }
+            } catch (Exception ignored) {
+                // fall through to type
+            }
         }
-        String current = null;
-        try {
-            current = field.getAttribute("value");
-        } catch (Exception ignored) {
-            // stale input; continue with clear + type
+        if (!serviceSearch("read", "").path("open").asBoolean()) {
+            serviceSearch("click", "");
         }
-        if (!forceRetype && query.equals(current)) {
-            return;
-        }
-        JavascriptExecutor js = (JavascriptExecutor) DriverUtil.getDriver();
-        js.executeScript("arguments[0].focus();", field);
-        try {
-            field.sendKeys(Keys.chord(Keys.CONTROL, "a"));
-            field.sendKeys(Keys.BACK_SPACE);
-        } catch (Exception e) {
-            ScenarioLogManager.getLogger().warn("service search native clear failed: {}", e.toString());
-        }
-        // Edge often keeps Choices state when only sendKeys clear; Chromium needs value='' too.
-        js.executeScript(
-                "arguments[0].value='';"
-                        + "arguments[0].dispatchEvent(new Event('input',{bubbles:true}));",
-                field);
-        field.sendKeys(query);
-        CitizenViewWaits.sleepQuiet(400L);
+        serviceSearch("type", query);
+        CitizenViewWaits.sleepQuiet(450L);
     }
 
     public JsonNode currentServiceListNames() {
