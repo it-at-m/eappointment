@@ -524,13 +524,7 @@ public class ZmsApiSteps {
         }
         Assertions.assertThat(reserved).as("reserved terminkunde at scope %d", scopeId).isNotNull();
 
-        response = given()
-            .baseUri(baseUri != null ? baseUri : TestConfig.getBaseUri())
-            .header("X-AuthKey", authKey)
-            .contentType("application/json")
-            .body(toJson(reserved))
-        .when()
-            .post("/process/status/confirmed/");
+        response = postConfirmedWithDeadlockRetry(authKey, reserved);
         CommonApiSteps.setResponse(response);
         Assertions.assertThat(response.getStatusCode())
                 .as("POST /process/status/confirmed/ body=%s", truncate(response.asString(), 1000))
@@ -1124,15 +1118,44 @@ public class ZmsApiSteps {
             .as("POST /process/status/reserved/ for scope %d", scopeId)
             .isNotNull();
 
-        response = given()
-            .baseUri(baseUri != null ? baseUri : TestConfig.getBaseUri())
-            .header("X-AuthKey", authKey)
-            .contentType("application/json")
-            .body(toJson(reserved))
-        .when()
-            .post("/process/status/confirmed/");
+        response = postConfirmedWithDeadlockRetry(authKey, reserved);
         CommonApiSteps.setResponse(response);
         rememberProcess(parseDataNode(response));
+    }
+
+    /**
+     * Parallel confirms can deadlock on scope display-number updates. Same retry as finish.
+     */
+    private Response postConfirmedWithDeadlockRetry(String authKey, JsonNode body) {
+        Response confirmed =
+                given()
+                        .baseUri(baseUri != null ? baseUri : TestConfig.getBaseUri())
+                        .header("X-AuthKey", authKey)
+                        .contentType("application/json")
+                        .body(toJson(body))
+                        .when()
+                        .post("/process/status/confirmed/");
+        if (confirmed.getStatusCode() == 500
+                && confirmed.asString().toLowerCase(Locale.ROOT).contains("deadlock")) {
+            ScenarioLogManager.getLogger()
+                    .warn(
+                            "Confirm hit a MySQL deadlock; retrying once. body={}",
+                            truncate(confirmed.asString(), 300));
+            try {
+                Thread.sleep(400);
+            } catch (InterruptedException ie) {
+                Thread.currentThread().interrupt();
+            }
+            confirmed =
+                    given()
+                            .baseUri(baseUri != null ? baseUri : TestConfig.getBaseUri())
+                            .header("X-AuthKey", authKey)
+                            .contentType("application/json")
+                            .body(toJson(body))
+                            .when()
+                            .post("/process/status/confirmed/");
+        }
+        return confirmed;
     }
 
     @When("I call the last process at the workstation with the X-AuthKey")

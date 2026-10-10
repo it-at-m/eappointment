@@ -384,7 +384,9 @@ public final class ServiceFinderStep {
 
     public JsonNode waitForFilteredServiceNames(String query) {
         String folded = query.toLowerCase(Locale.ROOT);
-        return new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(defaultWaitSeconds))
+        // Edge Choices can lag behind sendKeys; give the filter more than the default wait.
+        int waitSeconds = Math.max(defaultWaitSeconds, 90);
+        return new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(waitSeconds))
                 .until(d -> {
                     if (!applyServiceSearchQuery(query)) {
                         return null;
@@ -395,12 +397,7 @@ public final class ServiceFinderStep {
                     }
                     JsonNode names = read.path("names");
                     if (names.size() == 0) {
-                        WebElement field = serviceSearchInput();
-                        if (field != null) {
-                            ((JavascriptExecutor) DriverUtil.getDriver())
-                                    .executeScript("arguments[0].value=''; arguments[0].focus();", field);
-                            field.sendKeys(query);
-                        }
+                        typeServiceSearchQuery(query, true);
                         return null;
                     }
                     for (JsonNode name : names) {
@@ -424,14 +421,35 @@ public final class ServiceFinderStep {
         try {
             String current = field.getAttribute("value");
             if (!query.equals(current)) {
-                ((JavascriptExecutor) DriverUtil.getDriver())
-                        .executeScript("arguments[0].value=''; arguments[0].focus();", field);
-                field.sendKeys(query);
+                typeServiceSearchQuery(query, false);
             }
             return true;
         } catch (Exception e) {
             return false;
         }
+    }
+
+    /**
+     * Clear via select-all/delete (Edge ignores JS value='' on Choices), type, then fire input.
+     */
+    private void typeServiceSearchQuery(String query, boolean forceRetype) {
+        WebElement field = serviceSearchInput();
+        if (field == null) {
+            return;
+        }
+        JavascriptExecutor js = (JavascriptExecutor) DriverUtil.getDriver();
+        js.executeScript("arguments[0].focus();", field);
+        field.sendKeys(Keys.chord(Keys.CONTROL, "a"));
+        field.sendKeys(Keys.DELETE);
+        if (forceRetype || !query.equals(field.getAttribute("value"))) {
+            field.sendKeys(query);
+        }
+        js.executeScript(
+                "arguments[0].dispatchEvent(new Event('input',{bubbles:true}));"
+                        + "arguments[0].dispatchEvent(new Event('keyup',{bubbles:true}));",
+                field);
+        // Choices filter debounce is slower under Edge shard load.
+        CitizenViewWaits.sleepQuiet(350L);
     }
 
     public JsonNode currentServiceListNames() {

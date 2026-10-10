@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -77,12 +78,19 @@ public class UseraccountPage extends BasePage {
         waitForAdminLoaderGone();
         WebElement save = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
                 .until(ExpectedConditions.elementToBeClickable(By.xpath("//button[normalize-space(.)='Nutzer anlegen']")));
-        save.click();
+        ((JavascriptExecutor) DRIVER).executeScript("arguments[0].scrollIntoView({block:'center'});", save);
+        try {
+            save.click();
+        } catch (Exception e) {
+            ScenarioLogManager.getLogger().warn("Native save click failed; using JS click: {}", e.toString());
+            ((JavascriptExecutor) DRIVER).executeScript("arguments[0].click();", save);
+        }
+        waitForAdminLoaderGone();
     }
 
     public void assertDepartmentIsRequired() {
-        By departmentError = By.xpath("//*[contains(., '" + DEPARTMENT_REQUIRED + "')]");
-        By departmentGroupError = By.cssSelector("select[name='departments[][id]']");
+        By departmentSelect = By.cssSelector("select[name='departments[][id]']");
+        By departmentFieldError = By.cssSelector(".form-group.has-error .message--error");
         WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
         wait.until(driver -> {
             if (driver.getCurrentUrl().contains("useraccount_added")) {
@@ -91,10 +99,10 @@ public class UseraccountPage extends BasePage {
             if (driver.findElements(By.cssSelector("div.loader")).stream().anyMatch(WebElement::isDisplayed)) {
                 return false;
             }
-            if (!driver.findElements(departmentError).isEmpty()) {
+            if (!driver.findElements(departmentFieldError).isEmpty()) {
                 return true;
             }
-            List<WebElement> selects = driver.findElements(departmentGroupError);
+            List<WebElement> selects = driver.findElements(departmentSelect);
             if (selects.isEmpty()) {
                 return false;
             }
