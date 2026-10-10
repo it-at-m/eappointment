@@ -137,6 +137,48 @@
         }
       }
     },
+    "statistics": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "string",
+          "description": "Overall health status of the daily statistic availability check"
+        },
+        "checkedDate": {
+          "type": "string",
+          "description": "Calendar date for which statistic availability was checked"
+        },
+        "checkedAt": {
+          "type": "string",
+          "description": "ISO8601 timestamp when the statistic availability check was executed"
+        },
+        "statisticsChecked": {
+          "type": "number",
+          "description": "Number of statistic checks performed"
+        },
+        "statisticsMissing": {
+          "type": "number",
+          "description": "Number of missing statistic reports"
+        },
+        "missing": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "statistic": {
+                "type": "string"
+              },
+              "scopeId": {
+                "type": "string"
+              },
+              "scopeName": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
     "version": {
       "type": "object",
       "properties": {
