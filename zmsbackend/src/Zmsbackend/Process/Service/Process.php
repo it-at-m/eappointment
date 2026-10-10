@@ -932,6 +932,22 @@ class Process extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfaces\R
         return $this->attachAllRequestsInOneQuery($processList, (int) $resolveReferences);
     }
 
+    public function readLatestBookedDate(int $scopeId, \DateTimeInterface $now): ?string
+    {
+        $value = $this->fetchValue(
+            \BO\Zmsbackend\Process\Repository\Process::QUERY_LATEST_BOOKED_DATE,
+            [
+                'scopeId' => $scopeId,
+                'today' => $now->format('Y-m-d'),
+            ]
+        );
+        if ($value === false || $value === null || $value === '') {
+            return null;
+        }
+
+        return (string) $value;
+    }
+
     public function readAssignedWorkstationIdForUpdate(int $processId): ?int
     {
         $query = (new \BO\Zmsbackend\Process\Repository\Process(\BO\Zmsbackend\Query\Base::SELECT))->getLockAssignedWorkstationId();

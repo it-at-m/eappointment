@@ -68,6 +68,14 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
             OR istFolgeterminvon = ?
         ";
 
+    const string QUERY_LATEST_BOOKED_DATE = '
+        SELECT MAX(`Datum`)
+        FROM `buerger`
+        WHERE `StandortID` = :scopeId
+          AND `Datum` >= :today
+          AND `status` NOT IN ("free", "deleted", "anonymized", "blocked", "conflict")
+    ';
+
     const string QUERY_REASSIGN_PROCESS_CREDENTIALS = "UPDATE `buerger` process
        SET 
             process.BuergerID = :newProcessId, 
