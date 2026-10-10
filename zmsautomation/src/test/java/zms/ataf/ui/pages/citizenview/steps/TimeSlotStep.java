@@ -1103,6 +1103,30 @@ public final class TimeSlotStep {
     }
 
     /**
+     * After a taken/unfinished reserve, find another slot for {@code officeId}: Später, then up to
+     * several calendar days at a shorter lead time.
+     */
+    private boolean recoverHighlightForOffice(int officeId) {
+        clickSpäterIfAvailableAndReloadSlots();
+        if (highlightPreferredTimeslotForOfficeOrAbsent(officeId, "")) {
+            return true;
+        }
+        for (int day = 0; day < 7; day++) {
+            if (!openNextCalendarDayAndWaitForSlots()) {
+                break;
+            }
+            if (highlightPreferredTimeslotForOfficeOrAbsent(officeId, "", 20)) {
+                return true;
+            }
+            clickSpäterIfAvailableAndReloadSlots();
+            if (highlightPreferredTimeslotForOfficeOrAbsent(officeId, "", 20)) {
+                return true;
+            }
+        }
+        return highlightPreferredTimeslotForOfficeOrAbsent(officeId, "", 5);
+    }
+
+    /**
      * Step 2: click <strong>Später</strong> beside the time slot grid (hour/day-part navigation) when shown
      * (multi-provider), then wait for slots to reload. No-op if the button is absent or disabled.
      */
@@ -1168,17 +1192,13 @@ public final class TimeSlotStep {
                         finishReserveOnContactStep();
                         return;
                     }
-                    // Parallel 10427/10502 drains the current day-part; clear skips, Später, page days.
+                    // Parallel 10427 (captcha scope) / 10502 drains a day-part; page until a slot appears.
                     skipped.clear();
-                    clickSpäterIfAvailableAndReloadSlots();
-                    if (!highlightPreferredTimeslotForOfficeOrAbsent(officeId, "")) {
-                        openNextCalendarDayAndWaitForSlots();
-                        if (!highlightPreferredTimeslotForOfficeOrAbsent(officeId, "", 20)) {
-                            Assert.fail(
-                                    "zmscitizenview: could not find/highlight timeslot for provider "
-                                            + officeId
-                                            + " (shared booking uses data-provider-id / provider-{id}-timeslot-*)");
-                        }
+                    if (!recoverHighlightForOffice(officeId)) {
+                        Assert.fail(
+                                "zmscitizenview: could not find/highlight timeslot for provider "
+                                        + officeId
+                                        + " (shared booking uses data-provider-id / provider-{id}-timeslot-*)");
                     }
                 }
                 if (!clickHighlightedTimeslotSelectionOrGiveUp()) {
@@ -1333,11 +1353,8 @@ public final class TimeSlotStep {
             String skippedTimestamps =
                     skipped.stream().map(String::valueOf).reduce((a, b) -> a + "," + b).orElse("");
             if (!highlightPreferredTimeslotForOfficeOrAbsent(officeId, skippedTimestamps, 5)) {
-                // PASSFOTO / Wartezone seats get drained under full shard; Später + more days.
                 skipped.clear();
-                clickSpäterIfAvailableAndReloadSlots();
-                openNextCalendarDayAndWaitForSlots();
-                if (!highlightPreferredTimeslotForOfficeOrAbsent(officeId, "", 5)) {
+                if (!recoverHighlightForOffice(officeId)) {
                     Assert.fail(
                             "zmscitizenview: no more timeslots for office "
                                     + officeId
