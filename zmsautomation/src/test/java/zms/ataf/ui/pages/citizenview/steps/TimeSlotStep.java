@@ -1110,17 +1110,8 @@ public final class TimeSlotStep {
         context.set();
         int timeout = slotBookingWaitTimeoutSeconds();
         if (clickCitizenViewLaterOnceIfAvailable()) {
-            try {
-                Thread.sleep(1200L);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-            }
-            try {
-                waitUntilAppointmentSlotsReady(Math.min(45, timeout));
-            } catch (Exception e) {
-                ScenarioLogManager.getLogger()
-                        .warn("zmscitizenview slot wait after Später: {}", e.toString());
-            }
+            CitizenViewWaits.sleepQuiet(1200L);
+            waitUntilAppointmentSlotsReadyQuiet(Math.min(45, timeout));
         }
         scrollTimeSlotGridIntoViewForScreenshots();
     }
@@ -1177,12 +1168,17 @@ public final class TimeSlotStep {
                         finishReserveOnContactStep();
                         return;
                     }
-                    // Exhausted current views under parallel 10427 load — advance once more then fail.
+                    // Parallel 10427/10502 drains the current day-part; clear skips, Später, page days.
+                    skipped.clear();
                     clickSpäterIfAvailableAndReloadSlots();
-                    if (!highlightPreferredTimeslotForOfficeOrAbsent(officeId, skippedTimestamps)) {
-                        Assert.fail(
-                                "zmscitizenview: could not find/highlight timeslot for provider " + officeId
-                                        + " (shared booking uses data-provider-id / provider-{id}-timeslot-*)");
+                    if (!highlightPreferredTimeslotForOfficeOrAbsent(officeId, "")) {
+                        openNextCalendarDayAndWaitForSlots();
+                        if (!highlightPreferredTimeslotForOfficeOrAbsent(officeId, "", 20)) {
+                            Assert.fail(
+                                    "zmscitizenview: could not find/highlight timeslot for provider "
+                                            + officeId
+                                            + " (shared booking uses data-provider-id / provider-{id}-timeslot-*)");
+                        }
                     }
                 }
                 if (!clickHighlightedTimeslotSelectionOrGiveUp()) {
@@ -1338,8 +1334,10 @@ public final class TimeSlotStep {
                     skipped.stream().map(String::valueOf).reduce((a, b) -> a + "," + b).orElse("");
             if (!highlightPreferredTimeslotForOfficeOrAbsent(officeId, skippedTimestamps, 5)) {
                 // PASSFOTO / Wartezone seats get drained under full shard; Später + more days.
+                skipped.clear();
                 clickSpäterIfAvailableAndReloadSlots();
-                if (!highlightPreferredTimeslotForOfficeOrAbsent(officeId, skippedTimestamps, 5)) {
+                openNextCalendarDayAndWaitForSlots();
+                if (!highlightPreferredTimeslotForOfficeOrAbsent(officeId, "", 5)) {
                     Assert.fail(
                             "zmscitizenview: no more timeslots for office "
                                     + officeId
@@ -1993,12 +1991,7 @@ public final class TimeSlotStep {
             return false;
         }
         CitizenViewWaits.sleepQuiet(1200L);
-        try {
-            waitUntilAppointmentSlotsReady(Math.min(45, slotBookingWaitTimeoutSeconds()));
-        } catch (Exception e) {
-            ScenarioLogManager.getLogger()
-                    .warn("zmscitizenview slot wait after next calendar day: {}", e.toString());
-        }
+        waitUntilAppointmentSlotsReadyQuiet(Math.min(45, slotBookingWaitTimeoutSeconds()));
         return true;
     }
 
@@ -2235,12 +2228,7 @@ public final class TimeSlotStep {
                             attempt);
             if (clickCitizenViewLaterOnceIfAvailable()) {
                 CitizenViewWaits.sleepQuiet(1200L);
-                try {
-                    waitUntilAppointmentSlotsReady(Math.min(45, slotBookingWaitTimeoutSeconds()));
-                } catch (Exception e) {
-                    ScenarioLogManager.getLogger()
-                            .warn("zmscitizenview slot wait after Später (highlight): {}", e.toString());
-                }
+                waitUntilAppointmentSlotsReadyQuiet(Math.min(45, slotBookingWaitTimeoutSeconds()));
                 continue;
             }
             if (dayMoves >= 6 || !openNextCalendarDayAndWaitForSlots()) {
