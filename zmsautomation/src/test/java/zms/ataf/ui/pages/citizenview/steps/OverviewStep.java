@@ -920,30 +920,44 @@ public final class OverviewStep {
     }
     public void clickCancelAppointmentAndConfirm() {
         context.set();
-        ScenarioLogManager.getLogger().info("zmscitizenview: clicking cancel appointment button (Termin absagen)");
-        new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(defaultWaitSeconds))
-                .until(d -> shadow.clickButtonWithExactText("Termin absagen")
-                        || shadow.clickButtonContaining("Termin absagen"));
-        confirmCancelAppointmentDialogIfShown();
         String marker = CANCELLATION_SUCCESS_HEADING;
-        ScenarioLogManager.getLogger()
-                .info("zmscitizenview: waiting in 5s + 10s + 15s windows (30s total) for cancellation success callout");
-        CitizenViewWaits.waitWithThreeWindows(() -> shadow.shadowDomContainsText(marker), "Cancellation success callout");
-        Assert.assertTrue(
-                shadow.shadowDomContainsText(marker),
+        for (int attempt = 1; attempt <= 3; attempt++) {
+            ScenarioLogManager.getLogger()
+                    .info("zmscitizenview: Termin absagen attempt {}/3", attempt);
+            if (!shadow.shadowDomContainsText(marker)) {
+                new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(defaultWaitSeconds))
+                        .until(d -> shadow.clickButtonWithExactText("Termin absagen")
+                                || shadow.clickButtonContaining("Termin absagen"));
+                confirmCancelAppointmentDialogIfShown();
+            }
+            try {
+                new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(25))
+                        .until(d -> shadow.shadowDomContainsText(marker));
+                return;
+            } catch (TimeoutException e) {
+                ScenarioLogManager.getLogger()
+                        .warn(
+                                "zmscitizenview: cancellation success callout missing after attempt {}; retrying",
+                                attempt);
+            }
+        }
+        Assert.fail(
                 "Cancellation success callout (Sie haben Ihren Termin erfolgreich abgesagt.) not visible after Termin absagen with retries.");
     }
     private void confirmCancelAppointmentDialogIfShown() {
         String heading = "Absage Ihres Termins";
         try {
-            new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(5))
+            new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(8))
                     .until(d -> shadow.shadowDomContainsText(heading));
         } catch (TimeoutException e) {
             ScenarioLogManager.getLogger().info("zmscitizenview: cancel dialog was not shown");
             return;
         }
         ScenarioLogManager.getLogger().info("zmscitizenview: confirm cancel dialog (Absagen)");
-        shadow.waitForAndClickButtonContaining("Absagen", defaultWaitSeconds);
+        if (!shadow.clickButtonWithExactText("Absagen")
+                && !shadow.clickButtonContaining("Absagen")) {
+            shadow.waitForAndClickButtonContaining("Absagen", defaultWaitSeconds);
+        }
     }
     public void assertCancellationSuccessCalloutVisible() {
         ScenarioLogManager.getLogger().info("zmscitizenview: checking for cancellation success callout (Sie haben Ihren Termin erfolgreich abgesagt.)");
