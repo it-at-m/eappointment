@@ -409,9 +409,11 @@ watch(countOfService, (newCountOfService) => {
 });
 
 const setServiceData = (selectedService: ServiceImpl) => {
-  service.value!.providers = getProviders(selectedService.id, null);
-  // Do not inherit a prior service's zero; start at 1 and clamp below if this
-  // service cannot fit. Keep a positive count when switching between services.
+  // Jump-in / exclusive office: only that office's slots and slotsPerAppointment.
+  service.value!.providers = getProviders(
+    selectedService.id,
+    props.preselectedOfficeId ? [String(props.preselectedOfficeId)] : null
+  );
   service.value!.count = countOfService.value > 0 ? countOfService.value : 1;
 
   minSlotsPerAppointment.value = getEffectiveMinSlotsPerAppointment(
@@ -463,56 +465,47 @@ const setServiceData = (selectedService: ServiceImpl) => {
       );
   }
 
-  // Calculate currentSlots including main service and all subservices
+  // Clamp main count: 1+ when it fits, 0 only when quantity 1 exceeds the cap.
+  const subServiceSlots = calculateSubserviceSlots(service.value!.subServices);
+  const { adjustedCount } = adjustMainServiceCount(
+    service.value!.count || 1,
+    service.value!.providers,
+    subServiceSlots,
+    minSlotsPerAppointment.value
+  );
+  service.value!.count = adjustedCount;
+  countOfService.value = adjustedCount;
+
+  let remainingSlots =
+    minSlotsPerAppointment.value > 0
+      ? minSlotsPerAppointment.value -
+        getMaxSlotOfProvider(service.value!.providers) * adjustedCount
+      : Number.POSITIVE_INFINITY;
+
+  if (service.value!.subServices) {
+    if (remainingSlots <= 0 || adjustedCount === 0) {
+      service.value!.subServices.forEach((subservice) => {
+        subservice.count = 0;
+      });
+    } else {
+      service.value!.subServices.forEach((subservice) => {
+        const slotsPerUnit = getMaxSlotOfProvider(subservice.providers);
+        if (remainingSlots >= slotsPerUnit && slotsPerUnit > 0) {
+          const maxSubCount = Math.floor(remainingSlots / slotsPerUnit);
+          subservice.count = Math.min(subservice.count, maxSubCount);
+          remainingSlots -= slotsPerUnit * subservice.count;
+        } else {
+          subservice.count = 0;
+        }
+      });
+    }
+  }
+
   currentSlots.value = calculateTotalSlots(
     service.value!.providers,
     service.value!.count || 0,
     service.value!.subServices
   );
-
-  // Validate and adjust counts if they exceed minSlotsPerAppointment
-  if (
-    currentSlots.value > minSlotsPerAppointment.value &&
-    minSlotsPerAppointment.value > 0
-  ) {
-    let remainingSlots = minSlotsPerAppointment.value;
-    const mainServiceSlots = getMaxSlotOfProvider(service.value!.providers);
-
-    if (remainingSlots >= mainServiceSlots && mainServiceSlots > 0) {
-      const maxMainCount = Math.floor(remainingSlots / mainServiceSlots);
-      service.value!.count = Math.min(service.value!.count || 1, maxMainCount);
-      countOfService.value = service.value!.count;
-      remainingSlots -= mainServiceSlots * service.value!.count;
-    } else {
-      // Service does not fit even once under this scope's slotsPerAppointment.
-      service.value!.count = 0;
-      countOfService.value = 0;
-      remainingSlots = 0;
-    }
-
-    if (service.value!.subServices && remainingSlots > 0) {
-      service.value!.subServices.forEach((subservice) => {
-        const subServiceSlots = getMaxSlotOfProvider(subservice.providers);
-        if (remainingSlots >= subServiceSlots) {
-          const maxSubCount = Math.floor(remainingSlots / subServiceSlots);
-          subservice.count = Math.min(subservice.count, maxSubCount);
-          remainingSlots -= subServiceSlots * subservice.count;
-        } else {
-          subservice.count = 0;
-        }
-      });
-    } else if (service.value!.subServices) {
-      service.value!.subServices.forEach((subservice) => {
-        subservice.count = 0;
-      });
-    }
-
-    currentSlots.value = calculateTotalSlots(
-      service.value!.providers,
-      service.value!.count || 0,
-      service.value!.subServices
-    );
-  }
 };
 
 const getProviders = (serviceId: string, providers: string[] | null) => {

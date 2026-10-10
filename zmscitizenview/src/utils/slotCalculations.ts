@@ -126,7 +126,8 @@ export const exceedsSlotLimit = (
 
 /**
  * Adjusts the main service count to fit within slot limits.
- * Returns the adjusted count and updated total slots.
+ * When at least one unit fits, count stays at least 1 (same as before the zero-count
+ * path). Returns 0 only when quantity 1 already exceeds slotsPerAppointment.
  */
 export const adjustMainServiceCount = (
   requestedCount: number,
@@ -135,20 +136,25 @@ export const adjustMainServiceCount = (
   minSlotsPerAppointment: number
 ): { adjustedCount: number; totalSlots: number } => {
   const mainServiceSlots = getMaxSlotOfProvider(mainServiceProviders);
-  const totalSlots = mainServiceSlots * requestedCount + subServiceSlots;
+  const maxMainCount =
+    mainServiceSlots > 0
+      ? Math.floor(
+          (minSlotsPerAppointment - subServiceSlots) / mainServiceSlots
+        )
+      : requestedCount;
 
-  if (!exceedsSlotLimit(totalSlots, minSlotsPerAppointment)) {
-    return { adjustedCount: requestedCount, totalSlots };
+  if (minSlotsPerAppointment > 0 && maxMainCount < 1) {
+    return { adjustedCount: 0, totalSlots: subServiceSlots };
   }
 
-  const maxMainCount = Math.floor(
-    (minSlotsPerAppointment - subServiceSlots) / mainServiceSlots
+  const adjustedCount = Math.max(
+    1,
+    Math.min(requestedCount || 1, maxMainCount)
   );
-  // 0 when even quantity 1 exceeds slotsPerAppointment (Weiter must stay disabled).
-  const adjustedCount = Math.max(0, Math.min(requestedCount, maxMainCount));
-  const adjustedTotalSlots = mainServiceSlots * adjustedCount + subServiceSlots;
-
-  return { adjustedCount, totalSlots: adjustedTotalSlots };
+  return {
+    adjustedCount,
+    totalSlots: mainServiceSlots * adjustedCount + subServiceSlots,
+  };
 };
 
 /**
