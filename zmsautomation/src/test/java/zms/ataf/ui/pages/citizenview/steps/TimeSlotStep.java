@@ -2480,10 +2480,15 @@ public final class TimeSlotStep {
         return true;
     }
 
-    /** Umbuchen summary: Verschieben abbrechen (and no Kontakt form). */
+    /**
+     * Umbuchen Übersicht: Verschieben abbrechen without Kontakt — and not still on Termin.
+     * During rebooking the slot callout already shows Verschieben abbrechen next to Weiter;
+     * treating that alone as Übersicht made reserve Weiter pass while stuck on Ausgewählter Termin.
+     */
     public boolean rebookingOverviewReached() {
         return shadow.shadowDomContainsText("Verschieben abbrechen")
-                && !shadow.deepElementExists("#firstname");
+                && !shadow.deepElementExists("#firstname")
+                && !selectedAppointmentCalloutVisible();
     }
 
     public void finishReserveOnContactStep() {
