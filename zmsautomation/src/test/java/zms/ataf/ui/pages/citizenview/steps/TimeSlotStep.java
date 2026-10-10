@@ -51,8 +51,8 @@ public final class TimeSlotStep {
     public enum ReserveOutcome {
         CONTACT,
         /**
-         * Rebooking already left Termin (Übersicht with Verschieben abbrechen). Do not click Weiter
-         * again and do not require Kontaktdaten.
+         * Rebooking already left Termin for Übersicht (Verschieben abbrechen without the
+         * Ausgewählter Termin callout). Do not click Weiter again and do not require Kontaktdaten.
          */
         REBOOKING_OVERVIEW,
         SLOT_TAKEN,
