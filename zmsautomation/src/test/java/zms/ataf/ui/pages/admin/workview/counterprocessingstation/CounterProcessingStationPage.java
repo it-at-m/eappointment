@@ -662,8 +662,21 @@ public class CounterProcessingStationPage extends AdminPage {
     }
 
     public boolean hasBookAppointmentButton() {
-        List<WebElement> buttons = DRIVER.findElements(By.cssSelector("button.process-reserve"));
-        return !buttons.isEmpty() && buttons.get(0).isDisplayed();
+        // Edge rebuilds the appointment form under us; a found button can go stale before isDisplayed.
+        for (int attempt = 0; attempt < 5; attempt++) {
+            try {
+                List<WebElement> buttons = DRIVER.findElements(By.cssSelector("button.process-reserve"));
+                for (WebElement button : buttons) {
+                    if (button.isDisplayed()) {
+                        return true;
+                    }
+                }
+                return false;
+            } catch (StaleElementReferenceException ignored) {
+                // retry with a fresh find
+            }
+        }
+        return false;
     }
 
     public void selectWalkInCustomer() {
