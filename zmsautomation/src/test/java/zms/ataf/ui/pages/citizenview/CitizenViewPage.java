@@ -1273,6 +1273,16 @@ public class CitizenViewPage extends BasePage {
         timeSlot.assertAppointmentNoLongerAvailableCalloutVisible();
     }
 
+    /** Soft probe for the slot-taken Weiter retry (no assert). */
+    public boolean appointmentNotAvailableCalloutLikelyVisible() {
+        return timeSlot.appointmentNotAvailableCalloutLikelyVisible();
+    }
+
+    /** Soft probe: Kontakt step already reached after Weiter. */
+    public boolean contactStepLikelyReached() {
+        return timeSlot.contactStepReached();
+    }
+
     public void assertStillOnAppointmentSelectionStep() {
         timeSlot.assertStillOnAppointmentSelectionStep();
     }

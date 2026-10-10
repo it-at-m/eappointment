@@ -2172,6 +2172,18 @@ public class CitizenApiSteps {
             response.getStatusCode(),
             cancelBody.length() > 1250 ? cancelBody.substring(0, 1250) + "..." : cancelBody
         ));
+        int status = response.getStatusCode();
+        if (status == 200) {
+            return;
+        }
+        // Product refuses cancel once appointmentTime <= App::$now. Under shard load the
+        // source can pass that line between book and cancel; the rebooked process is already
+        // confirmed, so a past-slot 406 is an acceptable cleanup outcome.
+        if (status == 406 && cancelBody.contains("appointmentCanNotBeCanceled")) {
+            ScenarioLogManager.getLogger().info(
+                    "Citizen API rebooking source already not cancelable (appointmentCanNotBeCanceled); continuing");
+            return;
+        }
         response.then().statusCode(200);
     }
 
