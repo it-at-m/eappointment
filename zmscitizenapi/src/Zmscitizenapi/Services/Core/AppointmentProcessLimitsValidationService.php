@@ -61,32 +61,13 @@ class AppointmentProcessLimitsValidationService
         }
 
         $relationMaps = self::relationMapsForOffice($officeId);
-        $requiredSlotCount = self::computeRequiredSlotCount($serviceIdToCount, $relationMaps['slots']);
 
-        if ($requiredSlotCount !== null) {
-            $errors = self::validateSlotLimit(
-                $requiredSlotCount,
-                self::readSlotsPerAppointmentByOffice($officeId)
-            )['errors'];
-
-            return [
-                'errors' => array_merge(
-                    $errors,
-                    self::validateServiceQuantityLimits(
-                        $serviceIdToCount,
-                        $relationMaps['maxQuantity']
-                    )['errors']
-                ),
-            ];
-        }
-
-        // Missing relation or slots < 1: do not fall through to quantity-only checks.
-        // Backend may otherwise normalize an unresolved requirement to a one-slot hold.
-        if ($serviceIdToCount !== []) {
-            return ['errors' => [self::getError('invalidLocationAndServiceCombination')]];
-        }
-
-        return ['errors' => []];
+        return self::validateRequestLimitsWithMaps(
+            $serviceIdToCount,
+            self::computeRequiredSlotCount($serviceIdToCount, $relationMaps['slots']),
+            self::readSlotsPerAppointmentByOffice($officeId),
+            $relationMaps['maxQuantity']
+        );
     }
 
     /**
@@ -117,30 +98,14 @@ class AppointmentProcessLimitsValidationService
             }
 
             $relationMaps = $relationMapsByOffice[$officeId] ?? ['slots' => [], 'maxQuantity' => []];
-            $requiredSlotCount = self::computeRequiredSlotCount($serviceIdToCount, $relationMaps['slots']);
-
-            if ($requiredSlotCount === null) {
-                if ($serviceIdToCount !== []) {
-                    $lastErrors = ['errors' => [self::getError('invalidLocationAndServiceCombination')]];
-                    continue;
-                }
-                // No services to check: keep the office (same as validateReserveRequestLimits).
-                $eligible[] = (string) $officeIdRaw;
-                continue;
-            }
-
-            $errors = self::validateSlotLimit(
-                $requiredSlotCount,
-                $slotsPerAppointmentByOffice[$officeId] ?? null
-            )['errors'];
-            if ($errors === []) {
-                $errors = self::validateServiceQuantityLimits(
-                    $serviceIdToCount,
-                    $relationMaps['maxQuantity']
-                )['errors'];
-            }
-            if ($errors !== []) {
-                $lastErrors = ['errors' => $errors];
+            $limitErrors = self::validateRequestLimitsWithMaps(
+                $serviceIdToCount,
+                self::computeRequiredSlotCount($serviceIdToCount, $relationMaps['slots']),
+                $slotsPerAppointmentByOffice[$officeId] ?? null,
+                $relationMaps['maxQuantity']
+            );
+            if (!empty($limitErrors['errors'])) {
+                $lastErrors = $limitErrors;
                 continue;
             }
 
@@ -212,6 +177,41 @@ class AppointmentProcessLimitsValidationService
         }
 
         return $process->scope->getSlotsPerAppointment();
+    }
+
+    /**
+     * Shared request-side checks for reserve and calendar filtering (indexed maps already loaded).
+     * Slot and quantity errors are both returned when both limits fail.
+     *
+     * @param array<int, int> $serviceIdToCount
+     * @param array<int, int|null> $maxQuantityByServiceId
+     * @return array{errors: list<array>}
+     */
+    private static function validateRequestLimitsWithMaps(
+        array $serviceIdToCount,
+        ?int $requiredSlotCount,
+        mixed $slotsPerAppointment,
+        array $maxQuantityByServiceId
+    ): array {
+        if ($requiredSlotCount === null) {
+            // Missing relation or slots < 1: do not fall through to quantity-only checks.
+            // Backend may otherwise normalize an unresolved requirement to a one-slot hold.
+            if ($serviceIdToCount !== []) {
+                return ['errors' => [self::getError('invalidLocationAndServiceCombination')]];
+            }
+
+            return ['errors' => []];
+        }
+
+        return [
+            'errors' => array_merge(
+                self::validateSlotLimit($requiredSlotCount, $slotsPerAppointment)['errors'],
+                self::validateServiceQuantityLimits(
+                    $serviceIdToCount,
+                    $maxQuantityByServiceId
+                )['errors']
+            ),
+        ];
     }
 
     private static function readSlotsPerAppointmentByOffice(int $officeId): mixed
