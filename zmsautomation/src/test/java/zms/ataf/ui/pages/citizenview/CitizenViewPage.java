@@ -109,14 +109,11 @@ public class CitizenViewPage extends BasePage {
         timeSlot = new TimeSlotStep(CONTEXT, shadow, json, providerLocation, slotState, this, DEFAULT_EXPLICIT_WAIT_TIME);
         providerLocation.setSlotWaitBridge(
                 seconds -> {
-                    try {
-                        timeSlot.waitUntilAppointmentSlotsReady(seconds);
-                    } catch (Exception first) {
-                        // Keep-only after an empty Ort can land on a day/hour with no grid yet.
+                    // Keep-only / Ort toggle often lands on an empty day-part; page quietly.
+                    if (!timeSlot.waitUntilAppointmentSlotsReadyQuiet(seconds)) {
                         ScenarioLogManager.getLogger()
-                                .warn(
-                                        "zmscitizenview: first slot wait after Ort toggle failed; page days: {}",
-                                        first.toString());
+                                .info(
+                                        "zmscitizenview: Ort toggle had no timeslot yet; paging calendar days");
                         timeSlot.waitUntilSlotsReadyForBooking();
                     }
                 },
