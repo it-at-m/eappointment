@@ -1,26 +1,26 @@
 {
   "branch": "feature-zmskvr-1440-slots-per-appointment-service-fit",
   "branchSlug": "feature-zmskvr-1440-slots-per-appointment-service-fit",
-  "runId": "38074239701",
-  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38074239701",
-  "runStartedAt": "2026-10-10T18:03:27Z",
-  "publishedAt": "2026-10-10T18:21:56.405Z",
+  "runId": "38075839351",
+  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38075839351",
+  "runStartedAt": "2026-10-10T18:27:23Z",
+  "publishedAt": "2026-10-10T18:43:02.369Z",
   "features": {
     "feature-rest-zmscitizenapi-callouts-zmskvr-1440-zmskvr-1451-captcha-expiry-citizenapi": {
       "status": "passed",
       "shard": "custom",
       "browser": "chrome",
       "rel": "rest/zmscitizenapi/callouts/zmskvr-1440_zmskvr-1451_captcha_expiry_citizenapi.feature",
-      "runId": "38074239701",
-      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38074239701",
-      "runStartedAt": "2026-10-10T18:03:27Z",
+      "runId": "38075839351",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38075839351",
+      "runStartedAt": "2026-10-10T18:27:23Z",
       "browsers": {
         "chrome": {
           "status": "passed",
           "shard": "custom",
-          "runId": "38074239701",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38074239701",
-          "runStartedAt": "2026-10-10T18:03:27Z"
+          "runId": "38075839351",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38075839351",
+          "runStartedAt": "2026-10-10T18:27:23Z"
         }
       }
     },
@@ -29,16 +29,142 @@
       "shard": "custom",
       "browser": "chrome",
       "rel": "ui/zmscitizenview/callouts/zmskvr-444_zmskvr-596_zmskvr-1440_zmskvr-1451_zmskvr-1458_session_and_reservation_callouts.feature",
-      "runId": "38074239701",
-      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38074239701",
-      "runStartedAt": "2026-10-10T18:03:27Z",
+      "runId": "38075839351",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38075839351",
+      "runStartedAt": "2026-10-10T18:27:23Z",
       "browsers": {
         "chrome": {
           "status": "passed",
           "shard": "custom",
-          "runId": "38074239701",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38074239701",
-          "runStartedAt": "2026-10-10T18:03:27Z"
+          "runId": "38075839351",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38075839351",
+          "runStartedAt": "2026-10-10T18:27:23Z"
+        }
+      }
+    },
+    "feature-rest-zmscitizenapi-booking-zmskvr-1083-zmskvr-1183-office-spa-slots-citizenapi": {
+      "status": "passed",
+      "shard": "custom",
+      "browser": "chrome",
+      "rel": "rest/zmscitizenapi/booking/zmskvr-1083_zmskvr-1183_office_spa_slots_citizenapi.feature",
+      "runId": "38075839351",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38075839351",
+      "runStartedAt": "2026-10-10T18:27:23Z",
+      "browsers": {
+        "chrome": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "38075839351",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38075839351",
+          "runStartedAt": "2026-10-10T18:27:23Z"
+        }
+      }
+    },
+    "feature-rest-zmscitizenapi-booking-zmskvr-1083-zmskvr-1183-preconfirm-confirm-spa-limits-citizenapi": {
+      "status": "passed",
+      "shard": "custom",
+      "browser": "chrome",
+      "rel": "rest/zmscitizenapi/booking/zmskvr-1083_zmskvr-1183_preconfirm_confirm_spa_limits_citizenapi.feature",
+      "runId": "38075839351",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38075839351",
+      "runStartedAt": "2026-10-10T18:27:23Z",
+      "browsers": {
+        "chrome": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "38075839351",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38075839351",
+          "runStartedAt": "2026-10-10T18:27:23Z"
+        }
+      }
+    },
+    "feature-rest-zmscitizenapi-booking-zmskvr-1083-zmskvr-1183-reserve-max-quantity-citizenapi": {
+      "status": "passed",
+      "shard": "custom",
+      "browser": "chrome",
+      "rel": "rest/zmscitizenapi/booking/zmskvr-1083_zmskvr-1183_reserve_max_quantity_citizenapi.feature",
+      "runId": "38075839351",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38075839351",
+      "runStartedAt": "2026-10-10T18:27:23Z",
+      "browsers": {
+        "chrome": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "38075839351",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38075839351",
+          "runStartedAt": "2026-10-10T18:27:23Z"
+        }
+      }
+    },
+    "feature-rest-zmscitizenapi-booking-zmskvr-1083-zmskvr-1183-reserve-spa-limits-citizenapi": {
+      "status": "passed",
+      "shard": "custom",
+      "browser": "chrome",
+      "rel": "rest/zmscitizenapi/booking/zmskvr-1083_zmskvr-1183_reserve_spa_limits_citizenapi.feature",
+      "runId": "38075839351",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38075839351",
+      "runStartedAt": "2026-10-10T18:27:23Z",
+      "browsers": {
+        "chrome": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "38075839351",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38075839351",
+          "runStartedAt": "2026-10-10T18:27:23Z"
+        }
+      }
+    },
+    "feature-ui-zmscitizenview-booking-zmskvr-1083-zmskvr-1183-ausfuhr-spa-quantity-cap": {
+      "status": "passed",
+      "shard": "custom",
+      "browser": "chrome",
+      "rel": "ui/zmscitizenview/booking/zmskvr-1083_zmskvr-1183_ausfuhr_spa_quantity_cap.feature",
+      "runId": "38075839351",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38075839351",
+      "runStartedAt": "2026-10-10T18:27:23Z",
+      "browsers": {
+        "chrome": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "38075839351",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38075839351",
+          "runStartedAt": "2026-10-10T18:27:23Z"
+        }
+      }
+    },
+    "feature-ui-zmscitizenview-booking-zmskvr-1083-zmskvr-1183-leistung-back-keeps-spa": {
+      "status": "passed",
+      "shard": "custom",
+      "browser": "chrome",
+      "rel": "ui/zmscitizenview/booking/zmskvr-1083_zmskvr-1183_leistung_back_keeps_spa.feature",
+      "runId": "38075839351",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38075839351",
+      "runStartedAt": "2026-10-10T18:27:23Z",
+      "browsers": {
+        "chrome": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "38075839351",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38075839351",
+          "runStartedAt": "2026-10-10T18:27:23Z"
+        }
+      }
+    },
+    "feature-ui-zmscitizenview-booking-zmskvr-1083-zmskvr-1183-wechselkennzeichen-spa-cap": {
+      "status": "passed",
+      "shard": "custom",
+      "browser": "chrome",
+      "rel": "ui/zmscitizenview/booking/zmskvr-1083_zmskvr-1183_wechselkennzeichen_spa_cap.feature",
+      "runId": "38075839351",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38075839351",
+      "runStartedAt": "2026-10-10T18:27:23Z",
+      "browsers": {
+        "chrome": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "38075839351",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38075839351",
+          "runStartedAt": "2026-10-10T18:27:23Z"
         }
       }
     }
