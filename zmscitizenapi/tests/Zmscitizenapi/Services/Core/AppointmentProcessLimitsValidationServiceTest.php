@@ -122,6 +122,12 @@ class AppointmentProcessLimitsValidationServiceTest extends TestCase
                 []
             )
         );
+        $this->assertNull(
+            AppointmentProcessLimitsValidationService::computeRequiredSlotCount(
+                [1064268 => 1, 1064374 => 1],
+                [1064268 => 3, 1064374 => 0]
+            )
+        );
     }
 
     public function testValidateThinnedProcessLimits(): void
