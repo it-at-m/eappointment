@@ -826,9 +826,25 @@ public final class OverviewStep {
         context.set();
         ScenarioLogManager.getLogger()
                 .info("zmscitizenview: rebooking summary → confirm (Termin verschieben)");
-        shadow.waitForAndClickButtonContaining(RESCHEDULE_APPOINTMENT_BUTTON, defaultWaitSeconds);
-        CitizenViewWaits.waitWithThreeWindows(
-                () -> shadow.shadowDomContainsText(CONFIRMATION_SUCCESS_HEADING), "Rebooking confirmation success");
+        for (int attempt = 1; attempt <= 3; attempt++) {
+            if (shadow.shadowDomContainsText(CONFIRMATION_SUCCESS_HEADING)) {
+                break;
+            }
+            if (shadow.visibleButtonContaining(RESCHEDULE_APPOINTMENT_BUTTON)
+                    || shadow.shadowDomContainsText(RESCHEDULE_APPOINTMENT_BUTTON)) {
+                shadow.waitForAndClickButtonContaining(RESCHEDULE_APPOINTMENT_BUTTON, defaultWaitSeconds);
+            }
+            try {
+                new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(25))
+                        .until(d -> shadow.shadowDomContainsText(CONFIRMATION_SUCCESS_HEADING));
+                break;
+            } catch (TimeoutException e) {
+                ScenarioLogManager.getLogger()
+                        .warn(
+                                "zmscitizenview: rebooking confirmation missing after attempt {}; retrying",
+                                attempt);
+            }
+        }
         Assert.assertTrue(
                 shadow.shadowDomContainsText(CONFIRMATION_SUCCESS_HEADING),
                 "Confirmation success callout (Ihr Termin wurde gebucht.) not visible after guest rebooking.");
@@ -921,13 +937,44 @@ public final class OverviewStep {
     public void clickCancelAppointmentAndConfirm() {
         context.set();
         String marker = CANCELLATION_SUCCESS_HEADING;
-        for (int attempt = 1; attempt <= 3; attempt++) {
+        String cancelLabel = "Termin absagen";
+        for (int attempt = 1; attempt <= 4; attempt++) {
             ScenarioLogManager.getLogger()
-                    .info("zmscitizenview: Termin absagen attempt {}/3", attempt);
-            if (!shadow.shadowDomContainsText(marker)) {
-                new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(defaultWaitSeconds))
-                        .until(d -> shadow.clickButtonWithExactText("Termin absagen")
-                                || shadow.clickButtonContaining("Termin absagen"));
+                    .info("zmscitizenview: Termin absagen attempt {}/4", attempt);
+            if (shadow.shadowDomContainsText(marker)) {
+                return;
+            }
+            try {
+                new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(20))
+                        .until(
+                                d -> shadow.shadowDomContainsText(marker)
+                                        || shadow.shadowDomContainsText(cancelLabel));
+            } catch (TimeoutException e) {
+                ScenarioLogManager.getLogger()
+                        .warn(
+                                "zmscitizenview: Termin absagen not in DOM yet (attempt {}); retrying",
+                                attempt);
+                continue;
+            }
+            if (shadow.shadowDomContainsText(marker)) {
+                return;
+            }
+            shadow.scrollTextIntoView(cancelLabel);
+            boolean clicked = false;
+            try {
+                clicked =
+                        Boolean.TRUE.equals(
+                                new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(15))
+                                        .until(
+                                                d -> shadow.clickButtonWithExactText(cancelLabel)
+                                                        || shadow.clickButtonContaining(cancelLabel)));
+            } catch (TimeoutException e) {
+                ScenarioLogManager.getLogger()
+                        .warn(
+                                "zmscitizenview: could not click Termin absagen (attempt {})",
+                                attempt);
+            }
+            if (clicked) {
                 confirmCancelAppointmentDialogIfShown();
             }
             try {
