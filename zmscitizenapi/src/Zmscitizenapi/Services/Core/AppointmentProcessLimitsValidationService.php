@@ -56,27 +56,102 @@ class AppointmentProcessLimitsValidationService
         int $officeId
     ): array {
         $serviceIdToCount = self::buildServiceCountMap($serviceIds, $serviceCounts);
-        $slotsPerAppointment = $officeId > 0 ? self::readSlotsPerAppointmentByOffice($officeId) : null;
-        $requiredSlotCount = $officeId > 0
-            ? self::computeRequiredSlotCount($serviceIdToCount, self::readSlotsByOffice($officeId))
-            : null;
+        if ($officeId <= 0) {
+            return ['errors' => []];
+        }
+
+        $relationMaps = self::relationMapsForOffice($officeId);
+        $requiredSlotCount = self::computeRequiredSlotCount($serviceIdToCount, $relationMaps['slots']);
 
         if ($requiredSlotCount !== null) {
-            return self::validateProcessLimits(
+            $errors = self::validateSlotLimit(
                 $requiredSlotCount,
-                $slotsPerAppointment,
-                $serviceIdToCount,
-                $officeId
-            );
+                self::readSlotsPerAppointmentByOffice($officeId)
+            )['errors'];
+
+            return [
+                'errors' => array_merge(
+                    $errors,
+                    self::validateServiceQuantityLimits(
+                        $serviceIdToCount,
+                        $relationMaps['maxQuantity']
+                    )['errors']
+                ),
+            ];
         }
 
         // Missing relation or slots < 1: do not fall through to quantity-only checks.
         // Backend may otherwise normalize an unresolved requirement to a one-slot hold.
-        if ($officeId > 0 && $serviceIdToCount !== []) {
+        if ($serviceIdToCount !== []) {
             return ['errors' => [self::getError('invalidLocationAndServiceCombination')]];
         }
 
         return ['errors' => []];
+    }
+
+    /**
+     * Keep offices that pass the same request-side slot/quantity limits as reserve.
+     * Loads scopes and relations once for the whole office list (calendar multi-office path).
+     *
+     * @param list<string|int> $officeIds
+     * @param list<string|int> $serviceIds
+     * @param list<string|int> $serviceCounts
+     * @return array{officeIds?: list<string>, errors?: list<array>}
+     */
+    public static function filterOfficeIdsWithinRequestLimits(
+        array $officeIds,
+        array $serviceIds,
+        array $serviceCounts
+    ): array {
+        $serviceIdToCount = self::buildServiceCountMap($serviceIds, $serviceCounts);
+        $slotsPerAppointmentByOffice = self::indexSlotsPerAppointmentByOffice();
+        $relationMapsByOffice = self::indexRelationMapsByOffice();
+
+        $eligible = [];
+        $lastErrors = ['errors' => []];
+
+        foreach ($officeIds as $officeIdRaw) {
+            $officeId = (int) $officeIdRaw;
+            if ($officeId <= 0) {
+                continue;
+            }
+
+            $relationMaps = $relationMapsByOffice[$officeId] ?? ['slots' => [], 'maxQuantity' => []];
+            $requiredSlotCount = self::computeRequiredSlotCount($serviceIdToCount, $relationMaps['slots']);
+
+            if ($requiredSlotCount === null) {
+                if ($serviceIdToCount !== []) {
+                    $lastErrors = ['errors' => [self::getError('invalidLocationAndServiceCombination')]];
+                    continue;
+                }
+                // No services to check: keep the office (same as validateReserveRequestLimits).
+                $eligible[] = (string) $officeIdRaw;
+                continue;
+            }
+
+            $errors = self::validateSlotLimit(
+                $requiredSlotCount,
+                $slotsPerAppointmentByOffice[$officeId] ?? null
+            )['errors'];
+            if ($errors === []) {
+                $errors = self::validateServiceQuantityLimits(
+                    $serviceIdToCount,
+                    $relationMaps['maxQuantity']
+                )['errors'];
+            }
+            if ($errors !== []) {
+                $lastErrors = ['errors' => $errors];
+                continue;
+            }
+
+            $eligible[] = (string) $officeIdRaw;
+        }
+
+        if ($eligible === []) {
+            return $lastErrors;
+        }
+
+        return ['officeIds' => $eligible];
     }
 
     public static function validateReserveLimits(
@@ -141,19 +216,31 @@ class AppointmentProcessLimitsValidationService
 
     private static function readSlotsPerAppointmentByOffice(int $officeId): mixed
     {
+        return self::indexSlotsPerAppointmentByOffice()[$officeId] ?? null;
+    }
+
+    /**
+     * @return array<int, int> officeId => minimum slotsPerAppointment across scopes
+     */
+    private static function indexSlotsPerAppointmentByOffice(): array
+    {
         $scopeList = ZmsApiClientService::getScopes();
         if (!$scopeList) {
-            return null;
+            return [];
         }
 
-        $minSlots = null;
+        $byOffice = [];
         foreach ($scopeList as $scope) {
             try {
                 $provider = $scope->getProvider();
             } catch (\Throwable) {
                 continue;
             }
-            if (!$provider || (int) $provider->id !== $officeId) {
+            if (!$provider) {
+                continue;
+            }
+            $officeId = (int) $provider->id;
+            if ($officeId <= 0) {
                 continue;
             }
             $slotsPerAppointment = $scope->getSlotsPerAppointment();
@@ -164,10 +251,12 @@ class AppointmentProcessLimitsValidationService
             if ($parsed < 1) {
                 continue;
             }
-            $minSlots = $minSlots === null ? $parsed : min($minSlots, $parsed);
+            $byOffice[$officeId] = isset($byOffice[$officeId])
+                ? min($byOffice[$officeId], $parsed)
+                : $parsed;
         }
 
-        return $minSlots;
+        return $byOffice;
     }
 
     public static function buildServiceCountMap(array $serviceIds, array $serviceCounts): array
@@ -225,50 +314,45 @@ class AppointmentProcessLimitsValidationService
 
     private static function readMaxQuantityByOffice(int $officeId): array
     {
-        $maxQuantityByServiceId = [];
-        foreach (self::relationsForOffice($officeId) as $relation) {
-            $serviceId = isset($relation->request->id) ? (int) $relation->request->id : 0;
-            if ($serviceId <= 0) {
-                continue;
-            }
-            $maxQuantity = $relation->getMaxQuantity();
-            $maxQuantityByServiceId[$serviceId] = $maxQuantity === null || $maxQuantity === ''
-                ? null
-                : (int) $maxQuantity;
-        }
-
-        return $maxQuantityByServiceId;
+        return self::relationMapsForOffice($officeId)['maxQuantity'];
     }
 
-    private static function readSlotsByOffice(int $officeId): array
+    /**
+     * @return array{slots: array<int, int>, maxQuantity: array<int, int|null>}
+     */
+    private static function relationMapsForOffice(int $officeId): array
     {
-        $slotsByServiceId = [];
-        foreach (self::relationsForOffice($officeId) as $relation) {
-            $serviceId = isset($relation->request->id) ? (int) $relation->request->id : 0;
-            if ($serviceId <= 0) {
-                continue;
-            }
-            $slotsByServiceId[$serviceId] = (int) $relation->slots;
-        }
-
-        return $slotsByServiceId;
+        return self::indexRelationMapsByOffice()[$officeId]
+            ?? ['slots' => [], 'maxQuantity' => []];
     }
 
-    private static function relationsForOffice(int $officeId): array
+    /**
+     * @return array<int, array{slots: array<int, int>, maxQuantity: array<int, int|null>}>
+     */
+    private static function indexRelationMapsByOffice(): array
     {
         $relationList = ZmsApiClientService::getRequestRelationList();
         if (!$relationList) {
             return [];
         }
 
-        $matches = [];
+        $byOffice = [];
         foreach ($relationList as $relation) {
-            $providerId = isset($relation->provider->id) ? (int) $relation->provider->id : 0;
-            if ($providerId === $officeId) {
-                $matches[] = $relation;
+            $officeId = isset($relation->provider->id) ? (int) $relation->provider->id : 0;
+            $serviceId = isset($relation->request->id) ? (int) $relation->request->id : 0;
+            if ($officeId <= 0 || $serviceId <= 0) {
+                continue;
             }
+            if (!isset($byOffice[$officeId])) {
+                $byOffice[$officeId] = ['slots' => [], 'maxQuantity' => []];
+            }
+            $byOffice[$officeId]['slots'][$serviceId] = (int) $relation->slots;
+            $maxQuantity = $relation->getMaxQuantity();
+            $byOffice[$officeId]['maxQuantity'][$serviceId] = $maxQuantity === null || $maxQuantity === ''
+                ? null
+                : (int) $maxQuantity;
         }
 
-        return $matches;
+        return $byOffice;
     }
 }
