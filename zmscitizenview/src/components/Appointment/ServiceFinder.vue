@@ -410,8 +410,9 @@ watch(countOfService, (newCountOfService) => {
 
 const setServiceData = (selectedService: ServiceImpl) => {
   service.value!.providers = getProviders(selectedService.id, null);
-  // Keep 0 when slotsPerAppointment already blocked quantity 1.
-  service.value!.count = countOfService.value ?? 1;
+  // Do not inherit a prior service's zero; start at 1 and clamp below if this
+  // service cannot fit. Keep a positive count when switching between services.
+  service.value!.count = countOfService.value > 0 ? countOfService.value : 1;
 
   minSlotsPerAppointment.value = getEffectiveMinSlotsPerAppointment(
     service.value!.providers
