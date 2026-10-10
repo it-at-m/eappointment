@@ -51,6 +51,8 @@ public final class TimeSlotStep {
     public enum ReserveOutcome {
         CONTACT,
         SLOT_TAKEN,
+        /** Citizen API 429 / Zu viele Anfragen — wait out the window and retry same slot. */
+        RATE_LIMITED,
         UNFINISHED
     }
 
@@ -1243,22 +1245,32 @@ public final class TimeSlotStep {
                                     "zmscitizenview: slot timestamp={} is no longer available; trying the next available slot",
                                     timestamp);
                 }
+                case RATE_LIMITED -> {
+                    // Do not skip the slot — the hold never started. Wait past RATE_LIMIT_CACHE_TTL.
+                    ScenarioLogManager.getLogger()
+                            .warn(
+                                    "zmscitizenview: rate limit during reserve timestamp={}; waiting 65s then retrying Weiter",
+                                    timestamp);
+                    CitizenViewWaits.sleepQuiet(65_000L);
+                }
                 case UNFINISHED -> {
-                    if (timestamp > 0) {
-                        skipped.add(timestamp);
-                    }
                     unfinishedReserves++;
                     ScenarioLogManager.getLogger()
                             .info(
-                                    "zmscitizenview: reserve for timestamp={} did not finish; trying the next available slot",
-                                    timestamp);
-                    // Parallel 10427 (and similar short-hold scopes) often leave Weiter hanging
-                    // without Kontakt or taken-slot text; allow more skips before failing.
+                                    "zmscitizenview: reserve for timestamp={} did not finish (attempt {}); retrying",
+                                    timestamp,
+                                    unfinishedReserves);
+                    // First retries keep the same timestamp (Weiter often missed under load).
+                    // Only skip after repeated hangs so captcha TTL (5 min) is not burned on skips.
+                    if (unfinishedReserves >= 3 && timestamp > 0) {
+                        skipped.add(timestamp);
+                    }
                     if (unfinishedReserves >= 8) {
                         Assert.fail(
                                 "zmscitizenview: reserve did not reach Kontaktdaten and did not report a taken slot for office "
                                         + officeId);
                     }
+                    waitUntilAppointmentSlotsReadyQuiet(Math.min(30, slotBookingWaitTimeoutSeconds()));
                 }
             }
         }
@@ -2419,10 +2431,20 @@ public final class TimeSlotStep {
     }
 
     public ReserveOutcome waitForReserveOutcome() {
-        long deadline = System.currentTimeMillis() + 60_000L;
+        // Keep under captcha JWT TTL (CAPTCHA_TOKEN_TTL=300) when retries stack.
+        long deadline = System.currentTimeMillis() + 25_000L;
         while (System.currentTimeMillis() < deadline) {
             if (contactStepReached() || shadow.shadowDomContainsText("Termin verschieben")) {
                 return ReserveOutcome.CONTACT;
+            }
+            if (shadow.shadowDomContainsText("Zu viele Anfragen")
+                    || shadow.shadowDomContainsText("maximale Anzahl an Anfragen")) {
+                return ReserveOutcome.RATE_LIMITED;
+            }
+            if (shadow.shadowDomContainsText("Ihre Sitzung ist abgelaufen.")) {
+                Assert.fail(
+                        "zmscitizenview: captcha session expired during reserve (Ihre Sitzung ist abgelaufen.)"
+                                + " — finish Leistung→Kontakt within CAPTCHA_TOKEN_TTL");
             }
             if (shadow.shadowDomContainsText("Ihr gewählter Termin ist nicht mehr verfügbar.")
                     || shadow.shadowDomContainsText("Ein unbekannter Fehler ist aufgetreten.")
@@ -2433,6 +2455,10 @@ public final class TimeSlotStep {
         }
         if (contactStepReached()) {
             return ReserveOutcome.CONTACT;
+        }
+        if (shadow.shadowDomContainsText("Zu viele Anfragen")
+                || shadow.shadowDomContainsText("maximale Anzahl an Anfragen")) {
+            return ReserveOutcome.RATE_LIMITED;
         }
         ScenarioLogManager.getLogger()
                 .info(

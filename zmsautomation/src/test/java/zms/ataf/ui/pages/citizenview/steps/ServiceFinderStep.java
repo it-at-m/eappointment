@@ -439,8 +439,8 @@ public final class ServiceFinderStep {
     }
 
     /**
-     * Clear + {@code sendKeys} (stable on Chrome/Firefox). Edge also gets Choices {@code type}
-     * so the filter applies when native key events are ignored.
+     * Prefer Choices {@code type} (works when the input rejects {@code sendKeys} on Edge/Chrome).
+     * Native keys are best-effort only — ElementNotInteractable must not fail the step.
      */
     private void typeServiceSearchQuery(String query, boolean forceRetype) {
         if (!serviceSearch("read", "").path("open").asBoolean()) {
@@ -460,14 +460,20 @@ public final class ServiceFinderStep {
             // continue
         }
         JavascriptExecutor js = (JavascriptExecutor) DriverUtil.getDriver();
-        js.executeScript("arguments[0].value=''; arguments[0].focus();", field);
-        field.sendKeys(query);
-        String browser =
-                String.valueOf(((RemoteWebDriver) DriverUtil.getDriver()).getCapabilities().getBrowserName())
-                        .toLowerCase(Locale.ROOT);
-        if (browser.contains("edge") || browser.contains("msedge")) {
-            serviceSearch("type", query);
+        try {
+            js.executeScript("arguments[0].value=''; arguments[0].focus();", field);
+        } catch (Exception ignored) {
+            // Choices type below still applies the filter
         }
+        try {
+            field.sendKeys(query);
+        } catch (Exception e) {
+            ScenarioLogManager.getLogger()
+                    .info(
+                            "zmscitizenview: service search sendKeys not interactable ({}); using Choices type",
+                            e.getClass().getSimpleName());
+        }
+        serviceSearch("type", query);
         CitizenViewWaits.sleepQuiet(450L);
     }
 
