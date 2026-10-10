@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-10-10T17:32:15.655Z",
+  "publishedAt": "2026-10-10T18:21:56.405Z",
   "branches": [
     {
       "name": "next",
@@ -154,8 +154,8 @@
     {
       "name": "feature-zmskvr-1440-slots-per-appointment-service-fit",
       "slug": "feature-zmskvr-1440-slots-per-appointment-service-fit",
-      "runId": "38071254703",
-      "runStartedAt": "2026-10-10T17:19:25Z"
+      "runId": "38074239701",
+      "runStartedAt": "2026-10-10T18:03:27Z"
     },
     {
       "name": "feature-zmskvr-1575-profile-view-for-everyone",
