@@ -793,7 +793,7 @@ public class CitizenViewPage extends BasePage {
         bookingStepper.clickHighlightedBookingStep();
     }
 
-    private boolean bookingStepMatches(String label, String state, String icon) {
+    public boolean bookingStepMatches(String label, String state, String icon) {
         return bookingStepper.bookingStepMatches(label, state, icon);
     }
 
@@ -1506,6 +1506,11 @@ public class CitizenViewPage extends BasePage {
 
     public void assertContactFormVisible() {
         contact.assertContactFormVisible();
+    }
+
+    /** ZMSKVR-92 / ZMSKVR-164: Kontakt after reserve, recovering via stepper when Übersicht wins the race. */
+    public void assertContactFormVisibleAfterReserve() {
+        contact.assertContactFormVisibleAfterReserve();
     }
 
     public void assertFilledNameAndEmailLockedOnContactForm() {

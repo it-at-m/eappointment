@@ -739,6 +739,17 @@ public class CitizenViewSteps {
         page.assertContactFormVisible();
     }
 
+    /**
+     * ZMSKVR-92 / ZMSKVR-164: after re-reserve, accept Kontakt or Übersicht→Kontakt so preserved
+     * contact details can still be asserted.
+     */
+    @Then("the contact form should be reachable after reserve in the citizen view")
+    public void theContactFormShouldBeReachableAfterReserveInTheCitizenView() {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: assert Kontakt form reachable after reserve (Übersicht recovery)");
+        page.assertContactFormVisibleAfterReserve();
+    }
+
     @Then("the filled name and email fields should be locked on the contact form in the citizen view")
     public void theFilledNameAndEmailFieldsShouldBeLockedOnTheContactForm() {
         ScenarioLogManager.getLogger()
