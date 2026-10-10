@@ -8,7 +8,8 @@ Feature: ZMSKVR-1083 / ZMSKVR-1183 Reserve maxQuantity validation — Citizen AP
   #   slots=1, relation maxQuantity=5, service maxQuantity=5
   #   Office spa is unset → fallback 25, so serviceCount 6 stays under spa (slotCount 6)
   #   and only the quantity check fires → tooManyServicesPerAppointment.
-  # V24 opening hours cover this office. No process is kept on the reject path.
+  # Calendar uses the same request limits as reserve, so discover at count 5 then
+  # reserve at 6 (same pattern as the over-spa scenario). No process is kept on reject.
 
   Background:
     Given the Citizen API is available
@@ -22,9 +23,10 @@ Feature: ZMSKVR-1083 / ZMSKVR-1183 Reserve maxQuantity validation — Citizen AP
     And office 10313237 and service 1080843 should take 1 slots
 
   Scenario: Reserve above relation maxQuantity is rejected with tooManyServicesPerAppointment
-    When I request available days for office 10313237 and service 1080843 with service count 6
+    # Discover a timestamp at maxQuantity (count 5), then reserve with count 6.
+    When I request available days for office 10313237 and service 1080843 with service count 5
     And I request available appointments for the first available day
-    And I attempt to reserve an appointment with the first available slot
+    And I attempt to reserve an appointment with the first available slot and service count 6
     Then the response status code should be 400
     And the response errors should include errorCode "tooManyServicesPerAppointment"
 
