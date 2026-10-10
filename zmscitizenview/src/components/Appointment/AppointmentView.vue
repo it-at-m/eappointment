@@ -73,6 +73,21 @@
         currentView < 4
       "
     >
+      <!-- ZMSKVR-501: last 60s of captcha (Termin) or reservation (Kontakt/Übersicht) -->
+      <muc-banner
+        v-if="showTimeoutWarning && !isAppointmentInPast"
+        variant="header"
+        type="warning"
+        class="timeout-warning-banner"
+        data-test="timeout-warning-banner"
+        role="status"
+        aria-live="polite"
+      >
+        {{ t("timeoutWarningLabel") }}
+        <strong>{{
+          t("timeoutWarningSeconds", { seconds: remainingTimeoutSeconds })
+        }}</strong>
+      </muc-banner>
       <muc-stepper
         v-if="!isAppointmentInPast"
         ref="stepperRef"
@@ -425,6 +440,7 @@ import type { ApiErrorTranslation, ErrorStateMap } from "@/utils/errorHandler";
 import type { AppointmentTrackSlotUi } from "@/utils/trackAppointmentEvent";
 
 import {
+  MucBanner,
   MucButton,
   MucCallout,
   MucStepper,
@@ -488,6 +504,7 @@ import {
 } from "@/utils/appointmentLoginStorage";
 import { getTokenData } from "@/utils/auth";
 import { toCalloutType } from "@/utils/callout";
+import { captchaTokenExpiryMs } from "@/utils/captchaTokenExpiry";
 import {
   APPOINTMENT_ACTION_TYPE,
   QUERY_PARAM_APPOINTMENT_DISPLAY_NUMBER,
@@ -522,6 +539,7 @@ import {
   trackAppointmentEvent,
   trackAppointmentScreenFromView,
 } from "@/utils/trackAppointmentEvent";
+import { useTimeoutWarning } from "@/utils/useTimeoutWarning";
 
 const props = defineProps<{
   globalState: GlobalState;
@@ -532,7 +550,7 @@ const props = defineProps<{
   confirmAppointmentHash?: string;
   appointmentDetailUrl?: string;
   showLoginOption: boolean;
-  t: (key: string) => string;
+  t: (key: string, values?: Record<string, unknown>) => string;
 }>();
 
 const STEPPER_ITEMS: StepperItem[] = [
@@ -689,6 +707,25 @@ const preselectedLocationId = ref<string | undefined>(props.locationId);
 
 const reservationStartMs = ref<number | null>(null);
 
+const captchaDeadlineMs = computed<number | null>(() =>
+  captchaTokenExpiryMs(captchaToken.value)
+);
+
+const reservationDeadlineMs = computed<number | null>(() => {
+  if (reservationStartMs.value == null) return null;
+  const raw: unknown = (appointment.value as any)?.scope?.reservationDuration;
+  const minutes = typeof raw === "number" ? raw : Number(raw);
+  if (!Number.isFinite(minutes)) return null;
+  return reservationStartMs.value + minutes * 60_000;
+});
+
+const { showTimeoutWarning, remainingSeconds: remainingTimeoutSeconds } =
+  useTimeoutWarning({
+    currentView,
+    captchaDeadlineMs,
+    reservationDeadlineMs,
+  });
+
 const activationMinutes = computed<number | undefined>(() => {
   const fromAppt = (appointment.value as any)?.scope?.activationDuration;
   const fromProv = (selectedProvider.value as any)?.scope?.activationDuration;
@@ -699,7 +736,7 @@ const activationMinutes = computed<number | undefined>(() => {
 
 const confirmText = computed<string>(() => {
   const minutes = String(activationMinutes.value ?? 30);
-  return (props.t as any)("confirmAppointmentText", {
+  return props.t("confirmAppointmentText", {
     activationMinutes: minutes,
   });
 });

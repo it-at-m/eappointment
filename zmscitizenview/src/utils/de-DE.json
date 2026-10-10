@@ -289,6 +289,8 @@
   "switchToListViewAriaLabel": "Zur Listenansicht wechseln",
   "telephoneNumber": "Telefonnummer",
   "termsOfUse": "Rechtliche Hinweise",
+  "timeoutWarningLabel": "Verbleibende Zeit:",
+  "timeoutWarningSeconds": "{seconds} Sekunden",
   "termsOfUseForVideoConsultationLabel": "Nutzungsbedingungen Videoberatung",
   "termsOfUseForVideoConsultationText": "Für die Teilnahme an der Videoberatung stimme ich den <a href=\"https://stadt.muenchen.de/dam/DSGVO/Nutzungsbedingungen-Videoberatung.pdf\" target='_blank' rel='noopener noreferrer' aria-label='Nutzungsbedingungen Videoberatung pdf download'>Nutzungsbedingungen</a> zu.",
   "time": "Datum und Uhrzeit",
