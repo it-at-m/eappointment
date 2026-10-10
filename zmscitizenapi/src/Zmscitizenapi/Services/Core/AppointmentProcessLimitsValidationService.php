@@ -70,11 +70,10 @@ class AppointmentProcessLimitsValidationService
             );
         }
 
+        // Missing relation or slots < 1: do not fall through to quantity-only checks.
+        // Backend may otherwise normalize an unresolved requirement to a one-slot hold.
         if ($officeId > 0 && $serviceIdToCount !== []) {
-            return self::validateServiceQuantityLimits(
-                $serviceIdToCount,
-                self::readMaxQuantityByOffice($officeId)
-            );
+            return ['errors' => [self::getError('invalidLocationAndServiceCombination')]];
         }
 
         return ['errors' => []];
