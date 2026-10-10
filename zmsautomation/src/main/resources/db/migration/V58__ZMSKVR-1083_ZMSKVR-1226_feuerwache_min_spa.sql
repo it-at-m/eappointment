@@ -1,11 +1,10 @@
--- ZMSKVR-1083 / ZMSKVR-1226: Feuerwache min slotsPerAppointment for combination qty.
+-- ZMSKVR-1083 / ZMSKVR-1226: Feuerwache peer slotsPerAppointment for combination qty.
 --
 -- Führungen (10389330) is the only public Feuerwache service (1 slot). Bürgerbüro
--- peers share Wohnsitz and cannot prove min-spa on the counter. Set Föhring
--- (scope 274 / provider 10577) spa=8 and Milbertshofen (scope 271 / provider
--- 10579) spa=2. With services_de.json maxQuantity=5, Föhring alone would allow
--- 5; min spa across Feuerwachen stops the plus at 2.
--- request_provider.max_quantity stays in sync for relation-side checks.
+-- peers share Wohnsitz and cannot prove the spa/maxQuantity min on the counter.
+-- Set Föhring (scope 274 / provider 10577) spa=8 and Milbertshofen (scope 271 /
+-- provider 10579) spa=2 so the combination min spa is 2 (would allow qty 2).
+-- Live SADB maxQuantity stays 1 → UI max is min(1, floor(2/1))=1.
 
 INSERT INTO `preferences` (`entity`, `id`, `groupName`, `name`, `value`, `updateTimestamp`)
 VALUES
@@ -14,8 +13,3 @@ VALUES
 ON DUPLICATE KEY UPDATE
   `value` = VALUES(`value`),
   `updateTimestamp` = VALUES(`updateTimestamp`);
-
-UPDATE `request_provider`
-SET `max_quantity` = 5
-WHERE `source` = 'dldb'
-  AND `request__id` = '10389330';
