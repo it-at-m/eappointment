@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-10-10T16:07:28.039Z",
+  "publishedAt": "2026-10-10T17:32:15.655Z",
   "branches": [
     {
       "name": "next",
@@ -150,6 +150,12 @@
       "slug": "feature-zmskvr-1440-captcha-restart-booking",
       "runId": "37504230752",
       "runStartedAt": "2026-10-06T17:31:41Z"
+    },
+    {
+      "name": "feature-zmskvr-1440-slots-per-appointment-service-fit",
+      "slug": "feature-zmskvr-1440-slots-per-appointment-service-fit",
+      "runId": "38071254703",
+      "runStartedAt": "2026-10-10T17:19:25Z"
     },
     {
       "name": "feature-zmskvr-1575-profile-view-for-everyone",
