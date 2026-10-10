@@ -938,17 +938,28 @@ public final class OverviewStep {
         context.set();
         String marker = CANCELLATION_SUCCESS_HEADING;
         String cancelLabel = "Termin absagen";
-        for (int attempt = 1; attempt <= 4; attempt++) {
+        String rateLimit = "Zu viele Anfragen";
+        for (int attempt = 1; attempt <= 5; attempt++) {
             ScenarioLogManager.getLogger()
-                    .info("zmscitizenview: Termin absagen attempt {}/4", attempt);
+                    .info("zmscitizenview: Termin absagen attempt {}/5", attempt);
             if (shadow.shadowDomContainsText(marker)) {
                 return;
+            }
+            if (shadow.shadowDomContainsText(rateLimit)
+                    || shadow.shadowDomContainsText("maximale Anzahl an Anfragen")) {
+                ScenarioLogManager.getLogger()
+                        .warn(
+                                "zmscitizenview: rate limit on cancel (attempt {}); waiting 65s",
+                                attempt);
+                CitizenViewWaits.sleepQuiet(65_000L);
+                continue;
             }
             try {
                 new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(20))
                         .until(
                                 d -> shadow.shadowDomContainsText(marker)
-                                        || shadow.shadowDomContainsText(cancelLabel));
+                                        || shadow.shadowDomContainsText(cancelLabel)
+                                        || shadow.shadowDomContainsText(rateLimit));
             } catch (TimeoutException e) {
                 ScenarioLogManager.getLogger()
                         .warn(
@@ -958,6 +969,15 @@ public final class OverviewStep {
             }
             if (shadow.shadowDomContainsText(marker)) {
                 return;
+            }
+            if (shadow.shadowDomContainsText(rateLimit)
+                    || shadow.shadowDomContainsText("maximale Anzahl an Anfragen")) {
+                ScenarioLogManager.getLogger()
+                        .warn(
+                                "zmscitizenview: rate limit while waiting for cancel (attempt {}); waiting 65s",
+                                attempt);
+                CitizenViewWaits.sleepQuiet(65_000L);
+                continue;
             }
             shadow.scrollTextIntoView(cancelLabel);
             boolean clicked = false;
@@ -979,8 +999,21 @@ public final class OverviewStep {
             }
             try {
                 new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(25))
-                        .until(d -> shadow.shadowDomContainsText(marker));
-                return;
+                        .until(
+                                d -> shadow.shadowDomContainsText(marker)
+                                        || shadow.shadowDomContainsText(rateLimit));
+                if (shadow.shadowDomContainsText(marker)) {
+                    return;
+                }
+                if (shadow.shadowDomContainsText(rateLimit)
+                        || shadow.shadowDomContainsText("maximale Anzahl an Anfragen")) {
+                    ScenarioLogManager.getLogger()
+                            .warn(
+                                    "zmscitizenview: rate limit after Absagen (attempt {}); waiting 65s",
+                                    attempt);
+                    CitizenViewWaits.sleepQuiet(65_000L);
+                    continue;
+                }
             } catch (TimeoutException e) {
                 ScenarioLogManager.getLogger()
                         .warn(
