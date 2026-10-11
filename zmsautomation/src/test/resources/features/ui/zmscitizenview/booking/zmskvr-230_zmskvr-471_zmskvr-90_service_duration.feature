@@ -118,18 +118,19 @@ Feature: Estimated duration on the service page
     And the service duration is shown with a clock and is 20 minutes
 
   # Gewerbeamt: Art des Termins must be chosen before Voraussichtliche Termindauer appears.
+  # Vor-Ort stays on office 10546 (20′); Telefon/Video switch to the channel variant (5′).
   @jumpin @ZMSKVR-230
-  Scenario Outline: Gewerbe-Anmeldung shows 20 minutes after choosing the appointment type
+  Scenario Outline: Gewerbe-Anmeldung shows the duration for each appointment type
     Given I open zmscitizenview with jump-in service "1063423" and location "10546"
     Then the service combination step should be visible
     When I select the appointment type "<variant>" on the service combination step
-    Then the service duration is shown with a clock and is 20 minutes
+    Then the service duration is shown with a clock and is <minutes> minutes
 
     Examples:
-      | variant        |
-      | Vor-Ort-Termin |
-      | Telefon-Termin |
-      | Videoberatung  |
+      | variant        | minutes |
+      | Vor-Ort-Termin | 20      |
+      | Telefon-Termin | 5       |
+      | Videoberatung  | 5       |
 
   @jumpin @ZMSKVR-230
   Scenario: Einbürgerung at 10471 is 60 minutes
