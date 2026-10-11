@@ -353,8 +353,9 @@ describe("AppointmentView", () => {
       wrapper.vm.rebookedAppointment = { processId: 12345 } as any;
       await nextTick();
 
-      const fetchCallsBeforeRestart =
-        vi.mocked(ZMSAppointmentAPI.fetchAppointment).mock.calls.length;
+      const fetchCallsBeforeRestart = vi.mocked(
+        ZMSAppointmentAPI.fetchAppointment
+      ).mock.calls.length;
       wrapper.vm.restartBookingToServices();
       await nextTick();
       await Promise.resolve();
@@ -740,9 +741,7 @@ describe("AppointmentView", () => {
       expect(wrapper.vm.isRebooking).toBe(false);
       expect(wrapper.vm.rebookOrCancelDialog).toBe(true);
       expect(wrapper.vm.currentView).toBe(3);
-      expect(wrapper.vm.errorStates.apiErrorRebookingDisabled.value).toBe(
-        true
-      );
+      expect(wrapper.vm.errorStates.apiErrorRebookingDisabled.value).toBe(true);
       expect(wrapper.find('[data-test="appointment-summary"]').exists()).toBe(
         true
       );
@@ -2984,13 +2983,16 @@ describe("AppointmentView", () => {
                 combinable: {
                   a: { "123": [789] },
                   b: { "456": [789] },
+                  c: { "789": [789] },
                 },
               },
               { id: "456", name: "Sub Service", maxQuantity: 2 },
+              { id: "789", name: "Other Peer", maxQuantity: 2 },
             ],
             relations: [
               { serviceId: "123", officeId: "789", slots: 1 },
               { serviceId: "456", officeId: "789", slots: 1 },
+              { serviceId: "789", officeId: "789", slots: 1 },
             ],
           }),
         })
@@ -3043,6 +3045,17 @@ describe("AppointmentView", () => {
       );
       expect(sub?.count).toBe(1);
       expect(wrapper.vm.selectedServiceMap.get("456")).toBe(1);
+      // Full combinable peer list, not only the selected sub (Leistung after login).
+      expect(
+        wrapper.vm.selectedService?.subServices?.map((s: { id: string }) =>
+          String(s.id)
+        )
+      ).toEqual(["456", "789"]);
+      expect(
+        wrapper.vm.selectedService?.subServices?.find(
+          (entry: { id: string }) => String(entry.id) === "789"
+        )?.count
+      ).toBe(0);
       // Booked office stays on selectedProvider for the slot; do not pin Ort filter.
       expect(wrapper.vm.selectedProvider?.id).toBe("789");
       expect(wrapper.vm.preselectedLocationId).toBeUndefined();
