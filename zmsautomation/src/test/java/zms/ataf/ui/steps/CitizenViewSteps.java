@@ -123,6 +123,15 @@ public class CitizenViewSteps {
         page.navigateWithJumpIn(s, l);
     }
 
+    @Given("I open zmscitizenview with exclusive jump-in service {string} and location {string}")
+    public void iOpenZmscitizenviewWithExclusiveJumpIn(String serviceId, String locationId) {
+        String s = TestDataHelper.transformTestData(serviceId);
+        String l = TestDataHelper.transformTestData(locationId);
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: exclusive jump-in service={} location={}", s, l);
+        page.navigateWithExclusiveJumpIn(s, l);
+    }
+
     @Given("I open zmscitizenview with jump-in service {string}")
     public void iOpenZmscitizenviewWithJumpInService(String serviceId) {
         String s = TestDataHelper.transformTestData(serviceId);
