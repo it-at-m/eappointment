@@ -702,8 +702,7 @@ onMounted(() => {
       if (!service.value) {
         return;
       }
-      // Local services/relations ready — refresh providers/slots (peers already on
-      // selectedService after login resume with expandCombinablePeers).
+      // After login resume only selected subs are seeded — expand peers here.
       setServiceData(service.value);
       currentSlots.value = calculateTotalSlots(
         service.value.providers || [],
