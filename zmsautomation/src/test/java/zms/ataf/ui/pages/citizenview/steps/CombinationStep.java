@@ -231,28 +231,41 @@ public final class CombinationStep {
                 countVisibleCombinableServices(),
                 3,
                 "Combinable list did not collapse after Weniger Leistungen anzeigen.");
-        // Product scrolls servicesRef (Leistung h2), not the Kombinierbare heading further down.
-        new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(defaultWaitSeconds))
-                .until(
-                        d -> {
-                            JsonNode snap = combinableListScrollSnapshot();
-                            return snap.path("pageY").asDouble(9999) < 80
-                                    && snap.path("listTop").asDouble(9999) < 220;
-                        });
+        // Product scrolls servicesRef (Leistung h2). Sticky chrome / short pages leave pageY
+        // non-zero even when that heading is already in the upper viewport — assert the heading
+        // band, not an absolute pageY.
+        try {
+            new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(defaultWaitSeconds))
+                    .until(d -> combinableListStartInUpperViewport(combinableListScrollSnapshot()));
+        } catch (TimeoutException e) {
+            throw new AssertionError(
+                    "After Weniger Leistungen anzeigen the Leistung list start should be in the"
+                            + " upper viewport: "
+                            + combinableListScrollSnapshot(),
+                    e);
+        }
         JsonNode scroll = combinableListScrollSnapshot();
         Assert.assertTrue(
-                scroll.path("pageY").asDouble(9999) < 80,
-                "After Weniger Leistungen anzeigen the page should scroll back toward the top: "
+                combinableListStartInUpperViewport(scroll),
+                "After Weniger Leistungen anzeigen the Leistung list start should be in the upper"
+                        + " viewport: "
                         + scroll);
-        Assert.assertTrue(
-                scroll.path("listTop").asDouble(9999) < 220,
-                "After Weniger Leistungen anzeigen the Leistung list start should be near the top"
-                        + " of the viewport: "
-                        + scroll);
-        Assert.assertFalse(
-                scroll.path("nearPageBottom").asBoolean(true),
-                "After Weniger Leistungen anzeigen must not leave the viewport at the page bottom: "
-                        + scroll);
+    }
+
+    private static boolean combinableListStartInUpperViewport(JsonNode scroll) {
+        if (scroll.path("nearPageBottom").asBoolean(false)) {
+            return false;
+        }
+        // Prefer the Leistung h2 (servicesRef). Fall back to the selected primary service row —
+        // on phone the sticky Anmelden can cover the h2 while the list start is still on screen.
+        if (scroll.path("headingFound").asBoolean(false)) {
+            double listTop = scroll.path("listTop").asDouble(9999);
+            if (listTop > -120 && listTop < 320) {
+                return true;
+            }
+        }
+        double primaryTop = scroll.path("primaryTop").asDouble(9999);
+        return primaryTop > -40 && primaryTop < 280;
     }
 
     /**
@@ -607,12 +620,19 @@ public final class CombinationStep {
                         // Exact "Leistung" — not "Kombinierbare Leistungen" further down the step.
                         + "if(t==='Leistung')return n;return null;});"
                         + "var listTop=heading?heading.getBoundingClientRect().top:9999;"
+                        + "var primary=walk(document.body,function(n){"
+                        + "var tag=(n.tagName||'').toUpperCase();"
+                        + "if((tag!=='A'&&tag!=='BUTTON')||!shown(n))return null;"
+                        + "var t=(n.textContent||'').replace(/\\s+/g,' ').trim();"
+                        + "if(t==='Personalausweis')return n;return null;});"
+                        + "var primaryTop=primary?primary.getBoundingClientRect().top:9999;"
                         + "var doc=document.documentElement;"
                         + "var maxScroll=Math.max(0,(doc.scrollHeight||0)-(window.innerHeight||0));"
                         + "var y=window.pageYOffset||doc.scrollTop||0;"
                         // Short pages clamp near the bottom even after a top scroll; only flag real bottoms.
                         + "var nearBottom=maxScroll>200&&y>maxScroll-80;"
-                        + "return JSON.stringify({listTop:listTop,pageY:y,maxScroll:maxScroll,nearPageBottom:nearBottom});";
+                        + "return JSON.stringify({headingFound:!!heading,listTop:listTop,"
+                        + "primaryTop:primaryTop,pageY:y,maxScroll:maxScroll,nearPageBottom:nearBottom});";
         Object raw = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script);
         try {
             return new com.fasterxml.jackson.databind.ObjectMapper()

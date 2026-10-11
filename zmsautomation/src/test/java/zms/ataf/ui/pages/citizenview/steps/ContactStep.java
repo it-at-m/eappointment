@@ -471,14 +471,50 @@ public final class ContactStep {
      */
     public void assertMaxLengthCounterError(String fieldId, int maxChars) {
         context.set();
-        String value = "x".repeat(maxChars);
-        Assert.assertTrue(shadow.deepSetById(fieldId, value), "Could not fill #" + fieldId);
+        // Name/mail: error at length >= max. Remarks: error at plainTextCharCount > max, and the
+        // MucTextArea maxlength attribute blocks ordinary typing at exactly max.
+        boolean remarks = fieldId != null && fieldId.startsWith("remarks");
+        int fillLen = remarks ? maxChars + 1 : maxChars;
+        if (remarks) {
+            Assert.assertTrue(
+                    deepSetByIdBypassingMaxlength(fieldId, "x".repeat(fillLen)),
+                    "Could not fill #" + fieldId + " past maxlength");
+        } else {
+            Assert.assertTrue(shadow.deepSetById(fieldId, "x".repeat(fillLen)), "Could not fill #" + fieldId);
+        }
         CitizenViewWaits.sleepQuiet(300L);
         String expected =
                 "Ihre Eingabe in diesem Feld darf " + maxChars + " Zeichen nicht überschreiten.";
         Assert.assertTrue(
                 shadow.shadowDomContainsText(expected),
                 "Expected max-length counter error for #" + fieldId + ": " + expected);
+    }
+
+    /**
+     * Like {@link ShadowDom#deepSetById} but clears the HTML maxlength so remarks can exceed 250
+     * (product shows the overflow error only when {@code plainTextCharCount > 250}).
+     */
+    private boolean deepSetByIdBypassingMaxlength(String fieldId, String value) {
+        String script =
+                "var want=arguments[0],v=arguments[1]==null?'':String(arguments[1]);"
+                        + "var ids=[];ids.push(want);"
+                        + "if(want.indexOf('textarea-')===0)ids.push(want.slice(9));else ids.push('textarea-'+want);"
+                        + "if(want.indexOf('input-')===0)ids.push(want.slice(6));else ids.push('input-'+want);"
+                        + "function byId(root,id){try{if(root.getElementById)return root.getElementById(id);}catch(e0){}"
+                        + "try{return root.querySelector('#'+id.replace(/([^a-zA-Z0-9_-])/g,'\\\\$1'));}catch(e1){"
+                        + "return root.querySelector('[id=\"'+id.replace(/\"/g,'')+'\"]');}}"
+                        + "function resolve(el){if(!el)return null;if(el.tagName==='INPUT'||el.tagName==='TEXTAREA')return el;"
+                        + "if(el.shadowRoot){var q=el.shadowRoot.querySelector('input:not([type=hidden]),textarea');if(q)return q;}return null;}"
+                        + "function scanRoot(root){if(!root)return null;for(var i=0;i<ids.length;i++){var el=byId(root,ids[i]);var r=resolve(el);if(r)return r;}"
+                        + "var nodes=root.querySelectorAll('*');for(var j=0;j<nodes.length;j++){if(nodes[j].shadowRoot){var r2=scanRoot(nodes[j].shadowRoot);if(r2)return r2;}}return null;}"
+                        + "var e=scanRoot(document);if(!e)e=scanRoot(document.body);"
+                        + "if(!e)return false;e.removeAttribute('maxlength');e.scrollIntoView({block:'center'});e.focus();e.value=v;"
+                        + "try{e.dispatchEvent(new InputEvent('input',{bubbles:true,cancelable:true,inputType:'insertReplacementText',data:v}));}"
+                        + "catch(ex){e.dispatchEvent(new Event('input',{bubbles:true}));}"
+                        + "e.dispatchEvent(new Event('change',{bubbles:true}));return true;";
+        Object o =
+                ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script, fieldId, value);
+        return Boolean.TRUE.equals(o);
     }
 
     /** ZMSKVR-716: Muc character counter stays at .875rem on desktop (MucTextArea only). */
