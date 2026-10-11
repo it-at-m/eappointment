@@ -1,11 +1,13 @@
 #language: en
-@web @zmscitizenview @dldb-special-cases @citizen @ZMSKVR-1124 @executeLocally
+@web @zmscitizenview @dldb-special-cases @citizen @ZMSKVR-1124 @ZMSKVR-1258 @ZMSKVR-1261 @ZMSKVR-1263 @ZMSKVR-397 @executeLocally
 Feature: CitizenView: Ruppertstraße Passkalender, Hauptkalender und Abholung (jump-in)
   As a citizen
   I want to book via the citizen view UI
   So that jump-in links route to the correct office (Passkalender 10502, Hauptkalender 10489, Abholung 10492)
   And allowDisabledServicesMix jump-ins stay valid; Pass-only still books on the Passkalender (10502)
 
+  # ZMSKVR-1124 covers Passkalender routing; ZMSKVR-1258 / test ZMSKVR-1261 add Pass↔Non-Pass mix on
+  # Hauptkalender 10489 (KVR-II/22); ZMSKVR-1263 is the jump-in Testfall; ZMSKVR-397 is the Passkalender story.
   # Flow: calendar + slot → Ausgewählter Termin callout → Weiter (= reserve) → Kontakt form → Weiter (= update) →
   # preconfirm (summary + privacy) → Weiter → activation callout (“Aktivieren Sie Ihren Termin.”)
   # Slot selection is split into steps (wait for slots → Später if available → scroll/highlight timeslot → click slot → Weiter/reserve)
@@ -18,13 +20,15 @@ Feature: CitizenView: Ruppertstraße Passkalender, Hauptkalender und Abholung (j
     And the response should contain offices and services
 
   # --- Invalid jump-in: Passkalender 10502 only offers Pass family services (three Pass services). Hauptkalender 10489 also supports a Non-Pass service (e.g. 1063475 Wohnsitzanmeldung) in combination with Pass. Jumping in with this Non-Pass alone on 10502 has no relation → invalid jump-in callout. ---
-  @jumpin @passCalendar
+  # ZMSKVR-1263 #9.
+  @jumpin @passCalendar @ZMSKVR-1263
   Scenario: Non-Pass service jump-in with Passkalender 10502 is rejected
     Given I open zmscitizenview with jump-in service "1063475" and location "10502"
     Then the invalid jump-in callout should be visible in the citizen view
 
   # --- allowDisabledServicesMix (jump-in): Pass service 1063441 with location 10489 (Hauptkalender) is valid. The Pass-only combination must still list and book to Passkalender 10502; confirms allowDisabledServicesMix behaviour across locations. ---
-  @jumpin @allowDisabledServicesMix @passCalendar
+  # ZMSKVR-1261 #5 / ZMSKVR-1263 #8: Pass-only still books Passkalender 10502 (KVR-II/221) even from Haupt jump-in.
+  @jumpin @allowDisabledServicesMix @passCalendar @ZMSKVR-1261 @ZMSKVR-1263
   Scenario: Pass jump-in with location 10489 is valid; Pass-only books to provider 10502
     Given I open zmscitizenview with jump-in service "1063441" and location "10489"
     Then the service combination step should be visible
@@ -56,7 +60,8 @@ Feature: CitizenView: Ruppertstraße Passkalender, Hauptkalender und Abholung (j
     Then the cancellation success callout should be visible in the citizen view
 
   # --- Passkalender 10502 (jump-in): direct Reisepass jump-in must show only Pass-family combination services and book consistently to provider 10502 in Ort, Ausgewählter Termin, booking summary, and confirmation views. ---
-  @jumpin @passCalendar
+  # ZMSKVR-1263 #5–#6 / ZMSKVR-1261 #5: Pass-only at Passkalender.
+  @jumpin @passCalendar @ZMSKVR-1261 @ZMSKVR-1263
   Scenario: Reisepass jump-in Passkalender 10502 books to provider 10502 with correct summaries
     Given I open zmscitizenview with jump-in service "1063453" and location "10502"
     Then the service combination step should be visible
@@ -90,7 +95,8 @@ Feature: CitizenView: Ruppertstraße Passkalender, Hauptkalender und Abholung (j
     Then the cancellation success callout should be visible in the citizen view
 
   # --- Hauptkalender 10489 (jump-in, allowDisabledServicesMix): Pass jump-in lands on the combination step where Pass is combinable with Wohnsitzanmeldung. Booking must stay on Hauptkalender provider 10489, with duration 15 → 30 minutes after adding Wohnsitzanmeldung. ---
-  @jumpin @mainCalendar
+  # ZMSKVR-1258 / ZMSKVR-1261 #1: Pass first + Non-Pass → Hauptkalender 10489 (not Passkalender 10502).
+  @jumpin @mainCalendar @ZMSKVR-1258 @ZMSKVR-1261
   Scenario: Non-Pass jump-in Hauptkalender 10489 shows Pass combinable and books to provider 10489
     Given I open zmscitizenview with jump-in service "1063453" and location "10489"
     Then the service combination step should be visible
@@ -99,6 +105,7 @@ Feature: CitizenView: Ruppertstraße Passkalender, Hauptkalender und Abholung (j
     Then the estimated duration on the service combination step should be 30 minutes
     And I continue from the service combination step
     Then provider checkbox 10489 should be visible in the citizen view
+    And provider checkbox 10502 should not appear in the citizen view
     When I select office 10489 in the citizen view
     And I wait for appointment slots to be ready in the citizen view
     And I click Später in the time slot grid if available in the citizen view
@@ -123,7 +130,8 @@ Feature: CitizenView: Ruppertstraße Passkalender, Hauptkalender und Abholung (j
     Then the cancellation success callout should be visible in the citizen view
 
   # --- Abholung 10295182 (jump-in): pick-up service is only offered at provider 10492 (KVR-II/211). Jump-in must show only 10492 on Ort, and the booking must stay on 10492 in all summary views. ---
-  @jumpin @pickupCalendar
+  # ZMSKVR-1263 #2 (full booking path); peer rejection is in zmskvr-936_*.
+  @jumpin @pickupCalendar @ZMSKVR-1263
   Scenario: Abholung jump-in only Abholstandort 10492 and books to provider 10492
     Given I open zmscitizenview with jump-in service "10295182" and location "10492"
     Then the service combination step should be visible
@@ -156,7 +164,8 @@ Feature: CitizenView: Ruppertstraße Passkalender, Hauptkalender und Abholung (j
     Then the cancellation success callout should be visible in the citizen view
 
   # --- Full entry (no jump-in): Service Finder path for Personalausweis without preselected office. Passkalender 10502 scenario — only Pass-family services on the combination step and booking tied to provider 10502 throughout. ---
-  @serviceFinder @passCalendar
+  # ZMSKVR-1261 #5 / ZMSKVR-397: Pass-only → Passkalender.
+  @serviceFinder @passCalendar @ZMSKVR-1261 @ZMSKVR-397
   Scenario: Personalausweis full entry Passkalender 10502
     Given I open the zmscitizenview booking page
     Then the Service Finder should be visible on the start page
@@ -191,7 +200,8 @@ Feature: CitizenView: Ruppertstraße Passkalender, Hauptkalender und Abholung (j
     Then the cancellation success callout should be visible in the citizen view
 
   # --- Full entry (no jump-in): Service Finder path for Personalausweis with Hauptkalender 10489. Pass is combinable with Wohnsitzanmeldung on the combination step; adding Wohnsitzanmeldung changes duration 15 → 30 minutes and booking must be tied to provider 10489 in all summaries. ---
-  @serviceFinder @mainCalendar
+  # ZMSKVR-1258 / ZMSKVR-1261 #1 (Service Finder): Pass first + Non-Pass → 10489.
+  @serviceFinder @mainCalendar @ZMSKVR-1258 @ZMSKVR-1261
   Scenario: Personalausweis full entry Hauptkalender 10489
     Given I open the zmscitizenview booking page
     Then the Service Finder should be visible on the start page
@@ -202,6 +212,7 @@ Feature: CitizenView: Ruppertstraße Passkalender, Hauptkalender und Abholung (j
     Then the estimated duration on the service combination step should be 30 minutes
     And I continue from the service combination step
     Then provider checkbox 10489 should be visible in the citizen view
+    And provider checkbox 10502 should not appear in the citizen view
     And I keep only providers "10489" checked in the citizen view
     When I select office 10489 in the citizen view
     And I wait for appointment slots to be ready in the citizen view
@@ -223,5 +234,67 @@ Feature: CitizenView: Ruppertstraße Passkalender, Hauptkalender und Abholung (j
     And I open the appointment view deep link in the browser
     And the booking summary should show provider 10489 in the citizen view
     And the estimated duration in the confirmation view should be 30 minutes in the citizen view
+    When I cancel the appointment in the citizen view
+    Then the cancellation success callout should be visible in the citizen view
+
+  # --- ZMSKVR-1258 / ZMSKVR-1261 #3 + ZMSKVR-1263 #10: Non-Pass first, then Pass on combination → Hauptkalender 10489. ---
+  @jumpin @mainCalendar @ZMSKVR-1258 @ZMSKVR-1261 @ZMSKVR-1263
+  Scenario: Wohnsitzanmeldung jump-in with Pass combinable books to Hauptkalender 10489
+    Given I open zmscitizenview with jump-in service "1063475" and location "10489"
+    Then the service combination step should be visible
+    And the estimated duration on the service combination step should be 15 minutes
+    When I add subservice "Personalausweis" with quantity 1 on the service combination step
+    Then the estimated duration on the service combination step should be 30 minutes
+    And I continue from the service combination step
+    Then provider checkbox 10489 should be visible in the citizen view
+    And provider checkbox 10502 should not appear in the citizen view
+    When I select office 10489 in the citizen view
+    And I wait for appointment slots to be ready in the citizen view
+    And I click Später in the time slot grid if available in the citizen view
+    And I scroll to and highlight the preferred timeslot for office 10489 in the citizen view
+    And I click the highlighted timeslot in the citizen view
+    And I continue after slot selection with Weiter for office 10489 in the citizen view
+    When I enter default contact details in the citizen view
+    Then the booking summary should show provider 10489 in the citizen view
+    And the estimated duration in the booking summary should be 30 minutes in the citizen view
+    When I accept communication in the citizen view
+    And I continue from the preconfirm step in the citizen view
+    Then the preconfirmation callout should be visible with activation time 30 minutes in the citizen view
+    When I sync the booking process from citizen view localStorage
+    And I fetch the preconfirmation mail for the current process
+    And I open the confirmation deep link in the browser
+    Then the confirmation success callout should be visible in the citizen view
+    And I fetch the confirmation mail for the current process
+    And I open the appointment view deep link in the browser
+    And the booking summary should show provider 10489 in the citizen view
+    When I cancel the appointment in the citizen view
+    Then the cancellation success callout should be visible in the citizen view
+
+  # --- ZMSKVR-1261 #6: Non-Pass only stays on Hauptkalender 10489 (never Passkalender 10502). ---
+  @jumpin @mainCalendar @ZMSKVR-1261
+  Scenario: Wohnsitzanmeldung-only jump-in books to Hauptkalender 10489
+    Given I open zmscitizenview with jump-in service "1063475" and location "10489"
+    Then the service combination step should be visible
+    When I continue from the service combination step
+    Then provider checkbox 10489 should be visible in the citizen view
+    And provider checkbox 10502 should not appear in the citizen view
+    When I select office 10489 in the citizen view
+    And I wait for appointment slots to be ready in the citizen view
+    And I click Später in the time slot grid if available in the citizen view
+    And I scroll to and highlight the preferred timeslot for office 10489 in the citizen view
+    And I click the highlighted timeslot in the citizen view
+    And I continue after slot selection with Weiter for office 10489 in the citizen view
+    When I enter default contact details in the citizen view
+    Then the booking summary should show provider 10489 in the citizen view
+    When I accept communication in the citizen view
+    And I continue from the preconfirm step in the citizen view
+    Then the preconfirmation callout should be visible with activation time 30 minutes in the citizen view
+    When I sync the booking process from citizen view localStorage
+    And I fetch the preconfirmation mail for the current process
+    And I open the confirmation deep link in the browser
+    Then the confirmation success callout should be visible in the citizen view
+    And I fetch the confirmation mail for the current process
+    And I open the appointment view deep link in the browser
+    And the booking summary should show provider 10489 in the citizen view
     When I cancel the appointment in the citizen view
     Then the cancellation success callout should be visible in the citizen view
