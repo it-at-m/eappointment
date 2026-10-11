@@ -481,14 +481,19 @@ public final class ContactStep {
                 "Expected max-length counter error for #" + fieldId + ": " + expected);
     }
 
-    /** ZMSKVR-716: Muc character counter stays at .875rem on desktop. */
+    /** ZMSKVR-716: Muc character counter stays at .875rem on desktop (MucTextArea only). */
     public void assertCharacterCountFontSizeDesktop() {
         context.set();
         RemoteWebDriver driver = DriverUtil.getDriver();
         driver.manage().window().setSize(ViewportSizes.DESKTOP);
         CitizenViewWaits.sleepQuiet(400L);
-        // Ensure a counter is painted (fill Vorname near the limit).
-        shadow.deepSetById("firstname", "x".repeat(48));
+        Assert.assertTrue(
+                shadow.deepElementExists("#remarks")
+                        || shadow.deepElementExists("textarea#textarea-remarks")
+                        || shadow.deepElementExists("#textarea-remarks"),
+                "Expected remarks MucTextArea (only MucTextArea paints .m-character-count)");
+        // Counter is a MucTextArea sibling — fill remarks so length/maxlength paint.
+        Assert.assertTrue(shadow.deepSetById("remarks", "x".repeat(48)), "Could not fill #remarks");
         CitizenViewWaits.sleepQuiet(200L);
         String script =
                 "function walk(n,fn){if(!n)return null;if(n.nodeType===1){var hit=fn(n);if(hit)return hit;}"
@@ -510,7 +515,8 @@ public final class ContactStep {
     }
 
     /**
-     * ZMSKVR-719: long remarks grow the textarea so the counter does not overlap the text on mobile.
+     * ZMSKVR-719: long remarks grow the textarea ({@code lines + 2}) so the counter sits in the
+     * reserved bottom band instead of covering typed text.
      */
     public void assertRemarksTextareaGrowsWithoutCounterOverlap() {
         context.set();
@@ -542,14 +548,16 @@ public final class ContactStep {
                         + "if(counter)break;"
                         + "if(host.parentElement)host=host.parentElement;else{var r=host.getRootNode&&host.getRootNode();host=r&&r.host?r.host:null;}}}"
                         + "var tr=ta.getBoundingClientRect();var rows=parseInt(ta.getAttribute('rows')||'0',10);"
-                        + "var overlap=false;var cr=null;"
+                        + "var lineH=parseFloat(getComputedStyle(ta).lineHeight)||20;"
+                        + "var cr=null;var inReservedBand=false;var noInnerScroll=false;"
                         + "if(counter){cr=counter.getBoundingClientRect();"
-                        + "overlap=!(tr.right<cr.left||tr.left>cr.right||tr.bottom<cr.top||tr.top>cr.bottom);"
-                        + "var padBottom=parseFloat(getComputedStyle(ta).paddingBottom)||0;"
-                        + "var textBottom=tr.bottom-padBottom;"
-                        + "if(textBottom>cr.top+2&&tr.left<cr.right&&tr.right>cr.left)overlap=true;"
-                        + "else overlap=false;}"
-                        + "return {found:true,rows:rows,height:tr.height,hasCounter:!!counter,overlap:overlap};";
+                        // Counter is drawn inside the textarea box; product keeps ~2 empty rows for it.
+                        + "var bandTop=tr.bottom-Math.max(lineH*2.2,28);"
+                        + "inReservedBand=cr.top>=bandTop-4&&cr.bottom<=tr.bottom+4;"
+                        + "noInnerScroll=ta.scrollHeight<=ta.clientHeight+2;}"
+                        + "return {found:true,rows:rows,height:tr.height,hasCounter:!!counter,"
+                        + "inReservedBand:inReservedBand,noInnerScroll:noInnerScroll,"
+                        + "lineH:lineH};";
         Object raw = ((JavascriptExecutor) driver).executeScript(script);
         Assert.assertNotNull(raw, "Could not measure remarks textarea");
         @SuppressWarnings("unchecked")
@@ -558,9 +566,16 @@ public final class ContactStep {
         Assert.assertTrue(
                 ((Number) map.get("rows")).intValue() >= 4 || ((Number) map.get("height")).doubleValue() >= 80,
                 "Remarks textarea should grow with long input: " + map);
-        Assert.assertFalse(
-                Boolean.TRUE.equals(map.get("overlap")),
-                "Remarks text must not overlap the character counter on mobile: " + map);
+        Assert.assertTrue(
+                Boolean.TRUE.equals(map.get("hasCounter")),
+                "Remarks character counter missing: " + map);
+        Assert.assertTrue(
+                Boolean.TRUE.equals(map.get("inReservedBand")),
+                "Counter should sit in the reserved bottom band of the grown textarea: " + map);
+        Assert.assertTrue(
+                Boolean.TRUE.equals(map.get("noInnerScroll")),
+                "Grown remarks textarea should fit its text without inner scroll under the counter: "
+                        + map);
     }
 
     void completeKeycloakLoginForm(String username, String password) throws Exception {

@@ -41,7 +41,6 @@ Feature: Contact counter chrome and Leistung polish
     And I continue after slot selection with Weiter for office 2 in the citizen view
     Then the contact field "firstname" max-length error allows 50 characters
     And the contact field "lastname" max-length error allows 50 characters
-    And the contact character counter font size is point eight seven five rem on desktop
     When I sync the booking process from citizen view localStorage
     Then I cancel the appointment
 
@@ -57,6 +56,7 @@ Feature: Contact counter chrome and Leistung polish
     And I click the highlighted timeslot in the citizen view
     And I continue after slot selection with Weiter for office 10313237 in the citizen view
     Then the remarks textarea grows so the counter does not overlap on mobile
+    And the contact character counter font size is point eight seven five rem on desktop
     And the contact field "remarks" max-length error allows 250 characters
     When I sync the booking process from citizen view localStorage
     Then I cancel the appointment

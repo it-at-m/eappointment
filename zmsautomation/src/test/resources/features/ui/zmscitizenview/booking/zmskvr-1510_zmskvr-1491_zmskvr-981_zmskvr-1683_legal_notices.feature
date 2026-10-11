@@ -8,10 +8,12 @@ Feature: CitizenView: legal notices on the last booking step
   # ZMSKVR-1491 / ZMSKVR-1510. Phone (service 2, location 2, scope 369) has no
   # video terms, so the privacy section is only the link. The privacy href is the
   # one shipped in de-DE.json. Preconfirm creates the process; the scenario cancels it.
+  # Phone overview shows the variant label (Telefon-Termin), not Adresse.
   # ZMSKVR-981 / ZMSKVR-1683: checkbox titles Datenschutz and Elektronische
   # Kommunikation are h4 headings (assertStandardLegalNotices).
   # ZMSKVR-846 / ZMSKVR-1021: those links use target=_blank and an aria-label.
-  # ZMSKVR-521 / ZMSKVR-879: Adresse label is 16px with no bottom margin.
+  # ZMSKVR-521 / ZMSKVR-879: Adresse label is 16px with no bottom margin — physical
+  # office only (Wohnsitzanmeldung 1063475 at Hauptstelle 10489).
 
   Background:
     Given the Citizen API is available
@@ -33,11 +35,26 @@ Feature: CitizenView: legal notices on the last booking step
     When I enter default contact details in the citizen view
     Then the legal notices on the booking overview should replace the consent heading in the citizen view
     And the legal notice links open in a new tab with aria labels in the citizen view
-    And the overview Adresse label uses sixteen pixel type without bottom margin
     And the reserve appointment button should be disabled in the citizen view
     When I accept communication in the citizen view
     Then the reserve appointment button should be enabled in the citizen view
     When I continue from the preconfirm step in the citizen view
     Then the preconfirmation callout should be visible with activation time 60 minutes in the citizen view
+    When I sync the booking process from citizen view localStorage
+    Then I cancel the appointment
+
+  Scenario: Overview Adresse label chrome at a physical office
+    Given I open zmscitizenview with jump-in service "1063475" and location "10489"
+    Then the service combination step should be visible
+    When I continue from the service combination step
+    Then provider checkbox 10489 should be visible in the citizen view
+    When I select office 10489 in the citizen view
+    And I wait for appointment slots to be ready in the citizen view
+    And I click Später in the time slot grid if available in the citizen view
+    And I scroll to and highlight the preferred timeslot for office 10489 in the citizen view
+    And I click the highlighted timeslot in the citizen view
+    And I continue after slot selection with Weiter for office 10489 in the citizen view
+    When I enter default contact details in the citizen view
+    Then the overview Adresse label uses sixteen pixel type without bottom margin
     When I sync the booking process from citizen view localStorage
     Then I cancel the appointment
