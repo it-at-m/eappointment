@@ -698,6 +698,21 @@ onMounted(() => {
       ? service.value.count
       : countOfService.value;
 
+    // Stepper back destroys ServiceFinder (v-if on Leistung). Remount starts with
+    // empty offices/relations until fetch returns, while minSlots defaults to 25.
+    // Keep the spa already on selectedService.providers so quantity caps stay
+    // correct for that paint (ZMSKVR-1083 / ZMSKVR-1226).
+    if (service.value.providers?.length) {
+      minSlotsPerAppointment.value = getEffectiveMinSlotsPerAppointment(
+        service.value.providers
+      );
+      currentSlots.value = calculateTotalSlots(
+        service.value.providers,
+        service.value.count || 0,
+        service.value.subServices
+      );
+    }
+
     const refreshCombinationFromCatalog = () => {
       if (!service.value) {
         return;
