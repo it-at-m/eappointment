@@ -9,7 +9,8 @@ Feature: Citizen API: Ruppertstraße Wartezone and infoForAppointment stay on th
   # including Führerscheinstelle Allgemeinschalter A/B (V51, office 10308174).
   # ZMSKVR-1051 / ZMSKVR-1309 (API): GET /appointment/ after reserve must carry matching
   # Wartezone (scope.hint) and ATAF infoForAppointment for WB03 (181) or WB04 (160).
-  # V50 / V51: one internet seat each; a second reserve of the same timestamp switches scope.
+  # V52: one internet seat each on the day after the V19 range; a second reserve of the
+  # same timestamp switches scope without fighting the shared Hauptkalender window.
   # UI coverage: ui/.../citizen-login/zmskvr-1051_zmskvr-1309_zmskvr-1087_zmskvr-1311_wartezone_scope_hints.feature
 
   Background:
@@ -19,8 +20,7 @@ Feature: Citizen API: Ruppertstraße Wartezone and infoForAppointment stay on th
     And the response should contain offices and services
 
   Scenario: Same-time Wohnsitzanmeldung reserves switch Wartebereich with matching scope hints
-    When I request available days for office 10489 and service 1063475
-    And I request available appointments for the first available day
+    When I request available appointments for the scope-switch day for office 10489 and service 1063475
     And I reserve an appointment with the first available slot
     Then the reserve endpoint response should include a thinned booking process with processId, authKey, officeId, and serviceId
     When I fetch the appointment for the current process
@@ -34,8 +34,7 @@ Feature: Citizen API: Ruppertstraße Wartezone and infoForAppointment stay on th
     And I cancel the remembered "wb-first" appointment
 
   Scenario: Same-time Führerscheinstelle reserves switch Schalter with matching Kundenhinweis
-    When I request available days for office 10308174 and service 1071896
-    And I request available appointments for the first available day
+    When I request available appointments for the scope-switch day for office 10308174 and service 1071896
     And I reserve an appointment with the first available slot
     Then the reserve endpoint response should include a thinned booking process with processId, authKey, officeId, and serviceId
     When I fetch the appointment for the current process

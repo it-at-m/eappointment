@@ -205,6 +205,25 @@ public class CitizenViewSteps {
         page.assertMinusButton(TestDataHelper.transformTestData(label), false);
     }
 
+    @Then("the plus button for service {string} is disabled")
+    public void thePlusButtonForServiceIsDisabled(String label) {
+        ScenarioLogManager.getLogger().info("zmscitizenview: plus disabled for {}", label);
+        page.assertPlusButton(TestDataHelper.transformTestData(label), true);
+    }
+
+    @Then("the plus button for service {string} is enabled")
+    public void thePlusButtonForServiceIsEnabled(String label) {
+        ScenarioLogManager.getLogger().info("zmscitizenview: plus enabled for {}", label);
+        page.assertPlusButton(TestDataHelper.transformTestData(label), false);
+    }
+
+    @Then("the plus buttons for all services on the service combination step are disabled")
+    public void thePlusButtonsForAllServicesOnTheServiceCombinationStepAreDisabled() {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: every plus on the combination step is disabled");
+        page.assertAllPlusButtonsDisabled();
+    }
+
     @Then("the service {string} links to service {string} on muenchen.de")
     public void theServiceLinksToItsDescription(String label, String serviceId) {
         ScenarioLogManager.getLogger()
@@ -476,6 +495,13 @@ public class CitizenViewSteps {
         page.assertOfficesCheckedInFrequencyOrder();
     }
 
+    @Then("at least {int} location checkboxes are checked in the citizen view")
+    public void atLeastNLocationCheckboxesAreCheckedInTheCitizenView(int minimum) {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: assert at least {} Ort checkboxes are checked", minimum);
+        page.assertAtLeastNLocationCheckboxesChecked(minimum);
+    }
+
     @Then("the open hour lists each selected office with a map pin")
     public void theOpenHourListsEachSelectedOfficeWithAMapPin() {
         ScenarioLogManager.getLogger().info("zmscitizenview: open hour lists offices with a map pin");
@@ -725,6 +751,17 @@ public class CitizenViewSteps {
     public void theContactFormShouldBeVisibleInTheCitizenView() {
         ScenarioLogManager.getLogger().info("zmscitizenview: assert Kontakt form (Kontaktdaten) visible");
         page.assertContactFormVisible();
+    }
+
+    /**
+     * ZMSKVR-92 / ZMSKVR-164: after re-reserve, accept Kontakt or Übersicht→Kontakt so preserved
+     * contact details can still be asserted.
+     */
+    @Then("the contact form should be reachable after reserve in the citizen view")
+    public void theContactFormShouldBeReachableAfterReserveInTheCitizenView() {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: assert Kontakt form reachable after reserve (Übersicht recovery)");
+        page.assertContactFormVisibleAfterReserve();
     }
 
     @Then("the filled name and email fields should be locked on the contact form in the citizen view")
@@ -1099,6 +1136,26 @@ public class CitizenViewSteps {
     public void iTryToReserveTheSelectedTimeslotWithWeiter() {
         ScenarioLogManager.getLogger()
                 .info("zmscitizenview: one-shot Weiter after slot selection (expect not-available if snatching won)");
+        page.clickWeiter();
+        // Slow API snatch (Firefox) can leave the first Weiter with a stale selection and no
+        // callout; one retry after a short settle covers that without advancing to Kontakt.
+        long settleUntil = System.currentTimeMillis() + 8_000L;
+        while (System.currentTimeMillis() < settleUntil) {
+            if (page.appointmentNotAvailableCalloutLikelyVisible()) {
+                return;
+            }
+            if (page.contactStepLikelyReached()) {
+                return;
+            }
+            try {
+                Thread.sleep(400L);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                return;
+            }
+        }
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: no taken-slot callout yet after first Weiter; retrying once");
         page.clickWeiter();
     }
 

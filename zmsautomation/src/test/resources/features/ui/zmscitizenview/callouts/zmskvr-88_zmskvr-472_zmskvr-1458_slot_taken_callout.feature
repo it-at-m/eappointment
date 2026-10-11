@@ -29,7 +29,7 @@ Feature: CitizenView: slot already taken shows not-available callout
     Then the service combination step should be visible
     When I continue from the service combination step
     Then provider checkbox 10502 should be visible in the citizen view
-    When I select office 10502 in the citizen view
+    When I keep only providers "10502" checked in the citizen view
     And I wait for appointment slots to be ready in the citizen view
     And I select the single-seat Passkalender day after the V19 opening range in the citizen view
     And I click Später in the time slot grid if available in the citizen view

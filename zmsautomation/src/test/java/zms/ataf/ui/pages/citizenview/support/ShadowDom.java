@@ -27,23 +27,44 @@ public final class ShadowDom {
      * True if substring appears anywhere in document + shadow DOM text.
      * Also walks slotted nodes and same-origin frames, and folds whitespace, so a painted
      * callout such as "Sie sind angemeldet." matches even when its text is split across nodes.
+     * <p>
+     * Iterative + {@code seen}: Firefox hits {@code InternalError: too much recursion} when the
+     * old recursive walk re-enters the same light-DOM nodes via {@code assignedNodes} and
+     * {@code childNodes} (ZMSKVR-1088 reserve poll).
      */
     public boolean shadowDomContainsText(String substring) {
         context.set();
-        String esc = substring.replace("\\", "\\\\").replace("'", "\\'");
         String script =
-                "var sub='" + esc + "'.replace(/\\s+/g,' ').trim();"
-                        + "function walk(n){var s='';if(!n)return s;if(n.nodeType===3)return n.nodeValue||'';"
-                        + "if(n.shadowRoot)s+=' '+walk(n.shadowRoot);"
-                        + "if(n.assignedNodes){var a=n.assignedNodes({flatten:true});"
-                        + "for(var j=0;j<a.length;j++)s+=' '+walk(a[j]);}"
-                        + "var c=n.childNodes;if(c)for(var i=0;i<c.length;i++)s+=' '+walk(c[i]);"
-                        + "if(n.nodeType===1){var tag=n.tagName;"
-                        + "if(tag==='INPUT'||tag==='TEXTAREA')s+=' '+(n.value||'');"
-                        + "if(n.contentDocument){try{s+=' '+walk(n.contentDocument.body);}catch(e){}}}"
-                        + "return s;}"
-                        + "return walk(document.documentElement).replace(/\\s+/g,' ').indexOf(sub)>=0;";
-        Object o = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script);
+                "var sub=String(arguments[0]||'').replace(/\\s+/g,' ').trim();"
+                        + "if(!sub)return true;"
+                        + "var seen=new Set();"
+                        + "var stack=[document.documentElement];"
+                        + "var buf='';"
+                        + "while(stack.length){"
+                        + " var n=stack.pop();"
+                        + " if(!n||seen.has(n))continue;"
+                        + " seen.add(n);"
+                        + " if(n.nodeType===3){buf+=' '+(n.nodeValue||'');continue;}"
+                        + " if(n.shadowRoot)stack.push(n.shadowRoot);"
+                        + " if(n.assignedNodes){"
+                        + "  try{var a=n.assignedNodes({flatten:true});"
+                        + "  for(var j=0;j<a.length;j++)stack.push(a[j]);}catch(e){}"
+                        + " }"
+                        + " var c=n.childNodes;if(c)for(var i=0;i<c.length;i++)stack.push(c[i]);"
+                        + " if(n.nodeType===1){"
+                        + "  var tag=n.tagName;"
+                        + "  if(tag==='INPUT'||tag==='TEXTAREA')buf+=' '+(n.value||'');"
+                        + "  if(n.contentDocument){"
+                        + "   try{if(n.contentDocument.body)stack.push(n.contentDocument.body);}catch(e){}"
+                        + "  }"
+                        + " }"
+                        + " if(buf.length>65536){"
+                        + "  if(buf.replace(/\\s+/g,' ').indexOf(sub)>=0)return true;"
+                        + "  buf=buf.slice(-sub.length-64);"
+                        + " }"
+                        + "}"
+                        + "return buf.replace(/\\s+/g,' ').indexOf(sub)>=0;";
+        Object o = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script, substring);
         return Boolean.TRUE.equals(o);
     }
 

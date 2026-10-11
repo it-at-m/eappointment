@@ -48,10 +48,10 @@ Feature: CitizenView: captcha session and reservation callouts
     When I wait for the captcha check to finish in the citizen view
     And I continue from the service combination step
     Then provider checkbox 10427 should be visible in the citizen view
-    When I select office 10427 in the citizen view
+    When I keep only providers "10427" checked in the citizen view
     And I wait for appointment slots to be ready in the citizen view
     And I click Später in the time slot grid if available in the citizen view
-    And I scroll to and highlight the preferred timeslot for office 10427 in the citizen view
+    And I scroll to and highlight a timeslot at least 60 minutes ahead for office 10427 in the citizen view
     And I click the highlighted timeslot in the citizen view
     And I continue after slot selection with Weiter for office 10427 in the citizen view
     When I enter contact details without optional remarks in the citizen view
@@ -70,10 +70,10 @@ Feature: CitizenView: captcha session and reservation callouts
     When I wait for the captcha check to finish in the citizen view
     And I continue from the service combination step
     Then provider checkbox 10427 should be visible in the citizen view
-    When I select office 10427 in the citizen view
+    When I keep only providers "10427" checked in the citizen view
     And I wait for appointment slots to be ready in the citizen view
     And I click Später in the time slot grid if available in the citizen view
-    And I scroll to and highlight the preferred timeslot for office 10427 in the citizen view
+    And I scroll to and highlight a timeslot at least 60 minutes ahead for office 10427 in the citizen view
     And I click the highlighted timeslot in the citizen view
     And I continue after slot selection with Weiter for office 10427 in the citizen view
     When I enter default contact details in the citizen view
@@ -93,10 +93,10 @@ Feature: CitizenView: captcha session and reservation callouts
     When I wait for the captcha check to finish in the citizen view
     And I continue from the service combination step
     Then provider checkbox 10427 should be visible in the citizen view
-    When I select office 10427 in the citizen view
+    When I keep only providers "10427" checked in the citizen view
     And I wait for appointment slots to be ready in the citizen view
     And I click Später in the time slot grid if available in the citizen view
-    And I scroll to and highlight the preferred timeslot for office 10427 in the citizen view
+    And I scroll to and highlight a timeslot at least 60 minutes ahead for office 10427 in the citizen view
     And I click the highlighted timeslot in the citizen view
     And I continue after slot selection with Weiter for office 10427 in the citizen view
     When I enter default contact details in the citizen view

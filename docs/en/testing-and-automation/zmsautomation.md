@@ -285,6 +285,8 @@ Manual runs (`workflow_dispatch`) expose the usual module/browser/tag inputs plu
 
 Scheduled nightly runs always use the POM version (no override) and take a screenshot after each step. The version must exist on Maven Central. A manual run takes those screenshots only when per-step screenshots is checked.
 
+After a UI run, open **`ATAF-FAILED-SCREENSHOTS.html`** at the root of the `zmsautomation-ataf-reports-…` artifact (or `zmsautomation/target/index.html` locally). Each card shows the failed step, error, and last screenshot. Click a card for every step screenshot of that scenario, with the failed shot first.
+
 ## zmsautomation in Safari on macOS outside the container
 
 You can already run Safari-based automation outside the container on macOS.
