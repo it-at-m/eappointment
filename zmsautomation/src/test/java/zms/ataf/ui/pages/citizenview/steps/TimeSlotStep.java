@@ -2115,10 +2115,10 @@ public final class TimeSlotStep {
             Assert.assertTrue(
                     Math.abs(title.path("px").asDouble() - 18.0) <= 1.0,
                     "Desktop office title should be 1.125rem (~18px): " + title);
-            String align = title.path("alignItems").asText("");
-            Assert.assertTrue(
-                    "center".equals(align) || title.path("display").asText("").contains("flex"),
-                    "Icon and title should be vertically centered (align-items:center): " + title);
+            Assert.assertEquals(
+                    title.path("alignItems").asText(""),
+                    "center",
+                    "Icon and title should use align-items:center: " + title);
         }
         JsonNode datePad = chrome.path("datePad");
         Assert.assertFalse(datePad.isMissingNode() || datePad.isNull(), "Date heading missing: " + chrome);

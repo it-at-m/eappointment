@@ -486,8 +486,37 @@ public final class ContactStep {
         String expected =
                 "Ihre Eingabe in diesem Feld darf " + maxChars + " Zeichen nicht überschreiten.";
         Assert.assertTrue(
-                shadow.shadowDomContainsText(expected),
-                "Expected max-length counter error for #" + fieldId + ": " + expected);
+                fieldGroupContainsText(fieldId, expected),
+                "Expected max-length counter error on #" + fieldId + " only: " + expected);
+    }
+
+    /** True when {@code expected} appears in the Muc form-group that owns {@code fieldId}. */
+    private boolean fieldGroupContainsText(String fieldId, String expected) {
+        String script =
+                "var want=arguments[0],expected=arguments[1]==null?'':String(arguments[1]);"
+                        + "var ids=[];ids.push(want);"
+                        + "if(want.indexOf('textarea-')===0)ids.push(want.slice(9));else ids.push('textarea-'+want);"
+                        + "if(want.indexOf('input-')===0)ids.push(want.slice(6));else ids.push('input-'+want);"
+                        + "function byId(root,id){try{if(root.getElementById)return root.getElementById(id);}catch(e0){}"
+                        + "try{return root.querySelector('#'+id.replace(/([^a-zA-Z0-9_-])/g,'\\\\$1'));}catch(e1){"
+                        + "return root.querySelector('[id=\"'+id.replace(/\"/g,'')+'\"]');}}"
+                        + "function resolve(el){if(!el)return null;if(el.tagName==='INPUT'||el.tagName==='TEXTAREA')return el;"
+                        + "if(el.shadowRoot){var q=el.shadowRoot.querySelector('input:not([type=hidden]),textarea');if(q)return q;}"
+                        + "return el;}"
+                        + "function scanRoot(root){if(!root)return null;for(var i=0;i<ids.length;i++){var el=byId(root,ids[i]);if(el)return resolve(el);}"
+                        + "var nodes=root.querySelectorAll('*');for(var j=0;j<nodes.length;j++){if(nodes[j].shadowRoot){var r2=scanRoot(nodes[j].shadowRoot);if(r2)return r2;}}return null;}"
+                        + "var e=scanRoot(document);if(!e)e=scanRoot(document.body);if(!e)return false;"
+                        + "var n=e;"
+                        + "for(var g=0;g<12&&n;g++){"
+                        + "if(n.classList&&n.classList.contains('m-form-group')){"
+                        + "return (n.textContent||'').indexOf(expected)>=0;}"
+                        + "if(n.parentElement){n=n.parentElement;continue;}"
+                        + "var root=n.getRootNode&&n.getRootNode();n=root&&root.host?root.host:null;}"
+                        + "return false;";
+        Object o =
+                ((JavascriptExecutor) DriverUtil.getDriver())
+                        .executeScript(script, fieldId, expected);
+        return Boolean.TRUE.equals(o);
     }
 
     /**
