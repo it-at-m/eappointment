@@ -574,7 +574,8 @@ public final class TimeSlotStep {
                         + "return null;}"
                         + "var modal=walkModal(document.body);"
                         + "if(modal){var list=[];titles(modal,list);if(modal.shadowRoot)titles(modal.shadowRoot,list);"
-                        + " if(matchTitle(list)||norm(textOf(modal)).indexOf(expected)>=0)return true;}"
+                        // Title nodes only (h1/h2/[slot=title]/ — never body or trigger text.
+                        + " if(matchTitle(list))return true;}"
                         + "var painted=[];titles(document.body,painted);"
                         + "return matchTitle(painted);";
         return Boolean.TRUE.equals(
@@ -677,9 +678,12 @@ public final class TimeSlotStep {
                         + "var all=root.querySelectorAll('*');"
                         + "for(var j=0;j<all.length;j++)if(all[j].shadowRoot)n+=countH3(all[j].shadowRoot);"
                         + "return n;}"
-                        + "var modal=walkModal(document.body);if(!modal)return false;"
+                        // null = host missing (distinct from false = open modal with zero H3s).
+                        + "var modal=walkModal(document.body);if(!modal)return null;"
                         + "return countH3(modal)>0;";
-        return Boolean.TRUE.equals(((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script));
+        Object result = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script);
+        Assert.assertNotNull(result, "Availability info modal host not found for H3 check");
+        return Boolean.TRUE.equals(result);
     }
 
     private boolean noAppointmentErrorCalloutVisible() {
