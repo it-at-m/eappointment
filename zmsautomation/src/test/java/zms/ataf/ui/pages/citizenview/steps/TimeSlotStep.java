@@ -479,26 +479,80 @@ public final class TimeSlotStep {
     }
 
     private boolean availabilityInfoModalOpen() {
+        // MucModal may expose open as boolean, "", or "true". CI screenshots showed the dialog
+        // open while open-attribute / host-box checks timed out: the host is often zero-sized
+        // (closed shadow) while slotted title/body stay painted in light DOM.
         String script =
-                "function walk(n){if(!n)return false;"
+                "var title=arguments[0];"
+                        + "function box(el){if(!el||el.nodeType!==1||!el.getBoundingClientRect)return false;"
+                        + "var r=el.getBoundingClientRect();if(r.width<=8||r.height<=8)return false;"
+                        + "var st=window.getComputedStyle(el);"
+                        + "return st.visibility!=='hidden'&&st.display!=='none'&&st.opacity!=='0';}"
+                        + "function anyPainted(el){if(!el)return false;if(box(el))return true;"
+                        + "function w(n){if(!n)return false;if(n.nodeType===1&&n!==el&&box(n))return true;"
+                        + "if(n.shadowRoot&&w(n.shadowRoot))return true;"
+                        + "var c=n.children;if(c)for(var i=0;i<c.length;i++)if(w(c[i]))return true;"
+                        + "return false;}return w(el);}"
+                        + "function textOf(n){var s='';if(!n)return s;if(n.nodeType===3)return n.nodeValue||'';"
+                        + "if(n.shadowRoot)s+=' '+textOf(n.shadowRoot);"
+                        + "var c=n.childNodes;if(c)for(var i=0;i<c.length;i++)s+=' '+textOf(c[i]);return s;}"
+                        + "function norm(s){return (s||'').replace(/\\s+/g,' ').trim();}"
+                        + "function isOpenFlag(n){"
+                        + " if(n.open===true||n.open==='')return true;"
+                        + " if(String(n.open).toLowerCase()==='true')return true;"
+                        + " if(!n.hasAttribute||!n.hasAttribute('open'))return false;"
+                        + " var a=n.getAttribute('open');"
+                        + " if(a===null)return true;"
+                        + " a=String(a).toLowerCase();"
+                        + " return a===''||a==='true';}"
+                        + "function titlePaintedOutsideTrigger(root){"
+                        + " if(!root)return false;"
+                        + " var hs=root.querySelectorAll('h1,h2,[slot=\"title\"],.m-dialog__title,.modal-title');"
+                        + " for(var i=0;i<hs.length;i++){"
+                        + "  var t=norm(textOf(hs[i]));"
+                        + "  if((t===title||t.indexOf(title)===0)&&box(hs[i]))return true;}"
+                        + " var all=root.querySelectorAll('*');"
+                        + " for(var j=0;j<all.length;j++){"
+                        + "  if(all[j].shadowRoot&&titlePaintedOutsideTrigger(all[j].shadowRoot))return true;}"
+                        + " return false;}"
+                        + "function walk(n){if(!n)return false;"
                         + "var tag=(n.tagName||'').toUpperCase();"
-                        + "if(tag==='MUC-MODAL'){"
-                        + "var open=n.open===true||n.hasAttribute('open')||(n.getAttribute('open')!==null);"
-                        + "if(open)return true;}"
+                        + "var role=n.getAttribute&&n.getAttribute('role');"
+                        + "if(tag==='MUC-MODAL'||tag==='DIALOG'||role==='dialog'){"
+                        + " if(isOpenFlag(n))return true;"
+                        + " if(textOf(n).indexOf(title)>=0&&anyPainted(n))return true;}"
                         + "if(n.shadowRoot&&walk(n.shadowRoot))return true;"
                         + "var c=n.children;if(c)for(var i=0;i<c.length;i++)if(walk(c[i]))return true;"
                         + "return false;}"
-                        + "return walk(document.body);";
-        return Boolean.TRUE.equals(((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script));
+                        + "return walk(document.body)||titlePaintedOutsideTrigger(document.body);";
+        return Boolean.TRUE.equals(
+                ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script, NEW_APPOINTMENTS_INFO_LINK));
     }
 
     private boolean modalTitleIs(String expectedTitle) {
         String script =
                 "var expected=arguments[0];"
                         + "function norm(s){return (s||'').replace(/\\s+/g,' ').trim();}"
+                        + "function box(el){if(!el||el.nodeType!==1||!el.getBoundingClientRect)return false;"
+                        + "var r=el.getBoundingClientRect();if(r.width<=8||r.height<=8)return false;"
+                        + "var st=window.getComputedStyle(el);"
+                        + "return st.visibility!=='hidden'&&st.display!=='none'&&st.opacity!=='0';}"
+                        + "function anyPainted(el){if(!el)return false;if(box(el))return true;"
+                        + "function w(n){if(!n)return false;if(n.nodeType===1&&n!==el&&box(n))return true;"
+                        + "if(n.shadowRoot&&w(n.shadowRoot))return true;"
+                        + "var c=n.children;if(c)for(var i=0;i<c.length;i++)if(w(c[i]))return true;"
+                        + "return false;}return w(el);}"
                         + "function textOf(n){var s='';if(!n)return s;if(n.nodeType===3)return n.nodeValue||'';"
                         + "if(n.shadowRoot)s+=' '+textOf(n.shadowRoot);"
                         + "var c=n.childNodes;if(c)for(var i=0;i<c.length;i++)s+=' '+textOf(c[i]);return s;}"
+                        + "function isOpenFlag(n){"
+                        + " if(n.open===true||n.open==='')return true;"
+                        + " if(String(n.open).toLowerCase()==='true')return true;"
+                        + " if(!n.hasAttribute||!n.hasAttribute('open'))return false;"
+                        + " var a=n.getAttribute('open');"
+                        + " if(a===null)return true;"
+                        + " a=String(a).toLowerCase();"
+                        + " return a===''||a==='true';}"
                         + "function titles(root,out){"
                         + " if(!root)return;"
                         + " var hs=root.querySelectorAll('h1,h2,[slot=\"title\"],.m-dialog__title,.modal-title');"
@@ -506,37 +560,65 @@ public final class TimeSlotStep {
                         + " var all=root.querySelectorAll('*');"
                         + " for(var j=0;j<all.length;j++)if(all[j].shadowRoot)titles(all[j].shadowRoot,out);"
                         + "}"
+                        + "function matchTitle(list){"
+                        + " for(var k=0;k<list.length;k++)"
+                        + "  if(list[k]===expected||list[k].indexOf(expected)===0)return true;"
+                        + " return false;}"
                         + "function walkModal(n){if(!n)return null;"
                         + "var tag=(n.tagName||'').toUpperCase();"
-                        + "if(tag==='MUC-MODAL'){"
-                        + "var open=n.open===true||n.hasAttribute('open')||(n.getAttribute('open')!==null);"
-                        + "if(open)return n;}"
+                        + "var role=n.getAttribute&&n.getAttribute('role');"
+                        + "if(tag==='MUC-MODAL'||tag==='DIALOG'||role==='dialog'){"
+                        + " if(isOpenFlag(n)||(textOf(n).indexOf(expected)>=0&&anyPainted(n)))return n;}"
                         + "if(n.shadowRoot){var inner=walkModal(n.shadowRoot);if(inner)return inner;}"
                         + "var c=n.children;if(c)for(var i=0;i<c.length;i++){var hit=walkModal(c[i]);if(hit)return hit;}"
                         + "return null;}"
-                        + "var modal=walkModal(document.body);if(!modal)return false;"
-                        + "var list=[];titles(modal,list);if(modal.shadowRoot)titles(modal.shadowRoot,list);"
-                        + "for(var k=0;k<list.length;k++)if(list[k]===expected||list[k].indexOf(expected)===0)return true;"
-                        + "return false;";
+                        + "var modal=walkModal(document.body);"
+                        + "if(modal){var list=[];titles(modal,list);if(modal.shadowRoot)titles(modal.shadowRoot,list);"
+                        + " if(matchTitle(list)||norm(textOf(modal)).indexOf(expected)>=0)return true;}"
+                        + "var painted=[];titles(document.body,painted);"
+                        + "return matchTitle(painted);";
         return Boolean.TRUE.equals(
                 ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script, expectedTitle));
     }
 
+    private static final String MODAL_OPEN_FIND_PREFIX =
+            "function box(el){if(!el||el.nodeType!==1||!el.getBoundingClientRect)return false;"
+                    + "var r=el.getBoundingClientRect();if(r.width<=8||r.height<=8)return false;"
+                    + "var st=window.getComputedStyle(el);"
+                    + "return st.visibility!=='hidden'&&st.display!=='none'&&st.opacity!=='0';}"
+                    + "function anyPainted(el){if(!el)return false;if(box(el))return true;"
+                    + "function w(n){if(!n)return false;if(n.nodeType===1&&n!==el&&box(n))return true;"
+                    + "if(n.shadowRoot&&w(n.shadowRoot))return true;"
+                    + "var c=n.children;if(c)for(var i=0;i<c.length;i++)if(w(c[i]))return true;"
+                    + "return false;}return w(el);}"
+                    + "function textOf(n){var s='';if(!n)return s;if(n.nodeType===3)return n.nodeValue||'';"
+                    + "if(n.shadowRoot)s+=' '+textOf(n.shadowRoot);"
+                    + "var c=n.childNodes;if(c)for(var i=0;i<c.length;i++)s+=' '+textOf(c[i]);return s;}"
+                    + "function isOpenFlag(n){"
+                    + " if(n.open===true||n.open==='')return true;"
+                    + " if(String(n.open).toLowerCase()==='true')return true;"
+                    + " if(!n.hasAttribute||!n.hasAttribute('open'))return false;"
+                    + " var a=n.getAttribute('open');"
+                    + " if(a===null)return true;"
+                    + " a=String(a).toLowerCase();"
+                    + " return a===''||a==='true';}"
+                    + "function walkModal(n){if(!n)return null;"
+                    + "var tag=(n.tagName||'').toUpperCase();"
+                    + "var role=n.getAttribute&&n.getAttribute('role');"
+                    + "if(tag==='MUC-MODAL'||tag==='DIALOG'||role==='dialog'){"
+                    + " if(isOpenFlag(n)||(textOf(n).indexOf('"
+                    + NEW_APPOINTMENTS_INFO_LINK
+                    + "')>=0&&anyPainted(n)))return n;}"
+                    + "if(n.shadowRoot){var inner=walkModal(n.shadowRoot);if(inner)return inner;}"
+                    + "var c=n.children;if(c)for(var i=0;i<c.length;i++){var hit=walkModal(c[i]);if(hit)return hit;}"
+                    + "return null;}";
+
     private boolean modalBodyOrTitleContains(String fragment) {
         String script =
                 "var needle=arguments[0];"
-                        + "function textOf(n){var s='';if(!n)return s;if(n.nodeType===3)return n.nodeValue||'';"
-                        + "if(n.shadowRoot)s+=' '+textOf(n.shadowRoot);"
-                        + "var c=n.childNodes;if(c)for(var i=0;i<c.length;i++)s+=' '+textOf(c[i]);return s;}"
-                        + "function walk(n){if(!n)return false;"
-                        + "var tag=(n.tagName||'').toUpperCase();"
-                        + "if(tag==='MUC-MODAL'){"
-                        + "var open=n.open===true||n.hasAttribute('open')||(n.getAttribute('open')!==null);"
-                        + "if(open&&textOf(n).indexOf(needle)>=0)return true;}"
-                        + "if(n.shadowRoot&&walk(n.shadowRoot))return true;"
-                        + "var c=n.children;if(c)for(var i=0;i<c.length;i++)if(walk(c[i]))return true;"
-                        + "return false;}"
-                        + "return walk(document.body);";
+                        + MODAL_OPEN_FIND_PREFIX
+                        + "var modal=walkModal(document.body);if(!modal)return false;"
+                        + "return textOf(modal).indexOf(needle)>=0;";
         return Boolean.TRUE.equals(
                 ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script, fragment));
     }
@@ -544,22 +626,14 @@ public final class TimeSlotStep {
     private boolean modalHasHeadingContaining(String headingFragment) {
         String script =
                 "var needle=arguments[0];"
-                        + "function textOf(n){return ((n&&(n.innerText||n.textContent))||'').replace(/\\s+/g,' ').trim();}"
+                        + MODAL_OPEN_FIND_PREFIX
                         + "function headings(root,out){"
                         + " if(!root)return;"
                         + " var hs=root.querySelectorAll('h3');"
-                        + " for(var i=0;i<hs.length;i++)out.push(textOf(hs[i]));"
+                        + " for(var i=0;i<hs.length;i++)out.push((textOf(hs[i])||'').replace(/\\s+/g,' ').trim());"
                         + " var all=root.querySelectorAll('*');"
                         + " for(var j=0;j<all.length;j++)if(all[j].shadowRoot)headings(all[j].shadowRoot,out);"
                         + "}"
-                        + "function walkModal(n){if(!n)return null;"
-                        + "var tag=(n.tagName||'').toUpperCase();"
-                        + "if(tag==='MUC-MODAL'){"
-                        + "var open=n.open===true||n.hasAttribute('open')||(n.getAttribute('open')!==null);"
-                        + "if(open)return n;}"
-                        + "if(n.shadowRoot){var inner=walkModal(n.shadowRoot);if(inner)return inner;}"
-                        + "var c=n.children;if(c)for(var i=0;i<c.length;i++){var hit=walkModal(c[i]);if(hit)return hit;}"
-                        + "return null;}"
                         + "var modal=walkModal(document.body);if(!modal)return false;"
                         + "var list=[];headings(modal,list);if(modal.shadowRoot)headings(modal.shadowRoot,list);"
                         + "for(var k=0;k<list.length;k++)if(list[k].indexOf(needle)>=0)return true;"
@@ -571,7 +645,7 @@ public final class TimeSlotStep {
     private boolean modalHeadingGroupContains(String headingFragment, String contentFragment) {
         String script =
                 "var headingNeedle=arguments[0];var contentNeedle=arguments[1];"
-                        + "function textOf(n){return ((n&&(n.innerText||n.textContent))||'').replace(/\\s+/g,' ').trim();}"
+                        + MODAL_OPEN_FIND_PREFIX
                         + "function collectH3(root,out){"
                         + " if(!root)return;"
                         + " var hs=root.querySelectorAll('h3');"
@@ -579,23 +653,16 @@ public final class TimeSlotStep {
                         + " var all=root.querySelectorAll('*');"
                         + " for(var j=0;j<all.length;j++)if(all[j].shadowRoot)collectH3(all[j].shadowRoot,out);"
                         + "}"
-                        + "function walkModal(n){if(!n)return null;"
-                        + "var tag=(n.tagName||'').toUpperCase();"
-                        + "if(tag==='MUC-MODAL'){"
-                        + "var open=n.open===true||n.hasAttribute('open')||(n.getAttribute('open')!==null);"
-                        + "if(open)return n;}"
-                        + "if(n.shadowRoot){var inner=walkModal(n.shadowRoot);if(inner)return inner;}"
-                        + "var c=n.children;if(c)for(var i=0;i<c.length;i++){var hit=walkModal(c[i]);if(hit)return hit;}"
-                        + "return null;}"
+                        + "function plain(n){return (textOf(n)||'').replace(/\\s+/g,' ').trim();}"
                         + "var modal=walkModal(document.body);if(!modal)return false;"
                         + "var hs=[];collectH3(modal,hs);if(modal.shadowRoot)collectH3(modal.shadowRoot,hs);"
                         + "for(var k=0;k<hs.length;k++){"
-                        + " if(textOf(hs[k]).indexOf(headingNeedle)<0)continue;"
+                        + " if(plain(hs[k]).indexOf(headingNeedle)<0)continue;"
                         + " var sib=hs[k].nextElementSibling;"
-                        + " if(sib&&textOf(sib).indexOf(contentNeedle)>=0)return true;"
+                        + " if(sib&&plain(sib).indexOf(contentNeedle)>=0)return true;"
                         + " var parent=hs[k].parentElement;"
-                        + " if(parent&&textOf(parent).indexOf(contentNeedle)>=0"
-                        + "  &&textOf(parent).indexOf(headingNeedle)>=0)return true;"
+                        + " if(parent&&plain(parent).indexOf(contentNeedle)>=0"
+                        + "  &&plain(parent).indexOf(headingNeedle)>=0)return true;"
                         + "}"
                         + "return false;";
         return Boolean.TRUE.equals(
@@ -605,18 +672,11 @@ public final class TimeSlotStep {
 
     private boolean modalHasAnyH3() {
         String script =
-                "function countH3(root){if(!root)return 0;var n=root.querySelectorAll('h3').length;"
+                MODAL_OPEN_FIND_PREFIX
+                        + "function countH3(root){if(!root)return 0;var n=root.querySelectorAll('h3').length;"
                         + "var all=root.querySelectorAll('*');"
                         + "for(var j=0;j<all.length;j++)if(all[j].shadowRoot)n+=countH3(all[j].shadowRoot);"
                         + "return n;}"
-                        + "function walkModal(n){if(!n)return null;"
-                        + "var tag=(n.tagName||'').toUpperCase();"
-                        + "if(tag==='MUC-MODAL'){"
-                        + "var open=n.open===true||n.hasAttribute('open')||(n.getAttribute('open')!==null);"
-                        + "if(open)return n;}"
-                        + "if(n.shadowRoot){var inner=walkModal(n.shadowRoot);if(inner)return inner;}"
-                        + "var c=n.children;if(c)for(var i=0;i<c.length;i++){var hit=walkModal(c[i]);if(hit)return hit;}"
-                        + "return null;}"
                         + "var modal=walkModal(document.body);if(!modal)return false;"
                         + "return countH3(modal)>0;";
         return Boolean.TRUE.equals(((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script));
