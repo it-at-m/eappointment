@@ -68,6 +68,13 @@ public class CitizenViewPage extends BasePage {
     public static final String DE_APPOINTMENT_NOT_AVAILABLE_TEXT =
             "Leider hat inzwischen eine andere Person Ihren gewünschten Termin gebucht. Bitte wählen Sie einen neuen Termin aus.";
 
+    /** German too-many-appointments-per-email callout ({@code de-DE.json} apiErrorTooManyAppointmentsWithSameMail*). */
+    public static final String DE_TOO_MANY_APPOINTMENTS_HEADER =
+            "Sie haben bereits zu viele Termine gebucht.";
+
+    public static final String DE_TOO_MANY_APPOINTMENTS_TEXT =
+            "Sie können mit Ihrer E-Mail-Adresse nur eine begrenzte Anzahl an Terminen vereinbaren. Bitte sagen Sie einen anderen Termin ab, bevor Sie einen neuen Termin buchen.";
+
     private final CitizenViewPageContext CONTEXT;
 
     private final ShadowDom shadow;
@@ -1616,6 +1623,10 @@ public class CitizenViewPage extends BasePage {
         contact.fillContactDetailsRandom();
     }
 
+    public void fillContactDetailsWithFamilyName(String familyName) {
+        contact.fillContactDetailsWithFamilyName(familyName);
+    }
+
     public void fillContactDetailsRandomWithoutOptionalRemarks() {
         contact.fillContactDetailsRandomWithoutOptionalRemarks();
     }
@@ -1751,6 +1762,18 @@ public class CitizenViewPage extends BasePage {
 
     public void continueFromPreconfirmStep() {
         overview.continueFromPreconfirmStep();
+    }
+
+    public void tryPreconfirmFromOverview() {
+        overview.tryPreconfirmFromOverview();
+    }
+
+    public void assertTooManyAppointmentsWithSameMailCalloutVisible() {
+        overview.assertTooManyAppointmentsWithSameMailCalloutVisible();
+    }
+
+    public void assertReserveAppointmentButtonNotVisible() {
+        overview.assertReserveAppointmentButtonNotVisible();
     }
 
     public void assertPreconfirmationCalloutVisible(int activationMinutes) {

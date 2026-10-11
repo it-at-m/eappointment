@@ -1761,6 +1761,13 @@ public class CitizenApiSteps {
         postAppointmentUpdate(familyName, email, customTextfield != null ? customTextfield : "", true, false);
     }
 
+    @When("I attempt to update the appointment with family name {string} and customTextfield {string}")
+    public void iAttemptToUpdateTheAppointmentWithFamilyNameAndCustomTextfield(
+            String familyName, String customTextfield) {
+        String email = familyName.toLowerCase(Locale.ROOT).replaceAll("[^a-z0-9]", "") + "@mailinator.com";
+        postAppointmentUpdate(familyName, email, customTextfield != null ? customTextfield : "", false, false);
+    }
+
     @When("I update the appointment with contact details and customTextfield {string} as the logged-in citizen")
     public void iUpdateTheAppointmentWithContactDetailsAndCustomTextfieldAsTheLoggedInCitizen(String customTextfield) {
         postAppointmentUpdate(scenarioContactFamilyName(), scenarioContactEmail(), customTextfield != null ? customTextfield : "", true, true);
@@ -1820,6 +1827,31 @@ public class CitizenApiSteps {
                 label,
                 process.getProcessId(),
                 previousProcessId));
+    }
+
+    @When("I preconfirm the remembered {string} appointment")
+    public void iPreconfirmTheRememberedAppointment(String label) {
+        useRememberedAsCurrentProcess(label);
+        postPreconfirm(true);
+    }
+
+    @When("I attempt to preconfirm the remembered {string} appointment")
+    public void iAttemptToPreconfirmTheRememberedAppointment(String label) {
+        useRememberedAsCurrentProcess(label);
+        postPreconfirm(false);
+    }
+
+    private void useRememberedAsCurrentProcess(String label) {
+        RememberedAppointment remembered = requireRemembered(label);
+        ThinnedProcess stub = new ThinnedProcess();
+        stub.setProcessId(remembered.processId);
+        stub.setAuthKey(remembered.authKey);
+        lastReserveProcess = stub;
+        setLastReserveProcess(stub);
+        ScenarioLogManager.getLogger().info(String.format(
+                "Citizen API using remembered \"%s\" processId=%d as current process",
+                label,
+                remembered.processId));
     }
 
     @When("I reserve an appointment with the first available slot using the remembered {string} appointment as source")
