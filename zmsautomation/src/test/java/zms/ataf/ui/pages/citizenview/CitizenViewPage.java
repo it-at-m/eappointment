@@ -584,6 +584,10 @@ public class CitizenViewPage extends BasePage {
         combination.assertPlusButton(label, disabled);
     }
 
+    public void assertAllPlusButtonsDisabled() {
+        combination.assertAllPlusButtonsDisabled();
+    }
+
     /** ZMSKVR-106: the service name links to its description on muenchen.de. */
     public void assertServiceDescriptionLink(String label, String serviceId) {
         combination.assertServiceDescriptionLink(label, serviceId);
@@ -793,7 +797,7 @@ public class CitizenViewPage extends BasePage {
         bookingStepper.clickHighlightedBookingStep();
     }
 
-    private boolean bookingStepMatches(String label, String state, String icon) {
+    public boolean bookingStepMatches(String label, String state, String icon) {
         return bookingStepper.bookingStepMatches(label, state, icon);
     }
 
@@ -872,6 +876,11 @@ public class CitizenViewPage extends BasePage {
      */
     public void assertOfficesCheckedInFrequencyOrder() {
         providerLocation.assertOfficesCheckedInFrequencyOrder();
+    }
+
+    /** Login resume must keep several Ort checkboxes on (ZMSKVR-1002). */
+    public void assertAtLeastNLocationCheckboxesChecked(int minimum) {
+        providerLocation.assertAtLeastNLocationCheckboxesChecked(minimum);
     }
 
     /** One bookable office: a contact tile, no location checkboxes. */
@@ -1508,6 +1517,11 @@ public class CitizenViewPage extends BasePage {
         contact.assertContactFormVisible();
     }
 
+    /** ZMSKVR-92 / ZMSKVR-164: Kontakt after reserve, recovering via stepper when Übersicht wins the race. */
+    public void assertContactFormVisibleAfterReserve() {
+        contact.assertContactFormVisibleAfterReserve();
+    }
+
     public void assertFilledNameAndEmailLockedOnContactForm() {
         contact.assertFilledNameAndEmailLockedOnContactForm();
     }
@@ -1803,6 +1817,10 @@ public class CitizenViewPage extends BasePage {
 
     public void trySetBookingProcessFromPage() {
         myAppointments.trySetBookingProcessFromPage();
+    }
+
+    public boolean syncRememberedAppointmentTimeFromBookingProcess() {
+        return myAppointments.syncRememberedAppointmentTimeFromBookingProcess();
     }
 
     public void openConfirmationDeepLinkInBrowser() {

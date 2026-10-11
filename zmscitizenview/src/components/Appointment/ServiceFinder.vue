@@ -410,11 +410,9 @@ watch(countOfService, (newCountOfService) => {
 });
 
 const setServiceData = (selectedService: ServiceImpl) => {
-  // Jump-in / exclusive office: only that office's slots and slotsPerAppointment.
-  service.value!.providers = getProviders(
-    selectedService.id,
-    props.preselectedOfficeId ? [String(props.preselectedOfficeId)] : null
-  );
+  // Keep every office that offers the service. Jump-in only preselects Ort;
+  // narrowing providers here collapsed shared-booking peers into a single tile.
+  service.value!.providers = getProviders(selectedService.id, null);
   service.value!.count = countOfService.value > 0 ? countOfService.value : 1;
 
   minSlotsPerAppointment.value = getEffectiveMinSlotsPerAppointment(
@@ -699,18 +697,40 @@ onMounted(() => {
     countOfService.value = service.value.count
       ? service.value.count
       : countOfService.value;
-    currentSlots.value = calculateTotalSlots(
-      service.value.providers || [],
-      service.value.count || 0,
-      service.value.subServices
-    );
 
-    // Calculate minSlotsPerAppointment if providers are available
-    if (service.value.providers && service.value.providers.length > 0) {
+    // Stepper back destroys ServiceFinder (v-if on Leistung). Remount starts with
+    // empty offices/relations until fetch returns, while minSlots defaults to 25.
+    // Keep the spa already on selectedService.providers so quantity caps stay
+    // correct for that paint (ZMSKVR-1083 / ZMSKVR-1226).
+    if (service.value.providers?.length) {
       minSlotsPerAppointment.value = getEffectiveMinSlotsPerAppointment(
         service.value.providers
       );
+      currentSlots.value = calculateTotalSlots(
+        service.value.providers,
+        service.value.count || 0,
+        service.value.subServices
+      );
     }
+
+    const refreshCombinationFromCatalog = () => {
+      if (!service.value) {
+        return;
+      }
+      // Refresh providers/slots from local catalog (peers already on selectedService).
+      setServiceData(service.value);
+      currentSlots.value = calculateTotalSlots(
+        service.value.providers || [],
+        service.value.count || 0,
+        service.value.subServices
+      );
+      if (service.value.providers && service.value.providers.length > 0) {
+        minSlotsPerAppointment.value = getEffectiveMinSlotsPerAppointment(
+          service.value.providers
+        );
+      }
+    };
+
     if (services.value.length === 0) {
       fetchServicesAndProviders(
         props.preselectedServiceId ?? undefined,
@@ -728,14 +748,10 @@ onMounted(() => {
         services.value = (data as any).services;
         relations.value = (data as any).relations;
         offices.value = (data as any).offices;
-
-        // Recalculate minSlotsPerAppointment when navigating back
-        if (service.value) {
-          minSlotsPerAppointment.value = getEffectiveMinSlotsPerAppointment(
-            service.value.providers || []
-          );
-        }
+        refreshCombinationFromCatalog();
       });
+    } else {
+      refreshCombinationFromCatalog();
     }
   } else {
     fetchServicesAndProviders(
