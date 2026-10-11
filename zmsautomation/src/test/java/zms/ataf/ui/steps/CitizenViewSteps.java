@@ -1648,6 +1648,24 @@ public class CitizenViewSteps {
         page.assertCaptchaSessionCalloutNotVisible();
     }
 
+    @Then("the captcha on Leistung should match the muenchen.de design")
+    public void theCaptchaOnLeistungShouldMatchTheMuenchenDeDesign() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: assert captcha design on Leistung");
+        page.assertCaptchaDesign();
+    }
+
+    @Then("the Weiter button on Leistung should be disabled in the citizen view")
+    public void theWeiterButtonOnLeistungShouldBeDisabled() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: assert Weiter disabled before captcha");
+        page.assertLeistungWeiterDisabled();
+    }
+
+    @Then("the Weiter button on Leistung should be enabled in the citizen view")
+    public void theWeiterButtonOnLeistungShouldBeEnabled() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: assert Weiter enabled after captcha");
+        page.assertLeistungWeiterEnabled();
+    }
+
     @Then("the reservation expired callout should be visible in the citizen view")
     public void theReservationExpiredCalloutShouldBeVisible() {
         ScenarioLogManager.getLogger().info("zmscitizenview: assert reservation expired callout");
