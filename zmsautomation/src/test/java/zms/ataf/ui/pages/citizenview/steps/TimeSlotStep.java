@@ -9,6 +9,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import ataf.core.logging.ScenarioLogManager;
 import ataf.web.utils.DriverUtil;
@@ -980,6 +981,32 @@ public final class TimeSlotStep {
     private JsonNode lastMucSpinnerSnapshot;
 
     /**
+     * Shared DOM helpers for Muc spinner snapshots. Kept as one string so click+poll can run in a
+     * single {@code executeScript} turn and still catch a short flash on a fast network.
+     */
+    private static final String MUC_SPINNER_JS_HELPERS =
+            "function vis(el){if(!el)return false;var s=getComputedStyle(el);"
+                    + "if(s.display==='none'||s.visibility==='hidden'||parseFloat(s.opacity)===0)return false;"
+                    + "var r=el.getBoundingClientRect();return r.width>=8&&r.height>=8;}"
+                    + "function textOf(n){var s='';if(!n)return s;if(n.nodeType===3)return n.nodeValue||'';"
+                    + "if(n.shadowRoot)s+=textOf(n.shadowRoot);var c=n.childNodes;if(c)for(var i=0;i<c.length;i++)s+=textOf(c[i]);return s;}"
+                    + "function walk(n,fn){if(!n)return;fn(n);if(n.shadowRoot)walk(n.shadowRoot,fn);"
+                    + "var c=n.children;if(c)for(var i=0;i<c.length;i++)walk(c[i],fn);}"
+                    + "function snap(){var out={visible:false,text:'',ort:false,calendar:false,zeit:false};"
+                    + "walk(document.body,function(n){"
+                    + "if(!n||n.nodeType!==1)return;"
+                    + "if(n.classList&&n.classList.contains('m-spinner-container')&&vis(n)){"
+                    + "out.visible=true;out.text=textOf(n).replace(/\\s+/g,' ').trim();}"
+                    + "var tag=(n.tagName||'').toUpperCase();"
+                    + "if(tag==='H2'&&textOf(n).replace(/\\s+/g,' ').trim()==='Ort'&&vis(n))out.ort=true;"
+                    + "if((n.classList&&(n.classList.contains('muc-calendar-wrap')||n.classList.contains('calendar-root'))"
+                    + "||tag==='MUC-CALENDAR')&&vis(n))out.calendar=true;"
+                    + "if((tag==='H2'||tag==='H3')&&(textOf(n).indexOf('Datum und Uhrzeit')>=0"
+                    + "||textOf(n).replace(/\\s+/g,' ').trim()==='Zeit')&&vis(n))out.zeit=true;"
+                    + "});return out;}"
+                    + "function matchesWant(s,want){return !!(s&&s.visible&&String(s.text||'').indexOf(want)>=0);}";
+
+    /**
      * MucSpinner lives in {@code .m-spinner-container}; shown while days load and again after a calendar day change
      * until slot API returns ({@code CalendarView.vue}).
      */
@@ -993,33 +1020,40 @@ public final class TimeSlotStep {
      */
     public JsonNode mucSpinnerSnapshot() {
         context.set();
-        return json.citizenJson(
-                "(function(){"
-                        + "function vis(el){if(!el)return false;var s=getComputedStyle(el);"
-                        + "if(s.display==='none'||s.visibility==='hidden'||parseFloat(s.opacity)===0)return false;"
-                        + "var r=el.getBoundingClientRect();return r.width>=8&&r.height>=8;}"
-                        + "function textOf(n){var s='';if(!n)return s;if(n.nodeType===3)return n.nodeValue||'';"
-                        + "if(n.shadowRoot)s+=textOf(n.shadowRoot);var c=n.childNodes;if(c)for(var i=0;i<c.length;i++)s+=textOf(c[i]);return s;}"
-                        + "function walk(n,fn){if(!n)return;fn(n);if(n.shadowRoot)walk(n.shadowRoot,fn);"
-                        + "var c=n.children;if(c)for(var i=0;i<c.length;i++)walk(c[i],fn);}"
-                        + "var out={visible:false,text:'',ort:false,calendar:false,zeit:false};"
-                        + "walk(document.body,function(n){"
-                        + "if(!n||n.nodeType!==1)return;"
-                        + "if(n.classList&&n.classList.contains('m-spinner-container')&&vis(n)){"
-                        + "out.visible=true;out.text=textOf(n).replace(/\\s+/g,' ').trim();}"
-                        + "var tag=(n.tagName||'').toUpperCase();"
-                        + "if(tag==='H2'&&textOf(n).replace(/\\s+/g,' ').trim()==='Ort'&&vis(n))out.ort=true;"
-                        + "if((n.classList&&(n.classList.contains('muc-calendar-wrap')||n.classList.contains('calendar-root'))"
-                        + "||tag==='MUC-CALENDAR')&&vis(n))out.calendar=true;"
-                        + "if((tag==='H2'||tag==='H3')&&(textOf(n).indexOf('Datum und Uhrzeit')>=0"
-                        + "||textOf(n).replace(/\\s+/g,' ').trim()==='Zeit')&&vis(n))out.zeit=true;"
-                        + "});"
-                        + "return out;})()");
+        return json.citizenJson("(function(){" + MUC_SPINNER_JS_HELPERS + "return snap();})()");
     }
 
     /**
-     * Poll until a painted Muc spinner shows {@code expectedText} (ZMSKVR-604 / ZMSKVR-1011). Stores the
-     * snapshot for Ort/calendar assertions.
+     * Arm a page-side watcher before the action that should show the spinner. A MutationObserver +
+     * rAF loop records the first matching snapshot even if the spinner clears before Selenium's next
+     * poll (fast CI / warm cache).
+     */
+    public void armMucSpinnerWatch(String expectedText) {
+        context.set();
+        String want = expectedText == null ? "" : expectedText.trim();
+        ((JavascriptExecutor) DriverUtil.getDriver())
+                .executeScript(
+                        MUC_SPINNER_JS_HELPERS
+                                + "var want=arguments[0];"
+                                + "try{if(window.__zmsMucSpinnerObs){window.__zmsMucSpinnerObs.disconnect();}}catch(e){}"
+                                + "try{if(window.__zmsMucSpinnerRaf){cancelAnimationFrame(window.__zmsMucSpinnerRaf);}}catch(e2){}"
+                                + "window.__zmsMucSpinnerCatch=null;"
+                                + "window.__zmsMucSpinnerWant=want;"
+                                + "function check(){if(window.__zmsMucSpinnerCatch)return;"
+                                + "var s=snap();if(matchesWant(s,want)){window.__zmsMucSpinnerCatch=s;}}"
+                                + "window.__zmsMucSpinnerObs=new MutationObserver(check);"
+                                + "window.__zmsMucSpinnerObs.observe(document.documentElement,{subtree:true,childList:true,attributes:true,characterData:true});"
+                                + "function loop(){check();if(!window.__zmsMucSpinnerCatch){"
+                                + "window.__zmsMucSpinnerRaf=requestAnimationFrame(loop);}}"
+                                + "check();loop();",
+                        want);
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: armed Muc spinner watch for '{}'", want);
+    }
+
+    /**
+     * Wait until the armed watcher (or a live snapshot) saw {@code expectedText}. Prefer arming
+     * before the click so a sub-frame flash is not missed.
      */
     public void waitUntilMucSpinnerSeen(String expectedText, int maxSeconds) {
         context.set();
@@ -1029,9 +1063,16 @@ public final class TimeSlotStep {
         try {
             lastMucSpinnerSnapshot =
                     new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(maxSeconds))
-                            .pollingEvery(Duration.ofMillis(100))
+                            .pollingEvery(Duration.ofMillis(50))
                             .until(
                                     d -> {
+                                        Object caught =
+                                                ((JavascriptExecutor) d)
+                                                        .executeScript(
+                                                                "return window.__zmsMucSpinnerCatch||null;");
+                                        if (caught instanceof java.util.Map<?, ?> map) {
+                                            return new ObjectMapper().valueToTree(map);
+                                        }
                                         JsonNode snap = mucSpinnerSnapshot();
                                         if (!snap.path("visible").asBoolean(false)) {
                                             return null;
@@ -1048,11 +1089,25 @@ public final class TimeSlotStep {
                             + maxSeconds
                             + "s (last="
                             + last
-                            + ")");
+                            + "). Fast loads can flash the spinner — watcher must be armed before the action.");
             return;
+        } finally {
+            disarmMucSpinnerWatch();
         }
         ScenarioLogManager.getLogger()
                 .info("zmscitizenview: Muc spinner seen: {}", lastMucSpinnerSnapshot);
+    }
+
+    private void disarmMucSpinnerWatch() {
+        try {
+            ((JavascriptExecutor) DriverUtil.getDriver())
+                    .executeScript(
+                            "try{if(window.__zmsMucSpinnerObs){window.__zmsMucSpinnerObs.disconnect();}}catch(e){}"
+                                    + "try{if(window.__zmsMucSpinnerRaf){cancelAnimationFrame(window.__zmsMucSpinnerRaf);}}catch(e2){}"
+                                    + "window.__zmsMucSpinnerObs=null;window.__zmsMucSpinnerRaf=null;");
+        } catch (RuntimeException ignored) {
+            // page may already be gone
+        }
     }
 
     public void assertLastMucSpinnerText(String expectedText) {
@@ -1077,7 +1132,10 @@ public final class TimeSlotStep {
                 "Calendar should stay visible with the Muc spinner under Zeit: " + lastMucSpinnerSnapshot);
     }
 
-    /** Uncheck the first Ort checkbox and catch the Muc spinner during the refetch. */
+    /**
+     * Uncheck the first Ort checkbox and catch the Muc spinner during the refetch. Arm the watcher
+     * before the click, then also poll inside the same script turn as the click.
+     */
     public void uncheckFirstOrtOfficeCatchingSpinner(String expectedText) {
         context.set();
         JsonNode offices = providerLocation.providerCheckboxes().path("offices");
@@ -1094,18 +1152,110 @@ public final class TimeSlotStep {
                 checkboxId.startsWith("checkbox-provider-"),
                 "Unexpected Ort checkbox id: " + checkboxId);
         ScenarioLogManager.getLogger()
-                .info("zmscitizenview: uncheck {} and catch Muc spinner", checkboxId);
-        shadow.deepClickRequired("#" + checkboxId);
+                .info("zmscitizenview: uncheck {} and catch Muc spinner (armed)", checkboxId);
+        armMucSpinnerWatch(expectedText);
+        Object inline =
+                ((JavascriptExecutor) DriverUtil.getDriver())
+                        .executeScript(
+                                MUC_SPINNER_JS_HELPERS
+                                        + "var id=arguments[0];var want=arguments[1];var maxMs=arguments[2];"
+                                        + "function find(root){if(!root)return null;"
+                                        + "var q=root.querySelector('#'+id);if(q)return q;"
+                                        + "var all=root.querySelectorAll('*');"
+                                        + "for(var i=0;i<all.length;i++){if(all[i].shadowRoot){var f=find(all[i].shadowRoot);if(f)return f;}}"
+                                        + "return null;}"
+                                        + "var el=document.querySelector('#'+id)||find(document.body);"
+                                        + "if(!el)return {clicked:false,snap:snap()};"
+                                        + "try{el.click();}catch(e){return {clicked:false,snap:snap(),err:String(e)};}"
+                                        + "var t0=Date.now();"
+                                        + "while(Date.now()-t0<maxMs){"
+                                        + "var s=window.__zmsMucSpinnerCatch||snap();"
+                                        + "if(matchesWant(s,want)){window.__zmsMucSpinnerCatch=s;return {clicked:true,snap:s};}"
+                                        + "}"
+                                        + "return {clicked:true,snap:window.__zmsMucSpinnerCatch||snap()};",
+                                checkboxId,
+                                expectedText,
+                                4000);
+        rememberInlineSpinnerCatch(inline, expectedText);
         waitUntilMucSpinnerSeen(expectedText, 12);
     }
 
-    /** Click the next free calendar day and catch the Muc spinner while slots reload. */
+    /**
+     * Click the next free calendar day and catch the Muc spinner while slots reload. Same arm +
+     * in-script poll as Ort uncheck so a fast day fetch cannot race the Selenium round-trip.
+     */
     public void selectNextCalendarDayCatchingSpinner(String expectedText) {
         context.set();
+        armMucSpinnerWatch(expectedText);
+        Object inline =
+                ((JavascriptExecutor) DriverUtil.getDriver())
+                        .executeScript(
+                                MUC_SPINNER_JS_HELPERS
+                                        + "var want=arguments[0];var maxMs=arguments[1];"
+                                        + "function walk(root, visit){"
+                                        + "if(!root||!root.querySelectorAll)return false;"
+                                        + "var nodes=root.querySelectorAll('*');"
+                                        + "for(var i=0;i<nodes.length;i++){"
+                                        + "if(visit(nodes[i]))return true;"
+                                        + "if(nodes[i].shadowRoot&&walk(nodes[i].shadowRoot,visit))return true;}"
+                                        + "return false;}"
+                                        + "function enabled(btn){return btn&&!btn.disabled&&btn.getAttribute('aria-disabled')!=='true';}"
+                                        + "var wrap=null;"
+                                        + "walk(document,function(el){"
+                                        + "if(el.matches&&el.matches('.muc-calendar-wrap')){wrap=el;return true;}return false;});"
+                                        + "if(!wrap)return {clicked:false,snap:snap()};"
+                                        + "var days=[];"
+                                        + "walk(wrap,function(el){"
+                                        + "if(el.classList&&el.classList.contains('muc-calendar-item')&&el.getAttribute('role')==='button')days.push(el);"
+                                        + "return false;});"
+                                        + "var selectedDay=-1;"
+                                        + "for(var d=0;d<days.length;d++){if(days[d].classList.contains('selected'))selectedDay=d;}"
+                                        + "var clicked=false;"
+                                        + "if(selectedDay>=0){"
+                                        + "for(var n=selectedDay+1;n<days.length;n++){"
+                                        + "var tile=days[n];"
+                                        + "if(tile.getAttribute('aria-disabled')==='true'||tile.classList.contains('disabled-tile')||tile.classList.contains('off-month'))continue;"
+                                        + "var dayLabel=(tile.textContent||'').replace(/\\s+/g,' ').trim();"
+                                        + "if(!/^\\d{1,2}$/.test(dayLabel))continue;"
+                                        + "tile.click();clicked=true;break;}}"
+                                        + "if(!clicked){"
+                                        + "walk(wrap,function(el){"
+                                        + "if(clicked||el.tagName!=='BUTTON'||!enabled(el))return false;"
+                                        + "var useEl=el.querySelector('use');"
+                                        + "var href=(useEl&&(useEl.getAttribute('href')||useEl.getAttribute('xlink:href')))||'';"
+                                        + "if(href.indexOf('chevron-right')<0)return false;"
+                                        + "el.click();clicked=true;return true;});}"
+                                        + "if(!clicked)return {clicked:false,snap:snap()};"
+                                        + "var t0=Date.now();"
+                                        + "while(Date.now()-t0<maxMs){"
+                                        + "var s=window.__zmsMucSpinnerCatch||snap();"
+                                        + "if(matchesWant(s,want)){window.__zmsMucSpinnerCatch=s;return {clicked:true,snap:s};}}"
+                                        + "return {clicked:true,snap:window.__zmsMucSpinnerCatch||snap()};",
+                                expectedText,
+                                4000);
+        rememberInlineSpinnerCatch(inline, expectedText);
         Assert.assertTrue(
-                clickNextBookableCalendarDay(),
+                inline instanceof java.util.Map<?, ?> map
+                        && Boolean.TRUE.equals(map.get("clicked")),
                 "No next free calendar day to select for Muc spinner check");
         waitUntilMucSpinnerSeen(expectedText, 12);
+    }
+
+    private void rememberInlineSpinnerCatch(Object inline, String expectedText) {
+        if (!(inline instanceof java.util.Map<?, ?> map)) {
+            return;
+        }
+        Object snap = map.get("snap");
+        if (!(snap instanceof java.util.Map<?, ?> snapMap)) {
+            return;
+        }
+        JsonNode node = new ObjectMapper().valueToTree(snapMap);
+        if (node.path("visible").asBoolean(false)
+                && node.path("text").asText("").contains(expectedText == null ? "" : expectedText)) {
+            lastMucSpinnerSnapshot = node;
+            ((JavascriptExecutor) DriverUtil.getDriver())
+                    .executeScript("window.__zmsMucSpinnerCatch=arguments[0];", snapMap);
+        }
     }
 
     /**
