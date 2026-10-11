@@ -1174,6 +1174,21 @@ public class CitizenViewSteps {
         page.assertLoggedInConfirmationSuccessDetailsVisible();
     }
 
+    /** ZMSKVR-97 / ZMSKVR-526 / ZMSKVR-732: guest activation — ICS download + book another. */
+    @Then("the confirmation success callout should show the guest confirmation details in the citizen view")
+    public void theConfirmationSuccessCalloutShouldShowTheGuestConfirmationDetails() {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: assert guest confirmation success details");
+        page.assertGuestConfirmationSuccessDetailsVisible();
+    }
+
+    @When("I book another appointment from the confirmation success callout in the citizen view")
+    public void iBookAnotherAppointmentFromTheConfirmationSuccessCallout() {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: Weiteren Termin vereinbaren from confirmation success");
+        page.bookAnotherAppointmentFromConfirmationSuccess();
+    }
+
     @Then("the preconfirmation callout should not be visible in the citizen view")
     public void thePreconfirmationCalloutShouldNotBeVisibleInTheCitizenView() {
         ScenarioLogManager.getLogger().info("zmscitizenview: assert activation callout is hidden");
@@ -1790,5 +1805,12 @@ public class CitizenViewSteps {
     public void theDownloadedIcsFileShouldContainTheBookedAppointment() {
         ScenarioLogManager.getLogger().info("zmscitizenview: assert downloaded ICS");
         page.assertDownloadedIcsContainsBookedAppointment();
+    }
+
+    @Then("the downloaded ICS file should match the Munich confirmation template in the citizen view")
+    public void theDownloadedIcsFileShouldMatchTheMunichConfirmationTemplate() {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: assert downloaded ICS Munich confirmation template");
+        page.assertDownloadedIcsMatchesMunichConfirmationTemplate();
     }
 }

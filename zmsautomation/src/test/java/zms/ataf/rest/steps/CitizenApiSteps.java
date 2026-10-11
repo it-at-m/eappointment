@@ -1766,6 +1766,11 @@ public class CitizenApiSteps {
         postAppointmentUpdate(scenarioContactFamilyName(), scenarioContactEmail(), customTextfield != null ? customTextfield : "", true, true);
     }
 
+    @When("I update the appointment with contact details and telephone {string}")
+    public void iUpdateTheAppointmentWithContactDetailsAndTelephone(String telephone) {
+        postAppointmentUpdate(scenarioContactFamilyName(), scenarioContactEmail(), "", telephone, true, false);
+    }
+
     @When("I update the appointment with contact details and telephone {string} as the logged-in citizen")
     public void iUpdateTheAppointmentWithContactDetailsAndTelephoneAsTheLoggedInCitizen(String telephone) {
         postAppointmentUpdate(scenarioContactFamilyName(), scenarioContactEmail(), "", telephone, true, true);
@@ -2177,6 +2182,65 @@ public class CitizenApiSteps {
             .isGreaterThanOrEqualTo(nowEpochSeconds - 120);
         assertScopeProviderGeoPresent("confirm-appointment");
         // Skip `displayNumber` (varies) and `captchaToken` (captcha disabled in test data).
+    }
+
+    /**
+     * ZMSKVR-97 / ZMSKVR-535: confirm returns {@code icsContent} from Munich {@code icsappointment.twig}
+     * with Terminnummer ({@code displayNumber}), Leistung URL, and cancel hash link.
+     *
+     * @param displayNumberMode {@code prefixed} when the scope uses {@code displayNumberPrefix};
+     *     {@code plain} when displayNumber equals the process id
+     */
+    @Then("the confirm endpoint icsContent should match the Munich template with {string} displayNumber")
+    public void theConfirmEndpointIcsContentShouldMatchTheMunichTemplateWithDisplayNumber(
+            String displayNumberMode) {
+        response.then().statusCode(200);
+        ThinnedProcess process =
+                lastReserveProcess != null ? lastReserveProcess : parseDataResponse(response, ThinnedProcess.class);
+        Assertions.assertThat(process).as("confirm process").isNotNull();
+        Assertions.assertThat(process.getProcessId()).as("processId").isNotNull();
+        Assertions.assertThat(process.getIcsContent())
+                .as("confirm-appointment icsContent")
+                .isNotBlank()
+                .contains("BEGIN:VCALENDAR")
+                .contains("BEGIN:VEVENT");
+        String displayNumber = process.getDisplayNumber();
+        Assertions.assertThat(displayNumber).as("displayNumber on confirm").isNotBlank();
+        if ("plain".equalsIgnoreCase(displayNumberMode)) {
+            Assertions.assertThat(displayNumber)
+                    .as("plain displayNumber equals processId")
+                    .isEqualTo(String.valueOf(process.getProcessId()));
+        } else if ("prefixed".equalsIgnoreCase(displayNumberMode)) {
+            Assertions.assertThat(displayNumber)
+                    .as("prefixed displayNumber embeds processId")
+                    .contains(String.valueOf(process.getProcessId()))
+                    .isNotEqualTo(String.valueOf(process.getProcessId()));
+        } else {
+            throw new IllegalArgumentException(
+                    "Unknown displayNumber mode \"" + displayNumberMode + "\" (use prefixed|plain).");
+        }
+        String unfolded = unfoldIcs(process.getIcsContent());
+        Assertions.assertThat(unfolded)
+                .as("ICS DESCRIPTION Terminnummer")
+                .contains("Terminnummer: " + displayNumber);
+        Assertions.assertThat(unfolded)
+                .as("ICS UID displayNumber")
+                .contains("-" + displayNumber);
+        Assertions.assertThat(unfolded)
+                .as("ICS cancel/reschedule link")
+                .contains("#/appointment/");
+        Assertions.assertThat(process.getServiceId()).as("serviceId").isNotNull();
+        Assertions.assertThat(unfolded)
+                .as("ICS Leistung URL")
+                .contains("https://stadt.muenchen.de/service/info/" + process.getServiceId());
+        Assertions.assertThat(unfolded).as("ICS LOCATION present").contains("LOCATION:");
+    }
+
+    private static String unfoldIcs(String icsContent) {
+        if (icsContent == null) {
+            return "";
+        }
+        return icsContent.replaceAll("\\R[ \\t]", "").replace("\\n", "\n").replace("\\,", ",");
     }
 
     /**
