@@ -702,7 +702,7 @@ onMounted(() => {
       if (!service.value) {
         return;
       }
-      // After login resume only selected subs are seeded — expand peers here.
+      // Refresh providers/slots from local catalog (peers already on selectedService).
       setServiceData(service.value);
       currentSlots.value = calculateTotalSlots(
         service.value.providers || [],

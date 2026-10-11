@@ -1355,27 +1355,42 @@ const applyLocalStorageUiData = (uiData: LocalStorageUiData) => {
   );
   if (foundService) {
     const mainId = String(foundService.id);
-    // Map survives OAuth; catalog row has no subServices. Seed selected counts;
-    // ServiceFinder.setServiceData expands the rest of the combinable peers.
-    const subServices = Array.from(selectedServiceMap.value.entries())
-      .filter(([id, count]) => id !== mainId && count > 0)
-      .map(([id, count]) => {
-        const sub = services.value.find((service) => String(service.id) === id);
-        return new SubService(
-          id,
-          sub?.name ?? "",
-          sub?.maxQuantity ?? count,
-          getProviders(id, null),
-          count
+    // Map survives OAuth; catalog is already loaded — expand peers here so
+    // Leistung is not empty until ServiceFinder re-fetches.
+    const combinable = foundService.combinable
+      ? (JSON.parse(JSON.stringify(foundService.combinable)) as Combinable)
+      : undefined;
+    const subServices: SubService[] = [];
+    if (combinable) {
+      for (const key of Object.keys(combinable)) {
+        if (Object.keys(combinable[key])[0] === mainId) {
+          delete combinable[key];
+        }
+      }
+      for (const serviceObj of Object.values(combinable)) {
+        const subId = Object.keys(serviceObj)[0];
+        const sub = services.value.find(
+          (service) => String(service.id) === String(subId)
         );
-      });
+        if (!sub) {
+          continue;
+        }
+        subServices.push(
+          new SubService(
+            String(subId),
+            sub.name,
+            sub.maxQuantity,
+            getProviders(String(subId), serviceObj[subId]?.map(String) ?? null),
+            selectedServiceMap.value.get(String(subId)) ?? 0
+          )
+        );
+      }
+    }
     selectedService.value = new ServiceImpl(
       mainId,
       foundService.name,
       foundService.maxQuantity,
-      foundService.combinable
-        ? (JSON.parse(JSON.stringify(foundService.combinable)) as Combinable)
-        : foundService.combinable,
+      combinable,
       getProviders(mainId, null),
       subServices,
       selectedServiceMap.value.get(mainId) ?? 1,
@@ -1386,9 +1401,11 @@ const applyLocalStorageUiData = (uiData: LocalStorageUiData) => {
     );
     selectedService.value.rootParentId =
       foundService.rootParentId ?? foundService.id;
-    selectedService.value.subServiceSelectionOrder = subServices.map((sub) =>
-      String(sub.id)
-    );
+    selectedService.value.subServiceSelectionOrder = Array.from(
+      selectedServiceMap.value.entries()
+    )
+      .filter(([id, count]) => id !== mainId && count > 0)
+      .map(([id]) => String(id));
   }
 
   // Keep jump-in location only — do not pin Ort to the booked office.
