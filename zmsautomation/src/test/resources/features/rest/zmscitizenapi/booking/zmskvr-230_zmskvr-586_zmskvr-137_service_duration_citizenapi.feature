@@ -5,9 +5,8 @@ Feature: Citizen API: service duration from slotTimeInMinutes and slots
   So that Bürgeransicht and Admin can show the same minutes
 
   # ZMSKVR-137 exposes slotTimeInMinutes; duration = slots × slotTimeInMinutes.
-  # Passkalender 10502: 15 × 1 = 15. Hauptkalender 10489: 5 × 3 = 15 per service;
-  # Reisepass + Wohnsitzanmeldung = 30 (ZMSKVR-586). Also Abholung (10), KfZ (15/30),
-  # Ausfuhr (15), Führungszeugnis (5).
+  # Bürgerbüros, KfZ, Feuerwache, Standesamt, Fundbüro, Gewerbeamt, Einbürgerung,
+  # Führerscheinstelle, Versicherungsamt.
 
   Background:
     Given the Citizen API is available
@@ -28,6 +27,13 @@ Feature: Citizen API: service duration from slotTimeInMinutes and slots
       | 10308013 | 15       | 1080502   | 2     |
       | 10416    | 5        | 1064268   | 3     |
       | 10286848 | 5        | 1063565   | 1     |
+      | 10577    | 90       | 10389330  | 1     |
+      | 10295168 | 5        | 1063731   | 1     |
+      | 1061963  | 20       | 1063519   | 1     |
+      | 10546    | 5        | 1063423   | 4     |
+      | 10471    | 60       | 1071907   | 1     |
+      | 1094898  | 5        | 1071854   | 1     |
+      | 10512    | 15       | 1080455   | 3     |
 
   Scenario: Reisepass and Wohnsitzanmeldung sum to 30 minutes at Hauptkalender 10489
     Then office 10489 should use a slot time of 5 minutes and service 1063453 should take 3 slot

@@ -3,7 +3,7 @@ Feature: Bürgeransicht and Admin show the same Termindauer across offices
 
   # ZMSKVR-230 / ZMSKVR-586: Voraussichtliche Termindauer in Bürgeransicht matches
   # "Termindauer in Minuten" on the Sachbearbeiterplatz for the same service.
-  # Covers Passkalender, Abholung, Hauptkalender, and both KfZ scopes.
+  # Bürgerbüros, KfZ, Feuerwache, Standesamt, Fundbüro, Gewerbeamt, Einbürgerung.
 
   @web @zmsadmin @zmscitizenview @booking @clerk @citizen @ZMSKVR-230 @ZMSKVR-586 @executeLocally
   Scenario Outline: Jump-in duration matches Admin Termindauer at the related Standort
@@ -21,13 +21,17 @@ Feature: Bürgeransicht and Admin show the same Termindauer across offices
     Then the Termindauer on the appointment form is <minutes> minutes.
 
     Examples:
-      | serviceId | officeId | minutes | standort                                                              | serviceName                |
-      | 1063453   | 10502    | 15      | Bürgerbüro Ruppertstraße (KVR-II/221) WB04 Pass                        | Reisepass                  |
-      | 10295182  | 10492    | 10      | Bürgerbüro Ruppertstraße (KVR-II/211) Abholung                         | Abholung Personalausweis   |
-      | 1063565   | 10286848 | 5       | Bürgerbüro Forstenrieder Allee (KVR-II/234 Team 1) Serviceschalter     | Führungszeugnis            |
-      | 1064268   | 10416    | 15      | KfZ Zulassungsstelle (KVR-II/4321) Ausfuhr- und Rote Dauerkennzeichen | Ausfuhrkennzeichen         |
-      | 1063424   | 10308013 | 15      | KfZ Zulassungsstelle (KVR-II/4211) Termin Zulassung A                  | Umschreibung Fahrzeug      |
-      | 1080502   | 10308013 | 30      | KfZ Zulassungsstelle (KVR-II/4211) Termin Zulassung A                  | Wechselkennzeichen         |
+      | serviceId | officeId | minutes | standort                                                              | serviceName              |
+      | 1063453   | 10502    | 15      | Bürgerbüro Ruppertstraße (KVR-II/221) WB04 Pass                        | Reisepass                |
+      | 10295182  | 10492    | 10      | Bürgerbüro Ruppertstraße (KVR-II/211) Abholung                         | Abholung Personalausweis |
+      | 1064268   | 10416    | 15      | KfZ Zulassungsstelle (KVR-II/4321) Ausfuhr- und Rote Dauerkennzeichen | Ausfuhrkennzeichen       |
+      | 1063424   | 10308013 | 15      | KfZ Zulassungsstelle (KVR-II/4211) Termin Zulassung A                  | Umschreibung Fahrzeug    |
+      | 1080502   | 10308013 | 30      | KfZ Zulassungsstelle (KVR-II/4211) Termin Zulassung A                  | Wechselkennzeichen       |
+      | 10389330  | 10577    | 90      | Feuerwache 8 - Föhring (KVR-IV/FW8A-WAF) Feuerwache 08                 | Führungen auf den Feuerwachen |
+      | 1063731   | 10295168 | 5       | Standesamt München (KVR-II/1144) Kirchenaustritte                      | Kirchenaustritt          |
+      | 1063519   | 1061963  | 20      | Fundbüro (KVR-III/32 Team 1) Termin (extern, 3 Spuren)                 | Fundsache abholen        |
+      | 1063423   | 10546    | 20      | Gewerbeamt (KVR-III/21) Meldungen                                      | Gewerbe-Anmeldung        |
+      | 1071907   | 10471    | 60      | Einbürgerungsbehörde (KVR-V/4) Urkundenübergabe                        | Einbürgerung             |
 
   @web @zmsadmin @booking @clerk @ZMSKVR-230 @ZMSKVR-586 @executeLocally
   Scenario: Admin Termindauer doubles when Reisepass quantity is raised
