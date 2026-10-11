@@ -409,6 +409,30 @@ public class CitizenViewPage extends BasePage {
         timeSlot.assertNoAppointmentCustomInfoContains(fragment);
     }
 
+    public void assertNewAppointmentsInfoLinkVisible() {
+        timeSlot.assertNewAppointmentsInfoLinkVisible();
+    }
+
+    public void openNewAppointmentsInfoModal() {
+        timeSlot.openNewAppointmentsInfoModal();
+    }
+
+    public void assertAvailabilityInfoModalTitle() {
+        timeSlot.assertAvailabilityInfoModalTitle();
+    }
+
+    public void assertAvailabilityInfoModalContains(String fragment) {
+        timeSlot.assertAvailabilityInfoModalContains(fragment);
+    }
+
+    public void assertAvailabilityInfoModalHasHeading(String headingFragment) {
+        timeSlot.assertAvailabilityInfoModalHasHeading(headingFragment);
+    }
+
+    public void assertAvailabilityInfoModalHasNoProviderHeading() {
+        timeSlot.assertAvailabilityInfoModalHasNoProviderHeading();
+    }
+
     public void assertSelectedCalendarDayIsBerlinDaysFromToday(int daysFromToday) {
         timeSlot.assertSelectedCalendarDayIsBerlinDaysFromToday(daysFromToday);
     }
