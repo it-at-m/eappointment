@@ -217,6 +217,13 @@ public class CitizenViewSteps {
         page.assertPlusButton(TestDataHelper.transformTestData(label), false);
     }
 
+    @Then("the plus buttons for all services on the service combination step are disabled")
+    public void thePlusButtonsForAllServicesOnTheServiceCombinationStepAreDisabled() {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: every plus on the combination step is disabled");
+        page.assertAllPlusButtonsDisabled();
+    }
+
     @Then("the service {string} links to service {string} on muenchen.de")
     public void theServiceLinksToItsDescription(String label, String serviceId) {
         ScenarioLogManager.getLogger()
