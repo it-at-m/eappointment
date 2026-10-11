@@ -302,6 +302,47 @@ public class CitizenViewSteps {
         page.clickWeiter();
     }
 
+    @When("I continue from the service combination step and catch the appointment Muc spinner")
+    public void iContinueFromTheServiceCombinationStepAndCatchTheAppointmentMucSpinner() {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: Weiter (combination → Termin) and catch Muc spinner");
+        page.clickWeiter();
+        page.waitUntilMucSpinnerSeen(CitizenViewPage.DE_APPOINTMENT_SPINNER_TEXT, 15);
+    }
+
+    @Then("the appointment Muc spinner should show {string}")
+    public void theAppointmentMucSpinnerShouldShow(String expectedText) {
+        ScenarioLogManager.getLogger().info("zmscitizenview: assert Muc spinner text '{}'", expectedText);
+        page.assertLastMucSpinnerText(expectedText);
+    }
+
+    @Then("the Ort section should stay visible with the appointment Muc spinner")
+    public void theOrtSectionShouldStayVisibleWithTheAppointmentMucSpinner() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: Ort stays visible with Muc spinner");
+        page.assertLastMucSpinnerKeptOrtVisible();
+    }
+
+    @Then("the Ort section and the calendar should stay visible with the appointment Muc spinner")
+    public void theOrtSectionAndTheCalendarShouldStayVisibleWithTheAppointmentMucSpinner() {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: Ort and calendar stay visible with Muc spinner");
+        page.assertLastMucSpinnerKeptOrtAndCalendarVisible();
+    }
+
+    @When("I uncheck the first Ort office and catch the appointment Muc spinner")
+    public void iUncheckTheFirstOrtOfficeAndCatchTheAppointmentMucSpinner() {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: uncheck first Ort and catch Muc spinner");
+        page.uncheckFirstOrtOfficeCatchingSpinner(CitizenViewPage.DE_APPOINTMENT_SPINNER_TEXT);
+    }
+
+    @When("I select another free calendar day and catch the appointment Muc spinner")
+    public void iSelectAnotherFreeCalendarDayAndCatchTheAppointmentMucSpinner() {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: select next calendar day and catch Muc spinner");
+        page.selectNextCalendarDayCatchingSpinner(CitizenViewPage.DE_APPOINTMENT_SPINNER_TEXT);
+    }
+
     @Then("the booking stepper shows Leistung, Termin, Kontakt, and Übersicht")
     public void theBookingStepperShowsTheFourSteps() {
         ScenarioLogManager.getLogger().info("zmscitizenview: booking stepper labels");
