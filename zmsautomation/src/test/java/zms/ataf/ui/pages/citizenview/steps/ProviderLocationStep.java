@@ -125,6 +125,45 @@ public final class ProviderLocationStep {
         assertOfficeOrder(offices, true, true);
     }
 
+    /**
+     * Login resume must not pin a single Ort. Several checkboxes stay checked after going back to
+     * Termin (ZMSKVR-1002).
+     */
+    public void assertAtLeastNLocationCheckboxesChecked(int minimum) {
+        context.set();
+        Assert.assertTrue(minimum >= 1, "minimum checked Ort checkboxes must be >= 1");
+        JsonNode offices;
+        try {
+            offices = new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(defaultWaitSeconds))
+                    .until(d -> {
+                        JsonNode node = providerCheckboxes().path("offices");
+                        int checked = 0;
+                        for (JsonNode office : node) {
+                            if (office.path("checked").asBoolean()) {
+                                checked++;
+                            }
+                        }
+                        return checked >= minimum ? node : null;
+                    });
+        } catch (TimeoutException e) {
+            Assert.fail(
+                    "Expected at least "
+                            + minimum
+                            + " checked Ort checkboxes: "
+                            + providerCheckboxes());
+            return;
+        }
+        int checked = 0;
+        for (JsonNode office : offices) {
+            if (office.path("checked").asBoolean()) {
+                checked++;
+            }
+        }
+        Assert.assertTrue(
+                checked >= minimum,
+                "Expected at least " + minimum + " checked Ort checkboxes, found " + checked + ": " + offices);
+    }
+
     /** One bookable office: a contact tile, no location checkboxes. */
     public void assertSingleOfficeTile(int officeId, String name, String street) {
         context.set();

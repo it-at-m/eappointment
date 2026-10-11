@@ -697,18 +697,25 @@ onMounted(() => {
     countOfService.value = service.value.count
       ? service.value.count
       : countOfService.value;
-    currentSlots.value = calculateTotalSlots(
-      service.value.providers || [],
-      service.value.count || 0,
-      service.value.subServices
-    );
 
-    // Calculate minSlotsPerAppointment if providers are available
-    if (service.value.providers && service.value.providers.length > 0) {
-      minSlotsPerAppointment.value = getEffectiveMinSlotsPerAppointment(
-        service.value.providers
+    const refreshCombinationFromCatalog = () => {
+      if (!service.value) {
+        return;
+      }
+      // After login resume only selected subs are seeded — expand peers here.
+      setServiceData(service.value);
+      currentSlots.value = calculateTotalSlots(
+        service.value.providers || [],
+        service.value.count || 0,
+        service.value.subServices
       );
-    }
+      if (service.value.providers && service.value.providers.length > 0) {
+        minSlotsPerAppointment.value = getEffectiveMinSlotsPerAppointment(
+          service.value.providers
+        );
+      }
+    };
+
     if (services.value.length === 0) {
       fetchServicesAndProviders(
         props.preselectedServiceId ?? undefined,
@@ -726,14 +733,10 @@ onMounted(() => {
         services.value = (data as any).services;
         relations.value = (data as any).relations;
         offices.value = (data as any).offices;
-
-        // Recalculate minSlotsPerAppointment when navigating back
-        if (service.value) {
-          minSlotsPerAppointment.value = getEffectiveMinSlotsPerAppointment(
-            service.value.providers || []
-          );
-        }
+        refreshCombinationFromCatalog();
       });
+    } else {
+      refreshCombinationFromCatalog();
     }
   } else {
     fetchServicesAndProviders(

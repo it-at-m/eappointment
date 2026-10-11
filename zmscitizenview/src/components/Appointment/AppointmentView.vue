@@ -440,6 +440,7 @@ import {
 } from "vue";
 
 import { AppointmentDTO } from "@/api/models/AppointmentDTO";
+import { Combinable } from "@/api/models/Combinable";
 import { Office } from "@/api/models/Office";
 import { Relation } from "@/api/models/Relation";
 import { Service } from "@/api/models/Service";
@@ -471,6 +472,7 @@ import {
 } from "@/types/ProvideInjectTypes";
 import { ServiceImpl } from "@/types/ServiceImpl";
 import { StepperItem } from "@/types/StepperTypes";
+import { SubService } from "@/types/SubService";
 import {
   getApiStatusState,
   handleApiResponseForDownTime,
@@ -1352,18 +1354,44 @@ const applyLocalStorageUiData = (uiData: LocalStorageUiData) => {
     (service) => String(service.id) === String(uiData.selectedServiceId)
   );
   if (foundService) {
-    selectedService.value = foundService as ServiceImpl;
-    const count = selectedServiceMap.value.get(String(foundService.id));
-    if (count != undefined) {
-      selectedService.value.count = count;
-    }
-    selectedService.value.providers = getProviders(
-      selectedService.value.id,
-      null
+    const mainId = String(foundService.id);
+    // Map survives OAuth; catalog row has no subServices. Seed selected counts;
+    // ServiceFinder.setServiceData expands the rest of the combinable peers.
+    const subServices = Array.from(selectedServiceMap.value.entries())
+      .filter(([id, count]) => id !== mainId && count > 0)
+      .map(([id, count]) => {
+        const sub = services.value.find((service) => String(service.id) === id);
+        return new SubService(
+          id,
+          sub?.name ?? "",
+          sub?.maxQuantity ?? count,
+          getProviders(id, null),
+          count
+        );
+      });
+    selectedService.value = new ServiceImpl(
+      mainId,
+      foundService.name,
+      foundService.maxQuantity,
+      foundService.combinable
+        ? (JSON.parse(JSON.stringify(foundService.combinable)) as Combinable)
+        : foundService.combinable,
+      getProviders(mainId, null),
+      subServices,
+      selectedServiceMap.value.get(mainId) ?? 1,
+      foundService.parentId ?? null,
+      foundService.variantId ?? null,
+      foundService.showOnStartPage,
+      foundService.variantOverwrite
+    );
+    selectedService.value.rootParentId =
+      foundService.rootParentId ?? foundService.id;
+    selectedService.value.subServiceSelectionOrder = subServices.map((sub) =>
+      String(sub.id)
     );
   }
 
-  preselectedLocationId.value = uiData.selectedProviderId;
+  // Keep jump-in location only — do not pin Ort to the booked office.
   const restoredProvider = resolveOfficeById(uiData.selectedProviderId, {
     offices: offices.value,
     providers: selectedService.value?.providers,
@@ -1440,7 +1468,6 @@ const runLoginResumeFromHashAndLocalStorage = (
             );
             if (appointmentOffice) {
               selectedProvider.value = appointmentOffice;
-              preselectedLocationId.value = String(appointmentOffice.id);
             }
             if (isReservedProcessStatus(appointment.value.status)) {
               resumeReservedBookingFromHash();

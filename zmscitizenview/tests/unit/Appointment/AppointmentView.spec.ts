@@ -353,8 +353,9 @@ describe("AppointmentView", () => {
       wrapper.vm.rebookedAppointment = { processId: 12345 } as any;
       await nextTick();
 
-      const fetchCallsBeforeRestart =
-        vi.mocked(ZMSAppointmentAPI.fetchAppointment).mock.calls.length;
+      const fetchCallsBeforeRestart = vi.mocked(
+        ZMSAppointmentAPI.fetchAppointment
+      ).mock.calls.length;
       wrapper.vm.restartBookingToServices();
       await nextTick();
       await Promise.resolve();
@@ -740,9 +741,7 @@ describe("AppointmentView", () => {
       expect(wrapper.vm.isRebooking).toBe(false);
       expect(wrapper.vm.rebookOrCancelDialog).toBe(true);
       expect(wrapper.vm.currentView).toBe(3);
-      expect(wrapper.vm.errorStates.apiErrorRebookingDisabled.value).toBe(
-        true
-      );
+      expect(wrapper.vm.errorStates.apiErrorRebookingDisabled.value).toBe(true);
       expect(wrapper.find('[data-test="appointment-summary"]').exists()).toBe(
         true
       );
@@ -2967,6 +2966,84 @@ describe("AppointmentView", () => {
       expect(
         localStorage.getItem(LOCALSTORAGE_PARAM_APPOINTMENT_DATA)
       ).toBeNull();
+    });
+
+    it("login resume restores combinable subservice counts for back-navigation", async () => {
+      vi.stubGlobal(
+        "fetch",
+        vi.fn().mockResolvedValue({
+          status: 200,
+          json: async () => ({
+            ...catalogResponse,
+            services: [
+              {
+                id: "123",
+                name: "Test Service",
+                maxQuantity: 2,
+                combinable: {
+                  a: { "123": [789] },
+                  b: { "456": [789] },
+                },
+              },
+              { id: "456", name: "Sub Service", maxQuantity: 2 },
+            ],
+            relations: [
+              { serviceId: "123", officeId: "789", slots: 1 },
+              { serviceId: "456", officeId: "789", slots: 1 },
+            ],
+          }),
+        })
+      );
+
+      localStorage.setItem(
+        LOCALSTORAGE_PARAM_APPOINTMENT_DATA,
+        JSON.stringify({
+          ...uiStoragePayload,
+          selectedServiceMap: { "123": 1, "456": 1 },
+        })
+      );
+
+      const hash = buildAppointmentHash({
+        id: "hash-proc",
+        authKey: "hash-auth-key",
+      });
+
+      vi.mocked(ZMSAppointmentAPI.fetchAppointment).mockResolvedValue({
+        processId: "hash-proc",
+        authKey: "hash-auth-key",
+        timestamp: Math.floor(Date.now() / 1000) + 3600,
+        familyName: "Mustermann",
+        email: "max@example.com",
+        officeId: "789",
+        scope: {},
+        subRequestCounts: [{ id: "456", name: "Sub Service", count: 1 }],
+        serviceId: "123",
+        serviceName: "Test Service",
+        serviceCount: 1,
+        status: "reserved",
+      } as any);
+
+      const wrapper = createWrapper({
+        showLoginOption: true,
+        appointmentHash: hash,
+        locationId: undefined,
+        serviceId: undefined,
+      });
+
+      await vi.waitFor(() => {
+        expect(wrapper.vm.selectedService?.subServices?.length).toBeGreaterThan(
+          0
+        );
+      });
+
+      const sub = wrapper.vm.selectedService?.subServices?.find(
+        (entry: { id: string }) => String(entry.id) === "456"
+      );
+      expect(sub?.count).toBe(1);
+      expect(wrapper.vm.selectedServiceMap.get("456")).toBe(1);
+      // Booked office on selectedProvider only — do not pin Ort filter.
+      expect(wrapper.vm.selectedProvider?.id).toBe("789");
+      expect(wrapper.vm.preselectedLocationId).toBeUndefined();
     });
 
     it("login resume of a reserved appointment without contact stays on the form", async () => {
