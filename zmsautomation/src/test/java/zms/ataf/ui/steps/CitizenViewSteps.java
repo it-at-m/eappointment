@@ -6,6 +6,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.testng.Assert;
+
 import ataf.core.helpers.TestDataHelper;
 import ataf.core.logging.ScenarioLogManager;
 import ataf.web.utils.DriverUtil;
@@ -280,6 +282,82 @@ public class CitizenViewSteps {
     public void iShowAllCombinableServices() {
         ScenarioLogManager.getLogger().info("zmscitizenview: click Alle Leistungen anzeigen");
         page.showAllCombinableServices();
+    }
+
+    @Then("the show less services button is shown")
+    public void theShowLessServicesButtonIsShown() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: Weniger Leistungen anzeigen is shown");
+        page.assertShowLessServicesButtonVisible(true);
+    }
+
+    @Then("the show less services button is not shown")
+    public void theShowLessServicesButtonIsNotShown() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: Weniger Leistungen anzeigen is hidden");
+        page.assertShowLessServicesButtonVisible(false);
+    }
+
+    @When("I show less combinable services")
+    public void iShowLessCombinableServices() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: click Weniger Leistungen anzeigen");
+        page.showLessCombinableServices();
+    }
+
+    @Then("the disabled plus or minus for service {string} uses the grey disabled style")
+    public void theDisabledPlusOrMinusUsesTheGreyDisabledStyle(String label) {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: disabled counter style for {}", label);
+        page.assertDisabledCounterColors(TestDataHelper.transformTestData(label));
+    }
+
+    @Then("the contact field {string} max-length error allows {int} characters")
+    public void theContactFieldMaxLengthErrorAllowsCharacters(String fieldId, int maxChars) {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: max-length error for #{} at {}", fieldId, maxChars);
+        page.assertMaxLengthCounterError(fieldId, maxChars);
+    }
+
+    @Then("the contact character counter font size is point eight seven five rem on desktop")
+    public void theContactCharacterCounterFontSizeIsPointEightSevenFiveRemOnDesktop() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: counter font-size .875rem on desktop");
+        page.assertCharacterCountFontSizeDesktop();
+    }
+
+    @Then("the remarks textarea grows so the counter does not overlap on mobile")
+    public void theRemarksTextareaGrowsSoTheCounterDoesNotOverlapOnMobile() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: remarks textarea vs counter on mobile");
+        page.assertRemarksTextareaGrowsWithoutCounterOverlap();
+    }
+
+    @Then("the timeslot chrome under available appointments matches the design")
+    public void theTimeslotChromeUnderAvailableAppointmentsMatchesTheDesign() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: timeslot chrome (608/511/509)");
+        page.assertTimeslotChrome();
+    }
+
+    @Then("the legal notice links open in a new tab with aria labels in the citizen view")
+    public void theLegalNoticeLinksOpenInANewTabWithAriaLabelsInTheCitizenView() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: legal links target=_blank + aria");
+        page.assertLegalNoticeLinksOpenInNewTab();
+    }
+
+    @Then("the overview Adresse label uses sixteen pixel type without bottom margin")
+    public void theOverviewAdresseLabelUsesSixteenPixelTypeWithoutBottomMargin() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: Adresse label chrome (521)");
+        page.assertOverviewAddressLabelChrome();
+    }
+
+    @Then("the often searched services container padding is {int} pixels on mobile")
+    public void theOftenSearchedServicesContainerPaddingIsPixelsOnMobile(int pixels) {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: often-searched padding mobile expect {}", pixels);
+        Assert.assertEquals(pixels, 24, "Scenario expects 24px mobile padding");
+        page.assertOftenSearchedContainerPadding(true);
+    }
+
+    @Then("the often searched services container padding stays roomy on desktop")
+    public void theOftenSearchedServicesContainerPaddingStaysRoomyOnDesktop() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: often-searched padding desktop");
+        page.assertOftenSearchedContainerPadding(false);
     }
 
     @When("I raise the service {string} until the plus button is disabled")

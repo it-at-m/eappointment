@@ -6,6 +6,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
@@ -16,6 +17,7 @@ import ataf.core.logging.ScenarioLogManager;
 import ataf.web.utils.DriverUtil;
 import zms.ataf.helpers.AccountCheckout;
 import zms.ataf.helpers.RandomNameHelper;
+import zms.ataf.helpers.ViewportSizes;
 import zms.ataf.ui.pages.citizenview.CitizenViewPage;
 import zms.ataf.ui.pages.citizenview.CitizenViewPageContext;
 import zms.ataf.ui.pages.citizenview.support.CitizenViewWaits;
@@ -461,6 +463,106 @@ public final class ContactStep {
                 shadow.shadowDomContainsText("Sie sind angemeldet."),
                 "Expected 'Sie sind angemeldet.' after Bürger-Login on Kontakt form.");
     }
+    /**
+     * ZMSKVR-718: fill a contact field to its max length and assert the counter error copy.
+     *
+     * @param fieldId host id ({@code firstname}, {@code lastname}, {@code mailaddress}, {@code remarks}, …)
+     * @param maxChars maximum characters shown in the error (50 for name/mail, 250 for remarks)
+     */
+    public void assertMaxLengthCounterError(String fieldId, int maxChars) {
+        context.set();
+        String value = "x".repeat(maxChars);
+        Assert.assertTrue(shadow.deepSetById(fieldId, value), "Could not fill #" + fieldId);
+        CitizenViewWaits.sleepQuiet(300L);
+        String expected =
+                "Ihre Eingabe in diesem Feld darf " + maxChars + " Zeichen nicht überschreiten.";
+        Assert.assertTrue(
+                shadow.shadowDomContainsText(expected),
+                "Expected max-length counter error for #" + fieldId + ": " + expected);
+    }
+
+    /** ZMSKVR-716: Muc character counter stays at .875rem on desktop. */
+    public void assertCharacterCountFontSizeDesktop() {
+        context.set();
+        RemoteWebDriver driver = DriverUtil.getDriver();
+        driver.manage().window().setSize(ViewportSizes.DESKTOP);
+        CitizenViewWaits.sleepQuiet(400L);
+        // Ensure a counter is painted (fill Vorname near the limit).
+        shadow.deepSetById("firstname", "x".repeat(48));
+        CitizenViewWaits.sleepQuiet(200L);
+        String script =
+                "function walk(n,fn){if(!n)return null;if(n.nodeType===1){var hit=fn(n);if(hit)return hit;}"
+                        + "if(n.shadowRoot){var i=walk(n.shadowRoot,fn);if(i)return i;}"
+                        + "var c=n.children;if(c)for(var k=0;k<c.length;k++){var x=walk(c[k],fn);if(x)return x;}return null;}"
+                        + "var el=walk(document.body,function(n){"
+                        + "if(n.classList&&n.classList.contains('m-character-count'))return n;return null;});"
+                        + "if(!el)return null;"
+                        + "var fs=getComputedStyle(el).fontSize;return {fontSize:fs,px:parseFloat(fs)};";
+        Object raw = ((JavascriptExecutor) driver).executeScript(script);
+        Assert.assertNotNull(raw, "No .m-character-count on the Kontakt form");
+        @SuppressWarnings("unchecked")
+        java.util.Map<String, Object> map = (java.util.Map<String, Object>) raw;
+        double px = ((Number) map.get("px")).doubleValue();
+        // 0.875rem at 16px root = 14px
+        Assert.assertTrue(
+                Math.abs(px - 14.0) <= 1.0,
+                "Counter font-size on desktop should be .875rem (~14px), was " + map);
+    }
+
+    /**
+     * ZMSKVR-719: long remarks grow the textarea so the counter does not overlap the text on mobile.
+     */
+    public void assertRemarksTextareaGrowsWithoutCounterOverlap() {
+        context.set();
+        RemoteWebDriver driver = DriverUtil.getDriver();
+        driver.manage().window().setSize(ViewportSizes.MOBILE);
+        CitizenViewWaits.sleepQuiet(400L);
+        Assert.assertTrue(
+                shadow.deepElementExists("#remarks")
+                        || shadow.deepElementExists("textarea#textarea-remarks")
+                        || shadow.deepElementExists("#textarea-remarks"),
+                "Expected remarks textarea (custom textfield) for the overlap check");
+        String longText =
+                ("Lorem ipsum dolor sit amet, consectetuer adipiscing elit. ").repeat(4);
+        Assert.assertTrue(shadow.deepSetById("remarks", longText), "Could not fill remarks");
+        // textfieldRows grows on input; give Vue a tick
+        CitizenViewWaits.sleepQuiet(500L);
+        String script =
+                "function walk(n,fn){if(!n)return null;if(n.nodeType===1){var hit=fn(n);if(hit)return hit;}"
+                        + "if(n.shadowRoot){var i=walk(n.shadowRoot,fn);if(i)return i;}"
+                        + "var c=n.children;if(c)for(var k=0;k<c.length;k++){var x=walk(c[k],fn);if(x)return x;}return null;}"
+                        + "var ta=walk(document.body,function(n){"
+                        + "if((n.tagName||'').toUpperCase()==='TEXTAREA'&&((n.id||'').indexOf('remarks')>=0||(n.getAttribute('id')||'')==='textarea-remarks'))return n;"
+                        + "return null;});"
+                        + "if(!ta)return {found:false};"
+                        + "var counter=walk(ta.getRootNode&&ta.getRootNode().host?ta.getRootNode().host:document.body,function(n){"
+                        + "if(n.classList&&n.classList.contains('m-character-count'))return n;return null;});"
+                        + "if(!counter){var host=ta;for(var g=0;g<8&&host;g++){"
+                        + "counter=walk(host,function(n){if(n.classList&&n.classList.contains('m-character-count'))return n;return null;});"
+                        + "if(counter)break;"
+                        + "if(host.parentElement)host=host.parentElement;else{var r=host.getRootNode&&host.getRootNode();host=r&&r.host?r.host:null;}}}"
+                        + "var tr=ta.getBoundingClientRect();var rows=parseInt(ta.getAttribute('rows')||'0',10);"
+                        + "var overlap=false;var cr=null;"
+                        + "if(counter){cr=counter.getBoundingClientRect();"
+                        + "overlap=!(tr.right<cr.left||tr.left>cr.right||tr.bottom<cr.top||tr.top>cr.bottom);"
+                        + "var padBottom=parseFloat(getComputedStyle(ta).paddingBottom)||0;"
+                        + "var textBottom=tr.bottom-padBottom;"
+                        + "if(textBottom>cr.top+2&&tr.left<cr.right&&tr.right>cr.left)overlap=true;"
+                        + "else overlap=false;}"
+                        + "return {found:true,rows:rows,height:tr.height,hasCounter:!!counter,overlap:overlap};";
+        Object raw = ((JavascriptExecutor) driver).executeScript(script);
+        Assert.assertNotNull(raw, "Could not measure remarks textarea");
+        @SuppressWarnings("unchecked")
+        java.util.Map<String, Object> map = (java.util.Map<String, Object>) raw;
+        Assert.assertTrue(Boolean.TRUE.equals(map.get("found")), "remarks textarea missing: " + map);
+        Assert.assertTrue(
+                ((Number) map.get("rows")).intValue() >= 4 || ((Number) map.get("height")).doubleValue() >= 80,
+                "Remarks textarea should grow with long input: " + map);
+        Assert.assertFalse(
+                Boolean.TRUE.equals(map.get("overlap")),
+                "Remarks text must not overlap the character counter on mobile: " + map);
+    }
+
     void completeKeycloakLoginForm(String username, String password) throws Exception {
         var driver = DriverUtil.getDriver();
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(defaultWaitSeconds));
