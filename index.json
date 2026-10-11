@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-10-11T15:08:31.608Z",
+  "publishedAt": "2026-10-11T15:39:16.051Z",
   "branches": [
     {
       "name": "next",
@@ -774,6 +774,12 @@
       "slug": "test-zmskvr-84-zmskvr-305-service-search",
       "runId": "37438573122",
       "runStartedAt": "2026-10-06T08:48:18Z"
+    },
+    {
+      "name": "test-zmskvr-852-zmskvr-854-exclusive-location",
+      "slug": "test-zmskvr-852-zmskvr-854-exclusive-location",
+      "runId": "38151471755",
+      "runStartedAt": "2026-10-11T15:29:20Z"
     },
     {
       "name": "test-zmskvr-88-zmskvr-472-slot-taken-callout",

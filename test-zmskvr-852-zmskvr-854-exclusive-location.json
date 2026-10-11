@@ -1,0 +1,42 @@
+{
+  "branch": "test-zmskvr-852-zmskvr-854-exclusive-location",
+  "branchSlug": "test-zmskvr-852-zmskvr-854-exclusive-location",
+  "runId": "38151471755",
+  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38151471755",
+  "runStartedAt": "2026-10-11T15:29:20Z",
+  "publishedAt": "2026-10-11T15:39:16.051Z",
+  "features": {
+    "feature-ui-zmscitizenview-dldb-special-cases-zmskvr-852-zmskvr-854-exclusive-location-jumpin": {
+      "status": "failed",
+      "shard": "custom",
+      "browser": "chrome",
+      "browsers": {
+        "chrome": {
+          "status": "failed",
+          "shard": "custom",
+          "runId": "38151471755",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38151471755",
+          "runStartedAt": "2026-10-11T15:29:20Z"
+        },
+        "edge": {
+          "status": "failed",
+          "shard": "custom",
+          "runId": "38151471755",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38151471755",
+          "runStartedAt": "2026-10-11T15:29:20Z"
+        },
+        "firefox": {
+          "status": "failed",
+          "shard": "custom",
+          "runId": "38151471755",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38151471755",
+          "runStartedAt": "2026-10-11T15:29:20Z"
+        }
+      },
+      "rel": "ui/zmscitizenview/dldb-special-cases/zmskvr-852_zmskvr-854_exclusive_location_jumpin.feature",
+      "runId": "38151471755",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38151471755",
+      "runStartedAt": "2026-10-11T15:29:20Z"
+    }
+  }
+}
