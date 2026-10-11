@@ -1,5 +1,5 @@
 #language: en
-@web @zmscitizenview @booking @citizen @ZMSKVR-1491 @ZMSKVR-1510 @ZMSKVR-981 @ZMSKVR-1683 @executeLocally @jumpin
+@web @zmscitizenview @booking @citizen @ZMSKVR-1491 @ZMSKVR-1510 @ZMSKVR-981 @ZMSKVR-1683 @ZMSKVR-846 @ZMSKVR-1021 @ZMSKVR-521 @ZMSKVR-879 @executeLocally @jumpin
 Feature: CitizenView: legal notices on the last booking step
   As a citizen reserving an appointment
   I want the legal notices instead of a privacy consent checkbox
@@ -10,6 +10,8 @@ Feature: CitizenView: legal notices on the last booking step
   # one shipped in de-DE.json. Preconfirm creates the process; the scenario cancels it.
   # ZMSKVR-981 / ZMSKVR-1683: checkbox titles Datenschutz and Elektronische
   # Kommunikation are h4 headings (assertStandardLegalNotices).
+  # ZMSKVR-846 / ZMSKVR-1021: those links use target=_blank and an aria-label.
+  # ZMSKVR-521 / ZMSKVR-879: Adresse label is 16px with no bottom margin.
 
   Background:
     Given the Citizen API is available
@@ -30,6 +32,8 @@ Feature: CitizenView: legal notices on the last booking step
     And I continue after slot selection with Weiter for office 2 in the citizen view
     When I enter default contact details in the citizen view
     Then the legal notices on the booking overview should replace the consent heading in the citizen view
+    And the legal notice links open in a new tab with aria labels in the citizen view
+    And the overview Adresse label uses sixteen pixel type without bottom margin
     And the reserve appointment button should be disabled in the citizen view
     When I accept communication in the citizen view
     Then the reserve appointment button should be enabled in the citizen view
