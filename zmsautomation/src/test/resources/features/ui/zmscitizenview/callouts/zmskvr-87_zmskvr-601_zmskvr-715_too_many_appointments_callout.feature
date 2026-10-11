@@ -36,7 +36,7 @@ Feature: CitizenView: too many appointments per email callout on Übersicht
     And I click the highlighted timeslot in the citizen view
     And I continue after slot selection with Weiter for office 10521 in the citizen view
     When I enter contact details with family name "MusterZmskvr715Ui" in the citizen view
-    Then the booking summary should show provider 10521 in the citizen view
+    Then the booking summary should show "Waffenbehörde" for provider 10521 in the citizen view
     When I accept communication in the citizen view
     And I sync the booking process from citizen view localStorage
     And I remember the current appointment as "second"

@@ -1832,6 +1832,8 @@ public class CitizenApiSteps {
     @When("I preconfirm the remembered {string} appointment")
     public void iPreconfirmTheRememberedAppointment(String label) {
         useRememberedAsCurrentProcess(label);
+        // Stub has only processId/authKey; postPreconfirm(true) asserts serviceId/officeId.
+        iFetchTheAppointmentForTheCurrentProcess();
         postPreconfirm(true);
     }
 
