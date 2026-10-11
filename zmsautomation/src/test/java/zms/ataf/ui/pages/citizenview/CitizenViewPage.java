@@ -1105,6 +1105,33 @@ public class CitizenViewPage extends BasePage {
         return timeSlot.deepMucSpinnerVisible();
     }
 
+    /** German MucSpinner copy ({@code de-DE.json} {@code spinnerText}). */
+    public static final String DE_APPOINTMENT_SPINNER_TEXT = TimeSlotStep.DE_APPOINTMENT_SPINNER_TEXT;
+
+    public void waitUntilMucSpinnerSeen(String expectedText, int maxSeconds) {
+        timeSlot.waitUntilMucSpinnerSeen(expectedText, maxSeconds);
+    }
+
+    public void assertLastMucSpinnerText(String expectedText) {
+        timeSlot.assertLastMucSpinnerText(expectedText);
+    }
+
+    public void assertLastMucSpinnerKeptOrtVisible() {
+        timeSlot.assertLastMucSpinnerKeptOrtVisible();
+    }
+
+    public void assertLastMucSpinnerKeptOrtAndCalendarVisible() {
+        timeSlot.assertLastMucSpinnerKeptOrtAndCalendarVisible();
+    }
+
+    public void uncheckFirstOrtOfficeCatchingSpinner(String expectedText) {
+        timeSlot.uncheckFirstOrtOfficeCatchingSpinner(expectedText);
+    }
+
+    public void selectNextCalendarDayCatchingSpinner(String expectedText) {
+        timeSlot.selectNextCalendarDayCatchingSpinner(expectedText);
+    }
+
     /**
      * Slot API finished: no visible MucSpinner and at least one timeslot control (avoids clicking while day-change
      * spinner runs).
