@@ -1,0 +1,79 @@
+#language: en
+Feature: Bürgeransicht and Admin show the same Termindauer across offices
+
+  # ZMSKVR-230 / ZMSKVR-586: Voraussichtliche Termindauer in Bürgeransicht matches
+  # "Termindauer in Minuten" on the Sachbearbeiterplatz for the same service.
+  # Bürgerbüros, KfZ, Feuerwache, Standesamt, Fundbüro, Einbürgerung, Führerschein.
+  # Gewerbe-Anmeldung needs Art des Termins first (separate scenario below).
+
+  @web @zmsadmin @zmscitizenview @booking @clerk @citizen @ZMSKVR-230 @ZMSKVR-586 @executeLocally
+  Scenario Outline: Jump-in duration matches Admin Termindauer at the related Standort
+    Given I open zmscitizenview with jump-in service "<serviceId>" and location "<officeId>"
+    Then the service combination step should be visible
+    And the service duration is shown with a clock and is <minutes> minutes
+    When I open the administration website.
+    Then I should be on the administration start page.
+    When I click the button "Anmelden" in the administration.
+    And I select for "Standort" the value "<standort>".
+    And I enter in the field "Platz-Nr. oder Tresen" the text "14".
+    And I click the button "Auswahl bestätigen" in the administration.
+    Then the workstation page is displayed.
+    When I select the service "<serviceName>" under create appointment in the administration.
+    Then the Termindauer on the appointment form is <minutes> minutes.
+
+    Examples:
+      | serviceId | officeId | minutes | standort                                                              | serviceName                   |
+      | 1063453   | 10502    | 15      | Bürgerbüro Ruppertstraße (KVR-II/221) WB04 Pass                        | Reisepass                     |
+      | 10295182  | 10492    | 10      | Bürgerbüro Ruppertstraße (KVR-II/211) Abholung                         | Abholung Personalausweis      |
+      | 1064268   | 10416    | 15      | KfZ Zulassungsstelle (KVR-II/4321) Ausfuhr- und Rote Dauerkennzeichen | Ausfuhrkennzeichen            |
+      | 1063424   | 10308013 | 15      | KfZ Zulassungsstelle (KVR-II/4211) Termin Zulassung A                  | Umschreibung Fahrzeug         |
+      | 1080502   | 10308013 | 30      | KfZ Zulassungsstelle (KVR-II/4211) Termin Zulassung A                  | Wechselkennzeichen            |
+      | 10389330  | 10577    | 90      | Feuerwache 8 - Föhring (KVR-IV/FW8A-WAF) Feuerwache 08                 | Führungen auf den Feuerwachen |
+      | 1063731   | 10295168 | 5       | Standesamt München (KVR-II/1144) Kirchenaustritte                      | Kirchenaustritt               |
+      | 1063519   | 1061963  | 20      | Fundbüro (KVR-III/32 Team 1) Termin (extern, 3 Spuren)                 | Fundsache abholen             |
+      | 1071907   | 10471    | 60      | Einbürgerungsbehörde (KVR-V/4) Urkundenübergabe                        | Einbürgerung                  |
+      | 1071854   | 1094898  | 5       | Führerscheinstelle (KVR-II/4422) Logistik                             | Internationaler Führerschein  |
+
+  @web @zmsadmin @zmscitizenview @booking @clerk @citizen @ZMSKVR-230 @ZMSKVR-586 @executeLocally @jumpin
+  Scenario: Gewerbe-Anmeldung is 20 minutes after Vor-Ort and on the Admin form
+    Given I open zmscitizenview with jump-in service "1063423" and location "10546"
+    Then the service combination step should be visible
+    When I select the appointment type "Vor-Ort-Termin" on the service combination step
+    Then the service duration is shown with a clock and is 20 minutes
+    When I open the administration website.
+    Then I should be on the administration start page.
+    When I click the button "Anmelden" in the administration.
+    And I select for "Standort" the value "Gewerbeamt (KVR-III/21) Meldungen".
+    And I enter in the field "Platz-Nr. oder Tresen" the text "14".
+    And I click the button "Auswahl bestätigen" in the administration.
+    Then the workstation page is displayed.
+    When I select the service "Gewerbe-Anmeldung" under create appointment in the administration.
+    Then the Termindauer on the appointment form is 20 minutes.
+
+  @web @zmsadmin @booking @clerk @ZMSKVR-230 @ZMSKVR-586 @executeLocally
+  Scenario: Admin Termindauer doubles when Reisepass quantity is raised
+    When I open the administration website.
+    Then I should be on the administration start page.
+    When I click the button "Anmelden" in the administration.
+    And I select for "Standort" the value "Bürgerbüro Ruppertstraße (KVR-II/221) WB04 Pass".
+    And I enter in the field "Platz-Nr. oder Tresen" the text "14".
+    And I click the button "Auswahl bestätigen" in the administration.
+    Then the workstation page is displayed.
+    When I select the service "Reisepass" under create appointment in the administration.
+    Then the Termindauer on the appointment form is 15 minutes.
+    When I increase the count of the selected service "Reisepass" by 1.
+    Then the count of the selected service "Reisepass" is 2.
+    And the Termindauer on the appointment form is 30 minutes.
+
+  @web @zmsadmin @booking @clerk @ZMSKVR-230 @ZMSKVR-586 @executeLocally
+  Scenario: Admin Termindauer sums Reisepass and Personalausweis
+    When I open the administration website.
+    Then I should be on the administration start page.
+    When I click the button "Anmelden" in the administration.
+    And I select for "Standort" the value "Bürgerbüro Ruppertstraße (KVR-II/221) WB04 Pass".
+    And I enter in the field "Platz-Nr. oder Tresen" the text "14".
+    And I click the button "Auswahl bestätigen" in the administration.
+    Then the workstation page is displayed.
+    When I select the service "Reisepass" under create appointment in the administration.
+    And I select the service "Personalausweis" under create appointment in the administration.
+    Then the Termindauer on the appointment form is 30 minutes.

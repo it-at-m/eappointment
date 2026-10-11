@@ -303,6 +303,13 @@ public class AdminSteps {
         AUTHORITIES_AND_LOCATIONS_PAGE.clickOnLocationEntry(location);
     }
 
+    @Then("the availability hint field for citizens should be visible on the location form.")
+    public void theAvailabilityHintFieldForCitizensShouldBeVisibleOnTheLocationForm() {
+        ScenarioLogManager.getLogger()
+                .info("Assert Hinweismeldungen bzgl. der Terminverfügbarkeiten field on Standort form");
+        AUTHORITIES_AND_LOCATIONS_PAGE.assertAvailabilityHintFieldLegendVisible();
+    }
+
     @And("I open the opening-hours accordion {string}.")
     public void und_sie_die_oeffnungszeit_accordion_oeffnen(String accordionTitle) {
         accordionTitle = TestDataHelper.transformTestData(accordionTitle);
@@ -795,6 +802,11 @@ public class AdminSteps {
     public void zeigt_das_terminformular_die_dauer(String service, int minutes, int wrongMinutes) {
         COUNTER_PROCESSING_STATION_PAGE.assertAppointmentFormDuration(
                 TestDataHelper.transformTestData(service), minutes, wrongMinutes);
+    }
+
+    @Then("the Termindauer on the appointment form is {int} minutes.")
+    public void theTermindauerOnTheAppointmentFormIsMinutes(int minutes) {
+        COUNTER_PROCESSING_STATION_PAGE.assertTermindauerMinutes(minutes);
     }
 
     @When("I book the already selected appointment for {string}.")
