@@ -1,10 +1,10 @@
-@rest @zmscitizenapi @dldb-special-cases @citizen @ZMSKVR-936 @ZMSKVR-1013 @ZMSKVR-974
+@rest @zmscitizenapi @dldb-special-cases @citizen @ZMSKVR-936 @ZMSKVR-1013 @ZMSKVR-974 @ZMSKVR-1263
 Feature: Citizen API: Abholung only at Bürgerbüro Ruppertstraße (10492)
   As a citizen API client
   I want "Abholung Personalausweis, Reisepass oder eID-Karte" (10295182) only related to office 10492
   So that peer Ruppertstraße calendars and Außenstellen without Terminspuren cannot be booked
 
-  # ZMSKVR-936 / ZMSKVR-974 / test ZMSKVR-1013.
+  # ZMSKVR-936 / ZMSKVR-974 / test ZMSKVR-1013; ZMSKVR-1263 Abholung jump-in relations.
   # Relation exists only for 10492. Peers 10502 / 10489 / 10500 / 10491 have no relation (invalid jump-in).
   # Außenstellen still in the public catalog expose 10295182 in disabledByServices (DONT_SHOW).
   # 10204388 is omitted: without Terminspuren it is dropped from offices-and-services entirely.
