@@ -1,10 +1,10 @@
 {
   "branch": "bugfix-zmskvr-1002-restore-subservices-after-login",
   "branchSlug": "bugfix-zmskvr-1002-restore-subservices-after-login",
-  "runId": "38110814905",
-  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38110814905",
-  "runStartedAt": "2026-10-11T04:11:58Z",
-  "publishedAt": "2026-10-11T04:24:29.441Z",
+  "runId": "38111166852",
+  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38111166852",
+  "runStartedAt": "2026-10-11T04:18:32Z",
+  "publishedAt": "2026-10-11T04:30:56.872Z",
   "features": {
     "feature-ui-zmscitizenview-citizen-login-zmskvr-1002-login-resume-keeps-combination-and-offices": {
       "status": "passed",
@@ -14,29 +14,29 @@
         "chrome": {
           "status": "passed",
           "shard": "custom",
-          "runId": "38110814905",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38110814905",
-          "runStartedAt": "2026-10-11T04:11:58Z"
+          "runId": "38111166852",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38111166852",
+          "runStartedAt": "2026-10-11T04:18:32Z"
         },
         "edge": {
           "status": "passed",
           "shard": "custom",
-          "runId": "38110814905",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38110814905",
-          "runStartedAt": "2026-10-11T04:11:58Z"
+          "runId": "38111166852",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38111166852",
+          "runStartedAt": "2026-10-11T04:18:32Z"
         },
         "firefox": {
           "status": "passed",
           "shard": "custom",
-          "runId": "38110814905",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38110814905",
-          "runStartedAt": "2026-10-11T04:11:58Z"
+          "runId": "38111166852",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38111166852",
+          "runStartedAt": "2026-10-11T04:18:32Z"
         }
       },
       "rel": "ui/zmscitizenview/citizen-login/zmskvr-1002_login_resume_keeps_combination_and_offices.feature",
-      "runId": "38110814905",
-      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38110814905",
-      "runStartedAt": "2026-10-11T04:11:58Z"
+      "runId": "38111166852",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38111166852",
+      "runStartedAt": "2026-10-11T04:18:32Z"
     }
   }
 }
