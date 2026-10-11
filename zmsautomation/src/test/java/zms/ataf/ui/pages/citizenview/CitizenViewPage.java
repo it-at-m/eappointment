@@ -124,7 +124,7 @@ public class CitizenViewPage extends BasePage {
         contact = new ContactStep(CONTEXT, shadow, this, DEFAULT_EXPLICIT_WAIT_TIME);
         overview = new OverviewStep(CONTEXT, shadow, this, slotState, DEFAULT_EXPLICIT_WAIT_TIME);
         myAppointments = new MyAppointmentsStep(CONTEXT, shadow, slotState, this, contact, DEFAULT_EXPLICIT_WAIT_TIME);
-        captcha = new CaptchaStep(CONTEXT, shadow, DEFAULT_EXPLICIT_WAIT_TIME);
+        captcha = new CaptchaStep(CONTEXT, shadow, json, DEFAULT_EXPLICIT_WAIT_TIME);
     }
 
     public CitizenViewPageContext getContext() {
@@ -1859,6 +1859,18 @@ public class CitizenViewPage extends BasePage {
 
     public void assertCaptchaSessionCalloutNotVisible() {
         captcha.assertCaptchaSessionCalloutNotVisible();
+    }
+
+    public void assertCaptchaDesign() {
+        captcha.assertCaptchaDesign();
+    }
+
+    public void assertLeistungWeiterDisabled() {
+        captcha.assertLeistungWeiterDisabled();
+    }
+
+    public void assertLeistungWeiterEnabled() {
+        captcha.assertLeistungWeiterEnabled();
     }
 
     public void assertReservationExpiredCalloutVisible() {
