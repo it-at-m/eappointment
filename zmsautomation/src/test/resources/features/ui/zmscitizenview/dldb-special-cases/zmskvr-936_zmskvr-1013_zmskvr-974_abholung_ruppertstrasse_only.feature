@@ -1,13 +1,14 @@
 #language: en
-@web @zmscitizenview @dldb-special-cases @citizen @ZMSKVR-936 @ZMSKVR-1013 @executeLocally
+@web @zmscitizenview @dldb-special-cases @citizen @ZMSKVR-936 @ZMSKVR-1013 @ZMSKVR-974 @executeLocally
 Feature: CitizenView: Abholung only at Bürgerbüro Ruppertstraße (10492)
   As a citizen
   I want "Abholung Personalausweis, Reisepass oder eID-Karte" (10295182) only at Ort 10492
   So that peer Ruppertstraße calendars and Außenstellen without Terminspuren are not offered
 
-  # ZMSKVR-936 / test ZMSKVR-1013.
-  # Abholung is bookable only at KVR-II/211 (10492). Haupt 10489, Pass 10502, and peers 10500 / 10491
-  # have no office-service relation → jump-in shows "Diese Ansicht kann nicht geladen werden."
+  # ZMSKVR-936 / ZMSKVR-974 / test ZMSKVR-1013.
+  # Abholung is bookable only at KVR-II/211 (10492). No Standort checkbox list — Ruppertstraße is a tile.
+  # Haupt 10489, Pass 10502, and peers 10500 / 10491 have no office-service relation → jump-in shows
+  # "Diese Ansicht kann nicht geladen werden."
   # Service Finder and a valid 10492 jump-in show a single Ort tile; other Bürgerbüros stay hidden
   # (DONT_SHOW_LOCATION_BY_SERVICES + no relation for the peer calendars).
 
