@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-10-11T16:03:59.132Z",
+  "publishedAt": "2026-10-11T16:38:05.176Z",
   "branches": [
     {
       "name": "next",
@@ -420,6 +420,12 @@
       "slug": "test-zmskvr-1249-zmskvr-1583-sunday-opening-hours-range",
       "runId": "37194954540",
       "runStartedAt": "2026-10-04T10:18:41Z"
+    },
+    {
+      "name": "test-zmskvr-1258-zmskvr-1261-pass-mix-rup",
+      "slug": "test-zmskvr-1258-zmskvr-1261-pass-mix-rup",
+      "runId": "38155432152",
+      "runStartedAt": "2026-10-11T16:25:56Z"
     },
     {
       "name": "test-zmskvr-1266-zmskvr-1519-citizen-stats-year-boundary",

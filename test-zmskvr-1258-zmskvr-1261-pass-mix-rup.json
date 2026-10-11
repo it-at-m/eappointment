@@ -1,0 +1,106 @@
+{
+  "branch": "test-zmskvr-1258-zmskvr-1261-pass-mix-rup",
+  "branchSlug": "test-zmskvr-1258-zmskvr-1261-pass-mix-rup",
+  "runId": "38155432152",
+  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38155432152",
+  "runStartedAt": "2026-10-11T16:25:56Z",
+  "publishedAt": "2026-10-11T16:38:05.176Z",
+  "features": {
+    "feature-ui-zmscitizenview-citizen-login-zmskvr-1342-zmskvr-1088-service-title-order": {
+      "status": "passed",
+      "shard": "custom",
+      "browser": "chrome",
+      "browsers": {
+        "chrome": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "38155432152",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38155432152",
+          "runStartedAt": "2026-10-11T16:25:56Z"
+        },
+        "edge": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "38155432152",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38155432152",
+          "runStartedAt": "2026-10-11T16:25:56Z"
+        },
+        "firefox": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "38155432152",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38155432152",
+          "runStartedAt": "2026-10-11T16:25:56Z"
+        }
+      },
+      "rel": "ui/zmscitizenview/citizen-login/zmskvr-1342_zmskvr-1088_service_title_order.feature",
+      "runId": "38155432152",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38155432152",
+      "runStartedAt": "2026-10-11T16:25:56Z"
+    },
+    "feature-ui-zmscitizenview-dldb-special-cases-zmskvr-1124-booking-ruppertstrasse-pass-calendar-jumpin-links": {
+      "status": "passed",
+      "shard": "custom",
+      "browser": "chrome",
+      "browsers": {
+        "chrome": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "38155432152",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38155432152",
+          "runStartedAt": "2026-10-11T16:25:56Z"
+        },
+        "edge": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "38155432152",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38155432152",
+          "runStartedAt": "2026-10-11T16:25:56Z"
+        },
+        "firefox": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "38155432152",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38155432152",
+          "runStartedAt": "2026-10-11T16:25:56Z"
+        }
+      },
+      "rel": "ui/zmscitizenview/dldb-special-cases/zmskvr-1124_booking_ruppertstrasse_pass_calendar_jumpin_links.feature",
+      "runId": "38155432152",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38155432152",
+      "runStartedAt": "2026-10-11T16:25:56Z"
+    },
+    "feature-ui-zmscitizenview-dldb-special-cases-zmskvr-936-zmskvr-1013-zmskvr-974-abholung-ruppertstrasse-only": {
+      "status": "passed",
+      "shard": "custom",
+      "browser": "chrome",
+      "browsers": {
+        "chrome": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "38155432152",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38155432152",
+          "runStartedAt": "2026-10-11T16:25:56Z"
+        },
+        "edge": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "38155432152",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38155432152",
+          "runStartedAt": "2026-10-11T16:25:56Z"
+        },
+        "firefox": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "38155432152",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38155432152",
+          "runStartedAt": "2026-10-11T16:25:56Z"
+        }
+      },
+      "rel": "ui/zmscitizenview/dldb-special-cases/zmskvr-936_zmskvr-1013_zmskvr-974_abholung_ruppertstrasse_only.feature",
+      "runId": "38155432152",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38155432152",
+      "runStartedAt": "2026-10-11T16:25:56Z"
+    }
+  }
+}
