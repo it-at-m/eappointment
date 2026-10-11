@@ -707,4 +707,26 @@ public void saveLocationChanges() {
         textArea.clear();
         textArea.sendKeys(text);
     }
+
+    /**
+     * ZMSKVR-812 / ZMSKVR-830: superuser-only field for infoForAllAppointments.
+     */
+    public void assertAvailabilityHintFieldLegendVisible() {
+        ScenarioLogManager.getLogger()
+                .info("Asserting Hinweismeldungen bzgl. der Terminverfügbarkeiten field is visible");
+        WebElement legend = findElementByLocatorType(
+                "//legend[contains(normalize-space(.),'Hinweismeldungen bzgl. der Terminverfügbarkeiten an die Bürger')]",
+                LocatorType.XPATH,
+                true);
+        Assert.assertTrue(
+                legend.isDisplayed(),
+                "Expected legend for Hinweismeldungen bzgl. der Terminverfügbarkeiten an die Bürger*innen");
+        WebElement textArea = findElementByLocatorType(
+                "//textarea[@name='preferences[appointment][infoForAllAppointments]']",
+                LocatorType.XPATH,
+                true);
+        Assert.assertTrue(
+                textArea.isDisplayed(),
+                "Expected textarea preferences[appointment][infoForAllAppointments]");
+    }
 }

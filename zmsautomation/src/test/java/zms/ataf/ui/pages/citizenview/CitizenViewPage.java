@@ -143,6 +143,10 @@ public class CitizenViewPage extends BasePage {
         CONTEXT.navigateWithJumpIn(serviceId, locationId);
     }
 
+    public void navigateWithExclusiveJumpIn(String serviceId, String locationId) {
+        CONTEXT.navigateWithExclusiveJumpIn(serviceId, locationId);
+    }
+
     public void navigateWithJumpInService(String serviceId) {
         CONTEXT.navigateWithJumpInService(serviceId);
     }
@@ -409,6 +413,34 @@ public class CitizenViewPage extends BasePage {
         timeSlot.assertNoAppointmentCustomInfoContains(fragment);
     }
 
+    public void assertNewAppointmentsInfoLinkVisible() {
+        timeSlot.assertNewAppointmentsInfoLinkVisible();
+    }
+
+    public void openNewAppointmentsInfoModal() {
+        timeSlot.openNewAppointmentsInfoModal();
+    }
+
+    public void assertAvailabilityInfoModalTitle() {
+        timeSlot.assertAvailabilityInfoModalTitle();
+    }
+
+    public void assertAvailabilityInfoModalContains(String fragment) {
+        timeSlot.assertAvailabilityInfoModalContains(fragment);
+    }
+
+    public void assertAvailabilityInfoModalHasHeading(String headingFragment) {
+        timeSlot.assertAvailabilityInfoModalHasHeading(headingFragment);
+    }
+
+    public void assertAvailabilityInfoModalShowsUnderHeading(String contentFragment, String headingFragment) {
+        timeSlot.assertAvailabilityInfoModalShowsUnderHeading(contentFragment, headingFragment);
+    }
+
+    public void assertAvailabilityInfoModalHasNoProviderHeading() {
+        timeSlot.assertAvailabilityInfoModalHasNoProviderHeading();
+    }
+
     public void assertSelectedCalendarDayIsBerlinDaysFromToday(int daysFromToday) {
         timeSlot.assertSelectedCalendarDayIsBerlinDaysFromToday(daysFromToday);
     }
@@ -522,6 +554,10 @@ public class CitizenViewPage extends BasePage {
         combination.assertEstimatedDurationShownWithClock(minutes);
     }
 
+    public void selectAppointmentType(String label) {
+        combination.selectAppointmentType(label);
+    }
+
     /** ZMSKVR-1501: the broken 15-minute mapping showed 135 minutes for a 45-minute service. */
     public void assertEstimatedDurationMinutesNot(int minutes) {
         combination.assertEstimatedDurationMinutesNot(minutes);
@@ -574,6 +610,46 @@ public class CitizenViewPage extends BasePage {
 
     public void showAllCombinableServices() {
         combination.showAllCombinableServices();
+    }
+
+    public void assertShowLessServicesButtonVisible(boolean visible) {
+        combination.assertShowLessServicesButtonVisible(visible);
+    }
+
+    public void showLessCombinableServices() {
+        combination.showLessCombinableServices();
+    }
+
+    public void assertDisabledCounterColors(String label) {
+        combination.assertDisabledCounterColors(label);
+    }
+
+    public void assertMaxLengthCounterError(String fieldId, int maxChars) {
+        contact.assertMaxLengthCounterError(fieldId, maxChars);
+    }
+
+    public void assertCharacterCountFontSizeDesktop() {
+        contact.assertCharacterCountFontSizeDesktop();
+    }
+
+    public void assertRemarksTextareaGrowsWithoutCounterOverlap() {
+        contact.assertRemarksTextareaGrowsWithoutCounterOverlap();
+    }
+
+    public void assertTimeslotChrome() {
+        timeSlot.assertTimeslotChrome();
+    }
+
+    public void assertLegalNoticeLinksOpenInNewTab() {
+        overview.assertLegalNoticeLinksOpenInNewTab();
+    }
+
+    public void assertOverviewAddressLabelChrome() {
+        overview.assertOverviewAddressLabelChrome();
+    }
+
+    public void assertOftenSearchedContainerPadding(boolean mobile) {
+        serviceFinder.assertOftenSearchedContainerPadding(mobile);
     }
 
     public void assertSecondaryPlusAndMinus(String label) {
@@ -1107,6 +1183,37 @@ public class CitizenViewPage extends BasePage {
      */
     public boolean deepMucSpinnerVisible() {
         return timeSlot.deepMucSpinnerVisible();
+    }
+
+    /** German MucSpinner copy ({@code de-DE.json} {@code spinnerText}). */
+    public static final String DE_APPOINTMENT_SPINNER_TEXT = TimeSlotStep.DE_APPOINTMENT_SPINNER_TEXT;
+
+    public void armMucSpinnerWatch(String expectedText) {
+        timeSlot.armMucSpinnerWatch(expectedText);
+    }
+
+    public void waitUntilMucSpinnerSeen(String expectedText, int maxSeconds) {
+        timeSlot.waitUntilMucSpinnerSeen(expectedText, maxSeconds);
+    }
+
+    public void assertLastMucSpinnerText(String expectedText) {
+        timeSlot.assertLastMucSpinnerText(expectedText);
+    }
+
+    public void assertLastMucSpinnerKeptOrtVisible() {
+        timeSlot.assertLastMucSpinnerKeptOrtVisible();
+    }
+
+    public void assertLastMucSpinnerKeptOrtAndCalendarVisible() {
+        timeSlot.assertLastMucSpinnerKeptOrtAndCalendarVisible();
+    }
+
+    public void uncheckFirstOrtOfficeCatchingSpinner(String expectedText) {
+        timeSlot.uncheckFirstOrtOfficeCatchingSpinner(expectedText);
+    }
+
+    public void selectNextCalendarDayCatchingSpinner(String expectedText) {
+        timeSlot.selectNextCalendarDayCatchingSpinner(expectedText);
     }
 
     /**
