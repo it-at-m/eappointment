@@ -479,6 +479,48 @@ public final class CombinationStep {
                 "Service counter for \"" + label + "\" should still be " + count + ".");
     }
 
+    /**
+     * Art des Termins (Vor-Ort / Telefon / Video): duration stays hidden until a variant
+     * is chosen ({@code showEstimatedDuration} in ServiceFinder.vue).
+     */
+    public void selectAppointmentType(String label) {
+        context.set();
+        ScenarioLogManager.getLogger().info("zmscitizenview: select appointment type '{}'", label);
+        shadow.waitUntilShadowContains("Art des Termins", defaultWaitSeconds);
+        String script =
+                "var label=arguments[0];"
+                        + "function textOf(n){var s='';if(!n)return s;if(n.nodeType===3)return n.nodeValue||'';"
+                        + "if(n.shadowRoot)s+=' '+textOf(n.shadowRoot);"
+                        + "var c=n.childNodes;if(c)for(var i=0;i<c.length;i++)s+=' '+textOf(c[i]);return s;}"
+                        + "function clickable(n){"
+                        + " if(!n)return null;"
+                        + " if(n.shadowRoot){var inp=n.shadowRoot.querySelector('input[type=radio],button,.m-radio');"
+                        + "  if(inp)return inp;}"
+                        + " if((n.tagName||'').toUpperCase()==='INPUT'&&(n.type||'')==='radio')return n;"
+                        + " return n;}"
+                        + "function walk(n){if(!n)return false;"
+                        + " var tag=(n.tagName||'').toUpperCase();"
+                        + " if(tag==='MUC-RADIO-BUTTON'||tag==='LABEL'||(n.getAttribute&&n.getAttribute('role')==='radio')){"
+                        + "  var t=textOf(n).replace(/\\s+/g,' ').trim();"
+                        + "  if(t.indexOf(label)>=0){var hit=clickable(n);hit.scrollIntoView({block:'center'});hit.click();return true;}"
+                        + " }"
+                        + " if(n.shadowRoot&&walk(n.shadowRoot))return true;"
+                        + " var c=n.children;if(c)for(var i=0;i<c.length;i++)if(walk(c[i]))return true;"
+                        + " return false;}"
+                        + "return walk(document.body);";
+        boolean selected = false;
+        try {
+            selected = Boolean.TRUE.equals(new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(defaultWaitSeconds))
+                    .until(d -> {
+                        Object o = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script, label);
+                        return Boolean.TRUE.equals(o) ? Boolean.TRUE : null;
+                    }));
+        } catch (TimeoutException e) {
+            selected = false;
+        }
+        Assert.assertTrue(selected, "Could not select appointment type '" + label + "'.");
+    }
+
     public boolean durationClockIsVisible() {
         String script =
                 "function shown(el){var n=el;while(n&&n.nodeType===1){"
