@@ -507,6 +507,7 @@ import {
   hasPreconfirmContextError,
   hasUpdateContextError,
 } from "@/utils/errorHandler";
+import { expandSubServicesFromCombinable } from "@/utils/expandSubServicesFromCombinable";
 import {
   applyAppointmentContactToCustomerData,
   hasMissingRequiredContact,
@@ -1374,9 +1375,24 @@ const applyLocalStorageUiData = (uiData: LocalStorageUiData) => {
       (serviceId) => getProviders(serviceId, null)
     );
     if (restored) {
-      restored.subServiceSelectionOrder = (restored.subServices ?? []).map(
-        (sub) => String(sub.id)
+      // serviceFromAppointment only attaches selected counts; Leistung needs every
+      // combinable peer again (same as before login / hydrateServiceFromSelectedMap).
+      if (foundService.combinable) {
+        restored.combinable = JSON.parse(
+          JSON.stringify(foundService.combinable)
+        );
+      }
+      expandSubServicesFromCombinable(
+        restored,
+        selectedServiceMap.value,
+        services.value,
+        getProviders
       );
+      restored.subServiceSelectionOrder = Array.from(
+        selectedServiceMap.value.entries()
+      )
+        .filter(([id, count]) => id !== mainId && count > 0)
+        .map(([id]) => String(id));
       selectedService.value = restored;
     }
   }
