@@ -593,6 +593,19 @@ public class CitizenViewSteps {
         page.assertAvailabilityInfoModalHasHeading(text);
     }
 
+    @Then("the new appointments info modal should show {string} under a heading containing {string} in the citizen view")
+    public void theNewAppointmentsInfoModalShouldShowUnderHeading(
+            String contentFragment, String headingFragment) {
+        String content = TestDataHelper.transformTestData(contentFragment);
+        String heading = TestDataHelper.transformTestData(headingFragment);
+        ScenarioLogManager.getLogger()
+                .info(
+                        "zmscitizenview: assert availability info modal shows '{}' under H3 '{}'",
+                        content,
+                        heading);
+        page.assertAvailabilityInfoModalShowsUnderHeading(content, heading);
+    }
+
     @Then("the new appointments info modal should have no provider heading in the citizen view")
     public void theNewAppointmentsInfoModalShouldHaveNoProviderHeading() {
         ScenarioLogManager.getLogger()
