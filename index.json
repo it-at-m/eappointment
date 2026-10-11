@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-10-11T19:30:29.087Z",
+  "publishedAt": "2026-10-11T20:37:53.160Z",
   "branches": [
     {
       "name": "next",
@@ -774,6 +774,12 @@
       "slug": "test-zmskvr-751-zmskvr-1662-reserved-no-waiting-time",
       "runId": "37083558241",
       "runStartedAt": "2026-10-03T00:47:57Z"
+    },
+    {
+      "name": "test-zmskvr-812-zmskvr-830-availability-info-modal",
+      "slug": "test-zmskvr-812-zmskvr-830-availability-info-modal",
+      "runId": "38171887539",
+      "runStartedAt": "2026-10-11T20:21:46Z"
     },
     {
       "name": "test-zmskvr-82-zmskvr-391-several-offices",
