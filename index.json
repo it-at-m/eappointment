@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-10-11T04:52:52.503Z",
+  "publishedAt": "2026-10-11T05:20:40.248Z",
   "branches": [
     {
       "name": "next",
@@ -390,6 +390,12 @@
       "slug": "test-zmskvr-1204-zmskvr-1576-overview-reload",
       "runId": "37285381531",
       "runStartedAt": "2026-10-05T08:43:15Z"
+    },
+    {
+      "name": "test-zmskvr-1226-fallback-spa-25-slots",
+      "slug": "test-zmskvr-1226-fallback-spa-25-slots",
+      "runId": "38113856095",
+      "runStartedAt": "2026-10-11T05:08:59Z"
     },
     {
       "name": "test-zmskvr-1235-zmskvr-1244-no-appointment-callout",
