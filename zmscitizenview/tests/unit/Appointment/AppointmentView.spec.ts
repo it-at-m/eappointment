@@ -2983,13 +2983,16 @@ describe("AppointmentView", () => {
                 combinable: {
                   a: { "123": [789] },
                   b: { "456": [789] },
+                  c: { "321": [789] },
                 },
               },
               { id: "456", name: "Sub Service", maxQuantity: 2 },
+              { id: "321", name: "Other Peer", maxQuantity: 2 },
             ],
             relations: [
               { serviceId: "123", officeId: "789", slots: 1 },
               { serviceId: "456", officeId: "789", slots: 1 },
+              { serviceId: "321", officeId: "789", slots: 1 },
             ],
           }),
         })
@@ -3041,6 +3044,16 @@ describe("AppointmentView", () => {
       );
       expect(sub?.count).toBe(1);
       expect(wrapper.vm.selectedServiceMap.get("456")).toBe(1);
+      expect(
+        wrapper.vm.selectedService?.subServices?.map((s: { id: string }) =>
+          String(s.id)
+        )
+      ).toEqual(["456", "321"]);
+      expect(
+        wrapper.vm.selectedService?.subServices?.find(
+          (entry: { id: string }) => String(entry.id) === "321"
+        )?.count
+      ).toBe(0);
       // Booked office on selectedProvider only — do not pin Ort filter.
       expect(wrapper.vm.selectedProvider?.id).toBe("789");
       expect(wrapper.vm.preselectedLocationId).toBeUndefined();
