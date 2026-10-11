@@ -5,7 +5,7 @@ Feature: Citizen API: too many appointments with the same email
   So that appointmentsPerMail on the scope is enforced
 
   # ZMSKVR-87 / ZMSKVR-601 / ZMSKVR-715.
-  # Scope 380 (V60): office 10521 Waffenbehörde, service 1072587, appointmentsPerMail=1.
+  # Scope 380 (V60): office 10521 Waffenbehörde, public service 10429902, appointmentsPerMail=1.
   # Only preconfirmed/confirmed processes count; a reserved sibling does not.
 
   Background:
@@ -15,7 +15,7 @@ Feature: Citizen API: too many appointments with the same email
     And the response should contain offices and services
 
   Scenario: Update is rejected when the email already has an active appointment
-    When I request available days for office 10521 and service 1072587
+    When I request available days for office 10521 and service 10429902
     And I request available appointments for the first available day
     And I reserve an appointment with the first available slot
     Then the appointment status should be "reserved"
@@ -24,7 +24,7 @@ Feature: Citizen API: too many appointments with the same email
     When I preconfirm the appointment
     Then the appointment status should be "preconfirmed"
     And I remember the current appointment as "first"
-    When I request available days for office 10521 and service 1072587
+    When I request available days for office 10521 and service 10429902
     And I request available appointments for the first available day
     And I reserve an appointment with the first available slot
     Then the appointment status should be "reserved"
@@ -35,14 +35,14 @@ Feature: Citizen API: too many appointments with the same email
     And I cancel the remembered "first" appointment
 
   Scenario: Preconfirm is rejected when the email already has an active appointment
-    When I request available days for office 10521 and service 1072587
+    When I request available days for office 10521 and service 10429902
     And I request available appointments for the first available day
     And I reserve an appointment with the first available slot
     Then the appointment status should be "reserved"
     When I update the appointment with family name "MusterZmskvr715Api" and customTextfield "ATAF Bemerkung"
     Then the appointment status should be "reserved"
     And I remember the current appointment as "first"
-    When I request available days for office 10521 and service 1072587
+    When I request available days for office 10521 and service 10429902
     And I request available appointments for the first available day
     And I reserve an appointment with the first available slot
     Then the appointment status should be "reserved"
