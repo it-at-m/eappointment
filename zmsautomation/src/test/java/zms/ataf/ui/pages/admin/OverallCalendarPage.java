@@ -183,6 +183,7 @@ public class OverallCalendarPage extends AdminPage {
         clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "//button[normalize-space()='Übernehmen']", LocatorType.XPATH, false, CONTEXT);
         wait.until(ExpectedConditions.numberOfElementsToBeMoreThan(By.cssSelector(".overall-calendar-day-label"), 1));
         wait.until(ExpectedConditions.numberOfElementsToBeMoreThan(By.cssSelector(".overall-calendar-scope-header"), 0));
+        waitUntilHourLabelsPresent(wait);
     }
 
     /** Click select-all until locations are selected. The button is clickable before its listener exists. */
@@ -275,11 +276,19 @@ public class OverallCalendarPage extends AdminPage {
     }
 
     public void assertHourLabelSitsOnTheHourRow() {
+        waitUntilHourLabelsPresent(new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME)));
         Object result = ((JavascriptExecutor) DRIVER).executeScript(
-                "var label = document.querySelector('.overall-calendar-time-hour .overall-calendar-time-label');"
-                        + "if (!label || !/^\\d{2}:00$/.test(label.textContent.trim())) return 'missing hour label';"
+                "var root = document.getElementById('overall-calendar');"
+                        + "if (!root) return 'missing calendar';"
+                        + "var labels = Array.from(root.querySelectorAll('.overall-calendar-time-hour .overall-calendar-time-label'));"
+                        + "var label = labels.find(function (item) { return /^\\d{2}:00$/.test(item.textContent.trim()); });"
+                        + "if (!label) {"
+                        + "  var hours = root.querySelectorAll('.overall-calendar-time-hour').length;"
+                        + "  var any = labels.map(function (item) { return item.textContent.trim(); }).slice(0, 5).join(',');"
+                        + "  return 'missing hour label hours=' + hours + ' labels=' + labels.length + ' sample=' + any;"
+                        + "}"
                         + "var row = label.parentElement.style.gridRow.split('/')[0].trim();"
-                        + "var stripes = Array.from(document.querySelectorAll('.overall-calendar-stripe-hour'));"
+                        + "var stripes = Array.from(root.querySelectorAll('.overall-calendar-stripe-hour'));"
                         + "var stripe = stripes.find(function (item) {"
                         + "  return item.style.gridRow.split('/')[0].trim() === row;"
                         + "});"
@@ -291,6 +300,18 @@ public class OverallCalendarPage extends AdminPage {
                         + "if (labelMiddle <= lineMiddle) return 'the hour label sits on the hour line';"
                         + "return 'ok';");
         Assert.assertEquals(String.valueOf(result), "ok", "The hour label should sit on the first row of the hour.");
+    }
+
+    /** Full-hour labels are only attached after the grid finishes replacing #overall-calendar. */
+    private void waitUntilHourLabelsPresent(WebDriverWait wait) {
+        wait.until(driver -> {
+            Object ready = ((JavascriptExecutor) driver).executeScript(
+                    "var root = document.getElementById('overall-calendar');"
+                            + "if (!root) return false;"
+                            + "return Array.from(root.querySelectorAll('.overall-calendar-time-hour .overall-calendar-time-label'))"
+                            + ".some(function (item) { return /^\\d{2}:00$/.test(item.textContent.trim()); });");
+            return Boolean.TRUE.equals(ready);
+        });
     }
 
     public void assertDayLinesKeepOneWidth() {
