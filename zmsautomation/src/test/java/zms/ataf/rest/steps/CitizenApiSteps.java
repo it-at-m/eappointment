@@ -307,23 +307,56 @@ public class CitizenApiSteps {
             .isEqualTo(maxQuantity);
     }
 
-    private OfficeServiceRelation requireRelation(int officeId, int serviceId) {
+    @Then("office {int} and service {int} should have a relation")
+    public void officeAndServiceShouldHaveARelation(int officeId, int serviceId) {
+        Assertions.assertThat(findRelation(officeId, serviceId))
+            .as("Expected relation office %d service %d in offices-and-services", officeId, serviceId)
+            .isNotNull();
+    }
+
+    @Then("office {int} and service {int} should not have a relation")
+    public void officeAndServiceShouldNotHaveARelation(int officeId, int serviceId) {
+        Assertions.assertThat(findRelation(officeId, serviceId))
+            .as("Office %d must not offer service %d in offices-and-services", officeId, serviceId)
+            .isNull();
+    }
+
+    @Then("office {int} disabledByServices should include {int}")
+    public void officeDisabledByServicesShouldInclude(int officeId, int serviceId) {
         Assertions.assertThat(lastOfficesAndServicesResponse)
             .as("Request offices-and-services first")
             .isNotNull();
-        OfficeServiceRelation relation = null;
-        if (lastOfficesAndServicesResponse.getRelations() != null) {
-            for (OfficeServiceRelation candidate : lastOfficesAndServicesResponse.getRelations()) {
-                if (candidate != null
-                        && officeId == (candidate.getOfficeId() == null ? -1 : candidate.getOfficeId())
-                        && serviceId == (candidate.getServiceId() == null ? -1 : candidate.getServiceId())) {
-                    relation = candidate;
-                    break;
-                }
+        Office office = findOfficeById(lastOfficesAndServicesResponse, officeId);
+        Assertions.assertThat(office)
+            .as("Expected office %d in offices-and-services", officeId)
+            .isNotNull();
+        Assertions.assertThat(office.getDisabledByServices())
+            .as("office %d disabledByServices", officeId)
+            .isNotNull()
+            .contains(serviceId);
+    }
+
+    private OfficeServiceRelation findRelation(int officeId, int serviceId) {
+        Assertions.assertThat(lastOfficesAndServicesResponse)
+            .as("Request offices-and-services first")
+            .isNotNull();
+        if (lastOfficesAndServicesResponse.getRelations() == null) {
+            return null;
+        }
+        for (OfficeServiceRelation candidate : lastOfficesAndServicesResponse.getRelations()) {
+            if (candidate != null
+                    && officeId == (candidate.getOfficeId() == null ? -1 : candidate.getOfficeId())
+                    && serviceId == (candidate.getServiceId() == null ? -1 : candidate.getServiceId())) {
+                return candidate;
             }
         }
+        return null;
+    }
+
+    private OfficeServiceRelation requireRelation(int officeId, int serviceId) {
         return java.util.Objects.requireNonNull(
-                relation, "relation office " + officeId + " service " + serviceId);
+                findRelation(officeId, serviceId),
+                "relation office " + officeId + " service " + serviceId);
     }
 
     /**
