@@ -425,7 +425,9 @@ public class ZmsApiSteps {
     }
 
     /**
-     * ZMSKVR-230 / ZMSKVR-137: request {@code data.duration} from GET /scope/{id}/request/ (DLDB minutes).
+     * ZMSKVR-230: Admin Termindauer is {@code timeSlotCount × slotTimeInMinutes}
+     * (see appointment form.twig). GET /scope/{id}/request/ exposes timeSlotCount from
+     * the provider relation; slot time comes from the scope provider.
      */
     @Then("scope {int} request {string} should have duration {int} minutes")
     public void scopeRequestShouldHaveDuration(int scopeId, String serviceName, int minutes) {
@@ -437,14 +439,31 @@ public class ZmsApiSteps {
         Assertions.assertThat(request.path("name").asText("").toLowerCase(Locale.ROOT))
                 .as("scope %d request list should include %s", scopeId, serviceName)
                 .contains(serviceName.toLowerCase(Locale.ROOT));
-        int duration = request.path("data").path("duration").asInt(0);
-        if (duration <= 0) {
-            duration = request.path("duration").asInt(0);
-        }
+        int timeSlotCount = request.path("timeSlotCount").asInt(0);
+        int slotTimeInMinutes = fetchScopeSlotTimeInMinutes(scopeId, authKey);
+        int duration = timeSlotCount * slotTimeInMinutes;
         Assertions.assertThat(duration)
-                .as("scope %d request %s data.duration (body name=%s)",
-                        scopeId, serviceName, request.path("name").asText())
+                .as("scope %d request %s duration (timeSlotCount=%d × slotTimeInMinutes=%d, name=%s)",
+                        scopeId, serviceName, timeSlotCount, slotTimeInMinutes,
+                        request.path("name").asText())
                 .isEqualTo(minutes);
+    }
+
+    private int fetchScopeSlotTimeInMinutes(int scopeId, String authKey) {
+        Response scopeResponse = given()
+            .baseUri(baseUri != null ? baseUri : TestConfig.getBaseUri())
+            .header("X-AuthKey", authKey)
+        .when()
+            .get("/scope/" + scopeId + "/");
+        JsonNode scope = parseDataNode(scopeResponse);
+        Assertions.assertThat(scope)
+            .as("GET /scope/%d/ should return data", scopeId)
+            .isNotNull();
+        int slotTime = scope.path("provider").path("data").path("slotTimeInMinutes").asInt(0);
+        Assertions.assertThat(slotTime)
+            .as("scope %d provider.data.slotTimeInMinutes", scopeId)
+            .isGreaterThan(0);
+        return slotTime;
     }
 
     private void bookAppointmentCustomer(

@@ -117,14 +117,17 @@ Feature: Estimated duration on the service page
     Then the service combination step should be visible
     And the service duration is shown with a clock and is 20 minutes
 
-  @jumpin @ZMSKVR-230
-  Scenario: Gewerbe-Anmeldung at Gewerbeamt 10546 is 20 minutes
-    Given I open zmscitizenview with jump-in service "1063423" and location "10546"
-    Then the service combination step should be visible
-    And the service duration is shown with a clock and is 20 minutes
+  # Gewerbe-Anmeldung (1063423@10546) is API-only: Art des Termins hides the clock
+  # until Vor-Ort / Telefon / Video is chosen.
 
   @jumpin @ZMSKVR-230
   Scenario: Einbürgerung at 10471 is 60 minutes
     Given I open zmscitizenview with jump-in service "1071907" and location "10471"
     Then the service combination step should be visible
     And the service duration is shown with a clock and is 60 minutes
+
+  @jumpin @ZMSKVR-230
+  Scenario: Internationaler Führerschein at 1094898 is 5 minutes
+    Given I open zmscitizenview with jump-in service "1071854" and location "1094898"
+    Then the service combination step should be visible
+    And the service duration is shown with a clock and is 5 minutes

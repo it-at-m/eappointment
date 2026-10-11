@@ -5,8 +5,9 @@ Feature: Citizen API: service duration from slotTimeInMinutes and slots
   So that Bürgeransicht and Admin can show the same minutes
 
   # ZMSKVR-137 exposes slotTimeInMinutes; duration = slots × slotTimeInMinutes.
-  # Bürgerbüros, KfZ, Feuerwache, Standesamt, Fundbüro, Gewerbeamt, Einbürgerung,
-  # Führerscheinstelle, Versicherungsamt.
+  # Bürgerbüros, KfZ, Feuerwache, Standesamt, Fundbüro, Gewerbeamt (slots only;
+  # UI hides the clock until Vor-Ort/Telefon/Video), Einbürgerung, Führerschein,
+  # Versicherungsamt.
 
   Background:
     Given the Citizen API is available
