@@ -475,6 +475,116 @@ disable_xdebug_for_web
 # Remove stale dumps from earlier runs right away, so each run starts clean.
 cleanup_qemu_geckodriver_cores
 
+# Parallel ATAF shards can get Cloudflare/Central blips: Maven downloads the plugin
+# URL in ~300ms, then reports "Could not find artifact" even though the jar exists.
+# Retries with -U alone are not enough when wagon keeps getting a bad response — seed
+# the local .m2 path with curl (HTTP status checked) and prefer IPv4.
+export MAVEN_OPTS="${MAVEN_OPTS:-} -Djava.net.preferIPv4Stack=true"
+
+is_maven_bootstrap_failure() {
+  local log_file="$1"
+  [[ -f "$log_file" ]] || return 1
+  grep -a -F -q \
+    -e 'PluginResolutionException' \
+    -e 'ArtifactResolutionException' \
+    -e 'NoPluginFoundForPrefixException' \
+    -e 'could not be resolved' \
+    -e 'Could not find artifact' \
+    -e 'was not found in https://repo.maven.apache.org' \
+    -e 'resolution is not reattempted until the update interval' \
+    -e 'The POM for org.apache.maven.plugins:' \
+    -e 'No plugin found for prefix' \
+    "$log_file"
+}
+
+# curl a GAV into ~/.m2 so Maven does not have to fetch it through wagon.
+# groupId:artifactId:version  (packaging defaults to jar)
+seed_maven_central_gav() {
+  local gav="$1"
+  local group artifact version
+  local m2="${M2_REPO:-${HOME}/.m2/repository}"
+  local base="https://repo.maven.apache.org/maven2"
+  local gpath dest pom_url jar_url
+  IFS=':' read -r group artifact version <<< "$gav"
+  [[ -n "$group" && -n "$artifact" && -n "$version" ]] || return 1
+  gpath="${group//.//}"
+  dest="${m2}/${gpath}/${artifact}/${version}"
+  pom_url="${base}/${gpath}/${artifact}/${version}/${artifact}-${version}.pom"
+  jar_url="${base}/${gpath}/${artifact}/${version}/${artifact}-${version}.jar"
+  mkdir -p "$dest"
+  if [[ -f "${dest}/${artifact}-${version}.jar" && -f "${dest}/${artifact}-${version}.pom" ]]; then
+    # Drop poisoned .lastUpdated markers left by a prior failed resolve.
+    rm -f "${dest}/"*.lastUpdated "${dest}/_remote.repositories" 2>/dev/null || true
+    return 0
+  fi
+  info "Seeding Maven Central artifact ${gav} into ${dest}"
+  local try=1
+  while (( try <= 4 )); do
+    rm -f "${dest}/${artifact}-${version}.pom.part" "${dest}/${artifact}-${version}.jar.part" \
+      "${dest}/"*.lastUpdated 2>/dev/null || true
+    if curl -fsSL --retry 3 --retry-delay 2 --connect-timeout 15 --max-time 120 \
+        -o "${dest}/${artifact}-${version}.pom.part" "$pom_url" \
+      && curl -fsSL --retry 3 --retry-delay 2 --connect-timeout 15 --max-time 120 \
+        -o "${dest}/${artifact}-${version}.jar.part" "$jar_url"; then
+      mv -f "${dest}/${artifact}-${version}.pom.part" "${dest}/${artifact}-${version}.pom"
+      mv -f "${dest}/${artifact}-${version}.jar.part" "${dest}/${artifact}-${version}.jar"
+      # Tell Maven these files came from central so it does not leave .lastUpdated holes.
+      printf '%s\n' \
+        "${group}:${artifact}:pom:${version}>central=" \
+        "${group}:${artifact}:jar:${version}>central=" \
+        > "${dest}/_remote.repositories"
+      return 0
+    fi
+    warn "curl seed of ${gav} failed (try ${try}/4)"
+    sleep $((try * 5))
+    try=$((try + 1))
+  done
+  return 1
+}
+
+# Lifecycle + pom plugins that ATAF always needs before the first test/flyway invoke.
+seed_core_maven_plugins() {
+  local flyway_ver surefire_ver
+  flyway_ver="$(
+    sed -n 's/.*<flyway.version>\([^<]*\)<\/flyway.version>.*/\1/p' \
+      "$PROJECT_ROOT/zmsautomation/pom.xml" | head -1
+  )"
+  surefire_ver="$(
+    sed -n 's/.*<surefire.version>\([^<]*\)<\/surefire.version>.*/\1/p' \
+      "$PROJECT_ROOT/zmsautomation/pom.xml" | head -1
+  )"
+  [[ -n "$flyway_ver" ]] || flyway_ver="13.10.0"
+  [[ -n "$surefire_ver" ]] || surefire_ver="3.5.6"
+  seed_maven_central_gav "org.apache.maven.plugins:maven-resources-plugin:3.3.1" || true
+  seed_maven_central_gav "org.apache.maven.plugins:maven-compiler-plugin:3.16.0" || true
+  seed_maven_central_gav "org.apache.maven.plugins:maven-surefire-plugin:${surefire_ver}" || true
+  seed_maven_central_gav "org.flywaydb:flyway-maven-plugin:${flyway_ver}" || true
+}
+
+# Drop cached failed resolves, then curl-seed GAVs parsed from the Maven log.
+purge_and_seed_failed_maven_plugins() {
+  local log_file="$1"
+  local m2="${M2_REPO:-${HOME}/.m2/repository}"
+  local line g a v path
+  [[ -f "$log_file" ]] || return 0
+  # Always re-seed the lifecycle plugin that flakes under parallel shards.
+  seed_maven_central_gav "org.apache.maven.plugins:maven-resources-plugin:3.3.1" || true
+  while IFS= read -r line; do
+    # org.apache.maven.plugins:maven-resources-plugin:jar:3.3.1
+    if [[ "$line" =~ ([a-zA-Z0-9_.-]+):([a-zA-Z0-9_.-]+):(jar|pom):([0-9][^[:space:]]*) ]]; then
+      g="${BASH_REMATCH[1]}"
+      a="${BASH_REMATCH[2]}"
+      v="${BASH_REMATCH[4]}"
+      path="${m2}/${g//.//}/${a}/${v}"
+      if [[ -d "$path" ]]; then
+        warn "Purging cached Maven resolve failure: ${path}"
+        rm -rf "$path"
+      fi
+      seed_maven_central_gav "${g}:${a}:${v}" || true
+    fi
+  done < <(grep -a -E 'Could not find artifact|was not found in https://repo.maven.apache.org|The POM for org\.apache\.maven\.plugins:' "$log_file" || true)
+}
+
 # 1. Database Backup
 section "1. Database Backup"
 backup_db
@@ -514,17 +624,41 @@ info "Clearing test data migrations from flyway_schema_history..."
 exec_sql -e "DELETE FROM flyway_schema_history WHERE version > 1;" 2>/dev/null || true
 
 info "Running Flyway migrations from $FLYWAY_DIR via Maven Flyway plugin..."
-(
-  cd "$PROJECT_ROOT/zmsautomation"
-  mvn -B -q \
-    -Dflyway.url="jdbc:mysql://$DB_HOST:$DB_PORT/$DB_NAME" \
-    -Dflyway.user="$DB_USER" \
-    -Dflyway.password="$DB_PASSWORD" \
-    -Dflyway.locations="filesystem:$FLYWAY_DIR" \
-    -Dflyway.placeholders.citizenviewBaseUrl="$CITIZENVIEW_BASE_URI" \
-    -Dflyway.baselineOnMigrate=true \
-    flyway:migrate || warn "Flyway (Maven plugin) failed; continuing."
-)
+seed_core_maven_plugins || true
+run_flyway_migrate_with_retries() {
+  local flyway_try=1
+  local flyway_log="$PROJECT_ROOT/zmsautomation/target/maven-flyway-migrate.log"
+  local flyway_exit=0
+  mkdir -p "$PROJECT_ROOT/zmsautomation/target"
+  while (( flyway_try <= 4 )); do
+    (
+      cd "$PROJECT_ROOT/zmsautomation"
+      mvn -B -q \
+        -Dflyway.url="jdbc:mysql://$DB_HOST:$DB_PORT/$DB_NAME" \
+        -Dflyway.user="$DB_USER" \
+        -Dflyway.password="$DB_PASSWORD" \
+        -Dflyway.locations="filesystem:$FLYWAY_DIR" \
+        -Dflyway.placeholders.citizenviewBaseUrl="$CITIZENVIEW_BASE_URI" \
+        -Dflyway.baselineOnMigrate=true \
+        flyway:migrate
+    ) 2>&1 | tee "$flyway_log"
+    flyway_exit=${PIPESTATUS[0]}
+    if [[ $flyway_exit -eq 0 ]]; then
+      return 0
+    fi
+    if (( flyway_try < 4 )) && is_maven_bootstrap_failure "$flyway_log"; then
+      warn "Flyway Maven plugin resolve failed (try ${flyway_try}/4); curl-seeding and retrying"
+      purge_and_seed_failed_maven_plugins "$flyway_log"
+      seed_core_maven_plugins || true
+      sleep $((flyway_try * 15))
+      flyway_try=$((flyway_try + 1))
+      continue
+    fi
+    warn "Flyway (Maven plugin) failed; continuing."
+    return 0
+  done
+}
+run_flyway_migrate_with_retries
 
 info "Database tables after Flyway:"
 exec_sql -e "SELECT table_name AS 'Table Name', table_rows AS 'Row Count' FROM information_schema.tables WHERE table_schema = '$DB_NAME' ORDER BY table_name;" || true
@@ -820,23 +954,12 @@ is_webdriver_bootstrap_failure() {
     "$log_file"
 }
 
-# Central can cache a failed plugin download; -U on retry forces a new resolve.
-is_maven_bootstrap_failure() {
-  local log_file="$1"
-  [[ -f "$log_file" ]] || return 1
-  grep -a -F -q \
-    -e 'PluginResolutionException' \
-    -e 'could not be resolved' \
-    -e 'was not found in https://repo.maven.apache.org' \
-    -e 'resolution is not reattempted until the update interval' \
-    -e 'The POM for org.apache.maven.plugins:' \
-    "$log_file"
-}
-
 MAX_UI_RETRIES="${WEBDRIVER_RETRY_MAX_ATTEMPTS:-4}"
 RETRY_DELAY_SECONDS="${WEBDRIVER_RETRY_DELAY_SECONDS:-30}"
-MAX_MAVEN_BOOTSTRAP_RETRIES="${MAVEN_BOOTSTRAP_RETRY_MAX_ATTEMPTS:-3}"
-MAVEN_BOOTSTRAP_RETRY_DELAY_SECONDS="${MAVEN_BOOTSTRAP_RETRY_DELAY_SECONDS:-10}"
+# Total Maven bootstrap attempts (first try + retries). Was 3 with an off-by-one that
+# stopped after attempt 3 even when the loop banner said /4 (zmscalldisplay firefox nightly).
+MAX_MAVEN_BOOTSTRAP_RETRIES="${MAVEN_BOOTSTRAP_RETRY_MAX_ATTEMPTS:-6}"
+MAVEN_BOOTSTRAP_RETRY_DELAY_SECONDS="${MAVEN_BOOTSTRAP_RETRY_DELAY_SECONDS:-25}"
 if [[ "$RUN_UI_TESTS" != true ]]; then
   MAX_UI_RETRIES=1
 fi
@@ -847,7 +970,7 @@ if [[ "$RUN_UI_TESTS" == true ]] && (( MAX_UI_RETRIES < 4 )); then
   MAX_UI_RETRIES=4
 fi
 if ! [[ "$MAX_MAVEN_BOOTSTRAP_RETRIES" =~ ^[0-9]+$ ]] || (( MAX_MAVEN_BOOTSTRAP_RETRIES < 1 )); then
-  MAX_MAVEN_BOOTSTRAP_RETRIES=3
+  MAX_MAVEN_BOOTSTRAP_RETRIES=6
 fi
 
 archive_suite_reports() {
@@ -873,10 +996,12 @@ invoke_maven_suite() {
   local attempt_log
   local force_update=()
   local loop_max=$max_attempts
+  local backoff=$MAVEN_BOOTSTRAP_RETRY_DELAY_SECONDS
   if (( MAX_MAVEN_BOOTSTRAP_RETRIES > loop_max )); then
     loop_max=$MAX_MAVEN_BOOTSTRAP_RETRIES
   fi
   mkdir -p "$PROJECT_ROOT/zmsautomation/target"
+  seed_core_maven_plugins || true
   while (( attempt <= loop_max )); do
     attempt_log="$PROJECT_ROOT/zmsautomation/target/maven-test-${suite_name}-attempt-${attempt}.log"
     info "Starting ${suite_name} Maven test attempt ${attempt}/${loop_max}"
@@ -900,10 +1025,18 @@ invoke_maven_suite() {
     if [[ $suite_exit -eq 0 ]]; then
       return 0
     fi
-    if (( attempt < MAX_MAVEN_BOOTSTRAP_RETRIES )) && is_maven_bootstrap_failure "$attempt_log"; then
-      warn "Maven plugin/artifact resolve failed on ${suite_name} attempt ${attempt}; retrying with -U in ${MAVEN_BOOTSTRAP_RETRY_DELAY_SECONDS}s"
+    # Retry while attempts remain (attempt < loop_max), not attempt < MAX (off-by-one
+    # stopped after 3 when loop_max was 4 and MAX_MAVEN_BOOTSTRAP_RETRIES was 3).
+    if (( attempt < loop_max )) && is_maven_bootstrap_failure "$attempt_log"; then
+      warn "Maven plugin/artifact resolve failed on ${suite_name} attempt ${attempt}/${loop_max}; curl-seeding plugins and retrying with -U in ${backoff}s"
+      purge_and_seed_failed_maven_plugins "$attempt_log"
       force_update=(-U)
-      sleep "$MAVEN_BOOTSTRAP_RETRY_DELAY_SECONDS"
+      sleep "$backoff"
+      # Exponential backoff: parallel shards often need more than a flat 20s gap.
+      backoff=$((backoff + 20))
+      if (( backoff > 90 )); then
+        backoff=90
+      fi
       attempt=$((attempt + 1))
       continue
     fi
