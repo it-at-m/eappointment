@@ -3,6 +3,7 @@ package zms.ataf.ui.pages.citizenview.steps;
 import java.time.Duration;
 
 import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
@@ -148,11 +149,23 @@ public final class CombinationStep {
     /** Visible rows under Kombinierbare Leistungen (not the main selected service above). */
     public void assertCombinableServiceCount(int expected) {
         context.set();
-        int actual = countVisibleCombinableServices();
+        try {
+            new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(defaultWaitSeconds))
+                    .until(d -> countVisibleCombinableServices() == expected);
+        } catch (TimeoutException e) {
+            Assert.fail(
+                    "Expected "
+                            + expected
+                            + " combinable services, found "
+                            + countVisibleCombinableServices()
+                            + ".");
+        }
         Assert.assertEquals(
-                actual,
+                countVisibleCombinableServices(),
                 expected,
-                "Expected " + expected + " combinable services, found " + actual + ".");
+                "Expected " + expected + " combinable services, found "
+                        + countVisibleCombinableServices()
+                        + ".");
     }
 
     public void assertCombinableServiceCountGreaterThan(int minimum) {
