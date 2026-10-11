@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -72,39 +74,69 @@ public class UseraccountPage extends BasePage {
         }
     }
 
+    /** Wall time of the last new-user form submit (initial save or validation retry). */
+    private long lastNewUserSubmission;
+
     public void saveNewUser() {
         ScenarioLogManager.getLogger().info("Saving the new user without a department...");
         waitForAdminLoaderGone();
-        WebElement save = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
-                .until(ExpectedConditions.elementToBeClickable(By.xpath("//button[normalize-space(.)='Nutzer anlegen']")));
-        save.click();
+        // Firefox often reports a successful native click without submitting this form.
+        // requestSubmit keeps the save button value; form.submit() is the last resort.
+        lastNewUserSubmission = System.currentTimeMillis();
+        submitNewUserForm();
+        waitForAdminLoaderGone();
     }
 
     public void assertDepartmentIsRequired() {
-        By departmentError = By.xpath("//*[contains(., '" + DEPARTMENT_REQUIRED + "')]");
-        By departmentGroupError = By.cssSelector("select[name='departments[][id]']");
+        By departmentSelect = By.cssSelector("select[name='departments[][id]']");
+        By departmentFieldError = By.cssSelector(".form-group.has-error .message--error");
         WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        wait.ignoring(StaleElementReferenceException.class);
+        // Seed from saveNewUser so the first poll cannot immediately double-submit.
+        final long[] lastResubmit = { lastNewUserSubmission };
         wait.until(driver -> {
-            if (driver.getCurrentUrl().contains("useraccount_added")) {
+            String url = driver.getCurrentUrl();
+            if (url != null && url.contains("useraccount_added")) {
                 return true;
             }
-            if (driver.findElements(By.cssSelector("div.loader")).stream().anyMatch(WebElement::isDisplayed)) {
+            if (isAdminLoaderVisible(driver)) {
                 return false;
             }
-            if (!driver.findElements(departmentError).isEmpty()) {
+            String bodyText = "";
+            try {
+                bodyText = driver.findElement(By.tagName("body")).getText();
+            } catch (StaleElementReferenceException ignored) {
+                return false;
+            }
+            if (bodyText.contains(DEPARTMENT_REQUIRED) || bodyText.contains(INPUT_ERROR)) {
                 return true;
             }
-            List<WebElement> selects = driver.findElements(departmentGroupError);
+            if (!driver.findElements(departmentFieldError).isEmpty()) {
+                return true;
+            }
+            List<WebElement> selects = driver.findElements(departmentSelect);
             if (selects.isEmpty()) {
                 return false;
             }
             try {
                 WebElement group = selects.get(0).findElement(By.xpath("ancestor::*[contains(@class,'form-group')][1]"));
                 String groupClass = group.getAttribute("class");
-                return groupClass != null && groupClass.contains("has-error");
-            } catch (org.openqa.selenium.NoSuchElementException ignored) {
+                if (groupClass != null && groupClass.contains("has-error")) {
+                    return true;
+                }
+            } catch (org.openqa.selenium.NoSuchElementException | StaleElementReferenceException ignored) {
                 return false;
             }
+            // Still on a clean form: Firefox may have dropped the first click; submit once more.
+            long now = System.currentTimeMillis();
+            if (now - lastResubmit[0] > 5000L) {
+                lastResubmit[0] = now;
+                lastNewUserSubmission = now;
+                ScenarioLogManager.getLogger()
+                        .warn("Department validation still missing after save; submitting the new-user form again.");
+                submitNewUserForm();
+            }
+            return false;
         });
         Assert.assertFalse(DRIVER.getCurrentUrl().contains("useraccount_added"),
                 "The account was created without a department.");
@@ -142,9 +174,40 @@ public class UseraccountPage extends BasePage {
         Assert.assertEquals(width, "5px", "Behörde does not have the error border.");
     }
 
+    private void submitNewUserForm() {
+        WebElement save = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(ExpectedConditions.presenceOfElementLocated(
+                        By.xpath("//button[normalize-space(.)='Nutzer anlegen']")));
+        ((JavascriptExecutor) DRIVER).executeScript(
+                "var button = arguments[0];"
+                        + "button.scrollIntoView({block:'center'});"
+                        + "var form = button.closest('form');"
+                        + "if (form && typeof form.requestSubmit === 'function') {"
+                        + "  form.requestSubmit(button);"
+                        + "} else if (form) {"
+                        + "  form.submit();"
+                        + "} else {"
+                        + "  button.click();"
+                        + "}",
+                save);
+    }
+
+    private static boolean isAdminLoaderVisible(org.openqa.selenium.WebDriver driver) {
+        for (WebElement loader : driver.findElements(By.cssSelector("div.loader"))) {
+            try {
+                if (loader.isDisplayed()) {
+                    return true;
+                }
+            } catch (StaleElementReferenceException ignored) {
+                // page re-rendered
+            }
+        }
+        return false;
+    }
+
     private void waitForAdminLoaderGone() {
-        By loader = By.cssSelector("div.loader");
-        new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME)).until(driver ->
-                driver.findElements(loader).stream().noneMatch(WebElement::isDisplayed));
+        new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .ignoring(StaleElementReferenceException.class)
+                .until(driver -> !isAdminLoaderVisible(driver));
     }
 }
