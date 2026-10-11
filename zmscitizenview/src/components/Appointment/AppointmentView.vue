@@ -1381,7 +1381,8 @@ const applyLocalStorageUiData = (uiData: LocalStorageUiData) => {
     }
   }
 
-  preselectedLocationId.value = uiData.selectedProviderId;
+  // Keep jump-in location only. Pinning the booked office here makes the
+  // calendar remount with a single Ort checked (logged-out / already-in do not).
   const restoredProvider = resolveOfficeById(uiData.selectedProviderId, {
     offices: offices.value,
     providers: selectedService.value?.providers,
@@ -1458,7 +1459,6 @@ const runLoginResumeFromHashAndLocalStorage = (
             );
             if (appointmentOffice) {
               selectedProvider.value = appointmentOffice;
-              preselectedLocationId.value = String(appointmentOffice.id);
             }
             if (isReservedProcessStatus(appointment.value.status)) {
               resumeReservedBookingFromHash();
