@@ -617,7 +617,7 @@ public final class TimeSlotStep {
         String script =
                 "var needle=arguments[0];"
                         + MODAL_OPEN_FIND_PREFIX
-                        + "var modal=walkModal(document.body);if(!modal)return false;"
+                        + "var modal=walkModal(document.body);if(!modal)return false; "
                         + "return textOf(modal).indexOf(needle)>=0;";
         return Boolean.TRUE.equals(
                 ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script, fragment));
