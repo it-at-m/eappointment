@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-10-11T05:37:51.525Z",
+  "publishedAt": "2026-10-11T06:25:47.742Z",
   "branches": [
     {
       "name": "next",
@@ -786,6 +786,12 @@
       "slug": "test-zmskvr-924-zmskvr-1019-fuehrerschein-scope-hints",
       "runId": "37857081719",
       "runStartedAt": "2026-10-08T23:01:47Z"
+    },
+    {
+      "name": "test-zmskvr-936-zmskvr-1013-abholung-ruppertstrasse-only",
+      "slug": "test-zmskvr-936-zmskvr-1013-abholung-ruppertstrasse-only",
+      "runId": "38117152793",
+      "runStartedAt": "2026-10-11T06:09:47Z"
     },
     {
       "name": "zmskvr-1631-fix-previous-step-button",
