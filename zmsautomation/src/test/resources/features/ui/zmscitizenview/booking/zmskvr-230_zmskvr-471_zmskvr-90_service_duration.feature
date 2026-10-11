@@ -86,7 +86,7 @@ Feature: Estimated duration on the service page
     And the service duration is shown with a clock and is 30 minutes
     And the plus button for service "Wechselkennzeichen" is disabled
 
-  # More offices: Abholung 10 (slot 10×1), Ausfuhr 15 (slot 5×3), Führungszeugnis 5 (slot 5×1).
+  # More offices beyond Bürgerbüros (duration = slots × slotTimeInMinutes).
   @jumpin @ZMSKVR-230
   Scenario: Abholung at Ruppertstraße 10492 is 10 minutes
     Given I open zmscitizenview with jump-in service "10295182" and location "10492"
@@ -100,7 +100,31 @@ Feature: Estimated duration on the service page
     And the service duration is shown with a clock and is 15 minutes
 
   @jumpin @ZMSKVR-230
-  Scenario: Führungszeugnis at Forstenrieder Allee 10286848 is 5 minutes
-    Given I open zmscitizenview with jump-in service "1063565" and location "10286848"
+  Scenario: Führungen at Feuerwache Föhring 10577 are 90 minutes
+    Given I open zmscitizenview with jump-in service "10389330" and location "10577"
+    Then the service combination step should be visible
+    And the service duration is shown with a clock and is 90 minutes
+
+  @jumpin @ZMSKVR-230
+  Scenario: Kirchenaustritt at Standesamt 10295168 is 5 minutes
+    Given I open zmscitizenview with jump-in service "1063731" and location "10295168"
     Then the service combination step should be visible
     And the service duration is shown with a clock and is 5 minutes
+
+  @jumpin @ZMSKVR-230
+  Scenario: Fundsache abholen at Fundbüro 1061963 is 20 minutes
+    Given I open zmscitizenview with jump-in service "1063519" and location "1061963"
+    Then the service combination step should be visible
+    And the service duration is shown with a clock and is 20 minutes
+
+  @jumpin @ZMSKVR-230
+  Scenario: Gewerbe-Anmeldung at Gewerbeamt 10546 is 20 minutes
+    Given I open zmscitizenview with jump-in service "1063423" and location "10546"
+    Then the service combination step should be visible
+    And the service duration is shown with a clock and is 20 minutes
+
+  @jumpin @ZMSKVR-230
+  Scenario: Einbürgerung at 10471 is 60 minutes
+    Given I open zmscitizenview with jump-in service "1071907" and location "10471"
+    Then the service combination step should be visible
+    And the service duration is shown with a clock and is 60 minutes
