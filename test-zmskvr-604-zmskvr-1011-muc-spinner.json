@@ -1,10 +1,10 @@
 {
   "branch": "test-zmskvr-604-zmskvr-1011-muc-spinner",
   "branchSlug": "test-zmskvr-604-zmskvr-1011-muc-spinner",
-  "runId": "38141534178",
-  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38141534178",
-  "runStartedAt": "2026-10-11T13:01:32Z",
-  "publishedAt": "2026-10-11T13:12:24.210Z",
+  "runId": "38142459211",
+  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38142459211",
+  "runStartedAt": "2026-10-11T13:15:32Z",
+  "publishedAt": "2026-10-11T13:26:02.821Z",
   "features": {
     "feature-ui-zmscitizenview-calendar-zmskvr-604-zmskvr-1011-muc-spinner": {
       "status": "passed",
@@ -14,29 +14,29 @@
         "chrome": {
           "status": "passed",
           "shard": "custom",
-          "runId": "38141534178",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38141534178",
-          "runStartedAt": "2026-10-11T13:01:32Z"
+          "runId": "38142459211",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38142459211",
+          "runStartedAt": "2026-10-11T13:15:32Z"
         },
         "edge": {
           "status": "passed",
           "shard": "custom",
-          "runId": "38141534178",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38141534178",
-          "runStartedAt": "2026-10-11T13:01:32Z"
+          "runId": "38142459211",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38142459211",
+          "runStartedAt": "2026-10-11T13:15:32Z"
         },
         "firefox": {
           "status": "passed",
           "shard": "custom",
-          "runId": "38141534178",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38141534178",
-          "runStartedAt": "2026-10-11T13:01:32Z"
+          "runId": "38142459211",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38142459211",
+          "runStartedAt": "2026-10-11T13:15:32Z"
         }
       },
       "rel": "ui/zmscitizenview/calendar/zmskvr-604_zmskvr-1011_muc_spinner.feature",
-      "runId": "38141534178",
-      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38141534178",
-      "runStartedAt": "2026-10-11T13:01:32Z"
+      "runId": "38142459211",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38142459211",
+      "runStartedAt": "2026-10-11T13:15:32Z"
     }
   }
 }
