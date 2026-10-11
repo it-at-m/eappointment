@@ -6,8 +6,10 @@ Feature: Citizen API: Abholung only at Bürgerbüro Ruppertstraße (10492)
 
   # ZMSKVR-936 / test ZMSKVR-1013.
   # Relation exists only for 10492. Peers 10502 / 10489 / 10500 / 10491 have no relation (invalid jump-in).
-  # Außenstellen listed in DONT_SHOW_LOCATION_BY_SERVICES expose 10295182 in disabledByServices.
-  # Available-calendar stays bookable at 10492; peers return invalidLocationAndServiceCombination.
+  # Außenstellen still in the public catalog expose 10295182 in disabledByServices (DONT_SHOW).
+  # 10204388 is omitted: without Terminspuren it is dropped from offices-and-services entirely.
+  # Available-calendar: 10492 bookable; 10502 / 10489 / 10500 → invalidLocationAndServiceCombination;
+  # 10491 stays 200 with an empty calendar (no bookable day).
 
   Background:
     Given the Citizen API is available
@@ -27,7 +29,6 @@ Feature: Citizen API: Abholung only at Bürgerbüro Ruppertstraße (10492)
     And office 10286849 disabledByServices should include 10295182
     And office 10181770 disabledByServices should include 10295182
     And office 10204387 disabledByServices should include 10295182
-    And office 10204388 disabledByServices should include 10295182
     And office 10227989 disabledByServices should include 10295182
     And office 1060068 disabledByServices should include 10295182
 
@@ -41,4 +42,4 @@ Feature: Citizen API: Abholung only at Bürgerbüro Ruppertstraße (10492)
     When I request available days for office 10500 and service 10295182
     Then the response errors should include errorCode "invalidLocationAndServiceCombination"
     When I request available days for office 10491 and service 10295182
-    Then the response errors should include errorCode "invalidLocationAndServiceCombination"
+    Then the available calendar should include no bookable day for office 10491
