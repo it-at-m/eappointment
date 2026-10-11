@@ -3,13 +3,13 @@
 Feature: CitizenView: exclusive Ort after Zuständigkeitsabfrage jump-in
   As a citizen who already completed a Zuständigkeitsabfrage on muenchen.de
   I want the jump-in with exclusiveLocation to show only my Zuständigkeits-Ort
-  So that I cannot book at the peer Standesamt or Sozialbürgerhaus
+  So that I cannot book at the peer Standesamt
 
   # ZMSKVR-852 / test ZMSKVR-854.
   # Product flag: ?exclusiveLocation=1 on the Bürgeransicht URL (zms-appointment.ce.vue).
-  # Standesamt peers also ship showAlternativeLocations=false in the catalog; the query
-  # flag is what muenchen.de adds after the Zuständigkeitsabfrage.
-  # Peers asserted below are the other Standort for the same service in the local catalog.
+  # Standesamt peers also ship showAlternativeLocations=false via Munich::EXCLUSIVE_LOCATIONS;
+  # the query flag is what muenchen.de adds after the Zuständigkeitsabfrage.
+  # Sozialbürgerhaus jump-ins from the ticket (1073950 / 103633) are gone from live SADB.
 
   Background:
     Given the Citizen API is available
@@ -30,10 +30,3 @@ Feature: CitizenView: exclusive Ort after Zuständigkeitsabfrage jump-in
     When I continue from the service combination step
     Then provider checkbox 10351880 should be visible in the citizen view
     And provider checkbox 10470 should not appear in the citizen view
-
-  Scenario: Sozialbürgerhaus Ramersdorf-Perlach exclusive jump-in hides peer SBH
-    Given I open zmscitizenview with exclusive jump-in service "1073950" and location "103633"
-    Then the service combination step should be visible
-    When I continue from the service combination step
-    Then provider checkbox 103633 should be visible in the citizen view
-    And provider checkbox 103666 should not appear in the citizen view
