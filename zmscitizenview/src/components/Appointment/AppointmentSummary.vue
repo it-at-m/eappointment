@@ -1,17 +1,29 @@
 <template>
-  <div
-    v-if="isExpired"
-    :id="`process-${appointment?.processId}-displayNumber-${appointment?.displayNumber}`"
-  >
+  <div v-if="isReservationExpired">
     <muc-callout type="error">
+      <template #header>{{
+        t("apiErrorProcessNotReservedAnymoreHeader")
+      }}</template>
       <template #content>
-        <p>{{ t("apiErrorSessionTimeoutText") }}</p>
+        <p>{{ t("apiErrorProcessNotReservedAnymoreText") }}</p>
       </template>
-      <template #header>{{ t("apiErrorSessionTimeoutHeader") }}</template>
+      <template #buttons>
+        <div
+          class="m-button-group"
+          style="margin-top: 1rem"
+        >
+          <muc-button
+            icon="arrow-right"
+            @click="restartBooking"
+          >
+            <template #default>{{ t("restartBooking") }}</template>
+          </muc-button>
+        </div>
+      </template>
     </muc-callout>
   </div>
   <div
-    v-if="!isExpired"
+    v-if="!isReservationExpired"
     class="m-component"
     :id="`process-${appointment?.processId}-displayNumber-${appointment?.displayNumber}`"
   >
@@ -112,32 +124,21 @@
                 ></span>
               </p>
               <p class="no-bottom-margin smaller-front-size">
-                <strong>{{
-                  getAppointmentLocationVariantLabel(variantId, t)
-                }}</strong
+                <strong>{{ variant?.name }}</strong
                 ><br />
               </p>
-              <p v-if="getAppointmentLocationVariantHint(variantId, t)">
-                {{ getAppointmentLocationVariantHint(variantId, t) }}
+              <p v-if="variant?.hint">
+                {{ variant.hint }}
               </p>
-            </template>
-
-            <template v-else-if="isVariantWithHint(variantId)">
-              <p class="no-bottom-margin smaller-front-size">
-                <strong>{{
-                  getAppointmentLocationVariantLabel(variantId, t)
-                }}</strong
-                ><br />
-              </p>
-              <p>{{ getAppointmentLocationVariantHint(variantId, t) }}</p>
             </template>
 
             <template v-else>
-              <p>
-                <strong>{{
-                  getAppointmentLocationVariantLabel(variantId, t)
-                }}</strong
+              <p class="no-bottom-margin smaller-front-size">
+                <strong>{{ variant?.name }}</strong
                 ><br />
+              </p>
+              <p v-if="variant?.hint">
+                {{ variant.hint }}
               </p>
             </template>
           </div>
@@ -219,7 +220,7 @@
               <h3>{{ t("termsOfUse") }}</h3>
             </div>
             <div class="m-content">
-              <h4 class="smaller-front-size">{{ t("privacyLabel") }}</h4>
+              <h4 class="m-checkbox-group__heading">{{ t("privacyLabel") }}</h4>
             </div>
             <div class="m-content">
               <p
@@ -237,67 +238,63 @@
               />
             </div>
             <div class="m-content">
-              <h4 class="smaller-front-size">
-                {{ t("communicationCheckboxLabel") }}
-              </h4>
-            </div>
-            <div class="m-content">
-              <div class="m-checkboxes">
-                <div class="m-checkboxes__item">
-                  <input
-                    id="checkbox-electronic-communication"
-                    class="m-checkboxes__input"
+              <muc-checkbox-group
+                :heading="t('communicationCheckboxLabel')"
+                :heading-level="4"
+              >
+                <template #checkboxes>
+                  <muc-checkbox
+                    id="electronic-communication"
                     name="checkbox-electronic-communication"
-                    type="checkbox"
-                    @click="clickElectronicCommunication"
-                    aria-required="true"
-                  />
-                  <label
-                    class="m-label m-checkboxes__label"
-                    for="checkbox-electronic-communication"
-                    v-html="sanitizeHtml(t('communicationCheckboxText'))"
-                  />
-                </div>
-              </div>
+                    required
+                    v-model="electronicCommunication"
+                  >
+                    <template #label>
+                      <span
+                        v-html="sanitizeHtml(t('communicationCheckboxText'))"
+                      />
+                    </template>
+                  </muc-checkbox>
+                </template>
+              </muc-checkbox-group>
             </div>
-            <template v-if="isVideoVariant">
-              <div class="m-content">
-                <h4 class="smaller-front-size">
-                  {{ t("termsOfUseForVideoConsultationLabel") }}
-                </h4>
-              </div>
-              <div class="m-content">
-                <div class="m-checkboxes">
-                  <div class="m-checkboxes__item">
-                    <input
-                      id="checkbox-video-consultation"
-                      class="m-checkboxes__input"
-                      name="checkbox-video-consultation"
-                      type="checkbox"
-                      @click="clickVideoConsultation"
-                      aria-required="true"
-                    />
-                    <label
-                      class="m-label m-checkboxes__label"
-                      for="checkbox-video-consultation"
-                      v-html="
-                        sanitizeHtml(t('termsOfUseForVideoConsultationText'))
-                      "
-                    />
-                  </div>
-                </div>
-              </div>
-            </template>
+            <div
+              v-if="isVideoVariant"
+              class="m-content"
+            >
+              <muc-checkbox-group
+                :heading="t('termsOfUseForVideoConsultationLabel')"
+                :heading-level="4"
+              >
+                <template #checkboxes>
+                  <muc-checkbox
+                    id="video-consultation"
+                    name="checkbox-video-consultation"
+                    required
+                    v-model="videoConsultation"
+                  >
+                    <template #label>
+                      <span
+                        v-html="
+                          sanitizeHtml(t('termsOfUseForVideoConsultationText'))
+                        "
+                      />
+                    </template>
+                  </muc-checkbox>
+                </template>
+              </muc-checkbox-group>
+            </div>
           </div>
         </div>
       </div>
     </div>
   </div>
   <div
-    v-if="!isExpired && rebookOrCancelDialog"
+    v-if="!isReservationExpired && rebookOrCancelDialog"
     class="m-button-group"
   >
     <muc-button
+      v-if="!rebookingDisabled"
       icon="arrow-right"
       @click="rescheduleAppointment"
     >
@@ -306,7 +303,7 @@
     <muc-button
       :disabled="loadingStates.isCancelingAppointment.value"
       :icon="'close'"
-      variant="secondary"
+      :variant="rebookingDisabled ? 'primary' : 'secondary'"
       @click="cancelAppointment"
     >
       <template #default>
@@ -315,7 +312,7 @@
     </muc-button>
   </div>
   <div
-    v-if="!isExpired && isRebooking"
+    v-if="!isReservationExpired && isRebooking"
     class="m-button-group"
   >
     <muc-button
@@ -336,7 +333,7 @@
     </muc-button>
   </div>
   <div
-    v-if="!rebookOrCancelDialog && !isRebooking"
+    v-if="!isReservationExpired && !rebookOrCancelDialog && !isRebooking"
     class="m-button-group"
   >
     <muc-button
@@ -348,7 +345,7 @@
       <template #default>{{ t("back") }}</template>
     </muc-button>
     <muc-button
-      v-if="!isExpired"
+      v-if="!isReservationExpired"
       :disabled="!validForm || loadingStates.isBookingAppointment.value"
       :icon="'check'"
       @click="bookAppointment"
@@ -363,7 +360,13 @@
 <script setup lang="ts">
 import type { Ref } from "vue";
 
-import { MucBanner, MucButton, MucCallout } from "@muenchen/muc-patternlab-vue";
+import {
+  MucBanner,
+  MucButton,
+  MucCallout,
+  MucCheckbox,
+  MucCheckboxGroup,
+} from "@muenchen/muc-patternlab-vue";
 import { computed, inject, ref } from "vue";
 
 import {
@@ -374,18 +377,16 @@ import {
 } from "@/types/ProvideInjectTypes";
 import { calculateEstimatedDuration } from "@/utils/calculateEstimatedDuration";
 import {
-  getAppointmentLocationVariantHint,
-  getAppointmentLocationVariantLabel,
   getServiceBaseURL,
   isVariantWithAddress,
-  isVariantWithHint,
   VARIANT_ID_VIDEO,
 } from "@/utils/Constants";
 import { containsParagraphTag } from "@/utils/containsParagraphTag";
 import { sanitizeHtml } from "@/utils/sanitizeHtml";
 import { useReservationTimer } from "@/utils/useReservationTimer";
+import { useVariant } from "@/utils/useVariant";
 
-withDefaults(
+const props = withDefaults(
   defineProps<{
     appointmentAlreadyActivated?: boolean;
     isRebooking: boolean;
@@ -397,6 +398,8 @@ withDefaults(
   }
 );
 
+const getVariant = useVariant(props.t);
+
 const emit =
   defineEmits<
     (
@@ -406,6 +409,7 @@ const emit =
         | "cancelAppointment"
         | "cancelReschedule"
         | "rescheduleAppointment"
+        | "restartBooking"
     ) => void
   >();
 
@@ -437,7 +441,11 @@ const { serviceLinkId } = inject<ServiceLinkProvider>(
   "serviceLinkProvider"
 ) as ServiceLinkProvider;
 
-const { isExpired } = useReservationTimer();
+const { isReservationExpired } = useReservationTimer();
+
+const rebookingDisabled = computed(
+  () => appointment.value?.scope?.rebookingDisabled === true
+);
 
 const electronicCommunication = ref<boolean>(false);
 
@@ -462,12 +470,6 @@ const formatTime = (time: any) => {
   return formatterDate.format(date) + ", " + formatterTime.format(date);
 };
 
-const clickElectronicCommunication = () =>
-  (electronicCommunication.value = !electronicCommunication.value);
-
-const clickVideoConsultation = () =>
-  (videoConsultation.value = !videoConsultation.value);
-
 const validForm = computed(
   () =>
     electronicCommunication.value &&
@@ -476,6 +478,7 @@ const validForm = computed(
 
 const bookAppointment = () => emit("bookAppointment");
 const previousStep = () => emit("back");
+const restartBooking = () => emit("restartBooking");
 const cancelAppointment = () => emit("cancelAppointment");
 const cancelReschedule = () => emit("cancelReschedule");
 const rescheduleAppointment = () => emit("rescheduleAppointment");
@@ -495,6 +498,10 @@ const variantId = computed<number | null>(() => {
   const id = (selectedService.value as any)?.variantId;
   return typeof id === "number" && Number.isFinite(id) ? id : null;
 });
+
+const variant = computed(() =>
+  getVariant(variantId.value, selectedService.value?.variantOverwrite)
+);
 
 const isVideoVariant = computed(() => variantId.value === VARIANT_ID_VIDEO);
 

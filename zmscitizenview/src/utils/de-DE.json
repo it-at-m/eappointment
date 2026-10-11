@@ -5,7 +5,7 @@
     "error": "Die Prüfung ist fehlgeschlagen. Versuchen Sie es später erneut.",
     "expired": "Die Zeit ist abgelaufen. Versuchen Sie es erneut.",
     "invalidCaptchaHeader": "Ihre Sitzung ist abgelaufen.",
-    "invalidCaptchaText": "Seit dem Start Ihrer Terminbuchung ist zu viel Zeit vergangen. Bitte wählen Sie einen neuen Termin, um mit der Buchung fortzufahren.",
+    "invalidCaptchaText": "Seit Ihrer Bot-Überprüfung ist zu viel Zeit vergangen. Bitte starten Sie erneut mit der Terminbuchung, um die Prüfung zu aktualisieren.",
     "label": "Ich bin kein Bot.",
     "loadError": "Das Widget konnte nicht geladen werden.",
     "verified": "Erfolgreich überprüft.",
@@ -17,6 +17,8 @@
   "am": "Vormittag",
   "apiErrorAppointmentCanNotBeCanceledHeader": "Ihr Termin kann nicht abgesagt werden.",
   "apiErrorAppointmentCanNotBeCanceledText": "Leider kann Ihr Termin nicht abgesagt werden. Bitte wenden Sie sich an den Service, der Ihnen den Termin angeboten hat.",
+  "apiErrorRebookingDisabledHeader": "Dieser Termin kann nicht verschoben werden.",
+  "apiErrorRebookingDisabledText": "Eine Verschiebung ist für diesen Standort nicht möglich. Sie können den Termin absagen.",
   "apiErrorAppointmentNotAvailableHeader": "Ihr gewählter Termin ist nicht mehr verfügbar.",
   "apiErrorAppointmentNotAvailableText": "Leider hat inzwischen eine andere Person Ihren gewünschten Termin gebucht. Bitte wählen Sie einen neuen Termin aus.",
   "apiErrorAppointmentNotFoundHeader": "Wir konnten Ihren Termin nicht finden.",
@@ -24,11 +26,11 @@
   "apiErrorAuthKeyMismatchHeader": "Ungültiger Authentifizierungsschlüssel",
   "apiErrorAuthKeyMismatchText": "Leider kann Ihr Termin nicht aktiviert werden. Bitte überprüfen Sie, ob Sie den richtigen Link verwendet haben.",
   "apiErrorCaptchaExpiredHeader": "Ihre Sitzung ist abgelaufen.",
-  "apiErrorCaptchaExpiredText": "Seit dem Start Ihrer Terminbuchung ist zu viel Zeit vergangen. Bitte wählen Sie einen neuen Termin, um mit der Buchung fortzufahren.",
+  "apiErrorCaptchaExpiredText": "Seit Ihrer Bot-Überprüfung ist zu viel Zeit vergangen. Bitte starten Sie erneut mit der Terminbuchung, um die Prüfung zu aktualisieren.",
   "apiErrorCaptchaInvalidHeader": "Ihre Sitzung ist abgelaufen.",
-  "apiErrorCaptchaInvalidText": "Seit dem Start Ihrer Terminbuchung ist zu viel Zeit vergangen. Bitte wählen Sie einen neuen Termin, um mit der Buchung fortzufahren.",
+  "apiErrorCaptchaInvalidText": "Seit Ihrer Bot-Überprüfung ist zu viel Zeit vergangen. Bitte starten Sie erneut mit der Terminbuchung, um die Prüfung zu aktualisieren.",
   "apiErrorCaptchaMissingHeader": "Ihre Sitzung ist abgelaufen.",
-  "apiErrorCaptchaMissingText": "Seit dem Start Ihrer Terminbuchung ist zu viel Zeit vergangen. Bitte wählen Sie einen neuen Termin, um mit der Buchung fortzufahren.",
+  "apiErrorCaptchaMissingText": "Seit Ihrer Bot-Überprüfung ist zu viel Zeit vergangen. Bitte starten Sie erneut mit der Terminbuchung, um die Prüfung zu aktualisieren.",
   "apiErrorCaptchaVerificationErrorHeader": "Verifizierung fehlgeschlagen",
   "apiErrorCaptchaVerificationErrorText": "Verifizierung fehlgeschlagen. Versuche Sie es später noch einmal.",
   "apiErrorCaptchaVerificationFailedHeader": "Verifizierung fehlgeschlagen",
@@ -141,7 +143,7 @@
   "apiErrorServiceUnavailableHeader": "Dienstleistung nicht verfügbar",
   "apiErrorServiceUnavailableText": "Die angefragte Dienstleistung ist derzeit nicht verfügbar. Bitte versuchen Sie es später noch einmal.",
   "apiErrorSessionTimeoutHeader": "Ihre Sitzung ist abgelaufen.",
-  "apiErrorSessionTimeoutText": "Seit dem Start Ihrer Terminbuchung ist zu viel Zeit vergangen. Bitte wählen Sie einen neuen Termin, um mit der Buchung fortzufahren.",
+  "apiErrorSessionTimeoutText": "Seit Ihrer Bot-Überprüfung ist zu viel Zeit vergangen. Bitte starten Sie erneut mit der Terminbuchung, um die Prüfung zu aktualisieren.",
   "apiErrorSourceNotFoundHeader": "Terminbuchung derzeit eingeschränkt",
   "apiErrorSourceNotFoundText": "Die benötigten Standortdaten sind derzeit nicht verfügbar. Bitte versuchen Sie es später erneut.",
   "apiErrorTelephoneCannotBeChangedHeader": "Telefonnummer kann nicht geändert werden.",
@@ -152,8 +154,8 @@
   "apiErrorTooManyAppointmentsWithSameMailText": "Sie können mit Ihrer E-Mail-Adresse nur eine begrenzte Anzahl an Terminen vereinbaren. Bitte sagen Sie einen anderen Termin ab, bevor Sie einen neuen Termin buchen.",
   "apiErrorTooManyServicesPerAppointmentHeader": "Zu viele gleiche Leistungen ausgewählt.",
   "apiErrorTooManyServicesPerAppointmentText": "Sie haben mehr von einer Leistung ausgewählt als erlaubt. Bitte reduzieren Sie die Anzahl und versuchen Sie es erneut.",
-  "apiErrorTooManySlotsPerAppointmentHeader": "Zu viele Leistungen ausgewählt.",
-  "apiErrorTooManySlotsPerAppointmentText": "Sie können pro Termin nur eine begrenzte Anzahl an Leistungen buchen. Bitte reduzieren Sie Ihre Auswahl und versuchen Sie es erneut.",
+  "apiErrorTooManySlotsPerAppointmentHeader": "Aktuell ist kein Termin verfügbar.",
+  "apiErrorTooManySlotsPerAppointmentText": "Bitte versuchen Sie es noch einmal zu einem späteren Zeitpunkt.",
   "apiErrorUnknownErrorHeader": "Ein unbekannter Fehler ist aufgetreten.",
   "apiErrorUnknownErrorText": "Bitte versuchen Sie es später erneut.",
   "apiErrorZmsClientCommunicationErrorHeader": "Der Service ist vorübergehend nicht verfügbar.",
@@ -260,6 +262,7 @@
   "remarks2": "Weitere Bemerkungen",
   "reschedule": "Verschieben",
   "rescheduleAppointment": "Termin verschieben",
+  "restartBooking": "Buchung neu starten",
   "rescheduleAppointmentModalHeading": "Verschiebung Ihres Termins",
   "rescheduleAppointmentModalText": "Ihnen ist etwas dazwischengekommen? Klicken Sie auf  „Verschieben“, um einen anderen Termin zu vereinbaren.",
   "rescheduleErrorHeader": "Ihr Termin liegt in der Vergangenheit.",
@@ -303,18 +306,22 @@
   "systemFailurePageHeader": "Diese Funktion ist zur Zeit nicht verfügbar.",
   "systemFailurePageText": "Es gibt aktuell leider ein technisches Problem mit dieser Funktion. Bitte versuchen Sie es später noch einmal.",
   "appointmentType": "Art des Termins",
-  "appointmentTypes": {
-    "1": "Vor-Ort-Termin",
-    "2": "Telefon-Termin",
-    "3": "Videoberatung",
-    "4": "Termin für eine Einzelperson",
-    "5": "Termin für eine Familie",
-    "6": "Termin für einen Kleinkunden",
-    "7": "Termin für einen Großkunden"
-  },
-  "locationVariantText": {
-    "1": "Sie kommen persönlich an unserem Standort vorbei.",
-    "2": "Wir rufen Sie unter Ihrer gewünschten Nummer an.",
-    "3": "Sie erhalten einen Einwahllink für ein Online-Meeting."
+  "variants": {
+    "1": {
+      "name": "Vor-Ort-Termin",
+      "hint": "Sie kommen persönlich an unserem Standort vorbei."
+    },
+    "2": {
+      "name": "Telefon-Termin",
+      "hint": "Wir rufen Sie unter Ihrer gewünschten Nummer an."
+    },
+    "3": {
+      "name": "Videoberatung",
+      "hint": "Sie erhalten einen Einwahllink für ein Online-Meeting."
+    },
+    "4": { "name": "Termin für eine Einzelperson" },
+    "5": { "name": "Termin für eine Familie" },
+    "6": { "name": "Termin für einen Kleinkunden" },
+    "7": { "name": "Termin für einen Großkunden" }
   }
 }

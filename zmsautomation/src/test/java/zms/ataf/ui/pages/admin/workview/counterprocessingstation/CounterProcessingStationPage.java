@@ -212,6 +212,50 @@ public class CounterProcessingStationPage extends AdminPage {
         );
     }
 
+    /**
+     * After an API walk-in the Warteschlange can stay empty until the queue table is
+     * reloaded. Match the name cell (not digits stripped from "Zmskvr1341…").
+     */
+    public void assertCustomerVisibleInQueueByName(String familyName) {
+        ScenarioLogManager.getLogger().info(
+                "Checking for customer \"{}\" by name in waiting list...", familyName);
+        CONTEXT.waitForSpinners();
+        showSpontaneousCustomers(true);
+        // Name may sit in an <a> with a sibling call-count <small>; match the cell text flexibly.
+        By nameCell = By.xpath(
+                "//table[@id='table-queued-appointments']"
+                        + "//td[contains(@class,'callnextclient')]"
+                        + "[contains(normalize-space(.),'" + familyName + "')]");
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        wait.ignoring(StaleElementReferenceException.class);
+        long[] lastReload = { 0L };
+        // Return boolean only — a held WebElement goes stale when the queue reloads under us.
+        wait.withMessage("Customer \"" + familyName + "\" did not appear in the waiting list.")
+                .until(driver -> {
+                    List<WebElement> found = driver.findElements(nameCell);
+                    for (WebElement element : found) {
+                        try {
+                            if (element.isDisplayed()) {
+                                return true;
+                            }
+                        } catch (StaleElementReferenceException ignored) {
+                            // row replaced mid-poll
+                        }
+                    }
+                    long now = System.currentTimeMillis();
+                    if (now - lastReload[0] >= 2000L) {
+                        lastReload[0] = now;
+                        try {
+                            reloadQueueLists();
+                        } catch (RuntimeException ignored) {
+                            // loader or missing reload link — next poll retries
+                        }
+                        showSpontaneousCustomers(true);
+                    }
+                    return false;
+                });
+    }
+
     public void isCustomerVisibleInParkingTableByNumber(String number) {
         String numOnly = number == null ? "" : number.replaceAll("\\D+", "");
         ScenarioLogManager.getLogger().info("Checking parked list by Nr. (" + numOnly + ")...");
@@ -618,8 +662,21 @@ public class CounterProcessingStationPage extends AdminPage {
     }
 
     public boolean hasBookAppointmentButton() {
-        List<WebElement> buttons = DRIVER.findElements(By.cssSelector("button.process-reserve"));
-        return !buttons.isEmpty() && buttons.get(0).isDisplayed();
+        // Edge rebuilds the appointment form under us; a found button can go stale before isDisplayed.
+        for (int attempt = 0; attempt < 5; attempt++) {
+            try {
+                List<WebElement> buttons = DRIVER.findElements(By.cssSelector("button.process-reserve"));
+                for (WebElement button : buttons) {
+                    if (button.isDisplayed()) {
+                        return true;
+                    }
+                }
+                return false;
+            } catch (StaleElementReferenceException ignored) {
+                // retry with a fresh find
+            }
+        }
+        return false;
     }
 
     public void selectWalkInCustomer() {
@@ -824,6 +881,20 @@ public class CounterProcessingStationPage extends AdminPage {
         TestDataHelper.setTestData("new_appointment_customer_email", email);
     }
 
+    /** ZMSKVR-1396 / ZMSKVR-1687: appointment form E-Mail must expose browser autofill hints. */
+    public void assertNewAppointmentEmailFieldSupportsAutofill() {
+        ScenarioLogManager.getLogger().info("Asserting new-appointment email input type and autocomplete");
+        WebElement emailField = findElementByLocatorType("email", LocatorType.NAME, true);
+        Assert.assertEquals(
+                emailField.getAttribute("type"),
+                "email",
+                "Appointment E-Mail field must use type=\"email\"");
+        Assert.assertEquals(
+                emailField.getAttribute("autocomplete"),
+                "email",
+                "Appointment E-Mail field must use autocomplete=\"email\"");
+    }
+
     public void enterNoteInNewAppointmentTextField(String note) {
         ScenarioLogManager.getLogger().info("Trying to enter note \"" + note + "\" in new appointment text area...");
         WebElement newAppointmentNoteTextArea = findElementByLocatorType("amendment", LocatorType.NAME, true);
@@ -902,15 +973,16 @@ public class CounterProcessingStationPage extends AdminPage {
         CONTEXT.waitForSpinners();
     
         WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME * 2L));
+        // Cap each Termin-buchen poll so a vanished slot can reselect instead of burning 120s.
+        WebDriverWait bookButtonWait = new WebDriverWait(DRIVER, Duration.ofSeconds(20));
         AtomicReference<String> newAppointmentNumber = new AtomicReference<>("");
         AtomicBoolean validationErrorsVisible = new AtomicBoolean(false);
         Set<String> skippedTimes = new HashSet<>();
         final int maxBookingAttempts = 6;
-        boolean bookingAttempted = false;
         fillCustomTextfieldsForSpontaneousCustomerIfNeeded();
     
         for (int attempt = 1; attempt <= maxBookingAttempts; attempt++) {
-            if (attempt > 1 && bookingAttempted) {
+            if (attempt > 1) {
                 String previousTime = TestDataHelper.getTestData("new_appointment_time");
                 if (previousTime != null && !previousTime.isBlank()) {
                     skippedTimes.add(previousTime);
@@ -920,15 +992,22 @@ public class CounterProcessingStationPage extends AdminPage {
                                 + attempt + "/" + maxBookingAttempts + ")...");
                 CONTEXT.waitForSpinners();
                 selectTimeInNewAppointmentDropDownList("<nächste>", skippedTimes);
+                fillCustomTextfieldsForSpontaneousCustomerIfNeeded();
             }
     
-            WebElement bookButton = waitForBookAppointmentButton(wait);
+            WebElement bookButton;
+            try {
+                bookButton = waitForBookAppointmentButton(bookButtonWait);
+            } catch (TimeoutException e) {
+                ScenarioLogManager.getLogger().warn(
+                        "Termin buchen not ready (attempt " + attempt + "/" + maxBookingAttempts
+                                + "); will try another slot.");
+                continue;
+            }
     
-            bookingAttempted = false;
             try {
                 ((JavascriptExecutor) DRIVER).executeScript("arguments[0].scrollIntoView({block:'center'});", bookButton);
                 ((JavascriptExecutor) DRIVER).executeScript("arguments[0].click();", bookButton);
-                bookingAttempted = true;
             } catch (StaleElementReferenceException | ElementClickInterceptedException | TimeoutException e) {
                 ScenarioLogManager.getLogger().warn(
                         "Book click did not complete (attempt " + attempt + "/" + maxBookingAttempts + ").");
@@ -1642,6 +1721,114 @@ public class CounterProcessingStationPage extends AdminPage {
                 TestDataHelper.setTestData("new_appointment_iso_date", iso);
             }
         }
+    }
+
+    /**
+     * Opens the queue envelope dialog for a Terminkunde row matched by family name.
+     * Subject defaults use {@code process.displayNumber} (prefix scopes and plain process id).
+     */
+    public void openCustomMailForQueuedCustomer(String familyName) {
+        CONTEXT.set();
+        CONTEXT.waitForSpinners();
+        ScenarioLogManager.getLogger().info("Opening queue custom-mail dialog for {}", familyName);
+        String mailLink = "//table[@id='table-queued-appointments']//tr["
+                + "td[contains(@class,'callnextclient') and normalize-space(.)='" + familyName + "']]"
+                + "//a[contains(@class,'process-custom-mail-send')]";
+        clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, mailLink, LocatorType.XPATH, false, CONTEXT);
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(
+                By.cssSelector(".dialog form[name='mail'] input[name='subject']")));
+    }
+
+    public String getCustomMailSubject() {
+        WebElement subject = findElementByLocatorType(
+                ".dialog form[name='mail'] input[name='subject']", LocatorType.CSSSELECTOR, false);
+        return subject.getAttribute("value");
+    }
+
+    public void assertCustomMailSubjectContainsDisplayNumber() {
+        String displayNumber = TestDataHelper.getTestData("new_appointment_number");
+        Assert.assertNotNull(displayNumber, "new_appointment_number was not set after booking");
+        Assert.assertFalse(displayNumber.isBlank(), "new_appointment_number is blank");
+        String subject = getCustomMailSubject();
+        ScenarioLogManager.getLogger().info(
+                "Custom-mail subject=\"{}\" expected displayNumber=\"{}\"", subject, displayNumber);
+        Assert.assertTrue(
+                subject.contains(displayNumber),
+                "Mail subject must contain display number " + displayNumber + ", was: " + subject);
+        Assert.assertFalse(
+                subject.matches("(?s).*\\b(Termin|Wartenummer)\\s+0\\b.*"),
+                "Mail subject must not fall back to display number 0, was: " + subject);
+        Assert.assertTrue(
+                subject.startsWith("Information zu Ihrem Termin " + displayNumber + " am ")
+                        || subject.startsWith("Information zu Ihrer Wartenummer " + displayNumber + " am "),
+                "Mail subject must lead with the appointment/waiting number, was: " + subject);
+    }
+
+    public void setCustomMailSubject(String subject) {
+        WebElement field = findElementByLocatorType(
+                ".dialog form[name='mail'] input[name='subject']", LocatorType.CSSSELECTOR, false);
+        field.click();
+        field.clear();
+        if (subject != null && !subject.isEmpty()) {
+            field.sendKeys(subject);
+        }
+        Assert.assertEquals(
+                field.getAttribute("value"),
+                subject == null ? "" : subject,
+                "Setting custom-mail subject failed");
+    }
+
+    public void submitCustomMailForm() {
+        ScenarioLogManager.getLogger().info("Submitting queue custom-mail form");
+        clickOnWebElement(
+                DEFAULT_EXPLICIT_WAIT_TIME,
+                ".dialog form[name='mail'] button.button-submit",
+                LocatorType.CSSSELECTOR,
+                false,
+                CONTEXT);
+        CONTEXT.waitForSpinners();
+    }
+
+    public void assertCustomMailFormError(String expectedMessage) {
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        WebElement error = wait.until(ExpectedConditions.visibilityOfElementLocated(
+                By.xpath("//div[contains(@class,'dialog')]//div[contains(@class,'message--error')]"
+                        + "[contains(.,'" + expectedMessage + "')]")));
+        Assert.assertTrue(
+                error.isDisplayed(),
+                "Expected custom-mail form error: " + expectedMessage);
+    }
+
+    public void assertCustomMailSentSuccess() {
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        WebElement heading = wait.until(ExpectedConditions.visibilityOfElementLocated(
+                By.xpath("//*[contains(@class,'message__heading') and contains(.,'E-Mail versendet')]")));
+        Assert.assertTrue(heading.isDisplayed(), "Custom-mail success heading missing");
+        WebElement body = wait.until(ExpectedConditions.visibilityOfElementLocated(
+                By.xpath("//*[contains(@class,'message__body')]"
+                        + "[contains(.,'Der Versand der E-Mail war erfolgreich.')]")));
+        Assert.assertTrue(body.isDisplayed(), "Custom-mail success body missing");
+        clickOnWebElement(
+                DEFAULT_EXPLICIT_WAIT_TIME,
+                "//*[contains(@class,'message--success')]//button[contains(@class,'button-ok')]",
+                LocatorType.XPATH,
+                false,
+                CONTEXT);
+        wait.until(ExpectedConditions.invisibilityOf(heading));
+    }
+
+    public void closeCustomMailDialog() {
+        ScenarioLogManager.getLogger().info("Closing queue custom-mail dialog");
+        clickOnWebElement(
+                DEFAULT_EXPLICIT_WAIT_TIME,
+                ".dialog form[name='mail'] button.button-abort",
+                LocatorType.CSSSELECTOR,
+                false,
+                CONTEXT);
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        wait.until(ExpectedConditions.invisibilityOfElementLocated(
+                By.cssSelector(".dialog form[name='mail']")));
     }
 
 }

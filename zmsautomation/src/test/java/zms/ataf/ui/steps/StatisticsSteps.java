@@ -199,6 +199,16 @@ public class StatisticsSteps {
         STATISTICS_PAGE.clickOnCurrentMonthName();
     }
 
+    @When("I select the current year in the statistics.")
+    public void iSelectTheCurrentYearInTheStatistics() {
+        STATISTICS_PAGE.clickOnCurrentYear();
+    }
+
+    @Then("the capacity statistics year sum row shows the selected year.")
+    public void theCapacityStatisticsYearSumRowShowsTheSelectedYear() {
+        CAPACITY_STATISTICS_PAGE.assertYearSumRowShowsSelectedYear();
+    }
+
     @Then("the statistics page {string} is displayed.")
     public void wird_die_statistik_seite_angezeigt(String pageName) {
         STATISTICS_PAGE.checkIfStatisticsPageIsOpen(pageName);
@@ -247,6 +257,29 @@ public class StatisticsSteps {
     @When("I click the download button in the statistics.")
     public void wenn_sie_in_der_statistik_auf_den_download_button_klicken() {
         SERVICE_STATISTICS_PAGE.clickDownloadButton();
+    }
+
+    @When("I filter the citizen statistics across the last December to January boundary.")
+    public void iFilterTheCitizenStatisticsAcrossTheLastDecemberToJanuaryBoundary() {
+        LocalDate today = BerlinTime.today();
+        LocalDate from = LocalDate.of(today.getYear() - 1, 12, 20);
+        LocalDate to = LocalDate.of(today.getYear(), 1, 10);
+        STATISTICS_PAGE.applyDateRangeFilter(from, to);
+    }
+
+    @Then("the citizen statistics list each calendar day at most once.")
+    public void theCitizenStatisticsListEachCalendarDayAtMostOnce() {
+        CUSTOMER_STATISTICS_PAGE.assertEachCalendarDayAtMostOnce();
+    }
+
+    @When("I click the download button in the citizen statistics.")
+    public void iClickTheDownloadButtonInTheCitizenStatistics() {
+        CUSTOMER_STATISTICS_PAGE.clickCitizenStatisticDownload();
+    }
+
+    @Then("the downloaded citizen statistics list each calendar day at most once.")
+    public void theDownloadedCitizenStatisticsListEachCalendarDayAtMostOnce() throws Exception {
+        CUSTOMER_STATISTICS_PAGE.assertDownloadedEachCalendarDayAtMostOnce();
     }
 
     @Then("the citizen statistics are downloaded.")

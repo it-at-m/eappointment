@@ -85,6 +85,7 @@ class OfficesServicesRelationsControllerTest extends ControllerTestCase
                         "customTextfield2Required" => false,
                         "customTextfield2Label" => "Second Custom Label",
                         "captchaActivatedRequired" => false,
+                        "rebookingDisabled" => false,
                         "infoForAppointment" => null,
                         "infoForAllAppointments" => null,
                         "slotsPerAppointment" => null,
@@ -145,6 +146,7 @@ class OfficesServicesRelationsControllerTest extends ControllerTestCase
                         "customTextfield2Required" => true,
                         "customTextfield2Label" => "",
                         "captchaActivatedRequired" => false,
+                        "rebookingDisabled" => false,
                         "infoForAppointment" => null,
                         "infoForAllAppointments" => null,
                         "slotsPerAppointment" => null,
@@ -170,6 +172,7 @@ class OfficesServicesRelationsControllerTest extends ControllerTestCase
                     "variantId" => null,
                     "rootParentId" => 1,
                     "showOnStartPage" => true,
+                    "variantOverwrite" => null
                 ]
             ],
             "relations" => [
@@ -265,6 +268,7 @@ class OfficesServicesRelationsControllerTest extends ControllerTestCase
                         "customTextfield2Required" => false,
                         "customTextfield2Label" => "Second Custom Label",
                         "captchaActivatedRequired" => false,
+                        "rebookingDisabled" => false,
                         "infoForAppointment" => null,
                         "infoForAllAppointments" => null,
                         "slotsPerAppointment" => null,
@@ -325,6 +329,7 @@ class OfficesServicesRelationsControllerTest extends ControllerTestCase
                         "customTextfield2Required" => true,
                         "customTextfield2Label" => "",
                         "captchaActivatedRequired" => false,
+                        "rebookingDisabled" => false,
                         "infoForAppointment" => null,
                         "infoForAllAppointments" => null,
                         "slotsPerAppointment" => null,
@@ -349,7 +354,8 @@ class OfficesServicesRelationsControllerTest extends ControllerTestCase
                     "parentId" => null,
                     "variantId" => null,
                     "rootParentId" => 1,
-                    "showOnStartPage" => true
+                    "showOnStartPage" => true,
+                    "variantOverwrite" => null
                 ],
                 [
                     "id" => 2,
@@ -362,7 +368,8 @@ class OfficesServicesRelationsControllerTest extends ControllerTestCase
                     "parentId" => null,
                     "variantId" => null,
                     "rootParentId" => 2,
-                    "showOnStartPage" => true
+                    "showOnStartPage" => true,
+                    "variantOverwrite" => null
                 ]
             ],
             "relations" => [

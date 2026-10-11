@@ -302,6 +302,35 @@ describe("ServiceFinder", () => {
     //   await nextTick();
     //   expect(service.count).toBe(2);
     // });
+
+    it("keeps spa from selected providers before offices reload on remount", async () => {
+      // Mimic stepper back: ServiceFinder remounts with selectedService still at
+      // qty 2 while offices/relations fetch has not finished (spa must not fall
+      // back to MAX_SLOTS=25 or plus would enable again).
+      vi.mocked(fetch).mockReturnValueOnce(new Promise(() => {}) as Promise<Response>);
+      const service = {
+        id: "1064268",
+        name: "Ausfuhrkennzeichen",
+        maxQuantity: 3,
+        count: 2,
+        providers: [
+          {
+            id: "10416",
+            name: "KfZ Zulassungsstelle",
+            slots: 3,
+            slotsPerAppointment: "8",
+            slotTimeInMinutes: 5,
+          },
+        ],
+        subServices: [],
+        combinable: null,
+      };
+      const wrapper = createWrapper(service);
+      await nextTick();
+      const counter = wrapper.findComponent({ name: "muc-counter" });
+      // min(maxQuantity 3, floor(8/3))=2 — not floor(25/3)=8 capped by maxQuantity 3
+      expect(counter.props("max")).toBe(2);
+    });
   });
 
   describe("Next Step", () => {
@@ -1238,6 +1267,22 @@ describe("ServiceFinder", () => {
         object: "service_combination",
         action: "view",
       });
+    });
+  });
+
+  describe("ZMSKVR-1088 subservice selection order", () => {
+    it("keeps list order and records click order separately", async () => {
+      const service = makeService(6);
+      const wrapper = createWrapper(service);
+      await nextTick();
+
+      const idsBefore = service.subServices!.map((s: any) => s.id);
+      wrapper.vm.changeAppointmentCountOfSubservice("sub-5", 1);
+      wrapper.vm.changeAppointmentCountOfSubservice("sub-1", 1);
+      await nextTick();
+
+      expect(service.subServices!.map((s: any) => s.id)).toEqual(idsBefore);
+      expect(service.subServiceSelectionOrder).toEqual(["sub-5", "sub-1"]);
     });
   });
 });
