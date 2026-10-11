@@ -1,8 +1,9 @@
 import { mount } from "@vue/test-utils";
-import { describe, expect, it, beforeEach } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import { nextTick, ref } from "vue";
 
 import AppointmentSummary from "@/components/Appointment/AppointmentSummary.vue";
+import de from "@/utils/de-DE.json";
 
 describe("AppointmentSummary", () => {
   let mockSelectedService: any;
@@ -54,17 +55,29 @@ describe("AppointmentSummary", () => {
     mockReservationStartMs = ref<number | null>(Date.now());
   });
 
-  const createWrapper = (props: Partial<{
-    appointmentAlreadyActivated?: boolean;
-    isRebooking: boolean;
-    rebookOrCancelDialog: boolean;
-  }> = {}) => {
+  const createWrapper = (
+    props: Partial<{
+      appointmentAlreadyActivated?: boolean;
+      isRebooking: boolean;
+      rebookOrCancelDialog: boolean;
+    }> = {}
+  ) => {
     return mount(AppointmentSummary, {
       props: {
         appointmentAlreadyActivated: false,
         isRebooking: false,
         rebookOrCancelDialog: false,
-        t: (key: string) => key,
+        t: (key: string) => {
+          const [, id, field] = key.split(".");
+          if (key.startsWith("variants.")) {
+            const variant = de.variants[id as keyof typeof de.variants] as {
+              name: string;
+              hint?: string;
+            };
+            return variant?.[field as "name" | "hint"] ?? key;
+          }
+          return key;
+        },
         ...props,
       },
       global: {
@@ -81,13 +94,13 @@ describe("AppointmentSummary", () => {
           },
           serviceLinkProvider: {
             serviceLinkId: ref<string | null>(null),
-            updateServiceLinkId: () => { },
+            updateServiceLinkId: () => {},
           },
         },
         stubs: {
           "muc-button": {
             template:
-              '<button class="muc-button" :data-icon="icon" :disabled="disabled" @click="$emit(\'click\')"><slot /></button>',
+              '<button class="muc-button" :data-icon="icon" :data-variant="variant" :disabled="disabled" @click="$emit(\'click\')"><slot /></button>',
             props: ["icon", "iconShownLeft", "variant", "disabled"],
           },
           "muc-banner": {
@@ -97,7 +110,7 @@ describe("AppointmentSummary", () => {
           },
           "muc-callout": {
             template:
-              '<div class="muc-callout"><div class="header"><slot name="header" /></div><div class="content"><slot name="content" /></div></div>',
+              '<div class="muc-callout"><div class="header"><slot name="header" /></div><div class="content"><slot name="content" /><slot name="buttons" /></div></div>',
             props: ["type"],
           },
         },
@@ -106,7 +119,9 @@ describe("AppointmentSummary", () => {
   };
 
   const findButtonByIcon = (wrapper: any, icon: string) =>
-    wrapper.findAll(".muc-button").find((b: any) => b.attributes("data-icon") === icon);
+    wrapper
+      .findAll(".muc-button")
+      .find((b: any) => b.attributes("data-icon") === icon);
 
   describe("Rendering", () => {
     it("renders service information correctly", () => {
@@ -156,7 +171,8 @@ describe("AppointmentSummary", () => {
         minute: "numeric",
         hour12: false,
       });
-      const expectedDate = formatterDate.format(date) + ", " + formatterTime.format(date);
+      const expectedDate =
+        formatterDate.format(date) + ", " + formatterTime.format(date);
       expect(wrapper.text()).toContain(expectedDate);
     });
 
@@ -180,7 +196,9 @@ describe("AppointmentSummary", () => {
 
     it("enables preconfirm button when electronic communication checkbox is checked", async () => {
       const wrapper = createWrapper();
-      const communicationCheckbox = wrapper.find('input[name="checkbox-electronic-communication"]');
+      const communicationCheckbox = wrapper.find(
+        'input[name="checkbox-electronic-communication"]'
+      );
       await communicationCheckbox.trigger("click");
       await nextTick();
       const bookButton = findButtonByIcon(wrapper, "check");
@@ -190,7 +208,9 @@ describe("AppointmentSummary", () => {
 
     it("disables preconfirm button when checkbox is unchecked after it was checked", async () => {
       const wrapper = createWrapper();
-      const communicationCheckbox = wrapper.find('input[name="checkbox-electronic-communication"]');
+      const communicationCheckbox = wrapper.find(
+        'input[name="checkbox-electronic-communication"]'
+      );
       await communicationCheckbox.trigger("click");
       await nextTick();
       let bookButton = findButtonByIcon(wrapper, "check");
@@ -204,16 +224,31 @@ describe("AppointmentSummary", () => {
 
     it("renders privacy text and electronic communication checkbox", () => {
       const wrapper = createWrapper();
-      const communicationCheckbox = wrapper.find('input[name="checkbox-electronic-communication"]');
+      const communicationCheckbox = wrapper.find(
+        'input[name="checkbox-electronic-communication"]'
+      );
       expect(wrapper.text()).toContain("privacyText");
       expect(wrapper.text()).not.toContain("privacyVideoConsultationText");
-      expect(wrapper.text()).not.toContain("termsOfUseForVideoConsultationLabel");
-      expect(wrapper.text()).not.toContain("termsOfUseForVideoConsultationText");
-      expect(wrapper.find('input[name="checkbox-privacy-policy"]').exists()).toBe(false);
+      expect(wrapper.find("h4.m-checkbox-group__heading").exists()).toBe(true);
+      expect(wrapper.text()).not.toContain(
+        "termsOfUseForVideoConsultationLabel"
+      );
+      expect(wrapper.text()).not.toContain(
+        "termsOfUseForVideoConsultationText"
+      );
+      expect(
+        wrapper.find('input[name="checkbox-privacy-policy"]').exists()
+      ).toBe(false);
       expect(communicationCheckbox.exists()).toBe(true);
-      expect(wrapper.find('label[for="checkbox-electronic-communication"]').exists()).toBe(true);
-      expect(wrapper.find('input[name="checkbox-video-consultation"]').exists()).toBe(false);
-      expect(wrapper.find('label[for="checkbox-video-consultation"]').exists()).toBe(false);
+      expect(
+        wrapper.find('label[for="checkbox-electronic-communication"]').exists()
+      ).toBe(true);
+      expect(
+        wrapper.find('input[name="checkbox-video-consultation"]').exists()
+      ).toBe(false);
+      expect(
+        wrapper.find('label[for="checkbox-video-consultation"]').exists()
+      ).toBe(false);
     });
 
     it("renders additional video consultation privacy and terms only for video appointments", async () => {
@@ -224,15 +259,23 @@ describe("AppointmentSummary", () => {
       expect(wrapper.text()).toContain("privacyVideoConsultationText");
       expect(wrapper.text()).toContain("termsOfUseForVideoConsultationLabel");
       expect(wrapper.text()).toContain("termsOfUseForVideoConsultationText");
-      expect(wrapper.find('input[name="checkbox-electronic-communication"]').exists()).toBe(true);
-      expect(wrapper.find('input[name="checkbox-video-consultation"]').exists()).toBe(true);
-      expect(wrapper.find('label[for="checkbox-video-consultation"]').exists()).toBe(true);
+      expect(
+        wrapper.find('input[name="checkbox-electronic-communication"]').exists()
+      ).toBe(true);
+      expect(
+        wrapper.find('input[name="checkbox-video-consultation"]').exists()
+      ).toBe(true);
+      expect(
+        wrapper.find('label[for="checkbox-video-consultation"]').exists()
+      ).toBe(true);
     });
 
     it("keeps preconfirm button disabled for video appointments when only electronic communication is checked", async () => {
       mockSelectedService.value.variantId = 3;
       const wrapper = createWrapper();
-      const communicationCheckbox = wrapper.find('input[name="checkbox-electronic-communication"]');
+      const communicationCheckbox = wrapper.find(
+        'input[name="checkbox-electronic-communication"]'
+      );
       await communicationCheckbox.trigger("click");
       await nextTick();
       const bookButton = findButtonByIcon(wrapper, "check");
@@ -243,8 +286,12 @@ describe("AppointmentSummary", () => {
     it("enables preconfirm button for video appointments only when both required checkboxes are checked", async () => {
       mockSelectedService.value.variantId = 3;
       const wrapper = createWrapper();
-      const communicationCheckbox = wrapper.find('input[name="checkbox-electronic-communication"]');
-      const videoConsultationCheckbox = wrapper.find('input[name="checkbox-video-consultation"]');
+      const communicationCheckbox = wrapper.find(
+        'input[name="checkbox-electronic-communication"]'
+      );
+      const videoConsultationCheckbox = wrapper.find(
+        'input[name="checkbox-video-consultation"]'
+      );
       await communicationCheckbox.trigger("click");
       await videoConsultationCheckbox.trigger("click");
       await nextTick();
@@ -256,8 +303,12 @@ describe("AppointmentSummary", () => {
     it("disables preconfirm button for video appointments when video consultation checkbox is unchecked again", async () => {
       mockSelectedService.value.variantId = 3;
       const wrapper = createWrapper();
-      const communicationCheckbox = wrapper.find('input[name="checkbox-electronic-communication"]');
-      const videoConsultationCheckbox = wrapper.find('input[name="checkbox-video-consultation"]');
+      const communicationCheckbox = wrapper.find(
+        'input[name="checkbox-electronic-communication"]'
+      );
+      const videoConsultationCheckbox = wrapper.find(
+        'input[name="checkbox-video-consultation"]'
+      );
       await communicationCheckbox.trigger("click");
       await videoConsultationCheckbox.trigger("click");
       await nextTick();
@@ -272,7 +323,9 @@ describe("AppointmentSummary", () => {
 
     it("does not show consent checkbox in rebookOrCancelDialog mode", () => {
       const wrapper = createWrapper({ rebookOrCancelDialog: true });
-      const communicationCheckbox = wrapper.find('input[name="checkbox-electronic-communication"]');
+      const communicationCheckbox = wrapper.find(
+        'input[name="checkbox-electronic-communication"]'
+      );
       expect(communicationCheckbox.exists()).toBe(false);
     });
   });
@@ -288,7 +341,9 @@ describe("AppointmentSummary", () => {
 
     it("emits bookAppointment when preconfirm button is clicked", async () => {
       const wrapper = createWrapper();
-      await wrapper.find('input[name="checkbox-electronic-communication"]').trigger("click");
+      await wrapper
+        .find('input[name="checkbox-electronic-communication"]')
+        .trigger("click");
       await nextTick();
       const book = findButtonByIcon(wrapper, "check");
       expect(book).toBeTruthy();
@@ -302,6 +357,22 @@ describe("AppointmentSummary", () => {
       const wrapper = createWrapper({ rebookOrCancelDialog: true });
       expect(findButtonByIcon(wrapper, "arrow-right")).toBeTruthy();
       expect(findButtonByIcon(wrapper, "close")).toBeTruthy();
+    });
+
+    it("hides reschedule and keeps cancel when rebooking is disabled", () => {
+      mockAppointment.value.scope.rebookingDisabled = true;
+      const wrapper = createWrapper({ rebookOrCancelDialog: true });
+      expect(findButtonByIcon(wrapper, "arrow-right")).toBeFalsy();
+      const cancel = findButtonByIcon(wrapper, "close");
+      expect(cancel).toBeTruthy();
+      expect(cancel!.attributes("data-variant")).toBe("primary");
+    });
+
+    it("keeps cancel secondary when reschedule is shown", () => {
+      const wrapper = createWrapper({ rebookOrCancelDialog: true });
+      const cancel = findButtonByIcon(wrapper, "close");
+      expect(cancel).toBeTruthy();
+      expect(cancel!.attributes("data-variant")).toBe("secondary");
     });
 
     it("emits rescheduleAppointment when reschedule is clicked", async () => {
@@ -330,7 +401,9 @@ describe("AppointmentSummary", () => {
       const wrapper = createWrapper({ isRebooking: true });
 
       // validForm fulfilled (both consents set)
-      const comm = wrapper.find('input[name="checkbox-electronic-communication"]');
+      const comm = wrapper.find(
+        'input[name="checkbox-electronic-communication"]'
+      );
       await comm.trigger("click");
       await nextTick();
 
@@ -366,7 +439,9 @@ describe("AppointmentSummary", () => {
 
     it("book button enables/disables on valid form and loading", async () => {
       const wrapper = createWrapper();
-      await wrapper.find('input[name="checkbox-electronic-communication"]').trigger("click");
+      await wrapper
+        .find('input[name="checkbox-electronic-communication"]')
+        .trigger("click");
       await nextTick();
       let book = findButtonByIcon(wrapper, "check");
       expect(book!.attributes("disabled")).toBeUndefined(); // enabled
@@ -393,15 +468,21 @@ describe("AppointmentSummary", () => {
       await nextTick();
 
       // message visible
-      expect(wrapper.text()).toContain("apiErrorSessionTimeoutHeader");
-      expect(wrapper.text()).toContain("apiErrorSessionTimeoutText");
+      expect(wrapper.text()).toContain(
+        "apiErrorProcessNotReservedAnymoreHeader"
+      );
+      expect(wrapper.text()).toContain("apiErrorProcessNotReservedAnymoreText");
+      expect(wrapper.text()).toContain("restartBooking");
 
       // main content not visible
       expect(wrapper.find(".m-component").exists()).toBe(false);
 
-      // only back-button visible
+      // restart stays in the callout, back is hidden
       const anyButtons = wrapper.findAll(".muc-button");
       expect(anyButtons.length).toBe(1);
+      expect(wrapper.text()).not.toContain("back");
+      wrapper.vm.restartBooking();
+      expect(wrapper.emitted("restartBooking")).toHaveLength(1);
     });
 
     it("hides already-activated banner when the reservation session expired", async () => {
@@ -411,9 +492,13 @@ describe("AppointmentSummary", () => {
       const wrapper = createWrapper({ appointmentAlreadyActivated: true });
       await nextTick();
 
-      expect(wrapper.text()).toContain("apiErrorSessionTimeoutHeader");
+      expect(wrapper.text()).toContain(
+        "apiErrorProcessNotReservedAnymoreHeader"
+      );
       expect(
-        wrapper.find('[data-test="appointment-already-activated-banner"]').exists()
+        wrapper
+          .find('[data-test="appointment-already-activated-banner"]')
+          .exists()
       ).toBe(false);
       expect(wrapper.text()).not.toContain("appointmentAlreadyActivatedHeader");
     });
@@ -424,7 +509,9 @@ describe("AppointmentSummary", () => {
       const wrapper = createWrapper({ appointmentAlreadyActivated: true });
 
       expect(
-        wrapper.find('[data-test="appointment-already-activated-banner"]').exists()
+        wrapper
+          .find('[data-test="appointment-already-activated-banner"]')
+          .exists()
       ).toBe(true);
       expect(wrapper.text()).toContain("appointmentAlreadyActivatedHeader");
     });
@@ -436,20 +523,34 @@ describe("AppointmentSummary", () => {
       });
 
       expect(
-        wrapper.find('[data-test="appointment-already-activated-banner"]').exists()
+        wrapper
+          .find('[data-test="appointment-already-activated-banner"]')
+          .exists()
       ).toBe(false);
     });
   });
 
   describe("Location variants", () => {
+    it("shows a custom name and hint for a variant without a standard hint", () => {
+      mockSelectedService.value.variantId = 4;
+      mockSelectedService.value.variantOverwrite = {
+        de: { name: "Einzeltermin", hint: "Unterlagen mitbringen" },
+      };
+
+      const wrapper = createWrapper();
+      expect(wrapper.text()).toContain("Einzeltermin");
+      expect(wrapper.text()).toContain("Unterlagen mitbringen");
+      expect(wrapper.text()).not.toContain(de.variants["4"].name);
+    });
+
     it("should show address/hint and base text when no variant is set (variantId null)", () => {
       const wrapper = createWrapper();
 
       expect(wrapper.text()).toContain("Test Street 123");
       expect(wrapper.text()).toContain("12345 Test City");
       expect(wrapper.text()).toContain("Test Info Scope");
-      expect(wrapper.text()).not.toContain("appointmentTypes.1");
-      expect(wrapper.text()).not.toContain("locationVariantText.1");
+      expect(wrapper.text()).not.toContain(de.variants["1"].name);
+      expect(wrapper.text()).not.toContain(de.variants["1"].hint);
     });
 
     it("should show address/hint and base text for variant 1", async () => {
@@ -461,8 +562,8 @@ describe("AppointmentSummary", () => {
       expect(wrapper.text()).toContain("12345 Test City");
       expect(wrapper.text()).toContain("Test Info Scope");
 
-      expect(wrapper.text()).toContain("appointmentTypes.1");
-      expect(wrapper.text()).toContain("locationVariantText.1");
+      expect(wrapper.text()).toContain(de.variants["1"].name);
+      expect(wrapper.text()).toContain(de.variants["1"].hint);
     });
 
     it("should hide address/hint and show variant text for variant 2", async () => {
@@ -475,14 +576,14 @@ describe("AppointmentSummary", () => {
 
       const borderBlocks = wrapper.findAll(".m-content.border-bottom");
       const locationBlock = borderBlocks.find(b =>
-        b.text().includes("appointmentTypes.2")
+        b.text().includes(de.variants["2"].name)
       );
       expect(locationBlock).toBeTruthy();
 
       expect(locationBlock!.text()).not.toContain("Test Info Scope");
 
-      expect(wrapper.text()).toContain("appointmentTypes.2");
-      expect(wrapper.text()).toContain("locationVariantText.2");
+      expect(wrapper.text()).toContain(de.variants["2"].name);
+      expect(wrapper.text()).toContain(de.variants["2"].hint);
     });
 
     it.each([4, 5, 6, 7])(
@@ -500,10 +601,10 @@ describe("AppointmentSummary", () => {
     );
 
     it.each([
-      [4, "appointmentTypes.4"],
-      [5, "appointmentTypes.5"],
-      [6, "appointmentTypes.1"],
-      [7, "appointmentTypes.1"],
+      [4, de.variants["4"].name],
+      [5, de.variants["5"].name],
+      [6, de.variants["6"].name],
+      [7, de.variants["7"].name],
     ])(
       "should show the correct appointment type label for variant %i",
       async (variantId, expectedAppointmentTypeLabel) => {
@@ -522,8 +623,8 @@ describe("AppointmentSummary", () => {
       await nextTick();
 
       expect(wrapper.text()).not.toContain("Test Street 123");
-      expect(wrapper.text()).toContain("appointmentTypes.3");
-      expect(wrapper.text()).toContain("locationVariantText.3");
+      expect(wrapper.text()).toContain(de.variants["3"].name);
+      expect(wrapper.text()).toContain(de.variants["3"].hint);
     });
   });
 });

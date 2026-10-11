@@ -20,6 +20,7 @@ class Service extends Entity implements JsonSerializable
     public ?int $variantId = null;
     public ?int $rootParentId = null;
     public ?bool $showOnStartPage = null;
+    public ?array $variantOverwrite = null;
 
     public function __construct(
         int $id,
@@ -29,7 +30,8 @@ class Service extends Entity implements JsonSerializable
         ?int $parentId = null,
         ?int $variantId = null,
         ?bool $showOnStartPage = null,
-        ?int $rootParentId = null
+        ?int $rootParentId = null,
+        ?array $variantOverwrite = null
     ) {
         $this->id = $id;
         $this->name = $name;
@@ -39,6 +41,7 @@ class Service extends Entity implements JsonSerializable
         $this->variantId = $variantId;
         $this->showOnStartPage = $showOnStartPage;
         $this->rootParentId = $rootParentId ?? $id;
+        $this->variantOverwrite = $variantOverwrite;
         $this->ensureValid();
     }
 
@@ -54,7 +57,7 @@ class Service extends Entity implements JsonSerializable
 
     public function toArray(): array
     {
-        return [
+        $data = [
             'id' => $this->id,
             'name' => $this->name,
             'maxQuantity' => $this->maxQuantity,
@@ -62,8 +65,10 @@ class Service extends Entity implements JsonSerializable
             'parentId' => $this->parentId,
             'variantId' => $this->variantId,
             'rootParentId' => $this->rootParentId,
-            'showOnStartPage' => $this->showOnStartPage
+            'showOnStartPage' => $this->showOnStartPage,
+            'variantOverwrite' => $this->variantOverwrite
         ];
+        return $data;
     }
 
     #[\Override]

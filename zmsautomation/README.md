@@ -197,7 +197,8 @@ The ATAF tests automatically run Flyway migrations before executing tests. The m
   - `@zmsapi` - REST API tests (`features/rest/zmsapi/**`; served by `zmsbackend`)
   - `@zmscitizenapi` - Citizen API tests (`features/rest/zmscitizenapi/**`)
 - **UI tags**
-  - `@web` - All web UI tests
+  - `@web` - All web UI tests (starts Selenium; not a screen-size tag)
+  - `@mobile` - Phone viewport `390×844` after ATAF window setup; use with `@web` on zmscitizenview scenarios only. Workflow checkbox **viewport_mobile_only** runs `@mobile`.
   - `@zmsadmin` - Admin UI features (`features/ui/zmsadmin/**`)
   - `@zmsstatistic` - Statistik UI features (`features/ui/zmsstatistic/**`)
   - `@capacity` - Terminkapazität (`ui/zmsstatistic/capacity/`)
@@ -206,6 +207,7 @@ The ATAF tests automatically run Flyway migrations before executing tests. The m
   - `@zmscalldisplay` - Call display UI (`features/ui/zmscalldisplay/**`) and matching zmsbackend REST (`rest/zmsapi/calldisplay/`)
   - `@booking` - Booking / waiting-number flows (UI: `zmsadmin/booking`, `zmscitizenview/booking`, `zmsticketprinter/booking`; REST: `rest/zmsapi/booking/{frontend}/`, `rest/zmscitizenapi/booking/`)
   - `@rebooking` - Umbuchung / Weiterleiten (UI: `zmscitizenview/rebooking`, `zmsadmin/rebooking`; REST: `rest/zmscitizenapi/rebooking/`)
+  - `@callouts` - Booking restart callouts (UI: `zmscitizenview/callouts`)
   - `@user-administration` - Nutzer*innen (UI: `zmsadmin/user-administration`)
   - `@mail-templates` - Confirmation and reminder mail content (`rest/zmsapi/mail-templates/`)
   - `@citizen-login` - Bürger-Login (DBS) actor for logged-in citizen scenarios
@@ -219,7 +221,7 @@ The ATAF tests automatically run Flyway migrations before executing tests. The m
 - **Other**
   - `@smoke` - Smoke tests (critical path)
 
-`@executeLocally` is a UI-only tag (`@web` scenarios). Do not add it to pure REST scenarios (`@rest`), because they do not initialize Selenium/WebDriver.
+`@executeLocally` and `@mobile` are UI-only tags (`@web` scenarios). Do not add them to pure REST scenarios (`@rest`), because they do not initialize Selenium/WebDriver. Desktop citizenview scenarios omit `@mobile` and keep the ATAF default window (or set `1400×900` in an assertion).
 
 ## Feature Files
 
@@ -237,6 +239,7 @@ The ATAF tests automatically run Flyway migrations before executing tests. The m
 - `dldb-special-cases/zmskvr-1124_booking_ruppertstrasse_pass_calendar_jumpin_links_citizenapi.feature` - Ruppertstraße Citizen API booking (10502 / 10489 / 10492, jump-in)
 - `booking/zmskvr-955_zmskvr-965_logged_in_booking_no_activation_citizenapi.feature` - logged-in confirm without preconfirm / activation mail
 - `rebooking/zmskvr-353_rebooking_no_activation_citizenapi.feature` - guest rebooking confirm with original process, no second activation
+- `callouts/zmskvr-1440_zmskvr-1451_captcha_expiry_citizenapi.feature` - expired captcha token (`captchaExpired`) on the calendar and on reserve
 
 Additional REST features (availability, offices-and-services, etc.) may be added over time; this list reflects files currently present under `features/rest/`.
 
@@ -248,7 +251,11 @@ Additional REST features (availability, offices-and-services, etc.) may be added
 #### zmscitizenview UI (`ui/zmscitizenview/`)
 - `dldb-special-cases/zmskvr-1124_booking_ruppertstrasse_pass_calendar_jumpin_links.feature` - zmscitizenview Ruppertstraße UI booking (Kalenderansicht); Ort = checkbox list or single-provider teaser; slot wait until **MucSpinner** (`.m-spinner-container`) cleared after day load + timeslot in DOM; `#provider-*` on reserve, preconfirm, confirm
 - `booking/zmskvr-955_zmskvr-965_logged_in_booking_no_activation.feature` - Bürger-Login booking skips activation and shows the confirmation callout
+- `citizen-login/zmskvr-1342_zmskvr-1088_service_title_order.feature` - Meine Termine teaser/detail keep Wohnsitzanmeldung then combined passes in booking order
+- `booking/zmskvr-1305_zmskvr-1316_leistung_wechseln_clears_jumpin.feature` - Leistung wechseln after a service or service+location jump-in returns to the Service Finder without the jump-in hash
 - `rebooking/zmskvr-353_rebooking_no_activation.feature` - guest Umbuchung confirms immediately without a second activation
+- `callouts/zmskvr-444_zmskvr-596_zmskvr-1440_zmskvr-1451_zmskvr-1458_session_and_reservation_callouts.feature` - captcha session callout on Termin and reservation callout on Kontakt and Übersicht; rebooking restart returns to `#/appointment/{hash}` (office 10427)
+- `callouts/zmskvr-444_zmskvr-596_zmskvr-1448_zmskvr-1486_zmskvr-1498_captcha_callout_clears_after_restart.feature` - captcha session callout does not stick after Buchung neu starten and a fresh captcha (office 10427)
 
 #### Statistik UI (`ui/zmsstatistic/`)
 - Features for the Statistik web UI (Dienstleistungsstatistik, Kundenstatistik, CSV export, etc.)

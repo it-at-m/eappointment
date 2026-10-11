@@ -1,0 +1,35 @@
+package zms.ataf.ui.pages.citizenview.support;
+
+/**
+ * Mutable booking-slot selection state shared by Ort and Zeit steps.
+ */
+public final class SlotBookingState {
+
+    /** Last office chosen on the Ort step; used before slot grid screenshots. */
+    public int lastSlotBookingOfficeId = -1;
+
+    public String listHourLabel;
+    public String listHourBeforeMove;
+    public String calendarHourBeforeMove;
+    public int hiddenOfficeId = -1;
+    public int listAccordionCount;
+    public String openListHeading;
+    public String markedTimeslotId;
+    public String previousTimeslotId;
+
+    /**
+     * Epoch seconds of the reserved appointment (Meine Termine / ICS). Prefer the booking process
+     * timestamp after reserve — not the highlight id, which can drift one slot.
+     */
+    public Long rememberedAppointmentEpoch;
+
+    /** ATAF marker for the booked Ruppertstraße scope ({@code WB03} or {@code WB04}). */
+    public String rememberedWartezoneCode;
+
+    /**
+     * Concrete ATAF marker painted on Ausgewählter Termin (office-attached scope). Overview must
+     * match this after booking (ZMSKVR-1051).
+     */
+    public String rememberedCalloutWartezoneCode;
+}
+

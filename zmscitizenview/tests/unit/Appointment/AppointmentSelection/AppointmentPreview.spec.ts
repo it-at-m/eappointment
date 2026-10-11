@@ -56,8 +56,8 @@ describe("AppointmentPreview", () => {
   });
   it("displays appointment type for telephone and video variantId", () => {
     const variants = [
-      { id: 2, textKey: `appointmentTypes.${2}` },
-      { id: 3, textKey: `appointmentTypes.${3}` },
+      { id: 2, textKey: `variants.${2}.name` },
+      { id: 3, textKey: `variants.${3}.name` },
     ];
 
     variants.forEach((variant) => {

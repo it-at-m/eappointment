@@ -2,7 +2,7 @@ name: ⚙️ zmsautomation
 run-name: >-
   ${{
     github.event_name == 'schedule' && 'zmsautomation | ⏰ scheduled | UI × chrome+firefox+edge, API once | next'
-    || (github.event_name == 'workflow_dispatch' && inputs.run_main_next_matrix
+    || (github.event_name == 'workflow_dispatch' && inputs.run_next_matrix
         && format(
              'zmsautomation | ▶️ manual | full shard matrix | UI × chrome+firefox+edge, API once | next{0}{1}',
              inputs.ataf_version != '' && format(' | ATAF {0}', inputs.ataf_version) || '',
@@ -12,7 +12,7 @@ run-name: >-
          'zmsautomation | ▶️ manual | {0} | {1}{2}{3}{4}',
          github.ref_name,
          format('{0}{1}{2}', inputs.browser_chrome && '🌐 chrome' || '', inputs.browser_firefox && format('{0}🦊 firefox', inputs.browser_chrome && ' + ' || '') || '', inputs.browser_edge && format('{0}🪟 edge', (inputs.browser_chrome || inputs.browser_firefox) && ' + ' || '') || ''),
-         inputs.cucumber_tag_expressions != '' && format(' | {0}', inputs.cucumber_tag_expressions) || (inputs.use_custom_tags && ' | custom tags' || ''),
+         inputs.cucumber_tag_expressions != '' && format(' | {0}', inputs.cucumber_tag_expressions) || (inputs.use_custom_tags && ' | custom tags' || '') || (inputs.viewport_mobile_only && ' | 📱 @mobile' || ''),
          inputs.ataf_version != '' && format(' | ATAF {0}', inputs.ataf_version) || '',
          inputs.serial_scenarios && ' | serial scenarios' || ''
        )
@@ -21,7 +21,7 @@ run-name: >-
 on:
   workflow_dispatch:
     inputs:
-      run_main_next_matrix:
+      run_next_matrix:
         description: |
           Run the full scheduled shard matrix: next; UI modules (zmsadmin,
           zmscitizenview, zmsstatistic, zmsticketprinter, zmscalldisplay) on chrome + firefox + edge; API modules (zmsapi,
@@ -51,10 +51,18 @@ on:
         type: boolean
         default: true
       module_citizenview:
-        description: "Citizenview UI tests (@zmscitizenview)"
+        description: "Citizenview UI tests (@zmscitizenview), including @mobile"
         required: true
         type: boolean
         default: true
+      viewport_mobile_only:
+        description: |
+          📱 Run only @mobile UI scenarios (phone 390×844). Used by zmscitizenview.
+          Ignores module checkboxes and run_all_in_one_job (same idea as custom tags).
+          Ignored when cucumber_tag_expressions is set or use_custom_tags is enabled.
+        required: true
+        type: boolean
+        default: false
       module_statistic:
         description: "Statistic UI tests (@zmsstatistic)"
         required: true
@@ -100,10 +108,12 @@ on:
         default: both
       cucumber_tag_expressions:
         description: |
-          Optional. Newline-separated Cucumber tag expressions; each line runs sequentially.
-          If this field is set, only those tags run (module checkboxes are ignored).
-          @ignore is excluded automatically.
-          Examples: @ZMSKVR-833, @smoke
+          Optional. Cucumber tag expression(s). Newlines (or commas) join with OR into
+          one filter so the job runs Flyway/setup once. Module checkboxes are ignored
+          when this field is set. @ignore is excluded automatically.
+          Examples: @ZMSKVR-833
+                    @ZMSKVR-1083 or @ZMSKVR-1226
+                    @ZMSKVR-1440
         required: false
         default: ""
       browser_chrome:
@@ -167,7 +177,7 @@ jobs:
 
           FULL_MATRIX=false
           MATRIX_BRANCHES='["next"]'
-          if [[ "${{ github.event_name }}" == "schedule" || "${{ inputs.run_main_next_matrix }}" == "true" ]]; then
+          if [[ "${{ github.event_name }}" == "schedule" || "${{ inputs.run_next_matrix }}" == "true" ]]; then
             FULL_MATRIX=true
           fi
 
@@ -263,6 +273,27 @@ jobs:
                       ]
                     end
                   )
+                }
+                ' > matrix.json
+            elif [[ "${{ inputs.viewport_mobile_only }}" == "true" ]]; then
+              MOBILE_TAG_FILTER="$(append_not_ignore '@mobile')"
+              jq -n \
+                --arg branch "$BRANCH" \
+                --argjson browsers "$BROWSERS_JSON" \
+                --arg tag_filter "$MOBILE_TAG_FILTER" \
+                '
+                {
+                  include: [
+                    $browsers[] as $browser
+                    | {
+                        branch: $branch,
+                        browser: $browser,
+                        shard: "mobile",
+                        test_layer: "ui",
+                        tag_filter: $tag_filter,
+                        use_custom_tags: false
+                      }
+                  ]
                 }
                 ' > matrix.json
             elif [[ "${{ inputs.run_all_in_one_job }}" == "true" ]]; then
@@ -384,11 +415,14 @@ jobs:
         run: cp .devcontainer/.env.template .devcontainer/.env
 
       - name: Login to GitHub Container Registry
-        uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4
+        uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4
         with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          max_attempts: 5
+          retry_wait_seconds: 30
+          timeout_minutes: 5
+          command: |
+            echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io \
+              -u "${{ github.actor }}" --password-stdin
 
       - name: Compute image tags
         id: tags
@@ -814,10 +848,32 @@ jobs:
               TAG_LINES=("")
             else
               while IFS= read -r line; do
-                line="$(printf '%s' "$line" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
-                [[ -n "$line" ]] && TAG_LINES+=("$line")
+                line="$(printf '%s' "$line" | tr -d '\r' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
+                # Allow comma-separated tags on one line as well as newlines.
+                if [[ "$line" == *","* ]]; then
+                  IFS=',' read -r -a parts <<< "$line"
+                  for part in "${parts[@]}"; do
+                    part="$(printf '%s' "$part" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
+                    [[ -n "$part" ]] && TAG_LINES+=("$part")
+                  done
+                elif [[ -n "$line" ]]; then
+                  TAG_LINES+=("$line")
+                fi
               done <<< "$CUSTOM_SOURCE"
               [[ ${#TAG_LINES[@]} -eq 0 ]] && TAG_LINES=("")
+            fi
+            # One OR expression → one zmsautomation-test (Flyway/setup once).
+            if [[ ${#TAG_LINES[@]} -gt 1 ]]; then
+              combined=""
+              for part in "${TAG_LINES[@]}"; do
+                [[ -z "$part" ]] && continue
+                if [[ -z "$combined" ]]; then
+                  combined="$part"
+                else
+                  combined="$combined or $part"
+                fi
+              done
+              TAG_LINES=("$combined")
             fi
           else
             TAG_LINES=("$MATRIX_TAG_FILTER")
@@ -892,14 +948,43 @@ jobs:
             '{branch: $branch, branchSlug: $slug, shard: $shard, browser: $browser}' \
             > branch-meta.json
 
+      # Zip root: ATAF-FAILED-SCREENSHOTS.html (failed shot + step + error). Click → all step shots.
+      - name: Promote failed-screenshot gallery to artifact root
+        if: always()
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -euo pipefail
+          SCRIPT=zmsautomation/scripts/generate-failed-screenshot-gallery.py
+          SHOTS=zmsautomation/target/screenshots
+          [[ -f "$SCRIPT" ]] || { echo "Gallery script missing"; exit 0; }
+          JSON_ARGS=()
+          [[ -f zmsautomation/target/cucumber.json ]] && JSON_ARGS+=(--cucumber-json zmsautomation/target/cucumber.json)
+          [[ -f zmsautomation/target/cucumber-api.json ]] && JSON_ARGS+=(--cucumber-json zmsautomation/target/cucumber-api.json)
+          if [[ ${#JSON_ARGS[@]} -eq 0 ]]; then
+            echo "No cucumber.json; skip gallery promote"
+            exit 0
+          fi
+          rm -rf failed-screenshot-galleries ATAF-FAILED-SCREENSHOTS.html
+          python3 "$SCRIPT" \
+            "${JSON_ARGS[@]}" \
+            --screenshots-dir "$SHOTS" \
+            --out-dir . \
+            --failures-subdir failed-screenshot-galleries \
+            --index-name ATAF-FAILED-SCREENSHOTS.html \
+            --title "ATAF failed screenshots (${{ matrix.shard }} · ${{ matrix.browser }})"
+
       - name: Upload test reports (best effort)
         id: upload-test-reports
         if: always()
         continue-on-error: true
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: zmsautomation-ataf-reports-${{ github.run_id }}-${{ github.run_attempt }}-${{ steps.tags.outputs.branch_slug }}-${{ matrix.shard }}-${{ matrix.browser }}
           path: |
+            ATAF-FAILED-SCREENSHOTS.html
+            failed-screenshot-galleries/**
+            zmsautomation/target/index.html
             zmsautomation/target/cucumber.json
             zmsautomation/target/cucumber-api.json
             branch-meta.json
@@ -918,10 +1003,13 @@ jobs:
         id: upload-test-reports-retry-1
         if: always() && steps.upload-test-reports.outcome == 'failure'
         continue-on-error: true
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: zmsautomation-ataf-reports-${{ github.run_id }}-${{ github.run_attempt }}-${{ steps.tags.outputs.branch_slug }}-${{ matrix.shard }}-${{ matrix.browser }}
           path: |
+            ATAF-FAILED-SCREENSHOTS.html
+            failed-screenshot-galleries/**
+            zmsautomation/target/index.html
             zmsautomation/target/cucumber.json
             zmsautomation/target/cucumber-api.json
             branch-meta.json
@@ -940,10 +1028,13 @@ jobs:
         id: upload-test-reports-retry-2
         if: always() && steps.upload-test-reports-retry-1.outcome == 'failure'
         continue-on-error: true
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: zmsautomation-ataf-reports-${{ github.run_id }}-${{ github.run_attempt }}-${{ steps.tags.outputs.branch_slug }}-${{ matrix.shard }}-${{ matrix.browser }}
           path: |
+            ATAF-FAILED-SCREENSHOTS.html
+            failed-screenshot-galleries/**
+            zmsautomation/target/index.html
             zmsautomation/target/cucumber.json
             zmsautomation/target/cucumber-api.json
             branch-meta.json
@@ -961,10 +1052,13 @@ jobs:
       - name: Retry upload test reports (3/3)
         if: always() && steps.upload-test-reports-retry-2.outcome == 'failure'
         continue-on-error: true
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: zmsautomation-ataf-reports-${{ github.run_id }}-${{ github.run_attempt }}-${{ steps.tags.outputs.branch_slug }}-${{ matrix.shard }}-${{ matrix.browser }}
           path: |
+            ATAF-FAILED-SCREENSHOTS.html
+            failed-screenshot-galleries/**
+            zmsautomation/target/index.html
             zmsautomation/target/cucumber.json
             zmsautomation/target/cucumber-api.json
             branch-meta.json
@@ -1015,7 +1109,7 @@ jobs:
         id: upload-container-logs
         if: always()
         continue-on-error: true
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: zmsautomation-container-logs-${{ github.run_id }}-${{ github.run_attempt }}-${{ steps.tags.outputs.branch_slug }}-${{ matrix.shard }}-${{ matrix.browser }}
           path: artifacts/container-logs.tar.gz
@@ -1032,7 +1126,7 @@ jobs:
         id: upload-container-logs-retry-1
         if: always() && steps.upload-container-logs.outcome == 'failure'
         continue-on-error: true
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: zmsautomation-container-logs-${{ github.run_id }}-${{ github.run_attempt }}-${{ steps.tags.outputs.branch_slug }}-${{ matrix.shard }}-${{ matrix.browser }}
           path: artifacts/container-logs.tar.gz
@@ -1049,7 +1143,7 @@ jobs:
         id: upload-container-logs-retry-2
         if: always() && steps.upload-container-logs-retry-1.outcome == 'failure'
         continue-on-error: true
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: zmsautomation-container-logs-${{ github.run_id }}-${{ github.run_attempt }}-${{ steps.tags.outputs.branch_slug }}-${{ matrix.shard }}-${{ matrix.browser }}
           path: artifacts/container-logs.tar.gz
@@ -1065,7 +1159,7 @@ jobs:
       - name: Retry upload container logs (3/3)
         if: always() && steps.upload-container-logs-retry-2.outcome == 'failure'
         continue-on-error: true
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: zmsautomation-container-logs-${{ github.run_id }}-${{ github.run_attempt }}-${{ steps.tags.outputs.branch_slug }}-${{ matrix.shard }}-${{ matrix.browser }}
           path: artifacts/container-logs.tar.gz
@@ -1088,7 +1182,7 @@ jobs:
 
       - name: Download cucumber reports
         continue-on-error: true
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
         with:
           pattern: zmsautomation-ataf-reports-*
           path: cucumber-reports

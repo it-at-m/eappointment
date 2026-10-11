@@ -42,7 +42,7 @@ export function useReservationTimer() {
       : Math.max(0, deadlineMs.value - nowMs.value)
   );
 
-  const isExpired = computed<boolean>(
+  const isReservationExpired = computed<boolean>(
     () => remainingMs.value !== null && remainingMs.value <= 0
   );
 
@@ -55,7 +55,7 @@ export function useReservationTimer() {
   });
 
   return {
-    isExpired,
+    isReservationExpired,
     remainingMs,
     deadlineMs,
     nowMs,

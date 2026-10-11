@@ -711,7 +711,7 @@ class Process extends Schema\Entity
         return $this;
     }
 
-    public function getWasMissed(): bool
+    public function isWasMissed(): bool
     {
         return (bool) $this->wasMissed;
     }
