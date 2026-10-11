@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-10-11T04:30:56.872Z",
+  "publishedAt": "2026-10-11T04:52:52.503Z",
   "branches": [
     {
       "name": "next",
@@ -16,8 +16,8 @@
     {
       "name": "bugfix-zmskvr-1002-restore-subservices-after-login",
       "slug": "bugfix-zmskvr-1002-restore-subservices-after-login",
-      "runId": "38111166852",
-      "runStartedAt": "2026-10-11T04:18:32Z"
+      "runId": "38112345145",
+      "runStartedAt": "2026-10-11T04:40:48Z"
     },
     {
       "name": "bugfix-zmskvr-1246-zmskvr-319-cleanup-pending",
