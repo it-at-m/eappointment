@@ -507,7 +507,6 @@ import {
   hasPreconfirmContextError,
   hasUpdateContextError,
 } from "@/utils/errorHandler";
-import { hydrateServiceFromSelectedMap } from "@/utils/hydrateServiceFromSelectedMap";
 import {
   applyAppointmentContactToCustomerData,
   hasMissingRequiredContact,
@@ -1353,14 +1352,33 @@ const applyLocalStorageUiData = (uiData: LocalStorageUiData) => {
     (service) => String(service.id) === String(uiData.selectedServiceId)
   );
   if (foundService) {
-    selectedService.value = foundService as ServiceImpl;
-    // Map survives OAuth; subServices do not — rebuild for combination/calendar/overview.
-    hydrateServiceFromSelectedMap(
-      selectedService.value,
-      selectedServiceMap.value,
+    const mainId = String(foundService.id);
+    // Map survives OAuth; subServices on the catalog row do not — rebuild for
+    // combination / calendar / Übersicht after login resume.
+    const restored = serviceFromAppointment(
+      {
+        serviceId: mainId,
+        serviceName: foundService.name,
+        serviceCount: selectedServiceMap.value.get(mainId) ?? 1,
+        subRequestCounts: Array.from(selectedServiceMap.value.entries())
+          .filter(([id]) => id !== mainId)
+          .map(([id, count]) => ({
+            id,
+            count,
+            name:
+              services.value.find((service) => String(service.id) === id)
+                ?.name ?? "",
+          })),
+      } as AppointmentDTO,
       services.value,
-      getProviders
+      (serviceId) => getProviders(serviceId, null)
     );
+    if (restored) {
+      restored.subServiceSelectionOrder = (restored.subServices ?? []).map(
+        (sub) => String(sub.id)
+      );
+      selectedService.value = restored;
+    }
   }
 
   preselectedLocationId.value = uiData.selectedProviderId;
