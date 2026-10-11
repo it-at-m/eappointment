@@ -702,17 +702,8 @@ onMounted(() => {
       if (!service.value) {
         return;
       }
-      // Login resume rebuilds only selected counts (serviceFromAppointment). Peers come
-      // from the catalog combinable map. Use a clone so setServiceData's self-delete does
-      // not mutate the shared catalog entry.
-      const catalogService = services.value.find(
-        (entry) => String(entry.id) === String(service.value!.id)
-      );
-      if (catalogService?.combinable) {
-        service.value.combinable = JSON.parse(
-          JSON.stringify(catalogService.combinable)
-        ) as Combinable;
-      }
+      // Local services/relations ready — refresh providers/slots (peers already on
+      // selectedService after login resume with expandCombinablePeers).
       setServiceData(service.value);
       currentSlots.value = calculateTotalSlots(
         service.value.providers || [],

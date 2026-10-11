@@ -76,4 +76,45 @@ describe("serviceFromAppointment", () => {
     expect(selected?.count).toBe(2);
     expect(selected?.rootParentId).toBe(1063453);
   });
+
+  it("expandCombinablePeers keeps selected counts and lists other peers at 0", () => {
+    const catalog: Service[] = [
+      {
+        id: "123",
+        name: "Main",
+        maxQuantity: 2,
+        combinable: {
+          a: { "123": [1] },
+          b: { "456": [1] },
+          c: { "789": [1] },
+        },
+      } as Service,
+      { id: "456", name: "Selected", maxQuantity: 2 } as Service,
+      { id: "789", name: "Other", maxQuantity: 2 } as Service,
+    ];
+    const appointment = {
+      serviceId: "123",
+      serviceName: "Main",
+      serviceCount: 1,
+      subRequestCounts: [{ id: "456", name: "Selected", count: 1 }],
+    } as AppointmentDTO;
+
+    const selected = serviceFromAppointment(
+      appointment,
+      catalog,
+      () => [],
+      undefined,
+      {
+        expandCombinablePeers: true,
+      }
+    );
+
+    expect(selected?.subServices?.map((sub) => sub.id)).toEqual(["456", "789"]);
+    expect(selected?.subServices?.find((sub) => sub.id === "456")?.count).toBe(
+      1
+    );
+    expect(selected?.subServices?.find((sub) => sub.id === "789")?.count).toBe(
+      0
+    );
+  });
 });
