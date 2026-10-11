@@ -1,8 +1,17 @@
 import { AppointmentDTO } from "@/api/models/AppointmentDTO";
+import { Combinable } from "@/api/models/Combinable";
 import { Service } from "@/api/models/Service";
 import { OfficeImpl } from "@/types/OfficeImpl";
 import { ServiceImpl } from "@/types/ServiceImpl";
 import { SubService } from "@/types/SubService";
+
+export type ServiceFromAppointmentOptions = {
+  /**
+   * Login resume: build every combinable peer (selected counts kept, others 0)
+   * so Leistung does not wait on ServiceFinder's second catalog fetch.
+   */
+  expandCombinablePeers?: boolean;
+};
 
 /**
  * Resolve the booked service for an appointment overview/detail view.
@@ -13,7 +22,8 @@ export function serviceFromAppointment(
   appointment: AppointmentDTO | undefined | null,
   catalogServices: Service[] | undefined | null,
   getProvidersForService: (serviceId: string) => OfficeImpl[],
-  fallbackProvider?: OfficeImpl
+  fallbackProvider?: OfficeImpl,
+  options?: ServiceFromAppointmentOptions
 ): ServiceImpl | undefined {
   if (!appointment?.serviceId) {
     return undefined;
@@ -29,11 +39,15 @@ export function serviceFromAppointment(
     if (providers.length === 0 && fallbackProvider) {
       providers.push(fallbackProvider);
     }
+    const combinable =
+      options?.expandCombinablePeers && fromCatalog.combinable
+        ? (JSON.parse(JSON.stringify(fromCatalog.combinable)) as Combinable)
+        : fromCatalog.combinable;
     const selected = new ServiceImpl(
       serviceId,
       appointment.serviceName || fromCatalog.name,
       fromCatalog.maxQuantity,
-      fromCatalog.combinable,
+      combinable,
       providers,
       [],
       appointment.serviceCount,
@@ -47,7 +61,8 @@ export function serviceFromAppointment(
       selected,
       appointment,
       catalogServices ?? [],
-      getProvidersForService
+      getProvidersForService,
+      options?.expandCombinablePeers === true
     );
     return selected;
   }
@@ -77,7 +92,8 @@ export function serviceFromAppointment(
     selected,
     appointment,
     catalogServices ?? [],
-    getProvidersForService
+    getProvidersForService,
+    false
   );
   return selected;
 }
@@ -86,19 +102,57 @@ function attachSubServices(
   selected: ServiceImpl,
   appointment: AppointmentDTO,
   catalogServices: Service[],
-  getProvidersForService: (serviceId: string) => OfficeImpl[]
+  getProvidersForService: (serviceId: string) => OfficeImpl[],
+  expandCombinablePeers: boolean
 ): void {
-  const subRequestCounts = appointment.subRequestCounts ?? [];
-  if (subRequestCounts.length === 0) {
+  const counts = new Map(
+    (appointment.subRequestCounts ?? []).map((entry) => [
+      String(entry.id),
+      entry.count ?? 0,
+    ])
+  );
+
+  if (expandCombinablePeers && selected.combinable) {
+    const mainId = String(selected.id);
+    const combinable = selected.combinable;
+    for (const key of Object.keys(combinable)) {
+      if (Object.keys(combinable[key])[0] === mainId) {
+        delete combinable[key];
+      }
+    }
+    selected.subServices = Object.entries(combinable)
+      .map(([, serviceObj]) => {
+        const subId = Object.keys(serviceObj)[0];
+        const catalog = catalogServices.find(
+          (service) => String(service.id) === String(subId)
+        );
+        if (!catalog) {
+          return undefined;
+        }
+        return new SubService(
+          String(subId),
+          catalog.name,
+          catalog.maxQuantity,
+          getProvidersForService(String(subId)),
+          counts.get(String(subId)) ?? 0
+        );
+      })
+      .filter((entry): entry is SubService => entry !== undefined);
+    return;
+  }
+
+  if (counts.size === 0) {
     return;
   }
   selected.subServices = [];
-  for (const subRequestCount of subRequestCounts) {
-    const subId = String(subRequestCount.id);
+  for (const [subId, count] of counts) {
     const fromCatalog = catalogServices.find(
       (service) => String(service.id) === subId
     );
-    const name = fromCatalog?.name ?? subRequestCount.name;
+    const name =
+      fromCatalog?.name ??
+      appointment.subRequestCounts?.find((entry) => String(entry.id) === subId)
+        ?.name;
     if (!name) {
       continue;
     }
@@ -106,9 +160,9 @@ function attachSubServices(
       new SubService(
         subId,
         name,
-        fromCatalog?.maxQuantity ?? subRequestCount.count ?? 1,
+        fromCatalog?.maxQuantity ?? count ?? 1,
         getProvidersForService(subId),
-        subRequestCount.count
+        count
       )
     );
   }
