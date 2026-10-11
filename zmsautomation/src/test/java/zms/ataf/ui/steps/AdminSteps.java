@@ -797,6 +797,11 @@ public class AdminSteps {
                 TestDataHelper.transformTestData(service), minutes, wrongMinutes);
     }
 
+    @Then("the Termindauer on the appointment form is {int} minutes.")
+    public void theTermindauerOnTheAppointmentFormIsMinutes(int minutes) {
+        COUNTER_PROCESSING_STATION_PAGE.assertTermindauerMinutes(minutes);
+    }
+
     @When("I book the already selected appointment for {string}.")
     public void sie_den_bereits_gewaehlten_termin_buchen(String name) {
         bookAlreadySelectedAppointment(name, true);
