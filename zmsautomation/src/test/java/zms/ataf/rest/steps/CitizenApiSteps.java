@@ -255,6 +255,21 @@ public class CitizenApiSteps {
             .isEqualTo(expected);
     }
 
+    @Then("office {int} should have no slotsPerAppointment")
+    public void officeShouldHaveNoSlotsPerAppointment(int officeId) {
+        Assertions.assertThat(lastOfficesAndServicesResponse)
+            .as("Request offices-and-services first")
+            .isNotNull();
+        Office office = findOfficeById(lastOfficesAndServicesResponse, officeId);
+        Assertions.assertThat(office)
+            .as("Expected office %d in offices-and-services", officeId)
+            .isNotNull();
+        String spa = office.getSlotsPerAppointment();
+        Assertions.assertThat(spa == null || spa.isBlank())
+            .as("office %d slotsPerAppointment should be unset (fallback 25), was %s", officeId, spa)
+            .isTrue();
+    }
+
     @Then("office {int} and service {int} should take {int} slots")
     public void officeAndServiceShouldTakeSlots(int officeId, int serviceId, int slots) {
         OfficeServiceRelation relation = requireRelation(officeId, serviceId);
@@ -1112,6 +1127,32 @@ public class CitizenApiSteps {
         } finally {
             lastServiceCount = previousCount;
             cachedCalendarServiceCounts = previousCounts;
+        }
+    }
+
+    /**
+     * Discover under spa, then attempt reserve with a different counts CSV (same serviceIds order).
+     */
+    @When("I attempt to reserve an appointment with the first available slot and service counts {string}")
+    public void iAttemptToReserveAnAppointmentWithTheFirstAvailableSlotAndServiceCounts(
+            String serviceCountsCsv) {
+        List<Integer> previousCounts = cachedCalendarServiceCounts;
+        List<Integer> overrideCounts = parseOfficeIdsCsv(serviceCountsCsv);
+        Assertions.assertThat(cachedCalendarServiceIds)
+                .as("Request available days for multiple services first")
+                .isNotNull()
+                .isNotEmpty();
+        Assertions.assertThat(overrideCounts)
+                .as("serviceCounts csv")
+                .hasSameSizeAs(cachedCalendarServiceIds);
+        cachedCalendarServiceCounts = overrideCounts;
+        lastServiceCount = overrideCounts.get(0);
+        try {
+            reserveFirstAvailableSlot(false, false);
+        } finally {
+            cachedCalendarServiceCounts = previousCounts;
+            lastServiceCount =
+                    previousCounts != null && !previousCounts.isEmpty() ? previousCounts.get(0) : lastServiceCount;
         }
     }
 

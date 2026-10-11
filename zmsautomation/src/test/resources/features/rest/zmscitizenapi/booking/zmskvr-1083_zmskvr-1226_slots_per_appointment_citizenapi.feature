@@ -23,6 +23,10 @@ Feature: ZMSKVR-1083 / ZMSKVR-1226 slotsPerAppointment — Citizen API
   #   Office spa unset → fallback 25, so serviceCount 6 stays under spa and only
   #   tooManyServicesPerAppointment fires. Calendar uses the same request limits
   #   as reserve, so discover at the allowed count then reserve over the limit.
+  #
+  # Hauptkalender 10489: spa unset → MAX_SLOTS_FALLBACK=25 (125 minutes at 5-min
+  # slotTime). Eleven services at qty 1 sum to 25 slots; raising Haushalts-
+  # bescheinigung to 2 reaches 26 slots / 130 minutes → tooManySlotsPerAppointment.
   # V56 opening hours for scope 70. Finish or cancel every reserved process.
 
   Background:
@@ -103,3 +107,24 @@ Feature: ZMSKVR-1083 / ZMSKVR-1226 slotsPerAppointment — Citizen API
     Then the response status code should be 400
     And the response errors should include errorCode "tooManySlotsPerAppointment"
     When I cancel the appointment
+
+  Scenario: Office 10489 exposes unset slotsPerAppointment and a 5-minute slot grid
+    Then office 10489 should have no slotsPerAppointment
+    And office 10489 should use a slot time of 5 minutes and service 1063475 should take 3 slot
+    And office 10489 and service 1080843 should take 1 slots
+
+  Scenario: Fallback spa 25 books the 125-minute combination and is cancelled
+    When I request available days for office 10489 and services "1063475,10242339,10225181,1063426,1063428,10225119,1080843,1076889,1078273,1080582,10225197" with service counts "1,1,1,1,1,1,1,1,1,1,1"
+    And I request available appointments for the first available day
+    And I reserve an appointment with the first available slot
+    Then the reserve endpoint response should include a thinned booking process with processId, authKey, officeId, and serviceId
+    And the appointment status should be "reserved"
+    When I cancel the appointment
+
+  Scenario: Fallback spa rejects 26 slots for the 130-minute combination
+    # Discover under spa (25 slots / 125 minutes), then reserve with Haushaltsbescheinigung count 2.
+    When I request available days for office 10489 and services "1063475,10242339,10225181,1063426,1063428,10225119,1080843,1076889,1078273,1080582,10225197" with service counts "1,1,1,1,1,1,1,1,1,1,1"
+    And I request available appointments for the first available day
+    And I attempt to reserve an appointment with the first available slot and service counts "1,1,1,1,1,1,2,1,1,1,1"
+    Then the response status code should be 400
+    And the response errors should include errorCode "tooManySlotsPerAppointment"

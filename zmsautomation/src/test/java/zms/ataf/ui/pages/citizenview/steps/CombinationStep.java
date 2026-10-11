@@ -228,6 +228,63 @@ public final class CombinationStep {
                 "Plus for \"" + label + "\" was " + state);
     }
 
+    /**
+     * Every plus paired with a visible minus (muc-counter) is disabled — spa budget full,
+     * including unselected combinable peers that no longer fit.
+     */
+    public void assertAllPlusButtonsDisabled() {
+        context.set();
+        try {
+            new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(defaultWaitSeconds))
+                    .until(d -> {
+                        String state = allPlusButtonsState();
+                        return state.startsWith("ok:");
+                    });
+        } catch (TimeoutException e) {
+            Assert.fail("Expected every combination-step plus to be disabled: " + allPlusButtonsState());
+        }
+    }
+
+    /** Returns {@code ok:N} or {@code fail:…} describing visible counter plus states. */
+    private String allPlusButtonsState() {
+        String script =
+                "function shown(el){var n=el;while(n&&n.nodeType===1){"
+                        + "var st=window.getComputedStyle(n);"
+                        + "if(st.display==='none'||st.visibility==='hidden'||st.opacity==='0')return false;"
+                        + "if(n.parentElement){n=n.parentElement;continue;}"
+                        + "var root=n.getRootNode&&n.getRootNode();n=root&&root.host?root.host:null;}return true;}"
+                        + "function isDisabled(el){if(!el)return true;"
+                        + "function off(node){return !!(node&&(node.disabled||node.hasAttribute&&node.hasAttribute('disabled')"
+                        + "||(node.getAttribute&&node.getAttribute('aria-disabled')==='true')));}"
+                        + "if(off(el))return true;"
+                        + "var host=el.getRootNode&&el.getRootNode().host;return off(host);}"
+                        + "function walk(n,fn){if(!n)return;fn(n);if(n.shadowRoot)walk(n.shadowRoot,fn);"
+                        + "var c=n.children;if(c)for(var i=0;i<c.length;i++)walk(c[i],fn);}"
+                        + "function buttonsNear(minus){var host=minus;"
+                        + "for(var g=0;g<6&&host;g++){var found=[];"
+                        + "walk(host,function(n){if((n.tagName||'').toUpperCase()==='BUTTON'&&shown(n))found.push(n);});"
+                        + "if(found.length>=2)return found;"
+                        + "if(host.parentElement)host=host.parentElement;"
+                        + "else{var root=host.getRootNode&&host.getRootNode();host=root&&root.host?root.host:null;}}"
+                        + "return [];}"
+                        + "var minusBtns=[];"
+                        + "walk(document.body,function(n){if((n.tagName||'').toUpperCase()!=='BUTTON'||!shown(n))return;"
+                        + "var aria=(n.getAttribute('aria-label')||'').toLowerCase();"
+                        + "if(aria.indexOf('reduzier')>=0)minusBtns.push(n);});"
+                        + "if(minusBtns.length<2)return 'fail:only '+minusBtns.length+' minus buttons';"
+                        + "var enabled=[];"
+                        + "for(var i=0;i<minusBtns.length;i++){var minus=minusBtns[i];"
+                        + "var btns=buttonsNear(minus);var plus=null;"
+                        + "for(var j=0;j<btns.length;j++){if(btns[j]===minus)continue;"
+                        + "var a=(btns[j].getAttribute('aria-label')||'').toLowerCase();"
+                        + "if(a.indexOf('reduzier')>=0)continue;plus=btns[j];break;}"
+                        + "if(!plus)return 'fail:no plus near '+ (minus.getAttribute('aria-label')||'');"
+                        + "if(!isDisabled(plus))enabled.push(plus.getAttribute('aria-label')||'?');}"
+                        + "return enabled.length?('fail:enabled '+enabled.join(' | ')):'ok:'+minusBtns.length;";
+        Object raw = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script);
+        return raw == null ? "fail:null" : String.valueOf(raw);
+    }
+
     /** ZMSKVR-106: the service name links to its description on muenchen.de. */
     public void assertServiceDescriptionLink(String label, String serviceId) {
         context.set();
