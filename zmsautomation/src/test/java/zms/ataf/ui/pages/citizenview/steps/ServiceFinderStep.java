@@ -17,6 +17,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import ataf.core.logging.ScenarioLogManager;
 import ataf.web.utils.DriverUtil;
+import zms.ataf.helpers.ViewportSizes;
 import zms.ataf.ui.pages.citizenview.CitizenViewPageContext;
 import zms.ataf.ui.pages.citizenview.support.CitizenViewWaits;
 import zms.ataf.ui.pages.citizenview.support.ShadowDom;
@@ -695,6 +696,55 @@ public final class ServiceFinderStep {
         context.set();
         new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(seconds))
                 .until(d -> serviceLabelReadyForSelection(serviceLabel));
+    }
+
+    /**
+     * ZMSKVR-504 / ZMSKVR-869: Häufig gesuchte Leistungen container padding — 24px on phone, 32px
+     * (or ambient .container) on desktop.
+     */
+    public void assertOftenSearchedContainerPadding(boolean mobile) {
+        context.set();
+        RemoteWebDriver driver = DriverUtil.getDriver();
+        driver.manage().window().setSize(mobile ? ViewportSizes.MOBILE : ViewportSizes.DESKTOP);
+        CitizenViewWaits.sleepQuiet(500L);
+        String script =
+                "function walk(n,fn){if(!n)return null;if(n.nodeType===1){var hit=fn(n);if(hit)return hit;}"
+                        + "if(n.shadowRoot){var i=walk(n.shadowRoot,fn);if(i)return i;}"
+                        + "var c=n.children;if(c)for(var k=0;k<c.length;k++){var x=walk(c[k],fn);if(x)return x;}return null;}"
+                        + "var heading=walk(document.body,function(n){"
+                        + "var t=(n.textContent||'').replace(/\\s+/g,' ').trim();"
+                        + "if(t.indexOf('Häufig gesuchte Leistungen')===0&&(n.tagName||'').match(/^H[1-6]$/))return n;"
+                        + "if(t==='Häufig gesuchte Leistungen:'||t.indexOf('Häufig gesuchte Leistungen')===0){"
+                        + "if((n.tagName||'').toUpperCase()==='STRONG'||(n.tagName||'').match(/^H/))return n;}"
+                        + "return null;});"
+                        + "if(!heading)return {found:false};"
+                        + "var box=heading.closest?heading.closest('.container'):null;"
+                        + "if(!box){var cur=heading;for(var g=0;g<8&&cur;g++){"
+                        + "if(cur.classList&&cur.classList.contains('container')){box=cur;break;}"
+                        + "if(cur.parentElement)cur=cur.parentElement;"
+                        + "else{var r=cur.getRootNode&&cur.getRootNode();cur=r&&r.host?r.host:null;}}}"
+                        + "if(!box)return {found:false,reason:'no-container'};"
+                        + "var st=getComputedStyle(box);"
+                        + "return {found:true,pl:Math.round(parseFloat(st.paddingLeft)||0),"
+                        + "pr:Math.round(parseFloat(st.paddingRight)||0)};";
+        Object raw = ((JavascriptExecutor) driver).executeScript(script);
+        Assert.assertNotNull(raw, "Could not measure often-searched container padding");
+        @SuppressWarnings("unchecked")
+        java.util.Map<String, Object> map = (java.util.Map<String, Object>) raw;
+        Assert.assertTrue(Boolean.TRUE.equals(map.get("found")), "Often-searched container missing: " + map);
+        int pl = ((Number) map.get("pl")).intValue();
+        int pr = ((Number) map.get("pr")).intValue();
+        if (mobile) {
+            Assert.assertEquals(pl, 24, "Mobile left padding should be 24px: " + map);
+            Assert.assertEquals(pr, 24, "Mobile right padding should be 24px: " + map);
+        } else {
+            Assert.assertTrue(
+                    pl >= 24 && pl <= 40,
+                    "Desktop left padding should stay roomy (~32px ambient): " + map);
+            Assert.assertTrue(
+                    pr >= 24 && pr <= 40,
+                    "Desktop right padding should stay roomy (~32px ambient): " + map);
+        }
     }
 
 }
