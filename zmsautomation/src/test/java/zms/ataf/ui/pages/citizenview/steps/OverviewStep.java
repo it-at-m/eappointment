@@ -159,6 +159,90 @@ public final class OverviewStep {
                 privacyAcknowledgementCheckboxPresent(),
                 "Privacy acknowledgement checkbox should be gone.");
     }
+
+    /**
+     * ZMSKVR-846 / ZMSKVR-1021: privacy and electronic-communication links open in a new tab and
+     * expose an aria-label. Copy matches de-DE.json (privacy uses "pdf download"; communication
+     * mentions "neuem Tab").
+     */
+    public void assertLegalNoticeLinksOpenInNewTab() {
+        context.set();
+        String script =
+                "function walk(n,fn){if(!n)return;fn(n);if(n.shadowRoot)walk(n.shadowRoot,fn);"
+                        + "var c=n.children;if(c)for(var i=0;i<c.length;i++)walk(c[i],fn);}"
+                        + "var out={privacy:null,communication:null};"
+                        + "walk(document.body,function(n){"
+                        + "if((n.tagName||'').toUpperCase()!=='A')return;"
+                        + "var href=n.getAttribute('href')||'';"
+                        + "var aria=n.getAttribute('aria-label')||'';"
+                        + "var target=n.getAttribute('target')||'';"
+                        + "var text=(n.textContent||'').replace(/\\s+/g,' ').trim();"
+                        + "var info={href:href,target:target,aria:aria,text:text};"
+                        + "if(href.indexOf('23_07_Art_13_DSGVO.pdf')>=0||text.indexOf('Datenschutzhinweise Terminvereinbarung')>=0)out.privacy=info;"
+                        + "if(href.indexOf('elektronische-kommunikation')>=0||text.indexOf('elektronischen Kommunikation')>=0)out.communication=info;"
+                        + "});"
+                        + "return out;";
+        @SuppressWarnings("unchecked")
+        java.util.Map<String, Object> raw =
+                (java.util.Map<String, Object>)
+                        ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script);
+        Assert.assertNotNull(raw, "Could not scan legal notice links");
+        @SuppressWarnings("unchecked")
+        java.util.Map<String, Object> privacy = (java.util.Map<String, Object>) raw.get("privacy");
+        @SuppressWarnings("unchecked")
+        java.util.Map<String, Object> communication =
+                (java.util.Map<String, Object>) raw.get("communication");
+        Assert.assertNotNull(privacy, "Privacy link missing: " + raw);
+        Assert.assertNotNull(communication, "Electronic communication link missing: " + raw);
+        Assert.assertEquals(
+                String.valueOf(privacy.get("target")),
+                "_blank",
+                "Privacy link should use target=_blank: " + privacy);
+        Assert.assertEquals(
+                String.valueOf(communication.get("target")),
+                "_blank",
+                "Electronic communication link should use target=_blank: " + communication);
+        String privacyAria = String.valueOf(privacy.get("aria"));
+        String commAria = String.valueOf(communication.get("aria"));
+        Assert.assertTrue(
+                privacyAria.toLowerCase().contains("datenschutz")
+                        || privacyAria.toLowerCase().contains("pdf"),
+                "Privacy link needs an aria-label for screen readers: " + privacy);
+        Assert.assertTrue(
+                commAria.toLowerCase().contains("kommunikation")
+                        || commAria.toLowerCase().contains("tab"),
+                "Electronic communication link needs an aria-label for screen readers: "
+                        + communication);
+    }
+
+    /** ZMSKVR-521: Adresse label uses 16px and no bottom margin above the address lines. */
+    public void assertOverviewAddressLabelChrome() {
+        context.set();
+        String script =
+                "function walk(n,fn){if(!n)return null;if(n.nodeType===1){var hit=fn(n);if(hit)return hit;}"
+                        + "if(n.shadowRoot){var i=walk(n.shadowRoot,fn);if(i)return i;}"
+                        + "var c=n.children;if(c)for(var k=0;k<c.length;k++){var x=walk(c[k],fn);if(x)return x;}return null;}"
+                        + "var label=walk(document.body,function(n){"
+                        + "if(!n.classList||!n.classList.contains('smaller-front-size'))return null;"
+                        + "var t=(n.textContent||'').replace(/\\s+/g,' ').trim();"
+                        + "if(t.indexOf('Adresse')===0)return n;return null;});"
+                        + "if(!label)return {found:false};"
+                        + "var st=getComputedStyle(label);"
+                        + "return {found:true,fontSize:st.fontSize,px:parseFloat(st.fontSize),"
+                        + "marginBottom:st.marginBottom,mb:parseFloat(st.marginBottom)||0,"
+                        + "cls:String(label.className||'')};";
+        Object raw = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script);
+        Assert.assertNotNull(raw, "Could not measure Adresse label");
+        @SuppressWarnings("unchecked")
+        java.util.Map<String, Object> map = (java.util.Map<String, Object>) raw;
+        Assert.assertTrue(Boolean.TRUE.equals(map.get("found")), "Adresse label missing: " + map);
+        Assert.assertTrue(
+                Math.abs(((Number) map.get("px")).doubleValue() - 16.0) <= 1.0,
+                "Adresse label should be 16px: " + map);
+        Assert.assertTrue(
+                ((Number) map.get("mb")).doubleValue() <= 2.0,
+                "Adresse label should have no bottom margin: " + map);
+    }
     public void assertSelectedAppointmentPlaceExclusive(String heading, String exclusive) {
         if (!"yes".equals(exclusive)) {
             return;

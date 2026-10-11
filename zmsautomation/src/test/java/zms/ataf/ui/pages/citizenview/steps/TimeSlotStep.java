@@ -2056,6 +2056,86 @@ public final class TimeSlotStep {
                         + "return {titles:titles};})()");
     }
 
+    /**
+     * ZMSKVR-608 / ZMSKVR-511 / ZMSKVR-509: office title, date-heading padding, timeslot button
+     * spacing under Verfügbare Termine.
+     */
+    public void assertTimeslotChrome() {
+        context.set();
+        RemoteWebDriver driver = DriverUtil.getDriver();
+        driver.manage().window().setSize(ViewportSizes.DESKTOP);
+        CitizenViewWaits.sleepQuiet(400L);
+        JsonNode chrome =
+                json.citizenJson(
+                        "(function(){"
+                                + "function px(v){return Math.round(parseFloat(v)||0);}"
+                                + "var titles=[];var nodes=cssAll('h5.location-title');"
+                                + "for(var i=0;i<nodes.length;i++){var el=nodes[i];if(!shown(el))continue;"
+                                + "var st=getComputedStyle(el);var text=textOf(el);"
+                                + "var leading=text.length>0&&text.charAt(0)===' '; "
+                                + "var align=st.alignItems||'';"
+                                + "titles.push({tag:el.tagName,text:text,leadingSpace:leading,"
+                                + "fontSize:st.fontSize,px:px(st.fontSize),alignItems:align,"
+                                + "display:st.display});}"
+                                + "var datePad=null;"
+                                + "var dateBoxes=cssAll('h4');"
+                                + "for(var d=0;d<dateBoxes.length;d++){var h=dateBoxes[d];if(!shown(h))continue;"
+                                + "var label=textOf(h);"
+                                + "if(!/(Montag|Dienstag|Mittwoch|Donnerstag|Freitag|Samstag|Sonntag)/.test(label))continue;"
+                                // List: padding on the accordion button. Calendar: padding on the parent wrap.
+                                + "var box=h;var btn=h.querySelector&&h.querySelector('button.m-accordion__section-button');"
+                                + "if(btn)box=btn;"
+                                + "else if(h.parentElement){var pst0=getComputedStyle(h);"
+                                + "if(px(pst0.paddingLeft)<4)box=h.parentElement;}"
+                                + "var pst=getComputedStyle(box);"
+                                + "datePad={text:label,paddingTop:px(pst.paddingTop),paddingBottom:px(pst.paddingBottom),"
+                                + "paddingLeft:px(pst.paddingLeft)};break;}"
+                                + "var slot=null;var slots=cssAll('.timeslot,muc-button.timeslot');"
+                                + "for(var s=0;s<slots.length;s++){var b=slots[s];if(!shown(b))continue;"
+                                + "var target=b;if(b.shadowRoot){var inner=b.shadowRoot.querySelector('button,.m-button');if(inner)target=inner;}"
+                                + "var bst=getComputedStyle(target);"
+                                + "var grid=b.closest?b.closest('.grid'):null;var gst=grid?getComputedStyle(grid):null;"
+                                + "slot={paddingTop:px(bst.paddingTop),paddingBottom:px(bst.paddingBottom),"
+                                + "paddingLeft:px(bst.paddingLeft),paddingRight:px(bst.paddingRight),"
+                                + "gap:gst?px(gst.gap||gst.columnGap||'0'):null};break;}"
+                                + "return {titles:titles,datePad:datePad,slot:slot};})()");
+        JsonNode titles = chrome.path("titles");
+        boolean listView = shadow.deepElementExists("#listViewAccordion");
+        // Multi-office days show h5.location-title (ZMSKVR-608). A single-office list day may omit them.
+        if (!listView) {
+            Assert.assertTrue(
+                    titles.size() > 0,
+                    "Calendar view should show office titles (h5.location-title): " + chrome);
+        }
+        for (JsonNode title : titles) {
+            Assert.assertEquals(title.path("tag").asText(), "H5", "Office title should be H5: " + title);
+            Assert.assertFalse(
+                    title.path("leadingSpace").asBoolean(true),
+                    "Office title must not start with a space: " + title);
+            Assert.assertTrue(
+                    Math.abs(title.path("px").asDouble() - 18.0) <= 1.0,
+                    "Desktop office title should be 1.125rem (~18px): " + title);
+            String align = title.path("alignItems").asText("");
+            Assert.assertTrue(
+                    "center".equals(align) || title.path("display").asText("").contains("flex"),
+                    "Icon and title should be vertically centered (align-items:center): " + title);
+        }
+        JsonNode datePad = chrome.path("datePad");
+        Assert.assertFalse(datePad.isMissingNode() || datePad.isNull(), "Date heading missing: " + chrome);
+        Assert.assertEquals(datePad.path("paddingLeft").asInt(), 8, "Date heading left padding: " + datePad);
+        Assert.assertEquals(datePad.path("paddingTop").asInt(), 12, "Date heading top padding: " + datePad);
+        Assert.assertEquals(datePad.path("paddingBottom").asInt(), 12, "Date heading bottom padding: " + datePad);
+        JsonNode slot = chrome.path("slot");
+        Assert.assertFalse(slot.isMissingNode() || slot.isNull(), "Timeslot button missing: " + chrome);
+        Assert.assertEquals(slot.path("paddingLeft").asInt(), 12, "Timeslot L padding: " + slot);
+        Assert.assertEquals(slot.path("paddingRight").asInt(), 12, "Timeslot R padding: " + slot);
+        Assert.assertEquals(slot.path("paddingTop").asInt(), 4, "Timeslot T padding: " + slot);
+        Assert.assertEquals(slot.path("paddingBottom").asInt(), 4, "Timeslot B padding: " + slot);
+        if (!slot.path("gap").isNull() && !slot.path("gap").isMissingNode()) {
+            Assert.assertEquals(slot.path("gap").asInt(), 16, "Timeslot grid gap: " + slot);
+        }
+    }
+
     public JsonNode calendarGhostButtons() {
         return json.citizenJson(
                 "(function(){function paint(word){var el=findButton(document.body,word);if(!el)return {present:false};"

@@ -572,6 +572,46 @@ public class CitizenViewPage extends BasePage {
         combination.showAllCombinableServices();
     }
 
+    public void assertShowLessServicesButtonVisible(boolean visible) {
+        combination.assertShowLessServicesButtonVisible(visible);
+    }
+
+    public void showLessCombinableServices() {
+        combination.showLessCombinableServices();
+    }
+
+    public void assertDisabledCounterColors(String label) {
+        combination.assertDisabledCounterColors(label);
+    }
+
+    public void assertMaxLengthCounterError(String fieldId, int maxChars) {
+        contact.assertMaxLengthCounterError(fieldId, maxChars);
+    }
+
+    public void assertCharacterCountFontSizeDesktop() {
+        contact.assertCharacterCountFontSizeDesktop();
+    }
+
+    public void assertRemarksTextareaGrowsWithoutCounterOverlap() {
+        contact.assertRemarksTextareaGrowsWithoutCounterOverlap();
+    }
+
+    public void assertTimeslotChrome() {
+        timeSlot.assertTimeslotChrome();
+    }
+
+    public void assertLegalNoticeLinksOpenInNewTab() {
+        overview.assertLegalNoticeLinksOpenInNewTab();
+    }
+
+    public void assertOverviewAddressLabelChrome() {
+        overview.assertOverviewAddressLabelChrome();
+    }
+
+    public void assertOftenSearchedContainerPadding(boolean mobile) {
+        serviceFinder.assertOftenSearchedContainerPadding(mobile);
+    }
+
     public void assertSecondaryPlusAndMinus(String label) {
         combination.assertSecondaryPlusAndMinus(label);
     }
