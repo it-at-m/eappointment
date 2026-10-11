@@ -70,6 +70,7 @@ Feature: CitizenView: confirmation success offers ICS download for guests
     Then the confirmation success callout should show the guest confirmation details in the citizen view
     When I book another appointment from the confirmation success callout in the citizen view
     Then the Service Finder should be visible on the start page
+    And the citizen view address should not contain the jump-in
     When I sync the booking process from citizen view localStorage
     And I cancel the appointment
 

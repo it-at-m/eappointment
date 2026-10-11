@@ -2234,6 +2234,12 @@ public class CitizenApiSteps {
                 .as("ICS Leistung URL")
                 .contains("https://stadt.muenchen.de/service/info/" + process.getServiceId());
         Assertions.assertThat(unfolded).as("ICS LOCATION present").contains("LOCATION:");
+        Integer officeId = process.getOfficeId() != null ? process.getOfficeId() : lastOfficeId;
+        if (Integer.valueOf(10492).equals(officeId)) {
+            Assertions.assertThat(unfolded)
+                    .as("ICS LOCATION street for Bürgerbüro Ruppertstraße (10492)")
+                    .contains("Ruppertstraße");
+        }
     }
 
     private static String unfoldIcs(String icsContent) {
@@ -2241,6 +2247,38 @@ public class CitizenApiSteps {
             return "";
         }
         return icsContent.replaceAll("\\R[ \\t]", "").replace("\\n", "\n").replace("\\,", ",");
+    }
+
+    /**
+     * Reloads the booking process from GET /appointment/ so UI-synced credentials also carry
+     * displayNumber and serviceId for ICS asserts.
+     */
+    public static ThinnedProcess refreshBookingProcessFromAppointmentApi() {
+        ThinnedProcess process = getBookingProcess();
+        if (process == null || process.getProcessId() == null || process.getAuthKey() == null) {
+            throw new IllegalStateException(
+                    "Need processId/authKey on the booking process before refreshing from /appointment/.");
+        }
+        Response appointmentResponse =
+                given()
+                        .baseUri(TestConfig.getCitizenApiBaseUri())
+                        .queryParam("processId", process.getProcessId())
+                        .queryParam("authKey", process.getAuthKey())
+                        .when()
+                        .get("/appointment/");
+        appointmentResponse.then().statusCode(200);
+        ThinnedProcess appointment;
+        try {
+            appointment = appointmentResponse.as(ThinnedProcess.class);
+        } catch (Exception e) {
+            throw new IllegalStateException(
+                    "Could not parse GET /appointment/ for ICS asserts.", e);
+        }
+        Assertions.assertThat(appointment)
+                .as("GET /appointment/ payload")
+                .isNotNull();
+        setBookingProcess(appointment);
+        return appointment;
     }
 
     /**

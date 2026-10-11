@@ -1218,18 +1218,19 @@ public final class MyAppointmentsStep {
     /**
      * ZMSKVR-97 / ZMSKVR-535: Munich {@code icsappointment.twig} DESCRIPTION carries Terminnummer
      * ({@code displayNumber}), Leistung URL, and the cancel/reschedule appointment hash link.
+     * Reloads GET /appointment/ because UI sync only keeps processId/authKey/timestamp.
      */
     public void assertDownloadedIcsMatchesMunichConfirmationTemplate() {
         context.set();
         Assert.assertNotNull(capturedIcs, "No ICS file was downloaded.");
         String unfolded = unfoldIcs(capturedIcs);
-        ThinnedProcess process = zms.ataf.rest.steps.CitizenApiSteps.getBookingProcess();
+        ThinnedProcess process =
+                zms.ataf.rest.steps.CitizenApiSteps.refreshBookingProcessFromAppointmentApi();
         Assert.assertNotNull(process, "Need a synced booking process for ICS Terminnummer asserts.");
         Assert.assertNotNull(process.getProcessId(), "processId missing for ICS Terminnummer asserts.");
         String displayNumber = process.getDisplayNumber();
-        if (displayNumber == null || displayNumber.isBlank()) {
-            displayNumber = String.valueOf(process.getProcessId());
-        }
+        Assert.assertNotNull(displayNumber, "displayNumber missing from GET /appointment/.");
+        Assert.assertFalse(displayNumber.isBlank(), "displayNumber blank from GET /appointment/.");
         Assert.assertTrue(
                 unfolded.contains("Terminnummer: " + displayNumber),
                 "ICS DESCRIPTION must include Terminnummer: " + displayNumber + ". ICS=" + unfolded);
