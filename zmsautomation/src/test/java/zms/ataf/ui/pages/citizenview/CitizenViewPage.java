@@ -429,6 +429,10 @@ public class CitizenViewPage extends BasePage {
         timeSlot.assertAvailabilityInfoModalHasHeading(headingFragment);
     }
 
+    public void assertAvailabilityInfoModalShowsUnderHeading(String contentFragment, String headingFragment) {
+        timeSlot.assertAvailabilityInfoModalShowsUnderHeading(contentFragment, headingFragment);
+    }
+
     public void assertAvailabilityInfoModalHasNoProviderHeading() {
         timeSlot.assertAvailabilityInfoModalHasNoProviderHeading();
     }

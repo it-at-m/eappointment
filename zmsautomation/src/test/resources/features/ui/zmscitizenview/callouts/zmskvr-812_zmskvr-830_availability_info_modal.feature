@@ -53,11 +53,9 @@ Feature: CitizenView: Wann gibt es neue Termine? availability info modal
     Then the new appointments info link should be visible in the citizen view
     When I open the new appointments info modal in the citizen view
     Then the new appointments info modal title should be visible in the citizen view
-    And the new appointments info modal should have a heading containing "Föhring" in the citizen view
-    And the new appointments info modal should contain "ATAF Hinweis Feuerwache Föhring" in the citizen view
-    And the new appointments info modal should have a heading containing "Pasing" in the citizen view
-    And the new appointments info modal should have a heading containing "Neuperlach" in the citizen view
-    And the new appointments info modal should contain "ATAF Hinweis Feuerwache Gruppe" in the citizen view
+    And the new appointments info modal should show "ATAF Hinweis Feuerwache Föhring" under a heading containing "Föhring" in the citizen view
+    And the new appointments info modal should show "ATAF Hinweis Feuerwache Gruppe" under a heading containing "Pasing" in the citizen view
+    And the new appointments info modal should show "ATAF Hinweis Feuerwache Gruppe" under a heading containing "Neuperlach" in the citizen view
 
   Scenario: Empty-state callout link opens the modal for Feuerwache 7
     When I request the offices and services endpoint
