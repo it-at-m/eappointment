@@ -231,13 +231,23 @@ public final class CombinationStep {
                 countVisibleCombinableServices(),
                 3,
                 "Combinable list did not collapse after Weniger Leistungen anzeigen.");
-        // smooth scrollIntoView — wait for the list start to land near the viewport top
-        CitizenViewWaits.sleepQuiet(600L);
+        // Product scrolls servicesRef (Leistung h2), not the Kombinierbare heading further down.
+        new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(defaultWaitSeconds))
+                .until(
+                        d -> {
+                            JsonNode snap = combinableListScrollSnapshot();
+                            return snap.path("pageY").asDouble(9999) < 80
+                                    && snap.path("listTop").asDouble(9999) < 220;
+                        });
         JsonNode scroll = combinableListScrollSnapshot();
         Assert.assertTrue(
+                scroll.path("pageY").asDouble(9999) < 80,
+                "After Weniger Leistungen anzeigen the page should scroll back toward the top: "
+                        + scroll);
+        Assert.assertTrue(
                 scroll.path("listTop").asDouble(9999) < 220,
-                "After Weniger Leistungen anzeigen the list start should be near the top of the"
-                        + " viewport, not the page bottom: "
+                "After Weniger Leistungen anzeigen the Leistung list start should be near the top"
+                        + " of the viewport: "
                         + scroll);
         Assert.assertFalse(
                 scroll.path("nearPageBottom").asBoolean(true),
@@ -592,13 +602,16 @@ public final class CombinationStep {
                         + "var c=n.children;if(c)for(var i=0;i<c.length;i++){var next=walk(c[i],fn);if(next)return next;}return null;}"
                         + "var heading=walk(document.body,function(n){"
                         + "var tag=(n.tagName||'').toUpperCase();"
-                        + "if((tag==='H2'||tag==='H3'||tag==='H4')&&(n.textContent||'').indexOf('Kombinierbare Leistungen')>=0&&shown(n))return n;"
-                        + "return null;});"
+                        + "if(tag!=='H2'||!shown(n))return null;"
+                        + "var t=(n.textContent||'').replace(/\\s+/g,' ').trim();"
+                        // Exact "Leistung" — not "Kombinierbare Leistungen" further down the step.
+                        + "if(t==='Leistung')return n;return null;});"
                         + "var listTop=heading?heading.getBoundingClientRect().top:9999;"
                         + "var doc=document.documentElement;"
                         + "var maxScroll=Math.max(0,(doc.scrollHeight||0)-(window.innerHeight||0));"
                         + "var y=window.pageYOffset||doc.scrollTop||0;"
-                        + "var nearBottom=maxScroll>80&&y>maxScroll-80;"
+                        // Short pages clamp near the bottom even after a top scroll; only flag real bottoms.
+                        + "var nearBottom=maxScroll>200&&y>maxScroll-80;"
                         + "return JSON.stringify({listTop:listTop,pageY:y,maxScroll:maxScroll,nearPageBottom:nearBottom});";
         Object raw = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script);
         try {
