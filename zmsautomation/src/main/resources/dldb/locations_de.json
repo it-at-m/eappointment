@@ -14211,6 +14211,124 @@
                 10500,
                 10491
             ]
+        },
+        {
+            "name": "Sozialbürgerhaus Ramersdorf - Perlach (S-SBH-RP)",
+            "displayName": "Sozialbürgerhaus Ramersdorf-Perlach",
+            "displayNameAlternatives": [
+                "Sozialbürgerhaus Ramersdorf-Perlach"
+            ],
+            "organization": "Landeshauptstadt München",
+            "organizationUnit": "Sozialreferat",
+            "public": true,
+            "meta": {
+                "url": "https://stadt.muenchen.de/en/buergerservice/terminvereinbarung.html/#/locations/{locationId}",
+                "lastupdate": "2026-10-11T00:00:00",
+                "locale": "de",
+                "keywords": "Sozialbürgerhaus Ramersdorf-Perlach",
+                "translated": true,
+                "hash": "",
+            },
+            "address": {
+                "house_number": "16",
+                "city": "München",
+                "postal_code": "81737",
+                "street": "Thomas-Dehler-Straße",
+                "hint": false
+            },
+            "geo": {
+                "lat": "48.1070",
+                "lon": "11.6110"
+            },
+            "contact": {
+                "email": "noreply-terminvereinbarung@muenchen.de",
+                "fax": "",
+                "phone": "+491234567890",
+                "signed_mail": "0",
+                "signed_maillink": "",
+                "webinfo": "",
+                "competence": ""
+            },
+            "services": [
+                {
+                    "service": "1073950",
+                    "contact": [],
+                    "hint": false,
+                    "appointment": {
+                        "slots": "1",
+                        "external": false,
+                        "allowed": true
+                    },
+                    "onlineprocessing": {
+                        "description": null,
+                        "link": "https://stadt.muenchen.de/en/buergerservice/terminvereinbarung.html/#/services/1073950"
+                    },
+                    "duration": 15,
+                    "maxQuantity": 1
+                }
+            ],
+            "showAlternativeLocations": true,
+            "slotTimeInMinutes": 15,
+            "forceSlotTimeUpdate": true
+        },
+        {
+            "name": "Sozialbürgerhaus Schwabing - Freimann (S-SBH-SF)",
+            "displayName": "Sozialbürgerhaus Schwabing-Freimann",
+            "displayNameAlternatives": [
+                "Sozialbürgerhaus Schwabing-Freimann"
+            ],
+            "organization": "Landeshauptstadt München",
+            "organizationUnit": "Sozialreferat",
+            "public": true,
+            "meta": {
+                "url": "https://stadt.muenchen.de/en/buergerservice/terminvereinbarung.html/#/locations/{locationId}",
+                "lastupdate": "2026-10-11T00:00:00",
+                "locale": "de",
+                "keywords": "Sozialbürgerhaus Schwabing-Freimann",
+                "translated": true,
+                "hash": "",
+            },
+            "address": {
+                "house_number": "170",
+                "city": "München",
+                "postal_code": "80939",
+                "street": "Heidemannstraße",
+                "hint": false
+            },
+            "geo": {
+                "lat": "48.1970",
+                "lon": "11.5980"
+            },
+            "contact": {
+                "email": "noreply-terminvereinbarung@muenchen.de",
+                "fax": "",
+                "phone": "+491234567890",
+                "signed_mail": "0",
+                "signed_maillink": "",
+                "webinfo": "",
+                "competence": ""
+            },
+            "services": [
+                {
+                    "service": "1073950",
+                    "contact": [],
+                    "hint": false,
+                    "appointment": {
+                        "slots": "1",
+                        "external": false,
+                        "allowed": true
+                    },
+                    "onlineprocessing": {
+                        "description": null,
+                        "link": "https://stadt.muenchen.de/en/buergerservice/terminvereinbarung.html/#/services/1073950"
+                    },
+                    "duration": 15,
+                    "maxQuantity": 1
+                }
+            ],
+            "showAlternativeLocations": true,
+            "slotTimeInMinutes": 15,
+            "forceSlotTimeUpdate": true
         }
     ],
     "meta": {

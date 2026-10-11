@@ -32290,6 +32290,74 @@
                 10515601
             ],
             "fees": "<ul>\n <li>10 Euro pro Anwesen</li>\n</ul>"
+        },
+        {
+            "id": "1073950",
+            "name": "Beratung im Sozialbürgerhaus (ATAF exclusiveLocation)",
+            "description": "<p>ATAF fixture for ZMSKVR-852 exclusiveLocation at Sozialbürgerhäuser.</p>",
+            "meta": {
+                "lastupdate": "2026-10-11T00:00:00",
+                "url": "https://stadt.muenchen.de/en/buergerservice/terminvereinbarung.html/#/services/{serviceId}",
+                "locale": "de",
+                "keywords": "Sozialbürgerhaus",
+                "translated": true,
+                "hash": "",
+                "id": "1073950"
+            },
+            "authorities": [
+                {
+                    "id": "1",
+                    "name": "Stadtverwaltung München",
+                    "webinfo": "https://muenchen.de"
+                }
+            ],
+            "locations": [
+                {
+                    "authority": {
+                        "id": "1",
+                        "name": "Stadtverwaltung München",
+                        "webinfo": "https://muenchen.de"
+                    },
+                    "appointment": {
+                        "slots": "0",
+                        "external": false,
+                        "multiple": "1",
+                        "allowed": true
+                    },
+                    "responsibility": null,
+                    "responsibility_hint": null,
+                    "hint": false
+                },
+                {
+                    "authority": {
+                        "id": "1",
+                        "name": "Stadtverwaltung München",
+                        "webinfo": "https://muenchen.de"
+                    },
+                    "appointment": {
+                        "slots": "0",
+                        "external": false,
+                        "multiple": "1",
+                        "allowed": true
+                    },
+                    "responsibility": null,
+                    "responsibility_hint": null,
+                    "hint": false
+                }
+            ],
+            "leika": null,
+            "public": true,
+            "links": [],
+            "forms": [],
+            "appointment": {
+                "link": "https://stadt.muenchen.de/en/buergerservice/terminvereinbarung.html/#/services/{serviceId}"
+            },
+            "maxQuantity": 1,
+            "showOnStartPage": false,
+            "duration": 15,
+            "combinable": [
+                1073950
+            ]
         }
     ],
     "meta": {
