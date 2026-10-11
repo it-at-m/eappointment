@@ -1692,6 +1692,22 @@ public class CounterProcessingStationPage extends AdminPage {
     }
 
     /**
+     * ZMSKVR-230: "Termindauer in Minuten" on the create/edit appointment form after services are selected.
+     */
+    public void assertTermindauerMinutes(int minutes) {
+        CONTEXT.set();
+        CONTEXT.waitForSpinners();
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        WebElement slotCount = wait.until(
+                ExpectedConditions.visibilityOfElementLocated(By.id("appointmentForm_slotCount")));
+        String selected = new Select(slotCount).getFirstSelectedOption().getText().trim();
+        Assert.assertEquals(
+                selected,
+                String.valueOf(minutes),
+                "Termindauer in Minuten was " + selected + " instead of " + minutes + ".");
+    }
+
+    /**
      * The Auswahlliste label is "name (45 min)". Selecting the service hides that row and moves
      * the plain name to the Abwahlliste, so the label is read from text content.
      * Termindauer then shows the same number. The broken mapping showed 135.
@@ -1711,9 +1727,7 @@ public class CounterProcessingStationPage extends AdminPage {
         Assert.assertFalse(
                 text.contains("(" + wrongMinutes + " min)"),
                 "Service duration must not be (" + wrongMinutes + " min). actual=" + text);
-        WebElement slotCount = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("appointmentForm_slotCount")));
-        String selected = new Select(slotCount).getFirstSelectedOption().getText().trim();
-        Assert.assertEquals(selected, String.valueOf(minutes), "Termindauer select. actual=" + selected);
+        assertTermindauerMinutes(minutes);
         List<WebElement> dates = DRIVER.findElements(By.id("process_selected_date"));
         if (!dates.isEmpty()) {
             String iso = dates.get(0).getAttribute("value");
