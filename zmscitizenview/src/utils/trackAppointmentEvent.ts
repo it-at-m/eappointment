@@ -1,8 +1,11 @@
 /**
  * Privacy-safe booking analytics. Emits English, PII-free events that cross
  * Shadow DOM via document + composed CustomEvent. If etracker is present on
- * the host page, also forwards object/category/action. One visit in ten
- * is kept, and that visit emits every event in the chain. Never throws.
+ * the host page, also forwards object, category, and action. The Events
+ * report lists the object, so a reserved slot is new_calendar, new_list,
+ * rebooking_calendar, or rebooking_list, and a confirmation is
+ * new_confirmed or rebooking_confirmed. One visit in ten is kept, and that
+ * visit emits every event in the chain. Never throws.
  */
 
 export const APPOINTMENT_TRACK_EVENT = "zms-appointment-track";
@@ -148,9 +151,23 @@ function sendToEtracker(payload: AppointmentTrackPayload): void {
 
   sendEvent(
     new UserDefinedEvent(
-      payload.object,
+      etrackerObject(payload),
       APPOINTMENT_TRACK_CATEGORY,
       payload.action
     )
   );
+}
+
+/**
+ * The etracker Events report shows this string in the object column.
+ * Reserved slots and confirmations are named so flow and view are visible there.
+ */
+function etrackerObject(payload: AppointmentTrackPayload): string {
+  if (payload.object === "reserved" && payload.flow && payload.slot_ui) {
+    return `${payload.flow}_${payload.slot_ui}`;
+  }
+  if (payload.object === "confirmed" && payload.flow) {
+    return `${payload.flow}_confirmed`;
+  }
+  return payload.object;
 }

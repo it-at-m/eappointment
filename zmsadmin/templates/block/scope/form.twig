@@ -238,6 +238,24 @@
 
                     {{ formgroup(
                         {
+                            "legend": "Umbuchung:",
+                            "groupTag": "fieldset"
+                        },
+                        [{
+                            "type":"checkbox",
+                            "parameter": {
+                                "label": "Umbuchung deaktiviert",
+                                "description": "Ist diese Option aktiv, können Bürger*innen Termine in der Bürgeransicht nicht selbständig verschieben. Die Absage bleibt möglich. Die Einstellung gilt unabhängig von der maximalen Anzahl an Terminen pro E-Mail-Adresse.",
+                                "name": "preferences[appointment][rebookingDisabled]",
+                                "id": "rebookingDisabled",
+                                "value": 1,
+                                "checked": scope is defined ? (scope.preferences.appointment.rebookingDisabled|default(0)) : 0,
+                            }
+                        }]
+                    ) }}
+
+                    {{ formgroup(
+                        {
                             "label": "Maximale Anzahl an Terminen pro E-Mail-Adresse:", "description": "Wird 1 eingestellt, können Bürger*innen ihre Termine nicht selbständig umbuchen."
                         },
                         [{

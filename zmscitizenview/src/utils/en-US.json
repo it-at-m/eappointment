@@ -3,8 +3,9 @@
   "altcha": {
     "error": "Verification failed. Try again later.",
     "expired": "Verification expired. Try again.",
-    "invalidCaptcha": "Too much time has passed since you started booking your appointment. Please select a new date to continue with the booking.",
+    "invalidCaptcha": "Too much time has passed since your bot check. Please start the appointment booking again to refresh the check.",
     "invalidCaptchaHeader": "Your session has expired.",
+    "invalidCaptchaText": "Too much time has passed since your bot check. Please start the appointment booking again to refresh the check.",
     "label": "I'm not a robot",
     "loadError": "The widget could not be loaded.",
     "verified": "Verified",
@@ -16,6 +17,8 @@
   "am": "Morning",
   "apiErrorAppointmentCanNotBeCanceledHeader": "Your appointment cannot be cancelled.",
   "apiErrorAppointmentCanNotBeCanceledText": "Unfortunately, your appointment cannot be cancelled. Please contact the service that offered you the appointment.",
+  "apiErrorRebookingDisabledHeader": "This appointment cannot be rescheduled.",
+  "apiErrorRebookingDisabledText": "Rescheduling is not available for this location. You can still cancel the appointment.",
   "apiErrorAppointmentNotAvailableHeader": "Your selected date is no longer available.",
   "apiErrorAppointmentNotAvailableText": "Unfortunately, another person has now booked your desired appointment. Please select a new date.",
   "apiErrorAppointmentNotFoundHeader": "We could not find your appointment.",
@@ -23,11 +26,11 @@
   "apiErrorAuthKeyMismatchHeader": "Invalid authentication key.",
   "apiErrorAuthKeyMismatchText": "Unfortunately, your appointment cannot be activated. Please check that you have used the correct link.",
   "apiErrorCaptchaExpiredHeader": "Your session has expired.",
-  "apiErrorCaptchaExpiredText": "Too much time has passed since you started booking your appointment. Please select a new date to continue with the booking.",
+  "apiErrorCaptchaExpiredText": "Too much time has passed since your bot check. Please start the appointment booking again to refresh the check.",
   "apiErrorCaptchaInvalidHeader": "Your session has expired.",
-  "apiErrorCaptchaInvalidText": "Too much time has passed since you started booking your appointment. Please select a new date to continue with the booking.",
+  "apiErrorCaptchaInvalidText": "Too much time has passed since your bot check. Please start the appointment booking again to refresh the check.",
   "apiErrorCaptchaMissingHeader": "Your session has expired.",
-  "apiErrorCaptchaMissingText": "Too much time has passed since you started booking your appointment. Please select a new date to continue with the booking.",
+  "apiErrorCaptchaMissingText": "Too much time has passed since your bot check. Please start the appointment booking again to refresh the check.",
   "apiErrorCaptchaVerificationErrorHeader": "Verification failed.",
   "apiErrorCaptchaVerificationErrorText": "Verification failed. Please try again later.",
   "apiErrorCaptchaVerificationFailedHeader": "Verification failed.",
@@ -137,7 +140,7 @@
   "apiErrorServiceUnavailableHeader": "Service unavailable.",
   "apiErrorServiceUnavailableText": "The requested service is currently unavailable. Please try again later.",
   "apiErrorSessionTimeoutHeader": "Your session has expired.",
-  "apiErrorSessionTimeoutText": "Too much time has passed since you started booking your appointment. Please select a new date to continue with the booking.",
+  "apiErrorSessionTimeoutText": "Too much time has passed since your bot check. Please start the appointment booking again to refresh the check.",
   "apiErrorSourceNotFoundHeader": "Appointment booking currently limited",
   "apiErrorSourceNotFoundText": "Required location data is currently unavailable. Please try again later.",
   "apiErrorTelephoneCannotBeChangedHeader": "Telephone number cannot be changed.",
@@ -148,8 +151,8 @@
   "apiErrorTooManyAppointmentsWithSameMailText": "You can only book a limited number of appointments with your e-mail address. Please cancel another appointment before you book a new one.",
   "apiErrorTooManyServicesPerAppointmentHeader": "Too many of the same service selected.",
   "apiErrorTooManyServicesPerAppointmentText": "You have selected more of a service than allowed. Please reduce the quantity and try again.",
-  "apiErrorTooManySlotsPerAppointmentHeader": "Too many services selected.",
-  "apiErrorTooManySlotsPerAppointmentText": "You can only book a limited number of services in one appointment. Please reduce your selection and try again.",
+  "apiErrorTooManySlotsPerAppointmentHeader": "No appointment is currently available",
+  "apiErrorTooManySlotsPerAppointmentText": "Please try again later.",
   "apiErrorUnknownErrorHeader": "An unknown error occurred.",
   "apiErrorUnknownErrorText": "Please try again later or contact support.",
   "apiErrorZmsClientCommunicationErrorHeader": "Service is temporarily unavailable.",
@@ -243,6 +246,7 @@
   "remarks": "Remarks",
   "remarks2": "More remarks",
   "rescheduleAppointment": "Reschedule appointment",
+  "restartBooking": "Restart booking",
   "rescheduleErrorHeader": "Your appointment is in the past.",
   "rescheduleErrorText": "You can no longer cancel or reschedule this appointment. If required, please make a new appointment.",
   "selectedAppointment": "Selected Appointment",
@@ -280,18 +284,22 @@
   "systemFailurePageHeader": "The function is currently not available.",
   "systemFailurePageText": "There is currently a technical problem with this function. Please try again later.",
   "appointmentType": "Type of appointment",
-  "appointmentTypes": {
-    "1": "On-site appointment",
-    "2": "Phone appointment",
-    "3": "Video consultation",
-    "4": "Appointment for an individual",
-    "5": "Appointment for a family",
-    "6": "Appointment for a small client",
-    "7": "Appointment for a large client"
-  },
-  "locationVariantText": {
-    "1": "You will come to our location in person.",
-    "2": "We will call you at your preferred number.",
-    "3": "You will receive dial-in details and instructions by email."
+  "variants": {
+    "1": {
+      "name": "On-site appointment",
+      "hint": "You will come to our location in person."
+    },
+    "2": {
+      "name": "Phone appointment",
+      "hint": "We will call you at your preferred number."
+    },
+    "3": {
+      "name": "Video consultation",
+      "hint": "You will receive dial-in details and instructions by email."
+    },
+    "4": { "name": "Appointment for an individual" },
+    "5": { "name": "Appointment for a family" },
+    "6": { "name": "Appointment for a small client" },
+    "7": { "name": "Appointment for a large client" }
   }
 }

@@ -13,6 +13,7 @@ export function createErrorStateMap(): ErrorStateMap {
   // Define all error state names
   const errorStateNames = [
     "apiErrorAppointmentCanNotBeCanceled",
+    "apiErrorRebookingDisabled",
     "apiErrorAppointmentNotAvailable",
     "apiErrorAppointmentNotFound",
     "apiErrorAuthKeyMismatch",
