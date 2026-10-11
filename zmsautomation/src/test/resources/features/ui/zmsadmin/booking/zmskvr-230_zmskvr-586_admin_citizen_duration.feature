@@ -4,8 +4,7 @@ Feature: Bürgeransicht and Admin show the same Termindauer across offices
   # ZMSKVR-230 / ZMSKVR-586: Voraussichtliche Termindauer in Bürgeransicht matches
   # "Termindauer in Minuten" on the Sachbearbeiterplatz for the same service.
   # Bürgerbüros, KfZ, Feuerwache, Standesamt, Fundbüro, Einbürgerung, Führerschein.
-  # Skip Gewerbe-Anmeldung here: Art des Termins (Vor-Ort/Telefon/Video) hides the
-  # duration clock until a channel is chosen (API still covers office 10546).
+  # Gewerbe-Anmeldung needs Art des Termins first (separate scenario below).
 
   @web @zmsadmin @zmscitizenview @booking @clerk @citizen @ZMSKVR-230 @ZMSKVR-586 @executeLocally
   Scenario Outline: Jump-in duration matches Admin Termindauer at the related Standort
@@ -34,6 +33,22 @@ Feature: Bürgeransicht and Admin show the same Termindauer across offices
       | 1063519   | 1061963  | 20      | Fundbüro (KVR-III/32 Team 1) Termin (extern, 3 Spuren)                 | Fundsache abholen             |
       | 1071907   | 10471    | 60      | Einbürgerungsbehörde (KVR-V/4) Urkundenübergabe                        | Einbürgerung                  |
       | 1071854   | 1094898  | 5       | Führerscheinstelle (KVR-II/4422) Logistik                             | Internationaler Führerschein  |
+
+  @web @zmsadmin @zmscitizenview @booking @clerk @citizen @ZMSKVR-230 @ZMSKVR-586 @executeLocally @jumpin
+  Scenario: Gewerbe-Anmeldung is 20 minutes after Vor-Ort and on the Admin form
+    Given I open zmscitizenview with jump-in service "1063423" and location "10546"
+    Then the service combination step should be visible
+    When I select the appointment type "Vor-Ort-Termin" on the service combination step
+    Then the service duration is shown with a clock and is 20 minutes
+    When I open the administration website.
+    Then I should be on the administration start page.
+    When I click the button "Anmelden" in the administration.
+    And I select for "Standort" the value "Gewerbeamt (KVR-III/21) Meldungen".
+    And I enter in the field "Platz-Nr. oder Tresen" the text "14".
+    And I click the button "Auswahl bestätigen" in the administration.
+    Then the workstation page is displayed.
+    When I select the service "Gewerbe-Anmeldung" under create appointment in the administration.
+    Then the Termindauer on the appointment form is 20 minutes.
 
   @web @zmsadmin @booking @clerk @ZMSKVR-230 @ZMSKVR-586 @executeLocally
   Scenario: Admin Termindauer doubles when Reisepass quantity is raised

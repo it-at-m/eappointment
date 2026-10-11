@@ -522,6 +522,10 @@ public class CitizenViewPage extends BasePage {
         combination.assertEstimatedDurationShownWithClock(minutes);
     }
 
+    public void selectAppointmentType(String label) {
+        combination.selectAppointmentType(label);
+    }
+
     /** ZMSKVR-1501: the broken 15-minute mapping showed 135 minutes for a 45-minute service. */
     public void assertEstimatedDurationMinutesNot(int minutes) {
         combination.assertEstimatedDurationMinutesNot(minutes);

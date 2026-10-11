@@ -117,8 +117,19 @@ Feature: Estimated duration on the service page
     Then the service combination step should be visible
     And the service duration is shown with a clock and is 20 minutes
 
-  # Gewerbe-Anmeldung (1063423@10546) is API-only: Art des Termins hides the clock
-  # until Vor-Ort / Telefon / Video is chosen.
+  # Gewerbeamt: Art des Termins must be chosen before Voraussichtliche Termindauer appears.
+  @jumpin @ZMSKVR-230
+  Scenario Outline: Gewerbe-Anmeldung shows 20 minutes after choosing the appointment type
+    Given I open zmscitizenview with jump-in service "1063423" and location "10546"
+    Then the service combination step should be visible
+    When I select the appointment type "<variant>" on the service combination step
+    Then the service duration is shown with a clock and is 20 minutes
+
+    Examples:
+      | variant        |
+      | Vor-Ort-Termin |
+      | Telefon-Termin |
+      | Videoberatung  |
 
   @jumpin @ZMSKVR-230
   Scenario: Einbürgerung at 10471 is 60 minutes
