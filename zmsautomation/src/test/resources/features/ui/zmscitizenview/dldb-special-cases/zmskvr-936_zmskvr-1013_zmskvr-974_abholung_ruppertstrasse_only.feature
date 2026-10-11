@@ -1,11 +1,11 @@
 #language: en
-@web @zmscitizenview @dldb-special-cases @citizen @ZMSKVR-936 @ZMSKVR-1013 @ZMSKVR-974 @executeLocally
+@web @zmscitizenview @dldb-special-cases @citizen @ZMSKVR-936 @ZMSKVR-1013 @ZMSKVR-974 @ZMSKVR-1263 @executeLocally
 Feature: CitizenView: Abholung only at Bürgerbüro Ruppertstraße (10492)
   As a citizen
   I want "Abholung Personalausweis, Reisepass oder eID-Karte" (10295182) only at Ort 10492
   So that peer Ruppertstraße calendars and Außenstellen without Terminspuren are not offered
 
-  # ZMSKVR-936 / ZMSKVR-974 / test ZMSKVR-1013.
+  # ZMSKVR-936 / ZMSKVR-974 / test ZMSKVR-1013; ZMSKVR-1263 #1–#4 (Abholung jump-ins).
   # Abholung is bookable only at KVR-II/211 (10492). No Standort checkbox list — Ruppertstraße is a tile.
   # Haupt 10489, Pass 10502, and peers 10500 / 10491 have no office-service relation → jump-in shows
   # "Diese Ansicht kann nicht geladen werden."
@@ -38,7 +38,20 @@ Feature: CitizenView: Abholung only at Bürgerbüro Ruppertstraße (10492)
     And provider checkbox 10227989 should not appear in the citizen view
     And provider checkbox 1060068 should not appear in the citizen view
 
-  @jumpin
+  # ZMSKVR-1263 #1: service-only jump-in (no location) still resolves only Abholstandort 10492.
+  @jumpin @ZMSKVR-1263
+  Scenario: Abholung service-only jump-in shows only the Ruppertstraße tile
+    Given I open zmscitizenview with jump-in service "10295182"
+    Then the service combination step should be visible
+    When I continue from the service combination step
+    Then the only office is a tile without checkboxes
+    And provider checkbox 10502 should not appear in the citizen view
+    And provider checkbox 10489 should not appear in the citizen view
+    And provider checkbox 10500 should not appear in the citizen view
+    And provider checkbox 10491 should not appear in the citizen view
+
+  # ZMSKVR-1263 #2.
+  @jumpin @ZMSKVR-1263
   Scenario: Abholung jump-in at 10492 shows only that Ort tile
     Given I open zmscitizenview with jump-in service "10295182" and location "10492"
     Then the service combination step should be visible
@@ -49,7 +62,8 @@ Feature: CitizenView: Abholung only at Bürgerbüro Ruppertstraße (10492)
     And provider checkbox 10500 should not appear in the citizen view
     And provider checkbox 10491 should not appear in the citizen view
 
-  @jumpin
+  # ZMSKVR-1263 #3–#4 (plus peer calendars 10500 / 10491).
+  @jumpin @ZMSKVR-1263
   Scenario Outline: Abholung jump-in at a peer Ruppertstraße office is rejected
     Given I open zmscitizenview with jump-in service "10295182" and location "<location>"
     Then the invalid jump-in callout should be visible in the citizen view
