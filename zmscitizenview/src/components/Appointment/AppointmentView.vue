@@ -507,7 +507,6 @@ import {
   hasPreconfirmContextError,
   hasUpdateContextError,
 } from "@/utils/errorHandler";
-import { expandSubServicesFromCombinable } from "@/utils/expandSubServicesFromCombinable";
 import {
   applyAppointmentContactToCustomerData,
   hasMissingRequiredContact,
@@ -1372,22 +1371,12 @@ const applyLocalStorageUiData = (uiData: LocalStorageUiData) => {
           })),
       } as AppointmentDTO,
       services.value,
-      (serviceId) => getProviders(serviceId, null)
+      (serviceId) => getProviders(serviceId, null),
+      undefined,
+      // Peers now — not after ServiceFinder re-fetches the catalog (lag / ATAF race).
+      { expandCombinablePeers: true }
     );
     if (restored) {
-      // serviceFromAppointment only attaches selected counts; Leistung needs every
-      // combinable peer again (same as before login / hydrateServiceFromSelectedMap).
-      if (foundService.combinable) {
-        restored.combinable = JSON.parse(
-          JSON.stringify(foundService.combinable)
-        );
-      }
-      expandSubServicesFromCombinable(
-        restored,
-        selectedServiceMap.value,
-        services.value,
-        getProviders
-      );
       restored.subServiceSelectionOrder = Array.from(
         selectedServiceMap.value.entries()
       )
