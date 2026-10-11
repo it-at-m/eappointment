@@ -303,6 +303,13 @@ public class AdminSteps {
         AUTHORITIES_AND_LOCATIONS_PAGE.clickOnLocationEntry(location);
     }
 
+    @Then("the availability hint field for citizens should be visible on the location form.")
+    public void theAvailabilityHintFieldForCitizensShouldBeVisibleOnTheLocationForm() {
+        ScenarioLogManager.getLogger()
+                .info("Assert Hinweismeldungen bzgl. der Terminverfügbarkeiten field on Standort form");
+        AUTHORITIES_AND_LOCATIONS_PAGE.assertAvailabilityHintFieldLegendVisible();
+    }
+
     @And("I open the opening-hours accordion {string}.")
     public void und_sie_die_oeffnungszeit_accordion_oeffnen(String accordionTitle) {
         accordionTitle = TestDataHelper.transformTestData(accordionTitle);

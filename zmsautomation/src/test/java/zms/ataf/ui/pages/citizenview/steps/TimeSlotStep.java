@@ -321,24 +321,203 @@ public final class TimeSlotStep {
     public void assertNoAppointmentCustomInfoLinkVisible() {
         context.set();
         assertNoAppointmentInfoCalloutVisible();
-        Assert.assertTrue(
-                shadow.shadowDomContainsText(NEW_APPOINTMENTS_INFO_LINK),
-                "Expected '" + NEW_APPOINTMENTS_INFO_LINK + "' when the scope has custom empty-state info");
+        assertNewAppointmentsInfoLinkVisible();
     }
 
     /**
-     * Custom HTML is shown in a modal after the ghost link. The link presence already proves
-     * {@code emptyStateAvailabilityInfoHtml} is wired; content is asserted via Citizen API
-     * {@code infoForAllAppointments} in the feature (muc-button hosts are often zero-sized).
+     * Link above the timeslot grid (or list) when selected offices have infoForAllAppointments.
+     */
+    public void assertNewAppointmentsInfoLinkVisible() {
+        context.set();
+        Assert.assertTrue(
+                shadow.shadowDomContainsText(NEW_APPOINTMENTS_INFO_LINK),
+                "Expected '" + NEW_APPOINTMENTS_INFO_LINK + "' for availability info");
+    }
+
+    /**
+     * Opens the Pattern Lab modal from the ghost link (empty callout or above timeslots).
+     * muc-button hosts are often zero-sized, so click a painted descendant when needed.
+     */
+    public void openNewAppointmentsInfoModal() {
+        context.set();
+        assertNewAppointmentsInfoLinkVisible();
+        ScenarioLogManager.getLogger().info("zmscitizenview: open '{}'", NEW_APPOINTMENTS_INFO_LINK);
+        boolean clicked = false;
+        try {
+            clicked = Boolean.TRUE.equals(new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(defaultWaitSeconds))
+                    .until(d -> clickNewAppointmentsInfoLink() ? Boolean.TRUE : null));
+        } catch (TimeoutException e) {
+            clicked = false;
+        }
+        Assert.assertTrue(clicked, "Could not click '" + NEW_APPOINTMENTS_INFO_LINK + "'");
+        waitForAvailabilityInfoModalOpen();
+    }
+
+    public void assertAvailabilityInfoModalTitle() {
+        context.set();
+        waitForAvailabilityInfoModalOpen();
+        Assert.assertTrue(
+                modalBodyOrTitleContains(NEW_APPOINTMENTS_INFO_LINK),
+                "Expected modal title '" + NEW_APPOINTMENTS_INFO_LINK + "'");
+    }
+
+    public void assertAvailabilityInfoModalContains(String fragment) {
+        context.set();
+        Objects.requireNonNull(fragment, "fragment");
+        waitForAvailabilityInfoModalOpen();
+        Assert.assertTrue(
+                modalBodyOrTitleContains(fragment),
+                "Expected availability info modal to contain '" + fragment + "'");
+    }
+
+    public void assertAvailabilityInfoModalHasHeading(String headingFragment) {
+        context.set();
+        Objects.requireNonNull(headingFragment, "headingFragment");
+        waitForAvailabilityInfoModalOpen();
+        Assert.assertTrue(
+                modalHasHeadingContaining(headingFragment),
+                "Expected modal H3 containing '" + headingFragment + "'");
+    }
+
+    public void assertAvailabilityInfoModalHasNoProviderHeading() {
+        context.set();
+        waitForAvailabilityInfoModalOpen();
+        Assert.assertFalse(
+                modalHasAnyH3(),
+                "Identical infoForAllAppointments should omit Standort H3 headings in the modal");
+    }
+
+    /**
+     * Custom HTML is shown in the modal after the ghost link on the empty-state callout.
      */
     public void assertNoAppointmentCustomInfoContains(String fragment) {
         context.set();
         Objects.requireNonNull(fragment, "fragment");
         assertNoAppointmentCustomInfoLinkVisible();
-        ScenarioLogManager.getLogger()
-                .info(
-                        "zmscitizenview: custom empty-state link visible; fragment '{}' asserted via API in the feature",
-                        fragment);
+        openNewAppointmentsInfoModal();
+        assertAvailabilityInfoModalTitle();
+        assertAvailabilityInfoModalContains(fragment);
+    }
+
+    private boolean clickNewAppointmentsInfoLink() {
+        String script =
+                "var label=arguments[0];"
+                        + "function shown(el){var n=el;while(n&&n.nodeType===1){"
+                        + "var st=window.getComputedStyle(n);"
+                        + "if(st.display==='none'||st.visibility==='hidden'||st.opacity==='0')return false;"
+                        + "if(n.parentElement){n=n.parentElement;continue;}"
+                        + "var root=n.getRootNode&&n.getRootNode();n=root&&root.host?root.host:null;}"
+                        + "return true;}"
+                        + "function box(el){if(!el||el.nodeType!==1||!el.getBoundingClientRect)return false;"
+                        + "var r=el.getBoundingClientRect();if(r.width<=0||r.height<=0)return false;"
+                        + "var st=window.getComputedStyle(el);return st.visibility!=='hidden'&&st.display!=='none'&&st.opacity!=='0';}"
+                        + "function painted(el){if(box(el))return el;var found=null;"
+                        + "function w(n){if(!n||found)return;if(n.nodeType===1&&n!==el&&box(n)){found=n;return;}"
+                        + "if(n.shadowRoot)w(n.shadowRoot);var c=n.children;if(c)for(var i=0;i<c.length;i++)w(c[i]);}"
+                        + "w(el);return found;}"
+                        + "function textOf(n){var s='';if(!n)return s;if(n.nodeType===3)return n.nodeValue||'';"
+                        + "if(n.shadowRoot)s+=' '+textOf(n.shadowRoot);"
+                        + "var c=n.childNodes;if(c)for(var i=0;i<c.length;i++)s+=' '+textOf(c[i]);return s;}"
+                        + "function walk(n){if(!n)return null;"
+                        + "var tag=(n.tagName||'').toUpperCase();"
+                        + "if(tag==='MUC-BUTTON'||tag==='BUTTON'||tag==='A'){"
+                        + "var t=textOf(n).replace(/\\s+/g,' ').trim();"
+                        + "if(t.indexOf(label)>=0&&shown(n))return n;}"
+                        + "if(n.shadowRoot){var inner=walk(n.shadowRoot);if(inner)return inner;}"
+                        + "var c=n.children;if(c)for(var i=0;i<c.length;i++){var hit=walk(c[i]);if(hit)return hit;}"
+                        + "return null;}"
+                        + "var node=walk(document.body);if(!node)return false;"
+                        + "var hit=painted(node)||node;hit.scrollIntoView({block:'center'});hit.click();return true;";
+        return Boolean.TRUE.equals(
+                ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script, NEW_APPOINTMENTS_INFO_LINK));
+    }
+
+    private void waitForAvailabilityInfoModalOpen() {
+        try {
+            new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(defaultWaitSeconds))
+                    .until(d -> availabilityInfoModalOpen() ? Boolean.TRUE : null);
+        } catch (TimeoutException e) {
+            Assert.fail("Availability info modal did not open");
+        }
+    }
+
+    private boolean availabilityInfoModalOpen() {
+        String script =
+                "function walk(n){if(!n)return false;"
+                        + "var tag=(n.tagName||'').toUpperCase();"
+                        + "if(tag==='MUC-MODAL'){"
+                        + "var open=n.open===true||n.hasAttribute('open')||(n.getAttribute('open')!==null);"
+                        + "if(open)return true;}"
+                        + "if(n.shadowRoot&&walk(n.shadowRoot))return true;"
+                        + "var c=n.children;if(c)for(var i=0;i<c.length;i++)if(walk(c[i]))return true;"
+                        + "return false;}"
+                        + "return walk(document.body);";
+        return Boolean.TRUE.equals(((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script));
+    }
+
+    private boolean modalBodyOrTitleContains(String fragment) {
+        String script =
+                "var needle=arguments[0];"
+                        + "function textOf(n){var s='';if(!n)return s;if(n.nodeType===3)return n.nodeValue||'';"
+                        + "if(n.shadowRoot)s+=' '+textOf(n.shadowRoot);"
+                        + "var c=n.childNodes;if(c)for(var i=0;i<c.length;i++)s+=' '+textOf(c[i]);return s;}"
+                        + "function walk(n){if(!n)return false;"
+                        + "var tag=(n.tagName||'').toUpperCase();"
+                        + "if(tag==='MUC-MODAL'){"
+                        + "var open=n.open===true||n.hasAttribute('open')||(n.getAttribute('open')!==null);"
+                        + "if(open&&textOf(n).indexOf(needle)>=0)return true;}"
+                        + "if(n.shadowRoot&&walk(n.shadowRoot))return true;"
+                        + "var c=n.children;if(c)for(var i=0;i<c.length;i++)if(walk(c[i]))return true;"
+                        + "return false;}"
+                        + "return walk(document.body);";
+        return Boolean.TRUE.equals(
+                ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script, fragment));
+    }
+
+    private boolean modalHasHeadingContaining(String headingFragment) {
+        String script =
+                "var needle=arguments[0];"
+                        + "function textOf(n){return ((n&&(n.innerText||n.textContent))||'').replace(/\\s+/g,' ').trim();}"
+                        + "function headings(root,out){"
+                        + " if(!root)return;"
+                        + " var hs=root.querySelectorAll('h3');"
+                        + " for(var i=0;i<hs.length;i++)out.push(textOf(hs[i]));"
+                        + " var all=root.querySelectorAll('*');"
+                        + " for(var j=0;j<all.length;j++)if(all[j].shadowRoot)headings(all[j].shadowRoot,out);"
+                        + "}"
+                        + "function walkModal(n){if(!n)return null;"
+                        + "var tag=(n.tagName||'').toUpperCase();"
+                        + "if(tag==='MUC-MODAL'){"
+                        + "var open=n.open===true||n.hasAttribute('open')||(n.getAttribute('open')!==null);"
+                        + "if(open)return n;}"
+                        + "if(n.shadowRoot){var inner=walkModal(n.shadowRoot);if(inner)return inner;}"
+                        + "var c=n.children;if(c)for(var i=0;i<c.length;i++){var hit=walkModal(c[i]);if(hit)return hit;}"
+                        + "return null;}"
+                        + "var modal=walkModal(document.body);if(!modal)return false;"
+                        + "var list=[];headings(modal,list);if(modal.shadowRoot)headings(modal.shadowRoot,list);"
+                        + "for(var k=0;k<list.length;k++)if(list[k].indexOf(needle)>=0)return true;"
+                        + "return false;";
+        return Boolean.TRUE.equals(
+                ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script, headingFragment));
+    }
+
+    private boolean modalHasAnyH3() {
+        String script =
+                "function countH3(root){if(!root)return 0;var n=root.querySelectorAll('h3').length;"
+                        + "var all=root.querySelectorAll('*');"
+                        + "for(var j=0;j<all.length;j++)if(all[j].shadowRoot)n+=countH3(all[j].shadowRoot);"
+                        + "return n;}"
+                        + "function walkModal(n){if(!n)return null;"
+                        + "var tag=(n.tagName||'').toUpperCase();"
+                        + "if(tag==='MUC-MODAL'){"
+                        + "var open=n.open===true||n.hasAttribute('open')||(n.getAttribute('open')!==null);"
+                        + "if(open)return n;}"
+                        + "if(n.shadowRoot){var inner=walkModal(n.shadowRoot);if(inner)return inner;}"
+                        + "var c=n.children;if(c)for(var i=0;i<c.length;i++){var hit=walkModal(c[i]);if(hit)return hit;}"
+                        + "return null;}"
+                        + "var modal=walkModal(document.body);if(!modal)return false;"
+                        + "return countH3(modal)>0;";
+        return Boolean.TRUE.equals(((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script));
     }
 
     private boolean noAppointmentErrorCalloutVisible() {
