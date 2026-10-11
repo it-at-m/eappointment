@@ -584,6 +584,10 @@ public class CitizenViewPage extends BasePage {
         combination.assertPlusButton(label, disabled);
     }
 
+    public void assertAllPlusButtonsDisabled() {
+        combination.assertAllPlusButtonsDisabled();
+    }
+
     /** ZMSKVR-106: the service name links to its description on muenchen.de. */
     public void assertServiceDescriptionLink(String label, String serviceId) {
         combination.assertServiceDescriptionLink(label, serviceId);
