@@ -202,17 +202,15 @@ public final class OverviewStep {
                 String.valueOf(communication.get("target")),
                 "_blank",
                 "Electronic communication link should use target=_blank: " + communication);
-        String privacyAria = String.valueOf(privacy.get("aria"));
-        String commAria = String.valueOf(communication.get("aria"));
+        String privacyAria = String.valueOf(privacy.get("aria")).toLowerCase();
+        String commAria = String.valueOf(communication.get("aria")).toLowerCase();
+        // de-DE: "Datenschutzerklärung pdf download" / "…Kommunikation… neuem Tab"
         Assert.assertTrue(
-                privacyAria.toLowerCase().contains("datenschutz")
-                        || privacyAria.toLowerCase().contains("pdf"),
-                "Privacy link needs an aria-label for screen readers: " + privacy);
+                privacyAria.contains("datenschutz") && privacyAria.contains("pdf"),
+                "Privacy aria-label must name Datenschutz and PDF: " + privacy);
         Assert.assertTrue(
-                commAria.toLowerCase().contains("kommunikation")
-                        || commAria.toLowerCase().contains("tab"),
-                "Electronic communication link needs an aria-label for screen readers: "
-                        + communication);
+                commAria.contains("kommunikation") && commAria.contains("tab"),
+                "Communication aria-label must name Kommunikation and new tab: " + communication);
     }
 
     /** ZMSKVR-521: Adresse label uses 16px and no bottom margin above the address lines. */
@@ -246,7 +244,7 @@ public final class OverviewStep {
                 Math.abs(((Number) map.get("px")).doubleValue() - 16.0) <= 1.0,
                 "Adresse label should be 16px: " + map);
         Assert.assertTrue(
-                ((Number) map.get("mb")).doubleValue() <= 2.0,
+                Math.abs(((Number) map.get("mb")).doubleValue()) <= 0.5,
                 "Adresse label should have no bottom margin: " + map);
     }
     public void assertSelectedAppointmentPlaceExclusive(String heading, String exclusive) {
