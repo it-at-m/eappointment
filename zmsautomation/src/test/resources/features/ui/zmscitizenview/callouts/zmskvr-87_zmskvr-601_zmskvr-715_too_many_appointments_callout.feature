@@ -18,14 +18,14 @@ Feature: CitizenView: too many appointments per email callout on Übersicht
     And the response should contain offices and services
 
   Scenario: Termin reservieren shows the too-many-appointments callout on Übersicht
-    When I request available days for office 10521 and service 1072587
+    When I request available days for office 10521 and service 10429902
     And I request available appointments for the first available day
     And I reserve an appointment with the first available slot
     Then the appointment status should be "reserved"
     When I update the appointment with family name "MusterZmskvr715Ui" and customTextfield "ATAF Bemerkung"
     Then the appointment status should be "reserved"
     And I remember the current appointment as "first"
-    Given I open zmscitizenview with jump-in service "1072587" and location "10521"
+    Given I open zmscitizenview with jump-in service "10429902" and location "10521"
     Then the service combination step should be visible
     When I continue from the service combination step
     Then provider checkbox 10521 should be visible in the citizen view

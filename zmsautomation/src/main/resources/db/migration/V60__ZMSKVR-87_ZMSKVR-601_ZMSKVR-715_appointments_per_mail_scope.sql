@@ -1,9 +1,9 @@
 -- ZMSKVR-87 / ZMSKVR-601 / ZMSKVR-715: appointmentsPerMail = 1 fixture scope.
 --
--- Dedicated Standort 380 for Waffenbehörde provider 10521 (Europäischer
--- Feuerwaffenpass 1072587). No other ATAF feature books 10521. Limit 1 active
--- (preconfirmed/confirmed) appointment per email so the second booking hits
--- tooManyAppointmentsWithSameMail on update or preconfirm.
+-- Dedicated Standort 380 for Waffenbehörde provider 10521 (public service
+-- Waffen- bzw. Munitionsabgabe 10429902). No other ATAF feature books 10521.
+-- Limit 1 active (preconfirmed/confirmed) appointment per email so the second
+-- booking hits tooManyAppointmentsWithSameMail on update or preconfirm.
 --
 -- Hours follow Berlin now: stay on today while three hours remain, otherwise
 -- open the next day. CURDATE()/CURTIME() use zms-db TZ=Europe/Berlin.
