@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-10-11T17:02:10.197Z",
+  "publishedAt": "2026-10-11T17:26:53.104Z",
   "branches": [
     {
       "name": "next",
@@ -754,8 +754,8 @@
     {
       "name": "test-zmskvr-486-zmskvr-586-service-duration",
       "slug": "test-zmskvr-486-zmskvr-586-service-duration",
-      "runId": "38157246267",
-      "runStartedAt": "2026-10-11T16:52:13Z"
+      "runId": "38158729708",
+      "runStartedAt": "2026-10-11T17:13:20Z"
     },
     {
       "name": "test-zmskvr-514-ux-chrome-batch",
