@@ -2230,9 +2230,10 @@ public class CitizenApiSteps {
                 .as("ICS cancel/reschedule link")
                 .contains("#/appointment/");
         Assertions.assertThat(process.getServiceId()).as("serviceId").isNotNull();
+        String leistungServiceId = icsLeistungServiceId(process.getServiceId());
         Assertions.assertThat(unfolded)
-                .as("ICS Leistung URL")
-                .contains("https://stadt.muenchen.de/service/info/" + process.getServiceId());
+                .as("ICS Leistung URL (public request id for variants)")
+                .contains("https://stadt.muenchen.de/service/info/" + leistungServiceId);
         Assertions.assertThat(unfolded).as("ICS LOCATION present").contains("LOCATION:");
         Integer officeId = process.getOfficeId() != null ? process.getOfficeId() : lastOfficeId;
         if (Integer.valueOf(10492).equals(officeId)) {
@@ -2240,6 +2241,20 @@ public class CitizenApiSteps {
                     .as("ICS LOCATION street for Bürgerbüro Ruppertstraße (10492)")
                     .contains("Ruppertstraße");
         }
+    }
+
+    /**
+     * Munich {@code icsappointment.twig} links {@code request.id}. Phone/video variants (V26 zms
+     * ids 1/2) publish parent DLDB {@code 1080455} in that URL, not the internal serviceId.
+     */
+    public static String icsLeistungServiceId(Integer serviceId) {
+        if (serviceId == null) {
+            return null;
+        }
+        if (serviceId == 1 || serviceId == 2) {
+            return "1080455";
+        }
+        return String.valueOf(serviceId);
     }
 
     private static String unfoldIcs(String icsContent) {

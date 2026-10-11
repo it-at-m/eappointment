@@ -6,8 +6,9 @@ Feature: ZMSKVR-97 / ZMSKVR-535 — confirm-appointment returns Munich ICS conte
 
   # Matches Munich Flyway icsappointment.twig (V24): DESCRIPTION Terminnummer /
   # Leistung URL / #/appointment/{{ appointmentLink }}, LOCATION street for Vor-Ort.
-  # Prefixed displayNumber: Abholung 10295182 @ 10492 (scope 148 prefix A).
+  # Prefixed displayNumber: Abholung 10295182 @ 10492 (scope 148 prefix A; required Bemerkung).
   # Plain displayNumber: Auskunft zur Rente Telefon 2 @ 2 (scope 369, no prefix).
+  # ICS Leistung URL uses the public parent id 1080455 for phone/video variants (V26).
   # UI sibling: ui/.../booking/zmskvr-97_…_confirmation_ics.feature
 
   Background:
@@ -22,7 +23,7 @@ Feature: ZMSKVR-97 / ZMSKVR-535 — confirm-appointment returns Munich ICS conte
     And I reserve an appointment with the first available slot
     Then the reserve endpoint response should include a thinned booking process with processId, authKey, officeId, and serviceId
     And the appointment status should be "reserved"
-    When I update the appointment with contact details without custom text
+    When I update the appointment with contact details and customTextfield "ATAF Bemerkung"
     Then the update endpoint response should include a thinned booking process with processId, authKey, officeId, and serviceId
     When I preconfirm the appointment
     Then the preconfirm endpoint response should include a thinned booking process with processId, authKey, officeId, and serviceId
