@@ -3101,6 +3101,59 @@ describe("AppointmentView", () => {
       expect(wrapper.vm.rebookOrCancelDialog).toBe(false);
     });
 
+    it("login resume does not pull Zurück from Kontakt back when appointment fetch settles", async () => {
+      localStorage.setItem(
+        LOCALSTORAGE_PARAM_APPOINTMENT_DATA,
+        JSON.stringify(uiStoragePayload)
+      );
+
+      const hash = buildAppointmentHash({
+        id: "hash-proc",
+        authKey: "hash-auth-key",
+      });
+
+      let resolveAppointment: (value: any) => void = () => {};
+      vi.mocked(ZMSAppointmentAPI.fetchAppointment).mockImplementation(
+        () =>
+          new Promise((resolve) => {
+            resolveAppointment = resolve;
+          }) as any
+      );
+
+      const wrapper = createWrapper({
+        showLoginOption: true,
+        appointmentHash: hash,
+      });
+
+      await vi.waitFor(() => {
+        expect(wrapper.vm.currentView).toBe(2);
+      });
+
+      wrapper.vm.decreaseCurrentView();
+      expect(wrapper.vm.currentView).toBe(1);
+
+      resolveAppointment({
+        processId: "hash-proc",
+        authKey: "hash-auth-key",
+        timestamp: Math.floor(Date.now() / 1000) + 3600,
+        familyName: "",
+        email: "noreply-terminvereinbarung@muenchen.de",
+        officeId: "789",
+        scope: {},
+        subRequestCounts: [],
+        serviceId: "123",
+        serviceName: "Test Service",
+        serviceCount: 1,
+        status: "reserved",
+      });
+
+      await vi.waitFor(() => {
+        expect(wrapper.vm.appointment?.processId).toBe("hash-proc");
+      });
+
+      expect(wrapper.vm.currentView).toBe(1);
+    });
+
     it("does not restore authKey or PII from legacy localStorage when hash is missing", async () => {
       localStorage.setItem(
         LOCALSTORAGE_PARAM_APPOINTMENT_DATA,
