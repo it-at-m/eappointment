@@ -1242,9 +1242,15 @@ public final class MyAppointmentsStep {
                 "ICS DESCRIPTION must include the cancel/reschedule #/appointment/ link.");
         Integer serviceId = process.getServiceId();
         Assert.assertNotNull(serviceId, "serviceId missing for ICS Leistung URL.");
+        String leistungServiceId =
+                zms.ataf.rest.steps.CitizenApiSteps.icsLeistungServiceId(serviceId);
         Assert.assertTrue(
-                unfolded.contains("https://stadt.muenchen.de/service/info/" + serviceId),
-                "ICS DESCRIPTION must link the booked service " + serviceId + ".");
+                unfolded.contains("https://stadt.muenchen.de/service/info/" + leistungServiceId),
+                "ICS DESCRIPTION must link the booked service "
+                        + leistungServiceId
+                        + " (process serviceId="
+                        + serviceId
+                        + ").");
         Assert.assertTrue(
                 unfolded.contains("LOCATION:") && unfolded.contains("Ruppertstraße"),
                 "ICS LOCATION should carry the Bürgerbüro street address.");
