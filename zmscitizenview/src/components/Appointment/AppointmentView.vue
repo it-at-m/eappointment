@@ -507,6 +507,7 @@ import {
   hasPreconfirmContextError,
   hasUpdateContextError,
 } from "@/utils/errorHandler";
+import { hydrateServiceFromSelectedMap } from "@/utils/hydrateServiceFromSelectedMap";
 import {
   applyAppointmentContactToCustomerData,
   hasMissingRequiredContact,
@@ -1353,13 +1354,12 @@ const applyLocalStorageUiData = (uiData: LocalStorageUiData) => {
   );
   if (foundService) {
     selectedService.value = foundService as ServiceImpl;
-    const count = selectedServiceMap.value.get(String(foundService.id));
-    if (count != undefined) {
-      selectedService.value.count = count;
-    }
-    selectedService.value.providers = getProviders(
-      selectedService.value.id,
-      null
+    // Map survives OAuth; subServices do not — rebuild for combination/calendar/overview.
+    hydrateServiceFromSelectedMap(
+      selectedService.value,
+      selectedServiceMap.value,
+      services.value,
+      getProviders
     );
   }
 

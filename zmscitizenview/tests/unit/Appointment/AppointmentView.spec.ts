@@ -2969,6 +2969,79 @@ describe("AppointmentView", () => {
       ).toBeNull();
     });
 
+    it("login resume restores combinable subservice counts for back-navigation", async () => {
+      vi.stubGlobal(
+        "fetch",
+        vi.fn().mockResolvedValue({
+          status: 200,
+          json: async () => ({
+            ...catalogResponse,
+            services: [
+              {
+                id: "123",
+                name: "Test Service",
+                maxQuantity: 2,
+                combinable: {
+                  a: { "123": [789] },
+                  b: { "456": [789] },
+                },
+              },
+              { id: "456", name: "Sub Service", maxQuantity: 2 },
+            ],
+            relations: [
+              { serviceId: "123", officeId: "789", slots: 1 },
+              { serviceId: "456", officeId: "789", slots: 1 },
+            ],
+          }),
+        })
+      );
+
+      localStorage.setItem(
+        LOCALSTORAGE_PARAM_APPOINTMENT_DATA,
+        JSON.stringify({
+          ...uiStoragePayload,
+          selectedServiceMap: { "123": 1, "456": 1 },
+        })
+      );
+
+      const hash = buildAppointmentHash({
+        id: "hash-proc",
+        authKey: "hash-auth-key",
+      });
+
+      vi.mocked(ZMSAppointmentAPI.fetchAppointment).mockResolvedValue({
+        processId: "hash-proc",
+        authKey: "hash-auth-key",
+        timestamp: Math.floor(Date.now() / 1000) + 3600,
+        familyName: "Mustermann",
+        email: "max@example.com",
+        officeId: "789",
+        scope: {},
+        subRequestCounts: [{ id: "456", name: "Sub Service", count: 1 }],
+        serviceId: "123",
+        serviceName: "Test Service",
+        serviceCount: 1,
+        status: "reserved",
+      } as any);
+
+      const wrapper = createWrapper({
+        showLoginOption: true,
+        appointmentHash: hash,
+      });
+
+      await vi.waitFor(() => {
+        expect(wrapper.vm.selectedService?.subServices?.length).toBeGreaterThan(
+          0
+        );
+      });
+
+      const sub = wrapper.vm.selectedService?.subServices?.find(
+        (entry: { id: string }) => String(entry.id) === "456"
+      );
+      expect(sub?.count).toBe(1);
+      expect(wrapper.vm.selectedServiceMap.get("456")).toBe(1);
+    });
+
     it("login resume of a reserved appointment without contact stays on the form", async () => {
       localStorage.setItem(
         LOCALSTORAGE_PARAM_APPOINTMENT_DATA,
