@@ -306,6 +306,8 @@ public class CitizenViewSteps {
     public void iContinueFromTheServiceCombinationStepAndCatchTheAppointmentMucSpinner() {
         ScenarioLogManager.getLogger()
                 .info("zmscitizenview: Weiter (combination → Termin) and catch Muc spinner");
+        // Arm before Weiter so a sub-frame flash on a fast load is not missed between Selenium turns.
+        page.armMucSpinnerWatch(CitizenViewPage.DE_APPOINTMENT_SPINNER_TEXT);
         page.clickWeiter();
         page.waitUntilMucSpinnerSeen(CitizenViewPage.DE_APPOINTMENT_SPINNER_TEXT, 15);
     }
