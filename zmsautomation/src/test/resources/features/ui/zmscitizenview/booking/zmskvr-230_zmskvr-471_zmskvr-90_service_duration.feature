@@ -12,8 +12,8 @@ Feature: Estimated duration on the service page
   # ZMSKVR-486: combined duration is the DLDB sum; max slots (spa) still applies
   # (Umschreibung 15 + Wechselkennzeichen 30 needs 3 slots; KfZ spa=2 blocks the mix).
   # slotsPerAppointment enforcement for KfZ/Führungen lives in zmskvr-1083_*.
-  # ZMSKVR-137 (slotTimeInMinutes on offices-and-services) is asserted in the
-  # citizenapi 1083 feature. Admin cross-check from ZMSKVR-230 is not automated.
+  # ZMSKVR-137 (slotTimeInMinutes on offices-and-services) and Admin Termindauer
+  # cross-checks live in the citizenapi / zmsapi / admin-citizen 230 features.
 
   Scenario: Reisepass duration follows the count and an added service
     Given I open the zmscitizenview booking page
@@ -85,3 +85,22 @@ Feature: Estimated duration on the service page
     Then the service combination step should be visible
     And the service duration is shown with a clock and is 30 minutes
     And the plus button for service "Wechselkennzeichen" is disabled
+
+  # More offices: Abholung 10 (slot 10×1), Ausfuhr 15 (slot 5×3), Führungszeugnis 5 (slot 5×1).
+  @jumpin @ZMSKVR-230
+  Scenario: Abholung at Ruppertstraße 10492 is 10 minutes
+    Given I open zmscitizenview with jump-in service "10295182" and location "10492"
+    Then the service combination step should be visible
+    And the service duration is shown with a clock and is 10 minutes
+
+  @jumpin @ZMSKVR-230
+  Scenario: Ausfuhrkennzeichen at KfZ 10416 is 15 minutes
+    Given I open zmscitizenview with jump-in service "1064268" and location "10416"
+    Then the service combination step should be visible
+    And the service duration is shown with a clock and is 15 minutes
+
+  @jumpin @ZMSKVR-230
+  Scenario: Führungszeugnis at Forstenrieder Allee 10286848 is 5 minutes
+    Given I open zmscitizenview with jump-in service "1063565" and location "10286848"
+    Then the service combination step should be visible
+    And the service duration is shown with a clock and is 5 minutes
