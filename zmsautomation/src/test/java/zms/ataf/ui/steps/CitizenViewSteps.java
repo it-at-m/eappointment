@@ -217,6 +217,13 @@ public class CitizenViewSteps {
         page.assertPlusButton(TestDataHelper.transformTestData(label), false);
     }
 
+    @Then("the plus buttons for all services on the service combination step are disabled")
+    public void thePlusButtonsForAllServicesOnTheServiceCombinationStepAreDisabled() {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: every plus on the combination step is disabled");
+        page.assertAllPlusButtonsDisabled();
+    }
+
     @Then("the service {string} links to service {string} on muenchen.de")
     public void theServiceLinksToItsDescription(String label, String serviceId) {
         ScenarioLogManager.getLogger()
@@ -488,6 +495,13 @@ public class CitizenViewSteps {
         page.assertOfficesCheckedInFrequencyOrder();
     }
 
+    @Then("at least {int} location checkboxes are checked in the citizen view")
+    public void atLeastNLocationCheckboxesAreCheckedInTheCitizenView(int minimum) {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: assert at least {} Ort checkboxes are checked", minimum);
+        page.assertAtLeastNLocationCheckboxesChecked(minimum);
+    }
+
     @Then("the open hour lists each selected office with a map pin")
     public void theOpenHourListsEachSelectedOfficeWithAMapPin() {
         ScenarioLogManager.getLogger().info("zmscitizenview: open hour lists offices with a map pin");
@@ -737,6 +751,17 @@ public class CitizenViewSteps {
     public void theContactFormShouldBeVisibleInTheCitizenView() {
         ScenarioLogManager.getLogger().info("zmscitizenview: assert Kontakt form (Kontaktdaten) visible");
         page.assertContactFormVisible();
+    }
+
+    /**
+     * ZMSKVR-92 / ZMSKVR-164: after re-reserve, accept Kontakt or Übersicht→Kontakt so preserved
+     * contact details can still be asserted.
+     */
+    @Then("the contact form should be reachable after reserve in the citizen view")
+    public void theContactFormShouldBeReachableAfterReserveInTheCitizenView() {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: assert Kontakt form reachable after reserve (Übersicht recovery)");
+        page.assertContactFormVisibleAfterReserve();
     }
 
     @Then("the filled name and email fields should be locked on the contact form in the citizen view")

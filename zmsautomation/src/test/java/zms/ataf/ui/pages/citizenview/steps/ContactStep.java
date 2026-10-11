@@ -179,6 +179,43 @@ public final class ContactStep {
                 shadow.shadowDomContainsText("Kontaktdaten"),
                 "Expected Kontakt form (Kontaktdaten) after rebooking to a scope with missing required fields.");
     }
+
+    /**
+     * ZMSKVR-92 / ZMSKVR-164: after a second reserve the UI can briefly paint Kontakt then land on
+     * Übersicht (contact already known). Open Kontakt from the stepper when that happens so the
+     * form assert still checks preserved details.
+     */
+    public void assertContactFormVisibleAfterReserve() {
+        context.set();
+        long deadline = System.currentTimeMillis() + Math.max(60, defaultWaitSeconds) * 1000L;
+        while (System.currentTimeMillis() < deadline) {
+            if (shadow.shadowDomContainsText("Kontaktdaten") && shadow.deepElementExists("#firstname")) {
+                ScenarioLogManager.getLogger().info("zmscitizenview: Kontakt form visible after reserve");
+                return;
+            }
+            if (overviewShowsFinishedKontaktStep()) {
+                ScenarioLogManager.getLogger()
+                        .info("zmscitizenview: Übersicht after reserve — opening finished Kontakt step");
+                page.highlightFinishedBookingStep("Kontakt");
+                page.clickHighlightedBookingStep();
+                shadow.waitUntilShadowContains("Kontaktdaten", Math.max(30, defaultWaitSeconds));
+                Assert.assertTrue(
+                        shadow.shadowDomContainsText("Kontaktdaten"),
+                        "Expected Kontakt form after opening finished Kontakt from Übersicht.");
+                return;
+            }
+            CitizenViewWaits.sleepQuiet(400L);
+        }
+        assertContactFormVisible();
+    }
+
+    private boolean overviewShowsFinishedKontaktStep() {
+        if (!shadow.shadowDomContainsText("Ihr Termin")) {
+            return false;
+        }
+        return page.bookingStepMatches("Übersicht", "current", "information")
+                && page.bookingStepMatches("Kontakt", "finished", "mail");
+    }
     public void assertFilledNameAndEmailLockedOnContactForm() {
         context.set();
         shadow.waitUntilShadowContains("Kontaktdaten", Math.max(30, defaultWaitSeconds));
