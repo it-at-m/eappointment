@@ -8,9 +8,10 @@ Feature: ZMS API: request duration matches DLDB minutes across scopes
   # Bürgerbüro scopes plus KfZ, Feuerwache, Standesamt, Fundbüro, Gewerbeamt,
   # Einbürgerung, Führerscheinstelle, Versicherungsamt.
   # Minutes = request.timeSlotCount × scope.provider.data.slotTimeInMinutes (Admin formula).
+  # Login as ataf: agent_queue is only Behörde 40 and cannot GET other scopes.
 
   Scenario Outline: Scope request duration matches DLDB minutes
-    Given I am logged in to the ZMS API as "agent_queue"
+    Given I am logged in to the ZMS API as "ataf"
     Then scope <scopeId> request "<serviceName>" should have duration <minutes> minutes
 
     Examples:
