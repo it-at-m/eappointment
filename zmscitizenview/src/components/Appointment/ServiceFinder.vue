@@ -697,6 +697,8 @@ onMounted(() => {
     countOfService.value = service.value.count
       ? service.value.count
       : countOfService.value;
+    // Expand combinable peers again (login resume only restores selected counts).
+    setServiceData(service.value);
     currentSlots.value = calculateTotalSlots(
       service.value.providers || [],
       service.value.count || 0,

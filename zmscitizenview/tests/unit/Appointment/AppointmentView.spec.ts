@@ -3040,6 +3040,9 @@ describe("AppointmentView", () => {
       );
       expect(sub?.count).toBe(1);
       expect(wrapper.vm.selectedServiceMap.get("456")).toBe(1);
+      // Booked office stays on selectedProvider for the slot; do not pin Ort filter.
+      expect(wrapper.vm.selectedProvider?.id).toBe("789");
+      expect(wrapper.vm.preselectedLocationId).toBeUndefined();
     });
 
     it("login resume of a reserved appointment without contact stays on the form", async () => {
