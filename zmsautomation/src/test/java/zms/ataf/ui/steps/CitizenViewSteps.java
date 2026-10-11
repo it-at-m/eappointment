@@ -557,6 +557,49 @@ public class CitizenViewSteps {
         page.assertNoAppointmentCustomInfoContains(text);
     }
 
+    @Then("the new appointments info link should be visible in the citizen view")
+    public void theNewAppointmentsInfoLinkShouldBeVisible() {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: assert Wann gibt es neue Termine? link");
+        page.assertNewAppointmentsInfoLinkVisible();
+    }
+
+    @When("I open the new appointments info modal in the citizen view")
+    public void iOpenTheNewAppointmentsInfoModal() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: open availability info modal");
+        page.openNewAppointmentsInfoModal();
+    }
+
+    @Then("the new appointments info modal title should be visible in the citizen view")
+    public void theNewAppointmentsInfoModalTitleShouldBeVisible() {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: assert availability info modal title");
+        page.assertAvailabilityInfoModalTitle();
+    }
+
+    @Then("the new appointments info modal should contain {string} in the citizen view")
+    public void theNewAppointmentsInfoModalShouldContain(String fragment) {
+        String text = TestDataHelper.transformTestData(fragment);
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: assert availability info modal contains '{}'", text);
+        page.assertAvailabilityInfoModalContains(text);
+    }
+
+    @Then("the new appointments info modal should have a heading containing {string} in the citizen view")
+    public void theNewAppointmentsInfoModalShouldHaveHeadingContaining(String headingFragment) {
+        String text = TestDataHelper.transformTestData(headingFragment);
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: assert availability info modal H3 contains '{}'", text);
+        page.assertAvailabilityInfoModalHasHeading(text);
+    }
+
+    @Then("the new appointments info modal should have no provider heading in the citizen view")
+    public void theNewAppointmentsInfoModalShouldHaveNoProviderHeading() {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: assert availability info modal omits Standort H3");
+        page.assertAvailabilityInfoModalHasNoProviderHeading();
+    }
+
     @Then("the selected calendar day should be {int} Berlin days from today in the citizen view")
     public void theSelectedCalendarDayShouldBeBerlinDaysFromToday(int daysFromToday) {
         ScenarioLogManager.getLogger()
