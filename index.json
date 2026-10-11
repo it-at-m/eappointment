@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-10-11T07:22:25.396Z",
+  "publishedAt": "2026-10-11T12:06:40.408Z",
   "branches": [
     {
       "name": "next",
@@ -790,8 +790,8 @@
     {
       "name": "test-zmskvr-936-zmskvr-1013-abholung-ruppertstrasse-only",
       "slug": "test-zmskvr-936-zmskvr-1013-abholung-ruppertstrasse-only",
-      "runId": "38117152793",
-      "runStartedAt": "2026-10-11T06:09:47Z"
+      "runId": "38137319699",
+      "runStartedAt": "2026-10-11T11:55:10Z"
     },
     {
       "name": "zmskvr-1631-fix-previous-step-button",

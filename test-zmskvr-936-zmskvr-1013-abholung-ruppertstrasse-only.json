@@ -1,42 +1,42 @@
 {
   "branch": "test-zmskvr-936-zmskvr-1013-abholung-ruppertstrasse-only",
   "branchSlug": "test-zmskvr-936-zmskvr-1013-abholung-ruppertstrasse-only",
-  "runId": "38117152793",
-  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38117152793",
-  "runStartedAt": "2026-10-11T06:09:47Z",
-  "publishedAt": "2026-10-11T06:25:47.742Z",
+  "runId": "38137319699",
+  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38137319699",
+  "runStartedAt": "2026-10-11T11:55:10Z",
+  "publishedAt": "2026-10-11T12:06:40.408Z",
   "features": {
     "feature-rest-zmscitizenapi-dldb-special-cases-zmskvr-936-zmskvr-1013-abholung-ruppertstrasse-only-citizenapi": {
-      "status": "failed",
+      "status": "passed",
       "shard": "custom",
       "browser": "chrome",
       "browsers": {
         "chrome": {
-          "status": "failed",
+          "status": "passed",
           "shard": "custom",
-          "runId": "38117152793",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38117152793",
-          "runStartedAt": "2026-10-11T06:09:47Z"
+          "runId": "38137319699",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38137319699",
+          "runStartedAt": "2026-10-11T11:55:10Z"
         },
         "edge": {
-          "status": "failed",
+          "status": "passed",
           "shard": "custom",
-          "runId": "38117152793",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38117152793",
-          "runStartedAt": "2026-10-11T06:09:47Z"
+          "runId": "38137319699",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38137319699",
+          "runStartedAt": "2026-10-11T11:55:10Z"
         },
         "firefox": {
-          "status": "failed",
+          "status": "passed",
           "shard": "custom",
-          "runId": "38117152793",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38117152793",
-          "runStartedAt": "2026-10-11T06:09:47Z"
+          "runId": "38137319699",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38137319699",
+          "runStartedAt": "2026-10-11T11:55:10Z"
         }
       },
       "rel": "rest/zmscitizenapi/dldb-special-cases/zmskvr-936_zmskvr-1013_abholung_ruppertstrasse_only_citizenapi.feature",
-      "runId": "38117152793",
-      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38117152793",
-      "runStartedAt": "2026-10-11T06:09:47Z"
+      "runId": "38137319699",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38137319699",
+      "runStartedAt": "2026-10-11T11:55:10Z"
     },
     "feature-ui-zmscitizenview-dldb-special-cases-zmskvr-936-zmskvr-1013-abholung-ruppertstrasse-only": {
       "status": "passed",
@@ -46,29 +46,29 @@
         "chrome": {
           "status": "passed",
           "shard": "custom",
-          "runId": "38117152793",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38117152793",
-          "runStartedAt": "2026-10-11T06:09:47Z"
+          "runId": "38137319699",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38137319699",
+          "runStartedAt": "2026-10-11T11:55:10Z"
         },
         "edge": {
           "status": "passed",
           "shard": "custom",
-          "runId": "38117152793",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38117152793",
-          "runStartedAt": "2026-10-11T06:09:47Z"
+          "runId": "38137319699",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38137319699",
+          "runStartedAt": "2026-10-11T11:55:10Z"
         },
         "firefox": {
           "status": "passed",
           "shard": "custom",
-          "runId": "38117152793",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38117152793",
-          "runStartedAt": "2026-10-11T06:09:47Z"
+          "runId": "38137319699",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38137319699",
+          "runStartedAt": "2026-10-11T11:55:10Z"
         }
       },
       "rel": "ui/zmscitizenview/dldb-special-cases/zmskvr-936_zmskvr-1013_abholung_ruppertstrasse_only.feature",
-      "runId": "38117152793",
-      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38117152793",
-      "runStartedAt": "2026-10-11T06:09:47Z"
+      "runId": "38137319699",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38137319699",
+      "runStartedAt": "2026-10-11T11:55:10Z"
     }
   }
 }
