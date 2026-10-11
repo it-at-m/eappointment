@@ -141,7 +141,8 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
                     'function' => 'readGetResult',
                     'url' => '/process/101002/fb43/ics/',
                     'response' => $this->readFixture("GET_process_ics_template.json")
-                ]
+                ],
+                ...$this->rebookingSourceProcessApiCalls(),
             ]
         );
 
@@ -181,6 +182,7 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
                     'url' => '/process/101002/fb43/ics/',
                     'response' => $this->readFixture("GET_process_ics_template.json")
                 ],
+                ...$this->rebookingSourceProcessApiCalls(),
                 [
                     'function' => 'readPostResult',
                     'url' => '/process/101002/fb43/',
@@ -224,7 +226,8 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
                     'function' => 'readGetResult',
                     'url' => '/process/101002/fb43/ics/',
                     'response' => $this->readFixture("GET_process_ics_template.json")
-                ]
+                ],
+                ...$this->rebookingSourceProcessApiCalls(),
             ]
         );
 
@@ -244,6 +247,91 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
 
         $this->assertEquals(ErrorMessages::get('familyNameCannotBeChanged')['statusCode'], $response->getStatusCode());
         $this->assertContains(ErrorMessages::get('familyNameCannotBeChanged'), $responseBody['errors']);
+    }
+
+    public function testRebookingUpdateAllowedWhenOnlyTargetScopeDisablesRebooking(): void
+    {
+        $target = json_decode($this->readFixture('GET_process_reserved.json'), true, 512, JSON_THROW_ON_ERROR);
+        $target['data']['scope']['preferences']['appointment']['rebookingDisabled'] = '1';
+
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/process/101002/fb43/',
+                    'parameters' => [
+                        'resolveReferences' => 2,
+                    ],
+                    'response' => json_encode($target, JSON_THROW_ON_ERROR),
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/process/101002/fb43/ics/',
+                    'response' => $this->readFixture('GET_process_ics_template.json'),
+                ],
+                ...$this->rebookingSourceProcessApiCalls(rebookingDisabled: false),
+                [
+                    'function' => 'readPostResult',
+                    'url' => '/process/101002/fb43/',
+                    'response' => $this->readFixture('POST_update_appointment.json'),
+                ],
+            ]
+        );
+
+        $response = $this->render([], [
+            'processId' => '101002',
+            'authKey' => 'fb43',
+            'familyName' => 'Doe',
+            'email' => 'johndoe@example.com',
+            'telephone' => '0123456789',
+            'customTextfield' => 'Some custom text',
+            'customTextfield2' => 'Another custom text',
+            'sourceProcessId' => '100001',
+            'sourceAuthKey' => 'oldkey',
+        ], [], 'POST');
+
+        $this->assertEquals(200, $response->getStatusCode());
+    }
+
+    public function testRebookingUpdateRejectedWhenSourceScopeDisablesRebooking(): void
+    {
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/process/101002/fb43/',
+                    'parameters' => [
+                        'resolveReferences' => 2,
+                    ],
+                    'response' => $this->readFixture('GET_process_reserved.json'),
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/process/101002/fb43/ics/',
+                    'response' => $this->readFixture('GET_process_ics_template.json'),
+                ],
+                ...$this->rebookingSourceProcessApiCalls(rebookingDisabled: true),
+            ]
+        );
+
+        $response = $this->render([], [
+            'processId' => '101002',
+            'authKey' => 'fb43',
+            'familyName' => 'Doe',
+            'email' => 'johndoe@example.com',
+            'telephone' => '0123456789',
+            'customTextfield' => 'Some custom text',
+            'customTextfield2' => 'Another custom text',
+            'sourceProcessId' => '100001',
+            'sourceAuthKey' => 'oldkey',
+        ], [], 'POST');
+        $responseBody = json_decode((string) $response->getBody(), true);
+
+        $this->assertEquals(ErrorMessages::get('rebookingDisabled')['statusCode'], $response->getStatusCode());
+        $this->assertEqualsCanonicalizing(
+            ['errors' => [ErrorMessages::get('rebookingDisabled')]],
+            $responseBody
+        );
     }
 
     public function testFirstBookingAllowsChangingStoredContact(): void
@@ -1326,6 +1414,41 @@ class AppointmentUpdateControllerTest extends ControllerTestCase
         $process['data']['customTextfield2'] = '';
 
         return json_encode($process, JSON_THROW_ON_ERROR);
+    }
+
+    /**
+     * @return list<array{function: string, url: string, parameters?: array, response: string}>
+     */
+    private function rebookingSourceProcessApiCalls(bool $rebookingDisabled = false): array
+    {
+        $source = json_decode(
+            $this->processFixtureWith([
+                'id' => 100001,
+                'authKey' => 'oldkey',
+                'status' => 'confirmed',
+            ]),
+            true,
+            512,
+            JSON_THROW_ON_ERROR
+        );
+        $source['data']['scope']['preferences']['appointment']['rebookingDisabled'] =
+            $rebookingDisabled ? '1' : '0';
+
+        return [
+            [
+                'function' => 'readGetResult',
+                'url' => '/process/100001/oldkey/',
+                'parameters' => [
+                    'resolveReferences' => 2,
+                ],
+                'response' => json_encode($source, JSON_THROW_ON_ERROR),
+            ],
+            [
+                'function' => 'readGetResult',
+                'url' => '/process/100001/oldkey/ics/',
+                'response' => $this->readFixture('GET_process_ics_template.json'),
+            ],
+        ];
     }
 
 }

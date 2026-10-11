@@ -426,6 +426,25 @@ public class StatisticsPage extends BasePage {
         }
     }
 
+    /** Period table first column: year link opens the full-year report (not a month). */
+    public void clickOnCurrentYear() {
+        int year = BerlinTime.today().getYear();
+        String yearText = Integer.toString(year);
+        ScenarioLogManager.getLogger().info("Trying to click on current year link ({})...", yearText);
+        try {
+            WebElement yearLink = DRIVER.findElement(By.xpath(
+                    "//table[contains(@class,'table--base')]//tr[.//a[normalize-space()='"
+                            + yearText
+                            + "']]/td[1]//a[normalize-space()='"
+                            + yearText
+                            + "']"));
+            yearLink.click();
+        } catch (NoSuchElementException e) {
+            Assert.fail("No clickable year link for " + yearText
+                    + " in the statistics period table (need month data for that year).");
+        }
+    }
+
     public void checkIfTheStatisticForTheSelectedMonthIsOpen() {
         ScenarioLogManager.getLogger().info("Checking if statistic for the selected month is visible.");
         Assert.assertTrue(
