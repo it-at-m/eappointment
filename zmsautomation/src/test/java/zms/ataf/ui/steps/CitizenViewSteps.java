@@ -488,6 +488,13 @@ public class CitizenViewSteps {
         page.assertOfficesCheckedInFrequencyOrder();
     }
 
+    @Then("at least {int} location checkboxes are checked in the citizen view")
+    public void atLeastNLocationCheckboxesAreCheckedInTheCitizenView(int minimum) {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: assert at least {} Ort checkboxes are checked", minimum);
+        page.assertAtLeastNLocationCheckboxesChecked(minimum);
+    }
+
     @Then("the open hour lists each selected office with a map pin")
     public void theOpenHourListsEachSelectedOfficeWithAMapPin() {
         ScenarioLogManager.getLogger().info("zmscitizenview: open hour lists offices with a map pin");
