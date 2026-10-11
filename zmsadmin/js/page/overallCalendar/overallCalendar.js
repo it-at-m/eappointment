@@ -740,8 +740,14 @@ function isScopeClosed(dateIso, scopeId) {
 function buildTimeAxis(axis) {
     const minutesToHhmm = minutesFromMidnight =>
         String(Math.floor(minutesFromMidnight / 60)).padStart(2, '0') + ':' + String(minutesFromMidnight % 60).padStart(2, '0');
-    const start = timeToMin(axis.start);
-    const end = timeToMin(axis.end);
+    let start = timeToMin(axis.start);
+    let end = timeToMin(axis.end);
+    if (!Number.isFinite(start) || !Number.isFinite(end) || end <= start) {
+        return [];
+    }
+    // Hour labels only attach to HH:00 rows. Floor the first tick to that hour so a
+    // mid-hour axis (from bookings or short openings) still shows readable times.
+    start = Math.floor(start / 60) * 60;
 
     const output = [];
     for (let minuteOffset = start; minuteOffset < end; minuteOffset += STEP_MIN) {
