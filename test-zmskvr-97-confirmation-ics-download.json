@@ -1,0 +1,46 @@
+{
+  "branch": "test-zmskvr-97-confirmation-ics-download",
+  "branchSlug": "test-zmskvr-97-confirmation-ics-download",
+  "runId": "38181740278",
+  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38181740278",
+  "runStartedAt": "2026-10-11T22:46:22Z",
+  "publishedAt": "2026-10-11T23:25:29.897Z",
+  "features": {
+    "feature-rest-zmscitizenapi-booking-zmskvr-97-zmskvr-535-zmskvr-679-confirmation-ics-citizenapi": {
+      "status": "failed",
+      "shard": "custom",
+      "browser": "chrome",
+      "rel": "rest/zmscitizenapi/booking/zmskvr-97_zmskvr-535_zmskvr-679_confirmation_ics_citizenapi.feature",
+      "runId": "38181740278",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38181740278",
+      "runStartedAt": "2026-10-11T22:46:22Z",
+      "browsers": {
+        "chrome": {
+          "status": "failed",
+          "shard": "custom",
+          "runId": "38181740278",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38181740278",
+          "runStartedAt": "2026-10-11T22:46:22Z"
+        }
+      }
+    },
+    "feature-ui-zmscitizenview-booking-zmskvr-97-zmskvr-526-zmskvr-732-zmskvr-535-confirmation-ics": {
+      "status": "passed",
+      "shard": "custom",
+      "browser": "chrome",
+      "rel": "ui/zmscitizenview/booking/zmskvr-97_zmskvr-526_zmskvr-732_zmskvr-535_confirmation_ics.feature",
+      "runId": "38181740278",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38181740278",
+      "runStartedAt": "2026-10-11T22:46:22Z",
+      "browsers": {
+        "chrome": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "38181740278",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38181740278",
+          "runStartedAt": "2026-10-11T22:46:22Z"
+        }
+      }
+    }
+  }
+}
