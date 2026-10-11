@@ -973,25 +973,139 @@ public final class TimeSlotStep {
                 ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script));
     }
 
+    /** German MucSpinner copy ({@code de-DE.json} {@code spinnerText}). */
+    public static final String DE_APPOINTMENT_SPINNER_TEXT = "Wir suchen nach passenden Terminen...";
+
+    /** Last Muc spinner snapshot from {@link #waitUntilMucSpinnerSeen(String, int)}. */
+    private JsonNode lastMucSpinnerSnapshot;
+
     /**
      * MucSpinner lives in {@code .m-spinner-container}; shown while days load and again after a calendar day change
      * until slot API returns ({@code CalendarView.vue}).
      */
     public boolean deepMucSpinnerVisible() {
+        return mucSpinnerSnapshot().path("visible").asBoolean(false);
+    }
+
+    /**
+     * Painted Muc spinner plus whether Ort / calendar / Zeit heading are also painted (ZMSKVR-604 /
+     * ZMSKVR-1011).
+     */
+    public JsonNode mucSpinnerSnapshot() {
         context.set();
-        String script =
-                "function vis(el){if(!el)return false;var s=getComputedStyle(el);"
+        return json.citizenJson(
+                "(function(){"
+                        + "function vis(el){if(!el)return false;var s=getComputedStyle(el);"
                         + "if(s.display==='none'||s.visibility==='hidden'||parseFloat(s.opacity)===0)return false;"
                         + "var r=el.getBoundingClientRect();return r.width>=8&&r.height>=8;}"
-                        + "function spin(root){if(!root)return false;"
-                        + "var nodes=root.querySelectorAll('.m-spinner-container');"
-                        + "for(var i=0;i<nodes.length;i++)if(vis(nodes[i]))return true;"
-                        + "var all=root.querySelectorAll('*');"
-                        + "for(var j=0;j<all.length;j++)if(all[j].shadowRoot&&spin(all[j].shadowRoot))return true;"
-                        + "return false;}"
-                        + "return spin(document.body);";
-        return Boolean.TRUE.equals(
-                ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script));
+                        + "function textOf(n){var s='';if(!n)return s;if(n.nodeType===3)return n.nodeValue||'';"
+                        + "if(n.shadowRoot)s+=textOf(n.shadowRoot);var c=n.childNodes;if(c)for(var i=0;i<c.length;i++)s+=textOf(c[i]);return s;}"
+                        + "function walk(n,fn){if(!n)return;fn(n);if(n.shadowRoot)walk(n.shadowRoot,fn);"
+                        + "var c=n.children;if(c)for(var i=0;i<c.length;i++)walk(c[i],fn);}"
+                        + "var out={visible:false,text:'',ort:false,calendar:false,zeit:false};"
+                        + "walk(document.body,function(n){"
+                        + "if(!n||n.nodeType!==1)return;"
+                        + "if(n.classList&&n.classList.contains('m-spinner-container')&&vis(n)){"
+                        + "out.visible=true;out.text=textOf(n).replace(/\\s+/g,' ').trim();}"
+                        + "var tag=(n.tagName||'').toUpperCase();"
+                        + "if(tag==='H2'&&textOf(n).replace(/\\s+/g,' ').trim()==='Ort'&&vis(n))out.ort=true;"
+                        + "if((n.classList&&(n.classList.contains('muc-calendar-wrap')||n.classList.contains('calendar-root'))"
+                        + "||tag==='MUC-CALENDAR')&&vis(n))out.calendar=true;"
+                        + "if((tag==='H2'||tag==='H3')&&(textOf(n).indexOf('Datum und Uhrzeit')>=0"
+                        + "||textOf(n).replace(/\\s+/g,' ').trim()==='Zeit')&&vis(n))out.zeit=true;"
+                        + "});"
+                        + "return out;})()");
+    }
+
+    /**
+     * Poll until a painted Muc spinner shows {@code expectedText} (ZMSKVR-604 / ZMSKVR-1011). Stores the
+     * snapshot for Ort/calendar assertions.
+     */
+    public void waitUntilMucSpinnerSeen(String expectedText, int maxSeconds) {
+        context.set();
+        String want = expectedText == null ? "" : expectedText.trim();
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: waiting up to {}s for Muc spinner text '{}'", maxSeconds, want);
+        try {
+            lastMucSpinnerSnapshot =
+                    new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(maxSeconds))
+                            .pollingEvery(Duration.ofMillis(100))
+                            .until(
+                                    d -> {
+                                        JsonNode snap = mucSpinnerSnapshot();
+                                        if (!snap.path("visible").asBoolean(false)) {
+                                            return null;
+                                        }
+                                        String text = snap.path("text").asText("");
+                                        return text.contains(want) ? snap : null;
+                                    });
+        } catch (TimeoutException e) {
+            JsonNode last = mucSpinnerSnapshot();
+            Assert.fail(
+                    "Muc spinner with text \""
+                            + want
+                            + "\" did not appear within "
+                            + maxSeconds
+                            + "s (last="
+                            + last
+                            + ")");
+            return;
+        }
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: Muc spinner seen: {}", lastMucSpinnerSnapshot);
+    }
+
+    public void assertLastMucSpinnerText(String expectedText) {
+        Assert.assertNotNull(lastMucSpinnerSnapshot, "Catch the appointment Muc spinner first");
+        String text = lastMucSpinnerSnapshot.path("text").asText("");
+        Assert.assertTrue(
+                text.contains(expectedText),
+                "Muc spinner text should contain \"" + expectedText + "\", was: " + text);
+    }
+
+    public void assertLastMucSpinnerKeptOrtVisible() {
+        Assert.assertNotNull(lastMucSpinnerSnapshot, "Catch the appointment Muc spinner first");
+        Assert.assertTrue(
+                lastMucSpinnerSnapshot.path("ort").asBoolean(false),
+                "Ort should stay visible with the Muc spinner: " + lastMucSpinnerSnapshot);
+    }
+
+    public void assertLastMucSpinnerKeptOrtAndCalendarVisible() {
+        assertLastMucSpinnerKeptOrtVisible();
+        Assert.assertTrue(
+                lastMucSpinnerSnapshot.path("calendar").asBoolean(false),
+                "Calendar should stay visible with the Muc spinner under Zeit: " + lastMucSpinnerSnapshot);
+    }
+
+    /** Uncheck the first Ort checkbox and catch the Muc spinner during the refetch. */
+    public void uncheckFirstOrtOfficeCatchingSpinner(String expectedText) {
+        context.set();
+        JsonNode offices = providerLocation.providerCheckboxes().path("offices");
+        Assert.assertTrue(offices.size() >= 2, "Need several Ort checkboxes to uncheck one: " + offices);
+        String checkboxId = null;
+        for (JsonNode office : offices) {
+            if (office.path("checked").asBoolean(false)) {
+                checkboxId = office.path("id").asText(null);
+                break;
+            }
+        }
+        Assert.assertNotNull(checkboxId, "No checked Ort checkbox to clear: " + offices);
+        Assert.assertTrue(
+                checkboxId.startsWith("checkbox-provider-"),
+                "Unexpected Ort checkbox id: " + checkboxId);
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: uncheck {} and catch Muc spinner", checkboxId);
+        shadow.deepClickRequired("#" + checkboxId);
+        waitUntilMucSpinnerSeen(expectedText, 12);
+    }
+
+    /** Click the next free calendar day and catch the Muc spinner while slots reload. */
+    public void selectNextCalendarDayCatchingSpinner(String expectedText) {
+        context.set();
+        Assert.assertTrue(
+                clickNextBookableCalendarDay(),
+                "No next free calendar day to select for Muc spinner check");
+        waitUntilMucSpinnerSeen(expectedText, 12);
     }
 
     /**
