@@ -199,6 +199,74 @@ public final class CombinationStep {
                 "Combinable list did not expand after Alle Leistungen anzeigen.");
     }
 
+    /** ZMSKVR-514: after expand, "Weniger Leistungen anzeigen" with chevron-up. */
+    public void assertShowLessServicesButtonVisible(boolean visible) {
+        context.set();
+        JsonNode btn = showLessServicesButtonSnapshot();
+        Assert.assertEquals(
+                btn.path("visible").asBoolean(false),
+                visible,
+                visible
+                        ? "Expected Weniger Leistungen anzeigen on the service step: " + btn
+                        : "Weniger Leistungen anzeigen should be hidden: " + btn);
+        if (visible) {
+            Assert.assertTrue(
+                    btn.path("chevronUp").asBoolean(false),
+                    "Weniger Leistungen anzeigen should use chevron-up: " + btn);
+        }
+    }
+
+    /**
+     * ZMSKVR-514 / ZMSKVR-1185: collapse back to three peers and scroll to the start of the
+     * Leistung list (not the page bottom).
+     */
+    public void showLessCombinableServices() {
+        context.set();
+        Assert.assertTrue(
+                clickShowLessServicesButton(),
+                "Could not click Weniger Leistungen anzeigen.");
+        new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(defaultWaitSeconds))
+                .until(d -> countVisibleCombinableServices() == 3);
+        Assert.assertEquals(
+                countVisibleCombinableServices(),
+                3,
+                "Combinable list did not collapse after Weniger Leistungen anzeigen.");
+        // smooth scrollIntoView — wait for the list start to land near the viewport top
+        CitizenViewWaits.sleepQuiet(600L);
+        JsonNode scroll = combinableListScrollSnapshot();
+        Assert.assertTrue(
+                scroll.path("listTop").asDouble(9999) < 220,
+                "After Weniger Leistungen anzeigen the list start should be near the top of the"
+                        + " viewport, not the page bottom: "
+                        + scroll);
+        Assert.assertFalse(
+                scroll.path("nearPageBottom").asBoolean(true),
+                "After Weniger Leistungen anzeigen must not leave the viewport at the page bottom: "
+                        + scroll);
+    }
+
+    /**
+     * ZMSKVR-529: disabled plus/minus use transparent background, grey border and grey icon
+     * (#7A8D9F).
+     */
+    public void assertDisabledCounterColors(String label) {
+        context.set();
+        JsonNode style = disabledCounterStyle(label);
+        Assert.assertTrue(
+                style.path("found").asBoolean(false),
+                "No disabled plus/minus for \"" + label + "\": " + style);
+        Assert.assertTrue(
+                style.path("transparentBg").asBoolean(false),
+                "Disabled counter for \"" + label + "\" should have a transparent/white background: "
+                        + style);
+        Assert.assertTrue(
+                style.path("greyBorder").asBoolean(false),
+                "Disabled counter for \"" + label + "\" should use border #7a8d9f: " + style);
+        Assert.assertTrue(
+                style.path("greyIcon").asBoolean(false),
+                "Disabled counter for \"" + label + "\" should use icon/color #7a8d9f: " + style);
+    }
+
     public void assertSecondaryPlusAndMinus(String label) {
         context.set();
         JsonNode counter = waitForServiceCounter(label);
@@ -455,6 +523,134 @@ public final class CombinationStep {
                         + "if(tag!=='BUTTON'&&tag!=='MUC-BUTTON')return false;"
                         + "return norm(n.textContent||'').indexOf('Alle Leistungen anzeigen')>=0&&shown(n);});";
         return Boolean.TRUE.equals(((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script));
+    }
+
+    private JsonNode showLessServicesButtonSnapshot() {
+        String script =
+                "function shown(el){var n=el;while(n&&n.nodeType===1){"
+                        + "var st=window.getComputedStyle(n);"
+                        + "if(st.display==='none'||st.visibility==='hidden'||st.opacity==='0')return false;"
+                        + "if(n.parentElement){n=n.parentElement;continue;}"
+                        + "var root=n.getRootNode&&n.getRootNode();n=root&&root.host?root.host:null;}return true;}"
+                        + "function norm(t){return (t||'').replace(/\\s+/g,' ').trim();}"
+                        + "function walk(n,fn){if(!n)return null;if(n.nodeType===1){var hit=fn(n);if(hit)return hit;}"
+                        + "if(n.shadowRoot){var inner=walk(n.shadowRoot,fn);if(inner)return inner;}"
+                        + "var c=n.children;if(c)for(var i=0;i<c.length;i++){var next=walk(c[i],fn);if(next)return next;}return null;}"
+                        + "var btn=walk(document.body,function(n){"
+                        + "var tag=(n.tagName||'').toUpperCase();"
+                        + "if(tag!=='BUTTON'&&tag!=='MUC-BUTTON')return null;"
+                        + "if(norm(n.textContent||'').indexOf('Weniger Leistungen anzeigen')<0||!shown(n))return null;"
+                        + "return n;});"
+                        + "if(!btn)return JSON.stringify({visible:false});"
+                        + "var blob=' '+(btn.getAttribute('icon')||'');"
+                        + "var uses=btn.querySelectorAll?btn.querySelectorAll('use'):[];"
+                        + "for(var u=0;u<uses.length;u++){blob+=' '+(uses[u].getAttribute('href')||'')"
+                        + "+' '+(uses[u].getAttribute('xlink:href')||'');}"
+                        + "if(btn.shadowRoot){var su=btn.shadowRoot.querySelectorAll('use');"
+                        + "for(var s=0;s<su.length;s++){blob+=' '+(su[s].getAttribute('href')||'')"
+                        + "+' '+(su[s].getAttribute('xlink:href')||'');}}"
+                        + "blob=blob.toLowerCase();"
+                        + "return JSON.stringify({visible:true,chevronUp:blob.indexOf('chevron-up')>=0,blob:blob});";
+        Object raw = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script);
+        try {
+            return new com.fasterxml.jackson.databind.ObjectMapper()
+                    .readTree(raw == null ? "{\"visible\":false}" : String.valueOf(raw));
+        } catch (Exception e) {
+            throw new AssertionError("Could not read Weniger Leistungen anzeigen: " + raw, e);
+        }
+    }
+
+    private boolean clickShowLessServicesButton() {
+        String script =
+                "function shown(el){var n=el;while(n&&n.nodeType===1){"
+                        + "var st=window.getComputedStyle(n);"
+                        + "if(st.display==='none'||st.visibility==='hidden'||st.opacity==='0')return false;"
+                        + "if(n.parentElement){n=n.parentElement;continue;}"
+                        + "var root=n.getRootNode&&n.getRootNode();n=root&&root.host?root.host:null;}return true;}"
+                        + "function norm(t){return (t||'').replace(/\\s+/g,' ').trim();}"
+                        + "function walk(n,fn){if(!n)return null;if(n.nodeType===1){var hit=fn(n);if(hit)return hit;}"
+                        + "if(n.shadowRoot){var inner=walk(n.shadowRoot,fn);if(inner)return inner;}"
+                        + "var c=n.children;if(c)for(var i=0;i<c.length;i++){var next=walk(c[i],fn);if(next)return next;}return null;}"
+                        + "var btn=walk(document.body,function(n){"
+                        + "var tag=(n.tagName||'').toUpperCase();"
+                        + "if(tag!=='BUTTON'&&tag!=='MUC-BUTTON')return null;"
+                        + "if(norm(n.textContent||'').indexOf('Weniger Leistungen anzeigen')<0||!shown(n))return null;"
+                        + "return n;});"
+                        + "if(!btn)return false;btn.scrollIntoView({block:'center'});btn.click();return true;";
+        return Boolean.TRUE.equals(((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script));
+    }
+
+    private JsonNode combinableListScrollSnapshot() {
+        String script =
+                "function shown(el){var n=el;while(n&&n.nodeType===1){"
+                        + "var st=window.getComputedStyle(n);"
+                        + "if(st.display==='none'||st.visibility==='hidden'||st.opacity==='0')return false;"
+                        + "if(n.parentElement){n=n.parentElement;continue;}"
+                        + "var root=n.getRootNode&&n.getRootNode();n=root&&root.host?root.host:null;}return true;}"
+                        + "function walk(n,fn){if(!n)return null;if(n.nodeType===1){var hit=fn(n);if(hit)return hit;}"
+                        + "if(n.shadowRoot){var inner=walk(n.shadowRoot,fn);if(inner)return inner;}"
+                        + "var c=n.children;if(c)for(var i=0;i<c.length;i++){var next=walk(c[i],fn);if(next)return next;}return null;}"
+                        + "var heading=walk(document.body,function(n){"
+                        + "var tag=(n.tagName||'').toUpperCase();"
+                        + "if((tag==='H2'||tag==='H3'||tag==='H4')&&(n.textContent||'').indexOf('Kombinierbare Leistungen')>=0&&shown(n))return n;"
+                        + "return null;});"
+                        + "var listTop=heading?heading.getBoundingClientRect().top:9999;"
+                        + "var doc=document.documentElement;"
+                        + "var maxScroll=Math.max(0,(doc.scrollHeight||0)-(window.innerHeight||0));"
+                        + "var y=window.pageYOffset||doc.scrollTop||0;"
+                        + "var nearBottom=maxScroll>80&&y>maxScroll-80;"
+                        + "return JSON.stringify({listTop:listTop,pageY:y,maxScroll:maxScroll,nearPageBottom:nearBottom});";
+        Object raw = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script);
+        try {
+            return new com.fasterxml.jackson.databind.ObjectMapper()
+                    .readTree(raw == null ? "{}" : String.valueOf(raw));
+        } catch (Exception e) {
+            throw new AssertionError("Could not read combinable list scroll: " + raw, e);
+        }
+    }
+
+    private JsonNode disabledCounterStyle(String label) {
+        String script =
+                "var label=arguments[0];"
+                        + "function norm(t){return (t||'').replace(/\\s+/g,' ').trim();}"
+                        + "function key(t){return norm(t).replace(/-/g,'').toLowerCase();}"
+                        + "var labelKey=key(label);"
+                        + "function shown(el){var n=el;while(n&&n.nodeType===1){"
+                        + "var st=window.getComputedStyle(n);"
+                        + "if(st.display==='none'||st.visibility==='hidden'||st.opacity==='0')return false;"
+                        + "if(n.parentElement){n=n.parentElement;continue;}"
+                        + "var root=n.getRootNode&&n.getRootNode();n=root&&root.host?root.host:null;}return true;}"
+                        + "function isDisabled(el){if(!el)return true;"
+                        + "function off(node){return !!(node&&(node.disabled||node.hasAttribute&&node.hasAttribute('disabled')"
+                        + "||(node.getAttribute&&node.getAttribute('aria-disabled')==='true')));}"
+                        + "if(off(el))return true;var host=el.getRootNode&&el.getRootNode().host;return off(host);}"
+                        + "function rgbClose(c,r,g,b){var m=/rgba?\\((\\d+),\\s*(\\d+),\\s*(\\d+)/.exec(c||'');"
+                        + "if(!m)return false;return Math.abs(+m[1]-r)<=8&&Math.abs(+m[2]-g)<=8&&Math.abs(+m[3]-b)<=8;}"
+                        + "function paint(btn){var target=btn;"
+                        + "if(btn.shadowRoot){var inner=btn.shadowRoot.querySelector('button,.m-button,.counter-btn--disabled');if(inner)target=inner;}"
+                        + "var st=getComputedStyle(target);"
+                        + "var bg=st.backgroundColor||'';var bd=st.borderTopColor||st.borderColor||'';var col=st.color||'';"
+                        + "var transparentBg=bg==='transparent'||bg==='rgba(0, 0, 0, 0)'||rgbClose(bg,255,255,255);"
+                        + "var greyBorder=rgbClose(bd,122,141,159);var greyIcon=rgbClose(col,122,141,159);"
+                        + "return {found:true,bg:bg,border:bd,color:col,transparentBg:transparentBg,greyBorder:greyBorder,greyIcon:greyIcon};}"
+                        + "function walk(n,fn){if(!n)return null;if(n.nodeType===1){var hit=fn(n);if(hit)return hit;}"
+                        + "if(n.shadowRoot){var inner=walk(n.shadowRoot,fn);if(inner)return inner;}"
+                        + "var c=n.children;if(c)for(var i=0;i<c.length;i++){var next=walk(c[i],fn);if(next)return next;}return null;}"
+                        + "var btn=walk(document.body,function(n){"
+                        + "if((n.tagName||'').toUpperCase()!=='BUTTON'||!shown(n))return null;"
+                        + "var aria=(n.getAttribute('aria-label')||'');"
+                        + "if(key(aria).indexOf(labelKey)<0)return null;"
+                        + "if(!isDisabled(n))return null;"
+                        + "return n;});"
+                        + "if(!btn)return JSON.stringify({found:false});"
+                        + "return JSON.stringify(paint(btn));";
+        Object raw = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script, label);
+        try {
+            return new com.fasterxml.jackson.databind.ObjectMapper()
+                    .readTree(raw == null ? "{\"found\":false}" : String.valueOf(raw));
+        } catch (Exception e) {
+            throw new AssertionError("Could not read disabled counter style for \"" + label + "\": " + raw, e);
+        }
     }
 
     public boolean clickShowAllServicesButton() {
