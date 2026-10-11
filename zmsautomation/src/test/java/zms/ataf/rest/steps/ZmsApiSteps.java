@@ -431,8 +431,10 @@ public class ZmsApiSteps {
      */
     @Then("scope {int} request {string} should have duration {int} minutes")
     public void scopeRequestShouldHaveDuration(int scopeId, String serviceName, int minutes) {
+        // Prefer the current session (feature logs in as ataf). Do not force agent_queue:
+        // that account is only Behörde 40 and cannot GET other scopes.
         if (cachedXAuthKey == null || cachedXAuthKey.isBlank()) {
-            iAmLoggedInToTheZmsApiAs("agent_queue");
+            iAmLoggedInToTheZmsApiAs("ataf");
         }
         String authKey = getOrLoginXAuthKey();
         JsonNode request = findScopeRequestByName(scopeId, serviceName, authKey);
@@ -450,7 +452,7 @@ public class ZmsApiSteps {
     }
 
     private int fetchScopeSlotTimeInMinutes(int scopeId, String authKey) {
-        // Default resolveReferences=0 leaves provider as $ref without data.slotTimeInMinutes.
+        // resolveReferences=1 loads provider.data.slotTimeInMinutes (Admin Termindauer input).
         Response scopeResponse = given()
             .baseUri(baseUri != null ? baseUri : TestConfig.getBaseUri())
             .header("X-AuthKey", authKey)
@@ -465,20 +467,6 @@ public class ZmsApiSteps {
             .as("GET /scope/%d/?resolveReferences=1 should return data", scopeId)
             .isNotNull();
         int slotTime = scope.path("provider").path("data").path("slotTimeInMinutes").asInt(0);
-        if (slotTime <= 0) {
-            // Same source Admin uses after Standort login.
-            iUpdateTheWorkstationWithScopeAndCounterWithTheXAuthKey(scopeId, "14");
-            Response workstationResponse = given()
-                .baseUri(baseUri != null ? baseUri : TestConfig.getBaseUri())
-                .header("X-AuthKey", getOrLoginXAuthKey())
-                .queryParam("resolveReferences", 2)
-            .when()
-                .get("/workstation/");
-            JsonNode workstation = parseDataNode(workstationResponse);
-            slotTime = workstation == null
-                ? 0
-                : workstation.path("scope").path("provider").path("data").path("slotTimeInMinutes").asInt(0);
-        }
         Assertions.assertThat(slotTime)
             .as("scope %d provider.data.slotTimeInMinutes", scopeId)
             .isGreaterThan(0);
