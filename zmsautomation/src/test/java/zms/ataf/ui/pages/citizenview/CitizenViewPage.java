@@ -139,6 +139,10 @@ public class CitizenViewPage extends BasePage {
         CONTEXT.navigateWithJumpIn(serviceId, locationId);
     }
 
+    public void navigateWithExclusiveJumpIn(String serviceId, String locationId) {
+        CONTEXT.navigateWithExclusiveJumpIn(serviceId, locationId);
+    }
+
     public void navigateWithJumpInService(String serviceId) {
         CONTEXT.navigateWithJumpInService(serviceId);
     }
