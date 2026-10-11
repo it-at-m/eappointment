@@ -173,6 +173,13 @@ public class CitizenViewSteps {
         page.assertEstimatedDurationShownWithClock(minutes);
     }
 
+    @When("I select the appointment type {string} on the service combination step")
+    public void iSelectTheAppointmentTypeOnTheServiceCombinationStep(String label) {
+        String type = TestDataHelper.transformTestData(label);
+        ScenarioLogManager.getLogger().info("zmscitizenview: select appointment type {}", type);
+        page.selectAppointmentType(type);
+    }
+
     @When("I increase the selected service {string}")
     public void iIncreaseTheSelectedService(String label) {
         ScenarioLogManager.getLogger().info("zmscitizenview: increase selected service {}", label);
