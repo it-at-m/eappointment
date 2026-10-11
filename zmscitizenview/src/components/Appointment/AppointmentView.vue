@@ -929,7 +929,10 @@ const rememberConfiguredPlaceholder = (
   }
 };
 
-const resumeReservedBookingFromHash = (): void => {
+const resumeReservedBookingFromHash = (options?: {
+  /** LS already restored the step; do not clobber a Zurück the citizen already clicked. */
+  fromLoginResume?: boolean;
+}): void => {
   rebookOrCancelDialog.value = false;
   currentContext.value = "update";
   if (!appointment.value) {
@@ -952,9 +955,15 @@ const resumeReservedBookingFromHash = (): void => {
     return;
   }
   const scope = selectedProvider.value?.scope ?? appointment.value.scope;
-  currentView.value = hasMissingRequiredContact(appointment.value, scope)
-    ? 2
-    : 3;
+  const needsContact = hasMissingRequiredContact(appointment.value, scope);
+  if (options?.fromLoginResume) {
+    // Only pull back to Kontakt when LS left them on Übersicht without required fields.
+    if (needsContact && currentView.value > 2) {
+      currentView.value = 2;
+    }
+    return;
+  }
+  currentView.value = needsContact ? 2 : 3;
 };
 
 const fillCustomerDataFromRebookedAppointment = () => {
@@ -1487,7 +1496,7 @@ const runLoginResumeFromHashAndLocalStorage = (
               selectedProvider.value = appointmentOffice;
             }
             if (isReservedProcessStatus(appointment.value.status)) {
-              resumeReservedBookingFromHash();
+              resumeReservedBookingFromHash({ fromLoginResume: true });
             } else {
               // Keep stepper step from UI localStorage (do not open reschedule/cancel dialog).
               currentView.value = isAppointmentInPast.value
