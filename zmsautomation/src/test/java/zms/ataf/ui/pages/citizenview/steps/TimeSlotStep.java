@@ -413,6 +413,11 @@ public final class TimeSlotStep {
 
     public void switchToCalendarView() {
         context.set();
+        // Default is Kalenderansicht; the toggle aria only offers "Zur Kalenderansicht wechseln"
+        // while Listenansicht is active.
+        if (!shadow.deepElementExists("#listViewAccordion")) {
+            return;
+        }
         Assert.assertTrue(
                 shadow.deepClickButtonByAriaContains("Zur Kalenderansicht wechseln"),
                 "Could not switch to the calendar");
