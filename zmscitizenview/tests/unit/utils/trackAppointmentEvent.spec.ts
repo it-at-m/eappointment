@@ -57,7 +57,7 @@ describe("trackAppointmentEvent", () => {
     document.removeEventListener(APPOINTMENT_TRACK_EVENT, handler);
   });
 
-  it("forwards object, category, and action to etracker", () => {
+  it("names reserve and confirm events for the etracker events report", () => {
     keepThisVisit();
     const sendEvent = vi.fn();
     class FakeUserDefinedEvent {
@@ -73,18 +73,51 @@ describe("trackAppointmentEvent", () => {
     window._etracker = { sendEvent };
     window.et_UserDefinedEvent = FakeUserDefinedEvent;
 
+    trackAppointmentEvent(reserved);
     trackAppointmentEvent({
-      object: "preconfirmed",
+      object: "reserved",
+      action: "success",
+      flow: "new",
+      slot_ui: "list",
+    });
+    trackAppointmentEvent({
+      object: "reserved",
+      action: "success",
+      flow: "rebooking",
+      slot_ui: "calendar",
+    });
+    trackAppointmentEvent({
+      object: "reserved",
+      action: "success",
+      flow: "rebooking",
+      slot_ui: "list",
+    });
+    trackAppointmentEvent({
+      object: "confirmed",
+      action: "success",
+      flow: "new",
+    });
+    trackAppointmentEvent({
+      object: "confirmed",
       action: "success",
       flow: "rebooking",
     });
+    trackAppointmentEvent({ object: "rebooking", action: "started" });
 
-    expect(sendEvent).toHaveBeenCalledTimes(1);
-    const forwarded = sendEvent.mock.calls[0][0] as FakeUserDefinedEvent;
-    expect(forwarded).toBeInstanceOf(FakeUserDefinedEvent);
-    expect(forwarded.objectName).toBe("preconfirmed");
-    expect(forwarded.category).toBe(APPOINTMENT_TRACK_CATEGORY);
-    expect(forwarded.action).toBe("success");
+    const forwarded = sendEvent.mock.calls.map(
+      (call) => call[0] as FakeUserDefinedEvent
+    );
+    expect(forwarded.map((event) => event.objectName)).toEqual([
+      "new_calendar",
+      "new_list",
+      "rebooking_calendar",
+      "rebooking_list",
+      "new_confirmed",
+      "rebooking_confirmed",
+      "rebooking",
+    ]);
+    expect(forwarded[0].category).toBe(APPOINTMENT_TRACK_CATEGORY);
+    expect(forwarded[0].action).toBe("success");
   });
 
   it("does not throw when etracker is missing", () => {

@@ -56,7 +56,11 @@
         Bitte informieren Sie sich vorab über oben genannte/n Link/s, welche Unterlagen Sie benötigen. 
         <br> <br>
         Falls Sie diesen Termin nicht benötigen oder wahrnehmen können, stornieren Sie bitte <b>umgehend</b> Ihren Termin und reservieren einen neuen Termin.
+        {% if process.scope.preferences.appointment.rebookingDisabled|default(false) %}
+        <a href="{{ config.appointments.urlAppointments }}#/appointment/{{ appointmentLink }}">Termin absagen</a><br />
+        {% else %}
         <a href="{{ config.appointments.urlAppointments }}#/appointment/{{ appointmentLink }}">Termin ändern/stornieren</a><br />
+        {% endif %}
         <br /><br />
 
         {{ block("sendoff_german") }}

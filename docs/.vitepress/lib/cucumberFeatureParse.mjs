@@ -32,12 +32,16 @@ export const sortFeatureTags = (tags) => {
   return unique;
 };
 
+const hasMobileTag = (tags) =>
+  tags.some((tag) => String(tag).toLowerCase() === "@mobile");
+
 export const parseFeatureMeta = (raw) => {
   const featureTags = [];
   const allTags = [];
   let title = "";
   let firstScenario = "";
   let scenarioCount = 0;
+  let mobileScenarioCount = 0;
   let pendingTags = [];
   let seenFeature = false;
 
@@ -70,6 +74,9 @@ export const parseFeatureMeta = (raw) => {
     );
     if (scenarioMatch) {
       scenarioCount += 1;
+      if (hasMobileTag(featureTags) || hasMobileTag(pendingTags)) {
+        mobileScenarioCount += 1;
+      }
       if (!firstScenario) {
         firstScenario = scenarioMatch[1].trim();
       }
@@ -83,5 +90,6 @@ export const parseFeatureMeta = (raw) => {
     title: genericTitle ? firstScenario : title,
     tags: sortFeatureTags(featureTags.length ? featureTags : allTags),
     scenarioCount,
+    mobileScenarioCount,
   };
 };

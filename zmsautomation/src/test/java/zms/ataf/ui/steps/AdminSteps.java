@@ -529,6 +529,44 @@ public class AdminSteps {
         COUNTER_PROCESSING_STATION_PAGE.deleteQueuedAppointmentByFamilyName(TestDataHelper.transformTestData(familyName));
     }
 
+    @When("I open the queue mail form for {string}.")
+    public void iOpenTheQueueMailFormFor(String familyName) {
+        COUNTER_PROCESSING_STATION_PAGE.openCustomMailForQueuedCustomer(
+                TestDataHelper.transformTestData(familyName));
+    }
+
+    @Then("the queue mail subject contains the booked display number.")
+    public void theQueueMailSubjectContainsTheBookedDisplayNumber() {
+        COUNTER_PROCESSING_STATION_PAGE.assertCustomMailSubjectContainsDisplayNumber();
+    }
+
+    @When("I close the queue mail form.")
+    public void iCloseTheQueueMailForm() {
+        COUNTER_PROCESSING_STATION_PAGE.closeCustomMailDialog();
+    }
+
+    @When("I enter {int} characters in the queue mail subject.")
+    public void iEnterCharactersInTheQueueMailSubject(int length) {
+        Assert.assertTrue(length >= 0, "subject length must be non-negative");
+        COUNTER_PROCESSING_STATION_PAGE.setCustomMailSubject("A".repeat(length));
+    }
+
+    @When("I submit the queue mail form.")
+    public void iSubmitTheQueueMailForm() {
+        COUNTER_PROCESSING_STATION_PAGE.submitCustomMailForm();
+    }
+
+    @Then("the queue mail form shows the error {string}.")
+    public void theQueueMailFormShowsTheError(String expectedMessage) {
+        COUNTER_PROCESSING_STATION_PAGE.assertCustomMailFormError(
+                TestDataHelper.transformTestData(expectedMessage));
+    }
+
+    @Then("the queue mail was sent successfully.")
+    public void theQueueMailWasSentSuccessfully() {
+        COUNTER_PROCESSING_STATION_PAGE.assertCustomMailSentSuccess();
+    }
+
     @When("I sign in to the administration as {string}.")
     public void sie_sich_als_im_zeitmanagementsystem_anmelden(String username) throws Exception {
         ADMIN_PAGE.loginWithKeycloakUser(
@@ -634,6 +672,16 @@ public class AdminSteps {
     @When("I search for {string} in the customer search.")
     public void sie_in_der_kundensuche_nach_suchen(String query) {
         CUSTOMER_SEARCH_PAGE.search(TestDataHelper.transformTestData(query));
+    }
+
+    @Then("customer search is the start page, without a menu, a Kundensuche field, or a location prompt.")
+    public void customerSearchIsTheStartPageWithoutAMenu() {
+        CUSTOMER_SEARCH_PAGE.assertCustomerSearchIsTheStartPage();
+    }
+
+    @When("I submit the customer search for {string}.")
+    public void iSubmitTheCustomerSearchFor(String query) {
+        CUSTOMER_SEARCH_PAGE.submitOverallSearch(TestDataHelper.transformTestData(query));
     }
 
     @When("I open the found appointment of {string} from the customer search.")
@@ -911,6 +959,11 @@ public class AdminSteps {
         }
         TestDataHelper.setTestData("customer_email", email);
         COUNTER_PROCESSING_STATION_PAGE.enterEmailInNewAppointmentTextField(TestDataHelper.transformTestData(email));
+    }
+
+    @Then("the appointment email field supports browser autofill in the administration.")
+    public void theAppointmentEmailFieldSupportsBrowserAutofillInTheAdministration() {
+        COUNTER_PROCESSING_STATION_PAGE.assertNewAppointmentEmailFieldSupportsAutofill();
     }
 
     @And("I enter the note {string} under create appointment in the administration.")
@@ -1527,6 +1580,8 @@ public class AdminSteps {
         COUNTER_PROCESSING_STATION_PAGE.waitUntilCustomerIsBackInQueue(name);
         endNoShowLockout(name);
         COUNTER_PROCESSING_STATION_PAGE.reloadQueueLists();
+        // Name text is already visible during lockout; wait for the call <a> after timeoutTime is moved back.
+        PROCESSING_STATION_SECTION.waitUntilCustomerCallLinkVisible(name);
     }
 
     /**
@@ -1548,7 +1603,14 @@ public class AdminSteps {
 
     @Then("the customer {string} should appear in the waiting list.")
     public void sollte_der_kunde_in_der_warteliste_erscheinen(String kunde) {
-        COUNTER_PROCESSING_STATION_PAGE.isCustomerVisibleInQueue(TestDataHelper.transformTestData(kunde), true);
+        String resolved = TestDataHelper.transformTestData(kunde);
+        // Walk-in / forward scenarios store display or process numbers in TestData;
+        // concurrent-call scenarios assert the family name after an API queue.
+        if (resolved != null && resolved.trim().matches("\\d+")) {
+            COUNTER_PROCESSING_STATION_PAGE.isCustomerVisibleInQueue(resolved.trim(), true);
+        } else {
+            COUNTER_PROCESSING_STATION_PAGE.assertCustomerVisibleInQueueByName(resolved);
+        }
     }
 
     @Then("the waiting time H:mm:ss for {string} should be between {string} and {string}.")
@@ -1740,6 +1802,29 @@ public class AdminSteps {
     @Then("the error that a process is already called appears.")
     public void erscheint_die_fehlermeldung_dass_bereits_ein_vorgang_aufgerufen_ist() {
         PROCESSING_STATION_SECTION.assertAlreadyCalledProcessErrorVisible();
+    }
+
+    @Then("the precall confirmation with Kundeninformationen is shown.")
+    public void thePrecallConfirmationWithKundeninformationenIsShown() {
+        PROCESSING_STATION_SECTION.assertPrecallConfirmationVisible();
+    }
+
+    @Then("the precall confirm does not take the customer already held by another clerk.")
+    public void thePrecallConfirmDoesNotTakeTheCustomerAlreadyHeldByAnotherClerk() {
+        PROCESSING_STATION_SECTION.assertPrecallConfirmDidNotTakeCustomer();
+    }
+
+    @When("the clerk opens the call for the last ZMS API process.")
+    public void theClerkOpensTheCallForTheLastZmsApiProcess() {
+        String processId = TestDataHelper.getTestData("zmsapi_last_process_id");
+        Assert.assertTrue(processId != null && !processId.isBlank(),
+                "Queue or reserve a process via ZMS API before opening its call in the UI");
+        PROCESSING_STATION_SECTION.openWorkstationCallForProcessId(processId);
+    }
+
+    @Then("the error that the process cannot be called because another workstation holds it appears.")
+    public void theErrorThatTheProcessCannotBeCalledBecauseAnotherWorkstationHoldsItAppears() {
+        PROCESSING_STATION_SECTION.assertProcessNotCallableByOtherWorkstationVisible();
     }
 
     @And("the button {string} is visible.")

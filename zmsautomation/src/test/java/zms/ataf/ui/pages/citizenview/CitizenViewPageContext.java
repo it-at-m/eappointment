@@ -24,7 +24,7 @@ public class CitizenViewPageContext extends Context {
     public static final String TITLE = "Terminvereinbarung Bürgeransicht Webcomponent";
 
     private WindowType windowType;
-    String lastCitizenViewUrl;
+    public String lastCitizenViewUrl;
 
     CitizenViewPageContext(RemoteWebDriver driver) {
         super(driver);
@@ -68,10 +68,22 @@ public class CitizenViewPageContext extends Context {
     }
 
     /**
+     * Opens zmscitizenview on a service-only jump-in ({@code #/services/{id}}). Lands on the
+     * combination step with that service selected.
+     */
+    public void navigateWithJumpInService(String serviceId) {
+        navigateWithJumpInRoute("#/services/" + serviceId);
+    }
+
+    /**
      * Opens zmscitizenview on the jump-in route: service and location preselected; UI shows the
      * service combination (quantity) step, not the service finder.
      */
     public void navigateWithJumpIn(String serviceId, String locationId) {
+        navigateWithJumpInRoute("#/services/" + serviceId + "/locations/" + locationId);
+    }
+
+    private void navigateWithJumpInRoute(String route) {
         String citizenViewUrl;
         if (RunnerUtils.isJiraBasedTestExecution()) {
             citizenViewUrl = Objects.requireNonNull(Environment.contains(TestExecutionContext.get().ENVIRONMENT))
@@ -87,7 +99,6 @@ public class CitizenViewPageContext extends Context {
         windowType = new WindowType(NAME, new System(NAME, citizenViewUrl));
         int hashIdx = citizenViewUrl.indexOf('#');
         String base = hashIdx >= 0 ? citizenViewUrl.substring(0, hashIdx) : citizenViewUrl;
-        String route = "#/services/" + serviceId + "/locations/" + locationId;
         // A hash change on the open page does not remount the widget, so a second booking
         // stays on the confirmation of the first. A new query loads the jump-in from scratch.
         String jumpInUrl = base + route;
@@ -172,6 +183,15 @@ public class CitizenViewPageContext extends Context {
             }
         }
         ScenarioLogManager.getLogger().warn("Jump-in DOM still unsettled after 25s (half-blank risk).");
+    }
+
+    /** A mail link can be the first citizen page. Open it when no window is registered, otherwise switch to the open one. */
+    public void openCitizenViewIfNotAlreadyOpen() {
+        if (windowType == null) {
+            navigateToPage();
+        } else {
+            set();
+        }
     }
 
     @Override

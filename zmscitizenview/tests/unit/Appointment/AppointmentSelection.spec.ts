@@ -424,6 +424,51 @@ describe("AppointmentSelection", () => {
       expect(wrapper.text()).toContain("apiErrorNoAppointmentForThisScopeText");
     });
 
+    it("shows API error callout when calendar rejects invalid location/service combo", async () => {
+      (fetchAvailableCalendar as Mock).mockResolvedValue({
+        errors: [
+          {
+            errorCode: "invalidLocationAndServiceCombination",
+            errorMessage:
+              "The provided service(s) do not exist at the given location.",
+            statusCode: 400,
+            errorType: "warning",
+          },
+        ],
+      });
+
+      const wrapper = createWrapper({
+        selectedService: {
+          id: "1080784",
+          providers: [
+            {
+              name: "SZE",
+              id: 10446,
+              address: { street: "Ruppertstraße", house_number: "19" },
+              scope: { id: "205" },
+            },
+          ],
+        },
+        props: { isRebooking: true },
+      });
+
+      await flushPromises();
+      await nextTick();
+
+      expect(wrapper.vm.availableDaysFetched).toBe(true);
+      expect(wrapper.vm.isSwitchingProvider).toBe(false);
+      expect(wrapper.vm.error).toBe(true);
+      expect(wrapper.text()).toContain(
+        "apiErrorInvalidLocationAndServiceCombinationHeader"
+      );
+      expect(wrapper.text()).toContain(
+        "apiErrorInvalidLocationAndServiceCombinationText"
+      );
+      expect(wrapper.text()).not.toContain(
+        "apiErrorNoAppointmentForThisScopeHeader"
+      );
+    });
+
     it("shows newAppointmentsInfoLink on empty calendar when selected locations have info", async () => {
       (fetchAvailableCalendar as Mock).mockResolvedValue(calendarResponse([]));
 
@@ -2405,8 +2450,11 @@ describe("AppointmentSelection", () => {
       );
 
       expect(errorCallout).toBeDefined();
-      expect(errorCallout!.html()).toContain("apiErrorCaptchaInvalidHeader");
-      expect(errorCallout!.html()).toContain("apiErrorCaptchaInvalidText");
+      expect(errorCallout!.html()).toContain("apiErrorSessionTimeoutHeader");
+      expect(errorCallout!.html()).toContain("apiErrorSessionTimeoutText");
+      expect(errorCallout!.text()).toContain("restartBooking");
+      wrapper.vm.restartBooking();
+      expect(wrapper.emitted("restartBooking")).toHaveLength(1);
       // Captcha session errors hide provider selection and calendar
       expect(
         wrapper.findComponent({ name: "ProviderSelection" }).exists()
@@ -2507,8 +2555,46 @@ describe("AppointmentSelection", () => {
         (c) => c.attributes("data-type") === "error"
       );
       expect(errorCallout).toBeDefined();
-      expect(errorCallout!.html()).toContain("apiErrorCaptchaExpiredHeader");
-      expect(errorCallout!.html()).toContain("apiErrorCaptchaExpiredText");
+      expect(errorCallout!.html()).toContain("apiErrorSessionTimeoutHeader");
+      expect(errorCallout!.html()).toContain("apiErrorSessionTimeoutText");
+      expect(errorCallout!.text()).toContain("restartBooking");
+      wrapper.vm.restartBooking();
+      expect(wrapper.vm.captchaSessionExpired).toBe(false);
+      expect(wrapper.emitted("restartBooking")).toHaveLength(1);
+    });
+
+    it("shows the restart callout when the captcha token is already expired", async () => {
+      const payload = btoa(JSON.stringify({ exp: 1 }))
+        .replace(/\+/g, "-")
+        .replace(/\//g, "_")
+        .replace(/=+$/g, "");
+      const wrapper = createWrapper({
+        props: { captchaToken: `header.${payload}.sig` },
+        selectedService: {
+          id: "service1",
+          providers: [
+            {
+              name: "Office A",
+              id: 1,
+              address: { street: "Main", house_number: "1" },
+              scope: { id: "1" },
+            },
+          ],
+        },
+      });
+      await nextTick();
+
+      expect(wrapper.vm.captchaSessionExpired).toBe(true);
+      expect(
+        wrapper.findComponent({ name: "ProviderSelection" }).exists()
+      ).toBe(false);
+      const errorCallout = wrapper
+        .findAll('[data-test="muc-callout"]')
+        .find((c) => c.attributes("data-type") === "error");
+      expect(errorCallout).toBeDefined();
+      expect(errorCallout!.text()).toContain("restartBooking");
+      expect(errorCallout!.text()).toContain("apiErrorSessionTimeoutText");
+      expect(wrapper.find("h2").exists()).toBe(false);
     });
 
     it("shows no appointment error info callout when no appointment error is set", async () => {

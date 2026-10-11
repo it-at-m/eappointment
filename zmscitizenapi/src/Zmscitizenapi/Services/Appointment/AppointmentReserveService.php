@@ -8,6 +8,7 @@ use BO\Zmscitizenapi\Utils\DateTimeFormatHelper;
 use BO\Zmscitizenapi\Models\ThinnedProcess;
 use BO\Zmscitizenapi\Services\Captcha\CaptchaRequirementTrait;
 use BO\Zmscitizenapi\Services\Captcha\TokenValidationService;
+use BO\Zmscitizenapi\Services\Core\AppointmentProcessLimitsValidationService;
 use BO\Zmscitizenapi\Services\Core\MapperService;
 use BO\Zmscitizenapi\Services\Core\ValidationService;
 use BO\Zmscitizenapi\Services\Core\ZmsApiFacadeService;
@@ -55,6 +56,15 @@ class AppointmentReserveService
             return $errors;
         }
 
+        $limitErrors = AppointmentProcessLimitsValidationService::validateReserveRequestLimits(
+            $clientData->serviceIds,
+            $clientData->serviceCounts,
+            $clientData->officeId
+        );
+        if (!empty($limitErrors['errors'])) {
+            return $limitErrors;
+        }
+
         $selectedProcess = $this->findMatchingProcess(
             $clientData->officeId,
             $clientData->serviceIds,
@@ -67,9 +77,25 @@ class AppointmentReserveService
             return $errors;
         }
 
+        $limitErrors = AppointmentProcessLimitsValidationService::validateReserveLimits(
+            $selectedProcess,
+            $clientData->serviceIds,
+            $clientData->serviceCounts,
+            $clientData->officeId
+        );
+        if (!empty($limitErrors['errors'])) {
+            return $limitErrors;
+        }
+
         $sourceProcess = $this->loadSourceProcessForRebooking($clientData);
         if (is_array($sourceProcess)) {
             return $sourceProcess;
+        }
+        if ($sourceProcess instanceof ThinnedProcess) {
+            $rebookingErrors = ValidationService::validateRebookingAllowed($sourceProcess->scope ?? null);
+            if ($rebookingErrors['errors'] !== []) {
+                return $rebookingErrors;
+            }
         }
 
         return $this->reserveAppointment(
@@ -133,7 +159,8 @@ class AppointmentReserveService
 
                     $processData = [
                         'requests' => $requestIds,
-                        'appointments' => [$appointment]
+                        'appointments' => [$appointment],
+                        'slotCount' => (int) $appointment->getSlotCount(),
                     ];
                     $process->withUpdatedData($processData, new \DateTime("@$timestamp"), $process->scope);
                     return $process;
