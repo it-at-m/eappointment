@@ -11,7 +11,7 @@ Feature: Citizen API: Ruppertstraße Wartezone and infoForAppointment stay on th
   # Wartezone (scope.hint) and ATAF infoForAppointment for WB03 (181) or WB04 (160).
   # V52: one internet seat each on the day after the V19 range; a second reserve of the
   # same timestamp switches scope without fighting the shared Hauptkalender window.
-  # UI coverage: ui/.../citizen-login/zmskvr-1051_zmskvr-1309_zmskvr-1087_zmskvr-1311_wartezone_scope_hints.feature
+  # UI coverage: ui/.../citizen-login/zmskvr-1051_…_zmskvr-813_zmskvr-818_wartezone_scope_hints.feature
 
   Background:
     Given the Citizen API is available
