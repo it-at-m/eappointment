@@ -838,7 +838,7 @@ export function cucumberGhRunCommand(entry) {
   const testLayer = entry?.testType === "rest" ? "api" : "ui";
   const branch = cucumberSelectedBranch.value || CUCUMBER_DEFAULT_BRANCH;
   const fields = [
-    ["run_main_next_matrix", "false"],
+    ["run_next_matrix", "false"],
     ["run_all_in_one_job", "false"],
     ["module_admin", "false"],
     ["module_citizenview", "false"],

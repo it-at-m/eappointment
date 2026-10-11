@@ -40,6 +40,8 @@ public final class TimeSlotStep {
             "Ungültige Kombination aus Ort und Leistung.";
     private static final String INVALID_LOCATION_SERVICE_CALLOUT_TEXT =
             "Die angegebene Dienstleistung ist an diesem Standort nicht verfügbar.";
+    /** Frontend generic fallback (networkError / failed applyCalendarResponse), not the blue empty-day info. */
+    private static final String GENERIC_API_ERROR_CALLOUT = "Ein Fehler ist aufgetreten.";
 
 
     /**
@@ -50,7 +52,14 @@ public final class TimeSlotStep {
      */
     public enum ReserveOutcome {
         CONTACT,
+        /**
+         * Rebooking already left Termin for Übersicht (Verschieben abbrechen without the
+         * Ausgewählter Termin callout). Do not click Weiter again and do not require Kontaktdaten.
+         */
+        REBOOKING_OVERVIEW,
         SLOT_TAKEN,
+        /** Citizen API 429 / Zu viele Anfragen — wait out the window and retry same slot. */
+        RATE_LIMITED,
         UNFINISHED
     }
 
@@ -130,6 +139,10 @@ public final class TimeSlotStep {
     public void assertBookableDayInCalendarAndList(int officeId) {
         context.set();
         ensureBookableTimeslotVisible(officeId);
+        Assert.assertFalse(
+                genericApiErrorCalloutVisible(),
+                "Calendar showed '" + GENERIC_API_ERROR_CALLOUT + "' for office " + officeId
+                        + " (frontend generic/network error, not the blue empty-day callout)");
         Assert.assertTrue(
                 deepTimeslotPresentForProvider(officeId),
                 "Expected a timeslot for office " + officeId);
@@ -139,6 +152,9 @@ public final class TimeSlotStep {
         Assert.assertTrue(
                 shadow.deepClickButtonByAriaContains("Zur Listenansicht wechseln"),
                 "Could not switch to the list view");
+        CitizenViewWaits.waitWithThreeWindows(
+                () -> shadow.deepElementExists("#listViewAccordion") && !genericApiErrorCalloutVisible(),
+                "List view accordion after calendar→list for office " + officeId);
         Assert.assertTrue(
                 shadow.deepElementExists("#listViewAccordion"),
                 "List view should show the bookable day");
@@ -149,6 +165,9 @@ public final class TimeSlotStep {
                 shadow.deepClickButtonByAriaContains("Zur Kalenderansicht wechseln"),
                 "Could not switch back to the calendar");
         ensureBookableTimeslotVisible(officeId);
+        Assert.assertFalse(
+                genericApiErrorCalloutVisible(),
+                "Calendar showed '" + GENERIC_API_ERROR_CALLOUT + "' after returning from the list");
         Assert.assertTrue(
                 deepTimeslotPresentForProvider(officeId),
                 "Calendar should still show a timeslot for office " + officeId + " after the list");
@@ -160,22 +179,22 @@ public final class TimeSlotStep {
      */
     private void ensureBookableTimeslotVisible(int officeId) {
         waitUntilCalendarSettled(officeId, true);
-        if (deepTimeslotPresentForProvider(officeId)) {
+        if (deepTimeslotPresentForProvider(officeId) && !genericApiErrorCalloutVisible()) {
             return;
         }
-        // After an empty-office Ort toggle the calendar can stick without the blue callout text;
-        // re-check the restored office once so available-calendar is fetched again.
+        // Empty Ort toggle or a Firefox fetch race can leave the red generic error callout
+        // with no slots; re-check the office so available-calendar is fetched again.
         if (providerLocation.deepProviderCheckboxChecked(officeId)) {
             ScenarioLogManager.getLogger()
                     .info(
-                            "zmscitizenview: re-toggle provider {} after empty Ort left no timeslots",
+                            "zmscitizenview: re-toggle provider {} after empty Ort / generic calendar error",
                             officeId);
             shadow.deepClickRequired("#checkbox-provider-" + officeId);
             providerLocation.waitUntilProviderToggleSettled(15);
             shadow.deepClickRequired("#checkbox-provider-" + officeId);
             providerLocation.waitUntilProviderToggleSettled(30);
             waitUntilCalendarSettled(officeId, true);
-            if (deepTimeslotPresentForProvider(officeId)) {
+            if (deepTimeslotPresentForProvider(officeId) && !genericApiErrorCalloutVisible()) {
                 return;
             }
         }
@@ -435,6 +454,22 @@ public final class TimeSlotStep {
     }
 
     public void assertCalendarGroupsByHour() {
+        // Midnight / next-day opening-hour windows can land on a short day (Vormittag only).
+        // Advance until a busy day shows HH:00-HH:59 groups, then assert.
+        for (int day = 0; day < 10; day++) {
+            JsonNode snap = calendarSnapshot();
+            if (hourLabel(snap) != null) {
+                assertHourLabels(snap);
+                ScenarioLogManager.getLogger()
+                        .info("zmscitizenview: calendar groups by hour after {} day move(s)", day);
+                return;
+            }
+            if (day == 9 || !openNextCalendarDayAndWaitForSlots()) {
+                break;
+            }
+            ScenarioLogManager.getLogger()
+                    .info("zmscitizenview: no hour groups yet; opened next calendar day (move {})", day + 1);
+        }
         JsonNode state = new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(defaultWaitSeconds))
                 .until(d -> hourLabel(calendarSnapshot()));
         assertHourLabels(state);
@@ -1042,8 +1077,12 @@ public final class TimeSlotStep {
         return Boolean.TRUE.equals(clicked);
     }
 
-    /** Wait until slot buttons exist and MucSpinner cleared (calendar day / office fetch). */
-    public void waitUntilAppointmentSlotsReady(int maxSeconds) {
+    /**
+     * Wait until slot buttons exist and MucSpinner cleared (calendar day / office fetch).
+     *
+     * @return false when the current view stayed empty — callers may page the calendar
+     */
+    public boolean waitUntilAppointmentSlotsReadyQuiet(int maxSeconds) {
         context.set();
         ScenarioLogManager.getLogger()
                 .info(
@@ -1053,18 +1092,28 @@ public final class TimeSlotStep {
         try {
             new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(maxSeconds))
                     .until(d -> deepTimeslotReadyNoSpinner());
-        } catch (org.openqa.selenium.TimeoutException e) {
-            boolean spin = deepMucSpinnerVisible();
-            boolean slot = deepTimeslotClickablePresent();
             ScenarioLogManager.getLogger()
-                    .warn(
-                            "zmscitizenview: slot wait timeout — spinnerVisible={} timeslotInDom={} after {}ms",
-                            spin,
-                            slot,
-                            java.lang.System.currentTimeMillis() - t0);
-            throw e;
+                    .info("zmscitizenview: slots ready (spinner cleared, timeslot clickable)");
+            return true;
+        } catch (org.openqa.selenium.TimeoutException e) {
+            // Empty day/hour after Ort toggle is expected under parallel load — recover by paging.
+            // Log a one-liner; do not dump the Selenium TimeoutException stack into WARNs.
+            ScenarioLogManager.getLogger()
+                    .info(
+                            "zmscitizenview: no timeslot yet after {}ms (spinnerVisible={} timeslotInDom={})",
+                            java.lang.System.currentTimeMillis() - t0,
+                            deepMucSpinnerVisible(),
+                            deepTimeslotClickablePresent());
+            return false;
         }
-        ScenarioLogManager.getLogger().info("zmscitizenview: slots ready (spinner cleared, timeslot clickable)");
+    }
+
+    /** Wait until slot buttons exist and MucSpinner cleared (calendar day / office fetch). */
+    public void waitUntilAppointmentSlotsReady(int maxSeconds) {
+        if (!waitUntilAppointmentSlotsReadyQuiet(maxSeconds)) {
+            throw new org.openqa.selenium.TimeoutException(
+                    "zmscitizenview: timeslot not ready within " + maxSeconds + "s");
+        }
     }
 
     /**
@@ -1074,18 +1123,42 @@ public final class TimeSlotStep {
     public void waitUntilSlotsReadyForBooking() {
         context.set();
         int timeout = slotBookingWaitTimeoutSeconds();
-        for (int day = 0; day < 4; day++) {
-            try {
-                waitUntilAppointmentSlotsReady(day == 0 ? timeout : Math.min(45, timeout));
+        for (int day = 0; day < 8; day++) {
+            int waitSec = day == 0 ? timeout : Math.min(45, timeout);
+            if (waitUntilAppointmentSlotsReadyQuiet(waitSec)) {
                 break;
-            } catch (Exception e) {
-                ScenarioLogManager.getLogger().warn("zmscitizenview slot wait: {}", e.toString());
-                if (deepTimeslotClickablePresent() || !openNextCalendarDayAndWaitForSlots()) {
-                    break;
-                }
             }
+            if (deepTimeslotClickablePresent() || !openNextCalendarDayAndWaitForSlots()) {
+                break;
+            }
+            ScenarioLogManager.getLogger()
+                    .info("zmscitizenview: empty slot view; advanced calendar day ({}/7)", day + 1);
         }
         scrollTimeSlotGridIntoViewForScreenshots();
+    }
+
+    /**
+     * After a taken/unfinished reserve, find another slot for {@code officeId}: Später, then up to
+     * several calendar days at a shorter lead time.
+     */
+    private boolean recoverHighlightForOffice(int officeId) {
+        clickSpäterIfAvailableAndReloadSlots();
+        if (highlightPreferredTimeslotForOfficeOrAbsent(officeId, "")) {
+            return true;
+        }
+        for (int day = 0; day < 7; day++) {
+            if (!openNextCalendarDayAndWaitForSlots()) {
+                break;
+            }
+            if (highlightPreferredTimeslotForOfficeOrAbsent(officeId, "", 20)) {
+                return true;
+            }
+            clickSpäterIfAvailableAndReloadSlots();
+            if (highlightPreferredTimeslotForOfficeOrAbsent(officeId, "", 20)) {
+                return true;
+            }
+        }
+        return highlightPreferredTimeslotForOfficeOrAbsent(officeId, "", 5);
     }
 
     /**
@@ -1096,17 +1169,8 @@ public final class TimeSlotStep {
         context.set();
         int timeout = slotBookingWaitTimeoutSeconds();
         if (clickCitizenViewLaterOnceIfAvailable()) {
-            try {
-                Thread.sleep(1200L);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-            }
-            try {
-                waitUntilAppointmentSlotsReady(Math.min(45, timeout));
-            } catch (Exception e) {
-                ScenarioLogManager.getLogger()
-                        .warn("zmscitizenview slot wait after Später: {}", e.toString());
-            }
+            CitizenViewWaits.sleepQuiet(1200L);
+            waitUntilAppointmentSlotsReadyQuiet(Math.min(45, timeout));
         }
         scrollTimeSlotGridIntoViewForScreenshots();
     }
@@ -1148,8 +1212,8 @@ public final class TimeSlotStep {
         Set<Long> skipped = new HashSet<>();
         Long pendingReserveTimestamp = null;
         int unfinishedReserves = 0;
-        for (int attempt = 1; attempt <= 8; attempt++) {
-            if (contactStepReached()) {
+        for (int attempt = 1; attempt <= 12; attempt++) {
+            if (contactStepReached() || rebookingOverviewReached()) {
                 keepReservedSlot(pendingReserveTimestamp);
                 finishReserveOnContactStep();
                 return;
@@ -1158,14 +1222,19 @@ public final class TimeSlotStep {
                 String skippedTimestamps =
                         skipped.stream().map(String::valueOf).reduce((a, b) -> a + "," + b).orElse("");
                 if (!highlightPreferredTimeslotForOfficeOrAbsent(officeId, skippedTimestamps)) {
-                    if (contactStepReached()) {
+                    if (contactStepReached() || rebookingOverviewReached()) {
                         keepReservedSlot(pendingReserveTimestamp);
                         finishReserveOnContactStep();
                         return;
                     }
-                    Assert.fail(
-                            "zmscitizenview: could not find/highlight timeslot for provider " + officeId
-                                    + " (shared booking uses data-provider-id / provider-{id}-timeslot-*)");
+                    // Parallel 10427 (captcha scope) / 10502 drains a day-part; page until a slot appears.
+                    skipped.clear();
+                    if (!recoverHighlightForOffice(officeId)) {
+                        Assert.fail(
+                                "zmscitizenview: could not find/highlight timeslot for provider "
+                                        + officeId
+                                        + " (shared booking uses data-provider-id / provider-{id}-timeslot-*)");
+                    }
                 }
                 if (!clickHighlightedTimeslotSelectionOrGiveUp()) {
                     long missed = readStoredSlotTimestamp();
@@ -1194,7 +1263,7 @@ public final class TimeSlotStep {
                 pendingReserveTimestamp = timestamp;
             }
             switch (waitForReserveOutcome()) {
-                case CONTACT -> {
+                case CONTACT, REBOOKING_OVERVIEW -> {
                     keepReservedSlot(timestamp);
                     finishReserveOnContactStep();
                     return;
@@ -1209,20 +1278,32 @@ public final class TimeSlotStep {
                                     "zmscitizenview: slot timestamp={} is no longer available; trying the next available slot",
                                     timestamp);
                 }
+                case RATE_LIMITED -> {
+                    // Do not skip the slot — the hold never started. Wait past RATE_LIMIT_CACHE_TTL.
+                    ScenarioLogManager.getLogger()
+                            .warn(
+                                    "zmscitizenview: rate limit during reserve timestamp={}; waiting 65s then retrying Weiter",
+                                    timestamp);
+                    CitizenViewWaits.sleepQuiet(65_000L);
+                }
                 case UNFINISHED -> {
-                    if (timestamp > 0) {
-                        skipped.add(timestamp);
-                    }
                     unfinishedReserves++;
                     ScenarioLogManager.getLogger()
                             .info(
-                                    "zmscitizenview: reserve for timestamp={} did not finish; trying the next available slot",
-                                    timestamp);
-                    if (unfinishedReserves >= 2) {
+                                    "zmscitizenview: reserve for timestamp={} did not finish (attempt {}); retrying",
+                                    timestamp,
+                                    unfinishedReserves);
+                    // First retries keep the same timestamp (Weiter often missed under load).
+                    // Only skip after repeated hangs so captcha TTL (5 min) is not burned on skips.
+                    if (unfinishedReserves >= 3 && timestamp > 0) {
+                        skipped.add(timestamp);
+                    }
+                    if (unfinishedReserves >= 8) {
                         Assert.fail(
                                 "zmscitizenview: reserve did not reach Kontaktdaten and did not report a taken slot for office "
                                         + officeId);
                     }
+                    waitUntilAppointmentSlotsReadyQuiet(Math.min(30, slotBookingWaitTimeoutSeconds()));
                 }
             }
         }
@@ -1248,41 +1329,70 @@ public final class TimeSlotStep {
     /**
      * Info callout after slot pick: selected-appointment header + {@code #provider-{officeId}}.
      *
-     * @return false when the Kontakt step is already showing, so the caller must not click Weiter again
+     * @return false when Kontakt or rebooking Übersicht is already showing, so the caller must not
+     *     click Weiter again
      */
     public boolean assertSelectedAppointmentCalloutShowsProvider(int officeId) {
         context.set();
         String providerSelector = "#provider-" + officeId;
-        CitizenViewWaits.waitWithThreeWindows(
-                () -> contactStepReached()
-                        || (selectedAppointmentCalloutVisible() && shadow.deepElementExists(providerSelector)),
-                "Selected appointment callout for office " + officeId);
-        if (stopBecauseContactStepIsVisible(officeId)) {
-            return false;
-        }
-        new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(defaultWaitSeconds))
-                .until(
-                        d ->
-                                contactStepReached()
-                                        || (selectedAppointmentCalloutVisible()
-                                                && shadow.deepElementExists(providerSelector)));
-        if (stopBecauseContactStepIsVisible(officeId)) {
-            return false;
-        }
-        Assert.assertTrue(
-                selectedAppointmentCalloutVisible(),
-                "Selected-appointment callout header missing after slot click");
-        if (!shadow.deepElementExists(providerSelector)) {
-            if (stopBecauseContactStepIsVisible(officeId)) {
+        for (int paintTry = 0; paintTry < 2; paintTry++) {
+            CitizenViewWaits.waitWithThreeWindows(
+                    () -> contactStepReached()
+                            || rebookingOverviewReached()
+                            || (selectedAppointmentCalloutVisible()
+                                    && shadow.deepElementExists(providerSelector)),
+                    "Selected appointment callout for office " + officeId);
+            if (stopBecauseContactStepIsVisible(officeId) || stopBecauseRebookingOverview(officeId)) {
                 return false;
             }
-            Assert.fail("Expected #provider-" + officeId + " in selected-appointment callout");
+            try {
+                new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(Math.min(25, defaultWaitSeconds)))
+                        .until(
+                                d ->
+                                        contactStepReached()
+                                                || rebookingOverviewReached()
+                                                || (selectedAppointmentCalloutVisible()
+                                                        && shadow.deepElementExists(providerSelector)));
+            } catch (TimeoutException e) {
+                if (stopBecauseContactStepIsVisible(officeId) || stopBecauseRebookingOverview(officeId)) {
+                    return false;
+                }
+                if (paintTry == 0 && clickHighlightedTimeslotSelectionOrGiveUp()) {
+                    ScenarioLogManager.getLogger()
+                            .warn(
+                                    "zmscitizenview: Ausgewählter Termin missing for office {}; re-clicked timeslot",
+                                    officeId);
+                    continue;
+                }
+                throw e;
+            }
+            if (stopBecauseContactStepIsVisible(officeId) || stopBecauseRebookingOverview(officeId)) {
+                return false;
+            }
+            // Callout can vanish between the wait and this check when reserve already opened Kontakt.
+            if (!selectedAppointmentCalloutVisible()) {
+                if (stopBecauseContactStepIsVisible(officeId) || stopBecauseRebookingOverview(officeId)) {
+                    return false;
+                }
+                Assert.fail("Selected-appointment callout header missing after slot click");
+            }
+            if (!shadow.deepElementExists(providerSelector)) {
+                if (stopBecauseContactStepIsVisible(officeId) || stopBecauseRebookingOverview(officeId)) {
+                    return false;
+                }
+                Assert.fail("Expected #provider-" + officeId + " in selected-appointment callout");
+            }
+            ScenarioLogManager.getLogger()
+                    .info(
+                            "zmscitizenview: callout OK — Ausgewählter Termin includes provider {}",
+                            officeId);
+            return true;
         }
-        ScenarioLogManager.getLogger()
-                .info(
-                        "zmscitizenview: callout OK — Ausgewählter Termin includes provider {} (Bürgerbüro Ruppertstraße)",
-                        officeId);
-        return true;
+        if (stopBecauseContactStepIsVisible(officeId) || stopBecauseRebookingOverview(officeId)) {
+            return false;
+        }
+        Assert.fail("Selected-appointment callout for office " + officeId + " did not appear");
+        return false;
     }
 
     public void assertSelectedAppointmentCalloutVisible() {
@@ -1317,14 +1427,17 @@ public final class TimeSlotStep {
             String skippedTimestamps =
                     skipped.stream().map(String::valueOf).reduce((a, b) -> a + "," + b).orElse("");
             if (!highlightPreferredTimeslotForOfficeOrAbsent(officeId, skippedTimestamps, 5)) {
-                Assert.fail(
-                        "zmscitizenview: no more timeslots for office "
-                                + officeId
-                                + " while looking for "
-                                + code
-                                + " (skipped="
-                                + skippedTimestamps
-                                + ")");
+                skipped.clear();
+                if (!recoverHighlightForOffice(officeId)) {
+                    Assert.fail(
+                            "zmscitizenview: no more timeslots for office "
+                                    + officeId
+                                    + " while looking for "
+                                    + code
+                                    + " (skipped="
+                                    + skippedTimestamps
+                                    + ")");
+                }
             }
             if (!clickHighlightedTimeslotSelectionOrGiveUp()) {
                 long missed = readStoredSlotTimestamp();
@@ -1554,10 +1667,12 @@ public final class TimeSlotStep {
         context.set();
         String header = CitizenViewPage.DE_APPOINTMENT_NOT_AVAILABLE_HEADER;
         String text = CitizenViewPage.DE_APPOINTMENT_NOT_AVAILABLE_TEXT;
-        int sec = Math.min(30, defaultWaitSeconds);
+        // Firefox can take ~45–60s for the API snatch; give the UI time to paint the callout.
+        int sec = Math.max(60, defaultWaitSeconds);
         long deadline = System.currentTimeMillis() + sec * 1000L;
         while (System.currentTimeMillis() < deadline) {
-            if (appointmentNotAvailableCalloutBelowSummary(header, text)) {
+            if (appointmentNotAvailableCalloutBelowSummary(header, text)
+                    || appointmentNotAvailableCalloutAnywhere(header, text)) {
                 ScenarioLogManager.getLogger()
                         .info(
                                 "zmscitizenview: appointment-not-available error callout visible below Ausgewählter Termin");
@@ -1570,12 +1685,26 @@ public final class TimeSlotStep {
             CitizenViewWaits.sleepQuiet(300L);
         }
         Assert.assertTrue(
-                appointmentNotAvailableCalloutBelowSummary(header, text),
+                appointmentNotAvailableCalloutBelowSummary(header, text)
+                        || appointmentNotAvailableCalloutAnywhere(header, text),
                 "Expected error callout \""
                         + header
                         + "\" / \""
                         + text
                         + "\" below the selected-appointment summary after the slot was taken.");
+    }
+
+    /** Fallback when the error callout is visible but not yet laid out below the summary (Firefox). */
+    private boolean appointmentNotAvailableCalloutAnywhere(String header, String text) {
+        return shadow.shadowDomContainsText(header) && shadow.shadowDomContainsText(text);
+    }
+
+    /** Soft check used by the one-shot Weiter retry before asserting. */
+    public boolean appointmentNotAvailableCalloutLikelyVisible() {
+        String header = CitizenViewPage.DE_APPOINTMENT_NOT_AVAILABLE_HEADER;
+        String text = CitizenViewPage.DE_APPOINTMENT_NOT_AVAILABLE_TEXT;
+        return appointmentNotAvailableCalloutBelowSummary(header, text)
+                || appointmentNotAvailableCalloutAnywhere(header, text);
     }
 
     /**
@@ -1905,15 +2034,24 @@ public final class TimeSlotStep {
             if (!deepMucSpinnerVisible()) {
                 boolean slots = deepTimeslotPresentForProvider(officeId);
                 boolean callout = shadow.shadowDomContainsText(NO_APPOINTMENT_CALLOUT);
-                if (expectSlots && slots) {
+                boolean genericError = genericApiErrorCalloutVisible();
+                if (expectSlots && slots && !genericError) {
                     return;
                 }
                 if (!expectSlots && callout && !slots) {
                     return;
                 }
+                // Generic error is a settled failure state; let the caller re-fetch.
+                if (expectSlots && genericError && !slots) {
+                    return;
+                }
             }
             CitizenViewWaits.sleepQuiet(400L);
         }
+    }
+
+    private boolean genericApiErrorCalloutVisible() {
+        return shadow.shadowDomContainsText(GENERIC_API_ERROR_CALLOUT);
     }
 
     public static boolean timeslotLooksWhiteOnBlue(JsonNode slot) {
@@ -1953,12 +2091,7 @@ public final class TimeSlotStep {
             return false;
         }
         CitizenViewWaits.sleepQuiet(1200L);
-        try {
-            waitUntilAppointmentSlotsReady(Math.min(45, slotBookingWaitTimeoutSeconds()));
-        } catch (Exception e) {
-            ScenarioLogManager.getLogger()
-                    .warn("zmscitizenview slot wait after next calendar day: {}", e.toString());
-        }
+        waitUntilAppointmentSlotsReadyQuiet(Math.min(45, slotBookingWaitTimeoutSeconds()));
         return true;
     }
 
@@ -2171,7 +2304,7 @@ public final class TimeSlotStep {
         boolean highlighted = false;
         int dayMoves = 0;
         int leadSeconds = leadMinutes * 60;
-        for (int attempt = 1; attempt <= 8 && !highlighted; attempt++) {
+        for (int attempt = 1; attempt <= 12 && !highlighted; attempt++) {
             if (contactStepReached()) {
                 return false;
             }
@@ -2195,15 +2328,10 @@ public final class TimeSlotStep {
                             attempt);
             if (clickCitizenViewLaterOnceIfAvailable()) {
                 CitizenViewWaits.sleepQuiet(1200L);
-                try {
-                    waitUntilAppointmentSlotsReady(Math.min(45, slotBookingWaitTimeoutSeconds()));
-                } catch (Exception e) {
-                    ScenarioLogManager.getLogger()
-                            .warn("zmscitizenview slot wait after Später (highlight): {}", e.toString());
-                }
+                waitUntilAppointmentSlotsReadyQuiet(Math.min(45, slotBookingWaitTimeoutSeconds()));
                 continue;
             }
-            if (dayMoves >= 3 || !openNextCalendarDayAndWaitForSlots()) {
+            if (dayMoves >= 6 || !openNextCalendarDayAndWaitForSlots()) {
                 break;
             }
             dayMoves++;
@@ -2368,25 +2496,71 @@ public final class TimeSlotStep {
         return true;
     }
 
+    /** ZMSKVR-1553 / ZMSKVR-1500: reschedule Weiter can land on Übersicht before the callout assert. */
+    public boolean stopBecauseRebookingOverview(int officeId) {
+        if (!rebookingOverviewReached()) {
+            return false;
+        }
+        ScenarioLogManager.getLogger()
+                .info(
+                        "zmscitizenview: rebooking Übersicht visible for office {}; slot callout wait stopped",
+                        officeId);
+        return true;
+    }
+
+    /**
+     * Umbuchen Übersicht: Verschieben abbrechen without Kontakt — and not still on Termin.
+     * During rebooking the slot callout already shows Verschieben abbrechen next to Weiter;
+     * treating that alone as Übersicht made reserve Weiter pass while stuck on Ausgewählter Termin.
+     */
+    public boolean rebookingOverviewReached() {
+        return shadow.shadowDomContainsText("Verschieben abbrechen")
+                && !shadow.deepElementExists("#firstname")
+                && !selectedAppointmentCalloutVisible();
+    }
+
     public void finishReserveOnContactStep() {
         waitForReserveToSettle();
         page.trySetBookingProcessFromPage();
+        // Teaser / ICS must use the reserved process time, not the highlight id.
+        page.syncRememberedAppointmentTimeFromBookingProcess();
     }
 
     public ReserveOutcome waitForReserveOutcome() {
-        long deadline = System.currentTimeMillis() + 60_000L;
+        // Keep under captcha JWT TTL (CAPTCHA_TOKEN_TTL=300) when retries stack.
+        long deadline = System.currentTimeMillis() + 25_000L;
         while (System.currentTimeMillis() < deadline) {
+            if (rebookingOverviewReached()) {
+                return ReserveOutcome.REBOOKING_OVERVIEW;
+            }
             if (contactStepReached() || shadow.shadowDomContainsText("Termin verschieben")) {
                 return ReserveOutcome.CONTACT;
             }
+            if (shadow.shadowDomContainsText("Zu viele Anfragen")
+                    || shadow.shadowDomContainsText("maximale Anzahl an Anfragen")) {
+                return ReserveOutcome.RATE_LIMITED;
+            }
+            if (shadow.shadowDomContainsText("Ihre Sitzung ist abgelaufen.")) {
+                Assert.fail(
+                        "zmscitizenview: captcha session expired during reserve (Ihre Sitzung ist abgelaufen.)"
+                                + " — finish Leistung→Kontakt within CAPTCHA_TOKEN_TTL");
+            }
             if (shadow.shadowDomContainsText("Ihr gewählter Termin ist nicht mehr verfügbar.")
-                    || shadow.shadowDomContainsText("Ein unbekannter Fehler ist aufgetreten.")) {
+                    || shadow.shadowDomContainsText("Ein unbekannter Fehler ist aufgetreten.")
+                    || shadow.shadowDomContainsText(CitizenViewPage.DE_APPOINTMENT_NOT_AVAILABLE_HEADER)) {
                 return ReserveOutcome.SLOT_TAKEN;
             }
             CitizenViewWaits.sleepQuiet(400L);
         }
+        if (rebookingOverviewReached()) {
+            return ReserveOutcome.REBOOKING_OVERVIEW;
+        }
         if (contactStepReached()) {
             return ReserveOutcome.CONTACT;
+        }
+        if (shadow.shadowDomContainsText("Zu viele Anfragen")
+                || shadow.shadowDomContainsText("maximale Anzahl an Anfragen")) {
+            return ReserveOutcome.RATE_LIMITED;
         }
         ScenarioLogManager.getLogger()
                 .info(
@@ -2394,7 +2568,10 @@ public final class TimeSlotStep {
         return ReserveOutcome.UNFINISHED;
     }
 
-    /** Keep the slot whose Weiter reached Kontakt, not a later highlight. */
+    /**
+     * Provisional remember from the highlight id until {@link #finishReserveOnContactStep()} replaces it
+     * with the reserved process timestamp.
+     */
     public void keepReservedSlot(Long timestamp) {
         if (timestamp != null && timestamp > 0) {
             slotState.rememberedAppointmentEpoch = timestamp;

@@ -86,13 +86,15 @@ Feature: CitizenView: Termin verschieben hidden when rebooking is disabled
   # Scheidplatz → Passkalender: source allows Umbuchen; target disabled must not block.
   # Scheidplatz has no email activation, so the source booking uses Bürger-Login.
   # Bemerkung is already stored on the source, so rebooking skips Kontakt (like ZMSKVR-353).
+  # After Umbuchen, Ort checkboxes stay multi-selected (Scheidplatz + ranked peers).
+  # Keep only Passkalender so Später/highlight look at provider-10502 slots, not Scheidplatz.
   @citizen-login @jumpin @scheidplatz
   Scenario: Rebooking from Scheidplatz to Passkalender completes without activation
     Given I open zmscitizenview with jump-in service "1063453" and location "102524"
     Then the service combination step should be visible
     When I continue from the service combination step
     Then provider checkbox 102524 should be visible in the citizen view
-    When I select office 102524 in the citizen view
+    When I keep only providers "102524" checked in the citizen view
     And I wait for appointment slots to be ready in the citizen view
     And I click Später in the time slot grid if available in the citizen view
     And I scroll to and highlight the preferred timeslot for office 102524 in the citizen view
@@ -111,7 +113,7 @@ Feature: CitizenView: Termin verschieben hidden when rebooking is disabled
     And I open the Meine Termine teaser for "Reisepass"
     And I reschedule the appointment from Meine Termine in the citizen view
     Then provider checkbox 10502 should be visible in the citizen view
-    When I select office 10502 in the citizen view
+    When I keep only providers "10502" checked in the citizen view
     And I wait for appointment slots to be ready in the citizen view
     And I click Später in the time slot grid if available in the citizen view
     And I scroll to and highlight the preferred timeslot for office 10502 in the citizen view

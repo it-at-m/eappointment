@@ -440,6 +440,7 @@ import {
 } from "vue";
 
 import { AppointmentDTO } from "@/api/models/AppointmentDTO";
+import { Combinable } from "@/api/models/Combinable";
 import { Office } from "@/api/models/Office";
 import { Relation } from "@/api/models/Relation";
 import { Service } from "@/api/models/Service";
@@ -471,6 +472,7 @@ import {
 } from "@/types/ProvideInjectTypes";
 import { ServiceImpl } from "@/types/ServiceImpl";
 import { StepperItem } from "@/types/StepperTypes";
+import { SubService } from "@/types/SubService";
 import {
   getApiStatusState,
   handleApiResponseForDownTime,
@@ -927,7 +929,10 @@ const rememberConfiguredPlaceholder = (
   }
 };
 
-const resumeReservedBookingFromHash = (): void => {
+const resumeReservedBookingFromHash = (options?: {
+  /** LS already restored the step; do not clobber a Zurück the citizen already clicked. */
+  fromLoginResume?: boolean;
+}): void => {
   rebookOrCancelDialog.value = false;
   currentContext.value = "update";
   if (!appointment.value) {
@@ -950,9 +955,15 @@ const resumeReservedBookingFromHash = (): void => {
     return;
   }
   const scope = selectedProvider.value?.scope ?? appointment.value.scope;
-  currentView.value = hasMissingRequiredContact(appointment.value, scope)
-    ? 2
-    : 3;
+  const needsContact = hasMissingRequiredContact(appointment.value, scope);
+  if (options?.fromLoginResume) {
+    // Only pull back to Kontakt when LS left them on Übersicht without required fields.
+    if (needsContact && currentView.value > 2) {
+      currentView.value = 2;
+    }
+    return;
+  }
+  currentView.value = needsContact ? 2 : 3;
 };
 
 const fillCustomerDataFromRebookedAppointment = () => {
@@ -1352,18 +1363,61 @@ const applyLocalStorageUiData = (uiData: LocalStorageUiData) => {
     (service) => String(service.id) === String(uiData.selectedServiceId)
   );
   if (foundService) {
-    selectedService.value = foundService as ServiceImpl;
-    const count = selectedServiceMap.value.get(String(foundService.id));
-    if (count != undefined) {
-      selectedService.value.count = count;
+    const mainId = String(foundService.id);
+    // Map survives OAuth; catalog is already loaded — expand peers here so
+    // Leistung is not empty until ServiceFinder re-fetches.
+    const combinable = foundService.combinable
+      ? (JSON.parse(JSON.stringify(foundService.combinable)) as Combinable)
+      : undefined;
+    const subServices: SubService[] = [];
+    if (combinable) {
+      for (const key of Object.keys(combinable)) {
+        if (Object.keys(combinable[key])[0] === mainId) {
+          delete combinable[key];
+        }
+      }
+      for (const serviceObj of Object.values(combinable)) {
+        const subId = Object.keys(serviceObj)[0];
+        const sub = services.value.find(
+          (service) => String(service.id) === String(subId)
+        );
+        if (!sub) {
+          continue;
+        }
+        subServices.push(
+          new SubService(
+            String(subId),
+            sub.name,
+            sub.maxQuantity,
+            getProviders(String(subId), serviceObj[subId]?.map(String) ?? null),
+            selectedServiceMap.value.get(String(subId)) ?? 0
+          )
+        );
+      }
     }
-    selectedService.value.providers = getProviders(
-      selectedService.value.id,
-      null
+    selectedService.value = new ServiceImpl(
+      mainId,
+      foundService.name,
+      foundService.maxQuantity,
+      combinable,
+      getProviders(mainId, null),
+      subServices,
+      selectedServiceMap.value.get(mainId) ?? 1,
+      foundService.parentId ?? null,
+      foundService.variantId ?? null,
+      foundService.showOnStartPage,
+      foundService.variantOverwrite
     );
+    selectedService.value.rootParentId =
+      foundService.rootParentId ?? foundService.id;
+    selectedService.value.subServiceSelectionOrder = Array.from(
+      selectedServiceMap.value.entries()
+    )
+      .filter(([id, count]) => id !== mainId && count > 0)
+      .map(([id]) => String(id));
   }
 
-  preselectedLocationId.value = uiData.selectedProviderId;
+  // Keep jump-in location only — do not pin Ort to the booked office.
   const restoredProvider = resolveOfficeById(uiData.selectedProviderId, {
     offices: offices.value,
     providers: selectedService.value?.providers,
@@ -1440,10 +1494,9 @@ const runLoginResumeFromHashAndLocalStorage = (
             );
             if (appointmentOffice) {
               selectedProvider.value = appointmentOffice;
-              preselectedLocationId.value = String(appointmentOffice.id);
             }
             if (isReservedProcessStatus(appointment.value.status)) {
-              resumeReservedBookingFromHash();
+              resumeReservedBookingFromHash({ fromLoginResume: true });
             } else {
               // Keep stepper step from UI localStorage (do not open reschedule/cancel dialog).
               currentView.value = isAppointmentInPast.value

@@ -384,54 +384,97 @@ public final class ServiceFinderStep {
 
     public JsonNode waitForFilteredServiceNames(String query) {
         String folded = query.toLowerCase(Locale.ROOT);
-        return new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(defaultWaitSeconds))
+        // Choices filter (esp. Edge / short queries like "z") can lag under shard load.
+        int waitSeconds = Math.max(defaultWaitSeconds, 90);
+        final long[] lastTypeMs = {0L};
+        typeServiceSearchQuery(query, true);
+        lastTypeMs[0] = System.currentTimeMillis();
+        return new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(waitSeconds))
                 .until(d -> {
-                    if (!applyServiceSearchQuery(query)) {
+                    if (!serviceSearch("read", "").path("open").asBoolean()) {
+                        serviceSearch("click", "");
                         return null;
                     }
                     JsonNode read = serviceSearch("read", "");
-                    if (!read.path("open").asBoolean()) {
-                        return null;
-                    }
                     JsonNode names = read.path("names");
-                    if (names.size() == 0) {
-                        WebElement field = serviceSearchInput();
-                        if (field != null) {
-                            ((JavascriptExecutor) DriverUtil.getDriver())
-                                    .executeScript("arguments[0].value=''; arguments[0].focus();", field);
-                            field.sendKeys(query);
-                        }
-                        return null;
-                    }
+                    boolean allMatch = names.size() > 0;
                     for (JsonNode name : names) {
                         if (!name.asText().toLowerCase(Locale.ROOT).contains(folded)) {
-                            return null;
+                            allMatch = false;
+                            break;
                         }
                     }
-                    return read;
+                    if (allMatch) {
+                        return read;
+                    }
+                    // Retype at most every 2s — retyping every poll resets Choices debounce forever.
+                    long now = System.currentTimeMillis();
+                    if (now - lastTypeMs[0] >= 2000L) {
+                        typeServiceSearchQuery(query, true);
+                        lastTypeMs[0] = now;
+                    }
+                    return null;
                 });
     }
 
-    /** Reopen the list if AfterStep closed it, then type {@code query} with sendKeys. */
+    /** Reopen the list if AfterStep closed it, then type {@code query} via Choices JS {@code type}. */
     public boolean applyServiceSearchQuery(String query) {
         if (!serviceSearch("read", "").path("open").asBoolean()) {
             serviceSearch("click", "");
         }
         WebElement field = serviceSearchInput();
-        if (field == null) {
+        if (field == null && !serviceSearch("options", "").path("choicesReady").asBoolean()) {
             return false;
         }
         try {
-            String current = field.getAttribute("value");
+            String current = field == null ? null : field.getAttribute("value");
             if (!query.equals(current)) {
-                ((JavascriptExecutor) DriverUtil.getDriver())
-                        .executeScript("arguments[0].value=''; arguments[0].focus();", field);
-                field.sendKeys(query);
+                typeServiceSearchQuery(query, false);
             }
             return true;
         } catch (Exception e) {
-            return false;
+            typeServiceSearchQuery(query, true);
+            return true;
         }
+    }
+
+    /**
+     * Prefer Choices {@code type} (works when the input rejects {@code sendKeys} on Edge/Chrome).
+     * Native keys are best-effort only — ElementNotInteractable must not fail the step.
+     */
+    private void typeServiceSearchQuery(String query, boolean forceRetype) {
+        if (!serviceSearch("read", "").path("open").asBoolean()) {
+            serviceSearch("click", "");
+        }
+        WebElement field = serviceSearchInput();
+        if (field == null) {
+            serviceSearch("type", query);
+            CitizenViewWaits.sleepQuiet(450L);
+            return;
+        }
+        try {
+            if (!forceRetype && query.equals(field.getAttribute("value"))) {
+                return;
+            }
+        } catch (Exception ignored) {
+            // continue
+        }
+        JavascriptExecutor js = (JavascriptExecutor) DriverUtil.getDriver();
+        try {
+            js.executeScript("arguments[0].value=''; arguments[0].focus();", field);
+        } catch (Exception ignored) {
+            // Choices type below still applies the filter
+        }
+        try {
+            field.sendKeys(query);
+        } catch (Exception e) {
+            ScenarioLogManager.getLogger()
+                    .info(
+                            "zmscitizenview: service search sendKeys not interactable ({}); using Choices type",
+                            e.getClass().getSimpleName());
+        }
+        serviceSearch("type", query);
+        CitizenViewWaits.sleepQuiet(450L);
     }
 
     public JsonNode currentServiceListNames() {
