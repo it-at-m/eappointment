@@ -2,6 +2,10 @@ package zms.ataf.rest.steps;
 
 import static io.restassured.RestAssured.given;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
@@ -38,6 +42,7 @@ import zms.ataf.rest.dto.zmscitizenapi.AvailableCalendarResponse;
 import zms.ataf.rest.dto.zmscitizenapi.Office;
 import zms.ataf.rest.dto.zmscitizenapi.OfficeServiceRelation;
 import zms.ataf.rest.dto.zmscitizenapi.ReserveAppointmentRequest;
+import zms.ataf.rest.dto.zmscitizenapi.Service;
 import zms.ataf.rest.dto.zmscitizenapi.ThinnedProcess;
 import zms.ataf.rest.dto.zmscitizenapi.collections.OfficesAndServicesResponse;
 import zms.ataf.ui.pages.citizenview.support.FuehrerscheinstelleScopeHints;
@@ -234,6 +239,149 @@ public class CitizenApiSteps {
         Assertions.assertThat(relation.getSlots())
             .as("service %d slots at office %d", serviceId, officeId)
             .isEqualTo(slots);
+    }
+
+    @Then("office {int} should have slotsPerAppointment {string}")
+    public void officeShouldHaveSlotsPerAppointment(int officeId, String expected) {
+        Assertions.assertThat(lastOfficesAndServicesResponse)
+            .as("Request offices-and-services first")
+            .isNotNull();
+        Office office = findOfficeById(lastOfficesAndServicesResponse, officeId);
+        Assertions.assertThat(office)
+            .as("Expected office %d in offices-and-services", officeId)
+            .isNotNull();
+        Assertions.assertThat(office.getSlotsPerAppointment())
+            .as("office %d slotsPerAppointment", officeId)
+            .isEqualTo(expected);
+    }
+
+    @Then("office {int} should have no slotsPerAppointment")
+    public void officeShouldHaveNoSlotsPerAppointment(int officeId) {
+        Assertions.assertThat(lastOfficesAndServicesResponse)
+            .as("Request offices-and-services first")
+            .isNotNull();
+        Office office = findOfficeById(lastOfficesAndServicesResponse, officeId);
+        Assertions.assertThat(office)
+            .as("Expected office %d in offices-and-services", officeId)
+            .isNotNull();
+        String spa = office.getSlotsPerAppointment();
+        Assertions.assertThat(spa == null || spa.isBlank())
+            .as("office %d slotsPerAppointment should be unset (fallback 25), was %s", officeId, spa)
+            .isTrue();
+    }
+
+    @Then("office {int} and service {int} should take {int} slots")
+    public void officeAndServiceShouldTakeSlots(int officeId, int serviceId, int slots) {
+        OfficeServiceRelation relation = requireRelation(officeId, serviceId);
+        Assertions.assertThat(relation.getSlots())
+            .as("service %d slots at office %d", serviceId, officeId)
+            .isEqualTo(slots);
+    }
+
+    @Then("service {int} should have maxQuantity {int}")
+    public void serviceShouldHaveMaxQuantity(int serviceId, int maxQuantity) {
+        Assertions.assertThat(lastOfficesAndServicesResponse)
+            .as("Request offices-and-services first")
+            .isNotNull();
+        Service service = null;
+        if (lastOfficesAndServicesResponse.getServices() != null) {
+            for (Service candidate : lastOfficesAndServicesResponse.getServices()) {
+                if (candidate != null
+                        && serviceId == (candidate.getId() == null ? -1 : candidate.getId())) {
+                    service = candidate;
+                    break;
+                }
+            }
+        }
+        service = java.util.Objects.requireNonNull(service, "service " + serviceId);
+        Assertions.assertThat(service.getMaxQuantity())
+            .as("service %d maxQuantity", serviceId)
+            .isEqualTo(maxQuantity);
+    }
+
+    @Then("office {int} and service {int} should have relation maxQuantity {int}")
+    public void officeAndServiceShouldHaveRelationMaxQuantity(int officeId, int serviceId, int maxQuantity) {
+        OfficeServiceRelation relation = requireRelation(officeId, serviceId);
+        Assertions.assertThat(relation.getMaxQuantity())
+            .as("relation office %d service %d maxQuantity", officeId, serviceId)
+            .isEqualTo(maxQuantity);
+    }
+
+    private OfficeServiceRelation requireRelation(int officeId, int serviceId) {
+        Assertions.assertThat(lastOfficesAndServicesResponse)
+            .as("Request offices-and-services first")
+            .isNotNull();
+        OfficeServiceRelation relation = null;
+        if (lastOfficesAndServicesResponse.getRelations() != null) {
+            for (OfficeServiceRelation candidate : lastOfficesAndServicesResponse.getRelations()) {
+                if (candidate != null
+                        && officeId == (candidate.getOfficeId() == null ? -1 : candidate.getOfficeId())
+                        && serviceId == (candidate.getServiceId() == null ? -1 : candidate.getServiceId())) {
+                    relation = candidate;
+                    break;
+                }
+            }
+        }
+        return java.util.Objects.requireNonNull(
+                relation, "relation office " + officeId + " service " + serviceId);
+    }
+
+    /**
+     * Raise stored slotCount above scope spa so preconfirm/confirm validation can reject.
+     * {@code hatFolgetermine + 1} is appointments.0.slotCount in the process mapper.
+     */
+    @When("I plant slotCount {int} on the current appointment in the database")
+    public void iPlantSlotCountOnTheCurrentAppointmentInTheDatabase(int slotCount) {
+        if (slotCount < 1) {
+            throw new IllegalArgumentException("slotCount must be >= 1");
+        }
+        ThinnedProcess process = requireCurrentProcess();
+        int processId = process.getProcessId();
+        int hatFolgetermine = slotCount - 1;
+        String sql = "UPDATE buerger SET hatFolgetermine = ? WHERE BuergerID = ?";
+        try (Connection connection = openZmsConnection();
+                PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setInt(1, hatFolgetermine);
+            statement.setInt(2, processId);
+            int updated = statement.executeUpdate();
+            if (updated != 1) {
+                throw new IllegalStateException(
+                        "Process " + processId + " was not updated for planted slotCount (rows=" + updated + ").");
+            }
+        } catch (SQLException e) {
+            throw new IllegalStateException(
+                    "Could not plant slotCount " + slotCount + " on process " + processId + ".", e);
+        }
+        ScenarioLogManager.getLogger().info(
+                "Planted slotCount={} (hatFolgetermine={}) on process {}",
+                slotCount,
+                hatFolgetermine,
+                processId);
+    }
+
+    private static Connection openZmsConnection() throws SQLException {
+        String host = envOrDefault("MYSQL_HOST", "db");
+        String port = mysqlPort(envOrDefault("MYSQL_PORT", "3306"));
+        String database = envOrDefault("MYSQL_DATABASE", "db");
+        String user = envOrDefault("MYSQL_USER", "db");
+        String url = "jdbc:mysql://" + host + ":" + port + "/" + database;
+        return DriverManager.getConnection(url, user, envOrDefault("MYSQL_PASSWORD", "db"));
+    }
+
+    private static String mysqlPort(String raw) {
+        int colon = raw.lastIndexOf(':');
+        if (colon >= 0 && colon < raw.length() - 1) {
+            return raw.substring(colon + 1);
+        }
+        return raw;
+    }
+
+    private static String envOrDefault(String name, String fallback) {
+        String value = System.getenv(name);
+        if (value == null || value.isBlank()) {
+            return fallback;
+        }
+        return value.trim();
     }
 
     @When("I request available days for office {int} and service {int}")
@@ -449,6 +597,22 @@ public class CitizenApiSteps {
         String date = BerlinTime.singleSeatDayAfterV19RuppertstrasseRange().format(DATE_FORMAT);
         ScenarioLogManager.getLogger().info(String.format(
             "Citizen API using single-seat Passkalender day %s (after V19 range) officeId=%d serviceId=%d",
+            date,
+            officeId,
+            serviceId
+        ));
+        iRequestAvailableAppointmentsForDateOfficeAndService(date, officeId, serviceId, 1);
+    }
+
+    /**
+     * ZMSKVR-1051 / ZMSKVR-1309: day after V19 range (V52) has one internet seat per Wartebereich /
+     * Schalter so a second same-timestamp reserve switches scope without the shared calendar.
+     */
+    @When("I request available appointments for the scope-switch day for office {int} and service {int}")
+    public void iRequestAvailableAppointmentsForTheScopeSwitchDay(int officeId, int serviceId) {
+        String date = BerlinTime.scopeSwitchDayAfterV19RuppertstrasseRange().format(DATE_FORMAT);
+        ScenarioLogManager.getLogger().info(String.format(
+            "Citizen API using scope-switch day %s (after V19 range) officeId=%d serviceId=%d",
             date,
             officeId,
             serviceId
@@ -740,8 +904,10 @@ public class CitizenApiSteps {
     }
 
     /**
-     * ZMSKVR-1051 / ZMSKVR-1309: with one seat on WB03 and WB04, a second reserve of the same
-     * timestamp succeeds on the other scope (unlike the single-seat Passkalender race).
+     * ZMSKVR-1051 / ZMSKVR-1309 (and Führerscheinstelle twin): with one internet seat per
+     * Wartebereich/Schalter on the V52 scope-switch day, a second reserve of the same timestamp
+     * lands on the other scope. Cap pair retries on the current day only — walking the shared
+     * calendar burns into rateLimitExceeded under parallel load.
      */
     @When("I reserve the same appointment slot again for the other Wartebereich")
     public void iReserveTheSameAppointmentSlotAgainForTheOtherWartebereich() {
@@ -755,8 +921,84 @@ public class CitizenApiSteps {
             throw new IllegalStateException("First reserve has no officeId/serviceId for the second Wartebereich.");
         }
         int serviceCount = lastServiceCount > 0 ? lastServiceCount : 1;
-        long timestamp = first.getTimestamp();
 
+        response = postReserveForOfficeService(first.getTimestamp(), officeId, serviceId, serviceCount);
+        if (response.getStatusCode() == 200) {
+            acceptSecondSameTimestampReserve(first, response);
+            return;
+        }
+        if (rateLimitExceeded(response)) {
+            Assertions.fail(
+                    "Citizen API rate-limited while reserving the other Wartebereich/Schalter (status=429)");
+        }
+        if (!slotNoLongerAvailable(response)) {
+            response.then().statusCode(200);
+            return;
+        }
+
+        ScenarioLogManager.getLogger().info(String.format(
+                "Citizen API other Wartebereich seat gone at timestamp=%d; retrying pair on later slots of the same day",
+                first.getTimestamp()));
+        Integer abandonedFirstId = first.getProcessId();
+        cancelProcessQuietly(first.getProcessId(), first.getAuthKey());
+
+        List<Long> timestamps = new ArrayList<>();
+        long failedTimestamp = first.getTimestamp();
+        if (lastAvailableAppointmentsResponse != null) {
+            for (Long ts : lastAvailableAppointmentsResponse.futureAppointmentTimestamps()) {
+                if (ts != null && !ts.equals(failedTimestamp) && !timestamps.contains(ts)) {
+                    timestamps.add(ts);
+                }
+            }
+        }
+        final int maxPairAttempts = 5;
+        int attempts = 0;
+        for (long timestamp : timestamps) {
+            if (attempts >= maxPairAttempts) {
+                break;
+            }
+            attempts++;
+            Response firstResponse = postReserveForOfficeService(timestamp, officeId, serviceId, serviceCount);
+            if (rateLimitExceeded(firstResponse)) {
+                Assertions.fail(
+                        "Citizen API rate-limited while retrying Wartebereich/Schalter pair (status=429)");
+            }
+            if (firstResponse.getStatusCode() != 200) {
+                continue;
+            }
+            ThinnedProcess newFirst = parseReserveProcess(firstResponse);
+            if (newFirst == null || newFirst.getProcessId() == null || newFirst.getAuthKey() == null) {
+                continue;
+            }
+            // Reserve the pair back-to-back. A GET in between lets another runner take the
+            // other Wartebereich/Schalter seat (ZMSKVR-1051 / ZMSKVR-1309 flake).
+            Response secondResponse = postReserveForOfficeService(timestamp, officeId, serviceId, serviceCount);
+            if (secondResponse.getStatusCode() == 200) {
+                replaceRememberedProcess(abandonedFirstId, newFirst);
+                rememberScopeFamilyFromProcess(newFirst);
+                acceptSecondSameTimestampReserve(newFirst, secondResponse);
+                return;
+            }
+            if (rateLimitExceeded(secondResponse)) {
+                cancelProcessQuietly(newFirst.getProcessId(), newFirst.getAuthKey());
+                Assertions.fail(
+                        "Citizen API rate-limited on second Wartebereich/Schalter reserve (status=429)");
+            }
+            ScenarioLogManager.getLogger().info(String.format(
+                    "Citizen API other Wartebereich still unavailable at timestamp=%d status=%d; trying next",
+                    timestamp,
+                    secondResponse.getStatusCode()));
+            cancelProcessQuietly(newFirst.getProcessId(), newFirst.getAuthKey());
+        }
+
+        Assertions.fail(
+                "Could not reserve the same timestamp on the other Wartebereich/Schalter after "
+                        + attempts
+                        + " same-day pair attempt(s)");
+    }
+
+    private Response postReserveForOfficeService(
+            long timestamp, int officeId, int serviceId, int serviceCount) {
         ReserveAppointmentRequest body = new ReserveAppointmentRequest();
         body.setTimestamp(timestamp);
         body.setOfficeId(officeId);
@@ -772,27 +1014,28 @@ public class CitizenApiSteps {
                 officeId,
                 serviceId));
 
-        response = given()
+        Response reserveResponse = given()
                 .baseUri(baseUri != null ? baseUri : TestConfig.getCitizenApiBaseUri())
                 .contentType("application/json")
                 .body(body)
                 .when()
                 .post("/reserve-appointment/");
-        CommonApiSteps.setResponse(response);
+        response = reserveResponse;
+        CommonApiSteps.setResponse(reserveResponse);
 
-        String reserveBody = response.asString();
+        String reserveBody = reserveResponse.asString();
         ScenarioLogManager.getLogger().info(String.format(
                 "Citizen API /reserve-appointment/ other Wartebereich status=%d body=%s",
-                response.getStatusCode(),
+                reserveResponse.getStatusCode(),
                 reserveBody.length() > 1250 ? reserveBody.substring(0, 1250) + "..." : reserveBody));
-        response.then().statusCode(200);
+        return reserveResponse;
+    }
 
-        ThinnedProcess reserved;
-        try {
-            reserved = response.as(ThinnedProcess.class);
-        } catch (Exception e) {
-            reserved = parseDataResponse(response, ThinnedProcess.class);
-        }
+    private void acceptSecondSameTimestampReserve(ThinnedProcess first, Response secondResponse) {
+        response = secondResponse;
+        CommonApiSteps.setResponse(secondResponse);
+        secondResponse.then().statusCode(200);
+        ThinnedProcess reserved = parseReserveProcess(secondResponse);
         Assertions.assertThat(reserved).as("second Wartebereich reserve").isNotNull();
         Assertions.assertThat(reserved.getProcessId()).isNotNull();
         Assertions.assertThat(reserved.getAuthKey()).isNotBlank();
@@ -801,9 +1044,116 @@ public class CitizenApiSteps {
         setLastReserveProcess(reserved);
     }
 
+    private ThinnedProcess parseReserveProcess(Response reserveResponse) {
+        try {
+            return reserveResponse.as(ThinnedProcess.class);
+        } catch (Exception e) {
+            return parseDataResponse(reserveResponse, ThinnedProcess.class);
+        }
+    }
+
+    /** Keep remembered labels (e.g. wb-first) pointing at the process that still exists. */
+    private void replaceRememberedProcess(Integer oldProcessId, ThinnedProcess replacement) {
+        if (oldProcessId == null || replacement == null || replacement.getProcessId() == null) {
+            return;
+        }
+        for (Map.Entry<String, RememberedAppointment> entry : rememberedAppointments.entrySet()) {
+            RememberedAppointment current = entry.getValue();
+            if (current.processId == oldProcessId) {
+                entry.setValue(new RememberedAppointment(
+                        replacement.getProcessId(),
+                        replacement.getAuthKey(),
+                        oldProcessId));
+                ScenarioLogManager.getLogger().info(String.format(
+                        "Updated remembered \"%s\" processId %d → %d after Wartebereich retry",
+                        entry.getKey(),
+                        oldProcessId,
+                        replacement.getProcessId()));
+            }
+        }
+    }
+
+    /**
+     * After rebooking the first seat of a same-timestamp pair, refresh WB/Schalter memory so
+     * the following "other Wartebereich/Schalter" Then still matches.
+     */
+    private void rememberScopeFamilyFromProcess(ThinnedProcess process) {
+        if (process == null || process.getProcessId() == null || process.getAuthKey() == null) {
+            return;
+        }
+        Response appointmentResponse = given()
+                .baseUri(baseUri != null ? baseUri : TestConfig.getCitizenApiBaseUri())
+                .queryParam("processId", process.getProcessId())
+                .queryParam("authKey", process.getAuthKey())
+                .when()
+                .get("/appointment/");
+        if (appointmentResponse.getStatusCode() != 200) {
+            return;
+        }
+        String hint = appointmentResponse.jsonPath().getString("scope.hint");
+        String info = appointmentResponse.jsonPath().getString("scope.infoForAppointment");
+        String combined = (hint == null ? "" : hint) + " " + (info == null ? "" : info);
+        String wartezone = RuppertstrasseWartezoneHints.detectCode(combined);
+        if (wartezone != null) {
+            RuppertstrasseWartezoneHints.rememberApiWartezoneCode(wartezone);
+        }
+        String schalter = FuehrerscheinstelleScopeHints.detectCode(combined);
+        if (schalter != null) {
+            FuehrerscheinstelleScopeHints.rememberApiSchalterCode(schalter);
+        }
+    }
+
     @When("I attempt to reserve an appointment with the first available slot")
     public void iAttemptToReserveAnAppointmentWithTheFirstAvailableSlot() {
         reserveFirstAvailableSlot(false, false);
+    }
+
+    /**
+     * Use timestamps from the last appointments fetch, but send a different serviceCount
+     * (e.g. discover under spa, then attempt over spa for validation).
+     */
+    @When("I attempt to reserve an appointment with the first available slot and service count {int}")
+    public void iAttemptToReserveAnAppointmentWithTheFirstAvailableSlotAndServiceCount(int serviceCount) {
+        int previousCount = lastServiceCount;
+        List<Integer> previousCounts = cachedCalendarServiceCounts;
+        lastServiceCount = serviceCount;
+        if (cachedCalendarServiceIds != null && !cachedCalendarServiceIds.isEmpty()) {
+            cachedCalendarServiceCounts = cachedCalendarServiceIds.stream()
+                    .map(id -> serviceCount)
+                    .collect(Collectors.toList());
+        }
+        try {
+            reserveFirstAvailableSlot(false, false);
+        } finally {
+            lastServiceCount = previousCount;
+            cachedCalendarServiceCounts = previousCounts;
+        }
+    }
+
+    /**
+     * Discover under spa, then attempt reserve with a different counts CSV (same serviceIds order).
+     */
+    @When("I attempt to reserve an appointment with the first available slot and service counts {string}")
+    public void iAttemptToReserveAnAppointmentWithTheFirstAvailableSlotAndServiceCounts(
+            String serviceCountsCsv) {
+        List<Integer> previousCounts = cachedCalendarServiceCounts;
+        List<Integer> overrideCounts = parseOfficeIdsCsv(serviceCountsCsv);
+        Assertions.assertThat(cachedCalendarServiceIds)
+                .as("Request available days for multiple services first")
+                .isNotNull()
+                .isNotEmpty();
+        Assertions.assertThat(overrideCounts)
+                .as("serviceCounts csv")
+                .hasSameSizeAs(cachedCalendarServiceIds);
+        cachedCalendarServiceCounts = overrideCounts;
+        lastServiceCount = overrideCounts.get(0);
+        try {
+            reserveFirstAvailableSlot(false, false);
+        } finally {
+            cachedCalendarServiceCounts = previousCounts;
+            lastServiceCount =
+                    previousCounts != null && !previousCounts.isEmpty() ? previousCounts.get(0) : lastServiceCount;
+        }
     }
 
     @When("I reserve an appointment with the first available slot using the current appointment as source")
@@ -1225,6 +1575,11 @@ public class CitizenApiSteps {
         return body.contains("appointmentNotAvailable") || body.contains("unknownError");
     }
 
+    private static boolean rateLimitExceeded(Response reserveResponse) {
+        return reserveResponse.getStatusCode() == 429
+                || reserveResponse.asString().contains("rateLimitExceeded");
+    }
+
     @When("I preconfirm the appointment")
     public void iPreconfirmTheAppointment() {
         postPreconfirm(true);
@@ -1486,8 +1841,12 @@ public class CitizenApiSteps {
             .as("remember \"%s\" again after moving it", label)
             .isNotNull();
         Assertions.assertThat(remembered.processId).isNotEqualTo(remembered.previousProcessId);
-        Assertions.assertThat(findMyAppointment(remembered.previousProcessId)).isNull();
-        Assertions.assertThat(findMyAppointment(remembered.processId)).isNotNull();
+        Assertions.assertThat(findMyAppointment(remembered.previousProcessId))
+            .as("my appointments should drop previous process %s after the source cancel", remembered.previousProcessId)
+            .isNull();
+        Assertions.assertThat(findMyAppointment(remembered.processId))
+            .as("my appointments should include replacement process %s", remembered.processId)
+            .isNotNull();
     }
 
     @Then("the remembered {string} appointment is unchanged")
@@ -2009,6 +2368,18 @@ public class CitizenApiSteps {
             response.getStatusCode(),
             cancelBody.length() > 1250 ? cancelBody.substring(0, 1250) + "..." : cancelBody
         ));
+        int status = response.getStatusCode();
+        if (status == 200) {
+            return;
+        }
+        // Product refuses cancel once appointmentTime <= App::$now. Under shard load the
+        // source can pass that line between book and cancel; the rebooked process is already
+        // confirmed, so a past-slot 406 is an acceptable cleanup outcome.
+        if (status == 406 && cancelBody.contains("appointmentCanNotBeCanceled")) {
+            ScenarioLogManager.getLogger().info(
+                    "Citizen API rebooking source already not cancelable (appointmentCanNotBeCanceled); continuing");
+            return;
+        }
         response.then().statusCode(200);
     }
 

@@ -384,54 +384,97 @@ public final class ServiceFinderStep {
 
     public JsonNode waitForFilteredServiceNames(String query) {
         String folded = query.toLowerCase(Locale.ROOT);
-        return new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(defaultWaitSeconds))
+        // Choices filter (esp. Edge / short queries like "z") can lag under shard load.
+        int waitSeconds = Math.max(defaultWaitSeconds, 90);
+        final long[] lastTypeMs = {0L};
+        typeServiceSearchQuery(query, true);
+        lastTypeMs[0] = System.currentTimeMillis();
+        return new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(waitSeconds))
                 .until(d -> {
-                    if (!applyServiceSearchQuery(query)) {
+                    if (!serviceSearch("read", "").path("open").asBoolean()) {
+                        serviceSearch("click", "");
                         return null;
                     }
                     JsonNode read = serviceSearch("read", "");
-                    if (!read.path("open").asBoolean()) {
-                        return null;
-                    }
                     JsonNode names = read.path("names");
-                    if (names.size() == 0) {
-                        WebElement field = serviceSearchInput();
-                        if (field != null) {
-                            ((JavascriptExecutor) DriverUtil.getDriver())
-                                    .executeScript("arguments[0].value=''; arguments[0].focus();", field);
-                            field.sendKeys(query);
-                        }
-                        return null;
-                    }
+                    boolean allMatch = names.size() > 0;
                     for (JsonNode name : names) {
                         if (!name.asText().toLowerCase(Locale.ROOT).contains(folded)) {
-                            return null;
+                            allMatch = false;
+                            break;
                         }
                     }
-                    return read;
+                    if (allMatch) {
+                        return read;
+                    }
+                    // Retype at most every 2s — retyping every poll resets Choices debounce forever.
+                    long now = System.currentTimeMillis();
+                    if (now - lastTypeMs[0] >= 2000L) {
+                        typeServiceSearchQuery(query, true);
+                        lastTypeMs[0] = now;
+                    }
+                    return null;
                 });
     }
 
-    /** Reopen the list if AfterStep closed it, then type {@code query} with sendKeys. */
+    /** Reopen the list if AfterStep closed it, then type {@code query} via Choices JS {@code type}. */
     public boolean applyServiceSearchQuery(String query) {
         if (!serviceSearch("read", "").path("open").asBoolean()) {
             serviceSearch("click", "");
         }
         WebElement field = serviceSearchInput();
-        if (field == null) {
+        if (field == null && !serviceSearch("options", "").path("choicesReady").asBoolean()) {
             return false;
         }
         try {
-            String current = field.getAttribute("value");
+            String current = field == null ? null : field.getAttribute("value");
             if (!query.equals(current)) {
-                ((JavascriptExecutor) DriverUtil.getDriver())
-                        .executeScript("arguments[0].value=''; arguments[0].focus();", field);
-                field.sendKeys(query);
+                typeServiceSearchQuery(query, false);
             }
             return true;
         } catch (Exception e) {
-            return false;
+            typeServiceSearchQuery(query, true);
+            return true;
         }
+    }
+
+    /**
+     * Prefer Choices {@code type} (works when the input rejects {@code sendKeys} on Edge/Chrome).
+     * Native keys are best-effort only — ElementNotInteractable must not fail the step.
+     */
+    private void typeServiceSearchQuery(String query, boolean forceRetype) {
+        if (!serviceSearch("read", "").path("open").asBoolean()) {
+            serviceSearch("click", "");
+        }
+        WebElement field = serviceSearchInput();
+        if (field == null) {
+            serviceSearch("type", query);
+            CitizenViewWaits.sleepQuiet(450L);
+            return;
+        }
+        try {
+            if (!forceRetype && query.equals(field.getAttribute("value"))) {
+                return;
+            }
+        } catch (Exception ignored) {
+            // continue
+        }
+        JavascriptExecutor js = (JavascriptExecutor) DriverUtil.getDriver();
+        try {
+            js.executeScript("arguments[0].value=''; arguments[0].focus();", field);
+        } catch (Exception ignored) {
+            // Choices type below still applies the filter
+        }
+        try {
+            field.sendKeys(query);
+        } catch (Exception e) {
+            ScenarioLogManager.getLogger()
+                    .info(
+                            "zmscitizenview: service search sendKeys not interactable ({}); using Choices type",
+                            e.getClass().getSimpleName());
+        }
+        serviceSearch("type", query);
+        CitizenViewWaits.sleepQuiet(450L);
     }
 
     public JsonNode currentServiceListNames() {
@@ -456,30 +499,56 @@ public final class ServiceFinderStep {
     /** The search field stays empty until offices-and-services fills its options. */
     public void waitUntilServiceOptionsLoaded() {
         new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(defaultWaitSeconds))
-                .until(d -> serviceSearch("options", "").path("count").asInt() > 1);
-    }
-
-    public JsonNode waitUntilServiceListOpen() {
-        // Edge/Choices can swallow the first click after tab+enter or leave the list closed
-        // between Cucumber steps. Re-click while waiting instead of sitting on a closed list.
-        final long[] lastOpenAttemptMs = {0L};
-        new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(defaultWaitSeconds))
                 .until(
                         d -> {
-                            if (serviceSearch("read", "").path("open").asBoolean()) {
-                                return true;
-                            }
-                            long now = System.currentTimeMillis();
-                            if (now - lastOpenAttemptMs[0] < 1500L) {
-                                return false;
-                            }
-                            lastOpenAttemptMs[0] = now;
-                            serviceSearch("click", "");
-                            return serviceSearch("read", "").path("open").asBoolean();
+                            JsonNode options = serviceSearch("options", "");
+                            return options.path("count").asInt() > 1
+                                    && options.path("choicesReady").asBoolean();
                         });
-        JsonNode state = serviceSearch("read", "");
-        Assert.assertTrue(state.path("open").asBoolean(), "The service list did not open: " + state);
-        return state;
+    }
+
+    /**
+     * After reload / tab+enter, Choices often needs more than one click before the dropdown
+     * shows real service names (open:true with an empty list is still a miss). Return the
+     * successful read from the wait — a second read can see a closed list a tick later.
+     */
+    public JsonNode waitUntilServiceListOpen() {
+        final long[] lastOpenAttemptMs = {0L};
+        final int[] attempt = {0};
+        JsonNode opened =
+                new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(Math.max(defaultWaitSeconds, 30)))
+                        .until(
+                                d -> {
+                                    JsonNode state = serviceSearch("read", "");
+                                    if (serviceListShowsNames(state)) {
+                                        return state;
+                                    }
+                                    long now = System.currentTimeMillis();
+                                    if (now - lastOpenAttemptMs[0] < 700L) {
+                                        return null;
+                                    }
+                                    lastOpenAttemptMs[0] = now;
+                                    attempt[0]++;
+                                    // Half-open or stale dropdown: close, then open with a fuller click sequence.
+                                    if (state.path("open").asBoolean() || attempt[0] % 3 == 0) {
+                                        serviceSearch("close", "");
+                                        CitizenViewWaits.sleepQuiet(100L);
+                                    }
+                                    serviceSearch("click", "");
+                                    CitizenViewWaits.sleepQuiet(200L);
+                                    state = serviceSearch("read", "");
+                                    return serviceListShowsNames(state) ? state : null;
+                                });
+        Assert.assertTrue(
+                serviceListShowsNames(opened),
+                "The service list did not open: " + opened);
+        return opened;
+    }
+
+    private static boolean serviceListShowsNames(JsonNode state) {
+        return state != null
+                && state.path("open").asBoolean()
+                && state.path("names").size() > 0;
     }
 
     public JsonNode serviceSearch(String mode, String text) {
@@ -511,18 +580,32 @@ public final class ServiceFinderStep {
                         + "function deepActive(){var el=document.activeElement,guard=0;"
                         + "while(el&&el.shadowRoot&&el.shadowRoot.activeElement&&guard++<10)el=el.shadowRoot.activeElement;return el;}"
                         + "var select=findSelect();var choices=choicesOf(select);"
+                        + "function pointerClick(el){if(!el)return;"
+                        + "el.scrollIntoView({block:'center'});"
+                        + "var r=el.getBoundingClientRect();var x=r.left+Math.max(r.width,1)/2;var y=r.top+Math.max(r.height,1)/2;"
+                        + "var opts={bubbles:true,cancelable:true,view:window,clientX:x,clientY:y,button:0};"
+                        + "el.dispatchEvent(new MouseEvent('pointerdown',opts));"
+                        + "el.dispatchEvent(new MouseEvent('mousedown',opts));"
+                        + "el.dispatchEvent(new MouseEvent('pointerup',opts));"
+                        + "el.dispatchEvent(new MouseEvent('mouseup',opts));"
+                        + "el.dispatchEvent(new MouseEvent('click',opts));}"
                         + "if(mode==='links'){var links=[];walk(document.body,function(n){"
                         + "if(!n.classList||!n.classList.contains('m-linklist-inline__list'))return;"
                         + "var as=n.querySelectorAll('a');for(var i=0;i<as.length;i++)links.push(norm(as[i].textContent));});"
                         + "return JSON.stringify({hasField:!!select,links:links});}"
-                        + "if(mode==='options')return JSON.stringify({count:optionCount(select)});"
+                        + "if(mode==='options'){var ready=!!(select&&choicesOf(select)"
+                        + "&&choicesOf(select).querySelector('.choices__inner')&&optionCount(select)>1);"
+                        + "return JSON.stringify({count:optionCount(select),choicesReady:ready});}"
                         + "if(!choices)return JSON.stringify({open:false,hasField:false});"
                         + "if(mode==='click'){var inner=choices.querySelector('.choices__inner');"
-                        + "if(inner){inner.scrollIntoView({block:'center'});inner.click();}"
+                        + "var input=choices.querySelector('.choices__input--cloned');"
+                        + "pointerClick(inner);"
+                        + "if(!isOpen(choices)&&input){pointerClick(input);try{input.focus();}catch(e){}}"
+                        + "if(!isOpen(choices)&&inner){try{inner.click();}catch(e2){}}"
                         + "return JSON.stringify({open:isOpen(choices)});}"
-                        + "if(mode==='close'){var input=choices.querySelector('.choices__input--cloned');"
-                        + "if(input){input.focus();"
-                        + "input.dispatchEvent(new KeyboardEvent('keydown',{key:'Escape',code:'Escape',keyCode:27,which:27,bubbles:true,cancelable:true}));}"
+                        + "if(mode==='close'){var inputClose=choices.querySelector('.choices__input--cloned');"
+                        + "if(inputClose){inputClose.focus();"
+                        + "inputClose.dispatchEvent(new KeyboardEvent('keydown',{key:'Escape',code:'Escape',keyCode:27,which:27,bubbles:true,cancelable:true}));}"
                         + "if(isOpen(choices)){document.body.click();}"
                         + "if(isOpen(choices)){var inner2=choices.querySelector('.choices__inner');if(inner2)inner2.click();}"
                         + "return JSON.stringify({open:isOpen(choices)});}"

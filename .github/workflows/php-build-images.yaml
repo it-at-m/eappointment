@@ -51,8 +51,15 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Free disk space before image build
         run: |
-          docker system prune -af --volumes || true
-          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL || true
+          # Same reclaim as before (needed for the 10G swap file + image build).
+          # Delete the large toolcaches in parallel so this step is less I/O-serial.
+          set -uo pipefail
+          docker system prune -af --volumes || true &
+          sudo rm -rf /usr/share/dotnet || true &
+          sudo rm -rf /usr/local/lib/android || true &
+          sudo rm -rf /opt/ghc || true &
+          sudo rm -rf /opt/hostedtoolcache/CodeQL || true &
+          wait || true
           df -h
       - name: Set Swap Space
         uses: pierotofy/set-swap-space@fc79b3f67fa8a838184ce84a674ca12238d2c761 # master

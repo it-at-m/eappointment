@@ -19,6 +19,9 @@ public final class BerlinTime {
     /** V43 single-seat opening hours on Passkalender Standort 172 / office 10502. */
     private static final int SINGLE_SEAT_OPENING_HOURS_ID = 136510;
 
+    /** V52 WB04 one-seat day for same-timestamp Wartebereich switch (office 10489). */
+    private static final int SCOPE_SWITCH_OPENING_HOURS_ID = 136511;
+
     private BerlinTime() {
         throw new UnsupportedOperationException("Utility class");
     }
@@ -40,6 +43,22 @@ public final class BerlinTime {
      * {@code start_date} remains. Prefer the English column when present.
      */
     public static LocalDate singleSeatDayAfterV19RuppertstrasseRange() {
+        return openingHoursStartDate(
+                SINGLE_SEAT_OPENING_HOURS_ID, "V43 single-seat opening hours");
+    }
+
+    /**
+     * Start date seeded by {@code V52__ZMSKVR-1051_ZMSKVR-1309_scope_switch_day.sql} (row
+     * {@value #SCOPE_SWITCH_OPENING_HOURS_ID}): one internet seat each on WB03/WB04 (and Schalter
+     * A/B) so a second same-timestamp reserve switches scope without fighting the shared V19
+     * calendar.
+     */
+    public static LocalDate scopeSwitchDayAfterV19RuppertstrasseRange() {
+        return openingHoursStartDate(
+                SCOPE_SWITCH_OPENING_HOURS_ID, "V52 scope-switch opening hours");
+    }
+
+    private static LocalDate openingHoursStartDate(int openingHoursId, String label) {
         try (Connection connection = openZmsConnection()) {
             String startColumn = columnExists(connection, "start_date") ? "start_date" : "Startdatum";
             try (PreparedStatement statement =
@@ -47,28 +66,30 @@ public final class BerlinTime {
                             "SELECT "
                                     + startColumn
                                     + " FROM oeffnungszeit WHERE OeffnungszeitID = ?")) {
-                statement.setInt(1, SINGLE_SEAT_OPENING_HOURS_ID);
+                statement.setInt(1, openingHoursId);
                 try (ResultSet rows = statement.executeQuery()) {
                     if (!rows.next()) {
                         throw new IllegalStateException(
-                                "V43 single-seat opening hours (OeffnungszeitID "
-                                        + SINGLE_SEAT_OPENING_HOURS_ID
+                                label
+                                        + " (OeffnungszeitID "
+                                        + openingHoursId
                                         + ") not found. Run Flyway migrate first.");
                     }
                     java.sql.Date start = rows.getDate(1);
                     if (start == null) {
                         throw new IllegalStateException(
-                                "V43 single-seat "
+                                label
+                                        + " "
                                         + startColumn
                                         + " is null for OeffnungszeitID "
-                                        + SINGLE_SEAT_OPENING_HOURS_ID);
+                                        + openingHoursId);
                     }
                     return start.toLocalDate();
                 }
             }
         } catch (SQLException e) {
             throw new IllegalStateException(
-                    "Could not read V43 single-seat start date from oeffnungszeit.", e);
+                    "Could not read " + label + " start date from oeffnungszeit.", e);
         }
     }
 
