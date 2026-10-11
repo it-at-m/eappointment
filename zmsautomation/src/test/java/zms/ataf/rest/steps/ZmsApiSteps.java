@@ -424,6 +424,29 @@ public class ZmsApiSteps {
         bookAppointmentCustomer(scopeId, serviceName, familyName, minutesAhead, true);
     }
 
+    /**
+     * ZMSKVR-230 / ZMSKVR-137: request {@code data.duration} from GET /scope/{id}/request/ (DLDB minutes).
+     */
+    @Then("scope {int} request {string} should have duration {int} minutes")
+    public void scopeRequestShouldHaveDuration(int scopeId, String serviceName, int minutes) {
+        if (cachedXAuthKey == null || cachedXAuthKey.isBlank()) {
+            iAmLoggedInToTheZmsApiAs("agent_queue");
+        }
+        String authKey = getOrLoginXAuthKey();
+        JsonNode request = findScopeRequestByName(scopeId, serviceName, authKey);
+        Assertions.assertThat(request.path("name").asText("").toLowerCase(Locale.ROOT))
+                .as("scope %d request list should include %s", scopeId, serviceName)
+                .contains(serviceName.toLowerCase(Locale.ROOT));
+        int duration = request.path("data").path("duration").asInt(0);
+        if (duration <= 0) {
+            duration = request.path("duration").asInt(0);
+        }
+        Assertions.assertThat(duration)
+                .as("scope %d request %s data.duration (body name=%s)",
+                        scopeId, serviceName, request.path("name").asText())
+                .isEqualTo(minutes);
+    }
+
     private void bookAppointmentCustomer(
             int scopeId, String serviceName, String familyName, int minutesAhead, boolean requireServiceName) {
         // Keep the current API session (and its workstation). A fresh agent_queue login here
