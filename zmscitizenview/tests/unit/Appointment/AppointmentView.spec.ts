@@ -3027,6 +3027,9 @@ describe("AppointmentView", () => {
       const wrapper = createWrapper({
         showLoginOption: true,
         appointmentHash: hash,
+        // Non-jump-in booking: no locationId on the page.
+        locationId: undefined,
+        serviceId: undefined,
       });
 
       await vi.waitFor(() => {
