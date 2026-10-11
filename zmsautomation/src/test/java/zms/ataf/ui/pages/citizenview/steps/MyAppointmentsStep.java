@@ -823,6 +823,20 @@ public final class MyAppointmentsStep {
     }
     public void assertMyAppointmentsTeaser(String serviceName, String typeLabel, String locationText) {
         context.set();
+        // Prefer the confirmed process timestamp: highlight/remember can drift one slot from the booking.
+        trySetBookingProcessFromPage();
+        zms.ataf.rest.dto.zmscitizenapi.ThinnedProcess booked =
+                zms.ataf.rest.steps.CitizenApiSteps.getBookingProcess();
+        if (booked != null && booked.getTimestamp() != null && booked.getTimestamp() > 0) {
+            if (!booked.getTimestamp().equals(slotState.rememberedAppointmentEpoch)) {
+                ScenarioLogManager.getLogger()
+                        .info(
+                                "zmscitizenview: sync teaser time from booking process {} → {}",
+                                slotState.rememberedAppointmentEpoch,
+                                booked.getTimestamp());
+            }
+            slotState.rememberedAppointmentEpoch = booked.getTimestamp();
+        }
         Assert.assertNotNull(slotState.rememberedAppointmentEpoch, "Selected appointment time was not remembered.");
         ZonedDateTime when = Instant.ofEpochSecond(slotState.rememberedAppointmentEpoch).atZone(BERLIN);
         String dateTime = TEASER_DATE_TIME.format(when);

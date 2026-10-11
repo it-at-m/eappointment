@@ -40,6 +40,8 @@ public final class TimeSlotStep {
             "Ungültige Kombination aus Ort und Leistung.";
     private static final String INVALID_LOCATION_SERVICE_CALLOUT_TEXT =
             "Die angegebene Dienstleistung ist an diesem Standort nicht verfügbar.";
+    /** Frontend generic fallback (networkError / failed applyCalendarResponse), not the blue empty-day info. */
+    private static final String GENERIC_API_ERROR_CALLOUT = "Ein Fehler ist aufgetreten.";
 
 
     /**
@@ -137,6 +139,10 @@ public final class TimeSlotStep {
     public void assertBookableDayInCalendarAndList(int officeId) {
         context.set();
         ensureBookableTimeslotVisible(officeId);
+        Assert.assertFalse(
+                genericApiErrorCalloutVisible(),
+                "Calendar showed '" + GENERIC_API_ERROR_CALLOUT + "' for office " + officeId
+                        + " (frontend generic/network error, not the blue empty-day callout)");
         Assert.assertTrue(
                 deepTimeslotPresentForProvider(officeId),
                 "Expected a timeslot for office " + officeId);
@@ -146,6 +152,9 @@ public final class TimeSlotStep {
         Assert.assertTrue(
                 shadow.deepClickButtonByAriaContains("Zur Listenansicht wechseln"),
                 "Could not switch to the list view");
+        CitizenViewWaits.waitWithThreeWindows(
+                () -> shadow.deepElementExists("#listViewAccordion") && !genericApiErrorCalloutVisible(),
+                "List view accordion after calendar→list for office " + officeId);
         Assert.assertTrue(
                 shadow.deepElementExists("#listViewAccordion"),
                 "List view should show the bookable day");
@@ -156,6 +165,9 @@ public final class TimeSlotStep {
                 shadow.deepClickButtonByAriaContains("Zur Kalenderansicht wechseln"),
                 "Could not switch back to the calendar");
         ensureBookableTimeslotVisible(officeId);
+        Assert.assertFalse(
+                genericApiErrorCalloutVisible(),
+                "Calendar showed '" + GENERIC_API_ERROR_CALLOUT + "' after returning from the list");
         Assert.assertTrue(
                 deepTimeslotPresentForProvider(officeId),
                 "Calendar should still show a timeslot for office " + officeId + " after the list");
@@ -167,22 +179,22 @@ public final class TimeSlotStep {
      */
     private void ensureBookableTimeslotVisible(int officeId) {
         waitUntilCalendarSettled(officeId, true);
-        if (deepTimeslotPresentForProvider(officeId)) {
+        if (deepTimeslotPresentForProvider(officeId) && !genericApiErrorCalloutVisible()) {
             return;
         }
-        // After an empty-office Ort toggle the calendar can stick without the blue callout text;
-        // re-check the restored office once so available-calendar is fetched again.
+        // Empty Ort toggle or a Firefox fetch race can leave the red generic error callout
+        // with no slots; re-check the office so available-calendar is fetched again.
         if (providerLocation.deepProviderCheckboxChecked(officeId)) {
             ScenarioLogManager.getLogger()
                     .info(
-                            "zmscitizenview: re-toggle provider {} after empty Ort left no timeslots",
+                            "zmscitizenview: re-toggle provider {} after empty Ort / generic calendar error",
                             officeId);
             shadow.deepClickRequired("#checkbox-provider-" + officeId);
             providerLocation.waitUntilProviderToggleSettled(15);
             shadow.deepClickRequired("#checkbox-provider-" + officeId);
             providerLocation.waitUntilProviderToggleSettled(30);
             waitUntilCalendarSettled(officeId, true);
-            if (deepTimeslotPresentForProvider(officeId)) {
+            if (deepTimeslotPresentForProvider(officeId) && !genericApiErrorCalloutVisible()) {
                 return;
             }
         }
@@ -2022,15 +2034,24 @@ public final class TimeSlotStep {
             if (!deepMucSpinnerVisible()) {
                 boolean slots = deepTimeslotPresentForProvider(officeId);
                 boolean callout = shadow.shadowDomContainsText(NO_APPOINTMENT_CALLOUT);
-                if (expectSlots && slots) {
+                boolean genericError = genericApiErrorCalloutVisible();
+                if (expectSlots && slots && !genericError) {
                     return;
                 }
                 if (!expectSlots && callout && !slots) {
                     return;
                 }
+                // Generic error is a settled failure state; let the caller re-fetch.
+                if (expectSlots && genericError && !slots) {
+                    return;
+                }
             }
             CitizenViewWaits.sleepQuiet(400L);
         }
+    }
+
+    private boolean genericApiErrorCalloutVisible() {
+        return shadow.shadowDomContainsText(GENERIC_API_ERROR_CALLOUT);
     }
 
     public static boolean timeslotLooksWhiteOnBlue(JsonNode slot) {
