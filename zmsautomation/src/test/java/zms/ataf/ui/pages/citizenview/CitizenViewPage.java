@@ -1108,6 +1108,10 @@ public class CitizenViewPage extends BasePage {
     /** German MucSpinner copy ({@code de-DE.json} {@code spinnerText}). */
     public static final String DE_APPOINTMENT_SPINNER_TEXT = TimeSlotStep.DE_APPOINTMENT_SPINNER_TEXT;
 
+    public void armMucSpinnerWatch(String expectedText) {
+        timeSlot.armMucSpinnerWatch(expectedText);
+    }
+
     public void waitUntilMucSpinnerSeen(String expectedText, int maxSeconds) {
         timeSlot.waitUntilMucSpinnerSeen(expectedText, maxSeconds);
     }
