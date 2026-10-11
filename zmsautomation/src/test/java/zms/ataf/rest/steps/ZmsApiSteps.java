@@ -450,16 +450,35 @@ public class ZmsApiSteps {
     }
 
     private int fetchScopeSlotTimeInMinutes(int scopeId, String authKey) {
+        // Default resolveReferences=0 leaves provider as $ref without data.slotTimeInMinutes.
         Response scopeResponse = given()
             .baseUri(baseUri != null ? baseUri : TestConfig.getBaseUri())
             .header("X-AuthKey", authKey)
+            .queryParam("resolveReferences", 1)
         .when()
             .get("/scope/" + scopeId + "/");
+        Assertions.assertThat(scopeResponse.getStatusCode())
+            .as("GET /scope/%d/?resolveReferences=1 body=%s", scopeId, truncate(scopeResponse.asString(), 1000))
+            .isEqualTo(200);
         JsonNode scope = parseDataNode(scopeResponse);
         Assertions.assertThat(scope)
-            .as("GET /scope/%d/ should return data", scopeId)
+            .as("GET /scope/%d/?resolveReferences=1 should return data", scopeId)
             .isNotNull();
         int slotTime = scope.path("provider").path("data").path("slotTimeInMinutes").asInt(0);
+        if (slotTime <= 0) {
+            // Same source Admin uses after Standort login.
+            iUpdateTheWorkstationWithScopeAndCounterWithTheXAuthKey(scopeId, "14");
+            Response workstationResponse = given()
+                .baseUri(baseUri != null ? baseUri : TestConfig.getBaseUri())
+                .header("X-AuthKey", getOrLoginXAuthKey())
+                .queryParam("resolveReferences", 2)
+            .when()
+                .get("/workstation/");
+            JsonNode workstation = parseDataNode(workstationResponse);
+            slotTime = workstation == null
+                ? 0
+                : workstation.path("scope").path("provider").path("data").path("slotTimeInMinutes").asInt(0);
+        }
         Assertions.assertThat(slotTime)
             .as("scope %d provider.data.slotTimeInMinutes", scopeId)
             .isGreaterThan(0);
