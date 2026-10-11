@@ -25,7 +25,7 @@ class User
         'audit_viewer',
     ];
 
-    public function __construct($request, $resolveReferences = 0)
+    public function __construct($request, int $resolveReferences = 0)
     {
         static::$request = $request;
         static::readWorkstation($resolveReferences);
@@ -49,8 +49,23 @@ class User
         if ($resolveReferences > static::$workstationResolved && static::$workstation->hasId()) {
             static::$workstation = (new \BO\Zmsbackend\Workstation\Service\Workstation())
                 ->readResolvedReferences(static::$workstation, $resolveReferences);
+            static::$workstationResolved = $resolveReferences;
         }
         return static::$workstation;
+    }
+
+    /**
+     * Statistic reports only need the full department tree to filter rows.
+     * A superuser sees every row, so that load is skipped.
+     */
+    public static function readStatisticWorkstation(\Psr\Http\Message\RequestInterface $request): \BO\Zmsentities\Workstation
+    {
+        $workstation = (new self($request, 0))->checkPermissions('statistic');
+        if ($workstation->getUseraccount()->isSuperUser()) {
+            return $workstation;
+        }
+
+        return static::readWorkstation(2);
     }
 
     /**
@@ -60,7 +75,7 @@ class User
      *
      * @return void
      */
-    public static function testWorkstationAssigend(\BO\Zmsentities\Workstation $entity, $resolveReferences = 0)
+    public static function testWorkstationAssigend(\BO\Zmsentities\Workstation $entity, int $resolveReferences = 0)
     {
         if (! static::$assignedWorkstation && $entity->name) {
             static::$assignedWorkstation = (new \BO\Zmsbackend\Workstation\Service\Workstation())->readWorkstationByScopeAndName(

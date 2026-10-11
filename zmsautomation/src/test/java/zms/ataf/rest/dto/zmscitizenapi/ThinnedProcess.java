@@ -1,5 +1,7 @@
 package zms.ataf.rest.dto.zmscitizenapi;
 
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import lombok.Data;
@@ -18,6 +20,8 @@ public class ThinnedProcess {
     private String status;
     private String familyName;
     private String email;
+    /** Configured reserve placeholder, returned by GET /appointment/. */
+    private String placeholderEmail;
     private String telephone;
     private String customTextfield;
     private String customTextfield2;
@@ -25,12 +29,23 @@ public class ThinnedProcess {
     private Long timestamp;
     private Integer serviceId;
     private String serviceName;
+    private Integer serviceCount;
+    /** Combined services after the main service, in booking order. */
+    private List<SubRequestCount> subRequestCounts;
     private Object scope;
     private Integer slotCount;
     private String displayNumber;
     private String captchaToken;
     private String icsContent;
     private Object queue;
+
+    @Data
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public static class SubRequestCount {
+        private Integer id;
+        private String name;
+        private Integer count;
+    }
 
     public Integer getProcessId() {
         return processId != null ? processId : id;

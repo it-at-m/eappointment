@@ -14,6 +14,7 @@ class RoleDeleteTest extends Base
 
     protected $classname = "RoleDelete";
 
+    #[\Override]
     public function testRendering()
     {
         $this->setApiCalls(

@@ -9,6 +9,7 @@ class AppointmentPreconfirmControllerTest extends ControllerTestCase
 {
     protected $classname = "\BO\Zmscitizenapi\Controllers\Appointment\AppointmentPreconfirmController";
 
+    #[\Override]
     public function setUp(): void
     {
         parent::setUp();
@@ -20,6 +21,7 @@ class AppointmentPreconfirmControllerTest extends ControllerTestCase
         }
     }
 
+    #[\Override]
     public function testRendering()
     {
         $this->setApiCalls(
@@ -68,7 +70,7 @@ class AppointmentPreconfirmControllerTest extends ControllerTestCase
             'familyName' => 'TEST_USER',
             'customTextfield' => 'Some custom text',
             'customTextfield2' => 'Another custom text',
-            'email' => 'test@muenchen.de',
+            'email' => 'noreply-terminvereinbarung@muenchen.de',
             'telephone' => '123456789',
             'officeName' => null,
             'officeId' => 0,
@@ -95,6 +97,7 @@ class AppointmentPreconfirmControllerTest extends ControllerTestCase
                 'customTextfield2Required' => null,
                 'customTextfield2Label' => null,
                 'captchaActivatedRequired' => null,
+                'rebookingDisabled' => false,
                 'infoForAppointment' => null,
                 'infoForAllAppointments' => null,
                 'slotsPerAppointment' => null,

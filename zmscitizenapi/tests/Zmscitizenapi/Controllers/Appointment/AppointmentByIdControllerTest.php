@@ -9,6 +9,7 @@ class AppointmentByIdControllerTest extends ControllerTestCase
 {
     protected $classname = "\BO\Zmscitizenapi\Controllers\Appointment\AppointmentByIdController";
 
+    #[\Override]
     public function setUp(): void
     {
         parent::setUp();
@@ -28,6 +29,7 @@ class AppointmentByIdControllerTest extends ControllerTestCase
         \App::initialize();
     }
 
+    #[\Override]
     public function tearDown(): void
     {
         putenv('ALTCHA_CAPTCHA_SITE_KEY=');
@@ -39,6 +41,7 @@ class AppointmentByIdControllerTest extends ControllerTestCase
         parent::tearDown();
     }
 
+    #[\Override]
     public function testRendering()
     {
         $this->setApiCalls(
@@ -115,6 +118,7 @@ class AppointmentByIdControllerTest extends ControllerTestCase
                 "customTextfield2Required" => true,
                 "customTextfield2Label" => "Zusätzliche Bemerkung",
                 "captchaActivatedRequired" => false,
+                "rebookingDisabled" => false,
                 "infoForAppointment" => null,
                 "infoForAllAppointments" => null,
                 "slotsPerAppointment" => null,
@@ -129,7 +133,8 @@ class AppointmentByIdControllerTest extends ControllerTestCase
             "serviceName" => "Gewerbe anmelden",
             "serviceCount" => 1,
             "slotCount" => 1,
-            "displayNumber" => null
+            "displayNumber" => null,
+            "placeholderEmail" => \App::getPlaceholderEmail(),
         ];
 
         $this->assertEquals(200, $response->getStatusCode());

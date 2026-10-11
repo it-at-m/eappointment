@@ -41,6 +41,7 @@ class Cluster extends Schema\Entity implements Useraccount\AccessInterface
     /**
      * @return bool
      */
+    #[\Override]
     public function hasAccess(Useraccount $useraccount): bool
     {
         if ($useraccount->hasPermissions(['superuser'])) {

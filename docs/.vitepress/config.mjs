@@ -64,6 +64,29 @@ const listFeatureFilesInDir = (dir) => {
     .sort((a, b) => a.localeCompare(b));
 };
 
+const listFeatureFilesRecursive = (dir) => {
+  const files = listFeatureFilesInDir(dir);
+  for (const name of listSubdirs(dir)) {
+    files.push(...listFeatureFilesRecursive(path.join(dir, name)));
+  }
+  return files.sort((a, b) => a.localeCompare(b));
+};
+
+const emptyCategoryNode = () => ({ files: [], submodules: new Map() });
+
+const scenarioTotal = (items) =>
+  items.reduce((sum, item) => sum + (item.scenarioCount || 0), 0);
+
+const categoryNodeCount = (node) =>
+  scenarioTotal(node.files) +
+  [...node.submodules.values()].reduce(
+    (sum, items) => sum + scenarioTotal(items),
+    0
+  );
+
+const countedHeading = (level, count, title) =>
+  `${"#".repeat(level)} (${count}) ${title}`;
+
 const cucumberStrings = {
   en: {
     title: "Current Cucumber Tests in zmsautomation",
@@ -78,9 +101,10 @@ const cucumberStrings = {
       "> Deprecated: These scenarios target the legacy buergeransicht frontend from `it-at-m/eappointment-buergeransicht` and are not used for `zmscitizenview`.",
     deprecatedSuffix: "(deprecated)",
     accordionHint:
-      "Click a feature to view its Gherkin. Only one feature is expanded at a time. Pick a branch below the search to load that branch's `.feature` files, status, and run command. The play icon copies a command to start the test on the selected branch and opens [zmsautomation](https://github.com/it-at-m/eappointment/actions/workflows/zmsautomation-workflow.yaml). Status icons are pass/fail from the latest published zmsautomation run on the selected branch.",
+      "Click a feature to view its Gherkin. Only one feature is expanded at a time. Pick a branch below the search to load that branch's `.feature` files, status, and run command. The play icon copies a command to start the test on the selected branch and opens [zmsautomation](https://github.com/it-at-m/eappointment/actions/workflows/zmsautomation-workflow.yaml). The title status is green only when every browser in the latest published run passed, and red if any browser failed. Expand a feature to see each browser result.",
     noFiles: "No `.feature` files found.",
     uncategorized: "Uncategorized",
+    total: "All",
     emptyCategory:
       "> No scenarios yet for this category — add the first `.feature` file here.",
   },
@@ -97,9 +121,10 @@ const cucumberStrings = {
       "> Veraltet: Diese Szenarien adressieren das alte buergeransicht-Frontend aus `it-at-m/eappointment-buergeransicht` und werden für `zmscitizenview` nicht mehr verwendet.",
     deprecatedSuffix: "(veraltet)",
     accordionHint:
-      "Klicke auf ein Feature, um das Gherkin anzuzeigen. Es ist immer nur ein Feature aufgeklappt. Wähle unter der Suche einen Branch, um dessen `.feature`-Dateien, Status und Startbefehl zu laden. Das Play-Symbol kopiert einen Befehl, um den Test auf dem gewählten Branch zu starten, und öffnet [zmsautomation](https://github.com/it-at-m/eappointment/actions/workflows/zmsautomation-workflow.yaml). Status-Icons zeigen Bestanden/Fehlgeschlagen vom letzten veröffentlichten zmsautomation-Lauf auf dem gewählten Branch.",
+      "Klicke auf ein Feature, um das Gherkin anzuzeigen. Es ist immer nur ein Feature aufgeklappt. Wähle unter der Suche einen Branch, um dessen `.feature`-Dateien, Status und Startbefehl zu laden. Das Play-Symbol kopiert einen Befehl, um den Test auf dem gewählten Branch zu starten, und öffnet [zmsautomation](https://github.com/it-at-m/eappointment/actions/workflows/zmsautomation-workflow.yaml). Das Status-Icon in der Titelzeile ist grün nur wenn jeder Browser im letzten veröffentlichten Lauf bestanden hat, und rot wenn ein Browser fehlgeschlagen ist. Im aufgeklappten Feature stehen die einzelnen Browser-Ergebnisse.",
     noFiles: "Keine `.feature`-Dateien gefunden.",
     uncategorized: "Unkategorisiert",
+    total: "Alle",
     emptyCategory:
       "> Noch keine Szenarien für diese Kategorie – lege hier die erste `.feature`-Datei an.",
   },
@@ -123,7 +148,7 @@ const collectCucumberFeatures = () => {
   const featureFiles = [];
   const navigation = [];
 
-  const registerFeature = (file, { testType, module, category }) => {
+  const registerFeature = (file, { testType, module, category, submodule }) => {
     featureFiles.push(file);
     const rel = toPosix(path.relative(FEATURES_ROOT, file));
     const raw = fs.readFileSync(file, "utf8");
@@ -143,12 +168,22 @@ const collectCucumberFeatures = () => {
       title: parsed.title || path.basename(rel),
       tags: parsed.tags,
       scenarioCount: parsed.scenarioCount,
+      mobileScenarioCount: parsed.mobileScenarioCount || 0,
       sourceUrl: `${FEATURE_SOURCE_BASE}/${rel}`,
       testType,
       module,
       category,
+      submodule: submodule || "",
     };
-    return { abs: file, rel, id, category };
+    return {
+      abs: file,
+      rel,
+      id,
+      category,
+      submodule: submodule || "",
+      scenarioCount: parsed.scenarioCount,
+      mobileScenarioCount: parsed.mobileScenarioCount || 0,
+    };
   };
 
   for (const testType of listSubdirs(FEATURES_ROOT)) {
@@ -161,21 +196,53 @@ const collectCucumberFeatures = () => {
       modules.set(module, categories);
       for (const category of listSubdirs(moduleDir)) {
         const categoryDir = path.join(moduleDir, category);
-        const items = listFeatureFilesInDir(categoryDir).map((file) =>
-          registerFeature(file, { testType, module, category })
+        const node = emptyCategoryNode();
+        node.files = listFeatureFilesInDir(categoryDir).map((file) =>
+          registerFeature(file, { testType, module, category, submodule: "" })
         );
-        categories.set(category, items);
-        navigation.push({ testType, module, category, count: items.length });
+        for (const submodule of listSubdirs(categoryDir)) {
+          const submoduleDir = path.join(categoryDir, submodule);
+          const items = listFeatureFilesRecursive(submoduleDir).map((file) =>
+            registerFeature(file, { testType, module, category, submodule })
+          );
+          if (items.length) {
+            node.submodules.set(submodule, items);
+          }
+        }
+        categories.set(category, node);
+        navigation.push({
+          testType,
+          module,
+          category,
+          submodule: "",
+          count: categoryNodeCount(node),
+        });
+        for (const [submodule, items] of node.submodules) {
+          navigation.push({
+            testType,
+            module,
+            category,
+            submodule,
+            count: scenarioTotal(items),
+          });
+        }
       }
-      const rootItems = listFeatureFilesInDir(moduleDir).map((file) =>
-        registerFeature(file, { testType, module, category: "" })
+      const rootNode = emptyCategoryNode();
+      rootNode.files = listFeatureFilesInDir(moduleDir).map((file) =>
+        registerFeature(file, {
+          testType,
+          module,
+          category: "",
+          submodule: "",
+        })
       );
-      categories.set("", rootItems);
+      categories.set("", rootNode);
       navigation.push({
         testType,
         module,
         category: "",
-        count: rootItems.length,
+        submodule: "",
+        count: scenarioTotal(rootNode.files),
       });
     }
   }
@@ -185,12 +252,16 @@ const collectCucumberFeatures = () => {
 
 const renderCucumberDocFor = (locale, catalog) => {
   const t = cucumberStrings[locale];
-  const { featureFiles, grouped } = catalog;
+  const { featureFiles, grouped, meta } = catalog;
+  const testTotal = Object.values(meta).reduce(
+    (sum, entry) => sum + (entry.scenarioCount || 0),
+    0
+  );
 
   const lines = [
     "---",
     "outline:",
-    "  level: [2, 4]",
+    "  level: [2, 5]",
     "---",
     "",
     `# ${t.title}`,
@@ -198,6 +269,8 @@ const renderCucumberDocFor = (locale, catalog) => {
     ...t.intro,
     "",
     "<CucumberWorkflowStatus />",
+    "",
+    "<CucumberCountMatrix />",
     "",
     t.accordionHint,
     "",
@@ -220,6 +293,9 @@ const renderCucumberDocFor = (locale, catalog) => {
     "",
   ];
 
+  lines.push(countedHeading(2, testTotal, t.total));
+  lines.push("");
+
   if (!featureFiles.length) {
     lines.push(t.noFiles);
   } else {
@@ -229,10 +305,13 @@ const renderCucumberDocFor = (locale, catalog) => {
       const testTypeCount = [...modules.values()].reduce(
         (sum, categories) =>
           sum +
-          [...categories.values()].reduce((n, items) => n + items.length, 0),
+          [...categories.values()].reduce(
+            (n, node) => n + categoryNodeCount(node),
+            0
+          ),
         0
       );
-      lines.push(`## ${testType.toUpperCase()} (${testTypeCount})`);
+      lines.push(countedHeading(2, testTypeCount, testType.toUpperCase()));
       lines.push("");
       for (const [module, categories] of sortModuleEntries(modules)) {
         const moduleTitle =
@@ -240,14 +319,14 @@ const renderCucumberDocFor = (locale, catalog) => {
             ? `${module} ${t.deprecatedSuffix}`
             : module;
         const moduleCount = [...categories.values()].reduce(
-          (sum, items) => sum + items.length,
+          (sum, node) => sum + categoryNodeCount(node),
           0
         );
         lines.push(
           `<CucumberFeatureGroup test-type="${testType}" module="${module}">`
         );
         lines.push("");
-        lines.push(`### ${moduleTitle} (${moduleCount})`);
+        lines.push(countedHeading(3, moduleCount, moduleTitle));
         lines.push("");
         if (testType === "ui" && module === "buergeransicht") {
           lines.push(t.deprecated);
@@ -267,28 +346,45 @@ const renderCucumberDocFor = (locale, catalog) => {
           lines.push("</CucumberFeatureRow>");
           lines.push("");
         };
-        const uncategorized = categories.get("") ?? [];
+        const uncategorized = categories.get("") ?? emptyCategoryNode();
         const sortedCategories = [...categories.entries()].sort(([a], [b]) =>
           a.localeCompare(b)
         );
-        for (const [category, items] of sortedCategories) {
+        for (const [category, node] of sortedCategories) {
           if (!category) {
             continue;
           }
-          lines.push(`#### ${category} (${items.length})`);
+          const count = categoryNodeCount(node);
+          lines.push(countedHeading(4, count, category));
           lines.push("");
-          if (!items.length) {
+          if (!count) {
             lines.push(t.emptyCategory);
             lines.push("");
           }
-          for (const item of items) {
+          for (const item of node.files) {
             renderFeatureRow(item);
           }
+          const sortedSubmodules = [...node.submodules.entries()].sort(
+            ([a], [b]) => a.localeCompare(b)
+          );
+          for (const [submodule, items] of sortedSubmodules) {
+            lines.push(countedHeading(5, scenarioTotal(items), submodule));
+            lines.push("");
+            for (const item of items) {
+              renderFeatureRow(item);
+            }
+          }
         }
-        if (uncategorized.length) {
-          lines.push(`#### ${t.uncategorized} (${uncategorized.length})`);
+        if (uncategorized.files.length) {
+          lines.push(
+            countedHeading(
+              4,
+              scenarioTotal(uncategorized.files),
+              t.uncategorized
+            )
+          );
           lines.push("");
-          for (const item of uncategorized) {
+          for (const item of uncategorized.files) {
             renderFeatureRow(item);
           }
         }
@@ -419,6 +515,7 @@ const sidebarLabels = {
     unitTesting: "Unit Testing in ZMS",
     unitCoverage: "Unit Test Coverage",
     zmsautomation: "zmsautomation Documentation",
+    howWeParallelized: "How We Parallelized zmsautomation",
     cucumberCurrent: "Current Cucumber Tests",
     operations: "Operations",
     cicd: "CI/CD",
@@ -473,6 +570,7 @@ const sidebarLabels = {
     unitTesting: "Unit-Tests in ZMS",
     unitCoverage: "Unit-Test-Abdeckung",
     zmsautomation: "zmsautomation-Dokumentation",
+    howWeParallelized: "Wie wir zmsautomation parallelisiert haben",
     cucumberCurrent: "Aktuelle Cucumber-Tests",
     operations: "Betrieb",
     cicd: "CI/CD",
@@ -630,6 +728,10 @@ const buildSidebar = (prefix, lang) => {
           link: `${prefix}/testing-and-automation/zmsautomation`,
         },
         {
+          text: t.howWeParallelized,
+          link: `${prefix}/testing-and-automation/how-we-parallelized-zmsautomation`,
+        },
+        {
           text: t.cucumberCurrent,
           link: `${prefix}/testing-and-automation/zmsautomation-cucumber-current`,
         },
@@ -779,6 +881,112 @@ const buildAbsoluteUrl = (urlPath) => `${SITE_HOSTNAME}${SITE_BASE}${urlPath}`;
 
 const localeOfUrl = (urlPath) => (urlPath.startsWith("de/") ? "de" : "en");
 
+// VitePress names each page chunk after the markdown file and then asks the
+// browser for a ".lean.js" copy. Vite 8 drops that copy, and GitHub Pages will
+// not serve a path that contains ".md", so both the real chunk and the lean
+// copy are published without ".md".
+const STATIC_STRIP_RE = /['"`]__VP_STATIC_START__[^]*?__VP_STATIC_END__['"`]/g;
+
+const emitLeanPageChunks = () => ({
+  name: "emit-lean-page-chunks",
+  enforce: "pre",
+  generateBundle(_options, bundle) {
+    for (const chunk of Object.values(bundle)) {
+      if (chunk.type !== "chunk" || !chunk.fileName.includes(".md.")) {
+        continue;
+      }
+      if (chunk.fileName.endsWith(".lean.js")) {
+        continue;
+      }
+      this.emitFile({
+        type: "asset",
+        fileName: chunk.fileName.replace(/\.js$/, ".lean.js"),
+        source: chunk.code.replace(STATIC_STRIP_RE, '""'),
+      });
+    }
+  },
+});
+
+const walkFiles = (dir, files = []) => {
+  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+    const full = path.join(dir, entry.name);
+    if (entry.isDirectory()) {
+      walkFiles(full, files);
+    } else {
+      files.push(full);
+    }
+  }
+  return files;
+};
+
+const publishAssetsWithoutMdNames = (outDir) => {
+  if (!outDir || !fs.existsSync(outDir)) {
+    return;
+  }
+  const files = walkFiles(outDir);
+  const replacements = [];
+  const renames = [];
+  for (const file of files) {
+    const base = path.basename(file);
+    const match = base.match(/^(.*)\.md\.([-\w]+)\.js$/);
+    if (!match) {
+      continue;
+    }
+    const published = `${match[1]}.${match[2]}.js`;
+    const leanFrom = `${match[1]}.md.${match[2]}.lean.js`;
+    const leanTo = `${match[1]}.${match[2]}.lean.js`;
+    replacements.push([leanFrom, leanTo]);
+    replacements.push([base, published]);
+    renames.push([file, path.join(path.dirname(file), published)]);
+    const leanFile = path.join(path.dirname(file), leanFrom);
+    if (fs.existsSync(leanFile)) {
+      renames.push([leanFile, path.join(path.dirname(file), leanTo)]);
+    }
+  }
+  replacements.sort((a, b) => b[0].length - a[0].length);
+  const textFiles = new Set(files);
+  for (const [, dest] of renames) {
+    if (dest.endsWith(".lean.js")) {
+      textFiles.add(dest);
+    }
+  }
+  for (const file of textFiles) {
+    if (!fs.existsSync(file) || !/\.(html|js|css|json|map)$/.test(file)) {
+      continue;
+    }
+    let text = fs.readFileSync(file, "utf8");
+    let changed = false;
+    for (const [from, to] of replacements) {
+      if (text.includes(from)) {
+        text = text.split(from).join(to);
+        changed = true;
+      }
+    }
+    // The router does not store "index.md.<hash>.js". It builds
+    // `/assets/${page}.md.${hash}.js` and then swaps in ".lean.js".
+    // Renaming the file is not enough; the built URL has to drop ".md" too.
+    if (file.endsWith(".js")) {
+      const patched = text.replace(
+        /\/assets\/\$\{([A-Za-z_$][\w$]*)\}\.\$\{([A-Za-z_$][\w$]*)\}\.js/g,
+        (_match, pageVar, hashVar) =>
+          `/assets/\${${pageVar}.replace(/\\.md$/, "")}.\${${hashVar}}.js`
+      );
+      if (patched !== text) {
+        text = patched;
+        changed = true;
+      }
+    }
+    if (changed) {
+      fs.writeFileSync(file, text);
+    }
+  }
+  for (const [from, to] of renames) {
+    if (from !== to && fs.existsSync(from)) {
+      fs.renameSync(from, to);
+    }
+  }
+};
+
 export default {
   title: "eAppointment Docs",
   description: "Technical documentation for it-at-m/eappointment",
@@ -787,6 +995,7 @@ export default {
   // Local-dev URLs (e.g. Vite on :8082) are not reachable during CI docs builds.
   ignoreDeadLinks: [/^https?:\/\/localhost(?::\d+)?(?:\/|$)/],
   vite: {
+    plugins: [emitLeanPageChunks()],
     esbuild: {
       target: "es2022",
     },
@@ -804,6 +1013,9 @@ export default {
     // hostname must include the base path so emitted <loc> URLs are absolute
     // and resolve to the actual GitHub Pages location.
     hostname: `${SITE_HOSTNAME}${SITE_BASE}`,
+  },
+  buildEnd(siteConfig) {
+    publishAssetsWithoutMdNames(siteConfig.outDir);
   },
   transformHead({ pageData, siteConfig }) {
     const tags = [];
@@ -912,7 +1124,7 @@ export default {
         ...sharedThemeConfig,
         nav: buildNav("/de", "de"),
         sidebar: buildSidebar("/de", "de"),
-        outline: { label: "Auf dieser Seite", level: [2, 4] },
+        outline: { label: "Auf dieser Seite", level: [2, 5] },
         darkModeSwitchLabel: "Darstellung",
         langMenuLabel: "Sprache wechseln",
         returnToTopLabel: "Zurück nach oben",

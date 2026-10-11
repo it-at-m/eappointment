@@ -10,6 +10,7 @@ class WorkstationProcessProcessingTest extends Base
 
     protected $classname = "WorkstationProcessProcessing";
 
+    #[\Override]
     public function testRendering()
     {
         $this->setApiCalls(

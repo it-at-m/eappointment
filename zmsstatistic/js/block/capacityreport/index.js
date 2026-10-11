@@ -11,6 +11,7 @@ class View extends BaseView {
         this.chart = null;
         this.chartValueMode = 'slots';
         this.chartChannelMode = 'total';
+        this.chartGranularity = 'day';
         this.chartHideEmptySlots = true;
         this.autoRefreshIntervalMs = 0;
         this.autoRefreshTimer = null;
@@ -22,11 +23,13 @@ class View extends BaseView {
         this.autoRefreshController = new AutoRefresh(this);
 
         this.bindEvents();
-        this.chartController.initSparseTimelineFromDom();
         this.tableController.initSettingsFromDom();
         this.tableController.initDataFromDom();
-        this.chartController.initFromDom();
+        this.chartController.initSparseTimelineFromDom();
         this.chartController.initChannelFromDom();
+        this.chartController.initGranularityFromDom();
+        this.chartController.initValueModeFromDom();
+        this.chartController.initFromDom();
         this.chartController.syncChannelSelect();
         this.tableController.syncHeaders();
         this.tableController.render();
@@ -49,17 +52,33 @@ class View extends BaseView {
             ev.preventDefault();
             this.chartController.setChannelMode(ev.target.value);
         });
-        this.$main.on('click', '.report-board--chart-minutes', (ev) => {
+        this.$main.on('change', '.report-board--capacity-unit-select', (ev) => {
             ev.preventDefault();
-            this.chartController.toggleValueMode();
+            this.chartController.setValueMode(ev.target.value);
         });
         this.$main.on('click', '.report-board--chart-download', (ev) => {
             ev.preventDefault();
             this.chartController.downloadPng();
         });
+        this.$main.on('click', '.report-board--table-download', (ev) => {
+            this.chartController.syncTableDownloadLink();
+            if (ev.metaKey || ev.ctrlKey || ev.shiftKey || ev.altKey || ev.button !== 0) {
+                return;
+            }
+            const href = ev.currentTarget.getAttribute('href');
+            if (!href) {
+                return;
+            }
+            ev.preventDefault();
+            window.location.assign(href);
+        });
         this.$main.on('click', '.report-board--chart-sparse', (ev) => {
             ev.preventDefault();
             this.chartController.toggleSparseTimeline();
+        });
+        this.$main.on('change', '.report-board--capacity-granularity-select', (ev) => {
+            ev.preventDefault();
+            this.chartController.setGranularity(ev.target.value);
         });
     }
 }

@@ -12,6 +12,7 @@ abstract class BaseController extends \BO\Slim\Controller
 {
     public static $sessionAttribute = \App::SESSION_ATTRIBUTE;
 
+    #[\Override]
     public function __invoke(RequestInterface $request, ResponseInterface $response, array $args)
     {
         $request = $this->initRequest($request);

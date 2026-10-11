@@ -2,6 +2,7 @@ package zms.ataf.ui.pages.citizenview;
 
 import java.util.Objects;
 
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
@@ -23,7 +24,7 @@ public class CitizenViewPageContext extends Context {
     public static final String TITLE = "Terminvereinbarung Bürgeransicht Webcomponent";
 
     private WindowType windowType;
-    String lastCitizenViewUrl;
+    public String lastCitizenViewUrl;
 
     CitizenViewPageContext(RemoteWebDriver driver) {
         super(driver);
@@ -67,10 +68,22 @@ public class CitizenViewPageContext extends Context {
     }
 
     /**
+     * Opens zmscitizenview on a service-only jump-in ({@code #/services/{id}}). Lands on the
+     * combination step with that service selected.
+     */
+    public void navigateWithJumpInService(String serviceId) {
+        navigateWithJumpInRoute("#/services/" + serviceId);
+    }
+
+    /**
      * Opens zmscitizenview on the jump-in route: service and location preselected; UI shows the
      * service combination (quantity) step, not the service finder.
      */
     public void navigateWithJumpIn(String serviceId, String locationId) {
+        navigateWithJumpInRoute("#/services/" + serviceId + "/locations/" + locationId);
+    }
+
+    private void navigateWithJumpInRoute(String route) {
         String citizenViewUrl;
         if (RunnerUtils.isJiraBasedTestExecution()) {
             citizenViewUrl = Objects.requireNonNull(Environment.contains(TestExecutionContext.get().ENVIRONMENT))
@@ -86,7 +99,18 @@ public class CitizenViewPageContext extends Context {
         windowType = new WindowType(NAME, new System(NAME, citizenViewUrl));
         int hashIdx = citizenViewUrl.indexOf('#');
         String base = hashIdx >= 0 ? citizenViewUrl.substring(0, hashIdx) : citizenViewUrl;
-        String jumpInUrl = base + "#/services/" + serviceId + "/locations/" + locationId;
+        // A hash change on the open page does not remount the widget, so a second booking
+        // stays on the confirmation of the first. A new query loads the jump-in from scratch.
+        String jumpInUrl = base + route;
+        try {
+            String currentUrl = DRIVER.getCurrentUrl();
+            if (currentUrl != null && currentUrl.startsWith(base)) {
+                String separator = base.contains("?") ? "&" : "?";
+                jumpInUrl = base + separator + "zmsjump=" + java.lang.System.nanoTime() + route;
+            }
+        } catch (RuntimeException ignored) {
+            ScenarioLogManager.getLogger().debug("Jump-in has no current page yet.");
+        }
         try {
             DRIVER.navigate().to(jumpInUrl);
         } catch (TimeoutException e) {
@@ -95,8 +119,41 @@ public class CitizenViewPageContext extends Context {
         WindowControls.updateWindowList(DriverUtil.getDriver(), windowType);
         FrameControls.setCurrentFrame(FrameControls.DEFAULT_CONTENT);
         ScenarioLogManager.getLogger().info("Jump-in loaded: {}", jumpInUrl);
+        rememberAppointmentCredentialsFromLaterResponses();
         // Vue + offices-and-services fetch: wait until error callout or combination UI is present
         waitJumpInDomSettled();
+    }
+
+    /**
+     * Guest bookings keep the auth key in the reserve response, not in localStorage.
+     * Record it before the slot is reserved so cancel can free the process.
+     *
+     * <p>Call the saved fetch with the window as {@code this}. A bare {@code fetch()} from the page
+     * has {@code this === undefined}, and Firefox then throws instead of sending the request. The
+     * calendar call never reaches the server and the page stays on "kein Termin".
+     */
+    private void rememberAppointmentCredentialsFromLaterResponses() {
+        String script =
+                "if(window.__zmsCaptureBookingInstalled)return;"
+                        + "window.__zmsCaptureBookingInstalled=true;"
+                        + "window.__zmsCapturedBooking=null;"
+                        + "function note(text){var data;try{data=JSON.parse(text);}catch(e){return;}"
+                        + "var list=[data,data&&data.data,data&&data.appointment];"
+                        + "for(var i=0;i<list.length;i++){var body=list[i];"
+                        + "if(body&&body.processId&&body.authKey){"
+                        + "window.__zmsCapturedBooking=String(body.processId)+'|'+String(body.authKey);}}"
+                        + "}"
+                        + "var orig=window.fetch;"
+                        + "if(typeof orig!=='function')return;"
+                        + "var bound=orig.bind(window);"
+                        + "window.fetch=function(){return bound.apply(window,arguments).then(function(res){"
+                        + "try{res.clone().text().then(note).catch(function(){});}catch(e){}"
+                        + "return res;});};";
+        try {
+            ((JavascriptExecutor) DRIVER).executeScript(script);
+        } catch (RuntimeException e) {
+            ScenarioLogManager.getLogger().warn("Could not record later appointment responses.", e);
+        }
     }
 
     /** Poll shadow DOM until invalid jump-in, Weiter, or Service Finder copy appears (max ~25s). */
@@ -126,6 +183,15 @@ public class CitizenViewPageContext extends Context {
             }
         }
         ScenarioLogManager.getLogger().warn("Jump-in DOM still unsettled after 25s (half-blank risk).");
+    }
+
+    /** A mail link can be the first citizen page. Open it when no window is registered, otherwise switch to the open one. */
+    public void openCitizenViewIfNotAlreadyOpen() {
+        if (windowType == null) {
+            navigateToPage();
+        } else {
+            set();
+        }
     }
 
     @Override

@@ -44,6 +44,12 @@ export interface AppointmentDTO {
    */
   email: string;
   /**
+   * ZMS_CITIZENAPI_PLACEHOLDER_EMAIL from the API that reserved this process.
+   * @type {string}
+   * @memberof AppointmentDTO
+   */
+  placeholderEmail?: string;
+  /**
    *
    * @type {string}
    * @memberof AppointmentDTO
@@ -97,6 +103,12 @@ export interface AppointmentDTO {
    * @memberof AppointmentDTO
    */
   serviceCount: number;
+  /**
+   *
+   * @type {string}
+   * @memberof AppointmentDTO
+   */
+  status?: string;
   /**
    *
    * @type {string}

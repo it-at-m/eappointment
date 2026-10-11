@@ -15,6 +15,7 @@ class AuthTest extends TestCase
     private $originalHeadersSent;
     private $mockLog;
 
+    #[\Override]
     protected function setUp(): void
     {
         // Store original state
@@ -29,6 +30,7 @@ class AuthTest extends TestCase
         App::$log = $this->mockLog;
     }
 
+    #[\Override]
     protected function tearDown(): void
     {
         // Restore original state

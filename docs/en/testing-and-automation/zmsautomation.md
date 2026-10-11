@@ -18,12 +18,11 @@ This module contains API and UI tests for ZMS using [ATAF](https://it-at-m.githu
 - `src/test/java/zms/ataf/`
   - `zms/ataf/rest/steps/` - REST step definitions (REST Assured)
   - `zms/ataf/ui/steps/` - UI step definitions (Selenium/[ATAF](https://it-at-m.github.io/agile-test-automation-framework/) web)
-  - `zms/ataf/ui/pages/**` - page objects for Admin, Statistik, Buergeransicht, Mailinator
+  - `zms/ataf/ui/pages/**` - page objects for Admin, Statistik, zmscitizenview, Mailinator
 - `src/test/resources/features/` - Cucumber feature files
   - `rest/zmsapi/` - ZMS REST API features (legacy folder/tag name; targets `zmsbackend` at `/terminvereinbarung/api/2`)
   - `rest/zmscitizenapi/` - Citizen REST API features
   - `ui/zmsadmin/` - Admin UI features
-  - `ui/buergeransicht/` - deprecated legacy citizen frontend UI features from `it-at-m/eappointment-buergeransicht` (not used for `zmscitizenview`)
   - `ui/zmsstatistic/` - Statistik UI features
   - `ui/zmscitizenview/` - CitizenView UI (Service Finder + full booking E2E)
 - `src/main/resources/db/migration/` - Flyway database migrations
@@ -32,7 +31,11 @@ This module contains API and UI tests for ZMS using [ATAF](https://it-at-m.githu
 
 ### Using the Test Script (recommended)
 
-The `zmsautomation-test` script handles database setup, migrations, and test execution.
+The `zmsautomation-test` script handles database setup, migrations, and test execution. Scenarios inside one Maven run execute together: 32 at a time for `-Pataf-api`, 16 browsers at a time for `-Pataf-ui`. Pass `-Ddataproviderthreadcount=1` to run one scenario at a time. How that parallelism was introduced, including the login pools and the races it exposed, is in [How We Parallelized zmsautomation](./how-we-parallelized-zmsautomation.md).
+
+Each log line starts with the worker thread in brackets, for example `[29]`. TestNG reuses that thread for the next scenario, so lines with the same number belong to one scenario until that thread logs `Starting scenario`. Scroll up to the latest `Starting scenario` line with that number to see which test those lines belong to.
+
+A local run also writes one log file per scenario to `zmsautomation/logs`. The file name comes from the scenario name. Previous runs of the same scenario are kept as dated `.log.gz` files. The directory is gitignored.
 
 ```bash
 # Run all [ATAF](https://it-at-m.github.io/agile-test-automation-framework/) tests (API + UI)
@@ -54,6 +57,9 @@ The `zmsautomation-test` script handles database setup, migrations, and test exe
 
 # Optional: pin a different ATAF Maven version (default: ataf.version in pom.xml)
 ./zmsautomation/zmsautomation-test -Pataf-api -Pataf-ui -Dataf.version=0.3.3
+
+# One scenario at a time (default is 32 API threads or 16 UI browsers)
+./zmsautomation/zmsautomation-test -Pataf-ui -Ddataproviderthreadcount=1
 ```
 
 The ATAF library version defaults to `<ataf.version>` in `zmsautomation/pom.xml`. Override it with `-Dataf.version=…` when you need another published `de.muenchen.ataf` release.
@@ -115,7 +121,6 @@ mvn test -Pataf-ui
 # optionally filter:
 # mvn test -Pataf-ui -Dcucumber.filter.tags="@web"
 # mvn test -Pataf-ui -Dcucumber.filter.tags="@zmsadmin"
-# mvn test -Pataf-ui -Dcucumber.filter.tags="@buergeransicht"
 # mvn test -Pataf-ui -Dcucumber.filter.tags="@zmsstatistic"
 # mvn test -Pataf-ui -Dcucumber.filter.tags="@zmscitizenview"
 ```
@@ -240,7 +245,6 @@ cd zmsautomation && mvn test
 - UI tags:
   - `@web`
   - `@zmsadmin`
-  - `@buergeransicht` (deprecated legacy frontend; not used for `zmscitizenview`)
   - `@zmsstatistic`
   - `@zmscitizenview`
   - `@jumpin`
@@ -265,7 +269,6 @@ cd zmsautomation && mvn test
 ### UI Features (`src/test/resources/features/ui/`)
 
 - `ui/zmsadmin/` - Admin UI features
-- `ui/buergeransicht/` - deprecated legacy Buergeransicht features from `it-at-m/eappointment-buergeransicht` (not used for `zmscitizenview`)
 - `ui/zmscitizenview/` - CitizenView booking UI features
 - `ui/zmsstatistic/` - Statistik UI features
 
@@ -275,11 +278,14 @@ GitHub Actions workflow: [`.github/workflows/zmsautomation-workflow.yaml`](https
 
 Manual runs (`workflow_dispatch`) expose the usual module/browser/tag inputs plus:
 
-| Input          | Purpose                                                                                                                                                                                                                            |
-| -------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `ataf_version` | Optional ATAF Maven version (`de.muenchen.ataf:core\|rest\|web`). Leave empty to use `ataf.version` from `zmsautomation/pom.xml` on the checked-out branch. When set, the job passes `-Dataf.version=…` into `zmsautomation-test`. |
+| Input              | Purpose                                                                                                                                                                                                                            |
+| ------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ataf_version`     | Optional ATAF Maven version (`de.muenchen.ataf:core\|rest\|web`). Leave empty to use `ataf.version` from `zmsautomation/pom.xml` on the checked-out branch. When set, the job passes `-Dataf.version=…` into `zmsautomation-test`. |
+| `serial_scenarios` | Don't run scenarios in parallel. When checked, each job passes `-Ddataproviderthreadcount=1`. Off by default, including the nightly schedule.                                                                                      |
 
-Scheduled nightly runs always use the POM version (no override). The version must exist on Maven Central.
+Scheduled nightly runs always use the POM version (no override) and take a screenshot after each step. The version must exist on Maven Central. A manual run takes those screenshots only when per-step screenshots is checked.
+
+After a UI run, open **`ATAF-FAILED-SCREENSHOTS.html`** at the root of the `zmsautomation-ataf-reports-…` artifact (or `zmsautomation/target/index.html` locally). Each card shows the failed step, error, and last screenshot. Click a card for every step screenshot of that scenario, with the failed shot first.
 
 ## zmsautomation in Safari on macOS outside the container
 

@@ -251,12 +251,18 @@ export function preconfirmAppointment(
 
 export function confirmAppointment(
   globalState: GlobalState,
-  appointment: AppointmentHash
+  appointment: AppointmentHash,
+  sourceAppointment?: AppointmentDTO
 ): Promise<AppointmentDTO | ErrorDTO> {
   const requestBody = {
     processId: appointment.id,
     authKey: appointment.authKey,
     scope: appointment.scope,
+    ...(sourceAppointment?.processId &&
+      sourceAppointment.authKey && {
+        sourceProcessId: sourceAppointment.processId,
+        sourceAuthKey: sourceAppointment.authKey,
+      }),
   };
 
   return request({

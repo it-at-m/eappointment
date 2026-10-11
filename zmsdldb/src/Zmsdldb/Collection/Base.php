@@ -15,6 +15,7 @@ use BO\Zmsdldb\Helper\Sorter;
  */
 class Base extends \ArrayObject
 {
+    #[\Override]
     public function offsetSet(mixed $key, mixed $value): void
     {
         parent::offsetSet($key, $value);

@@ -28,11 +28,13 @@ abstract class Base extends TestCase
 
     protected mixed $apiCalls = array();
 
+    #[\Override]
     public function setUp(): void
     {
         \App::$http = $this->getApiMockup();
     }
 
+    #[\Override]
     public function tearDown(): void
     {
     }

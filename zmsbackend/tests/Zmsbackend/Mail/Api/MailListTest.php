@@ -8,6 +8,7 @@ class MailListTest extends \BO\Zmsbackend\Tests\Api\Base
 {
     protected $classname = "MailList";
 
+    #[\Override]
     public function testRendering()
     {
         $this->setWorkstation()->getUseraccount()->setPermissions('superuser');

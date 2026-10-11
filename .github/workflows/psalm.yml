@@ -53,9 +53,9 @@ jobs:
           submodules: true
 
       - name: Setup PHP
-        uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # v2
+        uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # v2
         with:
-          php-version: 8.3
+          php-version: 8.4
           tools: composer
           coverage: none
 
@@ -137,7 +137,7 @@ jobs:
 
       - name: Upload SARIF results
         if: always() && steps.sarif.outputs.exists == 'true'
-        uses: github/codeql-action/upload-sarif@cdf488f595d80d6e07e03d4674febd5ab45fa938 # v4.37.9
+        uses: github/codeql-action/upload-sarif@24c54180a607b1449ed407dd24f251e4e9147c8d # v4.38.3
         with:
           sarif_file: results-${{ matrix.project }}.sarif
           checkout_path: ${{ matrix.project }}
@@ -168,9 +168,9 @@ jobs:
           submodules: true
 
       - name: Setup PHP
-        uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # v2
+        uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # v2
         with:
-          php-version: 8.3
+          php-version: 8.4
           tools: composer
           coverage: none
 
@@ -257,7 +257,7 @@ jobs:
 
       - name: Upload monorepo SARIF results
         if: always() && steps.sarif_monorepo.outputs.exists == 'true'
-        uses: github/codeql-action/upload-sarif@cdf488f595d80d6e07e03d4674febd5ab45fa938 # v4.37.9
+        uses: github/codeql-action/upload-sarif@24c54180a607b1449ed407dd24f251e4e9147c8d # v4.38.3
         with:
           sarif_file: results-monorepo.sarif
           category: .github/workflows/psalm.yml:psalm-dead-code

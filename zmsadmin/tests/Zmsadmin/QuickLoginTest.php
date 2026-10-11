@@ -17,6 +17,7 @@ class QuickLoginTest extends Base
 
     protected $classname = "QuickLogin";
 
+    #[\Override]
     public function testRendering()
     {
         $this->setApiCalls(

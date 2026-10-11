@@ -13,7 +13,7 @@ class Link extends \BO\Zmsbackend\Base
      *
      * @return \BO\Zmsentities\Collection\LinkList
      */
-    public function readByDepartmentId($departmentId, $disableCache = false)
+    public function readByDepartmentId($departmentId, bool $disableCache = false)
     {
         $cacheKey = "linksReadByDepartmentId-$departmentId";
 

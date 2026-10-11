@@ -127,6 +127,7 @@ export const HistoryRowsTable = ({ rows }) => (
                 </tr>
             </thead>
             <tbody>
+                {/* eslint-disable-next-line complexity */}
                 {rows.map((row) => (
                     <tr key={row.id}>
                         <td className="cell--meta">

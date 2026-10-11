@@ -10,6 +10,7 @@ class MyAppointmentsControllerTest extends ControllerTestCase
 
     protected $classname = "\BO\Zmscitizenapi\Controllers\Appointment\MyAppointmentsController";
 
+    #[\Override]
     public function setUp(): void
     {
         parent::setUp();
@@ -73,6 +74,7 @@ class MyAppointmentsControllerTest extends ControllerTestCase
     }
 
     // overriding base method
+    #[\Override]
     public function testRendering() {
         $this->assertTrue(true);
     }
@@ -187,6 +189,7 @@ class MyAppointmentsControllerTest extends ControllerTestCase
                     'customTextfield2Required' => true,
                     'customTextfield2Label' => 'Zusätzliche Bemerkung',
                     'captchaActivatedRequired' => false,
+                    'rebookingDisabled' => false,
                     'infoForAppointment' => '',
                     'infoForAllAppointments' => '',
                     'slotsPerAppointment' => null,

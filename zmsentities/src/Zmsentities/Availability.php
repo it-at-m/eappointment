@@ -538,8 +538,11 @@ class Availability extends Schema\Entity
         });
         $foundWeekdays = [];
 
-        $currentDate = Helper\DateTime::create($startDate);
-        while ($currentDate <= $endDate) {
+        // Walk calendar days at noon so a clock time on the timestamp, or the
+        // DST fallback, cannot skip the last day of the range.
+        $currentDate = Helper\DateTime::create($startDate)->setTime(12, 0);
+        $endDay = Helper\DateTime::create($endDate)->setTime(12, 0);
+        while ($currentDate <= $endDay) {
             $weekDayName = self::$weekdayNameList[$currentDate->format('w')];
             if (in_array($weekDayName, $selectedWeekdays)) {
                 $foundWeekdays[] = $weekDayName;

@@ -13,6 +13,7 @@ class ProcessQueueResetTest extends Base
 
     protected $classname = "ProcessQueueReset";
 
+    #[\Override]
     public function testRendering()
     {
         $this->setApiCalls(

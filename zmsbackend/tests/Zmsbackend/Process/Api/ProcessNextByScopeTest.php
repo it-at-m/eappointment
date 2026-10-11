@@ -8,6 +8,7 @@ class ProcessNextByScopeTest extends \BO\Zmsbackend\Tests\Api\Base
 {
     protected $classname = "ProcessNextByScope";
 
+    #[\Override]
     public function testRendering()
     {
         $this->setWorkstation()

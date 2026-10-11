@@ -8,6 +8,7 @@ class ProcessReservedListTest extends \BO\Zmsbackend\Tests\Api\Base
 {
     protected $classname = "ProcessReservedList";
 
+    #[\Override]
     public function testRendering()
     {
         $this->setWorkstation();

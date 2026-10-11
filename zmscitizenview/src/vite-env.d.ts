@@ -8,6 +8,10 @@ interface ImportMetaEnv {
   readonly VITE_KC_URL?: string;
   readonly VITE_KC_REALM?: string;
   readonly VITE_KC_CLIENT_ID?: string;
+  readonly VITE_NODE_ENV?: string;
+  readonly VITE_GIT_COMMIT?: string;
+  readonly VITE_GIT_REF?: string;
+  readonly ZMS_CITIZENAPI_PLACEHOLDER_EMAIL?: string;
 }
 
 interface ImportMeta {

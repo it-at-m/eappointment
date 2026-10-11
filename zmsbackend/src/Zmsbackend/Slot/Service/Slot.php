@@ -118,7 +118,7 @@ class Slot extends \BO\Zmsbackend\Base
      */
     public function hasScopeRelevantChanges(
         \BO\Zmsentities\Scope $scope,
-        \DateTimeInterface $slotLastChange = null
+        ?\DateTimeInterface $slotLastChange = null
     ) {
         $startInDaysDefault = (new \BO\Zmsbackend\Preferences\Service\Preferences())
             ->readProperty('scope', $scope->id, 'appointment', 'startInDaysDefault');
@@ -146,7 +146,7 @@ class Slot extends \BO\Zmsbackend\Base
     public function isAvailabilityOutdated(
         \BO\Zmsentities\Availability $availability,
         \DateTimeInterface $now,
-        \DateTimeInterface $slotLastChange = null,
+        ?\DateTimeInterface $slotLastChange = null,
         int $oldestSlotVersion = 1
     ): bool {
         $proposedChange = new \BO\Zmsbackend\Helper\AvailabilitySnapShot($availability, $now);
@@ -228,7 +228,7 @@ class Slot extends \BO\Zmsbackend\Base
     public function writeByAvailability(
         \BO\Zmsentities\Availability $availability,
         \DateTimeInterface $now,
-        \DateTimeInterface $slotLastChange = null
+        ?\DateTimeInterface $slotLastChange = null
     ) {
         $now = \BO\Zmsentities\Helper\DateTime::create($now);
         $calculateSlotsUntilDate = \BO\Zmsentities\Helper\DateTime::create($now)->modify('+' . self::MAX_DAYS_OF_SLOT_CALCULATION . ' days');

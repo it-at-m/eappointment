@@ -3,8 +3,8 @@ package zms.ataf.ui.steps;
 import ataf.core.helpers.TestDataHelper;
 import ataf.core.logging.ScenarioLogManager;
 import ataf.web.utils.DriverUtil;
-import io.cucumber.java.de.Dann;
-import io.cucumber.java.de.Wenn;
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
 import zms.ataf.ui.pages.ticketprinter.TicketprinterPage;
 
 public class TicketprinterSteps {
@@ -15,14 +15,14 @@ public class TicketprinterSteps {
         page = new TicketprinterPage(DriverUtil.getDriver());
     }
 
-    @Wenn("Sie die Ticketausgabe für den Standort {string} öffnen.")
+    @When("I open the ticket printer for location {string}.")
     public void sie_die_ticketausgabe_fuer_den_standort_oeffnen(String scopeId) {
         scopeId = TestDataHelper.transformTestData(scopeId);
         ScenarioLogManager.getLogger().info("Ticketprinter: open scope {}", scopeId);
         page.openScope(scopeId);
     }
 
-    @Wenn("Sie die Ticketausgabe für die Dienstleistung {string} am Standort {string} öffnen.")
+    @When("I open the ticket printer for service {string} at location {string}.")
     public void sie_die_ticketausgabe_fuer_die_dienstleistung_am_standort_oeffnen(String requestId, String scopeId) {
         requestId = TestDataHelper.transformTestData(requestId);
         scopeId = TestDataHelper.transformTestData(scopeId);
@@ -30,40 +30,40 @@ public class TicketprinterSteps {
         page.openRequest(scopeId, requestId);
     }
 
-    @Wenn("Sie die Ticketausgabe mit der Buttonliste {string} öffnen.")
+    @When("I open the ticket printer with the button list {string}.")
     public void sie_die_ticketausgabe_mit_der_buttonliste_oeffnen(String buttonList) {
         buttonList = TestDataHelper.transformTestData(buttonList);
         ScenarioLogManager.getLogger().info("Ticketprinter: open button list {}", buttonList);
         page.openButtonList(buttonList);
     }
 
-    @Dann("sollte die Ticketausgabe keine Fehlerseite anzeigen.")
+    @Then("the ticket printer should not show an error page.")
     public void sollte_die_ticketausgabe_keine_fehlerseite_anzeigen() {
         ScenarioLogManager.getLogger().info("Ticketprinter: assert no error page");
         page.assertNotErrorPage();
     }
 
-    @Dann("sollte die Ticketausgabe anzeigen, dass der Kundenservice geschlossen ist.")
+    @Then("the ticket printer should show that the customer service is closed.")
     public void sollte_die_ticketausgabe_anzeigen_dass_der_kundenservice_geschlossen_ist() {
         ScenarioLogManager.getLogger().info("Ticketprinter: assert closed");
         page.assertClosed();
     }
 
-    @Dann("sollte die Schaltfläche {string} auf der Ticketausgabe sichtbar sein.")
+    @Then("the button {string} should be visible on the ticket printer.")
     public void sollte_die_schaltflaeche_auf_der_ticketausgabe_sichtbar_sein(String label) {
         label = TestDataHelper.transformTestData(label);
         ScenarioLogManager.getLogger().info("Ticketprinter: assert button visible \"{}\"", label);
         page.assertWaitingNumberButtonVisible(label);
     }
 
-    @Wenn("Sie auf der Ticketausgabe auf die Schaltfläche {string} klicken.")
+    @When("I click the button {string} on the ticket printer.")
     public void sie_auf_der_ticketausgabe_auf_die_schaltflaeche_klicken(String label) {
         label = TestDataHelper.transformTestData(label);
         ScenarioLogManager.getLogger().info("Ticketprinter: click button \"{}\"", label);
         page.clickWaitingNumberButton(label);
     }
 
-    @Dann("sollte Ihnen eine Wartenummer angezeigt werden.")
+    @Then("a waiting number should be displayed.")
     public void sollte_ihnen_eine_wartenummer_angezeigt_werden() {
         ScenarioLogManager.getLogger().info("Ticketprinter: assert waiting number shown");
         page.assertWaitingNumberShown();

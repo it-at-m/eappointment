@@ -18,6 +18,7 @@ class View extends BaseView {
         this.onCallNextProcess = options.onCallNextProcess || (() => { });
         this.onCancelForm = options.onCancelNextProcess || (() => { });
         this.onCalledProcess = options.onCalledProcess || (() => { });
+        this.lockClientActions = options.lockClientActions || false;
         this.bindPublicMethods('cleanInstance', 'bindEvents', 'loadClientNext', 'setTimeSinceCall', 'loadCalled', 'loadProcessing');
         $.ajaxSetup({ cache: false });
         this.bindEvents();
@@ -33,7 +34,8 @@ class View extends BaseView {
 
     load() {
         this.cleanInstance();
-        const url = `${this.includeUrl}/workstation/process/callbutton/`
+        const lockQuery = this.lockClientActions ? '?lockClientActions=1' : '';
+        const url = `${this.includeUrl}/workstation/process/callbutton/${lockQuery}`
         return this.loadInto(url).then(this.setTimeSinceCall);
     }
 
@@ -143,14 +145,25 @@ class View extends BaseView {
         }).on('click', '.client-info .button-cancel', (ev) => {
             ev.preventDefault();
             ev.stopPropagation();
+            if (this.isClientActionLocked(ev)) {
+                return;
+            }
             this.exclude = '';
             this.loadCancel('requeue_after_call_count_decrement');
         }).on('click', '.client-called_button-parked, .client-precall_button-parked, .button-parked', (ev) => {
             ev.preventDefault();
             ev.stopPropagation();
+            if (this.isClientActionLocked(ev)) {
+                return;
+            }
             this.exclude = '';
             this.loadParked();
         })
+    }
+
+    isClientActionLocked(ev) {
+        const $button = $(ev.currentTarget);
+        return $button.is(':disabled') || $button.closest('.client-info').data('actionsLocked') == 1;
     }
 
     loadErrorCallback(source, url) {
