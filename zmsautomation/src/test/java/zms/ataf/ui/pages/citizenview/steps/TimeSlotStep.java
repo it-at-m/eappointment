@@ -992,19 +992,26 @@ public final class TimeSlotStep {
                     + "if(n.shadowRoot)s+=textOf(n.shadowRoot);var c=n.childNodes;if(c)for(var i=0;i<c.length;i++)s+=textOf(c[i]);return s;}"
                     + "function walk(n,fn){if(!n)return;fn(n);if(n.shadowRoot)walk(n.shadowRoot,fn);"
                     + "var c=n.children;if(c)for(var i=0;i<c.length;i++)walk(c[i],fn);}"
-                    + "function snap(){var out={visible:false,text:'',ort:false,calendar:false,zeit:false};"
+                    // MucSpinner often joins label fragments without spaces ("Wir suchennach…");
+                    // match on a whitespace-stripped form so that does not flake the assertion.
+                    + "function norm(s){return String(s||'').replace(/\\s+/g,'').toLowerCase();}"
+                    + "function snap(scroll){var out={visible:false,text:'',ort:false,calendar:false,zeit:false};"
+                    + "var spinEl=null;"
                     + "walk(document.body,function(n){"
                     + "if(!n||n.nodeType!==1)return;"
                     + "if(n.classList&&n.classList.contains('m-spinner-container')&&vis(n)){"
-                    + "out.visible=true;out.text=textOf(n).replace(/\\s+/g,' ').trim();}"
+                    + "spinEl=n;out.visible=true;out.text=textOf(n).replace(/\\s+/g,' ').trim();}"
                     + "var tag=(n.tagName||'').toUpperCase();"
                     + "if(tag==='H2'&&textOf(n).replace(/\\s+/g,' ').trim()==='Ort'&&vis(n))out.ort=true;"
                     + "if((n.classList&&(n.classList.contains('muc-calendar-wrap')||n.classList.contains('calendar-root'))"
                     + "||tag==='MUC-CALENDAR')&&vis(n))out.calendar=true;"
                     + "if((tag==='H2'||tag==='H3')&&(textOf(n).indexOf('Datum und Uhrzeit')>=0"
                     + "||textOf(n).replace(/\\s+/g,' ').trim()==='Zeit')&&vis(n))out.zeit=true;"
-                    + "});return out;}"
-                    + "function matchesWant(s,want){return !!(s&&s.visible&&String(s.text||'').indexOf(want)>=0);}";
+                    + "});"
+                    + "if(scroll&&spinEl){try{spinEl.scrollIntoView({block:'center',inline:'nearest'});}catch(e){}"
+                    + "out.text=textOf(spinEl).replace(/\\s+/g,' ').trim();}"
+                    + "return out;}"
+                    + "function matchesWant(s,want){return !!(s&&s.visible&&norm(s.text).indexOf(norm(want))>=0);}";
 
     /**
      * MucSpinner lives in {@code .m-spinner-container}; shown while days load and again after a calendar day change
@@ -1020,7 +1027,17 @@ public final class TimeSlotStep {
      */
     public JsonNode mucSpinnerSnapshot() {
         context.set();
-        return json.citizenJson("(function(){" + MUC_SPINNER_JS_HELPERS + "return snap();})()");
+        return json.citizenJson("(function(){" + MUC_SPINNER_JS_HELPERS + "return snap(true);})()");
+    }
+
+    /** Whitespace-insensitive Muc spinner copy match (MucSpinner may omit spaces between nodes). */
+    private static boolean mucSpinnerTextMatches(String actual, String expected) {
+        if (actual == null || expected == null) {
+            return false;
+        }
+        String a = actual.replaceAll("\\s+", "").toLowerCase();
+        String e = expected.replaceAll("\\s+", "").toLowerCase();
+        return a.contains(e);
     }
 
     /**
@@ -1040,7 +1057,7 @@ public final class TimeSlotStep {
                                 + "window.__zmsMucSpinnerCatch=null;"
                                 + "window.__zmsMucSpinnerWant=want;"
                                 + "function check(){if(window.__zmsMucSpinnerCatch)return;"
-                                + "var s=snap();if(matchesWant(s,want)){window.__zmsMucSpinnerCatch=s;}}"
+                                + "var s=snap(true);if(matchesWant(s,want)){window.__zmsMucSpinnerCatch=s;}}"
                                 + "window.__zmsMucSpinnerObs=new MutationObserver(check);"
                                 + "window.__zmsMucSpinnerObs.observe(document.documentElement,{subtree:true,childList:true,attributes:true,characterData:true});"
                                 + "function loop(){check();if(!window.__zmsMucSpinnerCatch){"
@@ -1077,8 +1094,9 @@ public final class TimeSlotStep {
                                         if (!snap.path("visible").asBoolean(false)) {
                                             return null;
                                         }
-                                        String text = snap.path("text").asText("");
-                                        return text.contains(want) ? snap : null;
+                                        return mucSpinnerTextMatches(snap.path("text").asText(""), want)
+                                                ? snap
+                                                : null;
                                     });
         } catch (TimeoutException e) {
             JsonNode last = mucSpinnerSnapshot();
@@ -1094,6 +1112,8 @@ public final class TimeSlotStep {
         } finally {
             disarmMucSpinnerWatch();
         }
+        // Bring the spinner (and its label) fully into the viewport for screenshots / re-read.
+        mucSpinnerSnapshot();
         ScenarioLogManager.getLogger()
                 .info("zmscitizenview: Muc spinner seen: {}", lastMucSpinnerSnapshot);
     }
@@ -1114,7 +1134,7 @@ public final class TimeSlotStep {
         Assert.assertNotNull(lastMucSpinnerSnapshot, "Catch the appointment Muc spinner first");
         String text = lastMucSpinnerSnapshot.path("text").asText("");
         Assert.assertTrue(
-                text.contains(expectedText),
+                mucSpinnerTextMatches(text, expectedText),
                 "Muc spinner text should contain \"" + expectedText + "\", was: " + text);
     }
 
@@ -1165,14 +1185,14 @@ public final class TimeSlotStep {
                                         + "for(var i=0;i<all.length;i++){if(all[i].shadowRoot){var f=find(all[i].shadowRoot);if(f)return f;}}"
                                         + "return null;}"
                                         + "var el=document.querySelector('#'+id)||find(document.body);"
-                                        + "if(!el)return {clicked:false,snap:snap()};"
-                                        + "try{el.click();}catch(e){return {clicked:false,snap:snap(),err:String(e)};}"
+                                        + "if(!el)return {clicked:false,snap:snap(true)};"
+                                        + "try{el.click();}catch(e){return {clicked:false,snap:snap(true),err:String(e)};}"
                                         + "var t0=Date.now();"
                                         + "while(Date.now()-t0<maxMs){"
-                                        + "var s=window.__zmsMucSpinnerCatch||snap();"
+                                        + "var s=window.__zmsMucSpinnerCatch||snap(true);"
                                         + "if(matchesWant(s,want)){window.__zmsMucSpinnerCatch=s;return {clicked:true,snap:s};}"
                                         + "}"
-                                        + "return {clicked:true,snap:window.__zmsMucSpinnerCatch||snap()};",
+                                        + "return {clicked:true,snap:window.__zmsMucSpinnerCatch||snap(true)};",
                                 checkboxId,
                                 expectedText,
                                 4000);
@@ -1203,7 +1223,7 @@ public final class TimeSlotStep {
                                         + "var wrap=null;"
                                         + "walk(document,function(el){"
                                         + "if(el.matches&&el.matches('.muc-calendar-wrap')){wrap=el;return true;}return false;});"
-                                        + "if(!wrap)return {clicked:false,snap:snap()};"
+                                        + "if(!wrap)return {clicked:false,snap:snap(true)};"
                                         + "var days=[];"
                                         + "walk(wrap,function(el){"
                                         + "if(el.classList&&el.classList.contains('muc-calendar-item')&&el.getAttribute('role')==='button')days.push(el);"
@@ -1225,12 +1245,12 @@ public final class TimeSlotStep {
                                         + "var href=(useEl&&(useEl.getAttribute('href')||useEl.getAttribute('xlink:href')))||'';"
                                         + "if(href.indexOf('chevron-right')<0)return false;"
                                         + "el.click();clicked=true;return true;});}"
-                                        + "if(!clicked)return {clicked:false,snap:snap()};"
+                                        + "if(!clicked)return {clicked:false,snap:snap(true)};"
                                         + "var t0=Date.now();"
                                         + "while(Date.now()-t0<maxMs){"
-                                        + "var s=window.__zmsMucSpinnerCatch||snap();"
+                                        + "var s=window.__zmsMucSpinnerCatch||snap(true);"
                                         + "if(matchesWant(s,want)){window.__zmsMucSpinnerCatch=s;return {clicked:true,snap:s};}}"
-                                        + "return {clicked:true,snap:window.__zmsMucSpinnerCatch||snap()};",
+                                        + "return {clicked:true,snap:window.__zmsMucSpinnerCatch||snap(true)};",
                                 expectedText,
                                 4000);
         rememberInlineSpinnerCatch(inline, expectedText);
@@ -1251,7 +1271,7 @@ public final class TimeSlotStep {
         }
         JsonNode node = new ObjectMapper().valueToTree(snapMap);
         if (node.path("visible").asBoolean(false)
-                && node.path("text").asText("").contains(expectedText == null ? "" : expectedText)) {
+                && mucSpinnerTextMatches(node.path("text").asText(""), expectedText)) {
             lastMucSpinnerSnapshot = node;
             ((JavascriptExecutor) DriverUtil.getDriver())
                     .executeScript("window.__zmsMucSpinnerCatch=arguments[0];", snapMap);
