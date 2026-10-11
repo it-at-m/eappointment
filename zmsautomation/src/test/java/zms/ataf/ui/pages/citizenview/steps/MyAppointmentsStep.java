@@ -205,6 +205,12 @@ public final class MyAppointmentsStep {
         ThinnedProcess p = new ThinnedProcess();
         p.setProcessId(processId);
         p.setAuthKey(authKey);
+        if (appointment.has("timestamp") && !appointment.get("timestamp").isNull()) {
+            long timestamp = appointment.get("timestamp").asLong();
+            if (timestamp > 0) {
+                p.setTimestamp(timestamp);
+            }
+        }
         zms.ataf.rest.steps.CitizenApiSteps.setBookingProcess(p);
         return p;
     }
@@ -402,7 +408,10 @@ public final class MyAppointmentsStep {
                         + " if(!state)return null;"
                         + " var raw=state.appointment;"
                         + " var v=raw&&raw.__v_isRef?raw.value:raw;"
-                        + " if(v&&v.processId&&v.authKey)return {processId:v.processId,authKey:String(v.authKey)};"
+                        + " if(v&&v.processId&&v.authKey){"
+                        + "  var ts=v.timestamp!=null?Number(v.timestamp):0;"
+                        + "  return {processId:v.processId,authKey:String(v.authKey),timestamp:ts};"
+                        + " }"
                         + " return null;"
                         + "}"
                         + "function walkInst(inst,depth,seen){"
@@ -453,9 +462,25 @@ public final class MyAppointmentsStep {
             ThinnedProcess p = new ThinnedProcess();
             p.setProcessId(processId);
             p.setAuthKey(authKey);
+            Object tsRaw = map.get("timestamp");
+            if (tsRaw instanceof Number number && number.longValue() > 0) {
+                p.setTimestamp(number.longValue());
+            } else if (tsRaw != null) {
+                try {
+                    long ts = Long.parseLong(String.valueOf(tsRaw));
+                    if (ts > 0) {
+                        p.setTimestamp(ts);
+                    }
+                } catch (NumberFormatException ignored) {
+                    // keep process without timestamp
+                }
+            }
             zms.ataf.rest.steps.CitizenApiSteps.setBookingProcess(p);
             ScenarioLogManager.getLogger()
-                    .info("zmscitizenview: captured booking process from Vue appointment (processId={})", processId);
+                    .info(
+                            "zmscitizenview: captured booking process from Vue appointment (processId={}, timestamp={})",
+                            processId,
+                            p.getTimestamp());
             return true;
         } catch (NumberFormatException e) {
             ScenarioLogManager.getLogger().debug("zmscitizenview: Vue appointment process id was not numeric", e);
@@ -554,16 +579,110 @@ public final class MyAppointmentsStep {
     private String capturedIcs;
     public void rememberSelectedAppointmentTime() {
         context.set();
+        syncRememberedAppointmentTimeFromBookingProcess();
         if (slotState.rememberedAppointmentEpoch == null || slotState.rememberedAppointmentEpoch <= 0) {
             long timestamp = page.readStoredSlotTimestamp();
             Assert.assertTrue(timestamp > 0, "Selected timeslot id has no timestamp.");
             slotState.rememberedAppointmentEpoch = timestamp;
+            ScenarioLogManager.getLogger()
+                    .info(
+                            "zmscitizenview: remembered appointment time from highlight id {} (no reserved process timestamp yet)",
+                            timestamp);
         }
         TestDataHelper.setTestData(
                 "citizenview_selected_slot_timestamp",
                 String.valueOf(slotState.rememberedAppointmentEpoch));
         ScenarioLogManager.getLogger()
                 .info("zmscitizenview: remembered appointment time {}", slotState.rememberedAppointmentEpoch);
+    }
+
+    /**
+     * Prefer the reserved appointment timestamp over the highlight id (Meine Termine / ICS).
+     *
+     * @return true when {@link SlotBookingState#rememberedAppointmentEpoch} was set from the booking process
+     */
+    public boolean syncRememberedAppointmentTimeFromBookingProcess() {
+        context.set();
+        trySetBookingProcessFromPage();
+        // Hash / early capture can omit timestamp; Vue appointment after reserve has it.
+        enrichBookingProcessTimestampFromVue();
+        ThinnedProcess booked = zms.ataf.rest.steps.CitizenApiSteps.getBookingProcess();
+        if (booked == null || booked.getTimestamp() == null || booked.getTimestamp() <= 0) {
+            return false;
+        }
+        if (!booked.getTimestamp().equals(slotState.rememberedAppointmentEpoch)) {
+            ScenarioLogManager.getLogger()
+                    .info(
+                            "zmscitizenview: remember reserved appointment time {} → {}",
+                            slotState.rememberedAppointmentEpoch,
+                            booked.getTimestamp());
+        }
+        slotState.rememberedAppointmentEpoch = booked.getTimestamp();
+        return true;
+    }
+
+    /** Fill {@link ThinnedProcess#getTimestamp()} from Vue when credentials were captured without it. */
+    private void enrichBookingProcessTimestampFromVue() {
+        ThinnedProcess existing = zms.ataf.rest.steps.CitizenApiSteps.getBookingProcess();
+        if (existing != null && existing.getTimestamp() != null && existing.getTimestamp() > 0) {
+            return;
+        }
+        String script =
+                "function ts(state){"
+                        + " if(!state)return 0;"
+                        + " var raw=state.appointment;"
+                        + " var v=raw&&raw.__v_isRef?raw.value:raw;"
+                        + " return v&&v.timestamp!=null?Number(v.timestamp):0;"
+                        + "}"
+                        + "function walkInst(inst,depth,seen){"
+                        + " if(!inst||depth>80||seen.has(inst))return 0;"
+                        + " seen.add(inst);"
+                        + " var hit=ts(inst.setupState)||ts(inst.exposed);"
+                        + " if(hit)return hit;"
+                        + " return inst.subTree?walkNode(inst.subTree,depth+1,seen):0;"
+                        + "}"
+                        + "function walkNode(node,depth,seen){"
+                        + " if(!node||depth>80)return 0;"
+                        + " if(node.component){var a=walkInst(node.component,depth+1,seen);if(a)return a;}"
+                        + " var kids=node.children;"
+                        + " if(kids&&kids.length)for(var k=0;k<kids.length;k++){"
+                        + "  var b=walkNode(kids[k],depth+1,seen);if(b)return b;"
+                        + " }"
+                        + " return 0;"
+                        + "}"
+                        + "function walkDom(root,seen){"
+                        + " if(!root||!root.querySelectorAll)return 0;"
+                        + " var nodes=root.querySelectorAll('*');"
+                        + " for(var i=0;i<nodes.length;i++){"
+                        + "  var el=nodes[i];"
+                        + "  if(el._instance){var hit=walkInst(el._instance,0,seen);if(hit)return hit;}"
+                        + "  if(el.shadowRoot){var inner=walkDom(el.shadowRoot,seen);if(inner)return inner;}"
+                        + " }"
+                        + " return 0;"
+                        + "}"
+                        + "var seen=new Set();"
+                        + "return walkDom(document.body,seen)||walkDom(document.documentElement,seen);";
+        Object raw = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script);
+        long timestamp = 0L;
+        if (raw instanceof Number number) {
+            timestamp = number.longValue();
+        } else if (raw != null) {
+            try {
+                timestamp = Long.parseLong(String.valueOf(raw));
+            } catch (NumberFormatException e) {
+                return;
+            }
+        }
+        if (timestamp <= 0) {
+            return;
+        }
+        if (existing == null) {
+            existing = new ThinnedProcess();
+        }
+        existing.setTimestamp(timestamp);
+        zms.ataf.rest.steps.CitizenApiSteps.setBookingProcess(existing);
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: enriched booking process timestamp={} from Vue appointment", timestamp);
     }
     public void openMyAppointments() {
         context.set();
@@ -823,20 +942,7 @@ public final class MyAppointmentsStep {
     }
     public void assertMyAppointmentsTeaser(String serviceName, String typeLabel, String locationText) {
         context.set();
-        // Prefer the confirmed process timestamp: highlight/remember can drift one slot from the booking.
-        trySetBookingProcessFromPage();
-        zms.ataf.rest.dto.zmscitizenapi.ThinnedProcess booked =
-                zms.ataf.rest.steps.CitizenApiSteps.getBookingProcess();
-        if (booked != null && booked.getTimestamp() != null && booked.getTimestamp() > 0) {
-            if (!booked.getTimestamp().equals(slotState.rememberedAppointmentEpoch)) {
-                ScenarioLogManager.getLogger()
-                        .info(
-                                "zmscitizenview: sync teaser time from booking process {} → {}",
-                                slotState.rememberedAppointmentEpoch,
-                                booked.getTimestamp());
-            }
-            slotState.rememberedAppointmentEpoch = booked.getTimestamp();
-        }
+        syncRememberedAppointmentTimeFromBookingProcess();
         Assert.assertNotNull(slotState.rememberedAppointmentEpoch, "Selected appointment time was not remembered.");
         ZonedDateTime when = Instant.ofEpochSecond(slotState.rememberedAppointmentEpoch).atZone(BERLIN);
         String dateTime = TEASER_DATE_TIME.format(when);

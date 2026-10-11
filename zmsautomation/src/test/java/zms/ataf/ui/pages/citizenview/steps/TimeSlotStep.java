@@ -2522,6 +2522,8 @@ public final class TimeSlotStep {
     public void finishReserveOnContactStep() {
         waitForReserveToSettle();
         page.trySetBookingProcessFromPage();
+        // Teaser / ICS must use the reserved process time, not the highlight id.
+        page.syncRememberedAppointmentTimeFromBookingProcess();
     }
 
     public ReserveOutcome waitForReserveOutcome() {
@@ -2566,7 +2568,10 @@ public final class TimeSlotStep {
         return ReserveOutcome.UNFINISHED;
     }
 
-    /** Keep the slot whose Weiter reached Kontakt, not a later highlight. */
+    /**
+     * Provisional remember from the highlight id until {@link #finishReserveOnContactStep()} replaces it
+     * with the reserved process timestamp.
+     */
     public void keepReservedSlot(Long timestamp) {
         if (timestamp != null && timestamp > 0) {
             slotState.rememberedAppointmentEpoch = timestamp;

@@ -1810,6 +1810,10 @@ public class CitizenViewPage extends BasePage {
         myAppointments.trySetBookingProcessFromPage();
     }
 
+    public boolean syncRememberedAppointmentTimeFromBookingProcess() {
+        return myAppointments.syncRememberedAppointmentTimeFromBookingProcess();
+    }
+
     public void openConfirmationDeepLinkInBrowser() {
         myAppointments.openConfirmationDeepLinkInBrowser();
     }

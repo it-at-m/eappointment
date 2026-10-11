@@ -17,7 +17,10 @@ public final class SlotBookingState {
     public String markedTimeslotId;
     public String previousTimeslotId;
 
-    /** Epoch seconds of the slot kept after reserve (Meine Termine / ICS). */
+    /**
+     * Epoch seconds of the reserved appointment (Meine Termine / ICS). Prefer the booking process
+     * timestamp after reserve — not the highlight id, which can drift one slot.
+     */
     public Long rememberedAppointmentEpoch;
 
     /** ATAF marker for the booked Ruppertstraße scope ({@code WB03} or {@code WB04}). */
