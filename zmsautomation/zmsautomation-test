@@ -820,8 +820,23 @@ is_webdriver_bootstrap_failure() {
     "$log_file"
 }
 
+# Central can cache a failed plugin download; -U on retry forces a new resolve.
+is_maven_bootstrap_failure() {
+  local log_file="$1"
+  [[ -f "$log_file" ]] || return 1
+  grep -a -F -q \
+    -e 'PluginResolutionException' \
+    -e 'could not be resolved' \
+    -e 'was not found in https://repo.maven.apache.org' \
+    -e 'resolution is not reattempted until the update interval' \
+    -e 'The POM for org.apache.maven.plugins:' \
+    "$log_file"
+}
+
 MAX_UI_RETRIES="${WEBDRIVER_RETRY_MAX_ATTEMPTS:-4}"
 RETRY_DELAY_SECONDS="${WEBDRIVER_RETRY_DELAY_SECONDS:-30}"
+MAX_MAVEN_BOOTSTRAP_RETRIES="${MAVEN_BOOTSTRAP_RETRY_MAX_ATTEMPTS:-3}"
+MAVEN_BOOTSTRAP_RETRY_DELAY_SECONDS="${MAVEN_BOOTSTRAP_RETRY_DELAY_SECONDS:-10}"
 if [[ "$RUN_UI_TESTS" != true ]]; then
   MAX_UI_RETRIES=1
 fi
@@ -830,6 +845,9 @@ if ! [[ "$MAX_UI_RETRIES" =~ ^[0-9]+$ ]] || (( MAX_UI_RETRIES < 1 )); then
 fi
 if [[ "$RUN_UI_TESTS" == true ]] && (( MAX_UI_RETRIES < 4 )); then
   MAX_UI_RETRIES=4
+fi
+if ! [[ "$MAX_MAVEN_BOOTSTRAP_RETRIES" =~ ^[0-9]+$ ]] || (( MAX_MAVEN_BOOTSTRAP_RETRIES < 1 )); then
+  MAX_MAVEN_BOOTSTRAP_RETRIES=3
 fi
 
 archive_suite_reports() {
@@ -853,10 +871,17 @@ invoke_maven_suite() {
   local attempt=1
   local suite_exit=0
   local attempt_log
-  while (( attempt <= max_attempts )); do
+  local force_update=()
+  local loop_max=$max_attempts
+  if (( MAX_MAVEN_BOOTSTRAP_RETRIES > loop_max )); then
+    loop_max=$MAX_MAVEN_BOOTSTRAP_RETRIES
+  fi
+  mkdir -p "$PROJECT_ROOT/zmsautomation/target"
+  while (( attempt <= loop_max )); do
     attempt_log="$PROJECT_ROOT/zmsautomation/target/maven-test-${suite_name}-attempt-${attempt}.log"
-    info "Starting ${suite_name} Maven test attempt ${attempt}/${max_attempts}"
+    info "Starting ${suite_name} Maven test attempt ${attempt}/${loop_max}"
     mvn -B -DtrimStackTrace=false \
+      ${force_update[@]+"${force_update[@]}"} \
       "${PLATFORM_ARGS[@]}" \
       -DBASE_URI="$BASE_URI" \
       -DCITIZEN_API_BASE_URI="$CITIZEN_API_BASE_URI" \
@@ -874,6 +899,13 @@ invoke_maven_suite() {
 
     if [[ $suite_exit -eq 0 ]]; then
       return 0
+    fi
+    if (( attempt < MAX_MAVEN_BOOTSTRAP_RETRIES )) && is_maven_bootstrap_failure "$attempt_log"; then
+      warn "Maven plugin/artifact resolve failed on ${suite_name} attempt ${attempt}; retrying with -U in ${MAVEN_BOOTSTRAP_RETRY_DELAY_SECONDS}s"
+      force_update=(-U)
+      sleep "$MAVEN_BOOTSTRAP_RETRY_DELAY_SECONDS"
+      attempt=$((attempt + 1))
+      continue
     fi
     if (( attempt < max_attempts )) && is_webdriver_bootstrap_failure "$attempt_log"; then
       warn "Detected WebDriver bootstrap failure on ${suite_name} attempt ${attempt}; retrying in ${RETRY_DELAY_SECONDS}s"
