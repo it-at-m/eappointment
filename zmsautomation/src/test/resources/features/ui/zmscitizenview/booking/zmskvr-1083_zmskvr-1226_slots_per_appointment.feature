@@ -75,7 +75,7 @@ Feature: CitizenView: quantity follows slotsPerAppointment
     Then the service counter for "Führungen auf den Feuerwachen" should still be 1
     And the plus button for service "Führungen auf den Feuerwachen" is disabled
 
-  Scenario: Fallback spa 25 fills at 125 minutes and disables every plus
+  Scenario: Fallback spa 25 fills at 125 minutes, disables every plus, and Weiter stays available
     Given I open zmscitizenview with jump-in service "1063475" and location "10489"
     Then the service combination step should be visible
     When I show all combinable services
@@ -103,3 +103,6 @@ Feature: CitizenView: quantity follows slotsPerAppointment
     And the plus button for service "Vorläufiger Reisepass" is disabled
     And the plus button for service "Widerruf der Verlust- oder Diebstahlanzeige von Personalausweis oder Reisepass" is disabled
     And the plus buttons for all services on the service combination step are disabled
+    When I continue from the service combination step
+    Then the booking step "Termin" is "current" with the "calendar" icon
+    And the booking step "Leistung" is "finished" with the "shopping-cart" icon
