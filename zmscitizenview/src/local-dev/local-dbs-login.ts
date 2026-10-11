@@ -12,10 +12,14 @@
 import { KEYCLOAK_AUTH_LEVEL1 } from "@/types/AuthorizationEventDetails";
 
 const AUTH_REQUEST = "authorization-request";
+/** Vue asks for the current session after it registers the authorization-event listener. */
+const AUTH_SUBSCRIBE = "authorization-event-subscribe";
 const AUTH_EVENT = "authorization-event";
 const STORAGE_STATE = "zms-local-oidc-state";
 const STORAGE_VERIFIER = "zms-local-oidc-verifier";
 const STORAGE_SESSION = "zms-local-oidc-session";
+/** Keep re-emitting until Vue mounts; busy ATAF shards can take well over 20s. */
+const PUBLISH_SESSION_MS = 120_000;
 
 type LoginConfig = {
   kcUrl: string;
@@ -182,15 +186,33 @@ function emitAuthEvent(accessToken: string, idToken?: string): void {
   );
 }
 
-/**
- * Vue registers `authorization-event` in onMounted; this module may finish earlier.
- * Emit now and again shortly after so late subscribers still receive the session.
- */
+/** Vue registers `authorization-event` in onMounted, often after this module has already exchanged the code. */
+let publishTimer: number | undefined;
+
 function publishSession(accessToken: string, idToken?: string): void {
   saveSession(accessToken, idToken);
-  emitAuthEvent(accessToken, idToken);
-  window.setTimeout(() => emitAuthEvent(accessToken, idToken), 0);
-  window.setTimeout(() => emitAuthEvent(accessToken, idToken), 300);
+  if (publishTimer !== undefined) {
+    window.clearInterval(publishTimer);
+  }
+  const started = Date.now();
+  const tick = (): void => {
+    if (!loadSession() || Date.now() - started > PUBLISH_SESSION_MS) {
+      window.clearInterval(publishTimer);
+      publishTimer = undefined;
+      return;
+    }
+    emitAuthEvent(accessToken, idToken);
+  };
+  tick();
+  publishTimer = window.setInterval(tick, 500);
+}
+
+function replayStoredSession(): void {
+  const session = loadSession();
+  if (!session?.accessToken) {
+    return;
+  }
+  emitAuthEvent(session.accessToken, session.idToken);
 }
 
 async function startLogin(config: LoginConfig): Promise<void> {
@@ -553,6 +575,11 @@ export async function initLocalDbsLogin(): Promise<void> {
         err
       );
     });
+  });
+
+  // Vue mounts after this module; reply immediately when it asks for the session.
+  document.addEventListener(AUTH_SUBSCRIBE, () => {
+    replayStoredSession();
   });
 
   renderHostChrome(config);

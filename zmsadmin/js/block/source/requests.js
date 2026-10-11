@@ -1,7 +1,19 @@
 import React, {Component} from 'react'
 import PropTypes from 'prop-types'
 import * as Inputs from '../../lib/inputs'
-import {getEntity} from '../../lib/schema'
+
+const emptyRequest = () => ({
+    id: '',
+    link: '',
+    data: {},
+    group: '',
+    name: '',
+    source: '',
+    timeSlotCount: 1,
+    parent_id: null,
+    root_parent_id: null,
+    variant_id: null
+})
 
 const renderRequest = (request, index, onChange, onDeleteClick, labels, descriptions, source, parentRequests, onParentChange, requestVariants = []) => {
     const formName = `requests[${index}]`
@@ -176,13 +188,12 @@ class RequestsView extends Component {
     render() {
         const onNewClick = ev => {
             ev.preventDefault()
-            getEntity('request').then((entity) => {
-                entity.id = this.getNextId()
-                entity.source = this.props.source.source
-                entity.__isNew = true
-                entity.variant_id = null;
-                this.props.addNewHandler('requests', [entity])
-            })
+            this.props.addNewHandler('requests', [{
+                ...emptyRequest(),
+                id: this.getNextId(),
+                source: this.props.source.source,
+                __isNew: true
+            }])
         }
 
         const onDeleteClick = index => {

@@ -24,6 +24,7 @@ class DayoffUpdateTest extends \BO\Zmsbackend\Tests\Api\Base
         ], []);
     }
 
+    #[\Override]
     public function testRendering()
     {
         $this->setWorkstation()->getUseraccount()->setPermissions('dayoff');
@@ -54,6 +55,20 @@ class DayoffUpdateTest extends \BO\Zmsbackend\Tests\Api\Base
         );
         $this->render(['year' => self::YEAR - 1], [
             '__body' => json_encode($dayoffList)
+        ], []);
+    }
+
+    public function testDuplicateDates()
+    {
+        $this->setWorkstation()->getUseraccount()->setPermissions('dayoff');
+        $this->expectException('\BO\Zmsentities\Exception\DayoffDuplicateDate');
+        $this->expectExceptionCode(400);
+        $data = json_decode($this->readFixture("GetDayoffList.json"), true);
+        $duplicate = $data[0];
+        $duplicate['name'] = 'Noch ein Feiertag';
+        $data[] = $duplicate;
+        $this->render(['year' => self::YEAR], [
+            '__body' => json_encode($data)
         ], []);
     }
 }

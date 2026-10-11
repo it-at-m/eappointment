@@ -15,7 +15,7 @@ Usage: {$argv[0]} [--verbose] --commit
 EOS;
 
 $verbose = (preg_grep('#^--?v(erbose)?$#', $argv)) ? true : false;
-$commit = preg_grep('#^--commit$#', $argv);
+$commit = (bool) preg_grep('#^--commit$#', $argv);
 
 if (class_exists('\App') && isset(\App::$now)) {
     $now = \App::$now;

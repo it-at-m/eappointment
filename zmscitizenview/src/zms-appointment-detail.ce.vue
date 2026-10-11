@@ -16,6 +16,7 @@
         :t="t"
       />
     </div>
+    <build-info-badge />
   </main>
 </template>
 
@@ -26,6 +27,8 @@ import { onMounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
 
 import AppointmentDetailView from "@/components/AppointmentDetail/AppointmentDetailView.vue";
+import BuildInfoBadge from "@/components/Common/BuildInfoBadge.vue";
+import { trackWidgetView } from "@/utils/trackAppointmentEvent";
 import { useGlobalState } from "./utils/useGlobalState";
 
 const props = defineProps({
@@ -55,6 +58,7 @@ const onStylesheetLoaded = () => {
 
 // Fallback: reveal content after 3s even if stylesheet fails or never loads
 onMounted(() => {
+  trackWidgetView("appointment_detail");
   setTimeout(() => {
     stylesLoaded.value = true;
   }, 3000);
@@ -66,6 +70,8 @@ onMounted(() => {
 @import "@muenchen/muc-patternlab-vue/style.css";
 
 :host {
+  display: block;
+  position: relative;
   font-family:
     Open Sans,
     sans-serif;

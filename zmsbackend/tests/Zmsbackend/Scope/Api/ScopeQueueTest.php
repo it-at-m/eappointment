@@ -9,6 +9,7 @@ class ScopeQueueTest extends \BO\Zmsbackend\Tests\Api\Base
 {
     protected $classname = "ScopeQueue";
 
+    #[\Override]
     public function testRendering()
     {
         $this->setWorkstation();

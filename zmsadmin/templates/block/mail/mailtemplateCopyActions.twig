@@ -1,0 +1,25 @@
+<div class="form-actions">
+    {% if showCopyButton|default(false) %}
+        <button
+            type="submit"
+            name="copy"
+            value="1"
+            class="button button--positive"
+        >
+            Template kopieren
+        </button>
+    {% endif %}
+
+    <a
+        class="button"
+        href="{{ urlGet(
+            'mailtemplatesScope',
+            {
+                'scopeId': scopeId
+            },
+            {}
+        ) }}"
+    >
+        Zurück zu den E-Mail-Templates
+    </a>
+</div>

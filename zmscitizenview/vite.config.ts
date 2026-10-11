@@ -2,10 +2,50 @@
 import vue from '@vitejs/plugin-vue'
 
 // Utilities
+import {execSync} from 'node:child_process'
 import fs from 'node:fs'
 import path from 'node:path'
 import {fileURLToPath, URL} from 'node:url'
 import {defineConfig, type Plugin} from 'vite'
+
+function gitOutput(command: string): string {
+  try {
+    return execSync(command, {
+      encoding: 'utf8',
+      stdio: ['ignore', 'pipe', 'ignore'],
+    }).trim()
+  } catch {
+    return ''
+  }
+}
+
+/**
+ * Bake the current commit and branch/tag into import.meta.env so the UI can
+ * show it outside production. Prefer GitHub Actions refs when present (shallow
+ * clones / detached HEAD in CI), then fall back to local git.
+ */
+function readGitBuildInfo(): {commit: string; ref: string} {
+  const envSha = (process.env.GITHUB_SHA ?? '').trim()
+  const envRefName = (process.env.GITHUB_REF_NAME ?? '').trim()
+  const commit = (envSha ? envSha.slice(0, 7) : gitOutput('git rev-parse --short HEAD'))
+  let ref = envRefName && envRefName !== 'HEAD' ? envRefName : ''
+  if (!ref) {
+    ref = gitOutput('git describe --tags --exact-match HEAD')
+  }
+  if (!ref) {
+    const branch = gitOutput('git rev-parse --abbrev-ref HEAD')
+    ref = branch !== 'HEAD' ? branch : gitOutput('git describe --tags --always')
+  }
+  return {commit, ref}
+}
+
+const gitBuildInfo = readGitBuildInfo()
+if (gitBuildInfo.commit) {
+  process.env.VITE_GIT_COMMIT = gitBuildInfo.commit
+}
+if (gitBuildInfo.ref) {
+  process.env.VITE_GIT_REF = gitBuildInfo.ref
+}
 
 /**
  * Branch switches leave Vite's module graph / optimizeDeps cache pointing at
@@ -79,9 +119,13 @@ export default defineConfig({
     }),
     restartOnGitCheckout(),
   ],
-  // Expose SHOW_CITIZEN_LOGIN from .env / compose (same name as zms-deployment).
-  envPrefix: ['VITE_', 'SHOW_'],
-  define: {'process.env': {}},
+  // SHOW_CITIZEN_LOGIN and ZMS_CITIZENAPI_PLACEHOLDER_EMAIL keep the names used by compose.
+  envPrefix: ['VITE_', 'SHOW_', 'ZMS_CITIZENAPI_PLACEHOLDER_EMAIL'],
+  define: {
+    'process.env': {},
+    'import.meta.env.VITE_GIT_COMMIT': JSON.stringify(gitBuildInfo.commit),
+    'import.meta.env.VITE_GIT_REF': JSON.stringify(gitBuildInfo.ref),
+  },
   resolve: {
     dedupe: ['vue'],
     alias: {

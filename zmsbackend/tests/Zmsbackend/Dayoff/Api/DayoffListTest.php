@@ -9,6 +9,7 @@ class DayoffListTest extends \BO\Zmsbackend\Tests\Api\Base
 {
     protected $classname = "DayoffList";
 
+    #[\Override]
     public function testRendering()
     {
         $this->setWorkstation()->getUseraccount()->setPermissions('dayoff');

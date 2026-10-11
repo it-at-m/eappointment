@@ -301,6 +301,75 @@ class ReportCapacityService
     }
 
     /**
+     * Daily totals for the default table/chart, plus hourly payloads for the optional Stundenansicht.
+     */
+    public function buildCapacityDisplayExchanges(
+        Exchange $exchange,
+        ?array $dateRange,
+        ?string $period
+    ): array {
+        $hourlyTable = null;
+        $hourlyChartSparse = null;
+        $hourlyChartFull = null;
+        $dailyTable = $exchange;
+
+        if ($exchange->period === 'hour') {
+            $hourlyTable = clone $exchange;
+            $hourlyChartSparse = $this->buildSparseChartExchange($hourlyTable, $dateRange, $period);
+            $hourlyChartFull = $this->buildChartExchange($hourlyTable, $dateRange, $period);
+            $dailyTable = $this->withDailyAggregation($exchange);
+        }
+
+        return [
+            'dailyTable' => $dailyTable,
+            'dailyChartSparse' => $this->buildSparseChartExchange($dailyTable, $dateRange, $period),
+            'dailyChartFull' => $this->buildChartExchange($dailyTable, $dateRange, $period),
+            'hourlyTable' => $hourlyTable,
+            'hourlyChartSparse' => $hourlyChartSparse,
+            'hourlyChartFull' => $hourlyChartFull,
+        ];
+    }
+
+    /**
+     * Excel rows for the view on screen: daily or hourly, sparse API rows or the full timeline.
+     */
+    public function selectDownloadExchange(
+        array $displayExchanges,
+        ?string $granularity,
+        ?string $timeline
+    ): ?Exchange {
+        $useFullTimeline = $timeline === 'full';
+
+        if ($granularity === 'hour') {
+            $hourlyFull = $displayExchanges['hourlyChartFull'] ?? null;
+            $hourlySparse = $displayExchanges['hourlyTable'] ?? null;
+            $hourly = $useFullTimeline && $hourlyFull instanceof Exchange
+                ? $hourlyFull
+                : $hourlySparse;
+            if ($hourly instanceof Exchange) {
+                return $hourly;
+            }
+        }
+
+        $dailyFull = $displayExchanges['dailyChartFull'] ?? null;
+        $dailySparse = $displayExchanges['dailyTable'] ?? null;
+        $daily = $useFullTimeline && $dailyFull instanceof Exchange
+            ? $dailyFull
+            : $dailySparse;
+
+        return $daily instanceof Exchange ? $daily : null;
+    }
+
+    public function withDailyAggregation(Exchange $exchange): Exchange
+    {
+        $daily = clone $exchange;
+        $daily->data = $this->aggregateRowsByDate($exchange->data, false);
+        $daily->period = 'day';
+
+        return $daily;
+    }
+
+    /**
      * Sparse API rows for the chart (same as legacy warehouse reports).
      */
     public function buildSparseChartExchange(Exchange $exchange, ?array $dateRange, ?string $period): Exchange
@@ -314,7 +383,7 @@ class ReportCapacityService
     public function buildChartExchange(Exchange $exchange, ?array $dateRange, ?string $period): Exchange
     {
         $chartExchange = clone $exchange;
-        $useHourlyTimeline = $this->shouldFetchHourlyFromApi($dateRange, $period);
+        $useHourlyTimeline = $exchange->period === 'hour';
 
         $chartExchange->data = $this->fillMissingTimeline(
             $chartExchange->data,
@@ -335,7 +404,9 @@ class ReportCapacityService
         if (!is_array($visualization)) {
             $visualization = [];
         }
-        $visualization['labelIntervalHours'] = $this->resolveChartLabelIntervalHours($dateRange, $period);
+        $visualization['labelIntervalHours'] = $chartExchange->period === 'hour'
+            ? $this->resolveChartLabelIntervalHours($dateRange, $period)
+            : null;
         $visualization['allowSparseTimeline'] = true;
         if (!isset($visualization['allowCapacityChannel'])) {
             $visualization['allowCapacityChannel'] = $this->exchangeSupportsCapacityChannel($chartExchange);
@@ -346,7 +417,7 @@ class ReportCapacityService
     }
 
     /**
-     * X-axis tick label spacing in hours, or null for daily labels (data stays hourly/daily respectively).
+     * X-axis tick label spacing in hours, or null for daily labels.
      */
     public function resolveChartLabelIntervalHours(?array $dateRange, ?string $period): ?int
     {

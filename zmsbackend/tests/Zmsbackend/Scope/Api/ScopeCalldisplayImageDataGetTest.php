@@ -13,6 +13,7 @@ class ScopeCalldisplayImageDataGetTest extends \BO\Zmsbackend\Tests\Api\Base
 
     const int SCOPE_ID = 141;
 
+    #[\Override]
     public function testRendering()
     {
         $response = $this->render(['id' => self::SCOPE_ID], [], []);

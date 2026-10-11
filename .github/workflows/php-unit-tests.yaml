@@ -21,7 +21,7 @@ jobs:
   module-test:
     runs-on: ubuntu-latest
     container:
-      image: "ghcr.io/it-at-m/eappointment/zmsbase:${{ matrix.php_version }}-dev@sha256:cdf964fa2e02d11b1309f1006d0d71d0afef6a550d5722c7634860e5c594d4cb"
+      image: "ghcr.io/it-at-m/eappointment/zmsbase:${{ matrix.php_version }}-dev@sha256:39fa5ce4b22791e56d4c7d723190301748f2df7839dc1d79470a2c44008ff1fa"
     env:
       XDEBUG_MODE: coverage
       PHP_INI_SCAN_DIR: "/usr/local/etc/php/conf.d:/tmp/php/conf.d"
@@ -74,7 +74,7 @@ jobs:
             --display-deprecations --display-warnings --fail-on-deprecation
 
       - name: Upload Coverage
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: coverage-${{ matrix.module }}
           path: ${{ matrix.module }}/coverage/
@@ -90,33 +90,33 @@ jobs:
       matrix:
         include:
           - module: mellon
-            php_version: "8.3"      
+            php_version: "8.4"      
           - module: zmsadmin
-            php_version: "8.3"
+            php_version: "8.4"
           - module: zmscalldisplay
-            php_version: "8.3"
+            php_version: "8.4"
           - module: zmscitizenapi
-            php_version: "8.3"
+            php_version: "8.4"
           - module: zmsdldb
-            php_version: "8.3"
+            php_version: "8.4"
           - module: zmsentities
-            php_version: "8.3"
+            php_version: "8.4"
           - module: zmsmessaging
-            php_version: "8.3"
+            php_version: "8.4"
           - module: zmsslim
-            php_version: "8.3"
+            php_version: "8.4"
           - module: zmsstatistic
-            php_version: "8.3"
+            php_version: "8.4"
           - module: zmsticketprinter
-            php_version: "8.3"
+            php_version: "8.4"
 
   zmsbackend-test:
     runs-on: ubuntu-latest
     container:
-      image: "ghcr.io/it-at-m/eappointment/zmsbase:8.3-dev@sha256:5743860e7e9bf5755d75e9f2cd6b0f8986a779a0ef02e8cffee2bfd21fdd85fc"
+      image: "ghcr.io/it-at-m/eappointment/zmsbase:8.4-dev@sha256:3ba315e310cf72a0b0d5ad14390d82212c6dd8c78e954cbd0061a834d8bbcb31"
     services:
       mariadb:
-        image: mariadb:10.11@sha256:07c0aaff7396b74cb7975cba78257178d188e30f531a5db2b617c48beef13c41
+        image: mariadb:10.11@sha256:7db29378d4fdab73f8123bbc2b48905c90d1a4b00cf848b028f1e81e623257f2
         env:
           MYSQL_ROOT_PASSWORD: zmsbackend
           MYSQL_DATABASE: zmsbo
@@ -173,7 +173,7 @@ jobs:
             --log-junit coverage/junit.xml \
             --display-deprecations --display-warnings
       - name: Upload Coverage
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: coverage-zmsbackend
           path: zmsbackend/coverage/
@@ -193,9 +193,9 @@ jobs:
         with:
           persist-credentials: false
       - name: Set up PHP
-        uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # v2
+        uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # v2
         with:
-          php-version: "8.3"
+          php-version: "8.4"
           extensions: mbstring, xml, ctype, iconv, intl, pdo_mysql
           coverage: xdebug
 
@@ -222,7 +222,7 @@ jobs:
             --log-junit coverage/junit.xml \
             --display-deprecations --display-warnings --fail-on-deprecation
       - name: Upload Coverage
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: coverage-zmsclient
           path: zmsclient/coverage/

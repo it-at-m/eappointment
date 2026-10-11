@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import React from 'react'
 import moment from 'moment'
 import DatePicker, { registerLocale } from 'react-datepicker'
@@ -52,10 +51,19 @@ class Datepicker extends React.Component {
     }
 
     handleChange(date) {
+        if (!date) {
+            return
+        }
+        if (this.props.minDate && moment(date).isBefore(this.props.minDate, 'day')) {
+            return
+        }
+        if (this.props.maxDate && moment(date).isAfter(this.props.maxDate, 'day')) {
+            return
+        }
         this.setState({
             startDate: date
         });
-        this.props.onChange(moment(date, 'X').format('YYYY-MM-DD'))
+        this.props.onChange(moment(date).format('YYYY-MM-DD'))
         this.closeDatePicker();
     }
     
@@ -73,8 +81,12 @@ class Datepicker extends React.Component {
     }
 
     render () {
+        const submitValue = this.state.startDate && !isNaN(this.state.startDate.getTime())
+            ? moment(this.state.startDate).format('DD.MM.YYYY')
+            : ''
         return (
             <div className="add-date-picker" {...this.props.attributes}>
+                <input type="hidden" name={this.props.name} value={submitValue} />
                 <DatePicker 
                     locale="de" 
                     id={this.props.id}
@@ -82,7 +94,12 @@ class Datepicker extends React.Component {
                     className="form-control form-input" 
                     dateFormat="dd.MM.yyyy"
                     selected={this.state.startDate}
-                    onChange={this.handleChange} {...this.props.name } 
+                    onChange={this.handleChange}
+                    excludeDates={this.props.excludeDates}
+                    minDate={this.props.minDate}
+                    maxDate={this.props.maxDate}
+                    showYearDropdown={false}
+                    showMonthDropdown={false}
                     onInputClick={this.openDatePicker}
                     onKeyDown={this.keyDownHandler}
                     onClickOutside={this.closeDatePicker}

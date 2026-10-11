@@ -36,6 +36,7 @@ import preventFormResubmit from './element/form/preventFormResubmit'
 import focusFirstErrorElement from './element/form/focusFirstErrorElement'
 import maxChars from './element/form/maxChars'
 import validateClusterScopes from './element/form/validateClusterScopes'
+import scopeMultiselect from './element/form/scopeMultiselect'
 import appointmentsPerMailLimit from './element/form/appointmentsPerMailLimit'
 import DialogHandler from './lib/dialogHandler'
 
@@ -119,6 +120,10 @@ $('.client-processed').each(function () {
 
 $('.roles-list').each(function () {
     new RolesListView(this, getDataAttributes(this));
+})
+
+$('[data-scope-multiselect]').each(function () {
+    scopeMultiselect(this);
 })
 
 $('form').each(function () {

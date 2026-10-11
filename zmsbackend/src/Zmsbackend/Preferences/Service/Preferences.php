@@ -20,7 +20,7 @@ class Preferences extends \BO\Zmsbackend\Base
         ]);
     }
 
-    public function readChangeDateTime(string $entityName, $entityId, string $groupName, string $name, $forUpdate = false): \DateTimeImmutable
+    public function readChangeDateTime(string $entityName, $entityId, string $groupName, string $name, bool $forUpdate = false): \DateTimeImmutable
     {
         $sql = \BO\Zmsbackend\Preferences\Repository\Preferences::QUERY_SELECT_TIMESTAMP;
         if ($forUpdate) {

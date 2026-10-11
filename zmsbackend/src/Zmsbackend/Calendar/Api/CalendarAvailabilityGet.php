@@ -35,6 +35,7 @@ class CalendarAvailabilityGet extends \BO\Zmsbackend\Api\BaseController
             $slotsRequired = 0;
             $slotType = 'public';
         }
+        $slotsRequired = (int) ($slotsRequired ?? 0);
 
         try {
             $message = \BO\Zmsbackend\Api\Response\Message::create($request);

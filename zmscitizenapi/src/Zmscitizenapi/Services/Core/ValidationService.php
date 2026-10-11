@@ -593,25 +593,73 @@ class ValidationService
             return ['errors' => [self::getError('placeholderEmailNotAllowed')]];
         }
 
+        return AppointmentProcessLimitsValidationService::validateThinnedProcessLimits($process);
+    }
+
+    public static function validateRebookingAllowed(?ThinnedScope $scope): array
+    {
+        if ($scope instanceof ThinnedScope && $scope->isRebookingDisabled()) {
+            return ['errors' => [self::getError('rebookingDisabled')]];
+        }
+
         return ['errors' => []];
     }
 
-    public static function validateAppointmentConfirm(ThinnedProcess $process, mixed $externalUserId): array
-    {
+    public static function validateAppointmentConfirm(
+        ThinnedProcess $process,
+        mixed $externalUserId,
+        ?ThinnedProcess $sourceProcess = null
+    ): array {
         if (self::isMissingClientContactData($process)) {
             return ['errors' => [self::getError('placeholderEmailNotAllowed')]];
         }
 
         if ($process->status === 'preconfirmed') {
-            return ['errors' => []];
+            return AppointmentProcessLimitsValidationService::validateThinnedProcessLimits($process);
         }
 
         $hasExternalUserId = is_string($externalUserId) && trim($externalUserId) !== '';
         if ($process->status === 'reserved' && $hasExternalUserId) {
-            return ['errors' => []];
+            return AppointmentProcessLimitsValidationService::validateThinnedProcessLimits($process);
+        }
+
+        if ($process->status === 'reserved' && self::isConfirmedRebookingSource($process, $sourceProcess)) {
+            return AppointmentProcessLimitsValidationService::validateThinnedProcessLimits($process);
         }
 
         return ['errors' => [self::getError('processNotPreconfirmedAnymore')]];
+    }
+
+    /**
+     * Guest rebooking may skip email activation only when the original appointment
+     * is already confirmed, proven with processId + authKey, and has the same
+     * permitted contact data as the reserved process.
+     */
+    private static function isConfirmedRebookingSource(
+        ThinnedProcess $process,
+        ?ThinnedProcess $sourceProcess
+    ): bool {
+        if (!$sourceProcess instanceof ThinnedProcess) {
+            return false;
+        }
+        if ($sourceProcess->processId === null || $sourceProcess->processId === $process->processId) {
+            return false;
+        }
+        if ($sourceProcess->status !== Process::STATUS_CONFIRMED) {
+            return false;
+        }
+        if (self::isMissingClientContactData($sourceProcess)) {
+            return false;
+        }
+
+        return self::validateUnchangedStoredContact(
+            $sourceProcess,
+            $process->familyName,
+            $process->email,
+            $process->telephone,
+            $process->customTextfield,
+            $process->customTextfield2
+        )['errors'] === [];
     }
 
     private static function isValidOfficeId(?int $officeId): bool

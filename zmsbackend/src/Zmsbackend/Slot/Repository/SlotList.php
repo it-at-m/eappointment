@@ -175,11 +175,11 @@ class SlotList extends \BO\Zmsbackend\Query\Base
 
     public function __construct(
         array $slotData = ['availability__id' => null],
-        \DateTimeImmutable $start = null,
-        \DateTimeImmutable $stop = null,
-        \DateTimeInterface $now = null,
-        \BO\Zmsentities\Availability $availability = null,
-        \BO\Zmsentities\Scope $scope = null
+        ?\DateTimeImmutable $start = null,
+        ?\DateTimeImmutable $stop = null,
+        ?\DateTimeInterface $now = null,
+        ?\BO\Zmsentities\Availability $availability = null,
+        ?\BO\Zmsentities\Scope $scope = null
     ) {
         $this->availability = $availability;
         $this->scope = $scope;
@@ -326,7 +326,7 @@ class SlotList extends \BO\Zmsbackend\Query\Base
         \DateTimeInterface $now,
         $freeProcessesDate,
         $slotType = 'public',
-        $slotsRequired = 1
+        int $slotsRequired = 1
     ): \BO\Zmsentities\Calendar {
         $nowDate = $now->format('Y-m-d');
         foreach ($this->slots as $date => $slotList) {
@@ -348,7 +348,7 @@ class SlotList extends \BO\Zmsbackend\Query\Base
         $freeProcessesDate,
         $date,
         $slotType = 'public',
-        $slotsRequired = 1
+        int $slotsRequired = 1
     ): void {
         if (null !== $freeProcessesDate && $date == $freeProcessesDate->format('Y-m-d')) {
             $freeProcesses = $this->getFreeProcesses($calendar, $freeProcessesDate, $slotType, $slotsRequired);
@@ -365,9 +365,9 @@ class SlotList extends \BO\Zmsbackend\Query\Base
      */
     public function getFreeProcesses(
         \BO\Zmsentities\Calendar $calendar,
-        \DateTimeImmutable $freeProcessesDate = null,
+        ?\DateTimeImmutable $freeProcessesDate = null,
         $slotType = 'public',
-        $slotsRequired = 1
+        int $slotsRequired = 1
     ) {
         $selectedDate = $freeProcessesDate->format('Y-m-d');
         $slotList = $this->slots[$selectedDate];

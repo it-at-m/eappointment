@@ -14,6 +14,7 @@ class LogoutBySuperuserTest extends Base
 
     protected $classname = "LogoutBySuperuser";
 
+    #[\Override]
     public function testRendering()
     {
         $this->setApiCalls(

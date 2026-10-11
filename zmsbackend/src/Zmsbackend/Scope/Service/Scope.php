@@ -102,7 +102,7 @@ class Scope extends \BO\Zmsbackend\Base
     public function readResolvedReferences(
         \BO\Zmsentities\Schema\Entity $entity,
         int $resolveReferences,
-        $disableCache = false
+        bool $disableCache = false
     ) {
         if (0 < $resolveReferences) {
             $entity['dayoff'] = (new \BO\Zmsbackend\Dayoff\Service\DayOff())->readByScopeId($entity->id, $disableCache);
@@ -114,7 +114,7 @@ class Scope extends \BO\Zmsbackend\Base
     public function readByClusterId(
         $clusterId,
         int $resolveReferences = 0,
-        $disableCache = false
+        bool $disableCache = false
     ): Collection {
         $cacheKey = "scopeReadByClusterId-$clusterId-$resolveReferences";
 
@@ -172,7 +172,7 @@ class Scope extends \BO\Zmsbackend\Base
         return $scopeList;
     }
 
-    public function readByProviderId($providerId, int $resolveReferences = 0, $disableCache = false): Collection
+    public function readByProviderId($providerId, int $resolveReferences = 0, bool $disableCache = false): Collection
     {
         $cacheKey = "scopeReadByProviderId-$providerId-$resolveReferences";
 
@@ -222,7 +222,7 @@ class Scope extends \BO\Zmsbackend\Base
         return $scopeList;
     }
 
-    public function readByRequestId($requestId, $source, $resolveReferences = 0): Collection
+    public function readByRequestId($requestId, $source, int $resolveReferences = 0): Collection
     {
         $scopeList = new Collection();
         $providerList = (new \BO\Zmsbackend\Provider\Service\Provider())->readListBySource($source, 0, true, $requestId);
@@ -236,7 +236,7 @@ class Scope extends \BO\Zmsbackend\Base
         return $scopeList->withUniqueScopes();
     }
 
-    public function readByDepartmentId(int $departmentId, int $resolveReferences = 0, $disableCache = false): Collection
+    public function readByDepartmentId(int $departmentId, int $resolveReferences = 0, bool $disableCache = false): Collection
     {
         $cacheKey = "scopeReadByDepartmentId-$departmentId-$resolveReferences";
 
@@ -292,7 +292,7 @@ class Scope extends \BO\Zmsbackend\Base
         return $scopeList;
     }
     /** @psalm-api */
-    public function readListBySource($source, $resolveReferences = 0)
+    public function readListBySource($source, int $resolveReferences = 0)
     {
         $this->testSource($source);
         $query = new \BO\Zmsbackend\Request\Repository\Request(\BO\Zmsbackend\Query\Base::SELECT);
@@ -324,7 +324,7 @@ class Scope extends \BO\Zmsbackend\Base
         return $requestList;
     }
 
-    public function readList(int $resolveReferences = 0, $disableCache = false): Collection
+    public function readList(int $resolveReferences = 0, bool $disableCache = false): Collection
     {
         $cacheKey = "scopeReadList-$resolveReferences";
 
@@ -470,7 +470,7 @@ class Scope extends \BO\Zmsbackend\Base
         return $queueList->withEstimatedWaitingTime($timeAverage, $workstationCount, $dateTime);
     }
 
-    public function readScopesQueueListWithWaitingTime(Collection $scopes, \DateTimeInterface $dateTime, $resolveReferences = 0, $withEntities = [])
+    public function readScopesQueueListWithWaitingTime(Collection $scopes, \DateTimeInterface $dateTime, int $resolveReferences = 0, $withEntities = [])
     {
         $timeSum = 0;
         $workstationCount = 0;
@@ -526,7 +526,7 @@ class Scope extends \BO\Zmsbackend\Base
         return $this->readEntity($lastInsertId);
     }
 
-    public function updateEntity($scopeId, \BO\Zmsentities\Scope $entity, $resolveReferences = 0): Entity|null
+    public function updateEntity($scopeId, \BO\Zmsentities\Scope $entity, int $resolveReferences = 0): Entity|null
     {
         self::$cache = [];
 

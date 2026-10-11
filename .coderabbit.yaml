@@ -101,6 +101,12 @@ reviews:
         5. Needless Repetition.
         6. Opacity. The code is hard to understand.
 
+    - path: "zmsautomation/src/main/resources/db/migration/**"
+      instructions: |
+        Do not flag CURDATE(), CURTIME(), or DATE_SUB(CURDATE(), ...) in these versioned Flyway migrations as stale, or claim that a versioned migration is applied only once.
+
+        Every official zmsautomation run, local and in GitHub Actions, restores the database and then deletes rows from flyway_schema_history where version > 1 before Flyway migrate. See zmsautomation/zmsautomation-test. Versioned migrations therefore run again on every test run, and CURDATE()/CURTIME() are evaluated on that same Berlin calendar day (zms-db TZ=Europe/Berlin). Do not ask for the rows to be seeded outside Flyway for that reason.
+
     - path: "**/*.php"
       instructions: |
         Flag any usage of error_log() as it should be replaced with proper Monolog logging mechanisms provided by [zmsslim](https://github.com/it-at-m/eappointment/blob/b52b5d59c5013615d7fbfeaf595f3fdc047017d1/zmsslim/src/Slim/Bootstrap.php#L76) which should be setup in the App/Application of each module:

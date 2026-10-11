@@ -14,9 +14,9 @@ class Calendar extends \BO\Zmsbackend\Base
     public function readResolvedEntity(
         Entity $calendar,
         \DateTimeInterface $now,
-        $resolveOnlyScopes = false,
+        ?bool $resolveOnlyScopes = false,
         string $slotType = 'public',
-        $slotsRequired = 0,
+        int|float $slotsRequired = 0,
         bool $resolveScopeReferences = true
     ) {
         $calendar['freeProcesses'] = new \BO\Zmsentities\Collection\ProcessList();
@@ -120,10 +120,10 @@ class Calendar extends \BO\Zmsbackend\Base
 
     protected function readResolvedDays(
         Entity $calendar,
-        $resolveOnlyScopes,
+        ?bool $resolveOnlyScopes,
         \DateTimeInterface $now,
         $slotType,
-        $slotsRequiredForce
+        int|float $slotsRequiredForce
     ): Entity {
         if (!$resolveOnlyScopes) {
             $dayQuery = new \BO\Zmsbackend\Day\Service\Day();

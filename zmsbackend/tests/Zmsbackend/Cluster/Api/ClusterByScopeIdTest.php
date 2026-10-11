@@ -8,6 +8,7 @@ class ClusterByScopeIdTest extends \BO\Zmsbackend\Tests\Api\Base
 {
     protected $classname = "ClusterByScopeId";
 
+    #[\Override]
     public function testRendering()
     {
         $this->setWorkstation();

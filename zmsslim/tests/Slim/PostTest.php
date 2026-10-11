@@ -19,6 +19,7 @@ class PostTest extends Base
 
     protected $sessionData = [ ];
 
+    #[\Override]
     public function testRendering()
     {
         $response = $this->render([], $this->parameters, [], 'POST');

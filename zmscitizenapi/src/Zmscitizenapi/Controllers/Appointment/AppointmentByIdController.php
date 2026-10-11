@@ -32,8 +32,17 @@ class AppointmentByIdController extends BaseController
 
         $authenticatedUser = AuthenticationService::getAuthenticatedUser($request);
         $result = $this->service->getAppointmentById($request->getQueryParams(), $authenticatedUser);
-        return is_array($result) && isset($result['errors'])
-            ? $this->createJsonResponse($response, $result, ErrorMessages::getHighestStatusCode($result['errors']))
-            : $this->createJsonResponse($response, $result->toArray(), 200);
+        if (is_array($result) && isset($result['errors'])) {
+            return $this->createJsonResponse(
+                $response,
+                $result,
+                ErrorMessages::getHighestStatusCode($result['errors'])
+            );
+        }
+
+        $payload = $result->toArray();
+        $payload['placeholderEmail'] = \App::getPlaceholderEmail();
+
+        return $this->createJsonResponse($response, $payload, 200);
     }
 }

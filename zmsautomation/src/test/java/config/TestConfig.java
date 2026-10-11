@@ -56,6 +56,20 @@ public final class TestConfig {
     }
 
     /**
+     * Citizen API base as the Bürgeransicht browser uses (via refarch-gateway).
+     * Captcha JWTs bind to client IP; UI inject must mint the token on this path so
+     * available-calendar from the browser accepts it. REST steps keep
+     * {@link #getCitizenApiBaseUri()} (direct to zms-web).
+     */
+    public static String getCitizenApiBrowserBaseUri() {
+        return getConfigValue(
+            "CITIZEN_API_BROWSER_BASE_URI",
+            "CITIZEN_API_BROWSER_BASE_URI",
+            "http://refarch-gateway:8080/buergeransicht/api/citizen"
+        );
+    }
+
+    /**
      * Request timeout in milliseconds.
      * Default: 30000 (30 seconds)
      */
@@ -83,6 +97,23 @@ public final class TestConfig {
      */
     public static String getAuthToken() {
         return getConfigValue("AUTH_TOKEN", "AUTH_TOKEN", null);
+    }
+
+    /**
+     * Keycloak token endpoint for the citizen {@code dbs-fragments} public client.
+     * Default: {@code http://{SSO_HOST}:8080/auth/realms/zms/protocol/openid-connect/token}
+     * with {@code SSO_HOST=keycloak} (devcontainer Docker DNS).
+     */
+    public static String getKeycloakTokenUri() {
+        return getConfigValue(
+            "KEYCLOAK_TOKEN_URI",
+            "KEYCLOAK_TOKEN_URI",
+            "http://" + getSsoHost() + ":8080/auth/realms/zms/protocol/openid-connect/token"
+        );
+    }
+
+    private static String getSsoHost() {
+        return getConfigValue("SSO_HOST", "SSO_HOST", "keycloak");
     }
 
     /**

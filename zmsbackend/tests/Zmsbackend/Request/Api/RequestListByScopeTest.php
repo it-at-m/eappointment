@@ -6,6 +6,7 @@ class RequestListByScopeTest extends \BO\Zmsbackend\Tests\Api\Base
 {
     protected $classname = "RequestListByScope";
 
+    #[\Override]
     public function testRendering()
     {
         $response = $this->render(['id' => 141], [], []);

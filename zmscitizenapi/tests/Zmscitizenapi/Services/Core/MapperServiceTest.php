@@ -26,6 +26,7 @@ class MapperServiceTest extends TestCase
 {
     private $originalFacade;
 
+    #[\Override]
     protected function setUp(): void
     {
         parent::setUp();
@@ -35,6 +36,7 @@ class MapperServiceTest extends TestCase
         }
     }
 
+    #[\Override]
     protected function tearDown(): void
     {
         parent::tearDown();
@@ -218,6 +220,36 @@ class MapperServiceTest extends TestCase
         $this->assertEquals('Test Office', $result->officeName);
         $this->assertEquals(100, $result->officeId);
         $this->assertEquals('confirmed', $result->status);
+    }
+
+    /**
+     * Booked appointments keep serviceName even when the request is internal
+     * (public=false). Catalog listing still excludes those via mapServicesWithCombinations.
+     */
+    public function testProcessToThinnedProcessKeepsServiceNameForInternalRequest()
+    {
+        $process = new Process(['id' => 42, 'authKey' => 'abcd']);
+        $appointment = new class {
+            public $date = '1724907600';
+            public function hasTime() { return true; }
+        };
+        $process->appointments = [$appointment];
+        $process->queue = (object) ['status' => 'confirmed'];
+
+        $request = new Request();
+        $request->id = 1080784;
+        $request->name = 'Aufenthaltserlaubnis – Ausbildung oder Weiterbildung';
+        $request->data = ['public' => false, 'maxQuantity' => 1];
+        $process->requests = new RequestList([$request]);
+
+        $result = MapperService::processToThinnedProcess($process);
+
+        $this->assertSame(1080784, $result->serviceId);
+        $this->assertSame(
+            'Aufenthaltserlaubnis – Ausbildung oder Weiterbildung',
+            $result->serviceName
+        );
+        $this->assertSame(1, $result->serviceCount);
     }
 
     public function testProcessToThinnedProcessSkipsIcsForDeletedStatus()
@@ -473,7 +505,8 @@ class MapperServiceTest extends TestCase
                     "parentId" => null,
                     "variantId" => null,
                     "rootParentId" => 1,
-                    "showOnStartPage" => true
+                    "showOnStartPage" => true,
+                    "variantOverwrite" => null
                 ],
                 [
                     "id" => 2,
@@ -483,7 +516,8 @@ class MapperServiceTest extends TestCase
                     "parentId" => null,
                     "variantId" => null,
                     "rootParentId" => 2,
-                    "showOnStartPage" => true
+                    "showOnStartPage" => true,
+                    "variantOverwrite" => null
                 ]
             ]
         ];
@@ -495,11 +529,16 @@ class MapperServiceTest extends TestCase
         $this->assertEquals($expectedResponse, $resultArray);
     }
 
+    /**
+     * Offices-and-services catalog must omit internal requests (public=false),
+     * e.g. SZE service 1080784. Booked appointments still expose the name via
+     * processToThinnedProcess.
+     */
     public function testDontReturnNotPublicServices()
     {
         $request1 = new Request();
-        $request1->id = 1;
-        $request1->name = 'Service 111';
+        $request1->id = 1080784;
+        $request1->name = 'Aufenthaltserlaubnis – Ausbildung oder Weiterbildung';
         $request1->data = [
             'maxQuantity' => 22,
             'public' => false
@@ -535,7 +574,8 @@ class MapperServiceTest extends TestCase
                     "parentId" => null,
                     "variantId" => null,
                     "rootParentId" => 2,
-                    "showOnStartPage" => true
+                    "showOnStartPage" => true,
+                    "variantOverwrite" => null
                 ]
             ]
         ];
@@ -594,6 +634,23 @@ class MapperServiceTest extends TestCase
         $this->assertEquals('Test Provider', $result->provider->name);
         $this->assertNotNull($result->provider->contact);
         $this->assertEquals('Test Contact', $result->provider->contact->name);
+        $this->assertFalse($result->isRebookingDisabled());
+    }
+
+    public function testScopeToThinnedScopeRebookingDisabled(): void
+    {
+        $scope = new Scope();
+        $scope->id = 1;
+        $scope->preferences = [
+            'appointment' => [
+                'rebookingDisabled' => 1,
+            ],
+        ];
+
+        $result = MapperService::scopeToThinnedScope($scope);
+
+        $this->assertTrue($result->isRebookingDisabled());
+        $this->assertTrue($result->toArray()['rebookingDisabled']);
     }
 
     public function testMapRelations()
@@ -748,6 +805,34 @@ class MapperServiceTest extends TestCase
         $this->assertEquals(3, $services[0]['parentId']);
         $this->assertEquals(1080455, $services[0]['rootParentId']);
     }
+
+    public function testMapServicesWithCombinationsIncludesVariantOverwrite(): void
+    {
+        $request = new Request();
+        $request->id = 42;
+        $request->name = 'Beratung';
+        $request->variant_id = 2;
+        $request->data = [
+            'variantOverwrite' => [
+                'de' => ['name' => 'Rückruf'],
+                'en' => ['hint' => 'We will call you.'],
+            ],
+        ];
+
+        $provider = new Provider();
+        $provider->id = 100;
+        $relation = new RequestRelation();
+        $relation->request = $request;
+        $relation->provider = $provider;
+        $relation->slots = 1;
+
+        $result = MapperService::mapServicesWithCombinations(
+            new RequestList([$request]),
+            new RequestRelationList([$relation])
+        );
+
+        $this->assertSame($request->data['variantOverwrite'], $result->toArray()['services'][0]['variantOverwrite']);
+    }
     
     public function testScopeToThinnedScopeWithMissingProvider()
     {
@@ -796,6 +881,7 @@ class MapperServiceTest extends TestCase
         $this->assertNull($result->infoForAppointment);
         $this->assertNull($result->infoForAllAppointments);
         $this->assertNull($result->slotsPerAppointment);
+        $this->assertFalse($result->isRebookingDisabled());
     }
 
 }

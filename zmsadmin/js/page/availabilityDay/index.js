@@ -175,7 +175,7 @@ class AvailabilityPage extends Component {
                     method: 'POST',
                     data: JSON.stringify(payload),
                     contentType: 'application/json'
-                }).done((success) => {
+                }).done(() => {
                     this.refreshData()
                         .then(() => this.getConflictList({ scrollToErrors: false }))
                         .then((conflictList) => {
@@ -467,13 +467,13 @@ class AvailabilityPage extends Component {
 
         newAvailabilities.forEach(availability => {
             if (availability.startDate && availability.endDate) {
-                const startDate = moment.unix(availability.startDate);
-                const endDate = moment.unix(availability.endDate);
+                const startDate = moment.unix(availability.startDate).startOf('day');
+                const endDate = moment.unix(availability.endDate).startOf('day');
                 const currentDate = startDate.clone();
                 const validWeekdays = new Set();
 
                 // Find all weekdays that occur in this availability's range
-                while (currentDate <= endDate) {
+                while (currentDate.isSameOrBefore(endDate, 'day')) {
                     const dayIndex = currentDate.day();
                     const weekDayName = weekdayNames[dayIndex];
                     validWeekdays.add(weekDayName);
@@ -697,7 +697,7 @@ class AvailabilityPage extends Component {
         return fetch(url, requestOptions)
             .then(async (res) => {
                 const responseText = await res.text();
-                let data = {};
+                let data;
 
                 try {
                     data = responseText ? JSON.parse(responseText) : {};

@@ -22,7 +22,7 @@ class QueueListHelper
 
     protected static $status = ['confirmed', 'queued', 'reserved', 'fake'];
 
-    public function __construct(Scope $scope, Process $process = null)
+    public function __construct(Scope $scope, ?Process $process = null)
     {
         static::$fullList = static::createFullList($scope);
         static::$queueList = static::createQueueList($process);

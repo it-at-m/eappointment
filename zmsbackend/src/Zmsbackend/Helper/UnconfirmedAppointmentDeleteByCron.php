@@ -25,7 +25,7 @@ class UnconfirmedAppointmentDeleteByCron
 
     protected $count = [];
 
-    public function __construct(\DateTimeInterface $now, $verbose = false)
+    public function __construct(\DateTimeInterface $now, bool $verbose = false)
     {
         $this->now = $now;
         $this->verbose = $verbose;
@@ -46,7 +46,7 @@ class UnconfirmedAppointmentDeleteByCron
     /**
      * @psalm-api
      */
-    public function setLimit($limit): void
+    public function setLimit(int $limit): void
     {
         $this->limit = $limit;
     }
@@ -54,18 +54,18 @@ class UnconfirmedAppointmentDeleteByCron
     /**
      * @psalm-api
      */
-    public function setLoopCount($loopCount): void
+    public function setLoopCount(int $loopCount): void
     {
         $this->loopCount = $loopCount;
     }
 
-    public function startProcessing($commit): void
+    public function startProcessing(bool $commit): void
     {
         $this->deleteUnconfirmedProcesses($commit);
         $this->log("\nSUMMARY: Deleted processes: " . var_export($this->count, true));
     }
 
-    protected function deleteUnconfirmedProcesses($commit): void
+    protected function deleteUnconfirmedProcesses(bool $commit): void
     {
         foreach ($this->scopeList as $scope) {
             $count = $this->deleteByCallback($commit, function ($limit, $offset) use ($scope) {
@@ -96,7 +96,7 @@ class UnconfirmedAppointmentDeleteByCron
         }
     }
 
-    protected function deleteByCallback($commit, \Closure $callback): int
+    protected function deleteByCallback(bool $commit, \Closure $callback): int
     {
         $processCount = 0;
         $startposition = 0;
@@ -120,7 +120,7 @@ class UnconfirmedAppointmentDeleteByCron
         return $processCount;
     }
 
-    protected function removeProcess(\BO\Zmsentities\Process $process, $commit): int
+    protected function removeProcess(\BO\Zmsentities\Process $process, bool $commit): int
     {
         $verbose = $this->verbose;
         if (in_array($process->status, $this->statusListForDeletion)) {

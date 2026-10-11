@@ -6,6 +6,7 @@ class ScopeUpdateTest extends \BO\Zmsbackend\Tests\Api\Base
 {
     protected $classname = "ScopeUpdate";
 
+    #[\Override]
     public function testRendering()
     {
         $department = (new \BO\Zmsentities\Department());

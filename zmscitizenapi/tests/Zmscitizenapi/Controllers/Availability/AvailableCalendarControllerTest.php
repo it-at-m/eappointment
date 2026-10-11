@@ -10,6 +10,7 @@ class AvailableCalendarControllerTest extends ControllerTestCase
 {
     protected $classname = "\BO\Zmscitizenapi\Controllers\Availability\AvailableCalendarController";
 
+    #[\Override]
     public function setUp(): void
     {
         parent::setUp();
@@ -23,6 +24,7 @@ class AvailableCalendarControllerTest extends ControllerTestCase
         ValidationService::clearOfficeServicesCacheForTesting();
     }
 
+    #[\Override]
     public function testRendering()
     {
         $this->setCalendarAvailabilityApiCalls();
@@ -716,6 +718,43 @@ class AvailableCalendarControllerTest extends ControllerTestCase
             ]
         ];
         $this->assertEquals(ErrorMessages::get('invalidDateRange')['statusCode'], $response->getStatusCode());
+        $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
+    }
+
+    public function testTooManySlotsPerAppointmentRejectsBeforeCalendarLookup()
+    {
+        $source = json_decode($this->readFixture('GET_SourceGet_dldb.json'), true);
+        $source['data']['scopes'][0]['preferences']['client']['slotsPerAppointment'] = '1';
+
+        $this->setApiCalls([
+            [
+                'function' => 'readGetResult',
+                'url' => '/source/unittest/',
+                'parameters' => [
+                    'resolveReferences' => 2,
+                ],
+                'response' => json_encode($source),
+            ],
+        ]);
+
+        $parameters = [
+            'officeIds' => '9999998',
+            'serviceIds' => '1',
+            'serviceCounts' => '1',
+            'startDate' => '2024-08-21',
+            'endDate' => '2024-08-23',
+        ];
+        $response = $this->render([], $parameters, []);
+        $responseBody = json_decode((string) $response->getBody(), true);
+        $expectedResponse = [
+            'errors' => [
+                ErrorMessages::get('tooManySlotsPerAppointment'),
+            ],
+        ];
+        $this->assertEquals(
+            ErrorMessages::get('tooManySlotsPerAppointment')['statusCode'],
+            $response->getStatusCode()
+        );
         $this->assertEqualsCanonicalizing($expectedResponse, $responseBody);
     }
 

@@ -13,7 +13,7 @@ class ProcessStatus extends \BO\Zmsbackend\Process\Service\Process
         \BO\Zmsentities\Process $process,
         $status,
         \DateTimeInterface $dateTime,
-        $resolveReferences,
+        int $resolveReferences,
         $userAccount
     ): \BO\Zmsentities\Process {
         $query = new \BO\Zmsbackend\Process\Repository\Process(\BO\Zmsbackend\Query\Base::UPDATE);
