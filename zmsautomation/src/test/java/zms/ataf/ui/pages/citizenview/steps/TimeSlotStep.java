@@ -326,12 +326,13 @@ public final class TimeSlotStep {
 
     /**
      * Link above the timeslot grid (or list) when selected offices have infoForAllAppointments.
+     * Matches a visible button/anchor, not the modal title text alone.
      */
     public void assertNewAppointmentsInfoLinkVisible() {
         context.set();
         Assert.assertTrue(
-                shadow.shadowDomContainsText(NEW_APPOINTMENTS_INFO_LINK),
-                "Expected '" + NEW_APPOINTMENTS_INFO_LINK + "' for availability info");
+                newAppointmentsInfoLinkPresent(),
+                "Expected visible '" + NEW_APPOINTMENTS_INFO_LINK + "' button for availability info");
     }
 
     /**
@@ -357,8 +358,8 @@ public final class TimeSlotStep {
         context.set();
         waitForAvailabilityInfoModalOpen();
         Assert.assertTrue(
-                modalBodyOrTitleContains(NEW_APPOINTMENTS_INFO_LINK),
-                "Expected modal title '" + NEW_APPOINTMENTS_INFO_LINK + "'");
+                modalTitleIs(NEW_APPOINTMENTS_INFO_LINK),
+                "Expected modal H2 title '" + NEW_APPOINTMENTS_INFO_LINK + "'");
     }
 
     public void assertAvailabilityInfoModalContains(String fragment) {
@@ -377,6 +378,24 @@ public final class TimeSlotStep {
         Assert.assertTrue(
                 modalHasHeadingContaining(headingFragment),
                 "Expected modal H3 containing '" + headingFragment + "'");
+    }
+
+    /**
+     * Standort grouping: the hint under the H3 that contains {@code headingFragment} must include
+     * {@code contentFragment}.
+     */
+    public void assertAvailabilityInfoModalShowsUnderHeading(String contentFragment, String headingFragment) {
+        context.set();
+        Objects.requireNonNull(contentFragment, "contentFragment");
+        Objects.requireNonNull(headingFragment, "headingFragment");
+        waitForAvailabilityInfoModalOpen();
+        Assert.assertTrue(
+                modalHeadingGroupContains(headingFragment, contentFragment),
+                "Expected '"
+                        + contentFragment
+                        + "' under modal H3 containing '"
+                        + headingFragment
+                        + "'");
     }
 
     public void assertAvailabilityInfoModalHasNoProviderHeading() {
@@ -399,35 +418,53 @@ public final class TimeSlotStep {
         assertAvailabilityInfoModalContains(fragment);
     }
 
+    private static final String FIND_INFO_LINK_SCRIPT =
+            "var label=arguments[0];"
+                    + "function shown(el){var n=el;while(n&&n.nodeType===1){"
+                    + "var st=window.getComputedStyle(n);"
+                    + "if(st.display==='none'||st.visibility==='hidden'||st.opacity==='0')return false;"
+                    + "if(n.parentElement){n=n.parentElement;continue;}"
+                    + "var root=n.getRootNode&&n.getRootNode();n=root&&root.host?root.host:null;}"
+                    + "return true;}"
+                    + "function insideModal(el){var n=el;while(n&&n.nodeType===1){"
+                    + "if((n.tagName||'').toUpperCase()==='MUC-MODAL')return true;"
+                    + "if(n.parentElement){n=n.parentElement;continue;}"
+                    + "var root=n.getRootNode&&n.getRootNode();n=root&&root.host?root.host:null;}"
+                    + "return false;}"
+                    + "function box(el){if(!el||el.nodeType!==1||!el.getBoundingClientRect)return false;"
+                    + "var r=el.getBoundingClientRect();if(r.width<=0||r.height<=0)return false;"
+                    + "var st=window.getComputedStyle(el);return st.visibility!=='hidden'&&st.display!=='none'&&st.opacity!=='0';}"
+                    + "function painted(el){if(box(el))return el;var found=null;"
+                    + "function w(n){if(!n||found)return;if(n.nodeType===1&&n!==el&&box(n)){found=n;return;}"
+                    + "if(n.shadowRoot)w(n.shadowRoot);var c=n.children;if(c)for(var i=0;i<c.length;i++)w(c[i]);}"
+                    + "w(el);return found;}"
+                    + "function textOf(n){var s='';if(!n)return s;if(n.nodeType===3)return n.nodeValue||'';"
+                    + "if(n.shadowRoot)s+=' '+textOf(n.shadowRoot);"
+                    + "var c=n.childNodes;if(c)for(var i=0;i<c.length;i++)s+=' '+textOf(c[i]);return s;}"
+                    + "function walk(n){if(!n)return null;"
+                    + "var tag=(n.tagName||'').toUpperCase();"
+                    + "if(tag==='MUC-BUTTON'||tag==='BUTTON'||tag==='A'){"
+                    + "var t=textOf(n).replace(/\\s+/g,' ').trim();"
+                    + "if(t.indexOf(label)>=0&&shown(n)&&!insideModal(n))return n;}"
+                    + "if(n.shadowRoot){var inner=walk(n.shadowRoot);if(inner)return inner;}"
+                    + "var c=n.children;if(c)for(var i=0;i<c.length;i++){var hit=walk(c[i]);if(hit)return hit;}"
+                    + "return null;}"
+                    + "return walk(document.body);";
+
+    private boolean newAppointmentsInfoLinkPresent() {
+        Object node = ((JavascriptExecutor) DriverUtil.getDriver())
+                .executeScript(FIND_INFO_LINK_SCRIPT, NEW_APPOINTMENTS_INFO_LINK);
+        return node != null;
+    }
+
     private boolean clickNewAppointmentsInfoLink() {
+        // Same helpers as FIND_INFO_LINK_SCRIPT, then click a painted descendant.
         String script =
-                "var label=arguments[0];"
-                        + "function shown(el){var n=el;while(n&&n.nodeType===1){"
-                        + "var st=window.getComputedStyle(n);"
-                        + "if(st.display==='none'||st.visibility==='hidden'||st.opacity==='0')return false;"
-                        + "if(n.parentElement){n=n.parentElement;continue;}"
-                        + "var root=n.getRootNode&&n.getRootNode();n=root&&root.host?root.host:null;}"
-                        + "return true;}"
-                        + "function box(el){if(!el||el.nodeType!==1||!el.getBoundingClientRect)return false;"
-                        + "var r=el.getBoundingClientRect();if(r.width<=0||r.height<=0)return false;"
-                        + "var st=window.getComputedStyle(el);return st.visibility!=='hidden'&&st.display!=='none'&&st.opacity!=='0';}"
-                        + "function painted(el){if(box(el))return el;var found=null;"
-                        + "function w(n){if(!n||found)return;if(n.nodeType===1&&n!==el&&box(n)){found=n;return;}"
-                        + "if(n.shadowRoot)w(n.shadowRoot);var c=n.children;if(c)for(var i=0;i<c.length;i++)w(c[i]);}"
-                        + "w(el);return found;}"
-                        + "function textOf(n){var s='';if(!n)return s;if(n.nodeType===3)return n.nodeValue||'';"
-                        + "if(n.shadowRoot)s+=' '+textOf(n.shadowRoot);"
-                        + "var c=n.childNodes;if(c)for(var i=0;i<c.length;i++)s+=' '+textOf(c[i]);return s;}"
-                        + "function walk(n){if(!n)return null;"
-                        + "var tag=(n.tagName||'').toUpperCase();"
-                        + "if(tag==='MUC-BUTTON'||tag==='BUTTON'||tag==='A'){"
-                        + "var t=textOf(n).replace(/\\s+/g,' ').trim();"
-                        + "if(t.indexOf(label)>=0&&shown(n))return n;}"
-                        + "if(n.shadowRoot){var inner=walk(n.shadowRoot);if(inner)return inner;}"
-                        + "var c=n.children;if(c)for(var i=0;i<c.length;i++){var hit=walk(c[i]);if(hit)return hit;}"
-                        + "return null;}"
-                        + "var node=walk(document.body);if(!node)return false;"
-                        + "var hit=painted(node)||node;hit.scrollIntoView({block:'center'});hit.click();return true;";
+                FIND_INFO_LINK_SCRIPT.replace(
+                        "return walk(document.body);",
+                        "var node=walk(document.body);if(!node)return false;"
+                                + "var hit=painted(node)||node;hit.scrollIntoView({block:'center'});hit.click();"
+                                + "return true;");
         return Boolean.TRUE.equals(
                 ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script, NEW_APPOINTMENTS_INFO_LINK));
     }
@@ -453,6 +490,36 @@ public final class TimeSlotStep {
                         + "return false;}"
                         + "return walk(document.body);";
         return Boolean.TRUE.equals(((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script));
+    }
+
+    private boolean modalTitleIs(String expectedTitle) {
+        String script =
+                "var expected=arguments[0];"
+                        + "function norm(s){return (s||'').replace(/\\s+/g,' ').trim();}"
+                        + "function textOf(n){var s='';if(!n)return s;if(n.nodeType===3)return n.nodeValue||'';"
+                        + "if(n.shadowRoot)s+=' '+textOf(n.shadowRoot);"
+                        + "var c=n.childNodes;if(c)for(var i=0;i<c.length;i++)s+=' '+textOf(c[i]);return s;}"
+                        + "function titles(root,out){"
+                        + " if(!root)return;"
+                        + " var hs=root.querySelectorAll('h1,h2,[slot=\"title\"],.m-dialog__title,.modal-title');"
+                        + " for(var i=0;i<hs.length;i++)out.push(norm(textOf(hs[i])));"
+                        + " var all=root.querySelectorAll('*');"
+                        + " for(var j=0;j<all.length;j++)if(all[j].shadowRoot)titles(all[j].shadowRoot,out);"
+                        + "}"
+                        + "function walkModal(n){if(!n)return null;"
+                        + "var tag=(n.tagName||'').toUpperCase();"
+                        + "if(tag==='MUC-MODAL'){"
+                        + "var open=n.open===true||n.hasAttribute('open')||(n.getAttribute('open')!==null);"
+                        + "if(open)return n;}"
+                        + "if(n.shadowRoot){var inner=walkModal(n.shadowRoot);if(inner)return inner;}"
+                        + "var c=n.children;if(c)for(var i=0;i<c.length;i++){var hit=walkModal(c[i]);if(hit)return hit;}"
+                        + "return null;}"
+                        + "var modal=walkModal(document.body);if(!modal)return false;"
+                        + "var list=[];titles(modal,list);if(modal.shadowRoot)titles(modal.shadowRoot,list);"
+                        + "for(var k=0;k<list.length;k++)if(list[k]===expected||list[k].indexOf(expected)===0)return true;"
+                        + "return false;";
+        return Boolean.TRUE.equals(
+                ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script, expectedTitle));
     }
 
     private boolean modalBodyOrTitleContains(String fragment) {
@@ -499,6 +566,41 @@ public final class TimeSlotStep {
                         + "return false;";
         return Boolean.TRUE.equals(
                 ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script, headingFragment));
+    }
+
+    private boolean modalHeadingGroupContains(String headingFragment, String contentFragment) {
+        String script =
+                "var headingNeedle=arguments[0];var contentNeedle=arguments[1];"
+                        + "function textOf(n){return ((n&&(n.innerText||n.textContent))||'').replace(/\\s+/g,' ').trim();}"
+                        + "function collectH3(root,out){"
+                        + " if(!root)return;"
+                        + " var hs=root.querySelectorAll('h3');"
+                        + " for(var i=0;i<hs.length;i++)out.push(hs[i]);"
+                        + " var all=root.querySelectorAll('*');"
+                        + " for(var j=0;j<all.length;j++)if(all[j].shadowRoot)collectH3(all[j].shadowRoot,out);"
+                        + "}"
+                        + "function walkModal(n){if(!n)return null;"
+                        + "var tag=(n.tagName||'').toUpperCase();"
+                        + "if(tag==='MUC-MODAL'){"
+                        + "var open=n.open===true||n.hasAttribute('open')||(n.getAttribute('open')!==null);"
+                        + "if(open)return n;}"
+                        + "if(n.shadowRoot){var inner=walkModal(n.shadowRoot);if(inner)return inner;}"
+                        + "var c=n.children;if(c)for(var i=0;i<c.length;i++){var hit=walkModal(c[i]);if(hit)return hit;}"
+                        + "return null;}"
+                        + "var modal=walkModal(document.body);if(!modal)return false;"
+                        + "var hs=[];collectH3(modal,hs);if(modal.shadowRoot)collectH3(modal.shadowRoot,hs);"
+                        + "for(var k=0;k<hs.length;k++){"
+                        + " if(textOf(hs[k]).indexOf(headingNeedle)<0)continue;"
+                        + " var sib=hs[k].nextElementSibling;"
+                        + " if(sib&&textOf(sib).indexOf(contentNeedle)>=0)return true;"
+                        + " var parent=hs[k].parentElement;"
+                        + " if(parent&&textOf(parent).indexOf(contentNeedle)>=0"
+                        + "  &&textOf(parent).indexOf(headingNeedle)>=0)return true;"
+                        + "}"
+                        + "return false;";
+        return Boolean.TRUE.equals(
+                ((JavascriptExecutor) DriverUtil.getDriver())
+                        .executeScript(script, headingFragment, contentFragment));
     }
 
     private boolean modalHasAnyH3() {
