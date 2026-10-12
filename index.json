@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-10-12T20:13:29.620Z",
+  "publishedAt": "2026-10-12T20:33:03.082Z",
   "branches": [
     {
       "name": "next",
@@ -774,6 +774,12 @@
       "slug": "test-zmskvr-486-zmskvr-586-service-duration",
       "runId": "38166926622",
       "runStartedAt": "2026-10-11T19:10:58Z"
+    },
+    {
+      "name": "test-zmskvr-488-zmskvr-745-invalid-jumpin-callout",
+      "slug": "test-zmskvr-488-zmskvr-745-invalid-jumpin-callout",
+      "runId": "38303465583",
+      "runStartedAt": "2026-10-12T20:19:31Z"
     },
     {
       "name": "test-zmskvr-506-captcha-design",
