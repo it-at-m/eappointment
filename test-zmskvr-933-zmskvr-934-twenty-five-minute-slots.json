@@ -1,44 +1,44 @@
 {
   "branch": "test-zmskvr-933-zmskvr-934-twenty-five-minute-slots",
   "branchSlug": "test-zmskvr-933-zmskvr-934-twenty-five-minute-slots",
-  "runId": "38317599182",
-  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38317599182",
-  "runStartedAt": "2026-10-12T22:36:13Z",
-  "publishedAt": "2026-10-12T22:48:48.165Z",
+  "runId": "38318877406",
+  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38318877406",
+  "runStartedAt": "2026-10-12T22:50:00Z",
+  "publishedAt": "2026-10-12T22:59:32.464Z",
   "features": {
     "feature-rest-zmsapi-opening-hours-zmskvr-933-zmskvr-934-twenty-five-minute-slots": {
       "status": "failed",
       "shard": "custom",
       "browser": "chrome",
       "rel": "rest/zmsapi/opening-hours/zmskvr-933_zmskvr-934_twenty_five_minute_slots.feature",
-      "runId": "38317599182",
-      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38317599182",
-      "runStartedAt": "2026-10-12T22:36:13Z",
+      "runId": "38318877406",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38318877406",
+      "runStartedAt": "2026-10-12T22:50:00Z",
       "browsers": {
         "chrome": {
           "status": "failed",
           "shard": "custom",
-          "runId": "38317599182",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38317599182",
-          "runStartedAt": "2026-10-12T22:36:13Z"
+          "runId": "38318877406",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38318877406",
+          "runStartedAt": "2026-10-12T22:50:00Z"
         }
       }
     },
     "feature-ui-zmsadmin-opening-hours-zmskvr-933-zmskvr-934-twenty-five-minute-slots": {
-      "status": "failed",
+      "status": "passed",
       "shard": "custom",
       "browser": "chrome",
       "rel": "ui/zmsadmin/opening-hours/zmskvr-933_zmskvr-934_twenty_five_minute_slots.feature",
-      "runId": "38317599182",
-      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38317599182",
-      "runStartedAt": "2026-10-12T22:36:13Z",
+      "runId": "38318877406",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38318877406",
+      "runStartedAt": "2026-10-12T22:50:00Z",
       "browsers": {
         "chrome": {
-          "status": "failed",
+          "status": "passed",
           "shard": "custom",
-          "runId": "38317599182",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38317599182",
-          "runStartedAt": "2026-10-12T22:36:13Z"
+          "runId": "38318877406",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38318877406",
+          "runStartedAt": "2026-10-12T22:50:00Z"
         }
       }
     }

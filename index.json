@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-10-12T22:48:48.165Z",
+  "publishedAt": "2026-10-12T22:59:32.464Z",
   "branches": [
     {
       "name": "next",
@@ -874,8 +874,8 @@
     {
       "name": "test-zmskvr-933-zmskvr-934-twenty-five-minute-slots",
       "slug": "test-zmskvr-933-zmskvr-934-twenty-five-minute-slots",
-      "runId": "38317599182",
-      "runStartedAt": "2026-10-12T22:36:13Z"
+      "runId": "38318877406",
+      "runStartedAt": "2026-10-12T22:50:00Z"
     },
     {
       "name": "test-zmskvr-936-zmskvr-1013-abholung-ruppertstrasse-only",
