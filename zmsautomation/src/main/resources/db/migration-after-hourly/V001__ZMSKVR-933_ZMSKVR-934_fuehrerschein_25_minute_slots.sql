@@ -10,12 +10,16 @@ UPDATE `standort`
 SET `Bearbeitungszeit` = '00:25:00'
 WHERE `StandortID` IN (6, 256, 347);
 
--- Live SADB usually still has 20; hourly reimport wiped any Flyway pin.
+-- Live SADB / fixtures usually still have 20 (with or without space after ':').
 UPDATE `provider`
-SET `data` = REPLACE(`data`, '"slotTimeInMinutes":20', '"slotTimeInMinutes":25')
+SET `data` = REGEXP_REPLACE(
+  `data`,
+  '"slotTimeInMinutes"[[:space:]]*:[[:space:]]*[0-9]+',
+  '"slotTimeInMinutes":25'
+)
 WHERE `source` = 'dldb'
   AND `id` = '10308174'
-  AND `data` LIKE '%"slotTimeInMinutes":20%';
+  AND `data` REGEXP '"slotTimeInMinutes"[[:space:]]*:[[:space:]]*[0-9]+';
 
 SET @has_de := (
   SELECT COUNT(*) FROM information_schema.COLUMNS
