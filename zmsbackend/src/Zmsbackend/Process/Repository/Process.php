@@ -1117,7 +1117,7 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
         }
         $this->addValuesWasMissed($process);
         $this->addValuesPriority($process);
-        $this->addValuesStatusData($process, $dateTime);
+        $this->addValuesStatusData($process, $dateTime, $previousStatus);
         $this->addValuesExternalUserId($process);
     }
 
@@ -1160,7 +1160,7 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
         $this->addValues($data);
     }
 
-    public function addValuesStatusData(ProcessEntity $process, \DateTimeInterface $dateTime): void
+    public function addValuesStatusData(ProcessEntity $process, \DateTimeInterface $dateTime, $previousStatus = null): void
     {
         $data = array();
         $data['vorlaeufigeBuchung'] = ($process->status == 'reserved') ? 1 : 0;
@@ -1178,7 +1178,9 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
         if ($process->status == 'queued') {
             $data['nicht_erschienen'] = 0;
             $data['parked'] = 0;
+            $isCancelledCall = in_array($previousStatus, ['called', 'processing'], true);
             if (
+                !$isCancelledCall &&
                 $process->hasArrivalTime() &&
                 (isset($process->queue->withAppointment) && $process->queue->withAppointment)
             ) {
