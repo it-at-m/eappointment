@@ -860,7 +860,8 @@ public final class TimeSlotStep {
     /**
      * ZMSKVR-151 / ZMSKVR-714: open the list day that has Feuerwache 10 (Riem, day+4 in ATAF) and
      * assert that day's headings end with 10. Other days only get ascending checks (one Wache per
-     * day in fixtures).
+     * day in fixtures). List hour pagers often open on another day's hour — Später until titles
+     * show.
      */
     public void assertFeuerwacheListTitlesInNumericOrder() {
         context.set();
@@ -878,8 +879,7 @@ public final class TimeSlotStep {
         StringBuilder report = new StringBuilder();
         for (int day = 0; day < dayCount; day++) {
             openListDateAtIndex(day);
-            CitizenViewWaits.sleepQuiet(400L);
-            JsonNode titles = locationTitles().path("titles");
+            JsonNode titles = waitForOpenListLocationTitles();
             java.util.List<Integer> numbers =
                     ProviderLocationStep.feuerwacheNumbersFromTitles(titles);
             report.append(" day")
@@ -900,6 +900,32 @@ public final class TimeSlotStep {
                 "Feuerwache 10 must appear under Verfügbare Termine (open Riem day+4)."
                         + report);
         providerLocation.assertFeuerwacheTitlesInNumericOrder(titlesWithTen);
+    }
+
+    /**
+     * Open list days keep the previous day's hour; advance Später until {@code h5.location-title}
+     * appears (or the pager is exhausted).
+     */
+    private JsonNode waitForOpenListLocationTitles() {
+        for (int attempt = 0; attempt < 8; attempt++) {
+            CitizenViewWaits.sleepQuiet(400L);
+            JsonNode titles = locationTitles().path("titles");
+            if (titles.size() > 0) {
+                return titles;
+            }
+            JsonNode later =
+                    json.citizenJson(
+                            "(function(){var open=cssAll('#listViewAccordion section.m-accordion__section-content.show')[0];"
+                                    + "if(!open)return {clicked:false,reason:'no-open'};"
+                                    + "var btn=findButton(open,'Später');if(!btn)return {clicked:false,reason:'no-btn'};"
+                                    + "if(isDisabled(btn))return {clicked:false,disabled:true};"
+                                    + "var inner=btn.shadowRoot&&btn.shadowRoot.querySelector('button');"
+                                    + "(inner||btn).click();return {clicked:true};})()");
+            if (!later.path("clicked").asBoolean()) {
+                break;
+            }
+        }
+        return locationTitles().path("titles");
     }
 
     /** Expand the list-view date accordion at {@code index} (0-based). */
