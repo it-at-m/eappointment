@@ -23,7 +23,8 @@ This module contains **API and UI tests** for ZMS using the ATAF (Test Automatio
   - `ui/zmsstatistic/` - Statistik UI features  
   - `ui/zmscitizenview/` - Citizen view UI (Service Finder + full booking E2E)  
   - `ui/zmsticketprinter/` - Ticketprinter / kiosk UI features (`booking/`, …)  
-- `src/main/resources/db/migration/` - Flyway database migrations
+- `src/main/resources/db/migration/` - Flyway migrations (history table `flyway_migration`, before hourly)
+- `src/main/resources/db/migration-after-hourly/` - Flyway migrations (history table `flyway_migration_after_hourly`, after hourly / before minutly)
 
 ## Running Tests
 
@@ -189,7 +190,16 @@ cd zmsautomation && mvn test
 
 ## Database Setup
 
-The ATAF tests automatically run Flyway migrations before executing tests. The migrations are located in `src/main/resources/db/migration/`.
+`zmsautomation-test` runs **two** Flyway paths with separate history tables:
+
+| Folder | History table | When |
+|--------|---------------|------|
+| `src/main/resources/db/migration/` | `flyway_migration` | Step 5, before hourly |
+| `src/main/resources/db/migration-after-hourly/` | `flyway_migration_after_hourly` | Step 7b, after hourly / before minutly |
+
+Use `db/migration` for normal ATAF seed data. Use `db/migration-after-hourly` for pins that must win over the hourly DLDB/SADB provider reimport (for example `provider.data.slotTimeInMinutes`). Do **not** put those pins in `locations_de.json` (offline fallback only) or `munich_sadb_overwrite.json` (application overwrites).
+
+Naming is Flyway-style (`V###__description.sql`). After-hourly uses `baselineVersion=0` so `V001` is applied. Each setup clears the history rows so versioned migrations re-run (important for `CURDATE()`).
 
 ## Test Tags
 
