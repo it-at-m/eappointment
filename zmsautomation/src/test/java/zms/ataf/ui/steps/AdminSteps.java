@@ -303,6 +303,13 @@ public class AdminSteps {
         AUTHORITIES_AND_LOCATIONS_PAGE.clickOnLocationEntry(location);
     }
 
+    @Then("the availability hint field for citizens should be visible on the location form.")
+    public void theAvailabilityHintFieldForCitizensShouldBeVisibleOnTheLocationForm() {
+        ScenarioLogManager.getLogger()
+                .info("Assert Hinweismeldungen bzgl. der Terminverfügbarkeiten field on Standort form");
+        AUTHORITIES_AND_LOCATIONS_PAGE.assertAvailabilityHintFieldLegendVisible();
+    }
+
     @And("I open the opening-hours accordion {string}.")
     public void und_sie_die_oeffnungszeit_accordion_oeffnen(String accordionTitle) {
         accordionTitle = TestDataHelper.transformTestData(accordionTitle);
@@ -795,6 +802,11 @@ public class AdminSteps {
     public void zeigt_das_terminformular_die_dauer(String service, int minutes, int wrongMinutes) {
         COUNTER_PROCESSING_STATION_PAGE.assertAppointmentFormDuration(
                 TestDataHelper.transformTestData(service), minutes, wrongMinutes);
+    }
+
+    @Then("the Termindauer on the appointment form is {int} minutes.")
+    public void theTermindauerOnTheAppointmentFormIsMinutes(int minutes) {
+        COUNTER_PROCESSING_STATION_PAGE.assertTermindauerMinutes(minutes);
     }
 
     @When("I book the already selected appointment for {string}.")
@@ -2064,6 +2076,8 @@ public class AdminSteps {
     /**
      * Citizen cancel refuses an appointment that is already before {@code App::$now}.
      * After the queue check, put the same reserved row back in the future so it can be deleted.
+     * Use the later of {@code ZMS_TIMEADJUST} and wall-clock Berlin time — under shard load the
+     * suite clock can lag App::$now, and suiteClock+30m would still be uncancellable.
      */
     @When("the reserved appointment is moved back to after the suite clock.")
     public void theReservedAppointmentIsMovedBackToAfterTheSuiteClock() {
@@ -2072,7 +2086,10 @@ public class AdminSteps {
             throw new IllegalStateException("No reserved appointment was captured from the citizen view.");
         }
         int processId = process.getProcessId();
-        LocalDateTime appointment = suiteClock().plusMinutes(30);
+        LocalDateTime suite = suiteClock();
+        LocalDateTime wall = LocalDateTime.now(BerlinTime.ZONE);
+        LocalDateTime baseline = suite.isAfter(wall) ? suite : wall;
+        LocalDateTime appointment = baseline.plusMinutes(60);
         String sql = """
                 UPDATE buerger
                    SET Datum = ?, Uhrzeit = ?
@@ -2095,7 +2112,8 @@ public class AdminSteps {
                     "Could not move reserved appointment " + processId + " back after the suite clock.", e);
         }
         ScenarioLogManager.getLogger().info(
-                "Reserved process {} is back at {} so it can be cancelled", processId, appointment);
+                "Reserved process {} is back at {} (suite={}, wall={}) so it can be cancelled",
+                processId, appointment, suite, wall);
     }
 
     @When("I sign in at the workstation of the reserved appointment.")

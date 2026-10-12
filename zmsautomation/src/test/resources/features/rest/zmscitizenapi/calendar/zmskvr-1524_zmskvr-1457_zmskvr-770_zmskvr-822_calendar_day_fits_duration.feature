@@ -1,5 +1,5 @@
 #language: en
-@rest @zmscitizenapi @citizen @ZMSKVR-1457 @ZMSKVR-1524 @ZMSKVR-1235
+@rest @zmscitizenapi @citizen @ZMSKVR-1457 @ZMSKVR-1524 @ZMSKVR-1235 @ZMSKVR-770 @ZMSKVR-822
 Feature: Calendar days follow the appointment length
   As a citizen
   I want a day to stay available only when the selected length still fits
@@ -12,6 +12,8 @@ Feature: Calendar days follow the appointment length
   # Gewerbezentralregister, juristische Person 10225129 is 3 slots.
   # Part of the no-appointment inventory (UI empty-state callout when no day fits):
   #   ui/.../callouts/zmskvr-1235_zmskvr-1244_…_no_appointment_callout.feature
+  # ZMSKVR-770 / ZMSKVR-822 (Vorlauf): available-calendar must not return a bookable day
+  # when the day is outside the bookable window — same contract as a length that does not fit.
 
   Background:
     Given the Citizen API is available

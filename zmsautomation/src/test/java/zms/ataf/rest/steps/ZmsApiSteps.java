@@ -424,6 +424,55 @@ public class ZmsApiSteps {
         bookAppointmentCustomer(scopeId, serviceName, familyName, minutesAhead, true);
     }
 
+    /**
+     * ZMSKVR-230: Admin Termindauer is {@code timeSlotCount × slotTimeInMinutes}
+     * (see appointment form.twig). GET /scope/{id}/request/ exposes timeSlotCount from
+     * the provider relation; slot time comes from the scope provider.
+     */
+    @Then("scope {int} request {string} should have duration {int} minutes")
+    public void scopeRequestShouldHaveDuration(int scopeId, String serviceName, int minutes) {
+        // Prefer the current session (feature logs in as ataf). Do not force agent_queue:
+        // that account is only Behörde 40 and cannot GET other scopes.
+        if (cachedXAuthKey == null || cachedXAuthKey.isBlank()) {
+            iAmLoggedInToTheZmsApiAs("ataf");
+        }
+        String authKey = getOrLoginXAuthKey();
+        JsonNode request = findScopeRequestByName(scopeId, serviceName, authKey);
+        Assertions.assertThat(request.path("name").asText("").toLowerCase(Locale.ROOT))
+                .as("scope %d request list should include %s", scopeId, serviceName)
+                .contains(serviceName.toLowerCase(Locale.ROOT));
+        int timeSlotCount = request.path("timeSlotCount").asInt(0);
+        int slotTimeInMinutes = fetchScopeSlotTimeInMinutes(scopeId, authKey);
+        int duration = timeSlotCount * slotTimeInMinutes;
+        Assertions.assertThat(duration)
+                .as("scope %d request %s duration (timeSlotCount=%d × slotTimeInMinutes=%d, name=%s)",
+                        scopeId, serviceName, timeSlotCount, slotTimeInMinutes,
+                        request.path("name").asText())
+                .isEqualTo(minutes);
+    }
+
+    private int fetchScopeSlotTimeInMinutes(int scopeId, String authKey) {
+        // resolveReferences=1 loads provider.data.slotTimeInMinutes (Admin Termindauer input).
+        Response scopeResponse = given()
+            .baseUri(baseUri != null ? baseUri : TestConfig.getBaseUri())
+            .header("X-AuthKey", authKey)
+            .queryParam("resolveReferences", 1)
+        .when()
+            .get("/scope/" + scopeId + "/");
+        Assertions.assertThat(scopeResponse.getStatusCode())
+            .as("GET /scope/%d/?resolveReferences=1 body=%s", scopeId, truncate(scopeResponse.asString(), 1000))
+            .isEqualTo(200);
+        JsonNode scope = parseDataNode(scopeResponse);
+        Assertions.assertThat(scope)
+            .as("GET /scope/%d/?resolveReferences=1 should return data", scopeId)
+            .isNotNull();
+        int slotTime = scope.path("provider").path("data").path("slotTimeInMinutes").asInt(0);
+        Assertions.assertThat(slotTime)
+            .as("scope %d provider.data.slotTimeInMinutes", scopeId)
+            .isGreaterThan(0);
+        return slotTime;
+    }
+
     private void bookAppointmentCustomer(
             int scopeId, String serviceName, String familyName, int minutesAhead, boolean requireServiceName) {
         // Keep the current API session (and its workstation). A fresh agent_queue login here

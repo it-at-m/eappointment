@@ -68,6 +68,13 @@ public class CitizenViewPage extends BasePage {
     public static final String DE_APPOINTMENT_NOT_AVAILABLE_TEXT =
             "Leider hat inzwischen eine andere Person Ihren gewünschten Termin gebucht. Bitte wählen Sie einen neuen Termin aus.";
 
+    /** German too-many-appointments-per-email callout ({@code de-DE.json} apiErrorTooManyAppointmentsWithSameMail*). */
+    public static final String DE_TOO_MANY_APPOINTMENTS_HEADER =
+            "Sie haben bereits zu viele Termine gebucht.";
+
+    public static final String DE_TOO_MANY_APPOINTMENTS_TEXT =
+            "Sie können mit Ihrer E-Mail-Adresse nur eine begrenzte Anzahl an Terminen vereinbaren. Bitte sagen Sie einen anderen Termin ab, bevor Sie einen neuen Termin buchen.";
+
     private final CitizenViewPageContext CONTEXT;
 
     private final ShadowDom shadow;
@@ -124,7 +131,7 @@ public class CitizenViewPage extends BasePage {
         contact = new ContactStep(CONTEXT, shadow, this, DEFAULT_EXPLICIT_WAIT_TIME);
         overview = new OverviewStep(CONTEXT, shadow, this, slotState, DEFAULT_EXPLICIT_WAIT_TIME);
         myAppointments = new MyAppointmentsStep(CONTEXT, shadow, slotState, this, contact, DEFAULT_EXPLICIT_WAIT_TIME);
-        captcha = new CaptchaStep(CONTEXT, shadow, DEFAULT_EXPLICIT_WAIT_TIME);
+        captcha = new CaptchaStep(CONTEXT, shadow, json, DEFAULT_EXPLICIT_WAIT_TIME);
     }
 
     public CitizenViewPageContext getContext() {
@@ -137,6 +144,10 @@ public class CitizenViewPage extends BasePage {
 
     public void navigateWithJumpIn(String serviceId, String locationId) {
         CONTEXT.navigateWithJumpIn(serviceId, locationId);
+    }
+
+    public void navigateWithExclusiveJumpIn(String serviceId, String locationId) {
+        CONTEXT.navigateWithExclusiveJumpIn(serviceId, locationId);
     }
 
     public void navigateWithJumpInService(String serviceId) {
@@ -405,6 +416,34 @@ public class CitizenViewPage extends BasePage {
         timeSlot.assertNoAppointmentCustomInfoContains(fragment);
     }
 
+    public void assertNewAppointmentsInfoLinkVisible() {
+        timeSlot.assertNewAppointmentsInfoLinkVisible();
+    }
+
+    public void openNewAppointmentsInfoModal() {
+        timeSlot.openNewAppointmentsInfoModal();
+    }
+
+    public void assertAvailabilityInfoModalTitle() {
+        timeSlot.assertAvailabilityInfoModalTitle();
+    }
+
+    public void assertAvailabilityInfoModalContains(String fragment) {
+        timeSlot.assertAvailabilityInfoModalContains(fragment);
+    }
+
+    public void assertAvailabilityInfoModalHasHeading(String headingFragment) {
+        timeSlot.assertAvailabilityInfoModalHasHeading(headingFragment);
+    }
+
+    public void assertAvailabilityInfoModalShowsUnderHeading(String contentFragment, String headingFragment) {
+        timeSlot.assertAvailabilityInfoModalShowsUnderHeading(contentFragment, headingFragment);
+    }
+
+    public void assertAvailabilityInfoModalHasNoProviderHeading() {
+        timeSlot.assertAvailabilityInfoModalHasNoProviderHeading();
+    }
+
     public void assertSelectedCalendarDayIsBerlinDaysFromToday(int daysFromToday) {
         timeSlot.assertSelectedCalendarDayIsBerlinDaysFromToday(daysFromToday);
     }
@@ -518,6 +557,10 @@ public class CitizenViewPage extends BasePage {
         combination.assertEstimatedDurationShownWithClock(minutes);
     }
 
+    public void selectAppointmentType(String label) {
+        combination.selectAppointmentType(label);
+    }
+
     /** ZMSKVR-1501: the broken 15-minute mapping showed 135 minutes for a 45-minute service. */
     public void assertEstimatedDurationMinutesNot(int minutes) {
         combination.assertEstimatedDurationMinutesNot(minutes);
@@ -570,6 +613,46 @@ public class CitizenViewPage extends BasePage {
 
     public void showAllCombinableServices() {
         combination.showAllCombinableServices();
+    }
+
+    public void assertShowLessServicesButtonVisible(boolean visible) {
+        combination.assertShowLessServicesButtonVisible(visible);
+    }
+
+    public void showLessCombinableServices() {
+        combination.showLessCombinableServices();
+    }
+
+    public void assertDisabledCounterColors(String label) {
+        combination.assertDisabledCounterColors(label);
+    }
+
+    public void assertMaxLengthCounterError(String fieldId, int maxChars) {
+        contact.assertMaxLengthCounterError(fieldId, maxChars);
+    }
+
+    public void assertCharacterCountFontSizeDesktop() {
+        contact.assertCharacterCountFontSizeDesktop();
+    }
+
+    public void assertRemarksTextareaGrowsWithoutCounterOverlap() {
+        contact.assertRemarksTextareaGrowsWithoutCounterOverlap();
+    }
+
+    public void assertTimeslotChrome() {
+        timeSlot.assertTimeslotChrome();
+    }
+
+    public void assertLegalNoticeLinksOpenInNewTab() {
+        overview.assertLegalNoticeLinksOpenInNewTab();
+    }
+
+    public void assertOverviewAddressLabelChrome() {
+        overview.assertOverviewAddressLabelChrome();
+    }
+
+    public void assertOftenSearchedContainerPadding(boolean mobile) {
+        serviceFinder.assertOftenSearchedContainerPadding(mobile);
     }
 
     public void assertSecondaryPlusAndMinus(String label) {
@@ -1105,6 +1188,37 @@ public class CitizenViewPage extends BasePage {
         return timeSlot.deepMucSpinnerVisible();
     }
 
+    /** German MucSpinner copy ({@code de-DE.json} {@code spinnerText}). */
+    public static final String DE_APPOINTMENT_SPINNER_TEXT = TimeSlotStep.DE_APPOINTMENT_SPINNER_TEXT;
+
+    public void armMucSpinnerWatch(String expectedText) {
+        timeSlot.armMucSpinnerWatch(expectedText);
+    }
+
+    public void waitUntilMucSpinnerSeen(String expectedText, int maxSeconds) {
+        timeSlot.waitUntilMucSpinnerSeen(expectedText, maxSeconds);
+    }
+
+    public void assertLastMucSpinnerText(String expectedText) {
+        timeSlot.assertLastMucSpinnerText(expectedText);
+    }
+
+    public void assertLastMucSpinnerKeptOrtVisible() {
+        timeSlot.assertLastMucSpinnerKeptOrtVisible();
+    }
+
+    public void assertLastMucSpinnerKeptOrtAndCalendarVisible() {
+        timeSlot.assertLastMucSpinnerKeptOrtAndCalendarVisible();
+    }
+
+    public void uncheckFirstOrtOfficeCatchingSpinner(String expectedText) {
+        timeSlot.uncheckFirstOrtOfficeCatchingSpinner(expectedText);
+    }
+
+    public void selectNextCalendarDayCatchingSpinner(String expectedText) {
+        timeSlot.selectNextCalendarDayCatchingSpinner(expectedText);
+    }
+
     /**
      * Slot API finished: no visible MucSpinner and at least one timeslot control (avoids clicking while day-change
      * spinner runs).
@@ -1509,6 +1623,10 @@ public class CitizenViewPage extends BasePage {
         contact.fillContactDetailsRandom();
     }
 
+    public void fillContactDetailsWithFamilyName(String familyName) {
+        contact.fillContactDetailsWithFamilyName(familyName);
+    }
+
     public void fillContactDetailsRandomWithoutOptionalRemarks() {
         contact.fillContactDetailsRandomWithoutOptionalRemarks();
     }
@@ -1538,6 +1656,14 @@ public class CitizenViewPage extends BasePage {
         contact.fillContactDetailsRandomWithoutContinue();
     }
 
+    public void assertSsoLastNamePrefillWithoutGivenName(String expectedLastName) {
+        contact.assertSsoLastNamePrefillWithoutGivenName(expectedLastName);
+    }
+
+    public void completeContactWithMissingGivenName(String firstName, String expectedLastName) {
+        contact.completeContactWithMissingGivenName(firstName, expectedLastName);
+    }
+
     public boolean deepContactCustomTextFieldExists() {
         return contact.deepContactCustomTextFieldExists();
     }
@@ -1552,6 +1678,10 @@ public class CitizenViewPage extends BasePage {
 
     public void loginViaBuergerLoginWithKeycloak() throws Exception {
         contact.loginViaBuergerLoginWithKeycloak();
+    }
+
+    public void loginViaBuergerLoginWithKeycloakAs(String loginName) throws Exception {
+        contact.loginViaBuergerLoginWithKeycloakAs(loginName);
     }
 
     public void loginViaBuergerLoginWithKeycloakIfNeeded() throws Exception {
@@ -1572,6 +1702,10 @@ public class CitizenViewPage extends BasePage {
 
     public void assertProviderSummaryVisible(int officeId) {
         overview.assertProviderSummaryVisible(officeId);
+    }
+
+    public void assertBookingSummaryShowsContactName(String fullName) {
+        overview.assertBookingSummaryShowsContactName(fullName);
     }
 
     public String deepVisibleProviderSummaryText(int officeId) {
@@ -1646,6 +1780,18 @@ public class CitizenViewPage extends BasePage {
         overview.continueFromPreconfirmStep();
     }
 
+    public void tryPreconfirmFromOverview() {
+        overview.tryPreconfirmFromOverview();
+    }
+
+    public void assertTooManyAppointmentsWithSameMailCalloutVisible() {
+        overview.assertTooManyAppointmentsWithSameMailCalloutVisible();
+    }
+
+    public void assertReserveAppointmentButtonNotVisible() {
+        overview.assertReserveAppointmentButtonNotVisible();
+    }
+
     public void assertPreconfirmationCalloutVisible(int activationMinutes) {
         overview.assertPreconfirmationCalloutVisible(activationMinutes);
     }
@@ -1660,6 +1806,14 @@ public class CitizenViewPage extends BasePage {
 
     public void assertLoggedInConfirmationSuccessDetailsVisible() {
         overview.assertLoggedInConfirmationSuccessDetailsVisible();
+    }
+
+    public void assertGuestConfirmationSuccessDetailsVisible() {
+        overview.assertGuestConfirmationSuccessDetailsVisible();
+    }
+
+    public void bookAnotherAppointmentFromConfirmationSuccess() {
+        overview.bookAnotherAppointmentFromConfirmationSuccess();
     }
 
     public void confirmRebookingFromSummary() {
@@ -1752,6 +1906,18 @@ public class CitizenViewPage extends BasePage {
 
     public void assertCaptchaSessionCalloutNotVisible() {
         captcha.assertCaptchaSessionCalloutNotVisible();
+    }
+
+    public void assertCaptchaDesign() {
+        captcha.assertCaptchaDesign();
+    }
+
+    public void assertLeistungWeiterDisabled() {
+        captcha.assertLeistungWeiterDisabled();
+    }
+
+    public void assertLeistungWeiterEnabled() {
+        captcha.assertLeistungWeiterEnabled();
     }
 
     public void assertReservationExpiredCalloutVisible() {
@@ -1902,6 +2068,14 @@ public class CitizenViewPage extends BasePage {
 
     public void assertDownloadedIcsContainsBookedAppointment() {
         myAppointments.assertDownloadedIcsContainsBookedAppointment();
+    }
+
+    public void assertDownloadedIcsContainsText(String expected) {
+        myAppointments.assertDownloadedIcsContainsText(expected);
+    }
+
+    public void assertDownloadedIcsMatchesMunichConfirmationTemplate() {
+        myAppointments.assertDownloadedIcsMatchesMunichConfirmationTemplate();
     }
 
 }

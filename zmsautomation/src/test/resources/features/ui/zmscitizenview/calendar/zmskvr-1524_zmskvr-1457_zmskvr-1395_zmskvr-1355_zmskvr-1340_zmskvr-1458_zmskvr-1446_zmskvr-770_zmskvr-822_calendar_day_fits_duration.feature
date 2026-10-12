@@ -1,5 +1,5 @@
 #language: en
-@web @zmscitizenview @citizen @ZMSKVR-1457 @ZMSKVR-1524 @ZMSKVR-1355 @ZMSKVR-1395 @ZMSKVR-1235 @ZMSKVR-1340 @ZMSKVR-1458 @ZMSKVR-1446 @executeLocally
+@web @zmscitizenview @citizen @ZMSKVR-1457 @ZMSKVR-1524 @ZMSKVR-1355 @ZMSKVR-1395 @ZMSKVR-1235 @ZMSKVR-1340 @ZMSKVR-1458 @ZMSKVR-1446 @ZMSKVR-770 @ZMSKVR-822 @executeLocally
 Feature: Calendar and list hide a day that the appointment no longer fits
   As a citizen
   I want the calendar and the list to show a day only when the selected length still fits
@@ -13,6 +13,9 @@ Feature: Calendar and list hide a day that the appointment no longer fits
   # ZMSKVR-1355 / ZMSKVR-1395. A day that cannot be booked stays unselected instead of looking available.
   # ZMSKVR-1340 / ZMSKVR-1458 / ZMSKVR-1446: days without appointments must not look selectable
   # (grey active day).
+  # ZMSKVR-770 / ZMSKVR-822 (Vorlauf): non-bookable days stay out of Kalender and Listenansicht;
+  # Verfügbare Termine only for a day that available-calendar marks bookable.
+  # Earliest-day selection for a later office day: ZMSKVR-730 in the no-appointment callout feature.
   # Full no-appointment ticket inventory:
   #   ui/.../callouts/zmskvr-1235_zmskvr-1244_…_no_appointment_callout.feature
 
