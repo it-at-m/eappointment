@@ -6,7 +6,9 @@ Feature: ZMSKVR-97 / ZMSKVR-535 — confirm-appointment returns Munich ICS conte
 
   # Matches Munich Flyway icsappointment.twig (V24): DESCRIPTION Terminnummer /
   # Leistung URL / #/appointment/{{ appointmentLink }}, LOCATION street for Vor-Ort.
-  # Prefixed displayNumber: Abholung 10295182 @ 10492 (scope 148 prefix A; required Bemerkung).
+  # Abholung 10295182 @ 10492 (scope 148 has queue.displayNumberPrefix A in DB, but the
+  # citizen confirm path maps a thinned scope without that preference, so displayNumber
+  # stays the process id — assert "plain". Required Bemerkung on update.)
   # Plain displayNumber: Auskunft zur Rente Telefon 2 @ 2 (scope 369, no prefix).
   # ICS Leistung URL uses the public parent id 1080455 for phone/video variants (V26).
   # UI sibling: ui/.../booking/zmskvr-97_…_confirmation_ics.feature
@@ -17,7 +19,7 @@ Feature: ZMSKVR-97 / ZMSKVR-535 — confirm-appointment returns Munich ICS conte
     Then the response status code should be 200
     And the response should contain offices and services
 
-  Scenario: Confirm ICS uses prefixed displayNumber for Ruppertstraße Abholung
+  Scenario: Confirm ICS uses plain displayNumber for Ruppertstraße Abholung
     When I request available days for office 10492 and service 10295182
     And I request available appointments for the first available day
     And I reserve an appointment with the first available slot
@@ -33,7 +35,7 @@ Feature: ZMSKVR-97 / ZMSKVR-535 — confirm-appointment returns Munich ICS conte
     When I confirm the appointment
     Then the confirm endpoint response should include a thinned booking process with processId, authKey, officeId, and serviceId
     And the appointment status should be "confirmed"
-    And the confirm endpoint icsContent should match the Munich template with "prefixed" displayNumber
+    And the confirm endpoint icsContent should match the Munich template with "plain" displayNumber
     When I cancel the appointment
 
   Scenario: Confirm ICS uses plain displayNumber for Versicherungsamt phone
