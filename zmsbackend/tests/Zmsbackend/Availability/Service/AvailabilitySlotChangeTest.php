@@ -96,6 +96,46 @@ class AvailabilitySlotChangeTest extends \BO\Zmsbackend\Tests\Service\Base
         $this->assertNull($this->readCopiedRow('2016-04-16'));
     }
 
+    public function testRescalesSlotsPerAppointmentToTheSameMinuteBudget(): void
+    {
+        $this->assertSame(54, AvailabilitySlotChange::scaledSlotsPerAppointment(3, 90, 5));
+        $this->assertSame(3, AvailabilitySlotChange::scaledSlotsPerAppointment(54, 5, 90));
+        $this->assertSame(1, AvailabilitySlotChange::scaledSlotsPerAppointment(1, 10, 15));
+        $this->assertNull(AvailabilitySlotChange::scaledSlotsPerAppointment(null, 90, 5));
+        $this->assertNull(AvailabilitySlotChange::scaledSlotsPerAppointment(0, 90, 5));
+
+        $this->writeSlotsPerAppointment(3);
+        $this->writeAvailability('2016-04-01', '2016-06-30', '08:00:00', '17:00:00', 90);
+        $this->insertProcess(self::BOOKED_PROCESS_ID, '2016-04-15', 'confirmed');
+
+        $service = new AvailabilitySlotChange();
+        $service->apply(self::SCOPE_ID, 5, static::$now);
+        $this->assertSame(54, $this->readSlotsPerAppointment());
+
+        $service->apply(self::SCOPE_ID, 5, static::$now);
+        $this->assertSame(54, $this->readSlotsPerAppointment());
+    }
+
+    public function testLeavesAnEmptySlotsPerAppointmentAlone(): void
+    {
+        $this->writeSlotsPerAppointment(null);
+        $this->writeAvailability('2016-04-01', '2016-06-30', '08:00:00', '17:00:00', 90);
+
+        (new AvailabilitySlotChange())->apply(self::SCOPE_ID, 5, static::$now);
+
+        $this->assertNull($this->readSlotsPerAppointment());
+    }
+
+    public function testDoesNotRescaleSlotsPerAppointmentWhenTheOpeningStays(): void
+    {
+        $this->writeSlotsPerAppointment(3);
+        $this->writeAvailability('2016-04-01', '2016-06-30', '08:00:00', '09:00:00', 60);
+
+        (new AvailabilitySlotChange())->apply(self::SCOPE_ID, 90, static::$now);
+
+        $this->assertSame(3, $this->readSlotsPerAppointment());
+    }
+
     public function testDoesNothingWhenTheSlotAlreadyMatches(): void
     {
         $id = $this->writeAvailability('2016-04-01', '2016-06-30', '08:00:00', '12:00:00', 90);
@@ -124,7 +164,29 @@ class AvailabilitySlotChangeTest extends \BO\Zmsbackend\Tests\Service\Base
             'DELETE FROM `buerger` WHERE `BuergerID` IN (:booked, :cancelled)',
             ['booked' => self::BOOKED_PROCESS_ID, 'cancelled' => self::CANCELLED_PROCESS_ID]
         );
+        $this->writeSlotsPerAppointment(null);
         parent::tearDown();
+    }
+
+    private function writeSlotsPerAppointment(?int $slots): void
+    {
+        (new AvailabilityService())->perform(
+            'UPDATE `standort` SET `slots_per_appointment` = :slots WHERE `StandortID` = :scopeId',
+            ['slots' => $slots, 'scopeId' => self::SCOPE_ID]
+        );
+    }
+
+    private function readSlotsPerAppointment(): ?int
+    {
+        $value = (new AvailabilityService())->fetchValue(
+            'SELECT `slots_per_appointment` FROM `standort` WHERE `StandortID` = :scopeId',
+            ['scopeId' => self::SCOPE_ID]
+        );
+        if ($value === false || $value === null || $value === '') {
+            return null;
+        }
+
+        return (int) $value;
     }
 
     private function writeAvailability(

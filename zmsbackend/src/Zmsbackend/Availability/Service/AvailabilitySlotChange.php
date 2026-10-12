@@ -31,9 +31,31 @@ class AvailabilitySlotChange extends \BO\Zmsbackend\Base
 
         $latest = (new \BO\Zmsbackend\Process\Service\Process())->readLatestBookedDate($scopeId, $now);
         $cut = $this->cutDate($latest, $now);
+        $changedFrom = [];
         foreach ($rows as $row) {
-            $this->applyToRow($row, $newSlotMinutes, $cut);
+            if ($this->applyToRow($row, $newSlotMinutes, $cut)) {
+                $changedFrom[(int) $row['slot_minutes']] = true;
+            }
         }
+        if (count($changedFrom) === 1) {
+            $this->rescaleSlotsPerAppointment($scopeId, (int) array_key_first($changedFrom), $newSlotMinutes);
+        }
+    }
+
+    /**
+     * Keep the same maximum appointment length in minutes when the slot length changes.
+     * An empty limit stays empty. Returns null when nothing should be written.
+     */
+    public static function scaledSlotsPerAppointment(?int $current, int $oldSlotMinutes, int $newSlotMinutes): ?int
+    {
+        if ($current === null || $current < 1 || $oldSlotMinutes < 1 || $newSlotMinutes < 1) {
+            return null;
+        }
+        if ($oldSlotMinutes === $newSlotMinutes) {
+            return null;
+        }
+
+        return intdiv(($current * $oldSlotMinutes) + $newSlotMinutes - 1, $newSlotMinutes);
     }
 
     /**
@@ -62,23 +84,23 @@ class AvailabilitySlotChange extends \BO\Zmsbackend\Base
     /**
      * @param array<string, mixed> $row
      */
-    private function applyToRow(array $row, int $newSlotMinutes, string $cut): void
+    private function applyToRow(array $row, int $newSlotMinutes, string $cut): bool
     {
         $endDate = (string) $row['end_date'];
         if ((int) $row['slot_minutes'] === $newSlotMinutes || $endDate < $cut) {
-            return;
+            return false;
         }
 
         $times = $this->fittedTimes($row, $newSlotMinutes);
         if ($times === null) {
-            return;
+            return false;
         }
 
         $startDate = (string) $row['start_date'];
         if ($startDate >= $cut) {
             $this->updateSlotWindow((int) $row['id'], $newSlotMinutes, $times);
             $this->writeHistory((int) $row['id']);
-            return;
+            return true;
         }
 
         $newId = $this->insertCopy((int) $row['id'], $cut, $endDate, $newSlotMinutes, $times);
@@ -93,6 +115,45 @@ class AvailabilitySlotChange extends \BO\Zmsbackend\Base
         if ($newId !== null) {
             $this->writeHistory($newId);
         }
+
+        return true;
+    }
+
+    private function rescaleSlotsPerAppointment(int $scopeId, int $oldSlotMinutes, int $newSlotMinutes): void
+    {
+        $scaled = self::scaledSlotsPerAppointment(
+            $this->readSlotsPerAppointment($scopeId),
+            $oldSlotMinutes,
+            $newSlotMinutes
+        );
+        if ($scaled === null) {
+            return;
+        }
+
+        $this->perform(
+            \BO\Zmsbackend\Availability\Repository\Availability::QUERY_UPDATE_SLOTS_PER_APPOINTMENT,
+            [
+                'slots' => $scaled,
+                'scopeId' => $scopeId,
+            ]
+        );
+        $scope = (new \BO\Zmsbackend\Scope\Service\Scope())->readEntity($scopeId, 0, true);
+        if ($scope !== null && $scope->hasId()) {
+            (new \BO\Zmsbackend\Scope\Service\Scope())->removeCache($scope);
+        }
+    }
+
+    private function readSlotsPerAppointment(int $scopeId): ?int
+    {
+        $value = $this->fetchValue(
+            \BO\Zmsbackend\Availability\Repository\Availability::QUERY_READ_SLOTS_PER_APPOINTMENT,
+            ['scopeId' => $scopeId]
+        );
+        if ($value === false || $value === null || $value === '') {
+            return null;
+        }
+
+        return (int) $value;
     }
 
     /**
