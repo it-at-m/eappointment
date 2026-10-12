@@ -91,6 +91,27 @@ public final class MyAppointmentsStep {
     }
     public ThinnedProcess syncBookingProcessFromLocalStorage() throws Exception {
         context.set();
+        String json =
+                (String)
+                        ((JavascriptExecutor) DriverUtil.getDriver())
+                                .executeScript(
+                                        "return localStorage.getItem('" + MyAppointmentsStep.LOCALSTORAGE_APPOINTMENT_KEY + "');");
+        if (json != null && !json.isBlank()) {
+            ThinnedProcess fromStorage = parseAndSetBookingProcessFromJson(json);
+            if (hasCancelCredentials(fromStorage)) {
+                ThinnedProcess already = zms.ataf.rest.steps.CitizenApiSteps.getBookingProcess();
+                if (already != null
+                        && already.getProcessId() != null
+                        && !already.getProcessId().equals(fromStorage.getProcessId())) {
+                    ScenarioLogManager.getLogger()
+                            .info(
+                                    "zmscitizenview: localStorage processId={} differs from synced {}; using localStorage",
+                                    fromStorage.getProcessId(),
+                                    already.getProcessId());
+                }
+                return fromStorage;
+            }
+        }
         ThinnedProcess already = zms.ataf.rest.steps.CitizenApiSteps.getBookingProcess();
         if (hasCancelCredentials(already)) {
             ScenarioLogManager.getLogger().info("zmscitizenview: booking process already set (from reserve step), skipping localStorage read");
@@ -101,11 +122,6 @@ public final class MyAppointmentsStep {
         if (hasCancelCredentials(already)) {
             return already;
         }
-        String json =
-                (String)
-                        ((JavascriptExecutor) DriverUtil.getDriver())
-                                .executeScript(
-                                        "return localStorage.getItem('" + MyAppointmentsStep.LOCALSTORAGE_APPOINTMENT_KEY + "');");
         if (json == null || json.isBlank()) {
             captureBookingProcessForCleanup();
             ThinnedProcess captured = zms.ataf.rest.steps.CitizenApiSteps.getBookingProcess();
