@@ -128,6 +128,7 @@ BACKUP_FILE="/tmp/zms_backup_$(date +%s).sql.gz"
 SKIP_DB_RESTORE="${SKIP_DB_RESTORE:-0}"
 BASE_SQL_FILE="$PROJECT_ROOT/.resources/zms.sql"
 FLYWAY_DIR="$PROJECT_ROOT/zmsautomation/src/main/resources/db/migration"
+ATAF_AFTER_DLDB_SQL="$PROJECT_ROOT/zmsautomation/src/main/resources/db/ataf-after-dldb.sql"
 DLDB_FIXTURE_DIR="$PROJECT_ROOT/zmsautomation/src/main/resources/dldb"
 
 info "Test URLs: BASE_URI=$BASE_URI"
@@ -680,6 +681,20 @@ if ! run_hourly_with_retries; then
   install_dldb_bundled_fixtures || exit 1
 fi
 clear_caches
+
+# Hourly reimports dldb providers and rewrites availability.slotTimeInMinutes from
+# provider.data. ATAF pins that must win over SADB run here (before minutly / calculateSlots).
+section "7b. ATAF after-DLDB overrides"
+if [[ -f "$ATAF_AFTER_DLDB_SQL" ]]; then
+  info "Applying $ATAF_AFTER_DLDB_SQL ..."
+  exec_sql < "$ATAF_AFTER_DLDB_SQL" || {
+    warn "ataf-after-dldb.sql failed"
+    exit 1
+  }
+  info "ATAF after-DLDB overrides applied."
+else
+  warn "Missing $ATAF_AFTER_DLDB_SQL — skipping after-DLDB overrides"
+fi
 
 section "8. Minutly Cronjob"
 export ZMS_CRONROOT=1

@@ -6,7 +6,8 @@ Feature: Admin Öffnungszeiten Terminabstand is 25 minutes at Führerscheinstell
   So that the Terminabstand is not reset to 5 minutes
 
   # ZMSKVR-933 (#fix), tested by ZMSKVR-934.
-  # Office 10308174 / scopes 6 (A), 256 (B), 347 (C). V61 sets provider + Timeslot to 25.
+  # Office 10308174 / scopes 6 (A), 256 (B), 347 (C).
+  # Pin is db/ataf-after-dldb.sql after hourly (not locations_de.json / SADB overwrite).
   # Neue Öffnungszeit reads provider.data.slotTimeInMinutes into #AvDaySlottime.
 
   Scenario Outline: New opening hours at Allgemeinschalter default Terminabstand to 25 minutes
