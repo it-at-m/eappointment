@@ -1,5 +1,5 @@
 #language: en
-@web @zmscitizenview @dldb-special-cases @citizen @ZMSKVR-1124 @ZMSKVR-1258 @ZMSKVR-1261 @ZMSKVR-1263 @ZMSKVR-397 @ZMSKVR-590 @ZMSKVR-657 @executeLocally
+@web @zmscitizenview @dldb-special-cases @citizen @ZMSKVR-1124 @ZMSKVR-1258 @ZMSKVR-1261 @ZMSKVR-1263 @ZMSKVR-397 @executeLocally
 Feature: CitizenView: Ruppertstraße Passkalender, Hauptkalender und Abholung (jump-in)
   As a citizen
   I want to book via the citizen view UI
