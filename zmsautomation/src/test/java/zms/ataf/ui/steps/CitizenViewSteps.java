@@ -1438,6 +1438,13 @@ public class CitizenViewSteps {
         page.assertProviderCheckboxPresent(officeId);
     }
 
+    @Then("only provider {int} should be checked among the Ort checkboxes")
+    public void onlyProviderShouldBeCheckedAmongTheOrtCheckboxes(int officeId) {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: assert only provider {} checked among Ort checkboxes", officeId);
+        page.assertOnlyProviderCheckedAmongOrtCheckboxes(officeId);
+    }
+
     @Then("provider checkbox {int} should not appear in the citizen view")
     public void providerCheckboxShouldNotAppear(int officeId) {
         try {

@@ -953,6 +953,11 @@ public class CitizenViewPage extends BasePage {
         providerLocation.assertProviderCheckboxAbsent(officeId);
     }
 
+    /** ZMSKVR-590: only the JumpIn office is checked among Ort checkboxes. */
+    public void assertOnlyProviderCheckedAmongOrtCheckboxes(int officeId) {
+        providerLocation.assertOnlyProviderCheckedAmongOrtCheckboxes(officeId);
+    }
+
     /**
      * Ort checkboxes start selected. Ranked Bürgerbüros follow frequency order. Scheidplatz has no
      * frequency rank in the catalog, so it follows them. Each checkbox also shows its address.
