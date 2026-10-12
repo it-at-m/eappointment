@@ -76,18 +76,22 @@ public final class JumpInErrorStep {
         return (de || en) && invalidJumpinErrorCalloutPresent();
     }
 
-    /** ZMSKVR-488: Patternlab Callout Error ({@code muc-callout type="error"}). */
+    /**
+     * ZMSKVR-488: Patternlab Callout Error. Vue renders {@code <muc-callout type="error">} as
+     * {@code div.m-callout.m-callout--error} (no {@code MUC-CALLOUT} host / type attribute).
+     */
     private boolean invalidJumpinErrorCalloutPresent() {
         String script =
-                "function walk(n,fn){if(!n)return false;if(fn(n))return true;"
+                "function textOf(n){var s='';if(!n)return s;if(n.nodeType===3)return n.nodeValue||'';"
+                        + "if(n.shadowRoot)s+=textOf(n.shadowRoot);var c=n.childNodes;if(c)for(var i=0;i<c.length;i++)s+=textOf(c[i]);"
+                        + "if(n.nodeType===1){var tag=(n.tagName||'').toUpperCase();"
+                        + "if(tag==='INPUT'||tag==='TEXTAREA')s+=' '+(n.value||'');}return s;}"
+                        + "function walk(n,fn){if(!n)return false;if(fn(n))return true;"
                         + "if(n.shadowRoot&&walk(n.shadowRoot,fn))return true;"
                         + "var c=n.children;if(c)for(var i=0;i<c.length;i++)if(walk(c[i],fn))return true;return false;}"
                         + "return walk(document.body,function(n){"
-                        + "var tag=(n.tagName||'').toUpperCase();"
-                        + "if(tag!=='MUC-CALLOUT')return false;"
-                        + "var t=(n.getAttribute('type')||'').toLowerCase();"
-                        + "if(t!=='error')return false;"
-                        + "var txt=((n.innerText||n.textContent||'')+'').replace(/\\s+/g,' ');"
+                        + "if(n.nodeType!==1||!n.classList||!n.classList.contains('m-callout--error'))return false;"
+                        + "var txt=textOf(n).replace(/\\s+/g,' ');"
                         + "return txt.indexOf('Diese Ansicht kann nicht geladen werden')>=0"
                         + "||txt.indexOf('This view cannot be loaded')>=0;});";
         Object o = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script);
