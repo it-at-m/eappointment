@@ -25,7 +25,8 @@ Dieses Modul enthält API- und UI-Tests für ZMS auf Basis von [ATAF](https://it
   - `ui/zmsadmin/` – Admin-UI-Features
   - `ui/zmsstatistic/` – Statistik-UI-Features
   - `ui/zmscitizenview/` – CitizenView-UI (Service Finder + vollständige Buchung E2E)
-- `src/main/resources/db/migration/` – Flyway-Datenbankmigrationen
+- `src/main/resources/db/migration/` – Flyway-Migrationen (History-Tabelle `flyway_migration`, vor dem Stunden-Cron)
+- `src/main/resources/db/migration-after-hourly/` – Flyway-Migrationen (History-Tabelle `flyway_migration_after_hourly`, nach Stunden-Cron / vor Minuten-Cron)
 
 ## Tests ausführen
 
@@ -70,9 +71,10 @@ Das Skript:
 2. Leert Caches
 3. Setzt die Datenbank zurück (Tabellen verwerfen)
 4. Importiert die Basis-Datenbank (`.resources/zms.sql`)
-5. Führt Flyway-Migrationen aus (Maven-Plugin)
+5. Führt Flyway-Migrationen aus `db/migration` in die History-Tabelle `flyway_migration` aus
 6. Führt PHP-Migrationen aus (`zmsbackend` migrate)
-7. Führt den Stunden-Cron aus (mit Wiederholungen)
+7. Führt den Stunden-Cron aus (mit Wiederholungen; Fallback auf gebündelte `dldb/*.json` nur wenn Live-SADB scheitert)
+   7b. Führt Flyway-Migrationen aus `db/migration-after-hourly` in `flyway_migration_after_hourly` aus — Pins, die den stündlichen Provider-Reimport überstimmen müssen; nach Stunden-Cron, vor Minuten-Cron
 8. Führt den Minuten-Cron und die Slot-Berechnung aus (`calculateSlots`)
 9. Führt HTTP-Health-Checks aus (zmsbackend, Citizen-API, CitizenView, optionales refarch-gateway)
 10. Richtet Display-/Browser-Tooling ein (Xvfb, Treiberprüfungen)
@@ -234,7 +236,16 @@ cd zmsautomation && mvn test
 
 ## Datenbankeinrichtung
 
-[ATAF](https://it-at-m.github.io/agile-test-automation-framework/)-Tests führen vor der Testausführung automatisch Flyway-Migrationen aus. Die Migrationen liegen unter `src/main/resources/db/migration/`.
+Das [ATAF](https://it-at-m.github.io/agile-test-automation-framework/)-Setup über `zmsautomation-test` führt **zwei** Flyway-Pfade mit getrennten History-Tabellen aus:
+
+| Ordner                                          | History-Tabelle                 | Wann                                             |
+| ----------------------------------------------- | ------------------------------- | ------------------------------------------------ |
+| `src/main/resources/db/migration/`              | `flyway_migration`              | Schritt 5, vor dem Stunden-Cron                  |
+| `src/main/resources/db/migration-after-hourly/` | `flyway_migration_after_hourly` | Schritt 7b, nach Stunden-Cron / vor Minuten-Cron |
+
+`db/migration` für normale ATAF-Seed-Daten. `db/migration-after-hourly` für Pins, die den stündlichen DLDB/SADB-Provider-Reimport überstimmen müssen (z. B. `provider.data.slotTimeInMinutes`). Nicht in `locations_de.json` (nur Offline-Fallback) oder `munich_sadb_overwrite.json` (Anwendungs-Overwrites) legen.
+
+Benennung im Flyway-Stil (`V###__beschreibung.sql`). After-hourly nutzt `baselineVersion=0`, damit `V001` angewendet wird. Jedes Setup leert die History-Zeilen, damit versionierte Migrationen erneut laufen (wichtig für `CURDATE()`).
 
 ## Beispiele für Test-Tags
 
