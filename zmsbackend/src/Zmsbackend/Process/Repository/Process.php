@@ -1400,6 +1400,15 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
             $data['waiting_time'] = sprintf('%02d:%02d:%02d', $hours, $minutes, $seconds);
         }
 
+        if (
+            in_array($previousStatus, ['called', 'processing'], true)
+            && $process->status == 'queued'
+            && isset($process->queue->callCount)
+            && (int) $process->queue->callCount === 0
+        ) {
+            $data['waiting_time'] = null;
+        }
+
         $this->addValues($data);
     }
 
