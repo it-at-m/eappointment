@@ -128,7 +128,9 @@ BACKUP_FILE="/tmp/zms_backup_$(date +%s).sql.gz"
 SKIP_DB_RESTORE="${SKIP_DB_RESTORE:-0}"
 BASE_SQL_FILE="$PROJECT_ROOT/.resources/zms.sql"
 FLYWAY_DIR="$PROJECT_ROOT/zmsautomation/src/main/resources/db/migration"
-ATAF_AFTER_DLDB_SQL="$PROJECT_ROOT/zmsautomation/src/main/resources/db/ataf-after-dldb.sql"
+# Versioned ATAF pins that must win over hourly DLDB reimport (before minutly).
+# Naming: V###__ticket_description.sql — applied in lexicographic order.
+MIGRATION_AFTER_HOURLY_DIR="$PROJECT_ROOT/zmsautomation/src/main/resources/db/migration-after-hourly"
 DLDB_FIXTURE_DIR="$PROJECT_ROOT/zmsautomation/src/main/resources/dldb"
 
 info "Test URLs: BASE_URI=$BASE_URI"
@@ -683,18 +685,37 @@ fi
 clear_caches
 
 # Hourly reimports dldb providers and rewrites availability.slotTimeInMinutes from
-# provider.data. ATAF pins that must win over SADB run here (before minutly / calculateSlots).
-section "7b. ATAF after-DLDB overrides"
-if [[ -f "$ATAF_AFTER_DLDB_SQL" ]]; then
-  info "Applying $ATAF_AFTER_DLDB_SQL ..."
-  exec_sql < "$ATAF_AFTER_DLDB_SQL" || {
-    warn "ataf-after-dldb.sql failed"
-    exit 1
-  }
-  info "ATAF after-DLDB overrides applied."
-else
-  warn "Missing $ATAF_AFTER_DLDB_SQL — skipping after-DLDB overrides"
-fi
+# provider.data. ATAF pins that must win over SADB run here — after hourly, before
+# minutly / calculateSlots (not after both).
+apply_migration_after_hourly_sql() {
+  local sql_file count=0
+  if [[ ! -d "$MIGRATION_AFTER_HOURLY_DIR" ]]; then
+    warn "Missing $MIGRATION_AFTER_HOURLY_DIR — skipping migration-after-hourly"
+    return 0
+  fi
+  shopt -s nullglob
+  local files=("$MIGRATION_AFTER_HOURLY_DIR"/V*.sql)
+  shopt -u nullglob
+  if ((${#files[@]} == 0)); then
+    info "No migration-after-hourly SQL under $MIGRATION_AFTER_HOURLY_DIR"
+    return 0
+  fi
+  # Lexicographic order matches Flyway-style V001__, V002__, …
+  IFS=$'\n' files=($(printf '%s\n' "${files[@]}" | LC_ALL=C sort))
+  unset IFS
+  for sql_file in "${files[@]}"; do
+    info "Applying migration-after-hourly $(basename "$sql_file") ..."
+    exec_sql < "$sql_file" || {
+      warn "migration-after-hourly $(basename "$sql_file") failed"
+      return 1
+    }
+    count=$((count + 1))
+  done
+  info "Applied ${count} migration-after-hourly SQL file(s)."
+}
+
+section "7b. ATAF migration-after-hourly"
+apply_migration_after_hourly_sql || exit 1
 
 section "8. Minutly Cronjob"
 export ZMS_CRONROOT=1

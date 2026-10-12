@@ -7,8 +7,8 @@ Feature: ZMS API keeps 25-minute slots for Führerscheinstelle Allgemeinschalter
   # ZMSKVR-933 (#fix), tested by ZMSKVR-934.
   # Office 10308174 — Führerscheinstelle (KVR-II/44211):
   #   Allgemeinschalter A = scope 6, B = 256, C = 347.
-  # Pin is db/ataf-after-dldb.sql after hourly (not locations_de.json / SADB overwrite):
-  # hourly reimports providers and force-updates availability from provider.data.
+  # Pin is db/migration-after-hourly/V001__…sql (after hourly, before minutly; not locations_de / SADB overwrite).
+  # Hourly reimports providers and force-updates availability from provider.data.
 
   Background:
     Given the ZMS API is available

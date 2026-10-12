@@ -1,6 +1,7 @@
--- ATAF post-DLDB overrides (run after cronjob.hourly / bundled updateDldbData, before minutly).
--- Hourly reimports source=dldb providers and force-updates availability.slotTimeInMinutes from
--- provider.data — so Flyway provider/Timeslot pins do not survive. Do not put these in
+-- ATAF migration-after-hourly (applied after cronjob.hourly / bundled updateDldbData,
+-- before cronjob.minutly / calculateSlots).
+-- Hourly reimports source=dldb providers and force-updates availability.slotTimeInMinutes
+-- from provider.data — Flyway provider/Timeslot pins do not survive. Do not put these in
 -- munich_sadb_overwrite.json (application) or locations_de.json (offline fallback only).
 --
 -- ZMSKVR-933 / ZMSKVR-934: Führerscheinstelle 10308174 Allgemeinschalter A–C → 25 minutes.
@@ -51,9 +52,9 @@ SET @upd_sql := (
       )
   END
 );
-PREPARE ataf_dldb_upd FROM @upd_sql;
-EXECUTE ataf_dldb_upd;
-DEALLOCATE PREPARE ataf_dldb_upd;
+PREPARE ataf_mah_upd FROM @upd_sql;
+EXECUTE ataf_mah_upd;
+DEALLOCATE PREPARE ataf_mah_upd;
 
 SET @range_start := CURDATE();
 SET @range_end := DATE_ADD(CURDATE(), INTERVAL 14 DAY);
@@ -99,6 +100,6 @@ SET @hours_sql := (
     )
   END
 );
-PREPARE ataf_dldb_ins FROM @hours_sql;
-EXECUTE ataf_dldb_ins;
-DEALLOCATE PREPARE ataf_dldb_ins;
+PREPARE ataf_mah_ins FROM @hours_sql;
+EXECUTE ataf_mah_ins;
+DEALLOCATE PREPARE ataf_mah_ins;
