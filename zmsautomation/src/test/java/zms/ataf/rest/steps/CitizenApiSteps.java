@@ -1761,6 +1761,50 @@ public class CitizenApiSteps {
         postAppointmentUpdate(familyName, email, customTextfield != null ? customTextfield : "", true, false);
     }
 
+    @When("I update the appointment with family name {string} and customTextfield {string} as the logged-in citizen")
+    public void iUpdateTheAppointmentWithFamilyNameAndCustomTextfieldAsTheLoggedInCitizen(
+            String familyName, String customTextfield) {
+        String email = familyName.toLowerCase(Locale.ROOT).replaceAll("[^a-z0-9]", "") + "@mailinator.com";
+        setBookingContactEmail(email);
+        postAppointmentUpdate(familyName, email, customTextfield != null ? customTextfield : "", true, true);
+    }
+
+    @When("I authenticate as Keycloak citizen {string}")
+    public void iAuthenticateAsKeycloakCitizen(String loginName) {
+        citizenAccessToken = CitizenKeycloakTokenHelper.fetchAccessToken(loginName);
+        ScenarioLogManager.getLogger().info("Citizen API: authenticated as Keycloak citizen {}", loginName);
+    }
+
+    @Then("the citizen access token should omit claim {string}")
+    public void theCitizenAccessTokenShouldOmitClaim(String claimName) {
+        String token = requireCitizenAccessToken();
+        String[] parts = token.split("\\.");
+        Assertions.assertThat(parts.length)
+                .as("JWT parts")
+                .isGreaterThanOrEqualTo(2);
+        String payloadJson =
+                new String(java.util.Base64.getUrlDecoder().decode(padBase64Url(parts[1])), java.nio.charset.StandardCharsets.UTF_8);
+        com.fasterxml.jackson.databind.JsonNode payload;
+        try {
+            payload = new com.fasterxml.jackson.databind.ObjectMapper().readTree(payloadJson);
+        } catch (Exception e) {
+            throw new IllegalStateException("Could not parse citizen access token payload", e);
+        }
+        com.fasterxml.jackson.databind.JsonNode claim = payload.get(claimName);
+        boolean missingOrBlank =
+                claim == null || claim.isNull() || (claim.isTextual() && claim.asText().isBlank());
+        Assertions.assertThat(missingOrBlank)
+                .as("citizen JWT claim %s must be omitted or blank. payload=%s", claimName, payloadJson)
+                .isTrue();
+        ScenarioLogManager.getLogger()
+                .info("Citizen API: access token omits or blanks claim {}", claimName);
+    }
+
+    private static String padBase64Url(String value) {
+        int pad = (4 - (value.length() % 4)) % 4;
+        return value + "====".substring(0, pad);
+    }
+
     @When("I attempt to update the appointment with family name {string} and customTextfield {string}")
     public void iAttemptToUpdateTheAppointmentWithFamilyNameAndCustomTextfield(
             String familyName, String customTextfield) {
@@ -1896,6 +1940,18 @@ public class CitizenApiSteps {
             .as("my appointments should include process %s", remembered.processId)
             .isNotNull();
         Assertions.assertThat(match.getServiceId()).isEqualTo(serviceId);
+    }
+
+    @Then("my appointments include the remembered {string} appointment with familyName {string}")
+    public void myAppointmentsIncludeTheRememberedAppointmentWithFamilyName(String label, String familyName) {
+        RememberedAppointment remembered = requireRemembered(label);
+        ThinnedProcess match = findMyAppointment(remembered.processId);
+        Assertions.assertThat(match)
+                .as("my appointments should include process %s", remembered.processId)
+                .isNotNull();
+        Assertions.assertThat(contactValue(match.getFamilyName()))
+                .as("my-appointments familyName for process %s", remembered.processId)
+                .isEqualTo(familyName);
     }
 
     @Then("my appointments do not include the remembered {string} appointment")
@@ -2239,6 +2295,20 @@ public class CitizenApiSteps {
      *     process id). Citizen confirm currently keeps the process id for prefix scopes because
      *     the thinned scope omits {@code queue.displayNumberPrefix}.
      */
+    @Then("the confirm endpoint icsContent should contain {string}")
+    public void theConfirmEndpointIcsContentShouldContain(String expected) {
+        response.then().statusCode(200);
+        ThinnedProcess process =
+                lastReserveProcess != null ? lastReserveProcess : parseDataResponse(response, ThinnedProcess.class);
+        Assertions.assertThat(process).as("confirm process").isNotNull();
+        String unfolded = unfoldIcs(process.getIcsContent());
+        Assertions.assertThat(unfolded)
+                .as("confirm-appointment icsContent should contain '%s'", expected)
+                .contains(expected);
+        ScenarioLogManager.getLogger()
+                .info("Citizen API: confirm icsContent contains {}", expected);
+    }
+
     @Then("the confirm endpoint icsContent should match the Munich template with {string} displayNumber")
     public void theConfirmEndpointIcsContentShouldMatchTheMunichTemplateWithDisplayNumber(
             String displayNumberMode) {

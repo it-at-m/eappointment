@@ -25,6 +25,8 @@ public class CitizenViewPageContext extends Context {
 
     private WindowType windowType;
     public String lastCitizenViewUrl;
+    /** Keycloak username last assigned for Bürger-Login; Meine Termine re-login reuses it. */
+    public String lastCitizenLoginUsername;
 
     CitizenViewPageContext(RemoteWebDriver driver) {
         super(driver);

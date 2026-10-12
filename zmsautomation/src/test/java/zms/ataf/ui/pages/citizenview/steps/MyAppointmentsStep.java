@@ -835,8 +835,11 @@ public final class MyAppointmentsStep {
                     || shadow.shadowDomContainsText("Neuer Termin")
                     || !d.findElements(By.id("username")).isEmpty());
             if (!DriverUtil.getDriver().findElements(By.id("username")).isEmpty()) {
-                String username =
-                        TestPropertiesHelper.getPropertyAsString("citizenUserName", true, "citizen");
+                String username = context.lastCitizenLoginUsername;
+                if (username == null || username.isBlank()) {
+                    username =
+                            TestPropertiesHelper.getPropertyAsString("citizenUserName", true, "citizen");
+                }
                 String password =
                         TestPropertiesHelper.getPropertyAsString("citizenUserPassword", true, "vorschau");
                 contact.completeKeycloakLoginForm(AccountCheckout.assignCitizenLogin(username), password);
@@ -1229,6 +1232,17 @@ public final class MyAppointmentsStep {
         Assert.assertTrue(
                 capturedIcs.contains("DTSTART;TZID=Europe/Berlin:" + start),
                 "ICS DTSTART should be the booked slot " + start + ".");
+    }
+
+    /** ICS DESCRIPTION is the confirmation mail plain text and includes {@code client.familyName}. */
+    public void assertDownloadedIcsContainsText(String expected) {
+        context.set();
+        Assert.assertNotNull(capturedIcs, "No ICS file was downloaded.");
+        String unfolded = unfoldIcs(capturedIcs);
+        Assert.assertTrue(
+                unfolded.contains(expected),
+                "ICS should contain \"" + expected + "\". ICS=" + unfolded);
+        ScenarioLogManager.getLogger().info("zmscitizenview: ICS contains {}", expected);
     }
 
     /**
