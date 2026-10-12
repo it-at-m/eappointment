@@ -232,7 +232,7 @@ public final class ProviderLocationStep {
 
     /**
      * ZMSKVR-714: Feuerwache {@code h5.location-title} texts under Verfügbare Termine rise by
-     * Wache number (string sort would put 10 after 1). When 10 is present it must be last.
+     * Wache number (string sort would put 10 after 1). Feuerwache 10 must be present and last.
      */
     public void assertFeuerwacheTitlesInNumericOrder(JsonNode titles) {
         List<Integer> numbers = feuerwacheNumbersFromTitles(titles);
@@ -245,11 +245,23 @@ public final class ProviderLocationStep {
                             + " from "
                             + titles);
         }
-        if (numbers.contains(10)) {
-            Assert.assertEquals(
-                    numbers.get(numbers.size() - 1).intValue(),
-                    10,
-                    "Feuerwache 10 should be last among listed Wachen, was " + numbers);
+        Assert.assertTrue(
+                numbers.contains(10),
+                "Feuerwache 10 must be listed under Verfügbare Termine, was " + numbers);
+        Assert.assertEquals(
+                numbers.get(numbers.size() - 1).intValue(),
+                10,
+                "Feuerwache 10 should be last among listed Wachen, was " + numbers);
+    }
+
+    /** Ascending Wache numbers only (days that do not include Feuerwache 10). */
+    public void assertFeuerwacheTitlesAscending(JsonNode titles) {
+        List<Integer> numbers = feuerwacheNumbersFromTitles(titles);
+        Assert.assertFalse(numbers.isEmpty(), "Expected Feuerwache headings under Verfügbare Termine: " + titles);
+        for (int i = 1; i < numbers.size(); i++) {
+            Assert.assertTrue(
+                    numbers.get(i) > numbers.get(i - 1),
+                    "Feuerwache headings should rise by number, was " + numbers + " from " + titles);
         }
     }
 
@@ -560,7 +572,11 @@ public final class ProviderLocationStep {
         if (!m.find()) {
             return null;
         }
-        return Integer.parseInt(m.group(1));
+        try {
+            return Integer.parseInt(m.group(1));
+        } catch (NumberFormatException e) {
+            return null;
+        }
     }
 
     public static int frequencyRank(String name) {
