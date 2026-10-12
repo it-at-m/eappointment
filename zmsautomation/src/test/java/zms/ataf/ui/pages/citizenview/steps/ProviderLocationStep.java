@@ -231,20 +231,12 @@ public final class ProviderLocationStep {
     }
 
     /**
-     * ZMSKVR-714: under Verfügbare Termine, Feuerwache headings keep numeric order so 10 is last
-     * among listed Wachen (not after 1 as with string sort).
+     * ZMSKVR-714: Feuerwache {@code h5.location-title} texts under Verfügbare Termine rise by
+     * Wache number (string sort would put 10 after 1). When 10 is present it must be last.
      */
     public void assertFeuerwacheTitlesInNumericOrder(JsonNode titles) {
-        List<Integer> numbers = new ArrayList<>();
-        for (JsonNode title : titles) {
-            Integer n = feuerwacheNumber(title.path("text").asText());
-            if (n != null) {
-                numbers.add(n);
-            }
-        }
-        Assert.assertTrue(
-                numbers.size() >= 2,
-                "Expected several Feuerwache headings under Verfügbare Termine: " + titles);
+        List<Integer> numbers = feuerwacheNumbersFromTitles(titles);
+        Assert.assertFalse(numbers.isEmpty(), "Expected Feuerwache headings under Verfügbare Termine: " + titles);
         for (int i = 1; i < numbers.size(); i++) {
             Assert.assertTrue(
                     numbers.get(i) > numbers.get(i - 1),
@@ -253,10 +245,23 @@ public final class ProviderLocationStep {
                             + " from "
                             + titles);
         }
-        Assert.assertEquals(
-                numbers.get(numbers.size() - 1).intValue(),
-                10,
-                "Feuerwache 10 should be last among listed Wachen, was " + numbers);
+        if (numbers.contains(10)) {
+            Assert.assertEquals(
+                    numbers.get(numbers.size() - 1).intValue(),
+                    10,
+                    "Feuerwache 10 should be last among listed Wachen, was " + numbers);
+        }
+    }
+
+    public static List<Integer> feuerwacheNumbersFromTitles(JsonNode titles) {
+        List<Integer> numbers = new ArrayList<>();
+        for (JsonNode title : titles) {
+            Integer n = feuerwacheNumber(title.path("text").asText());
+            if (n != null) {
+                numbers.add(n);
+            }
+        }
+        return numbers;
     }
 
     /**

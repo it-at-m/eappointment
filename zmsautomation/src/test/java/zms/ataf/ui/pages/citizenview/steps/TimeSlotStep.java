@@ -857,21 +857,62 @@ public final class TimeSlotStep {
         providerLocation.assertOfficeOrder(titles, false, false);
     }
 
-    /** ZMSKVR-151 / ZMSKVR-714: list-view office headings keep Feuerwache 1…10 (10 last). */
+    /**
+     * ZMSKVR-151 / ZMSKVR-714: list-view location titles stay numeric per day; FW10 appears (ATAF
+     * seats are on different days — Föhring tomorrow, Pasing/Neuperlach/Riem later — so one open
+     * day often shows a single Wache).
+     */
     public void assertFeuerwacheListTitlesInNumericOrder() {
         context.set();
-        JsonNode titles = new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(defaultWaitSeconds))
+        Assert.assertTrue(
+                shadow.deepElementExists("#listViewAccordion"),
+                "List view accordion required under Verfügbare Termine");
+        JsonNode headers = new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(defaultWaitSeconds))
                 .until(d -> {
-                    JsonNode node = locationTitles().path("titles");
-                    int fw = 0;
-                    for (JsonNode t : node) {
-                        if (t.path("text").asText().contains("Feuerwache")) {
-                            fw++;
-                        }
-                    }
-                    return fw >= 2 ? node : null;
+                    JsonNode node = listSnapshot();
+                    return node.path("count").asInt() >= 1 ? node : null;
                 });
-        providerLocation.assertFeuerwacheTitlesInNumericOrder(titles);
+        int dayCount = headers.path("count").asInt();
+        Assert.assertTrue(dayCount >= 1, "Expected list date accordions: " + headers);
+        boolean sawTen = false;
+        StringBuilder report = new StringBuilder();
+        for (int day = 0; day < dayCount; day++) {
+            openListDateAtIndex(day);
+            CitizenViewWaits.sleepQuiet(400L);
+            JsonNode titles = locationTitles().path("titles");
+            java.util.List<Integer> numbers =
+                    ProviderLocationStep.feuerwacheNumbersFromTitles(titles);
+            report.append(" day")
+                    .append(day)
+                    .append('=')
+                    .append(numbers);
+            if (numbers.isEmpty()) {
+                continue;
+            }
+            providerLocation.assertFeuerwacheTitlesInNumericOrder(titles);
+            if (numbers.contains(10)) {
+                sawTen = true;
+            }
+        }
+        Assert.assertTrue(
+                sawTen,
+                "Feuerwache 10 must appear under Verfügbare Termine (not after 1 via string sort)."
+                        + report);
+    }
+
+    /** Expand the list-view date accordion at {@code index} (0-based). */
+    private void openListDateAtIndex(int index) {
+        JsonNode clicked = json.citizenJson(
+                "(function(){var idx=arguments[0];"
+                        + "var headers=cssAll('#listViewAccordion h4.m-accordion__section-header');"
+                        + "if(idx<0||idx>=headers.length)return {clicked:false,reason:'index'};"
+                        + "var b=headers[idx].querySelector('button');if(!b)return {clicked:false,reason:'button'};"
+                        + "if(b.getAttribute('aria-expanded')==='true')return {clicked:true,already:true};"
+                        + "b.scrollIntoView({block:'center'});b.click();return {clicked:true};})()",
+                index);
+        Assert.assertTrue(
+                clicked.path("clicked").asBoolean(),
+                "Could not open list date accordion " + index + ": " + clicked);
     }
 
     /** Früher is a disabled ghost button. Später is an enabled ghost button. */
