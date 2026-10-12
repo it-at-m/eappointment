@@ -210,6 +210,27 @@ public class CitizenApiSteps {
             .containsExactlyInAnyOrderElementsOf(expected);
     }
 
+    /**
+     * ZMSKVR-151: offices-and-services {@code priority} mirrors DLDB
+     * {@code LOCATION_PRIO_BY_DISPLAY_NAME} (Feuerwache and Bürgerbüro rows).
+     */
+    @Then("office {int} should have priority {int}")
+    public void officeShouldHavePriority(int officeId, int expectedPriority) {
+        Assertions.assertThat(lastOfficesAndServicesResponse)
+            .as("Request offices-and-services first")
+            .isNotNull();
+        Office office = findOfficeById(lastOfficesAndServicesResponse, officeId);
+        Assertions.assertThat(office)
+            .as("Expected office %d in offices-and-services", officeId)
+            .isNotNull();
+        Assertions.assertThat(office.getPriority())
+            .as(
+                "office %d (%s) priority — LOCATION_PRIO_BY_DISPLAY_NAME / provider.data.prio",
+                officeId,
+                office.getName())
+            .isEqualTo(expectedPriority);
+    }
+
     @Then("office {int} should use a slot time of {int} minutes and service {int} should take {int} slot")
     public void officeShouldUseSlotTimeAndServiceShouldTakeSlots(
             int officeId, int slotTimeInMinutes, int serviceId, int slots) {

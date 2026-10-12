@@ -986,6 +986,14 @@ public class CitizenViewPage extends BasePage {
         providerLocation.assertOfficesCheckedInFrequencyOrder();
     }
 
+    public void assertFeuerwacheCheckboxesInNumericOrder() {
+        providerLocation.assertFeuerwacheCheckboxesInNumericOrder();
+    }
+
+    public void assertFeuerwacheListTitlesInNumericOrder() {
+        timeSlot.assertFeuerwacheListTitlesInNumericOrder();
+    }
+
     /** Login resume must keep several Ort checkboxes on (ZMSKVR-1002). */
     public void assertAtLeastNLocationCheckboxesChecked(int minimum) {
         providerLocation.assertAtLeastNLocationCheckboxesChecked(minimum);

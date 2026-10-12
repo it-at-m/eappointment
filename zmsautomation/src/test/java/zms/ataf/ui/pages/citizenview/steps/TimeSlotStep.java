@@ -857,6 +857,94 @@ public final class TimeSlotStep {
         providerLocation.assertOfficeOrder(titles, false, false);
     }
 
+    /**
+     * ZMSKVR-151 / ZMSKVR-714: open the list day that has Feuerwache 10 (Riem, day+4 in ATAF) and
+     * assert that day's headings end with 10. Other days only get ascending checks (one Wache per
+     * day in fixtures). List hour pagers often open on another day's hour — Später until titles
+     * show.
+     */
+    public void assertFeuerwacheListTitlesInNumericOrder() {
+        context.set();
+        Assert.assertTrue(
+                shadow.deepElementExists("#listViewAccordion"),
+                "List view accordion required under Verfügbare Termine");
+        JsonNode headers = new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(defaultWaitSeconds))
+                .until(d -> {
+                    JsonNode node = listSnapshot();
+                    return node.path("count").asInt() >= 1 ? node : null;
+                });
+        int dayCount = headers.path("count").asInt();
+        Assert.assertTrue(dayCount >= 1, "Expected list date accordions: " + headers);
+        JsonNode titlesWithTen = null;
+        StringBuilder report = new StringBuilder();
+        for (int day = 0; day < dayCount; day++) {
+            openListDateAtIndex(day);
+            JsonNode titles = waitForOpenListLocationTitles();
+            java.util.List<Integer> numbers =
+                    ProviderLocationStep.feuerwacheNumbersFromTitles(titles);
+            report.append(" day")
+                    .append(day)
+                    .append('=')
+                    .append(numbers);
+            if (numbers.isEmpty()) {
+                continue;
+            }
+            if (numbers.contains(10)) {
+                titlesWithTen = titles;
+            } else {
+                providerLocation.assertFeuerwacheTitlesAscending(titles);
+            }
+        }
+        Assert.assertNotNull(
+                titlesWithTen,
+                "Feuerwache 10 must appear under Verfügbare Termine (open Riem day+4)."
+                        + report);
+        providerLocation.assertFeuerwacheTitlesInNumericOrder(titlesWithTen);
+    }
+
+    /**
+     * Open list days keep the previous day's hour; advance Später until {@code h5.location-title}
+     * appears (or the pager is exhausted).
+     */
+    private JsonNode waitForOpenListLocationTitles() {
+        for (int attempt = 0; attempt < 8; attempt++) {
+            CitizenViewWaits.sleepQuiet(400L);
+            JsonNode titles = locationTitles().path("titles");
+            if (titles.size() > 0) {
+                return titles;
+            }
+            JsonNode later =
+                    json.citizenJson(
+                            "(function(){var open=cssAll('#listViewAccordion section.m-accordion__section-content.show')[0];"
+                                    + "if(!open)return {clicked:false,reason:'no-open'};"
+                                    + "var btn=findButton(open,'Später');if(!btn)return {clicked:false,reason:'no-btn'};"
+                                    + "if(isDisabled(btn))return {clicked:false,disabled:true};"
+                                    + "var inner=btn.shadowRoot&&btn.shadowRoot.querySelector('button');"
+                                    + "(inner||btn).click();return {clicked:true};})()");
+            if (!later.path("clicked").asBoolean()) {
+                break;
+            }
+        }
+        return locationTitles().path("titles");
+    }
+
+    /** Expand the list-view date accordion at {@code index} (0-based). */
+    private void openListDateAtIndex(int index) {
+        // citizenJson exposes Selenium args as __args; an IIFE would shadow arguments.
+        JsonNode clicked = json.citizenJson(
+                "(function(){var idx=__args[0];"
+                        + "var headers=cssAll('#listViewAccordion h4.m-accordion__section-header');"
+                        + "if(idx<0||idx>=headers.length)return {clicked:false,reason:'index',len:headers.length};"
+                        + "var h=headers[idx];if(!h)return {clicked:false,reason:'header'};"
+                        + "var b=h.querySelector('button');if(!b)return {clicked:false,reason:'button'};"
+                        + "if(b.getAttribute('aria-expanded')==='true')return {clicked:true,already:true};"
+                        + "b.scrollIntoView({block:'center'});b.click();return {clicked:true};})()",
+                index);
+        Assert.assertTrue(
+                clicked.path("clicked").asBoolean(),
+                "Could not open list date accordion " + index + ": " + clicked);
+    }
+
     /** Früher is a disabled ghost button. Später is an enabled ghost button. */
     public void assertCalendarGhostPagerStartsAtFirstGroup() {
         context.set();

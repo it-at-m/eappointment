@@ -726,6 +726,19 @@ public class CitizenViewSteps {
         page.assertOfficesCheckedInFrequencyOrder();
     }
 
+    @Then("the Feuerwache location checkboxes are in numeric order from 1 to 10")
+    public void theFeuerwacheLocationCheckboxesAreInNumericOrderFrom1To10() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: Feuerwache Ort checkboxes 1…10");
+        page.assertFeuerwacheCheckboxesInNumericOrder();
+    }
+
+    @Then("the Feuerwache headings under available appointments are in numeric order with 10 last")
+    public void theFeuerwacheHeadingsUnderAvailableAppointmentsAreInNumericOrderWith10Last() {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: Feuerwache list/calendar headings numeric, 10 last");
+        page.assertFeuerwacheListTitlesInNumericOrder();
+    }
+
     @Then("at least {int} location checkboxes are checked in the citizen view")
     public void atLeastNLocationCheckboxesAreCheckedInTheCitizenView(int minimum) {
         ScenarioLogManager.getLogger()
