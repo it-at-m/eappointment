@@ -1,11 +1,15 @@
 package zms.ataf.ui.pages.citizenview.steps;
 
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.function.BooleanSupplier;
 import java.util.function.IntConsumer;
 import java.util.function.IntSupplier;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -36,6 +40,9 @@ public final class ProviderLocationStep {
         "Bürgerbüro Leonrodstraße"
     };
     static final String OFFICE_SCHEIDPLATZ = "Bürgerbüro Scheidplatz";
+
+    /** ZMSKVR-151: Branddirektion Ort list is numeric 1…10 via DLDB {@code prio} (not string sort). */
+    static final Pattern FEUERWACHE_NUMBER = Pattern.compile("Feuerwache\\s+(\\d+)\\b");
 
 
     private final CitizenViewPageContext context;
@@ -193,6 +200,80 @@ public final class ProviderLocationStep {
             return;
         }
         assertOfficeOrder(offices, true, true);
+    }
+
+    /**
+     * ZMSKVR-151 / ZMSKVR-714: Feuerwache Ort checkboxes are 1…10 (DLDB prio 10…1, UI sorts
+     * priority descending). Lexicographic label sort would put 10 after 1.
+     */
+    public void assertFeuerwacheCheckboxesInNumericOrder() {
+        context.set();
+        JsonNode offices;
+        try {
+            offices = new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(defaultWaitSeconds))
+                    .until(d -> {
+                        JsonNode node = providerCheckboxes().path("offices");
+                        return feuerwacheNumbers(node).size() >= 10 ? node : null;
+                    });
+        } catch (TimeoutException e) {
+            Assert.fail(
+                    "Expected 10 Feuerwache Ort checkboxes: " + providerCheckboxes());
+            return;
+        }
+        List<Integer> numbers = feuerwacheNumbers(offices);
+        Assert.assertEquals(numbers.size(), 10, "Expected Feuerwache 1…10 checkboxes: " + offices);
+        for (int i = 0; i < 10; i++) {
+            Assert.assertEquals(
+                    numbers.get(i).intValue(),
+                    i + 1,
+                    "Feuerwache Ort order should be 1…10, was " + numbers + " from " + offices);
+        }
+    }
+
+    /**
+     * ZMSKVR-714: Feuerwache {@code h5.location-title} texts under Verfügbare Termine rise by
+     * Wache number (string sort would put 10 after 1). Feuerwache 10 must be present and last.
+     */
+    public void assertFeuerwacheTitlesInNumericOrder(JsonNode titles) {
+        List<Integer> numbers = feuerwacheNumbersFromTitles(titles);
+        Assert.assertFalse(numbers.isEmpty(), "Expected Feuerwache headings under Verfügbare Termine: " + titles);
+        for (int i = 1; i < numbers.size(); i++) {
+            Assert.assertTrue(
+                    numbers.get(i) > numbers.get(i - 1),
+                    "Feuerwache headings should rise by number (10 last), was "
+                            + numbers
+                            + " from "
+                            + titles);
+        }
+        Assert.assertTrue(
+                numbers.contains(10),
+                "Feuerwache 10 must be listed under Verfügbare Termine, was " + numbers);
+        Assert.assertEquals(
+                numbers.get(numbers.size() - 1).intValue(),
+                10,
+                "Feuerwache 10 should be last among listed Wachen, was " + numbers);
+    }
+
+    /** Ascending Wache numbers only (days that do not include Feuerwache 10). */
+    public void assertFeuerwacheTitlesAscending(JsonNode titles) {
+        List<Integer> numbers = feuerwacheNumbersFromTitles(titles);
+        Assert.assertFalse(numbers.isEmpty(), "Expected Feuerwache headings under Verfügbare Termine: " + titles);
+        for (int i = 1; i < numbers.size(); i++) {
+            Assert.assertTrue(
+                    numbers.get(i) > numbers.get(i - 1),
+                    "Feuerwache headings should rise by number, was " + numbers + " from " + titles);
+        }
+    }
+
+    public static List<Integer> feuerwacheNumbersFromTitles(JsonNode titles) {
+        List<Integer> numbers = new ArrayList<>();
+        for (JsonNode title : titles) {
+            Integer n = feuerwacheNumber(title.path("text").asText());
+            if (n != null) {
+                numbers.add(n);
+            }
+        }
+        return numbers;
     }
 
     /**
@@ -374,7 +455,7 @@ public final class ProviderLocationStep {
                         + "function officeText(el){var cur=el;var guard=0;var text='';"
                         + "while(cur&&guard++<8){text=textOf(cur);var boxes=0;"
                         + "if(cur.querySelectorAll){boxes=cur.querySelectorAll('[id^=\"checkbox-provider-\"]').length;}"
-                        + "if(text.indexOf('Bürgerbüro')>=0&&boxes<=1)return text;"
+                        + "if((text.indexOf('Bürgerbüro')>=0||text.indexOf('Feuerwache')>=0)&&boxes<=1)return text;"
                         + "if(cur.parentElement){cur=cur.parentElement;continue;}"
                         + "var root=cur.getRootNode&&cur.getRootNode();cur=root&&root.host?root.host:null;}"
                         + "return text;}"
@@ -470,6 +551,32 @@ public final class ProviderLocationStep {
             }
         }
         return found;
+    }
+
+    private static List<Integer> feuerwacheNumbers(JsonNode offices) {
+        List<Integer> numbers = new ArrayList<>();
+        for (JsonNode office : offices) {
+            Integer n = feuerwacheNumber(office.path("text").asText());
+            if (n != null) {
+                numbers.add(n);
+            }
+        }
+        return numbers;
+    }
+
+    private static Integer feuerwacheNumber(String text) {
+        if (text == null || text.isBlank()) {
+            return null;
+        }
+        Matcher m = FEUERWACHE_NUMBER.matcher(text);
+        if (!m.find()) {
+            return null;
+        }
+        try {
+            return Integer.parseInt(m.group(1));
+        } catch (NumberFormatException e) {
+            return null;
+        }
     }
 
     public static int frequencyRank(String name) {
