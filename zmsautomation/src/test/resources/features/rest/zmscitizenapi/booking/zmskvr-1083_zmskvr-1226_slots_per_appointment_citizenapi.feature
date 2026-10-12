@@ -1,10 +1,10 @@
-@rest @zmscitizenapi @booking @system @ZMSKVR-1083 @ZMSKVR-1226 @ZMSKVR-486 @ZMSKVR-137
+@rest @zmscitizenapi @booking @system @ZMSKVR-1083 @ZMSKVR-1226 @ZMSKVR-1240 @ZMSKVR-486 @ZMSKVR-137
 Feature: ZMSKVR-1083 / ZMSKVR-1226 slotsPerAppointment — Citizen API
   As a citizen API client
   I want slot-budget variables and reserve/preconfirm/confirm limits to match
   So that slotsPerAppointment and maxQuantity are enforced before a process advances
 
-  # ZMSKVR-1083 (#1865), tested by ZMSKVR-1226; ZMSKVR-486 max-slots; ZMSKVR-137 slotTimeInMinutes.
+  # ZMSKVR-1083 (#1865), tested by ZMSKVR-1226 / ZMSKVR-1240; ZMSKVR-486 max-slots; ZMSKVR-137 slotTimeInMinutes.
   #   slotTimeInMinutes   — base duration of one slot at a provider
   #   slots               — how many slotTimeInMinutes units a service needs
   #   slotsPerAppointment — total slots allowed per appointment (spa, from scope)
