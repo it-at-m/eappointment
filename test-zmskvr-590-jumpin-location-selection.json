@@ -1,0 +1,74 @@
+{
+  "branch": "test-zmskvr-590-jumpin-location-selection",
+  "branchSlug": "test-zmskvr-590-jumpin-location-selection",
+  "runId": "38297595609",
+  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38297595609",
+  "runStartedAt": "2026-10-12T19:25:52Z",
+  "publishedAt": "2026-10-12T19:41:27.688Z",
+  "features": {
+    "feature-ui-zmscitizenview-dldb-special-cases-zmskvr-1124-booking-ruppertstrasse-pass-calendar-jumpin-links": {
+      "status": "passed",
+      "shard": "custom",
+      "browser": "chrome",
+      "browsers": {
+        "chrome": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "38297595609",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38297595609",
+          "runStartedAt": "2026-10-12T19:25:52Z"
+        },
+        "edge": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "38297595609",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38297595609",
+          "runStartedAt": "2026-10-12T19:25:52Z"
+        },
+        "firefox": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "38297595609",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38297595609",
+          "runStartedAt": "2026-10-12T19:25:52Z"
+        }
+      },
+      "rel": "ui/zmscitizenview/dldb-special-cases/zmskvr-1124_booking_ruppertstrasse_pass_calendar_jumpin_links.feature",
+      "runId": "38297595609",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38297595609",
+      "runStartedAt": "2026-10-12T19:25:52Z"
+    },
+    "feature-ui-zmscitizenview-dldb-special-cases-zmskvr-590-zmskvr-657-jumpin-location-preselect": {
+      "status": "passed",
+      "shard": "custom",
+      "browser": "chrome",
+      "browsers": {
+        "chrome": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "38297595609",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38297595609",
+          "runStartedAt": "2026-10-12T19:25:52Z"
+        },
+        "edge": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "38297595609",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38297595609",
+          "runStartedAt": "2026-10-12T19:25:52Z"
+        },
+        "firefox": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "38297595609",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38297595609",
+          "runStartedAt": "2026-10-12T19:25:52Z"
+        }
+      },
+      "rel": "ui/zmscitizenview/dldb-special-cases/zmskvr-590_zmskvr-657_jumpin_location_preselect.feature",
+      "runId": "38297595609",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38297595609",
+      "runStartedAt": "2026-10-12T19:25:52Z"
+    }
+  }
+}

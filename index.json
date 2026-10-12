@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-10-12T12:59:33.055Z",
+  "publishedAt": "2026-10-12T19:41:27.688Z",
   "branches": [
     {
       "name": "next",
@@ -780,6 +780,12 @@
       "slug": "test-zmskvr-514-ux-chrome-batch",
       "runId": "38149309301",
       "runStartedAt": "2026-10-11T14:57:51Z"
+    },
+    {
+      "name": "test-zmskvr-590-jumpin-location-selection",
+      "slug": "test-zmskvr-590-jumpin-location-selection",
+      "runId": "38297595609",
+      "runStartedAt": "2026-10-12T19:25:52Z"
     },
     {
       "name": "test-zmskvr-604-zmskvr-1011-muc-spinner",
