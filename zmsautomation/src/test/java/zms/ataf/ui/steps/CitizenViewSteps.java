@@ -1545,6 +1545,31 @@ public class CitizenViewSteps {
         page.fillContactDetailsRandomWithoutContinue();
     }
 
+    @Then("the contact form should show SSO Nachname {string} without Vorname in the citizen view")
+    public void theContactFormShouldShowSsoNachnameWithoutVorname(String expectedLastName) {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: assert SSO Nachname={} with empty Vorname", expectedLastName);
+        page.assertSsoLastNamePrefillWithoutGivenName(expectedLastName);
+    }
+
+    @When("I complete the contact form with Vorname {string} keeping SSO Nachname {string} in the citizen view")
+    public void iCompleteTheContactFormWithVornameKeepingSsoNachname(
+            String firstName, String expectedLastName) {
+        ScenarioLogManager.getLogger()
+                .info(
+                        "zmscitizenview: complete Kontakt Vorname={} keep Nachname={}",
+                        firstName,
+                        expectedLastName);
+        page.completeContactWithMissingGivenName(firstName, expectedLastName);
+    }
+
+    @Then("the booking summary should show contact name {string} in the citizen view")
+    public void theBookingSummaryShouldShowContactName(String fullName) {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: assert Übersicht contact name {}", fullName);
+        page.assertBookingSummaryShowsContactName(fullName);
+    }
+
     @When("I continue from the contact form in the citizen view")
     public void iContinueFromTheContactFormInTheCitizenView() {
         ScenarioLogManager.getLogger().info("zmscitizenview: Kontakt Weiter → Übersicht");
@@ -1563,6 +1588,13 @@ public class CitizenViewSteps {
         ScenarioLogManager.getLogger()
                 .info("zmscitizenview: Bürger-Login → Keycloak citizen user (dbs-fragments)");
         page.loginViaBuergerLoginWithKeycloak();
+    }
+
+    @When("I log in via Bürger-Login with Keycloak as {string} in the citizen view")
+    public void iLogInViaBuergerLoginWithKeycloakAs(String loginName) throws Exception {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: Bürger-Login → Keycloak user {}", loginName);
+        page.loginViaBuergerLoginWithKeycloakAs(loginName);
     }
 
     @When("I log in via Bürger-Login with Keycloak in the citizen view if I am not already logged in")
@@ -1823,6 +1855,12 @@ public class CitizenViewSteps {
     public void theDownloadedIcsFileShouldContainTheBookedAppointment() {
         ScenarioLogManager.getLogger().info("zmscitizenview: assert downloaded ICS");
         page.assertDownloadedIcsContainsBookedAppointment();
+    }
+
+    @Then("the downloaded ICS file should contain {string} in the citizen view")
+    public void theDownloadedIcsFileShouldContain(String expected) {
+        ScenarioLogManager.getLogger().info("zmscitizenview: assert ICS contains {}", expected);
+        page.assertDownloadedIcsContainsText(expected);
     }
 
     @Then("the downloaded ICS file should match the Munich confirmation template in the citizen view")

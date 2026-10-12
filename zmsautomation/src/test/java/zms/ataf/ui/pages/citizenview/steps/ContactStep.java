@@ -257,6 +257,111 @@ public final class ContactStep {
         lastContactPhone = CONTACT_PHONE_E2E;
         lastContactCustomText = CONTACT_LOREM_REQUIRED;
     }
+
+    /**
+     * ZMSKVR-1090: SSO user has Nachname only ({@code given_name} missing). Prefill must keep
+     * Vorname empty and Nachname from the token; the citizen completes Vorname before booking.
+     */
+    public void assertSsoLastNamePrefillWithoutGivenName(String expectedLastName) {
+        context.set();
+        shadow.waitUntilShadowContains("Kontaktdaten", Math.max(30, defaultWaitSeconds));
+        CitizenViewWaits.waitWithThreeWindows(
+                () -> expectedLastName.equals(shadow.deepGetById("lastname")),
+                "SSO Nachname prefill on Kontakt");
+        String first = shadow.deepGetById("firstname");
+        String last = shadow.deepGetById("lastname");
+        Assert.assertEquals(
+                last,
+                expectedLastName,
+                "Nachname should be prefilled from family_name. Was: " + last);
+        Assert.assertTrue(
+                first == null || first.isBlank(),
+                "Vorname must stay empty when given_name is missing. Was: " + first);
+        ScenarioLogManager.getLogger()
+                .info(
+                        "zmscitizenview: Kontakt SSO prefill — Vorname empty, Nachname={}",
+                        expectedLastName);
+    }
+
+    /**
+     * Completes Kontakt after SSO without given_name: sets Vorname, keeps Nachname, fills mail /
+     * phone / required Zusatzfelder like {@link #fillContactDetailsRandom()}.
+     */
+    public void completeContactWithMissingGivenName(String firstName, String expectedLastName) {
+        context.set();
+        assertSsoLastNamePrefillWithoutGivenName(expectedLastName);
+        String email =
+                RandomNameHelper.getEmailConformName(firstName + " " + expectedLastName)
+                        + "@mailinator.com";
+        lastContactFirstName = firstName;
+        lastContactLastName = expectedLastName;
+        lastContactEmail = email;
+        lastContactPhone = CONTACT_PHONE_E2E;
+        lastContactCustomText = CONTACT_LOREM_REQUIRED;
+        zms.ataf.rest.steps.CitizenApiSteps.setBookingContactEmail(email);
+        Assert.assertTrue(
+                shadow.deepSetById("firstname", firstName),
+                "Kontakt: could not set Vorname after SSO without given_name");
+        Assert.assertTrue(
+                shadow.deepSetById("mailaddress", email),
+                "Kontakt: could not set E-Mail after SSO without given_name");
+        if (deepContactPhoneFieldExists()) {
+            shadow.deepSetById("telephonenumber", CONTACT_PHONE_E2E);
+        }
+        fillRequiredCustomTextAreasInShadow();
+        fillOptionalContactRemarksIfPresent();
+        ScenarioLogManager.getLogger()
+                .info(
+                        "zmscitizenview: Kontakt completed Vorname={} Nachname={} E-Mail={}",
+                        firstName,
+                        expectedLastName,
+                        email);
+    }
+
+    public void loginViaBuergerLoginWithKeycloakAs(String loginName) throws Exception {
+        context.set();
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: click in-app Anmelden (Bürger-Login as {})", loginName);
+        try {
+            new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(defaultWaitSeconds))
+                    .until(d -> clickInAppBuergerLoginAnmelden());
+        } catch (TimeoutException e) {
+            ScenarioLogManager.getLogger()
+                    .warn("zmscitizenview: in-app Anmelden not found; falling back to any Anmelden button");
+            shadow.waitForAndClickButtonContaining("Anmelden", defaultWaitSeconds);
+        }
+
+        String password =
+                TestPropertiesHelper.getPropertyAsString("citizenUserPassword", true, "vorschau");
+        String username = AccountCheckout.assignCitizenLogin(loginName);
+        completeKeycloakLoginForm(username, password);
+
+        CitizenViewWaits.waitWithThreeWindows(
+                () -> shadow.shadowDomContainsText("Sie sind angemeldet"),
+                "Logged-in callout after Keycloak Bürger-Login");
+        if (!shadow.shadowDomContainsText("Sie sind angemeldet.")) {
+            ScenarioLogManager.getLogger()
+                    .warn("zmscitizenview: Bürger-Login callout missing; submitting Keycloak again");
+            if (!DriverUtil.getDriver().findElements(By.id("username")).isEmpty()) {
+                completeKeycloakLoginForm(username, password);
+            } else if (shadow.shadowDomContainsText("Anmelden")) {
+                clickInAppBuergerLoginAnmelden();
+                if (!DriverUtil.getDriver().findElements(By.id("username")).isEmpty()) {
+                    completeKeycloakLoginForm(username, password);
+                }
+            }
+            CitizenViewWaits.waitWithThreeWindows(
+                    () -> shadow.shadowDomContainsText("Sie sind angemeldet"),
+                    "Logged-in callout after Keycloak Bürger-Login retry");
+        }
+        Assert.assertTrue(
+                shadow.shadowDomContainsText("Sie sind angemeldet."),
+                "Expected 'Sie sind angemeldet.' after Bürger-Login as " + loginName + ".");
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: Bürger-Login completed as {}", username);
+        page.trySetBookingProcessFromPage();
+    }
+
     public boolean deepContactCustomTextFieldExists() {
         // MucTextArea binds the control as id="textarea-{prop}" (prop "remarks" is not on the host).
         return shadow.deepElementExists("#textarea-remarks")
