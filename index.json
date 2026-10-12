@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-10-12T21:34:24.580Z",
+  "publishedAt": "2026-10-12T22:18:23.594Z",
   "branches": [
     {
       "name": "next",
@@ -870,6 +870,12 @@
       "slug": "test-zmskvr-924-zmskvr-1019-fuehrerschein-scope-hints",
       "runId": "37857081719",
       "runStartedAt": "2026-10-08T23:01:47Z"
+    },
+    {
+      "name": "test-zmskvr-933-zmskvr-934-twenty-five-minute-slots",
+      "slug": "test-zmskvr-933-zmskvr-934-twenty-five-minute-slots",
+      "runId": "38314769700",
+      "runStartedAt": "2026-10-12T22:07:04Z"
     },
     {
       "name": "test-zmskvr-936-zmskvr-1013-abholung-ruppertstrasse-only",
