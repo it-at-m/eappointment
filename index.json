@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-10-12T00:47:47.985Z",
+  "publishedAt": "2026-10-12T01:03:20.218Z",
   "branches": [
     {
       "name": "next",
@@ -354,6 +354,12 @@
       "slug": "test-zmskvr-1088-zmskvr-1342-service-title-order",
       "runId": "37794274143",
       "runStartedAt": "2026-10-08T14:59:48Z"
+    },
+    {
+      "name": "test-zmskvr-1090-zmskvr-1139-login-without-given-name",
+      "slug": "test-zmskvr-1090-zmskvr-1139-login-without-given-name",
+      "runId": "38189505277",
+      "runStartedAt": "2026-10-12T00:49:48Z"
     },
     {
       "name": "test-zmskvr-110-zmskvr-236-calendar-list-view",
