@@ -219,7 +219,7 @@
             <div class="m-content">
               <h3>{{ t("termsOfUse") }}</h3>
             </div>
-            <div class="m-content">
+            <div class="m-checkbox-group__legend">
               <h4 class="m-checkbox-group__heading">{{ t("privacyLabel") }}</h4>
             </div>
             <div class="m-content">
@@ -546,6 +546,14 @@ const infoForAppointmentContainsPTag = computed(() =>
 }
 .smaller-front-size {
   font-size: 16px;
+}
+
+/* ".m-content h4" outranks ".m-checkbox-group__heading"; let the heading inherit from its legend again. */
+.m-content :deep(.m-checkbox-group__heading) {
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  margin: 0;
 }
 
 /* Preserve user line breaks in plain-text custom fields (same idea as nl2br / pre-wrap on server). */
