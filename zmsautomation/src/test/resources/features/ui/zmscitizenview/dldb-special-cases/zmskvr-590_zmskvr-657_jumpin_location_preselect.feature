@@ -11,6 +11,8 @@ Feature: CitizenView: JumpIn preselects the location from the URL
   # Bürgerbüro multi-checkbox preselect uses Wohnsitz / other Hauptkalender services and
   # Führungszeugnis (Team-1 / SP provider ids). Skip shared-booking twin 10313237 — JumpIn
   # there collapses to display Ort 10489 (see ZMSKVR-1046).
+  # Do not JumpIn Wohnsitz abmelden 1063486 or Übermittlungssperre 1063553 — they are absent
+  # from offices-and-services (1063486 stays SADB-internal) and CitizenView shows a faulty link.
   # Feuerwache 10389330 covers every FW; offices without opening hours must stay checked and
   # show the no-appointment callout (not fall back to the first listed office).
 
@@ -32,8 +34,8 @@ Feature: CitizenView: JumpIn preselects the location from the URL
       | 1063475  | 10489    | Ruppertstraße KVR-II/22        |
       | 1063426  | 102522   | Orleansplatz                   |
       | 1063428  | 102523   | Leonrodstraße                  |
-      | 1063486  | 102524   | Scheidplatz                    |
-      | 1063553  | 102526   | Forstenrieder Allee            |
+      | 10242339 | 102524   | Scheidplatz                    |
+      | 10224132 | 102526   | Forstenrieder Allee            |
       | 10224136 | 54261    | Pasing                         |
 
     Examples: Führungszeugnis Team-1 / SP Bürgerbüros
