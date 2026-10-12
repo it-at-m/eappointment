@@ -1769,6 +1769,14 @@ public class CitizenViewPage extends BasePage {
         overview.assertLoggedInConfirmationSuccessDetailsVisible();
     }
 
+    public void assertGuestConfirmationSuccessDetailsVisible() {
+        overview.assertGuestConfirmationSuccessDetailsVisible();
+    }
+
+    public void bookAnotherAppointmentFromConfirmationSuccess() {
+        overview.bookAnotherAppointmentFromConfirmationSuccess();
+    }
+
     public void confirmRebookingFromSummary() {
         overview.confirmRebookingFromSummary();
     }
@@ -2021,6 +2029,10 @@ public class CitizenViewPage extends BasePage {
 
     public void assertDownloadedIcsContainsBookedAppointment() {
         myAppointments.assertDownloadedIcsContainsBookedAppointment();
+    }
+
+    public void assertDownloadedIcsMatchesMunichConfirmationTemplate() {
+        myAppointments.assertDownloadedIcsMatchesMunichConfirmationTemplate();
     }
 
 }
