@@ -928,6 +928,15 @@ public class CitizenViewSteps {
         page.waitForPreconfirmPageAfterUpdate();
     }
 
+    @When("I enter contact details with family name {string} in the citizen view")
+    public void iEnterContactDetailsWithFamilyName(String familyName) {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: fill contact with family name {} and Weiter", familyName);
+        page.fillContactDetailsWithFamilyName(familyName);
+        page.clickWeiter(30);
+        page.waitForPreconfirmPageAfterUpdate();
+    }
+
     /**
      * ZMSKVR-833: first booking at a scope where custom text is optional — fill Kontakt but stay on
      * the form (no Weiter) so the missing Pflichtfeld is still empty for later rebooking.
@@ -1052,6 +1061,25 @@ public class CitizenViewSteps {
     public void iContinueFromThePreconfirmStepInTheCitizenView() {
         ScenarioLogManager.getLogger().info("zmscitizenview: preconfirm → Termin reservieren (activation)");
         page.continueFromPreconfirmStep();
+    }
+
+    @When("I try to preconfirm from the overview in the citizen view")
+    public void iTryToPreconfirmFromTheOverviewInTheCitizenView() {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: Übersicht → Termin reservieren (expect error callout)");
+        page.tryPreconfirmFromOverview();
+    }
+
+    @Then("the too many appointments with same mail callout should be visible in the citizen view")
+    public void theTooManyAppointmentsWithSameMailCalloutShouldBeVisible() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: assert too-many-appointments callout");
+        page.assertTooManyAppointmentsWithSameMailCalloutVisible();
+    }
+
+    @Then("the Termin reservieren button should not be visible in the citizen view")
+    public void theTerminReservierenButtonShouldNotBeVisible() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: assert Termin reservieren hidden");
+        page.assertReserveAppointmentButtonNotVisible();
     }
 
     @When("I reserve the appointment in the citizen view")

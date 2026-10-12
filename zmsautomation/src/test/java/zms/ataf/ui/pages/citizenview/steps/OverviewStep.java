@@ -844,6 +844,42 @@ public final class OverviewStep {
         ScenarioLogManager.getLogger().info("zmscitizenview: activation callout appeared");
         page.trySyncBookingProcessFromLocalStorageOnce();
     }
+
+    /**
+     * ZMSKVR-87 / ZMSKVR-601 / ZMSKVR-715: click Termin reservieren and stay on Übersicht expecting
+     * an error callout (no activation success).
+     */
+    public void tryPreconfirmFromOverview() {
+        context.set();
+        page.captureBookingProcessForCleanup();
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: Übersicht → Termin reservieren (expect too-many-appointments error)");
+        shadow.waitForAndClickButtonContaining(DE_RESERVE, defaultWaitSeconds);
+    }
+
+    public void assertTooManyAppointmentsWithSameMailCalloutVisible() {
+        context.set();
+        String header = CitizenViewPage.DE_TOO_MANY_APPOINTMENTS_HEADER;
+        String text = CitizenViewPage.DE_TOO_MANY_APPOINTMENTS_TEXT;
+        CitizenViewWaits.waitWithThreeWindows(
+                () -> shadow.shadowDomContainsText(header) && shadow.shadowDomContainsText(text),
+                "Too many appointments callout");
+        Assert.assertTrue(
+                shadow.shadowDomContainsText(header),
+                "Expected too-many-appointments callout header: " + header);
+        Assert.assertTrue(
+                shadow.shadowDomContainsText(text),
+                "Expected too-many-appointments callout text: " + text);
+        Assert.assertTrue(
+                shadow.shadowDomHasHeading(2, header),
+                "Expected H2 for too-many-appointments callout: " + header);
+    }
+
+    public void assertReserveAppointmentButtonNotVisible() {
+        context.set();
+        String state = reserveAppointmentButtonState();
+        Assert.assertNull(state, "Termin reservieren must be hidden while the too-many-appointments callout shows.");
+    }
     public void assertPreconfirmationCalloutVisible(int activationMinutes) {
         context.set();
         ScenarioLogManager.getLogger()

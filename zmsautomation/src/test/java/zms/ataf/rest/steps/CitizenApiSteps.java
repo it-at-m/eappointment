@@ -1761,6 +1761,13 @@ public class CitizenApiSteps {
         postAppointmentUpdate(familyName, email, customTextfield != null ? customTextfield : "", true, false);
     }
 
+    @When("I attempt to update the appointment with family name {string} and customTextfield {string}")
+    public void iAttemptToUpdateTheAppointmentWithFamilyNameAndCustomTextfield(
+            String familyName, String customTextfield) {
+        String email = familyName.toLowerCase(Locale.ROOT).replaceAll("[^a-z0-9]", "") + "@mailinator.com";
+        postAppointmentUpdate(familyName, email, customTextfield != null ? customTextfield : "", false, false);
+    }
+
     @When("I update the appointment with contact details and customTextfield {string} as the logged-in citizen")
     public void iUpdateTheAppointmentWithContactDetailsAndCustomTextfieldAsTheLoggedInCitizen(String customTextfield) {
         postAppointmentUpdate(scenarioContactFamilyName(), scenarioContactEmail(), customTextfield != null ? customTextfield : "", true, true);
@@ -1825,6 +1832,33 @@ public class CitizenApiSteps {
                 label,
                 process.getProcessId(),
                 previousProcessId));
+    }
+
+    @When("I preconfirm the remembered {string} appointment")
+    public void iPreconfirmTheRememberedAppointment(String label) {
+        useRememberedAsCurrentProcess(label);
+        // Stub has only processId/authKey; postPreconfirm(true) asserts serviceId/officeId.
+        iFetchTheAppointmentForTheCurrentProcess();
+        postPreconfirm(true);
+    }
+
+    @When("I attempt to preconfirm the remembered {string} appointment")
+    public void iAttemptToPreconfirmTheRememberedAppointment(String label) {
+        useRememberedAsCurrentProcess(label);
+        postPreconfirm(false);
+    }
+
+    private void useRememberedAsCurrentProcess(String label) {
+        RememberedAppointment remembered = requireRemembered(label);
+        ThinnedProcess stub = new ThinnedProcess();
+        stub.setProcessId(remembered.processId);
+        stub.setAuthKey(remembered.authKey);
+        lastReserveProcess = stub;
+        setLastReserveProcess(stub);
+        ScenarioLogManager.getLogger().info(String.format(
+                "Citizen API using remembered \"%s\" processId=%d as current process",
+                label,
+                remembered.processId));
     }
 
     @When("I reserve an appointment with the first available slot using the remembered {string} appointment as source")
@@ -2067,7 +2101,19 @@ public class CitizenApiSteps {
     }
 
     private ThinnedProcess requireCurrentProcess() {
-        ThinnedProcess process = lastReserveProcess != null ? lastReserveProcess : getBookingProcess();
+        // UI sync writes the ThreadLocal booking process; prefer it when it points at a
+        // different appointment than the last API reserve (mail-limit sibling flows).
+        ThinnedProcess booked = getBookingProcess();
+        if (booked != null
+                && booked.getProcessId() != null
+                && booked.getAuthKey() != null
+                && !booked.getAuthKey().isBlank()
+                && (lastReserveProcess == null
+                        || lastReserveProcess.getProcessId() == null
+                        || !lastReserveProcess.getProcessId().equals(booked.getProcessId()))) {
+            lastReserveProcess = booked;
+        }
+        ThinnedProcess process = lastReserveProcess != null ? lastReserveProcess : booked;
         if (process == null) {
             throw new IllegalStateException("Reserve an appointment first.");
         }
