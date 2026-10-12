@@ -332,6 +332,44 @@ public class CitizenViewSteps {
         page.assertMaxLengthCounterError(fieldId, maxChars);
     }
 
+    @Then("both freitext character counters should show {int} as the maximum in the citizen view")
+    public void bothFreitextCharacterCountersShouldShowAsTheMaximumInTheCitizenView(int maxChars) {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: both Freitext counters visible at max={}", maxChars);
+        page.assertBothFreitextCharacterCountersVisible(maxChars);
+    }
+
+    @Then("the freitext character counter for {string} should update live up to {int} in the citizen view")
+    public void theFreitextCharacterCounterForShouldUpdateLiveUpToInTheCitizenView(
+            String fieldId, int maxChars) {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: live Freitext counter #{} max={}", fieldId, maxChars);
+        page.assertFreitextCharacterCounterUpdatesLive(fieldId, maxChars);
+    }
+
+    @Then("the contact field {string} should have no character counter in the citizen view")
+    public void theContactFieldShouldHaveNoCharacterCounterInTheCitizenView(String fieldId) {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: no character counter on #{}", fieldId);
+        page.assertContactFieldHasNoCharacterCounter(fieldId);
+    }
+
+    @Then("the contact field {string} should block input at {int} characters in the citizen view")
+    public void theContactFieldShouldBlockInputAtCharactersInTheCitizenView(
+            String fieldId, int maxChars) {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: maxlength blocks #{} at {}", fieldId, maxChars);
+        page.assertContactFieldInputBlockedAtMax(fieldId, maxChars);
+    }
+
+    @Then("both freitext character counters should show {int} as the maximum on mobile in the citizen view")
+    public void bothFreitextCharacterCountersShouldShowAsTheMaximumOnMobileInTheCitizenView(
+            int maxChars) {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: both Freitext counters on mobile max={}", maxChars);
+        page.assertBothFreitextCharacterCountersVisibleOnMobile(maxChars);
+    }
+
     @Then("the contact character counter font size is point eight seven five rem on desktop")
     public void theContactCharacterCounterFontSizeIsPointEightSevenFiveRemOnDesktop() {
         ScenarioLogManager.getLogger().info("zmscitizenview: counter font-size .875rem on desktop");
