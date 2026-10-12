@@ -473,6 +473,60 @@ public class ZmsApiSteps {
         return slotTime;
     }
 
+    /**
+     * ZMSKVR-933 / ZMSKVR-934: provider.data.slotTimeInMinutes seeds Admin Terminabstand.
+     */
+    @Then("scope {int} provider data should have slotTimeInMinutes {int}")
+    public void scopeProviderDataShouldHaveSlotTimeInMinutes(int scopeId, int expectedMinutes) {
+        String authKey = getOrLoginXAuthKey();
+        int slotTime = fetchScopeSlotTimeInMinutes(scopeId, authKey);
+        Assertions.assertThat(slotTime)
+            .as("scope %d provider.data.slotTimeInMinutes", scopeId)
+            .isEqualTo(expectedMinutes);
+    }
+
+    /**
+     * ZMSKVR-933 / ZMSKVR-934: live Öffnungszeiten grid from GET /scope/{id}/availability/.
+     */
+    @Then("scope {int} opening hours should include slotTimeInMinutes {int}")
+    public void scopeOpeningHoursShouldIncludeSlotTimeInMinutes(int scopeId, int expectedMinutes) {
+        String authKey = getOrLoginXAuthKey();
+        LocalDate today = BerlinTime.today();
+        LocalDate end = today.plusDays(21);
+        response = given()
+            .baseUri(apiBaseUri())
+            .header("X-AuthKey", authKey)
+            .queryParam("startDate", today.toString())
+            .queryParam("endDate", end.toString())
+        .when()
+            .get("/scope/" + scopeId + "/availability/");
+        CommonApiSteps.setResponse(response);
+        Assertions.assertThat(response.getStatusCode())
+            .as("GET /scope/%d/availability/ body=%s", scopeId, truncate(response.asString(), 1000))
+            .isEqualTo(200);
+        ArrayNode list = parseDataArray(response);
+        Assertions.assertThat(list)
+            .as("GET /scope/%d/availability/ data", scopeId)
+            .isNotNull();
+        boolean found = false;
+        for (JsonNode item : list) {
+            if (!"openinghours".equals(item.path("type").asText())) {
+                continue;
+            }
+            if (item.path("slotTimeInMinutes").asInt(0) == expectedMinutes) {
+                found = true;
+                break;
+            }
+        }
+        Assertions.assertThat(found)
+            .as(
+                    "scope %d opening hours should include slotTimeInMinutes %d; body=%s",
+                    scopeId,
+                    expectedMinutes,
+                    truncate(response.asString(), 1500))
+            .isTrue();
+    }
+
     private void bookAppointmentCustomer(
             int scopeId, String serviceName, String familyName, int minutesAhead, boolean requireServiceName) {
         // Keep the current API session (and its workstation). A fresh agent_queue login here

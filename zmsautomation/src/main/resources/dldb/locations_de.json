@@ -9710,7 +9710,7 @@
                 }
             ],
             "showAlternativeLocations": true,
-            "slotTimeInMinutes": 20,
+            "slotTimeInMinutes": 25,
             "forceSlotTimeUpdate": true
         },
         {
