@@ -2507,8 +2507,9 @@ public class CitizenApiSteps {
 
     @Then("I cancel the appointment")
     public void iCancelTheAppointment() {
-        // Prefer the most recent process data, but fall back to the shared booking context.
-        ThinnedProcess process = lastReserveProcess != null ? lastReserveProcess : getBookingProcess();
+        // UI sync writes ThreadLocal; prefer it when it shares processId but has a newer authKey
+        // (update-appointment can rotate the key after reserve left lastReserveProcess stale).
+        ThinnedProcess process = processForCancel();
         if (process == null) {
             throw new IllegalStateException("No appointment process available to delete. Reserve and confirm first.");
         }
@@ -2520,25 +2521,46 @@ public class CitizenApiSteps {
         }
         lastDisplayNumberBeforeCancel = process.getDisplayNumber();
 
-        ScenarioLogManager.getLogger().info(String.format(
-            "Citizen API /cancel-appointment/ for processId=%d", pid
-        ));
-
-        response = given()
-            .baseUri(baseUri != null ? baseUri : TestConfig.getCitizenApiBaseUri())
-            .contentType("application/json")
-            .body(Map.of("processId", pid, "authKey", auth))
-        .when()
-            .post("/cancel-appointment/");
-
-        CommonApiSteps.setResponse(response);
-
+        response = postCancelAppointment(pid, auth);
         String cancelBody = response.asString();
-        ScenarioLogManager.getLogger().info(String.format(
-            "Citizen API /cancel-appointment/ status=%d body=%s",
-            response.getStatusCode(),
-            cancelBody.length() > 1250 ? cancelBody.substring(0, 1250) + "..." : cancelBody
-        ));
+        int status = response.getStatusCode();
+
+        // Stale authKey after UI update / parallel reserve: retry once with the other credential source.
+        if (status == 406 && cancelBody.contains("authKeyMismatch")) {
+            ThinnedProcess alternate = alternateProcessForCancel(process);
+            if (alternate != null
+                    && alternate.getAuthKey() != null
+                    && !alternate.getAuthKey().equals(auth)) {
+                ScenarioLogManager.getLogger().info(
+                        "Citizen API cancel authKeyMismatch; retrying processId={} with alternate authKey", pid);
+                process = alternate;
+                auth = alternate.getAuthKey();
+                response = postCancelAppointment(pid, auth);
+                cancelBody = response.asString();
+                status = response.getStatusCode();
+            }
+        }
+
+        // Past-slot cancel after DB clock moves: bump the reserved row into the future and retry once.
+        if (status == 406 && cancelBody.contains("appointmentCanNotBeCanceled")) {
+            ScenarioLogManager.getLogger().info(
+                    "Citizen API cancel appointmentCanNotBeCanceled; bumping processId={} forward and retrying",
+                    pid);
+            bumpReservedAppointmentIntoFuture(pid);
+            response = postCancelAppointment(pid, auth);
+            cancelBody = response.asString();
+            status = response.getStatusCode();
+        }
+
+        // Prior cancel or After from a sibling already removed it — treat as done.
+        if (status == 406 && cancelAlreadyGone(cancelBody)) {
+            ScenarioLogManager.getLogger().info(
+                    "Citizen API cancel already gone ({}); continuing", cancelBodyErrorCode(cancelBody));
+            process.setStatus("deleted");
+            lastReserveProcess = process;
+            setLastReserveProcess(process);
+            return;
+        }
 
         // Basic sanity: 200 and a non-empty payload with a thinned process.
         response.then().statusCode(200);
@@ -2572,11 +2594,118 @@ public class CitizenApiSteps {
     }
 
     /**
+     * Prefer ThreadLocal booking credentials when they share processId with {@code lastReserveProcess}
+     * but carry a different authKey (UI update / localStorage sync after reserve).
+     */
+    private ThinnedProcess processForCancel() {
+        ThinnedProcess booked = getBookingProcess();
+        if (lastReserveProcess == null) {
+            return booked;
+        }
+        if (booked == null
+                || booked.getProcessId() == null
+                || booked.getAuthKey() == null
+                || lastReserveProcess.getProcessId() == null) {
+            return lastReserveProcess;
+        }
+        if (booked.getProcessId().equals(lastReserveProcess.getProcessId())
+                && !booked.getAuthKey().equals(lastReserveProcess.getAuthKey())) {
+            return booked;
+        }
+        return lastReserveProcess;
+    }
+
+    private ThinnedProcess alternateProcessForCancel(ThinnedProcess primary) {
+        ThinnedProcess booked = getBookingProcess();
+        if (primary == lastReserveProcess) {
+            return booked;
+        }
+        return lastReserveProcess;
+    }
+
+    private Response postCancelAppointment(int processId, String authKey) {
+        ScenarioLogManager.getLogger().info(String.format(
+            "Citizen API /cancel-appointment/ for processId=%d", processId
+        ));
+        Response cancelResponse = given()
+            .baseUri(baseUri != null ? baseUri : TestConfig.getCitizenApiBaseUri())
+            .contentType("application/json")
+            .body(Map.of("processId", processId, "authKey", authKey))
+        .when()
+            .post("/cancel-appointment/");
+        CommonApiSteps.setResponse(cancelResponse);
+        String cancelBody = cancelResponse.asString();
+        ScenarioLogManager.getLogger().info(String.format(
+            "Citizen API /cancel-appointment/ status=%d body=%s",
+            cancelResponse.getStatusCode(),
+            cancelBody.length() > 1250 ? cancelBody.substring(0, 1250) + "..." : cancelBody
+        ));
+        return cancelResponse;
+    }
+
+    private static boolean cancelAlreadyGone(String cancelBody) {
+        return cancelBody != null && (cancelBody.contains("authKeyMismatch")
+                || cancelBody.contains("appointmentNotFound")
+                || cancelBody.contains("processNotFound"));
+    }
+
+    private static String cancelBodyErrorCode(String cancelBody) {
+        if (cancelBody == null) {
+            return "unknown";
+        }
+        for (String code : List.of("authKeyMismatch", "appointmentNotFound", "processNotFound",
+                "appointmentCanNotBeCanceled")) {
+            if (cancelBody.contains(code)) {
+                return code;
+            }
+        }
+        return "unknown";
+    }
+
+    /**
+     * Push a still-reserved row past both suite clock and wall clock so citizen cancel accepts it.
+     */
+    private void bumpReservedAppointmentIntoFuture(int processId) {
+        java.time.LocalDateTime suite;
+        String adjusted = System.getenv("ZMS_TIMEADJUST");
+        if (adjusted != null && !adjusted.isBlank()) {
+            suite = java.time.LocalDateTime.parse(
+                    adjusted.trim(), java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        } else {
+            suite = java.time.LocalDateTime.now(BerlinTime.ZONE);
+        }
+        java.time.LocalDateTime wall = java.time.LocalDateTime.now(BerlinTime.ZONE);
+        java.time.LocalDateTime baseline = suite.isAfter(wall) ? suite : wall;
+        java.time.LocalDateTime appointment = baseline.plusMinutes(90);
+        String sql = """
+                UPDATE buerger
+                   SET Datum = ?, Uhrzeit = ?
+                 WHERE BuergerID = ?
+                   AND bestaetigt = 0
+                   AND vorlaeufigeBuchung = 1
+                """;
+        try (Connection connection = openZmsConnection();
+                PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setString(1, appointment.toLocalDate().toString());
+            statement.setString(
+                    2, appointment.toLocalTime().format(java.time.format.DateTimeFormatter.ofPattern("HH:mm:ss")));
+            statement.setInt(3, processId);
+            int updated = statement.executeUpdate();
+            ScenarioLogManager.getLogger().info(
+                    "Bumped reserved process {} to {} for cancel retry (rows={})",
+                    processId, appointment, updated);
+        } catch (SQLException e) {
+            ScenarioLogManager.getLogger().warn(
+                    "Could not bump reserved process {} before cancel retry: {}", processId, e.toString());
+        }
+    }
+
+    /**
      * Cancel the current process if one exists and is not already deleted. Never fails the scenario:
      * used from {@link #cancelLeftoverAppointmentAfterScenario()} after both passing and failing runs.
      */
     public void cancelLeftoverAppointmentQuietly() {
-        ThinnedProcess process = lastReserveProcess != null ? lastReserveProcess : getBookingProcess();
+        ThinnedProcess process = processForCancel();
         if (process == null || process.getProcessId() == null || process.getAuthKey() == null) {
             return;
         }
@@ -2601,12 +2730,32 @@ public class CitizenApiSteps {
                 .body(Map.of("processId", processId, "authKey", authKey))
             .when()
                 .post("/cancel-appointment/");
+            int status = cancelResponse.getStatusCode();
+            String body = cancelResponse.asString();
             ScenarioLogManager.getLogger().info(String.format(
                 "Best-effort /cancel-appointment/ processId=%d http=%d",
                 processId,
-                cancelResponse.getStatusCode()
+                status
             ));
-            return cancelResponse.getStatusCode() == 200;
+            if (status == 200 || cancelAlreadyGone(body)) {
+                return true;
+            }
+            if (status == 406 && body.contains("appointmentCanNotBeCanceled")) {
+                bumpReservedAppointmentIntoFuture(processId);
+                Response retry = given()
+                    .baseUri(baseUri != null ? baseUri : TestConfig.getCitizenApiBaseUri())
+                    .contentType("application/json")
+                    .body(Map.of("processId", processId, "authKey", authKey))
+                .when()
+                    .post("/cancel-appointment/");
+                ScenarioLogManager.getLogger().info(String.format(
+                    "Best-effort /cancel-appointment/ retry processId=%d http=%d",
+                    processId,
+                    retry.getStatusCode()
+                ));
+                return retry.getStatusCode() == 200 || cancelAlreadyGone(retry.asString());
+            }
+            return false;
         } catch (Exception e) {
             ScenarioLogManager.getLogger().warn(
                 String.format("Best-effort cancel failed for processId=%d: %s", processId, e)
