@@ -631,6 +631,26 @@ public class CitizenViewPage extends BasePage {
         contact.assertMaxLengthCounterError(fieldId, maxChars);
     }
 
+    public void assertBothFreitextCharacterCountersVisible(int maxChars) {
+        contact.assertBothFreitextCharacterCountersVisible(maxChars);
+    }
+
+    public void assertFreitextCharacterCounterUpdatesLive(String fieldId, int maxChars) {
+        contact.assertFreitextCharacterCounterUpdatesLive(fieldId, maxChars);
+    }
+
+    public void assertContactFieldHasNoCharacterCounter(String fieldId) {
+        contact.assertContactFieldHasNoCharacterCounter(fieldId);
+    }
+
+    public void assertContactFieldInputBlockedAtMax(String fieldId, int maxChars) {
+        contact.assertContactFieldInputBlockedAtMax(fieldId, maxChars);
+    }
+
+    public void assertBothFreitextCharacterCountersVisibleOnMobile(int maxChars) {
+        contact.assertBothFreitextCharacterCountersVisibleOnMobile(maxChars);
+    }
+
     public void assertCharacterCountFontSizeDesktop() {
         contact.assertCharacterCountFontSizeDesktop();
     }

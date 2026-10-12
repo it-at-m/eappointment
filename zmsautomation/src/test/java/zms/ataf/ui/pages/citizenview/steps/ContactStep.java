@@ -701,6 +701,183 @@ public final class ContactStep {
         return Boolean.TRUE.equals(o);
     }
 
+    /**
+     * ZMSKVR-416 / ZMSKVR-571: both Freitext MucTextAreas show Patternlab {@code n/max} counters
+     * ({@code .m-character-count__status}). Story originally said 100; product max is 250
+     * (backend ProcessPlainText).
+     */
+    public void assertBothFreitextCharacterCountersVisible(int maxChars) {
+        context.set();
+        assertRemarksFieldExists("remarks");
+        assertRemarksFieldExists("remarks2");
+        for (String fieldId : new String[] {"remarks", "remarks2"}) {
+            Assert.assertTrue(shadow.deepSetById(fieldId, ""), "Could not clear #" + fieldId);
+            CitizenViewWaits.sleepQuiet(150L);
+            String status = characterCountStatusForField(fieldId);
+            Assert.assertEquals(
+                    status,
+                    "0/" + maxChars,
+                    "Freitext #" + fieldId + " counter should show 0/" + maxChars + ", was " + status);
+        }
+    }
+
+    /**
+     * ZMSKVR-571: counter status updates while typing and deleting (Patternlab {@code n/max}).
+     */
+    public void assertFreitextCharacterCounterUpdatesLive(String fieldId, int maxChars) {
+        context.set();
+        assertRemarksFieldExists(fieldId);
+        Assert.assertTrue(shadow.deepSetById(fieldId, ""), "Could not clear #" + fieldId);
+        CitizenViewWaits.sleepQuiet(150L);
+        Assert.assertEquals(
+                characterCountStatusForField(fieldId),
+                "0/" + maxChars,
+                "#" + fieldId + " counter should start at 0/" + maxChars);
+
+        String five = "abcde";
+        Assert.assertTrue(shadow.deepSetById(fieldId, five), "Could not fill #" + fieldId);
+        CitizenViewWaits.sleepQuiet(150L);
+        Assert.assertEquals(
+                characterCountStatusForField(fieldId),
+                five.length() + "/" + maxChars,
+                "#" + fieldId + " counter should track typed length");
+
+        String two = "ab";
+        Assert.assertTrue(shadow.deepSetById(fieldId, two), "Could not shorten #" + fieldId);
+        CitizenViewWaits.sleepQuiet(150L);
+        Assert.assertEquals(
+                characterCountStatusForField(fieldId),
+                two.length() + "/" + maxChars,
+                "#" + fieldId + " counter should track deletions");
+    }
+
+    /**
+     * ZMSKVR-416: Vorname / Nachname / E-Mail use MucInput maxlength without a character counter.
+     */
+    public void assertContactFieldHasNoCharacterCounter(String fieldId) {
+        context.set();
+        Assert.assertTrue(
+                resolveContactControl(fieldId) != null,
+                "Contact field #" + fieldId + " must be present");
+        Assert.assertFalse(
+                fieldGroupHasCharacterCount(fieldId),
+                "Contact field #" + fieldId + " must not show .m-character-count (only Freitext does)");
+    }
+
+    /**
+     * ZMSKVR-416 / ZMSKVR-571: HTML maxlength blocks further keyboard input at {@code maxChars}.
+     */
+    public void assertContactFieldInputBlockedAtMax(String fieldId, int maxChars) {
+        context.set();
+        WebElement control = resolveContactControl(fieldId);
+        Assert.assertNotNull(control, "Contact field #" + fieldId + " not found");
+        String maxAttr = control.getAttribute("maxlength");
+        Assert.assertEquals(
+                maxAttr,
+                String.valueOf(maxChars),
+                "#" + fieldId + " maxlength attribute");
+        control.clear();
+        control.sendKeys("x".repeat(maxChars + 15));
+        CitizenViewWaits.sleepQuiet(150L);
+        String value = control.getAttribute("value");
+        Assert.assertNotNull(value, "#" + fieldId + " value missing after typing");
+        Assert.assertEquals(
+                value.length(),
+                maxChars,
+                "#" + fieldId + " should stop accepting input at " + maxChars + " chars, was len="
+                        + value.length());
+    }
+
+    /** ZMSKVR-571: Freitext counters stay visible on the phone viewport. */
+    public void assertBothFreitextCharacterCountersVisibleOnMobile(int maxChars) {
+        context.set();
+        RemoteWebDriver driver = DriverUtil.getDriver();
+        driver.manage().window().setSize(ViewportSizes.MOBILE);
+        CitizenViewWaits.sleepQuiet(400L);
+        assertBothFreitextCharacterCountersVisible(maxChars);
+    }
+
+    private void assertRemarksFieldExists(String fieldId) {
+        Assert.assertTrue(
+                shadow.deepElementExists("#" + fieldId)
+                        || shadow.deepElementExists("textarea#textarea-" + fieldId)
+                        || shadow.deepElementExists("#textarea-" + fieldId)
+                        || shadow.deepElementExists("muc-text-area#" + fieldId),
+                "Expected Freitext MucTextArea #" + fieldId);
+    }
+
+    private String characterCountStatusForField(String fieldId) {
+        String script =
+                "var want=arguments[0];"
+                        + "var ids=[];ids.push(want);"
+                        + "if(want.indexOf('textarea-')===0)ids.push(want.slice(9));else ids.push('textarea-'+want);"
+                        + "function byId(root,id){try{if(root.getElementById)return root.getElementById(id);}catch(e0){}"
+                        + "try{return root.querySelector('#'+id.replace(/([^a-zA-Z0-9_-])/g,'\\\\$1'));}catch(e1){"
+                        + "return root.querySelector('[id=\"'+id.replace(/\"/g,'')+'\"]');}}"
+                        + "function resolve(el){if(!el)return null;if(el.tagName==='INPUT'||el.tagName==='TEXTAREA')return el;"
+                        + "if(el.shadowRoot){var q=el.shadowRoot.querySelector('input:not([type=hidden]),textarea');if(q)return q;}"
+                        + "return null;}"
+                        + "function scanRoot(root){if(!root)return null;for(var i=0;i<ids.length;i++){var el=byId(root,ids[i]);var r=resolve(el);if(r)return r;}"
+                        + "var nodes=root.querySelectorAll('*');for(var j=0;j<nodes.length;j++){if(nodes[j].shadowRoot){var r2=scanRoot(nodes[j].shadowRoot);if(r2)return r2;}}return null;}"
+                        + "var e=scanRoot(document);if(!e)e=scanRoot(document.body);if(!e)return null;"
+                        + "var host=e;for(var g=0;g<10&&host;g++){"
+                        + "var group=host;for(var k=0;k<8&&group;k++){"
+                        + "if(group.classList&&group.classList.contains('m-form-group')){"
+                        + "var st=group.querySelector('.m-character-count__status');"
+                        + "if(st)return (st.textContent||'').replace(/\\s+/g,'').trim();}"
+                        + "if(group.parentElement){group=group.parentElement;continue;}"
+                        + "var root=group.getRootNode&&group.getRootNode();group=root&&root.host?root.host:null;}"
+                        + "if(host.parentElement){host=host.parentElement;continue;}"
+                        + "var r=host.getRootNode&&host.getRootNode();host=r&&r.host?r.host:null;}"
+                        + "return null;";
+        Object o = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script, fieldId);
+        return o == null ? null : String.valueOf(o);
+    }
+
+    private boolean fieldGroupHasCharacterCount(String fieldId) {
+        String script =
+                "var want=arguments[0];"
+                        + "var ids=[];ids.push(want);"
+                        + "if(want.indexOf('textarea-')===0)ids.push(want.slice(9));else ids.push('textarea-'+want);"
+                        + "if(want.indexOf('input-')===0)ids.push(want.slice(6));else ids.push('input-'+want);"
+                        + "function byId(root,id){try{if(root.getElementById)return root.getElementById(id);}catch(e0){}"
+                        + "try{return root.querySelector('#'+id.replace(/([^a-zA-Z0-9_-])/g,'\\\\$1'));}catch(e1){"
+                        + "return root.querySelector('[id=\"'+id.replace(/\"/g,'')+'\"]');}}"
+                        + "function resolve(el){if(!el)return null;if(el.tagName==='INPUT'||el.tagName==='TEXTAREA')return el;"
+                        + "if(el.shadowRoot){var q=el.shadowRoot.querySelector('input:not([type=hidden]),textarea');if(q)return q;}"
+                        + "return null;}"
+                        + "function scanRoot(root){if(!root)return null;for(var i=0;i<ids.length;i++){var el=byId(root,ids[i]);var r=resolve(el);if(r)return r;}"
+                        + "var nodes=root.querySelectorAll('*');for(var j=0;j<nodes.length;j++){if(nodes[j].shadowRoot){var r2=scanRoot(nodes[j].shadowRoot);if(r2)return r2;}}return null;}"
+                        + "var e=scanRoot(document);if(!e)e=scanRoot(document.body);if(!e)return false;"
+                        + "var n=e;for(var g=0;g<12&&n;g++){"
+                        + "if(n.classList&&n.classList.contains('m-form-group')){"
+                        + "return !!n.querySelector('.m-character-count');}"
+                        + "if(n.parentElement){n=n.parentElement;continue;}"
+                        + "var root=n.getRootNode&&n.getRootNode();n=root&&root.host?root.host:null;}"
+                        + "return false;";
+        Object o = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script, fieldId);
+        return Boolean.TRUE.equals(o);
+    }
+
+    private WebElement resolveContactControl(String fieldId) {
+        String script =
+                "var want=arguments[0];"
+                        + "var ids=[];ids.push(want);"
+                        + "if(want.indexOf('textarea-')===0)ids.push(want.slice(9));else ids.push('textarea-'+want);"
+                        + "if(want.indexOf('input-')===0)ids.push(want.slice(6));else ids.push('input-'+want);"
+                        + "function byId(root,id){try{if(root.getElementById)return root.getElementById(id);}catch(e0){}"
+                        + "try{return root.querySelector('#'+id.replace(/([^a-zA-Z0-9_-])/g,'\\\\$1'));}catch(e1){"
+                        + "return root.querySelector('[id=\"'+id.replace(/\"/g,'')+'\"]');}}"
+                        + "function resolve(el){if(!el)return null;if(el.tagName==='INPUT'||el.tagName==='TEXTAREA')return el;"
+                        + "if(el.shadowRoot){var q=el.shadowRoot.querySelector('input:not([type=hidden]),textarea');if(q)return q;}"
+                        + "return null;}"
+                        + "function scanRoot(root){if(!root)return null;for(var i=0;i<ids.length;i++){var el=byId(root,ids[i]);var r=resolve(el);if(r)return r;}"
+                        + "var nodes=root.querySelectorAll('*');for(var j=0;j<nodes.length;j++){if(nodes[j].shadowRoot){var r2=scanRoot(nodes[j].shadowRoot);if(r2)return r2;}}return null;}"
+                        + "var e=scanRoot(document);if(!e)e=scanRoot(document.body);return e;";
+        Object o = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script, fieldId);
+        return o instanceof WebElement ? (WebElement) o : null;
+    }
+
     /** ZMSKVR-716: Muc character counter stays at .875rem on desktop (MucTextArea only). */
     public void assertCharacterCountFontSizeDesktop() {
         context.set();
