@@ -2188,8 +2188,10 @@ public class CitizenApiSteps {
      * ZMSKVR-97 / ZMSKVR-535: confirm returns {@code icsContent} from Munich {@code icsappointment.twig}
      * with Terminnummer ({@code displayNumber}), Leistung URL, and cancel hash link.
      *
-     * @param displayNumberMode {@code prefixed} when the scope uses {@code displayNumberPrefix};
-     *     {@code plain} when displayNumber equals the process id
+     * @param displayNumberMode {@code plain} when displayNumber equals the process id;
+     *     {@code prefixed} when it is {@code displayNumberPrefix} + padded counter (not the bare
+     *     process id). Citizen confirm currently keeps the process id for prefix scopes because
+     *     the thinned scope omits {@code queue.displayNumberPrefix}.
      */
     @Then("the confirm endpoint icsContent should match the Munich template with {string} displayNumber")
     public void theConfirmEndpointIcsContentShouldMatchTheMunichTemplateWithDisplayNumber(
@@ -2211,10 +2213,11 @@ public class CitizenApiSteps {
                     .as("plain displayNumber equals processId")
                     .isEqualTo(String.valueOf(process.getProcessId()));
         } else if ("prefixed".equalsIgnoreCase(displayNumberMode)) {
+            // Product form: prefix + zero-padded counter (see ProcessRepository::getNewDisplayNumber).
             Assertions.assertThat(displayNumber)
-                    .as("prefixed displayNumber embeds processId")
-                    .contains(String.valueOf(process.getProcessId()))
-                    .isNotEqualTo(String.valueOf(process.getProcessId()));
+                    .as("prefixed displayNumber is not the bare processId")
+                    .isNotEqualTo(String.valueOf(process.getProcessId()))
+                    .matches("[A-Za-z].*");
         } else {
             throw new IllegalArgumentException(
                     "Unknown displayNumber mode \"" + displayNumberMode + "\" (use prefixed|plain).");
