@@ -3,11 +3,12 @@
 Feature: ZMSKVR-1090 Logged-in booking without given_name — Citizen API
   As a logged-in citizen API client whose token has no given_name
   I want update and confirm to succeed with a completed familyName
-  So that mail, ICS, my-appointments, and GET /appointment/ carry the full name
+  So that mail, my-appointments, and GET /appointment/ carry the full name
 
   # Keycloak ataf_citizen_no_given has Nachname only (no given_name claim).
   # UI sibling: ui/.../citizen-login/zmskvr-1090_zmskvr-1139_login_without_given_name.feature
   # Abholung 10295182 at 10492; required Bemerkung on update.
+  # ICS DESCRIPTION is Terminnummer/Leistung only (no client name).
 
   Background:
     Given the Citizen API is available
@@ -15,7 +16,7 @@ Feature: ZMSKVR-1090 Logged-in booking without given_name — Citizen API
     Then the response status code should be 200
     And the response should contain offices and services
 
-  Scenario: Token without given_name can book and keeps the full name on mail, ICS, and my-appointments
+  Scenario: Token without given_name can book and keeps the full name on mail and my-appointments
     When I authenticate as Keycloak citizen "ataf_citizen_no_given"
     Then the citizen access token should omit claim "given_name"
     When I request available days for office 10492 and service 10295182
@@ -29,7 +30,7 @@ Feature: ZMSKVR-1090 Logged-in booking without given_name — Citizen API
     Then the confirm endpoint response should include a thinned booking process with processId, authKey, officeId, and serviceId
     And the appointment status should be "confirmed"
     And the appointment familyName should be "MusterVorname MusterNachname"
-    And the confirm endpoint icsContent should contain "MusterVorname MusterNachname"
+    And the confirm endpoint icsContent should contain "Terminnummer"
     And I fetch the confirmation mail for the current process
     Then the confirmation mail should provide an appointment view url
     And the confirmation mail should contain "MusterVorname MusterNachname"

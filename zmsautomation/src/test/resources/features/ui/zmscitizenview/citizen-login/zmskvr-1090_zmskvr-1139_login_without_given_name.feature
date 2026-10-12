@@ -3,11 +3,12 @@
 Feature: CitizenView: Bürger-Login without given_name completes Vorname on Kontakt
   As a citizen whose BayernID / BundID token has no given_name
   I want to log in, complete Vorname on Kontakt, and book
-  So that Übersicht, confirmation mail, ICS, Meine Termine, and Termin Details carry the full name
+  So that Übersicht, confirmation mail, Meine Termine, and Termin Details carry the full name
 
   # Abholung 10295182 at Bürgerbüro Ruppertstraße KVR-II/211 (10492), same jump-in as ZMSKVR-955.
   # Keycloak user ataf_citizen_no_given has Nachname only (no firstName → no given_name claim).
   # Kontakt keeps SSO Nachname; the citizen provides Vorname. Stored familyName is "Vorname Nachname".
+  # ICS DESCRIPTION is Terminnummer/Leistung only (no client name) — assert structure, not familyName.
   # API sibling: rest/.../citizen-login/zmskvr-1090_zmskvr-1139_login_without_given_name_citizenapi.feature
 
   Background:
@@ -16,7 +17,7 @@ Feature: CitizenView: Bürger-Login without given_name completes Vorname on Kont
     Then the response status code should be 200
     And the response should contain offices and services
 
-  Scenario: Login without given_name books with full name on Übersicht, mail, ICS, and Meine Termine
+  Scenario: Login without given_name books with full name on Übersicht, mail, and Meine Termine
     Given I open zmscitizenview with jump-in service "10295182" and location "10492"
     Then the service combination step should be visible
     When I continue from the service combination step
@@ -49,5 +50,4 @@ Feature: CitizenView: Bürger-Login without given_name completes Vorname on Kont
     Then the appointment detail intro should offer an ICS download in the citizen view
     When I download the appointment ICS file in the citizen view
     Then the downloaded ICS file should contain the booked appointment in the citizen view
-    And the downloaded ICS file should contain "MusterVorname MusterNachname" in the citizen view
     And I cancel the appointment in the citizen view
