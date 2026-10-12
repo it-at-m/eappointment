@@ -22,7 +22,7 @@ import zms.ataf.ui.pages.citizenview.CitizenViewPage;
  * All zmscitizenview UI steps (English). Service Finder smoke + full booking flow; see
  * {@code features/ui/zmscitizenview/ServiceFinder.feature},
  * {@code zmskvr-1124_booking_ruppertstrasse_pass_calendar_jumpin_links.feature}, and
- * {@code zmskvr-1046_booking_ruppertstrasse_shared_booking_ausbildung.feature}.
+ * {@code zmskvr-1046_zmskvr-1091_booking_ruppertstrasse_shared_booking_ausbildung.feature}.
  */
 public class CitizenViewSteps {
 
