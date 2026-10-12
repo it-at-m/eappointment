@@ -127,11 +127,24 @@ BACKUP_FILE="/tmp/zms_backup_$(date +%s).sql.gz"
 # Set SKIP_DB_RESTORE=1 to leave DB as-is after tests (e.g. for debugging)
 SKIP_DB_RESTORE="${SKIP_DB_RESTORE:-0}"
 BASE_SQL_FILE="$PROJECT_ROOT/.resources/zms.sql"
-FLYWAY_DIR="$PROJECT_ROOT/zmsautomation/src/main/resources/db/migration"
-# Versioned ATAF pins that must win over hourly DLDB reimport (before minutly).
-# Naming: V###__ticket_description.sql — applied in lexicographic order.
-MIGRATION_AFTER_HOURLY_DIR="$PROJECT_ROOT/zmsautomation/src/main/resources/db/migration-after-hourly"
+# Two Flyway setups (separate history tables):
+#   flyway_migration              ← db/migration (before hourly)
+#   flyway_migration_after_hourly ← db/migration-after-hourly (after hourly, before minutly)
+FLYWAY_MIGRATION_DIR="$PROJECT_ROOT/zmsautomation/src/main/resources/db/migration"
+FLYWAY_MIGRATION_TABLE="flyway_migration"
+FLYWAY_MIGRATION_AFTER_HOURLY_DIR="$PROJECT_ROOT/zmsautomation/src/main/resources/db/migration-after-hourly"
+FLYWAY_MIGRATION_AFTER_HOURLY_TABLE="flyway_migration_after_hourly"
 DLDB_FIXTURE_DIR="$PROJECT_ROOT/zmsautomation/src/main/resources/dldb"
+
+# Clear ATAF Flyway history so versioned migrations re-apply each run (CURDATE() etc.).
+# Legacy table name flyway_schema_history is cleared too for older local DBs.
+clear_flyway_test_rows() {
+  info "Clearing Flyway test rows ($FLYWAY_MIGRATION_TABLE, $FLYWAY_MIGRATION_AFTER_HOURLY_TABLE)..."
+  exec_sql -e "DELETE FROM flyway_schema_history WHERE version > 1;" 2>/dev/null || true
+  exec_sql -e "DELETE FROM \`$FLYWAY_MIGRATION_TABLE\` WHERE version > 1;" 2>/dev/null || true
+  # After-hourly pins must re-win every setup after hourly DLDB reimport.
+  exec_sql -e "DELETE FROM \`$FLYWAY_MIGRATION_AFTER_HOURLY_TABLE\`;" 2>/dev/null || true
+}
 
 info "Test URLs: BASE_URI=$BASE_URI"
 info "Test URLs: CITIZEN_API_BASE_URI=$CITIZEN_API_BASE_URI"
@@ -362,8 +375,7 @@ cleanup_on_exit() {
   
   # 4. Clear Flyway test migrations (skip when DB restore is disabled)
   if [[ -n "${BACKUP_FILE:-}" && "$SKIP_DB_RESTORE" != "1" ]]; then
-    info "Clearing test data migrations from flyway_schema_history..."
-    exec_sql -e "DELETE FROM flyway_schema_history WHERE version > 1;" 2>/dev/null || true
+    clear_flyway_test_rows
   fi
   
   # 5. Clear caches
@@ -621,18 +633,18 @@ else
   warn "Base SQL file not found at $BASE_SQL_FILE, skipping import."
 fi
 
-# 5. Flyway Migrations
-section "5. Flyway Migrations"
-info "Clearing test data migrations from flyway_schema_history..."
-exec_sql -e "DELETE FROM flyway_schema_history WHERE version > 1;" 2>/dev/null || true
-
-info "Running Flyway migrations from $FLYWAY_DIR via Maven Flyway plugin..."
-seed_core_maven_plugins || true
+# Run Maven Flyway migrate for one location + history table.
+# Args: locations_dir table_name log_basename [strict:1=fail hard, 0=warn and continue]
 run_flyway_migrate_with_retries() {
+  local locations_dir="$1"
+  local table_name="$2"
+  local log_basename="$3"
+  local strict="${4:-0}"
   local flyway_try=1
-  local flyway_log="$PROJECT_ROOT/zmsautomation/target/maven-flyway-migrate.log"
+  local flyway_log="$PROJECT_ROOT/zmsautomation/target/${log_basename}.log"
   local flyway_exit=0
   mkdir -p "$PROJECT_ROOT/zmsautomation/target"
+  info "Flyway migrate locations=$locations_dir table=$table_name"
   while (( flyway_try <= 4 )); do
     (
       cd "$PROJECT_ROOT/zmsautomation"
@@ -640,7 +652,8 @@ run_flyway_migrate_with_retries() {
         -Dflyway.url="jdbc:mysql://$DB_HOST:$DB_PORT/$DB_NAME" \
         -Dflyway.user="$DB_USER" \
         -Dflyway.password="$DB_PASSWORD" \
-        -Dflyway.locations="filesystem:$FLYWAY_DIR" \
+        -Dflyway.locations="filesystem:$locations_dir" \
+        -Dflyway.table="$table_name" \
         -Dflyway.placeholders.citizenviewBaseUrl="$CITIZENVIEW_BASE_URI" \
         -Dflyway.baselineOnMigrate=true \
         flyway:migrate
@@ -657,11 +670,25 @@ run_flyway_migrate_with_retries() {
       flyway_try=$((flyway_try + 1))
       continue
     fi
-    warn "Flyway (Maven plugin) failed; continuing."
+    if [[ "$strict" == "1" ]]; then
+      warn "Flyway migrate failed for table=$table_name (strict)."
+      return 1
+    fi
+    warn "Flyway (Maven plugin) failed for table=$table_name; continuing."
     return 0
   done
+  return 1
 }
-run_flyway_migrate_with_retries
+
+# 5. Flyway Migrations (pre-hourly)
+section "5. Flyway Migrations"
+clear_flyway_test_rows
+seed_core_maven_plugins || true
+run_flyway_migrate_with_retries \
+  "$FLYWAY_MIGRATION_DIR" \
+  "$FLYWAY_MIGRATION_TABLE" \
+  "maven-flyway-migrate" \
+  0
 
 info "Database tables after Flyway:"
 exec_sql -e "SELECT table_name AS 'Table Name', table_rows AS 'Row Count' FROM information_schema.tables WHERE table_schema = '$DB_NAME' ORDER BY table_name;" || true
@@ -685,37 +712,18 @@ fi
 clear_caches
 
 # Hourly reimports dldb providers and rewrites availability.slotTimeInMinutes from
-# provider.data. ATAF pins that must win over SADB run here — after hourly, before
+# provider.data. Second Flyway path wins over SADB here — after hourly, before
 # minutly / calculateSlots (not after both).
-apply_migration_after_hourly_sql() {
-  local sql_file count=0
-  if [[ ! -d "$MIGRATION_AFTER_HOURLY_DIR" ]]; then
-    warn "Missing $MIGRATION_AFTER_HOURLY_DIR — skipping migration-after-hourly"
-    return 0
-  fi
-  shopt -s nullglob
-  local files=("$MIGRATION_AFTER_HOURLY_DIR"/V*.sql)
-  shopt -u nullglob
-  if ((${#files[@]} == 0)); then
-    info "No migration-after-hourly SQL under $MIGRATION_AFTER_HOURLY_DIR"
-    return 0
-  fi
-  # Lexicographic order matches Flyway-style V001__, V002__, …
-  IFS=$'\n' files=($(printf '%s\n' "${files[@]}" | LC_ALL=C sort))
-  unset IFS
-  for sql_file in "${files[@]}"; do
-    info "Applying migration-after-hourly $(basename "$sql_file") ..."
-    exec_sql < "$sql_file" || {
-      warn "migration-after-hourly $(basename "$sql_file") failed"
-      return 1
-    }
-    count=$((count + 1))
-  done
-  info "Applied ${count} migration-after-hourly SQL file(s)."
-}
-
-section "7b. ATAF migration-after-hourly"
-apply_migration_after_hourly_sql || exit 1
+section "7b. Flyway migration-after-hourly"
+if [[ ! -d "$FLYWAY_MIGRATION_AFTER_HOURLY_DIR" ]]; then
+  warn "Missing $FLYWAY_MIGRATION_AFTER_HOURLY_DIR — skipping migration-after-hourly"
+else
+  run_flyway_migrate_with_retries \
+    "$FLYWAY_MIGRATION_AFTER_HOURLY_DIR" \
+    "$FLYWAY_MIGRATION_AFTER_HOURLY_TABLE" \
+    "maven-flyway-migrate-after-hourly" \
+    1 || exit 1
+fi
 
 section "8. Minutly Cronjob"
 export ZMS_CRONROOT=1
@@ -1226,10 +1234,9 @@ restore_db
 info "Restoring Keycloak config (revert test-time rewrites)..."
 restore_keycloak
 
-# Clear test data migrations from flyway_schema_history after restore (skip when SKIP_DB_RESTORE=1)
+# Clear test data migrations after restore (skip when SKIP_DB_RESTORE=1)
 if [[ "$SKIP_DB_RESTORE" != "1" ]]; then
-  info "Clearing test data migrations from flyway_schema_history after restore..."
-  exec_sql -e "DELETE FROM flyway_schema_history WHERE version > 1;" 2>/dev/null || true
+  clear_flyway_test_rows
 fi
 
 # 15. Cleanup

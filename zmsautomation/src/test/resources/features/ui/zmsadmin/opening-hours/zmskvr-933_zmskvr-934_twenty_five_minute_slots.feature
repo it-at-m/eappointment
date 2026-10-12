@@ -7,7 +7,7 @@ Feature: Admin Öffnungszeiten Terminabstand is 25 minutes at Führerscheinstell
 
   # ZMSKVR-933 (#fix), tested by ZMSKVR-934.
   # Office 10308174 / scopes 6 (A), 256 (B), 347 (C).
-  # Pin is db/migration-after-hourly/V001__…sql (after hourly, before minutly; not locations_de / SADB overwrite).
+  # Pin is Flyway db/migration-after-hourly → flyway_migration_after_hourly (after hourly, before minutly).
   # Neue Öffnungszeit reads provider.data.slotTimeInMinutes into #AvDaySlottime.
 
   Scenario Outline: New opening hours at Allgemeinschalter default Terminabstand to 25 minutes
