@@ -72,7 +72,8 @@ The script will:
 4. Import base database (`.resources/zms.sql`)
 5. Run Flyway migrations (Maven plugin)
 6. Run PHP migrations (`zmsbackend` migrate)
-7. Run hourly cronjob (with retries)
+7. Run hourly cronjob (with retries; falls back to bundled `dldb/*.json` only if live SADB fails)
+7b. Apply ATAF after-DLDB SQL (`db/ataf-after-dldb.sql`) — pins that must win over hourly provider reimport
 8. Run minutely cronjob and slot calculation (`calculateSlots`)
 9. Perform HTTP health checks (zmsbackend, citizen API, CitizenView, optional refarch-gateway)
 10. Set up display / browser tooling (Xvfb, driver checks)
