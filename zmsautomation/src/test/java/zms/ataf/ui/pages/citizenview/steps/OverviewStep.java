@@ -50,6 +50,7 @@ public final class OverviewStep {
             "Eine Bestätigung und weitere Informationen zu Ihrem Termin erhalten Sie per E-Mail. Wir freuen uns auf Ihren Besuch.";
     private static final String VIEW_APPOINTMENT_BUTTON = "Termin ansehen";
     private static final String BOOK_ANOTHER_APPOINTMENT_BUTTON = "Weiteren Termin vereinbaren";
+    private static final String ICS_DOWNLOAD_BUTTON = "Termin herunterladen (ics)";
     private static final String CANCELLATION_SUCCESS_HEADING =
             "Sie haben Ihren Termin erfolgreich abgesagt.";
     private static final String CANCELLATION_SUCCESS_TEXT =
@@ -58,6 +59,19 @@ public final class OverviewStep {
             "Sie haben Ihren Termin bereits aktiviert.";
     public void assertProviderSummaryVisible(int officeId) {
         assertProviderSummaryVisible(officeId, "Bürgerbüro Ruppertstraße");
+    }
+
+    /** Übersicht Kontakt block shows joined {@code appointment.familyName}. */
+    public void assertBookingSummaryShowsContactName(String fullName) {
+        context.set();
+        CitizenViewWaits.waitWithThreeWindows(
+                () -> shadow.shadowDomContainsText(fullName),
+                "Übersicht Kontakt name " + fullName);
+        Assert.assertTrue(
+                shadow.shadowDomContainsText(fullName),
+                "Übersicht Kontakt should show familyName \"" + fullName + "\".");
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: Übersicht shows contact name {}", fullName);
     }
     public String deepVisibleProviderSummaryText(int officeId) {
         context.set();
@@ -158,6 +172,94 @@ public final class OverviewStep {
         Assert.assertFalse(
                 privacyAcknowledgementCheckboxPresent(),
                 "Privacy acknowledgement checkbox should be gone.");
+    }
+
+    /**
+     * ZMSKVR-846 / ZMSKVR-1021: privacy and electronic-communication links open in a new tab and
+     * expose an aria-label. Copy matches de-DE.json (privacy uses "pdf download"; communication
+     * mentions "neuem Tab").
+     */
+    public void assertLegalNoticeLinksOpenInNewTab() {
+        context.set();
+        String script =
+                "function walk(n,fn){if(!n)return;fn(n);if(n.shadowRoot)walk(n.shadowRoot,fn);"
+                        + "var c=n.children;if(c)for(var i=0;i<c.length;i++)walk(c[i],fn);}"
+                        + "var out={privacy:null,communication:null};"
+                        + "walk(document.body,function(n){"
+                        + "if((n.tagName||'').toUpperCase()!=='A')return;"
+                        + "var href=n.getAttribute('href')||'';"
+                        + "var aria=n.getAttribute('aria-label')||'';"
+                        + "var target=n.getAttribute('target')||'';"
+                        + "var text=(n.textContent||'').replace(/\\s+/g,' ').trim();"
+                        + "var info={href:href,target:target,aria:aria,text:text};"
+                        + "if(href.indexOf('23_07_Art_13_DSGVO.pdf')>=0||text.indexOf('Datenschutzhinweise Terminvereinbarung')>=0)out.privacy=info;"
+                        + "if(href.indexOf('elektronische-kommunikation')>=0||text.indexOf('elektronischen Kommunikation')>=0)out.communication=info;"
+                        + "});"
+                        + "return out;";
+        @SuppressWarnings("unchecked")
+        java.util.Map<String, Object> raw =
+                (java.util.Map<String, Object>)
+                        ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script);
+        Assert.assertNotNull(raw, "Could not scan legal notice links");
+        @SuppressWarnings("unchecked")
+        java.util.Map<String, Object> privacy = (java.util.Map<String, Object>) raw.get("privacy");
+        @SuppressWarnings("unchecked")
+        java.util.Map<String, Object> communication =
+                (java.util.Map<String, Object>) raw.get("communication");
+        Assert.assertNotNull(privacy, "Privacy link missing: " + raw);
+        Assert.assertNotNull(communication, "Electronic communication link missing: " + raw);
+        Assert.assertEquals(
+                String.valueOf(privacy.get("target")),
+                "_blank",
+                "Privacy link should use target=_blank: " + privacy);
+        Assert.assertEquals(
+                String.valueOf(communication.get("target")),
+                "_blank",
+                "Electronic communication link should use target=_blank: " + communication);
+        String privacyAria = String.valueOf(privacy.get("aria")).toLowerCase();
+        String commAria = String.valueOf(communication.get("aria")).toLowerCase();
+        // de-DE: "Datenschutzerklärung pdf download" / "…Kommunikation… neuem Tab"
+        Assert.assertTrue(
+                privacyAria.contains("datenschutz") && privacyAria.contains("pdf"),
+                "Privacy aria-label must name Datenschutz and PDF: " + privacy);
+        Assert.assertTrue(
+                commAria.contains("kommunikation") && commAria.contains("tab"),
+                "Communication aria-label must name Kommunikation and new tab: " + communication);
+    }
+
+    /** ZMSKVR-521: Adresse label uses 16px and no bottom margin above the address lines. */
+    public void assertOverviewAddressLabelChrome() {
+        context.set();
+        String script =
+                "function walk(n,fn){if(!n)return null;if(n.nodeType===1){var hit=fn(n);if(hit)return hit;}"
+                        + "if(n.shadowRoot){var i=walk(n.shadowRoot,fn);if(i)return i;}"
+                        + "var c=n.children;if(c)for(var k=0;k<c.length;k++){var x=walk(c[k],fn);if(x)return x;}return null;}"
+                        // Prefer the smaller-front-size paragraph; fall back to a strong "Adresse".
+                        + "var label=walk(document.body,function(n){"
+                        + "if(!n.classList||!n.classList.contains('smaller-front-size'))return null;"
+                        + "var t=(n.textContent||'').replace(/\\s+/g,' ').trim();"
+                        + "if(t==='Adresse'||t.indexOf('Adresse')===0)return n;return null;});"
+                        + "if(!label){label=walk(document.body,function(n){"
+                        + "var tag=(n.tagName||'').toUpperCase();"
+                        + "if(tag!=='STRONG'&&tag!=='B')return null;"
+                        + "var t=(n.textContent||'').replace(/\\s+/g,' ').trim();"
+                        + "if(t==='Adresse')return n.parentElement||n;return null;});}"
+                        + "if(!label)return {found:false};"
+                        + "var st=getComputedStyle(label);"
+                        + "return {found:true,fontSize:st.fontSize,px:parseFloat(st.fontSize),"
+                        + "marginBottom:st.marginBottom,mb:parseFloat(st.marginBottom)||0,"
+                        + "cls:String(label.className||'')};";
+        Object raw = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script);
+        Assert.assertNotNull(raw, "Could not measure Adresse label");
+        @SuppressWarnings("unchecked")
+        java.util.Map<String, Object> map = (java.util.Map<String, Object>) raw;
+        Assert.assertTrue(Boolean.TRUE.equals(map.get("found")), "Adresse label missing: " + map);
+        Assert.assertTrue(
+                Math.abs(((Number) map.get("px")).doubleValue() - 16.0) <= 1.0,
+                "Adresse label should be 16px: " + map);
+        Assert.assertTrue(
+                Math.abs(((Number) map.get("mb")).doubleValue()) <= 0.5,
+                "Adresse label should have no bottom margin: " + map);
     }
     public void assertSelectedAppointmentPlaceExclusive(String heading, String exclusive) {
         if (!"yes".equals(exclusive)) {
@@ -755,6 +857,42 @@ public final class OverviewStep {
         ScenarioLogManager.getLogger().info("zmscitizenview: activation callout appeared");
         page.trySyncBookingProcessFromLocalStorageOnce();
     }
+
+    /**
+     * ZMSKVR-87 / ZMSKVR-601 / ZMSKVR-715: click Termin reservieren and stay on Übersicht expecting
+     * an error callout (no activation success).
+     */
+    public void tryPreconfirmFromOverview() {
+        context.set();
+        page.captureBookingProcessForCleanup();
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: Übersicht → Termin reservieren (expect too-many-appointments error)");
+        shadow.waitForAndClickButtonContaining(DE_RESERVE, defaultWaitSeconds);
+    }
+
+    public void assertTooManyAppointmentsWithSameMailCalloutVisible() {
+        context.set();
+        String header = CitizenViewPage.DE_TOO_MANY_APPOINTMENTS_HEADER;
+        String text = CitizenViewPage.DE_TOO_MANY_APPOINTMENTS_TEXT;
+        CitizenViewWaits.waitWithThreeWindows(
+                () -> shadow.shadowDomContainsText(header) && shadow.shadowDomContainsText(text),
+                "Too many appointments callout");
+        Assert.assertTrue(
+                shadow.shadowDomContainsText(header),
+                "Expected too-many-appointments callout header: " + header);
+        Assert.assertTrue(
+                shadow.shadowDomContainsText(text),
+                "Expected too-many-appointments callout text: " + text);
+        Assert.assertTrue(
+                shadow.shadowDomHasHeading(2, header),
+                "Expected H2 for too-many-appointments callout: " + header);
+    }
+
+    public void assertReserveAppointmentButtonNotVisible() {
+        context.set();
+        String state = reserveAppointmentButtonState();
+        Assert.assertNull(state, "Termin reservieren must be hidden while the too-many-appointments callout shows.");
+    }
     public void assertPreconfirmationCalloutVisible(int activationMinutes) {
         context.set();
         ScenarioLogManager.getLogger()
@@ -808,6 +946,44 @@ public final class OverviewStep {
         Assert.assertTrue(
                 shadow.shadowDomContainsText(BOOK_ANOTHER_APPOINTMENT_BUTTON),
                 "Logged-in confirmation must show secondary action 'Weiteren Termin vereinbaren'.");
+        Assert.assertFalse(
+                shadow.shadowDomContainsText(ICS_DOWNLOAD_BUTTON),
+                "Logged-in confirmation must not show ICS download (ZMSKVR-97).");
+    }
+
+    /**
+     * ZMSKVR-97 / ZMSKVR-526 / ZMSKVR-732: guest activation success shows ICS download + book another,
+     * not Termin ansehen.
+     */
+    public void assertGuestConfirmationSuccessDetailsVisible() {
+        context.set();
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: assert guest confirmation success details");
+        assertConfirmationSuccessCalloutVisible();
+        Assert.assertTrue(
+                shadow.shadowDomContainsText(CONFIRMATION_SUCCESS_TEXT),
+                "Confirmation success callout must include the booking-confirmation mail text.");
+        Assert.assertTrue(
+                shadow.shadowDomContainsText(ICS_DOWNLOAD_BUTTON),
+                "Guest confirmation must show primary action 'Termin herunterladen (ics)'.");
+        Assert.assertTrue(
+                shadow.shadowDomContainsText(BOOK_ANOTHER_APPOINTMENT_BUTTON),
+                "Guest confirmation must show secondary action 'Weiteren Termin vereinbaren'.");
+        Assert.assertFalse(
+                shadow.shadowDomContainsText(VIEW_APPOINTMENT_BUTTON),
+                "Guest confirmation must not show 'Termin ansehen'.");
+    }
+
+    /** ZMSKVR-526 / ZMSKVR-732: secondary button resets to Service Finder (Schritt 0). */
+    public void bookAnotherAppointmentFromConfirmationSuccess() {
+        context.set();
+        CitizenViewWaits.waitWithThreeWindows(
+                () -> shadow.shadowDomContainsText(BOOK_ANOTHER_APPOINTMENT_BUTTON),
+                "Weiteren Termin vereinbaren on confirmation success");
+        shadow.waitForAndClickButtonContaining(BOOK_ANOTHER_APPOINTMENT_BUTTON, defaultWaitSeconds);
+        CitizenViewWaits.waitWithThreeWindows(
+                () -> shadow.shadowDomContainsText("Bürgerservice-Suche"),
+                "Service Finder after Weiteren Termin vereinbaren");
     }
 
     /** Opens Termin-Detail for the appointment just confirmed (logged-in success callout). */

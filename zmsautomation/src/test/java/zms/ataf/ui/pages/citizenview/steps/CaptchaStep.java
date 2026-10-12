@@ -6,11 +6,14 @@ import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 
+import com.fasterxml.jackson.databind.JsonNode;
+
 import ataf.core.logging.ScenarioLogManager;
 import ataf.web.utils.DriverUtil;
 import config.TestConfig;
 import zms.ataf.helpers.CaptchaClient;
 import zms.ataf.ui.pages.citizenview.CitizenViewPageContext;
+import zms.ataf.ui.pages.citizenview.support.CitizenViewJson;
 import zms.ataf.ui.pages.citizenview.support.ShadowDom;
 
 /**
@@ -28,11 +31,17 @@ public final class CaptchaStep {
 
     private final CitizenViewPageContext context;
     private final ShadowDom shadow;
+    private final CitizenViewJson json;
     private final int defaultWaitSeconds;
 
-    public CaptchaStep(CitizenViewPageContext context, ShadowDom shadow, int defaultWaitSeconds) {
+    public CaptchaStep(
+            CitizenViewPageContext context,
+            ShadowDom shadow,
+            CitizenViewJson json,
+            int defaultWaitSeconds) {
         this.context = context;
         this.shadow = shadow;
+        this.json = json;
         this.defaultWaitSeconds = defaultWaitSeconds;
     }
 
@@ -55,6 +64,112 @@ public final class CaptchaStep {
         Assert.assertFalse(
                 shadow.shadowDomContainsText(DE_SESSION_TIMEOUT_TEXT),
                 "Captcha session callout text must not remain after a fresh captcha.");
+    }
+
+    /**
+     * ZMSKVR-506 / ZMSKVR-470 / ZMSKVR-597: label, hidden Altcha footer/logo, and muenchen.de CSS
+     * tokens on Leistung before verification.
+     */
+    public void assertCaptchaDesign() {
+        context.set();
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: assert captcha design (label, footer hidden, CSS tokens)");
+        shadow.waitUntilShadowContains(DE_CAPTCHA_LABEL, defaultWaitSeconds);
+        Assert.assertTrue(
+                shadow.shadowDomContainsText(DE_CAPTCHA_LABEL),
+                "Captcha label \"Ich bin kein Bot.\" must be visible on Leistung.");
+
+        JsonNode design =
+                json.citizenJson(
+                        "(function(){"
+                                + "var hosts=cssAll('.altcha-captcha');"
+                                + "var widgets=cssAll('altcha-widget');"
+                                + "var host=hosts.length?hosts[0]:null;"
+                                + "var widget=widgets.length?widgets[0]:null;"
+                                + "var css={};"
+                                + "if(host){var st=getComputedStyle(host);"
+                                + "css.borderColor=(st.getPropertyValue('--altcha-border-color')||'').trim();"
+                                + "css.borderRadius=(st.getPropertyValue('--altcha-border-radius')||'').trim();"
+                                + "css.checkboxBorder=(st.getPropertyValue('--altcha-checkbox-border-color')||'').trim();"
+                                + "css.checkboxWidth=(st.getPropertyValue('--altcha-checkbox-border-width')||'').trim();"
+                                + "css.checkboxRadius=(st.getPropertyValue('--altcha-checkbox-border-radius')||'').trim();"
+                                + "css.textColor=(st.getPropertyValue('--altcha-color-base-content')||'').trim();}"
+                                + "var config=null;"
+                                + "if(widget){var raw=widget.getAttribute('configuration');"
+                                + "if(!raw&&widget.configuration!=null)raw=widget.configuration;"
+                                + "if(typeof raw==='string'&&raw){try{config=JSON.parse(raw);}catch(e){config=null;}}"
+                                + "else if(raw&&typeof raw==='object')config=raw;}"
+                                + "var altchaLink=false;var checkbox=false;var altchaBrand=false;"
+                                + "function scan(n){if(!n)return;"
+                                + "if(n.tagName&&String(n.tagName).toLowerCase()==='a'){"
+                                + "var href=((n.getAttribute&&n.getAttribute('href'))||'').toLowerCase();"
+                                + "if(href.indexOf('altcha.org')>=0)altchaLink=true;}"
+                                + "if(n.nodeType===3){var tv=(n.nodeValue||'').replace(/\\s+/g,' ').trim();"
+                                + "if(tv==='ALTCHA'||tv.indexOf('ALTCHA')===0)altchaBrand=true;}"
+                                + "if(n.tagName&&String(n.tagName).toLowerCase()==='input'"
+                                + "&&((n.getAttribute&&n.getAttribute('type'))||'').toLowerCase()==='checkbox')"
+                                + "checkbox=true;"
+                                + "if(n.shadowRoot)scan(n.shadowRoot);"
+                                + "var c=n.childNodes;if(c)for(var i=0;i<c.length;i++)scan(c[i]);}"
+                                + "if(widget)scan(widget);"
+                                + "return {hostPresent:!!host,widgetPresent:!!widget,css:css,config:config,"
+                                + "altchaLink:altchaLink,altchaBrand:altchaBrand,checkbox:checkbox};})()");
+
+        Assert.assertTrue(
+                design.path("hostPresent").asBoolean(false),
+                "altcha-captcha host missing: " + design);
+        Assert.assertTrue(
+                design.path("widgetPresent").asBoolean(false),
+                "altcha-widget missing: " + design);
+        Assert.assertTrue(
+                design.path("checkbox").asBoolean(false),
+                "Captcha checkbox missing: " + design);
+        Assert.assertFalse(
+                design.path("altchaLink").asBoolean(true),
+                "Altcha footer link must be hidden: " + design);
+        Assert.assertFalse(
+                design.path("altchaBrand").asBoolean(true),
+                "Altcha footer brand text must be hidden: " + design);
+
+        JsonNode config = design.path("config");
+        Assert.assertFalse(config.isMissingNode() || config.isNull(), "Altcha configuration missing: " + design);
+        Assert.assertTrue(config.path("hideFooter").asBoolean(false), "hideFooter must be true: " + design);
+        Assert.assertTrue(config.path("hideLogo").asBoolean(false), "hideLogo must be true: " + design);
+
+        JsonNode css = design.path("css");
+        assertCssTokenContains(css, "borderColor", "#bdd4ea", "beau-blue");
+        assertCssTokenContains(css, "checkboxBorder", "#005a9f", "mde-blue");
+        assertCssTokenContains(css, "textColor", "#3a5368", "neutral-grey");
+        Assert.assertEquals(
+                normalizeCssLength(css.path("borderRadius").asText("")),
+                "0",
+                "Captcha border-radius: " + css);
+        Assert.assertEquals(
+                normalizeCssLength(css.path("checkboxRadius").asText("")),
+                "0",
+                "Captcha checkbox border-radius: " + css);
+        Assert.assertEquals(
+                normalizeCssLength(css.path("checkboxWidth").asText("")),
+                "2px",
+                "Captcha checkbox border-width: " + css);
+    }
+
+    public void assertLeistungWeiterDisabled() {
+        context.set();
+        JsonNode state = json.citizenJson("btnState(document.body,'" + DE_WEITER + "')");
+        Assert.assertTrue(state.path("present").asBoolean(false), "Weiter missing on Leistung: " + state);
+        Assert.assertTrue(
+                state.path("disabled").asBoolean(false),
+                "Weiter must stay disabled until captcha verification: " + state);
+    }
+
+    public void assertLeistungWeiterEnabled() {
+        context.set();
+        JsonNode state = json.citizenJson("btnState(document.body,'" + DE_WEITER + "')");
+        Assert.assertTrue(state.path("present").asBoolean(false), "Weiter missing on Leistung: " + state);
+        Assert.assertFalse(
+                state.path("disabled").asBoolean(true),
+                "Weiter should be enabled after captcha verification: " + state);
     }
 
     /**
@@ -157,5 +272,21 @@ public final class CaptchaStep {
                         + "return walk(document.body);";
         Object o = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script);
         return Boolean.TRUE.equals(o);
+    }
+
+    private static void assertCssTokenContains(JsonNode css, String field, String hex, String token) {
+        String value = css.path(field).asText("").toLowerCase();
+        Assert.assertTrue(
+                value.contains(hex.toLowerCase()) || value.contains(token.toLowerCase()),
+                "Captcha CSS " + field + " should reference " + hex + " or " + token + ": " + css);
+    }
+
+    /** Strip spaces so {@code 0px} / {@code 0} / {@code 2px} compare cleanly. */
+    private static String normalizeCssLength(String raw) {
+        String v = raw == null ? "" : raw.trim().toLowerCase().replace(" ", "");
+        if ("0px".equals(v) || "0rem".equals(v) || "0em".equals(v)) {
+            return "0";
+        }
+        return v;
     }
 }

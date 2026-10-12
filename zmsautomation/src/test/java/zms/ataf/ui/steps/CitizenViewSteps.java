@@ -6,6 +6,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.testng.Assert;
+
 import ataf.core.helpers.TestDataHelper;
 import ataf.core.logging.ScenarioLogManager;
 import ataf.web.utils.DriverUtil;
@@ -20,7 +22,7 @@ import zms.ataf.ui.pages.citizenview.CitizenViewPage;
  * All zmscitizenview UI steps (English). Service Finder smoke + full booking flow; see
  * {@code features/ui/zmscitizenview/ServiceFinder.feature},
  * {@code zmskvr-1124_booking_ruppertstrasse_pass_calendar_jumpin_links.feature}, and
- * {@code zmskvr-1046_booking_ruppertstrasse_shared_booking_ausbildung.feature}.
+ * {@code zmskvr-1046_zmskvr-1091_booking_ruppertstrasse_shared_booking_ausbildung.feature}.
  */
 public class CitizenViewSteps {
 
@@ -121,6 +123,15 @@ public class CitizenViewSteps {
         page.navigateWithJumpIn(s, l);
     }
 
+    @Given("I open zmscitizenview with exclusive jump-in service {string} and location {string}")
+    public void iOpenZmscitizenviewWithExclusiveJumpIn(String serviceId, String locationId) {
+        String s = TestDataHelper.transformTestData(serviceId);
+        String l = TestDataHelper.transformTestData(locationId);
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: exclusive jump-in service={} location={}", s, l);
+        page.navigateWithExclusiveJumpIn(s, l);
+    }
+
     @Given("I open zmscitizenview with jump-in service {string}")
     public void iOpenZmscitizenviewWithJumpInService(String serviceId) {
         String s = TestDataHelper.transformTestData(serviceId);
@@ -160,6 +171,13 @@ public class CitizenViewSteps {
         ScenarioLogManager.getLogger()
                 .info("zmscitizenview: assert clock and estimated duration {} minutes", minutes);
         page.assertEstimatedDurationShownWithClock(minutes);
+    }
+
+    @When("I select the appointment type {string} on the service combination step")
+    public void iSelectTheAppointmentTypeOnTheServiceCombinationStep(String label) {
+        String type = TestDataHelper.transformTestData(label);
+        ScenarioLogManager.getLogger().info("zmscitizenview: select appointment type {}", type);
+        page.selectAppointmentType(type);
     }
 
     @When("I increase the selected service {string}")
@@ -282,6 +300,82 @@ public class CitizenViewSteps {
         page.showAllCombinableServices();
     }
 
+    @Then("the show less services button is shown")
+    public void theShowLessServicesButtonIsShown() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: Weniger Leistungen anzeigen is shown");
+        page.assertShowLessServicesButtonVisible(true);
+    }
+
+    @Then("the show less services button is not shown")
+    public void theShowLessServicesButtonIsNotShown() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: Weniger Leistungen anzeigen is hidden");
+        page.assertShowLessServicesButtonVisible(false);
+    }
+
+    @When("I show less combinable services")
+    public void iShowLessCombinableServices() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: click Weniger Leistungen anzeigen");
+        page.showLessCombinableServices();
+    }
+
+    @Then("the disabled plus or minus for service {string} uses the grey disabled style")
+    public void theDisabledPlusOrMinusUsesTheGreyDisabledStyle(String label) {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: disabled counter style for {}", label);
+        page.assertDisabledCounterColors(TestDataHelper.transformTestData(label));
+    }
+
+    @Then("the contact field {string} max-length error allows {int} characters")
+    public void theContactFieldMaxLengthErrorAllowsCharacters(String fieldId, int maxChars) {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: max-length error for #{} at {}", fieldId, maxChars);
+        page.assertMaxLengthCounterError(fieldId, maxChars);
+    }
+
+    @Then("the contact character counter font size is point eight seven five rem on desktop")
+    public void theContactCharacterCounterFontSizeIsPointEightSevenFiveRemOnDesktop() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: counter font-size .875rem on desktop");
+        page.assertCharacterCountFontSizeDesktop();
+    }
+
+    @Then("the remarks textarea grows so the counter does not overlap on mobile")
+    public void theRemarksTextareaGrowsSoTheCounterDoesNotOverlapOnMobile() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: remarks textarea vs counter on mobile");
+        page.assertRemarksTextareaGrowsWithoutCounterOverlap();
+    }
+
+    @Then("the timeslot chrome under available appointments matches the design")
+    public void theTimeslotChromeUnderAvailableAppointmentsMatchesTheDesign() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: timeslot chrome (608/511/509)");
+        page.assertTimeslotChrome();
+    }
+
+    @Then("the legal notice links open in a new tab with aria labels in the citizen view")
+    public void theLegalNoticeLinksOpenInANewTabWithAriaLabelsInTheCitizenView() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: legal links target=_blank + aria");
+        page.assertLegalNoticeLinksOpenInNewTab();
+    }
+
+    @Then("the overview Adresse label uses sixteen pixel type without bottom margin")
+    public void theOverviewAdresseLabelUsesSixteenPixelTypeWithoutBottomMargin() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: Adresse label chrome (521)");
+        page.assertOverviewAddressLabelChrome();
+    }
+
+    @Then("the often searched services container padding is {int} pixels on mobile")
+    public void theOftenSearchedServicesContainerPaddingIsPixelsOnMobile(int pixels) {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: often-searched padding mobile expect {}", pixels);
+        Assert.assertEquals(pixels, 24, "Scenario expects 24px mobile padding");
+        page.assertOftenSearchedContainerPadding(true);
+    }
+
+    @Then("the often searched services container padding stays roomy on desktop")
+    public void theOftenSearchedServicesContainerPaddingStaysRoomyOnDesktop() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: often-searched padding desktop");
+        page.assertOftenSearchedContainerPadding(false);
+    }
+
     @When("I raise the service {string} until the plus button is disabled")
     public void iRaiseTheServiceUntilThePlusButtonIsDisabled(String label) {
         ScenarioLogManager.getLogger().info("zmscitizenview: raise {} until plus is disabled", label);
@@ -300,6 +394,49 @@ public class CitizenViewSteps {
     public void iContinueFromTheServiceCombinationStep() {
         ScenarioLogManager.getLogger().info("zmscitizenview: Weiter (combination → office/time)");
         page.clickWeiter();
+    }
+
+    @When("I continue from the service combination step and catch the appointment Muc spinner")
+    public void iContinueFromTheServiceCombinationStepAndCatchTheAppointmentMucSpinner() {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: Weiter (combination → Termin) and catch Muc spinner");
+        // Arm before Weiter so a sub-frame flash on a fast load is not missed between Selenium turns.
+        page.armMucSpinnerWatch(CitizenViewPage.DE_APPOINTMENT_SPINNER_TEXT);
+        page.clickWeiter();
+        page.waitUntilMucSpinnerSeen(CitizenViewPage.DE_APPOINTMENT_SPINNER_TEXT, 15);
+    }
+
+    @Then("the appointment Muc spinner should show {string}")
+    public void theAppointmentMucSpinnerShouldShow(String expectedText) {
+        ScenarioLogManager.getLogger().info("zmscitizenview: assert Muc spinner text '{}'", expectedText);
+        page.assertLastMucSpinnerText(expectedText);
+    }
+
+    @Then("the Ort section should stay visible with the appointment Muc spinner")
+    public void theOrtSectionShouldStayVisibleWithTheAppointmentMucSpinner() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: Ort stays visible with Muc spinner");
+        page.assertLastMucSpinnerKeptOrtVisible();
+    }
+
+    @Then("the Ort section and the calendar should stay visible with the appointment Muc spinner")
+    public void theOrtSectionAndTheCalendarShouldStayVisibleWithTheAppointmentMucSpinner() {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: Ort and calendar stay visible with Muc spinner");
+        page.assertLastMucSpinnerKeptOrtAndCalendarVisible();
+    }
+
+    @When("I uncheck the first Ort office and catch the appointment Muc spinner")
+    public void iUncheckTheFirstOrtOfficeAndCatchTheAppointmentMucSpinner() {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: uncheck first Ort and catch Muc spinner");
+        page.uncheckFirstOrtOfficeCatchingSpinner(CitizenViewPage.DE_APPOINTMENT_SPINNER_TEXT);
+    }
+
+    @When("I select another free calendar day and catch the appointment Muc spinner")
+    public void iSelectAnotherFreeCalendarDayAndCatchTheAppointmentMucSpinner() {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: select next calendar day and catch Muc spinner");
+        page.selectNextCalendarDayCatchingSpinner(CitizenViewPage.DE_APPOINTMENT_SPINNER_TEXT);
     }
 
     @Then("the booking stepper shows Leistung, Termin, Kontakt, and Übersicht")
@@ -418,6 +555,62 @@ public class CitizenViewSteps {
         ScenarioLogManager.getLogger()
                 .info("zmscitizenview: assert custom empty-state info contains '{}'", text);
         page.assertNoAppointmentCustomInfoContains(text);
+    }
+
+    @Then("the new appointments info link should be visible in the citizen view")
+    public void theNewAppointmentsInfoLinkShouldBeVisible() {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: assert Wann gibt es neue Termine? link");
+        page.assertNewAppointmentsInfoLinkVisible();
+    }
+
+    @When("I open the new appointments info modal in the citizen view")
+    public void iOpenTheNewAppointmentsInfoModal() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: open availability info modal");
+        page.openNewAppointmentsInfoModal();
+    }
+
+    @Then("the new appointments info modal title should be visible in the citizen view")
+    public void theNewAppointmentsInfoModalTitleShouldBeVisible() {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: assert availability info modal title");
+        page.assertAvailabilityInfoModalTitle();
+    }
+
+    @Then("the new appointments info modal should contain {string} in the citizen view")
+    public void theNewAppointmentsInfoModalShouldContain(String fragment) {
+        String text = TestDataHelper.transformTestData(fragment);
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: assert availability info modal contains '{}'", text);
+        page.assertAvailabilityInfoModalContains(text);
+    }
+
+    @Then("the new appointments info modal should have a heading containing {string} in the citizen view")
+    public void theNewAppointmentsInfoModalShouldHaveHeadingContaining(String headingFragment) {
+        String text = TestDataHelper.transformTestData(headingFragment);
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: assert availability info modal H3 contains '{}'", text);
+        page.assertAvailabilityInfoModalHasHeading(text);
+    }
+
+    @Then("the new appointments info modal should show {string} under a heading containing {string} in the citizen view")
+    public void theNewAppointmentsInfoModalShouldShowUnderHeading(
+            String contentFragment, String headingFragment) {
+        String content = TestDataHelper.transformTestData(contentFragment);
+        String heading = TestDataHelper.transformTestData(headingFragment);
+        ScenarioLogManager.getLogger()
+                .info(
+                        "zmscitizenview: assert availability info modal shows '{}' under H3 '{}'",
+                        content,
+                        heading);
+        page.assertAvailabilityInfoModalShowsUnderHeading(content, heading);
+    }
+
+    @Then("the new appointments info modal should have no provider heading in the citizen view")
+    public void theNewAppointmentsInfoModalShouldHaveNoProviderHeading() {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: assert availability info modal omits Standort H3");
+        page.assertAvailabilityInfoModalHasNoProviderHeading();
     }
 
     @Then("the selected calendar day should be {int} Berlin days from today in the citizen view")
@@ -735,6 +928,15 @@ public class CitizenViewSteps {
         page.waitForPreconfirmPageAfterUpdate();
     }
 
+    @When("I enter contact details with family name {string} in the citizen view")
+    public void iEnterContactDetailsWithFamilyName(String familyName) {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: fill contact with family name {} and Weiter", familyName);
+        page.fillContactDetailsWithFamilyName(familyName);
+        page.clickWeiter(30);
+        page.waitForPreconfirmPageAfterUpdate();
+    }
+
     /**
      * ZMSKVR-833: first booking at a scope where custom text is optional — fill Kontakt but stay on
      * the form (no Weiter) so the missing Pflichtfeld is still empty for later rebooking.
@@ -861,6 +1063,25 @@ public class CitizenViewSteps {
         page.continueFromPreconfirmStep();
     }
 
+    @When("I try to preconfirm from the overview in the citizen view")
+    public void iTryToPreconfirmFromTheOverviewInTheCitizenView() {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: Übersicht → Termin reservieren (expect error callout)");
+        page.tryPreconfirmFromOverview();
+    }
+
+    @Then("the too many appointments with same mail callout should be visible in the citizen view")
+    public void theTooManyAppointmentsWithSameMailCalloutShouldBeVisible() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: assert too-many-appointments callout");
+        page.assertTooManyAppointmentsWithSameMailCalloutVisible();
+    }
+
+    @Then("the Termin reservieren button should not be visible in the citizen view")
+    public void theTerminReservierenButtonShouldNotBeVisible() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: assert Termin reservieren hidden");
+        page.assertReserveAppointmentButtonNotVisible();
+    }
+
     @When("I reserve the appointment in the citizen view")
     public void iReserveTheAppointmentInTheCitizenView() {
         ScenarioLogManager.getLogger()
@@ -979,6 +1200,21 @@ public class CitizenViewSteps {
         ScenarioLogManager.getLogger()
                 .info("zmscitizenview: assert logged-in confirmation success details");
         page.assertLoggedInConfirmationSuccessDetailsVisible();
+    }
+
+    /** ZMSKVR-97 / ZMSKVR-526 / ZMSKVR-732: guest activation — ICS download + book another. */
+    @Then("the confirmation success callout should show the guest confirmation details in the citizen view")
+    public void theConfirmationSuccessCalloutShouldShowTheGuestConfirmationDetails() {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: assert guest confirmation success details");
+        page.assertGuestConfirmationSuccessDetailsVisible();
+    }
+
+    @When("I book another appointment from the confirmation success callout in the citizen view")
+    public void iBookAnotherAppointmentFromTheConfirmationSuccessCallout() {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: Weiteren Termin vereinbaren from confirmation success");
+        page.bookAnotherAppointmentFromConfirmationSuccess();
     }
 
     @Then("the preconfirmation callout should not be visible in the citizen view")
@@ -1337,6 +1573,31 @@ public class CitizenViewSteps {
         page.fillContactDetailsRandomWithoutContinue();
     }
 
+    @Then("the contact form should show SSO Nachname {string} without Vorname in the citizen view")
+    public void theContactFormShouldShowSsoNachnameWithoutVorname(String expectedLastName) {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: assert SSO Nachname={} with empty Vorname", expectedLastName);
+        page.assertSsoLastNamePrefillWithoutGivenName(expectedLastName);
+    }
+
+    @When("I complete the contact form with Vorname {string} keeping SSO Nachname {string} in the citizen view")
+    public void iCompleteTheContactFormWithVornameKeepingSsoNachname(
+            String firstName, String expectedLastName) {
+        ScenarioLogManager.getLogger()
+                .info(
+                        "zmscitizenview: complete Kontakt Vorname={} keep Nachname={}",
+                        firstName,
+                        expectedLastName);
+        page.completeContactWithMissingGivenName(firstName, expectedLastName);
+    }
+
+    @Then("the booking summary should show contact name {string} in the citizen view")
+    public void theBookingSummaryShouldShowContactName(String fullName) {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: assert Übersicht contact name {}", fullName);
+        page.assertBookingSummaryShowsContactName(fullName);
+    }
+
     @When("I continue from the contact form in the citizen view")
     public void iContinueFromTheContactFormInTheCitizenView() {
         ScenarioLogManager.getLogger().info("zmscitizenview: Kontakt Weiter → Übersicht");
@@ -1355,6 +1616,13 @@ public class CitizenViewSteps {
         ScenarioLogManager.getLogger()
                 .info("zmscitizenview: Bürger-Login → Keycloak citizen user (dbs-fragments)");
         page.loginViaBuergerLoginWithKeycloak();
+    }
+
+    @When("I log in via Bürger-Login with Keycloak as {string} in the citizen view")
+    public void iLogInViaBuergerLoginWithKeycloakAs(String loginName) throws Exception {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: Bürger-Login → Keycloak user {}", loginName);
+        page.loginViaBuergerLoginWithKeycloakAs(loginName);
     }
 
     @When("I log in via Bürger-Login with Keycloak in the citizen view if I am not already logged in")
@@ -1453,6 +1721,24 @@ public class CitizenViewSteps {
     public void theCaptchaSessionCalloutShouldNotBeVisible() {
         ScenarioLogManager.getLogger().info("zmscitizenview: assert captcha session callout is gone");
         page.assertCaptchaSessionCalloutNotVisible();
+    }
+
+    @Then("the captcha on Leistung should match the muenchen.de design")
+    public void theCaptchaOnLeistungShouldMatchTheMuenchenDeDesign() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: assert captcha design on Leistung");
+        page.assertCaptchaDesign();
+    }
+
+    @Then("the Weiter button on Leistung should be disabled in the citizen view")
+    public void theWeiterButtonOnLeistungShouldBeDisabled() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: assert Weiter disabled before captcha");
+        page.assertLeistungWeiterDisabled();
+    }
+
+    @Then("the Weiter button on Leistung should be enabled in the citizen view")
+    public void theWeiterButtonOnLeistungShouldBeEnabled() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: assert Weiter enabled after captcha");
+        page.assertLeistungWeiterEnabled();
     }
 
     @Then("the reservation expired callout should be visible in the citizen view")
@@ -1597,5 +1883,18 @@ public class CitizenViewSteps {
     public void theDownloadedIcsFileShouldContainTheBookedAppointment() {
         ScenarioLogManager.getLogger().info("zmscitizenview: assert downloaded ICS");
         page.assertDownloadedIcsContainsBookedAppointment();
+    }
+
+    @Then("the downloaded ICS file should contain {string} in the citizen view")
+    public void theDownloadedIcsFileShouldContain(String expected) {
+        ScenarioLogManager.getLogger().info("zmscitizenview: assert ICS contains {}", expected);
+        page.assertDownloadedIcsContainsText(expected);
+    }
+
+    @Then("the downloaded ICS file should match the Munich confirmation template in the citizen view")
+    public void theDownloadedIcsFileShouldMatchTheMunichConfirmationTemplate() {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: assert downloaded ICS Munich confirmation template");
+        page.assertDownloadedIcsMatchesMunichConfirmationTemplate();
     }
 }
