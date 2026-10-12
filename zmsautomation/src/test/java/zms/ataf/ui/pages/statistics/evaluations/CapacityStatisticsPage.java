@@ -114,10 +114,21 @@ public class CapacityStatisticsPage extends StatisticsPage {
         String expected = "Summe · " + year;
         ScenarioLogManager.getLogger()
                 .info("Checking capacity year sum label is \"{}\" (not Januar 1970).", expected);
+        By labelBy = By.cssSelector(".report-board--capacity-summary-label");
         WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
-        WebElement label = wait.until(ExpectedConditions.visibilityOfElementLocated(
-                By.cssSelector(".report-board--capacity-summary-label")));
-        String actual = label.getText().trim();
+        // Firefox often rebuilds the report board after year select; re-find on each poll.
+        String actual = wait.until(driver -> {
+            try {
+                List<WebElement> labels = driver.findElements(labelBy);
+                if (labels.isEmpty() || !labels.get(0).isDisplayed()) {
+                    return null;
+                }
+                String text = labels.get(0).getText().trim();
+                return expected.equals(text) ? text : null;
+            } catch (StaleElementReferenceException stale) {
+                return null;
+            }
+        });
         Assert.assertEquals(actual, expected, "Year sum row label is wrong.");
         Assert.assertFalse(
                 actual.contains("Januar"),
@@ -125,9 +136,13 @@ public class CapacityStatisticsPage extends StatisticsPage {
         String page = DRIVER.getPageSource();
         Assert.assertFalse(page.contains("Januar 1970"), "Page still shows Januar 1970.");
         Assert.assertFalse(page.contains("Summe · Januar"), "Page still shows Summe · Januar.");
-        List<WebElement> headings = DRIVER.findElements(By.cssSelector("h2.board__heading"));
-        boolean calendarYear = headings.stream()
-                .anyMatch(h2 -> h2.getText().contains("Kalenderjahr " + year));
-        Assert.assertTrue(calendarYear, "Board heading should contain Kalenderjahr " + year);
+        wait.until(driver -> {
+            try {
+                return driver.findElements(By.cssSelector("h2.board__heading")).stream()
+                        .anyMatch(h2 -> h2.getText().contains("Kalenderjahr " + year));
+            } catch (StaleElementReferenceException stale) {
+                return false;
+            }
+        });
     }
 }
