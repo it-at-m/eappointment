@@ -3,6 +3,8 @@ package zms.ataf.ui.pages.admin;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
@@ -169,9 +171,26 @@ public class UseraccountPage extends BasePage {
 
         String color = select.getCssValue("border-left-color");
         String width = select.getCssValue("border-left-width");
-        Assert.assertTrue(color != null && color.contains("213, 47, 46"),
-                "Behörde is not outlined in red: " + color);
+        // Chrome reports rgb(213, 47, 46); Firefox often rgb(210, 51, 51) for the same token.
+        Assert.assertTrue(isErrorRedBorder(color), "Behörde is not outlined in red: " + color);
         Assert.assertEquals(width, "5px", "Behörde does not have the error border.");
+    }
+
+    private static final Pattern CSS_RGB = Pattern.compile("rgba?\\(\\s*(\\d+)\\s*,\\s*(\\d+)\\s*,\\s*(\\d+)");
+
+    /** True for the admin has-error left border across Chromium and Gecko computed styles. */
+    static boolean isErrorRedBorder(String color) {
+        if (color == null || color.isBlank()) {
+            return false;
+        }
+        Matcher match = CSS_RGB.matcher(color);
+        if (!match.find()) {
+            return false;
+        }
+        int red = Integer.parseInt(match.group(1));
+        int green = Integer.parseInt(match.group(2));
+        int blue = Integer.parseInt(match.group(3));
+        return red >= 180 && green <= 90 && blue <= 90 && red > green + 80 && red > blue + 80;
     }
 
     private void submitNewUserForm() {
