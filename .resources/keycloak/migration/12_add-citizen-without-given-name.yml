@@ -1,0 +1,14 @@
+id: add citizen without given name for ZMSKVR-1090
+author: ZMS Development
+realm: zms
+changes:
+  # BayernID / BundID can omit given_name. Nachname only; Kontakt must complete Vorname.
+  - addUser:
+      name: ataf_citizen_no_given
+      lastName: MusterNachname
+      enabled: true
+      emailVerified: true
+      email: ataf_citizen_no_given@example.com
+  - updateUserPassword:
+      name: ataf_citizen_no_given
+      password: "vorschau"
