@@ -1,8 +1,8 @@
--- ATAF migration-after-hourly (applied after cronjob.hourly / bundled updateDldbData,
--- before cronjob.minutly / calculateSlots).
+-- ATAF Flyway path: db/migration-after-hourly → history table flyway_migration_after_hourly
+-- (zmsautomation-test step 7b: after cronjob.hourly / bundled updateDldbData, before minutly).
 -- Hourly reimports source=dldb providers and force-updates availability.slotTimeInMinutes
--- from provider.data — Flyway provider/Timeslot pins do not survive. Do not put these in
--- munich_sadb_overwrite.json (application) or locations_de.json (offline fallback only).
+-- from provider.data — pins in db/migration (flyway_migration) do not survive hourly.
+-- Do not put these in munich_sadb_overwrite.json or locations_de.json.
 --
 -- ZMSKVR-933 / ZMSKVR-934: Führerscheinstelle 10308174 Allgemeinschalter A–C → 25 minutes.
 
