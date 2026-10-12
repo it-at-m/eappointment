@@ -1,42 +1,42 @@
 {
   "branch": "test-zmskvr-488-zmskvr-745-invalid-jumpin-callout",
   "branchSlug": "test-zmskvr-488-zmskvr-745-invalid-jumpin-callout",
-  "runId": "38303465583",
-  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38303465583",
-  "runStartedAt": "2026-10-12T20:19:31Z",
-  "publishedAt": "2026-10-12T20:33:03.082Z",
+  "runId": "38305016319",
+  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38305016319",
+  "runStartedAt": "2026-10-12T20:33:39Z",
+  "publishedAt": "2026-10-12T20:44:47.749Z",
   "features": {
     "feature-ui-zmscitizenview-callouts-zmskvr-488-zmskvr-745-invalid-jumpin-callout": {
-      "status": "failed",
+      "status": "passed",
       "shard": "custom",
       "browser": "chrome",
       "browsers": {
         "chrome": {
-          "status": "failed",
+          "status": "passed",
           "shard": "custom",
-          "runId": "38303465583",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38303465583",
-          "runStartedAt": "2026-10-12T20:19:31Z"
+          "runId": "38305016319",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38305016319",
+          "runStartedAt": "2026-10-12T20:33:39Z"
         },
         "edge": {
-          "status": "failed",
+          "status": "passed",
           "shard": "custom",
-          "runId": "38303465583",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38303465583",
-          "runStartedAt": "2026-10-12T20:19:31Z"
+          "runId": "38305016319",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38305016319",
+          "runStartedAt": "2026-10-12T20:33:39Z"
         },
         "firefox": {
-          "status": "failed",
+          "status": "passed",
           "shard": "custom",
-          "runId": "38303465583",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38303465583",
-          "runStartedAt": "2026-10-12T20:19:31Z"
+          "runId": "38305016319",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38305016319",
+          "runStartedAt": "2026-10-12T20:33:39Z"
         }
       },
       "rel": "ui/zmscitizenview/callouts/zmskvr-488_zmskvr-745_invalid_jumpin_callout.feature",
-      "runId": "38303465583",
-      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38303465583",
-      "runStartedAt": "2026-10-12T20:19:31Z"
+      "runId": "38305016319",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38305016319",
+      "runStartedAt": "2026-10-12T20:33:39Z"
     }
   }
 }

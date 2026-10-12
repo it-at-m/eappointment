@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-10-12T20:42:16.716Z",
+  "publishedAt": "2026-10-12T20:44:47.749Z",
   "branches": [
     {
       "name": "next",
@@ -784,8 +784,8 @@
     {
       "name": "test-zmskvr-488-zmskvr-745-invalid-jumpin-callout",
       "slug": "test-zmskvr-488-zmskvr-745-invalid-jumpin-callout",
-      "runId": "38303465583",
-      "runStartedAt": "2026-10-12T20:19:31Z"
+      "runId": "38305016319",
+      "runStartedAt": "2026-10-12T20:33:39Z"
     },
     {
       "name": "test-zmskvr-506-captcha-design",
