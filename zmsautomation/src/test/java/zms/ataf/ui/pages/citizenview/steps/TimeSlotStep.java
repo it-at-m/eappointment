@@ -858,9 +858,9 @@ public final class TimeSlotStep {
     }
 
     /**
-     * ZMSKVR-151 / ZMSKVR-714: list-view location titles stay numeric per day; FW10 appears (ATAF
-     * seats are on different days — Föhring tomorrow, Pasing/Neuperlach/Riem later — so one open
-     * day often shows a single Wache).
+     * ZMSKVR-151 / ZMSKVR-714: open the list day that has Feuerwache 10 (Riem, day+4 in ATAF) and
+     * assert that day's headings end with 10. Other days only get ascending checks (one Wache per
+     * day in fixtures).
      */
     public void assertFeuerwacheListTitlesInNumericOrder() {
         context.set();
@@ -874,7 +874,7 @@ public final class TimeSlotStep {
                 });
         int dayCount = headers.path("count").asInt();
         Assert.assertTrue(dayCount >= 1, "Expected list date accordions: " + headers);
-        boolean sawTen = false;
+        JsonNode titlesWithTen = null;
         StringBuilder report = new StringBuilder();
         for (int day = 0; day < dayCount; day++) {
             openListDateAtIndex(day);
@@ -889,15 +889,17 @@ public final class TimeSlotStep {
             if (numbers.isEmpty()) {
                 continue;
             }
-            providerLocation.assertFeuerwacheTitlesInNumericOrder(titles);
             if (numbers.contains(10)) {
-                sawTen = true;
+                titlesWithTen = titles;
+            } else {
+                providerLocation.assertFeuerwacheTitlesAscending(titles);
             }
         }
-        Assert.assertTrue(
-                sawTen,
-                "Feuerwache 10 must appear under Verfügbare Termine (not after 1 via string sort)."
+        Assert.assertNotNull(
+                titlesWithTen,
+                "Feuerwache 10 must appear under Verfügbare Termine (open Riem day+4)."
                         + report);
+        providerLocation.assertFeuerwacheTitlesInNumericOrder(titlesWithTen);
     }
 
     /** Expand the list-view date accordion at {@code index} (0-based). */

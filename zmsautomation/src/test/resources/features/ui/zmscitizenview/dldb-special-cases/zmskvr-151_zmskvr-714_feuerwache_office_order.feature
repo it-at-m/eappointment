@@ -17,8 +17,9 @@ Feature: CitizenView: LOCATION_PRIO_BY_DISPLAY_NAME order for Feuerwachen and B�
   #
   # API twin: rest/.../zmskvr-151_zmskvr-714_location_prio_citizenapi.feature
   # Sibling UI for Bürgerbüro checkboxes alone: zmskvr-82_zmskvr-391_several_offices.feature
-  # Fixtures: FW seats are on different days (Föhring tomorrow; Pasing/Neuperlach/Riem later),
-  # so list view is checked per open day; FW10 must still appear under Verfügbare Termine.
+  # Fixtures: FW seats are on different days (Föhring tomorrow; Pasing/Neuperlach/Riem day+4).
+  # Keep bookable Wachen, wait until Riem 10575 has a bookable day, then assert list headings
+  # on that day end with Feuerwache 10 (unconditional).
 
   Background:
     Given the Citizen API is available
@@ -33,7 +34,8 @@ Feature: CitizenView: LOCATION_PRIO_BY_DISPLAY_NAME order for Feuerwachen and B�
     Then the Feuerwache location checkboxes are in numeric order from 1 to 10
     When I wait for appointment slots to be ready in the citizen view
     And I keep only providers "10585,10577,10582,10575" checked in the citizen view
-    And I switch to the list view in the citizen view
+    Then the citizen calendar and list should show a bookable day for office 10575
+    When I switch to the list view in the citizen view
     Then the Feuerwache headings under available appointments are in numeric order with 10 last
 
   Scenario: Bürgerbüro Ort order follows LOCATION_PRIO_BY_DISPLAY_NAME relevance
