@@ -73,7 +73,25 @@ public final class JumpInErrorStep {
                 && shadow.shadowDomContainsText(CitizenViewPage.DE_INVALID_JUMPIN_TEXT);
         boolean en = shadow.shadowDomContainsText(CitizenViewPage.EN_INVALID_JUMPIN_HEADER)
                 && shadow.shadowDomContainsText(CitizenViewPage.EN_INVALID_JUMPIN_TEXT);
-        return de || en;
+        return (de || en) && invalidJumpinErrorCalloutPresent();
+    }
+
+    /** ZMSKVR-488: Patternlab Callout Error ({@code muc-callout type="error"}). */
+    private boolean invalidJumpinErrorCalloutPresent() {
+        String script =
+                "function walk(n,fn){if(!n)return false;if(fn(n))return true;"
+                        + "if(n.shadowRoot&&walk(n.shadowRoot,fn))return true;"
+                        + "var c=n.children;if(c)for(var i=0;i<c.length;i++)if(walk(c[i],fn))return true;return false;}"
+                        + "return walk(document.body,function(n){"
+                        + "var tag=(n.tagName||'').toUpperCase();"
+                        + "if(tag!=='MUC-CALLOUT')return false;"
+                        + "var t=(n.getAttribute('type')||'').toLowerCase();"
+                        + "if(t!=='error')return false;"
+                        + "var txt=((n.innerText||n.textContent||'')+'').replace(/\\s+/g,' ');"
+                        + "return txt.indexOf('Diese Ansicht kann nicht geladen werden')>=0"
+                        + "||txt.indexOf('This view cannot be loaded')>=0;});";
+        Object o = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script);
+        return Boolean.TRUE.equals(o);
     }
 
     public void assertInvalidJumpinRestartButtonVisible() {
