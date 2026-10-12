@@ -334,6 +334,7 @@ public final class ContactStep {
         String password =
                 TestPropertiesHelper.getPropertyAsString("citizenUserPassword", true, "vorschau");
         String username = AccountCheckout.assignCitizenLogin(loginName);
+        context.lastCitizenLoginUsername = username;
         completeKeycloakLoginForm(username, password);
 
         CitizenViewWaits.waitWithThreeWindows(
@@ -431,6 +432,7 @@ public final class ContactStep {
         String password =
                 TestPropertiesHelper.getPropertyAsString("citizenUserPassword", true, "vorschau");
         username = AccountCheckout.assignCitizenLogin(username);
+        context.lastCitizenLoginUsername = username;
         completeKeycloakLoginForm(username, password);
 
         CitizenViewWaits.waitWithThreeWindows(
@@ -476,7 +478,9 @@ public final class ContactStep {
         if (!shadow.shadowDomContainsText("Sie sind angemeldet.")) {
             String username = TestPropertiesHelper.getPropertyAsString("citizenUserName", true, "citizen");
             String password = TestPropertiesHelper.getPropertyAsString("citizenUserPassword", true, "vorschau");
-            completeKeycloakLoginForm(AccountCheckout.assignCitizenLogin(username), password);
+            username = AccountCheckout.assignCitizenLogin(username);
+            context.lastCitizenLoginUsername = username;
+            completeKeycloakLoginForm(username, password);
         }
         CitizenViewWaits.waitWithThreeWindows(() -> shadow.shadowDomContainsText("Sie sind angemeldet"), "Logged-in callout");
         Assert.assertTrue(shadow.shadowDomContainsText("Sie sind angemeldet."), "Expected 'Sie sind angemeldet.'.");

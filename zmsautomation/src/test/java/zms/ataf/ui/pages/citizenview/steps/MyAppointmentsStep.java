@@ -819,8 +819,11 @@ public final class MyAppointmentsStep {
                     || shadow.shadowDomContainsText("Neuer Termin")
                     || !d.findElements(By.id("username")).isEmpty());
             if (!DriverUtil.getDriver().findElements(By.id("username")).isEmpty()) {
-                String username =
-                        TestPropertiesHelper.getPropertyAsString("citizenUserName", true, "citizen");
+                String username = context.lastCitizenLoginUsername;
+                if (username == null || username.isBlank()) {
+                    username =
+                            TestPropertiesHelper.getPropertyAsString("citizenUserName", true, "citizen");
+                }
                 String password =
                         TestPropertiesHelper.getPropertyAsString("citizenUserPassword", true, "vorschau");
                 contact.completeKeycloakLoginForm(AccountCheckout.assignCitizenLogin(username), password);
