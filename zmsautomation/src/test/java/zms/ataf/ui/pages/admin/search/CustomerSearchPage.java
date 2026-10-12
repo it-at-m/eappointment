@@ -100,11 +100,13 @@ public class CustomerSearchPage extends AdminPage {
     public void assertListedInOrder(String... familyNames) {
         CONTEXT.set();
         List<WebElement> rows = DRIVER.findElements(By.xpath("//table[contains(@class,'table--base')]/tbody/tr"));
+        // First hit per name only — leftover rows from a prior failed cleanup must not
+        // inflate the list when relative order of the expected names is still correct.
         List<String> found = new ArrayList<>();
         for (WebElement row : rows) {
             String text = row.getText();
             for (String familyName : familyNames) {
-                if (text.contains(familyName)) {
+                if (text.contains(familyName) && !found.contains(familyName)) {
                     found.add(familyName);
                 }
             }
