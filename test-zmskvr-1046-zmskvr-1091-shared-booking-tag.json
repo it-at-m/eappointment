@@ -1,0 +1,60 @@
+{
+  "branch": "test-zmskvr-1046-zmskvr-1091-shared-booking-tag",
+  "branchSlug": "test-zmskvr-1046-zmskvr-1091-shared-booking-tag",
+  "runId": "38190081012",
+  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38190081012",
+  "runStartedAt": "2026-10-12T00:58:46Z",
+  "publishedAt": "2026-10-12T01:12:31.117Z",
+  "features": {
+    "feature-rest-zmscitizenapi-dldb-special-cases-zmskvr-1046-zmskvr-1091-booking-ruppertstrasse-shared-booking-ausbildung-citizenapi": {
+      "status": "passed",
+      "shard": "custom",
+      "browser": "chrome",
+      "browsers": {
+        "chrome": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "38190081012",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38190081012",
+          "runStartedAt": "2026-10-12T00:58:46Z"
+        },
+        "firefox": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "38190081012",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38190081012",
+          "runStartedAt": "2026-10-12T00:58:46Z"
+        }
+      },
+      "rel": "rest/zmscitizenapi/dldb-special-cases/zmskvr-1046_zmskvr-1091_booking_ruppertstrasse_shared_booking_ausbildung_citizenapi.feature",
+      "runId": "38190081012",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38190081012",
+      "runStartedAt": "2026-10-12T00:58:46Z"
+    },
+    "feature-ui-zmscitizenview-dldb-special-cases-zmskvr-1046-zmskvr-1091-booking-ruppertstrasse-shared-booking-ausbildung": {
+      "status": "passed",
+      "shard": "custom",
+      "browser": "chrome",
+      "browsers": {
+        "chrome": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "38190081012",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38190081012",
+          "runStartedAt": "2026-10-12T00:58:46Z"
+        },
+        "firefox": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "38190081012",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38190081012",
+          "runStartedAt": "2026-10-12T00:58:46Z"
+        }
+      },
+      "rel": "ui/zmscitizenview/dldb-special-cases/zmskvr-1046_zmskvr-1091_booking_ruppertstrasse_shared_booking_ausbildung.feature",
+      "runId": "38190081012",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38190081012",
+      "runStartedAt": "2026-10-12T00:58:46Z"
+    }
+  }
+}
