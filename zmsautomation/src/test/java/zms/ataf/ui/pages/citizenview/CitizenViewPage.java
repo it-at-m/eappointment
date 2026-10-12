@@ -1645,6 +1645,14 @@ public class CitizenViewPage extends BasePage {
         contact.fillContactDetailsRandomWithoutContinue();
     }
 
+    public void assertSsoLastNamePrefillWithoutGivenName(String expectedLastName) {
+        contact.assertSsoLastNamePrefillWithoutGivenName(expectedLastName);
+    }
+
+    public void completeContactWithMissingGivenName(String firstName, String expectedLastName) {
+        contact.completeContactWithMissingGivenName(firstName, expectedLastName);
+    }
+
     public boolean deepContactCustomTextFieldExists() {
         return contact.deepContactCustomTextFieldExists();
     }
@@ -1659,6 +1667,10 @@ public class CitizenViewPage extends BasePage {
 
     public void loginViaBuergerLoginWithKeycloak() throws Exception {
         contact.loginViaBuergerLoginWithKeycloak();
+    }
+
+    public void loginViaBuergerLoginWithKeycloakAs(String loginName) throws Exception {
+        contact.loginViaBuergerLoginWithKeycloakAs(loginName);
     }
 
     public void loginViaBuergerLoginWithKeycloakIfNeeded() throws Exception {
@@ -1679,6 +1691,10 @@ public class CitizenViewPage extends BasePage {
 
     public void assertProviderSummaryVisible(int officeId) {
         overview.assertProviderSummaryVisible(officeId);
+    }
+
+    public void assertBookingSummaryShowsContactName(String fullName) {
+        overview.assertBookingSummaryShowsContactName(fullName);
     }
 
     public String deepVisibleProviderSummaryText(int officeId) {
@@ -2029,6 +2045,10 @@ public class CitizenViewPage extends BasePage {
 
     public void assertDownloadedIcsContainsBookedAppointment() {
         myAppointments.assertDownloadedIcsContainsBookedAppointment();
+    }
+
+    public void assertDownloadedIcsContainsText(String expected) {
+        myAppointments.assertDownloadedIcsContainsText(expected);
     }
 
     public void assertDownloadedIcsMatchesMunichConfirmationTemplate() {

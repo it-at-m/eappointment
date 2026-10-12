@@ -60,6 +60,19 @@ public final class OverviewStep {
     public void assertProviderSummaryVisible(int officeId) {
         assertProviderSummaryVisible(officeId, "Bürgerbüro Ruppertstraße");
     }
+
+    /** Übersicht Kontakt block shows joined {@code appointment.familyName}. */
+    public void assertBookingSummaryShowsContactName(String fullName) {
+        context.set();
+        CitizenViewWaits.waitWithThreeWindows(
+                () -> shadow.shadowDomContainsText(fullName),
+                "Übersicht Kontakt name " + fullName);
+        Assert.assertTrue(
+                shadow.shadowDomContainsText(fullName),
+                "Übersicht Kontakt should show familyName \"" + fullName + "\".");
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: Übersicht shows contact name {}", fullName);
+    }
     public String deepVisibleProviderSummaryText(int officeId) {
         context.set();
         String script =

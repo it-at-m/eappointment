@@ -1215,6 +1215,17 @@ public final class MyAppointmentsStep {
                 "ICS DTSTART should be the booked slot " + start + ".");
     }
 
+    /** ICS DESCRIPTION is the confirmation mail plain text and includes {@code client.familyName}. */
+    public void assertDownloadedIcsContainsText(String expected) {
+        context.set();
+        Assert.assertNotNull(capturedIcs, "No ICS file was downloaded.");
+        String unfolded = unfoldIcs(capturedIcs);
+        Assert.assertTrue(
+                unfolded.contains(expected),
+                "ICS should contain \"" + expected + "\". ICS=" + unfolded);
+        ScenarioLogManager.getLogger().info("zmscitizenview: ICS contains {}", expected);
+    }
+
     /**
      * ZMSKVR-97 / ZMSKVR-535: Munich {@code icsappointment.twig} DESCRIPTION carries Terminnummer
      * ({@code displayNumber}), Leistung URL, and the cancel/reschedule appointment hash link.
