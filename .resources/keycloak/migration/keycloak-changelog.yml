@@ -11,3 +11,4 @@ includes:
   - path: 10_add-citizen-token-mappers.yml
   - path: 11_add-parallel-test-users.yml
   - path: 12_add-citizen-without-given-name.yml
+  - path: 13_allow-citizen-without-given-name-login.yml
