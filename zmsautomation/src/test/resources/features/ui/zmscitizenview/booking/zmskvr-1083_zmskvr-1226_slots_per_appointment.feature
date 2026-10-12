@@ -80,7 +80,7 @@ Feature: CitizenView: quantity follows slotsPerAppointment
     Given I open zmscitizenview with jump-in service "1063475" and location "10489"
     Then the service combination step should be visible
     When I show all combinable services
-    And I add subservice "Adressaufkleber und Chipaktualisierung für Personalausweis, Reisepass und eAT" with quantity 1 on the service combination step
+    And I add subservice "Adressänderung Personalausweis, Reisepass, eAT" with quantity 1 on the service combination step
     And I add subservice "Beglaubigung von bis zu 20 Dokumenten" with quantity 1 on the service combination step
     And I add subservice "Beglaubigung von bis zu 5 Dokumenten" with quantity 1 on the service combination step
     And I add subservice "Beglaubigung von Unterschriften" with quantity 1 on the service combination step
@@ -93,7 +93,7 @@ Feature: CitizenView: quantity follows slotsPerAppointment
     Then the estimated duration on the service combination step should be 125 minutes
     And the service counter for "Wohnsitzanmeldung" should still be 1
     And the plus button for service "Wohnsitzanmeldung" is disabled
-    And the plus button for service "Adressaufkleber und Chipaktualisierung für Personalausweis, Reisepass und eAT" is disabled
+    And the plus button for service "Adressänderung Personalausweis, Reisepass, eAT" is disabled
     And the plus button for service "Beglaubigung von bis zu 20 Dokumenten" is disabled
     And the plus button for service "Beglaubigung von bis zu 5 Dokumenten" is disabled
     And the plus button for service "Beglaubigung von Unterschriften" is disabled
