@@ -1766,6 +1766,11 @@ public class CitizenApiSteps {
         postAppointmentUpdate(scenarioContactFamilyName(), scenarioContactEmail(), customTextfield != null ? customTextfield : "", true, true);
     }
 
+    @When("I update the appointment with contact details and telephone {string}")
+    public void iUpdateTheAppointmentWithContactDetailsAndTelephone(String telephone) {
+        postAppointmentUpdate(scenarioContactFamilyName(), scenarioContactEmail(), "", telephone, true, false);
+    }
+
     @When("I update the appointment with contact details and telephone {string} as the logged-in citizen")
     public void iUpdateTheAppointmentWithContactDetailsAndTelephoneAsTheLoggedInCitizen(String telephone) {
         postAppointmentUpdate(scenarioContactFamilyName(), scenarioContactEmail(), "", telephone, true, true);
@@ -2177,6 +2182,121 @@ public class CitizenApiSteps {
             .isGreaterThanOrEqualTo(nowEpochSeconds - 120);
         assertScopeProviderGeoPresent("confirm-appointment");
         // Skip `displayNumber` (varies) and `captchaToken` (captcha disabled in test data).
+    }
+
+    /**
+     * ZMSKVR-97 / ZMSKVR-535: confirm returns {@code icsContent} from Munich {@code icsappointment.twig}
+     * with Terminnummer ({@code displayNumber}), Leistung URL, and cancel hash link.
+     *
+     * @param displayNumberMode {@code plain} when displayNumber equals the process id;
+     *     {@code prefixed} when it is {@code displayNumberPrefix} + padded counter (not the bare
+     *     process id). Citizen confirm currently keeps the process id for prefix scopes because
+     *     the thinned scope omits {@code queue.displayNumberPrefix}.
+     */
+    @Then("the confirm endpoint icsContent should match the Munich template with {string} displayNumber")
+    public void theConfirmEndpointIcsContentShouldMatchTheMunichTemplateWithDisplayNumber(
+            String displayNumberMode) {
+        response.then().statusCode(200);
+        ThinnedProcess process =
+                lastReserveProcess != null ? lastReserveProcess : parseDataResponse(response, ThinnedProcess.class);
+        Assertions.assertThat(process).as("confirm process").isNotNull();
+        Assertions.assertThat(process.getProcessId()).as("processId").isNotNull();
+        Assertions.assertThat(process.getIcsContent())
+                .as("confirm-appointment icsContent")
+                .isNotBlank()
+                .contains("BEGIN:VCALENDAR")
+                .contains("BEGIN:VEVENT");
+        String displayNumber = process.getDisplayNumber();
+        Assertions.assertThat(displayNumber).as("displayNumber on confirm").isNotBlank();
+        if ("plain".equalsIgnoreCase(displayNumberMode)) {
+            Assertions.assertThat(displayNumber)
+                    .as("plain displayNumber equals processId")
+                    .isEqualTo(String.valueOf(process.getProcessId()));
+        } else if ("prefixed".equalsIgnoreCase(displayNumberMode)) {
+            // Product form: prefix + zero-padded counter (see ProcessRepository::getNewDisplayNumber).
+            Assertions.assertThat(displayNumber)
+                    .as("prefixed displayNumber is not the bare processId")
+                    .isNotEqualTo(String.valueOf(process.getProcessId()))
+                    .matches("[A-Za-z].*");
+        } else {
+            throw new IllegalArgumentException(
+                    "Unknown displayNumber mode \"" + displayNumberMode + "\" (use prefixed|plain).");
+        }
+        String unfolded = unfoldIcs(process.getIcsContent());
+        Assertions.assertThat(unfolded)
+                .as("ICS DESCRIPTION Terminnummer")
+                .contains("Terminnummer: " + displayNumber);
+        Assertions.assertThat(unfolded)
+                .as("ICS UID displayNumber")
+                .contains("-" + displayNumber);
+        Assertions.assertThat(unfolded)
+                .as("ICS cancel/reschedule link")
+                .contains("#/appointment/");
+        Assertions.assertThat(process.getServiceId()).as("serviceId").isNotNull();
+        String leistungServiceId = icsLeistungServiceId(process.getServiceId());
+        Assertions.assertThat(unfolded)
+                .as("ICS Leistung URL (public request id for variants)")
+                .contains("https://stadt.muenchen.de/service/info/" + leistungServiceId);
+        Assertions.assertThat(unfolded).as("ICS LOCATION present").contains("LOCATION:");
+        Integer officeId = process.getOfficeId() != null ? process.getOfficeId() : lastOfficeId;
+        if (Integer.valueOf(10492).equals(officeId)) {
+            Assertions.assertThat(unfolded)
+                    .as("ICS LOCATION street for Bürgerbüro Ruppertstraße (10492)")
+                    .contains("Ruppertstraße");
+        }
+    }
+
+    /**
+     * Munich {@code icsappointment.twig} links {@code request.id}. Phone/video variants (V26 zms
+     * ids 1/2) publish parent DLDB {@code 1080455} in that URL, not the internal serviceId.
+     */
+    public static String icsLeistungServiceId(Integer serviceId) {
+        if (serviceId == null) {
+            return null;
+        }
+        if (serviceId == 1 || serviceId == 2) {
+            return "1080455";
+        }
+        return String.valueOf(serviceId);
+    }
+
+    private static String unfoldIcs(String icsContent) {
+        if (icsContent == null) {
+            return "";
+        }
+        return icsContent.replaceAll("\\R[ \\t]", "").replace("\\n", "\n").replace("\\,", ",");
+    }
+
+    /**
+     * Reloads the booking process from GET /appointment/ so UI-synced credentials also carry
+     * displayNumber and serviceId for ICS asserts.
+     */
+    public static ThinnedProcess refreshBookingProcessFromAppointmentApi() {
+        ThinnedProcess process = getBookingProcess();
+        if (process == null || process.getProcessId() == null || process.getAuthKey() == null) {
+            throw new IllegalStateException(
+                    "Need processId/authKey on the booking process before refreshing from /appointment/.");
+        }
+        Response appointmentResponse =
+                given()
+                        .baseUri(TestConfig.getCitizenApiBaseUri())
+                        .queryParam("processId", process.getProcessId())
+                        .queryParam("authKey", process.getAuthKey())
+                        .when()
+                        .get("/appointment/");
+        appointmentResponse.then().statusCode(200);
+        ThinnedProcess appointment;
+        try {
+            appointment = appointmentResponse.as(ThinnedProcess.class);
+        } catch (Exception e) {
+            throw new IllegalStateException(
+                    "Could not parse GET /appointment/ for ICS asserts.", e);
+        }
+        Assertions.assertThat(appointment)
+                .as("GET /appointment/ payload")
+                .isNotNull();
+        setBookingProcess(appointment);
+        return appointment;
     }
 
     /**
