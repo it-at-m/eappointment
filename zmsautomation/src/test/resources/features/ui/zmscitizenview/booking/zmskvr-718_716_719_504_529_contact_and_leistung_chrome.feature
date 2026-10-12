@@ -11,6 +11,7 @@ Feature: Contact counter chrome and Leistung polish
   #   Ausbildung 10313237 has required "Zusätzliche Bemerkungen".
   # ZMSKVR-504 / ZMSKVR-869: often-searched container padding 24px on mobile.
   # ZMSKVR-529 / ZMSKVR-871: disabled plus/minus grey style.
+  # Live Freitext 1+2 counters / maxlength without counter on name+mail: ZMSKVR-416 / ZMSKVR-571.
   # No appointment is kept after the overview assertions are skipped — contact scenarios stop on Kontakt.
 
   Background:
