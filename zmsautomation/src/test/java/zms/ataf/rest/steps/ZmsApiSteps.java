@@ -508,9 +508,12 @@ public class ZmsApiSteps {
         Assertions.assertThat(list)
             .as("GET /scope/%d/availability/ data", scopeId)
             .isNotNull();
+        // Terminabstand lives on type=appointment availabilities (Öffnungszeiten for booking).
+        // type=openinghours is a separate open/closed window and is often absent here.
         boolean found = false;
         for (JsonNode item : list) {
-            if (!"openinghours".equals(item.path("type").asText())) {
+            String type = item.path("type").asText();
+            if (!"appointment".equals(type) && !"openinghours".equals(type)) {
                 continue;
             }
             if (item.path("slotTimeInMinutes").asInt(0) == expectedMinutes) {
@@ -520,7 +523,7 @@ public class ZmsApiSteps {
         }
         Assertions.assertThat(found)
             .as(
-                    "scope %d opening hours should include slotTimeInMinutes %d; body=%s",
+                    "scope %d availability should include slotTimeInMinutes %d; body=%s",
                     scopeId,
                     expectedMinutes,
                     truncate(response.asString(), 1500))
