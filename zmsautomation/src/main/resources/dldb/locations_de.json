@@ -14175,8 +14175,7 @@
                         "link": "https://stadt.muenchen.de/en/buergerservice/terminvereinbarung.html/#/services/1080843"
                     },
                     "duration": 5,
-                    "public": true,
-                    "maxQuantity": 5
+                    "public": true
                 },
                 {
                     "service": "1063475",
