@@ -1,10 +1,10 @@
 {
   "branch": "test-zmskvr-151-zmskvr-714-feuerwache-order",
   "branchSlug": "test-zmskvr-151-zmskvr-714-feuerwache-order",
-  "runId": "38307790777",
-  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38307790777",
-  "runStartedAt": "2026-10-12T20:59:41Z",
-  "publishedAt": "2026-10-12T21:13:38.156Z",
+  "runId": "38309390319",
+  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38309390319",
+  "runStartedAt": "2026-10-12T21:14:39Z",
+  "publishedAt": "2026-10-12T21:34:24.580Z",
   "features": {
     "feature-rest-zmscitizenapi-dldb-special-cases-zmskvr-151-zmskvr-714-location-prio-citizenapi": {
       "status": "passed",
@@ -14,61 +14,61 @@
         "chrome": {
           "status": "passed",
           "shard": "custom",
-          "runId": "38307790777",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38307790777",
-          "runStartedAt": "2026-10-12T20:59:41Z"
+          "runId": "38309390319",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38309390319",
+          "runStartedAt": "2026-10-12T21:14:39Z"
         },
         "edge": {
           "status": "passed",
           "shard": "custom",
-          "runId": "38307790777",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38307790777",
-          "runStartedAt": "2026-10-12T20:59:41Z"
+          "runId": "38309390319",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38309390319",
+          "runStartedAt": "2026-10-12T21:14:39Z"
         },
         "firefox": {
           "status": "passed",
           "shard": "custom",
-          "runId": "38307790777",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38307790777",
-          "runStartedAt": "2026-10-12T20:59:41Z"
+          "runId": "38309390319",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38309390319",
+          "runStartedAt": "2026-10-12T21:14:39Z"
         }
       },
       "rel": "rest/zmscitizenapi/dldb-special-cases/zmskvr-151_zmskvr-714_location_prio_citizenapi.feature",
-      "runId": "38307790777",
-      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38307790777",
-      "runStartedAt": "2026-10-12T20:59:41Z"
+      "runId": "38309390319",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38309390319",
+      "runStartedAt": "2026-10-12T21:14:39Z"
     },
     "feature-ui-zmscitizenview-dldb-special-cases-zmskvr-151-zmskvr-714-feuerwache-office-order": {
-      "status": "failed",
+      "status": "passed",
       "shard": "custom",
       "browser": "chrome",
       "browsers": {
         "chrome": {
-          "status": "failed",
+          "status": "passed",
           "shard": "custom",
-          "runId": "38307790777",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38307790777",
-          "runStartedAt": "2026-10-12T20:59:41Z"
+          "runId": "38309390319",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38309390319",
+          "runStartedAt": "2026-10-12T21:14:39Z"
         },
         "edge": {
-          "status": "failed",
+          "status": "passed",
           "shard": "custom",
-          "runId": "38307790777",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38307790777",
-          "runStartedAt": "2026-10-12T20:59:41Z"
+          "runId": "38309390319",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38309390319",
+          "runStartedAt": "2026-10-12T21:14:39Z"
         },
         "firefox": {
-          "status": "failed",
+          "status": "passed",
           "shard": "custom",
-          "runId": "38307790777",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38307790777",
-          "runStartedAt": "2026-10-12T20:59:41Z"
+          "runId": "38309390319",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38309390319",
+          "runStartedAt": "2026-10-12T21:14:39Z"
         }
       },
       "rel": "ui/zmscitizenview/dldb-special-cases/zmskvr-151_zmskvr-714_feuerwache_office_order.feature",
-      "runId": "38307790777",
-      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38307790777",
-      "runStartedAt": "2026-10-12T20:59:41Z"
+      "runId": "38309390319",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38309390319",
+      "runStartedAt": "2026-10-12T21:14:39Z"
     }
   }
 }
