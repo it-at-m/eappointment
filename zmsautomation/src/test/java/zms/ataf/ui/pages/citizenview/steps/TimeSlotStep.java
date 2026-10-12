@@ -902,11 +902,13 @@ public final class TimeSlotStep {
 
     /** Expand the list-view date accordion at {@code index} (0-based). */
     private void openListDateAtIndex(int index) {
+        // citizenJson exposes Selenium args as __args; an IIFE would shadow arguments.
         JsonNode clicked = json.citizenJson(
-                "(function(){var idx=arguments[0];"
+                "(function(){var idx=__args[0];"
                         + "var headers=cssAll('#listViewAccordion h4.m-accordion__section-header');"
-                        + "if(idx<0||idx>=headers.length)return {clicked:false,reason:'index'};"
-                        + "var b=headers[idx].querySelector('button');if(!b)return {clicked:false,reason:'button'};"
+                        + "if(idx<0||idx>=headers.length)return {clicked:false,reason:'index',len:headers.length};"
+                        + "var h=headers[idx];if(!h)return {clicked:false,reason:'header'};"
+                        + "var b=h.querySelector('button');if(!b)return {clicked:false,reason:'button'};"
                         + "if(b.getAttribute('aria-expanded')==='true')return {clicked:true,already:true};"
                         + "b.scrollIntoView({block:'center'});b.click();return {clicked:true};})()",
                 index);
