@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-10-12T00:03:49.817Z",
+  "publishedAt": "2026-10-12T00:11:55.988Z",
   "branches": [
     {
       "name": "next",
@@ -808,8 +808,8 @@
     {
       "name": "test-zmskvr-87-too-many-appointments-per-mail",
       "slug": "test-zmskvr-87-too-many-appointments-per-mail",
-      "runId": "38184135313",
-      "runStartedAt": "2026-10-11T23:24:02Z"
+      "runId": "38186212831",
+      "runStartedAt": "2026-10-11T23:57:44Z"
     },
     {
       "name": "test-zmskvr-88-zmskvr-472-slot-taken-callout",

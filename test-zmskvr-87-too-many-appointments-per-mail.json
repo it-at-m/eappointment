@@ -1,10 +1,10 @@
 {
   "branch": "test-zmskvr-87-too-many-appointments-per-mail",
   "branchSlug": "test-zmskvr-87-too-many-appointments-per-mail",
-  "runId": "38184135313",
-  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38184135313",
-  "runStartedAt": "2026-10-11T23:24:02Z",
-  "publishedAt": "2026-10-11T23:38:17.802Z",
+  "runId": "38186212831",
+  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38186212831",
+  "runStartedAt": "2026-10-11T23:57:44Z",
+  "publishedAt": "2026-10-12T00:11:55.988Z",
   "features": {
     "feature-rest-zmscitizenapi-callouts-zmskvr-87-zmskvr-601-zmskvr-715-too-many-appointments-citizenapi": {
       "status": "failed",
@@ -14,29 +14,29 @@
         "chrome": {
           "status": "failed",
           "shard": "custom",
-          "runId": "38184135313",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38184135313",
-          "runStartedAt": "2026-10-11T23:24:02Z"
+          "runId": "38186212831",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38186212831",
+          "runStartedAt": "2026-10-11T23:57:44Z"
         },
         "edge": {
           "status": "failed",
           "shard": "custom",
-          "runId": "38184135313",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38184135313",
-          "runStartedAt": "2026-10-11T23:24:02Z"
+          "runId": "38186212831",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38186212831",
+          "runStartedAt": "2026-10-11T23:57:44Z"
         },
         "firefox": {
           "status": "failed",
           "shard": "custom",
-          "runId": "38184135313",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38184135313",
-          "runStartedAt": "2026-10-11T23:24:02Z"
+          "runId": "38186212831",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38186212831",
+          "runStartedAt": "2026-10-11T23:57:44Z"
         }
       },
       "rel": "rest/zmscitizenapi/callouts/zmskvr-87_zmskvr-601_zmskvr-715_too_many_appointments_citizenapi.feature",
-      "runId": "38184135313",
-      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38184135313",
-      "runStartedAt": "2026-10-11T23:24:02Z"
+      "runId": "38186212831",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38186212831",
+      "runStartedAt": "2026-10-11T23:57:44Z"
     },
     "feature-ui-zmscitizenview-callouts-zmskvr-87-zmskvr-601-zmskvr-715-too-many-appointments-callout": {
       "status": "failed",
@@ -46,29 +46,29 @@
         "chrome": {
           "status": "failed",
           "shard": "custom",
-          "runId": "38184135313",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38184135313",
-          "runStartedAt": "2026-10-11T23:24:02Z"
+          "runId": "38186212831",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38186212831",
+          "runStartedAt": "2026-10-11T23:57:44Z"
         },
         "edge": {
           "status": "failed",
           "shard": "custom",
-          "runId": "38184135313",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38184135313",
-          "runStartedAt": "2026-10-11T23:24:02Z"
+          "runId": "38186212831",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38186212831",
+          "runStartedAt": "2026-10-11T23:57:44Z"
         },
         "firefox": {
           "status": "failed",
           "shard": "custom",
-          "runId": "38184135313",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38184135313",
-          "runStartedAt": "2026-10-11T23:24:02Z"
+          "runId": "38186212831",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38186212831",
+          "runStartedAt": "2026-10-11T23:57:44Z"
         }
       },
       "rel": "ui/zmscitizenview/callouts/zmskvr-87_zmskvr-601_zmskvr-715_too_many_appointments_callout.feature",
-      "runId": "38184135313",
-      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38184135313",
-      "runStartedAt": "2026-10-11T23:24:02Z"
+      "runId": "38186212831",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38186212831",
+      "runStartedAt": "2026-10-11T23:57:44Z"
     }
   }
 }
