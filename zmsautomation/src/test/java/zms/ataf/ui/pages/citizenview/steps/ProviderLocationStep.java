@@ -95,6 +95,76 @@ public final class ProviderLocationStep {
         Assert.assertTrue(locationStepShowsProvider(officeId), "Ort must show provider " + officeId);
     }
 
+    /**
+     * ZMSKVR-590: among Ort checkboxes, only the JumpIn location is checked; peers stay off.
+     * Requires a multi-office list (at least two checkboxes).
+     */
+    public void assertOnlyProviderCheckedAmongOrtCheckboxes(int officeId) {
+        context.set();
+        waitUntilLocationStepShowsProvider(officeId, defaultWaitSeconds);
+        WebDriverWait wait = new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(defaultWaitSeconds));
+        wait.withMessage("Ort step never showed multiple provider checkboxes with " + officeId + " checked");
+        wait.until(driver -> {
+            Set<Integer> present = collectProviderCheckboxIds();
+            if (present.size() < 2 || !present.contains(officeId)) {
+                return false;
+            }
+            try {
+                return deepProviderCheckboxChecked(officeId);
+            } catch (Exception e) {
+                return false;
+            }
+        });
+        Set<Integer> present = collectProviderCheckboxIds();
+        Assert.assertTrue(
+                present.size() >= 2,
+                "Expected several Ort checkboxes for JumpIn preselect, found: " + present);
+        Assert.assertTrue(present.contains(officeId), "JumpIn office " + officeId + " missing from Ort: " + present);
+        Assert.assertTrue(
+                deepProviderCheckboxChecked(officeId),
+                "JumpIn office " + officeId + " should be checked.");
+        for (Integer other : present) {
+            if (other.equals(officeId)) {
+                continue;
+            }
+            Assert.assertFalse(
+                    deepProviderCheckboxChecked(other),
+                    "Peer office " + other + " must stay unchecked when JumpIn selected " + officeId
+                            + "; checked providers=" + present);
+        }
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: only provider {} checked among Ort checkboxes {}", officeId, present);
+    }
+
+    private Set<Integer> collectProviderCheckboxIds() {
+        context.set();
+        String script =
+                "function collect(root,out){"
+                        + "  if(!root)return;"
+                        + "  var nodes=root.querySelectorAll('[id^=\"checkbox-provider-\"]');"
+                        + "  for(var i=0;i<nodes.length;i++){if(nodes[i]&&nodes[i].id)out.push(nodes[i].id);}"
+                        + "  var all=root.querySelectorAll('*');"
+                        + "  for(var j=0;j<all.length;j++)if(all[j].shadowRoot)collect(all[j].shadowRoot,out);"
+                        + "}"
+                        + "var ids=[];collect(document.body,ids);"
+                        + "return ids;";
+        Object idsObj = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script);
+        Set<Integer> presentIds = new HashSet<>();
+        if (idsObj instanceof java.util.List<?>) {
+            for (Object rawId : (java.util.List<?>) idsObj) {
+                String idStr = String.valueOf(rawId);
+                if (idStr.startsWith("checkbox-provider-")) {
+                    try {
+                        presentIds.add(Integer.parseInt(idStr.substring("checkbox-provider-".length())));
+                    } catch (NumberFormatException ignored) {
+                        // ignore malformed ids
+                    }
+                }
+            }
+        }
+        return presentIds;
+    }
+
     public void assertProviderCheckboxAbsent(int officeId) {
         context.set();
         Assert.assertFalse(
