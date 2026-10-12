@@ -67,6 +67,18 @@ class Availability extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Q
         WHERE OeffnungszeitID = :id
     ';
 
+    const string QUERY_READ_SLOTS_PER_APPOINTMENT = '
+        SELECT slots_per_appointment
+        FROM standort
+        WHERE StandortID = :scopeId
+    ';
+
+    const string QUERY_UPDATE_SLOTS_PER_APPOINTMENT = '
+        UPDATE standort
+        SET slots_per_appointment = :slots
+        WHERE StandortID = :scopeId
+    ';
+
     /**
      * @return void
      */
