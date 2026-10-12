@@ -55,6 +55,9 @@ class Zmsdldb extends \BO\Zmsbackend\Base
 
         if ($updateAvailability) {
             $this->updateAvailability($providers);
+            // writeCommit() opens a new transaction. Without this commit the slot
+            // cut is rolled back when the import process exits.
+            \BO\Zmsbackend\Connection\Select::writeCommit();
         }
     }
 
@@ -94,25 +97,17 @@ class Zmsdldb extends \BO\Zmsbackend\Base
 
     protected function updateAvailability($providers): void
     {
+        $now = \App::$now ?? new \DateTimeImmutable('now');
         foreach ($providers as $provider) {
-            $providerData = $provider->data;
+            $slotMinutes = (int) ($provider->data['slotTimeInMinutes'] ?? 0);
+            if ($slotMinutes < 1) {
+                continue;
+            }
 
             $scopes = (new \BO\Zmsbackend\Scope\Service\Scope())->readByProviderId($provider->getId());
             foreach ($scopes as $scope) {
-                $availabilities = (new \BO\Zmsbackend\Availability\Service\Availability())->readList($scope->getId());
-
-                foreach ($availabilities as $availability) {
-                    if ((int) $availability->slotTimeInMinutes === (int) $providerData['slotTimeInMinutes']) {
-                        continue;
-                    }
-
-                    $availability->slotTimeInMinutes = $providerData['slotTimeInMinutes'];
-                    $availability->version = $availability->version + 1;
-                    $updated = (new \BO\Zmsbackend\Availability\Service\Availability())
-                        ->updateEntity($availability->getId(), $availability, 2);
-                    (new \BO\Zmsbackend\Availability\Service\AvailabilityHistory())
-                        ->writeDldbSlotUpdate($updated);
-                }
+                (new \BO\Zmsbackend\Availability\Service\AvailabilitySlotChange())
+                    ->apply((int) $scope->getId(), $slotMinutes, $now);
             }
         }
     }
