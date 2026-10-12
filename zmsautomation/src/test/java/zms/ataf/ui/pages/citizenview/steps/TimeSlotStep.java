@@ -857,6 +857,23 @@ public final class TimeSlotStep {
         providerLocation.assertOfficeOrder(titles, false, false);
     }
 
+    /** ZMSKVR-151 / ZMSKVR-714: list-view office headings keep Feuerwache 1…10 (10 last). */
+    public void assertFeuerwacheListTitlesInNumericOrder() {
+        context.set();
+        JsonNode titles = new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(defaultWaitSeconds))
+                .until(d -> {
+                    JsonNode node = locationTitles().path("titles");
+                    int fw = 0;
+                    for (JsonNode t : node) {
+                        if (t.path("text").asText().contains("Feuerwache")) {
+                            fw++;
+                        }
+                    }
+                    return fw >= 2 ? node : null;
+                });
+        providerLocation.assertFeuerwacheTitlesInNumericOrder(titles);
+    }
+
     /** Früher is a disabled ghost button. Später is an enabled ghost button. */
     public void assertCalendarGhostPagerStartsAtFirstGroup() {
         context.set();
