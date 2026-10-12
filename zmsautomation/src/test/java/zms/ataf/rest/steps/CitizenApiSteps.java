@@ -2096,7 +2096,19 @@ public class CitizenApiSteps {
     }
 
     private ThinnedProcess requireCurrentProcess() {
-        ThinnedProcess process = lastReserveProcess != null ? lastReserveProcess : getBookingProcess();
+        // UI sync writes the ThreadLocal booking process; prefer it when it points at a
+        // different appointment than the last API reserve (mail-limit sibling flows).
+        ThinnedProcess booked = getBookingProcess();
+        if (booked != null
+                && booked.getProcessId() != null
+                && booked.getAuthKey() != null
+                && !booked.getAuthKey().isBlank()
+                && (lastReserveProcess == null
+                        || lastReserveProcess.getProcessId() == null
+                        || !lastReserveProcess.getProcessId().equals(booked.getProcessId()))) {
+            lastReserveProcess = booked;
+        }
+        ThinnedProcess process = lastReserveProcess != null ? lastReserveProcess : booked;
         if (process == null) {
             throw new IllegalStateException("Reserve an appointment first.");
         }

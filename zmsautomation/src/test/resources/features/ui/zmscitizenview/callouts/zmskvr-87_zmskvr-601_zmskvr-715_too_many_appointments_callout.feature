@@ -10,6 +10,8 @@ Feature: CitizenView: too many appointments per email callout on Übersicht
   # reach Übersicht with the same email while a sibling is only reserved. After that
   # sibling is preconfirmed via API, Termin reservieren hits preconfirm and shows
   # the red callout; the summary (and Termin reservieren) is hidden.
+  # Sync after Kontakt must take the UI booking from localStorage even though the
+  # API “first” reserve is already in the booking context.
 
   Background:
     Given the Citizen API is available
