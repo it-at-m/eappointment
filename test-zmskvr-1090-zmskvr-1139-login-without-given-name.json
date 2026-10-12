@@ -1,10 +1,10 @@
 {
   "branch": "test-zmskvr-1090-zmskvr-1139-login-without-given-name",
   "branchSlug": "test-zmskvr-1090-zmskvr-1139-login-without-given-name",
-  "runId": "38189505277",
-  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38189505277",
-  "runStartedAt": "2026-10-12T00:49:48Z",
-  "publishedAt": "2026-10-12T01:03:20.218Z",
+  "runId": "38189821722",
+  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38189821722",
+  "runStartedAt": "2026-10-12T00:54:43Z",
+  "publishedAt": "2026-10-12T01:08:11.062Z",
   "features": {
     "feature-ui-zmscitizenview-citizen-login-zmskvr-1090-zmskvr-1139-login-without-given-name": {
       "status": "failed",
@@ -14,22 +14,47 @@
         "chrome": {
           "status": "failed",
           "shard": "custom",
-          "runId": "38189505277",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38189505277",
-          "runStartedAt": "2026-10-12T00:49:48Z"
+          "runId": "38189821722",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38189821722",
+          "runStartedAt": "2026-10-12T00:54:43Z"
         },
         "firefox": {
           "status": "failed",
           "shard": "custom",
-          "runId": "38189505277",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38189505277",
-          "runStartedAt": "2026-10-12T00:49:48Z"
+          "runId": "38189821722",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38189821722",
+          "runStartedAt": "2026-10-12T00:54:43Z"
         }
       },
       "rel": "ui/zmscitizenview/citizen-login/zmskvr-1090_zmskvr-1139_login_without_given_name.feature",
-      "runId": "38189505277",
-      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38189505277",
-      "runStartedAt": "2026-10-12T00:49:48Z"
+      "runId": "38189821722",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38189821722",
+      "runStartedAt": "2026-10-12T00:54:43Z"
+    },
+    "feature-rest-zmscitizenapi-citizen-login-zmskvr-1090-zmskvr-1139-login-without-given-name-citizenapi": {
+      "status": "failed",
+      "shard": "custom",
+      "browser": "chrome",
+      "browsers": {
+        "chrome": {
+          "status": "failed",
+          "shard": "custom",
+          "runId": "38189821722",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38189821722",
+          "runStartedAt": "2026-10-12T00:54:43Z"
+        },
+        "firefox": {
+          "status": "failed",
+          "shard": "custom",
+          "runId": "38189821722",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38189821722",
+          "runStartedAt": "2026-10-12T00:54:43Z"
+        }
+      },
+      "rel": "rest/zmscitizenapi/citizen-login/zmskvr-1090_zmskvr-1139_login_without_given_name_citizenapi.feature",
+      "runId": "38189821722",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38189821722",
+      "runStartedAt": "2026-10-12T00:54:43Z"
     }
   }
 }
