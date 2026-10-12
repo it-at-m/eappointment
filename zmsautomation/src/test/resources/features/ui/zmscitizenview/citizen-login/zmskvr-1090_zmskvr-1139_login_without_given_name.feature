@@ -8,6 +8,7 @@ Feature: CitizenView: Bürger-Login without given_name completes Vorname on Kont
   # Abholung 10295182 at Bürgerbüro Ruppertstraße KVR-II/211 (10492), same jump-in as ZMSKVR-955.
   # Keycloak user ataf_citizen_no_given has Nachname only (no firstName → no given_name claim).
   # Kontakt keeps SSO Nachname; the citizen provides Vorname. Stored familyName is "Vorname Nachname".
+  # API sibling: rest/.../citizen-login/zmskvr-1090_zmskvr-1139_login_without_given_name_citizenapi.feature
 
   Background:
     Given the Citizen API is available
