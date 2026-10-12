@@ -1,6 +1,7 @@
 package zms.ataf.ui.pages.citizenview.steps;
 
 import java.time.Duration;
+import java.util.Locale;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
@@ -89,6 +90,51 @@ public final class ContactStep {
     public void fillContactDetailsRandomWithoutOptionalRemarks() {
         fillContactDetailsRandom(false);
     }
+
+    /**
+     * ZMSKVR-87 / ZMSKVR-715: same mailinator address the Citizen API derives from a fixed family
+     * name ({@code familyname@mailinator.com}).
+     */
+    public void fillContactDetailsWithFamilyName(String familyName) {
+        context.set();
+        shadow.waitUntilShadowContains("Kontaktdaten", Math.max(30, defaultWaitSeconds));
+        try {
+            Thread.sleep(600L);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+        String email = familyName.toLowerCase(Locale.ROOT).replaceAll("[^a-z0-9]", "") + "@mailinator.com";
+        lastContactFirstName = "Muster";
+        lastContactLastName = familyName;
+        lastContactEmail = email;
+        zms.ataf.rest.steps.CitizenApiSteps.setBookingContactEmail(email);
+        ScenarioLogManager.getLogger()
+                .info(
+                        "zmscitizenview: Kontakt — Vorname={} Nachname={} E-Mail={}",
+                        lastContactFirstName,
+                        familyName,
+                        email);
+        Assert.assertTrue(
+                shadow.deepSetById("firstname", lastContactFirstName),
+                "Kontakt: could not set Vorname (muc-input shadow)");
+        Assert.assertTrue(
+                shadow.deepSetById("lastname", familyName),
+                "Kontakt: could not set Nachname (muc-input shadow)");
+        Assert.assertTrue(
+                shadow.deepSetById("mailaddress", email),
+                "Kontakt: could not set E-Mail (muc-input shadow)");
+        if (deepContactPhoneFieldExists()) {
+            shadow.deepSetById("telephonenumber", CONTACT_PHONE_E2E);
+        }
+        fillRequiredCustomTextAreasInShadow();
+        fillOptionalContactRemarksIfPresent();
+        try {
+            Thread.sleep(500L);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+    }
+
     private void fillContactDetailsRandom(boolean fillOptionalRemarks) {
         context.set();
         shadow.waitUntilShadowContains("Kontaktdaten", Math.max(30, defaultWaitSeconds));
