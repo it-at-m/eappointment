@@ -20,6 +20,8 @@ Feature: CitizenView: LOCATION_PRIO_BY_DISPLAY_NAME order for Feuerwachen and B�
   # Fixtures: FW seats are on different days (Föhring tomorrow; Pasing/Neuperlach/Riem day+4).
   # V61 adds a shared day+7 for Pasing/Föhring/Neuperlach/Riem so list order can assert
   # Feuerwache 10 last without racing booked-out jobs that empty the single day+4 Riem seat.
+  # @feuerwache-capacity-lock serializes this against ZMSKVR-1235/1244 reserve-every on
+  # 10575/10582; the restore step reopens day+7 after booked-out emptied it.
   # Keep bookable Wachen, wait until Riem 10575 has a bookable day, then assert list headings
   # on that day end with Feuerwache 10 (unconditional).
 
@@ -29,8 +31,10 @@ Feature: CitizenView: LOCATION_PRIO_BY_DISPLAY_NAME order for Feuerwachen and B�
     Then the response status code should be 200
     And the response should contain offices and services
 
+  @feuerwache-capacity-lock
   Scenario: Führungen lists Feuerwachen 1…10 on Ort and keeps 10 last under Verfügbare Termine
-    Given I open zmscitizenview with jump-in service "10389330"
+    Given Feuerwache order-day seats are restored in the ATAF database
+    And I open zmscitizenview with jump-in service "10389330"
     Then the service combination step should be visible
     When I continue from the service combination step
     Then the Feuerwache location checkboxes are in numeric order from 1 to 10
