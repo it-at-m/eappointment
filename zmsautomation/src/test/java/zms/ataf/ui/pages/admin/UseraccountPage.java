@@ -33,6 +33,10 @@ public class UseraccountPage extends BasePage {
     private static final String MISSING_RIGHTS =
             "Um diesen Benutzer zu bearbeiten fehlen Ihnen die notwendigen Rechte.";
 
+    /** ZMSKVR-533 / ZMSKVR-661 — matches useraccount.json pattern message (de_DE). */
+    static final String USERNAME_CHAR_RESTRICTION =
+            "Der Nutzername darf nur Kleinbuchstaben, Zahlen, Punkte, Unterstriche und Bindestriche enthalten";
+
     public UseraccountPage(RemoteWebDriver driver) {
         super(driver);
     }
@@ -64,15 +68,119 @@ public class UseraccountPage extends BasePage {
     }
 
     public void enterNewUser(String username, String password) {
-        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
-        WebElement name = wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("input[name='id']")));
-        name.clear();
-        name.sendKeys(username);
+        enterNewUserUsername(username);
         List<WebElement> passwords = DRIVER.findElements(By.cssSelector("input[name='changePassword[]']"));
         Assert.assertEquals(passwords.size(), 2, "The new-user form does not show password and confirmation.");
         for (WebElement field : passwords) {
             field.clear();
             field.sendKeys(password);
+        }
+    }
+
+    /** ZMSKVR-533 / ZMSKVR-661: with default Keycloak provider, passwords are filled by the form JS. */
+    public void enterNewUserUsername(String username) {
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        WebElement name = wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("input[name='id']")));
+        name.clear();
+        name.sendKeys(username);
+        waitUntilOidcPasswordsFilled();
+    }
+
+    public void assertDefaultKeycloakProviderSelected() {
+        List<WebElement> provider = DRIVER.findElements(By.id("useOidcProvider"));
+        Assert.assertFalse(provider.isEmpty(), "OIDC provider select is missing on the new-user form.");
+        String selected = new Select(provider.get(0)).getFirstSelectedOption().getText();
+        Assert.assertTrue(
+                selected != null && selected.toLowerCase().contains("keycloak"),
+                "Expected default Keycloak provider, was: " + selected);
+        waitUntilOidcPasswordsFilled();
+    }
+
+    public void selectSignedInDepartment() {
+        String departmentId = TestDataHelper.getTestData("signed_in_department");
+        Assert.assertTrue(
+                departmentId != null && departmentId.matches("[1-9]\\d*"),
+                "The signed-in user admin has no department number: " + departmentId);
+        WebElement select = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(ExpectedConditions.visibilityOfElementLocated(
+                        By.cssSelector("select[name='departments[][id]']")));
+        new Select(select).selectByValue(departmentId);
+        ScenarioLogManager.getLogger().info("Selected Behörde id={}", departmentId);
+    }
+
+    public void assertUsernameCharacterRestriction() {
+        By usernameInput = By.cssSelector("input[name='id']");
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        wait.ignoring(StaleElementReferenceException.class);
+        final long[] lastResubmit = { lastNewUserSubmission };
+        wait.until(driver -> {
+            String url = driver.getCurrentUrl();
+            if (url != null && url.contains("useraccount_added")) {
+                return true;
+            }
+            if (isAdminLoaderVisible(driver)) {
+                return false;
+            }
+            if (usernameFieldShowsRestriction(driver)) {
+                return true;
+            }
+            long now = System.currentTimeMillis();
+            if (now - lastResubmit[0] > 5000L) {
+                lastResubmit[0] = now;
+                lastNewUserSubmission = now;
+                ScenarioLogManager.getLogger()
+                        .warn("Username restriction still missing after save; submitting the new-user form again.");
+                submitNewUserForm();
+            }
+            return false;
+        });
+        Assert.assertFalse(DRIVER.getCurrentUrl().contains("useraccount_added"),
+                "The account was created with an invalid username.");
+        WebElement group = DRIVER.findElement(usernameInput)
+                .findElement(By.xpath("ancestor::*[contains(@class,'form-group')][1]"));
+        String groupClass = group.getAttribute("class");
+        Assert.assertTrue(groupClass != null && groupClass.contains("has-error"),
+                "Nutzername is not marked invalid: " + groupClass);
+        String fieldError = group.findElement(By.cssSelector(".message--error")).getText().replace('\u00a0', ' ');
+        Assert.assertTrue(
+                fieldError.contains(USERNAME_CHAR_RESTRICTION),
+                "Username character restriction is not shown under Nutzername: " + fieldError);
+    }
+
+    private void waitUntilOidcPasswordsFilled() {
+        List<WebElement> provider = DRIVER.findElements(By.id("useOidcProvider"));
+        if (provider.isEmpty()) {
+            return;
+        }
+        String value = provider.get(0).getAttribute("value");
+        if (value == null || value.isBlank()) {
+            return;
+        }
+        new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME)).until(driver -> {
+            List<WebElement> fields = driver.findElements(By.cssSelector("input[name='changePassword[]']"));
+            return fields.size() == 2
+                    && fields.stream().allMatch(input -> {
+                        String v = input.getAttribute("value");
+                        return v != null && v.length() >= 6;
+                    });
+        });
+    }
+
+    private static boolean usernameFieldShowsRestriction(org.openqa.selenium.WebDriver driver) {
+        List<WebElement> inputs = driver.findElements(By.cssSelector("input[name='id']"));
+        if (inputs.isEmpty()) {
+            return false;
+        }
+        try {
+            WebElement group = inputs.get(0).findElement(By.xpath("ancestor::*[contains(@class,'form-group')][1]"));
+            String groupClass = group.getAttribute("class");
+            if (groupClass == null || !groupClass.contains("has-error")) {
+                return false;
+            }
+            String fieldError = group.findElement(By.cssSelector(".message--error")).getText();
+            return fieldError != null && fieldError.contains(USERNAME_CHAR_RESTRICTION);
+        } catch (org.openqa.selenium.NoSuchElementException | StaleElementReferenceException ignored) {
+            return false;
         }
     }
 

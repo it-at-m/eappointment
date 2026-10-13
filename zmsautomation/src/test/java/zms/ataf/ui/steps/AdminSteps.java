@@ -646,6 +646,21 @@ public class AdminSteps {
                 TestDataHelper.transformTestData(password));
     }
 
+    @When("I enter the new user username {string}.")
+    public void iEnterTheNewUserUsername(String username) {
+        USERACCOUNT_PAGE.enterNewUserUsername(TestDataHelper.transformTestData(username));
+    }
+
+    @Then("the default Keycloak provider should be selected for the new user.")
+    public void theDefaultKeycloakProviderShouldBeSelectedForTheNewUser() {
+        USERACCOUNT_PAGE.assertDefaultKeycloakProviderSelected();
+    }
+
+    @When("I select the signed-in department for the new user.")
+    public void iSelectTheSignedInDepartmentForTheNewUser() {
+        USERACCOUNT_PAGE.selectSignedInDepartment();
+    }
+
     @When("I save the new user.")
     public void iSaveTheNewUser() {
         USERACCOUNT_PAGE.saveNewUser();
@@ -654,6 +669,12 @@ public class AdminSteps {
     @Then("the new user form asks for a department and outlines Behörde in red.")
     public void theNewUserFormAsksForADepartmentAndOutlinesTheFieldInRed() {
         USERACCOUNT_PAGE.assertDepartmentIsRequired();
+    }
+
+    /** ZMSKVR-533 / ZMSKVR-661 */
+    @Then("the new user form shows the username character restriction.")
+    public void theNewUserFormShowsTheUsernameCharacterRestriction() {
+        USERACCOUNT_PAGE.assertUsernameCharacterRestriction();
     }
 
     @Then("the status link is visible in the page footer.")
