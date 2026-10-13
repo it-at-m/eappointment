@@ -1844,20 +1844,8 @@ public final class TimeSlotStep {
         context.set();
         int timeout = slotBookingWaitTimeoutSeconds();
         for (int day = 0; day < 8; day++) {
-            if (isNoAppointmentInfoCalloutPresent() && !deepMucSpinnerVisible()) {
-                ScenarioLogManager.getLogger()
-                        .info(
-                                "zmscitizenview: blue empty-state callout while waiting for slots; stop day paging");
-                break;
-            }
-            int waitSec = day == 0 ? Math.min(20, timeout) : Math.min(45, timeout);
+            int waitSec = day == 0 ? timeout : Math.min(45, timeout);
             if (waitUntilAppointmentSlotsReadyQuiet(waitSec)) {
-                break;
-            }
-            if (isNoAppointmentInfoCalloutPresent()) {
-                ScenarioLogManager.getLogger()
-                        .info(
-                                "zmscitizenview: blue empty-state callout after slot wait; stop day paging");
                 break;
             }
             if (deepTimeslotClickablePresent() || !openNextCalendarDayAndWaitForSlots()) {
@@ -1867,6 +1855,40 @@ public final class TimeSlotStep {
                     .info("zmscitizenview: empty slot view; advanced calendar day ({}/7)", day + 1);
         }
         scrollTimeSlotGridIntoViewForScreenshots();
+    }
+
+    /**
+     * After keep-only on a single office: wait for timeslots or the settled blue empty-state
+     * callout. Does not page calendar days (that races empty-office asserts and can abort a
+     * bookable Wohnsitzanmeldung calendar that briefly flashes the callout).
+     */
+    public void waitUntilSlotsOrEmptyCallout(int maxSeconds) {
+        context.set();
+        ScenarioLogManager.getLogger()
+                .info(
+                        "zmscitizenview: waiting up to {}s for slots or blue empty-state callout",
+                        maxSeconds);
+        long deadline = System.currentTimeMillis() + Math.max(1, maxSeconds) * 1000L;
+        while (System.currentTimeMillis() < deadline) {
+            if (deepTimeslotReadyNoSpinner()) {
+                ScenarioLogManager.getLogger()
+                        .info("zmscitizenview: slots ready after keep-only (no day paging)");
+                return;
+            }
+            if (!deepMucSpinnerVisible() && isNoAppointmentInfoCalloutPresent()) {
+                ScenarioLogManager.getLogger()
+                        .info(
+                                "zmscitizenview: blue empty-state callout after keep-only (no day paging)");
+                return;
+            }
+            CitizenViewWaits.sleepQuiet(300L);
+        }
+        ScenarioLogManager.getLogger()
+                .info(
+                        "zmscitizenview: keep-only settle timed out (spinnerVisible={} timeslot={} callout={})",
+                        deepMucSpinnerVisible(),
+                        deepTimeslotClickablePresent(),
+                        isNoAppointmentInfoCalloutPresent());
     }
 
     /**
