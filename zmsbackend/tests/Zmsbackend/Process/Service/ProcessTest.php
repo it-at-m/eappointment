@@ -72,6 +72,46 @@ class ProcessTest extends \BO\Zmsbackend\Tests\Service\Base
         $process = $query->writeEntityReserved($process, $now);
     }
 
+    public function testFreeProcessesCanBeRestrictedToAppointmentTime()
+    {
+        $query = new ProcessStatusFree();
+        $input = self::getTestProcessEntity();
+        $appointmentTime = $input->getFirstAppointment()->toDateTime();
+
+        $all = $query->readFreeProcesses($input->toCalendar(), static::$now);
+        $atTime = $query->readFreeProcesses(
+            $input->toCalendar(),
+            static::$now,
+            'public',
+            null,
+            false,
+            $appointmentTime
+        );
+
+        $matching = [];
+        foreach ($all as $process) {
+            if ($process->getFirstAppointment()->toDateTime()->format('H:i:s') === $appointmentTime->format('H:i:s')) {
+                $matching[] = $process->getFirstAppointment()->date;
+            }
+        }
+        $actual = [];
+        foreach ($atTime as $process) {
+            $actual[] = $process->getFirstAppointment()->date;
+        }
+
+        $this->assertNotEmpty($matching);
+        $this->assertEqualsCanonicalizing($matching, $actual);
+        $noFreeProcesses = $query->readFreeProcesses(
+            $input->toCalendar(),
+            static::$now,
+            'public',
+            null,
+            false,
+            $appointmentTime->setTime(23, 59, 59)
+        );
+        $this->assertCount(0, $noFreeProcesses);
+    }
+
     public function testExceptionFollowingSlotsReserved()
     {
         $this->expectException('\BO\Zmsbackend\Process\Exception\ProcessReserveFailed');
