@@ -17,6 +17,7 @@ import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import zms.ataf.rest.steps.ZmsApiMailSteps;
 import zms.ataf.ui.pages.citizenview.CitizenViewPage;
+import zms.ataf.ui.pages.citizenview.support.FeuerwacheOrderDaySeats;
 
 /**
  * All zmscitizenview UI steps (English). Service Finder smoke + full booking flow; see
@@ -137,6 +138,16 @@ public class CitizenViewSteps {
         String s = TestDataHelper.transformTestData(serviceId);
         ScenarioLogManager.getLogger().info("zmscitizenview: jump-in service={}", s);
         page.navigateWithJumpInService(s);
+    }
+
+    /**
+     * ZMSKVR-151 / ZMSKVR-714: booked-out scenarios may have reserved every V61 day+7 seat.
+     * Re-open capacity before asserting Feuerwache 10 last under Verfügbare Termine.
+     */
+    @Given("Feuerwache order-day seats are restored in the ATAF database")
+    public void feuerwacheOrderDaySeatsAreRestoredInTheAtafDatabase() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: restoring Feuerwache V61 order-day seats");
+        FeuerwacheOrderDaySeats.restore();
     }
 
     @When("I click Leistung wechseln in the citizen view")
