@@ -1,0 +1,46 @@
+{
+  "branch": "test-zmskvr-533-zmskvr-661-username-validation",
+  "branchSlug": "test-zmskvr-533-zmskvr-661-username-validation",
+  "runId": "38329489722",
+  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38329489722",
+  "runStartedAt": "2026-10-13T00:53:47Z",
+  "publishedAt": "2026-10-13T01:03:38.939Z",
+  "features": {
+    "feature-rest-zmsapi-useraccount-zmskvr-533-zmskvr-661-username-validation": {
+      "status": "passed",
+      "shard": "custom",
+      "browser": "chrome",
+      "rel": "rest/zmsapi/useraccount/zmskvr-533_zmskvr-661_username_validation.feature",
+      "runId": "38329489722",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38329489722",
+      "runStartedAt": "2026-10-13T00:53:47Z",
+      "browsers": {
+        "chrome": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "38329489722",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38329489722",
+          "runStartedAt": "2026-10-13T00:53:47Z"
+        }
+      }
+    },
+    "feature-ui-zmsadmin-user-administration-zmskvr-533-zmskvr-661-username-validation": {
+      "status": "passed",
+      "shard": "custom",
+      "browser": "chrome",
+      "rel": "ui/zmsadmin/user-administration/zmskvr-533_zmskvr-661_username_validation.feature",
+      "runId": "38329489722",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38329489722",
+      "runStartedAt": "2026-10-13T00:53:47Z",
+      "browsers": {
+        "chrome": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "38329489722",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38329489722",
+          "runStartedAt": "2026-10-13T00:53:47Z"
+        }
+      }
+    }
+  }
+}

@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-10-13T00:42:44.055Z",
+  "publishedAt": "2026-10-13T01:03:38.939Z",
   "branches": [
     {
       "name": "next",
@@ -798,6 +798,12 @@
       "slug": "test-zmskvr-514-ux-chrome-batch",
       "runId": "38149309301",
       "runStartedAt": "2026-10-11T14:57:51Z"
+    },
+    {
+      "name": "test-zmskvr-533-zmskvr-661-username-validation",
+      "slug": "test-zmskvr-533-zmskvr-661-username-validation",
+      "runId": "38329489722",
+      "runStartedAt": "2026-10-13T00:53:47Z"
     },
     {
       "name": "test-zmskvr-536-zmskvr-725-empty-opening-hours-times",
