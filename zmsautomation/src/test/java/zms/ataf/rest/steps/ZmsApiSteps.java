@@ -295,6 +295,54 @@ public class ZmsApiSteps {
             .contains(expectedExceptionShortName);
     }
 
+    /**
+     * ZMSKVR-533 / ZMSKVR-661 — POST /useraccount/ must reject ids outside
+     * {@code ^[-a-z0-9._]+(@keycloak)?$}.
+     */
+    @When("I try to create a useraccount with invalid username {string} with the X-AuthKey")
+    public void iTryToCreateAUseraccountWithInvalidUsernameWithTheXAuthKey(String username) {
+        Integer departmentId = AccountCheckout.checkedOutDepartmentId();
+        Assertions.assertThat(departmentId)
+            .as("user_admin login must remember a department for the new account")
+            .isNotNull()
+            .isPositive();
+
+        ObjectNode body = MAPPER.createObjectNode();
+        body.put("id", username);
+        body.put("password", "unittest");
+        ArrayNode roles = MAPPER.createArrayNode();
+        roles.add("agent_queue");
+        body.set("roles", roles);
+        ArrayNode departments = MAPPER.createArrayNode();
+        ObjectNode department = MAPPER.createObjectNode();
+        department.put("id", departmentId);
+        departments.add(department);
+        body.set("departments", departments);
+
+        String authKey = getOrLoginXAuthKey();
+        response = given()
+            .baseUri(apiBaseUri())
+            .header("X-AuthKey", authKey)
+            .contentType("application/json")
+            .body(toJson(body))
+        .when()
+            .post("/useraccount/");
+        CommonApiSteps.setResponse(response);
+    }
+
+    @Then("the response should reject the username with the character restriction message")
+    public void theResponseShouldRejectTheUsernameWithTheCharacterRestrictionMessage() {
+        if (response == null) {
+            response = CommonApiSteps.getResponse();
+        }
+        Assertions.assertThat(response).isNotNull();
+        Assertions.assertThat(response.getStatusCode()).isEqualTo(400);
+        String body = response.asString();
+        Assertions.assertThat(body)
+            .contains("SchemaValidation")
+            .contains("Der Nutzername darf nur Kleinbuchstaben, Zahlen, Punkte, Unterstriche und Bindestriche enthalten");
+    }
+
     @Then("the response should contain config information")
     public void theResponseShouldContainConfigInformation() {
         if (response == null) {
