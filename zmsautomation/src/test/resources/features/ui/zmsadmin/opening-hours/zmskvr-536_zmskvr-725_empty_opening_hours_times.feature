@@ -34,8 +34,8 @@ Feature: New opening hours do not prefill Uhrzeit; Ausnahme keeps the original t
     And I enter in the field "Uhrzeit von" the text "<naechste_oeffnungszeit>".
     And I enter in the field "Uhrzeit bis" the text "<oeffnungszeit_danach>".
     And I click the button "Alle Änderungen aktivieren" in the administration.
-    Then the active opening hours with the note "<TestData.Anmerkung>" should be deletable.
     When I open the opening hour with the note "<TestData.Anmerkung>" for editing.
     And I open the opening-hours accordion "<TestData.Anmerkung>".
     And I click the button "Ausnahme" in the administration.
     Then the opening hours time fields should show "<naechste_oeffnungszeit>" to "<oeffnungszeit_danach>".
+    And the active opening hours with the note "<TestData.Anmerkung>" should be deletable.
