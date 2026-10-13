@@ -193,12 +193,32 @@ public class UseraccountPage extends BasePage {
     public void saveNewUser() {
         ScenarioLogManager.getLogger().info("Saving the new user without a department...");
         waitForAdminLoaderGone();
+        ensureNoDepartmentSelected();
         // Firefox often reports a successful native click without submitting this form.
         // requestSubmit keeps the save button value; form.submit() is the last resort.
         lastNewUserSubmission = System.currentTimeMillis();
         newUserSubmitAttempt = 0;
         submitNewUserForm();
         waitForAdminLoaderGone();
+    }
+
+    /** Multi-select Behörde must stay empty for the missing-department scenario. */
+    private void ensureNoDepartmentSelected() {
+        List<WebElement> selects = DRIVER.findElements(By.cssSelector("select[name='departments[][id]']"));
+        if (selects.isEmpty()) {
+            return;
+        }
+        try {
+            Select select = new Select(selects.get(0));
+            if (select.isMultiple()) {
+                select.deselectAll();
+            } else {
+                select.selectByValue("");
+            }
+        } catch (Exception e) {
+            ScenarioLogManager.getLogger()
+                    .warn("Could not clear Behörde multi-select before save: {}", e.toString());
+        }
     }
 
     public void assertDepartmentIsRequired() {
@@ -346,14 +366,23 @@ public class UseraccountPage extends BasePage {
                 .until(ExpectedConditions.presenceOfElementLocated(saveButton));
         // Do not click then requestSubmit on the same element — a successful post re-renders
         // the form and the second call hits StaleElementReference (broke chrome/edge).
-        // Alternate: requestSubmit first (Chromium), native click on odd retries (Firefox).
-        boolean preferNativeClick = (newUserSubmitAttempt++ % 2) == 1;
+        // Chromium: requestSubmit(button). Firefox often no-ops click/requestSubmit; force a
+        // real navigation POST with a hidden save field (includes name/value for PHP).
+        boolean forceNavigationPost = (newUserSubmitAttempt++ % 2) == 1;
         try {
-            if (preferNativeClick) {
-                ScenarioLogManager.getLogger().info("zmsadmin: Nutzer anlegen via native click");
-                new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
-                        .until(ExpectedConditions.elementToBeClickable(saveButton))
-                        .click();
+            if (forceNavigationPost) {
+                ScenarioLogManager.getLogger().info("zmsadmin: Nutzer anlegen via forced form.submit POST");
+                ((JavascriptExecutor) DRIVER).executeScript(
+                        "var button = arguments[0];"
+                                + "var form = button.form || button.closest('form');"
+                                + "if (!form) { button.click(); return; }"
+                                + "var input = document.createElement('input');"
+                                + "input.type = 'hidden';"
+                                + "input.name = button.getAttribute('name') || 'save';"
+                                + "input.value = button.getAttribute('value') || 'save';"
+                                + "form.appendChild(input);"
+                                + "form.submit();",
+                        save);
                 return;
             }
             ((JavascriptExecutor) DRIVER).executeScript(
