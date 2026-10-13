@@ -91,6 +91,27 @@ public final class MyAppointmentsStep {
     }
     public ThinnedProcess syncBookingProcessFromLocalStorage() throws Exception {
         context.set();
+        String json =
+                (String)
+                        ((JavascriptExecutor) DriverUtil.getDriver())
+                                .executeScript(
+                                        "return localStorage.getItem('" + MyAppointmentsStep.LOCALSTORAGE_APPOINTMENT_KEY + "');");
+        if (json != null && !json.isBlank()) {
+            ThinnedProcess fromStorage = parseAndSetBookingProcessFromJson(json);
+            if (hasCancelCredentials(fromStorage)) {
+                ThinnedProcess already = zms.ataf.rest.steps.CitizenApiSteps.getBookingProcess();
+                if (already != null
+                        && already.getProcessId() != null
+                        && !already.getProcessId().equals(fromStorage.getProcessId())) {
+                    ScenarioLogManager.getLogger()
+                            .info(
+                                    "zmscitizenview: localStorage processId={} differs from synced {}; using localStorage",
+                                    fromStorage.getProcessId(),
+                                    already.getProcessId());
+                }
+                return fromStorage;
+            }
+        }
         ThinnedProcess already = zms.ataf.rest.steps.CitizenApiSteps.getBookingProcess();
         if (hasCancelCredentials(already)) {
             ScenarioLogManager.getLogger().info("zmscitizenview: booking process already set (from reserve step), skipping localStorage read");
@@ -101,11 +122,6 @@ public final class MyAppointmentsStep {
         if (hasCancelCredentials(already)) {
             return already;
         }
-        String json =
-                (String)
-                        ((JavascriptExecutor) DriverUtil.getDriver())
-                                .executeScript(
-                                        "return localStorage.getItem('" + MyAppointmentsStep.LOCALSTORAGE_APPOINTMENT_KEY + "');");
         if (json == null || json.isBlank()) {
             captureBookingProcessForCleanup();
             ThinnedProcess captured = zms.ataf.rest.steps.CitizenApiSteps.getBookingProcess();
@@ -819,8 +835,11 @@ public final class MyAppointmentsStep {
                     || shadow.shadowDomContainsText("Neuer Termin")
                     || !d.findElements(By.id("username")).isEmpty());
             if (!DriverUtil.getDriver().findElements(By.id("username")).isEmpty()) {
-                String username =
-                        TestPropertiesHelper.getPropertyAsString("citizenUserName", true, "citizen");
+                String username = context.lastCitizenLoginUsername;
+                if (username == null || username.isBlank()) {
+                    username =
+                            TestPropertiesHelper.getPropertyAsString("citizenUserName", true, "citizen");
+                }
                 String password =
                         TestPropertiesHelper.getPropertyAsString("citizenUserPassword", true, "vorschau");
                 contact.completeKeycloakLoginForm(AccountCheckout.assignCitizenLogin(username), password);
@@ -1130,6 +1149,7 @@ public final class MyAppointmentsStep {
         ((JavascriptExecutor) driver)
                 .executeScript(
                         "window.__zmsCapturedIcs='';"
+                                + "window.__zmsCapturedIcsName='';"
                                 + "if(!window.__zmsIcsHooked){"
                                 + "window.__zmsIcsHooked=true;"
                                 + "var NativeBlob=window.Blob;"
@@ -1141,7 +1161,15 @@ public final class MyAppointmentsStep {
                                 + "return typeof p==='string'?p:'';}).join('');}"
                                 + "return blob;}"
                                 + "CapturingBlob.prototype=NativeBlob.prototype;"
-                                + "window.Blob=CapturingBlob;}");
+                                + "window.Blob=CapturingBlob;"
+                                + "var desc=Object.getOwnPropertyDescriptor(HTMLAnchorElement.prototype,'download');"
+                                + "if(desc&&desc.set){Object.defineProperty(HTMLAnchorElement.prototype,'download',{"
+                                + "configurable:true,enumerable:desc.enumerable,"
+                                + "get:desc.get,"
+                                + "set:function(v){window.__zmsCapturedIcsName=v==null?'':String(v);return desc.set.call(this,v);}"
+                                + "});}"
+                                + "}");
+        // Confirmation success uses muc-button; appointment detail uses muc-link / <a>.
         String clickScript =
                 "var label=arguments[0];"
                         + "function textOf(n){var s='';if(!n)return s;if(n.nodeType===3)return n.nodeValue||'';"
@@ -1151,7 +1179,7 @@ public final class MyAppointmentsStep {
                         + "var hit=null;"
                         + "walk(document.body,function(n){"
                         + "var tag=(n.tagName||'').toUpperCase();"
-                        + "if(tag!=='MUC-LINK'&&tag!=='A')return false;"
+                        + "if(tag!=='MUC-LINK'&&tag!=='A'&&tag!=='MUC-BUTTON'&&tag!=='BUTTON')return false;"
                         + "if(textOf(n).indexOf(label)<0)return false;"
                         + "hit=n;return true;});"
                         + "if(!hit)return false;"
@@ -1205,6 +1233,74 @@ public final class MyAppointmentsStep {
                 capturedIcs.contains("DTSTART;TZID=Europe/Berlin:" + start),
                 "ICS DTSTART should be the booked slot " + start + ".");
     }
+
+    /** ICS DESCRIPTION is the confirmation mail plain text and includes {@code client.familyName}. */
+    public void assertDownloadedIcsContainsText(String expected) {
+        context.set();
+        Assert.assertNotNull(capturedIcs, "No ICS file was downloaded.");
+        String unfolded = unfoldIcs(capturedIcs);
+        Assert.assertTrue(
+                unfolded.contains(expected),
+                "ICS should contain \"" + expected + "\". ICS=" + unfolded);
+        ScenarioLogManager.getLogger().info("zmscitizenview: ICS contains {}", expected);
+    }
+
+    /**
+     * ZMSKVR-97 / ZMSKVR-535: Munich {@code icsappointment.twig} DESCRIPTION carries Terminnummer
+     * ({@code displayNumber}), Leistung URL, and the cancel/reschedule appointment hash link.
+     * Reloads GET /appointment/ because UI sync only keeps processId/authKey/timestamp.
+     */
+    public void assertDownloadedIcsMatchesMunichConfirmationTemplate() {
+        context.set();
+        Assert.assertNotNull(capturedIcs, "No ICS file was downloaded.");
+        String unfolded = unfoldIcs(capturedIcs);
+        ThinnedProcess process =
+                zms.ataf.rest.steps.CitizenApiSteps.refreshBookingProcessFromAppointmentApi();
+        Assert.assertNotNull(process, "Need a synced booking process for ICS Terminnummer asserts.");
+        Assert.assertNotNull(process.getProcessId(), "processId missing for ICS Terminnummer asserts.");
+        String displayNumber = process.getDisplayNumber();
+        Assert.assertNotNull(displayNumber, "displayNumber missing from GET /appointment/.");
+        Assert.assertFalse(displayNumber.isBlank(), "displayNumber blank from GET /appointment/.");
+        Assert.assertTrue(
+                unfolded.contains("Terminnummer: " + displayNumber),
+                "ICS DESCRIPTION must include Terminnummer: " + displayNumber + ". ICS=" + unfolded);
+        Assert.assertTrue(
+                unfolded.contains("UID:") && unfolded.contains("-" + displayNumber),
+                "ICS UID must include displayNumber " + displayNumber + ".");
+        Assert.assertTrue(
+                unfolded.contains("#/appointment/"),
+                "ICS DESCRIPTION must include the cancel/reschedule #/appointment/ link.");
+        Integer serviceId = process.getServiceId();
+        Assert.assertNotNull(serviceId, "serviceId missing for ICS Leistung URL.");
+        String leistungServiceId =
+                zms.ataf.rest.steps.CitizenApiSteps.icsLeistungServiceId(serviceId);
+        Assert.assertTrue(
+                unfolded.contains("https://stadt.muenchen.de/service/info/" + leistungServiceId),
+                "ICS DESCRIPTION must link the booked service "
+                        + leistungServiceId
+                        + " (process serviceId="
+                        + serviceId
+                        + ").");
+        Assert.assertTrue(
+                unfolded.contains("LOCATION:") && unfolded.contains("Ruppertstraße"),
+                "ICS LOCATION should carry the Bürgerbüro street address.");
+        Object nameRaw =
+                ((JavascriptExecutor) DriverUtil.getDriver())
+                        .executeScript("return window.__zmsCapturedIcsName || '';");
+        String downloadName = nameRaw instanceof String ? (String) nameRaw : "";
+        Assert.assertEquals(
+                "Termin.ics",
+                downloadName,
+                "Confirmation ICS download filename should be Termin.ics (product downloadIcsFile).");
+    }
+
+    private static String unfoldIcs(String icsContent) {
+        if (icsContent == null) {
+            return "";
+        }
+        return icsContent.replaceAll("\\R[ \\t]", "").replace("\\n", "\n").replace("\\,", ",");
+    }
+
     private String icsSummaryLine() {
         if (capturedIcs == null) {
             return "";

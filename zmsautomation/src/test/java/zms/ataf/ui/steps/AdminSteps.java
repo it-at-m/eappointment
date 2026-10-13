@@ -116,6 +116,9 @@ public class AdminSteps {
         case "Alle Änderungen aktivieren":
             AUTHORITIES_AND_LOCATIONS_PAGE.clickOnSaveButton();
             break;
+        case "Ausnahme":
+            AUTHORITIES_AND_LOCATIONS_PAGE.clickOnAusnahmeButton();
+            break;
         case "Aufruf nächster Kunde":
             PROCESSING_STATION_SECTION.callNextCustomer();
             break;
@@ -321,6 +324,19 @@ public class AdminSteps {
         AUTHORITIES_AND_LOCATIONS_PAGE.assertOpeningHoursDayPage();
     }
 
+    /** ZMSKVR-933 / ZMSKVR-934: Terminabstand (#AvDaySlottime) on Öffnungszeiten. */
+    @Then("the opening hours slot time should be {int} minutes.")
+    public void theOpeningHoursSlotTimeShouldBeMinutes(int expectedMinutes) {
+        int found = AUTHORITIES_AND_LOCATIONS_PAGE.getOpeningHoursSlotTimeInMinutes();
+        Assert.assertEquals(
+                found,
+                expectedMinutes,
+                "Expected Öffnungszeiten Terminabstand (AvDaySlottime) to be "
+                        + expectedMinutes
+                        + " minutes, was "
+                        + found);
+    }
+
     @When("I open the opening hour with the note {string} for editing.")
     public void iOpenTheOpeningHourWithTheNoteForEditing(String note) {
         AUTHORITIES_AND_LOCATIONS_PAGE.openOpeningHourForEditing(TestDataHelper.transformTestData(note));
@@ -389,6 +405,28 @@ public class AdminSteps {
     @Then("the button {string} should be enabled for saving the opening hours.")
     public void dann_die_schaltflaeche_sollte_zum_speichern_der_oeffnungszeiten_aktiv_sein(String button) {
         AUTHORITIES_AND_LOCATIONS_PAGE.assertOpeningHoursSaveButtonEnabled(TestDataHelper.transformTestData(button));
+    }
+
+    /** ZMSKVR-536 / ZMSKVR-725: neue Öffnungszeit leaves Uhrzeit von/bis empty. */
+    @Then("the opening hours time fields should be empty.")
+    public void theOpeningHoursTimeFieldsShouldBeEmpty() {
+        AUTHORITIES_AND_LOCATIONS_PAGE.assertOpeningHoursTimeFieldsEmpty();
+    }
+
+    /**
+     * ZMSKVR-536 / ZMSKVR-725: save without Uhrzeit is blocked by validation
+     * (footer button stays enabled; publish is rejected).
+     */
+    @When("I try to save the opening hours without a time.")
+    public void iTryToSaveTheOpeningHoursWithoutATime() {
+        AUTHORITIES_AND_LOCATIONS_PAGE.clickSaveOpeningHoursExpectingEmptyTimeValidation();
+    }
+
+    @Then("the opening hours time fields should show {string} to {string}.")
+    public void theOpeningHoursTimeFieldsShouldShow(String from, String until) {
+        AUTHORITIES_AND_LOCATIONS_PAGE.assertOpeningHoursTimeFieldsEqual(
+                resolveOpeningTime(TestDataHelper.transformTestData(from)),
+                resolveOpeningTime(TestDataHelper.transformTestData(until)));
     }
 
     private String resolveClosingDate(String text) {
@@ -608,6 +646,21 @@ public class AdminSteps {
                 TestDataHelper.transformTestData(password));
     }
 
+    @When("I enter the new user username {string}.")
+    public void iEnterTheNewUserUsername(String username) {
+        USERACCOUNT_PAGE.enterNewUserUsername(TestDataHelper.transformTestData(username));
+    }
+
+    @Then("the default Keycloak provider should be selected for the new user.")
+    public void theDefaultKeycloakProviderShouldBeSelectedForTheNewUser() {
+        USERACCOUNT_PAGE.assertDefaultKeycloakProviderSelected();
+    }
+
+    @When("I select the signed-in department for the new user.")
+    public void iSelectTheSignedInDepartmentForTheNewUser() {
+        USERACCOUNT_PAGE.selectSignedInDepartment();
+    }
+
     @When("I save the new user.")
     public void iSaveTheNewUser() {
         USERACCOUNT_PAGE.saveNewUser();
@@ -616,6 +669,12 @@ public class AdminSteps {
     @Then("the new user form asks for a department and outlines Behörde in red.")
     public void theNewUserFormAsksForADepartmentAndOutlinesTheFieldInRed() {
         USERACCOUNT_PAGE.assertDepartmentIsRequired();
+    }
+
+    /** ZMSKVR-533 / ZMSKVR-661 */
+    @Then("the new user form shows the username character restriction.")
+    public void theNewUserFormShowsTheUsernameCharacterRestriction() {
+        USERACCOUNT_PAGE.assertUsernameCharacterRestriction();
     }
 
     @Then("the status link is visible in the page footer.")
@@ -2076,6 +2135,8 @@ public class AdminSteps {
     /**
      * Citizen cancel refuses an appointment that is already before {@code App::$now}.
      * After the queue check, put the same reserved row back in the future so it can be deleted.
+     * Use the later of {@code ZMS_TIMEADJUST} and wall-clock Berlin time — under shard load the
+     * suite clock can lag App::$now, and suiteClock+30m would still be uncancellable.
      */
     @When("the reserved appointment is moved back to after the suite clock.")
     public void theReservedAppointmentIsMovedBackToAfterTheSuiteClock() {
@@ -2084,7 +2145,10 @@ public class AdminSteps {
             throw new IllegalStateException("No reserved appointment was captured from the citizen view.");
         }
         int processId = process.getProcessId();
-        LocalDateTime appointment = suiteClock().plusMinutes(30);
+        LocalDateTime suite = suiteClock();
+        LocalDateTime wall = LocalDateTime.now(BerlinTime.ZONE);
+        LocalDateTime baseline = suite.isAfter(wall) ? suite : wall;
+        LocalDateTime appointment = baseline.plusMinutes(60);
         String sql = """
                 UPDATE buerger
                    SET Datum = ?, Uhrzeit = ?
@@ -2107,7 +2171,8 @@ public class AdminSteps {
                     "Could not move reserved appointment " + processId + " back after the suite clock.", e);
         }
         ScenarioLogManager.getLogger().info(
-                "Reserved process {} is back at {} so it can be cancelled", processId, appointment);
+                "Reserved process {} is back at {} (suite={}, wall={}) so it can be cancelled",
+                processId, appointment, suite, wall);
     }
 
     @When("I sign in at the workstation of the reserved appointment.")

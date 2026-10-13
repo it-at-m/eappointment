@@ -197,6 +197,26 @@ public class ZmsApiMailSteps {
                 .isNull();
     }
 
+    @Then("the confirmation mail should contain {string}")
+    public void theConfirmationMailShouldContain(String expected) {
+        ThinnedProcess booking = CitizenApiSteps.getBookingProcess();
+        Assertions.assertThat(booking)
+                .as("booking process for confirmation mail body assert")
+                .isNotNull();
+        Assertions.assertThat(booking.getProcessId())
+                .as("processId for confirmation mail body assert")
+                .isNotNull();
+        String html = htmlForProcessContaining(String.valueOf(booking.getProcessId()), expected);
+        Assertions.assertThat(html)
+                .as("confirmation mail for process %s should contain '%s'", booking.getProcessId(), expected)
+                .contains(expected);
+        ScenarioLogManager.getLogger()
+                .info(
+                        "zmsapi: confirmation mail for process {} contains {}",
+                        booking.getProcessId(),
+                        expected);
+    }
+
     /** Second mail fetch: run after the appointment is confirmed. The confirmation mail (with link to /appointment/***) is only sent once the appointment is confirmed. */
     @When("I fetch the confirmation mail for the current process")
     public void iFetchTheConfirmationMailForTheCurrentProcess() {
