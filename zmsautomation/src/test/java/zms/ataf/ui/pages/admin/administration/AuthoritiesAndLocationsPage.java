@@ -450,13 +450,25 @@ public void saveLocationChanges() {
     public void clickOnAusnahmeButton() {
         ScenarioLogManager.getLogger().info("Trying to click on \"Ausnahme\" button...");
         CONTEXT.set();
-        String xpath = "//button[normalize-space()='Ausnahme' or @title='Ausnahme von dieser Öffnungszeit eintragen']";
-        clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, xpath, LocatorType.XPATH, false, CONTEXT);
-        new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
-                .until(ExpectedConditions.visibilityOfElementLocated(
-                        By.xpath("//div[contains(@class,'accordion__item')]"
-                                + "[.//button[contains(@class,'accordion__button')]"
-                                + "[contains(normalize-space(.),'Ausnahme')]]")));
+        By ausnahme = By.xpath(
+                "//div[contains(@class,'accordion__panel') and contains(@class,'opened')]"
+                        + "//button[@title='Ausnahme von dieser Öffnungszeit eintragen'"
+                        + " or normalize-space()='Ausnahme']");
+        WebElement button = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(ExpectedConditions.elementToBeClickable(ausnahme));
+        Assert.assertTrue(button.isEnabled(), "Ausnahme button is disabled (series must extend past the selected day).");
+        button.click();
+        // Accordion heading uses title= / .accrordion__title (not accordion__button).
+        By ausnahmeHeading = By.xpath(
+                "//h3[contains(@class,'accordion__heading')]"
+                        + "[contains(@title,'Ausnahme') or .//span[contains(.,'Ausnahme')]]");
+        try {
+            new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                    .until(ExpectedConditions.visibilityOfElementLocated(ausnahmeHeading));
+        } catch (TimeoutException e) {
+            Assert.fail("Expected an Öffnungszeit accordion titled with Ausnahme after clicking Ausnahme.", e);
+        }
+        expandOpeningHoursAccordionByTitle("Ausnahme");
     }
 
     private String readTimeInputValue(String inputId) {
