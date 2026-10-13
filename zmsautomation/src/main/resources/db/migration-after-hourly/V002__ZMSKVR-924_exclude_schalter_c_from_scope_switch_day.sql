@@ -5,7 +5,7 @@
 -- stay A/B-only so "second same-timestamp reserve switches Schalter" stays A↔B.
 -- Split C around that day; keep 25-minute coverage on every other day for ZMSKVR-933.
 --
--- Do not reference Startdatum/Endedatum unless those columns exist (English-only CI schema).
+-- Resolve column names first — English-only CI has start_date/end_date, not Startdatum.
 
 SET @has_de := (
   SELECT COUNT(*) FROM information_schema.COLUMNS
@@ -20,43 +20,47 @@ SET @has_en := (
     AND COLUMN_NAME = 'start_date'
 );
 
-SET @switch_sql := IF(
-  @has_en > 0,
-  'SELECT `start_date` FROM `oeffnungszeit` WHERE `OeffnungszeitID` = 136513 LIMIT 1',
-  IF(
-    @has_de > 0,
-    'SELECT `Startdatum` FROM `oeffnungszeit` WHERE `OeffnungszeitID` = 136513 LIMIT 1',
-    'SELECT NULL'
+SET @start_col := IF(@has_en > 0, 'start_date', IF(@has_de > 0, 'Startdatum', NULL));
+SET @end_col := IF(@has_en > 0, 'end_date', IF(@has_de > 0, 'Endedatum', NULL));
+
+SET @switch_day := NULL;
+SET @c_start := NULL;
+SET @c_end := NULL;
+
+SET @read_sql := IF(
+  @start_col IS NULL,
+  'SELECT 1',
+  CONCAT(
+    'SET @switch_day := (SELECT `', @start_col,
+    '` FROM `oeffnungszeit` WHERE `OeffnungszeitID` = 136513 LIMIT 1)'
   )
 );
-PREPARE ataf_mah_v002_switch FROM @switch_sql;
-EXECUTE ataf_mah_v002_switch INTO @switch_day;
+PREPARE ataf_mah_v002_switch FROM @read_sql;
+EXECUTE ataf_mah_v002_switch;
 DEALLOCATE PREPARE ataf_mah_v002_switch;
 
-SET @c_start_sql := IF(
-  @has_en > 0,
-  'SELECT `start_date` FROM `oeffnungszeit` WHERE `OeffnungszeitID` = 136550 LIMIT 1',
-  IF(
-    @has_de > 0,
-    'SELECT `Startdatum` FROM `oeffnungszeit` WHERE `OeffnungszeitID` = 136550 LIMIT 1',
-    'SELECT NULL'
+SET @read_sql := IF(
+  @start_col IS NULL,
+  'SELECT 1',
+  CONCAT(
+    'SET @c_start := (SELECT `', @start_col,
+    '` FROM `oeffnungszeit` WHERE `OeffnungszeitID` = 136550 LIMIT 1)'
   )
 );
-PREPARE ataf_mah_v002_cstart FROM @c_start_sql;
-EXECUTE ataf_mah_v002_cstart INTO @c_start;
+PREPARE ataf_mah_v002_cstart FROM @read_sql;
+EXECUTE ataf_mah_v002_cstart;
 DEALLOCATE PREPARE ataf_mah_v002_cstart;
 
-SET @c_end_sql := IF(
-  @has_en > 0,
-  'SELECT `end_date` FROM `oeffnungszeit` WHERE `OeffnungszeitID` = 136550 LIMIT 1',
-  IF(
-    @has_de > 0,
-    'SELECT `Endedatum` FROM `oeffnungszeit` WHERE `OeffnungszeitID` = 136550 LIMIT 1',
-    'SELECT NULL'
+SET @read_sql := IF(
+  @end_col IS NULL,
+  'SELECT 1',
+  CONCAT(
+    'SET @c_end := (SELECT `', @end_col,
+    '` FROM `oeffnungszeit` WHERE `OeffnungszeitID` = 136550 LIMIT 1)'
   )
 );
-PREPARE ataf_mah_v002_cend FROM @c_end_sql;
-EXECUTE ataf_mah_v002_cend INTO @c_end;
+PREPARE ataf_mah_v002_cend FROM @read_sql;
+EXECUTE ataf_mah_v002_cend;
 DEALLOCATE PREPARE ataf_mah_v002_cend;
 
 SET @do_split := IF(
@@ -85,7 +89,6 @@ SET @has_scope := (
     AND COLUMN_NAME = 'scope_id'
 );
 
--- End the existing C band the day before the switch day (or delete if it would be empty).
 SET @trim_sql := IF(
   @do_split = 0,
   'SELECT 1',
@@ -117,7 +120,6 @@ PREPARE ataf_mah_v002_trim FROM @trim_sql;
 EXECUTE ataf_mah_v002_trim;
 DEALLOCATE PREPARE ataf_mah_v002_trim;
 
--- Continue C after the switch day through the original end (25-minute, one internet seat).
 SET @ins_sql := IF(
   @do_split = 0 OR @after_start > @c_end,
   'SELECT 1',
