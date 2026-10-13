@@ -1,17 +1,24 @@
 package zms.ataf.ui.pages.citizenview.support;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 import ataf.core.logging.ScenarioLogManager;
 
 /**
  * Restores Flyway V61 day+7 seats for Pasing/Föhring/Neuperlach/Riem after a parallel
  * booked-out scenario reserved every appointment on those offices.
+ *
+ * <p>Booked-out can fill all V61 seats (same absolute count). Restoring must delete those
+ * bookings and/or raise the seat count above the reserved total — setting seats back to the
+ * same number leaves zero free capacity.
  */
 public final class FeuerwacheOrderDaySeats {
 
@@ -21,20 +28,22 @@ public final class FeuerwacheOrderDaySeats {
     /** StandortIDs: 268 Pasing, 274 Föhring, 277 Neuperlach, 280 Riem. */
     private static final int[] ORDER_DAY_SCOPE_IDS = {268, 274, 277, 280};
 
-    private static final int SEATS = 20;
+    /** Above booked-out's emptied V61 capacity so free slots reappear even if delete misses rows. */
+    private static final int SEATS = 50;
 
     private FeuerwacheOrderDaySeats() {}
 
     public static void restore() {
         try (Connection connection = openZmsConnection()) {
             LocalDate orderDay = orderDayFromDb(connection);
+            int removed = deleteBookingsOnOrderDay(connection, orderDay);
             bumpOpeningSeats(connection);
-            deleteBookingsOnOrderDay(connection, orderDay);
             ScenarioLogManager.getLogger()
                     .info(
-                            "Restored Feuerwache V61 order-day seats for {} ({} appointment seats)",
+                            "Restored Feuerwache V61 order-day seats for {} ({} appointment seats, deleted {} bookings)",
                             orderDay,
-                            SEATS);
+                            SEATS,
+                            removed);
         } catch (SQLException e) {
             throw new IllegalStateException("Failed to restore Feuerwache order-day seats", e);
         }
@@ -88,7 +97,7 @@ public final class FeuerwacheOrderDaySeats {
         }
     }
 
-    private static void deleteBookingsOnOrderDay(Connection connection, LocalDate orderDay)
+    private static int deleteBookingsOnOrderDay(Connection connection, LocalDate orderDay)
             throws SQLException {
         boolean hasStandort = columnExists(connection, "buerger", "StandortID");
         boolean hasScope = columnExists(connection, "buerger", "scope_id");
@@ -97,52 +106,84 @@ public final class FeuerwacheOrderDaySeats {
         if ((!hasStandort && !hasScope) || (!hasDatum && !hasDate)) {
             ScenarioLogManager.getLogger()
                     .warn("Skipping order-day booking cleanup; unexpected buerger columns");
-            return;
+            return 0;
         }
-        String scopeCol = hasStandort ? "StandortID" : "scope_id";
-        String dateCol = hasDatum ? "Datum" : "date";
-        String placeholders = "?,?,?,?";
+
+        List<String> scopePredicates = new ArrayList<>();
+        if (hasStandort) {
+            scopePredicates.add("`StandortID` IN (?,?,?,?)");
+        }
+        if (hasScope) {
+            scopePredicates.add("`scope_id` IN (?,?,?,?)");
+        }
+        List<String> datePredicates = new ArrayList<>();
+        if (hasDatum) {
+            datePredicates.add("DATE(`Datum`) = ?");
+        }
+        if (hasDate) {
+            datePredicates.add("DATE(`date`) = ?");
+        }
+        String where =
+                "("
+                        + String.join(" OR ", scopePredicates)
+                        + ") AND ("
+                        + String.join(" OR ", datePredicates)
+                        + ")";
+
         String idCol = columnExists(connection, "buerger", "BuergerID") ? "BuergerID" : "id";
-        String selectSql =
-                "SELECT `"
-                        + idCol
-                        + "` FROM buerger WHERE `"
-                        + scopeCol
-                        + "` IN ("
-                        + placeholders
-                        + ") AND `"
-                        + dateCol
-                        + "` = ?";
-        try (PreparedStatement select = connection.prepareStatement(selectSql)) {
-            int index = 1;
-            for (int scopeId : ORDER_DAY_SCOPE_IDS) {
-                select.setInt(index++, scopeId);
-            }
-            select.setString(index, orderDay.toString());
+        List<Long> processIds = new ArrayList<>();
+        try (PreparedStatement select =
+                connection.prepareStatement("SELECT `" + idCol + "` FROM buerger WHERE " + where)) {
+            bindOrderDayFilter(select, hasStandort, hasScope, hasDatum, hasDate, orderDay);
             try (ResultSet rs = select.executeQuery()) {
                 while (rs.next()) {
-                    long processId = rs.getLong(1);
-                    deleteProcessDependencies(connection, processId);
+                    processIds.add(rs.getLong(1));
                 }
             }
         }
-        String deleteSql =
-                "DELETE FROM buerger WHERE `"
-                        + scopeCol
-                        + "` IN ("
-                        + placeholders
-                        + ") AND `"
-                        + dateCol
-                        + "` = ?";
-        try (PreparedStatement delete = connection.prepareStatement(deleteSql)) {
-            int index = 1;
+        for (Long processId : processIds) {
+            deleteProcessDependencies(connection, processId);
+        }
+        int removed;
+        try (PreparedStatement delete =
+                connection.prepareStatement("DELETE FROM buerger WHERE " + where)) {
+            bindOrderDayFilter(delete, hasStandort, hasScope, hasDatum, hasDate, orderDay);
+            removed = delete.executeUpdate();
+        }
+        ScenarioLogManager.getLogger()
+                .info(
+                        "Deleted {} buerger row(s) on Feuerwache order day {} (matched {})",
+                        removed,
+                        orderDay,
+                        processIds.size());
+        return removed;
+    }
+
+    private static void bindOrderDayFilter(
+            PreparedStatement statement,
+            boolean hasStandort,
+            boolean hasScope,
+            boolean hasDatum,
+            boolean hasDate,
+            LocalDate orderDay)
+            throws SQLException {
+        int index = 1;
+        if (hasStandort) {
             for (int scopeId : ORDER_DAY_SCOPE_IDS) {
-                delete.setInt(index++, scopeId);
+                statement.setInt(index++, scopeId);
             }
-            delete.setString(index, orderDay.toString());
-            int removed = delete.executeUpdate();
-            ScenarioLogManager.getLogger()
-                    .info("Deleted {} buerger row(s) on Feuerwache order day {}", removed, orderDay);
+        }
+        if (hasScope) {
+            for (int scopeId : ORDER_DAY_SCOPE_IDS) {
+                statement.setInt(index++, scopeId);
+            }
+        }
+        Date sqlDay = Date.valueOf(orderDay);
+        if (hasDatum) {
+            statement.setDate(index++, sqlDay);
+        }
+        if (hasDate) {
+            statement.setDate(index, sqlDay);
         }
     }
 
