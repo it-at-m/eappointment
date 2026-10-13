@@ -277,11 +277,46 @@ public class UseraccountPage extends BasePage {
         Assert.assertTrue(fieldError.contains("Fehler: " + DEPARTMENT_REQUIRED),
                 "The department error is not shown under Behörde: " + fieldError);
 
-        String color = select.getCssValue("border-left-color");
-        String width = select.getCssValue("border-left-width");
-        // Chrome reports rgb(213, 47, 46); Firefox often rgb(210, 51, 51) for the same token.
-        Assert.assertTrue(isErrorRedBorder(color), "Behörde is not outlined in red: " + color);
-        Assert.assertEquals(width, "5px", "Behörde does not have the error border.");
+        // Chrome reports rgb(213, 47, 46); Firefox often rgb(210, 51, 51). Gecko can briefly
+        // still report the default select border (rgb(143, 143, 157)) before the has-error
+        // left accent paints — wait, and prefer getComputedStyle.
+        WebDriverWait borderWait = new WebDriverWait(DRIVER, Duration.ofSeconds(8));
+        borderWait.ignoring(StaleElementReferenceException.class);
+        String[] painted = new String[2];
+        try {
+            borderWait.until(driver -> {
+                WebElement field = driver.findElement(By.cssSelector("select[name='departments[][id]']"));
+                painted[0] = borderLeftColor(field);
+                painted[1] = field.getCssValue("border-left-width");
+                return isErrorRedBorder(painted[0]) && "5px".equals(painted[1]);
+            });
+        } catch (org.openqa.selenium.TimeoutException timedOut) {
+            WebElement field = DRIVER.findElement(By.cssSelector("select[name='departments[][id]']"));
+            painted[0] = borderLeftColor(field);
+            painted[1] = field.getCssValue("border-left-width");
+            ScenarioLogManager.getLogger().warn(
+                    "Behörde red border not stable after wait (color={}, width={}); has-error + message already asserted.",
+                    painted[0],
+                    painted[1]);
+        }
+        Assert.assertTrue(
+                isErrorRedBorder(painted[0]) && "5px".equals(painted[1]),
+                "Behörde is not outlined in red: color=" + painted[0] + " width=" + painted[1]);
+    }
+
+    private String borderLeftColor(WebElement field) {
+        try {
+            Object computed = ((JavascriptExecutor) DRIVER).executeScript(
+                    "var s=window.getComputedStyle(arguments[0]);"
+                            + "return s.borderLeftColor||s.borderColor||'';",
+                    field);
+            if (computed != null && !String.valueOf(computed).isBlank()) {
+                return String.valueOf(computed);
+            }
+        } catch (org.openqa.selenium.JavascriptException ignored) {
+            // fall through
+        }
+        return field.getCssValue("border-left-color");
     }
 
     private static final Pattern CSS_RGB = Pattern.compile("rgba?\\(\\s*(\\d+)\\s*,\\s*(\\d+)\\s*,\\s*(\\d+)");

@@ -351,23 +351,21 @@ public final class OverviewStep {
                 resolved,
                 "Overview must show matching Schalter Kundenhinweis + Termin Hinweis. Text: " + text);
         // Ausgewählter Termin may still paint the office-attached scope from
-        // offices-and-services; pin FS-A/FS-B from Übersicht Ort + Hinweis (ZMSKVR-924).
+        // offices-and-services; pin FS-A/B/C from Übersicht Ort + Hinweis (ZMSKVR-924).
         String zone = FuehrerscheinstelleScopeHints.zoneFor(resolved);
         String hint = FuehrerscheinstelleScopeHints.hintFor(resolved);
         shadow.scrollTextIntoView(zone);
         Assert.assertTrue(text.contains(zone), "Overview Ort missing " + zone + ". Text: " + text);
         shadow.scrollTextIntoView(hint);
         Assert.assertTrue(text.contains(hint), "Overview Hinweis missing " + hint + ". Text: " + text);
-        Assert.assertFalse(
-                text.contains(
-                        FuehrerscheinstelleScopeHints.zoneFor(
-                                FuehrerscheinstelleScopeHints.otherCode(resolved))),
-                "Overview must not mix the other Schalter. Text: " + text);
-        Assert.assertFalse(
-                text.contains(
-                        FuehrerscheinstelleScopeHints.hintFor(
-                                FuehrerscheinstelleScopeHints.otherCode(resolved))),
-                "Overview must not mix the other Schalter hint. Text: " + text);
+        for (String other : FuehrerscheinstelleScopeHints.otherCodes(resolved)) {
+            Assert.assertFalse(
+                    text.contains(FuehrerscheinstelleScopeHints.zoneFor(other)),
+                    "Overview must not mix Schalter " + other + ". Text: " + text);
+            Assert.assertFalse(
+                    text.contains(FuehrerscheinstelleScopeHints.hintFor(other)),
+                    "Overview must not mix Schalter hint " + other + ". Text: " + text);
+        }
         String place = visibleProviderSummaryOrFail(officeId);
         Assert.assertTrue(
                 place.contains(zone),

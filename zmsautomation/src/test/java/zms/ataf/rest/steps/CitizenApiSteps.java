@@ -902,16 +902,18 @@ public class CitizenApiSteps {
                 .isNotNull();
         Assertions.assertThat(hint).contains(FuehrerscheinstelleScopeHints.zoneFor(code));
         Assertions.assertThat(info).contains(FuehrerscheinstelleScopeHints.hintFor(code));
-        Assertions.assertThat(info)
-                .doesNotContain(
-                        FuehrerscheinstelleScopeHints.hintFor(
-                                FuehrerscheinstelleScopeHints.otherCode(code)));
+        Assertions.assertThat(FuehrerscheinstelleScopeHints.paintsOnly(hint + " " + info, code))
+                .as("scope.hint=%s infoForAppointment=%s must not mix Schalter markers", hint, info)
+                .isTrue();
         FuehrerscheinstelleScopeHints.rememberApiSchalterCode(code);
         ScenarioLogManager.getLogger()
                 .info("Citizen API appointment matched Führerscheinstelle Schalter {}", code);
     }
 
-    /** ZMSKVR-924 / ZMSKVR-1019: second same-timestamp reserve lands on the other Schalter. */
+    /**
+     * ZMSKVR-924 / ZMSKVR-1019: second same-timestamp reserve on the V55 switch day lands on
+     * the A↔B partner. After-hourly V002 keeps Schalter C off that day.
+     */
     @Then("the appointment scope should be the other Führerscheinstelle Schalter")
     public void theAppointmentScopeShouldBeTheOtherFuehrerscheinstelleSchalter() {
         String first = FuehrerscheinstelleScopeHints.rememberedApiSchalterCode();
@@ -927,8 +929,11 @@ public class CitizenApiSteps {
                 .isEqualTo(expected);
         Assertions.assertThat(hint)
                 .as("second reserve scope.hint=%s", hint)
-                .contains(FuehrerscheinstelleScopeHints.zoneFor(expected));
-        Assertions.assertThat(info).contains(FuehrerscheinstelleScopeHints.hintFor(expected));
+                .contains(FuehrerscheinstelleScopeHints.zoneFor(code));
+        Assertions.assertThat(info).contains(FuehrerscheinstelleScopeHints.hintFor(code));
+        Assertions.assertThat(FuehrerscheinstelleScopeHints.paintsOnly(hint + " " + info, code))
+                .as("second reserve must not mix Schalter markers (hint=%s info=%s)", hint, info)
+                .isTrue();
         FuehrerscheinstelleScopeHints.rememberApiSchalterCode(code);
         ScenarioLogManager.getLogger()
                 .info("Citizen API second reserve switched Schalter {} → {}", first, code);
