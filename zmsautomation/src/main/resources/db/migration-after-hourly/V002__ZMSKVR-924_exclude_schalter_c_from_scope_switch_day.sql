@@ -5,7 +5,7 @@
 -- stay A/B-only so "second same-timestamp reserve switches Schalter" stays A↔B.
 -- Split C around that day; keep 25-minute coverage on every other day for ZMSKVR-933.
 --
--- Resolve column names first — English-only CI has start_date/end_date, not Startdatum.
+-- IF() only evaluates the chosen branch, so EN-only CI never touches Startdatum.
 
 SET @has_de := (
   SELECT COUNT(*) FROM information_schema.COLUMNS
@@ -20,48 +20,33 @@ SET @has_en := (
     AND COLUMN_NAME = 'start_date'
 );
 
-SET @start_col := IF(@has_en > 0, 'start_date', IF(@has_de > 0, 'Startdatum', NULL));
-SET @end_col := IF(@has_en > 0, 'end_date', IF(@has_de > 0, 'Endedatum', NULL));
-
-SET @switch_day := NULL;
-SET @c_start := NULL;
-SET @c_end := NULL;
-
-SET @read_sql := IF(
-  @start_col IS NULL,
-  'SELECT 1',
-  CONCAT(
-    'SET @switch_day := (SELECT `', @start_col,
-    '` FROM `oeffnungszeit` WHERE `OeffnungszeitID` = 136513 LIMIT 1)'
+SET @switch_day := IF(
+  @has_en > 0,
+  (SELECT `start_date` FROM `oeffnungszeit` WHERE `OeffnungszeitID` = 136513 LIMIT 1),
+  IF(
+    @has_de > 0,
+    (SELECT `Startdatum` FROM `oeffnungszeit` WHERE `OeffnungszeitID` = 136513 LIMIT 1),
+    NULL
   )
 );
-PREPARE ataf_mah_v002_switch FROM @read_sql;
-EXECUTE ataf_mah_v002_switch;
-DEALLOCATE PREPARE ataf_mah_v002_switch;
-
-SET @read_sql := IF(
-  @start_col IS NULL,
-  'SELECT 1',
-  CONCAT(
-    'SET @c_start := (SELECT `', @start_col,
-    '` FROM `oeffnungszeit` WHERE `OeffnungszeitID` = 136550 LIMIT 1)'
+SET @c_start := IF(
+  @has_en > 0,
+  (SELECT `start_date` FROM `oeffnungszeit` WHERE `OeffnungszeitID` = 136550 LIMIT 1),
+  IF(
+    @has_de > 0,
+    (SELECT `Startdatum` FROM `oeffnungszeit` WHERE `OeffnungszeitID` = 136550 LIMIT 1),
+    NULL
   )
 );
-PREPARE ataf_mah_v002_cstart FROM @read_sql;
-EXECUTE ataf_mah_v002_cstart;
-DEALLOCATE PREPARE ataf_mah_v002_cstart;
-
-SET @read_sql := IF(
-  @end_col IS NULL,
-  'SELECT 1',
-  CONCAT(
-    'SET @c_end := (SELECT `', @end_col,
-    '` FROM `oeffnungszeit` WHERE `OeffnungszeitID` = 136550 LIMIT 1)'
+SET @c_end := IF(
+  @has_en > 0,
+  (SELECT `end_date` FROM `oeffnungszeit` WHERE `OeffnungszeitID` = 136550 LIMIT 1),
+  IF(
+    @has_de > 0,
+    (SELECT `Endedatum` FROM `oeffnungszeit` WHERE `OeffnungszeitID` = 136550 LIMIT 1),
+    NULL
   )
 );
-PREPARE ataf_mah_v002_cend FROM @read_sql;
-EXECUTE ataf_mah_v002_cend;
-DEALLOCATE PREPARE ataf_mah_v002_cend;
 
 SET @do_split := IF(
   @switch_day IS NOT NULL
