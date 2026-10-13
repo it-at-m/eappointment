@@ -401,6 +401,84 @@ public void saveLocationChanges() {
         Assert.assertTrue(button.isEnabled(), "\"" + buttonLabel + "\" is disabled");
     }
 
+    /** ZMSKVR-536 / ZMSKVR-725: neue Öffnungszeit must not prefill Uhrzeit von/bis. */
+    public void assertOpeningHoursTimeFieldsEmpty() {
+        CONTEXT.set();
+        String start = readTimeInputValue("AvDatesStart_time");
+        String end = readTimeInputValue("AvDatesEnd_time");
+        Assert.assertTrue(start == null || start.isBlank(),
+                "Uhrzeit von should be empty on neue Öffnungszeit, was \"" + start + "\"");
+        Assert.assertTrue(end == null || end.isBlank(),
+                "Uhrzeit bis should be empty on neue Öffnungszeit, was \"" + end + "\"");
+    }
+
+    /** ZMSKVR-536 / ZMSKVR-725: Ausnahme keeps the original series times. */
+    public void assertOpeningHoursTimeFieldsEqual(String expectedStart, String expectedEnd) {
+        CONTEXT.set();
+        String start = normalizeClock(readTimeInputValue("AvDatesStart_time"));
+        String end = normalizeClock(readTimeInputValue("AvDatesEnd_time"));
+        Assert.assertEquals(start, normalizeClock(expectedStart), "Uhrzeit von on Ausnahme form");
+        Assert.assertEquals(end, normalizeClock(expectedEnd), "Uhrzeit bis on Ausnahme form");
+    }
+
+    /**
+     * Publish with empty times: the footer button stays enabled, but validation blocks save
+     * ({@code Die Startzeit darf nicht leer sein.}).
+     */
+    public void clickSaveOpeningHoursExpectingEmptyTimeValidation() {
+        ScenarioLogManager.getLogger().info(
+                "Trying to click \"Alle Änderungen aktivieren\" expecting empty-time validation...");
+        CONTEXT.set();
+        String publishButton =
+                "//button[contains(@class,'button-save') and normalize-space()='Alle Änderungen aktivieren']";
+        clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, publishButton, LocatorType.XPATH, false, CONTEXT);
+        By startTimeError = By.xpath(
+                "//*[contains(@class,'message') or contains(@class,'error') or self::li or self::p]"
+                        + "[contains(., 'Die Startzeit darf nicht leer sein')]");
+        try {
+            new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                    .until(ExpectedConditions.visibilityOfElementLocated(startTimeError));
+        } catch (TimeoutException e) {
+            Assert.fail("Expected validation \"Die Startzeit darf nicht leer sein.\" after save without Uhrzeit.",
+                    e);
+        }
+        By success = By.xpath("//div[contains(@class,'message--success')][contains(., 'Öffnungszeiten gespeichert')]");
+        Assert.assertTrue(DRIVER.findElements(success).isEmpty(),
+                "Opening hours must not be saved while Uhrzeit von/bis are empty.");
+    }
+
+    public void clickOnAusnahmeButton() {
+        ScenarioLogManager.getLogger().info("Trying to click on \"Ausnahme\" button...");
+        CONTEXT.set();
+        String xpath = "//button[normalize-space()='Ausnahme' or @title='Ausnahme von dieser Öffnungszeit eintragen']";
+        clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, xpath, LocatorType.XPATH, false, CONTEXT);
+        new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(ExpectedConditions.visibilityOfElementLocated(
+                        By.xpath("//div[contains(@class,'accordion__item')]"
+                                + "[.//button[contains(@class,'accordion__button')]"
+                                + "[contains(normalize-space(.),'Ausnahme')]]")));
+    }
+
+    private String readTimeInputValue(String inputId) {
+        WebElement field = findVisibleInputById(inputId);
+        String value = field.getAttribute("value");
+        if (value == null) {
+            value = "";
+        }
+        return value.trim();
+    }
+
+    private static String normalizeClock(String time) {
+        if (time == null) {
+            return "";
+        }
+        String trimmed = time.trim();
+        if (trimmed.length() >= 5 && trimmed.charAt(2) == ':') {
+            return trimmed.substring(0, 5);
+        }
+        return trimmed;
+    }
+
     private WebElement findVisibleInputById(String id) {
         String inOpenedAccordion = "(//div[contains(@class,'accordion__panel') and contains(@class,'opened')]"
                 + "//input[@id='" + id + "'])[last()]";

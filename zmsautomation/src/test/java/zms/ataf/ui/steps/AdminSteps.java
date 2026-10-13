@@ -116,6 +116,9 @@ public class AdminSteps {
         case "Alle Änderungen aktivieren":
             AUTHORITIES_AND_LOCATIONS_PAGE.clickOnSaveButton();
             break;
+        case "Ausnahme":
+            AUTHORITIES_AND_LOCATIONS_PAGE.clickOnAusnahmeButton();
+            break;
         case "Aufruf nächster Kunde":
             PROCESSING_STATION_SECTION.callNextCustomer();
             break;
@@ -402,6 +405,28 @@ public class AdminSteps {
     @Then("the button {string} should be enabled for saving the opening hours.")
     public void dann_die_schaltflaeche_sollte_zum_speichern_der_oeffnungszeiten_aktiv_sein(String button) {
         AUTHORITIES_AND_LOCATIONS_PAGE.assertOpeningHoursSaveButtonEnabled(TestDataHelper.transformTestData(button));
+    }
+
+    /** ZMSKVR-536 / ZMSKVR-725: neue Öffnungszeit leaves Uhrzeit von/bis empty. */
+    @Then("the opening hours time fields should be empty.")
+    public void theOpeningHoursTimeFieldsShouldBeEmpty() {
+        AUTHORITIES_AND_LOCATIONS_PAGE.assertOpeningHoursTimeFieldsEmpty();
+    }
+
+    /**
+     * ZMSKVR-536 / ZMSKVR-725: save without Uhrzeit is blocked by validation
+     * (footer button stays enabled; publish is rejected).
+     */
+    @When("I try to save the opening hours without a time.")
+    public void iTryToSaveTheOpeningHoursWithoutATime() {
+        AUTHORITIES_AND_LOCATIONS_PAGE.clickSaveOpeningHoursExpectingEmptyTimeValidation();
+    }
+
+    @Then("the opening hours time fields should show {string} to {string}.")
+    public void theOpeningHoursTimeFieldsShouldShow(String from, String until) {
+        AUTHORITIES_AND_LOCATIONS_PAGE.assertOpeningHoursTimeFieldsEqual(
+                resolveOpeningTime(TestDataHelper.transformTestData(from)),
+                resolveOpeningTime(TestDataHelper.transformTestData(until)));
     }
 
     private String resolveClosingDate(String text) {
