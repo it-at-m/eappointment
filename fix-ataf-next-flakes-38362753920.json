@@ -1,0 +1,135 @@
+{
+  "branch": "fix-ataf-next-flakes-38362753920",
+  "branchSlug": "fix-ataf-next-flakes-38362753920",
+  "runId": "38373115283",
+  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38373115283",
+  "runStartedAt": "2026-10-13T08:59:31Z",
+  "publishedAt": "2026-10-13T09:19:04.987Z",
+  "features": {
+    "feature-rest-zmscitizenapi-citizen-login-zmskvr-1051-zmskvr-1309-wartezone-scope-hints-citizenapi": {
+      "status": "passed",
+      "shard": "custom",
+      "browser": "chrome",
+      "browsers": {
+        "chrome": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "38373115283",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38373115283",
+          "runStartedAt": "2026-10-13T08:59:31Z"
+        },
+        "firefox": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "38373115283",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38373115283",
+          "runStartedAt": "2026-10-13T08:59:31Z"
+        }
+      },
+      "rel": "rest/zmscitizenapi/citizen-login/zmskvr-1051_zmskvr-1309_wartezone_scope_hints_citizenapi.feature",
+      "runId": "38373115283",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38373115283",
+      "runStartedAt": "2026-10-13T08:59:31Z"
+    },
+    "feature-rest-zmscitizenapi-dldb-special-cases-zmskvr-151-zmskvr-714-location-prio-citizenapi": {
+      "status": "passed",
+      "shard": "custom",
+      "browser": "chrome",
+      "browsers": {
+        "chrome": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "38373115283",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38373115283",
+          "runStartedAt": "2026-10-13T08:59:31Z"
+        },
+        "firefox": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "38373115283",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38373115283",
+          "runStartedAt": "2026-10-13T08:59:31Z"
+        }
+      },
+      "rel": "rest/zmscitizenapi/dldb-special-cases/zmskvr-151_zmskvr-714_location_prio_citizenapi.feature",
+      "runId": "38373115283",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38373115283",
+      "runStartedAt": "2026-10-13T08:59:31Z"
+    },
+    "feature-ui-zmsadmin-user-administration-zmskvr-1624-zmskvr-1497-missing-department": {
+      "status": "passed",
+      "shard": "custom",
+      "browser": "chrome",
+      "browsers": {
+        "chrome": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "38373115283",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38373115283",
+          "runStartedAt": "2026-10-13T08:59:31Z"
+        },
+        "firefox": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "38373115283",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38373115283",
+          "runStartedAt": "2026-10-13T08:59:31Z"
+        }
+      },
+      "rel": "ui/zmsadmin/user-administration/zmskvr-1624_zmskvr-1497_missing_department.feature",
+      "runId": "38373115283",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38373115283",
+      "runStartedAt": "2026-10-13T08:59:31Z"
+    },
+    "feature-ui-zmscitizenview-citizen-login-zmskvr-1051-zmskvr-1309-zmskvr-1087-zmskvr-1311-zmskvr-813-zmskvr-818-wartezone-scope-hints": {
+      "status": "passed",
+      "shard": "custom",
+      "browser": "chrome",
+      "browsers": {
+        "chrome": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "38373115283",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38373115283",
+          "runStartedAt": "2026-10-13T08:59:31Z"
+        },
+        "firefox": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "38373115283",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38373115283",
+          "runStartedAt": "2026-10-13T08:59:31Z"
+        }
+      },
+      "rel": "ui/zmscitizenview/citizen-login/zmskvr-1051_zmskvr-1309_zmskvr-1087_zmskvr-1311_zmskvr-813_zmskvr-818_wartezone_scope_hints.feature",
+      "runId": "38373115283",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38373115283",
+      "runStartedAt": "2026-10-13T08:59:31Z"
+    },
+    "feature-ui-zmscitizenview-dldb-special-cases-zmskvr-151-zmskvr-714-feuerwache-office-order": {
+      "status": "passed",
+      "shard": "custom",
+      "browser": "chrome",
+      "browsers": {
+        "chrome": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "38373115283",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38373115283",
+          "runStartedAt": "2026-10-13T08:59:31Z"
+        },
+        "firefox": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "38373115283",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38373115283",
+          "runStartedAt": "2026-10-13T08:59:31Z"
+        }
+      },
+      "rel": "ui/zmscitizenview/dldb-special-cases/zmskvr-151_zmskvr-714_feuerwache_office_order.feature",
+      "runId": "38373115283",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38373115283",
+      "runStartedAt": "2026-10-13T08:59:31Z"
+    }
+  }
+}
