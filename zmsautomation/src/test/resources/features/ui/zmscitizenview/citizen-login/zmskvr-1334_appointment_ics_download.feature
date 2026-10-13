@@ -8,6 +8,7 @@ Feature: Citizen login appointment ICS download
   # No separate test ticket. One in-person appointment is enough: Abholung 10295182 at
   # Bürgerbüro Ruppertstraße (10492), opened from the Meine Termine teaser.
   # The intro offers "Termin herunterladen (ics)" and the file carries the booked slot.
+  # Guest confirmation ICS (Schritt 5): ui/.../booking/zmskvr-97_…_confirmation_ics.feature
   # The appointment is cancelled at the end.
 
   Background:

@@ -1,5 +1,5 @@
 #language: en
-@web @zmscitizenview @citizen @booking @ZMSKVR-90 @ZMSKVR-471 @ZMSKVR-230 @ZMSKVR-586 @ZMSKVR-486 @executeLocally
+@web @zmscitizenview @citizen @booking @ZMSKVR-90 @ZMSKVR-471 @ZMSKVR-230 @ZMSKVR-586 @ZMSKVR-445 @ZMSKVR-481 @ZMSKVR-482 @ZMSKVR-486 @executeLocally
 Feature: Estimated duration on the service page
   As a citizen
   I want the estimated duration to follow the services I selected
@@ -9,9 +9,9 @@ Feature: Estimated duration on the service page
   # Reisepass is 15 minutes. The selection page used to show 5.
   # Raising the count doubles it. The first service cannot go to 0.
   # Adding Personalausweis or Wohnsitzanmeldung adds its own 15 minutes.
-  # ZMSKVR-486: combined duration is the DLDB sum; max slots (spa) still applies
-  # (Umschreibung 15 + Wechselkennzeichen 30 needs 3 slots; KfZ spa=2 blocks the mix).
-  # slotsPerAppointment enforcement for KfZ/Führungen lives in zmskvr-1083_*.
+  # ZMSKVR-445 / ZMSKVR-481 / ZMSKVR-482 / ZMSKVR-486: KfZ spa=2 — Umschreibung cannot
+  # add Wechselkennzeichen (2 slots); plus disabled (no old Bürgeransicht Hinweis).
+  # slotsPerAppointment enforcement for KfZ/Führungen also in zmskvr-1083_*.
   # ZMSKVR-137 (slotTimeInMinutes on offices-and-services) and Admin Termindauer
   # cross-checks live in the citizenapi / zmsapi / admin-citizen 230 features.
 

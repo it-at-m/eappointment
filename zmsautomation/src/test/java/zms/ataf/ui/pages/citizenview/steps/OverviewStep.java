@@ -50,6 +50,7 @@ public final class OverviewStep {
             "Eine Bestätigung und weitere Informationen zu Ihrem Termin erhalten Sie per E-Mail. Wir freuen uns auf Ihren Besuch.";
     private static final String VIEW_APPOINTMENT_BUTTON = "Termin ansehen";
     private static final String BOOK_ANOTHER_APPOINTMENT_BUTTON = "Weiteren Termin vereinbaren";
+    private static final String ICS_DOWNLOAD_BUTTON = "Termin herunterladen (ics)";
     private static final String CANCELLATION_SUCCESS_HEADING =
             "Sie haben Ihren Termin erfolgreich abgesagt.";
     private static final String CANCELLATION_SUCCESS_TEXT =
@@ -58,6 +59,19 @@ public final class OverviewStep {
             "Sie haben Ihren Termin bereits aktiviert.";
     public void assertProviderSummaryVisible(int officeId) {
         assertProviderSummaryVisible(officeId, "Bürgerbüro Ruppertstraße");
+    }
+
+    /** Übersicht Kontakt block shows joined {@code appointment.familyName}. */
+    public void assertBookingSummaryShowsContactName(String fullName) {
+        context.set();
+        CitizenViewWaits.waitWithThreeWindows(
+                () -> shadow.shadowDomContainsText(fullName),
+                "Übersicht Kontakt name " + fullName);
+        Assert.assertTrue(
+                shadow.shadowDomContainsText(fullName),
+                "Übersicht Kontakt should show familyName \"" + fullName + "\".");
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: Übersicht shows contact name {}", fullName);
     }
     public String deepVisibleProviderSummaryText(int officeId) {
         context.set();
@@ -843,6 +857,42 @@ public final class OverviewStep {
         ScenarioLogManager.getLogger().info("zmscitizenview: activation callout appeared");
         page.trySyncBookingProcessFromLocalStorageOnce();
     }
+
+    /**
+     * ZMSKVR-87 / ZMSKVR-601 / ZMSKVR-715: click Termin reservieren and stay on Übersicht expecting
+     * an error callout (no activation success).
+     */
+    public void tryPreconfirmFromOverview() {
+        context.set();
+        page.captureBookingProcessForCleanup();
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: Übersicht → Termin reservieren (expect too-many-appointments error)");
+        shadow.waitForAndClickButtonContaining(DE_RESERVE, defaultWaitSeconds);
+    }
+
+    public void assertTooManyAppointmentsWithSameMailCalloutVisible() {
+        context.set();
+        String header = CitizenViewPage.DE_TOO_MANY_APPOINTMENTS_HEADER;
+        String text = CitizenViewPage.DE_TOO_MANY_APPOINTMENTS_TEXT;
+        CitizenViewWaits.waitWithThreeWindows(
+                () -> shadow.shadowDomContainsText(header) && shadow.shadowDomContainsText(text),
+                "Too many appointments callout");
+        Assert.assertTrue(
+                shadow.shadowDomContainsText(header),
+                "Expected too-many-appointments callout header: " + header);
+        Assert.assertTrue(
+                shadow.shadowDomContainsText(text),
+                "Expected too-many-appointments callout text: " + text);
+        Assert.assertTrue(
+                shadow.shadowDomHasHeading(2, header),
+                "Expected H2 for too-many-appointments callout: " + header);
+    }
+
+    public void assertReserveAppointmentButtonNotVisible() {
+        context.set();
+        String state = reserveAppointmentButtonState();
+        Assert.assertNull(state, "Termin reservieren must be hidden while the too-many-appointments callout shows.");
+    }
     public void assertPreconfirmationCalloutVisible(int activationMinutes) {
         context.set();
         ScenarioLogManager.getLogger()
@@ -896,6 +946,44 @@ public final class OverviewStep {
         Assert.assertTrue(
                 shadow.shadowDomContainsText(BOOK_ANOTHER_APPOINTMENT_BUTTON),
                 "Logged-in confirmation must show secondary action 'Weiteren Termin vereinbaren'.");
+        Assert.assertFalse(
+                shadow.shadowDomContainsText(ICS_DOWNLOAD_BUTTON),
+                "Logged-in confirmation must not show ICS download (ZMSKVR-97).");
+    }
+
+    /**
+     * ZMSKVR-97 / ZMSKVR-526 / ZMSKVR-732: guest activation success shows ICS download + book another,
+     * not Termin ansehen.
+     */
+    public void assertGuestConfirmationSuccessDetailsVisible() {
+        context.set();
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: assert guest confirmation success details");
+        assertConfirmationSuccessCalloutVisible();
+        Assert.assertTrue(
+                shadow.shadowDomContainsText(CONFIRMATION_SUCCESS_TEXT),
+                "Confirmation success callout must include the booking-confirmation mail text.");
+        Assert.assertTrue(
+                shadow.shadowDomContainsText(ICS_DOWNLOAD_BUTTON),
+                "Guest confirmation must show primary action 'Termin herunterladen (ics)'.");
+        Assert.assertTrue(
+                shadow.shadowDomContainsText(BOOK_ANOTHER_APPOINTMENT_BUTTON),
+                "Guest confirmation must show secondary action 'Weiteren Termin vereinbaren'.");
+        Assert.assertFalse(
+                shadow.shadowDomContainsText(VIEW_APPOINTMENT_BUTTON),
+                "Guest confirmation must not show 'Termin ansehen'.");
+    }
+
+    /** ZMSKVR-526 / ZMSKVR-732: secondary button resets to Service Finder (Schritt 0). */
+    public void bookAnotherAppointmentFromConfirmationSuccess() {
+        context.set();
+        CitizenViewWaits.waitWithThreeWindows(
+                () -> shadow.shadowDomContainsText(BOOK_ANOTHER_APPOINTMENT_BUTTON),
+                "Weiteren Termin vereinbaren on confirmation success");
+        shadow.waitForAndClickButtonContaining(BOOK_ANOTHER_APPOINTMENT_BUTTON, defaultWaitSeconds);
+        CitizenViewWaits.waitWithThreeWindows(
+                () -> shadow.shadowDomContainsText("Bürgerservice-Suche"),
+                "Service Finder after Weiteren Termin vereinbaren");
     }
 
     /** Opens Termin-Detail for the appointment just confirmed (logged-in success callout). */

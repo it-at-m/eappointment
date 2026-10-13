@@ -23,6 +23,7 @@ public class DatabaseHook {
                 System.getenv().getOrDefault("MYSQL_USER", "zmsbo"),
                 System.getenv().getOrDefault("MYSQL_PASSWORD", "zmsbo"))
             .locations("classpath:db/migration")
+            .table("flyway_migration")
             .cleanDisabled(!shouldAllowFlywayClean)
             .load();
         

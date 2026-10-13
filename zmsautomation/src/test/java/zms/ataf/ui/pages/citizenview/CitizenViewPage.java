@@ -68,6 +68,13 @@ public class CitizenViewPage extends BasePage {
     public static final String DE_APPOINTMENT_NOT_AVAILABLE_TEXT =
             "Leider hat inzwischen eine andere Person Ihren gewünschten Termin gebucht. Bitte wählen Sie einen neuen Termin aus.";
 
+    /** German too-many-appointments-per-email callout ({@code de-DE.json} apiErrorTooManyAppointmentsWithSameMail*). */
+    public static final String DE_TOO_MANY_APPOINTMENTS_HEADER =
+            "Sie haben bereits zu viele Termine gebucht.";
+
+    public static final String DE_TOO_MANY_APPOINTMENTS_TEXT =
+            "Sie können mit Ihrer E-Mail-Adresse nur eine begrenzte Anzahl an Terminen vereinbaren. Bitte sagen Sie einen anderen Termin ab, bevor Sie einen neuen Termin buchen.";
+
     private final CitizenViewPageContext CONTEXT;
 
     private final ShadowDom shadow;
@@ -124,7 +131,7 @@ public class CitizenViewPage extends BasePage {
         contact = new ContactStep(CONTEXT, shadow, this, DEFAULT_EXPLICIT_WAIT_TIME);
         overview = new OverviewStep(CONTEXT, shadow, this, slotState, DEFAULT_EXPLICIT_WAIT_TIME);
         myAppointments = new MyAppointmentsStep(CONTEXT, shadow, slotState, this, contact, DEFAULT_EXPLICIT_WAIT_TIME);
-        captcha = new CaptchaStep(CONTEXT, shadow, DEFAULT_EXPLICIT_WAIT_TIME);
+        captcha = new CaptchaStep(CONTEXT, shadow, json, DEFAULT_EXPLICIT_WAIT_TIME);
     }
 
     public CitizenViewPageContext getContext() {
@@ -624,6 +631,26 @@ public class CitizenViewPage extends BasePage {
         contact.assertMaxLengthCounterError(fieldId, maxChars);
     }
 
+    public void assertBothFreitextCharacterCountersVisible(int maxChars) {
+        contact.assertBothFreitextCharacterCountersVisible(maxChars);
+    }
+
+    public void assertFreitextCharacterCounterUpdatesLive(String fieldId, int maxChars) {
+        contact.assertFreitextCharacterCounterUpdatesLive(fieldId, maxChars);
+    }
+
+    public void assertContactFieldHasNoCharacterCounter(String fieldId) {
+        contact.assertContactFieldHasNoCharacterCounter(fieldId);
+    }
+
+    public void assertContactFieldInputBlockedAtMax(String fieldId, int maxChars) {
+        contact.assertContactFieldInputBlockedAtMax(fieldId, maxChars);
+    }
+
+    public void assertBothFreitextCharacterCountersVisibleOnMobile(int maxChars) {
+        contact.assertBothFreitextCharacterCountersVisibleOnMobile(maxChars);
+    }
+
     public void assertCharacterCountFontSizeDesktop() {
         contact.assertCharacterCountFontSizeDesktop();
     }
@@ -946,12 +973,25 @@ public class CitizenViewPage extends BasePage {
         providerLocation.assertProviderCheckboxAbsent(officeId);
     }
 
+    /** ZMSKVR-590: only the JumpIn office is checked among Ort checkboxes. */
+    public void assertOnlyProviderCheckedAmongOrtCheckboxes(int officeId) {
+        providerLocation.assertOnlyProviderCheckedAmongOrtCheckboxes(officeId);
+    }
+
     /**
      * Ort checkboxes start selected. Ranked Bürgerbüros follow frequency order. Scheidplatz has no
      * frequency rank in the catalog, so it follows them. Each checkbox also shows its address.
      */
     public void assertOfficesCheckedInFrequencyOrder() {
         providerLocation.assertOfficesCheckedInFrequencyOrder();
+    }
+
+    public void assertFeuerwacheCheckboxesInNumericOrder() {
+        providerLocation.assertFeuerwacheCheckboxesInNumericOrder();
+    }
+
+    public void assertFeuerwacheListTitlesInNumericOrder() {
+        timeSlot.assertFeuerwacheListTitlesInNumericOrder();
     }
 
     /** Login resume must keep several Ort checkboxes on (ZMSKVR-1002). */
@@ -1616,6 +1656,10 @@ public class CitizenViewPage extends BasePage {
         contact.fillContactDetailsRandom();
     }
 
+    public void fillContactDetailsWithFamilyName(String familyName) {
+        contact.fillContactDetailsWithFamilyName(familyName);
+    }
+
     public void fillContactDetailsRandomWithoutOptionalRemarks() {
         contact.fillContactDetailsRandomWithoutOptionalRemarks();
     }
@@ -1645,6 +1689,14 @@ public class CitizenViewPage extends BasePage {
         contact.fillContactDetailsRandomWithoutContinue();
     }
 
+    public void assertSsoLastNamePrefillWithoutGivenName(String expectedLastName) {
+        contact.assertSsoLastNamePrefillWithoutGivenName(expectedLastName);
+    }
+
+    public void completeContactWithMissingGivenName(String firstName, String expectedLastName) {
+        contact.completeContactWithMissingGivenName(firstName, expectedLastName);
+    }
+
     public boolean deepContactCustomTextFieldExists() {
         return contact.deepContactCustomTextFieldExists();
     }
@@ -1659,6 +1711,10 @@ public class CitizenViewPage extends BasePage {
 
     public void loginViaBuergerLoginWithKeycloak() throws Exception {
         contact.loginViaBuergerLoginWithKeycloak();
+    }
+
+    public void loginViaBuergerLoginWithKeycloakAs(String loginName) throws Exception {
+        contact.loginViaBuergerLoginWithKeycloakAs(loginName);
     }
 
     public void loginViaBuergerLoginWithKeycloakIfNeeded() throws Exception {
@@ -1679,6 +1735,10 @@ public class CitizenViewPage extends BasePage {
 
     public void assertProviderSummaryVisible(int officeId) {
         overview.assertProviderSummaryVisible(officeId);
+    }
+
+    public void assertBookingSummaryShowsContactName(String fullName) {
+        overview.assertBookingSummaryShowsContactName(fullName);
     }
 
     public String deepVisibleProviderSummaryText(int officeId) {
@@ -1753,6 +1813,18 @@ public class CitizenViewPage extends BasePage {
         overview.continueFromPreconfirmStep();
     }
 
+    public void tryPreconfirmFromOverview() {
+        overview.tryPreconfirmFromOverview();
+    }
+
+    public void assertTooManyAppointmentsWithSameMailCalloutVisible() {
+        overview.assertTooManyAppointmentsWithSameMailCalloutVisible();
+    }
+
+    public void assertReserveAppointmentButtonNotVisible() {
+        overview.assertReserveAppointmentButtonNotVisible();
+    }
+
     public void assertPreconfirmationCalloutVisible(int activationMinutes) {
         overview.assertPreconfirmationCalloutVisible(activationMinutes);
     }
@@ -1767,6 +1839,14 @@ public class CitizenViewPage extends BasePage {
 
     public void assertLoggedInConfirmationSuccessDetailsVisible() {
         overview.assertLoggedInConfirmationSuccessDetailsVisible();
+    }
+
+    public void assertGuestConfirmationSuccessDetailsVisible() {
+        overview.assertGuestConfirmationSuccessDetailsVisible();
+    }
+
+    public void bookAnotherAppointmentFromConfirmationSuccess() {
+        overview.bookAnotherAppointmentFromConfirmationSuccess();
     }
 
     public void confirmRebookingFromSummary() {
@@ -1859,6 +1939,18 @@ public class CitizenViewPage extends BasePage {
 
     public void assertCaptchaSessionCalloutNotVisible() {
         captcha.assertCaptchaSessionCalloutNotVisible();
+    }
+
+    public void assertCaptchaDesign() {
+        captcha.assertCaptchaDesign();
+    }
+
+    public void assertLeistungWeiterDisabled() {
+        captcha.assertLeistungWeiterDisabled();
+    }
+
+    public void assertLeistungWeiterEnabled() {
+        captcha.assertLeistungWeiterEnabled();
     }
 
     public void assertReservationExpiredCalloutVisible() {
@@ -2009,6 +2101,14 @@ public class CitizenViewPage extends BasePage {
 
     public void assertDownloadedIcsContainsBookedAppointment() {
         myAppointments.assertDownloadedIcsContainsBookedAppointment();
+    }
+
+    public void assertDownloadedIcsContainsText(String expected) {
+        myAppointments.assertDownloadedIcsContainsText(expected);
+    }
+
+    public void assertDownloadedIcsMatchesMunichConfirmationTemplate() {
+        myAppointments.assertDownloadedIcsMatchesMunichConfirmationTemplate();
     }
 
 }

@@ -295,6 +295,54 @@ public class ZmsApiSteps {
             .contains(expectedExceptionShortName);
     }
 
+    /**
+     * ZMSKVR-533 / ZMSKVR-661 — POST /useraccount/ must reject ids outside
+     * {@code ^[-a-z0-9._]+(@keycloak)?$}.
+     */
+    @When("I try to create a useraccount with invalid username {string} with the X-AuthKey")
+    public void iTryToCreateAUseraccountWithInvalidUsernameWithTheXAuthKey(String username) {
+        Integer departmentId = AccountCheckout.checkedOutDepartmentId();
+        Assertions.assertThat(departmentId)
+            .as("user_admin login must remember a department for the new account")
+            .isNotNull()
+            .isPositive();
+
+        ObjectNode body = MAPPER.createObjectNode();
+        body.put("id", username);
+        body.put("password", "unittest");
+        ArrayNode roles = MAPPER.createArrayNode();
+        roles.add("agent_queue");
+        body.set("roles", roles);
+        ArrayNode departments = MAPPER.createArrayNode();
+        ObjectNode department = MAPPER.createObjectNode();
+        department.put("id", departmentId);
+        departments.add(department);
+        body.set("departments", departments);
+
+        String authKey = getOrLoginXAuthKey();
+        response = given()
+            .baseUri(apiBaseUri())
+            .header("X-AuthKey", authKey)
+            .contentType("application/json")
+            .body(toJson(body))
+        .when()
+            .post("/useraccount/");
+        CommonApiSteps.setResponse(response);
+    }
+
+    @Then("the response should reject the username with the character restriction message")
+    public void theResponseShouldRejectTheUsernameWithTheCharacterRestrictionMessage() {
+        if (response == null) {
+            response = CommonApiSteps.getResponse();
+        }
+        Assertions.assertThat(response).isNotNull();
+        Assertions.assertThat(response.getStatusCode()).isEqualTo(400);
+        String body = response.asString();
+        Assertions.assertThat(body)
+            .contains("SchemaValidation")
+            .contains("Der Nutzername darf nur Kleinbuchstaben, Zahlen, Punkte, Unterstriche und Bindestriche enthalten");
+    }
+
     @Then("the response should contain config information")
     public void theResponseShouldContainConfigInformation() {
         if (response == null) {
@@ -471,6 +519,63 @@ public class ZmsApiSteps {
             .as("scope %d provider.data.slotTimeInMinutes", scopeId)
             .isGreaterThan(0);
         return slotTime;
+    }
+
+    /**
+     * ZMSKVR-933 / ZMSKVR-934: provider.data.slotTimeInMinutes seeds Admin Terminabstand.
+     */
+    @Then("scope {int} provider data should have slotTimeInMinutes {int}")
+    public void scopeProviderDataShouldHaveSlotTimeInMinutes(int scopeId, int expectedMinutes) {
+        String authKey = getOrLoginXAuthKey();
+        int slotTime = fetchScopeSlotTimeInMinutes(scopeId, authKey);
+        Assertions.assertThat(slotTime)
+            .as("scope %d provider.data.slotTimeInMinutes", scopeId)
+            .isEqualTo(expectedMinutes);
+    }
+
+    /**
+     * ZMSKVR-933 / ZMSKVR-934: live Öffnungszeiten grid from GET /scope/{id}/availability/.
+     */
+    @Then("scope {int} opening hours should include slotTimeInMinutes {int}")
+    public void scopeOpeningHoursShouldIncludeSlotTimeInMinutes(int scopeId, int expectedMinutes) {
+        String authKey = getOrLoginXAuthKey();
+        LocalDate today = BerlinTime.today();
+        LocalDate end = today.plusDays(21);
+        response = given()
+            .baseUri(apiBaseUri())
+            .header("X-AuthKey", authKey)
+            .queryParam("startDate", today.toString())
+            .queryParam("endDate", end.toString())
+        .when()
+            .get("/scope/" + scopeId + "/availability/");
+        CommonApiSteps.setResponse(response);
+        Assertions.assertThat(response.getStatusCode())
+            .as("GET /scope/%d/availability/ body=%s", scopeId, truncate(response.asString(), 1000))
+            .isEqualTo(200);
+        ArrayNode list = parseDataArray(response);
+        Assertions.assertThat(list)
+            .as("GET /scope/%d/availability/ data", scopeId)
+            .isNotNull();
+        // Terminabstand lives on type=appointment availabilities (Öffnungszeiten for booking).
+        // type=openinghours is a separate open/closed window and is often absent here.
+        boolean found = false;
+        for (JsonNode item : list) {
+            String type = item.path("type").asText();
+            if (!"appointment".equals(type) && !"openinghours".equals(type)) {
+                continue;
+            }
+            if (item.path("slotTimeInMinutes").asInt(0) == expectedMinutes) {
+                found = true;
+                break;
+            }
+        }
+        Assertions.assertThat(found)
+            .as(
+                    "scope %d availability should include slotTimeInMinutes %d; body=%s",
+                    scopeId,
+                    expectedMinutes,
+                    truncate(response.asString(), 1500))
+            .isTrue();
     }
 
     private void bookAppointmentCustomer(
