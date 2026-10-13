@@ -117,12 +117,41 @@ public class CitizenViewPage extends BasePage {
         providerLocation.setSlotWaitBridge(
                 seconds -> {
                     // Keep-only / Ort toggle often lands on an empty day-part; page quietly.
-                    if (!timeSlot.waitUntilAppointmentSlotsReadyQuiet(seconds)) {
+                    // Stop when the blue empty-state callout is already up (e.g. only 10579 /
+                    // no-OH offices checked) — paging for slots would race that assert.
+                    int quietSec = Math.min(seconds, 20);
+                    if (timeSlot.waitUntilAppointmentSlotsReadyQuiet(quietSec)) {
+                        return;
+                    }
+                    // Callout can appear a beat after the spinner clears with no timeslots.
+                    long calloutDeadline = System.currentTimeMillis() + 5_000L;
+                    while (System.currentTimeMillis() < calloutDeadline) {
+                        if (timeSlot.isNoAppointmentInfoCalloutPresent()) {
+                            ScenarioLogManager.getLogger()
+                                    .info(
+                                            "zmscitizenview: Ort toggle settled on blue empty-state callout; skip day paging");
+                            return;
+                        }
+                        if (timeSlot.deepMucSpinnerVisible()) {
+                            break;
+                        }
+                        try {
+                            Thread.sleep(250L);
+                        } catch (InterruptedException e) {
+                            Thread.currentThread().interrupt();
+                            return;
+                        }
+                    }
+                    if (timeSlot.isNoAppointmentInfoCalloutPresent()) {
                         ScenarioLogManager.getLogger()
                                 .info(
-                                        "zmscitizenview: Ort toggle had no timeslot yet; paging calendar days");
-                        timeSlot.waitUntilSlotsReadyForBooking();
+                                        "zmscitizenview: Ort toggle settled on blue empty-state callout; skip day paging");
+                        return;
                     }
+                    ScenarioLogManager.getLogger()
+                            .info(
+                                    "zmscitizenview: Ort toggle had no timeslot yet; paging calendar days");
+                    timeSlot.waitUntilSlotsReadyForBooking();
                 },
                 () -> timeSlot.slotBookingWaitTimeoutSeconds(),
                 () -> timeSlot.deepMucSpinnerVisible());

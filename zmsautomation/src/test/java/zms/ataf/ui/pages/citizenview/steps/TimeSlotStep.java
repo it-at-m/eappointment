@@ -253,6 +253,16 @@ public final class TimeSlotStep {
      * (same German keys), H2 time heading, H3 callout title, fixed body text. Calendar toggle stays
      * hidden while the spinner is gone.
      */
+    /**
+     * True when the blue empty-state info callout is already in the DOM (spinner may still be
+     * clearing). Used by Ort keep-only to avoid paging calendar days looking for slots.
+     */
+    public boolean isNoAppointmentInfoCalloutPresent() {
+        context.set();
+        return shadow.deepInfoCalloutContains(NO_APPOINTMENT_CALLOUT)
+                && shadow.shadowDomContainsText(NO_APPOINTMENT_CALLOUT_TEXT);
+    }
+
     public void assertNoAppointmentInfoCalloutVisible() {
         context.set();
         long deadline = System.currentTimeMillis() + Math.max(30, defaultWaitSeconds) * 1000L;
@@ -1834,8 +1844,20 @@ public final class TimeSlotStep {
         context.set();
         int timeout = slotBookingWaitTimeoutSeconds();
         for (int day = 0; day < 8; day++) {
-            int waitSec = day == 0 ? timeout : Math.min(45, timeout);
+            if (isNoAppointmentInfoCalloutPresent() && !deepMucSpinnerVisible()) {
+                ScenarioLogManager.getLogger()
+                        .info(
+                                "zmscitizenview: blue empty-state callout while waiting for slots; stop day paging");
+                break;
+            }
+            int waitSec = day == 0 ? Math.min(20, timeout) : Math.min(45, timeout);
             if (waitUntilAppointmentSlotsReadyQuiet(waitSec)) {
+                break;
+            }
+            if (isNoAppointmentInfoCalloutPresent()) {
+                ScenarioLogManager.getLogger()
+                        .info(
+                                "zmscitizenview: blue empty-state callout after slot wait; stop day paging");
                 break;
             }
             if (deepTimeslotClickablePresent() || !openNextCalendarDayAndWaitForSlots()) {
