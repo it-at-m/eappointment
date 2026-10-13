@@ -1479,7 +1479,7 @@ public final class MyAppointmentsStep {
         Assert.assertNotNull(code, "Need a remembered Schalter from the booking overview.");
         Assert.assertTrue(
                 FuehrerscheinstelleScopeHints.isConcrete(code),
-                "Expected FS-A or FS-B from overview, was: " + code);
+                "Expected FS-A/B/C from overview, was: " + code);
         String zone = FuehrerscheinstelleScopeHints.zoneFor(code);
         String hint = FuehrerscheinstelleScopeHints.hintFor(code);
         CitizenViewWaits.waitWithThreeWindows(
@@ -1500,11 +1500,11 @@ public final class MyAppointmentsStep {
                 "Detail missing callout header Hinweis zu Ihrem Termin.");
         shadow.scrollTextIntoView(hint);
         Assert.assertTrue(shadow.shadowDomContainsText(hint), "Detail callout missing " + hint);
-        Assert.assertFalse(
-                shadow.shadowDomContainsText(
-                        FuehrerscheinstelleScopeHints.zoneFor(
-                                FuehrerscheinstelleScopeHints.otherCode(code))),
-                "Detail must not show the other Schalter.");
+        for (String other : FuehrerscheinstelleScopeHints.otherCodes(code)) {
+            Assert.assertFalse(
+                    shadow.shadowDomContainsText(FuehrerscheinstelleScopeHints.zoneFor(other)),
+                    "Detail must not show another Schalter (" + other + ").");
+        }
         ScenarioLogManager.getLogger()
                 .info("zmscitizenview: detail matched Führerscheinstelle Schalter {} callout", code);
     }

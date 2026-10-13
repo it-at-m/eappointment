@@ -199,8 +199,9 @@ public final class TimeSlotStep {
                 return;
             }
         }
+        // Riem order day (V61) is CURDATE()+7; booked-out may empty day+4. Allow enough day moves.
         int dayMoves = 0;
-        for (int attempt = 1; attempt <= 12; attempt++) {
+        for (int attempt = 1; attempt <= 16; attempt++) {
             if (deepTimeslotPresentForProvider(officeId)) {
                 return;
             }
@@ -221,7 +222,7 @@ public final class TimeSlotStep {
                 }
                 continue;
             }
-            if (dayMoves >= 5 || !openNextCalendarDayAndWaitForSlots()) {
+            if (dayMoves >= 10 || !openNextCalendarDayAndWaitForSlots()) {
                 return;
             }
             dayMoves++;
@@ -2204,13 +2205,18 @@ public final class TimeSlotStep {
         if ("FS".equals(code) || FuehrerscheinstelleScopeHints.isConcrete(code)) {
             if ("FS".equals(code)) {
                 return shadow.shadowDomContainsText(FuehrerscheinstelleScopeHints.HINT_A)
-                        || shadow.shadowDomContainsText(FuehrerscheinstelleScopeHints.HINT_B);
+                        || shadow.shadowDomContainsText(FuehrerscheinstelleScopeHints.HINT_B)
+                        || shadow.shadowDomContainsText(FuehrerscheinstelleScopeHints.HINT_C);
             }
-            String hint = FuehrerscheinstelleScopeHints.hintFor(code);
-            return shadow.shadowDomContainsText(hint)
-                    && !shadow.shadowDomContainsText(
-                            FuehrerscheinstelleScopeHints.hintFor(
-                                    FuehrerscheinstelleScopeHints.otherCode(code)));
+            if (!shadow.shadowDomContainsText(FuehrerscheinstelleScopeHints.hintFor(code))) {
+                return false;
+            }
+            for (String other : FuehrerscheinstelleScopeHints.otherCodes(code)) {
+                if (shadow.shadowDomContainsText(FuehrerscheinstelleScopeHints.hintFor(other))) {
+                    return false;
+                }
+            }
+            return true;
         }
         String hint = RuppertstrasseWartezoneHints.hintFor(code);
         boolean has = shadow.shadowDomContainsText(hint);
@@ -2241,18 +2247,37 @@ public final class TimeSlotStep {
         Assert.assertTrue(
                 calloutShowsHintFamily("FS"),
                 "Ausgewählter Termin must show a Führerscheinstelle Schalter hint.");
-        String resolved =
-                shadow.shadowDomContainsText(FuehrerscheinstelleScopeHints.HINT_A) ? "FS-A" : "FS-B";
+        String resolved = resolvePaintedFuehrerscheinstelleSchalter();
+        Assert.assertTrue(
+                FuehrerscheinstelleScopeHints.isConcrete(resolved),
+                "Ausgewählter Termin must show exactly one Führerscheinstelle Schalter hint.");
         Assert.assertTrue(
                 shadow.shadowDomContainsText(FuehrerscheinstelleScopeHints.hintFor(resolved)),
                 "Ausgewählter Termin must show " + FuehrerscheinstelleScopeHints.hintFor(resolved));
-        Assert.assertFalse(
-                shadow.shadowDomContainsText(
-                        FuehrerscheinstelleScopeHints.hintFor(
-                                FuehrerscheinstelleScopeHints.otherCode(resolved))),
-                "Ausgewählter Termin must not mix both Schalter hints.");
+        for (String other : FuehrerscheinstelleScopeHints.otherCodes(resolved)) {
+            Assert.assertFalse(
+                    shadow.shadowDomContainsText(FuehrerscheinstelleScopeHints.hintFor(other)),
+                    "Ausgewählter Termin must not mix Schalter hints (also saw " + other + ").");
+        }
         slotState.rememberedCalloutWartezoneCode = resolved;
         slotState.rememberedWartezoneCode = "FS";
+    }
+
+    private String resolvePaintedFuehrerscheinstelleSchalter() {
+        StringBuilder painted = new StringBuilder();
+        if (shadow.shadowDomContainsText(FuehrerscheinstelleScopeHints.HINT_A)
+                || shadow.shadowDomContainsText(FuehrerscheinstelleScopeHints.ZONE_A)) {
+            painted.append(FuehrerscheinstelleScopeHints.HINT_A).append(' ');
+        }
+        if (shadow.shadowDomContainsText(FuehrerscheinstelleScopeHints.HINT_B)
+                || shadow.shadowDomContainsText(FuehrerscheinstelleScopeHints.ZONE_B)) {
+            painted.append(FuehrerscheinstelleScopeHints.HINT_B).append(' ');
+        }
+        if (shadow.shadowDomContainsText(FuehrerscheinstelleScopeHints.HINT_C)
+                || shadow.shadowDomContainsText(FuehrerscheinstelleScopeHints.ZONE_C)) {
+            painted.append(FuehrerscheinstelleScopeHints.HINT_C).append(' ');
+        }
+        return FuehrerscheinstelleScopeHints.detectCode(painted.toString());
     }
 
     public void assertSelectedAppointmentCalloutShowsRenderedRuppertstrasseHint(String code) {
