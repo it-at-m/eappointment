@@ -300,7 +300,7 @@ public class UseraccountPage extends BasePage {
                     painted[1]);
         }
         Assert.assertTrue(
-                isErrorRedBorder(painted[0]) || "5px".equals(painted[1]),
+                isErrorRedBorder(painted[0]) && "5px".equals(painted[1]),
                 "Behörde is not outlined in red: color=" + painted[0] + " width=" + painted[1]);
     }
 

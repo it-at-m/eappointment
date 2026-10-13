@@ -911,8 +911,8 @@ public class CitizenApiSteps {
     }
 
     /**
-     * ZMSKVR-924 / ZMSKVR-1019: second same-timestamp reserve lands on a different Schalter.
-     * V55 / after-hourly V002 keep the switch day A↔B; other days may also use C.
+     * ZMSKVR-924 / ZMSKVR-1019: second same-timestamp reserve on the V55 switch day lands on
+     * the A↔B partner. After-hourly V002 keeps Schalter C off that day.
      */
     @Then("the appointment scope should be the other Führerscheinstelle Schalter")
     public void theAppointmentScopeShouldBeTheOtherFuehrerscheinstelleSchalter() {
@@ -920,13 +920,13 @@ public class CitizenApiSteps {
         Assertions.assertThat(first)
                 .as("first Schalter must be remembered before the second reserve")
                 .isNotBlank();
+        String expected = FuehrerscheinstelleScopeHints.otherCode(first);
         String hint = response.jsonPath().getString("scope.hint");
         String info = response.jsonPath().getString("scope.infoForAppointment");
         String code = FuehrerscheinstelleScopeHints.detectCode(hint + " " + info);
         Assertions.assertThat(code)
                 .as("second reserve scope.hint=%s infoForAppointment=%s", hint, info)
-                .isNotBlank()
-                .isIn(FuehrerscheinstelleScopeHints.otherCodes(first));
+                .isEqualTo(expected);
         Assertions.assertThat(hint)
                 .as("second reserve scope.hint=%s", hint)
                 .contains(FuehrerscheinstelleScopeHints.zoneFor(code));
