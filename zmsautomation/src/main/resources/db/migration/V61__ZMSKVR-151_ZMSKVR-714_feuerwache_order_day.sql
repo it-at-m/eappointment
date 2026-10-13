@@ -3,7 +3,8 @@
 -- V51 gives Riem 10575 a single seat on day+4 for booked-out scenarios that reserve every
 -- slot. Parallel citizenview shards empty that seat before the order scenario can open it.
 -- Day+7 keeps Pasing / Föhring / Neuperlach / Riem bookable together so list headings can
--- end with Feuerwache 10 without racing the booked-out jobs.
+-- end with Feuerwache 10. Booked-out still empties these seats; ATAF serializes via
+-- @feuerwache-capacity-lock and restores day+7 before the order scenario.
 
 SET @order_day := DATE_ADD(CURDATE(), INTERVAL 7 DAY);
 
@@ -40,28 +41,28 @@ SET @hours_sql := (
       '`workstation_count`,`appointment_workstation_count`,`comment`,`internet_reduction`,',
       '`multiple_slots_allowed`,`open_from_days`,`open_until_days`,`updated_at`) VALUES ',
       '(136560,268,''', @order_day, ''',''', @order_day, ''',1,0,127,''00:00:00'',''09:30:00'',',
-      '''00:00:00'',''11:00:00'',''01:30:00'',0,3,',
+      '''00:00:00'',''11:00:00'',''01:30:00'',0,20,',
       '''ZMSKVR-151 ZMSKVR-714 Feuerwache order day Pasing'',0,1,0,60,NOW(),',
       '268,''', @order_day, ''',''', @order_day, ''',1,0,127,''00:00:00'',''09:30:00'',',
-      '''00:00:00'',''11:00:00'',''01:30:00'',0,3,',
+      '''00:00:00'',''11:00:00'',''01:30:00'',0,20,',
       '''ZMSKVR-151 ZMSKVR-714 Feuerwache order day Pasing'',0,1,0,60,NOW()),',
       '(136561,274,''', @order_day, ''',''', @order_day, ''',1,0,127,''00:00:00'',''09:30:00'',',
-      '''00:00:00'',''11:00:00'',''01:30:00'',0,3,',
+      '''00:00:00'',''11:00:00'',''01:30:00'',0,20,',
       '''ZMSKVR-151 ZMSKVR-714 Feuerwache order day Foehring'',0,1,0,60,NOW(),',
       '274,''', @order_day, ''',''', @order_day, ''',1,0,127,''00:00:00'',''09:30:00'',',
-      '''00:00:00'',''11:00:00'',''01:30:00'',0,3,',
+      '''00:00:00'',''11:00:00'',''01:30:00'',0,20,',
       '''ZMSKVR-151 ZMSKVR-714 Feuerwache order day Foehring'',0,1,0,60,NOW()),',
       '(136562,277,''', @order_day, ''',''', @order_day, ''',1,0,127,''00:00:00'',''09:30:00'',',
-      '''00:00:00'',''11:00:00'',''01:30:00'',0,3,',
+      '''00:00:00'',''11:00:00'',''01:30:00'',0,20,',
       '''ZMSKVR-151 ZMSKVR-714 Feuerwache order day Neuperlach'',0,1,0,60,NOW(),',
       '277,''', @order_day, ''',''', @order_day, ''',1,0,127,''00:00:00'',''09:30:00'',',
-      '''00:00:00'',''11:00:00'',''01:30:00'',0,3,',
+      '''00:00:00'',''11:00:00'',''01:30:00'',0,20,',
       '''ZMSKVR-151 ZMSKVR-714 Feuerwache order day Neuperlach'',0,1,0,60,NOW()),',
       '(136563,280,''', @order_day, ''',''', @order_day, ''',1,0,127,''00:00:00'',''09:30:00'',',
-      '''00:00:00'',''11:00:00'',''01:30:00'',0,3,',
+      '''00:00:00'',''11:00:00'',''01:30:00'',0,20,',
       '''ZMSKVR-151 ZMSKVR-714 Feuerwache order day Riem'',0,1,0,60,NOW(),',
       '280,''', @order_day, ''',''', @order_day, ''',1,0,127,''00:00:00'',''09:30:00'',',
-      '''00:00:00'',''11:00:00'',''01:30:00'',0,3,',
+      '''00:00:00'',''11:00:00'',''01:30:00'',0,20,',
       '''ZMSKVR-151 ZMSKVR-714 Feuerwache order day Riem'',0,1,0,60,NOW())'
     )
     WHEN @has_en > 0 THEN CONCAT(
@@ -71,16 +72,16 @@ SET @hours_sql := (
       '`workstation_count`,`appointment_workstation_count`,`comment`,`internet_reduction`,',
       '`multiple_slots_allowed`,`open_from_days`,`open_until_days`,`updated_at`) VALUES ',
       '(136560,268,''', @order_day, ''',''', @order_day, ''',1,0,127,''00:00:00'',''09:30:00'',',
-      '''00:00:00'',''11:00:00'',''01:30:00'',0,3,',
+      '''00:00:00'',''11:00:00'',''01:30:00'',0,20,',
       '''ZMSKVR-151 ZMSKVR-714 Feuerwache order day Pasing'',0,1,0,60,NOW()),',
       '(136561,274,''', @order_day, ''',''', @order_day, ''',1,0,127,''00:00:00'',''09:30:00'',',
-      '''00:00:00'',''11:00:00'',''01:30:00'',0,3,',
+      '''00:00:00'',''11:00:00'',''01:30:00'',0,20,',
       '''ZMSKVR-151 ZMSKVR-714 Feuerwache order day Foehring'',0,1,0,60,NOW()),',
       '(136562,277,''', @order_day, ''',''', @order_day, ''',1,0,127,''00:00:00'',''09:30:00'',',
-      '''00:00:00'',''11:00:00'',''01:30:00'',0,3,',
+      '''00:00:00'',''11:00:00'',''01:30:00'',0,20,',
       '''ZMSKVR-151 ZMSKVR-714 Feuerwache order day Neuperlach'',0,1,0,60,NOW()),',
       '(136563,280,''', @order_day, ''',''', @order_day, ''',1,0,127,''00:00:00'',''09:30:00'',',
-      '''00:00:00'',''11:00:00'',''01:30:00'',0,3,',
+      '''00:00:00'',''11:00:00'',''01:30:00'',0,20,',
       '''ZMSKVR-151 ZMSKVR-714 Feuerwache order day Riem'',0,1,0,60,NOW())'
     )
     ELSE CONCAT(
@@ -90,16 +91,16 @@ SET @hours_sql := (
       '`Anzahlterminarbeitsplaetze`,`kommentar`,`reduktionTermineImInternet`,`erlaubemehrfachslots`,',
       '`Offen_ab`,`Offen_bis`,`updateTimestamp`) VALUES ',
       '(136560,268,''', @order_day, ''',''', @order_day, ''',1,0,127,''00:00:00'',''09:30:00'',',
-      '''00:00:00'',''11:00:00'',''01:30:00'',0,3,',
+      '''00:00:00'',''11:00:00'',''01:30:00'',0,20,',
       '''ZMSKVR-151 ZMSKVR-714 Feuerwache order day Pasing'',0,1,0,60,NOW()),',
       '(136561,274,''', @order_day, ''',''', @order_day, ''',1,0,127,''00:00:00'',''09:30:00'',',
-      '''00:00:00'',''11:00:00'',''01:30:00'',0,3,',
+      '''00:00:00'',''11:00:00'',''01:30:00'',0,20,',
       '''ZMSKVR-151 ZMSKVR-714 Feuerwache order day Foehring'',0,1,0,60,NOW()),',
       '(136562,277,''', @order_day, ''',''', @order_day, ''',1,0,127,''00:00:00'',''09:30:00'',',
-      '''00:00:00'',''11:00:00'',''01:30:00'',0,3,',
+      '''00:00:00'',''11:00:00'',''01:30:00'',0,20,',
       '''ZMSKVR-151 ZMSKVR-714 Feuerwache order day Neuperlach'',0,1,0,60,NOW()),',
       '(136563,280,''', @order_day, ''',''', @order_day, ''',1,0,127,''00:00:00'',''09:30:00'',',
-      '''00:00:00'',''11:00:00'',''01:30:00'',0,3,',
+      '''00:00:00'',''11:00:00'',''01:30:00'',0,20,',
       '''ZMSKVR-151 ZMSKVR-714 Feuerwache order day Riem'',0,1,0,60,NOW())'
     )
   END
