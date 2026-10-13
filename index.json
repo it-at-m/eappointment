@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-10-12T23:12:49.697Z",
+  "publishedAt": "2026-10-13T00:15:42.858Z",
   "branches": [
     {
       "name": "next",
@@ -798,6 +798,12 @@
       "slug": "test-zmskvr-514-ux-chrome-batch",
       "runId": "38149309301",
       "runStartedAt": "2026-10-11T14:57:51Z"
+    },
+    {
+      "name": "test-zmskvr-536-zmskvr-725-empty-opening-hours-times",
+      "slug": "test-zmskvr-536-zmskvr-725-empty-opening-hours-times",
+      "runId": "38325245830",
+      "runStartedAt": "2026-10-13T00:02:26Z"
     },
     {
       "name": "test-zmskvr-590-jumpin-location-selection",
