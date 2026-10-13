@@ -1861,9 +1861,44 @@ public final class TimeSlotStep {
      * After keep-only on a single office: wait for timeslots or the settled blue empty-state
      * callout. Does not page calendar days (that races empty-office asserts and can abort a
      * bookable Wohnsitzanmeldung calendar that briefly flashes the callout).
+     *
+     * <p>Mass Ort toggles can leave Termin blank (no spinner, no slots, no callout) or on the red
+     * generic API error — re-toggle the kept office once to force available-calendar again.
      */
     public void waitUntilSlotsOrEmptyCallout(int maxSeconds) {
         context.set();
+        if (settleSlotsOrEmptyCallout(maxSeconds)) {
+            return;
+        }
+        int officeId = slotState.lastSlotBookingOfficeId;
+        if (officeId > 0
+                && providerLocation.deepProviderCheckboxChecked(officeId)
+                && !deepMucSpinnerVisible()
+                && !deepTimeslotClickablePresent()
+                && !isNoAppointmentInfoCalloutPresent()) {
+            ScenarioLogManager.getLogger()
+                    .info(
+                            "zmscitizenview: blank/generic Termin after keep-only; re-toggle provider {} (genericError={})",
+                            officeId,
+                            genericApiErrorCalloutVisible());
+            shadow.deepClickRequired("#checkbox-provider-" + officeId);
+            providerLocation.waitUntilProviderToggleSettled(15);
+            shadow.deepClickRequired("#checkbox-provider-" + officeId);
+            providerLocation.waitUntilProviderToggleSettled(30);
+            if (settleSlotsOrEmptyCallout(Math.max(20, maxSeconds / 2))) {
+                return;
+            }
+        }
+        ScenarioLogManager.getLogger()
+                .info(
+                        "zmscitizenview: keep-only settle timed out (spinnerVisible={} timeslot={} callout={} genericError={})",
+                        deepMucSpinnerVisible(),
+                        deepTimeslotClickablePresent(),
+                        isNoAppointmentInfoCalloutPresent(),
+                        genericApiErrorCalloutVisible());
+    }
+
+    private boolean settleSlotsOrEmptyCallout(int maxSeconds) {
         ScenarioLogManager.getLogger()
                 .info(
                         "zmscitizenview: waiting up to {}s for slots or blue empty-state callout",
@@ -1873,22 +1908,17 @@ public final class TimeSlotStep {
             if (deepTimeslotReadyNoSpinner()) {
                 ScenarioLogManager.getLogger()
                         .info("zmscitizenview: slots ready after keep-only (no day paging)");
-                return;
+                return true;
             }
             if (!deepMucSpinnerVisible() && isNoAppointmentInfoCalloutPresent()) {
                 ScenarioLogManager.getLogger()
                         .info(
                                 "zmscitizenview: blue empty-state callout after keep-only (no day paging)");
-                return;
+                return true;
             }
             CitizenViewWaits.sleepQuiet(300L);
         }
-        ScenarioLogManager.getLogger()
-                .info(
-                        "zmscitizenview: keep-only settle timed out (spinnerVisible={} timeslot={} callout={})",
-                        deepMucSpinnerVisible(),
-                        deepTimeslotClickablePresent(),
-                        isNoAppointmentInfoCalloutPresent());
+        return false;
     }
 
     /**
