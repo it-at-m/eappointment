@@ -239,7 +239,7 @@ public class UseraccountPage extends BasePage {
             }
             // Still on a clean form: Firefox may have dropped the first click; submit once more.
             long now = System.currentTimeMillis();
-            if (now - lastResubmit[0] > 5000L) {
+            if (now - lastResubmit[0] > 2500L) {
                 lastResubmit[0] = now;
                 lastNewUserSubmission = now;
                 ScenarioLogManager.getLogger()
@@ -338,20 +338,32 @@ public class UseraccountPage extends BasePage {
 
     private void submitNewUserForm() {
         WebElement save = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
-                .until(ExpectedConditions.presenceOfElementLocated(
+                .until(ExpectedConditions.elementToBeClickable(
                         By.xpath("//button[normalize-space(.)='Nutzer anlegen']")));
-        ((JavascriptExecutor) DRIVER).executeScript(
-                "var button = arguments[0];"
-                        + "button.scrollIntoView({block:'center'});"
-                        + "var form = button.closest('form');"
-                        + "if (form && typeof form.requestSubmit === 'function') {"
-                        + "  form.requestSubmit(button);"
-                        + "} else if (form) {"
-                        + "  form.submit();"
-                        + "} else {"
-                        + "  button.click();"
-                        + "}",
-                save);
+        // Firefox often no-ops requestSubmit-only; native click alone can also be dropped.
+        // Do both so the button name/value is posted and HTML5 / server validation runs.
+        try {
+            save.click();
+        } catch (Exception clickFailed) {
+            ScenarioLogManager.getLogger()
+                    .warn("Native Nutzer anlegen click failed ({}); continuing with JS submit", clickFailed.toString());
+        }
+        Object how =
+                ((JavascriptExecutor) DRIVER).executeScript(
+                        "var button = arguments[0];"
+                                + "button.scrollIntoView({block:'center'});"
+                                + "var form = button.form || button.closest('form');"
+                                + "if (form && typeof form.requestSubmit === 'function') {"
+                                + "  try { form.requestSubmit(button); return 'requestSubmit'; } catch (e) {}"
+                                + "}"
+                                + "try {"
+                                + "  button.dispatchEvent(new MouseEvent('click',{bubbles:true,cancelable:true,view:window}));"
+                                + "  return 'mouseEvent';"
+                                + "} catch (e2) {}"
+                                + "if (form) { form.submit(); return 'form.submit'; }"
+                                + "button.click(); return 'click';",
+                        save);
+        ScenarioLogManager.getLogger().info("zmsadmin: Nutzer anlegen JS submit via {}", how);
     }
 
     private static boolean isAdminLoaderVisible(org.openqa.selenium.WebDriver driver) {

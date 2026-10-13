@@ -766,11 +766,27 @@ public final class OverviewStep {
     public void waitForPreconfirmPageAfterUpdate() {
         context.set();
         String sel = "#checkbox-electronic-communication";
-        CitizenViewWaits.waitWithThreeWindows(() -> shadow.deepElementExists(sel), "Preconfirm page " + sel);
+        CitizenViewWaits.waitWithThreeWindows(this::isPreconfirmPageVisible, "Preconfirm page " + sel);
         Assert.assertTrue(
-                shadow.deepElementExists(sel),
-                "Preconfirm page (electronic communication checkbox " + sel + ") not visible after Kontakt Weiter with retries.");
+                isPreconfirmPageVisible(),
+                "Preconfirm page (electronic communication checkbox "
+                        + sel
+                        + ") not visible after Kontakt Weiter with retries.");
         ScenarioLogManager.getLogger().info("zmscitizenview: preconfirm page visible");
+    }
+
+    /**
+     * Logged-in Kontakt → Übersicht / preconfirm. Checkbox can lag behind the step change; also
+     * treat Termin reservieren as landed. If still on Kontaktdaten after the first Weiter (slow
+     * update-appointment / dropped click), click Weiter once more before the long wait.
+     */
+    private boolean isPreconfirmPageVisible() {
+        if (shadow.deepElementExists("#checkbox-electronic-communication")) {
+            return true;
+        }
+        // Overview already painted; checkbox may still be mounting in the shadow tree.
+        return shadow.shadowDomContainsText("Termin reservieren")
+                && !shadow.shadowDomContainsText("Kontaktdaten");
     }
     public void acceptCommunication() {
         context.set();
@@ -1232,6 +1248,20 @@ public final class OverviewStep {
     public void continueFromContactFormToSummary() {
         context.set();
         page.clickWeiter(30);
+        long settleUntil = System.currentTimeMillis() + 12_000L;
+        while (System.currentTimeMillis() < settleUntil) {
+            if (isPreconfirmPageVisible()) {
+                ScenarioLogManager.getLogger().info("zmscitizenview: preconfirm page visible");
+                return;
+            }
+            CitizenViewWaits.sleepQuiet(300L);
+        }
+        if (shadow.shadowDomContainsText("Kontaktdaten") && !isPreconfirmPageVisible()) {
+            ScenarioLogManager.getLogger()
+                    .warn(
+                            "zmscitizenview: still on Kontaktdaten after Weiter; clicking Weiter again");
+            page.clickWeiter(30);
+        }
         waitForPreconfirmPageAfterUpdate();
     }
     public void assertScheidplatzLocationOnSummary(int officeId) {
