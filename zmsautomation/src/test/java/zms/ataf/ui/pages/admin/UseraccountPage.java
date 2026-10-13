@@ -187,12 +187,16 @@ public class UseraccountPage extends BasePage {
     /** Wall time of the last new-user form submit (initial save or validation retry). */
     private long lastNewUserSubmission;
 
+    /** Alternates requestSubmit (Chromium) with native click (Firefox) on validation retries. */
+    private int newUserSubmitAttempt;
+
     public void saveNewUser() {
         ScenarioLogManager.getLogger().info("Saving the new user without a department...");
         waitForAdminLoaderGone();
         // Firefox often reports a successful native click without submitting this form.
         // requestSubmit keeps the save button value; form.submit() is the last resort.
         lastNewUserSubmission = System.currentTimeMillis();
+        newUserSubmitAttempt = 0;
         submitNewUserForm();
         waitForAdminLoaderGone();
     }
@@ -337,33 +341,39 @@ public class UseraccountPage extends BasePage {
     }
 
     private void submitNewUserForm() {
+        By saveButton = By.xpath("//button[normalize-space(.)='Nutzer anlegen']");
         WebElement save = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
-                .until(ExpectedConditions.elementToBeClickable(
-                        By.xpath("//button[normalize-space(.)='Nutzer anlegen']")));
-        // Firefox often no-ops requestSubmit-only; native click alone can also be dropped.
-        // Do both so the button name/value is posted and HTML5 / server validation runs.
+                .until(ExpectedConditions.presenceOfElementLocated(saveButton));
+        // Do not click then requestSubmit on the same element — a successful post re-renders
+        // the form and the second call hits StaleElementReference (broke chrome/edge).
+        // Alternate: requestSubmit first (Chromium), native click on odd retries (Firefox).
+        boolean preferNativeClick = (newUserSubmitAttempt++ % 2) == 1;
         try {
-            save.click();
-        } catch (Exception clickFailed) {
+            if (preferNativeClick) {
+                ScenarioLogManager.getLogger().info("zmsadmin: Nutzer anlegen via native click");
+                new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                        .until(ExpectedConditions.elementToBeClickable(saveButton))
+                        .click();
+                return;
+            }
+            ((JavascriptExecutor) DRIVER).executeScript(
+                    "var button = arguments[0];"
+                            + "button.scrollIntoView({block:'center'});"
+                            + "var form = button.form || button.closest('form');"
+                            + "if (form && typeof form.requestSubmit === 'function') {"
+                            + "  form.requestSubmit(button);"
+                            + "} else if (form) {"
+                            + "  form.submit();"
+                            + "} else {"
+                            + "  button.click();"
+                            + "}",
+                    save);
+            ScenarioLogManager.getLogger().info("zmsadmin: Nutzer anlegen via requestSubmit");
+        } catch (StaleElementReferenceException stale) {
+            // Submit already navigated / re-rendered — that is success for this attempt.
             ScenarioLogManager.getLogger()
-                    .warn("Native Nutzer anlegen click failed ({}); continuing with JS submit", clickFailed.toString());
+                    .info("zmsadmin: Nutzer anlegen stale after submit (page already moved)");
         }
-        Object how =
-                ((JavascriptExecutor) DRIVER).executeScript(
-                        "var button = arguments[0];"
-                                + "button.scrollIntoView({block:'center'});"
-                                + "var form = button.form || button.closest('form');"
-                                + "if (form && typeof form.requestSubmit === 'function') {"
-                                + "  try { form.requestSubmit(button); return 'requestSubmit'; } catch (e) {}"
-                                + "}"
-                                + "try {"
-                                + "  button.dispatchEvent(new MouseEvent('click',{bubbles:true,cancelable:true,view:window}));"
-                                + "  return 'mouseEvent';"
-                                + "} catch (e2) {}"
-                                + "if (form) { form.submit(); return 'form.submit'; }"
-                                + "button.click(); return 'click';",
-                        save);
-        ScenarioLogManager.getLogger().info("zmsadmin: Nutzer anlegen JS submit via {}", how);
     }
 
     private static boolean isAdminLoaderVisible(org.openqa.selenium.WebDriver driver) {
