@@ -857,15 +857,62 @@ public final class TimeSlotStep {
         assertMorningLabels(state);
     }
 
-    /** Open hour: each office that has a slot is a map-pin heading, in the same order as the checkboxes. */
+    /**
+     * Open hour: each office that has a slot is a map-pin heading, in the same order as the checkboxes.
+     *
+     * <p>Parallel Personalausweis booking can empty Ruppertstraße in the first open hour. Page Später
+     * / next calendar days until that office has a map-pin heading again, then assert order.
+     */
     public void assertOpenHourListsOfficesWithMapPin() {
         context.set();
-        JsonNode titles = new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(defaultWaitSeconds))
-                .until(d -> {
-                    JsonNode node = locationTitles().path("titles");
-                    return node.size() > 1 ? node : null;
-                });
+        for (int attempt = 0; attempt < 16; attempt++) {
+            JsonNode titles = locationTitles().path("titles");
+            if (titles.size() > 1 && titlesContainOffice(titles, "Bürgerbüro Ruppertstraße")) {
+                providerLocation.assertOfficeOrder(titles, false, false);
+                ScenarioLogManager.getLogger()
+                        .info(
+                                "zmscitizenview: open hour lists offices with Ruppertstraße after {} adjust(s)",
+                                attempt);
+                return;
+            }
+            ScenarioLogManager.getLogger()
+                    .info(
+                            "zmscitizenview: open hour missing Ruppertstraße (titles={}); try Später / next day ({}/15)",
+                            titles,
+                            attempt + 1);
+            if (clickCitizenViewLaterOnceIfAvailable()) {
+                waitUntilAppointmentSlotsReadyQuiet(Math.min(30, slotBookingWaitTimeoutSeconds()));
+                continue;
+            }
+            if (!openNextCalendarDayAndWaitForSlots()) {
+                break;
+            }
+        }
+        JsonNode titles =
+                new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(defaultWaitSeconds))
+                        .until(
+                                d -> {
+                                    JsonNode node = locationTitles().path("titles");
+                                    return node.size() > 1 ? node : null;
+                                });
         providerLocation.assertOfficeOrder(titles, false, false);
+    }
+
+    private static boolean titlesContainOffice(JsonNode titles, String officeName) {
+        if (titles == null || !titles.isArray()) {
+            return false;
+        }
+        for (JsonNode title : titles) {
+            String text = title.path("text").asText("");
+            if (ProviderLocationStep.frequencyName(text) != null
+                    && officeName.equals(ProviderLocationStep.frequencyName(text))) {
+                return true;
+            }
+            if (text.contains(officeName)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
