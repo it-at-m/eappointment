@@ -23,7 +23,7 @@ class ProcessStatusFree extends \BO\Zmsbackend\Query\Base
                 IF(a.multiple_slots_allowed, c.slotsRequired, :forceRequiredSlots) AS slotsRequired,
                 COUNT(DISTINCT h.slotID) AS ancestorCount,
                 IFNULL(GREATEST(0, MIN(
-                    IF(:slotType = "intern", s.intern, IF(:slotType = "public", s.`public`, 0))
+                    CAST(IF(:slotType = "intern", s.intern, IF(:slotType = "public", s.`public`, 0)) AS SIGNED)
                     - (SELECT COUNT(*) FROM slot_process p WHERE p.slotID = h.slotID)
                 )), 0) AS free
             FROM
