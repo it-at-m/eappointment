@@ -193,7 +193,7 @@ $day-h: 2.2rem;
 .overall-fullscreen-btn {
   position: fixed;
   z-index: 10001;
-  right: 1.25rem;
+  left: calc(100vw - 1.25rem - 3.25rem - 15);
   bottom: 1.25rem;
   width: 3.25rem;
   height: 3.25rem;
@@ -202,10 +202,19 @@ $day-h: 2.2rem;
   align-items: center;
   justify-content: center;
   font-size: 1.25rem;
+  color: #fff;
+  background: $color-blue;
+  border: 2px solid #fff;
   transition: transform .25s ease, box-shadow .25s ease;
 
   &:hover, &:focus {
     transform: scale(1.08);
+    background: darken($color-blue, 8%);
+  }
+
+  &:focus-visible {
+    outline: 3px solid $color-blue;
+    outline-offset: 2px;
   }
 
   &.is-active i::before {
