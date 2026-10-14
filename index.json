@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-10-14T06:46:19.699Z",
+  "publishedAt": "2026-10-14T06:59:15.844Z",
   "branches": [
     {
       "name": "next",
@@ -149,7 +149,7 @@
       "name": "feature-zmskvr-1202-optimize-reserve-appointment",
       "slug": "feature-zmskvr-1202-optimize-reserve-appointment",
       "runId": "38451878332",
-      "runStartedAt": "2026-10-13T19:04:09Z"
+      "runStartedAt": "2026-10-14T06:06:33Z"
     },
     {
       "name": "feature-zmskvr-1319-allow-variant-overwrite",
