@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-10-14T06:59:15.844Z",
+  "publishedAt": "2026-10-14T11:40:33.976Z",
   "branches": [
     {
       "name": "next",
@@ -192,6 +192,12 @@
       "slug": "feature-zmskvr-1620-scope-rebooking-setting",
       "runId": "37286663962",
       "runStartedAt": "2026-10-05T08:55:19Z"
+    },
+    {
+      "name": "feature-zmskvr-1622-contrast-for-fullscreen-button",
+      "slug": "feature-zmskvr-1622-contrast-for-fullscreen-button",
+      "runId": "38554929790",
+      "runStartedAt": "2026-10-14T11:12:20Z"
     },
     {
       "name": "feature-zmskvr-1656-calendar-list-toggle",
