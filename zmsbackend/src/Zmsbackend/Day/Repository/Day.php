@@ -53,9 +53,9 @@ class Day extends \BO\Zmsbackend\Query\Base
                 IF(a.multiple_slots_allowed, c.slotsRequired, :forceRequiredSlots) AS slotsRequired,
                 GREATEST(1, COUNT(DISTINCT h.slotID)) AS ancestorCount,
                 MIN(IFNULL(GREATEST(0, CAST(s.`public` AS SIGNED) -
-                    (SELECT COUNT(*) FROM slot_process p WHERE p.slotID = h.slotID)), 0)) AS public,
+                    (SELECT CAST(COUNT(*) AS SIGNED) FROM slot_process p WHERE p.slotID = h.slotID)), 0)) AS public,
                 MIN(CAST(s.intern AS SIGNED) -
-                    (SELECT COUNT(*) FROM slot_process p WHERE p.slotID = h.slotID)) AS intern,
+                    (SELECT CAST(COUNT(*) AS SIGNED) FROM slot_process p WHERE p.slotID = h.slotID)) AS intern,
                 MIN(s.`public`) AS publicall,
                 MIN(s.intern) AS internall
             FROM calendarscope c
