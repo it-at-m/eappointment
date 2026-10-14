@@ -193,7 +193,7 @@ $day-h: 2.2rem;
 .overall-fullscreen-btn {
   position: fixed;
   z-index: 10001;
-  left: calc(100vw - 1.25rem - 3.25rem - 15px);
+  right: 1.25rem;
   bottom: 1.25rem;
   width: 3.25rem;
   height: 3.25rem;
@@ -203,17 +203,17 @@ $day-h: 2.2rem;
   justify-content: center;
   font-size: 1.25rem;
   color: #fff;
-  background: $color-blue;
+  background: $color-button-default;
   border: 2px solid #fff;
   transition: transform .25s ease, box-shadow .25s ease;
 
-  &:hover, &:focus {
+  &:hover, &:focus-visible {
     transform: scale(1.08);
-    background: darken($color-blue, 8%);
+    background: $color-button-default-hover;
   }
 
   &:focus-visible {
-    outline: 3px solid $color-blue;
+    outline: 3px solid $color-button-default;
     outline-offset: 2px;
   }
 
