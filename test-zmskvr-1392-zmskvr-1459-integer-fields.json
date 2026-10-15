@@ -1,10 +1,10 @@
 {
   "branch": "test-zmskvr-1392-zmskvr-1459-integer-fields",
   "branchSlug": "test-zmskvr-1392-zmskvr-1459-integer-fields",
-  "runId": "38736081174",
-  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38736081174",
-  "runStartedAt": "2026-10-15T12:37:37Z",
-  "publishedAt": "2026-10-15T12:51:03.481Z",
+  "runId": "38745152289",
+  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38745152289",
+  "runStartedAt": "2026-10-15T13:43:35Z",
+  "publishedAt": "2026-10-15T13:56:23.845Z",
   "features": {
     "feature-ui-zmsadmin-configuration-zmskvr-1459-zmskvr-1392-integer-fields": {
       "status": "passed",
@@ -14,29 +14,29 @@
         "chrome": {
           "status": "passed",
           "shard": "custom",
-          "runId": "38736081174",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38736081174",
-          "runStartedAt": "2026-10-15T12:37:37Z"
+          "runId": "38745152289",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38745152289",
+          "runStartedAt": "2026-10-15T13:43:35Z"
         },
         "edge": {
           "status": "passed",
           "shard": "custom",
-          "runId": "38736081174",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38736081174",
-          "runStartedAt": "2026-10-15T12:37:37Z"
+          "runId": "38745152289",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38745152289",
+          "runStartedAt": "2026-10-15T13:43:35Z"
         },
         "firefox": {
           "status": "passed",
           "shard": "custom",
-          "runId": "38736081174",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38736081174",
-          "runStartedAt": "2026-10-15T12:37:37Z"
+          "runId": "38745152289",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38745152289",
+          "runStartedAt": "2026-10-15T13:43:35Z"
         }
       },
       "rel": "ui/zmsadmin/configuration/zmskvr-1459_zmskvr-1392_integer_fields.feature",
-      "runId": "38736081174",
-      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38736081174",
-      "runStartedAt": "2026-10-15T12:37:37Z"
+      "runId": "38745152289",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38745152289",
+      "runStartedAt": "2026-10-15T13:43:35Z"
     }
   }
 }
