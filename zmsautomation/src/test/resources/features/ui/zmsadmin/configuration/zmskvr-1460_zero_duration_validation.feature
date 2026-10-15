@@ -16,9 +16,9 @@ Feature: Placeholder — validate zero durations on Standort save
     And I click the button "Auswahl bestätigen" in the administration.
     And I click the entry "Behörden und Standorte" in the Administration menu.
     And I click the location "Bürgerbüro Forstenrieder Allee (KVR-II/234)" under authorities and locations.
-    When I set the Standort integer field Aktivierungsdauer to "0".
+    When I set the Standort integer field "Aktivierungsdauer" to "0".
     And I save the location configuration.
-    Then the location form shows a validation for Aktivierungsdauer.
+    Then the location form shows a validation for "Aktivierungsdauer".
 
   Scenario: Saving zero Reservierungsdauer shows a field validation
     When I open the administration website.
@@ -29,9 +29,9 @@ Feature: Placeholder — validate zero durations on Standort save
     And I click the button "Auswahl bestätigen" in the administration.
     And I click the entry "Behörden und Standorte" in the Administration menu.
     And I click the location "Bürgerbüro Forstenrieder Allee (KVR-II/234)" under authorities and locations.
-    When I set the Standort integer field Reservierungsdauer to "0".
+    When I set the Standort integer field "Reservierungsdauer" to "0".
     And I save the location configuration.
-    Then the location form shows a validation for Reservierungsdauer.
+    Then the location form shows a validation for "Reservierungsdauer".
 
   Scenario: Saving zero Durchschnittliche Bearbeitungszeit shows a field validation
     When I open the administration website.
@@ -42,6 +42,6 @@ Feature: Placeholder — validate zero durations on Standort save
     And I click the button "Auswahl bestätigen" in the administration.
     And I click the entry "Behörden und Standorte" in the Administration menu.
     And I click the location "Bürgerbüro Forstenrieder Allee (KVR-II/234)" under authorities and locations.
-    When I set the Standort integer field Durchschnittliche Bearbeitungszeit to "0".
+    When I set the Standort integer field "Durchschnittliche Bearbeitungszeit" to "0".
     And I save the location configuration.
-    Then the location form shows a validation for Durchschnittliche Bearbeitungszeit.
+    Then the location form shows a validation for "Durchschnittliche Bearbeitungszeit".
