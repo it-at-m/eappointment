@@ -21,7 +21,9 @@ Feature: Integer fields on Standort and Behörde reset empty values to zero
     And the Löschverzögerung description mentions no extra delay when set to 0.
     When I save the location configuration.
     Then the location configuration is saved successfully.
-    And those Standort integer fields show the value "0".
+    When I click the entry "Behörden und Standorte" in the Administration menu.
+    And I click the location "Bürgerbüro Forstenrieder Allee (KVR-II/234)" under authorities and locations.
+    Then those Standort integer fields show the value "0".
 
   Scenario: Clearing the Behörde reminder minutes field resets it to zero
     When I open the administration website.
