@@ -1031,62 +1031,72 @@ public final class MyAppointmentsStep {
                         + "var hit=card;"
                         + "if(card.shadowRoot){var a=card.shadowRoot.querySelector('a[href]');if(a)hit=a;}"
                         + "hit.scrollIntoView({block:'center'});hit.click();return true;";
-        // Detail can take well over 5s under a busy chrome shard; a short settle + immediate
-        // re-navigate reloads the page before Termin absagen appears.
-        long deadline = System.currentTimeMillis() + Math.max(90, defaultWaitSeconds) * 1000L;
+        // Edge can drop the Bürger-Login session while hopping overview → detail; a full 60s
+        // waitWithThreeWindows then burns the outer budget before Anmelden is noticed on reload.
+        long deadline = System.currentTimeMillis() + Math.max(120, defaultWaitSeconds) * 1000L;
         boolean opened = false;
+        int attempt = 0;
         while (System.currentTimeMillis() < deadline) {
+            attempt++;
             if (shadow.shadowDomContainsText("Termin absagen")) {
                 opened = true;
                 break;
             }
+            if (pageShowsCitizenLoginPrompt() || myAppointmentsShowsLoggedOut()) {
+                ScenarioLogManager.getLogger()
+                        .warn(
+                                "zmscitizenview: logged out before opening teaser {}; logging in again",
+                                serviceName);
+                ensureMeineTermineLoggedIn();
+                continue;
+            }
+            if (!browserIsOnMyAppointments() || !myAppointmentsFinishedLoading()) {
+                ScenarioLogManager.getLogger()
+                        .warn(
+                                "zmscitizenview: returning to Meine Termine before opening teaser {}",
+                                serviceName);
+                reloadMyAppointments();
+                waitUntilNeueTerminVisible();
+            }
+            waitForTeaserText(serviceName);
             Object hrefRaw =
                     ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(findHref, needle);
-            String href = hrefRaw == null ? "" : String.valueOf(hrefRaw).trim();
-            if (href.isEmpty()) {
-                if (myAppointmentsShowsLoggedOut()) {
-                    ScenarioLogManager.getLogger()
-                            .warn(
-                                    "zmscitizenview: Meine Termine shows Anmelden before opening teaser; logging in again");
-                    reloginForMyAppointments();
-                } else if (!browserIsOnMyAppointments() || !myAppointmentsFinishedLoading()) {
-                    ScenarioLogManager.getLogger()
-                            .warn(
-                                    "zmscitizenview: returning to Meine Termine before opening teaser {}",
-                                    serviceName);
-                    reloadMyAppointments();
-                    waitUntilNeueTerminVisible();
-                } else {
-                    waitForTeaserText(serviceName);
-                }
-                hrefRaw = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(findHref, needle);
-                href = hrefRaw == null ? "" : String.valueOf(hrefRaw).trim();
+            String href = absoluteCitizenUrl(hrefRaw == null ? "" : String.valueOf(hrefRaw).trim());
+            String apIdUrl = detailUrlFromTeaserNumber(serviceName);
+            // Alternate card href and explicit appointment-detail?ap-id= (same shape as Termin ansehen).
+            String target;
+            if (attempt % 2 == 1) {
+                target = !href.isEmpty() ? href : apIdUrl;
+            } else {
+                target = !apIdUrl.isEmpty() ? apIdUrl : href;
             }
-            if (!href.isEmpty()) {
+            if (!target.isEmpty()) {
                 try {
-                    if (href.startsWith("/")) {
-                        String current = DriverUtil.getDriver().getCurrentUrl();
-                        int slash = current.indexOf('/', current.indexOf("://") + 3);
-                        href = (slash > 0 ? current.substring(0, slash) : current) + href;
-                    }
-                    DriverUtil.getDriver().navigate().to(href);
+                    DriverUtil.getDriver().navigate().to(target);
                 } catch (TimeoutException e) {
                     ScenarioLogManager.getLogger().warn("Meine Termine teaser navigation timed out", e);
                 }
             } else {
                 ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(clickCard, needle);
             }
-            CitizenViewWaits.waitWithThreeWindows(
-                    () -> shadow.shadowDomContainsText("Termin absagen"),
-                    "Appointment detail after opening teaser " + serviceName);
-            if (shadow.shadowDomContainsText("Termin absagen")) {
+            waitForAppointmentDetailShellAfterNavigation();
+            if (waitUntilTerminAbsagenOrLoginPrompt(20)) {
                 opened = true;
                 break;
             }
+            if (pageShowsCitizenLoginPrompt()) {
+                ScenarioLogManager.getLogger()
+                        .warn(
+                                "zmscitizenview: detail for {} showed Anmelden; logging in and retrying",
+                                serviceName);
+                ensureMeineTermineLoggedIn();
+                continue;
+            }
             ScenarioLogManager.getLogger()
                     .warn(
-                            "zmscitizenview: teaser {} did not open detail; trying again",
-                            serviceName);
+                            "zmscitizenview: teaser {} did not open detail (attempt {}); trying again",
+                            serviceName,
+                            attempt);
             if (!browserIsOnMyAppointments()) {
                 reloadMyAppointments();
                 waitUntilNeueTerminVisible();
@@ -1095,6 +1105,78 @@ public final class MyAppointmentsStep {
         Assert.assertTrue(
                 opened || shadow.shadowDomContainsText("Termin absagen"),
                 "Appointment detail did not show Termin absagen after opening \"" + serviceName + "\".");
+    }
+
+    /** True when the Bürger-Login prompt is showing (overview or detail) without a session. */
+    private boolean pageShowsCitizenLoginPrompt() {
+        return shadow.shadowDomContainsText("Anmelden")
+                && !shadow.shadowDomContainsText("Mein Bereich")
+                && !shadow.shadowDomContainsText("Neuer Termin")
+                && !shadow.shadowDomContainsText("Kommende Termine")
+                && !shadow.shadowDomContainsText("Termin absagen");
+    }
+
+    private void ensureMeineTermineLoggedIn() {
+        if (!browserIsOnMyAppointments()) {
+            reloadMyAppointments();
+        }
+        reloginForMyAppointments();
+        waitUntilNeueTerminVisible();
+    }
+
+    /**
+     * Polls up to {@code seconds} for Termin absagen, aborting early when Anmelden appears so the
+     * outer teaser loop can re-login instead of burning a full three-window wait.
+     *
+     * @return true when Termin absagen is visible
+     */
+    private boolean waitUntilTerminAbsagenOrLoginPrompt(int seconds) {
+        long deadline = System.currentTimeMillis() + Math.max(5, seconds) * 1000L;
+        while (System.currentTimeMillis() < deadline) {
+            if (shadow.shadowDomContainsText("Termin absagen")) {
+                return true;
+            }
+            if (pageShowsCitizenLoginPrompt()) {
+                return false;
+            }
+            CitizenViewWaits.sleepQuiet(250L);
+        }
+        return shadow.shadowDomContainsText("Termin absagen");
+    }
+
+    private String absoluteCitizenUrl(String href) {
+        if (href == null || href.isBlank()) {
+            return "";
+        }
+        if (href.startsWith("http://") || href.startsWith("https://")) {
+            return href;
+        }
+        if (href.startsWith("/")) {
+            String current = DriverUtil.getDriver().getCurrentUrl();
+            int slash = current.indexOf('/', current.indexOf("://") + 3);
+            return (slash > 0 ? current.substring(0, slash) : current) + href;
+        }
+        return href;
+    }
+
+    /** Builds appointment-detail.html?ap-id=… from the teaser Terminnummer when still on overview. */
+    private String detailUrlFromTeaserNumber(String serviceName) {
+        if (!browserIsOnMyAppointments()) {
+            return "";
+        }
+        String number = appointmentNumberOnMyAppointments(serviceName);
+        if (number == null || number.isBlank()) {
+            return "";
+        }
+        String digits = number.replaceAll("[^0-9]", "");
+        if (digits.isEmpty()) {
+            return "";
+        }
+        try {
+            return appointmentDetailUrlForProcess(Integer.parseInt(digits), number);
+        } catch (NumberFormatException e) {
+            return "";
+        }
     }
     private String waitForTeaserText(String serviceName) {
         long deadline = System.currentTimeMillis() + Math.max(30, defaultWaitSeconds) * 1000L;

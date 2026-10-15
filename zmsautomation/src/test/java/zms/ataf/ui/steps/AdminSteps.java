@@ -97,7 +97,33 @@ public class AdminSteps {
     public void dann_sollten_sie_sich_am_start_des_zeitmanagementsystem_befinden() {
         Assert.assertEquals(WindowControls.getActiveWindow().getWindowTitle(), AdminPageContext.START_PAGE_TITLE,
                 "This is not the start page of the \"" + AdminPageContext.NAME + "\"");
-        WindowControls.getActiveWindow().setWindowType(WindowType.getSystemWindowType("Admin"));
+        // ATAF WindowType uses a shared HashMap; parallel shards can CME while iterating.
+        setActiveWindowTypeSafely("zmsadmin");
+    }
+
+    /**
+     * Retries {@link WindowType#getSystemWindowType(String)} under parallel shard load. The ATAF
+     * map is a plain HashMap mutated from {@code new WindowType(...)} on every navigate.
+     */
+    private static void setActiveWindowTypeSafely(String systemName) {
+        for (int attempt = 1; attempt <= 8; attempt++) {
+            try {
+                WindowControls.getActiveWindow().setWindowType(WindowType.getSystemWindowType(systemName));
+                return;
+            } catch (java.util.ConcurrentModificationException e) {
+                ScenarioLogManager.getLogger()
+                        .warn(
+                                "WindowType.getSystemWindowType(\"{}\") raced (attempt {}/8); retrying",
+                                systemName,
+                                attempt);
+                try {
+                    Thread.sleep(10L * attempt);
+                } catch (InterruptedException ie) {
+                    Thread.currentThread().interrupt();
+                    return;
+                }
+            }
+        }
     }
 
     @When("I click the button {string} in the administration.")
