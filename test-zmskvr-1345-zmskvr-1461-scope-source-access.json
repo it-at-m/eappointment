@@ -1,0 +1,74 @@
+{
+  "branch": "test-zmskvr-1345-zmskvr-1461-scope-source-access",
+  "branchSlug": "test-zmskvr-1345-zmskvr-1461-scope-source-access",
+  "runId": "38731513179",
+  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38731513179",
+  "runStartedAt": "2026-10-15T12:01:14Z",
+  "publishedAt": "2026-10-15T12:12:36.729Z",
+  "features": {
+    "feature-rest-zmsapi-roles-zmskvr-1461-zmskvr-1345-scope-source-access": {
+      "status": "passed",
+      "shard": "custom",
+      "browser": "chrome",
+      "browsers": {
+        "chrome": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "38731513179",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38731513179",
+          "runStartedAt": "2026-10-15T12:01:14Z"
+        },
+        "edge": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "38731513179",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38731513179",
+          "runStartedAt": "2026-10-15T12:01:14Z"
+        },
+        "firefox": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "38731513179",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38731513179",
+          "runStartedAt": "2026-10-15T12:01:14Z"
+        }
+      },
+      "rel": "rest/zmsapi/roles/zmskvr-1461_zmskvr-1345_scope_source_access.feature",
+      "runId": "38731513179",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38731513179",
+      "runStartedAt": "2026-10-15T12:01:14Z"
+    },
+    "feature-ui-zmsadmin-roles-zmskvr-1461-zmskvr-1345-scope-source-access": {
+      "status": "passed",
+      "shard": "custom",
+      "browser": "chrome",
+      "browsers": {
+        "chrome": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "38731513179",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38731513179",
+          "runStartedAt": "2026-10-15T12:01:14Z"
+        },
+        "edge": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "38731513179",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38731513179",
+          "runStartedAt": "2026-10-15T12:01:14Z"
+        },
+        "firefox": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "38731513179",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38731513179",
+          "runStartedAt": "2026-10-15T12:01:14Z"
+        }
+      },
+      "rel": "ui/zmsadmin/roles/zmskvr-1461_zmskvr-1345_scope_source_access.feature",
+      "runId": "38731513179",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38731513179",
+      "runStartedAt": "2026-10-15T12:01:14Z"
+    }
+  }
+}
