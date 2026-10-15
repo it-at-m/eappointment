@@ -1,0 +1,42 @@
+{
+  "branch": "test-zmskvr-1405-zmskvr-1441-kundenstatistik-excel-columns",
+  "branchSlug": "test-zmskvr-1405-zmskvr-1441-kundenstatistik-excel-columns",
+  "runId": "38738752953",
+  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38738752953",
+  "runStartedAt": "2026-10-15T12:58:01Z",
+  "publishedAt": "2026-10-15T13:09:28.780Z",
+  "features": {
+    "feature-ui-zmsstatistic-citizen-stats-zmskvr-1441-zmskvr-1405-kundenstatistik-excel-columns": {
+      "status": "passed",
+      "shard": "custom",
+      "browser": "chrome",
+      "browsers": {
+        "chrome": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "38738752953",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38738752953",
+          "runStartedAt": "2026-10-15T12:58:01Z"
+        },
+        "edge": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "38738752953",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38738752953",
+          "runStartedAt": "2026-10-15T12:58:01Z"
+        },
+        "firefox": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "38738752953",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38738752953",
+          "runStartedAt": "2026-10-15T12:58:01Z"
+        }
+      },
+      "rel": "ui/zmsstatistic/citizen-stats/zmskvr-1441_zmskvr-1405_kundenstatistik_excel_columns.feature",
+      "runId": "38738752953",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38738752953",
+      "runStartedAt": "2026-10-15T12:58:01Z"
+    }
+  }
+}

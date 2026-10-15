@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-10-15T12:51:03.481Z",
+  "publishedAt": "2026-10-15T13:09:28.780Z",
   "branches": [
     {
       "name": "next",
@@ -534,6 +534,12 @@
       "slug": "test-zmskvr-1397-zmskvr-1633-resume-waiting-time",
       "runId": "37137159568",
       "runStartedAt": "2026-10-03T16:31:22Z"
+    },
+    {
+      "name": "test-zmskvr-1405-zmskvr-1441-kundenstatistik-excel-columns",
+      "slug": "test-zmskvr-1405-zmskvr-1441-kundenstatistik-excel-columns",
+      "runId": "38738752953",
+      "runStartedAt": "2026-10-15T12:58:01Z"
     },
     {
       "name": "test-zmskvr-1411-zmskvr-1672-opening-hours-sunday",
