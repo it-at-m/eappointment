@@ -71,6 +71,9 @@ public class ZmsApiSteps {
     private Integer historyAvailabilityId;
     private int historyScopeId;
     private boolean lastProcessDeleted;
+    /** Provider id before a locked scope update (ZMSKVR-1345). */
+    private String rememberedScopeProviderId;
+    private String rememberedScopeProviderSource;
 
     @Before
     public void resetProcessContext() {
@@ -78,6 +81,8 @@ public class ZmsApiSteps {
         scenarioProcessIds.clear();
         processScopeById.clear();
         clerkAuthKeys.clear();
+        rememberedScopeProviderId = null;
+        rememberedScopeProviderSource = null;
         firstClerkCallResponse = null;
         secondClerkCallResponse = null;
         workstationScopeId = 0;
@@ -519,6 +524,82 @@ public class ZmsApiSteps {
             .as("scope %d provider.data.slotTimeInMinutes", scopeId)
             .isGreaterThan(0);
         return slotTime;
+    }
+
+    /**
+     * ZMSKVR-1345 / ZMSKVR-1461: restrictedscope users cannot change provider/source on POST /scope/{id}/.
+     */
+    @When("I try to change the provider source of scope {int} to {string} with the X-AuthKey")
+    public void iTryToChangeTheProviderSourceOfScopeToWithTheXAuthKey(int scopeId, String newSource) {
+        String authKey = getOrLoginXAuthKey();
+        Response getResponse = given()
+            .baseUri(apiBaseUri())
+            .header("X-AuthKey", authKey)
+            .queryParam("resolveReferences", 1)
+        .when()
+            .get("/scope/" + scopeId + "/");
+        Assertions.assertThat(getResponse.getStatusCode())
+            .as("GET /scope/%d/ before locked update body=%s", scopeId, truncate(getResponse.asString(), 1000))
+            .isEqualTo(200);
+        JsonNode scope = parseDataNode(getResponse);
+        Assertions.assertThat(scope).as("scope %d payload", scopeId).isNotNull();
+        rememberedScopeProviderId = scope.path("provider").path("id").asText("");
+        rememberedScopeProviderSource = scope.path("provider").path("source").asText("");
+        Assertions.assertThat(rememberedScopeProviderId)
+            .as("scope %d must already have a provider id", scopeId)
+            .isNotBlank();
+
+        ObjectNode body = (ObjectNode) scope.deepCopy();
+        ObjectNode provider = body.has("provider") && body.get("provider").isObject()
+            ? (ObjectNode) body.get("provider")
+            : body.putObject("provider");
+        provider.put("id", 999999);
+        provider.put("source", newSource);
+
+        response = given()
+            .baseUri(apiBaseUri())
+            .header("X-AuthKey", authKey)
+            .contentType("application/json")
+            .body(toJson(body))
+        .when()
+            .post("/scope/" + scopeId + "/");
+        CommonApiSteps.setResponse(response);
+    }
+
+    @Then("the scope provider source is still {string}")
+    public void theScopeProviderSourceIsStill(String expectedSource) {
+        if (response == null) {
+            response = CommonApiSteps.getResponse();
+        }
+        JsonNode scope = parseDataNode(response);
+        Assertions.assertThat(scope.path("provider").path("source").asText())
+            .as("provider.source after locked update")
+            .isEqualTo(expectedSource);
+    }
+
+    @Then("the scope provider id is unchanged")
+    public void theScopeProviderIdIsUnchanged() {
+        if (response == null) {
+            response = CommonApiSteps.getResponse();
+        }
+        Assertions.assertThat(rememberedScopeProviderId)
+            .as("remembered provider id from GET before update")
+            .isNotBlank();
+        JsonNode scope = parseDataNode(response);
+        Assertions.assertThat(scope.path("provider").path("id").asText())
+            .as("provider.id after locked update")
+            .isEqualTo(rememberedScopeProviderId);
+    }
+
+    @Then("the owner name is {string}")
+    public void theOwnerNameIs(String expectedName) {
+        if (response == null) {
+            response = CommonApiSteps.getResponse();
+        }
+        JsonNode owner = parseDataNode(response);
+        Assertions.assertThat(owner.path("name").asText())
+            .as("owner.name")
+            .isEqualTo(expectedName);
     }
 
     /**
