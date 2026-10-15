@@ -305,6 +305,11 @@ public class StatisticsSteps {
         CUSTOMER_STATISTICS_PAGE.assertDownloadedEachCalendarDayAtMostOnce();
     }
 
+    @Then("the downloaded citizen statistics include the customer total column headers.")
+    public void theDownloadedCitizenStatisticsIncludeTheCustomerTotalColumnHeaders() throws Exception {
+        CUSTOMER_STATISTICS_PAGE.assertDownloadedCustomerTotalHeaders();
+    }
+
     @Then("the citizen statistics are downloaded.")
     public void wird_die_kundenstatistik_heruntergeladen() {
         // For UI tests we only verify that the download button is present and clickable.
