@@ -854,14 +854,18 @@ public void saveLocationChanges() {
         ScenarioLogManager.getLogger()
                 .info("Asserting Quelle der Standortdaten / Standortdaten selects are hidden");
         Assert.assertTrue(
-                DRIVER.findElements(By.id("scopeProviderSource")).isEmpty(),
+                noneDisplayed(By.id("scopeProviderSource")),
                 "Quelle der Standortdaten (#scopeProviderSource) must stay hidden.");
         Assert.assertTrue(
-                DRIVER.findElements(By.id("scopeProviderId")).isEmpty(),
+                noneDisplayed(By.id("scopeProviderId")),
                 "Standortdaten provider select (#scopeProviderId) must stay hidden.");
         Assert.assertTrue(
-                DRIVER.findElements(By.cssSelector("label[for='scopeProviderSource']")).isEmpty(),
+                noneDisplayed(By.cssSelector("label[for='scopeProviderSource']")),
                 "Label Quelle der Standortdaten must stay hidden.");
+    }
+
+    private boolean noneDisplayed(By locator) {
+        return DRIVER.findElements(locator).stream().noneMatch(WebElement::isDisplayed);
     }
 
     /** ZMSKVR-1345 / ZMSKVR-1461: technical admin keeps editable source selects. */
@@ -875,6 +879,7 @@ public void saveLocationChanges() {
         Assert.assertTrue(source.isDisplayed(), "Expected Quelle der Standortdaten select.");
         Assert.assertTrue(provider.isDisplayed(), "Expected Standortdaten provider select.");
         Assert.assertTrue(source.isEnabled(), "Quelle der Standortdaten must be enabled.");
+        Assert.assertTrue(provider.isEnabled(), "Standortdaten provider select must be enabled.");
         Assert.assertTrue(
                 DRIVER.findElement(By.cssSelector("label[for='scopeProviderSource']")).getText()
                         .contains("Quelle der Standortdaten"),
@@ -912,21 +917,28 @@ public void saveLocationChanges() {
         Assert.assertTrue(
                 isWebElementVisible(
                         DEFAULT_EXPLICIT_WAIT_TIME,
-                        "//button[contains(.,'Referat hinzufügen')] | //a[contains(.,'Referat hinzufügen')]",
+                        "//h2[contains(@class,'form__heading') and contains(.,'Kundeneinrichtung')]",
                         LocatorType.XPATH,
-                        false)
-                        || DRIVER.getPageSource().contains("Referat hinzufügen"),
+                        false),
                 "Did not reach the owner edit form for " + ownerName + ".");
     }
 
     public void assertOwnerFormOffersAddReferatAndDelete() {
         ScenarioLogManager.getLogger()
                 .info("Asserting owner form offers Referat hinzufügen and Löschen");
-        Assert.assertTrue(
-                DRIVER.getPageSource().contains("Referat hinzufügen"),
-                "Expected Referat hinzufügen on the owner form.");
-        Assert.assertTrue(
-                DRIVER.getPageSource().contains("Löschen"),
-                "Expected Löschen on the owner form.");
+        WebElement addReferat = findElementByLocatorType(
+                "//div[contains(@class,'form-actions')]"
+                        + "//a[contains(@class,'type-new') and contains(normalize-space(.),'Referat hinzufügen')]",
+                LocatorType.XPATH,
+                true);
+        WebElement delete = findElementByLocatorType(
+                "//div[contains(@class,'form-actions')]"
+                        + "//a[contains(@class,'type-delete') and contains(normalize-space(.),'Löschen')]",
+                LocatorType.XPATH,
+                true);
+        Assert.assertTrue(addReferat.isDisplayed(), "Expected visible Referat hinzufügen on the owner form.");
+        Assert.assertTrue(addReferat.isEnabled(), "Referat hinzufügen must be enabled.");
+        Assert.assertTrue(delete.isDisplayed(), "Expected visible Löschen on the owner form.");
+        Assert.assertTrue(delete.isEnabled(), "Löschen must be enabled.");
     }
 }
