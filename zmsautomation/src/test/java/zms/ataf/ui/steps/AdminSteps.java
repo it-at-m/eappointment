@@ -370,6 +370,83 @@ public class AdminSteps {
         AUTHORITIES_AND_LOCATIONS_PAGE.assertOwnerFormOffersAddReferatAndDelete();
     }
 
+    private static final String[] STANDORT_ZERO_RESET_FIELDS = {
+        "Terminvergabe ab",
+        "Terminvergabe bis",
+        "Reservierungsdauer",
+        "Aktivierungsdauer",
+        "Löschverzögerung",
+        "Wiederholungsaufrufe",
+        "Durchschnittliche Bearbeitungszeit"
+    };
+
+    @When("I clear the Standort integer fields Terminvergabe ab, Terminvergabe bis, Reservierungsdauer, Aktivierungsdauer, Löschverzögerung, Wiederholungsaufrufe and Durchschnittliche Bearbeitungszeit.")
+    public void iClearTheStandortIntegerFieldsListedInZmskvr1459() {
+        AUTHORITIES_AND_LOCATIONS_PAGE.clearStandortIntegerFields(STANDORT_ZERO_RESET_FIELDS);
+    }
+
+    @Then("those Standort integer fields show the value {string}.")
+    public void thoseStandortIntegerFieldsShowTheValue(String expected) {
+        AUTHORITIES_AND_LOCATIONS_PAGE.assertStandortIntegerFieldsShow(
+                TestDataHelper.transformTestData(expected), STANDORT_ZERO_RESET_FIELDS);
+    }
+
+    @Then("the Löschverzögerung description mentions no extra delay when set to 0.")
+    public void theLoeschverzoegerungDescriptionMentionsNoExtraDelayWhenSetTo0() {
+        AUTHORITIES_AND_LOCATIONS_PAGE.assertLoeschverzoegerungDescriptionMentionsNoExtraDelay();
+    }
+
+    @When("I save the location configuration.")
+    public void iSaveTheLocationConfiguration() {
+        AUTHORITIES_AND_LOCATIONS_PAGE.saveLocationChanges();
+    }
+
+    @Then("the location configuration is saved successfully.")
+    public void theLocationConfigurationIsSavedSuccessfully() {
+        AUTHORITIES_AND_LOCATIONS_PAGE.assertLocationSavedSuccessfully();
+    }
+
+    @When("I open the department {string} for editing under authorities and locations.")
+    public void iOpenTheDepartmentForEditingUnderAuthoritiesAndLocations(String departmentName) {
+        AUTHORITIES_AND_LOCATIONS_PAGE.openDepartmentForEditing(
+                TestDataHelper.transformTestData(departmentName));
+    }
+
+    @When("I clear the Behörde integer field for the email reminder minutes.")
+    public void iClearTheBehoerdeIntegerFieldForTheEmailReminderMinutes() {
+        AUTHORITIES_AND_LOCATIONS_PAGE.clearDepartmentReminderMinutesField();
+    }
+
+    @Then("the Behörde email reminder minutes field shows the value {string}.")
+    public void theBehoerdeEmailReminderMinutesFieldShowsTheValue(String expected) {
+        AUTHORITIES_AND_LOCATIONS_PAGE.assertDepartmentReminderMinutesShows(
+                TestDataHelper.transformTestData(expected));
+    }
+
+    @When("I type {string} into the Standort integer field {string}.")
+    public void iTypeIntoTheStandortIntegerField(String text, String label) {
+        AUTHORITIES_AND_LOCATIONS_PAGE.typeIntoStandortIntegerField(
+                TestDataHelper.transformTestData(label), TestDataHelper.transformTestData(text));
+    }
+
+    @Then("the Standort integer field {string} does not contain letters.")
+    public void theStandortIntegerFieldDoesNotContainLetters(String label) {
+        AUTHORITIES_AND_LOCATIONS_PAGE.assertStandortIntegerFieldHasNoLetters(
+                TestDataHelper.transformTestData(label));
+    }
+
+    @When("I set the Standort integer field {string} to {string}.")
+    public void iSetTheStandortIntegerFieldTo(String label, String value) {
+        AUTHORITIES_AND_LOCATIONS_PAGE.setStandortIntegerField(
+                TestDataHelper.transformTestData(label), TestDataHelper.transformTestData(value));
+    }
+
+    @Then("the location form shows a validation for {string}.")
+    public void theLocationFormShowsAValidationFor(String label) {
+        AUTHORITIES_AND_LOCATIONS_PAGE.assertStandortFieldValidationVisible(
+                TestDataHelper.transformTestData(label));
+    }
+
     @And("I open the opening-hours accordion {string}.")
     public void und_sie_die_oeffnungszeit_accordion_oeffnen(String accordionTitle) {
         accordionTitle = TestDataHelper.transformTestData(accordionTitle);
