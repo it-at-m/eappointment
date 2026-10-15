@@ -4,7 +4,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -18,8 +20,9 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
 /**
- * Reads day dates from a Kundenstatistik workbook ({@code ClientReport}).
+ * Reads day dates and column headers from a Kundenstatistik workbook ({@code ClientReport}).
  * Day rows store the calendar date in column B as {@code dd.MM.yy}.
+ * Header row places {@code Datum} in column B, then customer totals in C and D.
  */
 final class ClientStatisticWorkbook {
 
@@ -50,6 +53,60 @@ final class ClientStatisticWorkbook {
                 }
             }
             return dates;
+        }
+    }
+
+    /**
+     * Header cells of the row that contains {@code Datum} (column B), left to right.
+     * Empty leading cells are kept so Excel column letters match indices (A=0, B=1, …).
+     */
+    static List<String> columnHeaders(Path xlsx) throws IOException {
+        try (ZipFile zip = new ZipFile(xlsx.toFile())) {
+            String[] shared = sharedStrings(zip);
+            ZipEntry sheet = zip.getEntry("xl/worksheets/sheet1.xml");
+            if (sheet == null) {
+                throw new IOException("Workbook has no sheet1: " + xlsx);
+            }
+            Document document = parse(zip.getInputStream(sheet));
+            Map<Integer, Map<Integer, String>> byRow = new HashMap<>();
+            NodeList cells = elements(document, "c");
+            for (int i = 0; i < cells.getLength(); i++) {
+                Element cell = (Element) cells.item(i);
+                String ref = cell.getAttribute("r");
+                byRow.computeIfAbsent(rowNumber(ref), ignored -> new HashMap<>())
+                        .put(columnIndex(ref), cellText(cell, shared).trim());
+            }
+            for (Map<Integer, String> columns : byRow.values()) {
+                if ("Datum".equals(columns.get(1))) {
+                    int last = columns.keySet().stream().mapToInt(Integer::intValue).max().orElse(0);
+                    List<String> headers = new ArrayList<>();
+                    for (int column = 0; column <= last; column++) {
+                        headers.add(columns.getOrDefault(column, ""));
+                    }
+                    return headers;
+                }
+            }
+            throw new IOException("Workbook has no Datum header row: " + xlsx);
+        }
+    }
+
+    private static int columnIndex(String ref) {
+        int index = 0;
+        for (int i = 0; i < ref.length(); i++) {
+            char letter = ref.charAt(i);
+            if (letter < 'A' || letter > 'Z') {
+                break;
+            }
+            index = index * 26 + (letter - 'A' + 1);
+        }
+        return index - 1;
+    }
+
+    private static int rowNumber(String ref) throws IOException {
+        try {
+            return Integer.parseInt(ref.replaceAll("\\D", ""));
+        } catch (NumberFormatException exception) {
+            throw new IOException("Workbook cell has no row number: " + ref, exception);
         }
     }
 
