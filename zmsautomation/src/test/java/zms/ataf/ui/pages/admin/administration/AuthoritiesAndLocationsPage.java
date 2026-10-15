@@ -819,4 +819,126 @@ public void saveLocationChanges() {
                 textArea.isDisplayed(),
                 "Expected textarea preferences[appointment][infoForAllAppointments]");
     }
+
+    /**
+     * ZMSKVR-1345 / ZMSKVR-1461: restrictedscope users start with read-only Name and Anschrift.
+     * The page title is {@code Standort}; the address label in the React block is Anschrift.
+     */
+    public void assertLocationFormStartsWithReadOnlyNameAndAddress() {
+        ScenarioLogManager.getLogger()
+                .info("Asserting Standort form starts with read-only Name and Anschrift");
+        Assert.assertTrue(
+                isWebElementVisible(
+                        DEFAULT_EXPLICIT_WAIT_TIME,
+                        "//h1[@class='main-title' and normalize-space(.)='Standort']",
+                        LocatorType.XPATH,
+                        false),
+                "Expected page title Standort.");
+        WebElement name = findElementByLocatorType("//input[@id='scopeProviderName']", LocatorType.XPATH, true);
+        WebElement address =
+                findElementByLocatorType("//input[@id='scopeProviderStreet']", LocatorType.XPATH, true);
+        Assert.assertTrue(name.isDisplayed(), "Expected read-only Name field (#scopeProviderName).");
+        Assert.assertTrue(address.isDisplayed(), "Expected read-only Anschrift field (#scopeProviderStreet).");
+        Assert.assertTrue(isReadonly(name), "Name must be read-only.");
+        Assert.assertTrue(isReadonly(address), "Anschrift must be read-only.");
+    }
+
+    private static boolean isReadonly(WebElement field) {
+        String readonly = field.getAttribute("readonly");
+        String readOnly = field.getAttribute("readOnly");
+        return (readonly != null && !readonly.isBlank()) || (readOnly != null && !readOnly.isBlank());
+    }
+
+    /** ZMSKVR-1345 / ZMSKVR-1461: Quelle der Standortdaten / Standortdaten selects stay hidden. */
+    public void assertLocationSourceAndProviderFieldsHidden() {
+        ScenarioLogManager.getLogger()
+                .info("Asserting Quelle der Standortdaten / Standortdaten selects are hidden");
+        Assert.assertTrue(
+                noneDisplayed(By.id("scopeProviderSource")),
+                "Quelle der Standortdaten (#scopeProviderSource) must stay hidden.");
+        Assert.assertTrue(
+                noneDisplayed(By.id("scopeProviderId")),
+                "Standortdaten provider select (#scopeProviderId) must stay hidden.");
+        Assert.assertTrue(
+                noneDisplayed(By.cssSelector("label[for='scopeProviderSource']")),
+                "Label Quelle der Standortdaten must stay hidden.");
+    }
+
+    private boolean noneDisplayed(By locator) {
+        return DRIVER.findElements(locator).stream().noneMatch(WebElement::isDisplayed);
+    }
+
+    /** ZMSKVR-1345 / ZMSKVR-1461: technical admin keeps editable source selects. */
+    public void assertLocationSourceAndProviderFieldsEditable() {
+        ScenarioLogManager.getLogger()
+                .info("Asserting Quelle der Standortdaten / Standortdaten selects are editable");
+        WebElement source =
+                findElementByLocatorType("//select[@id='scopeProviderSource']", LocatorType.XPATH, true);
+        WebElement provider =
+                findElementByLocatorType("//select[@id='scopeProviderId']", LocatorType.XPATH, true);
+        Assert.assertTrue(source.isDisplayed(), "Expected Quelle der Standortdaten select.");
+        Assert.assertTrue(provider.isDisplayed(), "Expected Standortdaten provider select.");
+        Assert.assertTrue(source.isEnabled(), "Quelle der Standortdaten must be enabled.");
+        Assert.assertTrue(provider.isEnabled(), "Standortdaten provider select must be enabled.");
+        Assert.assertTrue(
+                DRIVER.findElement(By.cssSelector("label[for='scopeProviderSource']")).getText()
+                        .contains("Quelle der Standortdaten"),
+                "Expected label Quelle der Standortdaten.");
+        Assert.assertTrue(
+                DRIVER.findElement(By.cssSelector("label[for='scopeProviderId']")).getText()
+                        .contains("Standortdaten"),
+                "Expected label Standortdaten.");
+    }
+
+    /** ZMSKVR-1345 / ZMSKVR-1461: jurisdiction shows the owner edit control on the overview. */
+    public void assertOwnerCanBeOpenedForEditing(String ownerName) {
+        ScenarioLogManager.getLogger()
+                .info("Asserting owner {} has an edit link under Behörden und Standorte", ownerName);
+        WebElement edit = findElementByLocatorType(
+                "//h2[contains(@class,'owner-title') and contains(normalize-space(.),'"
+                        + ownerName
+                        + "')]//a[@title='Bearbeiten']",
+                LocatorType.XPATH,
+                true);
+        Assert.assertTrue(edit.isDisplayed(), "Expected Bearbeiten link for owner " + ownerName + ".");
+    }
+
+    public void openOwnerForEditing(String ownerName) {
+        ScenarioLogManager.getLogger()
+                .info("Opening owner {} for editing under Behörden und Standorte", ownerName);
+        clickOnWebElement(
+                DEFAULT_EXPLICIT_WAIT_TIME,
+                "//h2[contains(@class,'owner-title') and contains(normalize-space(.),'"
+                        + ownerName
+                        + "')]//a[@title='Bearbeiten']",
+                LocatorType.XPATH,
+                false,
+                CONTEXT);
+        Assert.assertTrue(
+                isWebElementVisible(
+                        DEFAULT_EXPLICIT_WAIT_TIME,
+                        "//h2[contains(@class,'form__heading') and contains(.,'Kundeneinrichtung')]",
+                        LocatorType.XPATH,
+                        false),
+                "Did not reach the owner edit form for " + ownerName + ".");
+    }
+
+    public void assertOwnerFormOffersAddReferatAndDelete() {
+        ScenarioLogManager.getLogger()
+                .info("Asserting owner form offers Referat hinzufügen and Löschen");
+        WebElement addReferat = findElementByLocatorType(
+                "//div[contains(@class,'form-actions')]"
+                        + "//a[contains(@class,'type-new') and contains(normalize-space(.),'Referat hinzufügen')]",
+                LocatorType.XPATH,
+                true);
+        WebElement delete = findElementByLocatorType(
+                "//div[contains(@class,'form-actions')]"
+                        + "//a[contains(@class,'type-delete') and contains(normalize-space(.),'Löschen')]",
+                LocatorType.XPATH,
+                true);
+        Assert.assertTrue(addReferat.isDisplayed(), "Expected visible Referat hinzufügen on the owner form.");
+        Assert.assertTrue(addReferat.isEnabled(), "Referat hinzufügen must be enabled.");
+        Assert.assertTrue(delete.isDisplayed(), "Expected visible Löschen on the owner form.");
+        Assert.assertTrue(delete.isEnabled(), "Löschen must be enabled.");
+    }
 }
