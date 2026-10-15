@@ -522,6 +522,27 @@ public class ZmsApiSteps {
     }
 
     /**
+     * Placeholder glue for ZMSKVR-1460 (@ignore). Implement when the API rejects zero durations.
+     */
+    @When("I update scope {int} with activationDuration {int} with the X-AuthKey")
+    public void iUpdateScopeWithActivationDurationWithTheXAuthKey(int scopeId, int activationDuration) {
+        Assertions.fail("ZMSKVR-1460 not implemented: POST /scope/" + scopeId + "/ with activationDuration="
+                + activationDuration);
+    }
+
+    @When("I update scope {int} with reservationDuration {int} with the X-AuthKey")
+    public void iUpdateScopeWithReservationDurationWithTheXAuthKey(int scopeId, int reservationDuration) {
+        Assertions.fail("ZMSKVR-1460 not implemented: POST /scope/" + scopeId + "/ with reservationDuration="
+                + reservationDuration);
+    }
+
+    @When("I update scope {int} with processingTimeAverage {int} with the X-AuthKey")
+    public void iUpdateScopeWithProcessingTimeAverageWithTheXAuthKey(int scopeId, int processingTimeAverage) {
+        Assertions.fail("ZMSKVR-1460 not implemented: POST /scope/" + scopeId + "/ with processingTimeAverage="
+                + processingTimeAverage);
+    }
+
+    /**
      * ZMSKVR-933 / ZMSKVR-934: provider.data.slotTimeInMinutes seeds Admin Terminabstand.
      */
     @Then("scope {int} provider data should have slotTimeInMinutes {int}")
