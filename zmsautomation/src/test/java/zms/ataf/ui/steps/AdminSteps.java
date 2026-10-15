@@ -339,6 +339,37 @@ public class AdminSteps {
         AUTHORITIES_AND_LOCATIONS_PAGE.assertAvailabilityHintFieldLegendVisible();
     }
 
+    @Then("the location form starts with the read-only Name and Anschrift fields.")
+    public void theLocationFormStartsWithTheReadOnlyNameAndAnschriftFields() {
+        AUTHORITIES_AND_LOCATIONS_PAGE.assertLocationFormStartsWithReadOnlyNameAndAddress();
+    }
+
+    @Then("the location source and provider fields are hidden.")
+    public void theLocationSourceAndProviderFieldsAreHidden() {
+        AUTHORITIES_AND_LOCATIONS_PAGE.assertLocationSourceAndProviderFieldsHidden();
+    }
+
+    @Then("the location source and provider fields are editable.")
+    public void theLocationSourceAndProviderFieldsAreEditable() {
+        AUTHORITIES_AND_LOCATIONS_PAGE.assertLocationSourceAndProviderFieldsEditable();
+    }
+
+    @Then("the owner {string} can be opened for editing under authorities and locations.")
+    public void theOwnerCanBeOpenedForEditingUnderAuthoritiesAndLocations(String ownerName) {
+        AUTHORITIES_AND_LOCATIONS_PAGE.assertOwnerCanBeOpenedForEditing(
+                TestDataHelper.transformTestData(ownerName));
+    }
+
+    @When("I open the owner {string} for editing under authorities and locations.")
+    public void iOpenTheOwnerForEditingUnderAuthoritiesAndLocations(String ownerName) {
+        AUTHORITIES_AND_LOCATIONS_PAGE.openOwnerForEditing(TestDataHelper.transformTestData(ownerName));
+    }
+
+    @Then("the owner form offers adding a Referat and deleting the owner.")
+    public void theOwnerFormOffersAddingAReferatAndDeletingTheOwner() {
+        AUTHORITIES_AND_LOCATIONS_PAGE.assertOwnerFormOffersAddReferatAndDelete();
+    }
+
     @And("I open the opening-hours accordion {string}.")
     public void und_sie_die_oeffnungszeit_accordion_oeffnen(String accordionTitle) {
         accordionTitle = TestDataHelper.transformTestData(accordionTitle);
