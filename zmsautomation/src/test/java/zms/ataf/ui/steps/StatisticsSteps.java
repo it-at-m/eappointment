@@ -9,6 +9,7 @@ import java.util.Map;
 import org.testng.Assert;
 
 import ataf.core.helpers.TestDataHelper;
+import ataf.core.logging.ScenarioLogManager;
 import ataf.web.controls.WindowControls;
 import ataf.web.model.WindowType;
 import ataf.web.utils.DriverUtil;
@@ -54,7 +55,29 @@ public class StatisticsSteps {
     public void dann_sollten_sie_sich_am_start_des_zeitmanagementsystem_befinden() {
         Assert.assertEquals(WindowControls.getActiveWindow().getWindowTitle(), StatisticsPageContext.TITLE,
                 "This is not the start page of the \"" + StatisticsPageContext.NAME + "\"");
-        WindowControls.getActiveWindow().setWindowType(WindowType.getSystemWindowType("Statistik"));
+        // ATAF WindowType uses a shared HashMap; parallel shards can CME while iterating.
+        setActiveWindowTypeSafely("zmsstatistic");
+    }
+
+    private static void setActiveWindowTypeSafely(String systemName) {
+        for (int attempt = 1; attempt <= 8; attempt++) {
+            try {
+                WindowControls.getActiveWindow().setWindowType(WindowType.getSystemWindowType(systemName));
+                return;
+            } catch (java.util.ConcurrentModificationException e) {
+                ScenarioLogManager.getLogger()
+                        .warn(
+                                "WindowType.getSystemWindowType(\"{}\") raced (attempt {}/8); retrying",
+                                systemName,
+                                attempt);
+                try {
+                    Thread.sleep(10L * attempt);
+                } catch (InterruptedException ie) {
+                    Thread.currentThread().interrupt();
+                    return;
+                }
+            }
+        }
     }
 
     @When("I click the button {string} in the statistics.")
