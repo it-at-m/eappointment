@@ -177,6 +177,17 @@ public class CustomerStatisticsPage extends StatisticsPage {
         assertUniqueDates(dates, "Excel export");
     }
 
+    /** ZMSKVR-1405 / ZMSKVR-1441: Excel columns C and D are the customer totals. */
+    public void assertDownloadedCustomerTotalHeaders() throws IOException {
+        List<String> headers = ClientStatisticWorkbook.columnHeaders(workbookFromThisDownload());
+        ScenarioLogManager.getLogger().info("Kundenstatistik Excel headers: {}", headers);
+        Assert.assertTrue(headers.size() > 3, "Excel header row too short: " + headers);
+        Assert.assertEquals(headers.get(2), "Kunden Erschienen",
+                "Column C must be Kunden Erschienen. Headers: " + headers);
+        Assert.assertEquals(headers.get(3), "Kunden Nicht Erschienen",
+                "Column D must be Kunden Nicht Erschienen. Headers: " + headers);
+    }
+
     private List<String> uiDayDates() {
         WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
         wait.until(driver -> !driver.findElements(By.cssSelector("td.colDatumTag.statistik")).isEmpty()
