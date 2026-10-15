@@ -819,4 +819,160 @@ public void saveLocationChanges() {
                 textArea.isDisplayed(),
                 "Expected textarea preferences[appointment][infoForAllAppointments]");
     }
+
+    /** ZMSKVR-1392 / ZMSKVR-1459 — Standort number inputs that blur empty values to 0. */
+    private static final Map<String, String> STANDORT_INTEGER_FIELDS = Map.of(
+            "Terminvergabe ab", "preferences[appointment][startInDaysDefault]",
+            "Terminvergabe bis", "preferences[appointment][endInDaysDefault]",
+            "Reservierungsdauer", "preferences[appointment][reservationDuration]",
+            "Aktivierungsdauer", "preferences[appointment][activationDuration]",
+            "Löschverzögerung", "preferences[appointment][deallocationDuration]",
+            "Wiederholungsaufrufe", "preferences[queue][callCountMax]",
+            "Durchschnittliche Bearbeitungszeit", "preferences[queue][processingTimeAverage]");
+
+    private static final String DEPARTMENT_REMINDER_MINUTES =
+            "sendEmailReminderMinutesBefore";
+
+    private static final String LOESCHVERZOEGERUNG_HINT =
+            "Wird 0 eingestellt, so gibt es keine zusätzliche Löschverzögerung";
+
+    public void clearStandortIntegerFields(String... labels) {
+        for (String label : labels) {
+            clearIntegerInput(standortIntegerName(label));
+        }
+    }
+
+    public void assertStandortIntegerFieldsShow(String expected, String... labels) {
+        for (String label : labels) {
+            String name = standortIntegerName(label);
+            String value = integerInputValue(name);
+            Assert.assertEquals(
+                    value,
+                    expected,
+                    "Standort field \"" + label + "\" (" + name + ") expected " + expected + " but was " + value);
+        }
+    }
+
+    public void assertLoeschverzoegerungDescriptionMentionsNoExtraDelay() {
+        ScenarioLogManager.getLogger().info("Asserting Löschverzögerung help text");
+        String body = DRIVER.findElement(By.tagName("body")).getText().replace('\u00a0', ' ');
+        Assert.assertTrue(
+                body.contains(LOESCHVERZOEGERUNG_HINT),
+                "Expected Löschverzögerung description to contain: " + LOESCHVERZOEGERUNG_HINT);
+    }
+
+    public void assertLocationSavedSuccessfully() {
+        ScenarioLogManager.getLogger().info("Asserting Standort save succeeded");
+        Assert.assertTrue(
+                DRIVER.findElements(By.cssSelector(".message--error")).isEmpty()
+                        || DRIVER.findElements(By.cssSelector(".message--error")).stream()
+                                .noneMatch(WebElement::isDisplayed),
+                "Standort save showed a form error: "
+                        + DRIVER.findElements(By.cssSelector(".message--error")).stream()
+                                .map(WebElement::getText)
+                                .findFirst()
+                                .orElse(""));
+        boolean success =
+                !DRIVER.findElements(By.cssSelector(".message--success")).isEmpty()
+                        || DRIVER.getCurrentUrl().contains("success=scope_saved");
+        Assert.assertTrue(success, "Expected Standort save success banner or success=scope_saved URL.");
+    }
+
+    public void openDepartmentForEditing(String departmentName) {
+        ScenarioLogManager.getLogger()
+                .info("Opening department {} for editing under Behörden und Standorte", departmentName);
+        clickOnWebElement(
+                DEFAULT_EXPLICIT_WAIT_TIME,
+                "//h4[contains(@class,'department-title') and contains(normalize-space(.),'"
+                        + departmentName
+                        + "')]//a[@title='Bearbeiten']",
+                LocatorType.XPATH,
+                false,
+                CONTEXT);
+        Assert.assertTrue(
+                isWebElementVisible(
+                        DEFAULT_EXPLICIT_WAIT_TIME,
+                        "//input[@name='" + DEPARTMENT_REMINDER_MINUTES + "']",
+                        LocatorType.XPATH,
+                        false),
+                "Did not reach the Behörde form for " + departmentName + ".");
+    }
+
+    public void clearDepartmentReminderMinutesField() {
+        clearIntegerInput(DEPARTMENT_REMINDER_MINUTES);
+    }
+
+    public void assertDepartmentReminderMinutesShows(String expected) {
+        Assert.assertEquals(
+                integerInputValue(DEPARTMENT_REMINDER_MINUTES),
+                expected,
+                "Behörde email reminder minutes expected " + expected);
+    }
+
+    public void typeIntoStandortIntegerField(String label, String text) {
+        WebElement field = integerInput(standortIntegerName(label));
+        moveToElementAction(field);
+        field.click();
+        field.sendKeys(text);
+    }
+
+    public void setStandortIntegerField(String label, String value) {
+        WebElement field = integerInput(standortIntegerName(label));
+        moveToElementAction(field);
+        Keys selectAllMod = selectAllModifierKey();
+        new Actions(DRIVER)
+                .click(field)
+                .keyDown(selectAllMod)
+                .sendKeys("a")
+                .keyUp(selectAllMod)
+                .sendKeys(Keys.DELETE)
+                .sendKeys(value)
+                .sendKeys(Keys.TAB)
+                .perform();
+    }
+
+    public void assertStandortIntegerFieldHasNoLetters(String label) {
+        String value = integerInputValue(standortIntegerName(label));
+        Assert.assertTrue(
+                value == null || value.matches("^[0-9]*$"),
+                "Standort field \"" + label + "\" must not contain letters, was: " + value);
+    }
+
+    /** Placeholder for ZMSKVR-1460 until product rejects zero durations. */
+    public void assertStandortFieldValidationVisible(String label) {
+        Assert.fail(
+                "ZMSKVR-1460 not implemented yet: expected validation for \""
+                        + label
+                        + "\" after saving 0.");
+    }
+
+    private String standortIntegerName(String label) {
+        String name = STANDORT_INTEGER_FIELDS.get(label);
+        Assert.assertNotNull(name, "Unknown Standort integer field label: " + label);
+        return name;
+    }
+
+    private WebElement integerInput(String name) {
+        return findElementByLocatorType("//input[@name='" + name + "']", LocatorType.XPATH, true);
+    }
+
+    private String integerInputValue(String name) {
+        String value = integerInput(name).getAttribute("value");
+        return value == null ? "" : value.trim();
+    }
+
+    private void clearIntegerInput(String name) {
+        ScenarioLogManager.getLogger().info("Clearing integer input {}", name);
+        WebElement field = integerInput(name);
+        moveToElementAction(field);
+        Keys selectAllMod = selectAllModifierKey();
+        new Actions(DRIVER)
+                .click(field)
+                .keyDown(selectAllMod)
+                .sendKeys("a")
+                .keyUp(selectAllMod)
+                .sendKeys(Keys.DELETE)
+                .sendKeys(Keys.TAB)
+                .perform();
+    }
 }
