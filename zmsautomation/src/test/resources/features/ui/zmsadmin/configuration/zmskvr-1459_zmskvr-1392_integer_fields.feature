@@ -44,5 +44,5 @@ Feature: Integer fields on Standort and Behörde reset empty values to zero
     And I click the button "Auswahl bestätigen" in the administration.
     And I click the entry "Behörden und Standorte" in the Administration menu.
     And I click the location "Bürgerbüro Forstenrieder Allee (KVR-II/234)" under authorities and locations.
-    When I type "abc" into the Standort integer field Löschverzögerung.
-    Then the Standort integer field Löschverzögerung does not contain letters.
+    When I type "abc" into the Standort integer field "Löschverzögerung".
+    Then the Standort integer field "Löschverzögerung" does not contain letters.
