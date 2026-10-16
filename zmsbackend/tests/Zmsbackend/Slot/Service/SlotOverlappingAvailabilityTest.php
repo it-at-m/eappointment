@@ -187,27 +187,68 @@ class SlotOverlappingAvailabilityTest extends \BO\Zmsbackend\Tests\Service\Base
             $this->writeReservedProcess(static::TIMESTAMP_0830),
             $this->writeReservedProcess(static::TIMESTAMP_0850, 2),
         ];
-        $before = [];
-        foreach ($processList as $process) {
-            $before += $this->readMappedAvailabilityIds($process);
-        }
+        $processIds = array_keys($this->readMappedAvailabilityIdsForList($processList));
 
-        $slotService = new Slot();
-        foreach (array_keys($before) as $processId) {
-            $slotService->deleteSlotProcessMappingFor($processId);
-        }
-        $this->assertSame(count($before), $slotService->updateSlotProcessMapping(static::SCOPE_ID));
-
-        $after = [];
+        $firstRebuild = $this->rebuildMapping($processIds, $processList);
+        $this->assertSame($processIds, array_keys($firstRebuild));
         foreach ($processList as $process) {
-            $after += $this->readMappedAvailabilityIds($process);
+            $mapped = $this->readMappedAvailabilityIds($process);
+            $this->assertCount(1, array_unique($mapped), "Process $process is mapped to more than one availability");
         }
-        ksort($before);
-        ksort($after);
-        $this->assertSame($before, $after);
-        foreach (array_keys($after) as $processId) {
+        foreach ($processIds as $processId) {
             $this->assertSame(1, $this->readSlotProcessCount($processId));
         }
+        $this->assertSame([], (new Slot())->fetchAll('
+            SELECT s.slotID
+            FROM slot s
+                INNER JOIN slot_process sp ON sp.slotID = s.slotID
+            WHERE s.scopeID = :scopeID AND s.year = 2016 AND s.month = 5 AND s.day = 30
+            GROUP BY s.slotID
+            HAVING COUNT(sp.processID) > MAX(s.intern)
+        ', ['scopeID' => static::SCOPE_ID]));
+
+        // Rebuilding again gives the same mapping
+        $this->assertSame($firstRebuild, $this->rebuildMapping($processIds, $processList));
+    }
+
+    protected function rebuildMapping(array $processIds, array $processList): array
+    {
+        $slotService = new Slot();
+        foreach ($processIds as $processId) {
+            $slotService->deleteSlotProcessMappingFor($processId);
+        }
+        $this->assertSame(count($processIds), $slotService->updateSlotProcessMapping(static::SCOPE_ID));
+        return $this->readMappedAvailabilityIdsForList($processList);
+    }
+
+    protected function readMappedAvailabilityIdsForList(array $processList): array
+    {
+        $mapped = [];
+        foreach ($processList as $process) {
+            $mapped += $this->readMappedAvailabilityIds($process);
+        }
+        ksort($mapped);
+        return $mapped;
+    }
+
+    public function testDeletedAdditionalAvailabilityShowsOverbooking()
+    {
+        $shortAvailability = $this->writeShortAvailability();
+        $scope = (new \BO\Zmsbackend\Scope\Service\Scope())->readEntity(static::SCOPE_ID, 1, true);
+        $day = new \DateTimeImmutable('2016-05-30 00:00');
+        $processService = new \BO\Zmsbackend\Process\Service\Process();
+        $conflictsBefore = $processService->readConflictListByScopeAndTime($scope, $day, null, static::$now, 0);
+
+        // 2 workstations in the long and 1 in the short availability
+        for ($count = 0; $count < 3; $count++) {
+            $this->writeReservedProcess(static::TIMESTAMP_0830);
+        }
+        $conflictList = $processService->readConflictListByScopeAndTime($scope, $day, null, static::$now, 0);
+        $this->assertEquals($conflictsBefore->count(), $conflictList->count());
+
+        (new \BO\Zmsbackend\Availability\Service\Availability())->deleteEntity($shortAvailability->getId());
+        $conflictList = $processService->readConflictListByScopeAndTime($scope, $day, null, static::$now, 0);
+        $this->assertEquals($conflictsBefore->count() + 1, $conflictList->count());
     }
 
     public function testWithoutOverlapMappingIsUnchanged()
