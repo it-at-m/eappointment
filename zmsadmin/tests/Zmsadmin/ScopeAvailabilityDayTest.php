@@ -210,4 +210,49 @@ class ScopeAvailabilityDayTest extends Base
         );
         $this->render($this->arguments, $this->parameters, []);
     }
+
+    public function testSlotBucketsAddUpOverlappingAvailabilities()
+    {
+        $availabilityData = [
+            'type' => 'appointment',
+            'weekday' => ['friday' => '32'],
+            'repeat' => ['afterWeeks' => '1'],
+            'workstationCount' => ['public' => '2', 'intern' => '3'],
+            'slotTimeInMinutes' => '15',
+            'startDate' => strtotime('2016-04-01'),
+            'endDate' => strtotime('2016-04-01'),
+        ];
+        $availabilityList = new \BO\Zmsentities\Collection\AvailabilityList([
+            new \BO\Zmsentities\Availability(array_merge($availabilityData, [
+                'id' => '1',
+                'startTime' => '08:00:00',
+                'endTime' => '09:00:00',
+            ])),
+            // additional workstation inside availability 1
+            new \BO\Zmsentities\Availability(array_merge($availabilityData, [
+                'id' => '2',
+                'startTime' => '08:15:00',
+                'endTime' => '08:45:00',
+                'workstationCount' => ['public' => '1', 'intern' => '1'],
+            ])),
+        ]);
+        $buckets = ScopeAvailabilityDaySlotBuckets::readSlotBuckets(
+            $availabilityList,
+            new \BO\Zmsentities\Collection\ProcessList()
+        );
+        $this->assertSame(['08:00', '08:15', '08:30', '08:45'], array_keys($buckets));
+        $this->assertEquals(3, $buckets['08:00']['intern']);
+        $this->assertEquals(4, $buckets['08:15']['intern']);
+        $this->assertEquals(3, $buckets['08:15']['public']);
+        $this->assertEquals(4, $buckets['08:30']['intern']);
+        $this->assertEquals(3, $buckets['08:45']['intern']);
+    }
+}
+
+class ScopeAvailabilityDaySlotBuckets extends \BO\Zmsadmin\ScopeAvailabilityDay
+{
+    public static function readSlotBuckets($availabilityList, $processList): array
+    {
+        return static::getSlotBuckets($availabilityList, $processList);
+    }
 }
