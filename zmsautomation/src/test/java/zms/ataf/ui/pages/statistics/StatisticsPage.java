@@ -203,26 +203,19 @@ public class StatisticsPage extends BasePage {
     public void checkIfTheOverviewPageIsOpen() {
         ScenarioLogManager.getLogger().info("Checking if the overview page is visible.");
         // After admin→statistic SSO the landing page is often "Willkommen zurück"
-        // with the Auswertungen sidebar already available (no second scope form).
+        // with the Auswertungen sidebar (no data-includeurl shell wrapper).
         boolean overviewOrWelcome = isWebElementVisible(
-                        DEFAULT_EXPLICIT_WAIT_TIME,
+                        5,
                         "//h1[normalize-space()='Übersicht verfügbarer Statistiken'"
                                 + " or normalize-space()='Willkommen zurück']",
                         LocatorType.XPATH,
-                        true)
+                        false)
                 || isWebElementVisible(
-                        5,
+                        DEFAULT_EXPLICIT_WAIT_TIME,
                         "//a[normalize-space()='Kundenstatistik']",
                         LocatorType.XPATH,
-                        false);
+                        true);
         Assert.assertTrue(overviewOrWelcome, "Statistics overview / welcome page is not visible!");
-        Assert.assertTrue(
-                isWebElementVisible(
-                        DEFAULT_EXPLICIT_WAIT_TIME,
-                        "//div[@data-includeurl='/terminvereinbarung/statistic']",
-                        LocatorType.XPATH,
-                        true),
-                "Statistics shell is not visible!");
     }
 
     /** Use JS click and wait for sub-page to avoid navigation timeout when opening Kundenstatistik. */
