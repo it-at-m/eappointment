@@ -331,8 +331,14 @@ class Process extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfaces\R
     {
         $query = new \BO\Zmsbackend\Process\Repository\Process(\BO\Zmsbackend\Query\Base::SELECT);
         $processList = new Collection();
+        $processIds = [];
         while ($processData = $statement->fetch(\PDO::FETCH_ASSOC)) {
             $entity = new Entity($query->postProcessJoins($processData));
+            // The availability join may match a process once per overlapping availability
+            if ($entity->getId() && isset($processIds[$entity->getId()])) {
+                continue;
+            }
+            $processIds[$entity->getId()] = true;
             $entity = $this->readResolvedReferences($entity, $resolveReferences);
             $processList->addEntity($entity);
         }
