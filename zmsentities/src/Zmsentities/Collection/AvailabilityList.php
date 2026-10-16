@@ -151,12 +151,12 @@ class AvailabilityList extends Base
     }
 
     /**
-     * One slot list per availability, shorter availabilities first (then lower id).
+     * Availabilities keyed by id (or tempId), shorter availabilities first (then lower id).
      * Same order as the backend uses to map bookings of overlapping availabilities to slots.
      *
-     * @return SlotList[]
+     * @return array<int|string, Availability>
      */
-    public function getSlotListByAvailability(): array
+    public function getSortedByDuration(): array
     {
         $availabilityList = iterator_to_array($this);
         usort($availabilityList, function (Availability $left, Availability $right) {
@@ -165,9 +165,24 @@ class AvailabilityList extends Base
                 - $right->getStartDateTime()->getSecondsOfDay();
             return [$leftDuration, (int) $left->id] <=> [$rightDuration, (int) $right->id];
         });
+        $sorted = [];
+        foreach ($availabilityList as $index => $availability) {
+            $key = $availability->id ?: ($availability->tempId ?? "index-$index");
+            $sorted[$key] = $availability;
+        }
+        return $sorted;
+    }
+
+    /**
+     * One slot list per availability, keys and order as in getSortedByDuration()
+     *
+     * @return array<int|string, SlotList>
+     */
+    public function getSlotListByAvailability(): array
+    {
         $slotLists = [];
-        foreach ($availabilityList as $availability) {
-            $slotLists[] = $availability->getSlotList();
+        foreach ($this->getSortedByDuration() as $key => $availability) {
+            $slotLists[$key] = $availability->getSlotList();
         }
         return $slotLists;
     }
@@ -279,17 +294,13 @@ class AvailabilityList extends Base
     }
 
     /**
+     * Booked slots per availability, a booking in overlapping availabilities counts for one of them
+     *
      * @return array
      */
     public function getCalculatedSlotCount(\BO\Zmsentities\Collection\ProcessList $processList): array
     {
-        $slotCounts = [];
-        foreach ($this as $item) {
-            $itemId = $item->id;
-            $listWithAvailability = $processList->withAvailability($item);
-            $slotCounts[$itemId] = $listWithAvailability->getAppointmentList()->getCalculatedSlotCount();
-        }
-        return $slotCounts;
+        return $processList->getCalculatedSlotCountByAvailability($this);
     }
 
 
