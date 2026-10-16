@@ -9,6 +9,11 @@ Feature: E-Kiosk spontaneous customers appear under davon E-Kiosk in Kundenstati
 	# shortName standortkuerzel "EKiosk". Ticketprinter buttonName is standortinfozeile.
 	@web @zmsstatistic @zmsticketprinter @zmsadmin @citizen-stats @controlling @ZMSKVR-1196 @ZMSKVR-1126 @executeLocally
 	Scenario: Finished E-Kiosk walk-in counts as erschienen in Kundenstatistik GUI and Excel
+		Given the ZMS API is available
+		And I am logged in to the ZMS API as "ataf"
+		And Spontankunden opening hours exist for scope 381 from "00:01" to "23:59"
+		When I request the clientscope warehouse report for scope 381 for today with the X-AuthKey
+		And I remember the clientscope ticketprinter appeared count for today
 		When I open the ticket printer for location "381".
 		Then the button "Wartenummer für ZMSKVR-1126" should be visible on the ticket printer.
 		When I click the button "Wartenummer für ZMSKVR-1126" on the ticket printer.
@@ -31,7 +36,7 @@ Feature: E-Kiosk spontaneous customers appear under davon E-Kiosk in Kundenstati
 		And I select for "Standort" the value "Bürgerbüro Orleansplatz (KVR-II/231 KP) EKiosk" in the statistics filter.
 		And I filter the statistics from 0 days before today until today.
 		And the citizen statistics show the E-Kiosk column group.
-		Then the E-Kiosk appeared count for today is at least "1".
+		Then the E-Kiosk appeared count for today is greater than the remembered clientscope ticketprinter count.
 		When I click the download button in the citizen statistics.
 		Then the downloaded citizen statistics include the E-Kiosk column headers.
-		And the downloaded citizen statistics E-Kiosk appeared count for today is at least "1".
+		And the downloaded citizen statistics E-Kiosk appeared count for today is greater than the remembered clientscope ticketprinter count.

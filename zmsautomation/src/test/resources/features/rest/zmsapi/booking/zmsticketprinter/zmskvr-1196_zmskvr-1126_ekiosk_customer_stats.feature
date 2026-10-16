@@ -10,9 +10,12 @@ Feature: E-Kiosk ticketprinter walk-ins feed clientscope ticketprinter stats
   Background:
     Given the ZMS API is available
     And I am logged in to the ZMS API as "ataf"
+    And Spontankunden opening hours exist for scope 381 from "00:01" to "23:59"
     And I have a ticketprinter session for scope 381
 
   Scenario: Finished E-Kiosk waiting number increases clientscope ticketprinter for today
+    When I request the clientscope warehouse report for scope 381 for today with the X-AuthKey
+    And I remember the clientscope ticketprinter appeared count for today
     When I request a waiting number for scope 381
     Then the response status code should be 200
     And the response should contain process information
@@ -29,4 +32,4 @@ Feature: E-Kiosk ticketprinter walk-ins feed clientscope ticketprinter stats
     And the process status should be "finished"
     When I request the clientscope warehouse report for scope 381 for today with the X-AuthKey
     Then the response status code should be 200
-    And the clientscope ticketprinter appeared count for today should be at least 1
+    And the clientscope ticketprinter appeared count for today should be greater than the remembered count

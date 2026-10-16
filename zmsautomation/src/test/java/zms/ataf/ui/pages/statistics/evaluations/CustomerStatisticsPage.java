@@ -214,7 +214,13 @@ public class CustomerStatisticsPage extends StatisticsPage {
                 LocatorType.XPATH,
                 true);
         scrollToCenterByVisibleElement(cell);
-        int actual = Integer.parseInt(cell.getText().trim());
+        String text = cell.getText().trim();
+        int actual;
+        try {
+            actual = Integer.parseInt(text);
+        } catch (NumberFormatException e) {
+            throw new AssertionError("E-Kiosk appeared on " + date + " is not a number: \"" + text + "\"", e);
+        }
         Assert.assertTrue(
                 actual >= minimum,
                 "E-Kiosk appeared on " + date + " must be >= " + minimum + ", was " + actual);
@@ -238,7 +244,13 @@ public class CustomerStatisticsPage extends StatisticsPage {
         ScenarioLogManager.getLogger()
                 .info("Excel E-Kiosk appeared on {} is \"{}\" (min {}).", dayDate, value, minimum);
         Assert.assertFalse(value.isBlank(), "Excel has no Erschienen (E-Kiosk) value for " + dayDate);
-        int actual = Integer.parseInt(value.trim());
+        int actual;
+        try {
+            actual = Integer.parseInt(value.trim());
+        } catch (NumberFormatException e) {
+            throw new AssertionError(
+                    "Excel Erschienen (E-Kiosk) on " + dayDate + " is not a number: \"" + value + "\"", e);
+        }
         Assert.assertTrue(
                 actual >= minimum,
                 "Excel E-Kiosk appeared on " + dayDate + " must be >= " + minimum + ", was " + actual);

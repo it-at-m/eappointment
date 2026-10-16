@@ -204,18 +204,9 @@ public class StatisticsPage extends BasePage {
         ScenarioLogManager.getLogger().info("Checking if the overview page is visible.");
         // After admin→statistic SSO the landing page is often "Willkommen zurück"
         // with the Auswertungen sidebar (no data-includeurl shell wrapper).
-        boolean overviewOrWelcome = isWebElementVisible(
-                        5,
-                        "//h1[normalize-space()='Übersicht verfügbarer Statistiken'"
-                                + " or normalize-space()='Willkommen zurück']",
-                        LocatorType.XPATH,
-                        false)
-                || isWebElementVisible(
-                        DEFAULT_EXPLICIT_WAIT_TIME,
-                        "//a[normalize-space()='Kundenstatistik']",
-                        LocatorType.XPATH,
-                        true);
-        Assert.assertTrue(overviewOrWelcome, "Statistics overview / welcome page is not visible!");
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        wait.withMessage("Statistics overview / welcome page is not visible!");
+        wait.until(driver -> isStatisticsOverviewVisible());
     }
 
     /** Use JS click and wait for sub-page to avoid navigation timeout when opening Kundenstatistik. */

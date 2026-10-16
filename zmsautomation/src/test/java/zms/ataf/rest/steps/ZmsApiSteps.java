@@ -74,6 +74,8 @@ public class ZmsApiSteps {
     /** Provider id before a locked scope update (ZMSKVR-1345). */
     private String rememberedScopeProviderId;
     private String rememberedScopeProviderSource;
+    /** Warehouse ticketprinter count before finishing the current E-Kiosk walk-in (ZMSKVR-1126). */
+    private Integer rememberedTicketprinterCount;
 
     @Before
     public void resetProcessContext() {
@@ -83,6 +85,7 @@ public class ZmsApiSteps {
         clerkAuthKeys.clear();
         rememberedScopeProviderId = null;
         rememberedScopeProviderSource = null;
+        rememberedTicketprinterCount = null;
         firstClerkCallResponse = null;
         secondClerkCallResponse = null;
         workstationScopeId = 0;
@@ -2242,9 +2245,44 @@ public class ZmsApiSteps {
             truncate(response.asString(), 800));
     }
 
+    @When("I remember the clientscope ticketprinter appeared count for today")
+    public void iRememberTheClientscopeTicketprinterAppearedCountForToday() {
+        rememberedTicketprinterCount = ticketprinterAppearedCountForToday(parseDataNode(response));
+        TestDataHelper.setTestData(
+            "ekiosk_ticketprinter_baseline", Integer.toString(rememberedTicketprinterCount));
+        ScenarioLogManager.getLogger().info(
+            "Remembered clientscope ticketprinter baseline for today: {}", rememberedTicketprinterCount);
+    }
+
     @Then("the clientscope ticketprinter appeared count for today should be at least {int}")
     public void theClientscopeTicketprinterAppearedCountForTodayShouldBeAtLeast(int minimum) {
-        JsonNode exchange = parseDataNode(response);
+        int total = ticketprinterAppearedCountForToday(parseDataNode(response));
+        String today = BerlinTime.today().format(DateTimeFormatter.ISO_LOCAL_DATE);
+        ScenarioLogManager.getLogger().info(
+            "clientscope ticketprinter for {} = {} (min {})", today, total, minimum);
+        Assertions.assertThat(total)
+            .as("ticketprinter appeared for %s", today)
+            .isGreaterThanOrEqualTo(minimum);
+    }
+
+    @Then("the clientscope ticketprinter appeared count for today should be greater than the remembered count")
+    public void theClientscopeTicketprinterAppearedCountForTodayShouldBeGreaterThanTheRememberedCount() {
+        Assertions.assertThat(rememberedTicketprinterCount)
+            .as("Call 'I remember the clientscope ticketprinter appeared count for today' first")
+            .isNotNull();
+        int total = ticketprinterAppearedCountForToday(parseDataNode(response));
+        String today = BerlinTime.today().format(DateTimeFormatter.ISO_LOCAL_DATE);
+        ScenarioLogManager.getLogger().info(
+            "clientscope ticketprinter for {} = {} (baseline {})",
+            today,
+            total,
+            rememberedTicketprinterCount);
+        Assertions.assertThat(total)
+            .as("ticketprinter appeared for %s must increase over baseline %s", today, rememberedTicketprinterCount)
+            .isGreaterThan(rememberedTicketprinterCount);
+    }
+
+    private int ticketprinterAppearedCountForToday(JsonNode exchange) {
         Assertions.assertThat(exchange)
             .as("warehouse clientscope exchange body=%s", truncate(response != null ? response.asString() : "", 800))
             .isNotNull();
@@ -2267,11 +2305,7 @@ public class ZmsApiSteps {
                 }
             }
         }
-        ScenarioLogManager.getLogger().info(
-            "clientscope ticketprinter for {} = {} (min {})", today, total, minimum);
-        Assertions.assertThat(total)
-            .as("ticketprinter appeared for %s", today)
-            .isGreaterThanOrEqualTo(minimum);
+        return total;
     }
 
     private static int dictionaryIndex(JsonNode exchange, String name) {
