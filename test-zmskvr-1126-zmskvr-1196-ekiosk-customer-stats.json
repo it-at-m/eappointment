@@ -1,0 +1,74 @@
+{
+  "branch": "test-zmskvr-1126-zmskvr-1196-ekiosk-customer-stats",
+  "branchSlug": "test-zmskvr-1126-zmskvr-1196-ekiosk-customer-stats",
+  "runId": "38969213797",
+  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38969213797",
+  "runStartedAt": "2026-10-16T21:24:59Z",
+  "publishedAt": "2026-10-16T21:37:44.983Z",
+  "features": {
+    "feature-rest-zmsapi-booking-zmsticketprinter-zmskvr-1196-zmskvr-1126-ekiosk-customer-stats": {
+      "status": "passed",
+      "shard": "custom",
+      "browser": "chrome",
+      "browsers": {
+        "chrome": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "38969213797",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38969213797",
+          "runStartedAt": "2026-10-16T21:24:59Z"
+        },
+        "edge": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "38969213797",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38969213797",
+          "runStartedAt": "2026-10-16T21:24:59Z"
+        },
+        "firefox": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "38969213797",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38969213797",
+          "runStartedAt": "2026-10-16T21:24:59Z"
+        }
+      },
+      "rel": "rest/zmsapi/booking/zmsticketprinter/zmskvr-1196_zmskvr-1126_ekiosk_customer_stats.feature",
+      "runId": "38969213797",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38969213797",
+      "runStartedAt": "2026-10-16T21:24:59Z"
+    },
+    "feature-ui-zmsstatistic-citizen-stats-zmskvr-1196-zmskvr-1126-ekiosk-customer-stats": {
+      "status": "failed",
+      "shard": "custom",
+      "browser": "chrome",
+      "browsers": {
+        "chrome": {
+          "status": "failed",
+          "shard": "custom",
+          "runId": "38969213797",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38969213797",
+          "runStartedAt": "2026-10-16T21:24:59Z"
+        },
+        "edge": {
+          "status": "failed",
+          "shard": "custom",
+          "runId": "38969213797",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38969213797",
+          "runStartedAt": "2026-10-16T21:24:59Z"
+        },
+        "firefox": {
+          "status": "failed",
+          "shard": "custom",
+          "runId": "38969213797",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38969213797",
+          "runStartedAt": "2026-10-16T21:24:59Z"
+        }
+      },
+      "rel": "ui/zmsstatistic/citizen-stats/zmskvr-1196_zmskvr-1126_ekiosk_customer_stats.feature",
+      "runId": "38969213797",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38969213797",
+      "runStartedAt": "2026-10-16T21:24:59Z"
+    }
+  }
+}

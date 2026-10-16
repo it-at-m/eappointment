@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-10-16T21:10:39.451Z",
+  "publishedAt": "2026-10-16T21:37:44.983Z",
   "branches": [
     {
       "name": "next",
@@ -396,6 +396,12 @@
       "slug": "test-zmskvr-112-zmskvr-241-zmskvr-1623-cancel-success-callout",
       "runId": "37426556259",
       "runStartedAt": "2026-10-06T06:55:47Z"
+    },
+    {
+      "name": "test-zmskvr-1126-zmskvr-1196-ekiosk-customer-stats",
+      "slug": "test-zmskvr-1126-zmskvr-1196-ekiosk-customer-stats",
+      "runId": "38969213797",
+      "runStartedAt": "2026-10-16T21:24:59Z"
     },
     {
       "name": "test-zmskvr-1138-zmskvr-1341-concurrent-process-call",
