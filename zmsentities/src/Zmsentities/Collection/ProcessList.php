@@ -261,24 +261,44 @@ class ProcessList extends Base
         $processList = new static();
         foreach ($this->toProcessListByTime('Y-m-d') as $processListByDate) {
             $dateTime = $processListByDate[0]->getFirstAppointment()->toDateTime();
-            $slotList = $availabilityList->withType('appointment')->withDateTime($dateTime)->getSlotList();
+            $slotLists = $availabilityList->withType('appointment')->withDateTime($dateTime)
+                ->getSlotListByAvailability();
             foreach ($processListByDate as $process) {
                 if (!$process instanceof Process) {
                     continue;
                 }
-                try {
-                    $slotList->withSlotsForAppointment($process->getFirstAppointment());
-                    if (!$slotList->removeAppointment($process->getFirstAppointment())) {
-                        $process->amendment = "";
-                        $processList[] = clone $process;
-                    }
-                } catch (\BO\Zmsentities\Exception\AppointmentNotFitInSlotList $exception) {
+                if (!static::removeAppointmentFromOneSlotList($slotLists, $process->getFirstAppointment())) {
                     $process->amendment = "";
                     $processList[] = clone $process;
                 }
             }
         }
         return $processList;
+    }
+
+    /**
+     * An appointment uses the slots of exactly one availability, even if availabilities overlap
+     *
+     * @param SlotList[] $slotLists
+     */
+    protected static function removeAppointmentFromOneSlotList(
+        array &$slotLists,
+        \BO\Zmsentities\Appointment $appointment
+    ): bool {
+        foreach ($slotLists as $index => $slotList) {
+            try {
+                $slotList->withSlotsForAppointment($appointment);
+            } catch (\BO\Zmsentities\Exception\AppointmentNotFitInSlotList) {
+                continue;
+            }
+            // Work on a copy, a failed removal must not reduce slots of this availability
+            $reducedSlotList = clone $slotList;
+            if ($reducedSlotList->removeAppointment($appointment)) {
+                $slotLists[$index] = $reducedSlotList;
+                return true;
+            }
+        }
+        return false;
     }
 
     public function withUniqueScope(bool $oncePerHour = false): static

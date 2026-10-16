@@ -780,6 +780,9 @@ class Availability extends Schema\Entity
      * Get overlaps on daytime
      * This functions does not check, if two availabilities are openend on the same day!
      *
+     * Overlapping availabilities are allowed, their workstations add up (e.g. an additional workstation
+     * from 10:00 to 12:00 inside 08:00 to 18:00). Only availabilities with equal times are a conflict.
+     *
      * @param Availability $availability for comparision
      *
      * @return Collection\ProcessList with processes in status "conflict"
@@ -897,37 +900,17 @@ class Availability extends Schema\Entity
             && $availability->type == $this->type
             && $this->hasSharedWeekdayWith($availability)
         ) {
-            $processTemplate = new Process();
-            $processTemplate->amendment = "Zwei Öffnungszeiten überschneiden sich.";
-            $processTemplate->status = 'conflict';
-            $appointment = $processTemplate->getFirstAppointment();
-            $appointment->availability = $this;
-            $appointment->date = $this->getStartDateTime()->getTimestamp();
-            $thisStart = $this->getStartDateTime()->getSecondsOfDay();
-            $thisEnd = $this->getEndDateTime()->getSecondsOfDay();
-            $availabilityStart = $availability->getStartDateTime()->getSecondsOfDay();
-            $availabilityEnd = $availability->getEndDateTime()->getSecondsOfDay();
-
-            $isEqual = ($availabilityStart == $thisStart && $availabilityEnd == $thisEnd);
-
-            if ($availabilityStart < $thisEnd && $thisStart < $availabilityEnd && ! $isEqual) {
-                $process = clone $processTemplate;
-                $process->getFirstAppointment()->date = $this
-                    ->getStartDateTime()
-                    ->modify($currentDate->format("Y-m-d"))
-                    ->getTimestamp();
-                $processList->addEntity($process);
-            } elseif ($thisEnd < $availabilityStart && $availabilityEnd < $thisStart && ! $isEqual) {
-                $process = clone $processTemplate;
-                $process->getFirstAppointment()->date = $availability
-                    ->getStartDateTime()
-                    ->modify($currentDate->format("Y-m-d"))
-                    ->getTimestamp();
-                $processList->addEntity($process);
-            } elseif ($isEqual) {
-                $process = clone $processTemplate;
+            $isEqual = (
+                $availability->getStartDateTime()->getSecondsOfDay() == $this->getStartDateTime()->getSecondsOfDay()
+                && $availability->getEndDateTime()->getSecondsOfDay() == $this->getEndDateTime()->getSecondsOfDay()
+            );
+            if ($isEqual) {
+                $process = new Process();
                 $process->amendment = "Zwei Öffnungszeiten sind gleich.";
-                $process->getFirstAppointment()->date = $availability
+                $process->status = 'conflict';
+                $appointment = $process->getFirstAppointment();
+                $appointment->availability = $this;
+                $appointment->date = $availability
                     ->getStartDateTime()
                     ->modify($currentDate->format("Y-m-d"))
                     ->getTimestamp();

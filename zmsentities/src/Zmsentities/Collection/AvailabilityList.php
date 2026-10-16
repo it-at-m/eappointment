@@ -150,6 +150,28 @@ class AvailabilityList extends Base
         return $slotList;
     }
 
+    /**
+     * One slot list per availability, shorter availabilities first (then lower id).
+     * Same order as the backend uses to map bookings of overlapping availabilities to slots.
+     *
+     * @return SlotList[]
+     */
+    public function getSlotListByAvailability(): array
+    {
+        $availabilityList = iterator_to_array($this);
+        usort($availabilityList, function (Availability $left, Availability $right) {
+            $leftDuration = $left->getEndDateTime()->getSecondsOfDay() - $left->getStartDateTime()->getSecondsOfDay();
+            $rightDuration = $right->getEndDateTime()->getSecondsOfDay()
+                - $right->getStartDateTime()->getSecondsOfDay();
+            return [$leftDuration, (int) $left->id] <=> [$rightDuration, (int) $right->id];
+        });
+        $slotLists = [];
+        foreach ($availabilityList as $availability) {
+            $slotLists[] = $availability->getSlotList();
+        }
+        return $slotLists;
+    }
+
     public function getSlotListByType(mixed $type): SlotList
     {
         $slotList = new SlotList();

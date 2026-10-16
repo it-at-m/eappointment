@@ -930,14 +930,8 @@ class AvailabilityTest extends EntityCommonTests
             }
         }
     
-        // Availability 1 und 5 überschneiden sich jeweils 3 mal
-        $this->assertEquals(3, $list['Zwei Öffnungszeiten überschneiden sich.'][1]);
-        $this->assertEquals(3, $list['Zwei Öffnungszeiten überschneiden sich.'][5]);
-
-        // Availability 2, 4 und 6 überschneiden sich jeweils 2 mal
-        $this->assertEquals(2, $list['Zwei Öffnungszeiten überschneiden sich.'][2]);
-        $this->assertEquals(2, $list['Zwei Öffnungszeiten überschneiden sich.'][4]);
-        $this->assertEquals(2, $list['Zwei Öffnungszeiten überschneiden sich.'][6]);
+        // Überschneidende Öffnungszeiten (1, 2, 4, 6) sind erlaubt, ihre Arbeitsplätze werden addiert
+        $this->assertArrayNotHasKey('Zwei Öffnungszeiten überschneiden sich.', $list);
 
         // Availability 1 und 5 sind sich jeweils gleich
         $this->assertEquals(1, $list['Zwei Öffnungszeiten sind gleich.'][1]);
