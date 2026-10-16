@@ -229,6 +229,31 @@ class Availability extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfa
     }
 
     /**
+     * Read all availabilities matching an appointment, overlapping availabilities return more than one entry
+     */
+    public function readListByAppointment(
+        \BO\Zmsentities\Appointment $appointment,
+        int $resolveReferences = 0
+    ): Collection {
+        $collection = new Collection();
+        $query = new \BO\Zmsbackend\Availability\Repository\Availability(\BO\Zmsbackend\Query\Base::SELECT);
+        $query->addEntityMapping();
+        $query->addResolvedReferences($resolveReferences);
+        $query->addConditionScopeId($appointment->toProperty()->scope->id->get());
+        $query->addConditionDate($appointment->toDateTime());
+        $query->addConditionAppointmentTime($appointment->toDateTime());
+        $result = $this->fetchList($query, new Entity());
+        foreach ($result as $entity) {
+            if ($entity instanceof Entity) {
+                $entity->scope = $appointment->scope;
+                $entity = $this->readResolvedReferences($entity, $resolveReferences);
+                $collection->addEntity($entity);
+            }
+        }
+        return $collection;
+    }
+
+    /**
      * write an availability
      *
      * @param \BO\Zmsentities\Availability $entity
