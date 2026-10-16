@@ -57,8 +57,9 @@ final class ClientStatisticWorkbook {
     }
 
     /**
-     * Header cells of the row that contains {@code Datum} (column B), left to right.
-     * Empty leading cells are kept so Excel column letters match indices (A=0, B=1, …).
+     * Header cells of the Kundenstatistik column row, left to right.
+     * Prefers the row that contains {@code Kunden Erschienen}; falls back to {@code Datum}
+     * in column B. Empty leading cells are kept so Excel letters match indices (A=0, B=1, …).
      */
     static List<String> columnHeaders(Path xlsx) throws IOException {
         try (ZipFile zip = new ZipFile(xlsx.toFile())) {
@@ -76,17 +77,25 @@ final class ClientStatisticWorkbook {
                 byRow.computeIfAbsent(rowNumber(ref), ignored -> new HashMap<>())
                         .put(columnIndex(ref), cellText(cell, shared).trim());
             }
+            Map<Integer, String> preferred = null;
             for (Map<Integer, String> columns : byRow.values()) {
-                if ("Datum".equals(columns.get(1))) {
-                    int last = columns.keySet().stream().mapToInt(Integer::intValue).max().orElse(0);
-                    List<String> headers = new ArrayList<>();
-                    for (int column = 0; column <= last; column++) {
-                        headers.add(columns.getOrDefault(column, ""));
-                    }
-                    return headers;
+                if (columns.containsValue("Kunden Erschienen")) {
+                    preferred = columns;
+                    break;
+                }
+                if (preferred == null && "Datum".equals(columns.get(1))) {
+                    preferred = columns;
                 }
             }
-            throw new IOException("Workbook has no Datum header row: " + xlsx);
+            if (preferred != null) {
+                int last = preferred.keySet().stream().mapToInt(Integer::intValue).max().orElse(0);
+                List<String> headers = new ArrayList<>();
+                for (int column = 0; column <= last; column++) {
+                    headers.add(preferred.getOrDefault(column, ""));
+                }
+                return headers;
+            }
+            throw new IOException("Workbook has no Kundenstatistik header row: " + xlsx);
         }
     }
 
