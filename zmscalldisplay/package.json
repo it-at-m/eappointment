@@ -47,7 +47,7 @@
     "minimatch": "^10.2.5",
     "parcel": "^2.16.4",
     "picomatch": "^4.0.4",
-    "postcss": "^8.5.26",
+    "postcss": "^8.5.30",
     "qrcode-generator": "2.0.4",
     "sass": "^1.103.1",
     "svgo": "^4.0.2"
