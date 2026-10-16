@@ -2214,6 +2214,82 @@ public class ZmsApiSteps {
         ScenarioLogManager.getLogger().info("Ticketprinter waiting number: {}", number);
     }
 
+    @Then("the process should be flagged as ticketprinter")
+    public void theProcessShouldBeFlaggedAsTicketprinter() {
+        JsonNode process = lastProcess != null ? lastProcess : parseDataNode(response);
+        Assertions.assertThat(process).isNotNull();
+        Assertions.assertThat(process.path("isTicketprinter").asBoolean(false))
+            .as("process.isTicketprinter body=%s", truncate(process.toString(), 500))
+            .isTrue();
+    }
+
+    @When("I request the clientscope warehouse report for scope {int} for today with the X-AuthKey")
+    public void iRequestTheClientscopeWarehouseReportForScopeForTodayWithTheXAuthKey(int scopeId) {
+        String authKey = getOrLoginXAuthKey();
+        String period = BerlinTime.today().format(DateTimeFormatter.ISO_LOCAL_DATE);
+        response = given()
+            .baseUri(apiBaseUri())
+            .header("X-AuthKey", authKey)
+            .queryParam("groupby", "day")
+        .when()
+            .get("/warehouse/clientscope/" + scopeId + "/" + period + "/");
+        CommonApiSteps.setResponse(response);
+        ScenarioLogManager.getLogger().info(
+            "GET /warehouse/clientscope/{}/{} status={} body={}",
+            scopeId,
+            period,
+            response.getStatusCode(),
+            truncate(response.asString(), 800));
+    }
+
+    @Then("the clientscope ticketprinter appeared count for today should be at least {int}")
+    public void theClientscopeTicketprinterAppearedCountForTodayShouldBeAtLeast(int minimum) {
+        JsonNode exchange = parseDataNode(response);
+        Assertions.assertThat(exchange)
+            .as("warehouse clientscope exchange body=%s", truncate(response != null ? response.asString() : "", 800))
+            .isNotNull();
+        int ticketprinterIndex = dictionaryIndex(exchange, "ticketprinter");
+        Assertions.assertThat(ticketprinterIndex)
+            .as("dictionary entry ticketprinter in %s", exchange.path("dictionary"))
+            .isGreaterThanOrEqualTo(0);
+        String today = BerlinTime.today().format(DateTimeFormatter.ISO_LOCAL_DATE);
+        int dateIndex = dictionaryIndex(exchange, "date");
+        Assertions.assertThat(dateIndex).as("dictionary entry date").isGreaterThanOrEqualTo(0);
+        int total = 0;
+        JsonNode data = exchange.path("data");
+        if (data.isArray()) {
+            for (JsonNode row : data) {
+                if (!row.isArray() || row.size() <= Math.max(dateIndex, ticketprinterIndex)) {
+                    continue;
+                }
+                if (today.equals(row.get(dateIndex).asText())) {
+                    total += row.get(ticketprinterIndex).asInt(0);
+                }
+            }
+        }
+        ScenarioLogManager.getLogger().info(
+            "clientscope ticketprinter for {} = {} (min {})", today, total, minimum);
+        Assertions.assertThat(total)
+            .as("ticketprinter appeared for %s", today)
+            .isGreaterThanOrEqualTo(minimum);
+    }
+
+    private static int dictionaryIndex(JsonNode exchange, String name) {
+        JsonNode dictionary = exchange.path("dictionary");
+        if (!dictionary.isArray()) {
+            return -1;
+        }
+        for (int i = 0; i < dictionary.size(); i++) {
+            if (name.equals(dictionary.get(i).path("name").asText())) {
+                return i;
+            }
+            if (name.equals(dictionary.get(i).path("variable").asText())) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
     private void requestWaitingNumber(int scopeId, Integer requestId) {
         Assertions.assertThat(ticketprinterHash)
             .as("Call 'I have a ticketprinter session for scope …' first")

@@ -310,6 +310,30 @@ public class StatisticsSteps {
         CUSTOMER_STATISTICS_PAGE.assertDownloadedCustomerTotalHeaders();
     }
 
+    @Then("the citizen statistics show the E-Kiosk column group.")
+    public void theCitizenStatisticsShowTheEKioskColumnGroup() {
+        CUSTOMER_STATISTICS_PAGE.assertEKioskColumnGroupVisible();
+    }
+
+    @Then("the E-Kiosk appeared count for today is at least {string}.")
+    public void theEKioskAppearedCountForTodayIsAtLeast(String minimum) {
+        String today = DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.GERMANY).format(BerlinTime.today());
+        CUSTOMER_STATISTICS_PAGE.assertEKioskAppearedOnDateAtLeast(today, Integer.parseInt(minimum));
+    }
+
+    @Then("the downloaded citizen statistics include the E-Kiosk column headers.")
+    public void theDownloadedCitizenStatisticsIncludeTheEKioskColumnHeaders() throws Exception {
+        CUSTOMER_STATISTICS_PAGE.assertDownloadedEKioskHeaders();
+    }
+
+    @Then("the downloaded citizen statistics E-Kiosk appeared count for today is at least {string}.")
+    public void theDownloadedCitizenStatisticsEKioskAppearedCountForTodayIsAtLeast(String minimum)
+            throws Exception {
+        String today = DateTimeFormatter.ofPattern("dd.MM.yy", Locale.GERMANY).format(BerlinTime.today());
+        CUSTOMER_STATISTICS_PAGE.assertDownloadedEKioskAppearedOnDateAtLeast(
+                today, Integer.parseInt(minimum));
+    }
+
     @Then("the citizen statistics are downloaded.")
     public void wird_die_kundenstatistik_heruntergeladen() {
         // For UI tests we only verify that the download button is present and clickable.

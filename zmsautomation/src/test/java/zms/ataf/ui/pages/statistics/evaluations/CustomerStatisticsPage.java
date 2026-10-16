@@ -188,6 +188,62 @@ public class CustomerStatisticsPage extends StatisticsPage {
                 "Column D must be Kunden Nicht Erschienen. Headers: " + headers);
     }
 
+    /** ZMSKVR-1126 / ZMSKVR-1196: GUI table header includes davon E-Kiosk. */
+    public void assertEKioskColumnGroupVisible() {
+        ScenarioLogManager.getLogger().info("Checking Kundenstatistik for davon E-Kiosk headers.");
+        Assert.assertTrue(
+                isWebElementVisible(
+                        DEFAULT_EXPLICIT_WAIT_TIME,
+                        "//th[contains(normalize-space(.), 'davon E-Kiosk')]",
+                        LocatorType.XPATH,
+                        false),
+                "Kundenstatistik must show header 'davon E-Kiosk'.");
+        Assert.assertTrue(
+                DRIVER.findElements(By.cssSelector("td.colTicketprinter")).size() > 0
+                        || DRIVER.getPageSource().contains("colTicketprinter"),
+                "Kundenstatistik must include E-Kiosk appeared column cells.");
+    }
+
+    public void assertEKioskAppearedOnDateAtLeast(String date, int minimum) {
+        ScenarioLogManager.getLogger()
+                .info("Verifying E-Kiosk appeared on {} is at least {}.", date, minimum);
+        WebElement cell = findElementByLocatorType(
+                "//table[@class='table--base']"
+                        + "//tr[td[@class='colDatumTag statistik'][text()='" + date + "']]"
+                        + "/td[@class='colTicketprinter statistik']",
+                LocatorType.XPATH,
+                true);
+        scrollToCenterByVisibleElement(cell);
+        int actual = Integer.parseInt(cell.getText().trim());
+        Assert.assertTrue(
+                actual >= minimum,
+                "E-Kiosk appeared on " + date + " must be >= " + minimum + ", was " + actual);
+    }
+
+    /** ZMSKVR-1126 / ZMSKVR-1196: Excel export includes E-Kiosk column headers. */
+    public void assertDownloadedEKioskHeaders() throws IOException {
+        List<String> headers = ClientStatisticWorkbook.columnHeaders(workbookFromThisDownload());
+        ScenarioLogManager.getLogger().info("Kundenstatistik Excel headers: {}", headers);
+        Assert.assertTrue(
+                headers.contains("Erschienen (E-Kiosk)"),
+                "Excel must include Erschienen (E-Kiosk). Headers: " + headers);
+        Assert.assertTrue(
+                headers.contains("Nicht Erschienen (E-Kiosk)"),
+                "Excel must include Nicht Erschienen (E-Kiosk). Headers: " + headers);
+    }
+
+    public void assertDownloadedEKioskAppearedOnDateAtLeast(String dayDate, int minimum) throws IOException {
+        String value = ClientStatisticWorkbook.dayColumnValue(
+                workbookFromThisDownload(), dayDate, "Erschienen (E-Kiosk)");
+        ScenarioLogManager.getLogger()
+                .info("Excel E-Kiosk appeared on {} is \"{}\" (min {}).", dayDate, value, minimum);
+        Assert.assertFalse(value.isBlank(), "Excel has no Erschienen (E-Kiosk) value for " + dayDate);
+        int actual = Integer.parseInt(value.trim());
+        Assert.assertTrue(
+                actual >= minimum,
+                "Excel E-Kiosk appeared on " + dayDate + " must be >= " + minimum + ", was " + actual);
+    }
+
     private List<String> uiDayDates() {
         WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
         wait.until(driver -> !driver.findElements(By.cssSelector("td.colDatumTag.statistik")).isEmpty()
