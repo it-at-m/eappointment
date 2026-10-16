@@ -28,9 +28,9 @@ Feature: E-Kiosk spontaneous customers appear under davon E-Kiosk in Kundenstati
 		Then the statistics overview page is displayed.
 		When I click the button "Kundenstatistik" in the statistics sidebar.
 		Then the statistics page "Kundenstatistik" is displayed.
-		And the citizen statistics show the E-Kiosk column group.
 		And I select for "Standort" the value "Bürgerbüro Orleansplatz (KVR-II/231 KP) EKiosk" in the statistics filter.
 		And I filter the statistics from 0 days before today until today.
+		And the citizen statistics show the E-Kiosk column group.
 		Then the E-Kiosk appeared count for today is at least "1".
 		When I click the download button in the citizen statistics.
 		Then the downloaded citizen statistics include the E-Kiosk column headers.
