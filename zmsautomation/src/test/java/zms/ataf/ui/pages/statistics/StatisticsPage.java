@@ -89,12 +89,26 @@ public class StatisticsPage extends BasePage {
         }
     }
 
+    /**
+     * True when SSO already landed on the statistics scope form (e.g. after zmsadmin
+     * login in the same browser). Without this, Anmelden waits for a Keycloak button
+     * that never appears.
+     */
+    private boolean isAlreadyLoggedIn() {
+        return isWebElementVisible(2, "//*[contains(text(),'Sie sind bereits angemeldet')]", LocatorType.XPATH, false)
+                || isWebElementVisible(2, "//select[@name='scope']", LocatorType.XPATH, false)
+                || isWebElementVisible(1, ".page-header__scope a[title=\"Auswahl ändern\"]", LocatorType.CSSSELECTOR, false);
+    }
+
     /** Keycloak login for one statistics user. The caller checks the account out. */
     public void loginWithKeycloakUser(String username) throws Exception {
+        if (isAlreadyLoggedIn()) {
+            ScenarioLogManager.getLogger().info("Already logged in to statistics, skipping SSO login.");
+            return;
+        }
         ScenarioLogManager.getLogger().info("Trying to click on \"Login\" button...");
         clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "//button[@type='submit' and @value='keycloak']", LocatorType.XPATH, false);
         ScenarioLogManager.getLogger().info("SSO-Login page detected!");
-
         final StringBuilder clearPassword = new StringBuilder();
         Exception exception = null;
         try {
