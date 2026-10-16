@@ -6,7 +6,7 @@ import propTypeAvailability from '../../../../lib/propTypeAvailability'
 import { timeToFloat } from '../../../../lib/utils'
 
 const Opening = props => {
-    const { data, onSelect } = props
+    const { data, onSelect, lane } = props
     const startTime = moment(data.startTime, 'hh:mm:ss').format('HH:mm');
     const endTime = moment(data.endTime, 'hh:mm:ss').format('HH:mm');
     const description = (data.description) ? `${data.description}, ` : ``;
@@ -18,7 +18,8 @@ const Opening = props => {
 
     const style = {
         left: `${timeItemStart}em`,
-        width: `${timeItemLength}em`
+        width: `${timeItemLength}em`,
+        bottom: `${-lane * 1.8}rem`
     }
 
     const onClick = ev => {
@@ -33,9 +34,14 @@ const Opening = props => {
     )
 }
 
+Opening.defaultProps = {
+    lane: 0
+}
+
 Opening.propTypes = {
     data: propTypeAvailability,
-    onSelect: PropTypes.func.isRequired
+    onSelect: PropTypes.func.isRequired,
+    lane: PropTypes.number
 }
 
 export default Opening
