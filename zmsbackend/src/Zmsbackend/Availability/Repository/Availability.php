@@ -322,6 +322,18 @@ class Availability extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Q
             AND $process.Uhrzeit < $availability.appointment_end_time
             AND $process.Datum >= $availability.start_date
             AND $process.Datum <= $availability.end_date
+
+            -- overlapping availabilities: use the availability the process is mapped to
+            AND $availability.OeffnungszeitID = IFNULL(
+                (
+                    SELECT mapped_slot.availabilityID
+                    FROM slot_process mapped_process
+                        INNER JOIN slot mapped_slot ON mapped_slot.slotID = mapped_process.slotID
+                    WHERE mapped_process.processID = $process.BuergerID
+                    LIMIT 1
+                ),
+                $availability.OeffnungszeitID
+            )
             ");
     }
 

@@ -237,18 +237,54 @@ class SlotOverlappingAvailabilityTest extends \BO\Zmsbackend\Tests\Service\Base
         $scope = (new \BO\Zmsbackend\Scope\Service\Scope())->readEntity(static::SCOPE_ID, 1, true);
         $day = new \DateTimeImmutable('2016-05-30 00:00');
         $processService = new \BO\Zmsbackend\Process\Service\Process();
-        $conflictsBefore = $processService->readConflictListByScopeAndTime($scope, $day, null, static::$now, 0);
+        // resolveReferences 1 joins the availability of each process, like the admin conflict list does
+        $readConflictCount = fn($resolveReferences) => $processService
+            ->readConflictListByScopeAndTime($scope, $day, $day, static::$now, $resolveReferences)
+            ->count();
+        $conflictsBefore = [0 => $readConflictCount(0), 1 => $readConflictCount(1)];
 
         // 2 workstations in the long and 1 in the short availability
         for ($count = 0; $count < 3; $count++) {
             $this->writeReservedProcess(static::TIMESTAMP_0830);
         }
-        $conflictList = $processService->readConflictListByScopeAndTime($scope, $day, null, static::$now, 0);
-        $this->assertEquals($conflictsBefore->count(), $conflictList->count());
+        $this->assertEquals($conflictsBefore[0], $readConflictCount(0));
+        $this->assertEquals($conflictsBefore[1], $readConflictCount(1));
 
         (new \BO\Zmsbackend\Availability\Service\Availability())->deleteEntity($shortAvailability->getId());
-        $conflictList = $processService->readConflictListByScopeAndTime($scope, $day, null, static::$now, 0);
-        $this->assertEquals($conflictsBefore->count() + 1, $conflictList->count());
+        $this->assertEquals($conflictsBefore[0] + 1, $readConflictCount(0));
+        $this->assertEquals($conflictsBefore[1] + 1, $readConflictCount(1));
+    }
+
+    public function testProcessListJoinsMappedAvailabilityOnce()
+    {
+        $shortAvailability = $this->writeShortAvailability();
+        $processIds = [];
+        for ($count = 0; $count < 3; $count++) {
+            $processIds[] = $this->writeReservedProcess(static::TIMESTAMP_0830)->getId();
+        }
+        $processList = (new \BO\Zmsbackend\Process\Service\Process())->readConflictListByScopeAndTime(
+            (new \BO\Zmsbackend\Scope\Service\Scope())->readEntity(static::SCOPE_ID, 1, true),
+            new \DateTimeImmutable('2016-05-30 00:00'),
+            new \DateTimeImmutable('2016-05-30 00:00'),
+            static::$now,
+            1
+        );
+        foreach ($processList as $conflict) {
+            $this->assertNotContains($conflict->getId(), $processIds, "Booking $conflict is reported as conflict");
+        }
+
+        $availabilityByProcess = [];
+        foreach ($processIds as $processId) {
+            $process = (new \BO\Zmsbackend\Process\Service\Process())
+                ->readEntity($processId, new \BO\Zmsbackend\Helper\NoAuth(), 1);
+            $availabilityByProcess[$processId] = (int) $process->getFirstAppointment()->getAvailability()->getId();
+        }
+        $mapped = [];
+        foreach ($processIds as $processId) {
+            $mapped += $this->readMappedAvailabilityIds(new \BO\Zmsentities\Process(['id' => $processId]));
+        }
+        $this->assertSame($mapped, $availabilityByProcess);
+        $this->assertContains((int) $shortAvailability->getId(), $availabilityByProcess);
     }
 
     public function testWithoutOverlapMappingIsUnchanged()
