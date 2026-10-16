@@ -92,12 +92,21 @@ public class StatisticsPage extends BasePage {
     /**
      * True when SSO already landed on the statistics scope form (e.g. after zmsadmin
      * login in the same browser). Without this, Anmelden waits for a Keycloak button
-     * that never appears.
+     * that never appears. Do not treat the overview header alone as logged-in on the
+     * login page — that skips Anmelden while {@code select[@name=scope]} is missing.
      */
     private boolean isAlreadyLoggedIn() {
         return isWebElementVisible(2, "//*[contains(text(),'Sie sind bereits angemeldet')]", LocatorType.XPATH, false)
                 || isWebElementVisible(2, "//select[@name='scope']", LocatorType.XPATH, false)
-                || isWebElementVisible(1, ".page-header__scope a[title=\"Auswahl ändern\"]", LocatorType.CSSSELECTOR, false);
+                || isStatisticsOverviewVisible();
+    }
+
+    private boolean isStatisticsOverviewVisible() {
+        return isWebElementVisible(
+                2,
+                "//h1[normalize-space()='Übersicht verfügbarer Statistiken']",
+                LocatorType.XPATH,
+                false);
     }
 
     /** Keycloak login for one statistics user. The caller checks the account out. */
@@ -152,6 +161,11 @@ public class StatisticsPage extends BasePage {
 
     /** First scope selection: select Standort in the initial dropdown (name=scope), same as zmsadmin. Used after login before overview. */
     public void selectLocation(String location) {
+        if (isStatisticsOverviewVisible()) {
+            ScenarioLogManager.getLogger().info(
+                    "Statistics overview already open; skipping first Standort select for \"{}\".", location);
+            return;
+        }
         CONTEXT.set();
         ScenarioLogManager.getLogger().info("Trying to select location \"" + location + "\" (first scope, like zmsadmin)");
         selectDropDownListValueByVisibleText(DEFAULT_EXPLICIT_WAIT_TIME, "scope", LocatorType.NAME, location);
@@ -160,6 +174,10 @@ public class StatisticsPage extends BasePage {
 
     /** First scope selection: confirm with "Auswahl bestätigen", same as zmsadmin. Navigates to statistics overview. */
     public void clickOnApplySelectionButton() {
+        if (isStatisticsOverviewVisible()) {
+            ScenarioLogManager.getLogger().info("Statistics overview already open; skipping Auswahl bestätigen.");
+            return;
+        }
         ScenarioLogManager.getLogger().info("Trying to click on \"Auswahl bestätigen\" button...");
         CONTEXT.set();
         // Same locator as AdminPage; JS click avoids navigation timeout and stale element when stats app is slow
