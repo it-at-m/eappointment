@@ -1495,9 +1495,9 @@ public class CounterProcessingStationPage extends AdminPage {
         scrollToCenterByVisibleElement(findElementByLocatorType(APPOINTMENT_PARKED_TABLE_LOCATOR_ID, LocatorType.ID, false));
         List<WebElement> headers = DRIVER.findElements(
                 By.cssSelector("#" + APPOINTMENT_PARKED_TABLE_LOCATOR_ID + " thead th"));
+        // Keep empty <th> labels so indexes match physical columns (Zimmernummer adjacency).
         List<String> labels = headers.stream()
                 .map(header -> header.getText().replace('\u00a0', ' ').trim())
-                .filter(text -> !text.isEmpty())
                 .toList();
         int nr = indexOfHeader(labels, "Nr.");
         int room = indexOfHeader(labels, "Zimmernummer");
@@ -1515,7 +1515,7 @@ public class CounterProcessingStationPage extends AdminPage {
     public void assertParkedAppointmentShowsRoomNumber(String token, String roomNumber) {
         String numOnly = token == null ? "" : token.replaceAll("\\D+", "");
         ScenarioLogManager.getLogger()
-                .info("Asserting parked Nr. {} shows Zimmernummer {}", numOnly, roomNumber);
+                .info("Asserting parked appointment shows expected Zimmernummer");
         CONTEXT.waitForSpinners();
         By parkedTable = By.id(APPOINTMENT_PARKED_TABLE_LOCATOR_ID);
         WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
