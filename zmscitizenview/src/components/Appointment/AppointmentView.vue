@@ -293,9 +293,13 @@
               </muc-callout>
             </div>
 
-            <template v-if="currentView === 4">
+            <div
+              role="status"
+              aria-live="polite"
+              aria-atomic="true"
+            >
               <muc-callout
-                v-if="!cancelAppointmentSuccess"
+                v-if="currentView === 4 && !cancelAppointmentSuccess"
                 type="warning"
               >
                 <template #content>
@@ -305,7 +309,9 @@
                   {{ t("confirmAppointmentHeader") }}
                 </template>
               </muc-callout>
+            </div>
 
+            <template v-if="currentView === 4">
               <div
                 v-if="hasCancelAppointmentError"
                 role="alert"
