@@ -106,7 +106,17 @@ public class StatisticsPage extends BasePage {
                 2,
                 "//h1[normalize-space()='Übersicht verfügbarer Statistiken']",
                 LocatorType.XPATH,
-                false);
+                false)
+                || isWebElementVisible(
+                        2,
+                        "//h1[normalize-space()='Willkommen zurück']",
+                        LocatorType.XPATH,
+                        false)
+                || isWebElementVisible(
+                        1,
+                        "//a[contains(@href,'reportclient') or normalize-space()='Kundenstatistik']",
+                        LocatorType.XPATH,
+                        false);
     }
 
     /** Keycloak login for one statistics user. The caller checks the account out. */
