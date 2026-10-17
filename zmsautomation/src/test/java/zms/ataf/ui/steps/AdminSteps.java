@@ -951,11 +951,25 @@ public class AdminSteps {
     @When("I book a walk-in customer with service {string}, name {string}, free text {string} and second free text {string}.")
     public void sie_einen_spontankunden_mit_freitextfeldern_buchen(
             String service, String name, String freeText, String secondFreeText) {
+        bookWalkInWithOptionalNote(service, name, null, freeText, secondFreeText);
+    }
+
+    @When("I book a walk-in customer with service {string}, name {string}, note {string}, free text {string} and second free text {string}.")
+    public void sie_einen_spontankunden_mit_anmerkung_und_freitextfeldern_buchen(
+            String service, String name, String note, String freeText, String secondFreeText) {
+        bookWalkInWithOptionalNote(service, name, note, freeText, secondFreeText);
+    }
+
+    private void bookWalkInWithOptionalNote(
+            String service, String name, String note, String freeText, String secondFreeText) {
         wenn_sie_im_zeitmanagementsystem_unter_terminvereinbarung_neu_die_dienstleistung_string_auswaehlen(service);
         COUNTER_PROCESSING_STATION_PAGE.selectWalkInCustomer();
         COUNTER_PROCESSING_STATION_PAGE.enterNameInNewAppointmentTextField(name);
         String email = name.toLowerCase(Locale.ROOT).replaceAll("[^a-z0-9]", "") + "@mailinator.com";
         COUNTER_PROCESSING_STATION_PAGE.enterEmailInNewAppointmentTextField(email);
+        if (note != null && !note.isBlank()) {
+            COUNTER_PROCESSING_STATION_PAGE.enterNoteInNewAppointmentTextField(note);
+        }
         COUNTER_PROCESSING_STATION_PAGE.fillCustomTextfield("customTextfield", freeText);
         COUNTER_PROCESSING_STATION_PAGE.fillCustomTextfield("customTextfield2", secondFreeText);
         COUNTER_PROCESSING_STATION_PAGE.clickOnAddSpontaneousCustomer();
@@ -964,6 +978,26 @@ public class AdminSteps {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Then("the queue shows customer {string} with plain text {string} and {string}.")
+    public void theQueueShowsCustomerWithPlainTextAnd(String familyName, String first, String second) {
+        COUNTER_PROCESSING_STATION_PAGE.assertQueueRowShowsPlainTextSnippets(familyName, first, second);
+    }
+
+    @Then("the queue shows customer {string} with plain text {string}.")
+    public void theQueueShowsCustomerWithPlainText(String familyName, String snippet) {
+        COUNTER_PROCESSING_STATION_PAGE.assertQueueRowShowsPlainTextSnippets(familyName, snippet);
+    }
+
+    @Then("the queue row for customer {string} has no script elements.")
+    public void theQueueRowForCustomerHasNoScriptElements(String familyName) {
+        COUNTER_PROCESSING_STATION_PAGE.assertQueueRowHasNoScriptElements(familyName);
+    }
+
+    @Then("the queue row for customer {string} does not contain raw markup {string}.")
+    public void theQueueRowForCustomerDoesNotContainRawMarkup(String familyName, String rawMarkup) {
+        COUNTER_PROCESSING_STATION_PAGE.assertQueueRowDoesNotContainRawMarkup(familyName, rawMarkup);
     }
 
     @When("I return to the workstation.")
