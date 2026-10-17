@@ -694,7 +694,7 @@ public class ProcessingStationSection extends CounterProcessingStationPage {
         )));
         wait.withMessage("ProcessNotCallable status \"" + germanStatus + "\" is not visible!");
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(
-                "//*[contains(.,'Aktueller Status') and contains(.,'" + germanStatus + "')]"
+                "//*[contains(.,'Aktueller Status') and contains(.," + xpathLiteral(germanStatus) + ")]"
         )));
         wait.withMessage("ProcessNotCallable Abbrechen button is not visible!");
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(
@@ -719,7 +719,8 @@ public class ProcessingStationSection extends CounterProcessingStationPage {
         if (expectedScopeHint != null && !expectedScopeHint.isBlank()) {
             wait.withMessage("Scope-mismatch belonging line is not visible!");
             wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(
-                    "//*[contains(.,'Der Termin gehört zu:') and contains(.,'" + expectedScopeHint + "')]"
+                    "//*[contains(.,'Der Termin gehört zu:') and contains(.,"
+                            + xpathLiteral(expectedScopeHint) + ")]"
             )));
         }
         wait.withMessage("Scope-mismatch Wechseln button is not visible!");
@@ -735,11 +736,36 @@ public class ProcessingStationSection extends CounterProcessingStationPage {
     public void clickExceptionButton(String buttonLabel) {
         ScenarioLogManager.getLogger().info("Clicking exception board button \"{}\"...", buttonLabel);
         By button = By.xpath(
-                "//section[contains(@class,'exception')]//button[normalize-space()='" + buttonLabel + "']");
+                "//section[contains(@class,'exception')]//button[normalize-space()="
+                        + xpathLiteral(buttonLabel) + "]");
         WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
         WebElement el = wait.until(ExpectedConditions.elementToBeClickable(button));
         scrollToCenterByVisibleElement(el);
         el.click();
+    }
+
+    /** XPath 1.0 string literal safe for values that may contain {@code '} or {@code "}. */
+    private static String xpathLiteral(String value) {
+        if (value == null) {
+            return "''";
+        }
+        if (!value.contains("'")) {
+            return "'" + value + "'";
+        }
+        if (!value.contains("\"")) {
+            return "\"" + value + "\"";
+        }
+        StringBuilder sb = new StringBuilder("concat(");
+        boolean first = true;
+        for (String part : value.split("'", -1)) {
+            if (!first) {
+                sb.append(", \"'\", ");
+            }
+            first = false;
+            sb.append('\'').append(part).append('\'');
+        }
+        sb.append(')');
+        return sb.toString();
     }
 
     public void assertNoExceptionBoardVisible() {

@@ -18,7 +18,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
@@ -904,13 +903,16 @@ public class ZmsApiSteps {
                     "POST /process/status/reserved/ failed with " + response.getStatusCode() + ": "
                             + truncate(response.asString(), 1000));
         }
-        Assertions.assertThat(reserved).as("reserved terminkunde at scope %d", scopeId).isNotNull();
-        JsonNode reservedProcess = Objects.requireNonNull(reserved, "reserved terminkunde");
+        if (reserved == null) {
+            throw new IllegalStateException(
+                    "POST /process/status/reserved/ returned no data for scope " + scopeId + ": "
+                            + truncate(response.asString(), 500));
+        }
 
         if (!confirm) {
-            rememberProcess(reservedProcess);
-            trackProcess(reservedProcess.path("id").asInt(), scopeId);
-            long appointment = reservedProcess.path("appointments").path(0).path("date").asLong(0);
+            rememberProcess(reserved);
+            trackProcess(reserved.path("id").asInt(), scopeId);
+            long appointment = reserved.path("appointments").path(0).path("date").asLong(0);
             TestDataHelper.setTestData("appointment_epoch", Long.toString(appointment));
             TestDataHelper.setTestData("new_appointment_customer_name", familyName);
             ScenarioLogManager.getLogger().info(
@@ -918,11 +920,11 @@ public class ZmsApiSteps {
                     familyName,
                     appointment,
                     scopeId,
-                    reservedProcess.path("status").asText());
+                    reserved.path("status").asText());
             return;
         }
 
-        response = postConfirmedWithDeadlockRetry(authKey, reservedProcess);
+        response = postConfirmedWithDeadlockRetry(authKey, reserved);
         CommonApiSteps.setResponse(response);
         Assertions.assertThat(response.getStatusCode())
                 .as("POST /process/status/confirmed/ body=%s", truncate(response.asString(), 1000))
