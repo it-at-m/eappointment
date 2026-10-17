@@ -1,0 +1,42 @@
+{
+  "branch": "test-zmskvr-467-zmskvr-545-queue-html-escape",
+  "branchSlug": "test-zmskvr-467-zmskvr-545-queue-html-escape",
+  "runId": "39031721443",
+  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/39031721443",
+  "runStartedAt": "2026-10-17T12:14:08Z",
+  "publishedAt": "2026-10-17T12:24:57.816Z",
+  "features": {
+    "feature-ui-zmsadmin-queue-zmskvr-467-zmskvr-545-queue-html-escape": {
+      "status": "passed",
+      "shard": "custom",
+      "browser": "chrome",
+      "browsers": {
+        "chrome": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "39031721443",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/39031721443",
+          "runStartedAt": "2026-10-17T12:14:08Z"
+        },
+        "edge": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "39031721443",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/39031721443",
+          "runStartedAt": "2026-10-17T12:14:08Z"
+        },
+        "firefox": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "39031721443",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/39031721443",
+          "runStartedAt": "2026-10-17T12:14:08Z"
+        }
+      },
+      "rel": "ui/zmsadmin/queue/zmskvr-467_zmskvr-545_queue_html_escape.feature",
+      "runId": "39031721443",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/39031721443",
+      "runStartedAt": "2026-10-17T12:14:08Z"
+    }
+  }
+}
