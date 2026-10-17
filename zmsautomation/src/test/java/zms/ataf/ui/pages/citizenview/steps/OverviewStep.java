@@ -2,6 +2,7 @@ package zms.ataf.ui.pages.citizenview.steps;
 
 import java.time.Duration;
 
+import org.openqa.selenium.JavascriptException;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -923,10 +924,27 @@ public final class OverviewStep {
                 "Preconfirmation callout should mention activation time limit (" + timeText + ").");
         ScenarioLogManager.getLogger().info("zmscitizenview: activation callout visible with {} Minuten", activationMinutes);
     }
+    /**
+     * Poll for the success heading. Transient {@link JavascriptException} during SPA remount
+     * is treated as not-yet-visible so waits can finish; the final Assert still fails hard.
+     * Deep-link recovery (reopen / cache-bust) lives in {@code openConfirmationDeepLinkInBrowser}
+     * so this assert does not double that loop.
+     */
+    private boolean confirmationSuccessVisibleForPolling() {
+        try {
+            return shadow.shadowDomContainsText(CONFIRMATION_SUCCESS_HEADING);
+        } catch (JavascriptException e) {
+            return false;
+        }
+    }
+
     public void assertConfirmationSuccessCalloutVisible() {
         ScenarioLogManager.getLogger().info("zmscitizenview: checking for confirmation success callout (Ihr Termin wurde gebucht.)");
-        shadow.assertShadowContains(
-                CONFIRMATION_SUCCESS_HEADING,
+        CitizenViewWaits.waitWithThreeWindows(
+                this::confirmationSuccessVisibleForPolling,
+                "Confirmation success callout");
+        Assert.assertTrue(
+                shadow.shadowDomContainsText(CONFIRMATION_SUCCESS_HEADING),
                 "Confirmation success callout not found after opening confirm link.");
         ScenarioLogManager.getLogger().info("zmscitizenview: confirmation success callout found");
     }
