@@ -525,36 +525,67 @@ public class ZmsApiSteps {
     }
 
     /**
-     * ZMSKVR-375: confirmed Terminkunde then admin-cancel so status is deleted (ProcessNotCallable).
+     * ZMSKVR-375: confirmed Terminkunde then citizen-cancel ({@code DELETE /process/{id}/{authKey}/})
+     * so status is {@code deleted} (ProcessNotCallable). Admin quick-delete leaves {@code blocked},
+     * which WorkstationProcessGet does not treat as ProcessNotCallable.
      */
     @When("for scope {int} and service {string} a deleted appointment customer {string} is created at the next minute.")
     public void fuerStandortWirdEinGeloeschterTerminkundeZurNaechstenMinuteAngelegt(
             int scopeId, String serviceName, String familyName) {
-        bookAppointmentCustomer(scopeId, serviceName, familyName, 0, true, true);
-        iDeleteTheLastProcessWithTheXAuthKey();
+        // Prefer a slightly later slot so parallel outline examples do not starve next-minute capacity.
+        bookAppointmentCustomer(scopeId, serviceName, familyName, 5, true, true);
+        Assertions.assertThat(lastProcess).as("confirmed process before delete").isNotNull();
+        int processId = lastProcess.path("id").asInt();
+        String processAuthKey = lastProcess.path("authKey").asText();
+        Assertions.assertThat(processId).as("process id").isPositive();
+        Assertions.assertThat(processAuthKey).as("process authKey").isNotBlank();
+        String authKey = getOrLoginXAuthKey();
+        response = given()
+            .baseUri(baseUri != null ? baseUri : TestConfig.getBaseUri())
+            .header("X-AuthKey", authKey)
+            .queryParam("initiator", "admin")
+        .when()
+            .delete("/process/" + processId + "/" + processAuthKey + "/");
+        CommonApiSteps.setResponse(response);
+        Assertions.assertThat(response.getStatusCode())
+            .as("DELETE /process/%d/{authKey}/ body=%s", processId, truncate(response.asString(), 1000))
+            .isEqualTo(200);
         JsonNode deleted = parseDataNode(response);
-        Assertions.assertThat(deleted).as("DELETE /process/ data").isNotNull();
+        Assertions.assertThat(deleted).as("DELETE /process/{id}/{authKey}/ data").isNotNull();
         rememberProcess(deleted);
         lastProcessDeleted = true;
         Assertions.assertThat(lastProcess.path("status").asText())
-            .as("process status after delete")
+            .as("process status after citizen-cancel delete")
             .isEqualTo("deleted");
     }
 
     /**
      * ZMSKVR-375: confirmed same-day Terminkunde successfully called (status called).
+     * Uses POST called without the future→walk-in fallback so {@code lastProcess} stays this booking.
      */
     @When("for scope {int} and service {string} a called appointment customer {string} is created at the next minute.")
     public void fuerStandortWirdEinAufgerufenerTerminkundeZurNaechstenMinuteAngelegt(
             int scopeId, String serviceName, String familyName) {
-        bookAppointmentCustomer(scopeId, serviceName, familyName, 0, true, true);
+        bookAppointmentCustomer(scopeId, serviceName, familyName, 5, true, true);
+        Assertions.assertThat(appointmentIsToday(lastProcess))
+            .as("called fixture needs a same-day appointment; process=%s",
+                truncate(lastProcess != null ? lastProcess.toString() : "", 400))
+            .isTrue();
         iUpdateTheWorkstationWithScopeAndCounterWithTheXAuthKey(scopeId, "13");
         Assertions.assertThat(response.getStatusCode()).as("workstation scope for call").isEqualTo(200);
-        iCallTheLastProcessAtTheWorkstationWithTheXAuthKey();
+        String authKey = getOrLoginXAuthKey();
+        int processId = lastProcess.path("id").asInt();
+        response = postProcessCalled(authKey, true, lastProcess);
+        CommonApiSteps.setResponse(response);
         Assertions.assertThat(response.getStatusCode())
             .as("POST /workstation/process/called/ body=%s", truncate(response.asString(), 1000))
             .isEqualTo(200);
-        Assertions.assertThat(lastProcess.path("status").asText())
+        JsonNode assigned = refreshAssignedProcessFromWorkstation(authKey);
+        Assertions.assertThat(assigned.path("id").asInt())
+            .as("workstation must hold the called process id=%d; body=%s",
+                processId, truncate(response.asString(), 800))
+            .isEqualTo(processId);
+        Assertions.assertThat(assigned.path("status").asText())
             .as("process status after call")
             .isEqualTo("called");
     }
