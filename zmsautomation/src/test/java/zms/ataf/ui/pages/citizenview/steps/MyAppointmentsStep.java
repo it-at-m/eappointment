@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Locale;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptException;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.remote.RemoteWebDriver;
@@ -230,23 +231,37 @@ public final class MyAppointmentsStep {
         zms.ataf.rest.steps.CitizenApiSteps.setBookingProcess(p);
         return p;
     }
+    private static final String CONFIRMATION_SUCCESS_HEADING = "Ihr Termin wurde gebucht.";
+
     public void openConfirmationDeepLinkInBrowser() {
         context.set();
         String url = resolveConfirmationDeepLinkUrl();
         ScenarioLogManager.getLogger().info("zmscitizenview: navigating to confirmation URL: {}", url);
-        try {
-            DriverUtil.getDriver().navigate().to(url);
-            // Do not refresh. Same-tab hash routing now handles confirm links (ZMSKVR-1121).
-            // navigate()+refresh() can confirm twice and leave activation-expired UI instead of success.
-        } catch (Exception e) {
-            ScenarioLogManager.getLogger().warn("Navigate to confirm URL", e);
+        // Do not refresh. Same-tab hash routing now handles confirm links (ZMSKVR-1121).
+        // navigate()+refresh() can confirm twice and leave activation-expired UI instead of success.
+        navigateToConfirmationUrl(url);
+        if (waitForConfirmationSuccess(15_000L)) {
+            return;
         }
-        try {
-            Thread.sleep(10000L);
-        } catch (InterruptedException ie) {
-            Thread.currentThread().interrupt();
+        // Edge (and occasionally Firefox) can land on a blank shell with only Anmelden after
+        // hash navigation — same class of flake as Meine Termine overview. Leave the hash,
+        // then confirm again (reopen path); that still shows success for an already-confirmed
+        // process and re-applies the route when the first hop never mounted Vue.
+        ScenarioLogManager.getLogger()
+                .warn(
+                        "zmscitizenview: confirmation success missing after first navigate (url={}); retry leave-hash then confirm",
+                        DriverUtil.getDriver().getCurrentUrl());
+        reopenConfirmationDeepLinkInBrowser();
+        if (waitForConfirmationSuccess(20_000L)) {
+            return;
         }
+        String busted = withCacheBustBeforeHash(url);
+        ScenarioLogManager.getLogger()
+                .warn("zmscitizenview: confirmation success still missing; cache-bust navigate {}", busted);
+        navigateToConfirmationUrl(busted);
+        waitForConfirmationSuccess(20_000L);
     }
+
     public void reopenConfirmationDeepLinkInBrowser() {
         context.set();
         String confirmUrl = resolveConfirmationDeepLinkUrl();
@@ -259,18 +274,50 @@ public final class MyAppointmentsStep {
                 .info("zmscitizenview: reopening confirmation deep link (leave hash, then confirm again)");
         try {
             DriverUtil.getDriver().navigate().to(base + "#/");
-            Thread.sleep(1000L);
+            CitizenViewWaits.sleepQuiet(1000L);
             DriverUtil.getDriver().navigate().to(confirmUrl);
-        } catch (InterruptedException ie) {
-            Thread.currentThread().interrupt();
         } catch (Exception e) {
             ScenarioLogManager.getLogger().warn("Reopen confirm URL", e);
         }
+        CitizenViewWaits.sleepQuiet(3000L);
+    }
+
+    private void navigateToConfirmationUrl(String url) {
         try {
-            Thread.sleep(10000L);
-        } catch (InterruptedException ie) {
-            Thread.currentThread().interrupt();
+            DriverUtil.getDriver().navigate().to(url);
+        } catch (Exception e) {
+            ScenarioLogManager.getLogger().warn("Navigate to confirm URL", e);
         }
+        CitizenViewWaits.sleepQuiet(3000L);
+    }
+
+    private boolean waitForConfirmationSuccess(long millis) {
+        long deadline = System.currentTimeMillis() + millis;
+        while (System.currentTimeMillis() < deadline) {
+            try {
+                if (shadow.shadowDomContainsText(CONFIRMATION_SUCCESS_HEADING)) {
+                    ScenarioLogManager.getLogger().info("zmscitizenview: confirmation success callout visible");
+                    return true;
+                }
+            } catch (JavascriptException e) {
+                // Transient shadow lookup during SPA remount; keep polling so reopen/cache-bust can run.
+                ScenarioLogManager.getLogger().warn("Confirmation heading lookup failed; retrying", e);
+            }
+            CitizenViewWaits.sleepQuiet(250L);
+        }
+        return false;
+    }
+
+    /** Edge treats same-URL navigate as a no-op; bust before the hash so the SPA remounts. */
+    private static String withCacheBustBeforeHash(String url) {
+        if (url == null || url.isBlank()) {
+            return url;
+        }
+        int hashIdx = url.indexOf('#');
+        String base = hashIdx >= 0 ? url.substring(0, hashIdx) : url;
+        String hash = hashIdx >= 0 ? url.substring(hashIdx) : "";
+        String sep = base.contains("?") ? "&" : "?";
+        return base + sep + "r=" + System.currentTimeMillis() + hash;
     }
     private String resolveConfirmationDeepLinkUrl() {
         String url = zms.ataf.rest.steps.CitizenApiSteps.getBookingConfirmUrl();
