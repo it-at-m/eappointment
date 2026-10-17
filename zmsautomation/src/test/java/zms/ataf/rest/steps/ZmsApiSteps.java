@@ -74,6 +74,8 @@ public class ZmsApiSteps {
     /** Provider id before a locked scope update (ZMSKVR-1345). */
     private String rememberedScopeProviderId;
     private String rememberedScopeProviderSource;
+    /** Warehouse ticketprinter count before finishing the current E-Kiosk walk-in (ZMSKVR-1126). */
+    private Integer rememberedTicketprinterCount;
 
     @Before
     public void resetProcessContext() {
@@ -83,6 +85,7 @@ public class ZmsApiSteps {
         clerkAuthKeys.clear();
         rememberedScopeProviderId = null;
         rememberedScopeProviderSource = null;
+        rememberedTicketprinterCount = null;
         firstClerkCallResponse = null;
         secondClerkCallResponse = null;
         workstationScopeId = 0;
@@ -2212,6 +2215,155 @@ public class ZmsApiSteps {
             .as("process.queue.number")
             .isPositive();
         ScenarioLogManager.getLogger().info("Ticketprinter waiting number: {}", number);
+    }
+
+    @Then("the process should be flagged as ticketprinter")
+    public void theProcessShouldBeFlaggedAsTicketprinter() {
+        JsonNode process = lastProcess != null ? lastProcess : parseDataNode(response);
+        Assertions.assertThat(process).isNotNull();
+        Assertions.assertThat(process.path("isTicketprinter").asBoolean(false))
+            .as("process.isTicketprinter body=%s", truncate(process.toString(), 500))
+            .isTrue();
+    }
+
+    @When("I request the clientscope warehouse report for scope {int} for today with the X-AuthKey")
+    public void iRequestTheClientscopeWarehouseReportForScopeForTodayWithTheXAuthKey(int scopeId) {
+        String authKey = getOrLoginXAuthKey();
+        String period = BerlinTime.today().format(DateTimeFormatter.ISO_LOCAL_DATE);
+        response = given()
+            .baseUri(apiBaseUri())
+            .header("X-AuthKey", authKey)
+            .queryParam("groupby", "day")
+        .when()
+            .get("/warehouse/clientscope/" + scopeId + "/" + period + "/");
+        CommonApiSteps.setResponse(response);
+        ScenarioLogManager.getLogger().info(
+            "GET /warehouse/clientscope/{}/{} status={} body={}",
+            scopeId,
+            period,
+            response.getStatusCode(),
+            truncate(response.asString(), 800));
+    }
+
+    @When("I remember the clientscope ticketprinter appeared count for today")
+    public void iRememberTheClientscopeTicketprinterAppearedCountForToday() {
+        // Empty scopes return ReportNotFound until the first finish archives a row.
+        rememberedTicketprinterCount = ticketprinterAppearedCountForTodayOrZero();
+        TestDataHelper.setTestData(
+            "ekiosk_ticketprinter_baseline", Integer.toString(rememberedTicketprinterCount));
+        ScenarioLogManager.getLogger().info(
+            "Remembered clientscope ticketprinter baseline for today: {}", rememberedTicketprinterCount);
+    }
+
+    @Then("the clientscope ticketprinter appeared count for today should be at least {int}")
+    public void theClientscopeTicketprinterAppearedCountForTodayShouldBeAtLeast(int minimum) {
+        int total = ticketprinterAppearedCountForToday(parseDataNode(response));
+        String today = BerlinTime.today().format(DateTimeFormatter.ISO_LOCAL_DATE);
+        ScenarioLogManager.getLogger().info(
+            "clientscope ticketprinter for {} = {} (min {})", today, total, minimum);
+        Assertions.assertThat(total)
+            .as("ticketprinter appeared for %s", today)
+            .isGreaterThanOrEqualTo(minimum);
+    }
+
+    @Then("the clientscope ticketprinter appeared count for today should be greater than the remembered count")
+    public void theClientscopeTicketprinterAppearedCountForTodayShouldBeGreaterThanTheRememberedCount() {
+        Assertions.assertThat(rememberedTicketprinterCount)
+            .as("Call 'I remember the clientscope ticketprinter appeared count for today' first")
+            .isNotNull();
+        int total = ticketprinterAppearedCountForToday(parseDataNode(response));
+        String today = BerlinTime.today().format(DateTimeFormatter.ISO_LOCAL_DATE);
+        ScenarioLogManager.getLogger().info(
+            "clientscope ticketprinter for {} = {} (baseline {})",
+            today,
+            total,
+            rememberedTicketprinterCount);
+        Assertions.assertThat(total)
+            .as("ticketprinter appeared for %s must increase over baseline %s", today, rememberedTicketprinterCount)
+            .isGreaterThan(rememberedTicketprinterCount);
+    }
+
+    /** Baseline helper: missing warehouse report means zero finished E-Kiosk walk-ins yet. */
+    private int ticketprinterAppearedCountForTodayOrZero() {
+        if (response == null) {
+            return 0;
+        }
+        try {
+            JsonNode root = MAPPER.readTree(response.asString());
+            if (root.path("meta").path("error").asBoolean(false)) {
+                return 0;
+            }
+        } catch (Exception ignored) {
+            return 0;
+        }
+        JsonNode exchange = parseDataNode(response);
+        if (exchange == null) {
+            return 0;
+        }
+        int ticketprinterIndex = dictionaryIndex(exchange, "ticketprinter");
+        if (ticketprinterIndex < 0) {
+            return 0;
+        }
+        String today = BerlinTime.today().format(DateTimeFormatter.ISO_LOCAL_DATE);
+        int dateIndex = dictionaryIndex(exchange, "date");
+        if (dateIndex < 0) {
+            return 0;
+        }
+        int total = 0;
+        JsonNode data = exchange.path("data");
+        if (data.isArray()) {
+            for (JsonNode row : data) {
+                if (!row.isArray() || row.size() <= Math.max(dateIndex, ticketprinterIndex)) {
+                    continue;
+                }
+                if (today.equals(row.get(dateIndex).asText())) {
+                    total += row.get(ticketprinterIndex).asInt(0);
+                }
+            }
+        }
+        return total;
+    }
+
+    private int ticketprinterAppearedCountForToday(JsonNode exchange) {
+        Assertions.assertThat(exchange)
+            .as("warehouse clientscope exchange body=%s", truncate(response != null ? response.asString() : "", 800))
+            .isNotNull();
+        int ticketprinterIndex = dictionaryIndex(exchange, "ticketprinter");
+        Assertions.assertThat(ticketprinterIndex)
+            .as("dictionary entry ticketprinter in %s", exchange.path("dictionary"))
+            .isGreaterThanOrEqualTo(0);
+        String today = BerlinTime.today().format(DateTimeFormatter.ISO_LOCAL_DATE);
+        int dateIndex = dictionaryIndex(exchange, "date");
+        Assertions.assertThat(dateIndex).as("dictionary entry date").isGreaterThanOrEqualTo(0);
+        int total = 0;
+        JsonNode data = exchange.path("data");
+        if (data.isArray()) {
+            for (JsonNode row : data) {
+                if (!row.isArray() || row.size() <= Math.max(dateIndex, ticketprinterIndex)) {
+                    continue;
+                }
+                if (today.equals(row.get(dateIndex).asText())) {
+                    total += row.get(ticketprinterIndex).asInt(0);
+                }
+            }
+        }
+        return total;
+    }
+
+    private static int dictionaryIndex(JsonNode exchange, String name) {
+        JsonNode dictionary = exchange.path("dictionary");
+        if (!dictionary.isArray()) {
+            return -1;
+        }
+        for (int i = 0; i < dictionary.size(); i++) {
+            if (name.equals(dictionary.get(i).path("name").asText())) {
+                return i;
+            }
+            if (name.equals(dictionary.get(i).path("variable").asText())) {
+                return i;
+            }
+        }
+        return -1;
     }
 
     private void requestWaitingNumber(int scopeId, Integer requestId) {
