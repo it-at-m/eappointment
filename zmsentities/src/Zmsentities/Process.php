@@ -432,7 +432,8 @@ class Process extends Schema\Entity
             if (!isset($this[$field]) || !is_string($this[$field])) {
                 continue;
             }
-            $this[$field] = trim(ProcessPlainText::normalize($this[$field]));
+            // Do not trim here: DB/cron amendments may keep trailing spaces; mutators trim on write.
+            $this[$field] = ProcessPlainText::normalize($this[$field]);
         }
         return $this;
     }
