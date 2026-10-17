@@ -38,6 +38,24 @@ class ProcessTest extends EntityCommonTests
         ]))->customTextfield);
     }
 
+    public function testUnrelatedAddDataDoesNotRenormalizePlainTextFields()
+    {
+        // Double entity encoding survives one normalize as literal &lt;…&gt;; a second pass
+        // would decode then strip tags and lose the intended stored text.
+        $entity = new Process([
+            'amendment' => '&amp;lt;b&amp;gt;note&amp;lt;/b&amp;gt;',
+            'customTextfield' => '&amp;lt;i&amp;gt;free&amp;lt;/i&amp;gt;',
+        ]);
+        $this->assertSame('&lt;b&gt;note&lt;/b&gt;', $entity->amendment);
+        $this->assertSame('&lt;i&gt;free&lt;/i&gt;', $entity->customTextfield);
+        $entity->addData(['scope' => ['id' => 141, 'shortName' => 'Test']]);
+        $this->assertSame('&lt;b&gt;note&lt;/b&gt;', $entity->amendment);
+        $this->assertSame('&lt;i&gt;free&lt;/i&gt;', $entity->customTextfield);
+        $entity->addData(['customTextfield' => '<script>alert(1)</script>fresh']);
+        $this->assertSame('&lt;b&gt;note&lt;/b&gt;', $entity->amendment);
+        $this->assertSame('alert(1)fresh', $entity->customTextfield);
+    }
+
     public function testBasic()
     {
         $entity = $this->getExample();

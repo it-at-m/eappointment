@@ -261,8 +261,7 @@ public class CounterProcessingStationPage extends AdminPage {
      * without cutting off at angle brackets or interpreting markup.
      */
     public void assertQueueRowShowsPlainTextSnippets(String familyName, String... snippets) {
-        assertCustomerVisibleInQueueByName(familyName);
-        WebElement row = queueRowForFamilyName(familyName);
+        WebElement row = queueRowForScenarioWalkIn(familyName);
         String visible = row.getText().replace('\u00a0', ' ');
         for (String snippet : snippets) {
             if (snippet == null || snippet.isBlank()) {
@@ -277,7 +276,7 @@ public class CounterProcessingStationPage extends AdminPage {
 
     /** ZMSKVR-467: no live {@code <script>} nodes inside the customer's queue row. */
     public void assertQueueRowHasNoScriptElements(String familyName) {
-        WebElement row = queueRowForFamilyName(familyName);
+        WebElement row = queueRowForScenarioWalkIn(familyName);
         List<WebElement> scripts = row.findElements(By.tagName("script"));
         Assert.assertTrue(
                 scripts.isEmpty(),
@@ -290,7 +289,7 @@ public class CounterProcessingStationPage extends AdminPage {
      * contain an unescaped script open-tag (which the old bug would interpret).
      */
     public void assertQueueRowDoesNotContainRawMarkup(String familyName, String rawMarkup) {
-        WebElement row = queueRowForFamilyName(familyName);
+        WebElement row = queueRowForScenarioWalkIn(familyName);
         String html = row.getAttribute("innerHTML");
         Assert.assertNotNull(html, "Queue row innerHTML");
         Assert.assertFalse(
@@ -304,7 +303,7 @@ public class CounterProcessingStationPage extends AdminPage {
      * controls, so check href targets only).
      */
     public void assertQueueRowHasNoLinksTo(String familyName, String hrefFragment) {
-        WebElement row = queueRowForFamilyName(familyName);
+        WebElement row = queueRowForScenarioWalkIn(familyName);
         List<WebElement> links = row.findElements(By.cssSelector("a[href]"));
         for (WebElement link : links) {
             String href = link.getAttribute("href");
@@ -313,6 +312,32 @@ public class CounterProcessingStationPage extends AdminPage {
                     "Queue row for \"" + familyName + "\" must not link to \"" + hrefFragment
                             + "\", found href=" + href);
         }
+    }
+
+    /**
+     * Prefer the waiting number from {@link #clickOnAddSpontaneousCustomer()} so repeated runs
+     * with the same family name do not assert against an older walk-in row.
+     */
+    private WebElement queueRowForScenarioWalkIn(String familyName) {
+        String waitingNumber = TestDataHelper.getTestData("new_waiting_number");
+        if (waitingNumber != null && !waitingNumber.isBlank()) {
+            isCustomerVisibleInQueue(waitingNumber, true);
+            return queueRowForWaitingNumber(waitingNumber);
+        }
+        assertCustomerVisibleInQueueByName(familyName);
+        return queueRowForFamilyName(familyName);
+    }
+
+    private WebElement queueRowForWaitingNumber(String waitingNumber) {
+        String shown = waitingNumber.trim();
+        String numOnly = shown.replaceAll("\\D+", "");
+        By row = By.xpath(
+                "//table[@id='table-queued-appointments']/tbody/tr["
+                        + ".//td[normalize-space()=" + xpathLiteral(shown)
+                        + " or normalize-space()=" + xpathLiteral(numOnly) + "]]");
+        return new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .ignoring(StaleElementReferenceException.class)
+                .until(ExpectedConditions.visibilityOfElementLocated(row));
     }
 
     private WebElement queueRowForFamilyName(String familyName) {
