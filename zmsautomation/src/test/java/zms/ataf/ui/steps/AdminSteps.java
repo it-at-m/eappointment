@@ -1731,6 +1731,17 @@ public class AdminSteps {
         PROCESSING_STATION_SECTION.isCustomerVisibleInParkingTable(TestDataHelper.transformTestData(termin));
     }
 
+    @Then("the parked appointments table has a Zimmernummer column between Nr. and Name.")
+    public void theParkedAppointmentsTableHasAZimmernummerColumnBetweenNrAndName() {
+        COUNTER_PROCESSING_STATION_PAGE.assertParkedTableZimmernummerColumnBetweenNrAndName();
+    }
+
+    @Then("the parked appointment {string} shows room number {string}.")
+    public void theParkedAppointmentShowsRoomNumber(String termin, String roomNumber) {
+        COUNTER_PROCESSING_STATION_PAGE.assertParkedAppointmentShowsRoomNumber(
+                TestDataHelper.transformTestData(termin), TestDataHelper.transformTestData(roomNumber));
+    }
+
     @Given("the finished appointment table is displayed.")
     public void sieDieFertigeTermintabelleAnzeigen() {
         COUNTER_PROCESSING_STATION_PAGE.showTheFinishedAppointmentTable();
