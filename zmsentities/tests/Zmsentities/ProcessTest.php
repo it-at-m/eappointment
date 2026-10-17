@@ -23,6 +23,21 @@ class ProcessTest extends EntityCommonTests
 
     public $collectionclass = '\BO\Zmsentities\Collection\ProcessList';
 
+    public function testJsonHydrationStripsDangerousMarkupFromPlainTextFields()
+    {
+        $entity = new Process([
+            'amendment' => '<a href="https://evil.example">click</a> note',
+            'customTextfield' => '<script>alert(1)</script>xss',
+            'customTextfield2' => '<strong>bold</strong> ok',
+        ]);
+        $this->assertSame('click note', $entity->getAmendment());
+        $this->assertSame('alert(1)xss', $entity->customTextfield);
+        $this->assertSame('bold ok', $entity->customTextfield2);
+        $this->assertSame('Freitext a < b', (new Process([
+            'customTextfield' => 'Freitext a < b',
+        ]))->customTextfield);
+    }
+
     public function testBasic()
     {
         $entity = $this->getExample();

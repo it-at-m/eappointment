@@ -1000,6 +1000,11 @@ public class AdminSteps {
         COUNTER_PROCESSING_STATION_PAGE.assertQueueRowDoesNotContainRawMarkup(familyName, rawMarkup);
     }
 
+    @Then("the queue row for customer {string} has no links to {string}.")
+    public void theQueueRowForCustomerHasNoLinksTo(String familyName, String hrefFragment) {
+        COUNTER_PROCESSING_STATION_PAGE.assertQueueRowHasNoLinksTo(familyName, hrefFragment);
+    }
+
     @When("I return to the workstation.")
     public void sie_zum_sachbearbeiterplatz_zurueckkehren() {
         ADMIN_PAGE.clickInNavigationOnWorkstation();

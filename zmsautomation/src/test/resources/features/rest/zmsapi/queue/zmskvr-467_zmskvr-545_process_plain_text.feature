@@ -1,9 +1,11 @@
 @rest @zmsapi @queue @system @security @ZMSKVR-467 @ZMSKVR-545
 Feature: ProcessPlainText strips markup and keeps plain angle brackets
   # Backend sanitization for amendment / customTextfield / customTextfield2
-  # (BO\Zmsentities\Helper\ProcessPlainText::normalize → strip_tags).
+  # (BO\Zmsentities\Helper\ProcessPlainText::normalize → strip_tags), including
+  # JSON hydration via Process::addData (e.g. POST /workstation/process/waitingnumber/).
   # UI queue escaping is covered by ui/.../zmskvr-467_zmskvr-545_queue_html_escape.feature.
   # Scope 368 Dokumentenausgabe2 activates Freitextfeld 1.
+  # Use single-quoted HTML attributes in Examples so Cucumber {string} parsing stays valid.
 
   Background:
     Given the ZMS API is available
@@ -27,10 +29,10 @@ Feature: ProcessPlainText strips markup and keeps plain angle brackets
     And the last process customTextfield should not contain "href="
 
     Examples:
-      | name              | raw                                                      | plain               | forbidden |
-      | Muster Api Script | <script>alert(1)</script>xss payload                     | alert(1)xss payload | <script   |
-      | Muster Api Anchor | <a href="https://evil.example/phish">click</a> me        | click me            | <a        |
-      | Muster Api Iframe | before<iframe src="https://evil.example"></iframe>after  | beforeafter         | <iframe   |
-      | Muster Api Img    | before<img src="x" onerror="alert(1)">after              | beforeafter         | <img      |
-      | Muster Api Object | before<object data="https://evil.example"></object>after | beforeafter         | <object   |
-      | Muster Api Strong | <strong>bold</strong> text                               | bold text           | <strong   |
+      | name              | raw                                                        | plain               | forbidden |
+      | Muster Api Script | <script>alert(1)</script>xss payload                       | alert(1)xss payload | <script   |
+      | Muster Api Anchor | <a href='https://evil.example/phish'>click</a> me          | click me            | <a        |
+      | Muster Api Iframe | before<iframe src='https://evil.example'></iframe>after    | beforeafter         | <iframe   |
+      | Muster Api Img    | before<img src='x' onerror='alert(1)'>after                | beforeafter         | <img      |
+      | Muster Api Object | before<object data='https://evil.example'></object>after   | beforeafter         | <object   |
+      | Muster Api Strong | <strong>bold</strong> text                                 | bold text           | <strong   |
