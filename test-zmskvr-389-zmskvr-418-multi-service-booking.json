@@ -1,0 +1,74 @@
+{
+  "branch": "test-zmskvr-389-zmskvr-418-multi-service-booking",
+  "branchSlug": "test-zmskvr-389-zmskvr-418-multi-service-booking",
+  "runId": "39079282132",
+  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/39079282132",
+  "runStartedAt": "2026-10-17T23:30:23Z",
+  "publishedAt": "2026-10-17T23:42:28.697Z",
+  "features": {
+    "feature-rest-zmscitizenapi-booking-zmskvr-389-zmskvr-418-multi-service-booking-citizenapi": {
+      "status": "failed",
+      "shard": "custom",
+      "browser": "chrome",
+      "browsers": {
+        "chrome": {
+          "status": "failed",
+          "shard": "custom",
+          "runId": "39079282132",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/39079282132",
+          "runStartedAt": "2026-10-17T23:30:23Z"
+        },
+        "edge": {
+          "status": "failed",
+          "shard": "custom",
+          "runId": "39079282132",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/39079282132",
+          "runStartedAt": "2026-10-17T23:30:23Z"
+        },
+        "firefox": {
+          "status": "failed",
+          "shard": "custom",
+          "runId": "39079282132",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/39079282132",
+          "runStartedAt": "2026-10-17T23:30:23Z"
+        }
+      },
+      "rel": "rest/zmscitizenapi/booking/zmskvr-389_zmskvr-418_multi_service_booking_citizenapi.feature",
+      "runId": "39079282132",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/39079282132",
+      "runStartedAt": "2026-10-17T23:30:23Z"
+    },
+    "feature-ui-zmscitizenview-booking-zmskvr-389-zmskvr-418-multi-service-booking": {
+      "status": "failed",
+      "shard": "custom",
+      "browser": "chrome",
+      "browsers": {
+        "chrome": {
+          "status": "failed",
+          "shard": "custom",
+          "runId": "39079282132",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/39079282132",
+          "runStartedAt": "2026-10-17T23:30:23Z"
+        },
+        "edge": {
+          "status": "failed",
+          "shard": "custom",
+          "runId": "39079282132",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/39079282132",
+          "runStartedAt": "2026-10-17T23:30:23Z"
+        },
+        "firefox": {
+          "status": "failed",
+          "shard": "custom",
+          "runId": "39079282132",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/39079282132",
+          "runStartedAt": "2026-10-17T23:30:23Z"
+        }
+      },
+      "rel": "ui/zmscitizenview/booking/zmskvr-389_zmskvr-418_multi_service_booking.feature",
+      "runId": "39079282132",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/39079282132",
+      "runStartedAt": "2026-10-17T23:30:23Z"
+    }
+  }
+}
