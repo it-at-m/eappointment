@@ -1,0 +1,42 @@
+{
+  "branch": "fix-zmskvr-97-edge-confirm-deep-link-blank",
+  "branchSlug": "fix-zmskvr-97-edge-confirm-deep-link-blank",
+  "runId": "39028890595",
+  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/39028890595",
+  "runStartedAt": "2026-10-17T11:29:29Z",
+  "publishedAt": "2026-10-17T11:41:07.707Z",
+  "features": {
+    "feature-ui-zmscitizenview-booking-zmskvr-97-zmskvr-526-zmskvr-732-zmskvr-535-confirmation-ics": {
+      "status": "passed",
+      "shard": "custom",
+      "browser": "chrome",
+      "browsers": {
+        "chrome": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "39028890595",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/39028890595",
+          "runStartedAt": "2026-10-17T11:29:29Z"
+        },
+        "edge": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "39028890595",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/39028890595",
+          "runStartedAt": "2026-10-17T11:29:29Z"
+        },
+        "firefox": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "39028890595",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/39028890595",
+          "runStartedAt": "2026-10-17T11:29:29Z"
+        }
+      },
+      "rel": "ui/zmscitizenview/booking/zmskvr-97_zmskvr-526_zmskvr-732_zmskvr-535_confirmation_ics.feature",
+      "runId": "39028890595",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/39028890595",
+      "runStartedAt": "2026-10-17T11:29:29Z"
+    }
+  }
+}
