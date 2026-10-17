@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Locale;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptException;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.remote.RemoteWebDriver;
@@ -293,9 +294,14 @@ public final class MyAppointmentsStep {
     private boolean waitForConfirmationSuccess(long millis) {
         long deadline = System.currentTimeMillis() + millis;
         while (System.currentTimeMillis() < deadline) {
-            if (shadow.shadowDomContainsText(CONFIRMATION_SUCCESS_HEADING)) {
-                ScenarioLogManager.getLogger().info("zmscitizenview: confirmation success callout visible");
-                return true;
+            try {
+                if (shadow.shadowDomContainsText(CONFIRMATION_SUCCESS_HEADING)) {
+                    ScenarioLogManager.getLogger().info("zmscitizenview: confirmation success callout visible");
+                    return true;
+                }
+            } catch (JavascriptException e) {
+                // Transient shadow lookup during SPA remount; keep polling so reopen/cache-bust can run.
+                ScenarioLogManager.getLogger().warn("Confirmation heading lookup failed; retrying", e);
             }
             CitizenViewWaits.sleepQuiet(250L);
         }
