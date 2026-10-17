@@ -32,3 +32,16 @@ Feature: Queue shows plain text with angle brackets; script markup is not interp
 		Then the queue shows customer "Muster Script Tag" with plain text "xss payload".
 		And the queue row for customer "Muster Script Tag" has no script elements.
 		And the queue row for customer "Muster Script Tag" does not contain raw markup "<script".
+
+	Scenario: Anchor tags in freitext are not live links in the queue
+		When I open the administration website.
+		Then I should be on the administration start page.
+		When I click the button "Anmelden" in the administration.
+		And I select for "Standort" the value "Dokumentenausgabe (KVR-V/132) Dokumentenausgabe2".
+		And I enter in the field "Platz-Nr. oder Tresen" the text "4".
+		And I click the button "Auswahl bestätigen" in the administration.
+		Then the workstation page is displayed.
+		When I book a walk-in customer with service "Spontan eAT/eRA", name "Muster Anchor Tag", note "safe note", free text "<a href=\"https://evil.example/phish\">click me</a> trailing" and second free text "".
+		Then the queue shows customer "Muster Anchor Tag" with plain text "click me trailing".
+		And the queue row for customer "Muster Anchor Tag" does not contain raw markup "<a ".
+		And the queue row for customer "Muster Anchor Tag" does not contain raw markup "href=".
