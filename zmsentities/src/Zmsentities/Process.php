@@ -415,20 +415,35 @@ class Process extends Schema\Entity
     }
 
     /**
-     * Strip markup from amendment / Freitext when hydrating from API JSON (and other merges).
+     * Strip markup from amendment / Freitext when those keys are present in the merge.
      * Mutators like addAmendment already normalize; this closes the waitingnumber / reserve path
      * that does {@code new Process($input)} without those mutators.
+     * Only supplied fields are normalized: ProcessPlainText::normalize is not idempotent
+     * (entity-encoded markup would be decoded then stripped on a later unrelated addData).
      */
     #[\Override]
     public function addData(array|object $mergeData): static
     {
         parent::addData($mergeData);
-        return $this->normalizePlainTextFields();
+        return $this->normalizePlainTextFields($mergeData);
     }
 
-    public function normalizePlainTextFields(): static
+    /**
+     * @param array|object|null $mergeData When set, only normalize keys present in this merge.
+     */
+    public function normalizePlainTextFields(array|object|null $mergeData = null): static
     {
+        $mergeKeys = null;
+        if ($mergeData !== null) {
+            $keys = is_array($mergeData)
+                ? array_keys($mergeData)
+                : array_keys(get_object_vars($mergeData));
+            $mergeKeys = array_fill_keys($keys, true);
+        }
         foreach (['amendment', 'customTextfield', 'customTextfield2'] as $field) {
+            if ($mergeKeys !== null && !isset($mergeKeys[$field])) {
+                continue;
+            }
             if (!isset($this[$field]) || !is_string($this[$field])) {
                 continue;
             }
