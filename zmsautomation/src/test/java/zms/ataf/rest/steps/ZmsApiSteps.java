@@ -497,6 +497,84 @@ public class ZmsApiSteps {
         bookAppointmentCustomer(scopeId, serviceName, familyName, 0, true, false);
     }
 
+    /**
+     * ZMSKVR-375: reserved → preconfirmed so GET /process/{id}/ returns ProcessNotCallable.
+     */
+    @When("for scope {int} and service {string} a preconfirmed appointment customer {string} is created at the next minute.")
+    public void fuerStandortWirdEinVorbestaetigterTerminkundeZurNaechstenMinuteAngelegt(
+            int scopeId, String serviceName, String familyName) {
+        bookAppointmentCustomer(scopeId, serviceName, familyName, 0, true, false);
+        Assertions.assertThat(lastProcess).as("reserved process before preconfirm").isNotNull();
+        String authKey = getOrLoginXAuthKey();
+        response = given()
+            .baseUri(baseUri != null ? baseUri : TestConfig.getBaseUri())
+            .header("X-AuthKey", authKey)
+            .contentType("application/json")
+            .queryParam("resolveReferences", 2)
+            .body(toJson(lastProcess))
+        .when()
+            .post("/process/status/preconfirmed/");
+        CommonApiSteps.setResponse(response);
+        Assertions.assertThat(response.getStatusCode())
+            .as("POST /process/status/preconfirmed/ body=%s", truncate(response.asString(), 1000))
+            .isEqualTo(200);
+        rememberProcess(parseDataNode(response));
+        Assertions.assertThat(lastProcess.path("status").asText())
+            .as("process status after preconfirm")
+            .isEqualTo("preconfirmed");
+    }
+
+    /**
+     * ZMSKVR-375: confirmed Terminkunde then admin-cancel so status is deleted (ProcessNotCallable).
+     */
+    @When("for scope {int} and service {string} a deleted appointment customer {string} is created at the next minute.")
+    public void fuerStandortWirdEinGeloeschterTerminkundeZurNaechstenMinuteAngelegt(
+            int scopeId, String serviceName, String familyName) {
+        bookAppointmentCustomer(scopeId, serviceName, familyName, 0, true, true);
+        iDeleteTheLastProcessWithTheXAuthKey();
+        JsonNode deleted = parseDataNode(response);
+        Assertions.assertThat(deleted).as("DELETE /process/ data").isNotNull();
+        rememberProcess(deleted);
+        lastProcessDeleted = true;
+        Assertions.assertThat(lastProcess.path("status").asText())
+            .as("process status after delete")
+            .isEqualTo("deleted");
+    }
+
+    /**
+     * ZMSKVR-375: confirmed same-day Terminkunde successfully called (status called).
+     */
+    @When("for scope {int} and service {string} a called appointment customer {string} is created at the next minute.")
+    public void fuerStandortWirdEinAufgerufenerTerminkundeZurNaechstenMinuteAngelegt(
+            int scopeId, String serviceName, String familyName) {
+        bookAppointmentCustomer(scopeId, serviceName, familyName, 0, true, true);
+        iUpdateTheWorkstationWithScopeAndCounterWithTheXAuthKey(scopeId, "13");
+        Assertions.assertThat(response.getStatusCode()).as("workstation scope for call").isEqualTo(200);
+        iCallTheLastProcessAtTheWorkstationWithTheXAuthKey();
+        Assertions.assertThat(response.getStatusCode())
+            .as("POST /workstation/process/called/ body=%s", truncate(response.asString(), 1000))
+            .isEqualTo(200);
+        Assertions.assertThat(lastProcess.path("status").asText())
+            .as("process status after call")
+            .isEqualTo("called");
+    }
+
+    /**
+     * ZMSKVR-375: called then moved to processing (ProcessNotCallable on GET).
+     */
+    @When("for scope {int} and service {string} a processing appointment customer {string} is created at the next minute.")
+    public void fuerStandortWirdEinInBearbeitungTerminkundeZurNaechstenMinuteAngelegt(
+            int scopeId, String serviceName, String familyName) {
+        fuerStandortWirdEinAufgerufenerTerminkundeZurNaechstenMinuteAngelegt(scopeId, serviceName, familyName);
+        iSetTheAssignedProcessStatusToProcessingWithTheXAuthKey();
+        Assertions.assertThat(response.getStatusCode())
+            .as("POST process status processing body=%s", truncate(response.asString(), 1000))
+            .isEqualTo(200);
+        Assertions.assertThat(lastProcess.path("status").asText())
+            .as("process status after processing")
+            .isEqualTo("processing");
+    }
+
     @Then("the last process appointment is not today")
     public void theLastProcessAppointmentIsNotToday() {
         Assertions.assertThat(lastProcess).as("last process").isNotNull();
