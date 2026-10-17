@@ -18,6 +18,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
@@ -136,8 +137,8 @@ public class ZmsApiSteps {
             return true;
         }
         Integer scopeId = processScopeById.get(processId);
-        if (scopeId != null) {
-            ensureWorkstationOnScope(scopeId);
+        if (scopeId != null && !ensureWorkstationOnScope(scopeId, assertSuccess)) {
+            return false;
         }
         try {
             Response cleanup = given()
@@ -467,7 +468,7 @@ public class ZmsApiSteps {
     @When("for scope {int} and service {string} an appointment customer {string} is created at the next minute.")
     public void fuerStandortWirdEinTerminkundeZurNaechstenMinuteAngelegt(
             int scopeId, String serviceName, String familyName) {
-        bookAppointmentCustomer(scopeId, serviceName, familyName, 0, false);
+        bookAppointmentCustomer(scopeId, serviceName, familyName, 0, false, true);
     }
 
     /**
@@ -477,7 +478,233 @@ public class ZmsApiSteps {
     @When("for scope {int} and service {string} an appointment customer {string} is created at least {int} minutes ahead.")
     public void fuerStandortWirdEinTerminkundeMitVorlaufAngelegt(
             int scopeId, String serviceName, String familyName, int minutesAhead) {
-        bookAppointmentCustomer(scopeId, serviceName, familyName, minutesAhead, true);
+        bookAppointmentCustomer(scopeId, serviceName, familyName, minutesAhead, true, true);
+    }
+
+    /**
+     * ZMSKVR-405 / ZMSKVR-549: confirmed Terminkunde whose appointment day is after today
+     * (ProcessNotCurrentDate for calledprocess / POST called).
+     */
+    @When("for scope {int} and service {string} an appointment customer {string} is created on a future calendar day.")
+    public void fuerStandortWirdEinTerminkundeAnEinemZukuenftigenKalendertagAngelegt(
+            int scopeId, String serviceName, String familyName) {
+        bookAppointmentCustomerOnFutureDay(scopeId, serviceName, familyName, true);
+    }
+
+    /**
+     * ZMSKVR-375: leave the process as reserved (same-day) so ProcessNotCallable applies
+     * to both calledprocess and selectedprocess without ProcessNotCurrentDate winning first.
+     * Prefer a slightly later slot so outline examples (reserved → preconfirmed → …) do not
+     * starve the narrow next-minute / 6-minute free window (ProcessReserveFailed).
+     */
+    @When("for scope {int} and service {string} a reserved appointment customer {string} is created at the next minute.")
+    public void fuerStandortWirdEinReservierterTerminkundeZurNaechstenMinuteAngelegt(
+            int scopeId, String serviceName, String familyName) {
+        bookAppointmentCustomer(scopeId, serviceName, familyName, 2, true, false);
+    }
+
+    /**
+     * ZMSKVR-375: reserved → preconfirmed so GET /process/{id}/ returns ProcessNotCallable.
+     * Stagger minutesAhead from the reserved fixture so sequential outline examples do not
+     * collide on the same intern slot.
+     */
+    @When("for scope {int} and service {string} a preconfirmed appointment customer {string} is created at the next minute.")
+    public void fuerStandortWirdEinVorbestaetigterTerminkundeZurNaechstenMinuteAngelegt(
+            int scopeId, String serviceName, String familyName) {
+        bookAppointmentCustomer(scopeId, serviceName, familyName, 4, true, false);
+        Assertions.assertThat(lastProcess).as("reserved process before preconfirm").isNotNull();
+        String authKey = getOrLoginXAuthKey();
+        response = given()
+            .baseUri(baseUri != null ? baseUri : TestConfig.getBaseUri())
+            .header("X-AuthKey", authKey)
+            .contentType("application/json")
+            .queryParam("resolveReferences", 2)
+            .body(toJson(lastProcess))
+        .when()
+            .post("/process/status/preconfirmed/");
+        CommonApiSteps.setResponse(response);
+        Assertions.assertThat(response.getStatusCode())
+            .as("POST /process/status/preconfirmed/ body=%s", truncate(response.asString(), 1000))
+            .isEqualTo(200);
+        rememberProcess(parseDataNode(response));
+        Assertions.assertThat(lastProcess.path("status").asText())
+            .as("process status after preconfirm")
+            .isEqualTo("preconfirmed");
+    }
+
+    /**
+     * ZMSKVR-375: confirmed Terminkunde then citizen-cancel ({@code DELETE /process/{id}/{authKey}/})
+     * so status is {@code deleted} (ProcessNotCallable). Admin quick-delete leaves {@code blocked},
+     * which WorkstationProcessGet does not treat as ProcessNotCallable.
+     */
+    @When("for scope {int} and service {string} a deleted appointment customer {string} is created at the next minute.")
+    public void fuerStandortWirdEinGeloeschterTerminkundeZurNaechstenMinuteAngelegt(
+            int scopeId, String serviceName, String familyName) {
+        // Prefer a slightly later slot so parallel outline examples do not starve next-minute capacity.
+        bookAppointmentCustomer(scopeId, serviceName, familyName, 5, true, true);
+        Assertions.assertThat(lastProcess).as("confirmed process before delete").isNotNull();
+        int processId = lastProcess.path("id").asInt();
+        String processAuthKey = lastProcess.path("authKey").asText();
+        Assertions.assertThat(processId).as("process id").isPositive();
+        Assertions.assertThat(processAuthKey).as("process authKey").isNotBlank();
+        String authKey = getOrLoginXAuthKey();
+        response = given()
+            .baseUri(baseUri != null ? baseUri : TestConfig.getBaseUri())
+            .header("X-AuthKey", authKey)
+            .queryParam("initiator", "admin")
+        .when()
+            .delete("/process/" + processId + "/" + processAuthKey + "/");
+        CommonApiSteps.setResponse(response);
+        Assertions.assertThat(response.getStatusCode())
+            .as("DELETE /process/%d/{authKey}/ body=%s", processId, truncate(response.asString(), 1000))
+            .isEqualTo(200);
+        JsonNode deleted = parseDataNode(response);
+        Assertions.assertThat(deleted).as("DELETE /process/{id}/{authKey}/ data").isNotNull();
+        rememberProcess(deleted);
+        lastProcessDeleted = true;
+        Assertions.assertThat(lastProcess.path("status").asText())
+            .as("process status after citizen-cancel delete")
+            .isEqualTo("deleted");
+    }
+
+    /**
+     * ZMSKVR-375: confirmed same-day Terminkunde successfully called (status called).
+     * Calls via a second {@code ataf} workstation session so the process stays assigned to that
+     * holder desk. The scenario's primary clerk (and the UI {@code ataf_superuser_*} login) then
+     * hit ProcessNotCallable on GET / {@code ?calledprocess=} instead of reopening the live call panel.
+     */
+    @When("for scope {int} and service {string} a called appointment customer {string} is created at the next minute.")
+    public void fuerStandortWirdEinAufgerufenerTerminkundeZurNaechstenMinuteAngelegt(
+            int scopeId, String serviceName, String familyName) {
+        bookAppointmentCustomer(scopeId, serviceName, familyName, 5, true, true);
+        Assertions.assertThat(lastProcess).as("booked process before call").isNotNull();
+        JsonNode booked = Objects.requireNonNull(lastProcess, "booked process before call");
+        Assertions.assertThat(appointmentIsToday(booked))
+            .as("called fixture needs a same-day appointment; process=%s",
+                truncate(booked.toString(), 400))
+            .isTrue();
+        int processId = booked.path("id").asInt();
+        String primaryAuthKey = getOrLoginXAuthKey();
+        String primaryUsername = scenarioLoginUsername;
+        String primaryPassword = scenarioLoginPassword;
+
+        iAmLoggedInToTheZmsApiAsAnother("ataf");
+        String holderAuthKey = getOrLoginXAuthKey();
+        iUpdateTheWorkstationWithScopeAndCounterWithTheXAuthKey(scopeId, "13");
+        Assertions.assertThat(response.getStatusCode())
+            .as("holder workstation scope for call body=%s", truncate(response.asString(), 500))
+            .isEqualTo(200);
+        response = postProcessCalled(holderAuthKey, true, booked);
+        CommonApiSteps.setResponse(response);
+        Assertions.assertThat(response.getStatusCode())
+            .as("POST /workstation/process/called/ (holder) body=%s", truncate(response.asString(), 1000))
+            .isEqualTo(200);
+        JsonNode assigned = refreshAssignedProcessFromWorkstation(holderAuthKey);
+        Assertions.assertThat(assigned).as("holder assigned process after call").isNotNull();
+        Assertions.assertThat(assigned.path("id").asInt())
+            .as("holder workstation must hold process id=%d; body=%s",
+                processId, truncate(response.asString(), 800))
+            .isEqualTo(processId);
+        Assertions.assertThat(assigned.path("status").asText())
+            .as("process status after holder call")
+            .isEqualTo("called");
+        rememberProcess(assigned);
+
+        // Restore the scenario's primary clerk session for later GET / UI steps.
+        cachedXAuthKey = primaryAuthKey;
+        scenarioLoginUsername = primaryUsername;
+        scenarioLoginPassword = primaryPassword;
+        iUpdateTheWorkstationWithScopeAndCounterWithTheXAuthKey(scopeId, "13");
+        Assertions.assertThat(response.getStatusCode())
+            .as("primary workstation after holder call body=%s", truncate(response.asString(), 500))
+            .isEqualTo(200);
+    }
+
+    /**
+     * ZMSKVR-375: called then moved to processing (ProcessNotCallable on GET).
+     */
+    @When("for scope {int} and service {string} a processing appointment customer {string} is created at the next minute.")
+    public void fuerStandortWirdEinInBearbeitungTerminkundeZurNaechstenMinuteAngelegt(
+            int scopeId, String serviceName, String familyName) {
+        fuerStandortWirdEinAufgerufenerTerminkundeZurNaechstenMinuteAngelegt(scopeId, serviceName, familyName);
+        forceLastProcessStatus("processing");
+        Assertions.assertThat(response.getStatusCode())
+            .as("POST process status processing body=%s", truncate(response.asString(), 1000))
+            .isEqualTo(200);
+        Assertions.assertThat(lastProcess.path("status").asText())
+            .as("process status after processing")
+            .isEqualTo("processing");
+    }
+
+    @Then("the last process appointment is not today")
+    public void theLastProcessAppointmentIsNotToday() {
+        Assertions.assertThat(lastProcess).as("last process").isNotNull();
+        Assertions.assertThat(appointmentIsToday(lastProcess))
+            .as("last process appointment must be on a future/past day for ProcessNotCurrentDate; process=%s",
+                truncate(lastProcess.toString(), 400))
+            .isFalse();
+    }
+
+    @When("I request the last process with the X-AuthKey")
+    public void iRequestTheLastProcessWithTheXAuthKey() {
+        Assertions.assertThat(lastProcess).as("last process").isNotNull();
+        int processId = lastProcess.path("id").asInt();
+        Assertions.assertThat(processId).as("process id").isPositive();
+        iRequestProcessWithTheXAuthKey(processId);
+    }
+
+    @When("I request process {int} with the X-AuthKey")
+    public void iRequestProcessWithTheXAuthKey(int processId) {
+        String authKey = getOrLoginXAuthKey();
+        response = given()
+            .baseUri(apiBaseUri())
+            .header("X-AuthKey", authKey)
+            .queryParam("resolveReferences", 1)
+        .when()
+            .get("/process/" + processId + "/");
+        CommonApiSteps.setResponse(response);
+        ScenarioLogManager.getLogger().info(
+            "GET /process/{}/ status={} body={}",
+            processId,
+            response.getStatusCode(),
+            truncate(response.asString(), 800));
+    }
+
+    /**
+     * Attempts POST /workstation/process/called/ without replacing a future appointment with a walk-in.
+     * Used for ProcessNotCurrentDate / MatchScope / reserved-call coverage (ZMSKVR-405 / 375).
+     * {@code allowClusterWideCall=false} so WorkstationProcessMatchScopeFailed can surface on call.
+     */
+    @When("I try to call the last process at the workstation with the X-AuthKey")
+    public void iTryToCallTheLastProcessAtTheWorkstationWithTheXAuthKey() {
+        Assertions.assertThat(lastProcess)
+            .as("Reserve an appointment before trying to call it")
+            .isNotNull();
+        String authKey = getOrLoginXAuthKey();
+        response = postProcessCalled(authKey, false, lastProcess);
+        CommonApiSteps.setResponse(response);
+        ScenarioLogManager.getLogger().info(
+            "POST /workstation/process/called/ (no walk-in fallback) status={} body={}",
+            response.getStatusCode(),
+            truncate(response.asString(), 800));
+    }
+
+    /**
+     * Call a known-missing process id (no walk-in fallback) for ProcessNotFound on the call path.
+     */
+    @When("I try to call process {int} at the workstation with the X-AuthKey")
+    public void iTryToCallProcessAtTheWorkstationWithTheXAuthKey(int processId) {
+        String authKey = getOrLoginXAuthKey();
+        ObjectNode body = MAPPER.createObjectNode();
+        body.put("id", processId);
+        body.put("authKey", "missing");
+        response = postProcessCalled(authKey, false, body);
+        CommonApiSteps.setResponse(response);
+        ScenarioLogManager.getLogger().info(
+            "POST /workstation/process/called/ processId={} (expect ProcessNotFound) status={} body={}",
+            processId,
+            response.getStatusCode(),
+            truncate(response.asString(), 800));
     }
 
     /**
@@ -685,6 +912,16 @@ public class ZmsApiSteps {
 
     private void bookAppointmentCustomer(
             int scopeId, String serviceName, String familyName, int minutesAhead, boolean requireServiceName) {
+        bookAppointmentCustomer(scopeId, serviceName, familyName, minutesAhead, requireServiceName, true);
+    }
+
+    private void bookAppointmentCustomer(
+            int scopeId,
+            String serviceName,
+            String familyName,
+            int minutesAhead,
+            boolean requireServiceName,
+            boolean confirm) {
         // Keep the current API session (and its workstation). A fresh agent_queue login here
         // would drop the clerk's scope and invalidate remembered clerk X-AuthKeys (401 / MatchScopeFailed).
         if (cachedXAuthKey == null || cachedXAuthKey.isBlank()) {
@@ -747,6 +984,49 @@ public class ZmsApiSteps {
                         earliest)
                 .isNotEmpty();
 
+        reserveAndOptionallyConfirm(
+                scopeId, familyName, request, authKey, candidates, confirm, earliest, endOfToday, minutesAhead, now);
+    }
+
+    /** Book from tomorrow onward so ProcessNotCurrentDate applies to calledprocess. */
+    private void bookAppointmentCustomerOnFutureDay(
+            int scopeId, String serviceName, String familyName, boolean confirm) {
+        if (cachedXAuthKey == null || cachedXAuthKey.isBlank()) {
+            iAmLoggedInToTheZmsApiAs("ataf");
+        }
+        String authKey = getOrLoginXAuthKey();
+        JsonNode request = findScopeRequestByName(scopeId, serviceName, authKey);
+        Assertions.assertThat(request.path("name").asText("").toLowerCase(Locale.ROOT))
+                .as("scope %d request list should include %s", scopeId, serviceName)
+                .contains(serviceName.toLowerCase(Locale.ROOT));
+        long startOfTomorrow = BerlinTime.today()
+                .plusDays(1)
+                .atStartOfDay(java.time.ZoneId.of("Europe/Berlin"))
+                .toEpochSecond();
+        JsonNode freeList = fetchFreeProcessesLookingAhead(scopeId, request, authKey, startOfTomorrow);
+        List<JsonNode> candidates = slotsBetween(freeList, startOfTomorrow, startOfTomorrow + 14L * 86_400L);
+        Assertions.assertThat(candidates)
+                .as("scope %d needs an intern slot on a future calendar day from epoch %d", scopeId, startOfTomorrow)
+                .isNotEmpty();
+        reserveAndOptionallyConfirm(
+                scopeId, familyName, request, authKey, candidates, confirm, startOfTomorrow, 0, 1, 0);
+        Assertions.assertThat(appointmentIsToday(lastProcess))
+                .as("future-day Terminkunde must not be today; process=%s",
+                        truncate(lastProcess != null ? lastProcess.toString() : "", 400))
+                .isFalse();
+    }
+
+    private void reserveAndOptionallyConfirm(
+            int scopeId,
+            String familyName,
+            JsonNode request,
+            String authKey,
+            List<JsonNode> candidates,
+            boolean confirm,
+            long earliest,
+            long endOfToday,
+            int minutesAhead,
+            long now) {
         JsonNode reserved = null;
         for (int i = 0; i < candidates.size(); i++) {
             ObjectNode process = (ObjectNode) candidates.get(i).deepCopy();
@@ -781,7 +1061,27 @@ public class ZmsApiSteps {
                     "POST /process/status/reserved/ failed with " + response.getStatusCode() + ": "
                             + truncate(response.asString(), 1000));
         }
-        Assertions.assertThat(reserved).as("reserved terminkunde at scope %d", scopeId).isNotNull();
+        if (reserved == null) {
+            throw new IllegalStateException(
+                    "POST /process/status/reserved/ returned no data for scope " + scopeId + ": "
+                            + truncate(response.asString(), 500));
+        }
+
+        if (!confirm) {
+            JsonNode reservedProcess = Objects.requireNonNull(reserved, "reserved terminkunde");
+            rememberProcess(reservedProcess);
+            trackProcess(reservedProcess.path("id").asInt(), scopeId);
+            long appointment = reservedProcess.path("appointments").path(0).path("date").asLong(0);
+            TestDataHelper.setTestData("appointment_epoch", Long.toString(appointment));
+            TestDataHelper.setTestData("new_appointment_customer_name", familyName);
+            ScenarioLogManager.getLogger().info(
+                    "Reserved Terminkunde {} at epoch {} for scope {} (status={})",
+                    familyName,
+                    appointment,
+                    scopeId,
+                    reservedProcess.path("status").asText());
+            return;
+        }
 
         response = postConfirmedWithDeadlockRetry(authKey, reserved);
         CommonApiSteps.setResponse(response);
@@ -793,20 +1093,21 @@ public class ZmsApiSteps {
         trackProcess(confirmed.path("id").asInt(), scopeId);
 
         long appointment = confirmed.path("appointments").path(0).path("date").asLong(0);
-        if (minutesAhead <= 0) {
+        if (minutesAhead <= 0 && endOfToday > 0) {
             Assertions.assertThat(appointmentIsToday(confirmed))
                     .as("Terminkunde collision needs a same-day appointment; got epoch %d", appointment)
                     .isTrue();
             Assertions.assertThat(appointment)
                     .as("confirmed same-day appointment time")
                     .isBetween(earliest, endOfToday);
-        } else {
+        } else if (minutesAhead > 0 && now > 0 && endOfToday > 0) {
             long reminderHorizon = now + 24 * 60 * 60;
             Assertions.assertThat(appointment)
                     .as("confirmed appointment time")
                     .isBetween(earliest, reminderHorizon);
         }
         TestDataHelper.setTestData("appointment_epoch", Long.toString(appointment));
+        TestDataHelper.setTestData("new_appointment_customer_name", familyName);
         ScenarioLogManager.getLogger().info(
                 "Terminkunde {} booked at epoch {} for scope {}", familyName, appointment, scopeId);
     }
@@ -2703,15 +3004,44 @@ public class ZmsApiSteps {
     /**
      * Delete is allowed only for the workstation scope and the user's departments.
      * A forwarded appointment lives on the target scope, so the workstation has to follow it.
+     * Soft mode (required=false) is for {@code @After} cleanup after a UI Keycloak login may have
+     * invalidated the API X-AuthKey for the same ataf_superuser account.
      */
-    private void ensureWorkstationOnScope(int scopeId) {
+    private boolean ensureWorkstationOnScope(int scopeId, boolean required) {
         if (scopeId <= 0 || scopeId == workstationScopeId) {
-            return;
+            return true;
         }
         iUpdateTheWorkstationWithScopeAndCounterWithTheXAuthKey(scopeId, "21");
-        Assertions.assertThat(response.getStatusCode())
-            .as("POST /workstation/ for scope %d body=%s", scopeId, truncate(response.asString(), 500))
-            .isEqualTo(200);
+        if (response.getStatusCode() == 200) {
+            return true;
+        }
+        // UI login as the same pool user can drop the API session; refresh once.
+        cachedXAuthKey = null;
+        try {
+            getOrLoginXAuthKey();
+            iUpdateTheWorkstationWithScopeAndCounterWithTheXAuthKey(scopeId, "21");
+        } catch (RuntimeException e) {
+            if (required) {
+                throw e;
+            }
+            ScenarioLogManager.getLogger().warn(
+                "Skip cleanup workstation switch to scope {}: {}", scopeId, e.getMessage());
+            return false;
+        }
+        if (response.getStatusCode() == 200) {
+            return true;
+        }
+        if (required) {
+            Assertions.assertThat(response.getStatusCode())
+                .as("POST /workstation/ for scope %d body=%s", scopeId, truncate(response.asString(), 500))
+                .isEqualTo(200);
+        }
+        ScenarioLogManager.getLogger().warn(
+            "Skip cleanup workstation switch to scope {}: HTTP {} body={}",
+            scopeId,
+            response.getStatusCode(),
+            truncate(response.asString(), 300));
+        return false;
     }
 
     private List<JsonNode> slotsBetween(JsonNode freeList, long fromInclusive, long toInclusive) {
@@ -2837,6 +3167,30 @@ public class ZmsApiSteps {
             return process;
         }
         return lastProcess;
+    }
+
+    /** Set lastProcess status without requiring a workstation assignment on the current clerk. */
+    private void forceLastProcessStatus(String status) {
+        Assertions.assertThat(lastProcess).as("last process before status force").isNotNull();
+        JsonNode process = Objects.requireNonNull(lastProcess, "last process before status force");
+        int processId = process.path("id").asInt();
+        String processAuthKey = process.path("authKey").asText();
+        Assertions.assertThat(processId).as("process id").isPositive();
+        Assertions.assertThat(processAuthKey).as("process authKey").isNotBlank();
+        ObjectNode body = process.deepCopy();
+        body.put("status", status);
+        body.putNull("parkedBy");
+        String authKey = getOrLoginXAuthKey();
+        response = given()
+            .baseUri(apiBaseUri())
+            .header("X-AuthKey", authKey)
+            .contentType("application/json")
+            .queryParam("initiator", "admin")
+            .body(toJson(body))
+        .when()
+            .post("/process/" + processId + "/" + processAuthKey + "/");
+        CommonApiSteps.setResponse(response);
+        rememberProcess(parseDataNode(response));
     }
 
     private void rememberProcess(JsonNode process) {
