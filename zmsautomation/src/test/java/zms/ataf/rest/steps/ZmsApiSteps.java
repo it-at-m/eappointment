@@ -2247,7 +2247,8 @@ public class ZmsApiSteps {
 
     @When("I remember the clientscope ticketprinter appeared count for today")
     public void iRememberTheClientscopeTicketprinterAppearedCountForToday() {
-        rememberedTicketprinterCount = ticketprinterAppearedCountForToday(parseDataNode(response));
+        // Empty scopes return ReportNotFound until the first finish archives a row.
+        rememberedTicketprinterCount = ticketprinterAppearedCountForTodayOrZero();
         TestDataHelper.setTestData(
             "ekiosk_ticketprinter_baseline", Integer.toString(rememberedTicketprinterCount));
         ScenarioLogManager.getLogger().info(
@@ -2280,6 +2281,47 @@ public class ZmsApiSteps {
         Assertions.assertThat(total)
             .as("ticketprinter appeared for %s must increase over baseline %s", today, rememberedTicketprinterCount)
             .isGreaterThan(rememberedTicketprinterCount);
+    }
+
+    /** Baseline helper: missing warehouse report means zero finished E-Kiosk walk-ins yet. */
+    private int ticketprinterAppearedCountForTodayOrZero() {
+        if (response == null) {
+            return 0;
+        }
+        try {
+            JsonNode root = MAPPER.readTree(response.asString());
+            if (root.path("meta").path("error").asBoolean(false)) {
+                return 0;
+            }
+        } catch (Exception ignored) {
+            return 0;
+        }
+        JsonNode exchange = parseDataNode(response);
+        if (exchange == null) {
+            return 0;
+        }
+        int ticketprinterIndex = dictionaryIndex(exchange, "ticketprinter");
+        if (ticketprinterIndex < 0) {
+            return 0;
+        }
+        String today = BerlinTime.today().format(DateTimeFormatter.ISO_LOCAL_DATE);
+        int dateIndex = dictionaryIndex(exchange, "date");
+        if (dateIndex < 0) {
+            return 0;
+        }
+        int total = 0;
+        JsonNode data = exchange.path("data");
+        if (data.isArray()) {
+            for (JsonNode row : data) {
+                if (!row.isArray() || row.size() <= Math.max(dateIndex, ticketprinterIndex)) {
+                    continue;
+                }
+                if (today.equals(row.get(dateIndex).asText())) {
+                    total += row.get(ticketprinterIndex).asInt(0);
+                }
+            }
+        }
+        return total;
     }
 
     private int ticketprinterAppearedCountForToday(JsonNode exchange) {
