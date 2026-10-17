@@ -634,13 +634,14 @@ public final class OverviewStep {
     private String visibleServiceOrSubserviceSummaryText(int serviceId) {
         String serviceSel = "#service-" + serviceId;
         String subSel = "#subservice-" + serviceId;
+        // Prefer #subservice- (Übersicht combined peers); #service- can also match Leistung-step rows.
         CitizenViewWaits.waitWithThreeWindows(
-                () -> deepVisibleElementByIdExists("service-" + serviceId)
-                        || deepVisibleElementByIdExists("subservice-" + serviceId),
+                () -> deepVisibleElementByIdExists("subservice-" + serviceId)
+                        || deepVisibleElementByIdExists("service-" + serviceId),
                 "Service summary " + serviceSel + " or " + subSel);
-        String text = deepVisibleElementByIdText("service-" + serviceId);
+        String text = deepVisibleElementByIdText("subservice-" + serviceId);
         if (text == null) {
-            text = deepVisibleElementByIdText("subservice-" + serviceId);
+            text = deepVisibleElementByIdText("service-" + serviceId);
         }
         Assert.assertNotNull(
                 text, "Expected visible booking summary block " + serviceSel + " or " + subSel);
@@ -674,7 +675,10 @@ public final class OverviewStep {
                                         + "if(root.shadowRoot){var s=walk(root.shadowRoot);if(s)return s;}"
                                         + "var c=root.children||[];for(var i=0;i<c.length;i++){var f=walk(c[i]);if(f)return f;}"
                                         + "return null;}"
-                                        + "var n=walk(document.body);return n?((n.innerText||n.textContent||'')+''):null;",
+                                        // Count prefix ("2x") sits on the parent <p>; id is often on the <a>.
+                                        + "var n=walk(document.body);if(!n)return null;"
+                                        + "var p=(n.closest&&n.closest('p'))||n.parentElement||n;"
+                                        + "return ((p.innerText||p.textContent||n.innerText||n.textContent||'')+'');",
                                 elementId);
         if (raw == null) {
             return null;

@@ -218,8 +218,9 @@ public class ZmsApiMailSteps {
     }
 
     /**
-     * ZMSKVR-418: confirmation mail lists each booked service with {@code Anzahl: N}
-     * (mail_confirmation.twig requestGroups). CSV form {@code Name:count, Name:count}.
+     * ZMSKVR-418: confirmation mail lists each booked service with its count.
+     * Stock templates use {@code Anzahl: N}; Munich templates use {@code Nx Name}.
+     * CSV form {@code Name:count, Name:count}.
      */
     @Then("the confirmation mail should list services with counts {string}")
     public void theConfirmationMailShouldListServicesWithCounts(String nameCountCsv) {
@@ -232,6 +233,7 @@ public class ZmsApiMailSteps {
                 .isNotNull();
         String firstName = firstServiceNameFromCountCsv(nameCountCsv);
         String html = htmlForProcessContaining(String.valueOf(booking.getProcessId()), firstName);
+        String collapsed = html.replaceAll("\\s+", " ");
         for (String part : nameCountCsv.split(",")) {
             String trimmed = part.trim();
             if (trimmed.isEmpty()) {
@@ -243,16 +245,20 @@ public class ZmsApiMailSteps {
                     .isGreaterThan(0);
             String name = trimmed.substring(0, colon).trim();
             String count = trimmed.substring(colon + 1).trim();
-            Assertions.assertThat(html)
+            Assertions.assertThat(collapsed)
                     .as("confirmation mail for process %s should name service %s", booking.getProcessId(), name)
                     .contains(name);
-            Assertions.assertThat(html)
+            boolean anzahlForm = collapsed.contains("Anzahl: " + count);
+            boolean compactForm = collapsed.contains(count + "x") && collapsed.contains(name);
+            Assertions.assertThat(anzahlForm || compactForm)
                     .as(
-                            "confirmation mail for process %s should show Anzahl: %s for %s",
+                            "confirmation mail for process %s should show count %s for %s "
+                                    + "(Anzahl: N or Nx). html=%s",
                             booking.getProcessId(),
                             count,
-                            name)
-                    .contains("Anzahl: " + count);
+                            name,
+                            abbreviate(html))
+                    .isTrue();
         }
         ScenarioLogManager.getLogger()
                 .info(
