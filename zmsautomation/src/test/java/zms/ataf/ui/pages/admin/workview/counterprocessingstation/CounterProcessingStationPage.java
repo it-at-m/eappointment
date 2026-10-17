@@ -225,7 +225,7 @@ public class CounterProcessingStationPage extends AdminPage {
         By nameCell = By.xpath(
                 "//table[@id='table-queued-appointments']"
                         + "//td[contains(@class,'callnextclient')]"
-                        + "[contains(normalize-space(.),'" + familyName + "')]");
+                        + "[contains(normalize-space(.)," + xpathLiteral(familyName) + ")]");
         WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
         wait.ignoring(StaleElementReferenceException.class);
         long[] lastReload = { 0L };
@@ -254,6 +254,83 @@ public class CounterProcessingStationPage extends AdminPage {
                     }
                     return false;
                 });
+    }
+
+    /**
+     * ZMSKVR-467 / ZMSKVR-545: queue must show the full plain-text snippets (including {@code <})
+     * without cutting off at angle brackets or interpreting markup.
+     */
+    public void assertQueueRowShowsPlainTextSnippets(String familyName, String... snippets) {
+        assertCustomerVisibleInQueueByName(familyName);
+        WebElement row = queueRowForFamilyName(familyName);
+        String visible = row.getText().replace('\u00a0', ' ');
+        for (String snippet : snippets) {
+            if (snippet == null || snippet.isBlank()) {
+                continue;
+            }
+            Assert.assertTrue(
+                    visible.contains(snippet),
+                    "Queue row for \"" + familyName + "\" should contain plain text \"" + snippet
+                            + "\", but was: " + visible);
+        }
+    }
+
+    /** ZMSKVR-467: no live {@code <script>} nodes inside the customer's queue row. */
+    public void assertQueueRowHasNoScriptElements(String familyName) {
+        WebElement row = queueRowForFamilyName(familyName);
+        List<WebElement> scripts = row.findElements(By.tagName("script"));
+        Assert.assertTrue(
+                scripts.isEmpty(),
+                "Queue row for \"" + familyName + "\" must not contain <script> elements, found "
+                        + scripts.size());
+    }
+
+    /**
+     * ZMSKVR-467: after ProcessPlainText normalization / Twig {@code |e}, the row HTML must not
+     * contain an unescaped script open-tag (which the old bug would interpret).
+     */
+    public void assertQueueRowDoesNotContainRawMarkup(String familyName, String rawMarkup) {
+        WebElement row = queueRowForFamilyName(familyName);
+        String html = row.getAttribute("innerHTML");
+        Assert.assertNotNull(html, "Queue row innerHTML");
+        Assert.assertFalse(
+                html.toLowerCase(Locale.ROOT).contains(rawMarkup.toLowerCase(Locale.ROOT)),
+                "Queue row for \"" + familyName + "\" must not contain raw markup \"" + rawMarkup
+                        + "\", innerHTML=" + html);
+    }
+
+    private WebElement queueRowForFamilyName(String familyName) {
+        By row = By.xpath(
+                "//table[@id='table-queued-appointments']/tbody/tr["
+                        + ".//td[contains(@class,'callnextclient') and contains(normalize-space(.),"
+                        + xpathLiteral(familyName) + ")]]");
+        return new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .ignoring(StaleElementReferenceException.class)
+                .until(ExpectedConditions.visibilityOfElementLocated(row));
+    }
+
+    /** XPath 1.0 string literal safe for values that may contain {@code '} or {@code "}. */
+    private static String xpathLiteral(String value) {
+        if (value == null) {
+            return "''";
+        }
+        if (!value.contains("'")) {
+            return "'" + value + "'";
+        }
+        if (!value.contains("\"")) {
+            return "\"" + value + "\"";
+        }
+        StringBuilder sb = new StringBuilder("concat(");
+        boolean first = true;
+        for (String part : value.split("'", -1)) {
+            if (!first) {
+                sb.append(", \"'\", ");
+            }
+            first = false;
+            sb.append("'").append(part).append("'");
+        }
+        sb.append(")");
+        return sb.toString();
     }
 
     public void isCustomerVisibleInParkingTableByNumber(String number) {
