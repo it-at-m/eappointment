@@ -15,7 +15,7 @@ Feature: Workstation URL security for calledprocess and selectedprocess
 		And I enter in the field "Platz-Nr. oder Tresen" the text "13".
 		And I click the button "Auswahl bestätigen" in the administration.
 		Then the workstation page is displayed.
-		When the clerk opens the workstation with "calledprocess" for process "1".
+		When the clerk opens the workstation with "calledprocess" for process "2147483000".
 		Then the ProcessNotFound error is displayed.
 		When I click the exception button "Abbrechen".
 		Then the workstation exception board is gone.

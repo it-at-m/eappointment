@@ -9,7 +9,7 @@ Feature: ZMS API workstation URL security exceptions
     And I am logged in to the ZMS API as "ataf"
 
   Scenario: GET missing process returns ProcessNotFound
-    When I request process 1 with the X-AuthKey
+    When I request process 2147483000 with the X-AuthKey
     Then the response status code should be 404
     And the response meta should contain exception "ProcessNotFound"
 

@@ -18,6 +18,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
@@ -133,8 +134,8 @@ public class ZmsApiSteps {
             return true;
         }
         Integer scopeId = processScopeById.get(processId);
-        if (scopeId != null) {
-            ensureWorkstationOnScope(scopeId);
+        if (scopeId != null && !ensureWorkstationOnScope(scopeId, assertSuccess)) {
+            return false;
         }
         try {
             Response cleanup = given()
@@ -904,11 +905,12 @@ public class ZmsApiSteps {
                             + truncate(response.asString(), 1000));
         }
         Assertions.assertThat(reserved).as("reserved terminkunde at scope %d", scopeId).isNotNull();
+        JsonNode reservedProcess = Objects.requireNonNull(reserved, "reserved terminkunde");
 
         if (!confirm) {
-            rememberProcess(reserved);
-            trackProcess(reserved.path("id").asInt(), scopeId);
-            long appointment = reserved.path("appointments").path(0).path("date").asLong(0);
+            rememberProcess(reservedProcess);
+            trackProcess(reservedProcess.path("id").asInt(), scopeId);
+            long appointment = reservedProcess.path("appointments").path(0).path("date").asLong(0);
             TestDataHelper.setTestData("appointment_epoch", Long.toString(appointment));
             TestDataHelper.setTestData("new_appointment_customer_name", familyName);
             ScenarioLogManager.getLogger().info(
@@ -916,11 +918,11 @@ public class ZmsApiSteps {
                     familyName,
                     appointment,
                     scopeId,
-                    reserved.path("status").asText());
+                    reservedProcess.path("status").asText());
             return;
         }
 
-        response = postConfirmedWithDeadlockRetry(authKey, reserved);
+        response = postConfirmedWithDeadlockRetry(authKey, reservedProcess);
         CommonApiSteps.setResponse(response);
         Assertions.assertThat(response.getStatusCode())
                 .as("POST /process/status/confirmed/ body=%s", truncate(response.asString(), 1000))
@@ -2692,15 +2694,44 @@ public class ZmsApiSteps {
     /**
      * Delete is allowed only for the workstation scope and the user's departments.
      * A forwarded appointment lives on the target scope, so the workstation has to follow it.
+     * Soft mode (required=false) is for {@code @After} cleanup after a UI Keycloak login may have
+     * invalidated the API X-AuthKey for the same ataf_superuser account.
      */
-    private void ensureWorkstationOnScope(int scopeId) {
+    private boolean ensureWorkstationOnScope(int scopeId, boolean required) {
         if (scopeId <= 0 || scopeId == workstationScopeId) {
-            return;
+            return true;
         }
         iUpdateTheWorkstationWithScopeAndCounterWithTheXAuthKey(scopeId, "21");
-        Assertions.assertThat(response.getStatusCode())
-            .as("POST /workstation/ for scope %d body=%s", scopeId, truncate(response.asString(), 500))
-            .isEqualTo(200);
+        if (response.getStatusCode() == 200) {
+            return true;
+        }
+        // UI login as the same pool user can drop the API session; refresh once.
+        cachedXAuthKey = null;
+        try {
+            getOrLoginXAuthKey();
+            iUpdateTheWorkstationWithScopeAndCounterWithTheXAuthKey(scopeId, "21");
+        } catch (RuntimeException e) {
+            if (required) {
+                throw e;
+            }
+            ScenarioLogManager.getLogger().warn(
+                "Skip cleanup workstation switch to scope {}: {}", scopeId, e.getMessage());
+            return false;
+        }
+        if (response.getStatusCode() == 200) {
+            return true;
+        }
+        if (required) {
+            Assertions.assertThat(response.getStatusCode())
+                .as("POST /workstation/ for scope %d body=%s", scopeId, truncate(response.asString(), 500))
+                .isEqualTo(200);
+        }
+        ScenarioLogManager.getLogger().warn(
+            "Skip cleanup workstation switch to scope {}: HTTP {} body={}",
+            scopeId,
+            response.getStatusCode(),
+            truncate(response.asString(), 300));
+        return false;
     }
 
     private List<JsonNode> slotsBetween(JsonNode freeList, long fromInclusive, long toInclusive) {
