@@ -299,6 +299,22 @@ public class CounterProcessingStationPage extends AdminPage {
                         + "\", innerHTML=" + html);
     }
 
+    /**
+     * ZMSKVR-467: freitext must not become a live link (queue UI has legitimate {@code <a>}
+     * controls, so check href targets only).
+     */
+    public void assertQueueRowHasNoLinksTo(String familyName, String hrefFragment) {
+        WebElement row = queueRowForFamilyName(familyName);
+        List<WebElement> links = row.findElements(By.cssSelector("a[href]"));
+        for (WebElement link : links) {
+            String href = link.getAttribute("href");
+            Assert.assertFalse(
+                    href != null && href.toLowerCase(Locale.ROOT).contains(hrefFragment.toLowerCase(Locale.ROOT)),
+                    "Queue row for \"" + familyName + "\" must not link to \"" + hrefFragment
+                            + "\", found href=" + href);
+        }
+    }
+
     private WebElement queueRowForFamilyName(String familyName) {
         By row = By.xpath(
                 "//table[@id='table-queued-appointments']/tbody/tr["

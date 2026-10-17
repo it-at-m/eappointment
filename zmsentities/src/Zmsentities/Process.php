@@ -414,6 +414,29 @@ class Process extends Schema\Entity
         return $this->toProperty()->finishTime->get();
     }
 
+    /**
+     * Strip markup from amendment / Freitext when hydrating from API JSON (and other merges).
+     * Mutators like addAmendment already normalize; this closes the waitingnumber / reserve path
+     * that does {@code new Process($input)} without those mutators.
+     */
+    #[\Override]
+    public function addData(array|object $mergeData): static
+    {
+        parent::addData($mergeData);
+        return $this->normalizePlainTextFields();
+    }
+
+    public function normalizePlainTextFields(): static
+    {
+        foreach (['amendment', 'customTextfield', 'customTextfield2'] as $field) {
+            if (!isset($this[$field]) || !is_string($this[$field])) {
+                continue;
+            }
+            $this[$field] = trim(ProcessPlainText::normalize($this[$field]));
+        }
+        return $this;
+    }
+
     public function addAmendment(mixed $input, string $notice = ''): static
     {
         $this->amendment = $notice;
