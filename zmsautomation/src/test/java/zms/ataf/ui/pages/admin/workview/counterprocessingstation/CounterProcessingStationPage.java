@@ -1484,6 +1484,72 @@ public class CounterProcessingStationPage extends AdminPage {
         areValuesVisibleInTableColumn(APPOINTMENT_PARKED_TABLE_LOCATOR_ID, LocatorType.ID, column, searchStrings);
     }
 
+    /** ZMSKVR-1113 / ZMSKVR-1182: Zimmernummer sits between Nr. and Name in Geparkte Termine. */
+    public void assertParkedTableZimmernummerColumnBetweenNrAndName() {
+        ScenarioLogManager.getLogger()
+                .info("Asserting Zimmernummer column sits between Nr. and Name in parked appointments");
+        CONTEXT.waitForSpinners();
+        By parkedTable = By.id(APPOINTMENT_PARKED_TABLE_LOCATOR_ID);
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(parkedTable));
+        scrollToCenterByVisibleElement(findElementByLocatorType(APPOINTMENT_PARKED_TABLE_LOCATOR_ID, LocatorType.ID, false));
+        List<WebElement> headers = DRIVER.findElements(
+                By.cssSelector("#" + APPOINTMENT_PARKED_TABLE_LOCATOR_ID + " thead th"));
+        // Keep empty <th> labels so indexes match physical columns (Zimmernummer adjacency).
+        List<String> labels = headers.stream()
+                .map(header -> header.getText().replace('\u00a0', ' ').trim())
+                .toList();
+        int nr = indexOfHeader(labels, "Nr.");
+        int room = indexOfHeader(labels, "Zimmernummer");
+        int name = indexOfHeaderStartsWith(labels, "Name");
+        Assert.assertTrue(nr >= 0, "Parked table missing Nr. column. Headers: " + labels);
+        Assert.assertTrue(room >= 0, "Parked table missing Zimmernummer column. Headers: " + labels);
+        Assert.assertTrue(name >= 0, "Parked table missing Name column. Headers: " + labels);
+        Assert.assertEquals(room, nr + 1, "Zimmernummer must follow Nr. Headers: " + labels);
+        Assert.assertEquals(name, room + 1, "Name must follow Zimmernummer. Headers: " + labels);
+    }
+
+    /**
+     * ZMSKVR-1113 / ZMSKVR-1182: parked row shows the Platz-Nr. from the call that parked it.
+     */
+    public void assertParkedAppointmentShowsRoomNumber(String token, String roomNumber) {
+        String numOnly = token == null ? "" : token.replaceAll("\\D+", "");
+        ScenarioLogManager.getLogger()
+                .info("Asserting parked appointment shows expected Zimmernummer");
+        CONTEXT.waitForSpinners();
+        By parkedTable = By.id(APPOINTMENT_PARKED_TABLE_LOCATOR_ID);
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(parkedTable));
+        scrollToCenterByVisibleElement(findElementByLocatorType(APPOINTMENT_PARKED_TABLE_LOCATOR_ID, LocatorType.ID, false));
+        By roomCell = By.xpath(
+                "//table[@id='" + APPOINTMENT_PARKED_TABLE_LOCATOR_ID + "']"
+                        + "//tbody/tr[td[count(preceding-sibling::td)=2][normalize-space(.)='" + numOnly + "']]"
+                        + "/td[count(preceding-sibling::td)=3]");
+        WebElement cell = wait.until(ExpectedConditions.visibilityOfElementLocated(roomCell));
+        Assert.assertEquals(
+                cell.getText().trim(),
+                roomNumber,
+                "Parked appointment " + numOnly + " must show Zimmernummer " + roomNumber);
+    }
+
+    private static int indexOfHeader(List<String> labels, String expected) {
+        for (int i = 0; i < labels.size(); i++) {
+            if (expected.equals(labels.get(i))) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    private static int indexOfHeaderStartsWith(List<String> labels, String prefix) {
+        for (int i = 0; i < labels.size(); i++) {
+            if (labels.get(i).startsWith(prefix)) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
     public void checkForValuesInFinishedTableColumn(String column, String... searchStrings) {
         ScenarioLogManager.getLogger().info("Checking for values to be visible in '{}' column of the finished table...", column);
         CONTEXT.waitForSpinners();
