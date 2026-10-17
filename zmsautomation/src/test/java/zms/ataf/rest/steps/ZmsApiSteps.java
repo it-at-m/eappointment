@@ -464,7 +464,7 @@ public class ZmsApiSteps {
     @When("for scope {int} and service {string} an appointment customer {string} is created at the next minute.")
     public void fuerStandortWirdEinTerminkundeZurNaechstenMinuteAngelegt(
             int scopeId, String serviceName, String familyName) {
-        bookAppointmentCustomer(scopeId, serviceName, familyName, 0, false);
+        bookAppointmentCustomer(scopeId, serviceName, familyName, 0, false, true);
     }
 
     /**
@@ -474,7 +474,79 @@ public class ZmsApiSteps {
     @When("for scope {int} and service {string} an appointment customer {string} is created at least {int} minutes ahead.")
     public void fuerStandortWirdEinTerminkundeMitVorlaufAngelegt(
             int scopeId, String serviceName, String familyName, int minutesAhead) {
-        bookAppointmentCustomer(scopeId, serviceName, familyName, minutesAhead, true);
+        bookAppointmentCustomer(scopeId, serviceName, familyName, minutesAhead, true, true);
+    }
+
+    /**
+     * ZMSKVR-405 / ZMSKVR-549: confirmed Terminkunde whose appointment day is after today
+     * (ProcessNotCurrentDate for calledprocess / POST called).
+     */
+    @When("for scope {int} and service {string} an appointment customer {string} is created on a future calendar day.")
+    public void fuerStandortWirdEinTerminkundeAnEinemZukuenftigenKalendertagAngelegt(
+            int scopeId, String serviceName, String familyName) {
+        bookAppointmentCustomerOnFutureDay(scopeId, serviceName, familyName, true);
+    }
+
+    /**
+     * ZMSKVR-375: leave the process as reserved (same-day) so ProcessNotCallable applies
+     * to both calledprocess and selectedprocess without ProcessNotCurrentDate winning first.
+     */
+    @When("for scope {int} and service {string} a reserved appointment customer {string} is created at the next minute.")
+    public void fuerStandortWirdEinReservierterTerminkundeZurNaechstenMinuteAngelegt(
+            int scopeId, String serviceName, String familyName) {
+        bookAppointmentCustomer(scopeId, serviceName, familyName, 0, true, false);
+    }
+
+    @Then("the last process appointment is not today")
+    public void theLastProcessAppointmentIsNotToday() {
+        Assertions.assertThat(lastProcess).as("last process").isNotNull();
+        Assertions.assertThat(appointmentIsToday(lastProcess))
+            .as("last process appointment must be on a future/past day for ProcessNotCurrentDate; process=%s",
+                truncate(lastProcess.toString(), 400))
+            .isFalse();
+    }
+
+    @When("I request the last process with the X-AuthKey")
+    public void iRequestTheLastProcessWithTheXAuthKey() {
+        Assertions.assertThat(lastProcess).as("last process").isNotNull();
+        int processId = lastProcess.path("id").asInt();
+        Assertions.assertThat(processId).as("process id").isPositive();
+        iRequestProcessWithTheXAuthKey(processId);
+    }
+
+    @When("I request process {int} with the X-AuthKey")
+    public void iRequestProcessWithTheXAuthKey(int processId) {
+        String authKey = getOrLoginXAuthKey();
+        response = given()
+            .baseUri(apiBaseUri())
+            .header("X-AuthKey", authKey)
+            .queryParam("resolveReferences", 1)
+        .when()
+            .get("/process/" + processId + "/");
+        CommonApiSteps.setResponse(response);
+        ScenarioLogManager.getLogger().info(
+            "GET /process/{}/ status={} body={}",
+            processId,
+            response.getStatusCode(),
+            truncate(response.asString(), 800));
+    }
+
+    /**
+     * Attempts POST /workstation/process/called/ without replacing a future appointment with a walk-in.
+     * Used for ProcessNotCurrentDate coverage (ZMSKVR-405).
+     */
+    @When("I try to call the last process at the workstation with the X-AuthKey")
+    public void iTryToCallTheLastProcessAtTheWorkstationWithTheXAuthKey() {
+        Assertions.assertThat(lastProcess)
+            .as("Reserve an appointment before trying to call it")
+            .isNotNull();
+        String authKey = getOrLoginXAuthKey();
+        response = postProcessCalled(authKey, false, lastProcess);
+        CommonApiSteps.setResponse(response);
+        ScenarioLogManager.getLogger().info(
+            "POST /workstation/process/called/ (no walk-in fallback) status={} body={}",
+            response.getStatusCode(),
+            truncate(response.asString(), 800));
     }
 
     /**
@@ -682,6 +754,16 @@ public class ZmsApiSteps {
 
     private void bookAppointmentCustomer(
             int scopeId, String serviceName, String familyName, int minutesAhead, boolean requireServiceName) {
+        bookAppointmentCustomer(scopeId, serviceName, familyName, minutesAhead, requireServiceName, true);
+    }
+
+    private void bookAppointmentCustomer(
+            int scopeId,
+            String serviceName,
+            String familyName,
+            int minutesAhead,
+            boolean requireServiceName,
+            boolean confirm) {
         // Keep the current API session (and its workstation). A fresh agent_queue login here
         // would drop the clerk's scope and invalidate remembered clerk X-AuthKeys (401 / MatchScopeFailed).
         if (cachedXAuthKey == null || cachedXAuthKey.isBlank()) {
@@ -744,6 +826,49 @@ public class ZmsApiSteps {
                         earliest)
                 .isNotEmpty();
 
+        reserveAndOptionallyConfirm(
+                scopeId, familyName, request, authKey, candidates, confirm, earliest, endOfToday, minutesAhead, now);
+    }
+
+    /** Book from tomorrow onward so ProcessNotCurrentDate applies to calledprocess. */
+    private void bookAppointmentCustomerOnFutureDay(
+            int scopeId, String serviceName, String familyName, boolean confirm) {
+        if (cachedXAuthKey == null || cachedXAuthKey.isBlank()) {
+            iAmLoggedInToTheZmsApiAs("ataf");
+        }
+        String authKey = getOrLoginXAuthKey();
+        JsonNode request = findScopeRequestByName(scopeId, serviceName, authKey);
+        Assertions.assertThat(request.path("name").asText("").toLowerCase(Locale.ROOT))
+                .as("scope %d request list should include %s", scopeId, serviceName)
+                .contains(serviceName.toLowerCase(Locale.ROOT));
+        long startOfTomorrow = BerlinTime.today()
+                .plusDays(1)
+                .atStartOfDay(java.time.ZoneId.of("Europe/Berlin"))
+                .toEpochSecond();
+        JsonNode freeList = fetchFreeProcessesLookingAhead(scopeId, request, authKey, startOfTomorrow);
+        List<JsonNode> candidates = slotsBetween(freeList, startOfTomorrow, startOfTomorrow + 14L * 86_400L);
+        Assertions.assertThat(candidates)
+                .as("scope %d needs an intern slot on a future calendar day from epoch %d", scopeId, startOfTomorrow)
+                .isNotEmpty();
+        reserveAndOptionallyConfirm(
+                scopeId, familyName, request, authKey, candidates, confirm, startOfTomorrow, 0, 1, 0);
+        Assertions.assertThat(appointmentIsToday(lastProcess))
+                .as("future-day Terminkunde must not be today; process=%s",
+                        truncate(lastProcess != null ? lastProcess.toString() : "", 400))
+                .isFalse();
+    }
+
+    private void reserveAndOptionallyConfirm(
+            int scopeId,
+            String familyName,
+            JsonNode request,
+            String authKey,
+            List<JsonNode> candidates,
+            boolean confirm,
+            long earliest,
+            long endOfToday,
+            int minutesAhead,
+            long now) {
         JsonNode reserved = null;
         for (int i = 0; i < candidates.size(); i++) {
             ObjectNode process = (ObjectNode) candidates.get(i).deepCopy();
@@ -780,6 +905,21 @@ public class ZmsApiSteps {
         }
         Assertions.assertThat(reserved).as("reserved terminkunde at scope %d", scopeId).isNotNull();
 
+        if (!confirm) {
+            rememberProcess(reserved);
+            trackProcess(reserved.path("id").asInt(), scopeId);
+            long appointment = reserved.path("appointments").path(0).path("date").asLong(0);
+            TestDataHelper.setTestData("appointment_epoch", Long.toString(appointment));
+            TestDataHelper.setTestData("new_appointment_customer_name", familyName);
+            ScenarioLogManager.getLogger().info(
+                    "Reserved Terminkunde {} at epoch {} for scope {} (status={})",
+                    familyName,
+                    appointment,
+                    scopeId,
+                    reserved.path("status").asText());
+            return;
+        }
+
         response = postConfirmedWithDeadlockRetry(authKey, reserved);
         CommonApiSteps.setResponse(response);
         Assertions.assertThat(response.getStatusCode())
@@ -790,20 +930,21 @@ public class ZmsApiSteps {
         trackProcess(confirmed.path("id").asInt(), scopeId);
 
         long appointment = confirmed.path("appointments").path(0).path("date").asLong(0);
-        if (minutesAhead <= 0) {
+        if (minutesAhead <= 0 && endOfToday > 0) {
             Assertions.assertThat(appointmentIsToday(confirmed))
                     .as("Terminkunde collision needs a same-day appointment; got epoch %d", appointment)
                     .isTrue();
             Assertions.assertThat(appointment)
                     .as("confirmed same-day appointment time")
                     .isBetween(earliest, endOfToday);
-        } else {
+        } else if (minutesAhead > 0 && now > 0 && endOfToday > 0) {
             long reminderHorizon = now + 24 * 60 * 60;
             Assertions.assertThat(appointment)
                     .as("confirmed appointment time")
                     .isBetween(earliest, reminderHorizon);
         }
         TestDataHelper.setTestData("appointment_epoch", Long.toString(appointment));
+        TestDataHelper.setTestData("new_appointment_customer_name", familyName);
         ScenarioLogManager.getLogger().info(
                 "Terminkunde {} booked at epoch {} for scope {}", familyName, appointment, scopeId);
     }
