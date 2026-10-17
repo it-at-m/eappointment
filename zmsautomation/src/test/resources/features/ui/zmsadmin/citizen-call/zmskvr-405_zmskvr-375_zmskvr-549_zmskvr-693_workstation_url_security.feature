@@ -4,10 +4,11 @@ Feature: Workstation URL security for calledprocess and selectedprocess
 	#   ?selectedprocess= still opens the edit form.
 	# ZMSKVR-375 / ZMSKVR-693: wrong Standort → WorkstationProcessMatchScopeFailed (Wechseln/Abbrechen).
 	# Also covers ProcessNotFound and ProcessNotCallable (reserved) via the same URL hooks.
+	# Each exception is exercised for both calledprocess (call) and selectedprocess (edit).
 	# Product: Muc-28 (PR #1270). Use example.com emails only — never private addresses.
 
 	@web @zmsadmin @citizen-call @clerk @security @ZMSKVR-405 @ZMSKVR-549 @executeLocally
-	Scenario: Missing process id shows ProcessNotFound for calledprocess
+	Scenario: Missing process id shows ProcessNotFound for calledprocess and selectedprocess
 		When I open the administration website.
 		Then I should be on the administration start page.
 		When I click the button "Anmelden" in the administration.
@@ -19,9 +20,13 @@ Feature: Workstation URL security for calledprocess and selectedprocess
 		Then the ProcessNotFound error is displayed.
 		When I click the exception button "Abbrechen".
 		Then the workstation exception board is gone.
+		When the clerk opens the workstation with "selectedprocess" for process "2147483000".
+		Then the ProcessNotFound error is displayed.
+		When I click the exception button "Abbrechen".
+		Then the workstation exception board is gone.
 
 	@web @zmsadmin @citizen-call @clerk @security @ZMSKVR-405 @ZMSKVR-549 @executeLocally
-	Scenario: Future appointment calledprocess shows ProcessNotCurrentDate; selectedprocess allows edit
+	Scenario: Future appointment: calledprocess shows ProcessNotCurrentDate; selectedprocess allows edit
 		Given the ZMS API is available
 		And I am logged in to the ZMS API as "ataf"
 		When for scope 133 and service "Führungszeugnis" an appointment customer "Muster Zmskvr405" is created on a future calendar day.
@@ -36,7 +41,9 @@ Feature: Workstation URL security for calledprocess and selectedprocess
 		Then the workstation page is displayed.
 		When the clerk opens the workstation with "calledprocess" for the last ZMS API process.
 		Then the ProcessNotCurrentDate error is displayed.
-		When I click the exception button "Bearbeiten".
+		When I click the exception button "Abbrechen".
+		Then the workstation exception board is gone.
+		When the clerk opens the workstation with "selectedprocess" for the last ZMS API process.
 		Then the edit form for the appointment customer is displayed.
 
 	@web @zmsadmin @citizen-call @clerk @security @ZMSKVR-375 @executeLocally
@@ -61,7 +68,7 @@ Feature: Workstation URL security for calledprocess and selectedprocess
 		Then the ProcessNotCallable error with status "reserviert" is displayed.
 
 	@web @zmsadmin @citizen-call @clerk @security @ZMSKVR-375 @ZMSKVR-693 @executeLocally
-	Scenario: Wrong Standort shows Zugriff verweigert with Wechseln and Abbrechen
+	Scenario: Wrong Standort shows Zugriff verweigert for calledprocess and selectedprocess
 		Given the ZMS API is available
 		And I am logged in to the ZMS API as "ataf"
 		When for scope 133 and service "Führungszeugnis" an appointment customer "Muster Zmskvr693" is created on a future calendar day.
@@ -74,6 +81,10 @@ Feature: Workstation URL security for calledprocess and selectedprocess
 		And I click the button "Auswahl bestätigen" in the administration.
 		Then the workstation page is displayed.
 		When the clerk opens the workstation with "calledprocess" for the last ZMS API process.
+		Then the WorkstationProcessMatchScopeFailed error for location "Bürgerbüro Orleansplatz" is displayed.
+		When I click the exception button "Abbrechen".
+		Then the workstation exception board is gone.
+		When the clerk opens the workstation with "selectedprocess" for the last ZMS API process.
 		Then the WorkstationProcessMatchScopeFailed error for location "Bürgerbüro Orleansplatz" is displayed.
 		When I click the exception button "Wechseln".
 		Then the workstation Standort selection page is displayed.
