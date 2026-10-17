@@ -925,8 +925,20 @@ public final class OverviewStep {
     }
     public void assertConfirmationSuccessCalloutVisible() {
         ScenarioLogManager.getLogger().info("zmscitizenview: checking for confirmation success callout (Ihr Termin wurde gebucht.)");
-        shadow.assertShadowContains(
-                CONFIRMATION_SUCCESS_HEADING,
+        CitizenViewWaits.waitWithThreeWindows(
+                () -> shadow.shadowDomContainsText(CONFIRMATION_SUCCESS_HEADING),
+                "Confirmation success callout");
+        if (!shadow.shadowDomContainsText(CONFIRMATION_SUCCESS_HEADING)) {
+            // Edge can leave a blank Anmelden shell after confirm hash navigation; reopen once.
+            ScenarioLogManager.getLogger()
+                    .warn("zmscitizenview: confirmation success still missing; reopen confirm deep link once");
+            page.reopenConfirmationDeepLinkInBrowser();
+            CitizenViewWaits.waitWithThreeWindows(
+                    () -> shadow.shadowDomContainsText(CONFIRMATION_SUCCESS_HEADING),
+                    "Confirmation success callout after reopen");
+        }
+        Assert.assertTrue(
+                shadow.shadowDomContainsText(CONFIRMATION_SUCCESS_HEADING),
                 "Confirmation success callout not found after opening confirm link.");
         ScenarioLogManager.getLogger().info("zmscitizenview: confirmation success callout found");
     }
