@@ -57,6 +57,40 @@ final class ClientStatisticWorkbook {
     }
 
     /**
+     * Value of {@code header} on the day row whose column-B date is {@code dayDate}
+     * ({@code dd.MM.yy}). Empty string when the day or column is missing.
+     */
+    static String dayColumnValue(Path xlsx, String dayDate, String header) throws IOException {
+        List<String> headers = columnHeaders(xlsx);
+        int column = headers.indexOf(header);
+        if (column < 0) {
+            throw new IOException("Workbook has no column \"" + header + "\": " + headers);
+        }
+        try (ZipFile zip = new ZipFile(xlsx.toFile())) {
+            String[] shared = sharedStrings(zip);
+            ZipEntry sheet = zip.getEntry("xl/worksheets/sheet1.xml");
+            if (sheet == null) {
+                throw new IOException("Workbook has no sheet1: " + xlsx);
+            }
+            Document document = parse(zip.getInputStream(sheet));
+            Map<Integer, Map<Integer, String>> byRow = new HashMap<>();
+            NodeList cells = elements(document, "c");
+            for (int i = 0; i < cells.getLength(); i++) {
+                Element cell = (Element) cells.item(i);
+                String ref = cell.getAttribute("r");
+                byRow.computeIfAbsent(rowNumber(ref), ignored -> new HashMap<>())
+                        .put(columnIndex(ref), cellText(cell, shared).trim());
+            }
+            for (Map<Integer, String> columns : byRow.values()) {
+                if (dayDate.equals(columns.get(1))) {
+                    return columns.getOrDefault(column, "");
+                }
+            }
+            return "";
+        }
+    }
+
+    /**
      * Header cells of the Kundenstatistik column row, left to right.
      * Prefers the row that contains {@code Kunden Erschienen}; falls back to {@code Datum}
      * in column B. Empty leading cells are kept so Excel letters match indices (A=0, B=1, …).
