@@ -1295,6 +1295,27 @@ public class ZmsApiSteps {
     @When("I queue a walk-in at scope {int} with service {string}, name {string}, free text {string} and second free text {string} with the X-AuthKey")
     public void iQueueAWalkInWithFreeTextWithTheXAuthKey(
             int scopeId, String serviceName, String familyName, String freeText, String secondFreeText) {
+        queueWalkInWithPlainTextFields(scopeId, serviceName, familyName, null, freeText, secondFreeText);
+    }
+
+    @When("I queue a walk-in at scope {int} with service {string}, name {string}, amendment {string}, free text {string} and second free text {string} with the X-AuthKey")
+    public void iQueueAWalkInWithAmendmentAndFreeTextWithTheXAuthKey(
+            int scopeId,
+            String serviceName,
+            String familyName,
+            String amendment,
+            String freeText,
+            String secondFreeText) {
+        queueWalkInWithPlainTextFields(scopeId, serviceName, familyName, amendment, freeText, secondFreeText);
+    }
+
+    private void queueWalkInWithPlainTextFields(
+            int scopeId,
+            String serviceName,
+            String familyName,
+            String amendment,
+            String freeText,
+            String secondFreeText) {
         String authKey = getOrLoginXAuthKey();
         JsonNode request = findScopeRequestByName(scopeId, serviceName, authKey);
         ObjectNode scope = MAPPER.createObjectNode();
@@ -1308,8 +1329,11 @@ public class ZmsApiSteps {
         client.put("surveyAccepted", 1);
         ObjectNode process = MAPPER.createObjectNode();
         process.put("status", "queued");
-        process.put("customTextfield", freeText);
-        process.put("customTextfield2", secondFreeText);
+        if (amendment != null && !amendment.isBlank()) {
+            process.put("amendment", amendment);
+        }
+        process.put("customTextfield", freeText != null ? freeText : "");
+        process.put("customTextfield2", secondFreeText != null ? secondFreeText : "");
         process.set("scope", scope);
         process.set("appointments", MAPPER.createArrayNode().add(appointment));
         process.set("requests", MAPPER.createArrayNode().add(request.deepCopy()));
@@ -1332,6 +1356,38 @@ public class ZmsApiSteps {
         if (processId > 0 && !scenarioProcessIds.contains(processId)) {
             scenarioProcessIds.add(processId);
         }
+    }
+
+    @Then("the last process amendment should be {string}")
+    public void theLastProcessAmendmentShouldBe(String expected) {
+        Assertions.assertThat(lastProcess).as("last process").isNotNull();
+        Assertions.assertThat(lastProcess.path("amendment").asText())
+            .as("last process amendment; process=%s", truncate(lastProcess.toString(), 500))
+            .isEqualTo(expected);
+    }
+
+    @Then("the last process customTextfield should be {string}")
+    public void theLastProcessCustomTextfieldShouldBe(String expected) {
+        Assertions.assertThat(lastProcess).as("last process").isNotNull();
+        Assertions.assertThat(lastProcess.path("customTextfield").asText())
+            .as("last process customTextfield; process=%s", truncate(lastProcess.toString(), 500))
+            .isEqualTo(expected);
+    }
+
+    @Then("the last process amendment should not contain {string}")
+    public void theLastProcessAmendmentShouldNotContain(String forbidden) {
+        Assertions.assertThat(lastProcess).as("last process").isNotNull();
+        Assertions.assertThat(lastProcess.path("amendment").asText())
+            .as("last process amendment must not contain %s", forbidden)
+            .doesNotContain(forbidden);
+    }
+
+    @Then("the last process customTextfield should not contain {string}")
+    public void theLastProcessCustomTextfieldShouldNotContain(String forbidden) {
+        Assertions.assertThat(lastProcess).as("last process").isNotNull();
+        Assertions.assertThat(lastProcess.path("customTextfield").asText())
+            .as("last process customTextfield must not contain %s", forbidden)
+            .doesNotContain(forbidden);
     }
 
     @When("I delete the processes created in this scenario with the X-AuthKey")
