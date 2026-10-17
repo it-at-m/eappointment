@@ -1,10 +1,10 @@
 {
   "branch": "test-zmskvr-1182-zmskvr-1113-parked-room-number",
   "branchSlug": "test-zmskvr-1182-zmskvr-1113-parked-room-number",
-  "runId": "38965781176",
-  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38965781176",
-  "runStartedAt": "2026-10-16T20:55:54Z",
-  "publishedAt": "2026-10-16T21:10:39.451Z",
+  "runId": "38983703038",
+  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38983703038",
+  "runStartedAt": "2026-10-16T23:52:52Z",
+  "publishedAt": "2026-10-17T00:05:26.897Z",
   "features": {
     "feature-ui-zmsadmin-queue-zmskvr-1182-zmskvr-1113-parked-room-number": {
       "status": "passed",
@@ -14,29 +14,29 @@
         "chrome": {
           "status": "passed",
           "shard": "custom",
-          "runId": "38965781176",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38965781176",
-          "runStartedAt": "2026-10-16T20:55:54Z"
+          "runId": "38983703038",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38983703038",
+          "runStartedAt": "2026-10-16T23:52:52Z"
         },
         "edge": {
           "status": "passed",
           "shard": "custom",
-          "runId": "38965781176",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38965781176",
-          "runStartedAt": "2026-10-16T20:55:54Z"
+          "runId": "38983703038",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38983703038",
+          "runStartedAt": "2026-10-16T23:52:52Z"
         },
         "firefox": {
           "status": "passed",
           "shard": "custom",
-          "runId": "38965781176",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38965781176",
-          "runStartedAt": "2026-10-16T20:55:54Z"
+          "runId": "38983703038",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38983703038",
+          "runStartedAt": "2026-10-16T23:52:52Z"
         }
       },
       "rel": "ui/zmsadmin/queue/zmskvr-1182_zmskvr-1113_parked_room_number.feature",
-      "runId": "38965781176",
-      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38965781176",
-      "runStartedAt": "2026-10-16T20:55:54Z"
+      "runId": "38983703038",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/38983703038",
+      "runStartedAt": "2026-10-16T23:52:52Z"
     }
   }
 }
