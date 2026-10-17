@@ -5,8 +5,8 @@ Feature: Queue shows plain text with angle brackets; script markup is not interp
 	# Name, Anmerkung, Freitext 1/2 must appear fully and unformatted in the Warteschlange
 	# (e.g. "3 < 5" must not cut off at "<"). Script tags must not become live HTML.
 	# Standort 368 Dokumentenausgabe2 has Freitextfeld 1 required.
-	# CitizenView HTML allow-list (strong/em/…) vs scripts is covered by
-	# zmscitizenview/tests/unit/utils/sanitizeHtml.spec.ts (DOMPurify).
+	# Backend ProcessPlainText (strip_tags on amendment/Freitext): rest/.../zmskvr-467_…_process_plain_text.feature.
+	# CitizenView HTML allow-list (strong/em/…) vs scripts: zmscitizenview/.../sanitizeHtml.spec.ts (DOMPurify).
 
 	Scenario: Angle brackets in name, note and freitext stay visible as plain text
 		When I open the administration website.
