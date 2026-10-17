@@ -1,11 +1,11 @@
 #language: en
-@web @zmsadmin @queue @clerk @security @ZMSKVR-467 @ZMSKVR-545 @executeLocally
-Feature: Queue shows plain text with angle brackets; script markup is not interpreted
-	# Bug ZMSKVR-467 / Testfall ZMSKVR-545 (Muc-26).
+@web @zmsadmin @queue @clerk @security @validation @ZMSKVR-467 @ZMSKVR-545 @executeLocally
+Feature: Queue plain-text security validation — angle brackets kept, markup not live
+	# Security / validation (ZMSKVR-467 / ZMSKVR-545, Muc-26).
 	# Name, Anmerkung, Freitext 1/2 must appear fully and unformatted in the Warteschlange
-	# (e.g. "3 < 5" must not cut off at "<"). Script tags must not become live HTML.
+	# (e.g. "3 < 5" must not cut off at "<"). Dangerous tags must not become live HTML.
 	# Standort 368 Dokumentenausgabe2 has Freitextfeld 1 required.
-	# Backend ProcessPlainText (strip_tags on amendment/Freitext): rest/.../zmskvr-467_…_process_plain_text.feature.
+	# Backend ProcessPlainText: rest/.../zmskvr-467_zmskvr-545_plain_text_security_validation.feature.
 	# CitizenView HTML allow-list (strong/em/…) vs scripts: zmscitizenview/.../sanitizeHtml.spec.ts (DOMPurify).
 
 	Scenario: Angle brackets in name, note and freitext stay visible as plain text

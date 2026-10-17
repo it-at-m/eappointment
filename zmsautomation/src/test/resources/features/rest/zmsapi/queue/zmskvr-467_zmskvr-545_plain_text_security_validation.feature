@@ -1,9 +1,9 @@
-@rest @zmsapi @queue @system @security @ZMSKVR-467 @ZMSKVR-545
-Feature: ProcessPlainText strips markup and keeps plain angle brackets
-  # Backend sanitization for amendment / customTextfield / customTextfield2
-  # (BO\Zmsentities\Helper\ProcessPlainText::normalize → strip_tags), including
-  # JSON hydration via Process::addData (e.g. POST /workstation/process/waitingnumber/).
-  # UI queue escaping is covered by ui/.../zmskvr-467_zmskvr-545_queue_html_escape.feature.
+@rest @zmsapi @queue @system @security @validation @ZMSKVR-467 @ZMSKVR-545
+Feature: Process plain-text security validation strips markup and keeps angle brackets
+  # Security / validation (ZMSKVR-467 / ZMSKVR-545, Muc-26): amendment and Freitext
+  # must be stored as plain text via ProcessPlainText::normalize (strip_tags), including
+  # JSON hydration via Process::addData (POST /workstation/process/waitingnumber/).
+  # UI queue checks: ui/.../zmskvr-467_zmskvr-545_queue_plain_text_security_validation.feature.
   # Scope 368 Dokumentenausgabe2 activates Freitextfeld 1.
   # Use single-quoted HTML attributes in Examples so Cucumber {string} parsing stays valid.
 
