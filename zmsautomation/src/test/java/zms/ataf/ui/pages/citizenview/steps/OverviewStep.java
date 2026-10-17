@@ -609,43 +609,73 @@ public final class OverviewStep {
     /** Leistung block on Übersicht / rebook-or-cancel dialog (e.g. internal service from appointment). */
     public void assertOverviewServiceVisible(int serviceId, String serviceName) {
         context.set();
-        String sel = "#service-" + serviceId;
-        CitizenViewWaits.waitWithThreeWindows(
-                () -> deepVisibleServiceSummaryExists(serviceId), "Service summary " + sel);
-        String text = deepVisibleServiceSummaryText(serviceId);
-        Assert.assertNotNull(text, "Expected visible booking summary service block: " + sel);
+        String text = visibleServiceOrSubserviceSummaryText(serviceId);
         Assert.assertTrue(
                 text.contains(serviceName),
-                "Expected service name in " + sel + ": " + serviceName + " actual=" + text);
+                "Expected service name in summary for id " + serviceId + ": " + serviceName + " actual=" + text);
     }
 
-    private boolean deepVisibleServiceSummaryExists(int serviceId) {
+    /**
+     * ZMSKVR-418: Übersicht / confirm / cancel screens show {@code Nx ServiceName}
+     * ({@code #service-} for the main row, {@code #subservice-} for combined peers).
+     */
+    public void assertOverviewServiceWithCount(int serviceId, int count, String serviceName) {
+        context.set();
+        String text = visibleServiceOrSubserviceSummaryText(serviceId);
+        String countPrefix = count + "x";
+        Assert.assertTrue(
+                text.contains(countPrefix),
+                "Expected count prefix \"" + countPrefix + "\" for service id " + serviceId + " actual=" + text);
+        Assert.assertTrue(
+                text.contains(serviceName),
+                "Expected service name in summary for id " + serviceId + ": " + serviceName + " actual=" + text);
+    }
+
+    private String visibleServiceOrSubserviceSummaryText(int serviceId) {
+        String serviceSel = "#service-" + serviceId;
+        String subSel = "#subservice-" + serviceId;
+        CitizenViewWaits.waitWithThreeWindows(
+                () -> deepVisibleElementByIdExists("service-" + serviceId)
+                        || deepVisibleElementByIdExists("subservice-" + serviceId),
+                "Service summary " + serviceSel + " or " + subSel);
+        String text = deepVisibleElementByIdText("service-" + serviceId);
+        if (text == null) {
+            text = deepVisibleElementByIdText("subservice-" + serviceId);
+        }
+        Assert.assertNotNull(
+                text, "Expected visible booking summary block " + serviceSel + " or " + subSel);
+        return text;
+    }
+
+    private boolean deepVisibleElementByIdExists(String elementId) {
         Object raw =
                 ((JavascriptExecutor) DriverUtil.getDriver())
                         .executeScript(
-                                "var id='service-'+" + serviceId + ";"
+                                "var id=arguments[0];"
                                         + "function shown(n){if(!n)return false;var s=getComputedStyle(n);"
                                         + "return s&&s.display!='none'&&s.visibility!='hidden'&&n.offsetParent!==null;}"
                                         + "function walk(root){if(!root)return null;if(root.id===id&&shown(root))return root;"
                                         + "if(root.shadowRoot){var s=walk(root.shadowRoot);if(s)return s;}"
                                         + "var c=root.children||[];for(var i=0;i<c.length;i++){var f=walk(c[i]);if(f)return f;}"
                                         + "return null;}"
-                                        + "return !!walk(document.body);");
+                                        + "return !!walk(document.body);",
+                                elementId);
         return Boolean.TRUE.equals(raw);
     }
 
-    private String deepVisibleServiceSummaryText(int serviceId) {
+    private String deepVisibleElementByIdText(String elementId) {
         Object raw =
                 ((JavascriptExecutor) DriverUtil.getDriver())
                         .executeScript(
-                                "var id='service-'+" + serviceId + ";"
+                                "var id=arguments[0];"
                                         + "function shown(n){if(!n)return false;var s=getComputedStyle(n);"
                                         + "return s&&s.display!='none'&&s.visibility!='hidden'&&n.offsetParent!==null;}"
                                         + "function walk(root){if(!root)return null;if(root.id===id&&shown(root))return root;"
                                         + "if(root.shadowRoot){var s=walk(root.shadowRoot);if(s)return s;}"
                                         + "var c=root.children||[];for(var i=0;i<c.length;i++){var f=walk(c[i]);if(f)return f;}"
                                         + "return null;}"
-                                        + "var n=walk(document.body);return n?((n.innerText||n.textContent||'')+''):null;");
+                                        + "var n=walk(document.body);return n?((n.innerText||n.textContent||'')+''):null;",
+                                elementId);
         if (raw == null) {
             return null;
         }
