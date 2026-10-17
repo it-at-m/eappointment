@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-10-17T12:24:57.816Z",
+  "publishedAt": "2026-10-17T12:48:46.196Z",
   "branches": [
     {
       "name": "next",
@@ -826,8 +826,8 @@
     {
       "name": "test-zmskvr-405-zmskvr-375-workstation-url-security",
       "slug": "test-zmskvr-405-zmskvr-375-workstation-url-security",
-      "runId": "39031259270",
-      "runStartedAt": "2026-10-17T12:06:59Z"
+      "runId": "39033155970",
+      "runStartedAt": "2026-10-17T12:35:51Z"
     },
     {
       "name": "test-zmskvr-416-zmskvr-571-freitext-counter",
