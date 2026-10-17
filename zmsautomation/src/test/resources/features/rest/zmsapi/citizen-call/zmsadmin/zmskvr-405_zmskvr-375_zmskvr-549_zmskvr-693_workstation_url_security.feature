@@ -2,7 +2,7 @@
 Feature: ZMS API workstation URL security exceptions
   # Mirrors the Muc-28 admin workstation guards (PR #1270).
   # Edit path = GET /process/{id}/ (selectedprocess). Call path = POST /workstation/process/called/.
-  # Each exception is exercised for both where product behavior applies.
+  # ProcessNotCallable covers reserved, preconfirmed, deleted, called, processing.
   # Emails use example.com only.
 
   Background:
@@ -31,15 +31,30 @@ Feature: ZMS API workstation URL security exceptions
     When I request the last process with the X-AuthKey
     Then the response status code should be 200
 
-  Scenario: Reserved process: GET returns ProcessNotCallable; call returns ProcessReservedNotCallable
+  Scenario Outline: GET process with status <status> returns ProcessNotCallable
     When I update the workstation with scope 133 and counter "13" with the X-AuthKey
     Then the response status code should be 200
-    When for scope 133 and service "Führungszeugnis" a reserved appointment customer "Muster Zmskvr375Api" is created at the next minute.
+    When for scope 133 and service "Führungszeugnis" a <status> appointment customer "Muster Zmskvr375Api <status>" is created at the next minute.
     Then the response status code should be 200
-    And the process status should be "reserved"
+    And the process status should be "<status>"
     When I request the last process with the X-AuthKey
     Then the response status code should be 403
     And the response meta should contain exception "ProcessNotCallable"
+
+    Examples:
+      | status       |
+      | reserved     |
+      | preconfirmed |
+      | deleted      |
+      | called       |
+      | processing   |
+
+  Scenario: Reserved process call returns ProcessReservedNotCallable
+    When I update the workstation with scope 133 and counter "13" with the X-AuthKey
+    Then the response status code should be 200
+    When for scope 133 and service "Führungszeugnis" a reserved appointment customer "Muster Zmskvr375ApiCall" is created at the next minute.
+    Then the response status code should be 200
+    And the process status should be "reserved"
     When I try to call the last process at the workstation with the X-AuthKey
     Then the response status code should be 404
     And the response meta should contain exception "ProcessReservedNotCallable"

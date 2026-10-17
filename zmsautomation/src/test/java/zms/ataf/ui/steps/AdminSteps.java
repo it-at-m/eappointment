@@ -2040,6 +2040,14 @@ public class AdminSteps {
         PROCESSING_STATION_SECTION.openWorkstationUrlWithProcessParam(paramName, processId);
     }
 
+    @When("the clerk opens the process delete URL for the last ZMS API process.")
+    public void theClerkOpensTheProcessDeleteUrlForTheLastZmsApiProcess() {
+        String processId = TestDataHelper.getTestData("zmsapi_last_process_id");
+        Assert.assertTrue(processId != null && !processId.isBlank(),
+                "Queue or reserve a process via ZMS API before opening ProcessDelete");
+        PROCESSING_STATION_SECTION.openProcessDeleteUrlForProcessId(processId);
+    }
+
     @Then("the error that the process cannot be called because another workstation holds it appears.")
     public void theErrorThatTheProcessCannotBeCalledBecauseAnotherWorkstationHoldsItAppears() {
         PROCESSING_STATION_SECTION.assertProcessNotCallableByOtherWorkstationVisible();

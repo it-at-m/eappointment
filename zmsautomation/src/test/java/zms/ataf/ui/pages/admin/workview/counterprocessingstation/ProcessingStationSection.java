@@ -645,6 +645,26 @@ public class ProcessingStationSection extends CounterProcessingStationPage {
         DRIVER.navigate().to(url);
     }
 
+    /**
+     * ZMSKVR-375: open admin ProcessDelete ({@code /process/{id}/delete/}) which GETs the process
+     * then runs {@code validateProcessScopeAccess} — wrong Standort → MatchScopeFailed.
+     */
+    public void openProcessDeleteUrlForProcessId(String processId) {
+        Assert.assertTrue(processId != null && processId.matches("\\d+"),
+                "Expected numeric process id, got: " + processId);
+        String current = DRIVER.getCurrentUrl().replaceAll("[?#].*$", "");
+        String adminRoot = current.replaceAll("(/workstation/).*$", "/");
+        if (!adminRoot.contains("/admin/")) {
+            adminRoot = current.replaceAll("(.*?/admin/).*$", "$1");
+        }
+        if (!adminRoot.endsWith("/")) {
+            adminRoot = adminRoot + "/";
+        }
+        String url = adminRoot + "process/" + processId + "/delete/?initiator=admin";
+        ScenarioLogManager.getLogger().info("Navigating to ProcessDelete URL {}", url);
+        DRIVER.navigate().to(url);
+    }
+
     /** ZMSKVR-405: ProcessNotFound exception board. */
     public void assertProcessNotFoundVisible() {
         ScenarioLogManager.getLogger().info("Checking ProcessNotFound error...");
