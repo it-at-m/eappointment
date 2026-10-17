@@ -2038,9 +2038,65 @@ public class AdminSteps {
         PROCESSING_STATION_SECTION.openWorkstationCallForProcessId(processId);
     }
 
+    @When("the clerk opens the workstation with {string} for process {string}.")
+    public void theClerkOpensTheWorkstationWithParamForProcess(String paramName, String processId) {
+        PROCESSING_STATION_SECTION.openWorkstationUrlWithProcessParam(paramName, processId);
+    }
+
+    @When("the clerk opens the workstation with {string} for the last ZMS API process.")
+    public void theClerkOpensTheWorkstationWithParamForTheLastZmsApiProcess(String paramName) {
+        String processId = TestDataHelper.getTestData("zmsapi_last_process_id");
+        Assert.assertTrue(processId != null && !processId.isBlank(),
+                "Queue or reserve a process via ZMS API before opening the workstation URL");
+        PROCESSING_STATION_SECTION.openWorkstationUrlWithProcessParam(paramName, processId);
+    }
+
+    @When("the clerk opens the process delete URL for the last ZMS API process.")
+    public void theClerkOpensTheProcessDeleteUrlForTheLastZmsApiProcess() {
+        String processId = TestDataHelper.getTestData("zmsapi_last_process_id");
+        Assert.assertTrue(processId != null && !processId.isBlank(),
+                "Queue or reserve a process via ZMS API before opening ProcessDelete");
+        PROCESSING_STATION_SECTION.openProcessDeleteUrlForProcessId(processId);
+    }
+
     @Then("the error that the process cannot be called because another workstation holds it appears.")
     public void theErrorThatTheProcessCannotBeCalledBecauseAnotherWorkstationHoldsItAppears() {
         PROCESSING_STATION_SECTION.assertProcessNotCallableByOtherWorkstationVisible();
+    }
+
+    @Then("the ProcessNotFound error is displayed.")
+    public void theProcessNotFoundErrorIsDisplayed() {
+        PROCESSING_STATION_SECTION.assertProcessNotFoundVisible();
+    }
+
+    @Then("the ProcessNotCurrentDate error is displayed.")
+    public void theProcessNotCurrentDateErrorIsDisplayed() {
+        PROCESSING_STATION_SECTION.assertProcessNotCurrentDateVisible();
+    }
+
+    @Then("the ProcessNotCallable error with status {string} is displayed.")
+    public void theProcessNotCallableErrorWithStatusIsDisplayed(String germanStatus) {
+        PROCESSING_STATION_SECTION.assertProcessNotCallableWithStatusVisible(germanStatus);
+    }
+
+    @Then("the WorkstationProcessMatchScopeFailed error for location {string} is displayed.")
+    public void theWorkstationProcessMatchScopeFailedErrorForLocationIsDisplayed(String locationHint) {
+        PROCESSING_STATION_SECTION.assertWorkstationProcessMatchScopeFailedVisible(locationHint);
+    }
+
+    @When("I click the exception button {string}.")
+    public void iClickTheExceptionButton(String buttonLabel) {
+        PROCESSING_STATION_SECTION.clickExceptionButton(buttonLabel);
+    }
+
+    @Then("the workstation exception board is gone.")
+    public void theWorkstationExceptionBoardIsGone() {
+        PROCESSING_STATION_SECTION.assertNoExceptionBoardVisible();
+    }
+
+    @Then("the workstation Standort selection page is displayed.")
+    public void theWorkstationStandortSelectionPageIsDisplayed() {
+        PROCESSING_STATION_SECTION.assertWorkstationSelectPageVisible();
     }
 
     @And("the button {string} is visible.")
