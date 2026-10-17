@@ -491,20 +491,24 @@ public class ZmsApiSteps {
     /**
      * ZMSKVR-375: leave the process as reserved (same-day) so ProcessNotCallable applies
      * to both calledprocess and selectedprocess without ProcessNotCurrentDate winning first.
+     * Prefer a slightly later slot so outline examples (reserved → preconfirmed → …) do not
+     * starve the narrow next-minute / 6-minute free window (ProcessReserveFailed).
      */
     @When("for scope {int} and service {string} a reserved appointment customer {string} is created at the next minute.")
     public void fuerStandortWirdEinReservierterTerminkundeZurNaechstenMinuteAngelegt(
             int scopeId, String serviceName, String familyName) {
-        bookAppointmentCustomer(scopeId, serviceName, familyName, 0, true, false);
+        bookAppointmentCustomer(scopeId, serviceName, familyName, 2, true, false);
     }
 
     /**
      * ZMSKVR-375: reserved → preconfirmed so GET /process/{id}/ returns ProcessNotCallable.
+     * Stagger minutesAhead from the reserved fixture so sequential outline examples do not
+     * collide on the same intern slot.
      */
     @When("for scope {int} and service {string} a preconfirmed appointment customer {string} is created at the next minute.")
     public void fuerStandortWirdEinVorbestaetigterTerminkundeZurNaechstenMinuteAngelegt(
             int scopeId, String serviceName, String familyName) {
-        bookAppointmentCustomer(scopeId, serviceName, familyName, 0, true, false);
+        bookAppointmentCustomer(scopeId, serviceName, familyName, 4, true, false);
         Assertions.assertThat(lastProcess).as("reserved process before preconfirm").isNotNull();
         String authKey = getOrLoginXAuthKey();
         response = given()
