@@ -18,6 +18,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
@@ -562,25 +563,33 @@ public class ZmsApiSteps {
     /**
      * ZMSKVR-375: confirmed same-day Terminkunde successfully called (status called).
      * Uses POST called without the future→walk-in fallback so {@code lastProcess} stays this booking.
+     * Then detaches the process from the API workstation while keeping status {@code called}, so the UI
+     * {@code ?calledprocess=} path hits ProcessNotCallable instead of reopening the live call panel
+     * (same {@code ataf_superuser_*} account would otherwise already hold the process).
      */
     @When("for scope {int} and service {string} a called appointment customer {string} is created at the next minute.")
     public void fuerStandortWirdEinAufgerufenerTerminkundeZurNaechstenMinuteAngelegt(
             int scopeId, String serviceName, String familyName) {
         bookAppointmentCustomer(scopeId, serviceName, familyName, 5, true, true);
-        Assertions.assertThat(appointmentIsToday(lastProcess))
+        Assertions.assertThat(lastProcess).as("booked process before call").isNotNull();
+        JsonNode booked = Objects.requireNonNull(lastProcess, "booked process before call");
+        Assertions.assertThat(appointmentIsToday(booked))
             .as("called fixture needs a same-day appointment; process=%s",
-                truncate(lastProcess != null ? lastProcess.toString() : "", 400))
+                truncate(booked.toString(), 400))
             .isTrue();
         iUpdateTheWorkstationWithScopeAndCounterWithTheXAuthKey(scopeId, "13");
         Assertions.assertThat(response.getStatusCode()).as("workstation scope for call").isEqualTo(200);
         String authKey = getOrLoginXAuthKey();
-        int processId = lastProcess.path("id").asInt();
-        response = postProcessCalled(authKey, true, lastProcess);
+        int processId = booked.path("id").asInt();
+        String processAuthKey = booked.path("authKey").asText();
+        Assertions.assertThat(processAuthKey).as("process authKey").isNotBlank();
+        response = postProcessCalled(authKey, true, booked);
         CommonApiSteps.setResponse(response);
         Assertions.assertThat(response.getStatusCode())
             .as("POST /workstation/process/called/ body=%s", truncate(response.asString(), 1000))
             .isEqualTo(200);
         JsonNode assigned = refreshAssignedProcessFromWorkstation(authKey);
+        Assertions.assertThat(assigned).as("assigned process after call").isNotNull();
         Assertions.assertThat(assigned.path("id").asInt())
             .as("workstation must hold the called process id=%d; body=%s",
                 processId, truncate(response.asString(), 800))
@@ -588,6 +597,7 @@ public class ZmsApiSteps {
         Assertions.assertThat(assigned.path("status").asText())
             .as("process status after call")
             .isEqualTo("called");
+        releaseAssignedProcessKeepingStatus(authKey, processId, processAuthKey, "called");
     }
 
     /**
@@ -597,7 +607,7 @@ public class ZmsApiSteps {
     public void fuerStandortWirdEinInBearbeitungTerminkundeZurNaechstenMinuteAngelegt(
             int scopeId, String serviceName, String familyName) {
         fuerStandortWirdEinAufgerufenerTerminkundeZurNaechstenMinuteAngelegt(scopeId, serviceName, familyName);
-        iSetTheAssignedProcessStatusToProcessingWithTheXAuthKey();
+        forceLastProcessStatus("processing");
         Assertions.assertThat(response.getStatusCode())
             .as("POST process status processing body=%s", truncate(response.asString(), 1000))
             .isEqualTo(200);
@@ -1038,9 +1048,10 @@ public class ZmsApiSteps {
         }
 
         if (!confirm) {
-            rememberProcess(reserved);
-            trackProcess(reserved.path("id").asInt(), scopeId);
-            long appointment = reserved.path("appointments").path(0).path("date").asLong(0);
+            JsonNode reservedProcess = Objects.requireNonNull(reserved, "reserved terminkunde");
+            rememberProcess(reservedProcess);
+            trackProcess(reservedProcess.path("id").asInt(), scopeId);
+            long appointment = reservedProcess.path("appointments").path(0).path("date").asLong(0);
             TestDataHelper.setTestData("appointment_epoch", Long.toString(appointment));
             TestDataHelper.setTestData("new_appointment_customer_name", familyName);
             ScenarioLogManager.getLogger().info(
@@ -1048,7 +1059,7 @@ public class ZmsApiSteps {
                     familyName,
                     appointment,
                     scopeId,
-                    reserved.path("status").asText());
+                    reservedProcess.path("status").asText());
             return;
         }
 
@@ -2987,6 +2998,82 @@ public class ZmsApiSteps {
             return process;
         }
         return lastProcess;
+    }
+
+    /**
+     * DELETE /workstation/process/ clears the assignment but setStatusBySettings turns {@code called}
+     * into {@code confirmed}. Restore {@code keepStatus} without re-assigning so ProcessNotCallable
+     * still applies on GET / selectedprocess / calledprocess.
+     */
+    private void releaseAssignedProcessKeepingStatus(
+            String authKey, int processId, String processAuthKey, String keepStatus) {
+        response = given()
+            .baseUri(apiBaseUri())
+            .header("X-AuthKey", authKey)
+        .when()
+            .delete("/workstation/process/");
+        CommonApiSteps.setResponse(response);
+        Assertions.assertThat(response.getStatusCode())
+            .as("DELETE /workstation/process/ (detach called fixture) body=%s",
+                truncate(response.asString(), 800))
+            .isEqualTo(200);
+
+        response = given()
+            .baseUri(apiBaseUri())
+            .header("X-AuthKey", authKey)
+            .queryParam("resolveReferences", 1)
+        .when()
+            .get("/process/" + processId + "/");
+        CommonApiSteps.setResponse(response);
+        Assertions.assertThat(response.getStatusCode())
+            .as("GET /process/%d/ after detach body=%s", processId, truncate(response.asString(), 800))
+            .isEqualTo(200);
+        JsonNode detached = parseDataNode(response);
+        Assertions.assertThat(detached).as("process after detach").isNotNull();
+
+        ObjectNode body = detached.deepCopy();
+        body.put("status", keepStatus);
+        body.putNull("parkedBy");
+        response = given()
+            .baseUri(apiBaseUri())
+            .header("X-AuthKey", authKey)
+            .contentType("application/json")
+            .queryParam("initiator", "admin")
+            .body(toJson(body))
+        .when()
+            .post("/process/" + processId + "/" + processAuthKey + "/");
+        CommonApiSteps.setResponse(response);
+        Assertions.assertThat(response.getStatusCode())
+            .as("restore status=%s after detach body=%s", keepStatus, truncate(response.asString(), 800))
+            .isEqualTo(200);
+        rememberProcess(parseDataNode(response));
+        Assertions.assertThat(lastProcess.path("status").asText())
+            .as("process status after detach+restore")
+            .isEqualTo(keepStatus);
+    }
+
+    /** Set lastProcess status without requiring a workstation assignment. */
+    private void forceLastProcessStatus(String status) {
+        Assertions.assertThat(lastProcess).as("last process before status force").isNotNull();
+        JsonNode process = Objects.requireNonNull(lastProcess, "last process before status force");
+        int processId = process.path("id").asInt();
+        String processAuthKey = process.path("authKey").asText();
+        Assertions.assertThat(processId).as("process id").isPositive();
+        Assertions.assertThat(processAuthKey).as("process authKey").isNotBlank();
+        ObjectNode body = process.deepCopy();
+        body.put("status", status);
+        body.putNull("parkedBy");
+        String authKey = getOrLoginXAuthKey();
+        response = given()
+            .baseUri(apiBaseUri())
+            .header("X-AuthKey", authKey)
+            .contentType("application/json")
+            .queryParam("initiator", "admin")
+            .body(toJson(body))
+        .when()
+            .post("/process/" + processId + "/" + processAuthKey + "/");
+        CommonApiSteps.setResponse(response);
+        rememberProcess(parseDataNode(response));
     }
 
     private void rememberProcess(JsonNode process) {
