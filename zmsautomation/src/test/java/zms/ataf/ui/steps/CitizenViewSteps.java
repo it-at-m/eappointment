@@ -1596,6 +1596,20 @@ public class CitizenViewSteps {
         page.assertOverviewServiceVisible(serviceId, label);
     }
 
+    /** ZMSKVR-418: Übersicht / confirm / cancel list main + sub services with their booked counts. */
+    @Then("the appointment overview should show {int}x service {int} named {string} in the citizen view")
+    public void theAppointmentOverviewShouldShowCountServiceNamed(
+            int count, int serviceId, String serviceName) {
+        String label = TestDataHelper.transformTestData(serviceName);
+        ScenarioLogManager.getLogger()
+                .info(
+                        "zmscitizenview: assert overview shows {}x service {} named {}",
+                        count,
+                        serviceId,
+                        label);
+        page.assertOverviewServiceWithCount(serviceId, count, label);
+    }
+
     @Then("the booking summary should show {string} for provider {int} in the citizen view")
     public void theBookingSummaryShouldShowLocationForProvider(String locationLabel, int officeId) {
         String label = TestDataHelper.transformTestData(locationLabel);

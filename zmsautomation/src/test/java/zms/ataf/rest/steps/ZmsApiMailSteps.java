@@ -217,6 +217,65 @@ public class ZmsApiMailSteps {
                         expected);
     }
 
+    /**
+     * ZMSKVR-418: confirmation mail lists each booked service with {@code Anzahl: N}
+     * (mail_confirmation.twig requestGroups). CSV form {@code Name:count, Name:count}.
+     */
+    @Then("the confirmation mail should list services with counts {string}")
+    public void theConfirmationMailShouldListServicesWithCounts(String nameCountCsv) {
+        ThinnedProcess booking = CitizenApiSteps.getBookingProcess();
+        Assertions.assertThat(booking)
+                .as("booking process for confirmation mail service list")
+                .isNotNull();
+        Assertions.assertThat(booking.getProcessId())
+                .as("processId for confirmation mail service list")
+                .isNotNull();
+        String firstName = firstServiceNameFromCountCsv(nameCountCsv);
+        String html = htmlForProcessContaining(String.valueOf(booking.getProcessId()), firstName);
+        for (String part : nameCountCsv.split(",")) {
+            String trimmed = part.trim();
+            if (trimmed.isEmpty()) {
+                continue;
+            }
+            int colon = trimmed.lastIndexOf(':');
+            Assertions.assertThat(colon)
+                    .as("expected Name:count token, got \"%s\"", trimmed)
+                    .isGreaterThan(0);
+            String name = trimmed.substring(0, colon).trim();
+            String count = trimmed.substring(colon + 1).trim();
+            Assertions.assertThat(html)
+                    .as("confirmation mail for process %s should name service %s", booking.getProcessId(), name)
+                    .contains(name);
+            Assertions.assertThat(html)
+                    .as(
+                            "confirmation mail for process %s should show Anzahl: %s for %s",
+                            booking.getProcessId(),
+                            count,
+                            name)
+                    .contains("Anzahl: " + count);
+        }
+        ScenarioLogManager.getLogger()
+                .info(
+                        "zmsapi: confirmation mail for process {} lists services {}",
+                        booking.getProcessId(),
+                        nameCountCsv);
+    }
+
+    private static String firstServiceNameFromCountCsv(String nameCountCsv) {
+        for (String part : nameCountCsv.split(",")) {
+            String trimmed = part.trim();
+            if (trimmed.isEmpty()) {
+                continue;
+            }
+            int colon = trimmed.lastIndexOf(':');
+            if (colon > 0) {
+                return trimmed.substring(0, colon).trim();
+            }
+            return trimmed;
+        }
+        throw new IllegalArgumentException("empty Name:count csv");
+    }
+
     /** Second mail fetch: run after the appointment is confirmed. The confirmation mail (with link to /appointment/***) is only sent once the appointment is confirmed. */
     @When("I fetch the confirmation mail for the current process")
     public void iFetchTheConfirmationMailForTheCurrentProcess() {
