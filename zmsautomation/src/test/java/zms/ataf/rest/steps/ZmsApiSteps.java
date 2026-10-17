@@ -533,7 +533,8 @@ public class ZmsApiSteps {
 
     /**
      * Attempts POST /workstation/process/called/ without replacing a future appointment with a walk-in.
-     * Used for ProcessNotCurrentDate coverage (ZMSKVR-405).
+     * Used for ProcessNotCurrentDate / MatchScope / reserved-call coverage (ZMSKVR-405 / 375).
+     * {@code allowClusterWideCall=false} so WorkstationProcessMatchScopeFailed can surface on call.
      */
     @When("I try to call the last process at the workstation with the X-AuthKey")
     public void iTryToCallTheLastProcessAtTheWorkstationWithTheXAuthKey() {
@@ -545,6 +546,24 @@ public class ZmsApiSteps {
         CommonApiSteps.setResponse(response);
         ScenarioLogManager.getLogger().info(
             "POST /workstation/process/called/ (no walk-in fallback) status={} body={}",
+            response.getStatusCode(),
+            truncate(response.asString(), 800));
+    }
+
+    /**
+     * Call a known-missing process id (no walk-in fallback) for ProcessNotFound on the call path.
+     */
+    @When("I try to call process {int} at the workstation with the X-AuthKey")
+    public void iTryToCallProcessAtTheWorkstationWithTheXAuthKey(int processId) {
+        String authKey = getOrLoginXAuthKey();
+        ObjectNode body = MAPPER.createObjectNode();
+        body.put("id", processId);
+        body.put("authKey", "missing");
+        response = postProcessCalled(authKey, false, body);
+        CommonApiSteps.setResponse(response);
+        ScenarioLogManager.getLogger().info(
+            "POST /workstation/process/called/ processId={} (expect ProcessNotFound) status={} body={}",
+            processId,
             response.getStatusCode(),
             truncate(response.asString(), 800));
     }
