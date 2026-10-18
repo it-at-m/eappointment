@@ -1,0 +1,74 @@
+{
+  "branch": "test-zms-3507-zmsalt-3541-spontankunden-weiterleiten",
+  "branchSlug": "test-zms-3507-zmsalt-3541-spontankunden-weiterleiten",
+  "runId": "39102201508",
+  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/39102201508",
+  "runStartedAt": "2026-10-18T05:55:09Z",
+  "publishedAt": "2026-10-18T06:07:27.158Z",
+  "features": {
+    "feature-rest-zmsapi-rebooking-zms-3507-zmsalt-3541-forward-walkin": {
+      "status": "passed",
+      "shard": "custom",
+      "browser": "chrome",
+      "browsers": {
+        "chrome": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "39102201508",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/39102201508",
+          "runStartedAt": "2026-10-18T05:55:09Z"
+        },
+        "edge": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "39102201508",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/39102201508",
+          "runStartedAt": "2026-10-18T05:55:09Z"
+        },
+        "firefox": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "39102201508",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/39102201508",
+          "runStartedAt": "2026-10-18T05:55:09Z"
+        }
+      },
+      "rel": "rest/zmsapi/rebooking/zms-3507_zmsalt-3541_forward_walkin.feature",
+      "runId": "39102201508",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/39102201508",
+      "runStartedAt": "2026-10-18T05:55:09Z"
+    },
+    "feature-ui-zmsadmin-rebooking-zms-3507-zmsalt-3541-forward-walkin": {
+      "status": "passed",
+      "shard": "custom",
+      "browser": "chrome",
+      "browsers": {
+        "chrome": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "39102201508",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/39102201508",
+          "runStartedAt": "2026-10-18T05:55:09Z"
+        },
+        "edge": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "39102201508",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/39102201508",
+          "runStartedAt": "2026-10-18T05:55:09Z"
+        },
+        "firefox": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "39102201508",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/39102201508",
+          "runStartedAt": "2026-10-18T05:55:09Z"
+        }
+      },
+      "rel": "ui/zmsadmin/rebooking/zms-3507_zmsalt-3541_forward_walkin.feature",
+      "runId": "39102201508",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/39102201508",
+      "runStartedAt": "2026-10-18T05:55:09Z"
+    }
+  }
+}

@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-10-18T05:44:53.856Z",
+  "publishedAt": "2026-10-18T06:07:27.158Z",
   "branches": [
     {
       "name": "next",
@@ -360,6 +360,12 @@
       "slug": "test-zms-3212-zms-3503-emergency-tresen-and-reset",
       "runId": "39100883960",
       "runStartedAt": "2026-10-18T05:32:09Z"
+    },
+    {
+      "name": "test-zms-3507-zmsalt-3541-spontankunden-weiterleiten",
+      "slug": "test-zms-3507-zmsalt-3541-spontankunden-weiterleiten",
+      "runId": "39102201508",
+      "runStartedAt": "2026-10-18T05:55:09Z"
     },
     {
       "name": "test-zms-opening-hours-holiday-dialog",
