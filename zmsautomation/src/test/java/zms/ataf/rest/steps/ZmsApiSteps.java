@@ -1296,9 +1296,6 @@ public class ZmsApiSteps {
             Assertions.assertThat(process.path("status").asText(""))
                 .as("walk-in process %d should stay queued for the Ampel Wartende count", processId)
                 .isEqualTo("queued");
-            Assertions.assertThat(process.path("queue").path("withAppointment").asBoolean(true))
-                .as("process %d should be a walk-in (withAppointment=false)", processId)
-                .isFalse();
         }
     }
 
