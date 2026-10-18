@@ -128,20 +128,39 @@ public class ZmsApiSteps {
 
     private void restoreEmergencyLeftByTheScenario() {
         Integer scopeId = emergencyScopeId;
-        emergencyScopeId = null;
         if (scopeId == null) {
             return;
         }
+        Boolean previousEnabled = emergencyEnabledBeforeScenario;
         try {
-            postOrDeleteEmergency(scopeId, false);
-            if (emergencyEnabledBeforeScenario != null) {
-                setScopeEmergencyEnabled(scopeId, emergencyEnabledBeforeScenario);
+            Response stop = postOrDeleteEmergency(scopeId, false);
+            if (stop.getStatusCode() == 401 || stop.getStatusCode() == 403) {
+                cachedXAuthKey = null;
+                stop = postOrDeleteEmergency(scopeId, false);
             }
-        } catch (RuntimeException e) {
-            ScenarioLogManager.getLogger().warn(
-                    "Could not restore emergency state for scope {}: {}", scopeId, e.getMessage());
-        } finally {
+            Assertions.assertThat(stop.getStatusCode())
+                    .as("teardown DELETE /scope/%d/emergency/ body=%s",
+                            scopeId, truncate(stop.asString(), 500))
+                    .isEqualTo(200);
+            if (previousEnabled != null) {
+                Response restore = setScopeEmergencyEnabled(scopeId, previousEnabled);
+                if (restore.getStatusCode() == 401 || restore.getStatusCode() == 403) {
+                    cachedXAuthKey = null;
+                    restore = setScopeEmergencyEnabled(scopeId, previousEnabled);
+                }
+                Assertions.assertThat(restore.getStatusCode())
+                        .as("teardown restore emergencyEnabled=%s for scope %d body=%s",
+                                previousEnabled, scopeId, truncate(restore.asString(), 500))
+                        .isEqualTo(200);
+            }
+            emergencyScopeId = null;
             emergencyEnabledBeforeScenario = null;
+        } catch (RuntimeException | AssertionError e) {
+            ScenarioLogManager.getLogger().error(
+                    "Could not restore emergency state for scope {}: {}", scopeId, e.getMessage());
+            throw e instanceof AssertionError
+                    ? (AssertionError) e
+                    : new AssertionError("Emergency teardown failed for scope " + scopeId, e);
         }
     }
 
