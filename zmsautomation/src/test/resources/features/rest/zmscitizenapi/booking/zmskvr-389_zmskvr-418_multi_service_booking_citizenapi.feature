@@ -53,4 +53,5 @@ Feature: Multi-service booking keeps main and sub services with counts — Citiz
     Then the confirmation mail should list services with counts "Reisepass:2, Wohnsitzanmeldung:1"
     When I cancel the appointment
     Then the cancel endpoint response should still include processId, email, displayNumber, and scope.id, and serviceId and serviceName for the cancellation email
+    And the appointment should list services with counts "Reisepass:2, Wohnsitzanmeldung:1"
     And I cancel the rebooking source appointment

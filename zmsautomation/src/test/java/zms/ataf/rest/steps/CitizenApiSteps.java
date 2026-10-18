@@ -3091,8 +3091,13 @@ public class CitizenApiSteps {
                     .as("expected Name:count token, got \"%s\"", trimmed)
                     .isGreaterThan(0);
             String name = trimmed.substring(0, colon).trim();
-            int count = Integer.parseInt(trimmed.substring(colon + 1).trim());
-            parsed.add(new AbstractMap.SimpleEntry<>(name, count));
+            String countToken = trimmed.substring(colon + 1).trim();
+            try {
+                parsed.add(new AbstractMap.SimpleEntry<>(name, Integer.parseInt(countToken)));
+            } catch (NumberFormatException ex) {
+                throw new IllegalArgumentException(
+                        "expected Name:count token with integer count, got \"" + trimmed + "\"", ex);
+            }
         }
         return parsed;
     }
