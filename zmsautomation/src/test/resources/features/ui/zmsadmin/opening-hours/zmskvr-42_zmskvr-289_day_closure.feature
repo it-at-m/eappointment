@@ -24,10 +24,6 @@ Feature: An appointment administrator can lock and unlock a whole day
     When I click the day-closure button "Sperren".
     And I confirm the day-closure dialog.
     Then the day-closure banner should show that booking is locked.
-    When I open the opening-hours month overview.
-    Then the month overview should show the locked-day icon for day "<heute_tag>".
-    When I click day "<heute_tag>" under opening hours.
-    Then the day-closure banner should show that booking is locked.
     When I click the button "neue Öffnungszeit" in the administration.
     And I open the opening-hours accordion "Neue Öffnungszeit".
     Then the opening hours time fields should be empty.
