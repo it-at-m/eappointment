@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-10-18T00:49:20.780Z",
+  "publishedAt": "2026-10-18T01:07:28.840Z",
   "branches": [
     {
       "name": "next",
@@ -826,8 +826,8 @@
     {
       "name": "test-zmskvr-389-zmskvr-418-multi-service-booking",
       "slug": "test-zmskvr-389-zmskvr-418-multi-service-booking",
-      "runId": "39083311131",
-      "runStartedAt": "2026-10-18T00:35:17Z"
+      "runId": "39084414438",
+      "runStartedAt": "2026-10-18T00:53:04Z"
     },
     {
       "name": "test-zmskvr-405-zmskvr-375-workstation-url-security",
