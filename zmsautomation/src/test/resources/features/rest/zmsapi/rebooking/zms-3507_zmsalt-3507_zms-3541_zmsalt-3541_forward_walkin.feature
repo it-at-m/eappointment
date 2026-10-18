@@ -1,7 +1,7 @@
-@rest @zmsapi @rebooking @clerk @system @ZMS-3507 @ZMSALT-3507 @ZMSALT-3541
+@rest @zmsapi @rebooking @clerk @system @ZMS-3507 @ZMSALT-3507 @ZMS-3541 @ZMSALT-3541
 Feature: Redirecting a walk-in keeps the source waiting number and stores the forward note
 
-  # ZMSALT-3541 covers ZMS-3507 / ZMSALT-3507.
+  # ZMS-3507 / ZMSALT-3507 and ZMS-3541 / ZMSALT-3541.
   # Scope 169 Forstenrieder Allee → scope 130 Team 1 Serviceschalter (same department).
   # POST /process/status/redirect/ must keep displayNumber / queue.number from the source walk-in.
 
