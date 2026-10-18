@@ -615,7 +615,7 @@ public class CitizenApiSteps {
         if (lastAvailableCalendarResponse == null) {
             throw new IllegalStateException("Request available days first.");
         }
-        String date = lastAvailableCalendarResponse.getFirstAvailableDay();
+        String date = refetchCalendarUntilFirstAvailableDay(null);
         if (date == null) {
             throw new IllegalStateException("No available day in last response.");
         }
@@ -635,12 +635,54 @@ public class CitizenApiSteps {
         if (lastAvailableCalendarResponse == null) {
             throw new IllegalStateException("Request available days first.");
         }
-        String date = lastAvailableCalendarResponse.getFirstAvailableDayForOffice(officeId);
+        String date = refetchCalendarUntilFirstAvailableDay(officeId);
         if (date == null) {
             throw new IllegalStateException(
                 "No available day with appointments for office " + officeId + " in last calendar response.");
         }
         iRequestAvailableAppointmentsForDateOfficeAndService(date, officeId, lastServiceId, lastServiceCount);
+    }
+
+    /**
+     * Parallel shard runs briefly empty a calendar (reservations). Refetch with backoff before
+     * failing spa / booking scenarios that need at least one day.
+     *
+     * @param officeId when non-null, require a day with appointments for that office bucket
+     */
+    private String refetchCalendarUntilFirstAvailableDay(Integer officeId) {
+        for (int attempt = 1; attempt <= 8; attempt++) {
+            String date =
+                    officeId == null
+                            ? lastAvailableCalendarResponse.getFirstAvailableDay()
+                            : lastAvailableCalendarResponse.getFirstAvailableDayForOffice(officeId);
+            if (date != null) {
+                return date;
+            }
+            if (cachedCalendarOfficeIds == null
+                    || cachedCalendarServiceIds == null
+                    || cachedCalendarServiceCounts == null
+                    || attempt == 8) {
+                return null;
+            }
+            ScenarioLogManager.getLogger().info(String.format(
+                    "Citizen API calendar has no available day%s; requesting it again (%d/8)",
+                    officeId == null ? "" : (" for office " + officeId),
+                    attempt));
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException interrupted) {
+                Thread.currentThread().interrupt();
+                return null;
+            }
+            lastAvailableCalendarResponse = fetchAvailableCalendar(
+                    parseOfficeIdsCsv(cachedCalendarOfficeIds),
+                    cachedCalendarServiceIds,
+                    cachedCalendarServiceCounts);
+            if (lastAvailableCalendarResponse == null) {
+                return null;
+            }
+        }
+        return null;
     }
 
     /**
