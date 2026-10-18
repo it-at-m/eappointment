@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-10-18T12:42:32.589Z",
+  "publishedAt": "2026-10-18T12:44:31.415Z",
   "branches": [
     {
       "name": "next",
@@ -358,8 +358,8 @@
     {
       "name": "test-zms-3152-zmsalt-3381-waiting-traffic-light",
       "slug": "test-zms-3152-zmsalt-3381-waiting-traffic-light",
-      "runId": "39108113268",
-      "runStartedAt": "2026-10-18T07:33:27Z"
+      "runId": "39127745270",
+      "runStartedAt": "2026-10-18T12:33:01Z"
     },
     {
       "name": "test-zms-3212-zms-3503-emergency-tresen-and-reset",
