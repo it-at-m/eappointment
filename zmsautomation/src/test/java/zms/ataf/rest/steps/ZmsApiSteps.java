@@ -1276,57 +1276,30 @@ public class ZmsApiSteps {
                 count, scopeId, authKey != null && !authKey.isBlank());
     }
 
-    @When("I request the scope {int} queue for today with the X-AuthKey")
-    public void iRequestTheScopeQueueForTodayWithTheXAuthKey(int scopeId) {
+    @Then("the walk-ins created in this scenario are still queued")
+    public void theWalkInsCreatedInThisScenarioAreStillQueued() {
+        Assertions.assertThat(scenarioProcessIds)
+            .as("Queue walk-ins before asserting they are still queued")
+            .isNotEmpty();
         String authKey = getOrLoginXAuthKey();
-        String today = java.time.LocalDate.now(java.time.ZoneId.of("Europe/Berlin")).toString();
-        response = given()
-            .baseUri(apiBaseUri())
-            .header("X-AuthKey", authKey)
-            .queryParam("date", today)
-            .queryParam("resolveReferences", 0)
-        .when()
-            .get("/scope/" + scopeId + "/queue/");
-        CommonApiSteps.setResponse(response);
-        Assertions.assertThat(response.getStatusCode())
-            .as("GET /scope/%d/queue/ body=%s", scopeId, truncate(response.asString(), 1000))
-            .isEqualTo(200);
-    }
-
-    @Then("the scope queue has at least {int} walk-in entries")
-    public void theScopeQueueHasAtLeastWalkInEntries(int expected) {
-        JsonNode data = parseDataNode(response);
-        Assertions.assertThat(data).as("scope queue data").isNotNull();
-        int walkIns = 0;
-        if (data.isArray()) {
-            for (JsonNode entry : data) {
-                if (!entry.path("withAppointment").asBoolean(false)
-                        && !"fake".equals(entry.path("status").asText(""))) {
-                    walkIns++;
-                }
-            }
+        for (Integer processId : scenarioProcessIds) {
+            Response processResponse = given()
+                .baseUri(apiBaseUri())
+                .header("X-AuthKey", authKey)
+            .when()
+                .get("/process/" + processId + "/");
+            Assertions.assertThat(processResponse.getStatusCode())
+                .as("GET /process/%d/ body=%s", processId, truncate(processResponse.asString(), 1000))
+                .isEqualTo(200);
+            JsonNode process = parseDataNode(processResponse);
+            Assertions.assertThat(process).as("process %d payload", processId).isNotNull();
+            Assertions.assertThat(process.path("status").asText(""))
+                .as("walk-in process %d should stay queued for the Ampel Wartende count", processId)
+                .isEqualTo("queued");
+            Assertions.assertThat(process.path("queue").path("withAppointment").asBoolean(true))
+                .as("process %d should be a walk-in (withAppointment=false)", processId)
+                .isFalse();
         }
-        Assertions.assertThat(walkIns)
-            .as("walk-in entries in scope queue; body=%s", truncate(response.asString(), 1000))
-            .isGreaterThanOrEqualTo(expected);
-    }
-
-    @Then("the Ampel class for {int} waiting clients is {string}")
-    public void theAmpelClassForWaitingClientsIs(int count, String expectedClass) {
-        // Keep in sync with BO\Zmsadmin\Helper\WaitingClientsTrafficLight (ZMS-3152).
-        String actual;
-        if (count <= 10) {
-            actual = "green";
-        } else if (count <= 20) {
-            actual = "yellow";
-        } else if (count <= 40) {
-            actual = "orange";
-        } else {
-            actual = "red";
-        }
-        Assertions.assertThat(actual)
-            .as("Ampel class for %d waiting clients", count)
-            .isEqualTo(expectedClass);
     }
 
     @When("the appointments created in this scenario are deleted.")

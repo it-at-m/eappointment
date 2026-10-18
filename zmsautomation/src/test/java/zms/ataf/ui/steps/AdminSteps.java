@@ -1350,6 +1350,11 @@ public class AdminSteps {
         COUNTER_SECTION.assertWaitingTrafficLightMatchesCount();
     }
 
+    @Then("the number of waiting customers under information is at least {int}.")
+    public void ist_die_anzahl_der_wartenden_unter_informationen_mindestens(int minimum) {
+        COUNTER_SECTION.assertWaitingClientsAtLeast(minimum);
+    }
+
     @When("I reload the counter waiting information.")
     public void ich_lade_die_tresen_warteinformationen_neu() {
         COUNTER_SECTION.reloadAndReadWaitingClientsOnCounter();
