@@ -2546,8 +2546,8 @@ public class ZmsApiSteps {
     }
 
     /**
-     * ZMS-3213 / ZMSALT-3250: two clerks call two walk-ins so both stay status=called on the
-     * Aufrufmonitor; the second call is newer and must appear first.
+     * ZMS-3213 / ZMSALT-3250: seed two called walk-ins for Aufrufmonitor UI order
+     * (zmscalldisplay already sorts by callTime descending).
      */
     @When("I prepare two called walk-ins at scope {int} with service {string} for call display order with the X-AuthKey")
     public void iPrepareTwoCalledWalkInsForCallDisplayOrder(int scopeId, String serviceName)
@@ -2633,125 +2633,6 @@ public class ZmsApiSteps {
         }
         int id = process.path("id").asInt();
         return id > 0 ? Integer.toString(id) : "";
-    }
-
-    @When("I request the call display queue for locations {string} with status called")
-    public void iRequestTheCallDisplayQueueForLocationsWithStatusCalled(String scopeList) {
-        ArrayNode scopes = MAPPER.createArrayNode();
-        for (String id : scopeList.split(",")) {
-            String token = id.trim();
-            try {
-                scopes.add(MAPPER.createObjectNode().put("id", Integer.parseInt(token)));
-            } catch (NumberFormatException e) {
-                Assertions.fail("Location id must be a number, got: " + token, e);
-            }
-        }
-        ObjectNode body = MAPPER.createObjectNode();
-        body.set("scopes", scopes);
-        response = given()
-            .baseUri(apiBaseUri())
-            .contentType("application/json")
-            .queryParam("statusList[0]", "called")
-            .body(toJson(body))
-        .when()
-            .post("/calldisplay/queue/");
-        CommonApiSteps.setResponse(response);
-        Assertions.assertThat(response.getStatusCode())
-            .as("POST /calldisplay/queue/ body=%s", truncate(response.asString(), 1000))
-            .isEqualTo(200);
-    }
-
-    @Then("the call display queue should list the newer call before the older call")
-    public void theCallDisplayQueueShouldListTheNewerCallBeforeTheOlderCall() {
-        Assertions.assertThat(callDisplayNumbersInCallOrder)
-            .as("Prepare two called walk-ins before asserting call display order")
-            .hasSize(2);
-        String older = callDisplayNumbersInCallOrder.get(0);
-        String newer = callDisplayNumbersInCallOrder.get(1);
-        List<String> numbers = callDisplayQueueNumbers();
-        int newerIndex = numbers.indexOf(newer);
-        int olderIndex = numbers.indexOf(older);
-        Assertions.assertThat(newerIndex)
-            .as("newer number %s in queue %s", newer, numbers)
-            .isGreaterThanOrEqualTo(0);
-        Assertions.assertThat(olderIndex)
-            .as("older number %s in queue %s", older, numbers)
-            .isGreaterThanOrEqualTo(0);
-        Assertions.assertThat(newerIndex)
-            .as("newest call %s must appear before older call %s in %s", newer, older, numbers)
-            .isLessThan(olderIndex);
-        long newerCallTime = callTimeForNumber(newer);
-        long olderCallTime = callTimeForNumber(older);
-        Assertions.assertThat(newerCallTime)
-            .as("newer callTime for %s vs older %s", newer, older)
-            .isGreaterThan(olderCallTime);
-    }
-
-    private List<String> callDisplayQueueNumbers() {
-        List<String> numbers = new ArrayList<>();
-        for (JsonNode row : callDisplayQueueRows()) {
-            numbers.add(queueRowNumber(row));
-        }
-        return numbers.stream().filter(n -> n != null && !n.isBlank()).toList();
-    }
-
-    private long callTimeForNumber(String number) {
-        for (JsonNode row : callDisplayQueueRows()) {
-            if (number.equals(queueRowNumber(row))) {
-                return row.path("callTime").asLong(0L);
-            }
-        }
-        return 0L;
-    }
-
-    private List<JsonNode> callDisplayQueueRows() {
-        JsonNode data = parseDataNode(response);
-        List<JsonNode> rows = new ArrayList<>();
-        if (data == null) {
-            return rows;
-        }
-        if (data.isArray()) {
-            data.forEach(rows::add);
-        } else if (data.isObject()) {
-            data.properties().forEach(entry -> rows.add(entry.getValue()));
-        }
-        return rows;
-    }
-
-    /**
-     * Finish both prepared called walk-ins via their clerks so DELETE is allowed afterwards.
-     */
-    @When("I finish the called walk-ins prepared for call display order with the X-AuthKey")
-    public void iFinishTheCalledWalkInsPreparedForCallDisplayOrderWithTheXAuthKey() {
-        finishCalledWalkInAsClerk("first", "older");
-        finishCalledWalkInAsClerk("second", "newer");
-    }
-
-    private void finishCalledWalkInAsClerk(String clerk, String label) {
-        String authKey = clerkAuthKeys.get(clerk);
-        Assertions.assertThat(authKey).as("Remember clerk %s before finishing", clerk).isNotBlank();
-        JsonNode process = callDisplayProcessesByLabel.get(label);
-        Assertions.assertThat(process).as("Remember call-display process \"%s\"", label).isNotNull();
-        cachedXAuthKey = authKey;
-        ObjectNode body = process.deepCopy();
-        body.put("status", "finished");
-        response = postFinished(authKey, body);
-        CommonApiSteps.setResponse(response);
-        Assertions.assertThat(response.getStatusCode())
-                .as("clerk %s finish \"%s\" body=%s", clerk, label, truncate(response.asString(), 1000))
-                .isEqualTo(200);
-        rememberProcess(parseDataNode(response));
-    }
-
-    private static String queueRowNumber(JsonNode row) {
-        if (row == null) {
-            return "";
-        }
-        String displayNumber = row.path("displayNumber").asText("");
-        if (!displayNumber.isBlank()) {
-            return displayNumber;
-        }
-        return row.path("number").asText("");
     }
 
     @Then("the call display response should include location {int}")

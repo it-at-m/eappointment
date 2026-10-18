@@ -42,14 +42,8 @@ class CalldisplayQueue extends \BO\Zmsbackend\Api\BaseController
             $this->readQueueListByStatus($calldisplay, $statusList, $resolveReferences) :
             $this->readFullQueueList($calldisplay, $resolveReferences);
 
-        $queueList = $queueList->withoutDublicates();
-        // ZMS-3213 / ZMSALT-3250: Aufrufmonitor shows newest calls first (Terminkunden + Spontankunden).
-        if (count($statusList)) {
-            $queueList = $queueList->sortByCallTime('descending');
-        }
-
         $message = \BO\Zmsbackend\Api\Response\Message::create($request);
-        $message->data = $queueList;
+        $message->data = $queueList->withoutDublicates();
 
         $response = Render::withLastModified($response, time(), '0');
         $response = Render::withJson($response, $message, 200);
