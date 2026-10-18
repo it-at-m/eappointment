@@ -62,8 +62,7 @@ public class CounterSection extends CounterProcessingStationPage {
 
     public WebElement waitingTrafficLightRow() {
         CONTEXT.set();
-        // Prefer the central-scale row when the branch image is deployed; fall back to
-        // the Ampel markup already on next so ATAF still works before the image is ready.
+        // Sachbearbeiter next may expose data-waiting-clients-row; Tresen info uses li.traffic-light.
         By withScale = By.cssSelector("li.traffic-light[data-waiting-clients-row]");
         By legacy = By.cssSelector("li.traffic-light");
         WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
@@ -80,19 +79,9 @@ public class CounterSection extends CounterProcessingStationPage {
         Assert.assertTrue(
                 classes.matches("(?s).*\\b" + expectedClass + "\\b.*"),
                 "Expected traffic-light class \"" + expectedClass + "\" but was \"" + classes + "\".");
-        String greenMax = row.getAttribute("data-waiting-clients-green-max");
-        if (greenMax != null && !greenMax.isBlank()) {
-            Assert.assertEquals(greenMax, "10", "Ampel greenMax should come from the central scale.");
-            Assert.assertEquals(
-                    row.getAttribute("data-waiting-clients-yellow-max"), "20",
-                    "Ampel yellowMax should come from the central scale.");
-            Assert.assertEquals(
-                    row.getAttribute("data-waiting-clients-orange-max"), "40",
-                    "Ampel orangeMax should come from the central scale.");
-        }
     }
 
-    /** ZMS-3152: colour follows Wartende using the central QAppoint thresholds. */
+    /** ZMS-3152: colour follows Wartende (0–10 green, 11–20 yellow, 21–40 orange, 41+ red). */
     public void assertWaitingTrafficLightMatchesCount() {
         int count = readWaitingClientsOnCounter();
         String expected;

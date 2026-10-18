@@ -23,8 +23,7 @@ class WorkstationInfo
             'waitingTimeOptimistic' => 0,
             'waitingClientsFullList' => 0,
             'waitingClientsBeforeNext' => 0,
-            'waitingClientsEffective' => 0,
-            'waitingClientsTrafficLight' => WaitingClientsTrafficLight::thresholds(),
+            'waitingClientsEffective' => 0
         );
         $scope = \App::$http->readGetResult('/scope/' . $workstation->scope['id'] . '/workstationcount/')->getEntity();
 
@@ -71,9 +70,6 @@ class WorkstationInfo
                 $infoData = static::getAdditionalInfoData($infoData, $queueListHelper);
             }
         }
-        $infoData['waitingClientsTrafficLightClass'] = WaitingClientsTrafficLight::cssClassForCount(
-            (int) $infoData['waitingClientsEffective']
-        );
         return $infoData;
     }
 

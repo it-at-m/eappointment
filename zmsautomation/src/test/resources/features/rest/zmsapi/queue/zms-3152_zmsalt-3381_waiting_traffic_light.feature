@@ -2,7 +2,7 @@
 Feature: Waiting clients feed the Ampel scale used under Informationen
 
   # ZMSALT-3381 covers ZMS-3152.
-  # Queued walk-ins are the Wartende input for the Ampel; class bands are covered by WaitingClientsTrafficLightTest.
+  # Queued walk-ins are the Wartende input for the existing Ampel on Informationen.
 
   Scenario: Walk-ins queued for Ampel coverage stay queued on the scope
     Given the ZMS API is available
