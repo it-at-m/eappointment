@@ -5,10 +5,9 @@ Feature: The waiting count under Informationen uses a traffic light scale
 	# Tresen Informationen shows average waiting times and colours Wartende:
 	# 0–10 green, 11–20 yellow, 21–40 orange, from 41 red (WaitingClientsTrafficLight).
 	# Scope 2 Gewerbeamt opens as Tresen without a seat number.
-	# Ampel colour is asserted against the live Wartende count (no Sachbearbeiter no-show clear).
 
 	@web @zmsadmin @queue @clerk @ZMS-3152 @ZMSALT-3152 @ZMSALT-3381 @executeLocally
-	Scenario: Informationen shows waiting averages and an Ampel matching Wartende
+	Scenario: Informationen shows waiting averages and turns yellow after 11 walk-ins
 		When I open the administration website.
 		Then I should be on the administration start page.
 		When I click the button "Anmelden" in the administration.
@@ -22,5 +21,6 @@ Feature: The waiting count under Informationen uses a traffic light scale
 		And I am logged in to the ZMS API as "ataf"
 		When I queue 11 walk-ins at scope 2 with service "Zulassung Taxi oder Mietwagen" with the X-AuthKey
 		And I reload the counter waiting information.
-		Then the waiting traffic light under information matches the Wartende count.
+		Then the number of waiting customers under information is at least 11.
+		And the waiting traffic light under information is "yellow".
 		When I delete the processes created in this scenario with the X-AuthKey

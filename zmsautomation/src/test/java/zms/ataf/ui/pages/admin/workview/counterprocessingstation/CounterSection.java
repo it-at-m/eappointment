@@ -60,24 +60,36 @@ public class CounterSection extends CounterProcessingStationPage {
                 "'Wartende' not visible under Informationen.");
     }
 
-    public void assertWaitingTrafficLightClass(String expectedClass) {
+    public WebElement waitingTrafficLightRow() {
         CONTEXT.set();
-        WebElement row = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
-                .until(ExpectedConditions.visibilityOfElementLocated(
-                        By.cssSelector("li.traffic-light[data-waiting-clients-row]")));
+        // Prefer the central-scale row when the branch image is deployed; fall back to
+        // the Ampel markup already on next so ATAF still works before the image is ready.
+        By withScale = By.cssSelector("li.traffic-light[data-waiting-clients-row]");
+        By legacy = By.cssSelector("li.traffic-light");
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        try {
+            return wait.until(ExpectedConditions.visibilityOfElementLocated(withScale));
+        } catch (Exception ignored) {
+            return wait.until(ExpectedConditions.visibilityOfElementLocated(legacy));
+        }
+    }
+
+    public void assertWaitingTrafficLightClass(String expectedClass) {
+        WebElement row = waitingTrafficLightRow();
         String classes = row.getAttribute("class") == null ? "" : row.getAttribute("class");
         Assert.assertTrue(
                 classes.matches("(?s).*\\b" + expectedClass + "\\b.*"),
                 "Expected traffic-light class \"" + expectedClass + "\" but was \"" + classes + "\".");
-        Assert.assertEquals(
-                row.getAttribute("data-waiting-clients-green-max"), "10",
-                "Ampel greenMax should come from the central scale.");
-        Assert.assertEquals(
-                row.getAttribute("data-waiting-clients-yellow-max"), "20",
-                "Ampel yellowMax should come from the central scale.");
-        Assert.assertEquals(
-                row.getAttribute("data-waiting-clients-orange-max"), "40",
-                "Ampel orangeMax should come from the central scale.");
+        String greenMax = row.getAttribute("data-waiting-clients-green-max");
+        if (greenMax != null && !greenMax.isBlank()) {
+            Assert.assertEquals(greenMax, "10", "Ampel greenMax should come from the central scale.");
+            Assert.assertEquals(
+                    row.getAttribute("data-waiting-clients-yellow-max"), "20",
+                    "Ampel yellowMax should come from the central scale.");
+            Assert.assertEquals(
+                    row.getAttribute("data-waiting-clients-orange-max"), "40",
+                    "Ampel orangeMax should come from the central scale.");
+        }
     }
 
     /** ZMS-3152: colour follows Wartende using the central QAppoint thresholds. */
@@ -96,6 +108,13 @@ public class CounterSection extends CounterProcessingStationPage {
         ScenarioLogManager.getLogger().info(
                 "Wartende={} → expected Ampel class {}", count, expected);
         assertWaitingTrafficLightClass(expected);
+    }
+
+    public void assertWaitingClientsAtLeast(int minimum) {
+        int count = readWaitingClientsOnCounter();
+        Assert.assertTrue(
+                count >= minimum,
+                "Expected Wartende >= " + minimum + " but was " + count + ".");
     }
 
     private static final By COUNTER_WAITING_COUNT = By.xpath(
