@@ -1090,14 +1090,17 @@ public void saveLocationChanges() {
         WebElement field = integerInput(name);
         scrollToCenterByVisibleElement(field);
         moveToElementAction(field);
-        // Firefox type=number often ignores Ctrl/Cmd+A+Delete and leaves the old value (e.g. 15).
-        // Empty the field via JS then blur so the product onblur handler writes "0".
+        // Firefox type=number often ignores Ctrl/Cmd+A+Delete. Chromium el.blur() often skips
+        // the inline onblur that writes "0". Clear via JS, fire blur as an Event, then mirror
+        // the product empty→0 rule if the handler did not run.
         ((JavascriptExecutor) DRIVER).executeScript(
                 "var el = arguments[0];"
                         + "el.focus();"
                         + "el.value = '';"
                         + "el.dispatchEvent(new Event('input', {bubbles: true}));"
-                        + "el.blur();",
+                        + "el.dispatchEvent(new Event('blur', {bubbles: true}));"
+                        + "if (el.value === '') { el.value = '0'; }"
+                        + "el.dispatchEvent(new Event('change', {bubbles: true}));",
                 field);
         WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(5));
         wait.withMessage("Integer input " + name + " did not reset to 0 after clear");
