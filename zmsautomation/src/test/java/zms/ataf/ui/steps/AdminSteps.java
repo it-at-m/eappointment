@@ -458,6 +458,46 @@ public class AdminSteps {
         AUTHORITIES_AND_LOCATIONS_PAGE.assertOpeningHoursDayPage();
     }
 
+    @Then("the day-closure banner should show that booking is not locked.")
+    public void theDayClosureBannerShouldShowThatBookingIsNotLocked() {
+        AUTHORITIES_AND_LOCATIONS_PAGE.assertDayClosureBannerUnlocked();
+    }
+
+    @Then("the day-closure banner should show that booking is locked.")
+    public void theDayClosureBannerShouldShowThatBookingIsLocked() {
+        AUTHORITIES_AND_LOCATIONS_PAGE.assertDayClosureBannerLocked();
+    }
+
+    @When("I click the day-closure button {string}.")
+    public void iClickTheDayClosureButton(String label) {
+        AUTHORITIES_AND_LOCATIONS_PAGE.clickDayClosureButton(TestDataHelper.transformTestData(label));
+    }
+
+    @Then("the day-closure confirm dialog should contain {string}.")
+    public void theDayClosureConfirmDialogShouldContain(String message) {
+        AUTHORITIES_AND_LOCATIONS_PAGE.assertDayClosureConfirmDialog(TestDataHelper.transformTestData(message));
+    }
+
+    @When("I confirm the day-closure dialog.")
+    public void iConfirmTheDayClosureDialog() {
+        AUTHORITIES_AND_LOCATIONS_PAGE.confirmDayClosureDialog();
+    }
+
+    @When("I cancel the day-closure dialog.")
+    public void iCancelTheDayClosureDialog() {
+        AUTHORITIES_AND_LOCATIONS_PAGE.abortDayClosureDialog();
+    }
+
+    @When("I open the opening-hours month overview.")
+    public void iOpenTheOpeningHoursMonthOverview() {
+        AUTHORITIES_AND_LOCATIONS_PAGE.clickMonthOverviewLink();
+    }
+
+    @Then("the month overview should show the locked-day icon for day {string}.")
+    public void theMonthOverviewShouldShowTheLockedDayIconForDay(String day) {
+        AUTHORITIES_AND_LOCATIONS_PAGE.assertMonthLockedDayIconForDay(TestDataHelper.transformTestData(day));
+    }
+
     /** ZMSKVR-933 / ZMSKVR-934: Terminabstand (#AvDaySlottime) on Öffnungszeiten. */
     @Then("the opening hours slot time should be {int} minutes.")
     public void theOpeningHoursSlotTimeShouldBeMinutes(int expectedMinutes) {

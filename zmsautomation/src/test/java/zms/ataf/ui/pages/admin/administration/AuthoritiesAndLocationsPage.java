@@ -688,6 +688,100 @@ public void saveLocationChanges() {
         Assert.assertTrue(heading.isDisplayed(), "The opening-hours day page is not visible.");
     }
 
+    /** ZMSKVR-42: day-lock banner above the opening-hours list. */
+    public void assertDayClosureBannerUnlocked() {
+        CONTEXT.set();
+        WebElement open = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(ExpectedConditions.visibilityOfElementLocated(By.id("closure-open")));
+        Assert.assertTrue(
+                open.getText().contains("NICHT gesperrt"),
+                "Unlocked banner text missing: " + open.getText());
+        new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(ExpectedConditions.invisibilityOfElementLocated(By.id("closure-close")));
+    }
+
+    public void assertDayClosureBannerLocked() {
+        CONTEXT.set();
+        WebElement close = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(ExpectedConditions.visibilityOfElementLocated(By.id("closure-close")));
+        Assert.assertTrue(
+                close.getText().contains("gesperrt") && !close.getText().contains("NICHT"),
+                "Locked banner text missing: " + close.getText());
+        new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(ExpectedConditions.invisibilityOfElementLocated(By.id("closure-open")));
+    }
+
+    public void clickDayClosureButton(String label) {
+        CONTEXT.set();
+        ScenarioLogManager.getLogger().info("Trying to click day-closure button \"{}\"...", label);
+        String xpath = "//button[contains(@class,'js-day-closure-toggle') and normalize-space()='" + label + "']";
+        clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, xpath, LocatorType.XPATH, false, CONTEXT);
+    }
+
+    public void assertDayClosureConfirmDialog(String expectedMessage) {
+        CONTEXT.set();
+        By dialog = By.xpath("//div[contains(@class,'lightbox__content')]//section[contains(@class,'dialog')]");
+        WebElement box = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(ExpectedConditions.visibilityOfElementLocated(dialog));
+        String text = box.getText().replace('\n', ' ').trim();
+        Assert.assertTrue(
+                text.contains(expectedMessage),
+                "Day-closure confirm dialog text mismatch. expected to contain \"" + expectedMessage
+                        + "\", was: " + text);
+        Assert.assertTrue(
+                DRIVER.findElements(By.cssSelector("div.lightbox__content a.button-ok")).stream()
+                        .anyMatch(WebElement::isDisplayed),
+                "Confirm dialog OK button missing.");
+        Assert.assertTrue(
+                DRIVER.findElements(By.cssSelector("div.lightbox__content a.button-abort")).stream()
+                        .anyMatch(WebElement::isDisplayed),
+                "Confirm dialog Abbruch button missing.");
+    }
+
+    public void confirmDayClosureDialog() {
+        CONTEXT.set();
+        By confirmButton = By.cssSelector("div.lightbox__content a.button-ok");
+        WebElement ok = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(ExpectedConditions.elementToBeClickable(confirmButton));
+        ok.click();
+        new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(ExpectedConditions.invisibilityOfElementLocated(confirmButton));
+    }
+
+    public void abortDayClosureDialog() {
+        CONTEXT.set();
+        By abortButton = By.cssSelector("div.lightbox__content a.button-abort");
+        WebElement abort = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(ExpectedConditions.elementToBeClickable(abortButton));
+        abort.click();
+        new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(ExpectedConditions.invisibilityOfElementLocated(abortButton));
+    }
+
+    public void assertMonthLockedDayIconForDay(String day) {
+        CONTEXT.set();
+        ScenarioLogManager.getLogger().info("Checking month locked-day icon for day \"{}\"...", day);
+        String xpath = "//span[@class='day' and normalize-space()='" + day
+                + "']/ancestor::a[1]//strong[@class='char' and normalize-space()='X']";
+        WebElement icon = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(ExpectedConditions.visibilityOfElementLocated(By.xpath(xpath)));
+        Assert.assertTrue(icon.isDisplayed(), "Month overview missing locked-day X icon for day " + day);
+        WebElement marked = icon.findElement(By.xpath("./ancestor::*[contains(@class,'daystatus--conflict')][1]"));
+        Assert.assertTrue(
+                marked.getAttribute("title") != null && marked.getAttribute("title").contains("Gesperrt"),
+                "Locked-day icon should be titled Gesperrt.");
+    }
+
+    public void clickMonthOverviewLink() {
+        CONTEXT.set();
+        clickOnWebElement(
+                DEFAULT_EXPLICIT_WAIT_TIME,
+                "//a[contains(., 'zurück zur Monatsansicht') or contains(@href,'availability/month')]",
+                LocatorType.XPATH,
+                false,
+                CONTEXT);
+    }
+
     public void openOpeningHourForEditing(String note) {
         ScenarioLogManager.getLogger().info("Trying to edit the opening hour with note \"" + note + "\"...");
         String pencil = openingHourRow(note) + "//a[@aria-label='Bearbeiten']";
