@@ -6,7 +6,7 @@ Feature: Aufrufmonitor shows the newest called waiting number on top
 	# Newest calls insert at the top (left column, first row); older calls move down.
 	# Seeding uses two clerks so both processes stay status=called.
 
-	@web @zmscalldisplay @queue @ZMS-3213 @ZMSALT-3213 @ZMSALT-3250 @executeLocally
+	@web @zmscalldisplay @queue @ZMS-3213 @ZMSALT-3213 @ZMS-3250 @ZMSALT-3250 @executeLocally
 	Scenario: Newest called walk-in appears before the older call on the display
 		Given the ZMS API is available
 		When I prepare two called walk-ins at scope 2 with service "Zulassung Taxi oder Mietwagen" for call display order with the X-AuthKey
