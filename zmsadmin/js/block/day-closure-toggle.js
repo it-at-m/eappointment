@@ -6,16 +6,21 @@ import { buildConfirmDialogHtml } from '../lib/confirmDialog';
  * ZMSKVR-42: day lock/unlock on Öffnungszeiten Tagesübersicht uses the same
  * lightbox confirm dialog as other opening-hours actions (not native confirm()).
  *
- * Banner visibility must use the HTML `hidden` attribute — admin.css only
- * styles `[hidden]`, not a `.hidden` class, so class toggling never updated
- * the UI until a full page refresh.
+ * Visibility must use inline display — .message--* sets display:block, which
+ * overrides both [hidden] and a non-existent .hidden class, so both banners
+ * (Sperren + Entsperren) were shown at once.
  */
 function applyDayClosureState(existing) {
     const locked = !!existing;
     const $close = $('#closure-close');
     const $open = $('#closure-open');
-    $close.prop('hidden', !locked);
-    $open.prop('hidden', locked);
+    if (locked) {
+        $close.show();
+        $open.hide();
+    } else {
+        $close.hide();
+        $open.show();
+    }
     $close.find('.js-day-closure-toggle').data('locked', locked);
     $open.find('.js-day-closure-toggle').data('locked', locked);
 }
