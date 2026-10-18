@@ -699,6 +699,7 @@ public void saveLocationChanges() {
         Assert.assertFalse(
                 DRIVER.findElement(By.id("closure-close")).isDisplayed(),
                 "Locked banner must stay hidden while unlocked.");
+        TestDataHelper.setTestData("day_closure_ui_locked", "false");
     }
 
     public void assertDayClosureBannerLocked() {
@@ -711,11 +712,52 @@ public void saveLocationChanges() {
         Assert.assertFalse(
                 DRIVER.findElement(By.id("closure-open")).isDisplayed(),
                 "Unlocked banner must stay hidden while locked.");
+        TestDataHelper.setTestData("day_closure_ui_locked", "true");
+    }
+
+    /**
+     * Serialize parallel browsers on the same scope day-lock (matches API checkout key).
+     * Parses {@code data-toggle-url} like {@code .../scope/130/availability/day/2026-10-18/closure/toggle/}.
+     */
+    public void checkoutDayClosureResource() {
+        CONTEXT.set();
+        List<WebElement> buttons = DRIVER.findElements(By.cssSelector(".js-day-closure-toggle[data-toggle-url]"));
+        for (WebElement button : buttons) {
+            String url = button.getAttribute("data-toggle-url");
+            if (url == null || url.isBlank()) {
+                continue;
+            }
+            Matcher m = Pattern
+                    .compile("/scope/(\\d+)/availability/day/(\\d{4}-\\d{2}-\\d{2})/closure/toggle/")
+                    .matcher(url);
+            if (m.find()) {
+                AccountCheckout.checkout("scope:" + m.group(1) + ":day-closure");
+                TestDataHelper.setTestData("day_closure_ui_scope", m.group(1));
+                TestDataHelper.setTestData("day_closure_ui_date", m.group(2));
+                return;
+            }
+        }
+    }
+
+    /** Leave the day unlocked so a failed prior run cannot poison this scenario. */
+    public void ensureDayClosureUnlocked() {
+        CONTEXT.set();
+        checkoutDayClosureResource();
+        WebElement close = DRIVER.findElement(By.id("closure-close"));
+        if (!close.isDisplayed()) {
+            TestDataHelper.setTestData("day_closure_ui_locked", "false");
+            return;
+        }
+        ScenarioLogManager.getLogger().info("Day closure still locked; unlocking before the scenario continues.");
+        clickDayClosureButton("Entsperren");
+        confirmDayClosureDialog();
+        assertDayClosureBannerUnlocked();
     }
 
     public void clickDayClosureButton(String label) {
         CONTEXT.set();
         ScenarioLogManager.getLogger().info("Trying to click day-closure button \"{}\"...", label);
+        checkoutDayClosureResource();
         // Prefer the visible banner (#closure-open / #closure-close). Match button or
         // legacy input so a stale module image is obvious in the failure screenshot.
         String xpath = "//div[@id='closure-open' or @id='closure-close']"

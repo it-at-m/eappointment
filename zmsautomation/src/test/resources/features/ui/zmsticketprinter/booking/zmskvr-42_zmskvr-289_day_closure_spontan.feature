@@ -20,6 +20,7 @@ Feature: Spontankunden opening hours stay editable on a locked day
     And I enter in the field "Uhrzeit von" the text "00:05".
     And I enter in the field "Uhrzeit bis" the text "23:55".
     And I click the button "Alle Änderungen aktivieren" in the administration.
+    When I ensure the day closure is unlocked.
     Then the day-closure banner should show that booking is not locked.
     When I click the day-closure button "Sperren".
     And I confirm the day-closure dialog.

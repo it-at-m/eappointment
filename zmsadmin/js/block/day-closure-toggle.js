@@ -2,6 +2,8 @@ import $ from 'jquery';
 import BaseView from '../lib/baseview';
 import { buildConfirmDialogHtml } from '../lib/confirmDialog';
 
+let dayClosureToggleInFlight = false;
+
 /**
  * ZMSKVR-42: day lock/unlock on Öffnungszeiten Tagesübersicht uses the same
  * lightbox confirm dialog as other opening-hours actions (not native confirm()).
@@ -25,9 +27,20 @@ function applyDayClosureState(existing) {
     $open.find('.js-day-closure-toggle').data('locked', locked);
 }
 
+function showDayClosureError(err) {
+    const status = err && err.status ? ' (HTTP ' + err.status + ')' : '';
+    $('#day-closure-error').remove();
+    const $msg = $('<div id="day-closure-error" class="message message--error" role="alert">')
+        .text('Die Sperrung/Entsperrung konnte nicht gespeichert werden' + status + '.');
+    $('#closure-close, #closure-open').first().before($msg);
+}
+
 function bindDayClosureToggle() {
     $(document).on('click', '.js-day-closure-toggle', (ev) => {
         ev.preventDefault();
+        if (dayClosureToggleInFlight) {
+            return;
+        }
         const $btn = $(ev.currentTarget);
         const locked = $btn.data('locked') === true || $btn.data('locked') === 'true' || $btn.data('locked') === 1;
         const url = $btn.data('toggleUrl');
@@ -45,17 +58,24 @@ function bindDayClosureToggle() {
         BaseView.loadDialogStatic(
             dialogHtml,
             () => {
+                if (dayClosureToggleInFlight) {
+                    return;
+                }
+                dayClosureToggleInFlight = true;
+                $('#day-closure-error').remove();
                 $.ajax(url, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     data: JSON.stringify({})
                 }).done((data) => {
                     const fromResponse = data && data.closure && data.closure.existing;
-                    // Prefer API flag; fall back to the inverse of the pre-click state.
                     const existing = typeof fromResponse === 'boolean' ? fromResponse : !locked;
                     applyDayClosureState(existing);
                 }).fail((err) => {
-                    console.log('day closure toggle error', err);
+                    console.error('day closure toggle error', err);
+                    showDayClosureError(err);
+                }).always(() => {
+                    dayClosureToggleInFlight = false;
                 });
             },
             () => {},
