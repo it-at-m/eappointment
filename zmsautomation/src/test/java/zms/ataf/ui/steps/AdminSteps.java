@@ -498,13 +498,19 @@ public class AdminSteps {
         if (!"true".equals(TestDataHelper.getTestData("day_closure_ui_locked"))) {
             return;
         }
+        // Prefer API cleanup in ZmsApiSteps (exact scope/date). Page unlock only when
+        // scope/date were never recorded (e.g. still on the day view).
+        String scope = TestDataHelper.getTestData("day_closure_ui_scope");
+        String date = TestDataHelper.getTestData("day_closure_ui_date");
+        if (scope != null && !scope.isBlank() && date != null && !date.isBlank()) {
+            return;
+        }
         try {
             AUTHORITIES_AND_LOCATIONS_PAGE.ensureDayClosureUnlocked();
+            TestDataHelper.setTestData("day_closure_ui_locked", "false");
         } catch (RuntimeException e) {
             ScenarioLogManager.getLogger().warn(
-                    "Could not unlock UI day closure leftover: {}", e.getMessage());
-        } finally {
-            TestDataHelper.setTestData("day_closure_ui_locked", "false");
+                    "Could not unlock UI day closure leftover from the page: {}", e.getMessage());
         }
     }
 

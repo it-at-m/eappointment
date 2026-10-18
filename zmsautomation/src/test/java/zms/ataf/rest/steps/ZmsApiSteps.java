@@ -133,19 +133,106 @@ public class ZmsApiSteps {
     }
 
     private void unlockDayClosureLeftByTheScenario() {
-        if (!dayClosureIsLocked || dayClosureScopeId == null || dayClosureDate == null) {
+        if (dayClosureIsLocked && dayClosureScopeId != null && dayClosureDate != null) {
+            try {
+                unlockDayClosureViaApiIfLocked(dayClosureScopeId, dayClosureDate);
+                dayClosureIsLocked = false;
+            } catch (RuntimeException e) {
+                ScenarioLogManager.getLogger().warn(
+                        "Could not unlock day closure for scope {} on {}: {}",
+                        dayClosureScopeId,
+                        dayClosureDate,
+                        e.getMessage());
+            }
+        }
+        unlockUiDayClosureLeftByTheScenario();
+    }
+
+    /**
+     * ZMSKVR-42: UI lock leftovers (e.g. failed after month overview) are unlocked via API
+     * using the recorded scope/date — not the current browser page.
+     */
+    private void unlockUiDayClosureLeftByTheScenario() {
+        if (!"true".equals(TestDataHelper.getTestData("day_closure_ui_locked"))) {
+            return;
+        }
+        String scope = TestDataHelper.getTestData("day_closure_ui_scope");
+        String date = TestDataHelper.getTestData("day_closure_ui_date");
+        if (scope == null || date == null || scope.isBlank() || date.isBlank()) {
+            ScenarioLogManager.getLogger().warn(
+                    "UI day closure flagged locked but day_closure_ui_scope/date missing; leaving flag set");
             return;
         }
         try {
-            postDayClosureToggle(dayClosureScopeId, dayClosureDate);
-            dayClosureIsLocked = false;
+            unlockDayClosureViaApiIfLocked(Integer.parseInt(scope), date);
+            TestDataHelper.setTestData("day_closure_ui_locked", "false");
         } catch (RuntimeException e) {
             ScenarioLogManager.getLogger().warn(
-                    "Could not unlock day closure for scope {} on {}: {}",
-                    dayClosureScopeId,
-                    dayClosureDate,
+                    "Could not unlock UI day closure for scope {} on {}: {}",
+                    scope,
+                    date,
                     e.getMessage());
         }
+    }
+
+    private void unlockDayClosureViaApiIfLocked(int scopeId, String date) {
+        AccountCheckout.checkout("scope:" + scopeId + ":day-closure");
+        iAmLoggedInToTheZmsApiAs("appointment_admin");
+        if (!isDayClosureLocked(scopeId, date)) {
+            ScenarioLogManager.getLogger().info(
+                    "Day closure for scope {} on {} already unlocked", scopeId, date);
+            return;
+        }
+        Response toggle = postDayClosureToggle(scopeId, date);
+        Assertions.assertThat(toggle.getStatusCode())
+                .as("cleanup toggle closure scope %d on %s body=%s",
+                        scopeId, date, truncate(toggle.asString(), 500))
+                .isEqualTo(200);
+        JsonNode existing = parseDataNode(toggle).path("existing");
+        Assertions.assertThat(existing.isBoolean())
+                .as("cleanup toggle data.existing must be boolean")
+                .isTrue();
+        Assertions.assertThat(existing.asBoolean())
+                .as("cleanup should leave scope %d on %s unlocked", scopeId, date)
+                .isFalse();
+    }
+
+    private boolean isDayClosureLocked(int scopeId, String date) {
+        String authKey = getOrLoginXAuthKey();
+        Response list = given()
+                .baseUri(apiBaseUri())
+                .header("X-AuthKey", authKey)
+                .queryParam("scopeIds", Integer.toString(scopeId))
+                .queryParam("dateFrom", date)
+                .queryParam("dateUntil", date)
+                .when()
+                .get("/closure/");
+        Assertions.assertThat(list.getStatusCode())
+                .as("GET /closure/ scope %d %s body=%s", scopeId, date, truncate(list.asString(), 500))
+                .isEqualTo(200);
+        JsonNode data = parseDataNode(list);
+        if (data == null) {
+            return false;
+        }
+        if (data.isArray()) {
+            for (JsonNode row : data) {
+                if (scopeId == row.path("scopeId").asInt()
+                        && date.equals(row.path("date").asText())) {
+                    return true;
+                }
+            }
+            return false;
+        }
+        JsonNode items = data.path("items");
+        if (items.isArray()) {
+            for (JsonNode row : items) {
+                if (scopeId == row.path("scopeId").asInt()
+                        && date.equals(row.path("date").asText())) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     private void deleteScenarioProcesses() {
@@ -2548,7 +2635,7 @@ public class ZmsApiSteps {
         Assertions.assertThat(existingNode)
                 .as("closure toggle data.existing")
                 .isNotNull();
-        Assertions.assertThat(existingNode.isBoolean() || existingNode.isNumber())
+        Assertions.assertThat(existingNode.isBoolean())
                 .as("closure toggle data.existing must be boolean, was %s", existingNode.getNodeType())
                 .isTrue();
         boolean existing = existingNode.asBoolean();
