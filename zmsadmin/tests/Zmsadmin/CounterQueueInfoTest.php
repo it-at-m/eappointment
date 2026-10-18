@@ -123,9 +123,18 @@ class CounterQueueInfoTest extends Base
             'ghostworkstationcount' => 2,
             'selecteddate' => '2016-04-01'
         ], []);
-        $this->assertStringContainsString('davon vor nächstem Spontankunden', (string)$response->getBody());
-        $this->assertStringContainsString('Wartezeit für neue Spontankunden', (string)$response->getBody());
-        
+        $body = (string)$response->getBody();
+        $this->assertStringContainsString('davon vor nächstem Spontankunden', $body);
+        $this->assertStringContainsString('Wartezeit für neue Spontankunden', $body);
+        $this->assertStringContainsString('Durchschnittliche Wartezeit von Terminkunden', $body);
+        $this->assertStringContainsString('Durchschnittliche Wartezeit von Spontankunden', $body);
+        $this->assertStringContainsString('Wartende', $body);
+        $this->assertStringContainsString('traffic-light', $body);
+        $this->assertStringContainsString('data-waiting-clients-green-max="10"', $body);
+        $this->assertStringContainsString('data-waiting-clients-yellow-max="20"', $body);
+        $this->assertStringContainsString('data-waiting-clients-orange-max="40"', $body);
+        $this->assertMatchesRegularExpression('/class="traffic-light (green|yellow|orange|red)"/', $body);
+
         $this->assertEquals(200, $response->getStatusCode());
     }
 

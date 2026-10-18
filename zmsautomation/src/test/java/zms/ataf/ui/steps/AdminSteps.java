@@ -1335,6 +1335,21 @@ public class AdminSteps {
         //COUNTER_PROCESSING_STATION_PAGE.checkQueueElementsVisibleWithoutSMS();
     }
 
+    @Then("the average waiting time labels under information are visible.")
+    public void sind_die_durchschnittlichen_wartezeiten_unter_informationen_sichtbar() {
+        COUNTER_SECTION.assertAverageWaitingTimeLabelsVisible();
+    }
+
+    @Then("the waiting traffic light under information is {string}.")
+    public void ist_die_ampel_unter_informationen(String colorClass) {
+        COUNTER_SECTION.assertWaitingTrafficLightClass(colorClass);
+    }
+
+    @When("I reload the counter waiting information.")
+    public void ich_lade_die_tresen_warteinformationen_neu() {
+        COUNTER_SECTION.reloadAndReadWaitingClientsOnCounter();
+    }
+
     @Then("the select-location page opens.")
     public void dann_oeffnet_sich_die_standort_auswaehlen_seite() {
         ADMIN_PAGE.checkForLocationPage();

@@ -1253,6 +1253,82 @@ public class ZmsApiSteps {
         }
     }
 
+    /**
+     * ZMS-3152 / ZMSALT-3381: seed enough walk-ins to hit Ampel bands (green/yellow/orange/red).
+     */
+    @When("I queue {int} walk-ins at scope {int} with service {string} with the X-AuthKey")
+    public void iQueueManyWalkInsAtScopeWithServiceWithTheXAuthKey(int count, int scopeId, String serviceName) {
+        Assertions.assertThat(count).isBetween(1, 50);
+        String authKey = getOrLoginXAuthKey();
+        iUpdateTheWorkstationWithScopeAndCounterWithTheXAuthKey(scopeId, "22");
+        Assertions.assertThat(response.getStatusCode())
+            .as("POST /workstation/ for scope %d body=%s", scopeId, truncate(response.asString(), 1000))
+            .isEqualTo(200);
+        for (int i = 0; i < count; i++) {
+            queueWalkIn(scopeId, serviceName, "Muster Ampel " + i + " " + System.nanoTime(), null);
+            int processId = lastProcess == null ? 0 : lastProcess.path("id").asInt();
+            if (processId > 0 && !scenarioProcessIds.contains(processId)) {
+                scenarioProcessIds.add(processId);
+            }
+        }
+        ScenarioLogManager.getLogger().info(
+                "Queued {} walk-ins at scope {} for Ampel coverage (auth={})",
+                count, scopeId, authKey != null && !authKey.isBlank());
+    }
+
+    @When("I request the scope {int} queue for today with the X-AuthKey")
+    public void iRequestTheScopeQueueForTodayWithTheXAuthKey(int scopeId) {
+        String authKey = getOrLoginXAuthKey();
+        String today = java.time.LocalDate.now(java.time.ZoneId.of("Europe/Berlin")).toString();
+        response = given()
+            .baseUri(apiBaseUri())
+            .header("X-AuthKey", authKey)
+            .queryParam("date", today)
+            .queryParam("resolveReferences", 0)
+        .when()
+            .get("/scope/" + scopeId + "/queue/");
+        CommonApiSteps.setResponse(response);
+        Assertions.assertThat(response.getStatusCode())
+            .as("GET /scope/%d/queue/ body=%s", scopeId, truncate(response.asString(), 1000))
+            .isEqualTo(200);
+    }
+
+    @Then("the scope queue has at least {int} walk-in entries")
+    public void theScopeQueueHasAtLeastWalkInEntries(int expected) {
+        JsonNode data = parseDataNode(response);
+        Assertions.assertThat(data).as("scope queue data").isNotNull();
+        int walkIns = 0;
+        if (data.isArray()) {
+            for (JsonNode entry : data) {
+                if (!entry.path("withAppointment").asBoolean(false)
+                        && !"fake".equals(entry.path("status").asText(""))) {
+                    walkIns++;
+                }
+            }
+        }
+        Assertions.assertThat(walkIns)
+            .as("walk-in entries in scope queue; body=%s", truncate(response.asString(), 1000))
+            .isGreaterThanOrEqualTo(expected);
+    }
+
+    @Then("the Ampel class for {int} waiting clients is {string}")
+    public void theAmpelClassForWaitingClientsIs(int count, String expectedClass) {
+        // Keep in sync with BO\Zmsadmin\Helper\WaitingClientsTrafficLight (ZMS-3152).
+        String actual;
+        if (count <= 10) {
+            actual = "green";
+        } else if (count <= 20) {
+            actual = "yellow";
+        } else if (count <= 40) {
+            actual = "orange";
+        } else {
+            actual = "red";
+        }
+        Assertions.assertThat(actual)
+            .as("Ampel class for %d waiting clients", count)
+            .isEqualTo(expectedClass);
+    }
+
     @When("the appointments created in this scenario are deleted.")
     public void dieInDiesemSzenarioAngelegtenTermineGeloeschtWerden() {
         iDeleteTheProcessesCreatedInThisScenarioWithTheXAuthKey();
