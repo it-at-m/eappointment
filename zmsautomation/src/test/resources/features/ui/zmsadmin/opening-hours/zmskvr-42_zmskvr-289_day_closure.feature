@@ -15,6 +15,7 @@ Feature: An appointment administrator can lock and unlock a whole day
     And I click the opening-hours entry of "Forstenrieder Allee" under authorities and locations.
     And I click day "<heute_tag>" under opening hours.
     Then the opening hours page for the location should be visible.
+    When I ensure the day closure is unlocked.
     And the day-closure banner should show that booking is not locked.
     When I click the day-closure button "Sperren".
     Then the day-closure confirm dialog should contain "Möchten Sie wirklich die Terminbuchung für diesen Tag sperren?"

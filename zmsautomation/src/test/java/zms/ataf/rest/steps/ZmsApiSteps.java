@@ -2541,7 +2541,17 @@ public class ZmsApiSteps {
                         scopeId, resolved, truncate(response.asString(), 800))
                 .isEqualTo(200);
         JsonNode data = parseDataNode(response);
-        boolean existing = data != null && data.path("existing").asBoolean(false);
+        Assertions.assertThat(data)
+                .as("closure toggle response data")
+                .isNotNull();
+        JsonNode existingNode = data.get("existing");
+        Assertions.assertThat(existingNode)
+                .as("closure toggle data.existing")
+                .isNotNull();
+        Assertions.assertThat(existingNode.isBoolean() || existingNode.isNumber())
+                .as("closure toggle data.existing must be boolean, was %s", existingNode.getNodeType())
+                .isTrue();
+        boolean existing = existingNode.asBoolean();
         dayClosureScopeId = scopeId;
         dayClosureDate = resolved;
         dayClosureIsLocked = existing;
@@ -2557,7 +2567,14 @@ public class ZmsApiSteps {
                 .as("day closure existing flag after toggle")
                 .isEqualTo(want);
         JsonNode data = parseDataNode(response);
-        Assertions.assertThat(data.path("existing").asBoolean())
+        Assertions.assertThat(data)
+                .as("closure toggle response data")
+                .isNotNull();
+        JsonNode existingNode = data.get("existing");
+        Assertions.assertThat(existingNode)
+                .as("API data.existing")
+                .isNotNull();
+        Assertions.assertThat(existingNode.asBoolean())
                 .as("API data.existing")
                 .isEqualTo(want);
     }
@@ -2590,12 +2607,17 @@ public class ZmsApiSteps {
                 .body(toJson(freeProcessCalendar(scopeId, rememberedFreeAppointmentRequest, day)))
                 .when()
                 .post("/process/status/free/");
+        Assertions.assertThat(freeResponse.getStatusCode())
+                .as("POST /process/status/free/ for scope %d on %s body=%s",
+                        scopeId, day, truncate(freeResponse.asString(), 800))
+                .isEqualTo(200);
         JsonNode freeList = parseDataArray(freeResponse);
+        Assertions.assertThat(freeList)
+                .as("POST /process/status/free/ data array for scope %d on %s", scopeId, day)
+                .isNotNull();
         long dayStart = day.atStartOfDay(BerlinTime.ZONE).toEpochSecond();
         long dayEnd = dayStart + 86_400L;
-        List<JsonNode> onDay = freeList == null
-                ? List.of()
-                : slotsBetween(freeList, dayStart, dayEnd);
+        List<JsonNode> onDay = slotsBetween(freeList, dayStart, dayEnd);
         if (expectSlots) {
             Assertions.assertThat(onDay)
                     .as("expected free intern slots on %s for scope %d", day, scopeId)

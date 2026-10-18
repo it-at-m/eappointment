@@ -458,6 +458,11 @@ public class AdminSteps {
         AUTHORITIES_AND_LOCATIONS_PAGE.assertOpeningHoursDayPage();
     }
 
+    @When("I ensure the day closure is unlocked.")
+    public void iEnsureTheDayClosureIsUnlocked() {
+        AUTHORITIES_AND_LOCATIONS_PAGE.ensureDayClosureUnlocked();
+    }
+
     @Then("the day-closure banner should show that booking is not locked.")
     public void theDayClosureBannerShouldShowThatBookingIsNotLocked() {
         AUTHORITIES_AND_LOCATIONS_PAGE.assertDayClosureBannerUnlocked();
@@ -486,6 +491,21 @@ public class AdminSteps {
     @When("I cancel the day-closure dialog.")
     public void iCancelTheDayClosureDialog() {
         AUTHORITIES_AND_LOCATIONS_PAGE.abortDayClosureDialog();
+    }
+
+    @After(value = "@ZMSKVR-42 or @ZMSKVR-289", order = 10001)
+    public void unlockDayClosureLeftByUiScenario() {
+        if (!"true".equals(TestDataHelper.getTestData("day_closure_ui_locked"))) {
+            return;
+        }
+        try {
+            AUTHORITIES_AND_LOCATIONS_PAGE.ensureDayClosureUnlocked();
+        } catch (RuntimeException e) {
+            ScenarioLogManager.getLogger().warn(
+                    "Could not unlock UI day closure leftover: {}", e.getMessage());
+        } finally {
+            TestDataHelper.setTestData("day_closure_ui_locked", "false");
+        }
     }
 
     @When("I open the opening-hours month overview.")
