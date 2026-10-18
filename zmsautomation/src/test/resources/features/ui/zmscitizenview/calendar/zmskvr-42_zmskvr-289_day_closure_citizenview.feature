@@ -15,5 +15,9 @@ Feature: Citizen view stays usable after a day is locked and unlocked via API
     When I toggle the day closure for scope 130 on the remembered free appointment day with the X-AuthKey
     Then the day closure existing flag should be false
     Given I open zmscitizenview with jump-in service "1063565" and location "10286848"
+    Then the service combination step should be visible
+    When I continue from the service combination step
+    Then provider checkbox 10286848 should be visible in the citizen view
     When I select office 10286848 in the citizen view
+    And I wait for appointment slots to be ready in the citizen view
     Then the citizen calendar and list should show a bookable day for office 10286848

@@ -18,7 +18,7 @@ Feature: An appointment administrator can lock and unlock a whole day
     When I ensure the day closure is unlocked.
     And the day-closure banner should show that booking is not locked.
     When I click the day-closure button "Sperren".
-    Then the day-closure confirm dialog should contain "Möchten Sie wirklich die Terminbuchung für diesen Tag sperren?"
+    Then the day-closure confirm dialog should contain "Möchten Sie wirklich die Terminbuchung für diesen Tag sperren?".
     When I cancel the day-closure dialog.
     Then the day-closure banner should show that booking is not locked.
     When I click the day-closure button "Sperren".
@@ -32,6 +32,6 @@ Feature: An appointment administrator can lock and unlock a whole day
     And I open the opening-hours accordion "Neue Öffnungszeit".
     Then the opening hours time fields should be empty.
     When I click the day-closure button "Entsperren".
-    Then the day-closure confirm dialog should contain "Möchten Sie wirklich die Terminbuchung für diesen Tag entsperren?"
+    Then the day-closure confirm dialog should contain "Möchten Sie wirklich die Terminbuchung für diesen Tag entsperren?".
     When I confirm the day-closure dialog.
     Then the day-closure banner should show that booking is not locked.
