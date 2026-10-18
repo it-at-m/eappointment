@@ -1,5 +1,5 @@
 #language: en
-@web @zmsadmin @emergency @appointment-admin @ZMS-3212 @ZMSALT-3212 @ZMSALT-3577 @executeLocally
+@web @zmsadmin @emergency @appointment-admin @ZMS-3212 @ZMSALT-3212 @ZMS-3577 @ZMSALT-3577 @executeLocally
 Feature: Notruf button is hidden when logged in as Tresen without Platz-Nr.
   Scope 169 already has Notruffunktion enabled. Login without a Platz-Nr. is Tresen:
   Sachbearbeiterplatz stays hidden and the NOTRUF trigger must not appear.

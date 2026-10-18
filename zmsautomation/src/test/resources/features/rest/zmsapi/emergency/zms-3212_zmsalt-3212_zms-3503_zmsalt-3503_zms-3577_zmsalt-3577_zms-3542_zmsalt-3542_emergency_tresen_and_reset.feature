@@ -1,5 +1,5 @@
 #language: en
-@rest @zmsapi @emergency @appointment-admin @ZMS-3212 @ZMS-3503 @ZMSALT-3212 @ZMSALT-3503 @executeLocally
+@rest @zmsapi @emergency @appointment-admin @ZMS-3212 @ZMSALT-3212 @ZMS-3503 @ZMSALT-3503 @ZMS-3577 @ZMSALT-3577 @ZMS-3542 @ZMSALT-3542 @executeLocally
 Feature: Emergency call via zmsapi — trigger and stop
   Scope 169 (Bürgerbüro Forstenrieder Allee) already has emergencyEnabled=1 in seed data.
   Product behaviour for ending an alarm is already on next (DELETE /scope/{id}/emergency/).
