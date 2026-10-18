@@ -1,9 +1,5 @@
 import $ from 'jquery'
 
-/**
- * ZMS-3503: unchecking Notruffunktion on the Standort form ends an active emergency
- * via DELETE /scope/{id}/emergency/ (proxied as GET from this page).
- */
 class EndEmergencyView {
 
     constructor(element, options) {
@@ -13,11 +9,7 @@ class EndEmergencyView {
         this.data = {}
         this.$ = $(element)
 
-        this.$.find('.emergency__button-end').on('change', (ev) => {
-            if (!ev.currentTarget.checked) {
-                this.endEmergency()
-            }
-        })
+        this.$.find('.emergency__button-end').on('click', this.endEmergency.bind(this))
     }
 
     endEmergency() {
@@ -45,4 +37,4 @@ class EndEmergencyView {
     }
 }
 
-export default EndEmergencyView;
+export default EndEmergencyView;  
