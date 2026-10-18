@@ -418,14 +418,27 @@ class QueueList extends Base implements \BO\Zmsentities\Helper\NoSanitize
         foreach ($this as $entity) {
             $queueListArray[] = $entity;
         }
-        usort($queueListArray, function ($a, $b) use ($order) {
+        // Stable secondary key: keep relative order when callTime ties (same second).
+        $indexed = [];
+        foreach ($queueListArray as $index => $entity) {
+            $indexed[] = ['entity' => $entity, 'index' => $index];
+        }
+        usort($indexed, function ($left, $right) use ($order) {
+            $a = (int) $left['entity']->callTime;
+            $b = (int) $right['entity']->callTime;
             if ($order === 'ascending') {
-                return $a->callTime <=> $b->callTime;
+                $cmp = $a <=> $b;
             } elseif ($order === 'descending') {
-                return $b->callTime <=> $a->callTime;
+                $cmp = $b <=> $a;
+            } else {
+                throw new \InvalidArgumentException("Invalid sort order: $order. Use 'ascending' or 'descending'.");
             }
-            throw new \InvalidArgumentException("Invalid sort order: $order. Use 'ascending' or 'descending'.");
+            return $cmp !== 0 ? $cmp : ($left['index'] <=> $right['index']);
         });
-        return new self($queueListArray);
+        $sorted = [];
+        foreach ($indexed as $row) {
+            $sorted[] = $row['entity'];
+        }
+        return new self($sorted);
     }
 }
