@@ -688,7 +688,7 @@ public void saveLocationChanges() {
         Assert.assertTrue(heading.isDisplayed(), "The opening-hours day page is not visible.");
     }
 
-    /** ZMSKVR-42: day-lock banner above the opening-hours list. */
+    /** ZMSKVR-42: day-lock banner above the opening-hours list (only one may be visible). */
     public void assertDayClosureBannerUnlocked() {
         CONTEXT.set();
         WebElement open = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
@@ -696,8 +696,9 @@ public void saveLocationChanges() {
         Assert.assertTrue(
                 open.getText().contains("NICHT gesperrt"),
                 "Unlocked banner text missing: " + open.getText());
-        new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
-                .until(ExpectedConditions.invisibilityOfElementLocated(By.id("closure-close")));
+        Assert.assertFalse(
+                DRIVER.findElement(By.id("closure-close")).isDisplayed(),
+                "Locked banner must stay hidden while unlocked.");
     }
 
     public void assertDayClosureBannerLocked() {
@@ -707,8 +708,9 @@ public void saveLocationChanges() {
         Assert.assertTrue(
                 close.getText().contains("gesperrt") && !close.getText().contains("NICHT"),
                 "Locked banner text missing: " + close.getText());
-        new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
-                .until(ExpectedConditions.invisibilityOfElementLocated(By.id("closure-open")));
+        Assert.assertFalse(
+                DRIVER.findElement(By.id("closure-open")).isDisplayed(),
+                "Unlocked banner must stay hidden while locked.");
     }
 
     public void clickDayClosureButton(String label) {

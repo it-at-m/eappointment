@@ -31,8 +31,8 @@
             {% endif %}
         {% endfor %}
         {% set toggleUrl = includeUrl ~ '/scope/' ~ scope.id ~ '/availability/day/' ~ dateString ~ '/closure/toggle/' %}
-        {# Use the HTML hidden attribute ([hidden]{display:none}); class "hidden" is not styled in admin.css #}
-        <div id="closure-close" class="message message--warning" {% if not locked %}hidden{% endif %}>
+        {# Inline display:none — .message--* sets display:block and overrides [hidden] / .hidden #}
+        <div id="closure-close" class="message message--warning"{% if not locked %} style="display:none"{% endif %}>
             Die Terminbuchung für diesen Tag ist gesperrt.
             <button type="button"
                     class="button btn js-day-closure-toggle"
@@ -40,7 +40,7 @@
                     data-locked="true"
                     data-toggle-url="{{ toggleUrl }}">Entsperren</button>
         </div>
-        <div id="closure-open" class="message message--info" {% if locked %}hidden{% endif %}>
+        <div id="closure-open" class="message message--info"{% if locked %} style="display:none"{% endif %}>
             Die Terminbuchung für diesen Tag ist NICHT gesperrt.
             <button type="button"
                     class="button btn js-day-closure-toggle"
