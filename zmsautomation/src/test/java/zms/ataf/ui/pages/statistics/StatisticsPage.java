@@ -489,16 +489,40 @@ public class StatisticsPage extends BasePage {
         Assert.assertTrue(
                 current.contains("/report/capacity/scope/"),
                 "Expected Terminkapazität scope URL before selecting year " + yearText + ", was: " + current);
-        String target = current.replaceFirst(
+        // Keep Standort scopes; drop from/to day filters so the year report can render.
+        String path = current.replaceFirst("\\?.*$", "");
+        String target = path.replaceFirst(
                 "/report/capacity/scope/(?:[^/?#]*)?",
                 "/report/capacity/scope/" + yearText);
-        if (!target.endsWith("/") && !target.contains("?")) {
+        if (!target.endsWith("/")) {
             target = target + "/";
+        }
+        String scopesQuery = scopesQueryParams(current);
+        if (!scopesQuery.isEmpty()) {
+            target = target + "?" + scopesQuery;
         }
         ScenarioLogManager.getLogger().info("No year chip for {}; navigating to {}", yearText, target);
         DRIVER.navigate().to(target);
         new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
                 .until(ExpectedConditions.urlContains("/report/capacity/scope/" + yearText));
+    }
+
+    /** Query string with only scopes[…] / scopes%5B…%5D params (no from/to day range). */
+    private static String scopesQueryParams(String url) {
+        int q = url.indexOf('?');
+        if (q < 0 || q + 1 >= url.length()) {
+            return "";
+        }
+        StringBuilder scopes = new StringBuilder();
+        for (String part : url.substring(q + 1).split("&")) {
+            if (part.startsWith("scopes[") || part.startsWith("scopes%5B") || part.startsWith("scopes%5b")) {
+                if (scopes.length() > 0) {
+                    scopes.append('&');
+                }
+                scopes.append(part);
+            }
+        }
+        return scopes.toString();
     }
 
     public void checkIfTheStatisticForTheSelectedMonthIsOpen() {

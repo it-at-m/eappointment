@@ -22,7 +22,7 @@ Feature: Parked appointments show the room number of the last call
 		And I park the appointment.
 		Then the appointment "<TestData.Termin1>" appears under parked appointments.
 		And the parked appointments table has a Zimmernummer column between Nr. and Name.
-		And the parked appointment for customer "<TestData.Kunde1>" shows room number "13".
+		And the parked appointment for customer "<TestData.Kunde1>" shows room number "<TestData.workstation>".
 		When I click the button "Auswahl ändern" in the administration header.
 		And I select for "Standort" the value "Bürgerbüro Orleansplatz (KVR-II/231 KP) Abholung".
 		And I enter in the field "Platz-Nr. oder Tresen" the text "14".
