@@ -79,11 +79,10 @@ class Closure extends \BO\Zmsbackend\Base
         $query = new \BO\Zmsbackend\Availability\Repository\Closure(\BO\Zmsbackend\Query\Base::DELETE);
         $query->addConditionId($closure->getId());
 
-        if (App::$cache) {
-            App::$cache->delete('closuresByScope-' . $closure->scopeId);
-        }
+        $deleted = $this->deleteItem($query);
+        $this->invalidateCaches((int) $closure->scopeId);
 
-        return ($this->deleteItem($query));
+        return $deleted;
     }
 
     public function createOne($scopeId, DateTime $date)
@@ -98,14 +97,33 @@ class Closure extends \BO\Zmsbackend\Base
             )
         );
 
+        $this->writeItem($query);
+        $id = $this->getWriter()->lastInsertId();
+        $this->invalidateCaches((int) $scopeId);
+
+        return $this->readEntity($id);
+    }
+
+    /**
+     * Clear closure list cache and scope caches that embed closures
+     * (scope-{id}-{resolveReferences}, department/cluster lists, in-process static).
+     */
+    protected function invalidateCaches(int $scopeId): void
+    {
+        if ($scopeId < 1) {
+            return;
+        }
+
         if (App::$cache) {
             App::$cache->delete('closuresByScope-' . $scopeId);
         }
 
-        $this->writeItem($query);
-        $id = $this->getWriter()->lastInsertId();
+        $scope = new \BO\Zmsentities\Scope(['id' => $scopeId]);
+        (new \BO\Zmsbackend\Scope\Service\Scope())->removeCacheByContext($scope);
 
-        return $this->readEntity($id);
+        for ($resolveReferences = 0; $resolveReferences <= 3; $resolveReferences++) {
+            unset(\BO\Zmsbackend\Scope\Service\Scope::$cache["{$scopeId}-{$resolveReferences}"]);
+        }
     }
 
     public function readEntity(string|false $id): Entity
