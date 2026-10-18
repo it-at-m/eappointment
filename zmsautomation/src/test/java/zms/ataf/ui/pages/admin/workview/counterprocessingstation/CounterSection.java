@@ -80,6 +80,24 @@ public class CounterSection extends CounterProcessingStationPage {
                 "Ampel orangeMax should come from the central scale.");
     }
 
+    /** ZMS-3152: colour follows Wartende using the central QAppoint thresholds. */
+    public void assertWaitingTrafficLightMatchesCount() {
+        int count = readWaitingClientsOnCounter();
+        String expected;
+        if (count <= 10) {
+            expected = "green";
+        } else if (count <= 20) {
+            expected = "yellow";
+        } else if (count <= 40) {
+            expected = "orange";
+        } else {
+            expected = "red";
+        }
+        ScenarioLogManager.getLogger().info(
+                "Wartende={} → expected Ampel class {}", count, expected);
+        assertWaitingTrafficLightClass(expected);
+    }
+
     private static final By COUNTER_WAITING_COUNT = By.xpath(
             "//h4[contains(@class,'wartende')]/ancestor::li//span[contains(@class,'waiting-count')]");
 

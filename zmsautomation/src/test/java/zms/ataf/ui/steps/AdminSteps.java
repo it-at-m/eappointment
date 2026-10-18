@@ -1345,6 +1345,11 @@ public class AdminSteps {
         COUNTER_SECTION.assertWaitingTrafficLightClass(colorClass);
     }
 
+    @Then("the waiting traffic light under information matches the Wartende count.")
+    public void stimmt_die_ampel_unter_informationen_mit_der_wartenden_zahl() {
+        COUNTER_SECTION.assertWaitingTrafficLightMatchesCount();
+    }
+
     @When("I reload the counter waiting information.")
     public void ich_lade_die_tresen_warteinformationen_neu() {
         COUNTER_SECTION.reloadAndReadWaitingClientsOnCounter();
