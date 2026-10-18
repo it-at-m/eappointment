@@ -1,74 +1,74 @@
 {
   "branch": "test-zms-3152-zmsalt-3381-waiting-traffic-light",
   "branchSlug": "test-zms-3152-zmsalt-3381-waiting-traffic-light",
-  "runId": "39107079388",
-  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/39107079388",
-  "runStartedAt": "2026-10-18T07:16:59Z",
-  "publishedAt": "2026-10-18T07:28:47.155Z",
+  "runId": "39108113268",
+  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/39108113268",
+  "runStartedAt": "2026-10-18T07:33:27Z",
+  "publishedAt": "2026-10-18T07:43:42.076Z",
   "features": {
     "feature-rest-zmsapi-queue-zms-3152-zmsalt-3381-waiting-traffic-light": {
-      "status": "failed",
+      "status": "passed",
       "shard": "custom",
       "browser": "chrome",
       "browsers": {
         "chrome": {
-          "status": "failed",
+          "status": "passed",
           "shard": "custom",
-          "runId": "39107079388",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/39107079388",
-          "runStartedAt": "2026-10-18T07:16:59Z"
+          "runId": "39108113268",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/39108113268",
+          "runStartedAt": "2026-10-18T07:33:27Z"
         },
         "edge": {
-          "status": "failed",
+          "status": "passed",
           "shard": "custom",
-          "runId": "39107079388",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/39107079388",
-          "runStartedAt": "2026-10-18T07:16:59Z"
+          "runId": "39108113268",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/39108113268",
+          "runStartedAt": "2026-10-18T07:33:27Z"
         },
         "firefox": {
-          "status": "failed",
+          "status": "passed",
           "shard": "custom",
-          "runId": "39107079388",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/39107079388",
-          "runStartedAt": "2026-10-18T07:16:59Z"
+          "runId": "39108113268",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/39108113268",
+          "runStartedAt": "2026-10-18T07:33:27Z"
         }
       },
       "rel": "rest/zmsapi/queue/zms-3152_zmsalt-3381_waiting_traffic_light.feature",
-      "runId": "39107079388",
-      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/39107079388",
-      "runStartedAt": "2026-10-18T07:16:59Z"
+      "runId": "39108113268",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/39108113268",
+      "runStartedAt": "2026-10-18T07:33:27Z"
     },
     "feature-ui-zmsadmin-queue-zms-3152-zmsalt-3381-waiting-traffic-light": {
-      "status": "failed",
+      "status": "passed",
       "shard": "custom",
       "browser": "chrome",
       "browsers": {
         "chrome": {
-          "status": "failed",
+          "status": "passed",
           "shard": "custom",
-          "runId": "39107079388",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/39107079388",
-          "runStartedAt": "2026-10-18T07:16:59Z"
+          "runId": "39108113268",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/39108113268",
+          "runStartedAt": "2026-10-18T07:33:27Z"
         },
         "edge": {
-          "status": "failed",
+          "status": "passed",
           "shard": "custom",
-          "runId": "39107079388",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/39107079388",
-          "runStartedAt": "2026-10-18T07:16:59Z"
+          "runId": "39108113268",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/39108113268",
+          "runStartedAt": "2026-10-18T07:33:27Z"
         },
         "firefox": {
-          "status": "failed",
+          "status": "passed",
           "shard": "custom",
-          "runId": "39107079388",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/39107079388",
-          "runStartedAt": "2026-10-18T07:16:59Z"
+          "runId": "39108113268",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/39108113268",
+          "runStartedAt": "2026-10-18T07:33:27Z"
         }
       },
       "rel": "ui/zmsadmin/queue/zms-3152_zmsalt-3381_waiting_traffic_light.feature",
-      "runId": "39107079388",
-      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/39107079388",
-      "runStartedAt": "2026-10-18T07:16:59Z"
+      "runId": "39108113268",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/39108113268",
+      "runStartedAt": "2026-10-18T07:33:27Z"
     }
   }
 }
