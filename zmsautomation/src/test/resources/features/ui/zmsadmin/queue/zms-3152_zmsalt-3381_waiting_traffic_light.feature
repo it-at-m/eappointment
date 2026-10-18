@@ -2,10 +2,9 @@
 Feature: The waiting count under Informationen uses a traffic light scale
 
 	# ZMSALT-3381 covers ZMS-3152.
-	# Tresen Informationen shows average waiting times and colours Wartende
-	# (0–10 green, 11–20 yellow, 21–40 orange, 41+ red via WaitingClientsTrafficLight).
+	# Tresen Informationen already shows averages and colours Wartende
+	# (0–10 green, 11–20 yellow, 21–40 orange, 41+ red). ATAF only asserts that.
 	# Scope 2 Gewerbeamt opens as Tresen without a seat number.
-	# Colour-band boundaries are covered by WaitingClientsTrafficLightTest.
 
 	@web @zmsadmin @queue @clerk @ZMS-3152 @ZMSALT-3152 @ZMSALT-3381 @executeLocally
 	Scenario: Informationen shows waiting averages and an Ampel for Wartende
