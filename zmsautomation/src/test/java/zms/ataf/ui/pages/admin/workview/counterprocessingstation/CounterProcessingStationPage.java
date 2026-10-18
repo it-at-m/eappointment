@@ -375,8 +375,9 @@ public class CounterProcessingStationPage extends AdminPage {
     }
 
     public void isCustomerVisibleInParkingTableByNumber(String number) {
-        String numOnly = number == null ? "" : number.replaceAll("\\D+", "");
-        ScenarioLogManager.getLogger().info("Checking parked list by Nr. (" + numOnly + ")...");
+        String shown = number == null ? "" : number.trim();
+        String numOnly = shown.replaceAll("\\D+", "");
+        ScenarioLogManager.getLogger().info("Checking parked list by Nr. (" + shown + ")...");
     
         CONTEXT.waitForSpinners();
     
@@ -386,15 +387,18 @@ public class CounterProcessingStationPage extends AdminPage {
     
         scrollToCenterByVisibleElement(findElementByLocatorType(APPOINTMENT_PARKED_TABLE_LOCATOR_ID, LocatorType.ID, false));
     
-        // 3rd column (Nr.) = td with 2 preceding siblings
+        // Prefer the full display number (prefix scopes e.g. N3); digits-only as fallback.
+        String nrMatch = shown.matches(".*\\p{L}.*")
+                ? "normalize-space(.)='" + shown + "'"
+                : "(normalize-space(.)='" + shown + "' or normalize-space(.)='" + numOnly + "')";
         By rowByNr = By.xpath(
             "//table[@id='" + APPOINTMENT_PARKED_TABLE_LOCATOR_ID + "']" +
-            "//tbody/tr[td[count(preceding-sibling::td)=2][normalize-space(.)='" + numOnly + "']]");
+            "//tbody/tr[td[count(preceding-sibling::td)=2][" + nrMatch + "]]");
         org.openqa.selenium.WebElement row =
             wait.until(org.openqa.selenium.support.ui.ExpectedConditions.presenceOfElementLocated(rowByNr));
     
         org.testng.Assert.assertTrue(row.isDisplayed(),
-            "Parked row with Nr. '" + numOnly + "' not visible in " + APPOINTMENT_PARKED_TABLE_LOCATOR_ID + "!");
+            "Parked row with Nr. '" + shown + "' not visible in " + APPOINTMENT_PARKED_TABLE_LOCATOR_ID + "!");
     }
 
     public void isCustomerVisibleInParkingTableByName(String customerName) {
@@ -1629,9 +1633,12 @@ public class CounterProcessingStationPage extends AdminPage {
 
     /**
      * ZMSKVR-1113 / ZMSKVR-1182: parked row shows the Platz-Nr. from the call that parked it.
+     * Match Nr. by the full display number first (prefix scopes like N3). Digits-only matching
+     * alone can hit a leftover row when another process shares the numeric suffix.
      */
     public void assertParkedAppointmentShowsRoomNumber(String token, String roomNumber) {
-        String numOnly = token == null ? "" : token.replaceAll("\\D+", "");
+        String shown = token == null ? "" : token.trim();
+        String numOnly = shown.replaceAll("\\D+", "");
         ScenarioLogManager.getLogger()
                 .info("Asserting parked appointment shows expected Zimmernummer");
         CONTEXT.waitForSpinners();
@@ -1639,15 +1646,59 @@ public class CounterProcessingStationPage extends AdminPage {
         WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
         wait.until(ExpectedConditions.visibilityOfElementLocated(parkedTable));
         scrollToCenterByVisibleElement(findElementByLocatorType(APPOINTMENT_PARKED_TABLE_LOCATOR_ID, LocatorType.ID, false));
+        List<WebElement> headers = DRIVER.findElements(
+                By.cssSelector("#" + APPOINTMENT_PARKED_TABLE_LOCATOR_ID + " thead th"));
+        List<String> labels = headers.stream()
+                .map(header -> header.getText().replace('\u00a0', ' ').trim())
+                .toList();
+        int nr = indexOfHeader(labels, "Nr.");
+        int room = indexOfHeader(labels, "Zimmernummer");
+        Assert.assertTrue(nr >= 0, "Parked table missing Nr. column. Headers: " + labels);
+        Assert.assertTrue(room >= 0, "Parked table missing Zimmernummer column. Headers: " + labels);
+        String nrMatch = shown.matches(".*\\p{L}.*")
+                ? "normalize-space(.)='" + shown + "'"
+                : "(normalize-space(.)='" + shown + "' or normalize-space(.)='" + numOnly + "')";
         By roomCell = By.xpath(
                 "//table[@id='" + APPOINTMENT_PARKED_TABLE_LOCATOR_ID + "']"
-                        + "//tbody/tr[td[count(preceding-sibling::td)=2][normalize-space(.)='" + numOnly + "']]"
-                        + "/td[count(preceding-sibling::td)=3]");
+                        + "//tbody/tr[td[count(preceding-sibling::td)=" + nr + "][" + nrMatch + "]]"
+                        + "/td[count(preceding-sibling::td)=" + room + "]");
         WebElement cell = wait.until(ExpectedConditions.visibilityOfElementLocated(roomCell));
         Assert.assertEquals(
                 cell.getText().trim(),
                 roomNumber,
-                "Parked appointment " + numOnly + " must show Zimmernummer " + roomNumber);
+                "Parked appointment " + shown + " must show Zimmernummer " + roomNumber);
+    }
+
+    /**
+     * Same Zimmernummer check, keyed by the unique customer name (avoids Nr. collisions).
+     */
+    public void assertParkedAppointmentForCustomerShowsRoomNumber(String customerName, String roomNumber) {
+        ScenarioLogManager.getLogger()
+                .info("Asserting parked appointment for customer shows expected Zimmernummer");
+        CONTEXT.waitForSpinners();
+        By parkedTable = By.id(APPOINTMENT_PARKED_TABLE_LOCATOR_ID);
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(parkedTable));
+        scrollToCenterByVisibleElement(findElementByLocatorType(APPOINTMENT_PARKED_TABLE_LOCATOR_ID, LocatorType.ID, false));
+        List<WebElement> headers = DRIVER.findElements(
+                By.cssSelector("#" + APPOINTMENT_PARKED_TABLE_LOCATOR_ID + " thead th"));
+        List<String> labels = headers.stream()
+                .map(header -> header.getText().replace('\u00a0', ' ').trim())
+                .toList();
+        int room = indexOfHeader(labels, "Zimmernummer");
+        int name = indexOfHeaderStartsWith(labels, "Name");
+        Assert.assertTrue(room >= 0, "Parked table missing Zimmernummer column. Headers: " + labels);
+        Assert.assertTrue(name >= 0, "Parked table missing Name column. Headers: " + labels);
+        By roomCell = By.xpath(
+                "//table[@id='" + APPOINTMENT_PARKED_TABLE_LOCATOR_ID + "']"
+                        + "//tbody/tr[td[count(preceding-sibling::td)=" + name + "]"
+                        + "[starts-with(normalize-space(.),'" + customerName + "')]]"
+                        + "/td[count(preceding-sibling::td)=" + room + "]");
+        WebElement cell = wait.until(ExpectedConditions.visibilityOfElementLocated(roomCell));
+        Assert.assertEquals(
+                cell.getText().trim(),
+                roomNumber,
+                "Parked appointment for " + customerName + " must show Zimmernummer " + roomNumber);
     }
 
     private static int indexOfHeader(List<String> labels, String expected) {
