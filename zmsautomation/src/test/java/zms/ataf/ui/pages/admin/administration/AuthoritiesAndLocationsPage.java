@@ -1088,15 +1088,19 @@ public void saveLocationChanges() {
     private void clearIntegerInput(String name) {
         ScenarioLogManager.getLogger().info("Clearing integer input {}", name);
         WebElement field = integerInput(name);
+        scrollToCenterByVisibleElement(field);
         moveToElementAction(field);
-        Keys selectAllMod = selectAllModifierKey();
-        new Actions(DRIVER)
-                .click(field)
-                .keyDown(selectAllMod)
-                .sendKeys("a")
-                .keyUp(selectAllMod)
-                .sendKeys(Keys.DELETE)
-                .sendKeys(Keys.TAB)
-                .perform();
+        // Firefox type=number often ignores Ctrl/Cmd+A+Delete and leaves the old value (e.g. 15).
+        // Empty the field via JS then blur so the product onblur handler writes "0".
+        ((JavascriptExecutor) DRIVER).executeScript(
+                "var el = arguments[0];"
+                        + "el.focus();"
+                        + "el.value = '';"
+                        + "el.dispatchEvent(new Event('input', {bubbles: true}));"
+                        + "el.blur();",
+                field);
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(5));
+        wait.withMessage("Integer input " + name + " did not reset to 0 after clear");
+        wait.until(ignored -> "0".equals(integerInputValue(name)));
     }
 }
