@@ -2,6 +2,7 @@
 Feature: Aufrufmonitor shows the newest called waiting number on top
 
 	# ZMSALT-3250 covers ZMS-3213.
+	# Product already sorts by callTime descending in zmscalldisplay; ATAF only.
 	# Newest calls insert at the top (left column, first row); older calls move down.
 	# Seeding uses two clerks so both processes stay status=called.
 
