@@ -332,6 +332,37 @@ public class AdminSteps {
         AUTHORITIES_AND_LOCATIONS_PAGE.clickOnLocationEntry(location);
     }
 
+    @Then("the administration navigation should not show {string}.")
+    public void theAdministrationNavigationShouldNotShow(String label) {
+        ADMIN_PAGE.assertNavigationDoesNotShow(TestDataHelper.transformTestData(label));
+    }
+
+    @Then("the Notruf trigger button should not be visible.")
+    public void theNotrufTriggerButtonShouldNotBeVisible() {
+        ADMIN_PAGE.assertNotrufTriggerNotVisible();
+    }
+
+    @Then("the Notruffunktion checkbox label should contain {string}.")
+    public void theNotruffunktionCheckboxLabelShouldContain(String expected) {
+        AUTHORITIES_AND_LOCATIONS_PAGE.assertNotruffunktionCheckboxLabelContains(
+                TestDataHelper.transformTestData(expected));
+    }
+
+    @Then("the Notruffunktion checkbox should be checked.")
+    public void theNotruffunktionCheckboxShouldBeChecked() {
+        AUTHORITIES_AND_LOCATIONS_PAGE.assertNotruffunktionCheckboxChecked(true);
+    }
+
+    @When("I uncheck the Notruffunktion checkbox.")
+    public void iUncheckTheNotruffunktionCheckbox() {
+        AUTHORITIES_AND_LOCATIONS_PAGE.setNotruffunktionCheckbox(false);
+    }
+
+    @When("I check the Notruffunktion checkbox.")
+    public void iCheckTheNotruffunktionCheckbox() {
+        AUTHORITIES_AND_LOCATIONS_PAGE.setNotruffunktionCheckbox(true);
+    }
+
     @Then("the availability hint field for citizens should be visible on the location form.")
     public void theAvailabilityHintFieldForCitizensShouldBeVisibleOnTheLocationForm() {
         ScenarioLogManager.getLogger()

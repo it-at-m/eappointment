@@ -532,6 +532,13 @@ class Scope extends \BO\Zmsbackend\Base
 
         $departmentId = $this->readDepartmentIdByScopeId($scopeId);
 
+        // ZMS-3503 / ZMSALT-3503: turning off Notruffunktion must end an active emergency.
+        if (!$entity->getPreference('workstation', 'emergencyEnabled', true)) {
+            $entity->status['emergency']['activated'] = 0;
+            $entity->status['emergency']['calledByWorkstation'] = -1;
+            $entity->status['emergency']['acceptedByWorkstation'] = -1;
+        }
+
         $query = new \BO\Zmsbackend\Query\Scope(\BO\Zmsbackend\Query\Base::UPDATE);
         $query->addConditionScopeId($scopeId);
         $values = $query->reverseEntityMapping($entity);
