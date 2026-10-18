@@ -1,12 +1,12 @@
 #language: en
 Feature: A walk-in can be forwarded to another location of the same authority while keeping the original waiting number and note
 
-	# ZMSALT-3541 covers ZMS-3507 / ZMSALT-3507.
+	# ZMS-3507 / ZMSALT-3507 and ZMS-3541 / ZMSALT-3541.
 	# Spontankunden use the same Weiterleiten path as Terminkunden.
 	# The Kundennummer stays the source waiting number; the forward note is shown at the target.
 	# Forstenrieder Allee (169) and Team 1 Serviceschalter (130) belong to one Behörde with disjoint walk-in ranges.
 
-	@web @zmsadmin @rebooking @clerk @ZMS-3507 @ZMSALT-3507 @ZMSALT-3541 @executeLocally
+	@web @zmsadmin @rebooking @clerk @ZMS-3507 @ZMSALT-3507 @ZMS-3541 @ZMSALT-3541 @executeLocally
 	Scenario: Forwarding a walk-in keeps the original waiting number and note at the target location
 		When I open the administration website.
 		And I click the button "Anmelden" in the administration.
