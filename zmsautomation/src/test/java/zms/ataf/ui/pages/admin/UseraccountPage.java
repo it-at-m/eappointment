@@ -235,10 +235,7 @@ public class UseraccountPage extends BasePage {
         if (passwords.size() < 2) {
             return;
         }
-        boolean needsFill = passwords.stream().anyMatch(field -> {
-            String value = field.getAttribute("value");
-            return value == null || value.length() < 6;
-        });
+        boolean needsFill = passwords.stream().anyMatch(field -> passwordFieldValue(field).length() < 6);
         if (!needsFill) {
             return;
         }
@@ -252,10 +249,23 @@ public class UseraccountPage extends BasePage {
         Assert.assertEquals(passwords.size(), 2, "The new-user form does not show password and confirmation.");
         JavascriptExecutor js = (JavascriptExecutor) DRIVER;
         for (WebElement field : passwords) {
+            // Prefer real typing: Firefox password managers / readonly toggles can ignore .value=.
+            try {
+                field.click();
+                field.clear();
+                field.sendKeys(password);
+            } catch (Exception typed) {
+                ScenarioLogManager.getLogger()
+                        .warn("sendKeys on changePassword[] failed ({}); using JS value assign.", typed.toString());
+            }
+            if (passwordFieldValue(field).equals(password)) {
+                continue;
+            }
             js.executeScript(
                     "var input = arguments[0]; var value = arguments[1];"
+                            + "input.removeAttribute('readonly');"
+                            + "input.readOnly = false;"
                             + "input.focus();"
-                            + "input.value = '';"
                             + "input.value = value;"
                             + "input.dispatchEvent(new Event('input', {bubbles:true}));"
                             + "input.dispatchEvent(new Event('change', {bubbles:true}));",
@@ -263,12 +273,22 @@ public class UseraccountPage extends BasePage {
                     password);
         }
         for (WebElement field : passwords) {
-            String value = field.getAttribute("value");
+            // Gecko getAttribute('value') stays at the HTML default (""); read the live property.
+            String value = passwordFieldValue(field);
             Assert.assertTrue(
-                    value != null && value.equals(password),
-                    "Password field did not keep the typed value (got length "
-                            + (value == null ? 0 : value.length())
-                            + ").");
+                    value.equals(password),
+                    "Password field did not keep the typed value (got length " + value.length() + ").");
+        }
+    }
+
+    /** Live input.value — Firefox getAttribute("value") on type=password stays empty. */
+    private String passwordFieldValue(WebElement field) {
+        try {
+            Object live = ((JavascriptExecutor) DRIVER).executeScript("return arguments[0].value || '';", field);
+            return live == null ? "" : String.valueOf(live);
+        } catch (org.openqa.selenium.JavascriptException ignored) {
+            String attr = field.getAttribute("value");
+            return attr == null ? "" : attr;
         }
     }
 
