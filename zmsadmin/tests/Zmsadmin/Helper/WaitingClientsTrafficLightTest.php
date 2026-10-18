@@ -3,6 +3,7 @@
 namespace BO\Zmsadmin\Tests\Helper;
 
 use BO\Zmsadmin\Helper\WaitingClientsTrafficLight;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class WaitingClientsTrafficLightTest extends TestCase
@@ -19,9 +20,7 @@ class WaitingClientsTrafficLightTest extends TestCase
         );
     }
 
-    /**
-     * @dataProvider countToCssClassProvider
-     */
+    #[DataProvider('countToCssClassProvider')]
     public function testCssClassForCount(int $count, string $expectedClass): void
     {
         $this->assertSame($expectedClass, WaitingClientsTrafficLight::cssClassForCount($count));
