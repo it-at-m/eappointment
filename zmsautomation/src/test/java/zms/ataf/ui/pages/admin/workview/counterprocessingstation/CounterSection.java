@@ -40,6 +40,46 @@ public class CounterSection extends CounterProcessingStationPage {
                 "'Wartezeit für neue Spontankunden:' not visible.");
     }
 
+    /** ZMS-3152 / ZMSALT-3381: average waiting times and Wartende Ampel under Informationen. */
+    public void assertAverageWaitingTimeLabelsVisible() {
+        ScenarioLogManager.getLogger().info("Checking average waiting time labels under Informationen...");
+        Assert.assertTrue(
+                isWebElementVisible(DEFAULT_EXPLICIT_WAIT_TIME,
+                        "//h4[contains(normalize-space(.), 'Durchschnittliche Wartezeit von Terminkunden')]",
+                        LocatorType.XPATH, false),
+                "'Durchschnittliche Wartezeit von Terminkunden' not visible.");
+        Assert.assertTrue(
+                isWebElementVisible(DEFAULT_EXPLICIT_WAIT_TIME,
+                        "//h4[contains(normalize-space(.), 'Durchschnittliche Wartezeit von Spontankunden')]",
+                        LocatorType.XPATH, false),
+                "'Durchschnittliche Wartezeit von Spontankunden' not visible.");
+        Assert.assertTrue(
+                isWebElementVisible(DEFAULT_EXPLICIT_WAIT_TIME,
+                        "//h4[contains(@class,'wartende') and contains(normalize-space(.), 'Wartende')]",
+                        LocatorType.XPATH, false),
+                "'Wartende' not visible under Informationen.");
+    }
+
+    public void assertWaitingTrafficLightClass(String expectedClass) {
+        CONTEXT.set();
+        WebElement row = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(ExpectedConditions.visibilityOfElementLocated(
+                        By.cssSelector("li.traffic-light[data-waiting-clients-row]")));
+        String classes = row.getAttribute("class") == null ? "" : row.getAttribute("class");
+        Assert.assertTrue(
+                classes.matches("(?s).*\\b" + expectedClass + "\\b.*"),
+                "Expected traffic-light class \"" + expectedClass + "\" but was \"" + classes + "\".");
+        Assert.assertEquals(
+                row.getAttribute("data-waiting-clients-green-max"), "10",
+                "Ampel greenMax should come from the central scale.");
+        Assert.assertEquals(
+                row.getAttribute("data-waiting-clients-yellow-max"), "20",
+                "Ampel yellowMax should come from the central scale.");
+        Assert.assertEquals(
+                row.getAttribute("data-waiting-clients-orange-max"), "40",
+                "Ampel orangeMax should come from the central scale.");
+    }
+
     private static final By COUNTER_WAITING_COUNT = By.xpath(
             "//h4[contains(@class,'wartende')]/ancestor::li//span[contains(@class,'waiting-count')]");
 

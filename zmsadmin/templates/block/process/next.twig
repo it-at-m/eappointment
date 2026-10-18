@@ -34,19 +34,13 @@
     <ul class="list list--table bordered">
     
         {% set waiting_customers = workstationInfo.waitingClientsEffective|default(0) %}
-        {% set waiting_clients_green_max = 10 %}
-        {% set waiting_clients_yellow_max = 20 %}
-        {% set waiting_clients_orange_max = 40 %}
+        {% set traffic_thresholds = workstationInfo.waitingClientsTrafficLight|default({greenMax: 10, yellowMax: 20, orangeMax: 40}) %}
 
         <li data-waiting-clients-row
-            data-waiting-clients-green-max="{{ waiting_clients_green_max }}"
-            data-waiting-clients-yellow-max="{{ waiting_clients_yellow_max }}"
-            data-waiting-clients-orange-max="{{ waiting_clients_orange_max }}"
-            class="traffic-light {% if waiting_customers >= 0 and waiting_customers <= waiting_clients_green_max %}green
-                {% elseif waiting_customers <= waiting_clients_yellow_max %}yellow
-                {% elseif waiting_customers <= waiting_clients_orange_max %}orange
-                {% else %}red
-                {% endif %}">                        
+            data-waiting-clients-green-max="{{ traffic_thresholds.greenMax }}"
+            data-waiting-clients-yellow-max="{{ traffic_thresholds.yellowMax }}"
+            data-waiting-clients-orange-max="{{ traffic_thresholds.orangeMax }}"
+            class="traffic-light {{ workstationInfo.waitingClientsTrafficLightClass|default('green') }}">
             <div class="cell middle">
             <h4 class="wartende">{% trans %}Wartende{% endtrans %}:</h4>
             </div>

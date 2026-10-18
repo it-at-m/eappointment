@@ -136,17 +136,18 @@
                         </div>
                     </li>
                     
-                    {% set waiting_customers = workstationInfo.waitingClientsEffective %}
-                    <li class="traffic-light {% if waiting_customers >= 0 and waiting_customers <= 10 %}green
-                                {% elseif waiting_customers >= 11 and waiting_customers <= 20 %}yellow
-                                {% elseif waiting_customers >= 21 and waiting_customers <= 40 %}orange
-                                {% elseif waiting_customers >= 41 %}red
-                                {% endif %}">                        
+                    {% set waiting_customers = workstationInfo.waitingClientsEffective|default(0) %}
+                    {% set traffic_thresholds = workstationInfo.waitingClientsTrafficLight|default({greenMax: 10, yellowMax: 20, orangeMax: 40}) %}
+                    <li data-waiting-clients-row
+                        data-waiting-clients-green-max="{{ traffic_thresholds.greenMax }}"
+                        data-waiting-clients-yellow-max="{{ traffic_thresholds.yellowMax }}"
+                        data-waiting-clients-orange-max="{{ traffic_thresholds.orangeMax }}"
+                        class="traffic-light {{ workstationInfo.waitingClientsTrafficLightClass|default('green') }}">
                             <div class="cell middle">
                             <h4 class="wartende">{% trans %}Wartende{% endtrans %}:</h4>
                             </div>
                             <div class="cell right">
-                                <span class="waiting-count">{{ workstationInfo.waitingClientsEffective }}</span>
+                                <span class="waiting-count" data-waiting-clients-effective>{{ waiting_customers }}</span>
                             </div>
                     </li>
 
