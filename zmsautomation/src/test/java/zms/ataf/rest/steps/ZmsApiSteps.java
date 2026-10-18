@@ -77,6 +77,9 @@ public class ZmsApiSteps {
     private String rememberedScopeProviderSource;
     /** Warehouse ticketprinter count before finishing the current E-Kiosk walk-in (ZMSKVR-1126). */
     private Integer rememberedTicketprinterCount;
+    /** Source walk-in Kundennummer before redirect (ZMS-3507 / ZMSALT-3541). */
+    private String rememberedDisplayNumber;
+    private Integer rememberedQueueNumber;
 
     @Before
     public void resetProcessContext() {
@@ -87,6 +90,8 @@ public class ZmsApiSteps {
         rememberedScopeProviderId = null;
         rememberedScopeProviderSource = null;
         rememberedTicketprinterCount = null;
+        rememberedDisplayNumber = null;
+        rememberedQueueNumber = null;
         firstClerkCallResponse = null;
         secondClerkCallResponse = null;
         workstationScopeId = 0;
@@ -1417,8 +1422,32 @@ public class ZmsApiSteps {
         reserveConfirmedAppointment(scopeId, serviceName, familyName, email, amendment, true);
     }
 
+    @When("I remember the last process display number and queue number")
+    public void iRememberTheLastProcessDisplayNumberAndQueueNumber() {
+        Assertions.assertThat(lastProcess)
+            .as("Queue or reserve a process before remembering its waiting number")
+            .isNotNull();
+        rememberedDisplayNumber = lastProcess.path("displayNumber").asText("");
+        Assertions.assertThat(rememberedDisplayNumber)
+            .as("displayNumber of process %s", lastProcess.path("id").asInt())
+            .isNotBlank();
+        rememberedQueueNumber = lastProcess.path("queue").path("number").asInt(0);
+        Assertions.assertThat(rememberedQueueNumber)
+            .as("queue.number of process %s", lastProcess.path("id").asInt())
+            .isPositive();
+    }
+
     @When("I redirect the last process to scope {int} with the X-AuthKey")
     public void iRedirectTheLastProcessToScopeWithTheXAuthKey(int targetScopeId) {
+        redirectLastProcessToScope(targetScopeId, null);
+    }
+
+    @When("I redirect the last process to scope {int} with amendment {string} with the X-AuthKey")
+    public void iRedirectTheLastProcessToScopeWithAmendmentWithTheXAuthKey(int targetScopeId, String amendment) {
+        redirectLastProcessToScope(targetScopeId, amendment);
+    }
+
+    private void redirectLastProcessToScope(int targetScopeId, String amendment) {
         Assertions.assertThat(lastProcess)
             .as("Reserve an appointment before redirecting it")
             .isNotNull();
@@ -1438,6 +1467,9 @@ public class ZmsApiSteps {
             if (appointment.path("scope").isObject()) {
                 ((ObjectNode) appointment.get("scope")).put("id", targetScopeId);
             }
+        }
+        if (amendment != null) {
+            body.put("amendment", amendment);
         }
 
         String authKey = getOrLoginXAuthKey();
@@ -1459,6 +1491,36 @@ public class ZmsApiSteps {
         forgetProcess(originalId);
         trackProcess(createdId, targetScopeId);
         rememberProcess(created);
+    }
+
+    @Then("the last process display number matches the remembered value")
+    public void theLastProcessDisplayNumberMatchesTheRememberedValue() {
+        Assertions.assertThat(lastProcess).as("last process").isNotNull();
+        Assertions.assertThat(rememberedDisplayNumber)
+            .as("Remember displayNumber before redirecting")
+            .isNotBlank();
+        Assertions.assertThat(lastProcess.path("displayNumber").asText(""))
+            .as("displayNumber after redirect; process=%s", lastProcess.path("id").asInt())
+            .isEqualTo(rememberedDisplayNumber);
+    }
+
+    @Then("the last process queue number matches the remembered value")
+    public void theLastProcessQueueNumberMatchesTheRememberedValue() {
+        Assertions.assertThat(lastProcess).as("last process").isNotNull();
+        Assertions.assertThat(rememberedQueueNumber)
+            .as("Remember queue.number before redirecting")
+            .isNotNull();
+        Assertions.assertThat(lastProcess.path("queue").path("number").asInt(0))
+            .as("queue.number after redirect; process=%s", lastProcess.path("id").asInt())
+            .isEqualTo(rememberedQueueNumber);
+    }
+
+    @Then("the last process scope id is {int}")
+    public void theLastProcessScopeIdIs(int scopeId) {
+        Assertions.assertThat(lastProcess).as("last process").isNotNull();
+        Assertions.assertThat(scopeIdOf(lastProcess))
+            .as("scope.id after redirect; process=%s", lastProcess.path("id").asInt())
+            .isEqualTo(scopeId);
     }
 
     @Then("the last process has priority {int}")
