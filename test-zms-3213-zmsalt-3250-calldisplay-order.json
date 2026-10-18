@@ -1,74 +1,74 @@
 {
   "branch": "test-zms-3213-zmsalt-3250-calldisplay-order",
   "branchSlug": "test-zms-3213-zmsalt-3250-calldisplay-order",
-  "runId": "39110782693",
-  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/39110782693",
-  "runStartedAt": "2026-10-18T08:15:59Z",
-  "publishedAt": "2026-10-18T08:26:04.369Z",
+  "runId": "39111562648",
+  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/39111562648",
+  "runStartedAt": "2026-10-18T08:28:17Z",
+  "publishedAt": "2026-10-18T08:38:32.046Z",
   "features": {
     "feature-rest-zmsapi-calldisplay-zms-3213-zmsalt-3250-call-order": {
-      "status": "failed",
+      "status": "passed",
       "shard": "custom",
       "browser": "chrome",
       "browsers": {
         "chrome": {
-          "status": "failed",
+          "status": "passed",
           "shard": "custom",
-          "runId": "39110782693",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/39110782693",
-          "runStartedAt": "2026-10-18T08:15:59Z"
+          "runId": "39111562648",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/39111562648",
+          "runStartedAt": "2026-10-18T08:28:17Z"
         },
         "edge": {
-          "status": "failed",
+          "status": "passed",
           "shard": "custom",
-          "runId": "39110782693",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/39110782693",
-          "runStartedAt": "2026-10-18T08:15:59Z"
+          "runId": "39111562648",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/39111562648",
+          "runStartedAt": "2026-10-18T08:28:17Z"
         },
         "firefox": {
-          "status": "failed",
+          "status": "passed",
           "shard": "custom",
-          "runId": "39110782693",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/39110782693",
-          "runStartedAt": "2026-10-18T08:15:59Z"
+          "runId": "39111562648",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/39111562648",
+          "runStartedAt": "2026-10-18T08:28:17Z"
         }
       },
       "rel": "rest/zmsapi/calldisplay/zms-3213_zmsalt-3250_call_order.feature",
-      "runId": "39110782693",
-      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/39110782693",
-      "runStartedAt": "2026-10-18T08:15:59Z"
+      "runId": "39111562648",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/39111562648",
+      "runStartedAt": "2026-10-18T08:28:17Z"
     },
     "feature-ui-zmscalldisplay-queue-zms-3213-zmsalt-3250-call-order": {
-      "status": "failed",
+      "status": "passed",
       "shard": "custom",
       "browser": "chrome",
       "browsers": {
         "chrome": {
-          "status": "failed",
+          "status": "passed",
           "shard": "custom",
-          "runId": "39110782693",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/39110782693",
-          "runStartedAt": "2026-10-18T08:15:59Z"
+          "runId": "39111562648",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/39111562648",
+          "runStartedAt": "2026-10-18T08:28:17Z"
         },
         "edge": {
-          "status": "failed",
+          "status": "passed",
           "shard": "custom",
-          "runId": "39110782693",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/39110782693",
-          "runStartedAt": "2026-10-18T08:15:59Z"
+          "runId": "39111562648",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/39111562648",
+          "runStartedAt": "2026-10-18T08:28:17Z"
         },
         "firefox": {
-          "status": "failed",
+          "status": "passed",
           "shard": "custom",
-          "runId": "39110782693",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/39110782693",
-          "runStartedAt": "2026-10-18T08:15:59Z"
+          "runId": "39111562648",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/39111562648",
+          "runStartedAt": "2026-10-18T08:28:17Z"
         }
       },
       "rel": "ui/zmscalldisplay/queue/zms-3213_zmsalt-3250_call_order.feature",
-      "runId": "39110782693",
-      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/39110782693",
-      "runStartedAt": "2026-10-18T08:15:59Z"
+      "runId": "39111562648",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/39111562648",
+      "runStartedAt": "2026-10-18T08:28:17Z"
     }
   }
 }
