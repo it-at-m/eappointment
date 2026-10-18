@@ -10,4 +10,5 @@ Feature: Call display queue lists newest calls first
     When I prepare two called walk-ins at scope 2 with service "Zulassung Taxi oder Mietwagen" for call display order with the X-AuthKey
     And I request the call display queue for locations "2" with status called
     Then the call display queue should list the newer call before the older call
-    When I delete the processes created in this scenario with the X-AuthKey
+    When I finish the called walk-ins prepared for call display order with the X-AuthKey
+    And I delete the processes created in this scenario with the X-AuthKey

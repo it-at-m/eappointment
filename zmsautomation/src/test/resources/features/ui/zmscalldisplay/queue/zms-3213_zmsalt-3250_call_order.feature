@@ -12,4 +12,5 @@ Feature: Aufrufmonitor shows the newest called waiting number on top
 		And I open the call display for locations "2" with template "default_counter"
 		Then the call display should be visible
 		And the call display should list waiting numbers newest first for this scenario
-		When I delete the processes created in this scenario with the X-AuthKey
+		When I finish the called walk-ins prepared for call display order with the X-AuthKey
+		And I delete the processes created in this scenario with the X-AuthKey

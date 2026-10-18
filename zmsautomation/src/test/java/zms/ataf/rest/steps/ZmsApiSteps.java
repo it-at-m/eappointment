@@ -2688,37 +2688,59 @@ public class ZmsApiSteps {
     }
 
     private List<String> callDisplayQueueNumbers() {
-        JsonNode data = parseDataNode(response);
         List<String> numbers = new ArrayList<>();
-        if (data == null) {
-            return numbers;
-        }
-        if (data.isArray()) {
-            data.forEach(row -> numbers.add(queueRowNumber(row)));
-        } else if (data.isObject()) {
-            data.fields().forEachRemaining(entry -> numbers.add(queueRowNumber(entry.getValue())));
+        for (JsonNode row : callDisplayQueueRows()) {
+            numbers.add(queueRowNumber(row));
         }
         return numbers.stream().filter(n -> n != null && !n.isBlank()).toList();
     }
 
     private long callTimeForNumber(String number) {
-        JsonNode data = parseDataNode(response);
-        if (data == null) {
-            return 0L;
-        }
-        Iterable<JsonNode> rows = data.isArray()
-            ? data
-            : () -> {
-                List<JsonNode> list = new ArrayList<>();
-                data.fields().forEachRemaining(e -> list.add(e.getValue()));
-                return list.iterator();
-            };
-        for (JsonNode row : rows) {
+        for (JsonNode row : callDisplayQueueRows()) {
             if (number.equals(queueRowNumber(row))) {
                 return row.path("callTime").asLong(0L);
             }
         }
         return 0L;
+    }
+
+    private List<JsonNode> callDisplayQueueRows() {
+        JsonNode data = parseDataNode(response);
+        List<JsonNode> rows = new ArrayList<>();
+        if (data == null) {
+            return rows;
+        }
+        if (data.isArray()) {
+            data.forEach(rows::add);
+        } else if (data.isObject()) {
+            data.properties().forEach(entry -> rows.add(entry.getValue()));
+        }
+        return rows;
+    }
+
+    /**
+     * Finish both prepared called walk-ins via their clerks so DELETE is allowed afterwards.
+     */
+    @When("I finish the called walk-ins prepared for call display order with the X-AuthKey")
+    public void iFinishTheCalledWalkInsPreparedForCallDisplayOrderWithTheXAuthKey() {
+        finishCalledWalkInAsClerk("first", "older");
+        finishCalledWalkInAsClerk("second", "newer");
+    }
+
+    private void finishCalledWalkInAsClerk(String clerk, String label) {
+        String authKey = clerkAuthKeys.get(clerk);
+        Assertions.assertThat(authKey).as("Remember clerk %s before finishing", clerk).isNotBlank();
+        JsonNode process = callDisplayProcessesByLabel.get(label);
+        Assertions.assertThat(process).as("Remember call-display process \"%s\"", label).isNotNull();
+        cachedXAuthKey = authKey;
+        ObjectNode body = process.deepCopy();
+        body.put("status", "finished");
+        response = postFinished(authKey, body);
+        CommonApiSteps.setResponse(response);
+        Assertions.assertThat(response.getStatusCode())
+                .as("clerk %s finish \"%s\" body=%s", clerk, label, truncate(response.asString(), 1000))
+                .isEqualTo(200);
+        rememberProcess(parseDataNode(response));
     }
 
     private static String queueRowNumber(JsonNode row) {
