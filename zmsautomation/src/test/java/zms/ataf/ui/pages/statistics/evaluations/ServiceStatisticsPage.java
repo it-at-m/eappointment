@@ -198,7 +198,9 @@ public class ServiceStatisticsPage extends StatisticsPage {
             return null;
         }
         if (pendingWorkbookName == null) {
-            pendingWorkbookName = newcomers.get(0).getFileName().toString();
+            // Newest first: same period filename is overwritten in-scenario; earliest can be a
+            // stale parallel download (Summe from the previous single-scope export).
+            pendingWorkbookName = newcomers.get(newcomers.size() - 1).getFileName().toString();
             pendingWorkbookSize = -1;
         }
         Path locked = downloads.resolve(pendingWorkbookName);
@@ -223,7 +225,7 @@ public class ServiceStatisticsPage extends StatisticsPage {
             return null;
         }
         if (pendingWorkbookName == null) {
-            pendingWorkbookName = newcomers.get(0).getName();
+            pendingWorkbookName = newcomers.get(newcomers.size() - 1).getName();
             pendingWorkbookSize = -1;
         }
         HasDownloads.DownloadedFile locked = ((HasDownloads) DRIVER).getDownloadedFiles().stream()
