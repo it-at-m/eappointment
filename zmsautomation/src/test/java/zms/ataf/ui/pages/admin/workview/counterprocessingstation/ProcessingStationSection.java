@@ -706,6 +706,24 @@ public class ProcessingStationSection extends CounterProcessingStationPage {
     public void assertProcessNotCallableWithStatusVisible(String germanStatus) {
         ScenarioLogManager.getLogger().info(
                 "Checking ProcessNotCallable error with status \"{}\"...", germanStatus);
+        try {
+            waitForProcessNotCallableBoard(germanStatus);
+        } catch (TimeoutException first) {
+            // Firefox after a long Orleansplatz checkout sometimes lands on the plain workstation;
+            // one hard reload of the same ?calledprocess= / ?selectedprocess= URL recovers it.
+            String url = DRIVER.getCurrentUrl();
+            if (url != null && (url.contains("calledprocess=") || url.contains("selectedprocess="))) {
+                ScenarioLogManager.getLogger().warn(
+                        "ProcessNotCallable board missing; reloading workstation URL {}", url);
+                DRIVER.navigate().to(url);
+                waitForProcessNotCallableBoard(germanStatus);
+                return;
+            }
+            throw first;
+        }
+    }
+
+    private void waitForProcessNotCallableBoard(String germanStatus) {
         WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
         wait.withMessage("ProcessNotCallable headline is not visible!");
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(

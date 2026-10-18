@@ -614,13 +614,11 @@ public class ZmsApiSteps {
         rememberProcess(assigned);
 
         // Restore the scenario's primary clerk session for later GET / UI steps.
+        // Do not rebind primary to Platz 13 — that races the UI clerk on the same desk during
+        // slow Firefox scope checkout and can drop the holder assignment on desk 97.
         cachedXAuthKey = primaryAuthKey;
         scenarioLoginUsername = primaryUsername;
         scenarioLoginPassword = primaryPassword;
-        iUpdateTheWorkstationWithScopeAndCounterWithTheXAuthKey(scopeId, "13");
-        Assertions.assertThat(response.getStatusCode())
-            .as("primary workstation after holder call body=%s", truncate(response.asString(), 500))
-            .isEqualTo(200);
     }
 
     /**

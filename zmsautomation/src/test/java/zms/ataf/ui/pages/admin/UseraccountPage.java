@@ -242,7 +242,9 @@ public class UseraccountPage extends BasePage {
             } catch (StaleElementReferenceException ignored) {
                 return false;
             }
-            if (bodyText.contains(DEPARTMENT_REQUIRED) || bodyText.contains(INPUT_ERROR)) {
+            // Require the department message itself — INPUT_ERROR alone can appear a tick earlier
+            // on Firefox and made the wait succeed before Behörde text was painted.
+            if (bodyText.contains(DEPARTMENT_REQUIRED)) {
                 return true;
             }
             if (!driver.findElements(departmentFieldError).isEmpty()) {
