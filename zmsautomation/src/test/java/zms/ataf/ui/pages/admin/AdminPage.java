@@ -101,8 +101,12 @@ public class AdminPage extends BasePage {
             WebElement kcLogin = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
                     .until(ExpectedConditions.elementToBeClickable(By.id("kc-login")));
             ((JavascriptExecutor) DRIVER).executeScript("arguments[0].click();", kcLogin);
+            // Restored workstation sessions skip the scope form and land on the queue header.
             new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
-                    .until(ExpectedConditions.presenceOfElementLocated(ready));
+                    .until(ExpectedConditions.or(
+                            ExpectedConditions.presenceOfElementLocated(ready),
+                            ExpectedConditions.presenceOfElementLocated(
+                                    By.cssSelector(HEADER_CHANGE_SELECTION_LOCATOR))));
             ScenarioLogManager.getLogger().info("SSO login submitted successfully.");
         } catch (Exception e) {
             ScenarioLogManager.getLogger().error(e.getMessage(), e);
@@ -122,6 +126,7 @@ public class AdminPage extends BasePage {
 
     public void selectLocation(String location) {
         CONTEXT.set();
+        ensureScopeSelectionForm();
         ScenarioLogManager.getLogger().info("Trying to select location \"" + location + "\"");
         AccountCheckout.checkout("scope:" + location);
         selectDropDownListValueByVisibleText(DEFAULT_EXPLICIT_WAIT_TIME, "scope", LocatorType.NAME, location);
@@ -135,6 +140,7 @@ public class AdminPage extends BasePage {
      */
     public void selectLocationByScopeId(int scopeId) {
         CONTEXT.set();
+        ensureScopeSelectionForm();
         String scopeValue = Integer.toString(scopeId);
         WebElement selectEl = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
                 .until(ExpectedConditions.presenceOfElementLocated(By.name("scope")));
@@ -197,6 +203,17 @@ public class AdminPage extends BasePage {
         }
         ScenarioLogManager.getLogger().info("Header 'Auswahl ändern' not visible, using nav link 'Standort auswählen'");
         clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, NAV_SELECT_LOCATION_LOCATOR, LocatorType.XPATH, true, CONTEXT);
+    }
+
+    /** Opens the Standort form when SSO restored an existing workstation session. */
+    private void ensureScopeSelectionForm() {
+        if (!DRIVER.findElements(By.name("scope")).isEmpty()) {
+            return;
+        }
+        ScenarioLogManager.getLogger().info("Scope form missing after login; opening Standort selection.");
+        clickInHeaderOnChangeSelectionButton();
+        new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(ExpectedConditions.presenceOfElementLocated(By.name("scope")));
     }
 
     public void clickInNavigationOnOverallCalendar() {

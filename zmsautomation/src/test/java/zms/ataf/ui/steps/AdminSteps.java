@@ -1781,6 +1781,12 @@ public class AdminSteps {
                 TestDataHelper.transformTestData(termin), TestDataHelper.transformTestData(roomNumber));
     }
 
+    @Then("the parked appointment for customer {string} shows room number {string}.")
+    public void theParkedAppointmentForCustomerShowsRoomNumber(String customer, String roomNumber) {
+        COUNTER_PROCESSING_STATION_PAGE.assertParkedAppointmentForCustomerShowsRoomNumber(
+                TestDataHelper.transformTestData(customer), TestDataHelper.transformTestData(roomNumber));
+    }
+
     @Given("the finished appointment table is displayed.")
     public void sieDieFertigeTermintabelleAnzeigen() {
         COUNTER_PROCESSING_STATION_PAGE.showTheFinishedAppointmentTable();
