@@ -72,6 +72,12 @@ public class ZmsApiSteps {
     private Integer historyAvailabilityId;
     private int historyScopeId;
     private boolean lastProcessDeleted;
+    /** ZMSKVR-42: unlock in @After if the scenario left a day locked. */
+    private Integer dayClosureScopeId;
+    private String dayClosureDate;
+    private boolean dayClosureIsLocked;
+    private String rememberedFreeAppointmentDate;
+    private JsonNode rememberedFreeAppointmentRequest;
     /** Provider id before a locked scope update (ZMSKVR-1345). */
     private String rememberedScopeProviderId;
     private String rememberedScopeProviderSource;
@@ -99,10 +105,16 @@ public class ZmsApiSteps {
         historyAvailabilityId = null;
         historyScopeId = 0;
         lastProcessDeleted = false;
+        dayClosureScopeId = null;
+        dayClosureDate = null;
+        dayClosureIsLocked = false;
+        rememberedFreeAppointmentDate = null;
+        rememberedFreeAppointmentRequest = null;
     }
 
     @After
     public void deleteOpeningHoursLeftByTheScenario() {
+        unlockDayClosureLeftByTheScenario();
         Integer id = createdAvailabilityId;
         createdAvailabilityId = null;
         if (id != null) {
@@ -118,6 +130,22 @@ public class ZmsApiSteps {
         }
         deleteScenarioProcesses();
         deleteLastProcessIfStillOpen();
+    }
+
+    private void unlockDayClosureLeftByTheScenario() {
+        if (!dayClosureIsLocked || dayClosureScopeId == null || dayClosureDate == null) {
+            return;
+        }
+        try {
+            postDayClosureToggle(dayClosureScopeId, dayClosureDate);
+            dayClosureIsLocked = false;
+        } catch (RuntimeException e) {
+            ScenarioLogManager.getLogger().warn(
+                    "Could not unlock day closure for scope {} on {}: {}",
+                    dayClosureScopeId,
+                    dayClosureDate,
+                    e.getMessage());
+        }
     }
 
     private void deleteScenarioProcesses() {
@@ -2452,6 +2480,159 @@ public class ZmsApiSteps {
                 .as("DELETE /availability/%d/", id)
                 .isEqualTo(200);
         }
+    }
+
+    /**
+     * ZMSKVR-42: remember the first future day with intern free slots so day-lock
+     * can be asserted against a concrete date (Terminkunden).
+     */
+    @When("I remember a free appointment day for scope {int} and service {string} with the X-AuthKey")
+    public void iRememberAFreeAppointmentDayForScopeAndService(int scopeId, String serviceName) {
+        AccountCheckout.checkout("scope:" + scopeId + ":day-closure");
+        String authKey = getOrLoginXAuthKey();
+        JsonNode request = findScopeRequestByName(scopeId, serviceName, authKey);
+        Assertions.assertThat(request.path("name").asText("").toLowerCase(Locale.ROOT))
+                .as("scope %d request list should include %s", scopeId, serviceName)
+                .contains(serviceName.toLowerCase(Locale.ROOT));
+        long startOfTomorrow = BerlinTime.today()
+                .plusDays(1)
+                .atStartOfDay(BerlinTime.ZONE)
+                .toEpochSecond();
+        JsonNode freeList = fetchFreeProcessesLookingAhead(scopeId, request, authKey, startOfTomorrow);
+        List<JsonNode> candidates = slotsBetween(freeList, startOfTomorrow, startOfTomorrow + 14L * 86_400L);
+        Assertions.assertThat(candidates)
+                .as("scope %d needs an intern slot on a future calendar day", scopeId)
+                .isNotEmpty();
+        long appointment = candidates.get(0).path("appointments").path(0).path("date").asLong();
+        LocalDate day = Instant.ofEpochSecond(appointment).atZone(BerlinTime.ZONE).toLocalDate();
+        rememberedFreeAppointmentDate = day.toString();
+        rememberedFreeAppointmentRequest = request;
+        TestDataHelper.setTestData("day_closure_date", rememberedFreeAppointmentDate);
+        TestDataHelper.setTestData("day_closure_day", Integer.toString(day.getDayOfMonth()));
+        ScenarioLogManager.getLogger().info(
+                "Remembered free appointment day {} for scope {}", rememberedFreeAppointmentDate, scopeId);
+    }
+
+    @When("I toggle the day closure for scope {int} on the remembered free appointment day with the X-AuthKey")
+    public void iToggleTheDayClosureForScopeOnTheRememberedFreeAppointmentDay(int scopeId) {
+        Assertions.assertThat(rememberedFreeAppointmentDate)
+                .as("Call 'I remember a free appointment day…' first")
+                .isNotBlank();
+        iToggleTheDayClosureForScopeOnDate(scopeId, rememberedFreeAppointmentDate);
+    }
+
+    @When("I toggle the day closure for scope {int} on the remembered day-closure date with the X-AuthKey")
+    public void iToggleTheDayClosureForScopeOnTheRememberedDayClosureDate(int scopeId) {
+        String date = TestDataHelper.getTestData("day_closure_date");
+        Assertions.assertThat(date)
+                .as("day_closure_date from a remember step")
+                .isNotBlank();
+        iToggleTheDayClosureForScopeOnDate(scopeId, date);
+    }
+
+    @When("I toggle the day closure for scope {int} on date {string} with the X-AuthKey")
+    public void iToggleTheDayClosureForScopeOnDate(int scopeId, String date) {
+        AccountCheckout.checkout("scope:" + scopeId + ":day-closure");
+        String resolved = resolveDayClosureDate(date);
+        response = postDayClosureToggle(scopeId, resolved);
+        CommonApiSteps.setResponse(response);
+        Assertions.assertThat(response.getStatusCode())
+                .as("POST /scope/%d/availability/%s/closure/toggle/ body=%s",
+                        scopeId, resolved, truncate(response.asString(), 800))
+                .isEqualTo(200);
+        JsonNode data = parseDataNode(response);
+        boolean existing = data != null && data.path("existing").asBoolean(false);
+        dayClosureScopeId = scopeId;
+        dayClosureDate = resolved;
+        dayClosureIsLocked = existing;
+        TestDataHelper.setTestData("day_closure_existing", Boolean.toString(existing));
+        ScenarioLogManager.getLogger().info(
+                "Day closure for scope {} on {} existing={}", scopeId, resolved, existing);
+    }
+
+    @Then("the day closure existing flag should be {word}")
+    public void theDayClosureExistingFlagShouldBe(String expected) {
+        boolean want = Boolean.parseBoolean(expected);
+        Assertions.assertThat(dayClosureIsLocked)
+                .as("day closure existing flag after toggle")
+                .isEqualTo(want);
+        JsonNode data = parseDataNode(response);
+        Assertions.assertThat(data.path("existing").asBoolean())
+                .as("API data.existing")
+                .isEqualTo(want);
+    }
+
+    @Then("scope {int} should have no free appointment slots on the remembered day with the X-AuthKey")
+    public void scopeShouldHaveNoFreeAppointmentSlotsOnTheRememberedDay(int scopeId) {
+        assertFreeSlotsOnRememberedDay(scopeId, false);
+    }
+
+    @Then("scope {int} should have free appointment slots on the remembered day with the X-AuthKey")
+    public void scopeShouldHaveFreeAppointmentSlotsOnTheRememberedDay(int scopeId) {
+        assertFreeSlotsOnRememberedDay(scopeId, true);
+    }
+
+    private void assertFreeSlotsOnRememberedDay(int scopeId, boolean expectSlots) {
+        Assertions.assertThat(rememberedFreeAppointmentDate)
+                .as("remembered free appointment day")
+                .isNotBlank();
+        Assertions.assertThat(rememberedFreeAppointmentRequest)
+                .as("remembered free appointment request")
+                .isNotNull();
+        String authKey = getOrLoginXAuthKey();
+        LocalDate day = LocalDate.parse(rememberedFreeAppointmentDate);
+        Response freeResponse = given()
+                .baseUri(apiBaseUri())
+                .header("X-AuthKey", authKey)
+                .contentType("application/json")
+                .queryParam("slotType", "intern")
+                .queryParam("slotsRequired", 0)
+                .body(toJson(freeProcessCalendar(scopeId, rememberedFreeAppointmentRequest, day)))
+                .when()
+                .post("/process/status/free/");
+        JsonNode freeList = parseDataArray(freeResponse);
+        long dayStart = day.atStartOfDay(BerlinTime.ZONE).toEpochSecond();
+        long dayEnd = dayStart + 86_400L;
+        List<JsonNode> onDay = freeList == null
+                ? List.of()
+                : slotsBetween(freeList, dayStart, dayEnd);
+        if (expectSlots) {
+            Assertions.assertThat(onDay)
+                    .as("expected free intern slots on %s for scope %d", day, scopeId)
+                    .isNotEmpty();
+        } else {
+            Assertions.assertThat(onDay)
+                    .as("expected no free intern slots on locked day %s for scope %d", day, scopeId)
+                    .isEmpty();
+        }
+    }
+
+    private Response postDayClosureToggle(int scopeId, String date) {
+        String authKey = getOrLoginXAuthKey();
+        // AvailabilityClosureToggle rejects an empty JSON body.
+        ObjectNode body = MAPPER.createObjectNode();
+        body.put("id", 0);
+        return given()
+                .baseUri(apiBaseUri())
+                .header("X-AuthKey", authKey)
+                .contentType("application/json")
+                .body(toJson(body))
+                .when()
+                .post("/scope/" + scopeId + "/availability/" + date + "/closure/toggle/");
+    }
+
+    private String resolveDayClosureDate(String date) {
+        if (date == null || date.isBlank() || "<morgen>".equals(date) || "tomorrow".equalsIgnoreCase(date)) {
+            return BerlinTime.today().plusDays(1).toString();
+        }
+        if ("<heute>".equals(date) || "today".equalsIgnoreCase(date)) {
+            return BerlinTime.today().toString();
+        }
+        if ("<remembered>".equals(date) || "remembered".equalsIgnoreCase(date)) {
+            Assertions.assertThat(rememberedFreeAppointmentDate).isNotBlank();
+            return rememberedFreeAppointmentDate;
+        }
+        return TestDataHelper.transformTestData(date);
     }
 
     @When("I request a ticketprinter button list {string}")
