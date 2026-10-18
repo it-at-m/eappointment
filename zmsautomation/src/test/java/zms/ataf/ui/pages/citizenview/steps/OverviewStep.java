@@ -622,10 +622,12 @@ public final class OverviewStep {
     public void assertOverviewServiceWithCount(int serviceId, int count, String serviceName) {
         context.set();
         String text = visibleServiceOrSubserviceSummaryText(serviceId);
-        String countPrefix = count + "x";
+        // Bound the digits so "2x" does not match "12x".
         Assert.assertTrue(
-                text.contains(countPrefix),
-                "Expected count prefix \"" + countPrefix + "\" for service id " + serviceId + " actual=" + text);
+                java.util.regex.Pattern.compile("(?<!\\d)" + count + "x")
+                        .matcher(text)
+                        .find(),
+                "Expected count prefix \"" + count + "x\" for service id " + serviceId + " actual=" + text);
         Assert.assertTrue(
                 text.contains(serviceName),
                 "Expected service name in summary for id " + serviceId + ": " + serviceName + " actual=" + text);

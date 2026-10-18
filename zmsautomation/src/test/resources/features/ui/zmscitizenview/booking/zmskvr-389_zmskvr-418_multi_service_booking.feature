@@ -2,13 +2,14 @@
 @web @zmscitizenview @booking @citizen @ZMSKVR-389 @ZMSKVR-418 @executeLocally @jumpin
 Feature: Multi-service booking lists main and sub services with counts
   As a citizen
-  I want combined Dienstleistungen with their counts on Leistung, Übersicht, confirm, rebook, and cancel
-  So that every booked service stays visible through the full guest booking flow
+  I want combined Dienstleistungen with their counts on Leistung, Übersicht, confirm, and rebook
+  So that every booked service stays visible through the guest booking flow
 
   # ZMSKVR-389 (product): combination must open the calendar.
   # ZMSKVR-418 (test): main + sub services with Anzahl at each step where they appear.
   # Reisepass 1063453 (count 2) + Wohnsitzanmeldung 1063475 (count 1) at Hauptkalender 10489.
   # Guest rebooking confirms without a second activation mail (ZMSKVR-353).
+  # Cancel with service counts is covered by the citizenapi twin feature.
 
   Background:
     Given the Citizen API is available
@@ -16,7 +17,7 @@ Feature: Multi-service booking lists main and sub services with counts
     Then the response status code should be 200
     And the response should contain offices and services
 
-  Scenario: Combined services stay listed with counts through activate, rebook, and cancel
+  Scenario: Combined services stay listed with counts through activate and rebook
     Given I open zmscitizenview with jump-in service "1063453" and location "10489"
     Then the service combination step should be visible
     And the service counter for "Reisepass" should still be 1

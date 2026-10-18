@@ -219,8 +219,9 @@ public class ZmsApiMailSteps {
 
     /**
      * ZMSKVR-418: confirmation mail lists each booked service with its count.
-     * Stock templates use {@code Anzahl: N}; Munich templates use {@code Nx Name}.
-     * CSV form {@code Name:count, Name:count}.
+     * Stock templates use {@code Name … Anzahl: N}; Munich templates use {@code Nx Name}.
+     * CSV form {@code Name:count, Name:count}. Name and count must appear in the same entry
+     * so swapped counts fail.
      */
     @Then("the confirmation mail should list services with counts {string}")
     public void theConfirmationMailShouldListServicesWithCounts(String nameCountCsv) {
@@ -245,18 +246,23 @@ public class ZmsApiMailSteps {
                     .isGreaterThan(0);
             String name = trimmed.substring(0, colon).trim();
             String count = trimmed.substring(colon + 1).trim();
-            Assertions.assertThat(collapsed)
-                    .as("confirmation mail for process %s should name service %s", booking.getProcessId(), name)
-                    .contains(name);
-            boolean anzahlForm = collapsed.contains("Anzahl: " + count);
-            boolean compactForm = collapsed.contains(count + "x") && collapsed.contains(name);
-            Assertions.assertThat(anzahlForm || compactForm)
+            Pattern compact =
+                    Pattern.compile(
+                            "(?<!\\d)" + Pattern.quote(count) + "x\\s*(?:<[^>]+>\\s*)*"
+                                    + Pattern.quote(name),
+                            Pattern.CASE_INSENSITIVE);
+            Pattern anzahl =
+                    Pattern.compile(
+                            Pattern.quote(name) + ".{0,240}?Anzahl:\\s*" + Pattern.quote(count)
+                                    + "(?!\\d)",
+                            Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+            Assertions.assertThat(compact.matcher(collapsed).find() || anzahl.matcher(collapsed).find())
                     .as(
-                            "confirmation mail for process %s should show count %s for %s "
-                                    + "(Anzahl: N or Nx). html=%s",
+                            "confirmation mail for process %s should pair %s with count %s "
+                                    + "(Nx Name or Name…Anzahl: N). html=%s",
                             booking.getProcessId(),
-                            count,
                             name,
+                            count,
                             abbreviate(html))
                     .isTrue();
         }
