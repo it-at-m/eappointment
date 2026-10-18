@@ -119,6 +119,24 @@ class ScopeTest extends \BO\Zmsbackend\Tests\Service\Base
         $this->assertEquals($entity->status['emergency']['acceptedByWorkstation'], '123');
     }
 
+    /** ZMS-3503: saving a scope with Notruffunktion off clears an active emergency. */
+    public function testUpdateEntityClearsEmergencyWhenDisabled()
+    {
+        $query = new Query();
+        $entity = $query->readEntity(141, 1);
+        $previousEnabled = $entity->getPreference('workstation', 'emergencyEnabled', true);
+        $entity->status['emergency']['activated'] = 1;
+        $entity->status['emergency']['calledByWorkstation'] = '5';
+        $entity->status['emergency']['acceptedByWorkstation'] = -1;
+        $entity->preferences['workstation']['emergencyEnabled'] = '0';
+        $query->updateEntity(141, $entity, 1);
+        $entity = $query->readEntity(141, 1, true);
+        $this->assertEquals(0, (int) $entity->toProperty()->status->emergency->activated->get(0));
+
+        $entity->preferences['workstation']['emergencyEnabled'] = $previousEnabled ? '1' : '0';
+        $query->updateEntity(141, $entity, 1);
+    }
+
     public function testReadUpdatedWaitingNumber()
     {
         $query = new Query();

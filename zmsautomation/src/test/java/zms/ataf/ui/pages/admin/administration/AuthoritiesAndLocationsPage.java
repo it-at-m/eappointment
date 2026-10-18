@@ -1002,6 +1002,51 @@ public void saveLocationChanges() {
         Assert.assertTrue(success, "Expected Standort save success banner or success=scope_saved URL.");
     }
 
+    /** ZMS-3503: Notruffunktion checkbox on the Standort form. */
+    public void assertNotruffunktionCheckboxLabelContains(String expected) {
+        CONTEXT.set();
+        WebElement label = notruffunktionCheckboxLabel();
+        Assert.assertTrue(
+                label.getText().replace('\n', ' ').contains(expected),
+                "Notruffunktion label missing explanation. was: " + label.getText());
+    }
+
+    public void assertNotruffunktionCheckboxChecked(boolean expectedChecked) {
+        CONTEXT.set();
+        WebElement box = notruffunktionCheckbox();
+        Assert.assertEquals(
+                box.isSelected(),
+                expectedChecked,
+                "Notruffunktion checkbox checked=" + box.isSelected());
+    }
+
+    public void setNotruffunktionCheckbox(boolean checked) {
+        CONTEXT.set();
+        WebElement box = notruffunktionCheckbox();
+        if (box.isSelected() != checked) {
+            box.click();
+        }
+        Assert.assertEquals(box.isSelected(), checked, "Notruffunktion checkbox did not toggle.");
+    }
+
+    private WebElement notruffunktionCheckbox() {
+        return new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(ExpectedConditions.elementToBeClickable(
+                        By.cssSelector("input[name='preferences[workstation][emergencyEnabled]']")));
+    }
+
+    private WebElement notruffunktionCheckboxLabel() {
+        WebElement box = notruffunktionCheckbox();
+        String id = box.getAttribute("id");
+        if (id != null && !id.isBlank()) {
+            List<WebElement> byFor = DRIVER.findElements(By.cssSelector("label[for='" + id + "']"));
+            if (!byFor.isEmpty()) {
+                return byFor.get(0);
+            }
+        }
+        return box.findElement(By.xpath("./ancestor::label[1]"));
+    }
+
     public void openDepartmentForEditing(String departmentName) {
         ScenarioLogManager.getLogger()
                 .info("Opening department {} for editing under Behörden und Standorte", departmentName);
