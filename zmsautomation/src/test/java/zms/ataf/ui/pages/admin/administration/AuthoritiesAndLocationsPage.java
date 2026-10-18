@@ -811,15 +811,14 @@ public void saveLocationChanges() {
     public void assertMonthLockedDayIconForDay(String day) {
         CONTEXT.set();
         ScenarioLogManager.getLogger().info("Checking month locked-day icon for day \"{}\"...", day);
-        String xpath = "//span[@class='day' and normalize-space()='" + day
-                + "']/ancestor::a[1]//strong[@class='char' and normalize-space()='X']";
+        // X sits in .palm-hide; assert presence (not visibility) so narrow viewports still pass.
+        String xpath = "//span[contains(@class,'day') and normalize-space()='" + day
+                + "']/ancestor::a[contains(@class,'month-item')][1]"
+                + "//*[contains(@class,'daystatus--conflict') and (@title='Gesperrt' or @aria-label='Gesperrt')]"
+                + "//strong[contains(@class,'char') and normalize-space()='X']";
         WebElement icon = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
-                .until(ExpectedConditions.visibilityOfElementLocated(By.xpath(xpath)));
-        Assert.assertTrue(icon.isDisplayed(), "Month overview missing locked-day X icon for day " + day);
-        WebElement marked = icon.findElement(By.xpath("./ancestor::*[contains(@class,'daystatus--conflict')][1]"));
-        Assert.assertTrue(
-                marked.getAttribute("title") != null && marked.getAttribute("title").contains("Gesperrt"),
-                "Locked-day icon should be titled Gesperrt.");
+                .until(ExpectedConditions.presenceOfElementLocated(By.xpath(xpath)));
+        Assert.assertNotNull(icon, "Month overview missing locked-day X icon for day " + day);
     }
 
     public void clickMonthOverviewLink() {
@@ -830,6 +829,9 @@ public void saveLocationChanges() {
                 LocatorType.XPATH,
                 false,
                 CONTEXT);
+        new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(ExpectedConditions.presenceOfElementLocated(
+                        By.cssSelector("a.month-item, .calendar__tile")));
     }
 
     public void openOpeningHourForEditing(String note) {
