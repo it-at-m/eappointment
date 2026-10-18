@@ -1,4 +1,4 @@
-@rest @zmsapi @queue @clerk @system @ZMS-3152 @ZMSALT-3152 @ZMSALT-3381
+@rest @zmsapi @queue @clerk @system @ZMS-3152 @ZMSALT-3152 @ZMS-3381 @ZMSALT-3381
 Feature: Waiting clients feed the Ampel scale used under Informationen
 
   # ZMS-3152 / ZMSALT-3152 and ZMS-3381 / ZMSALT-3381.

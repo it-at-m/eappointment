@@ -6,7 +6,7 @@ Feature: The waiting count under Informationen uses a traffic light scale
 	# (0–10 green, 11–20 yellow, 21–40 orange, 41+ red). ATAF only asserts that.
 	# Scope 2 Gewerbeamt opens as Tresen without a seat number.
 
-	@web @zmsadmin @queue @clerk @ZMS-3152 @ZMSALT-3152 @ZMSALT-3381 @executeLocally
+	@web @zmsadmin @queue @clerk @ZMS-3152 @ZMSALT-3152 @ZMS-3381 @ZMSALT-3381 @executeLocally
 	Scenario: Informationen shows waiting averages and an Ampel for Wartende
 		When I open the administration website.
 		Then I should be on the administration start page.
