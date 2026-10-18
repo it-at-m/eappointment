@@ -1,7 +1,7 @@
 @rest @zmsapi @queue @clerk @system @ZMS-3152 @ZMSALT-3152 @ZMSALT-3381
 Feature: Waiting clients feed the Ampel scale used under Informationen
 
-  # ZMSALT-3381 covers ZMS-3152.
+  # ZMS-3152 / ZMSALT-3152 and ZMS-3381 / ZMSALT-3381.
   # Queued walk-ins are the Wartende input for the existing Ampel on Informationen.
 
   Scenario: Walk-ins queued for Ampel coverage stay queued on the scope
