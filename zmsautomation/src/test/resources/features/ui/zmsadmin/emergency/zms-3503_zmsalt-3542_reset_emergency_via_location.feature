@@ -21,7 +21,7 @@ Feature: Appointment admin can clear an active Notruf via Standort settings
     And I enter in the field "Platz-Nr. oder Tresen" the text "5".
     And I click the button "Auswahl bestätigen" in the administration.
     And I click the entry "Behörden und Standorte" in the Administration menu.
-    And I click the location "Bürgerbüro Forstenrieder Allee (KVR-II/234)" under authorities and locations.
+    And I click the location "Forstenrieder Allee (KVR-II/234)" under authorities and locations.
     Then the Notruffunktion checkbox label should contain "Durch das Deaktivieren der Funktion wird auch ein aktuell bestehender Notruf am Standort beendet."
     And the Notruffunktion checkbox should be checked.
     When I uncheck the Notruffunktion checkbox.

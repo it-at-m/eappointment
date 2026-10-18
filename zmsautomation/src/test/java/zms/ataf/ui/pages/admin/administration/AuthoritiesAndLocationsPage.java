@@ -83,9 +83,15 @@ public class AuthoritiesAndLocationsPage extends AdminPage {
 
     public void clickOnLocationEntry(String location) {
         ScenarioLogManager.getLogger().info("Trying to click on '" + location + "' under Authorities and locations...");
-        clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "//li/a[contains(text(), '" + location + "')]", LocatorType.XPATH, false, CONTEXT);
+        // normalize-space(.) matches nested markup; contains(text()) only sees direct text nodes.
+        clickOnWebElement(
+                DEFAULT_EXPLICIT_WAIT_TIME,
+                "//li//a[contains(normalize-space(.), '" + location + "')]",
+                LocatorType.XPATH,
+                false,
+                CONTEXT);
         Assert.assertTrue(isWebElementVisible(DEFAULT_EXPLICIT_WAIT_TIME, "//h1[@class='main-title' and text()='Standort']", LocatorType.XPATH, false),
-                "Page title 'Behörden und Standorte' is not visible!");
+                "Page title 'Standort' is not visible after opening the location!");
     }
 
     /**
