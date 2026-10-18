@@ -588,9 +588,12 @@ public class ZmsApiSteps {
         String primaryUsername = scenarioLoginUsername;
         String primaryPassword = scenarioLoginPassword;
 
+        // Hold the call on a desk the UI / primary clerk never use (features use Platz 13).
+        // Same desk as the UI clerk races Parallel ProcessNotCallable scenarios and can clear
+        // the holder assignment so ?calledprocess= never shows ProcessNotCallable (Firefox flake).
         iAmLoggedInToTheZmsApiAsAnother("ataf");
         String holderAuthKey = getOrLoginXAuthKey();
-        iUpdateTheWorkstationWithScopeAndCounterWithTheXAuthKey(scopeId, "13");
+        iUpdateTheWorkstationWithScopeAndCounterWithTheXAuthKey(scopeId, "97");
         Assertions.assertThat(response.getStatusCode())
             .as("holder workstation scope for call body=%s", truncate(response.asString(), 500))
             .isEqualTo(200);
@@ -984,8 +987,37 @@ public class ZmsApiSteps {
                         earliest)
                 .isNotEmpty();
 
-        reserveAndOptionallyConfirm(
-                scopeId, familyName, request, authKey, candidates, confirm, earliest, endOfToday, minutesAhead, now);
+        try {
+            reserveAndOptionallyConfirm(
+                    scopeId, familyName, request, authKey, candidates, confirm, earliest, endOfToday,
+                    minutesAhead, now);
+        } catch (IllegalStateException reserveFailed) {
+            if (!reserveFailed.getMessage().contains("Failed to reserve process. Maybe someone was faster.")) {
+                throw reserveFailed;
+            }
+            // Parallel API scenarios often race the same free-list snapshot; refresh and retry once.
+            ScenarioLogManager.getLogger().warn(
+                    "All {} free-slot candidates for scope {} were taken; refreshing free list once",
+                    candidates.size(),
+                    scopeId);
+            JsonNode refreshed = minutesAhead > 0
+                    ? fetchFreeProcessesLookingAhead(scopeId, request, authKey, earliest)
+                    : fetchFreeProcessesLookingAhead(scopeId, request, authKey, earliest);
+            List<JsonNode> retry = slotsBetween(refreshed, earliest, Math.min(soon, endOfToday));
+            if (retry.isEmpty()) {
+                retry = slotsBetween(refreshed, earliest, endOfToday);
+            }
+            if (minutesAhead > 0 && retry.isEmpty()) {
+                retry = slotsBetween(refreshed, earliest, now + 24 * 60 * 60);
+            }
+            Assertions.assertThat(retry)
+                    .as("scope %d still needs an intern slot after reserve collision from epoch %d",
+                            scopeId, earliest)
+                    .isNotEmpty();
+            reserveAndOptionallyConfirm(
+                    scopeId, familyName, request, authKey, retry, confirm, earliest, endOfToday,
+                    minutesAhead, now);
+        }
     }
 
     /** Book from tomorrow onward so ProcessNotCurrentDate applies to calledprocess. */

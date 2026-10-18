@@ -46,6 +46,9 @@ public class StatisticsPage extends BasePage {
 
     private List<String> scopeIdsForNextFilter = List.of();
 
+    /** Last applied Kundenstatistik date range; download filename is {@code clientstatistic_{from}_{to}.xlsx}. */
+    private String expectedClientStatisticWorkbookName;
+
     //aktueller Monat (auf deutsch)
     private final String currentMonth = BerlinTime.today().getMonth().getDisplayName(TextStyle.FULL_STANDALONE, Locale.GERMAN);
 
@@ -65,6 +68,11 @@ public class StatisticsPage extends BasePage {
 
     public String getCurrentMonth() {
         return currentMonth;
+    }
+
+    /** Filename expected from the last {@link #applyDateRangeFilter}; null when no filter was applied. */
+    protected String expectedClientStatisticWorkbookName() {
+        return expectedClientStatisticWorkbookName;
     }
 
     public void navigateToPage() {
@@ -352,6 +360,7 @@ public class StatisticsPage extends BasePage {
 
         String fromIso = from.format(DateTimeFormatter.ISO_LOCAL_DATE);
         String toIso = to.format(DateTimeFormatter.ISO_LOCAL_DATE);
+        expectedClientStatisticWorkbookName = "clientstatistic_" + fromIso + "_" + toIso + ".xlsx";
 
         ScenarioLogManager.getLogger().info("Setting statistics date range from " + fromIso + " to " + toIso);
         setDateInputByJs("from", fromIso);
