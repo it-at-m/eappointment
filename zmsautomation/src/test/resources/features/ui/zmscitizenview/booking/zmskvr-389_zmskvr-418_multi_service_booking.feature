@@ -65,5 +65,11 @@ Feature: Multi-service booking lists main and sub services with counts
     And I confirm the rebooking from the summary in the citizen view
     Then the confirmation success callout should be visible in the citizen view
     And the preconfirmation callout should not be visible in the citizen view
+    When I sync the booking process from citizen view localStorage
+    And I fetch the confirmation mail for the current process
+    Then the confirmation mail should list services with counts "Reisepass:2, Wohnsitzanmeldung:1"
+    When I open the appointment view deep link in the browser
+    Then the appointment overview should show service 1063453 named "Reisepass" in the citizen view
+    And the appointment overview should show service 1063475 named "Wohnsitzanmeldung" in the citizen view
     When I cancel the appointment in the citizen view
     Then the cancellation success callout should be visible in the citizen view
