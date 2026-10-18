@@ -716,7 +716,13 @@ public void saveLocationChanges() {
     public void clickDayClosureButton(String label) {
         CONTEXT.set();
         ScenarioLogManager.getLogger().info("Trying to click day-closure button \"{}\"...", label);
-        String xpath = "//button[contains(@class,'js-day-closure-toggle') and normalize-space()='" + label + "']";
+        // Prefer the visible banner (#closure-open / #closure-close). Match button or
+        // legacy input so a stale module image is obvious in the failure screenshot.
+        String xpath = "//div[@id='closure-open' or @id='closure-close']"
+                + "[not(contains(@style,'display: none')) and not(contains(@style,'display:none'))]"
+                + "//*[self::button or self::input]"
+                + "[contains(@class,'js-day-closure-toggle') or @onclick='toggleClosure()']"
+                + "[normalize-space()='" + label + "' or @value='" + label + "']";
         clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, xpath, LocatorType.XPATH, false, CONTEXT);
     }
 
