@@ -30,51 +30,23 @@
                 {% set locked = true %}
             {% endif %}
         {% endfor %}
+        {% set toggleUrl = includeUrl ~ '/scope/' ~ scope.id ~ '/availability/day/' ~ dateString ~ '/closure/toggle/' %}
         <div id="closure-close" class="message message--warning {% if not locked %}hidden{% endif %}">
-            Die Terminbuchung für diesen Tag ist gesperrt. <input class="button btn" style="margin-top: -6px;" type="button" onclick="toggleClosure()" value="Entsperren">
+            Die Terminbuchung für diesen Tag ist gesperrt.
+            <button type="button"
+                    class="button btn js-day-closure-toggle"
+                    style="margin-top: -6px;"
+                    data-locked="true"
+                    data-toggle-url="{{ toggleUrl }}">Entsperren</button>
         </div>
         <div id="closure-open" class="message message--info {% if locked %}hidden{% endif %}">
-            Die Terminbuchung für diesen Tag ist NICHT gesperrt. <input class="button btn" style="margin-top: -6px;" onclick="toggleClosure()" type="button" value="Sperren">
+            Die Terminbuchung für diesen Tag ist NICHT gesperrt.
+            <button type="button"
+                    class="button btn js-day-closure-toggle"
+                    style="margin-top: -6px;"
+                    data-locked="false"
+                    data-toggle-url="{{ toggleUrl }}">Sperren</button>
         </div>
-
-        <script>
-            var locked = {% if locked %}true{% else %}false{% endif %};
-            function toggleClosure() {
-                var text = 'Möchten Sie wirklich die Terminbuchung für diesen Tag entsperren?';
-
-                if (!locked) {
-                    text = 'Möchten Sie wirklich die Terminbuchung für diesen Tag sperren?'
-                }
-                const ok = confirm(text)
-                if (!ok) {
-                    return
-                }
-
-                const currentDate = '{{ dateString }}'
-                const url = `{{ includeUrl }}/scope/{{ scope.id }}/availability/day/${currentDate}/closure/toggle/`
-                $.ajax(url, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    data: JSON.stringify({})
-                }).done(data => {
-                    if (data.closure.existing) {
-                        document.getElementById('closure-close').classList.remove('hidden')
-                        document.getElementById('closure-open').classList.add('hidden')
-                    } else {
-                        document.getElementById('closure-close').classList.add('hidden')
-                        document.getElementById('closure-open').classList.remove('hidden')
-                    }
-                    locked = !locked;
-                }).fail(err => {
-                    console.log('error', err)
-                })
-            }
-        </script>
-
-        {% set a = getNow()|date('Y-m-d') %}
-        {% if scope.closure.hasEntityByDate('2025-02-24') %}
-            X
-        {% endif %}
     </div>
     <div class="availabilityDayRoot"
         data-today="{{ today }}"
