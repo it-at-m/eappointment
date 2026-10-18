@@ -125,16 +125,26 @@ class ScopeTest extends \BO\Zmsbackend\Tests\Service\Base
         $query = new Query();
         $entity = $query->readEntity(141, 1);
         $previousEnabled = $entity->getPreference('workstation', 'emergencyEnabled', true);
-        $entity->status['emergency']['activated'] = 1;
-        $entity->status['emergency']['calledByWorkstation'] = '5';
-        $entity->status['emergency']['acceptedByWorkstation'] = -1;
-        $entity->preferences['workstation']['emergencyEnabled'] = '0';
-        $query->updateEntity(141, $entity, 1);
-        $entity = $query->readEntity(141, 1, true);
-        $this->assertEquals(0, (int) $entity->toProperty()->status->emergency->activated->get(0));
-
-        $entity->preferences['workstation']['emergencyEnabled'] = $previousEnabled ? '1' : '0';
-        $query->updateEntity(141, $entity, 1);
+        $previousAccepted = $entity->toProperty()->status->emergency->acceptedByWorkstation->get(-1);
+        $previousCalled = $entity->toProperty()->status->emergency->calledByWorkstation->get('');
+        $previousActivated = (int) $entity->toProperty()->status->emergency->activated->get(0);
+        try {
+            $entity->status['emergency']['activated'] = 1;
+            $entity->status['emergency']['calledByWorkstation'] = '5';
+            $entity->status['emergency']['acceptedByWorkstation'] = -1;
+            $entity->preferences['workstation']['emergencyEnabled'] = '0';
+            $query->updateEntity(141, $entity, 1);
+            $entity = $query->readEntity(141, 1, true);
+            $this->assertEquals(0, (int) $entity->toProperty()->status->emergency->activated->get(0));
+        } finally {
+            $entity = $query->readEntity(141, 1);
+            $entity->preferences['workstation']['emergencyEnabled'] = $previousEnabled ? '1' : '0';
+            $query->updateEntity(141, $entity, 1);
+            $entity->status['emergency']['activated'] = $previousActivated;
+            $entity->status['emergency']['calledByWorkstation'] = $previousCalled;
+            $entity->status['emergency']['acceptedByWorkstation'] = $previousAccepted;
+            $query->updateEmergency(141, $entity);
+        }
     }
 
     public function testReadUpdatedWaitingNumber()
