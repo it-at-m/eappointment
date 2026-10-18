@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-10-18T06:12:41.014Z",
+  "publishedAt": "2026-10-18T06:39:37.386Z",
   "branches": [
     {
       "name": "next",
@@ -354,6 +354,12 @@
       "slug": "test-zms-1808-zms-2702-book-button",
       "runId": "37307099663",
       "runStartedAt": "2026-10-05T12:05:02Z"
+    },
+    {
+      "name": "test-zms-3152-zmsalt-3381-waiting-traffic-light",
+      "slug": "test-zms-3152-zmsalt-3381-waiting-traffic-light",
+      "runId": "39103992729",
+      "runStartedAt": "2026-10-18T06:25:39Z"
     },
     {
       "name": "test-zms-3212-zms-3503-emergency-tresen-and-reset",
