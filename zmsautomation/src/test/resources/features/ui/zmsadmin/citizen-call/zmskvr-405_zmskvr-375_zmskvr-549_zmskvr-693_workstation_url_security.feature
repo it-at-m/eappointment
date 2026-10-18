@@ -48,9 +48,13 @@ Feature: Workstation URL security for calledprocess and selectedprocess
 
 	@web @zmsadmin @citizen-call @clerk @security @ZMSKVR-375 @executeLocally
 	Scenario Outline: ProcessNotCallable for <status> on calledprocess and selectedprocess
-		# UI clerk on the workstation first, then refresh the API session and create the fixture
-		# immediately before ?calledprocess= (avoids stale X-AuthKey on free/ and keeps called/processing holders live).
+		# Fixture before UI login (original order). Creating while the UI clerk is already on
+		# Platz 13 makes ?calledprocess= skip the ProcessNotCallable board for every status.
 		Given the ZMS API is available
+		And I am logged in to the ZMS API as "ataf"
+		When for scope 133 and service "Führungszeugnis" a <status> appointment customer "Muster Zmskvr375 <status>" is created at the next minute.
+		Then the response status code should be 200
+		And the process status should be "<status>"
 		When I open the administration website.
 		Then I should be on the administration start page.
 		When I click the button "Anmelden" in the administration.
@@ -58,10 +62,6 @@ Feature: Workstation URL security for calledprocess and selectedprocess
 		And I enter in the field "Platz-Nr. oder Tresen" the text "13".
 		And I click the button "Auswahl bestätigen" in the administration.
 		Then the workstation page is displayed.
-		And I am logged in to the ZMS API as "ataf"
-		When for scope 133 and service "Führungszeugnis" a <status> appointment customer "Muster Zmskvr375 <status>" is created at the next minute.
-		Then the response status code should be 200
-		And the process status should be "<status>"
 		When the clerk opens the workstation with "calledprocess" for the last ZMS API process.
 		Then the ProcessNotCallable error with status "<germanStatus>" is displayed.
 		When I click the exception button "Abbrechen".
