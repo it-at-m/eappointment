@@ -146,7 +146,24 @@ public class ServiceStatisticsPage extends StatisticsPage {
     }
 
     public void assertDownloadedStatisticValues(List<Map<String, String>> rows) throws IOException {
-        Map<String, String[]> workbook = RequestStatisticWorkbook.rows(workbookFromThisDownload());
+        Assert.assertFalse(rows == null || rows.isEmpty(), "Expected at least one service statistic row.");
+        String marker = rows.get(0).get("Dienstleistung");
+        Map<String, String[]> workbook = null;
+        // Parallel shards share period filenames; newest lock can briefly grab another scope's XLSX.
+        for (int attempt = 1; attempt <= 3; attempt++) {
+            Path path = workbookFromThisDownload();
+            workbook = RequestStatisticWorkbook.rows(path);
+            if (workbook.containsKey(marker)) {
+                break;
+            }
+            ScenarioLogManager.getLogger().warn(
+                    "Service XLSX {} missing row '{}'; rows={}; re-downloading ({}/3)",
+                    path.getFileName(),
+                    marker,
+                    workbook.keySet(),
+                    attempt);
+            clickDownloadButton();
+        }
         for (Map<String, String> row : rows) {
             String label = row.get("Dienstleistung");
             String[] cells = workbook.get(label);
