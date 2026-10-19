@@ -72,11 +72,23 @@ public class ZmsApiSteps {
     private Integer historyAvailabilityId;
     private int historyScopeId;
     private boolean lastProcessDeleted;
+    /** ZMSKVR-42: unlock in @After if the scenario left a day locked. */
+    private Integer dayClosureScopeId;
+    private String dayClosureDate;
+    private boolean dayClosureIsLocked;
+    private String rememberedFreeAppointmentDate;
+    private JsonNode rememberedFreeAppointmentRequest;
     /** Provider id before a locked scope update (ZMSKVR-1345). */
     private String rememberedScopeProviderId;
     private String rememberedScopeProviderSource;
     /** Warehouse ticketprinter count before finishing the current E-Kiosk walk-in (ZMSKVR-1126). */
     private Integer rememberedTicketprinterCount;
+    /** ZMS-3213: display numbers in call order (oldest first) for Aufrufmonitor assertions. */
+    private final List<String> callDisplayNumbersInCallOrder = new ArrayList<>();
+    private final Map<String, JsonNode> callDisplayProcessesByLabel = new HashMap<>();
+    /** Source walk-in Kundennummer before redirect (ZMS-3507 / ZMSALT-3541). */
+    private String rememberedDisplayNumber;
+    private Integer rememberedQueueNumber;
 
     @Before
     public void resetProcessContext() {
@@ -84,9 +96,13 @@ public class ZmsApiSteps {
         scenarioProcessIds.clear();
         processScopeById.clear();
         clerkAuthKeys.clear();
+        callDisplayNumbersInCallOrder.clear();
+        callDisplayProcessesByLabel.clear();
         rememberedScopeProviderId = null;
         rememberedScopeProviderSource = null;
         rememberedTicketprinterCount = null;
+        rememberedDisplayNumber = null;
+        rememberedQueueNumber = null;
         firstClerkCallResponse = null;
         secondClerkCallResponse = null;
         workstationScopeId = 0;
@@ -99,10 +115,16 @@ public class ZmsApiSteps {
         historyAvailabilityId = null;
         historyScopeId = 0;
         lastProcessDeleted = false;
+        dayClosureScopeId = null;
+        dayClosureDate = null;
+        dayClosureIsLocked = false;
+        rememberedFreeAppointmentDate = null;
+        rememberedFreeAppointmentRequest = null;
     }
 
     @After
     public void deleteOpeningHoursLeftByTheScenario() {
+        unlockDayClosureLeftByTheScenario();
         Integer id = createdAvailabilityId;
         createdAvailabilityId = null;
         if (id != null) {
@@ -118,6 +140,151 @@ public class ZmsApiSteps {
         }
         deleteScenarioProcesses();
         deleteLastProcessIfStillOpen();
+    }
+
+    private void unlockDayClosureLeftByTheScenario() {
+        // Unlock whenever scope/date were recorded — not only when dayClosureIsLocked is true.
+        // A failed assertion after a successful lock must not skip teardown.
+        if (dayClosureScopeId != null && dayClosureDate != null) {
+            try {
+                unlockDayClosureViaApiIfLocked(dayClosureScopeId, dayClosureDate);
+                dayClosureIsLocked = false;
+            } catch (RuntimeException | AssertionError e) {
+                ScenarioLogManager.getLogger().warn(
+                        "Could not unlock day closure for scope {} on {}: {}",
+                        dayClosureScopeId,
+                        dayClosureDate,
+                        e.getMessage());
+            }
+        }
+        unlockUiDayClosureLeftByTheScenario();
+    }
+
+    /**
+     * ZMSKVR-42: UI lock leftovers (e.g. failed after month overview) are unlocked via API
+     * using the recorded scope/date — not the current browser page. Scope/date alone are
+     * enough: the banner assertion may have failed after the lock POST succeeded.
+     * API-only scenarios (and threads whose TestData map was already cleared) must no-op.
+     */
+    private void unlockUiDayClosureLeftByTheScenario() {
+        String scope = optionalTestData("day_closure_ui_scope");
+        String date = optionalTestData("day_closure_ui_date");
+        boolean flaggedLocked = "true".equals(optionalTestData("day_closure_ui_locked"));
+        if (scope == null || date == null || scope.isBlank() || date.isBlank()) {
+            if (flaggedLocked) {
+                ScenarioLogManager.getLogger().warn(
+                        "UI day closure flagged locked but day_closure_ui_scope/date missing; leaving flag set");
+            }
+            return;
+        }
+        try {
+            unlockDayClosureViaApiIfLocked(Integer.parseInt(scope), date);
+            TestDataHelper.setTestData("day_closure_ui_locked", "false");
+        } catch (RuntimeException | AssertionError e) {
+            ScenarioLogManager.getLogger().warn(
+                    "Could not unlock UI day closure for scope {} on {}: {}",
+                    scope,
+                    date,
+                    e.getMessage());
+        }
+    }
+
+    /** Null-safe TestDataHelper read — getTestData NPEs when the scenario map is unset. */
+    private static String optionalTestData(String key) {
+        try {
+            return TestDataHelper.getTestData(key);
+        } catch (NullPointerException | IllegalStateException ignored) {
+            return null;
+        }
+    }
+
+    private void unlockDayClosureViaApiIfLocked(int scopeId, String date) {
+        AccountCheckout.checkout("scope:" + scopeId + ":day-closure");
+        iAmLoggedInToTheZmsApiAs("appointment_admin");
+        if (!isDayClosureLocked(scopeId, date)) {
+            ScenarioLogManager.getLogger().info(
+                    "Day closure for scope {} on {} already unlocked", scopeId, date);
+            return;
+        }
+        Response toggle = postDayClosureToggle(scopeId, date);
+        Assertions.assertThat(toggle.getStatusCode())
+                .as("cleanup toggle closure scope %d on %s body=%s",
+                        scopeId, date, truncate(toggle.asString(), 500))
+                .isEqualTo(200);
+        JsonNode existing = parseDataNode(toggle).path("existing");
+        Assertions.assertThat(existing.isBoolean())
+                .as("cleanup toggle data.existing must be boolean")
+                .isTrue();
+        Assertions.assertThat(existing.asBoolean())
+                .as("cleanup should leave scope %d on %s unlocked", scopeId, date)
+                .isFalse();
+    }
+
+    /**
+     * Ensure the day starts unlocked so a following toggle creates a lock owned by this scenario.
+     * If another run left it locked, unlock without recording ownership for teardown restore.
+     */
+    @Given("the day closure for scope {int} on date {string} is unlocked with the X-AuthKey")
+    public void theDayClosureForScopeOnDateIsUnlocked(int scopeId, String date) {
+        AccountCheckout.checkout("scope:" + scopeId + ":day-closure");
+        String resolved = resolveDayClosureDate(date);
+        if (!isDayClosureLocked(scopeId, resolved)) {
+            ScenarioLogManager.getLogger().info(
+                    "Day closure for scope {} on {} already unlocked", scopeId, resolved);
+            return;
+        }
+        ScenarioLogManager.getLogger().warn(
+                "Day closure for scope {} on {} was locked; unlocking before the scenario owns a toggle",
+                scopeId,
+                resolved);
+        Response toggle = postDayClosureToggle(scopeId, resolved);
+        Assertions.assertThat(toggle.getStatusCode())
+                .as("ensure-unlocked toggle scope %d on %s body=%s",
+                        scopeId, resolved, truncate(toggle.asString(), 500))
+                .isEqualTo(200);
+        JsonNode existing = parseDataNode(toggle).path("existing");
+        Assertions.assertThat(existing.isBoolean()).isTrue();
+        Assertions.assertThat(existing.asBoolean())
+                .as("ensure-unlocked should leave scope %d on %s unlocked", scopeId, resolved)
+                .isFalse();
+    }
+
+    private boolean isDayClosureLocked(int scopeId, String date) {
+        String authKey = getOrLoginXAuthKey();
+        Response list = given()
+                .baseUri(apiBaseUri())
+                .header("X-AuthKey", authKey)
+                .queryParam("scopeIds", Integer.toString(scopeId))
+                .queryParam("dateFrom", date)
+                .queryParam("dateUntil", date)
+                .when()
+                .get("/closure/");
+        Assertions.assertThat(list.getStatusCode())
+                .as("GET /closure/ scope %d %s body=%s", scopeId, date, truncate(list.asString(), 500))
+                .isEqualTo(200);
+        JsonNode data = parseDataNode(list);
+        if (data == null) {
+            return false;
+        }
+        if (data.isArray()) {
+            for (JsonNode row : data) {
+                if (scopeId == row.path("scopeId").asInt()
+                        && date.equals(row.path("date").asText())) {
+                    return true;
+                }
+            }
+            return false;
+        }
+        JsonNode items = data.path("items");
+        if (items.isArray()) {
+            for (JsonNode row : items) {
+                if (scopeId == row.path("scopeId").asInt()
+                        && date.equals(row.path("date").asText())) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     private void deleteScenarioProcesses() {
@@ -1447,8 +1614,32 @@ public class ZmsApiSteps {
         reserveConfirmedAppointment(scopeId, serviceName, familyName, email, amendment, true);
     }
 
+    @When("I remember the last process display number and queue number")
+    public void iRememberTheLastProcessDisplayNumberAndQueueNumber() {
+        Assertions.assertThat(lastProcess)
+            .as("Queue or reserve a process before remembering its waiting number")
+            .isNotNull();
+        rememberedDisplayNumber = lastProcess.path("displayNumber").asText("");
+        Assertions.assertThat(rememberedDisplayNumber)
+            .as("displayNumber of process %s", lastProcess.path("id").asInt())
+            .isNotBlank();
+        rememberedQueueNumber = lastProcess.path("queue").path("number").asInt(0);
+        Assertions.assertThat(rememberedQueueNumber)
+            .as("queue.number of process %s", lastProcess.path("id").asInt())
+            .isPositive();
+    }
+
     @When("I redirect the last process to scope {int} with the X-AuthKey")
     public void iRedirectTheLastProcessToScopeWithTheXAuthKey(int targetScopeId) {
+        redirectLastProcessToScope(targetScopeId, null);
+    }
+
+    @When("I redirect the last process to scope {int} with amendment {string} with the X-AuthKey")
+    public void iRedirectTheLastProcessToScopeWithAmendmentWithTheXAuthKey(int targetScopeId, String amendment) {
+        redirectLastProcessToScope(targetScopeId, amendment);
+    }
+
+    private void redirectLastProcessToScope(int targetScopeId, String amendment) {
         Assertions.assertThat(lastProcess)
             .as("Reserve an appointment before redirecting it")
             .isNotNull();
@@ -1468,6 +1659,9 @@ public class ZmsApiSteps {
             if (appointment.path("scope").isObject()) {
                 ((ObjectNode) appointment.get("scope")).put("id", targetScopeId);
             }
+        }
+        if (amendment != null) {
+            body.put("amendment", amendment);
         }
 
         String authKey = getOrLoginXAuthKey();
@@ -1489,6 +1683,36 @@ public class ZmsApiSteps {
         forgetProcess(originalId);
         trackProcess(createdId, targetScopeId);
         rememberProcess(created);
+    }
+
+    @Then("the last process display number matches the remembered value")
+    public void theLastProcessDisplayNumberMatchesTheRememberedValue() {
+        Assertions.assertThat(lastProcess).as("last process").isNotNull();
+        Assertions.assertThat(rememberedDisplayNumber)
+            .as("Remember displayNumber before redirecting")
+            .isNotBlank();
+        Assertions.assertThat(lastProcess.path("displayNumber").asText(""))
+            .as("displayNumber after redirect; process=%s", lastProcess.path("id").asInt())
+            .isEqualTo(rememberedDisplayNumber);
+    }
+
+    @Then("the last process queue number matches the remembered value")
+    public void theLastProcessQueueNumberMatchesTheRememberedValue() {
+        Assertions.assertThat(lastProcess).as("last process").isNotNull();
+        Assertions.assertThat(rememberedQueueNumber)
+            .as("Remember queue.number before redirecting")
+            .isNotNull();
+        Assertions.assertThat(lastProcess.path("queue").path("number").asInt(0))
+            .as("queue.number after redirect; process=%s", lastProcess.path("id").asInt())
+            .isEqualTo(rememberedQueueNumber);
+    }
+
+    @Then("the last process scope id is {int}")
+    public void theLastProcessScopeIdIs(int scopeId) {
+        Assertions.assertThat(lastProcess).as("last process").isNotNull();
+        Assertions.assertThat(scopeIdOf(lastProcess))
+            .as("scope.id after redirect; process=%s", lastProcess.path("id").asInt())
+            .isEqualTo(scopeId);
     }
 
     @Then("the last process has priority {int}")
@@ -2254,9 +2478,8 @@ public class ZmsApiSteps {
     @Given("Spontankunden opening hours exist for scope {int} from {string} to {string}")
     public void spontankundenOpeningHoursExistForScope(int scopeId, String from, String to) {
         AccountCheckout.checkout("scope:" + scopeId + ":spontankunden");
-        if (findOpeningHoursIds(scopeId, "ATAF-ZMSKVR-167").isEmpty()) {
-            createSpontankundenOpeningHours(scopeId, from, to);
-        }
+        // Always create a scenario-owned row; never reuse or delete pre-existing ATAF-ZMSKVR-167.
+        createSpontankundenOpeningHours(scopeId, from, to);
     }
 
     @When("I create opening hours for scope {int} through Sunday of the current week with the X-AuthKey")
@@ -2466,22 +2689,195 @@ public class ZmsApiSteps {
     @When("I delete Spontankunden opening hours for scope {int} with the X-AuthKey")
     public void iDeleteSpontankundenOpeningHoursForScope(int scopeId) {
         AccountCheckout.checkout("scope:" + scopeId + ":spontankunden");
+        Assertions.assertThat(createdAvailabilityId)
+            .as("scope %d: scenario must own a created Spontankunden availability id to delete", scopeId)
+            .isNotNull();
+        int id = createdAvailabilityId;
+        response = given()
+            .baseUri(apiBaseUri())
+            .header("X-AuthKey", getOrLoginXAuthKey())
+        .when()
+            .delete("/availability/" + id + "/");
+        CommonApiSteps.setResponse(response);
+        Assertions.assertThat(response.getStatusCode())
+            .as("DELETE /availability/%d/", id)
+            .isEqualTo(200);
+        createdAvailabilityId = null;
+    }
+
+    /**
+     * ZMSKVR-42: remember the first future day with intern free slots so day-lock
+     * can be asserted against a concrete date (Terminkunden).
+     */
+    @When("I remember a free appointment day for scope {int} and service {string} with the X-AuthKey")
+    public void iRememberAFreeAppointmentDayForScopeAndService(int scopeId, String serviceName) {
+        AccountCheckout.checkout("scope:" + scopeId + ":day-closure");
         String authKey = getOrLoginXAuthKey();
-        java.util.List<Integer> ids = findOpeningHoursIds(scopeId, null);
-        Assertions.assertThat(ids)
-            .as("scope %d should have Spontankunden opening hours to delete", scopeId)
-            .isNotEmpty();
-        for (int id : ids) {
-            response = given()
+        JsonNode request = findScopeRequestByName(scopeId, serviceName, authKey);
+        Assertions.assertThat(request.path("name").asText("").toLowerCase(Locale.ROOT))
+                .as("scope %d request list should include %s", scopeId, serviceName)
+                .contains(serviceName.toLowerCase(Locale.ROOT));
+        long startOfTomorrow = BerlinTime.today()
+                .plusDays(1)
+                .atStartOfDay(BerlinTime.ZONE)
+                .toEpochSecond();
+        JsonNode freeList = fetchFreeProcessesLookingAhead(scopeId, request, authKey, startOfTomorrow);
+        List<JsonNode> candidates = slotsBetween(freeList, startOfTomorrow, startOfTomorrow + 14L * 86_400L);
+        Assertions.assertThat(candidates)
+                .as("scope %d needs an intern slot on a future calendar day", scopeId)
+                .isNotEmpty();
+        long appointment = candidates.get(0).path("appointments").path(0).path("date").asLong();
+        LocalDate day = Instant.ofEpochSecond(appointment).atZone(BerlinTime.ZONE).toLocalDate();
+        rememberedFreeAppointmentDate = day.toString();
+        rememberedFreeAppointmentRequest = request;
+        TestDataHelper.setTestData("day_closure_date", rememberedFreeAppointmentDate);
+        TestDataHelper.setTestData("day_closure_day", Integer.toString(day.getDayOfMonth()));
+        ScenarioLogManager.getLogger().info(
+                "Remembered free appointment day {} for scope {}", rememberedFreeAppointmentDate, scopeId);
+    }
+
+    @When("I toggle the day closure for scope {int} on the remembered free appointment day with the X-AuthKey")
+    public void iToggleTheDayClosureForScopeOnTheRememberedFreeAppointmentDay(int scopeId) {
+        Assertions.assertThat(rememberedFreeAppointmentDate)
+                .as("Call 'I remember a free appointment day…' first")
+                .isNotBlank();
+        iToggleTheDayClosureForScopeOnDate(scopeId, rememberedFreeAppointmentDate);
+    }
+
+    @When("I toggle the day closure for scope {int} on the remembered day-closure date with the X-AuthKey")
+    public void iToggleTheDayClosureForScopeOnTheRememberedDayClosureDate(int scopeId) {
+        String date = TestDataHelper.getTestData("day_closure_date");
+        Assertions.assertThat(date)
+                .as("day_closure_date from a remember step")
+                .isNotBlank();
+        iToggleTheDayClosureForScopeOnDate(scopeId, date);
+    }
+
+    @When("I toggle the day closure for scope {int} on date {string} with the X-AuthKey")
+    public void iToggleTheDayClosureForScopeOnDate(int scopeId, String date) {
+        AccountCheckout.checkout("scope:" + scopeId + ":day-closure");
+        String resolved = resolveDayClosureDate(date);
+        response = postDayClosureToggle(scopeId, resolved);
+        CommonApiSteps.setResponse(response);
+        Assertions.assertThat(response.getStatusCode())
+                .as("POST /scope/%d/availability/%s/closure/toggle/ body=%s",
+                        scopeId, resolved, truncate(response.asString(), 800))
+                .isEqualTo(200);
+        JsonNode data = parseDataNode(response);
+        Assertions.assertThat(data)
+                .as("closure toggle response data")
+                .isNotNull();
+        JsonNode existingNode = data.get("existing");
+        Assertions.assertThat(existingNode)
+                .as("closure toggle data.existing")
+                .isNotNull();
+        Assertions.assertThat(existingNode.isBoolean())
+                .as("closure toggle data.existing must be boolean, was %s", existingNode.getNodeType())
+                .isTrue();
+        boolean existing = existingNode.asBoolean();
+        dayClosureScopeId = scopeId;
+        dayClosureDate = resolved;
+        dayClosureIsLocked = existing;
+        TestDataHelper.setTestData("day_closure_existing", Boolean.toString(existing));
+        ScenarioLogManager.getLogger().info(
+                "Day closure for scope {} on {} existing={}", scopeId, resolved, existing);
+    }
+
+    @Then("the day closure existing flag should be {word}")
+    public void theDayClosureExistingFlagShouldBe(String expected) {
+        boolean want = Boolean.parseBoolean(expected);
+        Assertions.assertThat(dayClosureIsLocked)
+                .as("day closure existing flag after toggle")
+                .isEqualTo(want);
+        JsonNode data = parseDataNode(response);
+        Assertions.assertThat(data)
+                .as("closure toggle response data")
+                .isNotNull();
+        JsonNode existingNode = data.get("existing");
+        Assertions.assertThat(existingNode)
+                .as("API data.existing")
+                .isNotNull();
+        Assertions.assertThat(existingNode.asBoolean())
+                .as("API data.existing")
+                .isEqualTo(want);
+    }
+
+    @Then("scope {int} should have no free appointment slots on the remembered day with the X-AuthKey")
+    public void scopeShouldHaveNoFreeAppointmentSlotsOnTheRememberedDay(int scopeId) {
+        assertFreeSlotsOnRememberedDay(scopeId, false);
+    }
+
+    @Then("scope {int} should have free appointment slots on the remembered day with the X-AuthKey")
+    public void scopeShouldHaveFreeAppointmentSlotsOnTheRememberedDay(int scopeId) {
+        assertFreeSlotsOnRememberedDay(scopeId, true);
+    }
+
+    private void assertFreeSlotsOnRememberedDay(int scopeId, boolean expectSlots) {
+        Assertions.assertThat(rememberedFreeAppointmentDate)
+                .as("remembered free appointment day")
+                .isNotBlank();
+        Assertions.assertThat(rememberedFreeAppointmentRequest)
+                .as("remembered free appointment request")
+                .isNotNull();
+        String authKey = getOrLoginXAuthKey();
+        LocalDate day = LocalDate.parse(rememberedFreeAppointmentDate);
+        Response freeResponse = given()
                 .baseUri(apiBaseUri())
                 .header("X-AuthKey", authKey)
-            .when()
-                .delete("/availability/" + id + "/");
-            CommonApiSteps.setResponse(response);
-            Assertions.assertThat(response.getStatusCode())
-                .as("DELETE /availability/%d/", id)
+                .contentType("application/json")
+                .queryParam("slotType", "intern")
+                .queryParam("slotsRequired", 0)
+                .body(toJson(freeProcessCalendar(scopeId, rememberedFreeAppointmentRequest, day)))
+                .when()
+                .post("/process/status/free/");
+        Assertions.assertThat(freeResponse.getStatusCode())
+                .as("POST /process/status/free/ for scope %d on %s body=%s",
+                        scopeId, day, truncate(freeResponse.asString(), 800))
                 .isEqualTo(200);
+        JsonNode freeList = parseDataArray(freeResponse);
+        Assertions.assertThat(freeList)
+                .as("POST /process/status/free/ data array for scope %d on %s", scopeId, day)
+                .isNotNull();
+        long dayStart = day.atStartOfDay(BerlinTime.ZONE).toEpochSecond();
+        long dayEnd = dayStart + 86_400L;
+        List<JsonNode> onDay = slotsBetween(freeList, dayStart, dayEnd);
+        if (expectSlots) {
+            Assertions.assertThat(onDay)
+                    .as("expected free intern slots on %s for scope %d", day, scopeId)
+                    .isNotEmpty();
+        } else {
+            Assertions.assertThat(onDay)
+                    .as("expected no free intern slots on locked day %s for scope %d", day, scopeId)
+                    .isEmpty();
         }
+    }
+
+    private Response postDayClosureToggle(int scopeId, String date) {
+        String authKey = getOrLoginXAuthKey();
+        // AvailabilityClosureToggle rejects an empty JSON body.
+        ObjectNode body = MAPPER.createObjectNode();
+        body.put("id", 0);
+        return given()
+                .baseUri(apiBaseUri())
+                .header("X-AuthKey", authKey)
+                .contentType("application/json")
+                .body(toJson(body))
+                .when()
+                .post("/scope/" + scopeId + "/availability/" + date + "/closure/toggle/");
+    }
+
+    private String resolveDayClosureDate(String date) {
+        if (date == null || date.isBlank() || "<morgen>".equals(date) || "tomorrow".equalsIgnoreCase(date)) {
+            return BerlinTime.today().plusDays(1).toString();
+        }
+        if ("<heute>".equals(date) || "today".equalsIgnoreCase(date)) {
+            return BerlinTime.today().toString();
+        }
+        if ("<remembered>".equals(date) || "remembered".equalsIgnoreCase(date)) {
+            Assertions.assertThat(rememberedFreeAppointmentDate).isNotBlank();
+            return rememberedFreeAppointmentDate;
+        }
+        return TestDataHelper.transformTestData(date);
     }
 
     @When("I request a ticketprinter button list {string}")
@@ -2568,6 +2964,96 @@ public class ZmsApiSteps {
                 response.getStatusCode(),
                 truncate(response.asString(), 1000));
         }
+    }
+
+    /**
+     * ZMS-3213 / ZMSALT-3250: seed two called walk-ins for Aufrufmonitor UI order
+     * (zmscalldisplay already sorts by callTime descending).
+     */
+    @When("I prepare two called walk-ins at scope {int} with service {string} for call display order with the X-AuthKey")
+    public void iPrepareTwoCalledWalkInsForCallDisplayOrder(int scopeId, String serviceName)
+            throws InterruptedException {
+        callDisplayNumbersInCallOrder.clear();
+        callDisplayProcessesByLabel.clear();
+
+        iAmLoggedInToTheZmsApiAs("ataf");
+        iUpdateTheWorkstationWithScopeAndCounterWithTheXAuthKey(scopeId, "22");
+        Assertions.assertThat(response.getStatusCode()).as("first clerk workstation").isEqualTo(200);
+        iRememberTheCurrentZmsApiLoginAsClerk("first");
+        queueWalkIn(
+                scopeId,
+                serviceName,
+                "Muster Calldisplay Older " + System.nanoTime(),
+                null);
+        JsonNode older = lastProcess;
+        Assertions.assertThat(older).as("older walk-in").isNotNull();
+        callDisplayProcessesByLabel.put("older", older.deepCopy());
+        trackProcess(older.path("id").asInt(), scopeId);
+
+        iAmLoggedInToTheZmsApiAsAnother("ataf");
+        iUpdateTheWorkstationWithScopeAndCounterWithTheXAuthKey(scopeId, "23");
+        Assertions.assertThat(response.getStatusCode()).as("second clerk workstation").isEqualTo(200);
+        iRememberTheCurrentZmsApiLoginAsClerk("second");
+        queueWalkIn(
+                scopeId,
+                serviceName,
+                "Muster Calldisplay Newer " + System.nanoTime(),
+                null);
+        JsonNode newer = lastProcess;
+        Assertions.assertThat(newer).as("newer walk-in").isNotNull();
+        callDisplayProcessesByLabel.put("newer", newer.deepCopy());
+        trackProcess(newer.path("id").asInt(), scopeId);
+
+        callWalkInAsClerk("first", "older");
+        Thread.sleep(1100);
+        callWalkInAsClerk("second", "newer");
+
+        TestDataHelper.setTestData(
+                "calldisplay_older_number", callDisplayNumbersInCallOrder.get(0));
+        TestDataHelper.setTestData(
+                "calldisplay_newer_number", callDisplayNumbersInCallOrder.get(1));
+        ScenarioLogManager.getLogger().info(
+                "Call display order prepared older={} newer={}",
+                callDisplayNumbersInCallOrder.get(0),
+                callDisplayNumbersInCallOrder.get(1));
+    }
+
+    private void callWalkInAsClerk(String clerk, String label) {
+        String authKey = clerkAuthKeys.get(clerk);
+        Assertions.assertThat(authKey).as("Remember clerk %s before calling", clerk).isNotBlank();
+        JsonNode process = callDisplayProcessesByLabel.get(label);
+        Assertions.assertThat(process).as("Remember call-display process \"%s\"", label).isNotNull();
+        response = postProcessCalled(authKey, true, process);
+        CommonApiSteps.setResponse(response);
+        Assertions.assertThat(response.getStatusCode())
+                .as("clerk %s call \"%s\" body=%s", clerk, label, truncate(response.asString(), 1000))
+                .isEqualTo(200);
+        JsonNode workstation = parseDataNode(response);
+        JsonNode called = workstation != null ? workstation.path("process") : null;
+        rememberProcess(called);
+        String displayNumber = displayNumberOf(called != null ? called : process);
+        Assertions.assertThat(displayNumber)
+                .as("displayNumber for call-display \"%s\"", label)
+                .isNotBlank();
+        callDisplayNumbersInCallOrder.add(displayNumber);
+        callDisplayProcessesByLabel.put(label, (called != null ? called : process).deepCopy());
+        cachedXAuthKey = authKey;
+    }
+
+    private static String displayNumberOf(JsonNode process) {
+        if (process == null) {
+            return "";
+        }
+        String displayNumber = process.path("displayNumber").asText("");
+        if (!displayNumber.isBlank()) {
+            return displayNumber;
+        }
+        String queueNumber = process.path("queue").path("number").asText("");
+        if (!queueNumber.isBlank()) {
+            return queueNumber;
+        }
+        int id = process.path("id").asInt();
+        return id > 0 ? Integer.toString(id) : "";
     }
 
     @Then("the call display response should include location {int}")
@@ -2819,36 +3305,10 @@ public class ZmsApiSteps {
                     + " failed with " + response.getStatusCode() + ": "
                     + truncate(response.asString(), 1000));
         }
-    }
-
-    private java.util.List<Integer> findOpeningHoursIds(int scopeId, String description) {
-        String authKey = getOrLoginXAuthKey();
-        LocalDate today = BerlinTime.today();
-        Response listResponse = given()
-            .baseUri(apiBaseUri())
-            .header("X-AuthKey", authKey)
-            .queryParam("startDate", today.toString())
-            .queryParam("endDate", today.toString())
-        .when()
-            .get("/scope/" + scopeId + "/availability/");
-        if (listResponse.getStatusCode() != 200) {
-            return java.util.List.of();
+        ArrayNode created = parseDataArray(response);
+        if (created != null && !created.isEmpty() && created.get(0).path("id").asInt() > 0) {
+            createdAvailabilityId = created.get(0).path("id").asInt();
         }
-        ArrayNode list = parseDataArray(listResponse);
-        if (list == null) {
-            return java.util.List.of();
-        }
-        java.util.List<Integer> ids = new java.util.ArrayList<>();
-        for (JsonNode item : list) {
-            if (!"openinghours".equals(item.path("type").asText()) || item.path("id").asInt() <= 0) {
-                continue;
-            }
-            if (description != null && !description.equals(item.path("description").asText())) {
-                continue;
-            }
-            ids.add(item.path("id").asInt());
-        }
-        return ids;
     }
 
     private JsonNode findScopeButton(int scopeId) {
