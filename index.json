@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-10-19T06:42:28.137Z",
+  "publishedAt": "2026-10-19T07:50:46.314Z",
   "branches": [
     {
       "name": "next",
@@ -868,8 +868,8 @@
     {
       "name": "test-zmskvr-42-zmskvr-289-day-closure-opening-hours",
       "slug": "test-zmskvr-42-zmskvr-289-day-closure-opening-hours",
-      "runId": "39095807739",
-      "runStartedAt": "2026-10-18T04:04:09Z"
+      "runId": "39217247745",
+      "runStartedAt": "2026-10-19T07:38:03Z"
     },
     {
       "name": "test-zmskvr-467-zmskvr-545-queue-html-escape",
