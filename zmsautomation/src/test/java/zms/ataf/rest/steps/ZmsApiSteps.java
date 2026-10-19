@@ -77,6 +77,9 @@ public class ZmsApiSteps {
     private String rememberedScopeProviderSource;
     /** Warehouse ticketprinter count before finishing the current E-Kiosk walk-in (ZMSKVR-1126). */
     private Integer rememberedTicketprinterCount;
+    /** ZMS-3213: display numbers in call order (oldest first) for Aufrufmonitor assertions. */
+    private final List<String> callDisplayNumbersInCallOrder = new ArrayList<>();
+    private final Map<String, JsonNode> callDisplayProcessesByLabel = new HashMap<>();
     /** Source walk-in Kundennummer before redirect (ZMS-3507 / ZMSALT-3541). */
     private String rememberedDisplayNumber;
     private Integer rememberedQueueNumber;
@@ -87,6 +90,8 @@ public class ZmsApiSteps {
         scenarioProcessIds.clear();
         processScopeById.clear();
         clerkAuthKeys.clear();
+        callDisplayNumbersInCallOrder.clear();
+        callDisplayProcessesByLabel.clear();
         rememberedScopeProviderId = null;
         rememberedScopeProviderSource = null;
         rememberedTicketprinterCount = null;
@@ -2630,6 +2635,96 @@ public class ZmsApiSteps {
                 response.getStatusCode(),
                 truncate(response.asString(), 1000));
         }
+    }
+
+    /**
+     * ZMS-3213 / ZMSALT-3250: seed two called walk-ins for Aufrufmonitor UI order
+     * (zmscalldisplay already sorts by callTime descending).
+     */
+    @When("I prepare two called walk-ins at scope {int} with service {string} for call display order with the X-AuthKey")
+    public void iPrepareTwoCalledWalkInsForCallDisplayOrder(int scopeId, String serviceName)
+            throws InterruptedException {
+        callDisplayNumbersInCallOrder.clear();
+        callDisplayProcessesByLabel.clear();
+
+        iAmLoggedInToTheZmsApiAs("ataf");
+        iUpdateTheWorkstationWithScopeAndCounterWithTheXAuthKey(scopeId, "22");
+        Assertions.assertThat(response.getStatusCode()).as("first clerk workstation").isEqualTo(200);
+        iRememberTheCurrentZmsApiLoginAsClerk("first");
+        queueWalkIn(
+                scopeId,
+                serviceName,
+                "Muster Calldisplay Older " + System.nanoTime(),
+                null);
+        JsonNode older = lastProcess;
+        Assertions.assertThat(older).as("older walk-in").isNotNull();
+        callDisplayProcessesByLabel.put("older", older.deepCopy());
+        trackProcess(older.path("id").asInt(), scopeId);
+
+        iAmLoggedInToTheZmsApiAsAnother("ataf");
+        iUpdateTheWorkstationWithScopeAndCounterWithTheXAuthKey(scopeId, "23");
+        Assertions.assertThat(response.getStatusCode()).as("second clerk workstation").isEqualTo(200);
+        iRememberTheCurrentZmsApiLoginAsClerk("second");
+        queueWalkIn(
+                scopeId,
+                serviceName,
+                "Muster Calldisplay Newer " + System.nanoTime(),
+                null);
+        JsonNode newer = lastProcess;
+        Assertions.assertThat(newer).as("newer walk-in").isNotNull();
+        callDisplayProcessesByLabel.put("newer", newer.deepCopy());
+        trackProcess(newer.path("id").asInt(), scopeId);
+
+        callWalkInAsClerk("first", "older");
+        Thread.sleep(1100);
+        callWalkInAsClerk("second", "newer");
+
+        TestDataHelper.setTestData(
+                "calldisplay_older_number", callDisplayNumbersInCallOrder.get(0));
+        TestDataHelper.setTestData(
+                "calldisplay_newer_number", callDisplayNumbersInCallOrder.get(1));
+        ScenarioLogManager.getLogger().info(
+                "Call display order prepared older={} newer={}",
+                callDisplayNumbersInCallOrder.get(0),
+                callDisplayNumbersInCallOrder.get(1));
+    }
+
+    private void callWalkInAsClerk(String clerk, String label) {
+        String authKey = clerkAuthKeys.get(clerk);
+        Assertions.assertThat(authKey).as("Remember clerk %s before calling", clerk).isNotBlank();
+        JsonNode process = callDisplayProcessesByLabel.get(label);
+        Assertions.assertThat(process).as("Remember call-display process \"%s\"", label).isNotNull();
+        response = postProcessCalled(authKey, true, process);
+        CommonApiSteps.setResponse(response);
+        Assertions.assertThat(response.getStatusCode())
+                .as("clerk %s call \"%s\" body=%s", clerk, label, truncate(response.asString(), 1000))
+                .isEqualTo(200);
+        JsonNode workstation = parseDataNode(response);
+        JsonNode called = workstation != null ? workstation.path("process") : null;
+        rememberProcess(called);
+        String displayNumber = displayNumberOf(called != null ? called : process);
+        Assertions.assertThat(displayNumber)
+                .as("displayNumber for call-display \"%s\"", label)
+                .isNotBlank();
+        callDisplayNumbersInCallOrder.add(displayNumber);
+        callDisplayProcessesByLabel.put(label, (called != null ? called : process).deepCopy());
+        cachedXAuthKey = authKey;
+    }
+
+    private static String displayNumberOf(JsonNode process) {
+        if (process == null) {
+            return "";
+        }
+        String displayNumber = process.path("displayNumber").asText("");
+        if (!displayNumber.isBlank()) {
+            return displayNumber;
+        }
+        String queueNumber = process.path("queue").path("number").asText("");
+        if (!queueNumber.isBlank()) {
+            return queueNumber;
+        }
+        int id = process.path("id").asInt();
+        return id > 0 ? Integer.toString(id) : "";
     }
 
     @Then("the call display response should include location {int}")
