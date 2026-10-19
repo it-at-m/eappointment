@@ -1185,8 +1185,8 @@ public void saveLocationChanges() {
         CONTEXT.set();
         WebElement box = notruffunktionCheckbox();
         if (box.isSelected() != checked) {
-            box.click();
-            // Unchecking sends GET /scope/{id}/emergency/ before the form save navigates away.
+            // The minimized Notruf bar stays fixed over the bottom of this long form.
+            ((JavascriptExecutor) DRIVER).executeScript("arguments[0].click();", box);
             waitUntilJqueryIdle();
         }
         Assert.assertEquals(box.isSelected(), checked, "Notruffunktion checkbox did not toggle.");
