@@ -154,11 +154,12 @@ public class ZmsApiSteps {
      * ZMSKVR-42: UI lock leftovers (e.g. failed after month overview) are unlocked via API
      * using the recorded scope/date — not the current browser page. Scope/date alone are
      * enough: the banner assertion may have failed after the lock POST succeeded.
+     * API-only scenarios (and threads whose TestData map was already cleared) must no-op.
      */
     private void unlockUiDayClosureLeftByTheScenario() {
-        String scope = TestDataHelper.getTestData("day_closure_ui_scope");
-        String date = TestDataHelper.getTestData("day_closure_ui_date");
-        boolean flaggedLocked = "true".equals(TestDataHelper.getTestData("day_closure_ui_locked"));
+        String scope = optionalTestData("day_closure_ui_scope");
+        String date = optionalTestData("day_closure_ui_date");
+        boolean flaggedLocked = "true".equals(optionalTestData("day_closure_ui_locked"));
         if (scope == null || date == null || scope.isBlank() || date.isBlank()) {
             if (flaggedLocked) {
                 ScenarioLogManager.getLogger().warn(
@@ -175,6 +176,15 @@ public class ZmsApiSteps {
                     scope,
                     date,
                     e.getMessage());
+        }
+    }
+
+    /** Null-safe TestDataHelper read — getTestData NPEs when the scenario map is unset. */
+    private static String optionalTestData(String key) {
+        try {
+            return TestDataHelper.getTestData(key);
+        } catch (NullPointerException | IllegalStateException ignored) {
+            return null;
         }
     }
 
