@@ -1204,7 +1204,7 @@ public void saveLocationChanges() {
     private WebElement notruffunktionCheckbox() {
         return new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
                 .until(ExpectedConditions.elementToBeClickable(
-                        By.cssSelector("input[name='preferences[workstation][emergencyEnabled]']")));
+                        By.cssSelector("input[type='checkbox'][name='preferences[workstation][emergencyEnabled]']")));
     }
 
     private WebElement notruffunktionCheckboxLabel() {
