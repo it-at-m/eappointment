@@ -1177,8 +1177,19 @@ public void saveLocationChanges() {
         WebElement box = notruffunktionCheckbox();
         if (box.isSelected() != checked) {
             box.click();
+            // Unchecking sends GET /scope/{id}/emergency/ before the form save navigates away.
+            waitUntilJqueryIdle();
         }
         Assert.assertEquals(box.isSelected(), checked, "Notruffunktion checkbox did not toggle.");
+    }
+
+    private void waitUntilJqueryIdle() {
+        new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(driver -> {
+                    Object active = ((JavascriptExecutor) driver).executeScript(
+                            "return window.jQuery ? window.jQuery.active : 0;");
+                    return active instanceof Number && ((Number) active).intValue() == 0;
+                });
     }
 
     private WebElement notruffunktionCheckbox() {
