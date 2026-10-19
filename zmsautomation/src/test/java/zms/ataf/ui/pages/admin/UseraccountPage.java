@@ -68,13 +68,9 @@ public class UseraccountPage extends BasePage {
     }
 
     public void enterNewUser(String username, String password) {
+        pendingNewUserPassword = password;
         enterNewUserUsername(username);
-        List<WebElement> passwords = DRIVER.findElements(By.cssSelector("input[name='changePassword[]']"));
-        Assert.assertEquals(passwords.size(), 2, "The new-user form does not show password and confirmation.");
-        for (WebElement field : passwords) {
-            field.clear();
-            field.sendKeys(password);
-        }
+        fillChangePasswordFields(password);
     }
 
     /** ZMSKVR-533 / ZMSKVR-661: with default Keycloak provider, passwords are filled by the form JS. */
@@ -187,17 +183,22 @@ public class UseraccountPage extends BasePage {
     /** Wall time of the last new-user form submit (initial save or validation retry). */
     private long lastNewUserSubmission;
 
-    /** Alternates requestSubmit (Chromium) with native click (Firefox) on validation retries. */
+    /** Alternates requestSubmit (Chromium) with forced form.submit (Firefox) on validation retries. */
     private int newUserSubmitAttempt;
+
+    /** Last password typed into changePassword[] — re-applied before each submit (Firefox drops sendKeys). */
+    private String pendingNewUserPassword;
 
     public void saveNewUser() {
         ScenarioLogManager.getLogger().info("Saving the new user without a department...");
         waitForAdminLoaderGone();
+        ensureNewUserPasswordsFilled();
         ensureNoDepartmentSelected();
         // Firefox often reports a successful native click without submitting this form.
         // requestSubmit keeps the save button value; form.submit() is the last resort.
+        // Start with forced POST so Gecko does not sit on a no-op requestSubmit for 2.5s.
         lastNewUserSubmission = System.currentTimeMillis();
-        newUserSubmitAttempt = 0;
+        newUserSubmitAttempt = 1;
         submitNewUserForm();
         waitForAdminLoaderGone();
     }
@@ -218,6 +219,76 @@ public class UseraccountPage extends BasePage {
         } catch (Exception e) {
             ScenarioLogManager.getLogger()
                     .warn("Could not clear Behörde multi-select before save: {}", e.toString());
+        }
+    }
+
+    /**
+     * Gecko often leaves changePassword[] empty after clear/sendKeys (or after a validation
+     * re-render). Empty passwords yield "Passwort … mindestens 6 Zeichen" instead of the
+     * department error this scenario asserts.
+     */
+    private void ensureNewUserPasswordsFilled() {
+        if (pendingNewUserPassword == null || pendingNewUserPassword.isBlank()) {
+            return;
+        }
+        List<WebElement> passwords = DRIVER.findElements(By.cssSelector("input[name='changePassword[]']"));
+        if (passwords.size() < 2) {
+            return;
+        }
+        boolean needsFill = passwords.stream().anyMatch(field -> passwordFieldValue(field).length() < 6);
+        if (!needsFill) {
+            return;
+        }
+        ScenarioLogManager.getLogger()
+                .warn("New-user password fields empty or short; re-applying password before submit.");
+        fillChangePasswordFields(pendingNewUserPassword);
+    }
+
+    private void fillChangePasswordFields(String password) {
+        List<WebElement> passwords = DRIVER.findElements(By.cssSelector("input[name='changePassword[]']"));
+        Assert.assertEquals(passwords.size(), 2, "The new-user form does not show password and confirmation.");
+        JavascriptExecutor js = (JavascriptExecutor) DRIVER;
+        for (WebElement field : passwords) {
+            // Prefer real typing: Firefox password managers / readonly toggles can ignore .value=.
+            try {
+                field.click();
+                field.clear();
+                field.sendKeys(password);
+            } catch (Exception typed) {
+                ScenarioLogManager.getLogger()
+                        .warn("sendKeys on changePassword[] failed ({}); using JS value assign.", typed.toString());
+            }
+            if (passwordFieldValue(field).equals(password)) {
+                continue;
+            }
+            js.executeScript(
+                    "var input = arguments[0]; var value = arguments[1];"
+                            + "input.removeAttribute('readonly');"
+                            + "input.readOnly = false;"
+                            + "input.focus();"
+                            + "input.value = value;"
+                            + "input.dispatchEvent(new Event('input', {bubbles:true}));"
+                            + "input.dispatchEvent(new Event('change', {bubbles:true}));",
+                    field,
+                    password);
+        }
+        for (WebElement field : passwords) {
+            // Gecko getAttribute('value') stays at the HTML default (""); read the live property.
+            String value = passwordFieldValue(field);
+            Assert.assertTrue(
+                    value.equals(password),
+                    "Password field did not keep the typed value (got length " + value.length() + ").");
+        }
+    }
+
+    /** Live input.value — Firefox getAttribute("value") on type=password stays empty. */
+    private String passwordFieldValue(WebElement field) {
+        try {
+            Object live = ((JavascriptExecutor) DRIVER).executeScript("return arguments[0].value || '';", field);
+            return live == null ? "" : String.valueOf(live);
+        } catch (org.openqa.selenium.JavascriptException ignored) {
+            String attr = field.getAttribute("value");
+            return attr == null ? "" : attr;
         }
     }
 
@@ -242,11 +313,14 @@ public class UseraccountPage extends BasePage {
             } catch (StaleElementReferenceException ignored) {
                 return false;
             }
-            if (bodyText.contains(DEPARTMENT_REQUIRED) || bodyText.contains(INPUT_ERROR)) {
+            // Require the department message itself — INPUT_ERROR alone can appear a tick earlier
+            // on Firefox and made the wait succeed before Behörde text was painted.
+            if (bodyText.contains(DEPARTMENT_REQUIRED)) {
                 return true;
             }
+            boolean departmentMarkedInvalid = false;
             if (!driver.findElements(departmentFieldError).isEmpty()) {
-                return true;
+                departmentMarkedInvalid = true;
             }
             List<WebElement> selects = driver.findElements(departmentSelect);
             if (selects.isEmpty()) {
@@ -256,18 +330,23 @@ public class UseraccountPage extends BasePage {
                 WebElement group = selects.get(0).findElement(By.xpath("ancestor::*[contains(@class,'form-group')][1]"));
                 String groupClass = group.getAttribute("class");
                 if (groupClass != null && groupClass.contains("has-error")) {
-                    return true;
+                    departmentMarkedInvalid = true;
                 }
             } catch (org.openqa.selenium.NoSuchElementException | StaleElementReferenceException ignored) {
                 return false;
             }
-            // Still on a clean form: Firefox may have dropped the first click; submit once more.
+            if (departmentMarkedInvalid && bodyText.contains(DEPARTMENT_REQUIRED)) {
+                return true;
+            }
+            // Password-only validation means Firefox dropped changePassword[]; refill and POST again.
             long now = System.currentTimeMillis();
             if (now - lastResubmit[0] > 2500L) {
                 lastResubmit[0] = now;
                 lastNewUserSubmission = now;
                 ScenarioLogManager.getLogger()
                         .warn("Department validation still missing after save; submitting the new-user form again.");
+                ensureNewUserPasswordsFilled();
+                ensureNoDepartmentSelected();
                 submitNewUserForm();
             }
             return false;
