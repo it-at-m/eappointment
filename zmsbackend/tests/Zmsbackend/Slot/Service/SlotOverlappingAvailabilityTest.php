@@ -118,6 +118,18 @@ class SlotOverlappingAvailabilityTest extends \BO\Zmsbackend\Tests\Service\Base
         $this->assertSame(5, Slot::selectPreferredAvailabilityId($rows, '08:00:00', 1));
     }
 
+    public function testPublicBookingNeedsPublicCapacity()
+    {
+        // The short availability is open for intern bookings only
+        $rows = static::getOverlappingSlotRows();
+        foreach ($rows as &$row) {
+            $row['public'] = ($row['availabilityID'] === 2) ? 0 : 2;
+        }
+        unset($row);
+        $this->assertSame(1, Slot::selectPreferredAvailabilityId($rows, '08:15:00', 1, 'public'));
+        $this->assertSame(2, Slot::selectPreferredAvailabilityId($rows, '08:15:00', 1, 'intern'));
+    }
+
     public function testNoSlotReturnsNull()
     {
         $this->assertNull(Slot::selectPreferredAvailabilityId(static::getOverlappingSlotRows(), '10:00:00', 1));
@@ -287,6 +299,69 @@ class SlotOverlappingAvailabilityTest extends \BO\Zmsbackend\Tests\Service\Base
         $this->assertContains((int) $shortAvailability->getId(), $availabilityByProcess);
     }
 
+    public function testPublicReservationSkipsInternOnlyAvailability()
+    {
+        $this->writeShortAvailability(false, 0);
+        $process = $this->writeReservedProcess(static::TIMESTAMP_0830);
+        $this->assertSame(
+            [$process->getId() => static::LONG_AVAILABILITY_ID],
+            $this->readMappedAvailabilityIds($process)
+        );
+    }
+
+    public function testReservationIsMappedToTheChosenAvailability()
+    {
+        $shortAvailability = $this->writeShortAvailability();
+        $appointment = new \BO\Zmsentities\Appointment([
+            'date' => static::TIMESTAMP_0830,
+            'scope' => ['id' => static::SCOPE_ID],
+            'slotCount' => 1,
+        ]);
+        $reservation = (new Slot())->readReservationByAppointment($appointment, null, false, true, 'public');
+        $this->assertSame((int) $shortAvailability->getId(), (int) $reservation['availability']->getId());
+
+        $process = $this->writeReservedProcess(static::TIMESTAMP_0830);
+        $this->assertSame(
+            [$process->getId() => (int) $shortAvailability->getId()],
+            $this->readMappedAvailabilityIds($process)
+        );
+    }
+
+    public function testMappingKeepsAGivenAvailability()
+    {
+        $this->writeShortAvailability();
+        $process = $this->writeReservedProcess(static::TIMESTAMP_0830);
+        // Without a given availability the shorter one would be chosen again
+        (new Slot())->writeSlotProcessMappingFor($process->getId(), static::LONG_AVAILABILITY_ID);
+        $this->assertSame(
+            [$process->getId() => static::LONG_AVAILABILITY_ID],
+            $this->readMappedAvailabilityIds($process)
+        );
+    }
+
+    public function testUnmappedProcessJoinsShortestAvailabilityOnce()
+    {
+        $shortAvailability = $this->writeShortAvailability();
+        $processId = $this->writeReservedProcess(static::TIMESTAMP_0830)->getId();
+        (new Slot())->deleteSlotProcessMappingFor($processId);
+
+        $process = (new \BO\Zmsbackend\Process\Service\Process())
+            ->readEntity($processId, new \BO\Zmsbackend\Helper\NoAuth(), 1);
+        $this->assertSame(
+            (int) $shortAvailability->getId(),
+            (int) $process->getFirstAppointment()->getAvailability()->getId()
+        );
+
+        $row = (new Slot())->fetchRow('
+            SELECT COUNT(*) AS joined
+            FROM buerger process
+                INNER JOIN oeffnungszeit availability ON ' .
+                \BO\Zmsbackend\Availability\Repository\Availability::getJoinExpression('process', 'availability') . '
+            WHERE process.BuergerID = :processId
+        ', ['processId' => $processId]);
+        $this->assertSame(1, (int) $row['joined']);
+    }
+
     public function testWithoutOverlapMappingIsUnchanged()
     {
         $process = $this->writeReservedProcess(static::TIMESTAMP_0830);
@@ -299,7 +374,7 @@ class SlotOverlappingAvailabilityTest extends \BO\Zmsbackend\Tests\Service\Base
     /**
      * Additional workstation on 2016-05-30 from 08:30 to 09:00 inside availability 94666
      */
-    protected function writeShortAvailability(bool $multipleSlotsAllowed = false)
+    protected function writeShortAvailability(bool $multipleSlotsAllowed = false, int $publicWorkstations = 1)
     {
         $availabilityQuery = new \BO\Zmsbackend\Availability\Service\Availability();
         if ($multipleSlotsAllowed) {
@@ -314,8 +389,8 @@ class SlotOverlappingAvailabilityTest extends \BO\Zmsbackend\Tests\Service\Base
         $availability->startTime = '08:30:00';
         $availability->endTime = '09:00:00';
         $availability->workstationCount['intern'] = 1;
-        $availability->workstationCount['public'] = 1;
-        $availability->workstationCount['callcenter'] = 1;
+        $availability->workstationCount['public'] = $publicWorkstations;
+        $availability->workstationCount['callcenter'] = $publicWorkstations;
         $availability->multipleSlotsAllowed = $multipleSlotsAllowed;
         $availability->bookable['startInDays'] = 0;
         $availability->bookable['endInDays'] = 60;

@@ -214,10 +214,12 @@ class Process extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfaces\R
 // update new process with old credentials, also assigned requests and following slots
         $this->updateFollowingProcesses($processTempNewId, $processNew);
         $this->updateReassignedRequests($processTempNewId, $processNew->getId());
-//delete slot mapping for temp process id
-        (new \BO\Zmsbackend\Slot\Service\Slot())->deleteSlotProcessMappingFor($processTempNewId);
+//keep the availability chosen by the reservation, then delete slot mapping for temp process id
+        $slotService = new \BO\Zmsbackend\Slot\Service\Slot();
+        $reservedAvailabilityId = $slotService->readMappedAvailabilityId($processTempNewId);
+        $slotService->deleteSlotProcessMappingFor($processTempNewId);
 //write new slot mapping for changed process with old credentials because new appointment data
-        (new \BO\Zmsbackend\Slot\Service\Slot())->writeSlotProcessMappingFor($processNew->getId());
+        $slotService->writeSlotProcessMappingFor($processNew->getId(), $reservedAvailabilityId);
         \BO\Zmsbackend\Log\Service\Log::writeProcessLog("UPDATE (\BO\Zmsbackend\Process\Service\Process::writeEntityWithNewAppointment) $process ", \BO\Zmsbackend\Log\Service\Log::ACTION_EDITED, $process);
         $status = ($keepReserved) ? Entity::STATUS_RESERVED : ENTITY::STATUS_CONFIRMED;
         return $this->updateProcessStatus($processNew, $status, $now, $resolveReferences);
@@ -261,7 +263,7 @@ class Process extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfaces\R
      * write a new process to DB
      *
      */
-    protected function writeNewProcess(\BO\Zmsentities\Process $process, \DateTimeInterface $dateTime, int $parentProcess = 0, int $childProcessCount = 0, bool $retry = true, \BO\Zmsentities\Useraccount|null $userAccount = null)
+    protected function writeNewProcess(\BO\Zmsentities\Process $process, \DateTimeInterface $dateTime, int $parentProcess = 0, int $childProcessCount = 0, bool $retry = true, \BO\Zmsentities\Useraccount|null $userAccount = null, ?int $availabilityId = null)
     {
         $query = new \BO\Zmsbackend\Process\Repository\Process(\BO\Zmsbackend\Query\Base::INSERT);
         $process->id = $this->readNewProcessId();
@@ -287,11 +289,11 @@ class Process extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfaces\R
         // First try might fail if two processes are created with the same number at the same time
                 sleep(1);
         // Let the other process complete his transaction
-                return $this->writeNewProcess($process, $dateTime, $parentProcess, $childProcessCount, false, $userAccount);
+                return $this->writeNewProcess($process, $dateTime, $parentProcess, $childProcessCount, false, $userAccount, $availabilityId);
             }
             throw new \BO\Zmsbackend\Process\Exception\ProcessCreateFailed($exception->getMessage());
         }
-        (new \BO\Zmsbackend\Slot\Service\Slot())->writeSlotProcessMappingFor($process->id);
+        (new \BO\Zmsbackend\Slot\Service\Slot())->writeSlotProcessMappingFor($process->id, $availabilityId);
         $checksum = ($userAccount) ? sha1($process->id . '-' . $userAccount->getId()) : '';
 
         \BO\Zmsbackend\Log\Service\Log::writeProcessLog("CREATE (\BO\Zmsbackend\Process\Service\Process::writeNewProcess) $process $checksum ", \BO\Zmsbackend\Log\Service\Log::ACTION_NEW, $process, $userAccount);

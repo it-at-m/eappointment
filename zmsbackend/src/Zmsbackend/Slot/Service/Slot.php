@@ -30,10 +30,39 @@ class Slot extends \BO\Zmsbackend\Base
         \BO\Zmsentities\Appointment $appointment,
         int|null $overwriteSlotsCount = null,
         bool $extendSlotList = false,
-        bool $lockSlots = false
+        bool $lockSlots = false,
+        string $slotType = 'intern'
     ) {
+        return $this->readReservationByAppointment(
+            $appointment,
+            $overwriteSlotsCount,
+            $extendSlotList,
+            $lockSlots,
+            $slotType
+        )['slotList'];
+    }
+
+    /**
+     * Like readByAppointment(), but also returns the availability the slots belong to. A reservation maps the
+     * process to exactly this availability, so the choice made under the slot locks is the one that is stored.
+     *
+     * @return array{availability: AvailabilityEntity, slotList: Collection}
+     */
+    public function readReservationByAppointment(
+        \BO\Zmsentities\Appointment $appointment,
+        int|null $overwriteSlotsCount = null,
+        bool $extendSlotList = false,
+        bool $lockSlots = false,
+        string $slotType = 'intern'
+    ): array {
         $appointment = clone $appointment;
-        $availability = $this->readAvailabilityByAppointment($appointment, $overwriteSlotsCount, $extendSlotList);
+        $availability = $this->readAvailabilityByAppointment(
+            $appointment,
+            $overwriteSlotsCount,
+            $extendSlotList,
+            $lockSlots,
+            $slotType
+        );
         $appointment->slotCount = static::getSlotCountForAvailability(
             $availability,
             $appointment,
@@ -48,17 +77,22 @@ class Slot extends \BO\Zmsbackend\Base
                 $this->readByAvailability($slot, $availability, $appointment->toDateTime(), false);
             }
         }
-        return $slotList;
+        return ['availability' => $availability, 'slotList' => $slotList];
     }
 
     /**
      * Choose the availability an appointment is booked on. Overlapping availabilities offer the same time,
      * so the same rule as in writeSlotProcessMappingFor() decides which one gets the appointment.
+     *
+     * With $lockSlots the slots of all candidates are locked before their occupancy is read, so concurrent
+     * reservations for the same time wait for each other instead of choosing on outdated occupancy.
      */
     public function readAvailabilityByAppointment(
         \BO\Zmsentities\Appointment $appointment,
         int|null $overwriteSlotsCount = null,
-        bool $extendSlotList = false
+        bool $extendSlotList = false,
+        bool $lockSlots = false,
+        string $slotType = 'intern'
     ): AvailabilityEntity {
         $availabilityService = new \BO\Zmsbackend\Availability\Service\Availability();
         $availabilityList = $availabilityService->readListByAppointment($appointment);
@@ -69,6 +103,7 @@ class Slot extends \BO\Zmsbackend\Base
             return $availabilityList->getFirst();
         }
         $requiredSlots = [];
+        $candidateTimes = [];
         foreach ($availabilityList as $candidate) {
             $candidateAppointment = clone $appointment;
             $candidateAppointment->slotCount = static::getSlotCountForAvailability(
@@ -82,11 +117,19 @@ class Slot extends \BO\Zmsbackend\Base
                 continue;
             }
             $requiredSlots[$candidate->getId()] = count($slotList);
+            foreach ($slotList as $slot) {
+                $candidateTimes[] = $slot->getTimeString();
+            }
+        }
+        $scopeId = (int) $appointment->toProperty()->scope->id->get();
+        if ($lockSlots) {
+            $this->lockCandidateSlots($scopeId, array_keys($requiredSlots), $candidateTimes, $appointment->toDateTime());
         }
         $availabilityId = $this->readPreferredAvailabilityId(
-            (int) $appointment->toProperty()->scope->id->get(),
+            $scopeId,
             $appointment->toDateTime(),
-            $requiredSlots
+            $requiredSlots,
+            $slotType
         );
         foreach ($availabilityList as $candidate) {
             if ($availabilityId !== null && $candidate->getId() == $availabilityId) {
@@ -111,11 +154,13 @@ class Slot extends \BO\Zmsbackend\Base
     /**
      * @param int|array<int|string, int> $requiredSlots one count for every availability with slots on that day
      *        or a count per candidate availability id
+     * @param string $slotType "public" bookings need public capacity, all other bookings intern capacity
      */
     public function readPreferredAvailabilityId(
         int $scopeId,
         \DateTimeInterface $dateTime,
-        int|array $requiredSlots
+        int|array $requiredSlots,
+        string $slotType = 'intern'
     ): ?int {
         $slotRows = $this->fetchAll(
             \BO\Zmsbackend\Slot\Repository\Slot::QUERY_SELECT_SLOT_OCCUPANCY_BY_SCOPE_AND_DAY,
@@ -126,7 +171,12 @@ class Slot extends \BO\Zmsbackend\Base
                 'day' => $dateTime->format('d'),
             ]
         );
-        return static::selectPreferredAvailabilityId($slotRows, $dateTime->format('H:i:s'), $requiredSlots);
+        return static::selectPreferredAvailabilityId(
+            $slotRows,
+            $dateTime->format('H:i:s'),
+            $requiredSlots,
+            $slotType
+        );
     }
 
     /**
@@ -134,12 +184,19 @@ class Slot extends \BO\Zmsbackend\Base
      *
      * Order: all required slots in a row with free capacity, then all required slots in a row,
      * then only the first slot. Within each group the shorter availability wins, then the lower id.
+     * Free capacity is checked against the workstations of the booking type: public bookings must not
+     * use workstations that are only open for intern bookings.
      *
      * @param array<array<string, mixed>> $slotRows rows of QUERY_SELECT_SLOT_OCCUPANCY_BY_SCOPE_AND_DAY
      * @param int|array<int|string, int> $requiredSlots
      */
-    public static function selectPreferredAvailabilityId(array $slotRows, string $time, int|array $requiredSlots): ?int
-    {
+    public static function selectPreferredAvailabilityId(
+        array $slotRows,
+        string $time,
+        int|array $requiredSlots,
+        string $slotType = 'intern'
+    ): ?int {
+        $capacityField = ($slotType === 'public') ? 'public' : 'intern';
         $slotsByAvailability = [];
         foreach ($slotRows as $row) {
             $slotsByAvailability[(int) $row['availabilityID']][] = $row;
@@ -174,7 +231,7 @@ class Slot extends \BO\Zmsbackend\Base
                     $isComplete = false;
                 }
                 $previousEnd = $slotStart + (int) $slot['slotTimeInMinutes'] * 60;
-                if ((int) $slot['confirmed'] >= (int) $slot['intern']) {
+                if ((int) $slot['confirmed'] >= (int) ($slot[$capacityField] ?? $slot['intern'])) {
                     $hasCapacity = false;
                 }
             }
@@ -261,6 +318,33 @@ class Slot extends \BO\Zmsbackend\Base
             $times
         );
         $this->fetchAll($sql, $params);
+    }
+
+    /**
+     * @param array<int|string> $availabilityIds
+     * @param array<string> $times
+     */
+    protected function lockCandidateSlots(
+        int $scopeId,
+        array $availabilityIds,
+        array $times,
+        \DateTimeInterface $date
+    ): void {
+        $availabilityIds = array_values(array_unique(array_map('intval', $availabilityIds)));
+        $times = array_values(array_unique($times));
+        if ($availabilityIds === [] || $times === []) {
+            return;
+        }
+        $sql = sprintf(
+            \BO\Zmsbackend\Slot\Repository\Slot::QUERY_SELECT_CANDIDATE_SLOTS_FOR_UPDATE,
+            implode(',', array_fill(0, count($availabilityIds), '?')),
+            implode(',', array_fill(0, count($times), '?'))
+        );
+        $this->fetchAll($sql, array_merge(
+            [$scopeId, $date->format('Y'), $date->format('m'), $date->format('d')],
+            $availabilityIds,
+            $times
+        ));
     }
 
     /**
@@ -614,8 +698,11 @@ class Slot extends \BO\Zmsbackend\Base
     /**
      * Map a process to exactly one slot. With overlapping availabilities a process and its following
      * processes are mapped to slots of the same availability, otherwise the booking would be counted twice.
+     *
+     * @param int|null $availabilityId availability already chosen (and locked) by the reservation, otherwise the
+     *        availability is chosen like in readAvailabilityByAppointment()
      */
-    public function writeSlotProcessMappingFor($processId): static
+    public function writeSlotProcessMappingFor($processId, ?int $availabilityId = null): static
     {
         $process = $this->fetchRow(\BO\Zmsbackend\Slot\Repository\Slot::QUERY_SELECT_PROCESS_FOR_SLOT_MAPPING, [
             'processId' => $processId,
@@ -625,10 +712,10 @@ class Slot extends \BO\Zmsbackend\Base
         }
         $mainProcessId = (int) $process['istFolgeterminvon'];
         if ($mainProcessId > 0) {
-            $availabilityId = $this->readMappedAvailabilityId($mainProcessId);
-            if ($availabilityId) {
+            $mainAvailabilityId = $this->readMappedAvailabilityId($mainProcessId);
+            if ($mainAvailabilityId) {
                 $this->deleteSlotProcessMappingFor($process['BuergerID']);
-                $this->writeSlotProcessMappingForAvailability($process['BuergerID'], $availabilityId);
+                $this->writeSlotProcessMappingForAvailability($process['BuergerID'], $mainAvailabilityId);
                 return $this;
             }
             $mainProcess = $this->fetchRow(
@@ -637,14 +724,14 @@ class Slot extends \BO\Zmsbackend\Base
             );
             $process = $mainProcess ? $mainProcess : $process;
         }
-        $this->writeSlotProcessMappingForProcessGroup($process);
+        $this->writeSlotProcessMappingForProcessGroup($process, $availabilityId);
         return $this;
     }
 
     /**
      * @param array<string, mixed> $mainProcess row of QUERY_SELECT_PROCESS_FOR_SLOT_MAPPING
      */
-    protected function writeSlotProcessMappingForProcessGroup(array $mainProcess): void
+    protected function writeSlotProcessMappingForProcessGroup(array $mainProcess, ?int $availabilityId = null): void
     {
         $processIdList = [$mainProcess['BuergerID']];
         if ((int) $mainProcess['istFolgeterminvon'] === 0) {
@@ -662,12 +749,14 @@ class Slot extends \BO\Zmsbackend\Base
         if (!$mainProcess['Datum'] || str_starts_with((string) $mainProcess['Datum'], '0000')) {
             return;
         }
-        $slotCount = max(1 + (int) $mainProcess['hatFolgetermine'], count($processIdList));
-        $availabilityId = $this->readPreferredAvailabilityId(
-            (int) $mainProcess['StandortID'],
-            new \DateTimeImmutable($mainProcess['Datum'] . ' ' . $mainProcess['Uhrzeit']),
-            $slotCount
-        );
+        if ($availabilityId === null) {
+            $slotCount = max(1 + (int) $mainProcess['hatFolgetermine'], count($processIdList));
+            $availabilityId = $this->readPreferredAvailabilityId(
+                (int) $mainProcess['StandortID'],
+                new \DateTimeImmutable($mainProcess['Datum'] . ' ' . $mainProcess['Uhrzeit']),
+                $slotCount
+            );
+        }
         if ($availabilityId === null) {
             return;
         }
@@ -684,7 +773,7 @@ class Slot extends \BO\Zmsbackend\Base
         ]);
     }
 
-    protected function readMappedAvailabilityId($processId): ?int
+    public function readMappedAvailabilityId($processId): ?int
     {
         $row = $this->fetchRow(\BO\Zmsbackend\Slot\Repository\Slot::QUERY_SELECT_MAPPED_AVAILABILITY_BY_PROCESS, [
             'processId' => $processId,
