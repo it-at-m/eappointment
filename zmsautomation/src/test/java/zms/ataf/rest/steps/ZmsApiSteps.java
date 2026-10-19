@@ -669,13 +669,14 @@ public class ZmsApiSteps {
         iUpdateTheWorkstationWithScopeAndCounterWithTheXAuthKey(scopeId, "4");
         JsonNode emergency = fetchScopeEmergencyStatus(scopeId);
         JsonNode activated = emergency.get("activated");
+        // Compressed scope JSON drops activated when it matches the schema default false.
         int actual;
         if (activated == null || activated.isNull() || activated.isMissingNode()) {
-            actual = -1;
+            actual = 0;
         } else if (activated.isBoolean()) {
             actual = activated.asBoolean() ? 1 : 0;
         } else {
-            actual = activated.asInt(-1);
+            actual = activated.asInt(0);
         }
         Assertions.assertThat(actual)
                 .as("scope %d status.emergency=%s", scopeId, emergency)
