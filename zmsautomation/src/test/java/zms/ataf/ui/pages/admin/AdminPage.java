@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.RemoteWebDriver;
@@ -129,8 +130,22 @@ public class AdminPage extends BasePage {
         ensureScopeSelectionForm();
         ScenarioLogManager.getLogger().info("Trying to select location \"" + location + "\"");
         AccountCheckout.checkout("scope:" + location);
-        selectDropDownListValueByVisibleText(DEFAULT_EXPLICIT_WAIT_TIME, "scope", LocatorType.NAME, location);
-        TestDataHelper.setTestData("location", location);
+        // Firefox can rebuild the scope <select> while option text is read → StaleElementReference.
+        StaleElementReferenceException lastStale = null;
+        for (int attempt = 1; attempt <= 3; attempt++) {
+            try {
+                selectDropDownListValueByVisibleText(
+                        DEFAULT_EXPLICIT_WAIT_TIME, "scope", LocatorType.NAME, location);
+                TestDataHelper.setTestData("location", location);
+                return;
+            } catch (StaleElementReferenceException stale) {
+                lastStale = stale;
+                ScenarioLogManager.getLogger()
+                        .warn("Standort select went stale (attempt {}); refreshing form.", attempt);
+                ensureScopeSelectionForm();
+            }
+        }
+        throw lastStale;
     }
 
     /**
