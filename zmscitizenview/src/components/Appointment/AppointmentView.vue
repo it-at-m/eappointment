@@ -2015,6 +2015,17 @@ onMounted(() => {
 <style lang="scss" scoped>
 @use "@/styles/breakpoints.scss" as *;
 
+.timeout-warning-banner {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  margin-top: -1.5rem;
+
+  @media (min-width: 1200px) {
+    margin-top: -2rem;
+  }
+}
+
 .m-button-group {
   display: flex;
   flex-direction: row;
