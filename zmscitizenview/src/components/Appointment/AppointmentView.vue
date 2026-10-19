@@ -80,6 +80,7 @@
         type="warning"
         class="timeout-warning-banner"
         data-test="timeout-warning-banner"
+        :style="{ '--timeout-banner-top': timeoutBannerTop }"
         role="status"
         aria-live="polite"
       >
@@ -449,6 +450,7 @@ import {
   ComponentPublicInstance,
   computed,
   nextTick,
+  onBeforeUnmount,
   onMounted,
   provide,
   ref,
@@ -526,6 +528,7 @@ import {
   hasPreconfirmContextError,
   hasUpdateContextError,
 } from "@/utils/errorHandler";
+import { hostFixedHeaderInsetPx } from "@/utils/hostFixedHeaderInset";
 import {
   applyAppointmentContactToCustomerData,
   hasMissingRequiredContact,
@@ -727,6 +730,48 @@ const { showTimeoutWarning, remainingSeconds: remainingTimeoutSeconds } =
     captchaDeadlineMs,
     reservationDeadlineMs,
   });
+
+const timeoutBannerTop = ref("0px");
+let timeoutBannerFrame = 0;
+
+function syncTimeoutBannerTop() {
+  timeoutBannerTop.value = `${hostFixedHeaderInsetPx()}px`;
+}
+
+function onTimeoutBannerViewportChange() {
+  if (timeoutBannerFrame) return;
+  timeoutBannerFrame = window.requestAnimationFrame(() => {
+    timeoutBannerFrame = 0;
+    syncTimeoutBannerTop();
+  });
+}
+
+function bindTimeoutBannerInset() {
+  syncTimeoutBannerTop();
+  window.addEventListener("scroll", onTimeoutBannerViewportChange, {
+    passive: true,
+  });
+  window.addEventListener("resize", onTimeoutBannerViewportChange);
+}
+
+function unbindTimeoutBannerInset() {
+  window.removeEventListener("scroll", onTimeoutBannerViewportChange);
+  window.removeEventListener("resize", onTimeoutBannerViewportChange);
+  if (timeoutBannerFrame) {
+    window.cancelAnimationFrame(timeoutBannerFrame);
+    timeoutBannerFrame = 0;
+  }
+}
+
+watch(
+  () => showTimeoutWarning.value && !isAppointmentInPast.value,
+  (visible) => {
+    if (visible) bindTimeoutBannerInset();
+    else unbindTimeoutBannerInset();
+  }
+);
+
+onBeforeUnmount(unbindTimeoutBannerInset);
 
 const activationMinutes = computed<number | undefined>(() => {
   const fromAppt = (appointment.value as any)?.scope?.activationDuration;
@@ -2017,7 +2062,7 @@ onMounted(() => {
 
 .timeout-warning-banner {
   position: sticky;
-  top: 0;
+  top: var(--timeout-banner-top, 0px);
   z-index: 2;
   margin-top: -1.5rem;
 
