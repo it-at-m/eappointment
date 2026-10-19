@@ -1,26 +1,26 @@
 {
   "branch": "feature-ZMSKVR-501-timeout-warning-banner",
   "branchSlug": "feature-ZMSKVR-501-timeout-warning-banner",
-  "runId": "39244342652",
-  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/39244342652",
-  "runStartedAt": "2026-10-19T11:40:56Z",
-  "publishedAt": "2026-10-19T11:58:39.080Z",
+  "runId": "39254897520",
+  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/39254897520",
+  "runStartedAt": "2026-10-19T12:48:08Z",
+  "publishedAt": "2026-10-19T13:12:18.260Z",
   "features": {
     "feature-ui-zmscitizenview-callouts-zmskvr-501-zmskvr-1682-timeout-warning-banner": {
       "status": "passed",
       "shard": "custom",
       "browser": "chrome",
       "rel": "ui/zmscitizenview/callouts/zmskvr-501_zmskvr-1682_timeout_warning_banner.feature",
-      "runId": "39244342652",
-      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/39244342652",
-      "runStartedAt": "2026-10-19T11:40:56Z",
+      "runId": "39254897520",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/39254897520",
+      "runStartedAt": "2026-10-19T12:48:08Z",
       "browsers": {
         "chrome": {
           "status": "passed",
           "shard": "custom",
-          "runId": "39244342652",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/39244342652",
-          "runStartedAt": "2026-10-19T11:40:56Z"
+          "runId": "39254897520",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/39254897520",
+          "runStartedAt": "2026-10-19T12:48:08Z"
         }
       }
     }
