@@ -747,4 +747,20 @@ const canLoadMore = computed(() => {
 .no-top-margin h3 {
   margin-top: 0 !important;
 }
+
+/* MDE 1.1.27 moved the accordion chevron to .m-accordion__indicator; keep the
+   inline .icon of this hand-built accordion right-aligned as before. */
+.m-accordion__section-button {
+  flex-wrap: nowrap;
+  justify-content: space-between;
+}
+
+.m-accordion__section-button .icon {
+  align-self: baseline;
+  color: var(--accordion-icon-color);
+  fill: var(--accordion-icon-color);
+  height: 1.75rem;
+  margin-left: 1rem;
+  width: 1.75rem;
+}
 </style>
