@@ -666,9 +666,19 @@ public class ZmsApiSteps {
 
     @Then("scope {int} emergency activated flag should be {int} with the X-AuthKey")
     public void scopeEmergencyActivatedFlagShouldBeWithTheXAuthKey(int scopeId, int expected) {
+        iUpdateTheWorkstationWithScopeAndCounterWithTheXAuthKey(scopeId, "4");
         JsonNode emergency = fetchScopeEmergencyStatus(scopeId);
-        Assertions.assertThat(emergency.path("activated").asInt(-1))
-                .as("scope %d status.emergency.activated", scopeId)
+        JsonNode activated = emergency.get("activated");
+        int actual;
+        if (activated == null || activated.isNull() || activated.isMissingNode()) {
+            actual = -1;
+        } else if (activated.isBoolean()) {
+            actual = activated.asBoolean() ? 1 : 0;
+        } else {
+            actual = activated.asInt(-1);
+        }
+        Assertions.assertThat(actual)
+                .as("scope %d status.emergency=%s", scopeId, emergency)
                 .isEqualTo(expected);
     }
 
