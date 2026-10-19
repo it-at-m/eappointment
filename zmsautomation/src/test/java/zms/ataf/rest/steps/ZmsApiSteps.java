@@ -2381,12 +2381,8 @@ public class ZmsApiSteps {
     @Given("Spontankunden opening hours exist for scope {int} from {string} to {string}")
     public void spontankundenOpeningHoursExistForScope(int scopeId, String from, String to) {
         AccountCheckout.checkout("scope:" + scopeId + ":spontankunden");
-        java.util.List<Integer> existing = findOpeningHoursIds(scopeId, "ATAF-ZMSKVR-167");
-        if (existing.isEmpty()) {
-            createSpontankundenOpeningHours(scopeId, from, to);
-        } else {
-            createdAvailabilityId = existing.get(0);
-        }
+        // Always create a scenario-owned row; never reuse or delete pre-existing ATAF-ZMSKVR-167.
+        createSpontankundenOpeningHours(scopeId, from, to);
     }
 
     @When("I create opening hours for scope {int} through Sunday of the current week with the X-AuthKey")
@@ -2596,29 +2592,20 @@ public class ZmsApiSteps {
     @When("I delete Spontankunden opening hours for scope {int} with the X-AuthKey")
     public void iDeleteSpontankundenOpeningHoursForScope(int scopeId) {
         AccountCheckout.checkout("scope:" + scopeId + ":spontankunden");
-        String authKey = getOrLoginXAuthKey();
-        // Only ATAF-ZMSKVR-167 rows — never wipe unrelated opening hours for the scope/day.
-        java.util.List<Integer> ids = findOpeningHoursIds(scopeId, "ATAF-ZMSKVR-167");
-        if (ids.isEmpty() && createdAvailabilityId != null) {
-            ids = java.util.List.of(createdAvailabilityId);
-        }
-        Assertions.assertThat(ids)
-            .as("scope %d should have ATAF-ZMSKVR-167 Spontankunden opening hours to delete", scopeId)
-            .isNotEmpty();
-        for (int id : ids) {
-            response = given()
-                .baseUri(apiBaseUri())
-                .header("X-AuthKey", authKey)
-            .when()
-                .delete("/availability/" + id + "/");
-            CommonApiSteps.setResponse(response);
-            Assertions.assertThat(response.getStatusCode())
-                .as("DELETE /availability/%d/", id)
-                .isEqualTo(200);
-            if (createdAvailabilityId != null && createdAvailabilityId == id) {
-                createdAvailabilityId = null;
-            }
-        }
+        Assertions.assertThat(createdAvailabilityId)
+            .as("scope %d: scenario must own a created Spontankunden availability id to delete", scopeId)
+            .isNotNull();
+        int id = createdAvailabilityId;
+        response = given()
+            .baseUri(apiBaseUri())
+            .header("X-AuthKey", getOrLoginXAuthKey())
+        .when()
+            .delete("/availability/" + id + "/");
+        CommonApiSteps.setResponse(response);
+        Assertions.assertThat(response.getStatusCode())
+            .as("DELETE /availability/%d/", id)
+            .isEqualTo(200);
+        createdAvailabilityId = null;
     }
 
     /**
@@ -3135,36 +3122,6 @@ public class ZmsApiSteps {
         if (created != null && !created.isEmpty() && created.get(0).path("id").asInt() > 0) {
             createdAvailabilityId = created.get(0).path("id").asInt();
         }
-    }
-
-    private java.util.List<Integer> findOpeningHoursIds(int scopeId, String description) {
-        String authKey = getOrLoginXAuthKey();
-        LocalDate today = BerlinTime.today();
-        Response listResponse = given()
-            .baseUri(apiBaseUri())
-            .header("X-AuthKey", authKey)
-            .queryParam("startDate", today.toString())
-            .queryParam("endDate", today.toString())
-        .when()
-            .get("/scope/" + scopeId + "/availability/");
-        if (listResponse.getStatusCode() != 200) {
-            return java.util.List.of();
-        }
-        ArrayNode list = parseDataArray(listResponse);
-        if (list == null) {
-            return java.util.List.of();
-        }
-        java.util.List<Integer> ids = new java.util.ArrayList<>();
-        for (JsonNode item : list) {
-            if (!"openinghours".equals(item.path("type").asText()) || item.path("id").asInt() <= 0) {
-                continue;
-            }
-            if (description != null && !description.equals(item.path("description").asText())) {
-                continue;
-            }
-            ids.add(item.path("id").asInt());
-        }
-        return ids;
     }
 
     private JsonNode findScopeButton(int scopeId) {
