@@ -646,6 +646,16 @@ class ProcessTest extends EntityCommonTests
         $this->assertEquals([1 => 4, 2 => 2], $slotCounts);
     }
 
+    public function testCalculatedSlotCountUsesBookedAvailability()
+    {
+        // Booked on the long availability although the short one still has a free workstation
+        $booked = static::getTestProcessAt('1', '12:15');
+        $booked->getFirstAppointment()->availability = ['id' => '1'];
+        $processList = new ProcessList([$booked]);
+        $slotCounts = static::getOverlappingTestAvailabilityList()->getCalculatedSlotCount($processList);
+        $this->assertEquals([1 => 1, 2 => 0], $slotCounts);
+    }
+
     public function testWithOutAvailabilityKeepsFollowingSlotsInOneAvailability()
     {
         $processList = new ProcessList([

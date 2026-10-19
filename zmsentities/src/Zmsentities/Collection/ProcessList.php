@@ -314,7 +314,9 @@ class ProcessList extends Base
     }
 
     /**
-     * An appointment uses the slots of exactly one availability, even if availabilities overlap
+     * An appointment uses the slots of exactly one availability, even if availabilities overlap.
+     * The availability the appointment is booked on (slot_process mapping) is used first,
+     * otherwise the shortest availability with free slots.
      *
      * @param array<int|string, SlotList> $slotLists
      *
@@ -324,20 +326,42 @@ class ProcessList extends Base
         array &$slotLists,
         \BO\Zmsentities\Appointment $appointment
     ): int|string|null {
-        foreach ($slotLists as $index => $slotList) {
-            try {
-                $slotList->withSlotsForAppointment($appointment);
-            } catch (\BO\Zmsentities\Exception\AppointmentNotFitInSlotList) {
-                continue;
-            }
-            // Work on a copy, a failed removal must not reduce slots of this availability
-            $reducedSlotList = clone $slotList;
-            if ($reducedSlotList->removeAppointment($appointment)) {
-                $slotLists[$index] = $reducedSlotList;
+        $availability = $appointment->getAvailability();
+        $bookedKey = $availability->id ?: ($availability->tempId ?? null);
+        if (null !== $bookedKey && static::removeAppointmentFromSlotList($slotLists, $bookedKey, $appointment)) {
+            return $bookedKey;
+        }
+        foreach (array_keys($slotLists) as $index) {
+            if (static::removeAppointmentFromSlotList($slotLists, $index, $appointment)) {
                 return $index;
             }
         }
         return null;
+    }
+
+    /**
+     * @param array<int|string, SlotList> $slotLists
+     */
+    protected static function removeAppointmentFromSlotList(
+        array &$slotLists,
+        int|string $index,
+        \BO\Zmsentities\Appointment $appointment
+    ): bool {
+        if (!array_key_exists($index, $slotLists)) {
+            return false;
+        }
+        try {
+            $slotLists[$index]->withSlotsForAppointment($appointment);
+        } catch (\BO\Zmsentities\Exception\AppointmentNotFitInSlotList) {
+            return false;
+        }
+        // Work on a copy, a failed removal must not reduce slots of this availability
+        $reducedSlotList = clone $slotLists[$index];
+        if (!$reducedSlotList->removeAppointment($appointment)) {
+            return false;
+        }
+        $slotLists[$index] = $reducedSlotList;
+        return true;
     }
 
     public function withUniqueScope(bool $oncePerHour = false): static

@@ -15,7 +15,8 @@ export const getLaneLayout = (lane, laneCount) => {
     const spacing = laneCount > 1 ? Math.min(LANE_SPACING, MAX_LANE_OFFSET / (laneCount - 1)) : LANE_SPACING
     return {
         offset: lane * spacing,
-        barHeight: Math.min(BAR_HEIGHT, spacing - LANE_GAP)
+        // The gap shrinks with the spacing, so many lanes still get a positive bar height
+        barHeight: Math.min(BAR_HEIGHT, spacing - Math.min(LANE_GAP, spacing / 3))
     }
 }
 

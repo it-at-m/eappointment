@@ -327,6 +327,39 @@ class SlotOverlappingAvailabilityTest extends \BO\Zmsbackend\Tests\Service\Base
         );
     }
 
+    public function testMappedAvailabilityIsFoundOnFullSlot()
+    {
+        $shortAvailability = $this->writeShortAvailability();
+        $process = $this->writeReservedProcess(static::TIMESTAMP_0830);
+        // The booking took the last workstation of the short availability
+        (new Slot())->perform(
+            'UPDATE slot s INNER JOIN slot_process sp ON sp.slotID = s.slotID
+                SET s.status = "full" WHERE sp.processID = :processId',
+            ['processId' => $process->getId()]
+        );
+        $this->assertSame((int) $shortAvailability->getId(), (new Slot())->readMappedAvailabilityId($process->getId()));
+    }
+
+    public function testFullSlotsStayCandidates()
+    {
+        $shortAvailability = $this->writeShortAvailability();
+        $slotService = new Slot();
+        $slotService->perform(
+            'UPDATE slot SET status = "full"
+                WHERE scopeID = :scopeID AND year = 2016 AND month = 5 AND day = 30 AND time = "08:30:00"',
+            ['scopeID' => static::SCOPE_ID]
+        );
+        // Overbooked processes still get a mapping, on the shorter availability
+        $this->assertSame(
+            (int) $shortAvailability->getId(),
+            $slotService->readPreferredAvailabilityId(
+                static::SCOPE_ID,
+                new \DateTimeImmutable('2016-05-30 08:30:00'),
+                1
+            )
+        );
+    }
+
     public function testMappingKeepsAGivenAvailability()
     {
         $this->writeShortAvailability();
