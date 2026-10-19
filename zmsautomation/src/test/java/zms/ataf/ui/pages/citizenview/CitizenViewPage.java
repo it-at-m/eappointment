@@ -1805,6 +1805,10 @@ public class CitizenViewPage extends BasePage {
         overview.assertOverviewServiceVisible(serviceId, serviceName);
     }
 
+    public void assertOverviewServiceWithCount(int serviceId, int count, String serviceName) {
+        overview.assertOverviewServiceWithCount(serviceId, count, serviceName);
+    }
+
     public void waitForPreconfirmPageAfterUpdate() {
         overview.waitForPreconfirmPageAfterUpdate();
     }
