@@ -83,6 +83,27 @@ public class AvailableCalendarResponse {
         return null;
     }
 
+    /** True when the given ISO date has free-slot appointments for the office. */
+    public boolean isBookableDayForOffice(String date, int officeId) {
+        if (availableDays == null || date == null || date.isBlank()) {
+            return false;
+        }
+        for (CalendarDay day : availableDays) {
+            if (day == null || !date.equals(day.getDate()) || day.getOffices() == null) {
+                continue;
+            }
+            for (OfficeSlot office : day.getOffices()) {
+                if (office != null
+                        && office.matchesOfficeId(officeId)
+                        && office.getAppointments() != null
+                        && !office.getAppointments().isEmpty()) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     /** True when any day has at least one appointment timestamp for each given office id. */
     public boolean hasAppointmentsForAllOffices(int... officeIds) {
         if (officeIds == null || officeIds.length == 0) {

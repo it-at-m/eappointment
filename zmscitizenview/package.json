@@ -18,10 +18,10 @@
   "dependencies": {
     "@muenchen/muc-patternlab-vue": "^12.0.0",
     "altcha": "^3.2.2",
-    "dompurify": "^3.4.15",
+    "dompurify": "^3.4.17",
     "jsdom": "^30.0.0",
-    "vue": "^3.5.41",
-    "vue-i18n": "11.4.14",
+    "vue": "^3.5.44",
+    "vue-i18n": "11.4.16",
     "webfontloader": "^1.0.0"
   },
   "devDependencies": {
@@ -30,18 +30,18 @@
     "@types/node": "^26.5.1",
     "@types/webfontloader": "^1.6.35",
     "@vitejs/plugin-vue": "^6.0.8",
-    "@vitest/coverage-v8": "^5.0.0",
+    "@vitest/coverage-v8": "^5.0.4",
     "@vue/eslint-config-prettier": "10.2.0",
     "@vue/eslint-config-typescript": "14.9.0",
     "@vue/test-utils": "^2.4.11",
-    "eslint": "10.12.0",
+    "eslint": "10.13.0",
     "eslint-plugin-vue": "10.11.1",
     "local-web-server": "^5.4.0",
     "lodash": "^4.18.0",
-    "sass": "^1.104.1",
+    "sass": "^1.105.2",
     "typescript": "^7.0.2",
     "vite": "^8.3.0",
-    "vitest": "^5.0.0",
+    "vitest": "^5.0.4",
     "vue-tsc": "^3.3.11"
   },
   "// overrides.@tootallnate/once": "local-web-server -> lws-rewrite -> http-proxy-agent pins once@2; force ^3.0.1 (abort-signal hang / GHSA).",
@@ -59,11 +59,11 @@
     "@tootallnate/once": "^3.0.1",
     "tmp": "^0.2.7",
     "ws": "^8.22.0",
-    "undici": "^8.11.2",
+    "undici": "^8.12.2",
     "morgan": "^1.12.1",
     "immutable": "^5.1.9",
     "brace-expansion": "5.0.12",
     "nanoid": "^6.0.2",
-    "qs": "^6.16.0"
+    "qs": "^6.16.1"
   }
 }
