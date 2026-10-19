@@ -42,80 +42,79 @@ class SlotOverlappingAvailabilityTest extends \BO\Zmsbackend\Tests\Service\Base
         return $rows;
     }
 
-    public function testShorterAvailabilityIsPreferred()
+    /**
+     * Candidates in the order of AvailabilityList::getSortedByDuration(): the short availability 2 first
+     */
+    protected static function getPreferredCandidates(int $slotCount): array
     {
-        $availabilityId = Slot::selectPreferredAvailabilityId(static::getOverlappingSlotRows(), '08:15:00', 1);
-        $this->assertSame(2, $availabilityId);
+        return [2 => $slotCount, 1 => $slotCount];
     }
 
-    public function testTimeInsideSlotIsMatched()
+    public function testPreferredAvailabilityIsUsed()
     {
-        $availabilityId = Slot::selectPreferredAvailabilityId(static::getOverlappingSlotRows(), '08:20:00', 1);
-        $this->assertSame(2, $availabilityId);
+        $rows = static::getOverlappingSlotRows();
+        $this->assertSame(2, Slot::selectPreferredAvailabilityId($rows, '08:15:00', static::getPreferredCandidates(1)));
     }
 
-    public function testOnlyCoveringAvailabilityIsUsed()
-    {
-        $availabilityId = Slot::selectPreferredAvailabilityId(static::getOverlappingSlotRows(), '08:00:00', 1);
-        $this->assertSame(1, $availabilityId);
-    }
-
-    public function testLongerAvailabilityIsUsedIfShorterIsFull()
-    {
-        $rows = static::getOverlappingSlotRows(['08:15:00' => 1]);
-        $availabilityId = Slot::selectPreferredAvailabilityId($rows, '08:15:00', 1);
-        $this->assertSame(1, $availabilityId);
-    }
-
-    public function testFollowingSlotsMustFitInOneAvailability()
-    {
-        // 08:30 + 2 slots ends at 09:00, the short availability ends at 08:45
-        $availabilityId = Slot::selectPreferredAvailabilityId(static::getOverlappingSlotRows(), '08:30:00', 2);
-        $this->assertSame(1, $availabilityId);
-    }
-
-    public function testFollowingSlotsNeedFreeCapacity()
-    {
-        $rows = static::getOverlappingSlotRows(['08:30:00' => 1]);
-        $availabilityId = Slot::selectPreferredAvailabilityId($rows, '08:15:00', 2);
-        $this->assertSame(1, $availabilityId);
-    }
-
-    public function testShorterAvailabilityIsUsedIfAllAreFull()
-    {
-        $rows = static::getOverlappingSlotRows(['08:15:00' => 1], ['08:15:00' => 2]);
-        $availabilityId = Slot::selectPreferredAvailabilityId($rows, '08:15:00', 1);
-        $this->assertSame(2, $availabilityId);
-    }
-
-    public function testCandidateListLimitsAvailabilities()
-    {
-        $availabilityId = Slot::selectPreferredAvailabilityId(
-            static::getOverlappingSlotRows(),
-            '08:15:00',
-            [1 => 1]
-        );
-        $this->assertSame(1, $availabilityId);
-    }
-
-    public function testCandidateListUsesSlotCountPerAvailability()
-    {
-        // Short availability does not allow multiple slots, so it needs only one slot
-        $availabilityId = Slot::selectPreferredAvailabilityId(
-            static::getOverlappingSlotRows(),
-            '08:30:00',
-            [1 => 2, 2 => 1]
-        );
-        $this->assertSame(2, $availabilityId);
-    }
-
-    public function testEqualDurationUsesLowerId()
+    public function testCandidateOrderDecides()
     {
         $rows = [
             static::getSlotRow(7, '08:00:00'),
             static::getSlotRow(5, '08:00:00'),
         ];
-        $this->assertSame(5, Slot::selectPreferredAvailabilityId($rows, '08:00:00', 1));
+        $this->assertSame(5, Slot::selectPreferredAvailabilityId($rows, '08:00:00', [5 => 1, 7 => 1]));
+        $this->assertSame(7, Slot::selectPreferredAvailabilityId($rows, '08:00:00', [7 => 1, 5 => 1]));
+    }
+
+    public function testTimeInsideSlotIsMatched()
+    {
+        $rows = static::getOverlappingSlotRows();
+        $this->assertSame(2, Slot::selectPreferredAvailabilityId($rows, '08:20:00', static::getPreferredCandidates(1)));
+    }
+
+    public function testOnlyCoveringAvailabilityIsUsed()
+    {
+        $rows = static::getOverlappingSlotRows();
+        $this->assertSame(1, Slot::selectPreferredAvailabilityId($rows, '08:00:00', static::getPreferredCandidates(1)));
+    }
+
+    public function testLongerAvailabilityIsUsedIfShorterIsFull()
+    {
+        $rows = static::getOverlappingSlotRows(['08:15:00' => 1]);
+        $this->assertSame(1, Slot::selectPreferredAvailabilityId($rows, '08:15:00', static::getPreferredCandidates(1)));
+    }
+
+    public function testFollowingSlotsMustFitInOneAvailability()
+    {
+        // 08:30 + 2 slots ends at 09:00, the short availability ends at 08:45
+        $rows = static::getOverlappingSlotRows();
+        $this->assertSame(1, Slot::selectPreferredAvailabilityId($rows, '08:30:00', static::getPreferredCandidates(2)));
+    }
+
+    public function testFollowingSlotsNeedFreeCapacity()
+    {
+        $rows = static::getOverlappingSlotRows(['08:30:00' => 1]);
+        $this->assertSame(1, Slot::selectPreferredAvailabilityId($rows, '08:15:00', static::getPreferredCandidates(2)));
+    }
+
+    public function testPreferredAvailabilityIsUsedIfAllAreFull()
+    {
+        $rows = static::getOverlappingSlotRows(['08:15:00' => 1], ['08:15:00' => 2]);
+        $this->assertSame(2, Slot::selectPreferredAvailabilityId($rows, '08:15:00', static::getPreferredCandidates(1)));
+    }
+
+    public function testCandidateListLimitsAvailabilities()
+    {
+        $this->assertSame(1, Slot::selectPreferredAvailabilityId(static::getOverlappingSlotRows(), '08:15:00', [1 => 1]));
+    }
+
+    public function testCandidateListUsesSlotCountPerAvailability()
+    {
+        // Short availability does not allow multiple slots, so it needs only one slot
+        $this->assertSame(
+            2,
+            Slot::selectPreferredAvailabilityId(static::getOverlappingSlotRows(), '08:30:00', [2 => 1, 1 => 2])
+        );
     }
 
     public function testPublicBookingNeedsPublicCapacity()
@@ -126,14 +125,17 @@ class SlotOverlappingAvailabilityTest extends \BO\Zmsbackend\Tests\Service\Base
             $row['public'] = ($row['availabilityID'] === 2) ? 0 : 2;
         }
         unset($row);
-        $this->assertSame(1, Slot::selectPreferredAvailabilityId($rows, '08:15:00', 1, 'public'));
-        $this->assertSame(2, Slot::selectPreferredAvailabilityId($rows, '08:15:00', 1, 'intern'));
+        $candidates = static::getPreferredCandidates(1);
+        $this->assertSame(1, Slot::selectPreferredAvailabilityId($rows, '08:15:00', $candidates, 'public'));
+        $this->assertSame(2, Slot::selectPreferredAvailabilityId($rows, '08:15:00', $candidates, 'intern'));
     }
 
     public function testNoSlotReturnsNull()
     {
-        $this->assertNull(Slot::selectPreferredAvailabilityId(static::getOverlappingSlotRows(), '10:00:00', 1));
-        $this->assertNull(Slot::selectPreferredAvailabilityId([], '08:00:00', 1));
+        $candidates = static::getPreferredCandidates(1);
+        $this->assertNull(Slot::selectPreferredAvailabilityId(static::getOverlappingSlotRows(), '10:00:00', $candidates));
+        $this->assertNull(Slot::selectPreferredAvailabilityId([], '08:00:00', $candidates));
+        $this->assertNull(Slot::selectPreferredAvailabilityId(static::getOverlappingSlotRows(), '08:15:00', []));
     }
 
     public function testBookingInOverlapIsMappedToShorterAvailability()
@@ -355,7 +357,7 @@ class SlotOverlappingAvailabilityTest extends \BO\Zmsbackend\Tests\Service\Base
             $slotService->readPreferredAvailabilityId(
                 static::SCOPE_ID,
                 new \DateTimeImmutable('2016-05-30 08:30:00'),
-                1
+                [(int) $shortAvailability->getId() => 1, static::LONG_AVAILABILITY_ID => 1]
             )
         );
     }

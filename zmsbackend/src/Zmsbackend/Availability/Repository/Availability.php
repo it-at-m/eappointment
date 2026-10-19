@@ -52,13 +52,9 @@ class Availability extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Q
             ),
             'description' => 'availability.comment',
             'startDate' => 'availability.start_date',
-            'startTime' => self::expression(
-                'IF(`availability`.`appointment_start_time`,`availability`.`appointment_start_time`,`availability`.`start_time`)'
-            ),
+            'startTime' => self::expression(static::getStartTimeExpression('`availability`')),
             'endDate' => 'availability.end_date',
-            'endTime' => self::expression(
-                'IF(`availability`.`appointment_start_time`, `availability`.`appointment_end_time`, `availability`.`end_time`)'
-            ),
+            'endTime' => self::expression(static::getEndTimeExpression('`availability`')),
             'lastChange' => 'availability.updated_at',
             'version' => 'availability.version',
             'multipleSlotsAllowed' => 'availability.multiple_slots_allowed',
@@ -289,7 +285,8 @@ class Availability extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Q
             $matchesProcess
 
             -- overlapping availabilities: use the availability the process is mapped to,
-            -- unmapped processes use the shortest matching availability (like getSortedByDuration())
+            -- unmapped processes use the shortest matching availability, then the lower id.
+            -- SQL counterpart of AvailabilityList::getSortedByDuration(), keep both in sync
             AND $availability.OeffnungszeitID = IFNULL(
                 (
                     SELECT mapped_slot.availabilityID
@@ -304,14 +301,32 @@ class Availability extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Q
                     WHERE $fallbackMatchesProcess
                     ORDER BY
                         TIMEDIFF(
-                            fallback_availability.appointment_end_time,
-                            fallback_availability.appointment_start_time
+                            " . static::getEndTimeExpression('fallback_availability') . ",
+                            " . static::getStartTimeExpression('fallback_availability') . "
                         ),
                         fallback_availability.OeffnungszeitID
                     LIMIT 1
                 )
             )
             ");
+    }
+
+    /**
+     * Start time as the entity sees it (startTime), appointment times win over opening times
+     */
+    protected static function getStartTimeExpression(string $availability): string
+    {
+        return "IF($availability.`appointment_start_time`, $availability.`appointment_start_time`, "
+            . "$availability.`start_time`)";
+    }
+
+    /**
+     * End time as the entity sees it (endTime), appointment times win over opening times
+     */
+    protected static function getEndTimeExpression(string $availability): string
+    {
+        return "IF($availability.`appointment_start_time`, $availability.`appointment_end_time`, "
+            . "$availability.`end_time`)";
     }
 
     protected static function getProcessMatchCondition(string $process, string $availability): string

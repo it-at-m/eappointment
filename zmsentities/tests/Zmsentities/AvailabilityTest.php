@@ -760,6 +760,24 @@ class AvailabilityTest extends EntityCommonTests
      * @SuppressWarnings(Length)
      *
      */
+    public function testSortedByDuration()
+    {
+        $availabilityData = [
+            'type' => 'appointment',
+            'weekday' => ['monday' => '2'],
+            'repeat' => ['afterWeeks' => '1'],
+            'startDate' => strtotime('2016-04-04'),
+            'endDate' => strtotime('2016-04-04'),
+        ];
+        $list = new \BO\Zmsentities\Collection\AvailabilityList([
+            new Availability($availabilityData + ['id' => '3', 'startTime' => '08:00:00', 'endTime' => '18:00:00']),
+            new Availability($availabilityData + ['id' => '9', 'startTime' => '10:00:00', 'endTime' => '12:00:00']),
+            new Availability($availabilityData + ['id' => '4', 'startTime' => '13:00:00', 'endTime' => '15:00:00']),
+        ]);
+        // shorter first, equal duration: lower id first
+        $this->assertSame([4, 9, 3], array_keys($list->getSortedByDuration()));
+    }
+
     public function testConflicts()
     {
         $availability = new Availability([

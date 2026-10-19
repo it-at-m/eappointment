@@ -102,28 +102,23 @@ class Slot extends \BO\Zmsbackend\Base
         if (count($availabilityList) === 1) {
             return $availabilityList->getFirst();
         }
-        $requiredSlots = [];
         $candidateTimes = [];
-        foreach ($availabilityList as $candidate) {
-            $candidateAppointment = clone $appointment;
-            $candidateAppointment->slotCount = static::getSlotCountForAvailability(
-                $candidate,
-                $appointment,
-                $overwriteSlotsCount
-            );
-            try {
-                $slotList = $candidate->getSlotList()->withSlotsForAppointment($candidateAppointment, $extendSlotList);
-            } catch (\BO\Zmsentities\Exception\AppointmentNotFitInSlotList) {
-                continue;
-            }
-            $requiredSlots[$candidate->getId()] = count($slotList);
-            foreach ($slotList as $slot) {
-                $candidateTimes[] = $slot->getTimeString();
-            }
-        }
+        $requiredSlots = static::getRequiredSlotsByAvailability(
+            $availabilityList,
+            $appointment,
+            $overwriteSlotsCount,
+            $extendSlotList,
+            false,
+            $candidateTimes
+        );
         $scopeId = (int) $appointment->toProperty()->scope->id->get();
         if ($lockSlots) {
-            $this->lockCandidateSlots($scopeId, array_keys($requiredSlots), $candidateTimes, $appointment->toDateTime());
+            $this->lockCandidateSlots(
+                $scopeId,
+                array_keys($requiredSlots),
+                $candidateTimes,
+                $appointment->toDateTime()
+            );
         }
         $availabilityId = $this->readPreferredAvailabilityId(
             $scopeId,
@@ -139,6 +134,48 @@ class Slot extends \BO\Zmsbackend\Base
         return $availabilityList->getFirst();
     }
 
+    /**
+     * Required slots per candidate availability, in the order of AvailabilityList::getSortedByDuration().
+     * This order is the only place that decides which of several overlapping availabilities is preferred.
+     *
+     * @param bool $keepNotFitting keep candidates the appointment does not fit in completely (an existing
+     *        booking must still be mapped somewhere), otherwise they are skipped
+     * @param array<string> $candidateTimes filled with the slot times of all candidates
+     *
+     * @return array<int, int> availability id => required slots
+     */
+    protected static function getRequiredSlotsByAvailability(
+        \BO\Zmsentities\Collection\AvailabilityList $availabilityList,
+        \BO\Zmsentities\Appointment $appointment,
+        int|null $overwriteSlotsCount,
+        bool $extendSlotList,
+        bool $keepNotFitting,
+        array &$candidateTimes = []
+    ): array {
+        $requiredSlots = [];
+        foreach ($availabilityList->getSortedByDuration() as $candidate) {
+            $candidateAppointment = clone $appointment;
+            $candidateAppointment->slotCount = static::getSlotCountForAvailability(
+                $candidate,
+                $appointment,
+                $overwriteSlotsCount
+            );
+            try {
+                $slotList = $candidate->getSlotList()->withSlotsForAppointment($candidateAppointment, $extendSlotList);
+            } catch (\BO\Zmsentities\Exception\AppointmentNotFitInSlotList) {
+                if ($keepNotFitting) {
+                    $requiredSlots[(int) $candidate->getId()] = max(1, (int) $candidateAppointment->slotCount);
+                }
+                continue;
+            }
+            $requiredSlots[(int) $candidate->getId()] = count($slotList);
+            foreach ($slotList as $slot) {
+                $candidateTimes[] = $slot->getTimeString();
+            }
+        }
+        return $requiredSlots;
+    }
+
     protected static function getSlotCountForAvailability(
         AvailabilityEntity $availability,
         \BO\Zmsentities\Appointment $appointment,
@@ -152,14 +189,14 @@ class Slot extends \BO\Zmsbackend\Base
     }
 
     /**
-     * @param int|array<int|string, int> $requiredSlots one count for every availability with slots on that day
-     *        or a count per candidate availability id
+     * @param array<int, int> $requiredSlots candidate availability id => required slots, preferred first
+     *        (see getRequiredSlotsByAvailability())
      * @param string $slotType "public" bookings need public capacity, all other bookings intern capacity
      */
     public function readPreferredAvailabilityId(
         int $scopeId,
         \DateTimeInterface $dateTime,
-        int|array $requiredSlots,
+        array $requiredSlots,
         string $slotType = 'intern'
     ): ?int {
         $slotRows = $this->fetchAll(
@@ -183,19 +220,21 @@ class Slot extends \BO\Zmsbackend\Base
      * Pick one availability for an appointment starting at $time from the free slots of that day.
      *
      * Order: all required slots in a row with free capacity, then all required slots in a row,
-     * then only the first slot. Within each group the shorter availability wins, then the lower id.
+     * then only the first slot. Within each group the order of $requiredSlots decides (shorter availability
+     * first, see AvailabilityList::getSortedByDuration()).
      * Free capacity is checked against the workstations of the booking type: public bookings must not
      * use workstations that are only open for intern bookings.
      *
      * @param array<array<string, mixed>> $slotRows rows of QUERY_SELECT_SLOT_OCCUPANCY_BY_SCOPE_AND_DAY
-     * @param int|array<int|string, int> $requiredSlots
+     * @param array<int, int> $requiredSlots candidate availability id => required slots, preferred first
      */
     public static function selectPreferredAvailabilityId(
         array $slotRows,
         string $time,
-        int|array $requiredSlots,
+        array $requiredSlots,
         string $slotType = 'intern'
     ): ?int {
+        $preference = array_flip(array_map('intval', array_keys($requiredSlots)));
         $capacityField = ($slotType === 'public') ? 'public' : 'intern';
         $slotsByAvailability = [];
         foreach ($slotRows as $row) {
@@ -204,10 +243,10 @@ class Slot extends \BO\Zmsbackend\Base
         $startSeconds = static::getSecondsOfDay($time);
         $candidates = [];
         foreach ($slotsByAvailability as $availabilityId => $slots) {
-            if (is_array($requiredSlots) && !array_key_exists($availabilityId, $requiredSlots)) {
+            if (!array_key_exists($availabilityId, $preference)) {
                 continue;
             }
-            $slotCount = max(1, (int) (is_array($requiredSlots) ? $requiredSlots[$availabilityId] : $requiredSlots));
+            $slotCount = max(1, (int) $requiredSlots[$availabilityId]);
             usort($slots, fn($left, $right) => static::getSecondsOfDay($left['time'])
                 <=> static::getSecondsOfDay($right['time']));
             $startIndex = null;
@@ -235,19 +274,17 @@ class Slot extends \BO\Zmsbackend\Base
                     $hasCapacity = false;
                 }
             }
-            $lastSlot = end($slots);
             $candidates[] = [
                 'availabilityId' => $availabilityId,
                 'rank' => ($isComplete && $hasCapacity) ? 0 : ($isComplete ? 1 : 2),
-                'duration' => static::getSecondsOfDay($lastSlot['time']) + (int) $lastSlot['slotTimeInMinutes'] * 60
-                    - static::getSecondsOfDay($slots[0]['time']),
+                'preference' => $preference[$availabilityId],
             ];
         }
         if ($candidates === []) {
             return null;
         }
-        usort($candidates, fn($left, $right) => [$left['rank'], $left['duration'], $left['availabilityId']]
-            <=> [$right['rank'], $right['duration'], $right['availabilityId']]);
+        usort($candidates, fn($left, $right) => [$left['rank'], $left['preference']]
+            <=> [$right['rank'], $right['preference']]);
         return $candidates[0]['availabilityId'];
     }
 
@@ -751,10 +788,26 @@ class Slot extends \BO\Zmsbackend\Base
         }
         if ($availabilityId === null) {
             $slotCount = max(1 + (int) $mainProcess['hatFolgetermine'], count($processIdList));
+            $dateTime = new \DateTimeImmutable($mainProcess['Datum'] . ' ' . $mainProcess['Uhrzeit']);
+            $appointment = new \BO\Zmsentities\Appointment([
+                'date' => $dateTime->getTimestamp(),
+                'scope' => ['id' => (int) $mainProcess['StandortID']],
+                'slotCount' => $slotCount,
+            ]);
+            $availabilityList = (new \BO\Zmsbackend\Availability\Service\Availability())
+                ->readListByAppointment($appointment);
+            // The booking already exists, so it is mapped even if it does not fit completely
+            $requiredSlots = static::getRequiredSlotsByAvailability(
+                $availabilityList,
+                $appointment,
+                $slotCount,
+                false,
+                true
+            );
             $availabilityId = $this->readPreferredAvailabilityId(
                 (int) $mainProcess['StandortID'],
-                new \DateTimeImmutable($mainProcess['Datum'] . ' ' . $mainProcess['Uhrzeit']),
-                $slotCount
+                $dateTime,
+                $requiredSlots
             );
         }
         if ($availabilityId === null) {
