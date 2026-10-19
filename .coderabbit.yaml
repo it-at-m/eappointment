@@ -105,7 +105,11 @@ reviews:
       instructions: |
         Do not flag CURDATE(), CURTIME(), or DATE_SUB(CURDATE(), ...) in these versioned Flyway migrations as stale, or claim that a versioned migration is applied only once.
 
-        Every official zmsautomation run, local and in GitHub Actions, restores the database and then deletes rows from flyway_schema_history where version > 1 before Flyway migrate. See zmsautomation/zmsautomation-test. Versioned migrations therefore run again on every test run, and CURDATE()/CURTIME() are evaluated on that same Berlin calendar day (zms-db TZ=Europe/Berlin). Do not ask for the rows to be seeded outside Flyway for that reason.
+        Every official zmsautomation run, local and in GitHub Actions, restores the database and then deletes rows from flyway_migration where version > 1 before Flyway migrate (legacy name flyway_schema_history is cleared too). See zmsautomation/zmsautomation-test. Versioned migrations therefore run again on every test run, and CURDATE()/CURTIME() are evaluated on that same Berlin calendar day (zms-db TZ=Europe/Berlin). Do not ask for the rows to be seeded outside Flyway for that reason.
+
+    - path: "zmsautomation/src/main/resources/db/migration-after-hourly/**"
+      instructions: |
+        These are a second Flyway path (history table flyway_migration_after_hourly), applied after cronjob.hourly and before minutly. Do not flag CURDATE()/CURTIME() as stale; the history table is cleared each ATAF setup so migrations re-apply. Do not suggest moving these into db/migration, locations_de.json, or munich_sadb_overwrite.json.
 
     - path: "**/*.php"
       instructions: |

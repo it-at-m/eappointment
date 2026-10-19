@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Locale;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptException;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.remote.RemoteWebDriver;
@@ -91,6 +92,27 @@ public final class MyAppointmentsStep {
     }
     public ThinnedProcess syncBookingProcessFromLocalStorage() throws Exception {
         context.set();
+        String json =
+                (String)
+                        ((JavascriptExecutor) DriverUtil.getDriver())
+                                .executeScript(
+                                        "return localStorage.getItem('" + MyAppointmentsStep.LOCALSTORAGE_APPOINTMENT_KEY + "');");
+        if (json != null && !json.isBlank()) {
+            ThinnedProcess fromStorage = parseAndSetBookingProcessFromJson(json);
+            if (hasCancelCredentials(fromStorage)) {
+                ThinnedProcess already = zms.ataf.rest.steps.CitizenApiSteps.getBookingProcess();
+                if (already != null
+                        && already.getProcessId() != null
+                        && !already.getProcessId().equals(fromStorage.getProcessId())) {
+                    ScenarioLogManager.getLogger()
+                            .info(
+                                    "zmscitizenview: localStorage processId={} differs from synced {}; using localStorage",
+                                    fromStorage.getProcessId(),
+                                    already.getProcessId());
+                }
+                return fromStorage;
+            }
+        }
         ThinnedProcess already = zms.ataf.rest.steps.CitizenApiSteps.getBookingProcess();
         if (hasCancelCredentials(already)) {
             ScenarioLogManager.getLogger().info("zmscitizenview: booking process already set (from reserve step), skipping localStorage read");
@@ -101,11 +123,6 @@ public final class MyAppointmentsStep {
         if (hasCancelCredentials(already)) {
             return already;
         }
-        String json =
-                (String)
-                        ((JavascriptExecutor) DriverUtil.getDriver())
-                                .executeScript(
-                                        "return localStorage.getItem('" + MyAppointmentsStep.LOCALSTORAGE_APPOINTMENT_KEY + "');");
         if (json == null || json.isBlank()) {
             captureBookingProcessForCleanup();
             ThinnedProcess captured = zms.ataf.rest.steps.CitizenApiSteps.getBookingProcess();
@@ -214,23 +231,37 @@ public final class MyAppointmentsStep {
         zms.ataf.rest.steps.CitizenApiSteps.setBookingProcess(p);
         return p;
     }
+    private static final String CONFIRMATION_SUCCESS_HEADING = "Ihr Termin wurde gebucht.";
+
     public void openConfirmationDeepLinkInBrowser() {
         context.set();
         String url = resolveConfirmationDeepLinkUrl();
         ScenarioLogManager.getLogger().info("zmscitizenview: navigating to confirmation URL: {}", url);
-        try {
-            DriverUtil.getDriver().navigate().to(url);
-            // Do not refresh. Same-tab hash routing now handles confirm links (ZMSKVR-1121).
-            // navigate()+refresh() can confirm twice and leave activation-expired UI instead of success.
-        } catch (Exception e) {
-            ScenarioLogManager.getLogger().warn("Navigate to confirm URL", e);
+        // Do not refresh. Same-tab hash routing now handles confirm links (ZMSKVR-1121).
+        // navigate()+refresh() can confirm twice and leave activation-expired UI instead of success.
+        navigateToConfirmationUrl(url);
+        if (waitForConfirmationSuccess(15_000L)) {
+            return;
         }
-        try {
-            Thread.sleep(10000L);
-        } catch (InterruptedException ie) {
-            Thread.currentThread().interrupt();
+        // Edge (and occasionally Firefox) can land on a blank shell with only Anmelden after
+        // hash navigation — same class of flake as Meine Termine overview. Leave the hash,
+        // then confirm again (reopen path); that still shows success for an already-confirmed
+        // process and re-applies the route when the first hop never mounted Vue.
+        ScenarioLogManager.getLogger()
+                .warn(
+                        "zmscitizenview: confirmation success missing after first navigate (url={}); retry leave-hash then confirm",
+                        DriverUtil.getDriver().getCurrentUrl());
+        reopenConfirmationDeepLinkInBrowser();
+        if (waitForConfirmationSuccess(20_000L)) {
+            return;
         }
+        String busted = withCacheBustBeforeHash(url);
+        ScenarioLogManager.getLogger()
+                .warn("zmscitizenview: confirmation success still missing; cache-bust navigate {}", busted);
+        navigateToConfirmationUrl(busted);
+        waitForConfirmationSuccess(20_000L);
     }
+
     public void reopenConfirmationDeepLinkInBrowser() {
         context.set();
         String confirmUrl = resolveConfirmationDeepLinkUrl();
@@ -243,18 +274,50 @@ public final class MyAppointmentsStep {
                 .info("zmscitizenview: reopening confirmation deep link (leave hash, then confirm again)");
         try {
             DriverUtil.getDriver().navigate().to(base + "#/");
-            Thread.sleep(1000L);
+            CitizenViewWaits.sleepQuiet(1000L);
             DriverUtil.getDriver().navigate().to(confirmUrl);
-        } catch (InterruptedException ie) {
-            Thread.currentThread().interrupt();
         } catch (Exception e) {
             ScenarioLogManager.getLogger().warn("Reopen confirm URL", e);
         }
+        CitizenViewWaits.sleepQuiet(3000L);
+    }
+
+    private void navigateToConfirmationUrl(String url) {
         try {
-            Thread.sleep(10000L);
-        } catch (InterruptedException ie) {
-            Thread.currentThread().interrupt();
+            DriverUtil.getDriver().navigate().to(url);
+        } catch (Exception e) {
+            ScenarioLogManager.getLogger().warn("Navigate to confirm URL", e);
         }
+        CitizenViewWaits.sleepQuiet(3000L);
+    }
+
+    private boolean waitForConfirmationSuccess(long millis) {
+        long deadline = System.currentTimeMillis() + millis;
+        while (System.currentTimeMillis() < deadline) {
+            try {
+                if (shadow.shadowDomContainsText(CONFIRMATION_SUCCESS_HEADING)) {
+                    ScenarioLogManager.getLogger().info("zmscitizenview: confirmation success callout visible");
+                    return true;
+                }
+            } catch (JavascriptException e) {
+                // Transient shadow lookup during SPA remount; keep polling so reopen/cache-bust can run.
+                ScenarioLogManager.getLogger().warn("Confirmation heading lookup failed; retrying", e);
+            }
+            CitizenViewWaits.sleepQuiet(250L);
+        }
+        return false;
+    }
+
+    /** Edge treats same-URL navigate as a no-op; bust before the hash so the SPA remounts. */
+    private static String withCacheBustBeforeHash(String url) {
+        if (url == null || url.isBlank()) {
+            return url;
+        }
+        int hashIdx = url.indexOf('#');
+        String base = hashIdx >= 0 ? url.substring(0, hashIdx) : url;
+        String hash = hashIdx >= 0 ? url.substring(hashIdx) : "";
+        String sep = base.contains("?") ? "&" : "?";
+        return base + sep + "r=" + System.currentTimeMillis() + hash;
     }
     private String resolveConfirmationDeepLinkUrl() {
         String url = zms.ataf.rest.steps.CitizenApiSteps.getBookingConfirmUrl();
@@ -819,8 +882,11 @@ public final class MyAppointmentsStep {
                     || shadow.shadowDomContainsText("Neuer Termin")
                     || !d.findElements(By.id("username")).isEmpty());
             if (!DriverUtil.getDriver().findElements(By.id("username")).isEmpty()) {
-                String username =
-                        TestPropertiesHelper.getPropertyAsString("citizenUserName", true, "citizen");
+                String username = context.lastCitizenLoginUsername;
+                if (username == null || username.isBlank()) {
+                    username =
+                            TestPropertiesHelper.getPropertyAsString("citizenUserName", true, "citizen");
+                }
                 String password =
                         TestPropertiesHelper.getPropertyAsString("citizenUserPassword", true, "vorschau");
                 contact.completeKeycloakLoginForm(AccountCheckout.assignCitizenLogin(username), password);
@@ -1012,62 +1078,72 @@ public final class MyAppointmentsStep {
                         + "var hit=card;"
                         + "if(card.shadowRoot){var a=card.shadowRoot.querySelector('a[href]');if(a)hit=a;}"
                         + "hit.scrollIntoView({block:'center'});hit.click();return true;";
-        // Detail can take well over 5s under a busy chrome shard; a short settle + immediate
-        // re-navigate reloads the page before Termin absagen appears.
-        long deadline = System.currentTimeMillis() + Math.max(90, defaultWaitSeconds) * 1000L;
+        // Edge can drop the Bürger-Login session while hopping overview → detail; a full 60s
+        // waitWithThreeWindows then burns the outer budget before Anmelden is noticed on reload.
+        long deadline = System.currentTimeMillis() + Math.max(120, defaultWaitSeconds) * 1000L;
         boolean opened = false;
+        int attempt = 0;
         while (System.currentTimeMillis() < deadline) {
+            attempt++;
             if (shadow.shadowDomContainsText("Termin absagen")) {
                 opened = true;
                 break;
             }
+            if (pageShowsCitizenLoginPrompt() || myAppointmentsShowsLoggedOut()) {
+                ScenarioLogManager.getLogger()
+                        .warn(
+                                "zmscitizenview: logged out before opening teaser {}; logging in again",
+                                serviceName);
+                ensureMeineTermineLoggedIn();
+                continue;
+            }
+            if (!browserIsOnMyAppointments() || !myAppointmentsFinishedLoading()) {
+                ScenarioLogManager.getLogger()
+                        .warn(
+                                "zmscitizenview: returning to Meine Termine before opening teaser {}",
+                                serviceName);
+                reloadMyAppointments();
+                waitUntilNeueTerminVisible();
+            }
+            waitForTeaserText(serviceName);
             Object hrefRaw =
                     ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(findHref, needle);
-            String href = hrefRaw == null ? "" : String.valueOf(hrefRaw).trim();
-            if (href.isEmpty()) {
-                if (myAppointmentsShowsLoggedOut()) {
-                    ScenarioLogManager.getLogger()
-                            .warn(
-                                    "zmscitizenview: Meine Termine shows Anmelden before opening teaser; logging in again");
-                    reloginForMyAppointments();
-                } else if (!browserIsOnMyAppointments() || !myAppointmentsFinishedLoading()) {
-                    ScenarioLogManager.getLogger()
-                            .warn(
-                                    "zmscitizenview: returning to Meine Termine before opening teaser {}",
-                                    serviceName);
-                    reloadMyAppointments();
-                    waitUntilNeueTerminVisible();
-                } else {
-                    waitForTeaserText(serviceName);
-                }
-                hrefRaw = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(findHref, needle);
-                href = hrefRaw == null ? "" : String.valueOf(hrefRaw).trim();
+            String href = absoluteCitizenUrl(hrefRaw == null ? "" : String.valueOf(hrefRaw).trim());
+            String apIdUrl = detailUrlFromTeaserNumber(serviceName);
+            // Alternate card href and explicit appointment-detail?ap-id= (same shape as Termin ansehen).
+            String target;
+            if (attempt % 2 == 1) {
+                target = !href.isEmpty() ? href : apIdUrl;
+            } else {
+                target = !apIdUrl.isEmpty() ? apIdUrl : href;
             }
-            if (!href.isEmpty()) {
+            if (!target.isEmpty()) {
                 try {
-                    if (href.startsWith("/")) {
-                        String current = DriverUtil.getDriver().getCurrentUrl();
-                        int slash = current.indexOf('/', current.indexOf("://") + 3);
-                        href = (slash > 0 ? current.substring(0, slash) : current) + href;
-                    }
-                    DriverUtil.getDriver().navigate().to(href);
+                    DriverUtil.getDriver().navigate().to(target);
                 } catch (TimeoutException e) {
                     ScenarioLogManager.getLogger().warn("Meine Termine teaser navigation timed out", e);
                 }
             } else {
                 ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(clickCard, needle);
             }
-            CitizenViewWaits.waitWithThreeWindows(
-                    () -> shadow.shadowDomContainsText("Termin absagen"),
-                    "Appointment detail after opening teaser " + serviceName);
-            if (shadow.shadowDomContainsText("Termin absagen")) {
+            waitForAppointmentDetailShellAfterNavigation();
+            if (waitUntilTerminAbsagenOrLoginPrompt(20)) {
                 opened = true;
                 break;
             }
+            if (pageShowsCitizenLoginPrompt()) {
+                ScenarioLogManager.getLogger()
+                        .warn(
+                                "zmscitizenview: detail for {} showed Anmelden; logging in and retrying",
+                                serviceName);
+                ensureMeineTermineLoggedIn();
+                continue;
+            }
             ScenarioLogManager.getLogger()
                     .warn(
-                            "zmscitizenview: teaser {} did not open detail; trying again",
-                            serviceName);
+                            "zmscitizenview: teaser {} did not open detail (attempt {}); trying again",
+                            serviceName,
+                            attempt);
             if (!browserIsOnMyAppointments()) {
                 reloadMyAppointments();
                 waitUntilNeueTerminVisible();
@@ -1076,6 +1152,78 @@ public final class MyAppointmentsStep {
         Assert.assertTrue(
                 opened || shadow.shadowDomContainsText("Termin absagen"),
                 "Appointment detail did not show Termin absagen after opening \"" + serviceName + "\".");
+    }
+
+    /** True when the Bürger-Login prompt is showing (overview or detail) without a session. */
+    private boolean pageShowsCitizenLoginPrompt() {
+        return shadow.shadowDomContainsText("Anmelden")
+                && !shadow.shadowDomContainsText("Mein Bereich")
+                && !shadow.shadowDomContainsText("Neuer Termin")
+                && !shadow.shadowDomContainsText("Kommende Termine")
+                && !shadow.shadowDomContainsText("Termin absagen");
+    }
+
+    private void ensureMeineTermineLoggedIn() {
+        if (!browserIsOnMyAppointments()) {
+            reloadMyAppointments();
+        }
+        reloginForMyAppointments();
+        waitUntilNeueTerminVisible();
+    }
+
+    /**
+     * Polls up to {@code seconds} for Termin absagen, aborting early when Anmelden appears so the
+     * outer teaser loop can re-login instead of burning a full three-window wait.
+     *
+     * @return true when Termin absagen is visible
+     */
+    private boolean waitUntilTerminAbsagenOrLoginPrompt(int seconds) {
+        long deadline = System.currentTimeMillis() + Math.max(5, seconds) * 1000L;
+        while (System.currentTimeMillis() < deadline) {
+            if (shadow.shadowDomContainsText("Termin absagen")) {
+                return true;
+            }
+            if (pageShowsCitizenLoginPrompt()) {
+                return false;
+            }
+            CitizenViewWaits.sleepQuiet(250L);
+        }
+        return shadow.shadowDomContainsText("Termin absagen");
+    }
+
+    private String absoluteCitizenUrl(String href) {
+        if (href == null || href.isBlank()) {
+            return "";
+        }
+        if (href.startsWith("http://") || href.startsWith("https://")) {
+            return href;
+        }
+        if (href.startsWith("/")) {
+            String current = DriverUtil.getDriver().getCurrentUrl();
+            int slash = current.indexOf('/', current.indexOf("://") + 3);
+            return (slash > 0 ? current.substring(0, slash) : current) + href;
+        }
+        return href;
+    }
+
+    /** Builds appointment-detail.html?ap-id=… from the teaser Terminnummer when still on overview. */
+    private String detailUrlFromTeaserNumber(String serviceName) {
+        if (!browserIsOnMyAppointments()) {
+            return "";
+        }
+        String number = appointmentNumberOnMyAppointments(serviceName);
+        if (number == null || number.isBlank()) {
+            return "";
+        }
+        String digits = number.replaceAll("[^0-9]", "");
+        if (digits.isEmpty()) {
+            return "";
+        }
+        try {
+            return appointmentDetailUrlForProcess(Integer.parseInt(digits), number);
+        } catch (NumberFormatException e) {
+            return "";
+        }
     }
     private String waitForTeaserText(String serviceName) {
         long deadline = System.currentTimeMillis() + Math.max(30, defaultWaitSeconds) * 1000L;
@@ -1130,6 +1278,7 @@ public final class MyAppointmentsStep {
         ((JavascriptExecutor) driver)
                 .executeScript(
                         "window.__zmsCapturedIcs='';"
+                                + "window.__zmsCapturedIcsName='';"
                                 + "if(!window.__zmsIcsHooked){"
                                 + "window.__zmsIcsHooked=true;"
                                 + "var NativeBlob=window.Blob;"
@@ -1141,7 +1290,15 @@ public final class MyAppointmentsStep {
                                 + "return typeof p==='string'?p:'';}).join('');}"
                                 + "return blob;}"
                                 + "CapturingBlob.prototype=NativeBlob.prototype;"
-                                + "window.Blob=CapturingBlob;}");
+                                + "window.Blob=CapturingBlob;"
+                                + "var desc=Object.getOwnPropertyDescriptor(HTMLAnchorElement.prototype,'download');"
+                                + "if(desc&&desc.set){Object.defineProperty(HTMLAnchorElement.prototype,'download',{"
+                                + "configurable:true,enumerable:desc.enumerable,"
+                                + "get:desc.get,"
+                                + "set:function(v){window.__zmsCapturedIcsName=v==null?'':String(v);return desc.set.call(this,v);}"
+                                + "});}"
+                                + "}");
+        // Confirmation success uses muc-button; appointment detail uses muc-link / <a>.
         String clickScript =
                 "var label=arguments[0];"
                         + "function textOf(n){var s='';if(!n)return s;if(n.nodeType===3)return n.nodeValue||'';"
@@ -1151,7 +1308,7 @@ public final class MyAppointmentsStep {
                         + "var hit=null;"
                         + "walk(document.body,function(n){"
                         + "var tag=(n.tagName||'').toUpperCase();"
-                        + "if(tag!=='MUC-LINK'&&tag!=='A')return false;"
+                        + "if(tag!=='MUC-LINK'&&tag!=='A'&&tag!=='MUC-BUTTON'&&tag!=='BUTTON')return false;"
                         + "if(textOf(n).indexOf(label)<0)return false;"
                         + "hit=n;return true;});"
                         + "if(!hit)return false;"
@@ -1205,6 +1362,74 @@ public final class MyAppointmentsStep {
                 capturedIcs.contains("DTSTART;TZID=Europe/Berlin:" + start),
                 "ICS DTSTART should be the booked slot " + start + ".");
     }
+
+    /** ICS DESCRIPTION is the confirmation mail plain text and includes {@code client.familyName}. */
+    public void assertDownloadedIcsContainsText(String expected) {
+        context.set();
+        Assert.assertNotNull(capturedIcs, "No ICS file was downloaded.");
+        String unfolded = unfoldIcs(capturedIcs);
+        Assert.assertTrue(
+                unfolded.contains(expected),
+                "ICS should contain \"" + expected + "\". ICS=" + unfolded);
+        ScenarioLogManager.getLogger().info("zmscitizenview: ICS contains {}", expected);
+    }
+
+    /**
+     * ZMSKVR-97 / ZMSKVR-535: Munich {@code icsappointment.twig} DESCRIPTION carries Terminnummer
+     * ({@code displayNumber}), Leistung URL, and the cancel/reschedule appointment hash link.
+     * Reloads GET /appointment/ because UI sync only keeps processId/authKey/timestamp.
+     */
+    public void assertDownloadedIcsMatchesMunichConfirmationTemplate() {
+        context.set();
+        Assert.assertNotNull(capturedIcs, "No ICS file was downloaded.");
+        String unfolded = unfoldIcs(capturedIcs);
+        ThinnedProcess process =
+                zms.ataf.rest.steps.CitizenApiSteps.refreshBookingProcessFromAppointmentApi();
+        Assert.assertNotNull(process, "Need a synced booking process for ICS Terminnummer asserts.");
+        Assert.assertNotNull(process.getProcessId(), "processId missing for ICS Terminnummer asserts.");
+        String displayNumber = process.getDisplayNumber();
+        Assert.assertNotNull(displayNumber, "displayNumber missing from GET /appointment/.");
+        Assert.assertFalse(displayNumber.isBlank(), "displayNumber blank from GET /appointment/.");
+        Assert.assertTrue(
+                unfolded.contains("Terminnummer: " + displayNumber),
+                "ICS DESCRIPTION must include Terminnummer: " + displayNumber + ". ICS=" + unfolded);
+        Assert.assertTrue(
+                unfolded.contains("UID:") && unfolded.contains("-" + displayNumber),
+                "ICS UID must include displayNumber " + displayNumber + ".");
+        Assert.assertTrue(
+                unfolded.contains("#/appointment/"),
+                "ICS DESCRIPTION must include the cancel/reschedule #/appointment/ link.");
+        Integer serviceId = process.getServiceId();
+        Assert.assertNotNull(serviceId, "serviceId missing for ICS Leistung URL.");
+        String leistungServiceId =
+                zms.ataf.rest.steps.CitizenApiSteps.icsLeistungServiceId(serviceId);
+        Assert.assertTrue(
+                unfolded.contains("https://stadt.muenchen.de/service/info/" + leistungServiceId),
+                "ICS DESCRIPTION must link the booked service "
+                        + leistungServiceId
+                        + " (process serviceId="
+                        + serviceId
+                        + ").");
+        Assert.assertTrue(
+                unfolded.contains("LOCATION:") && unfolded.contains("Ruppertstraße"),
+                "ICS LOCATION should carry the Bürgerbüro street address.");
+        Object nameRaw =
+                ((JavascriptExecutor) DriverUtil.getDriver())
+                        .executeScript("return window.__zmsCapturedIcsName || '';");
+        String downloadName = nameRaw instanceof String ? (String) nameRaw : "";
+        Assert.assertEquals(
+                "Termin.ics",
+                downloadName,
+                "Confirmation ICS download filename should be Termin.ics (product downloadIcsFile).");
+    }
+
+    private static String unfoldIcs(String icsContent) {
+        if (icsContent == null) {
+            return "";
+        }
+        return icsContent.replaceAll("\\R[ \\t]", "").replace("\\n", "\n").replace("\\,", ",");
+    }
+
     private String icsSummaryLine() {
         if (capturedIcs == null) {
             return "";
@@ -1383,7 +1608,7 @@ public final class MyAppointmentsStep {
         Assert.assertNotNull(code, "Need a remembered Schalter from the booking overview.");
         Assert.assertTrue(
                 FuehrerscheinstelleScopeHints.isConcrete(code),
-                "Expected FS-A or FS-B from overview, was: " + code);
+                "Expected FS-A/B/C from overview, was: " + code);
         String zone = FuehrerscheinstelleScopeHints.zoneFor(code);
         String hint = FuehrerscheinstelleScopeHints.hintFor(code);
         CitizenViewWaits.waitWithThreeWindows(
@@ -1404,11 +1629,11 @@ public final class MyAppointmentsStep {
                 "Detail missing callout header Hinweis zu Ihrem Termin.");
         shadow.scrollTextIntoView(hint);
         Assert.assertTrue(shadow.shadowDomContainsText(hint), "Detail callout missing " + hint);
-        Assert.assertFalse(
-                shadow.shadowDomContainsText(
-                        FuehrerscheinstelleScopeHints.zoneFor(
-                                FuehrerscheinstelleScopeHints.otherCode(code))),
-                "Detail must not show the other Schalter.");
+        for (String other : FuehrerscheinstelleScopeHints.otherCodes(code)) {
+            Assert.assertFalse(
+                    shadow.shadowDomContainsText(FuehrerscheinstelleScopeHints.zoneFor(other)),
+                    "Detail must not show another Schalter (" + other + ").");
+        }
         ScenarioLogManager.getLogger()
                 .info("zmscitizenview: detail matched Führerscheinstelle Schalter {} callout", code);
     }

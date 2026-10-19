@@ -92,6 +92,7 @@ class SourceCacheWarmupControllerTest extends ControllerTestCase
     public function testWarmupRebuildsOfficesAndServicesCache()
     {
         \App::$cache->set('processed_offices_and_services', ['stale' => true], 3600);
+        \App::$cache->set('processed_scopes', ['stale' => true], 3600);
         \App::$cache->set('source_unittest', ['stale' => true], 3600);
 
         $this->setApiCalls([
@@ -115,9 +116,11 @@ class SourceCacheWarmupControllerTest extends ControllerTestCase
         $body = json_decode((string) $response->getBody(), true);
         $this->assertTrue($body['warmed']);
         $this->assertContains('processed_offices_and_services', $body['refreshedKeys']);
+        $this->assertContains('processed_scopes', $body['refreshedKeys']);
         $this->assertContains('source_unittest', $body['refreshedKeys']);
         $this->assertArrayNotHasKey('deletedKeys', $body);
         $this->assertNotEquals(['stale' => true], \App::$cache->get('processed_offices_and_services'));
+        $this->assertNotEquals(['stale' => true], \App::$cache->get('processed_scopes'));
         $this->assertNotEquals(['stale' => true], \App::$cache->get('source_unittest'));
     }
 
