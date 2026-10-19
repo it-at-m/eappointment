@@ -38,8 +38,9 @@ class Slot extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\Map
         SELECT MAX(updateTimestamp) AS dateString FROM slot WHERE scopeID = :scopeID;';
 
     /**
-     * Free slots of one scope and day with their current occupancy,
-     * used to decide which of several overlapping availabilities gets an appointment
+     * Active (free or full, not cancelled) slots of one scope and day with their current occupancy,
+     * used to decide which of several overlapping availabilities gets an appointment.
+     * Full slots are needed, otherwise a full slot looks like a gap in its availability.
      */
     const string QUERY_SELECT_SLOT_OCCUPANCY_BY_SCOPE_AND_DAY = '
         SELECT
@@ -57,7 +58,7 @@ class Slot extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\Map
             AND s.year = :year
             AND s.month = :month
             AND s.day = :day
-            AND s.status = "free"
+            AND s.status IN ("free", "full")
         GROUP BY s.slotID
         ORDER BY s.availabilityID, s.time
     ';
@@ -87,7 +88,7 @@ class Slot extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\Map
             INNER JOIN slot s ON s.slotID = sp.slotID
         WHERE
             sp.processID = :processId
-            AND s.status = "free"
+            AND s.status IN ("free", "full")
         LIMIT 1
     ';
 
