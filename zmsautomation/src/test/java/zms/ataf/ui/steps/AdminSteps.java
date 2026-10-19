@@ -342,6 +342,11 @@ public class AdminSteps {
         ADMIN_PAGE.assertNotrufTriggerNotVisible();
     }
 
+    @When("I minimize the Notruf overlay.")
+    public void iMinimizeTheNotrufOverlay() {
+        ADMIN_PAGE.minimizeNotrufOverlay();
+    }
+
     @Then("the Notruffunktion checkbox label should contain {string}.")
     public void theNotruffunktionCheckboxLabelShouldContain(String expected) {
         AUTHORITIES_AND_LOCATIONS_PAGE.assertNotruffunktionCheckboxLabelContains(

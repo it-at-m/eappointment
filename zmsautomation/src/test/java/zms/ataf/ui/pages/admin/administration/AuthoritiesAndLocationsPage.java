@@ -83,13 +83,22 @@ public class AuthoritiesAndLocationsPage extends AdminPage {
 
     public void clickOnLocationEntry(String location) {
         ScenarioLogManager.getLogger().info("Trying to click on '" + location + "' under Authorities and locations...");
+        CONTEXT.set();
         // normalize-space(.) matches nested markup; contains(text()) only sees direct text nodes.
-        clickOnWebElement(
-                DEFAULT_EXPLICIT_WAIT_TIME,
-                "//li//a[contains(normalize-space(.), '" + location + "')]",
-                LocatorType.XPATH,
-                false,
-                CONTEXT);
+        By link = By.xpath("//li//a[contains(normalize-space(.), '" + location + "')]");
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        WebElement entry = wait.until(ExpectedConditions.presenceOfElementLocated(link));
+        ((JavascriptExecutor) DRIVER).executeScript(
+                "arguments[0].scrollIntoView({block:'center'});", entry);
+        try {
+            new WebDriverWait(DRIVER, Duration.ofSeconds(5))
+                    .until(ExpectedConditions.elementToBeClickable(entry))
+                    .click();
+        } catch (Exception e) {
+            ScenarioLogManager.getLogger().warn(
+                    "Normal click failed, trying JS click for location '{}'...", location);
+            ((JavascriptExecutor) DRIVER).executeScript("arguments[0].click();", entry);
+        }
         Assert.assertTrue(isWebElementVisible(DEFAULT_EXPLICIT_WAIT_TIME, "//h1[@class='main-title' and text()='Standort']", LocatorType.XPATH, false),
                 "Page title 'Standort' is not visible after opening the location!");
     }

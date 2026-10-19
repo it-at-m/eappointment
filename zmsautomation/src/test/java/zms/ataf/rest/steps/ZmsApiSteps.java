@@ -158,6 +158,7 @@ public class ZmsApiSteps {
             Response stop = postOrDeleteEmergency(scopeId, false);
             if (stop.getStatusCode() == 401 || stop.getStatusCode() == 403) {
                 cachedXAuthKey = null;
+                iUpdateTheWorkstationWithScopeAndCounterWithTheXAuthKey(scopeId, "4");
                 stop = postOrDeleteEmergency(scopeId, false);
             }
             Assertions.assertThat(stop.getStatusCode())
@@ -168,6 +169,7 @@ public class ZmsApiSteps {
                 Response restore = setScopeEmergencyEnabled(scopeId, previousEnabled);
                 if (restore.getStatusCode() == 401 || restore.getStatusCode() == 403) {
                     cachedXAuthKey = null;
+                    iUpdateTheWorkstationWithScopeAndCounterWithTheXAuthKey(scopeId, "4");
                     restore = setScopeEmergencyEnabled(scopeId, previousEnabled);
                 }
                 Assertions.assertThat(restore.getStatusCode())
