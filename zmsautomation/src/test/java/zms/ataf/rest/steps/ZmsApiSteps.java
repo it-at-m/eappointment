@@ -80,6 +80,9 @@ public class ZmsApiSteps {
     /** ZMS-3213: display numbers in call order (oldest first) for Aufrufmonitor assertions. */
     private final List<String> callDisplayNumbersInCallOrder = new ArrayList<>();
     private final Map<String, JsonNode> callDisplayProcessesByLabel = new HashMap<>();
+    /** Source walk-in Kundennummer before redirect (ZMS-3507 / ZMSALT-3541). */
+    private String rememberedDisplayNumber;
+    private Integer rememberedQueueNumber;
 
     @Before
     public void resetProcessContext() {
@@ -92,6 +95,8 @@ public class ZmsApiSteps {
         rememberedScopeProviderId = null;
         rememberedScopeProviderSource = null;
         rememberedTicketprinterCount = null;
+        rememberedDisplayNumber = null;
+        rememberedQueueNumber = null;
         firstClerkCallResponse = null;
         secondClerkCallResponse = null;
         workstationScopeId = 0;
@@ -593,9 +598,12 @@ public class ZmsApiSteps {
         String primaryUsername = scenarioLoginUsername;
         String primaryPassword = scenarioLoginPassword;
 
+        // Hold the call on a desk the UI / primary clerk never use (features use Platz 13).
+        // Same desk as the UI clerk races Parallel ProcessNotCallable scenarios and can clear
+        // the holder assignment so ?calledprocess= never shows ProcessNotCallable (Firefox flake).
         iAmLoggedInToTheZmsApiAsAnother("ataf");
         String holderAuthKey = getOrLoginXAuthKey();
-        iUpdateTheWorkstationWithScopeAndCounterWithTheXAuthKey(scopeId, "13");
+        iUpdateTheWorkstationWithScopeAndCounterWithTheXAuthKey(scopeId, "97");
         Assertions.assertThat(response.getStatusCode())
             .as("holder workstation scope for call body=%s", truncate(response.asString(), 500))
             .isEqualTo(200);
@@ -616,13 +624,11 @@ public class ZmsApiSteps {
         rememberProcess(assigned);
 
         // Restore the scenario's primary clerk session for later GET / UI steps.
+        // Do not rebind primary to Platz 13 — that races the UI clerk on the same desk during
+        // slow Firefox scope checkout and can drop the holder assignment on desk 97.
         cachedXAuthKey = primaryAuthKey;
         scenarioLoginUsername = primaryUsername;
         scenarioLoginPassword = primaryPassword;
-        iUpdateTheWorkstationWithScopeAndCounterWithTheXAuthKey(scopeId, "13");
-        Assertions.assertThat(response.getStatusCode())
-            .as("primary workstation after holder call body=%s", truncate(response.asString(), 500))
-            .isEqualTo(200);
     }
 
     /**
@@ -989,8 +995,37 @@ public class ZmsApiSteps {
                         earliest)
                 .isNotEmpty();
 
-        reserveAndOptionallyConfirm(
-                scopeId, familyName, request, authKey, candidates, confirm, earliest, endOfToday, minutesAhead, now);
+        try {
+            reserveAndOptionallyConfirm(
+                    scopeId, familyName, request, authKey, candidates, confirm, earliest, endOfToday,
+                    minutesAhead, now);
+        } catch (IllegalStateException reserveFailed) {
+            if (!reserveFailed.getMessage().contains("Failed to reserve process. Maybe someone was faster.")) {
+                throw reserveFailed;
+            }
+            // Parallel API scenarios often race the same free-list snapshot; refresh and retry once.
+            ScenarioLogManager.getLogger().warn(
+                    "All {} free-slot candidates for scope {} were taken; refreshing free list once",
+                    candidates.size(),
+                    scopeId);
+            JsonNode refreshed = minutesAhead > 0
+                    ? fetchFreeProcessesLookingAhead(scopeId, request, authKey, earliest)
+                    : fetchFreeProcessesLookingAhead(scopeId, request, authKey, earliest);
+            List<JsonNode> retry = slotsBetween(refreshed, earliest, Math.min(soon, endOfToday));
+            if (retry.isEmpty()) {
+                retry = slotsBetween(refreshed, earliest, endOfToday);
+            }
+            if (minutesAhead > 0 && retry.isEmpty()) {
+                retry = slotsBetween(refreshed, earliest, now + 24 * 60 * 60);
+            }
+            Assertions.assertThat(retry)
+                    .as("scope %d still needs an intern slot after reserve collision from epoch %d",
+                            scopeId, earliest)
+                    .isNotEmpty();
+            reserveAndOptionallyConfirm(
+                    scopeId, familyName, request, authKey, retry, confirm, earliest, endOfToday,
+                    minutesAhead, now);
+        }
     }
 
     /** Book from tomorrow onward so ProcessNotCurrentDate applies to calledprocess. */
@@ -1422,8 +1457,32 @@ public class ZmsApiSteps {
         reserveConfirmedAppointment(scopeId, serviceName, familyName, email, amendment, true);
     }
 
+    @When("I remember the last process display number and queue number")
+    public void iRememberTheLastProcessDisplayNumberAndQueueNumber() {
+        Assertions.assertThat(lastProcess)
+            .as("Queue or reserve a process before remembering its waiting number")
+            .isNotNull();
+        rememberedDisplayNumber = lastProcess.path("displayNumber").asText("");
+        Assertions.assertThat(rememberedDisplayNumber)
+            .as("displayNumber of process %s", lastProcess.path("id").asInt())
+            .isNotBlank();
+        rememberedQueueNumber = lastProcess.path("queue").path("number").asInt(0);
+        Assertions.assertThat(rememberedQueueNumber)
+            .as("queue.number of process %s", lastProcess.path("id").asInt())
+            .isPositive();
+    }
+
     @When("I redirect the last process to scope {int} with the X-AuthKey")
     public void iRedirectTheLastProcessToScopeWithTheXAuthKey(int targetScopeId) {
+        redirectLastProcessToScope(targetScopeId, null);
+    }
+
+    @When("I redirect the last process to scope {int} with amendment {string} with the X-AuthKey")
+    public void iRedirectTheLastProcessToScopeWithAmendmentWithTheXAuthKey(int targetScopeId, String amendment) {
+        redirectLastProcessToScope(targetScopeId, amendment);
+    }
+
+    private void redirectLastProcessToScope(int targetScopeId, String amendment) {
         Assertions.assertThat(lastProcess)
             .as("Reserve an appointment before redirecting it")
             .isNotNull();
@@ -1443,6 +1502,9 @@ public class ZmsApiSteps {
             if (appointment.path("scope").isObject()) {
                 ((ObjectNode) appointment.get("scope")).put("id", targetScopeId);
             }
+        }
+        if (amendment != null) {
+            body.put("amendment", amendment);
         }
 
         String authKey = getOrLoginXAuthKey();
@@ -1464,6 +1526,36 @@ public class ZmsApiSteps {
         forgetProcess(originalId);
         trackProcess(createdId, targetScopeId);
         rememberProcess(created);
+    }
+
+    @Then("the last process display number matches the remembered value")
+    public void theLastProcessDisplayNumberMatchesTheRememberedValue() {
+        Assertions.assertThat(lastProcess).as("last process").isNotNull();
+        Assertions.assertThat(rememberedDisplayNumber)
+            .as("Remember displayNumber before redirecting")
+            .isNotBlank();
+        Assertions.assertThat(lastProcess.path("displayNumber").asText(""))
+            .as("displayNumber after redirect; process=%s", lastProcess.path("id").asInt())
+            .isEqualTo(rememberedDisplayNumber);
+    }
+
+    @Then("the last process queue number matches the remembered value")
+    public void theLastProcessQueueNumberMatchesTheRememberedValue() {
+        Assertions.assertThat(lastProcess).as("last process").isNotNull();
+        Assertions.assertThat(rememberedQueueNumber)
+            .as("Remember queue.number before redirecting")
+            .isNotNull();
+        Assertions.assertThat(lastProcess.path("queue").path("number").asInt(0))
+            .as("queue.number after redirect; process=%s", lastProcess.path("id").asInt())
+            .isEqualTo(rememberedQueueNumber);
+    }
+
+    @Then("the last process scope id is {int}")
+    public void theLastProcessScopeIdIs(int scopeId) {
+        Assertions.assertThat(lastProcess).as("last process").isNotNull();
+        Assertions.assertThat(scopeIdOf(lastProcess))
+            .as("scope.id after redirect; process=%s", lastProcess.path("id").asInt())
+            .isEqualTo(scopeId);
     }
 
     @Then("the last process has priority {int}")

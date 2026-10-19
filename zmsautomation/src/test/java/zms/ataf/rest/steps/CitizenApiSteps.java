@@ -8,6 +8,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
+import java.util.AbstractMap;
 import java.util.Locale;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -615,7 +616,7 @@ public class CitizenApiSteps {
         if (lastAvailableCalendarResponse == null) {
             throw new IllegalStateException("Request available days first.");
         }
-        String date = lastAvailableCalendarResponse.getFirstAvailableDay();
+        String date = refetchCalendarUntilFirstAvailableDay(null);
         if (date == null) {
             throw new IllegalStateException("No available day in last response.");
         }
@@ -635,12 +636,54 @@ public class CitizenApiSteps {
         if (lastAvailableCalendarResponse == null) {
             throw new IllegalStateException("Request available days first.");
         }
-        String date = lastAvailableCalendarResponse.getFirstAvailableDayForOffice(officeId);
+        String date = refetchCalendarUntilFirstAvailableDay(officeId);
         if (date == null) {
             throw new IllegalStateException(
                 "No available day with appointments for office " + officeId + " in last calendar response.");
         }
         iRequestAvailableAppointmentsForDateOfficeAndService(date, officeId, lastServiceId, lastServiceCount);
+    }
+
+    /**
+     * Parallel shard runs briefly empty a calendar (reservations). Refetch with backoff before
+     * failing spa / booking scenarios that need at least one day.
+     *
+     * @param officeId when non-null, require a day with appointments for that office bucket
+     */
+    private String refetchCalendarUntilFirstAvailableDay(Integer officeId) {
+        for (int attempt = 1; attempt <= 8; attempt++) {
+            String date =
+                    officeId == null
+                            ? lastAvailableCalendarResponse.getFirstAvailableDay()
+                            : lastAvailableCalendarResponse.getFirstAvailableDayForOffice(officeId);
+            if (date != null) {
+                return date;
+            }
+            if (cachedCalendarOfficeIds == null
+                    || cachedCalendarServiceIds == null
+                    || cachedCalendarServiceCounts == null
+                    || attempt == 8) {
+                return null;
+            }
+            ScenarioLogManager.getLogger().info(String.format(
+                    "Citizen API calendar has no available day%s; requesting it again (%d/8)",
+                    officeId == null ? "" : (" for office " + officeId),
+                    attempt));
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException interrupted) {
+                Thread.currentThread().interrupt();
+                return null;
+            }
+            lastAvailableCalendarResponse = fetchAvailableCalendar(
+                    parseOfficeIdsCsv(cachedCalendarOfficeIds),
+                    cachedCalendarServiceIds,
+                    cachedCalendarServiceCounts);
+            if (lastAvailableCalendarResponse == null) {
+                return null;
+            }
+        }
+        return null;
     }
 
     /**
@@ -3042,6 +3085,63 @@ public class CitizenApiSteps {
                 }
             }
         }
+    }
+
+    /**
+     * ZMSKVR-389 / ZMSKVR-418: thinned process keeps main serviceCount and each
+     * subRequestCounts entry. CSV form {@code Name:count, Name:count}.
+     */
+    @Then("the appointment should list services with counts {string}")
+    public void theAppointmentShouldListServicesWithCounts(String nameCountCsv) {
+        ThinnedProcess process =
+                lastReserveProcess != null ? lastReserveProcess : parseDataResponse(response, ThinnedProcess.class);
+        Assertions.assertThat(process).as("appointment process").isNotNull();
+        List<AbstractMap.SimpleEntry<String, Integer>> expected = parseServiceNameCounts(nameCountCsv);
+        Assertions.assertThat(expected).as("expected Name:count pairs").isNotEmpty();
+        Assertions.assertThat(process.getServiceName())
+                .as("main serviceName")
+                .isEqualTo(expected.get(0).getKey());
+        Assertions.assertThat(process.getServiceCount())
+                .as("main serviceCount for %s", expected.get(0).getKey())
+                .isEqualTo(expected.get(0).getValue());
+        List<ThinnedProcess.SubRequestCount> subs =
+                process.getSubRequestCounts() == null ? List.of() : process.getSubRequestCounts();
+        Assertions.assertThat(subs)
+                .as("subRequestCounts size for %s", nameCountCsv)
+                .hasSize(expected.size() - 1);
+        for (int i = 1; i < expected.size(); i++) {
+            ThinnedProcess.SubRequestCount sub = subs.get(i - 1);
+            Assertions.assertThat(sub).as("subRequestCounts[%d]", i - 1).isNotNull();
+            Assertions.assertThat(sub.getName())
+                    .as("subRequestCounts[%d].name", i - 1)
+                    .isEqualTo(expected.get(i).getKey());
+            Assertions.assertThat(sub.getCount())
+                    .as("subRequestCounts[%d].count for %s", i - 1, expected.get(i).getKey())
+                    .isEqualTo(expected.get(i).getValue());
+        }
+    }
+
+    private static List<AbstractMap.SimpleEntry<String, Integer>> parseServiceNameCounts(String nameCountCsv) {
+        List<AbstractMap.SimpleEntry<String, Integer>> parsed = new ArrayList<>();
+        for (String part : nameCountCsv.split(",")) {
+            String trimmed = part.trim();
+            if (trimmed.isEmpty()) {
+                continue;
+            }
+            int colon = trimmed.lastIndexOf(':');
+            Assertions.assertThat(colon)
+                    .as("expected Name:count token, got \"%s\"", trimmed)
+                    .isGreaterThan(0);
+            String name = trimmed.substring(0, colon).trim();
+            String countToken = trimmed.substring(colon + 1).trim();
+            try {
+                parsed.add(new AbstractMap.SimpleEntry<>(name, Integer.parseInt(countToken)));
+            } catch (NumberFormatException ex) {
+                throw new IllegalArgumentException(
+                        "expected Name:count token with integer count, got \"" + trimmed + "\"", ex);
+            }
+        }
+        return parsed;
     }
 
     /** Unfolded ICS SUMMARY value, or null when the property is absent. */

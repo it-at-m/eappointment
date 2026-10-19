@@ -1722,6 +1722,12 @@ public class AdminSteps {
                 TestDataHelper.transformTestData(kunde), prioritaet);
     }
 
+    @Then("the queued customer {string} has the note {string}.")
+    public void hat_der_wartende_kunde_die_anmerkung(String termin, String anmerkung) {
+        COUNTER_PROCESSING_STATION_PAGE.assertQueuedCustomerHasNote(
+                TestDataHelper.transformTestData(termin), anmerkung);
+    }
+
     @When("I forward the appointment to {string} with the note {string}.")
     public void wenn_sie_den_termin_weiterleiten(String standort, String anmerkung) {
         PROCESSING_STATION_SECTION.clickOnForwardAppointment();
@@ -1779,6 +1785,12 @@ public class AdminSteps {
     public void theParkedAppointmentShowsRoomNumber(String termin, String roomNumber) {
         COUNTER_PROCESSING_STATION_PAGE.assertParkedAppointmentShowsRoomNumber(
                 TestDataHelper.transformTestData(termin), TestDataHelper.transformTestData(roomNumber));
+    }
+
+    @Then("the parked appointment for customer {string} shows room number {string}.")
+    public void theParkedAppointmentForCustomerShowsRoomNumber(String customer, String roomNumber) {
+        COUNTER_PROCESSING_STATION_PAGE.assertParkedAppointmentForCustomerShowsRoomNumber(
+                TestDataHelper.transformTestData(customer), TestDataHelper.transformTestData(roomNumber));
     }
 
     @Given("the finished appointment table is displayed.")
