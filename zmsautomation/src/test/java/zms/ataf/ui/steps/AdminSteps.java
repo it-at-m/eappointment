@@ -498,12 +498,20 @@ public class AdminSteps {
         // Prefer API cleanup in ZmsApiSteps (exact scope/date), which also runs when the
         // banner assertion never flipped day_closure_ui_locked. Page unlock only when
         // scope/date were never recorded (e.g. still on the day view after a partial lock).
-        String scope = TestDataHelper.getTestData("day_closure_ui_scope");
-        String date = TestDataHelper.getTestData("day_closure_ui_date");
+        String scope;
+        String date;
+        String lockedFlag;
+        try {
+            scope = TestDataHelper.getTestData("day_closure_ui_scope");
+            date = TestDataHelper.getTestData("day_closure_ui_date");
+            lockedFlag = TestDataHelper.getTestData("day_closure_ui_locked");
+        } catch (NullPointerException | IllegalStateException ignored) {
+            return;
+        }
         if (scope != null && !scope.isBlank() && date != null && !date.isBlank()) {
             return;
         }
-        if (!"true".equals(TestDataHelper.getTestData("day_closure_ui_locked"))) {
+        if (!"true".equals(lockedFlag)) {
             return;
         }
         try {
