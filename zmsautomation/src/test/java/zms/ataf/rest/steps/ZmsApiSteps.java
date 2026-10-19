@@ -86,6 +86,8 @@ public class ZmsApiSteps {
     /** ZMS-3212 / ZMS-3503: scope whose emergency may need cleanup. */
     private Integer emergencyScopeId;
     private Boolean emergencyEnabledBeforeScenario;
+    /** True when the alarm was already on before this scenario changed it. */
+    private Boolean emergencyActivatedBeforeScenario;
     /** ZMS-3213: display numbers in call order (oldest first) for Aufrufmonitor assertions. */
     private final List<String> callDisplayNumbersInCallOrder = new ArrayList<>();
     private final Map<String, JsonNode> callDisplayProcessesByLabel = new HashMap<>();
@@ -106,6 +108,7 @@ public class ZmsApiSteps {
         rememberedTicketprinterCount = null;
         emergencyScopeId = null;
         emergencyEnabledBeforeScenario = null;
+        emergencyActivatedBeforeScenario = null;
         rememberedDisplayNumber = null;
         rememberedQueueNumber = null;
         firstClerkCallResponse = null;
@@ -129,7 +132,28 @@ public class ZmsApiSteps {
 
     @After
     public void deleteOpeningHoursLeftByTheScenario() {
-        restoreEmergencyLeftByTheScenario();
+        AssertionError emergencyFailure = null;
+        try {
+            restoreEmergencyLeftByTheScenario();
+        } catch (RuntimeException | AssertionError e) {
+            emergencyFailure = e instanceof AssertionError
+                    ? (AssertionError) e
+                    : new AssertionError("Emergency teardown failed", e);
+        }
+        try {
+            finishScenarioCleanup();
+        } catch (RuntimeException | AssertionError later) {
+            if (emergencyFailure != null) {
+                later.addSuppressed(emergencyFailure);
+            }
+            throw later;
+        }
+        if (emergencyFailure != null) {
+            throw emergencyFailure;
+        }
+    }
+
+    private void finishScenarioCleanup() {
         unlockDayClosureLeftByTheScenario();
         Integer id = createdAvailabilityId;
         createdAvailabilityId = null;
@@ -154,17 +178,33 @@ public class ZmsApiSteps {
             return;
         }
         Boolean previousEnabled = emergencyEnabledBeforeScenario;
+        boolean wasActive = Boolean.TRUE.equals(emergencyActivatedBeforeScenario);
         try {
-            Response stop = postOrDeleteEmergency(scopeId, false);
-            if (stop.getStatusCode() == 401 || stop.getStatusCode() == 403) {
-                cachedXAuthKey = null;
-                iUpdateTheWorkstationWithScopeAndCounterWithTheXAuthKey(scopeId, "4");
-                stop = postOrDeleteEmergency(scopeId, false);
+            if (wasActive) {
+                if (!isEmergencyActivated(fetchScopeEmergencyStatus(scopeId))) {
+                    Response trigger = postOrDeleteEmergency(scopeId, true);
+                    if (trigger.getStatusCode() == 401 || trigger.getStatusCode() == 403) {
+                        cachedXAuthKey = null;
+                        iUpdateTheWorkstationWithScopeAndCounterWithTheXAuthKey(scopeId, "4");
+                        trigger = postOrDeleteEmergency(scopeId, true);
+                    }
+                    Assertions.assertThat(trigger.getStatusCode())
+                            .as("teardown POST /scope/%d/emergency/ body=%s",
+                                    scopeId, truncate(trigger.asString(), 500))
+                            .isEqualTo(200);
+                }
+            } else {
+                Response stop = postOrDeleteEmergency(scopeId, false);
+                if (stop.getStatusCode() == 401 || stop.getStatusCode() == 403) {
+                    cachedXAuthKey = null;
+                    iUpdateTheWorkstationWithScopeAndCounterWithTheXAuthKey(scopeId, "4");
+                    stop = postOrDeleteEmergency(scopeId, false);
+                }
+                Assertions.assertThat(stop.getStatusCode())
+                        .as("teardown DELETE /scope/%d/emergency/ body=%s",
+                                scopeId, truncate(stop.asString(), 500))
+                        .isEqualTo(200);
             }
-            Assertions.assertThat(stop.getStatusCode())
-                    .as("teardown DELETE /scope/%d/emergency/ body=%s",
-                            scopeId, truncate(stop.asString(), 500))
-                    .isEqualTo(200);
             if (previousEnabled != null) {
                 Response restore = setScopeEmergencyEnabled(scopeId, previousEnabled);
                 if (restore.getStatusCode() == 401 || restore.getStatusCode() == 403) {
@@ -179,6 +219,7 @@ public class ZmsApiSteps {
             }
             emergencyScopeId = null;
             emergencyEnabledBeforeScenario = null;
+            emergencyActivatedBeforeScenario = null;
         } catch (RuntimeException | AssertionError e) {
             ScenarioLogManager.getLogger().error(
                     "Could not restore emergency state for scope {}: {}", scopeId, e.getMessage());
@@ -684,12 +725,26 @@ public class ZmsApiSteps {
     }
 
     private void rememberEmergencyScope(int scopeId) {
-        if (emergencyScopeId == null) {
-            emergencyScopeId = scopeId;
-            JsonNode scope = fetchScope(scopeId, 1);
-            emergencyEnabledBeforeScenario = "1".equals(
-                    scope.path("preferences").path("workstation").path("emergencyEnabled").asText("0"));
+        if (emergencyScopeId != null) {
+            return;
         }
+        JsonNode scope = fetchScope(scopeId, 1);
+        emergencyActivatedBeforeScenario = isEmergencyActivated(scope.path("status").path("emergency"));
+        emergencyEnabledBeforeScenario = "1".equals(
+                scope.path("preferences").path("workstation").path("emergencyEnabled").asText("0"));
+        emergencyScopeId = scopeId;
+    }
+
+    /** Compressed scope JSON omits activated when it is the schema default false. */
+    private static boolean isEmergencyActivated(JsonNode emergency) {
+        JsonNode activated = emergency.get("activated");
+        if (activated == null || activated.isNull() || activated.isMissingNode()) {
+            return false;
+        }
+        if (activated.isBoolean()) {
+            return activated.asBoolean();
+        }
+        return activated.asInt(0) == 1;
     }
 
     private Response postOrDeleteEmergency(int scopeId, boolean trigger) {
