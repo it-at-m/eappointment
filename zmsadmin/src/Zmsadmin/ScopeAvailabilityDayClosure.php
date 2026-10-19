@@ -8,7 +8,6 @@
 namespace BO\Zmsadmin;
 
 use BO\Slim\Render;
-use BO\Zmsentities\Closure;
 use Psr\Http\Message\ResponseInterface;
 
 class ScopeAvailabilityDayClosure extends BaseController
@@ -31,10 +30,14 @@ class ScopeAvailabilityDayClosure extends BaseController
             new \BO\Zmsentities\Closure()
         )->getEntity();
 
+        // Plain boolean so the day-view banner can update without relying on
+        // schema serialization of the dynamic `existing` property.
         return \BO\Slim\Render::withJson(
             $response,
             [
-                'closure' => $closureToggled
+                'closure' => [
+                    'existing' => (bool) ($closureToggled['existing'] ?? false),
+                ],
             ]
         );
     }
