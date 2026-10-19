@@ -327,6 +327,18 @@ public class AdminPage extends BasePage {
         Assert.assertFalse(visible, "Navigation must not show \"" + label + "\" for Tresen login.");
     }
 
+    /** Active Notruf covers the page until Ausblenden is used. */
+    public void minimizeNotrufOverlay() {
+        CONTEXT.set();
+        ScenarioLogManager.getLogger().info("Minimizing the Notruf overlay...");
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        WebElement hide = wait.until(ExpectedConditions.elementToBeClickable(
+                By.cssSelector("button.emergency__button-hide")));
+        hide.click();
+        wait.until(ExpectedConditions.presenceOfElementLocated(
+                By.cssSelector(".emergency[data-minimized]")));
+    }
+
     /** ZMS-3212: NOTRUF trigger is only rendered when workstation.name is set. */
     public void assertNotrufTriggerNotVisible() {
         CONTEXT.set();
