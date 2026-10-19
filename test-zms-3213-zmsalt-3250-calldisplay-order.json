@@ -1,10 +1,10 @@
 {
   "branch": "test-zms-3213-zmsalt-3250-calldisplay-order",
   "branchSlug": "test-zms-3213-zmsalt-3250-calldisplay-order",
-  "runId": "39127747745",
-  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/39127747745",
-  "runStartedAt": "2026-10-18T12:33:03Z",
-  "publishedAt": "2026-10-18T12:42:32.589Z",
+  "runId": "39218516358",
+  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/39218516358",
+  "runStartedAt": "2026-10-19T07:49:48Z",
+  "publishedAt": "2026-10-19T07:59:35.021Z",
   "features": {
     "feature-rest-zmsapi-calldisplay-zms-3213-zmsalt-3250-call-order": {
       "status": "passed",
@@ -69,6 +69,38 @@
       "runId": "39127747745",
       "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/39127747745",
       "runStartedAt": "2026-10-18T12:33:03Z"
+    },
+    "feature-ui-zmscalldisplay-queue-zms-3213-zmsalt-3213-zms-3250-zmsalt-3250-call-order": {
+      "status": "passed",
+      "shard": "custom",
+      "browser": "chrome",
+      "browsers": {
+        "chrome": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "39218516358",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/39218516358",
+          "runStartedAt": "2026-10-19T07:49:48Z"
+        },
+        "edge": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "39218516358",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/39218516358",
+          "runStartedAt": "2026-10-19T07:49:48Z"
+        },
+        "firefox": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "39218516358",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/39218516358",
+          "runStartedAt": "2026-10-19T07:49:48Z"
+        }
+      },
+      "rel": "ui/zmscalldisplay/queue/zms-3213_zmsalt-3213_zms-3250_zmsalt-3250_call_order.feature",
+      "runId": "39218516358",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/39218516358",
+      "runStartedAt": "2026-10-19T07:49:48Z"
     }
   }
 }
