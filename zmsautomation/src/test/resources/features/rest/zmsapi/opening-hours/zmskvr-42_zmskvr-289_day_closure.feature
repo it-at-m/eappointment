@@ -24,6 +24,8 @@ Feature: Day closure blocks free Terminkunden slots on zmsapi
     # Scope 133 (not Abholung 148) so UI Ruppertstraße Abholung day-lock cannot collide across shards.
     Given I am logged in to the ZMS API as "ataf"
     And Spontankunden opening hours exist for scope 133 from "00:05:00" to "23:55:00"
+    # Start unlocked so the first toggle creates a lock owned by this scenario (not removing a leftover).
+    And the day closure for scope 133 on date "<heute>" is unlocked with the X-AuthKey
     When I toggle the day closure for scope 133 on date "<heute>" with the X-AuthKey
     Then the response status code should be 200
     And the day closure existing flag should be true
