@@ -495,20 +495,21 @@ public class AdminSteps {
 
     @After(value = "@ZMSKVR-42 or @ZMSKVR-289", order = 10001)
     public void unlockDayClosureLeftByUiScenario() {
-        if (!"true".equals(TestDataHelper.getTestData("day_closure_ui_locked"))) {
-            return;
-        }
-        // Prefer API cleanup in ZmsApiSteps (exact scope/date). Page unlock only when
-        // scope/date were never recorded (e.g. still on the day view).
+        // Prefer API cleanup in ZmsApiSteps (exact scope/date), which also runs when the
+        // banner assertion never flipped day_closure_ui_locked. Page unlock only when
+        // scope/date were never recorded (e.g. still on the day view after a partial lock).
         String scope = TestDataHelper.getTestData("day_closure_ui_scope");
         String date = TestDataHelper.getTestData("day_closure_ui_date");
         if (scope != null && !scope.isBlank() && date != null && !date.isBlank()) {
             return;
         }
+        if (!"true".equals(TestDataHelper.getTestData("day_closure_ui_locked"))) {
+            return;
+        }
         try {
             AUTHORITIES_AND_LOCATIONS_PAGE.ensureDayClosureUnlocked();
             TestDataHelper.setTestData("day_closure_ui_locked", "false");
-        } catch (RuntimeException e) {
+        } catch (RuntimeException | AssertionError e) {
             ScenarioLogManager.getLogger().warn(
                     "Could not unlock UI day closure leftover from the page: {}", e.getMessage());
         }

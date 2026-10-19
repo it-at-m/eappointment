@@ -133,11 +133,13 @@ public class ZmsApiSteps {
     }
 
     private void unlockDayClosureLeftByTheScenario() {
-        if (dayClosureIsLocked && dayClosureScopeId != null && dayClosureDate != null) {
+        // Unlock whenever scope/date were recorded — not only when dayClosureIsLocked is true.
+        // A failed assertion after a successful lock must not skip teardown.
+        if (dayClosureScopeId != null && dayClosureDate != null) {
             try {
                 unlockDayClosureViaApiIfLocked(dayClosureScopeId, dayClosureDate);
                 dayClosureIsLocked = false;
-            } catch (RuntimeException e) {
+            } catch (RuntimeException | AssertionError e) {
                 ScenarioLogManager.getLogger().warn(
                         "Could not unlock day closure for scope {} on {}: {}",
                         dayClosureScopeId,
@@ -150,23 +152,24 @@ public class ZmsApiSteps {
 
     /**
      * ZMSKVR-42: UI lock leftovers (e.g. failed after month overview) are unlocked via API
-     * using the recorded scope/date — not the current browser page.
+     * using the recorded scope/date — not the current browser page. Scope/date alone are
+     * enough: the banner assertion may have failed after the lock POST succeeded.
      */
     private void unlockUiDayClosureLeftByTheScenario() {
-        if (!"true".equals(TestDataHelper.getTestData("day_closure_ui_locked"))) {
-            return;
-        }
         String scope = TestDataHelper.getTestData("day_closure_ui_scope");
         String date = TestDataHelper.getTestData("day_closure_ui_date");
+        boolean flaggedLocked = "true".equals(TestDataHelper.getTestData("day_closure_ui_locked"));
         if (scope == null || date == null || scope.isBlank() || date.isBlank()) {
-            ScenarioLogManager.getLogger().warn(
-                    "UI day closure flagged locked but day_closure_ui_scope/date missing; leaving flag set");
+            if (flaggedLocked) {
+                ScenarioLogManager.getLogger().warn(
+                        "UI day closure flagged locked but day_closure_ui_scope/date missing; leaving flag set");
+            }
             return;
         }
         try {
             unlockDayClosureViaApiIfLocked(Integer.parseInt(scope), date);
             TestDataHelper.setTestData("day_closure_ui_locked", "false");
-        } catch (RuntimeException e) {
+        } catch (RuntimeException | AssertionError e) {
             ScenarioLogManager.getLogger().warn(
                     "Could not unlock UI day closure for scope {} on {}: {}",
                     scope,
@@ -194,6 +197,35 @@ public class ZmsApiSteps {
                 .isTrue();
         Assertions.assertThat(existing.asBoolean())
                 .as("cleanup should leave scope %d on %s unlocked", scopeId, date)
+                .isFalse();
+    }
+
+    /**
+     * Ensure the day starts unlocked so a following toggle creates a lock owned by this scenario.
+     * If another run left it locked, unlock without recording ownership for teardown restore.
+     */
+    @Given("the day closure for scope {int} on date {string} is unlocked with the X-AuthKey")
+    public void theDayClosureForScopeOnDateIsUnlocked(int scopeId, String date) {
+        AccountCheckout.checkout("scope:" + scopeId + ":day-closure");
+        String resolved = resolveDayClosureDate(date);
+        if (!isDayClosureLocked(scopeId, resolved)) {
+            ScenarioLogManager.getLogger().info(
+                    "Day closure for scope {} on {} already unlocked", scopeId, resolved);
+            return;
+        }
+        ScenarioLogManager.getLogger().warn(
+                "Day closure for scope {} on {} was locked; unlocking before the scenario owns a toggle",
+                scopeId,
+                resolved);
+        Response toggle = postDayClosureToggle(scopeId, resolved);
+        Assertions.assertThat(toggle.getStatusCode())
+                .as("ensure-unlocked toggle scope %d on %s body=%s",
+                        scopeId, resolved, truncate(toggle.asString(), 500))
+                .isEqualTo(200);
+        JsonNode existing = parseDataNode(toggle).path("existing");
+        Assertions.assertThat(existing.isBoolean()).isTrue();
+        Assertions.assertThat(existing.asBoolean())
+                .as("ensure-unlocked should leave scope %d on %s unlocked", scopeId, resolved)
                 .isFalse();
     }
 
@@ -2339,8 +2371,11 @@ public class ZmsApiSteps {
     @Given("Spontankunden opening hours exist for scope {int} from {string} to {string}")
     public void spontankundenOpeningHoursExistForScope(int scopeId, String from, String to) {
         AccountCheckout.checkout("scope:" + scopeId + ":spontankunden");
-        if (findOpeningHoursIds(scopeId, "ATAF-ZMSKVR-167").isEmpty()) {
+        java.util.List<Integer> existing = findOpeningHoursIds(scopeId, "ATAF-ZMSKVR-167");
+        if (existing.isEmpty()) {
             createSpontankundenOpeningHours(scopeId, from, to);
+        } else {
+            createdAvailabilityId = existing.get(0);
         }
     }
 
@@ -2552,9 +2587,13 @@ public class ZmsApiSteps {
     public void iDeleteSpontankundenOpeningHoursForScope(int scopeId) {
         AccountCheckout.checkout("scope:" + scopeId + ":spontankunden");
         String authKey = getOrLoginXAuthKey();
-        java.util.List<Integer> ids = findOpeningHoursIds(scopeId, null);
+        // Only ATAF-ZMSKVR-167 rows — never wipe unrelated opening hours for the scope/day.
+        java.util.List<Integer> ids = findOpeningHoursIds(scopeId, "ATAF-ZMSKVR-167");
+        if (ids.isEmpty() && createdAvailabilityId != null) {
+            ids = java.util.List.of(createdAvailabilityId);
+        }
         Assertions.assertThat(ids)
-            .as("scope %d should have Spontankunden opening hours to delete", scopeId)
+            .as("scope %d should have ATAF-ZMSKVR-167 Spontankunden opening hours to delete", scopeId)
             .isNotEmpty();
         for (int id : ids) {
             response = given()
@@ -2566,6 +2605,9 @@ public class ZmsApiSteps {
             Assertions.assertThat(response.getStatusCode())
                 .as("DELETE /availability/%d/", id)
                 .isEqualTo(200);
+            if (createdAvailabilityId != null && createdAvailabilityId == id) {
+                createdAvailabilityId = null;
+            }
         }
     }
 
@@ -3078,6 +3120,10 @@ public class ZmsApiSteps {
                 "POST /availability/ for Spontankunden hours on scope " + scopeId
                     + " failed with " + response.getStatusCode() + ": "
                     + truncate(response.asString(), 1000));
+        }
+        ArrayNode created = parseDataArray(response);
+        if (created != null && !created.isEmpty() && created.get(0).path("id").asInt() > 0) {
+            createdAvailabilityId = created.get(0).path("id").asInt();
         }
     }
 
