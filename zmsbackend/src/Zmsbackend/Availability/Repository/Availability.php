@@ -283,8 +283,41 @@ class Availability extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Q
 
     public static function getJoinExpression(string $process, string $availability): \BO\Zmsbackend\Query\Builder\Expression
     {
-        // UNIX_TIMESTAMP is relative here, no dependency to TIMEZONE
+        $matchesProcess = static::getProcessMatchCondition($process, $availability);
+        $fallbackMatchesProcess = static::getProcessMatchCondition($process, 'fallback_availability');
         return self::expression("
+            $matchesProcess
+
+            -- overlapping availabilities: use the availability the process is mapped to,
+            -- unmapped processes use the shortest matching availability (like getSortedByDuration())
+            AND $availability.OeffnungszeitID = IFNULL(
+                (
+                    SELECT mapped_slot.availabilityID
+                    FROM slot_process mapped_process
+                        INNER JOIN slot mapped_slot ON mapped_slot.slotID = mapped_process.slotID
+                    WHERE mapped_process.processID = $process.BuergerID
+                    LIMIT 1
+                ),
+                (
+                    SELECT fallback_availability.OeffnungszeitID
+                    FROM " . self::getTablename() . " fallback_availability
+                    WHERE $fallbackMatchesProcess
+                    ORDER BY
+                        TIMEDIFF(
+                            fallback_availability.appointment_end_time,
+                            fallback_availability.appointment_start_time
+                        ),
+                        fallback_availability.OeffnungszeitID
+                    LIMIT 1
+                )
+            )
+            ");
+    }
+
+    protected static function getProcessMatchCondition(string $process, string $availability): string
+    {
+        // UNIX_TIMESTAMP is relative here, no dependency to TIMEZONE
+        return "
             $availability.scope_id = $process.StandortID
             AND $availability.OeffnungszeitID IS NOT NULL
 
@@ -322,19 +355,7 @@ class Availability extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Q
             AND $process.Uhrzeit < $availability.appointment_end_time
             AND $process.Datum >= $availability.start_date
             AND $process.Datum <= $availability.end_date
-
-            -- overlapping availabilities: use the availability the process is mapped to
-            AND $availability.OeffnungszeitID = IFNULL(
-                (
-                    SELECT mapped_slot.availabilityID
-                    FROM slot_process mapped_process
-                        INNER JOIN slot mapped_slot ON mapped_slot.slotID = mapped_process.slotID
-                    WHERE mapped_process.processID = $process.BuergerID
-                    LIMIT 1
-                ),
-                $availability.OeffnungszeitID
-            )
-            ");
+            ";
     }
 
     #[\Override]

@@ -47,6 +47,7 @@ class Slot extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\Map
             s.availabilityID,
             s.time,
             s.slotTimeInMinutes,
+            s.public,
             s.intern,
             COUNT(sp.processID) AS confirmed
         FROM slot s
@@ -238,6 +239,21 @@ class Slot extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\Map
       AND year = ?
       AND month = ?
       AND day = ?
+      AND time IN (%s)
+    ORDER BY slotID ASC
+    FOR UPDATE
+';
+
+    /**
+     * Lock the slots of several overlapping availabilities in one statement (consistent slotID order)
+     */
+    public const string QUERY_SELECT_CANDIDATE_SLOTS_FOR_UPDATE = '
+    SELECT slotID FROM slot WHERE
+      scopeID = ?
+      AND year = ?
+      AND month = ?
+      AND day = ?
+      AND availabilityID IN (%s)
       AND time IN (%s)
     ORDER BY slotID ASC
     FOR UPDATE
