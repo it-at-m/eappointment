@@ -17,12 +17,13 @@ import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import zms.ataf.rest.steps.ZmsApiMailSteps;
 import zms.ataf.ui.pages.citizenview.CitizenViewPage;
+import zms.ataf.ui.pages.citizenview.support.FeuerwacheOrderDaySeats;
 
 /**
  * All zmscitizenview UI steps (English). Service Finder smoke + full booking flow; see
  * {@code features/ui/zmscitizenview/ServiceFinder.feature},
  * {@code zmskvr-1124_booking_ruppertstrasse_pass_calendar_jumpin_links.feature}, and
- * {@code zmskvr-1046_booking_ruppertstrasse_shared_booking_ausbildung.feature}.
+ * {@code zmskvr-1046_zmskvr-1091_booking_ruppertstrasse_shared_booking_ausbildung.feature}.
  */
 public class CitizenViewSteps {
 
@@ -137,6 +138,16 @@ public class CitizenViewSteps {
         String s = TestDataHelper.transformTestData(serviceId);
         ScenarioLogManager.getLogger().info("zmscitizenview: jump-in service={}", s);
         page.navigateWithJumpInService(s);
+    }
+
+    /**
+     * ZMSKVR-151 / ZMSKVR-714: booked-out scenarios may have reserved every V61 day+7 seat.
+     * Re-open capacity before asserting Feuerwache 10 last under Verfügbare Termine.
+     */
+    @Given("Feuerwache order-day seats are restored in the ATAF database")
+    public void feuerwacheOrderDaySeatsAreRestoredInTheAtafDatabase() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: restoring Feuerwache V61 order-day seats");
+        FeuerwacheOrderDaySeats.restore();
     }
 
     @When("I click Leistung wechseln in the citizen view")
@@ -330,6 +341,44 @@ public class CitizenViewSteps {
         ScenarioLogManager.getLogger()
                 .info("zmscitizenview: max-length error for #{} at {}", fieldId, maxChars);
         page.assertMaxLengthCounterError(fieldId, maxChars);
+    }
+
+    @Then("both freitext character counters should show {int} as the maximum in the citizen view")
+    public void bothFreitextCharacterCountersShouldShowAsTheMaximumInTheCitizenView(int maxChars) {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: both Freitext counters visible at max={}", maxChars);
+        page.assertBothFreitextCharacterCountersVisible(maxChars);
+    }
+
+    @Then("the freitext character counter for {string} should update live up to {int} in the citizen view")
+    public void theFreitextCharacterCounterForShouldUpdateLiveUpToInTheCitizenView(
+            String fieldId, int maxChars) {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: live Freitext counter #{} max={}", fieldId, maxChars);
+        page.assertFreitextCharacterCounterUpdatesLive(fieldId, maxChars);
+    }
+
+    @Then("the contact field {string} should have no character counter in the citizen view")
+    public void theContactFieldShouldHaveNoCharacterCounterInTheCitizenView(String fieldId) {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: no character counter on #{}", fieldId);
+        page.assertContactFieldHasNoCharacterCounter(fieldId);
+    }
+
+    @Then("the contact field {string} should block input at {int} characters in the citizen view")
+    public void theContactFieldShouldBlockInputAtCharactersInTheCitizenView(
+            String fieldId, int maxChars) {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: maxlength blocks #{} at {}", fieldId, maxChars);
+        page.assertContactFieldInputBlockedAtMax(fieldId, maxChars);
+    }
+
+    @Then("both freitext character counters should show {int} as the maximum on mobile in the citizen view")
+    public void bothFreitextCharacterCountersShouldShowAsTheMaximumOnMobileInTheCitizenView(
+            int maxChars) {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: both Freitext counters on mobile max={}", maxChars);
+        page.assertBothFreitextCharacterCountersVisibleOnMobile(maxChars);
     }
 
     @Then("the contact character counter font size is point eight seven five rem on desktop")
@@ -688,6 +737,19 @@ public class CitizenViewSteps {
         page.assertOfficesCheckedInFrequencyOrder();
     }
 
+    @Then("the Feuerwache location checkboxes are in numeric order from 1 to 10")
+    public void theFeuerwacheLocationCheckboxesAreInNumericOrderFrom1To10() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: Feuerwache Ort checkboxes 1…10");
+        page.assertFeuerwacheCheckboxesInNumericOrder();
+    }
+
+    @Then("the Feuerwache headings under available appointments are in numeric order with 10 last")
+    public void theFeuerwacheHeadingsUnderAvailableAppointmentsAreInNumericOrderWith10Last() {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: Feuerwache list/calendar headings numeric, 10 last");
+        page.assertFeuerwacheListTitlesInNumericOrder();
+    }
+
     @Then("at least {int} location checkboxes are checked in the citizen view")
     public void atLeastNLocationCheckboxesAreCheckedInTheCitizenView(int minimum) {
         ScenarioLogManager.getLogger()
@@ -928,6 +990,15 @@ public class CitizenViewSteps {
         page.waitForPreconfirmPageAfterUpdate();
     }
 
+    @When("I enter contact details with family name {string} in the citizen view")
+    public void iEnterContactDetailsWithFamilyName(String familyName) {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: fill contact with family name {} and Weiter", familyName);
+        page.fillContactDetailsWithFamilyName(familyName);
+        page.clickWeiter(30);
+        page.waitForPreconfirmPageAfterUpdate();
+    }
+
     /**
      * ZMSKVR-833: first booking at a scope where custom text is optional — fill Kontakt but stay on
      * the form (no Weiter) so the missing Pflichtfeld is still empty for later rebooking.
@@ -1054,6 +1125,25 @@ public class CitizenViewSteps {
         page.continueFromPreconfirmStep();
     }
 
+    @When("I try to preconfirm from the overview in the citizen view")
+    public void iTryToPreconfirmFromTheOverviewInTheCitizenView() {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: Übersicht → Termin reservieren (expect error callout)");
+        page.tryPreconfirmFromOverview();
+    }
+
+    @Then("the too many appointments with same mail callout should be visible in the citizen view")
+    public void theTooManyAppointmentsWithSameMailCalloutShouldBeVisible() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: assert too-many-appointments callout");
+        page.assertTooManyAppointmentsWithSameMailCalloutVisible();
+    }
+
+    @Then("the Termin reservieren button should not be visible in the citizen view")
+    public void theTerminReservierenButtonShouldNotBeVisible() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: assert Termin reservieren hidden");
+        page.assertReserveAppointmentButtonNotVisible();
+    }
+
     @When("I reserve the appointment in the citizen view")
     public void iReserveTheAppointmentInTheCitizenView() {
         ScenarioLogManager.getLogger()
@@ -1172,6 +1262,21 @@ public class CitizenViewSteps {
         ScenarioLogManager.getLogger()
                 .info("zmscitizenview: assert logged-in confirmation success details");
         page.assertLoggedInConfirmationSuccessDetailsVisible();
+    }
+
+    /** ZMSKVR-97 / ZMSKVR-526 / ZMSKVR-732: guest activation — ICS download + book another. */
+    @Then("the confirmation success callout should show the guest confirmation details in the citizen view")
+    public void theConfirmationSuccessCalloutShouldShowTheGuestConfirmationDetails() {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: assert guest confirmation success details");
+        page.assertGuestConfirmationSuccessDetailsVisible();
+    }
+
+    @When("I book another appointment from the confirmation success callout in the citizen view")
+    public void iBookAnotherAppointmentFromTheConfirmationSuccessCallout() {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: Weiteren Termin vereinbaren from confirmation success");
+        page.bookAnotherAppointmentFromConfirmationSuccess();
     }
 
     @Then("the preconfirmation callout should not be visible in the citizen view")
@@ -1395,6 +1500,13 @@ public class CitizenViewSteps {
         page.assertProviderCheckboxPresent(officeId);
     }
 
+    @Then("only provider {int} should be checked among the Ort checkboxes")
+    public void onlyProviderShouldBeCheckedAmongTheOrtCheckboxes(int officeId) {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: assert only provider {} checked among Ort checkboxes", officeId);
+        page.assertOnlyProviderCheckedAmongOrtCheckboxes(officeId);
+    }
+
     @Then("provider checkbox {int} should not appear in the citizen view")
     public void providerCheckboxShouldNotAppear(int officeId) {
         try {
@@ -1484,6 +1596,20 @@ public class CitizenViewSteps {
         page.assertOverviewServiceVisible(serviceId, label);
     }
 
+    /** ZMSKVR-418: Übersicht / confirm / cancel list main + sub services with their booked counts. */
+    @Then("the appointment overview should show {int}x service {int} named {string} in the citizen view")
+    public void theAppointmentOverviewShouldShowCountServiceNamed(
+            int count, int serviceId, String serviceName) {
+        String label = TestDataHelper.transformTestData(serviceName);
+        ScenarioLogManager.getLogger()
+                .info(
+                        "zmscitizenview: assert overview shows {}x service {} named {}",
+                        count,
+                        serviceId,
+                        label);
+        page.assertOverviewServiceWithCount(serviceId, count, label);
+    }
+
     @Then("the booking summary should show {string} for provider {int} in the citizen view")
     public void theBookingSummaryShouldShowLocationForProvider(String locationLabel, int officeId) {
         String label = TestDataHelper.transformTestData(locationLabel);
@@ -1530,6 +1656,31 @@ public class CitizenViewSteps {
         page.fillContactDetailsRandomWithoutContinue();
     }
 
+    @Then("the contact form should show SSO Nachname {string} without Vorname in the citizen view")
+    public void theContactFormShouldShowSsoNachnameWithoutVorname(String expectedLastName) {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: assert SSO Nachname={} with empty Vorname", expectedLastName);
+        page.assertSsoLastNamePrefillWithoutGivenName(expectedLastName);
+    }
+
+    @When("I complete the contact form with Vorname {string} keeping SSO Nachname {string} in the citizen view")
+    public void iCompleteTheContactFormWithVornameKeepingSsoNachname(
+            String firstName, String expectedLastName) {
+        ScenarioLogManager.getLogger()
+                .info(
+                        "zmscitizenview: complete Kontakt Vorname={} keep Nachname={}",
+                        firstName,
+                        expectedLastName);
+        page.completeContactWithMissingGivenName(firstName, expectedLastName);
+    }
+
+    @Then("the booking summary should show contact name {string} in the citizen view")
+    public void theBookingSummaryShouldShowContactName(String fullName) {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: assert Übersicht contact name {}", fullName);
+        page.assertBookingSummaryShowsContactName(fullName);
+    }
+
     @When("I continue from the contact form in the citizen view")
     public void iContinueFromTheContactFormInTheCitizenView() {
         ScenarioLogManager.getLogger().info("zmscitizenview: Kontakt Weiter → Übersicht");
@@ -1548,6 +1699,13 @@ public class CitizenViewSteps {
         ScenarioLogManager.getLogger()
                 .info("zmscitizenview: Bürger-Login → Keycloak citizen user (dbs-fragments)");
         page.loginViaBuergerLoginWithKeycloak();
+    }
+
+    @When("I log in via Bürger-Login with Keycloak as {string} in the citizen view")
+    public void iLogInViaBuergerLoginWithKeycloakAs(String loginName) throws Exception {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: Bürger-Login → Keycloak user {}", loginName);
+        page.loginViaBuergerLoginWithKeycloakAs(loginName);
     }
 
     @When("I log in via Bürger-Login with Keycloak in the citizen view if I am not already logged in")
@@ -1646,6 +1804,24 @@ public class CitizenViewSteps {
     public void theCaptchaSessionCalloutShouldNotBeVisible() {
         ScenarioLogManager.getLogger().info("zmscitizenview: assert captcha session callout is gone");
         page.assertCaptchaSessionCalloutNotVisible();
+    }
+
+    @Then("the captcha on Leistung should match the muenchen.de design")
+    public void theCaptchaOnLeistungShouldMatchTheMuenchenDeDesign() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: assert captcha design on Leistung");
+        page.assertCaptchaDesign();
+    }
+
+    @Then("the Weiter button on Leistung should be disabled in the citizen view")
+    public void theWeiterButtonOnLeistungShouldBeDisabled() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: assert Weiter disabled before captcha");
+        page.assertLeistungWeiterDisabled();
+    }
+
+    @Then("the Weiter button on Leistung should be enabled in the citizen view")
+    public void theWeiterButtonOnLeistungShouldBeEnabled() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: assert Weiter enabled after captcha");
+        page.assertLeistungWeiterEnabled();
     }
 
     @Then("the reservation expired callout should be visible in the citizen view")
@@ -1815,5 +1991,18 @@ public class CitizenViewSteps {
     public void theDownloadedIcsFileShouldContainTheBookedAppointment() {
         ScenarioLogManager.getLogger().info("zmscitizenview: assert downloaded ICS");
         page.assertDownloadedIcsContainsBookedAppointment();
+    }
+
+    @Then("the downloaded ICS file should contain {string} in the citizen view")
+    public void theDownloadedIcsFileShouldContain(String expected) {
+        ScenarioLogManager.getLogger().info("zmscitizenview: assert ICS contains {}", expected);
+        page.assertDownloadedIcsContainsText(expected);
+    }
+
+    @Then("the downloaded ICS file should match the Munich confirmation template in the citizen view")
+    public void theDownloadedIcsFileShouldMatchTheMunichConfirmationTemplate() {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: assert downloaded ICS Munich confirmation template");
+        page.assertDownloadedIcsMatchesMunichConfirmationTemplate();
     }
 }

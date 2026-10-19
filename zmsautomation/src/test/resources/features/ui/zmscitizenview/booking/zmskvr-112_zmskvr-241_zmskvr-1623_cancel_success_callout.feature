@@ -1,11 +1,12 @@
 #language: en
-@web @zmscitizenview @booking @citizen @ZMSKVR-112 @ZMSKVR-241 @ZMSKVR-1623 @executeLocally @jumpin @pickupCalendar
+@web @zmscitizenview @booking @citizen @ZMSKVR-112 @ZMSKVR-241 @ZMSKVR-1623 @ZMSKVR-957 @ZMSKVR-968 @executeLocally @jumpin @pickupCalendar
 Feature: CitizenView: cancelling shows the success callout
   As a citizen
   I want to cancel my appointment from the overview
   So that the time is free and the page confirms it
 
   # ZMSKVR-112, tested by ZMSKVR-241 and ZMSKVR-1623 in one scenario.
+  # ZMSKVR-957 / ZMSKVR-968: Termin-Detail Absagen modal → success (and mail).
   # Abholung 10295182 at Bürgerbüro Ruppertstraße KVR-II/211 (10492).
   # The overview offers Termin verschieben and Termin absagen.
   # Termin absagen shows the success heading and the thank-you text.

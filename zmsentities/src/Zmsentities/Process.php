@@ -414,6 +414,45 @@ class Process extends Schema\Entity
         return $this->toProperty()->finishTime->get();
     }
 
+    /**
+     * Strip markup from amendment / Freitext when those keys are present in the merge.
+     * Mutators like addAmendment already normalize; this closes the waitingnumber / reserve path
+     * that does {@code new Process($input)} without those mutators.
+     * Only supplied fields are normalized: ProcessPlainText::normalize is not idempotent
+     * (entity-encoded markup would be decoded then stripped on a later unrelated addData).
+     */
+    #[\Override]
+    public function addData(array|object $mergeData): static
+    {
+        parent::addData($mergeData);
+        return $this->normalizePlainTextFields($mergeData);
+    }
+
+    /**
+     * @param array|object|null $mergeData When set, only normalize keys present in this merge.
+     */
+    public function normalizePlainTextFields(array|object|null $mergeData = null): static
+    {
+        $mergeKeys = null;
+        if ($mergeData !== null) {
+            $keys = is_array($mergeData)
+                ? array_keys($mergeData)
+                : array_keys(get_object_vars($mergeData));
+            $mergeKeys = array_fill_keys($keys, true);
+        }
+        foreach (['amendment', 'customTextfield', 'customTextfield2'] as $field) {
+            if ($mergeKeys !== null && !isset($mergeKeys[$field])) {
+                continue;
+            }
+            if (!isset($this[$field]) || !is_string($this[$field])) {
+                continue;
+            }
+            // Do not trim here: DB/cron amendments may keep trailing spaces; mutators trim on write.
+            $this[$field] = ProcessPlainText::normalize($this[$field]);
+        }
+        return $this;
+    }
+
     public function addAmendment(mixed $input, string $notice = ''): static
     {
         $this->amendment = $notice;

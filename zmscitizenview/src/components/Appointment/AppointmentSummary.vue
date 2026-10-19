@@ -219,23 +219,29 @@
             <div class="m-content">
               <h3>{{ t("termsOfUse") }}</h3>
             </div>
-            <div class="m-content">
-              <h4 class="m-checkbox-group__heading">{{ t("privacyLabel") }}</h4>
-            </div>
-            <div class="m-content">
-              <p
-                class="m-label"
-                v-html="sanitizeHtml(t('privacyText'))"
-              />
-            </div>
-            <div
-              v-if="isVideoVariant"
-              class="m-content"
-            >
-              <p
-                class="m-label"
-                v-html="sanitizeHtml(t('privacyVideoConsultationText'))"
-              />
+            <div class="privacy-notice">
+              <div class="m-checkbox-group__legend">
+                <h4 class="m-checkbox-group__heading">
+                  {{ t("privacyLabel") }}
+                </h4>
+              </div>
+              <div class="m-checkboxes">
+                <div class="m-content">
+                  <p
+                    class="m-label"
+                    v-html="sanitizeHtml(t('privacyText'))"
+                  />
+                </div>
+                <div
+                  v-if="isVideoVariant"
+                  class="m-content"
+                >
+                  <p
+                    class="m-label"
+                    v-html="sanitizeHtml(t('privacyVideoConsultationText'))"
+                  />
+                </div>
+              </div>
             </div>
             <div class="m-content">
               <muc-checkbox-group
@@ -546,6 +552,20 @@ const infoForAppointmentContainsPTag = computed(() =>
 }
 .smaller-front-size {
   font-size: 16px;
+}
+
+/* ".m-content h4" outranks ".m-checkbox-group__heading"; let the heading inherit from its legend again. */
+.m-content :deep(.m-checkbox-group__heading) {
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  margin: 0;
+}
+
+/* Mirrors muc-checkbox-group without a fieldset: a real legend's margin does not collapse into ".m-checkboxes", so keep both margins here too. */
+.privacy-notice {
+  display: flex;
+  flex-direction: column;
 }
 
 /* Preserve user line breaks in plain-text custom fields (same idea as nl2br / pre-wrap on server). */

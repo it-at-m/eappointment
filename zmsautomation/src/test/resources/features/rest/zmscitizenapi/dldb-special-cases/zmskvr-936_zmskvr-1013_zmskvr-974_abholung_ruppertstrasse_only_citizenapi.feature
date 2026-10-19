@@ -9,7 +9,7 @@ Feature: Citizen API: Abholung only at Bürgerbüro Ruppertstraße (10492)
   # Außenstellen still in the public catalog expose 10295182 in disabledByServices (DONT_SHOW).
   # 10204388 is omitted: without Terminspuren it is dropped from offices-and-services entirely.
   # Available-calendar: 10492 bookable; 10502 / 10489 / 10500 → invalidLocationAndServiceCombination;
-  # 10491 stays 200 with an empty calendar (no bookable day).
+  # 10491 keeps a non-public relation so calendar stays 200 with no bookable day.
 
   Background:
     Given the Citizen API is available

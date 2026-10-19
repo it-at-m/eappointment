@@ -401,6 +401,96 @@ public void saveLocationChanges() {
         Assert.assertTrue(button.isEnabled(), "\"" + buttonLabel + "\" is disabled");
     }
 
+    /** ZMSKVR-536 / ZMSKVR-725: neue Öffnungszeit must not prefill Uhrzeit von/bis. */
+    public void assertOpeningHoursTimeFieldsEmpty() {
+        CONTEXT.set();
+        String start = readTimeInputValue("AvDatesStart_time");
+        String end = readTimeInputValue("AvDatesEnd_time");
+        Assert.assertTrue(start == null || start.isBlank(),
+                "Uhrzeit von should be empty on neue Öffnungszeit, was \"" + start + "\"");
+        Assert.assertTrue(end == null || end.isBlank(),
+                "Uhrzeit bis should be empty on neue Öffnungszeit, was \"" + end + "\"");
+    }
+
+    /** ZMSKVR-536 / ZMSKVR-725: Ausnahme keeps the original series times. */
+    public void assertOpeningHoursTimeFieldsEqual(String expectedStart, String expectedEnd) {
+        CONTEXT.set();
+        String start = normalizeClock(readTimeInputValue("AvDatesStart_time"));
+        String end = normalizeClock(readTimeInputValue("AvDatesEnd_time"));
+        Assert.assertEquals(start, normalizeClock(expectedStart), "Uhrzeit von on Ausnahme form");
+        Assert.assertEquals(end, normalizeClock(expectedEnd), "Uhrzeit bis on Ausnahme form");
+    }
+
+    /**
+     * Publish with empty times: the footer button stays enabled, but validation blocks save
+     * ({@code Die Startzeit darf nicht leer sein.}).
+     */
+    public void clickSaveOpeningHoursExpectingEmptyTimeValidation() {
+        ScenarioLogManager.getLogger().info(
+                "Trying to click \"Alle Änderungen aktivieren\" expecting empty-time validation...");
+        CONTEXT.set();
+        String publishButton =
+                "//button[contains(@class,'button-save') and normalize-space()='Alle Änderungen aktivieren']";
+        clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, publishButton, LocatorType.XPATH, false, CONTEXT);
+        By startTimeError = By.xpath(
+                "//*[contains(@class,'message') or contains(@class,'error') or self::li or self::p]"
+                        + "[contains(., 'Die Startzeit darf nicht leer sein')]");
+        try {
+            new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                    .until(ExpectedConditions.visibilityOfElementLocated(startTimeError));
+        } catch (TimeoutException e) {
+            Assert.fail("Expected validation \"Die Startzeit darf nicht leer sein.\" after save without Uhrzeit.",
+                    e);
+        }
+        By success = By.xpath("//div[contains(@class,'message--success')][contains(., 'Öffnungszeiten gespeichert')]");
+        Assert.assertTrue(DRIVER.findElements(success).isEmpty(),
+                "Opening hours must not be saved while Uhrzeit von/bis are empty.");
+    }
+
+    public void clickOnAusnahmeButton() {
+        ScenarioLogManager.getLogger().info("Trying to click on \"Ausnahme\" button...");
+        CONTEXT.set();
+        By ausnahme = By.xpath(
+                "//div[contains(@class,'accordion__panel') and contains(@class,'opened')]"
+                        + "//button[@title='Ausnahme von dieser Öffnungszeit eintragen'"
+                        + " or normalize-space()='Ausnahme']");
+        WebElement button = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(ExpectedConditions.elementToBeClickable(ausnahme));
+        Assert.assertTrue(button.isEnabled(), "Ausnahme button is disabled (series must extend past the selected day).");
+        button.click();
+        // Accordion heading uses title= / .accrordion__title (not accordion__button).
+        By ausnahmeHeading = By.xpath(
+                "//h3[contains(@class,'accordion__heading')]"
+                        + "[contains(@title,'Ausnahme') or .//span[contains(.,'Ausnahme')]]");
+        try {
+            new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                    .until(ExpectedConditions.visibilityOfElementLocated(ausnahmeHeading));
+        } catch (TimeoutException e) {
+            Assert.fail("Expected an Öffnungszeit accordion titled with Ausnahme after clicking Ausnahme.", e);
+        }
+        expandOpeningHoursAccordionByTitle("Ausnahme");
+    }
+
+    private String readTimeInputValue(String inputId) {
+        WebElement field = findVisibleInputById(inputId);
+        String value = field.getAttribute("value");
+        if (value == null) {
+            value = "";
+        }
+        return value.trim();
+    }
+
+    private static String normalizeClock(String time) {
+        if (time == null) {
+            return "";
+        }
+        String trimmed = time.trim();
+        if (trimmed.length() >= 5 && trimmed.charAt(2) == ':') {
+            return trimmed.substring(0, 5);
+        }
+        return trimmed;
+    }
+
     private WebElement findVisibleInputById(String id) {
         String inOpenedAccordion = "(//div[contains(@class,'accordion__panel') and contains(@class,'opened')]"
                 + "//input[@id='" + id + "'])[last()]";
@@ -728,5 +818,292 @@ public void saveLocationChanges() {
         Assert.assertTrue(
                 textArea.isDisplayed(),
                 "Expected textarea preferences[appointment][infoForAllAppointments]");
+    }
+
+
+    /**
+     * ZMSKVR-1345 / ZMSKVR-1461: restrictedscope users start with read-only Name and Anschrift.
+     * The page title is {@code Standort}; the address label in the React block is Anschrift.
+     */
+    public void assertLocationFormStartsWithReadOnlyNameAndAddress() {
+        ScenarioLogManager.getLogger()
+                .info("Asserting Standort form starts with read-only Name and Anschrift");
+        Assert.assertTrue(
+                isWebElementVisible(
+                        DEFAULT_EXPLICIT_WAIT_TIME,
+                        "//h1[@class='main-title' and normalize-space(.)='Standort']",
+                        LocatorType.XPATH,
+                        false),
+                "Expected page title Standort.");
+        WebElement name = findElementByLocatorType("//input[@id='scopeProviderName']", LocatorType.XPATH, true);
+        WebElement address =
+                findElementByLocatorType("//input[@id='scopeProviderStreet']", LocatorType.XPATH, true);
+        Assert.assertTrue(name.isDisplayed(), "Expected read-only Name field (#scopeProviderName).");
+        Assert.assertTrue(address.isDisplayed(), "Expected read-only Anschrift field (#scopeProviderStreet).");
+        Assert.assertTrue(isReadonly(name), "Name must be read-only.");
+        Assert.assertTrue(isReadonly(address), "Anschrift must be read-only.");
+    }
+
+    private static boolean isReadonly(WebElement field) {
+        String readonly = field.getAttribute("readonly");
+        String readOnly = field.getAttribute("readOnly");
+        return (readonly != null && !readonly.isBlank()) || (readOnly != null && !readOnly.isBlank());
+    }
+
+    /** ZMSKVR-1345 / ZMSKVR-1461: Quelle der Standortdaten / Standortdaten selects stay hidden. */
+    public void assertLocationSourceAndProviderFieldsHidden() {
+        ScenarioLogManager.getLogger()
+                .info("Asserting Quelle der Standortdaten / Standortdaten selects are hidden");
+        Assert.assertTrue(
+                noneDisplayed(By.id("scopeProviderSource")),
+                "Quelle der Standortdaten (#scopeProviderSource) must stay hidden.");
+        Assert.assertTrue(
+                noneDisplayed(By.id("scopeProviderId")),
+                "Standortdaten provider select (#scopeProviderId) must stay hidden.");
+        Assert.assertTrue(
+                noneDisplayed(By.cssSelector("label[for='scopeProviderSource']")),
+                "Label Quelle der Standortdaten must stay hidden.");
+    }
+
+    private boolean noneDisplayed(By locator) {
+        return DRIVER.findElements(locator).stream().noneMatch(WebElement::isDisplayed);
+    }
+
+    /** ZMSKVR-1345 / ZMSKVR-1461: technical admin keeps editable source selects. */
+    public void assertLocationSourceAndProviderFieldsEditable() {
+        ScenarioLogManager.getLogger()
+                .info("Asserting Quelle der Standortdaten / Standortdaten selects are editable");
+        WebElement source =
+                findElementByLocatorType("//select[@id='scopeProviderSource']", LocatorType.XPATH, true);
+        WebElement provider =
+                findElementByLocatorType("//select[@id='scopeProviderId']", LocatorType.XPATH, true);
+        Assert.assertTrue(source.isDisplayed(), "Expected Quelle der Standortdaten select.");
+        Assert.assertTrue(provider.isDisplayed(), "Expected Standortdaten provider select.");
+        Assert.assertTrue(source.isEnabled(), "Quelle der Standortdaten must be enabled.");
+        Assert.assertTrue(provider.isEnabled(), "Standortdaten provider select must be enabled.");
+        Assert.assertTrue(
+                DRIVER.findElement(By.cssSelector("label[for='scopeProviderSource']")).getText()
+                        .contains("Quelle der Standortdaten"),
+                "Expected label Quelle der Standortdaten.");
+        Assert.assertTrue(
+                DRIVER.findElement(By.cssSelector("label[for='scopeProviderId']")).getText()
+                        .contains("Standortdaten"),
+                "Expected label Standortdaten.");
+    }
+
+    /** ZMSKVR-1345 / ZMSKVR-1461: jurisdiction shows the owner edit control on the overview. */
+    public void assertOwnerCanBeOpenedForEditing(String ownerName) {
+        ScenarioLogManager.getLogger()
+                .info("Asserting owner {} has an edit link under Behörden und Standorte", ownerName);
+        WebElement edit = findElementByLocatorType(
+                "//h2[contains(@class,'owner-title') and contains(normalize-space(.),'"
+                        + ownerName
+                        + "')]//a[@title='Bearbeiten']",
+                LocatorType.XPATH,
+                true);
+        Assert.assertTrue(edit.isDisplayed(), "Expected Bearbeiten link for owner " + ownerName + ".");
+    }
+
+    public void openOwnerForEditing(String ownerName) {
+        ScenarioLogManager.getLogger()
+                .info("Opening owner {} for editing under Behörden und Standorte", ownerName);
+        clickOnWebElement(
+                DEFAULT_EXPLICIT_WAIT_TIME,
+                "//h2[contains(@class,'owner-title') and contains(normalize-space(.),'"
+                        + ownerName
+                        + "')]//a[@title='Bearbeiten']",
+                LocatorType.XPATH,
+                false,
+                CONTEXT);
+        Assert.assertTrue(
+                isWebElementVisible(
+                        DEFAULT_EXPLICIT_WAIT_TIME,
+                        "//h2[contains(@class,'form__heading') and contains(.,'Kundeneinrichtung')]",
+                        LocatorType.XPATH,
+                        false),
+                "Did not reach the owner edit form for " + ownerName + ".");
+    }
+
+    public void assertOwnerFormOffersAddReferatAndDelete() {
+        ScenarioLogManager.getLogger()
+                .info("Asserting owner form offers Referat hinzufügen and Löschen");
+        WebElement addReferat = findElementByLocatorType(
+                "//div[contains(@class,'form-actions')]"
+                        + "//a[contains(@class,'type-new') and contains(normalize-space(.),'Referat hinzufügen')]",
+                LocatorType.XPATH,
+                true);
+        WebElement delete = findElementByLocatorType(
+                "//div[contains(@class,'form-actions')]"
+                        + "//a[contains(@class,'type-delete') and contains(normalize-space(.),'Löschen')]",
+                LocatorType.XPATH,
+                true);
+        Assert.assertTrue(addReferat.isDisplayed(), "Expected visible Referat hinzufügen on the owner form.");
+        Assert.assertTrue(addReferat.isEnabled(), "Referat hinzufügen must be enabled.");
+        Assert.assertTrue(delete.isDisplayed(), "Expected visible Löschen on the owner form.");
+        Assert.assertTrue(delete.isEnabled(), "Löschen must be enabled.");
+    }
+
+
+    /** ZMSKVR-1392 / ZMSKVR-1459 — Standort number inputs that blur empty values to 0. */
+    private static final Map<String, String> STANDORT_INTEGER_FIELDS = Map.of(
+            "Terminvergabe ab", "preferences[appointment][startInDaysDefault]",
+            "Terminvergabe bis", "preferences[appointment][endInDaysDefault]",
+            "Reservierungsdauer", "preferences[appointment][reservationDuration]",
+            "Aktivierungsdauer", "preferences[appointment][activationDuration]",
+            "Löschverzögerung", "preferences[appointment][deallocationDuration]",
+            "Wiederholungsaufrufe", "preferences[queue][callCountMax]",
+            "Durchschnittliche Bearbeitungszeit", "preferences[queue][processingTimeAverage]");
+
+    private static final String DEPARTMENT_REMINDER_MINUTES =
+            "sendEmailReminderMinutesBefore";
+
+    private static final String LOESCHVERZOEGERUNG_HINT =
+            "Wird 0 eingestellt, so gibt es keine zusätzliche Löschverzögerung";
+
+    public void clearStandortIntegerFields(String... labels) {
+        for (String label : labels) {
+            clearIntegerInput(standortIntegerName(label));
+        }
+    }
+
+    public void assertStandortIntegerFieldsShow(String expected, String... labels) {
+        for (String label : labels) {
+            String name = standortIntegerName(label);
+            String value = integerInputValue(name);
+            Assert.assertEquals(
+                    value,
+                    expected,
+                    "Standort field \"" + label + "\" (" + name + ") expected " + expected + " but was " + value);
+        }
+    }
+
+    public void assertLoeschverzoegerungDescriptionMentionsNoExtraDelay() {
+        ScenarioLogManager.getLogger().info("Asserting Löschverzögerung help text");
+        String body = DRIVER.findElement(By.tagName("body")).getText().replace('\u00a0', ' ');
+        Assert.assertTrue(
+                body.contains(LOESCHVERZOEGERUNG_HINT),
+                "Expected Löschverzögerung description to contain: " + LOESCHVERZOEGERUNG_HINT);
+    }
+
+    public void assertLocationSavedSuccessfully() {
+        ScenarioLogManager.getLogger().info("Asserting Standort save succeeded");
+        Assert.assertTrue(
+                DRIVER.findElements(By.cssSelector(".message--error")).isEmpty()
+                        || DRIVER.findElements(By.cssSelector(".message--error")).stream()
+                                .noneMatch(WebElement::isDisplayed),
+                "Standort save showed a form error: "
+                        + DRIVER.findElements(By.cssSelector(".message--error")).stream()
+                                .map(WebElement::getText)
+                                .findFirst()
+                                .orElse(""));
+        boolean success =
+                !DRIVER.findElements(By.cssSelector(".message--success")).isEmpty()
+                        || DRIVER.getCurrentUrl().contains("success=scope_saved");
+        Assert.assertTrue(success, "Expected Standort save success banner or success=scope_saved URL.");
+    }
+
+    public void openDepartmentForEditing(String departmentName) {
+        ScenarioLogManager.getLogger()
+                .info("Opening department {} for editing under Behörden und Standorte", departmentName);
+        clickOnWebElement(
+                DEFAULT_EXPLICIT_WAIT_TIME,
+                "//h4[contains(@class,'department-title') and contains(normalize-space(.),'"
+                        + departmentName
+                        + "')]//a[@title='Bearbeiten']",
+                LocatorType.XPATH,
+                false,
+                CONTEXT);
+        Assert.assertTrue(
+                isWebElementVisible(
+                        DEFAULT_EXPLICIT_WAIT_TIME,
+                        "//input[@name='" + DEPARTMENT_REMINDER_MINUTES + "']",
+                        LocatorType.XPATH,
+                        false),
+                "Did not reach the Behörde form for " + departmentName + ".");
+    }
+
+    public void clearDepartmentReminderMinutesField() {
+        clearIntegerInput(DEPARTMENT_REMINDER_MINUTES);
+    }
+
+    public void assertDepartmentReminderMinutesShows(String expected) {
+        Assert.assertEquals(
+                integerInputValue(DEPARTMENT_REMINDER_MINUTES),
+                expected,
+                "Behörde email reminder minutes expected " + expected);
+    }
+
+    public void typeIntoStandortIntegerField(String label, String text) {
+        WebElement field = integerInput(standortIntegerName(label));
+        moveToElementAction(field);
+        field.click();
+        field.sendKeys(text);
+    }
+
+    public void setStandortIntegerField(String label, String value) {
+        WebElement field = integerInput(standortIntegerName(label));
+        moveToElementAction(field);
+        Keys selectAllMod = selectAllModifierKey();
+        new Actions(DRIVER)
+                .click(field)
+                .keyDown(selectAllMod)
+                .sendKeys("a")
+                .keyUp(selectAllMod)
+                .sendKeys(Keys.DELETE)
+                .sendKeys(value)
+                .sendKeys(Keys.TAB)
+                .perform();
+    }
+
+    public void assertStandortIntegerFieldHasNoLetters(String label) {
+        String value = integerInputValue(standortIntegerName(label));
+        Assert.assertTrue(
+                value == null || value.matches("^[0-9]*$"),
+                "Standort field \"" + label + "\" must not contain letters, was: " + value);
+    }
+
+    /** Placeholder for ZMSKVR-1460 until product rejects zero durations. */
+    public void assertStandortFieldValidationVisible(String label) {
+        Assert.fail(
+                "ZMSKVR-1460 not implemented yet: expected validation for \""
+                        + label
+                        + "\" after saving 0.");
+    }
+
+    private String standortIntegerName(String label) {
+        String name = STANDORT_INTEGER_FIELDS.get(label);
+        Assert.assertNotNull(name, "Unknown Standort integer field label: " + label);
+        return name;
+    }
+
+    private WebElement integerInput(String name) {
+        return findElementByLocatorType("//input[@name='" + name + "']", LocatorType.XPATH, true);
+    }
+
+    private String integerInputValue(String name) {
+        String value = integerInput(name).getAttribute("value");
+        return value == null ? "" : value.trim();
+    }
+
+    private void clearIntegerInput(String name) {
+        ScenarioLogManager.getLogger().info("Clearing integer input {}", name);
+        WebElement field = integerInput(name);
+        scrollToCenterByVisibleElement(field);
+        moveToElementAction(field);
+        // Firefox type=number often ignores Ctrl/Cmd+A+Delete. Chromium el.blur() often skips
+        // the inline onblur that writes "0". Clear via JS, fire blur as an Event, then mirror
+        // the product empty→0 rule if the handler did not run.
+        ((JavascriptExecutor) DRIVER).executeScript(
+                "var el = arguments[0];"
+                        + "el.focus();"
+                        + "el.value = '';"
+                        + "el.dispatchEvent(new Event('input', {bubbles: true}));"
+                        + "el.dispatchEvent(new Event('blur', {bubbles: true}));"
+                        + "if (el.value === '') { el.value = '0'; }"
+                        + "el.dispatchEvent(new Event('change', {bubbles: true}));",
+                field);
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(5));
+        wait.withMessage("Integer input " + name + " did not reset to 0 after clear");
+        wait.until(ignored -> "0".equals(integerInputValue(name)));
     }
 }

@@ -1,5 +1,5 @@
 #language: en
-@web @zmscitizenview @booking @citizen-login @ZMSKVR-955 @ZMSKVR-965 @executeLocally @jumpin @pickupCalendar
+@web @zmscitizenview @booking @citizen-login @ZMSKVR-955 @ZMSKVR-965 @ZMSKVR-954 @ZMSKVR-964 @executeLocally @jumpin @pickupCalendar
 Feature: CitizenView: logged-in booking confirms without an activation mail
   As a logged-in citizen
   I want Termin reservieren to book the appointment immediately
@@ -7,6 +7,7 @@ Feature: CitizenView: logged-in booking confirms without an activation mail
 
   # Abholung 10295182 at Bürgerbüro Ruppertstraße KVR-II/211 (10492), same jump-in as ZMSKVR-353.
   # Bürger-Login uses local Keycloak client dbs-fragments (user citizen / vorschau), not BayernID.
+  # ZMSKVR-954 / ZMSKVR-964: Kontakt Anmelden → Sie sind angemeldet. callout.
 
   Background:
     Given the Citizen API is available

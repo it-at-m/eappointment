@@ -197,6 +197,97 @@ public class ZmsApiMailSteps {
                 .isNull();
     }
 
+    @Then("the confirmation mail should contain {string}")
+    public void theConfirmationMailShouldContain(String expected) {
+        ThinnedProcess booking = CitizenApiSteps.getBookingProcess();
+        Assertions.assertThat(booking)
+                .as("booking process for confirmation mail body assert")
+                .isNotNull();
+        Assertions.assertThat(booking.getProcessId())
+                .as("processId for confirmation mail body assert")
+                .isNotNull();
+        String html = htmlForProcessContaining(String.valueOf(booking.getProcessId()), expected);
+        Assertions.assertThat(html)
+                .as("confirmation mail for process %s should contain '%s'", booking.getProcessId(), expected)
+                .contains(expected);
+        ScenarioLogManager.getLogger()
+                .info(
+                        "zmsapi: confirmation mail for process {} contains {}",
+                        booking.getProcessId(),
+                        expected);
+    }
+
+    /**
+     * ZMSKVR-418: confirmation mail lists each booked service with its count.
+     * Stock templates use {@code Name … Anzahl: N}; Munich templates use {@code Nx Name}.
+     * CSV form {@code Name:count, Name:count}. Name and count must appear in the same entry
+     * so swapped counts fail.
+     */
+    @Then("the confirmation mail should list services with counts {string}")
+    public void theConfirmationMailShouldListServicesWithCounts(String nameCountCsv) {
+        ThinnedProcess booking = CitizenApiSteps.getBookingProcess();
+        Assertions.assertThat(booking)
+                .as("booking process for confirmation mail service list")
+                .isNotNull();
+        Assertions.assertThat(booking.getProcessId())
+                .as("processId for confirmation mail service list")
+                .isNotNull();
+        String firstName = firstServiceNameFromCountCsv(nameCountCsv);
+        String html = htmlForProcessContaining(String.valueOf(booking.getProcessId()), firstName);
+        String collapsed = html.replaceAll("\\s+", " ");
+        for (String part : nameCountCsv.split(",")) {
+            String trimmed = part.trim();
+            if (trimmed.isEmpty()) {
+                continue;
+            }
+            int colon = trimmed.lastIndexOf(':');
+            Assertions.assertThat(colon)
+                    .as("expected Name:count token, got \"%s\"", trimmed)
+                    .isGreaterThan(0);
+            String name = trimmed.substring(0, colon).trim();
+            String count = trimmed.substring(colon + 1).trim();
+            Pattern compact =
+                    Pattern.compile(
+                            "(?<!\\d)" + Pattern.quote(count) + "x\\s*(?:<[^>]+>\\s*)*"
+                                    + Pattern.quote(name),
+                            Pattern.CASE_INSENSITIVE);
+            Pattern anzahl =
+                    Pattern.compile(
+                            Pattern.quote(name) + ".{0,240}?Anzahl:\\s*" + Pattern.quote(count)
+                                    + "(?!\\d)",
+                            Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+            Assertions.assertThat(compact.matcher(collapsed).find() || anzahl.matcher(collapsed).find())
+                    .as(
+                            "confirmation mail for process %s should pair %s with count %s "
+                                    + "(Nx Name or Name…Anzahl: N). html=%s",
+                            booking.getProcessId(),
+                            name,
+                            count,
+                            abbreviate(html))
+                    .isTrue();
+        }
+        ScenarioLogManager.getLogger()
+                .info(
+                        "zmsapi: confirmation mail for process {} lists services {}",
+                        booking.getProcessId(),
+                        nameCountCsv);
+    }
+
+    private static String firstServiceNameFromCountCsv(String nameCountCsv) {
+        for (String part : nameCountCsv.split(",")) {
+            String trimmed = part.trim();
+            if (trimmed.isEmpty()) {
+                continue;
+            }
+            int colon = trimmed.lastIndexOf(':');
+            if (colon > 0) {
+                return trimmed.substring(0, colon).trim();
+            }
+            return trimmed;
+        }
+        throw new IllegalArgumentException("empty Name:count csv");
+    }
+
     /** Second mail fetch: run after the appointment is confirmed. The confirmation mail (with link to /appointment/***) is only sent once the appointment is confirmed. */
     @When("I fetch the confirmation mail for the current process")
     public void iFetchTheConfirmationMailForTheCurrentProcess() {

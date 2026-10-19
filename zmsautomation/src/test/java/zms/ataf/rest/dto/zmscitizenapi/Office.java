@@ -29,6 +29,11 @@ public class Office {
     private Integer parentId;
     private Object scope;
     private List<Integer> disabledByServices;
+    /**
+     * Sort weight from DLDB {@code prio} ({@code LOCATION_PRIO_BY_DISPLAY_NAME} in Munich
+     * transformer). CitizenView sorts offices by this descending.
+     */
+    private Integer priority;
     private String slotsPerAppointment;
     /** Shared-booking peers (e.g. Haupt 10489 + KVR-II/2252 10313237). */
     private List<Integer> sharedBookingOfficeIds;

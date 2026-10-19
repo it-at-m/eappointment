@@ -2,6 +2,7 @@ package zms.ataf.ui.pages.citizenview.steps;
 
 import java.time.Duration;
 
+import org.openqa.selenium.JavascriptException;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -50,6 +51,7 @@ public final class OverviewStep {
             "Eine Bestätigung und weitere Informationen zu Ihrem Termin erhalten Sie per E-Mail. Wir freuen uns auf Ihren Besuch.";
     private static final String VIEW_APPOINTMENT_BUTTON = "Termin ansehen";
     private static final String BOOK_ANOTHER_APPOINTMENT_BUTTON = "Weiteren Termin vereinbaren";
+    private static final String ICS_DOWNLOAD_BUTTON = "Termin herunterladen (ics)";
     private static final String CANCELLATION_SUCCESS_HEADING =
             "Sie haben Ihren Termin erfolgreich abgesagt.";
     private static final String CANCELLATION_SUCCESS_TEXT =
@@ -58,6 +60,19 @@ public final class OverviewStep {
             "Sie haben Ihren Termin bereits aktiviert.";
     public void assertProviderSummaryVisible(int officeId) {
         assertProviderSummaryVisible(officeId, "Bürgerbüro Ruppertstraße");
+    }
+
+    /** Übersicht Kontakt block shows joined {@code appointment.familyName}. */
+    public void assertBookingSummaryShowsContactName(String fullName) {
+        context.set();
+        CitizenViewWaits.waitWithThreeWindows(
+                () -> shadow.shadowDomContainsText(fullName),
+                "Übersicht Kontakt name " + fullName);
+        Assert.assertTrue(
+                shadow.shadowDomContainsText(fullName),
+                "Übersicht Kontakt should show familyName \"" + fullName + "\".");
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: Übersicht shows contact name {}", fullName);
     }
     public String deepVisibleProviderSummaryText(int officeId) {
         context.set();
@@ -337,23 +352,21 @@ public final class OverviewStep {
                 resolved,
                 "Overview must show matching Schalter Kundenhinweis + Termin Hinweis. Text: " + text);
         // Ausgewählter Termin may still paint the office-attached scope from
-        // offices-and-services; pin FS-A/FS-B from Übersicht Ort + Hinweis (ZMSKVR-924).
+        // offices-and-services; pin FS-A/B/C from Übersicht Ort + Hinweis (ZMSKVR-924).
         String zone = FuehrerscheinstelleScopeHints.zoneFor(resolved);
         String hint = FuehrerscheinstelleScopeHints.hintFor(resolved);
         shadow.scrollTextIntoView(zone);
         Assert.assertTrue(text.contains(zone), "Overview Ort missing " + zone + ". Text: " + text);
         shadow.scrollTextIntoView(hint);
         Assert.assertTrue(text.contains(hint), "Overview Hinweis missing " + hint + ". Text: " + text);
-        Assert.assertFalse(
-                text.contains(
-                        FuehrerscheinstelleScopeHints.zoneFor(
-                                FuehrerscheinstelleScopeHints.otherCode(resolved))),
-                "Overview must not mix the other Schalter. Text: " + text);
-        Assert.assertFalse(
-                text.contains(
-                        FuehrerscheinstelleScopeHints.hintFor(
-                                FuehrerscheinstelleScopeHints.otherCode(resolved))),
-                "Overview must not mix the other Schalter hint. Text: " + text);
+        for (String other : FuehrerscheinstelleScopeHints.otherCodes(resolved)) {
+            Assert.assertFalse(
+                    text.contains(FuehrerscheinstelleScopeHints.zoneFor(other)),
+                    "Overview must not mix Schalter " + other + ". Text: " + text);
+            Assert.assertFalse(
+                    text.contains(FuehrerscheinstelleScopeHints.hintFor(other)),
+                    "Overview must not mix Schalter hint " + other + ". Text: " + text);
+        }
         String place = visibleProviderSummaryOrFail(officeId);
         Assert.assertTrue(
                 place.contains(zone),
@@ -596,43 +609,79 @@ public final class OverviewStep {
     /** Leistung block on Übersicht / rebook-or-cancel dialog (e.g. internal service from appointment). */
     public void assertOverviewServiceVisible(int serviceId, String serviceName) {
         context.set();
-        String sel = "#service-" + serviceId;
-        CitizenViewWaits.waitWithThreeWindows(
-                () -> deepVisibleServiceSummaryExists(serviceId), "Service summary " + sel);
-        String text = deepVisibleServiceSummaryText(serviceId);
-        Assert.assertNotNull(text, "Expected visible booking summary service block: " + sel);
+        String text = visibleServiceOrSubserviceSummaryText(serviceId);
         Assert.assertTrue(
                 text.contains(serviceName),
-                "Expected service name in " + sel + ": " + serviceName + " actual=" + text);
+                "Expected service name in summary for id " + serviceId + ": " + serviceName + " actual=" + text);
     }
 
-    private boolean deepVisibleServiceSummaryExists(int serviceId) {
+    /**
+     * ZMSKVR-418: Übersicht / confirm / cancel screens show {@code Nx ServiceName}
+     * ({@code #service-} for the main row, {@code #subservice-} for combined peers).
+     */
+    public void assertOverviewServiceWithCount(int serviceId, int count, String serviceName) {
+        context.set();
+        String text = visibleServiceOrSubserviceSummaryText(serviceId);
+        // Bound the digits so "2x" does not match "12x".
+        Assert.assertTrue(
+                java.util.regex.Pattern.compile("(?<!\\d)" + count + "x")
+                        .matcher(text)
+                        .find(),
+                "Expected count prefix \"" + count + "x\" for service id " + serviceId + " actual=" + text);
+        Assert.assertTrue(
+                text.contains(serviceName),
+                "Expected service name in summary for id " + serviceId + ": " + serviceName + " actual=" + text);
+    }
+
+    private String visibleServiceOrSubserviceSummaryText(int serviceId) {
+        String serviceSel = "#service-" + serviceId;
+        String subSel = "#subservice-" + serviceId;
+        // Prefer #subservice- (Übersicht combined peers); #service- can also match Leistung-step rows.
+        CitizenViewWaits.waitWithThreeWindows(
+                () -> deepVisibleElementByIdExists("subservice-" + serviceId)
+                        || deepVisibleElementByIdExists("service-" + serviceId),
+                "Service summary " + serviceSel + " or " + subSel);
+        String text = deepVisibleElementByIdText("subservice-" + serviceId);
+        if (text == null) {
+            text = deepVisibleElementByIdText("service-" + serviceId);
+        }
+        Assert.assertNotNull(
+                text, "Expected visible booking summary block " + serviceSel + " or " + subSel);
+        return text;
+    }
+
+    private boolean deepVisibleElementByIdExists(String elementId) {
         Object raw =
                 ((JavascriptExecutor) DriverUtil.getDriver())
                         .executeScript(
-                                "var id='service-'+" + serviceId + ";"
+                                "var id=arguments[0];"
                                         + "function shown(n){if(!n)return false;var s=getComputedStyle(n);"
                                         + "return s&&s.display!='none'&&s.visibility!='hidden'&&n.offsetParent!==null;}"
                                         + "function walk(root){if(!root)return null;if(root.id===id&&shown(root))return root;"
                                         + "if(root.shadowRoot){var s=walk(root.shadowRoot);if(s)return s;}"
                                         + "var c=root.children||[];for(var i=0;i<c.length;i++){var f=walk(c[i]);if(f)return f;}"
                                         + "return null;}"
-                                        + "return !!walk(document.body);");
+                                        + "return !!walk(document.body);",
+                                elementId);
         return Boolean.TRUE.equals(raw);
     }
 
-    private String deepVisibleServiceSummaryText(int serviceId) {
+    private String deepVisibleElementByIdText(String elementId) {
         Object raw =
                 ((JavascriptExecutor) DriverUtil.getDriver())
                         .executeScript(
-                                "var id='service-'+" + serviceId + ";"
+                                "var id=arguments[0];"
                                         + "function shown(n){if(!n)return false;var s=getComputedStyle(n);"
                                         + "return s&&s.display!='none'&&s.visibility!='hidden'&&n.offsetParent!==null;}"
                                         + "function walk(root){if(!root)return null;if(root.id===id&&shown(root))return root;"
                                         + "if(root.shadowRoot){var s=walk(root.shadowRoot);if(s)return s;}"
                                         + "var c=root.children||[];for(var i=0;i<c.length;i++){var f=walk(c[i]);if(f)return f;}"
                                         + "return null;}"
-                                        + "var n=walk(document.body);return n?((n.innerText||n.textContent||'')+''):null;");
+                                        // Count prefix ("2x") sits on the parent <p>; id is often on the <a>.
+                                        + "var n=walk(document.body);if(!n)return null;"
+                                        + "var p=(n.closest&&n.closest('p'))||n.parentElement||n;"
+                                        + "return ((p.innerText||p.textContent||n.innerText||n.textContent||'')+'');",
+                                elementId);
         if (raw == null) {
             return null;
         }
@@ -754,11 +803,27 @@ public final class OverviewStep {
     public void waitForPreconfirmPageAfterUpdate() {
         context.set();
         String sel = "#checkbox-electronic-communication";
-        CitizenViewWaits.waitWithThreeWindows(() -> shadow.deepElementExists(sel), "Preconfirm page " + sel);
+        CitizenViewWaits.waitWithThreeWindows(this::isPreconfirmPageVisible, "Preconfirm page " + sel);
         Assert.assertTrue(
-                shadow.deepElementExists(sel),
-                "Preconfirm page (electronic communication checkbox " + sel + ") not visible after Kontakt Weiter with retries.");
+                isPreconfirmPageVisible(),
+                "Preconfirm page (electronic communication checkbox "
+                        + sel
+                        + ") not visible after Kontakt Weiter with retries.");
         ScenarioLogManager.getLogger().info("zmscitizenview: preconfirm page visible");
+    }
+
+    /**
+     * Logged-in Kontakt → Übersicht / preconfirm. Checkbox can lag behind the step change; also
+     * treat Termin reservieren as landed. If still on Kontaktdaten after the first Weiter (slow
+     * update-appointment / dropped click), click Weiter once more before the long wait.
+     */
+    private boolean isPreconfirmPageVisible() {
+        if (shadow.deepElementExists("#checkbox-electronic-communication")) {
+            return true;
+        }
+        // Overview already painted; checkbox may still be mounting in the shadow tree.
+        return shadow.shadowDomContainsText("Termin reservieren")
+                && !shadow.shadowDomContainsText("Kontaktdaten");
     }
     public void acceptCommunication() {
         context.set();
@@ -843,6 +908,42 @@ public final class OverviewStep {
         ScenarioLogManager.getLogger().info("zmscitizenview: activation callout appeared");
         page.trySyncBookingProcessFromLocalStorageOnce();
     }
+
+    /**
+     * ZMSKVR-87 / ZMSKVR-601 / ZMSKVR-715: click Termin reservieren and stay on Übersicht expecting
+     * an error callout (no activation success).
+     */
+    public void tryPreconfirmFromOverview() {
+        context.set();
+        page.captureBookingProcessForCleanup();
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: Übersicht → Termin reservieren (expect too-many-appointments error)");
+        shadow.waitForAndClickButtonContaining(DE_RESERVE, defaultWaitSeconds);
+    }
+
+    public void assertTooManyAppointmentsWithSameMailCalloutVisible() {
+        context.set();
+        String header = CitizenViewPage.DE_TOO_MANY_APPOINTMENTS_HEADER;
+        String text = CitizenViewPage.DE_TOO_MANY_APPOINTMENTS_TEXT;
+        CitizenViewWaits.waitWithThreeWindows(
+                () -> shadow.shadowDomContainsText(header) && shadow.shadowDomContainsText(text),
+                "Too many appointments callout");
+        Assert.assertTrue(
+                shadow.shadowDomContainsText(header),
+                "Expected too-many-appointments callout header: " + header);
+        Assert.assertTrue(
+                shadow.shadowDomContainsText(text),
+                "Expected too-many-appointments callout text: " + text);
+        Assert.assertTrue(
+                shadow.shadowDomHasHeading(2, header),
+                "Expected H2 for too-many-appointments callout: " + header);
+    }
+
+    public void assertReserveAppointmentButtonNotVisible() {
+        context.set();
+        String state = reserveAppointmentButtonState();
+        Assert.assertNull(state, "Termin reservieren must be hidden while the too-many-appointments callout shows.");
+    }
     public void assertPreconfirmationCalloutVisible(int activationMinutes) {
         context.set();
         ScenarioLogManager.getLogger()
@@ -859,10 +960,27 @@ public final class OverviewStep {
                 "Preconfirmation callout should mention activation time limit (" + timeText + ").");
         ScenarioLogManager.getLogger().info("zmscitizenview: activation callout visible with {} Minuten", activationMinutes);
     }
+    /**
+     * Poll for the success heading. Transient {@link JavascriptException} during SPA remount
+     * is treated as not-yet-visible so waits can finish; the final Assert still fails hard.
+     * Deep-link recovery (reopen / cache-bust) lives in {@code openConfirmationDeepLinkInBrowser}
+     * so this assert does not double that loop.
+     */
+    private boolean confirmationSuccessVisibleForPolling() {
+        try {
+            return shadow.shadowDomContainsText(CONFIRMATION_SUCCESS_HEADING);
+        } catch (JavascriptException e) {
+            return false;
+        }
+    }
+
     public void assertConfirmationSuccessCalloutVisible() {
         ScenarioLogManager.getLogger().info("zmscitizenview: checking for confirmation success callout (Ihr Termin wurde gebucht.)");
-        shadow.assertShadowContains(
-                CONFIRMATION_SUCCESS_HEADING,
+        CitizenViewWaits.waitWithThreeWindows(
+                this::confirmationSuccessVisibleForPolling,
+                "Confirmation success callout");
+        Assert.assertTrue(
+                shadow.shadowDomContainsText(CONFIRMATION_SUCCESS_HEADING),
                 "Confirmation success callout not found after opening confirm link.");
         ScenarioLogManager.getLogger().info("zmscitizenview: confirmation success callout found");
     }
@@ -896,6 +1014,44 @@ public final class OverviewStep {
         Assert.assertTrue(
                 shadow.shadowDomContainsText(BOOK_ANOTHER_APPOINTMENT_BUTTON),
                 "Logged-in confirmation must show secondary action 'Weiteren Termin vereinbaren'.");
+        Assert.assertFalse(
+                shadow.shadowDomContainsText(ICS_DOWNLOAD_BUTTON),
+                "Logged-in confirmation must not show ICS download (ZMSKVR-97).");
+    }
+
+    /**
+     * ZMSKVR-97 / ZMSKVR-526 / ZMSKVR-732: guest activation success shows ICS download + book another,
+     * not Termin ansehen.
+     */
+    public void assertGuestConfirmationSuccessDetailsVisible() {
+        context.set();
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: assert guest confirmation success details");
+        assertConfirmationSuccessCalloutVisible();
+        Assert.assertTrue(
+                shadow.shadowDomContainsText(CONFIRMATION_SUCCESS_TEXT),
+                "Confirmation success callout must include the booking-confirmation mail text.");
+        Assert.assertTrue(
+                shadow.shadowDomContainsText(ICS_DOWNLOAD_BUTTON),
+                "Guest confirmation must show primary action 'Termin herunterladen (ics)'.");
+        Assert.assertTrue(
+                shadow.shadowDomContainsText(BOOK_ANOTHER_APPOINTMENT_BUTTON),
+                "Guest confirmation must show secondary action 'Weiteren Termin vereinbaren'.");
+        Assert.assertFalse(
+                shadow.shadowDomContainsText(VIEW_APPOINTMENT_BUTTON),
+                "Guest confirmation must not show 'Termin ansehen'.");
+    }
+
+    /** ZMSKVR-526 / ZMSKVR-732: secondary button resets to Service Finder (Schritt 0). */
+    public void bookAnotherAppointmentFromConfirmationSuccess() {
+        context.set();
+        CitizenViewWaits.waitWithThreeWindows(
+                () -> shadow.shadowDomContainsText(BOOK_ANOTHER_APPOINTMENT_BUTTON),
+                "Weiteren Termin vereinbaren on confirmation success");
+        shadow.waitForAndClickButtonContaining(BOOK_ANOTHER_APPOINTMENT_BUTTON, defaultWaitSeconds);
+        CitizenViewWaits.waitWithThreeWindows(
+                () -> shadow.shadowDomContainsText("Bürgerservice-Suche"),
+                "Service Finder after Weiteren Termin vereinbaren");
     }
 
     /** Opens Termin-Detail for the appointment just confirmed (logged-in success callout). */
@@ -1146,6 +1302,20 @@ public final class OverviewStep {
     public void continueFromContactFormToSummary() {
         context.set();
         page.clickWeiter(30);
+        long settleUntil = System.currentTimeMillis() + 12_000L;
+        while (System.currentTimeMillis() < settleUntil) {
+            if (isPreconfirmPageVisible()) {
+                ScenarioLogManager.getLogger().info("zmscitizenview: preconfirm page visible");
+                return;
+            }
+            CitizenViewWaits.sleepQuiet(300L);
+        }
+        if (shadow.shadowDomContainsText("Kontaktdaten") && !isPreconfirmPageVisible()) {
+            ScenarioLogManager.getLogger()
+                    .warn(
+                            "zmscitizenview: still on Kontaktdaten after Weiter; clicking Weiter again");
+            page.clickWeiter(30);
+        }
         waitForPreconfirmPageAfterUpdate();
     }
     public void assertScheidplatzLocationOnSummary(int officeId) {
