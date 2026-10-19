@@ -458,6 +458,81 @@ public class AdminSteps {
         AUTHORITIES_AND_LOCATIONS_PAGE.assertOpeningHoursDayPage();
     }
 
+    @When("I ensure the day closure is unlocked.")
+    public void iEnsureTheDayClosureIsUnlocked() {
+        AUTHORITIES_AND_LOCATIONS_PAGE.ensureDayClosureUnlocked();
+    }
+
+    @Then("the day-closure banner should show that booking is not locked.")
+    public void theDayClosureBannerShouldShowThatBookingIsNotLocked() {
+        AUTHORITIES_AND_LOCATIONS_PAGE.assertDayClosureBannerUnlocked();
+    }
+
+    @Then("the day-closure banner should show that booking is locked.")
+    public void theDayClosureBannerShouldShowThatBookingIsLocked() {
+        AUTHORITIES_AND_LOCATIONS_PAGE.assertDayClosureBannerLocked();
+    }
+
+    @When("I click the day-closure button {string}.")
+    public void iClickTheDayClosureButton(String label) {
+        AUTHORITIES_AND_LOCATIONS_PAGE.clickDayClosureButton(TestDataHelper.transformTestData(label));
+    }
+
+    @Then("the day-closure confirm dialog should contain {string}.")
+    public void theDayClosureConfirmDialogShouldContain(String message) {
+        AUTHORITIES_AND_LOCATIONS_PAGE.assertDayClosureConfirmDialog(TestDataHelper.transformTestData(message));
+    }
+
+    @When("I confirm the day-closure dialog.")
+    public void iConfirmTheDayClosureDialog() {
+        AUTHORITIES_AND_LOCATIONS_PAGE.confirmDayClosureDialog();
+    }
+
+    @When("I cancel the day-closure dialog.")
+    public void iCancelTheDayClosureDialog() {
+        AUTHORITIES_AND_LOCATIONS_PAGE.abortDayClosureDialog();
+    }
+
+    @After(value = "@ZMSKVR-42 or @ZMSKVR-289", order = 10001)
+    public void unlockDayClosureLeftByUiScenario() {
+        // Prefer API cleanup in ZmsApiSteps (exact scope/date), which also runs when the
+        // banner assertion never flipped day_closure_ui_locked. Page unlock only when
+        // scope/date were never recorded (e.g. still on the day view after a partial lock).
+        String scope;
+        String date;
+        String lockedFlag;
+        try {
+            scope = TestDataHelper.getTestData("day_closure_ui_scope");
+            date = TestDataHelper.getTestData("day_closure_ui_date");
+            lockedFlag = TestDataHelper.getTestData("day_closure_ui_locked");
+        } catch (NullPointerException | IllegalStateException ignored) {
+            return;
+        }
+        if (scope != null && !scope.isBlank() && date != null && !date.isBlank()) {
+            return;
+        }
+        if (!"true".equals(lockedFlag)) {
+            return;
+        }
+        try {
+            AUTHORITIES_AND_LOCATIONS_PAGE.ensureDayClosureUnlocked();
+            TestDataHelper.setTestData("day_closure_ui_locked", "false");
+        } catch (RuntimeException | AssertionError e) {
+            ScenarioLogManager.getLogger().warn(
+                    "Could not unlock UI day closure leftover from the page: {}", e.getMessage());
+        }
+    }
+
+    @When("I open the opening-hours month overview.")
+    public void iOpenTheOpeningHoursMonthOverview() {
+        AUTHORITIES_AND_LOCATIONS_PAGE.clickMonthOverviewLink();
+    }
+
+    @Then("the month overview should show the locked-day icon for day {string}.")
+    public void theMonthOverviewShouldShowTheLockedDayIconForDay(String day) {
+        AUTHORITIES_AND_LOCATIONS_PAGE.assertMonthLockedDayIconForDay(TestDataHelper.transformTestData(day));
+    }
+
     /** ZMSKVR-933 / ZMSKVR-934: Terminabstand (#AvDaySlottime) on Öffnungszeiten. */
     @Then("the opening hours slot time should be {int} minutes.")
     public void theOpeningHoursSlotTimeShouldBeMinutes(int expectedMinutes) {
@@ -1720,6 +1795,12 @@ public class AdminSteps {
     public void hat_der_weitergeleitete_kunde_die_prioritaet(String kunde, String prioritaet) {
         COUNTER_PROCESSING_STATION_PAGE.assertQueuedCustomerPriority(
                 TestDataHelper.transformTestData(kunde), prioritaet);
+    }
+
+    @Then("the queued customer {string} has the note {string}.")
+    public void hat_der_wartende_kunde_die_anmerkung(String termin, String anmerkung) {
+        COUNTER_PROCESSING_STATION_PAGE.assertQueuedCustomerHasNote(
+                TestDataHelper.transformTestData(termin), anmerkung);
     }
 
     @When("I forward the appointment to {string} with the note {string}.")

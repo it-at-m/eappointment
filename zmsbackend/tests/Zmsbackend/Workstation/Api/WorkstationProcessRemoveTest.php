@@ -43,6 +43,21 @@ class WorkstationProcessRemoveTest extends \BO\Zmsbackend\Tests\Api\Base
         $this->assertTrue($process->isWasMissed());
     }
 
+    public function testRequeueAfterCallCountDecrementKeepsArrivalTime()
+    {
+        $this->setWorkstationWithCallCountMax('1');
+        $this->assignCalledProcessToWorkstation(1);
+        $arrivalTime = \App::$now->getTimestamp() - 600;
+
+        $response = $this->render([], ['action' => 'requeue_after_call_count_decrement'], []);
+        $this->assertEquals(200, $response->getStatusCode());
+
+        $process = (new \BO\Zmsbackend\Process\Service\Process())->readEntity(self::CALLED_PROCESS_ID, self::CALLED_AUTHKEY, 1);
+        $this->assertEquals(\BO\Zmsentities\Process::STATUS_QUEUED, $process->status);
+        $this->assertEquals(0, $process->queue['callCount']);
+        $this->assertEquals($arrivalTime, $process->queue['arrivalTime']);
+    }
+
     #[\Override]
     public function testRendering()
     {

@@ -677,6 +677,29 @@ public class CounterProcessingStationPage extends AdminPage {
                 "Expected priority \"" + priorityLabel + "\" for " + familyName + ", but found \"" + selected + "\".");
     }
 
+    /**
+     * ZMS-3507 / ZMSALT-3541: after Weiterleiten the target queue keeps the source waiting number
+     * and shows the forward note in the Anmerkung column.
+     */
+    public void assertQueuedCustomerHasNote(String displayNumber, String expectedNote) {
+        CONTEXT.set();
+        showSpontaneousCustomers(true);
+        CONTEXT.waitForSpinners();
+        String shown = displayNumber == null ? "" : displayNumber.trim();
+        String numOnly = shown.replaceAll("\\D+", "");
+        By rowByNumber = By.xpath(
+                "//table[@id='table-queued-appointments']"
+                        + "//tbody/tr[.//td[normalize-space()='" + shown + "'"
+                        + " or normalize-space()='" + numOnly + "']]");
+        WebElement row = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(ExpectedConditions.visibilityOfElementLocated(rowByNumber));
+        String rowText = row.getText().replaceAll("[\\r\\n]+", " ").trim();
+        Assert.assertTrue(
+                rowText.contains(expectedNote),
+                "Queue row for waiting number \"" + shown + "\" should contain note \""
+                        + expectedNote + "\", but was: " + rowText);
+    }
+
     public void deleteQueuedAppointmentByFamilyName(String familyName) {
         CONTEXT.set();
         if ("true".equals(TestDataHelper.getTestData("appointment_booked_as_walk_in"))) {
