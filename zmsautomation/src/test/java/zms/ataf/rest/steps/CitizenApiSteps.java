@@ -526,6 +526,50 @@ public class CitizenApiSteps {
             .isNull();
     }
 
+    /** ZMSKVR-42: pin the first bookable citizen day so day-lock can target it. */
+    @When("I remember the first bookable day for office {int}")
+    public void iRememberTheFirstBookableDayForOffice(int officeId) {
+        Assertions.assertThat(lastAvailableCalendarResponse)
+            .as("Request available days first")
+            .isNotNull();
+        String date = lastAvailableCalendarResponse.getFirstAvailableDayForOffice(officeId);
+        Assertions.assertThat(date)
+            .as("Expected a bookable day to remember for office %d", officeId)
+            .isNotBlank();
+        TestDataHelper.setTestData("day_closure_date", date);
+        ScenarioLogManager.getLogger().info("Remembered citizen bookable day {} for office {}", date, officeId);
+    }
+
+    @Then("the available calendar should not include the remembered bookable day for office {int}")
+    public void theAvailableCalendarShouldNotIncludeTheRememberedBookableDayForOffice(int officeId) {
+        Assertions.assertThat(response.getStatusCode())
+            .as("GET /available-calendar/")
+            .isEqualTo(200);
+        Assertions.assertThat(lastAvailableCalendarResponse)
+            .as("Request available days first")
+            .isNotNull();
+        String date = TestDataHelper.getTestData("day_closure_date");
+        Assertions.assertThat(date).as("remembered day_closure_date").isNotBlank();
+        Assertions.assertThat(lastAvailableCalendarResponse.isBookableDayForOffice(date, officeId))
+            .as("Locked day %s should not stay bookable for office %d", date, officeId)
+            .isFalse();
+    }
+
+    @Then("the available calendar should include the remembered bookable day for office {int}")
+    public void theAvailableCalendarShouldIncludeTheRememberedBookableDayForOffice(int officeId) {
+        Assertions.assertThat(response.getStatusCode())
+            .as("GET /available-calendar/")
+            .isEqualTo(200);
+        Assertions.assertThat(lastAvailableCalendarResponse)
+            .as("Request available days first")
+            .isNotNull();
+        String date = TestDataHelper.getTestData("day_closure_date");
+        Assertions.assertThat(date).as("remembered day_closure_date").isNotBlank();
+        Assertions.assertThat(lastAvailableCalendarResponse.isBookableDayForOffice(date, officeId))
+            .as("Unlocked day %s should be bookable again for office %d", date, officeId)
+            .isTrue();
+    }
+
     @Then("the available calendar should include appointments for offices {string}")
     public void theAvailableCalendarShouldIncludeAppointmentsForOffices(String officeIdsCsv) {
         int[] officeIds = parseOfficeIdsCsv(officeIdsCsv).stream().mapToInt(Integer::intValue).toArray();
