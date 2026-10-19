@@ -1088,15 +1088,22 @@ public void saveLocationChanges() {
     private void clearIntegerInput(String name) {
         ScenarioLogManager.getLogger().info("Clearing integer input {}", name);
         WebElement field = integerInput(name);
+        scrollToCenterByVisibleElement(field);
         moveToElementAction(field);
-        Keys selectAllMod = selectAllModifierKey();
-        new Actions(DRIVER)
-                .click(field)
-                .keyDown(selectAllMod)
-                .sendKeys("a")
-                .keyUp(selectAllMod)
-                .sendKeys(Keys.DELETE)
-                .sendKeys(Keys.TAB)
-                .perform();
+        // Firefox type=number often ignores Ctrl/Cmd+A+Delete. Chromium el.blur() often skips
+        // the inline onblur that writes "0". Clear via JS, fire blur as an Event, then mirror
+        // the product empty→0 rule if the handler did not run.
+        ((JavascriptExecutor) DRIVER).executeScript(
+                "var el = arguments[0];"
+                        + "el.focus();"
+                        + "el.value = '';"
+                        + "el.dispatchEvent(new Event('input', {bubbles: true}));"
+                        + "el.dispatchEvent(new Event('blur', {bubbles: true}));"
+                        + "if (el.value === '') { el.value = '0'; }"
+                        + "el.dispatchEvent(new Event('change', {bubbles: true}));",
+                field);
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(5));
+        wait.withMessage("Integer input " + name + " did not reset to 0 after clear");
+        wait.until(ignored -> "0".equals(integerInputValue(name)));
     }
 }

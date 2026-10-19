@@ -48,6 +48,8 @@ Feature: Workstation URL security for calledprocess and selectedprocess
 
 	@web @zmsadmin @citizen-call @clerk @security @ZMSKVR-375 @executeLocally
 	Scenario Outline: ProcessNotCallable for <status> on calledprocess and selectedprocess
+		# Fixture before UI login (original order). Creating while the UI clerk is already on
+		# Platz 13 makes ?calledprocess= skip the ProcessNotCallable board for every status.
 		Given the ZMS API is available
 		And I am logged in to the ZMS API as "ataf"
 		When for scope 133 and service "Führungszeugnis" a <status> appointment customer "Muster Zmskvr375 <status>" is created at the next minute.
