@@ -3,6 +3,11 @@
  * so a fixed host-page bar (muenchen.de menu) does not cover it.
  * Light-DOM CSS is invisible from the shadow root, so this is measured instead.
  *
+ * Do not use position: sticky with this value. muenchen.de wraps the page in
+ * .site { overflow: hidden }, and that element becomes the sticky scrollport,
+ * so a sticky banner scrolls away with the page. Pin with position: fixed at
+ * this inset, and release the pin when the widget scrolls out.
+ *
  * Reuse this for ZMSKVR-1525 (Terminstatus in Schritt "Übersicht" und
  * Termin-Detailseite anzeigen): that ticket shows a banner when the appointment
  * is being called in the waiting room, and it has the same sticky offset.
