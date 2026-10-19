@@ -74,21 +74,32 @@
       "
     >
       <!-- ZMSKVR-501: last 60s of captcha (Termin) or reservation (Kontakt/Übersicht) -->
-      <muc-banner
+      <div
         v-if="showTimeoutWarning && !isAppointmentInPast"
-        variant="header"
-        type="warning"
-        class="timeout-warning-banner"
-        data-test="timeout-warning-banner"
-        :style="{ '--timeout-banner-top': timeoutBannerTop }"
-        role="status"
-        aria-live="polite"
+        ref="timeoutBannerSlot"
+        class="timeout-warning-banner-slot"
+        :style="
+          timeoutBannerPinned
+            ? { minHeight: timeoutBannerSlotHeight }
+            : undefined
+        "
       >
-        {{ t("timeoutWarningLabel") }}
-        <strong>{{
-          t("timeoutWarningSeconds", { seconds: remainingTimeoutSeconds })
-        }}</strong>
-      </muc-banner>
+        <muc-banner
+          variant="header"
+          type="warning"
+          class="timeout-warning-banner"
+          :class="{ 'timeout-warning-banner--pinned': timeoutBannerPinned }"
+          data-test="timeout-warning-banner"
+          :style="timeoutBannerPinStyle"
+          role="status"
+          aria-live="polite"
+        >
+          {{ t("timeoutWarningLabel") }}
+          <strong>{{
+            t("timeoutWarningSeconds", { seconds: remainingTimeoutSeconds })
+          }}</strong>
+        </muc-banner>
+      </div>
       <muc-stepper
         v-if="!isAppointmentInPast"
         ref="stepperRef"
@@ -731,11 +742,41 @@ const { showTimeoutWarning, remainingSeconds: remainingTimeoutSeconds } =
     reservationDeadlineMs,
   });
 
-const timeoutBannerTop = ref("0px");
+const timeoutBannerSlot = ref<HTMLElement | null>(null);
+const timeoutBannerPinned = ref(false);
+const timeoutBannerSlotHeight = ref("0px");
+const timeoutBannerPinStyle = ref<Record<string, string>>({});
 let timeoutBannerFrame = 0;
 
 function syncTimeoutBannerTop() {
-  timeoutBannerTop.value = `${hostFixedHeaderInsetPx()}px`;
+  const slot = timeoutBannerSlot.value;
+  if (!slot) return;
+
+  const inset = hostFixedHeaderInsetPx();
+  const slotRect = slot.getBoundingClientRect();
+  const banner = slot.querySelector<HTMLElement>(
+    "[data-test='timeout-warning-banner']"
+  );
+  const bannerHeight =
+    banner?.getBoundingClientRect().height ?? slotRect.height;
+  const root = slot.getRootNode();
+  const boundary = root instanceof ShadowRoot ? root.host : slot;
+  const boundaryBottom = boundary.getBoundingClientRect().bottom;
+  const pin = slotRect.top < inset && boundaryBottom > inset + bannerHeight;
+
+  if (!pin) {
+    timeoutBannerPinned.value = false;
+    timeoutBannerPinStyle.value = {};
+    return;
+  }
+
+  timeoutBannerSlotHeight.value = `${Math.round(bannerHeight)}px`;
+  timeoutBannerPinned.value = true;
+  timeoutBannerPinStyle.value = {
+    top: `${inset}px`,
+    left: `${Math.round(slotRect.left)}px`,
+    width: `${Math.round(slotRect.width)}px`,
+  };
 }
 
 function onTimeoutBannerViewportChange() {
@@ -761,6 +802,8 @@ function unbindTimeoutBannerInset() {
     window.cancelAnimationFrame(timeoutBannerFrame);
     timeoutBannerFrame = 0;
   }
+  timeoutBannerPinned.value = false;
+  timeoutBannerPinStyle.value = {};
 }
 
 watch(
@@ -768,7 +811,8 @@ watch(
   (visible) => {
     if (visible) bindTimeoutBannerInset();
     else unbindTimeoutBannerInset();
-  }
+  },
+  { flush: "post" }
 );
 
 onBeforeUnmount(unbindTimeoutBannerInset);
@@ -2060,15 +2104,19 @@ onMounted(() => {
 <style lang="scss" scoped>
 @use "@/styles/breakpoints.scss" as *;
 
-.timeout-warning-banner {
-  position: sticky;
-  top: var(--timeout-banner-top, 0px);
-  z-index: 2;
+.timeout-warning-banner-slot {
   margin-top: -1.5rem;
 
   @media (min-width: 1200px) {
     margin-top: -2rem;
   }
+}
+
+/* Sticky cannot stick on muenchen.de: .site { overflow: hidden } is the scrollport. */
+.timeout-warning-banner--pinned {
+  position: fixed;
+  z-index: 90;
+  margin-top: 0;
 }
 
 .m-button-group {
