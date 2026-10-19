@@ -1,10 +1,10 @@
 {
   "branch": "test-zms-3212-zms-3503-emergency-tresen-and-reset",
   "branchSlug": "test-zms-3212-zms-3503-emergency-tresen-and-reset",
-  "runId": "39328524668",
-  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/39328524668",
-  "runStartedAt": "2026-10-19T21:34:16Z",
-  "publishedAt": "2026-10-19T21:45:29.717Z",
+  "runId": "39336170095",
+  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/39336170095",
+  "runStartedAt": "2026-10-19T22:36:44Z",
+  "publishedAt": "2026-10-19T22:50:14.052Z",
   "features": {
     "feature-rest-zmsapi-emergency-zms-3212-zms-3503-emergency-tresen-and-reset": {
       "status": "passed",
@@ -103,20 +103,20 @@
       "runStartedAt": "2026-10-18T05:18:01Z"
     },
     "feature-ui-zmsadmin-emergency-zms-3503-zmsalt-3503-zms-3542-zmsalt-3542-reset-emergency-via-location": {
-      "status": "failed",
+      "status": "passed",
       "shard": "custom",
       "browser": "chrome",
       "rel": "ui/zmsadmin/emergency/zms-3503_zmsalt-3503_zms-3542_zmsalt-3542_reset_emergency_via_location.feature",
-      "runId": "39328524668",
-      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/39328524668",
-      "runStartedAt": "2026-10-19T21:34:16Z",
+      "runId": "39336170095",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/39336170095",
+      "runStartedAt": "2026-10-19T22:36:44Z",
       "browsers": {
         "chrome": {
-          "status": "failed",
+          "status": "passed",
           "shard": "custom",
-          "runId": "39328524668",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/39328524668",
-          "runStartedAt": "2026-10-19T21:34:16Z"
+          "runId": "39336170095",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/39336170095",
+          "runStartedAt": "2026-10-19T22:36:44Z"
         }
       }
     }
