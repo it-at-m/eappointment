@@ -152,7 +152,9 @@ class AvailabilityList extends Base
 
     /**
      * Availabilities keyed by id (or tempId), shorter availabilities first (then lower id).
-     * Same order as the backend uses to map bookings of overlapping availabilities to slots.
+     * This is the only definition of which overlapping availability is preferred: the backend uses it to
+     * choose the availability of a booking (Slot::getRequiredSlotsByAvailability()). The only copy is the SQL
+     * fallback for unmapped bookings in Availability\Repository\Availability::getJoinExpression().
      *
      * @return array<int|string, Availability>
      */
