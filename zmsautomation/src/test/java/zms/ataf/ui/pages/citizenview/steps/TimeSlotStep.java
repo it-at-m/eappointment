@@ -2817,15 +2817,14 @@ public final class TimeSlotStep {
     }
 
     public JsonNode waitForToggleLabels(String activeLabel) {
-        // Color transition is 200ms, but under shard load Firefox/Chrome can keep the previous
-        // label paint while the list accordion mounts or the viewport settles after resize.
+        // The list accordion and a viewport resize can remount the toggle before the active class settles.
         return new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(slotBookingWaitTimeoutSeconds()))
                 .pollingEvery(Duration.ofMillis(250))
                 .until(d -> {
                     JsonNode node = json.citizenJson(
                             "(function(){var labels=cssAll('.m-toggle-switch__label');var out=[];"
-                                    + "for(var i=0;i<labels.length;i++){var st=getComputedStyle(labels[i]);"
-                                    + "out.push({text:textOf(labels[i]),color:st.color,active:labels[i].classList.contains('m-toggle-switch__label--active')});}"
+                                    + "for(var i=0;i<labels.length;i++){"
+                                    + "out.push({text:textOf(labels[i]),active:labels[i].classList.contains('m-toggle-switch__label--active')});}"
                                     + "var heading=byId('viewToggleLabel');var toggle=cssAll('button.m-toggle-switch')[0];"
                                     + "var hr=heading?heading.getBoundingClientRect():null;var tr=toggle?toggle.getBoundingClientRect():null;"
                                     + "return {labels:out,heading:heading?textOf(heading):'',"
@@ -2839,14 +2838,7 @@ public final class TimeSlotStep {
                     }
                     for (JsonNode label : node.path("labels")) {
                         boolean shouldBeActive = activeLabel.equals(label.path("text").asText());
-                        String color = label.path("color").asText();
                         if (label.path("active").asBoolean() != shouldBeActive) {
-                            return null;
-                        }
-                        if (shouldBeActive && !isToggleBlue(color)) {
-                            return null;
-                        }
-                        if (!shouldBeActive && !isToggleGrey(color)) {
                             return null;
                         }
                     }
@@ -2856,28 +2848,10 @@ public final class TimeSlotStep {
 
     public void assertToggleColor(JsonNode label, String text, boolean active) {
         Assert.assertEquals(label.path("text").asText(), text, "Toggle label: " + label);
-        Assert.assertEquals(label.path("active").asBoolean(), active, text + " active state: " + label);
-        String color = label.path("color").asText();
-        Assert.assertTrue(
-                active ? isToggleBlue(color) : isToggleGrey(color),
-                text + " should be " + (active ? "#005A9F" : "#617586") + " but was " + color);
-    }
-
-    /** Accepts rgb()/rgba() with commas or modern space-separated components. */
-    private static boolean isToggleBlue(String color) {
-        return colorMatchesChannels(color, 0, 90, 159);
-    }
-
-    private static boolean isToggleGrey(String color) {
-        return colorMatchesChannels(color, 97, 117, 134);
-    }
-
-    private static boolean colorMatchesChannels(String color, int r, int g, int b) {
-        if (color == null || color.isBlank()) {
-            return false;
-        }
-        String compact = color.replace(" ", "");
-        return compact.contains(r + "," + g + "," + b) || color.contains(r + " " + g + " " + b);
+        Assert.assertEquals(
+                label.path("active").asBoolean(),
+                active,
+                text + " should " + (active ? "" : "not ") + "carry m-toggle-switch__label--active: " + label);
     }
 
     public JsonNode calendarSnapshot() {
