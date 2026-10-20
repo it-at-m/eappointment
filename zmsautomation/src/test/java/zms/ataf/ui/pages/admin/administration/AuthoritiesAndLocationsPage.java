@@ -591,26 +591,15 @@ public void saveLocationChanges() {
                 "//button[contains(@class,'button-save') and normalize-space()='Alle Änderungen aktivieren']";
         clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, publishButton, LocatorType.XPATH, false, CONTEXT);
         // A holiday in the range asks to continue, then the save dialog asks again.
-        // Confirm each dialog until the save banner is on the page. A conflicting series
-        // still saves; that banner is message--warning and hides after a few seconds.
+        // Confirm each dialog until the success message is on the page.
         By confirmButton = By.xpath("//div[contains(@class,'lightbox__content')]//a[@data-action-ok]");
-        By saved = By.xpath(
-                "//div[contains(@class,'message--success') or contains(@class,'message--warning')]"
-                        + "[contains(., 'Öffnungszeiten gespeichert')]");
+        By success = By.xpath("//div[contains(@class,'message--success')][contains(., 'Öffnungszeiten gespeichert')]");
         WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
         wait.ignoring(StaleElementReferenceException.class);
-        final String[] savedMessage = {null};
         try {
             wait.until(driver -> {
-                for (WebElement banner : driver.findElements(saved)) {
-                    if (!isShown(banner)) {
-                        continue;
-                    }
-                    String text = banner.getText();
-                    if (text != null && text.contains("Öffnungszeiten gespeichert")) {
-                        savedMessage[0] = text;
-                        return true;
-                    }
+                if (driver.findElements(success).stream().anyMatch(this::isShown)) {
+                    return true;
                 }
                 for (WebElement ok : driver.findElements(confirmButton)) {
                     if (isShown(ok)) {
@@ -623,14 +612,19 @@ public void saveLocationChanges() {
         } catch (TimeoutException e) {
             Assert.fail("Opening hours were not saved.", e);
         }
-        String message = savedMessage[0].replaceAll("\\n", "").trim();
+        String message = getWebElementText(
+            DEFAULT_EXPLICIT_WAIT_TIME,
+            "//div[contains(@class,'message--success')]",
+            LocatorType.XPATH,
+            CONTEXT
+        ).replaceAll("\\n", "").trim();
 
         String today = BerlinTime.today()
                 .format(DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.GERMANY));
 
         Assert.assertTrue(
-                message.contains("Öffnungszeiten gespeichert") && message.contains(today),
-                "Success message does not contain today's date! " + message
+                message.contains("Öffnungszeiten gespeichert, " + today),
+                "Success message does not contain today's date!"
         );
     }
 
