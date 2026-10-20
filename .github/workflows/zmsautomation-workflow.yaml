@@ -1168,21 +1168,33 @@ jobs:
           compression-level: 0
           overwrite: true
 
-  # Stable check for branch protection. A manual run of any module posts this
-  # name on that commit. It does not run on pull_request or push.
-  zmsautomation:
-    name: zmsautomation
+  # A workflow_dispatch job check is ignored on the pull request. A commit
+  # status named zmsautomation is what the pull request and branch protection see.
+  # The job name must stay different: GitHub requires both when the names match.
+  record-zmsautomation-status:
+    name: Record zmsautomation status
     needs: [generate-matrix, zms-automation]
     if: always() && !cancelled()
     runs-on: ubuntu-latest
+    permissions:
+      statuses: write
     steps:
-      - name: Require the selected tests to pass
+      - name: Post zmsautomation on the commit
+        env:
+          GH_TOKEN: ${{ github.token }}
+          STATE: ${{ (needs.generate-matrix.result == 'success' && needs.zms-automation.result == 'success') && 'success' || 'failure' }}
         run: |
           set -euo pipefail
-          echo "generate-matrix=${{ needs.generate-matrix.result }}"
-          echo "zms-automation=${{ needs.zms-automation.result }}"
-          test "${{ needs.generate-matrix.result }}" = "success"
-          test "${{ needs.zms-automation.result }}" = "success"
+          if [ "${STATE}" = "success" ]; then
+            description="Manual zmsautomation run passed"
+          else
+            description="Manual zmsautomation run failed"
+          fi
+          gh api --method POST "repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" \
+            -f state="${STATE}" \
+            -f context="zmsautomation" \
+            -f description="${description}" \
+            -f target_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
 
   publish-cucumber-status:
     name: Publish cucumber status JSON
