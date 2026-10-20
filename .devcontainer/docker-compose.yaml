@@ -1,6 +1,7 @@
 services:
   # zmsbase uses per-arch tags. devcontainer initializeCommand runs
-  # .devcontainer/scripts/sync-php-base-tag.sh (see devcontainer.json) sets ZMS_PHP_BASE_TAG from host uname.
+  # .devcontainer/scripts/sync-php-base-tag.sh (see devcontainer.json), which sets
+  # ZMS_PHP_BASE_TAG from the host architecture and pulls that image.
   # Fallback default is amd64 for plain `docker compose` without that step.
   web:
     container_name: zms-web
