@@ -29,7 +29,7 @@ The `php_v8_3_local` and `php_v8_4_local` jobs build single-architecture tags in
 - `linux/amd64` on `ubuntu-latest` -> `8.3-local-amd64` / `8.4-local-amd64`
 - `linux/arm64` on `ubuntu-24.04-arm` -> `8.3-local-arm64` / `8.4-local-arm64`
 
-Devcontainer sets `ZMS_PHP_BASE_TAG` via [`.devcontainer/scripts/sync-php-base-tag.sh`](https://github.com/it-at-m/eappointment/blob/main/.devcontainer/scripts/sync-php-base-tag.sh), then pulls that tag with [`.devcontainer/scripts/pull-php-base-image.sh`](https://github.com/it-at-m/eappointment/blob/main/.devcontainer/scripts/pull-php-base-image.sh) before Compose starts.
+Devcontainer sets `ZMS_PHP_BASE_TAG` and pulls that image via [`.devcontainer/scripts/sync-php-base-tag.sh`](https://github.com/it-at-m/eappointment/blob/main/.devcontainer/scripts/sync-php-base-tag.sh) before Compose starts.
 
 ## Build and publish workflow behavior
 

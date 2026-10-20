@@ -6,7 +6,7 @@ Die lokale Entwicklung nutzt **Podman** mit **Dev Containers**. Starte den Stack
 devcontainer up --workspace-folder .
 ```
 
-Das erzeugt und startet die lokale Container-Umgebung für Entwicklung und Tests. Der Befehl erkennt außerdem automatisch deine Host-Architektur (`amd64` vs. `arm64`) und zieht für `zms-web` das passende lokale PHP-Basis-Image-Tag mit der Podman- oder Docker-CLI, bevor Compose startet. Dieser CLI-Pull registriert das Tag. Ubuntus `/usr/bin/docker-compose` ist Compose v1 und zieht über die Docker-API von Podman. Die kann den Download abschließen und das Image trotzdem als unbekannt melden, sodass Compose es ein zweites Mal lädt und `zms-web` nicht startet.
+Das erzeugt und startet die lokale Container-Umgebung für Entwicklung und Tests. Der Befehl erkennt außerdem automatisch deine Host-Architektur (`amd64` vs. `arm64`) und zieht für `zms-web` das passende lokale PHP-Basis-Image, bevor Compose startet.
 
 Wie du Podman auf dem Host vollständig bereinigst und den Stack neu erzeugst, beschreibt [Schnelles Zurücksetzen der lokalen Umgebung](/de/setup-and-development/getting-started/quick-reset-local-environment).
 
