@@ -210,6 +210,12 @@ public final class TimeSlotStep {
                             "zmscitizenview: no timeslot for office {} yet (attempt {}); try Später",
                             officeId,
                             attempt);
+            if (deepMucSpinnerVisible()) {
+                if (!finishInFlightCalendarLoad()) {
+                    return;
+                }
+                continue;
+            }
             if (clickCitizenViewLaterOnceIfAvailable()) {
                 CitizenViewWaits.sleepQuiet(1200L);
                 try {
@@ -880,6 +886,12 @@ public final class TimeSlotStep {
                             "zmscitizenview: open hour missing Ruppertstraße (titles={}); try Später / next day ({}/15)",
                             titles,
                             attempt + 1);
+            if (deepMucSpinnerVisible()) {
+                if (!finishInFlightCalendarLoad()) {
+                    break;
+                }
+                continue;
+            }
             if (clickCitizenViewLaterOnceIfAvailable()) {
                 waitUntilAppointmentSlotsReadyQuiet(Math.min(30, slotBookingWaitTimeoutSeconds()));
                 continue;
@@ -1380,6 +1392,12 @@ public final class TimeSlotStep {
                             "zmscitizenview: still missing timeslots for providers {} (attempt {}); try Später",
                             remaining,
                             attempt);
+            if (deepMucSpinnerVisible()) {
+                if (!finishInFlightCalendarLoad()) {
+                    break;
+                }
+                continue;
+            }
             if (clickCitizenViewLaterOnceIfAvailable()) {
                 CitizenViewWaits.sleepQuiet(1200L);
                 try {
@@ -1894,6 +1912,11 @@ public final class TimeSlotStep {
             int waitSec = day == 0 ? timeout : Math.min(45, timeout);
             if (waitUntilAppointmentSlotsReadyQuiet(waitSec)) {
                 break;
+            }
+            if (deepMucSpinnerVisible()) {
+                if (!finishInFlightCalendarLoad() || deepTimeslotClickablePresent()) {
+                    break;
+                }
             }
             if (deepTimeslotClickablePresent() || !openNextCalendarDayAndWaitForSlots()) {
                 break;
@@ -3000,8 +3023,39 @@ public final class TimeSlotStep {
             return false;
         }
         CitizenViewWaits.sleepQuiet(1200L);
-        waitUntilAppointmentSlotsReadyQuiet(Math.min(45, slotBookingWaitTimeoutSeconds()));
+        // Shard load makes a multi-office day fetch take longer than 45s. Waiting
+        // only 45s and then opening another day drops the response that is about to arrive.
+        waitUntilAppointmentSlotsReadyQuiet(slotBookingWaitTimeoutSeconds());
+        if (deepMucSpinnerVisible()) {
+            ScenarioLogManager.getLogger()
+                    .info(
+                            "zmscitizenview: next calendar day still loading after {}s; not paging further",
+                            slotBookingWaitTimeoutSeconds());
+            return false;
+        }
         return true;
+    }
+
+    /**
+     * A visible MucSpinner is an in-flight available-calendar request, not an empty day.
+     *
+     * @return false when that request is still running after the full slot wait
+     */
+    private boolean finishInFlightCalendarLoad() {
+        if (!deepMucSpinnerVisible()) {
+            return true;
+        }
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: calendar still loading; waiting out the in-flight request");
+        waitUntilAppointmentSlotsReadyQuiet(slotBookingWaitTimeoutSeconds());
+        if (!deepMucSpinnerVisible()) {
+            return true;
+        }
+        ScenarioLogManager.getLogger()
+                .info(
+                        "zmscitizenview: calendar request still in flight after {}s; not opening another day",
+                        slotBookingWaitTimeoutSeconds());
+        return false;
     }
 
     /**
@@ -3235,6 +3289,12 @@ public final class TimeSlotStep {
                             "zmscitizenview: no timeslot for provider {} in current view (attempt {}); try Später",
                             officeId,
                             attempt);
+            if (deepMucSpinnerVisible()) {
+                if (!finishInFlightCalendarLoad()) {
+                    break;
+                }
+                continue;
+            }
             if (clickCitizenViewLaterOnceIfAvailable()) {
                 CitizenViewWaits.sleepQuiet(1200L);
                 waitUntilAppointmentSlotsReadyQuiet(Math.min(45, slotBookingWaitTimeoutSeconds()));
