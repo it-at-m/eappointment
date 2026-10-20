@@ -1,10 +1,10 @@
 {
   "branch": "next",
   "branchSlug": "next",
-  "runId": "39403259466",
-  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/39403259466",
-  "runStartedAt": "2026-10-20T09:47:31Z",
-  "publishedAt": "2026-10-20T09:58:25.969Z",
+  "runId": "39405805010",
+  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/39405805010",
+  "runStartedAt": "2026-10-20T10:08:31Z",
+  "publishedAt": "2026-10-20T10:21:41.582Z",
   "features": {
     "feature-rest-zmsapi-zmskvr-1328": {
       "status": "passed",
@@ -2931,36 +2931,22 @@
       "runStartedAt": "2026-10-20T08:24:41Z"
     },
     "feature-ui-zmsadmin-citizen-search-zmskvr-1595-zmskvr-1532-basis-search-edit": {
-      "status": "failed",
-      "shard": "zmsadmin",
+      "status": "passed",
+      "shard": "custom",
       "browser": "chrome",
+      "rel": "ui/zmsadmin/citizen-search/zmskvr-1595_zmskvr-1532_basis_search_edit.feature",
+      "runId": "39405805010",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/39405805010",
+      "runStartedAt": "2026-10-20T10:08:31Z",
       "browsers": {
         "chrome": {
           "status": "passed",
-          "shard": "zmsadmin",
-          "runId": "39393197680",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/39393197680",
-          "runStartedAt": "2026-10-20T08:24:41Z"
-        },
-        "edge": {
-          "status": "passed",
-          "shard": "zmsadmin",
-          "runId": "39393197680",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/39393197680",
-          "runStartedAt": "2026-10-20T08:24:41Z"
-        },
-        "firefox": {
-          "status": "failed",
-          "shard": "zmsadmin",
-          "runId": "39393197680",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/39393197680",
-          "runStartedAt": "2026-10-20T08:24:41Z"
+          "shard": "custom",
+          "runId": "39405805010",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/39405805010",
+          "runStartedAt": "2026-10-20T10:08:31Z"
         }
-      },
-      "rel": "ui/zmsadmin/citizen-search/zmskvr-1595_zmskvr-1532_basis_search_edit.feature",
-      "runId": "39393197680",
-      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/39393197680",
-      "runStartedAt": "2026-10-20T08:24:41Z"
+      }
     },
     "feature-ui-zmsadmin-opening-hours-zmskvr-1583-zmskvr-1249-opening-hours-history": {
       "status": "passed",
@@ -6156,36 +6142,22 @@
       "runStartedAt": "2026-10-20T08:24:41Z"
     },
     "feature-ui-zmsadmin-configuration-zmskvr-1459-zmskvr-1392-integer-fields": {
-      "status": "failed",
-      "shard": "zmsadmin",
+      "status": "passed",
+      "shard": "custom",
       "browser": "chrome",
+      "rel": "ui/zmsadmin/configuration/zmskvr-1459_zmskvr-1392_integer_fields.feature",
+      "runId": "39405805010",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/39405805010",
+      "runStartedAt": "2026-10-20T10:08:31Z",
       "browsers": {
         "chrome": {
-          "status": "failed",
-          "shard": "zmsadmin",
-          "runId": "39393197680",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/39393197680",
-          "runStartedAt": "2026-10-20T08:24:41Z"
-        },
-        "edge": {
-          "status": "failed",
-          "shard": "zmsadmin",
-          "runId": "39393197680",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/39393197680",
-          "runStartedAt": "2026-10-20T08:24:41Z"
-        },
-        "firefox": {
           "status": "passed",
-          "shard": "zmsadmin",
-          "runId": "39393197680",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/39393197680",
-          "runStartedAt": "2026-10-20T08:24:41Z"
+          "shard": "custom",
+          "runId": "39405805010",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/39405805010",
+          "runStartedAt": "2026-10-20T10:08:31Z"
         }
-      },
-      "rel": "ui/zmsadmin/configuration/zmskvr-1459_zmskvr-1392_integer_fields.feature",
-      "runId": "39393197680",
-      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/39393197680",
-      "runStartedAt": "2026-10-20T08:24:41Z"
+      }
     },
     "feature-ui-zmsadmin-roles-zmskvr-1461-zmskvr-1345-scope-source-access": {
       "status": "passed",
