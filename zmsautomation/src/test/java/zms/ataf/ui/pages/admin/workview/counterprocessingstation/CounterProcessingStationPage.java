@@ -1364,7 +1364,37 @@ public class CounterProcessingStationPage extends AdminPage {
 
     public void clickOnCloseButton() {
         ScenarioLogManager.getLogger().info("Trying to click on \"Close\"  button...");
-        clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "//button[contains(text(),'Schließen')]", LocatorType.XPATH, false);
+        CONTEXT.set();
+        // text() misses the button when Firefox splits the label. The success dialog's
+        // Schließen is the button-ok; the mail form uses button-abort.
+        By close = By.xpath("//button[contains(@class,'button-ok') and normalize-space(.)='Schließen']");
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        WebElement button = wait.ignoring(StaleElementReferenceException.class).until(driver -> {
+            for (WebElement candidate : driver.findElements(close)) {
+                try {
+                    if (candidate.isDisplayed()) {
+                        return candidate;
+                    }
+                } catch (StaleElementReferenceException ignored) {
+                    // dialog re-rendered
+                }
+            }
+            return null;
+        });
+        ((JavascriptExecutor) DRIVER).executeScript("arguments[0].scrollIntoView({block:'center'});", button);
+        try {
+            button.click();
+        } catch (StaleElementReferenceException | ElementClickInterceptedException e) {
+            button = wait.ignoring(StaleElementReferenceException.class).until(driver -> {
+                for (WebElement candidate : driver.findElements(close)) {
+                    if (candidate.isDisplayed()) {
+                        return candidate;
+                    }
+                }
+                return null;
+            });
+            ((JavascriptExecutor) DRIVER).executeScript("arguments[0].click();", button);
+        }
     }
 
     public void clickOnOkButton() {

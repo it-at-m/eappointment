@@ -1222,14 +1222,28 @@ public void saveLocationChanges() {
     public void openDepartmentForEditing(String departmentName) {
         ScenarioLogManager.getLogger()
                 .info("Opening department {} for editing under Behörden und Standorte", departmentName);
-        clickOnWebElement(
-                DEFAULT_EXPLICIT_WAIT_TIME,
+        CONTEXT.set();
+        CONTEXT.waitForSpinners();
+        // The owner list is long. An off-screen Bearbeiten link is present but the normal click
+        // never lands, which is what Chrome and Edge hit on this step.
+        By link = By.xpath(
                 "//h4[contains(@class,'department-title') and contains(normalize-space(.),'"
                         + departmentName
-                        + "')]//a[@title='Bearbeiten']",
-                LocatorType.XPATH,
-                false,
-                CONTEXT);
+                        + "')]//a[@title='Bearbeiten']");
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        WebElement entry = wait.until(ExpectedConditions.presenceOfElementLocated(link));
+        ((JavascriptExecutor) DRIVER).executeScript("arguments[0].scrollIntoView({block:'center'});", entry);
+        try {
+            new WebDriverWait(DRIVER, Duration.ofSeconds(5))
+                    .ignoring(StaleElementReferenceException.class)
+                    .until(ExpectedConditions.elementToBeClickable(entry))
+                    .click();
+        } catch (Exception e) {
+            ScenarioLogManager.getLogger().warn(
+                    "Normal click failed, trying JS click for department '{}'...", departmentName);
+            entry = wait.until(ExpectedConditions.presenceOfElementLocated(link));
+            ((JavascriptExecutor) DRIVER).executeScript("arguments[0].click();", entry);
+        }
         Assert.assertTrue(
                 isWebElementVisible(
                         DEFAULT_EXPLICIT_WAIT_TIME,
