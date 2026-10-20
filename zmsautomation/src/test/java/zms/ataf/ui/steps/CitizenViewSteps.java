@@ -17,6 +17,7 @@ import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import zms.ataf.rest.steps.ZmsApiMailSteps;
 import zms.ataf.ui.pages.citizenview.CitizenViewPage;
+import zms.ataf.ui.pages.citizenview.support.FeuerwacheOrderDaySeats;
 
 /**
  * All zmscitizenview UI steps (English). Service Finder smoke + full booking flow; see
@@ -137,6 +138,16 @@ public class CitizenViewSteps {
         String s = TestDataHelper.transformTestData(serviceId);
         ScenarioLogManager.getLogger().info("zmscitizenview: jump-in service={}", s);
         page.navigateWithJumpInService(s);
+    }
+
+    /**
+     * ZMSKVR-151 / ZMSKVR-714: booked-out scenarios may have reserved every V61 day+7 seat.
+     * Re-open capacity before asserting Feuerwache 10 last under Verfügbare Termine.
+     */
+    @Given("Feuerwache order-day seats are restored in the ATAF database")
+    public void feuerwacheOrderDaySeatsAreRestoredInTheAtafDatabase() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: restoring Feuerwache V61 order-day seats");
+        FeuerwacheOrderDaySeats.restore();
     }
 
     @When("I click Leistung wechseln in the citizen view")
@@ -330,6 +341,44 @@ public class CitizenViewSteps {
         ScenarioLogManager.getLogger()
                 .info("zmscitizenview: max-length error for #{} at {}", fieldId, maxChars);
         page.assertMaxLengthCounterError(fieldId, maxChars);
+    }
+
+    @Then("both freitext character counters should show {int} as the maximum in the citizen view")
+    public void bothFreitextCharacterCountersShouldShowAsTheMaximumInTheCitizenView(int maxChars) {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: both Freitext counters visible at max={}", maxChars);
+        page.assertBothFreitextCharacterCountersVisible(maxChars);
+    }
+
+    @Then("the freitext character counter for {string} should update live up to {int} in the citizen view")
+    public void theFreitextCharacterCounterForShouldUpdateLiveUpToInTheCitizenView(
+            String fieldId, int maxChars) {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: live Freitext counter #{} max={}", fieldId, maxChars);
+        page.assertFreitextCharacterCounterUpdatesLive(fieldId, maxChars);
+    }
+
+    @Then("the contact field {string} should have no character counter in the citizen view")
+    public void theContactFieldShouldHaveNoCharacterCounterInTheCitizenView(String fieldId) {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: no character counter on #{}", fieldId);
+        page.assertContactFieldHasNoCharacterCounter(fieldId);
+    }
+
+    @Then("the contact field {string} should block input at {int} characters in the citizen view")
+    public void theContactFieldShouldBlockInputAtCharactersInTheCitizenView(
+            String fieldId, int maxChars) {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: maxlength blocks #{} at {}", fieldId, maxChars);
+        page.assertContactFieldInputBlockedAtMax(fieldId, maxChars);
+    }
+
+    @Then("both freitext character counters should show {int} as the maximum on mobile in the citizen view")
+    public void bothFreitextCharacterCountersShouldShowAsTheMaximumOnMobileInTheCitizenView(
+            int maxChars) {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: both Freitext counters on mobile max={}", maxChars);
+        page.assertBothFreitextCharacterCountersVisibleOnMobile(maxChars);
     }
 
     @Then("the contact character counter font size is point eight seven five rem on desktop")
@@ -686,6 +735,19 @@ public class CitizenViewSteps {
     public void theLocationCheckboxesAreSelectedInFrequencyOrder() {
         ScenarioLogManager.getLogger().info("zmscitizenview: location checkboxes selected in frequency order");
         page.assertOfficesCheckedInFrequencyOrder();
+    }
+
+    @Then("the Feuerwache location checkboxes are in numeric order from 1 to 10")
+    public void theFeuerwacheLocationCheckboxesAreInNumericOrderFrom1To10() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: Feuerwache Ort checkboxes 1…10");
+        page.assertFeuerwacheCheckboxesInNumericOrder();
+    }
+
+    @Then("the Feuerwache headings under available appointments are in numeric order with 10 last")
+    public void theFeuerwacheHeadingsUnderAvailableAppointmentsAreInNumericOrderWith10Last() {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: Feuerwache list/calendar headings numeric, 10 last");
+        page.assertFeuerwacheListTitlesInNumericOrder();
     }
 
     @Then("at least {int} location checkboxes are checked in the citizen view")
@@ -1438,6 +1500,13 @@ public class CitizenViewSteps {
         page.assertProviderCheckboxPresent(officeId);
     }
 
+    @Then("only provider {int} should be checked among the Ort checkboxes")
+    public void onlyProviderShouldBeCheckedAmongTheOrtCheckboxes(int officeId) {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: assert only provider {} checked among Ort checkboxes", officeId);
+        page.assertOnlyProviderCheckedAmongOrtCheckboxes(officeId);
+    }
+
     @Then("provider checkbox {int} should not appear in the citizen view")
     public void providerCheckboxShouldNotAppear(int officeId) {
         try {
@@ -1525,6 +1594,20 @@ public class CitizenViewSteps {
         ScenarioLogManager.getLogger()
                 .info("zmscitizenview: assert overview shows service {} named {}", serviceId, label);
         page.assertOverviewServiceVisible(serviceId, label);
+    }
+
+    /** ZMSKVR-418: Übersicht / confirm / cancel list main + sub services with their booked counts. */
+    @Then("the appointment overview should show {int}x service {int} named {string} in the citizen view")
+    public void theAppointmentOverviewShouldShowCountServiceNamed(
+            int count, int serviceId, String serviceName) {
+        String label = TestDataHelper.transformTestData(serviceName);
+        ScenarioLogManager.getLogger()
+                .info(
+                        "zmscitizenview: assert overview shows {}x service {} named {}",
+                        count,
+                        serviceId,
+                        label);
+        page.assertOverviewServiceWithCount(serviceId, count, label);
     }
 
     @Then("the booking summary should show {string} for provider {int} in the citizen view")

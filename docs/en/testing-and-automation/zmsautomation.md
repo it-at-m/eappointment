@@ -25,7 +25,8 @@ This module contains API and UI tests for ZMS using [ATAF](https://it-at-m.githu
   - `ui/zmsadmin/` - Admin UI features
   - `ui/zmsstatistic/` - Statistik UI features
   - `ui/zmscitizenview/` - CitizenView UI (Service Finder + full booking E2E)
-- `src/main/resources/db/migration/` - Flyway database migrations
+- `src/main/resources/db/migration/` - Flyway migrations (history table `flyway_migration`, before hourly)
+- `src/main/resources/db/migration-after-hourly/` - Flyway migrations (history table `flyway_migration_after_hourly`, after hourly / before minutly)
 
 ## Running Tests
 
@@ -70,9 +71,10 @@ The script will:
 2. Clear caches
 3. Reset database (drop tables)
 4. Import base database (`.resources/zms.sql`)
-5. Run Flyway migrations (Maven plugin)
+5. Run Flyway migrations from `db/migration` into history table `flyway_migration`
 6. Run PHP migrations (`zmsbackend` migrate)
-7. Run hourly cronjob (with retries)
+7. Run hourly cronjob (with retries; falls back to bundled `dldb/*.json` only if live SADB fails)
+   7b. Run Flyway migrations from `db/migration-after-hourly` into `flyway_migration_after_hourly` — pins that must win over hourly provider reimport; after hourly, before minutly
 8. Run minutely cronjob and slot calculation (`calculateSlots`)
 9. Perform HTTP health checks (zmsbackend, citizen API, CitizenView, optional refarch-gateway)
 10. Set up display/browser tooling (Xvfb, driver checks)
@@ -234,7 +236,16 @@ cd zmsautomation && mvn test
 
 ## Database Setup
 
-[ATAF](https://it-at-m.github.io/agile-test-automation-framework/) tests automatically run Flyway migrations before executing tests. Migrations are under `src/main/resources/db/migration/`.
+[ATAF](https://it-at-m.github.io/agile-test-automation-framework/) setup via `zmsautomation-test` runs **two** Flyway paths with separate history tables:
+
+| Folder                                          | History table                   | When                                   |
+| ----------------------------------------------- | ------------------------------- | -------------------------------------- |
+| `src/main/resources/db/migration/`              | `flyway_migration`              | Step 5, before hourly                  |
+| `src/main/resources/db/migration-after-hourly/` | `flyway_migration_after_hourly` | Step 7b, after hourly / before minutly |
+
+Use `db/migration` for normal ATAF seed data. Use `db/migration-after-hourly` for pins that must win over the hourly DLDB/SADB provider reimport (for example `provider.data.slotTimeInMinutes`). Do **not** put those pins in `locations_de.json` (offline fallback only) or `munich_sadb_overwrite.json` (application overwrites).
+
+Naming is Flyway-style (`V###__description.sql`). After-hourly uses `baselineVersion=0` so `V001` is applied. Each setup clears the history rows so versioned migrations re-run (important for `CURDATE()`).
 
 ## Some Test Tag Examples
 

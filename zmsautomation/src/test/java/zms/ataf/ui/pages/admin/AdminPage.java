@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.RemoteWebDriver;
@@ -101,8 +102,12 @@ public class AdminPage extends BasePage {
             WebElement kcLogin = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
                     .until(ExpectedConditions.elementToBeClickable(By.id("kc-login")));
             ((JavascriptExecutor) DRIVER).executeScript("arguments[0].click();", kcLogin);
+            // Restored workstation sessions skip the scope form and land on the queue header.
             new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
-                    .until(ExpectedConditions.presenceOfElementLocated(ready));
+                    .until(ExpectedConditions.or(
+                            ExpectedConditions.presenceOfElementLocated(ready),
+                            ExpectedConditions.presenceOfElementLocated(
+                                    By.cssSelector(HEADER_CHANGE_SELECTION_LOCATOR))));
             ScenarioLogManager.getLogger().info("SSO login submitted successfully.");
         } catch (Exception e) {
             ScenarioLogManager.getLogger().error(e.getMessage(), e);
@@ -122,10 +127,25 @@ public class AdminPage extends BasePage {
 
     public void selectLocation(String location) {
         CONTEXT.set();
+        ensureScopeSelectionForm();
         ScenarioLogManager.getLogger().info("Trying to select location \"" + location + "\"");
         AccountCheckout.checkout("scope:" + location);
-        selectDropDownListValueByVisibleText(DEFAULT_EXPLICIT_WAIT_TIME, "scope", LocatorType.NAME, location);
-        TestDataHelper.setTestData("location", location);
+        // Firefox can rebuild the scope <select> while option text is read → StaleElementReference.
+        StaleElementReferenceException lastStale = null;
+        for (int attempt = 1; attempt <= 3; attempt++) {
+            try {
+                selectDropDownListValueByVisibleText(
+                        DEFAULT_EXPLICIT_WAIT_TIME, "scope", LocatorType.NAME, location);
+                TestDataHelper.setTestData("location", location);
+                return;
+            } catch (StaleElementReferenceException stale) {
+                lastStale = stale;
+                ScenarioLogManager.getLogger()
+                        .warn("Standort select went stale (attempt {}); refreshing form.", attempt);
+                ensureScopeSelectionForm();
+            }
+        }
+        throw lastStale;
     }
 
     /**
@@ -135,6 +155,7 @@ public class AdminPage extends BasePage {
      */
     public void selectLocationByScopeId(int scopeId) {
         CONTEXT.set();
+        ensureScopeSelectionForm();
         String scopeValue = Integer.toString(scopeId);
         WebElement selectEl = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
                 .until(ExpectedConditions.presenceOfElementLocated(By.name("scope")));
@@ -197,6 +218,17 @@ public class AdminPage extends BasePage {
         }
         ScenarioLogManager.getLogger().info("Header 'Auswahl ändern' not visible, using nav link 'Standort auswählen'");
         clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, NAV_SELECT_LOCATION_LOCATOR, LocatorType.XPATH, true, CONTEXT);
+    }
+
+    /** Opens the Standort form when SSO restored an existing workstation session. */
+    private void ensureScopeSelectionForm() {
+        if (!DRIVER.findElements(By.name("scope")).isEmpty()) {
+            return;
+        }
+        ScenarioLogManager.getLogger().info("Scope form missing after login; opening Standort selection.");
+        clickInHeaderOnChangeSelectionButton();
+        new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(ExpectedConditions.presenceOfElementLocated(By.name("scope")));
     }
 
     public void clickInNavigationOnOverallCalendar() {
@@ -281,6 +313,44 @@ public class AdminPage extends BasePage {
             return false;
         }
         return true;
+    }
+
+    /** ZMS-3212 / ZMSALT-3577: Tresen login must not show Sachbearbeiterplatz. */
+    public void assertNavigationDoesNotShow(String label) {
+        CONTEXT.set();
+        waitForPrimaryNavigation();
+        String compact = label.replace("\u00ad", "").replace("-", "");
+        boolean visible = DRIVER.findElements(By.cssSelector("nav.navigation-primary a")).stream()
+                .filter(WebElement::isDisplayed)
+                .map(a -> a.getText().replace("\u00ad", "").replace("\n", "").replace("-", "").trim())
+                .anyMatch(t -> t.equalsIgnoreCase(compact) || t.contains(compact));
+        Assert.assertFalse(visible, "Navigation must not show \"" + label + "\" for Tresen login.");
+    }
+
+    /** Active Notruf covers the page until Ausblenden is used. */
+    public void minimizeNotrufOverlay() {
+        CONTEXT.set();
+        ScenarioLogManager.getLogger().info("Minimizing the Notruf overlay...");
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        WebElement hide = wait.until(ExpectedConditions.elementToBeClickable(
+                By.cssSelector("button.emergency__button-hide")));
+        hide.click();
+        wait.until(ExpectedConditions.presenceOfElementLocated(
+                By.cssSelector(".emergency[data-minimized]")));
+    }
+
+    /** ZMS-3212: NOTRUF trigger is only rendered when workstation.name is set. */
+    public void assertNotrufTriggerNotVisible() {
+        CONTEXT.set();
+        waitForPrimaryNavigation();
+        List<WebElement> triggers = DRIVER.findElements(By.cssSelector("button.emergency__button-trigger"));
+        boolean visible = triggers.stream().anyMatch(WebElement::isDisplayed);
+        Assert.assertFalse(visible, "NOTRUF trigger must stay hidden without Platz-Nr.");
+    }
+
+    private void waitForPrimaryNavigation() {
+        new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("nav.navigation-primary")));
     }
 
 }

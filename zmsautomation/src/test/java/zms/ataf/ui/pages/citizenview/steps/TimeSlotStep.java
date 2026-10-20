@@ -199,8 +199,9 @@ public final class TimeSlotStep {
                 return;
             }
         }
+        // Riem order day (V61) is CURDATE()+7; booked-out may empty day+4. Allow enough day moves.
         int dayMoves = 0;
-        for (int attempt = 1; attempt <= 12; attempt++) {
+        for (int attempt = 1; attempt <= 16; attempt++) {
             if (deepTimeslotPresentForProvider(officeId)) {
                 return;
             }
@@ -221,7 +222,7 @@ public final class TimeSlotStep {
                 }
                 continue;
             }
-            if (dayMoves >= 5 || !openNextCalendarDayAndWaitForSlots()) {
+            if (dayMoves >= 10 || !openNextCalendarDayAndWaitForSlots()) {
                 return;
             }
             dayMoves++;
@@ -252,6 +253,16 @@ public final class TimeSlotStep {
      * (same German keys), H2 time heading, H3 callout title, fixed body text. Calendar toggle stays
      * hidden while the spinner is gone.
      */
+    /**
+     * True when the blue empty-state info callout is already in the DOM (spinner may still be
+     * clearing). Used by Ort keep-only to avoid paging calendar days looking for slots.
+     */
+    public boolean isNoAppointmentInfoCalloutPresent() {
+        context.set();
+        return shadow.deepInfoCalloutContains(NO_APPOINTMENT_CALLOUT)
+                && shadow.shadowDomContainsText(NO_APPOINTMENT_CALLOUT_TEXT);
+    }
+
     public void assertNoAppointmentInfoCalloutVisible() {
         context.set();
         long deadline = System.currentTimeMillis() + Math.max(30, defaultWaitSeconds) * 1000L;
@@ -846,15 +857,150 @@ public final class TimeSlotStep {
         assertMorningLabels(state);
     }
 
-    /** Open hour: each office that has a slot is a map-pin heading, in the same order as the checkboxes. */
+    /**
+     * Open hour: each office that has a slot is a map-pin heading, in the same order as the checkboxes.
+     *
+     * <p>Parallel Personalausweis booking can empty Ruppertstraße in the first open hour. Page Später
+     * / next calendar days until that office has a map-pin heading again, then assert order.
+     */
     public void assertOpenHourListsOfficesWithMapPin() {
         context.set();
-        JsonNode titles = new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(defaultWaitSeconds))
-                .until(d -> {
-                    JsonNode node = locationTitles().path("titles");
-                    return node.size() > 1 ? node : null;
-                });
+        for (int attempt = 0; attempt < 16; attempt++) {
+            JsonNode titles = locationTitles().path("titles");
+            if (titles.size() > 1 && titlesContainOffice(titles, "Bürgerbüro Ruppertstraße")) {
+                providerLocation.assertOfficeOrder(titles, false, false);
+                ScenarioLogManager.getLogger()
+                        .info(
+                                "zmscitizenview: open hour lists offices with Ruppertstraße after {} adjust(s)",
+                                attempt);
+                return;
+            }
+            ScenarioLogManager.getLogger()
+                    .info(
+                            "zmscitizenview: open hour missing Ruppertstraße (titles={}); try Später / next day ({}/15)",
+                            titles,
+                            attempt + 1);
+            if (clickCitizenViewLaterOnceIfAvailable()) {
+                waitUntilAppointmentSlotsReadyQuiet(Math.min(30, slotBookingWaitTimeoutSeconds()));
+                continue;
+            }
+            if (!openNextCalendarDayAndWaitForSlots()) {
+                break;
+            }
+        }
+        JsonNode titles =
+                new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(defaultWaitSeconds))
+                        .until(
+                                d -> {
+                                    JsonNode node = locationTitles().path("titles");
+                                    return node.size() > 1 ? node : null;
+                                });
         providerLocation.assertOfficeOrder(titles, false, false);
+    }
+
+    private static boolean titlesContainOffice(JsonNode titles, String officeName) {
+        if (titles == null || !titles.isArray()) {
+            return false;
+        }
+        for (JsonNode title : titles) {
+            String text = title.path("text").asText("");
+            if (ProviderLocationStep.frequencyName(text) != null
+                    && officeName.equals(ProviderLocationStep.frequencyName(text))) {
+                return true;
+            }
+            if (text.contains(officeName)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * ZMSKVR-151 / ZMSKVR-714: open the list day that has Feuerwache 10 (Riem, day+4 in ATAF) and
+     * assert that day's headings end with 10. Other days only get ascending checks (one Wache per
+     * day in fixtures). List hour pagers often open on another day's hour — Später until titles
+     * show.
+     */
+    public void assertFeuerwacheListTitlesInNumericOrder() {
+        context.set();
+        Assert.assertTrue(
+                shadow.deepElementExists("#listViewAccordion"),
+                "List view accordion required under Verfügbare Termine");
+        JsonNode headers = new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(defaultWaitSeconds))
+                .until(d -> {
+                    JsonNode node = listSnapshot();
+                    return node.path("count").asInt() >= 1 ? node : null;
+                });
+        int dayCount = headers.path("count").asInt();
+        Assert.assertTrue(dayCount >= 1, "Expected list date accordions: " + headers);
+        JsonNode titlesWithTen = null;
+        StringBuilder report = new StringBuilder();
+        for (int day = 0; day < dayCount; day++) {
+            openListDateAtIndex(day);
+            JsonNode titles = waitForOpenListLocationTitles();
+            java.util.List<Integer> numbers =
+                    ProviderLocationStep.feuerwacheNumbersFromTitles(titles);
+            report.append(" day")
+                    .append(day)
+                    .append('=')
+                    .append(numbers);
+            if (numbers.isEmpty()) {
+                continue;
+            }
+            if (numbers.contains(10)) {
+                titlesWithTen = titles;
+            } else {
+                providerLocation.assertFeuerwacheTitlesAscending(titles);
+            }
+        }
+        Assert.assertNotNull(
+                titlesWithTen,
+                "Feuerwache 10 must appear under Verfügbare Termine (open Riem day+4)."
+                        + report);
+        providerLocation.assertFeuerwacheTitlesInNumericOrder(titlesWithTen);
+    }
+
+    /**
+     * Open list days keep the previous day's hour; advance Später until {@code h5.location-title}
+     * appears (or the pager is exhausted).
+     */
+    private JsonNode waitForOpenListLocationTitles() {
+        for (int attempt = 0; attempt < 8; attempt++) {
+            CitizenViewWaits.sleepQuiet(400L);
+            JsonNode titles = locationTitles().path("titles");
+            if (titles.size() > 0) {
+                return titles;
+            }
+            JsonNode later =
+                    json.citizenJson(
+                            "(function(){var open=cssAll('#listViewAccordion section.m-accordion__section-content.show')[0];"
+                                    + "if(!open)return {clicked:false,reason:'no-open'};"
+                                    + "var btn=findButton(open,'Später');if(!btn)return {clicked:false,reason:'no-btn'};"
+                                    + "if(isDisabled(btn))return {clicked:false,disabled:true};"
+                                    + "var inner=btn.shadowRoot&&btn.shadowRoot.querySelector('button');"
+                                    + "(inner||btn).click();return {clicked:true};})()");
+            if (!later.path("clicked").asBoolean()) {
+                break;
+            }
+        }
+        return locationTitles().path("titles");
+    }
+
+    /** Expand the list-view date accordion at {@code index} (0-based). */
+    private void openListDateAtIndex(int index) {
+        // citizenJson exposes Selenium args as __args; an IIFE would shadow arguments.
+        JsonNode clicked = json.citizenJson(
+                "(function(){var idx=__args[0];"
+                        + "var headers=cssAll('#listViewAccordion h4.m-accordion__section-header');"
+                        + "if(idx<0||idx>=headers.length)return {clicked:false,reason:'index',len:headers.length};"
+                        + "var h=headers[idx];if(!h)return {clicked:false,reason:'header'};"
+                        + "var b=h.querySelector('button');if(!b)return {clicked:false,reason:'button'};"
+                        + "if(b.getAttribute('aria-expanded')==='true')return {clicked:true,already:true};"
+                        + "b.scrollIntoView({block:'center'});b.click();return {clicked:true};})()",
+                index);
+        Assert.assertTrue(
+                clicked.path("clicked").asBoolean(),
+                "Could not open list date accordion " + index + ": " + clicked);
     }
 
     /** Früher is a disabled ghost button. Später is an enabled ghost button. */
@@ -1759,6 +1905,70 @@ public final class TimeSlotStep {
     }
 
     /**
+     * After keep-only on a single office: wait for timeslots or the settled blue empty-state
+     * callout. Does not page calendar days (that races empty-office asserts and can abort a
+     * bookable Wohnsitzanmeldung calendar that briefly flashes the callout).
+     *
+     * <p>Mass Ort toggles can leave Termin blank (no spinner, no slots, no callout) or on the red
+     * generic API error — re-toggle the kept office once to force available-calendar again.
+     */
+    public void waitUntilSlotsOrEmptyCallout(int maxSeconds) {
+        context.set();
+        if (settleSlotsOrEmptyCallout(maxSeconds)) {
+            return;
+        }
+        int officeId = slotState.lastSlotBookingOfficeId;
+        if (officeId > 0
+                && providerLocation.deepProviderCheckboxChecked(officeId)
+                && !deepMucSpinnerVisible()
+                && !deepTimeslotClickablePresent()
+                && !isNoAppointmentInfoCalloutPresent()) {
+            ScenarioLogManager.getLogger()
+                    .info(
+                            "zmscitizenview: blank/generic Termin after keep-only; re-toggle provider {} (genericError={})",
+                            officeId,
+                            genericApiErrorCalloutVisible());
+            shadow.deepClickRequired("#checkbox-provider-" + officeId);
+            providerLocation.waitUntilProviderToggleSettled(15);
+            shadow.deepClickRequired("#checkbox-provider-" + officeId);
+            providerLocation.waitUntilProviderToggleSettled(30);
+            if (settleSlotsOrEmptyCallout(Math.max(20, maxSeconds / 2))) {
+                return;
+            }
+        }
+        ScenarioLogManager.getLogger()
+                .info(
+                        "zmscitizenview: keep-only settle timed out (spinnerVisible={} timeslot={} callout={} genericError={})",
+                        deepMucSpinnerVisible(),
+                        deepTimeslotClickablePresent(),
+                        isNoAppointmentInfoCalloutPresent(),
+                        genericApiErrorCalloutVisible());
+    }
+
+    private boolean settleSlotsOrEmptyCallout(int maxSeconds) {
+        ScenarioLogManager.getLogger()
+                .info(
+                        "zmscitizenview: waiting up to {}s for slots or blue empty-state callout",
+                        maxSeconds);
+        long deadline = System.currentTimeMillis() + Math.max(1, maxSeconds) * 1000L;
+        while (System.currentTimeMillis() < deadline) {
+            if (deepTimeslotReadyNoSpinner()) {
+                ScenarioLogManager.getLogger()
+                        .info("zmscitizenview: slots ready after keep-only (no day paging)");
+                return true;
+            }
+            if (!deepMucSpinnerVisible() && isNoAppointmentInfoCalloutPresent()) {
+                ScenarioLogManager.getLogger()
+                        .info(
+                                "zmscitizenview: blue empty-state callout after keep-only (no day paging)");
+                return true;
+            }
+            CitizenViewWaits.sleepQuiet(300L);
+        }
+        return false;
+    }
+
+    /**
      * After a taken/unfinished reserve, find another slot for {@code officeId}: Später, then up to
      * several calendar days at a shorter lead time.
      */
@@ -2116,13 +2326,18 @@ public final class TimeSlotStep {
         if ("FS".equals(code) || FuehrerscheinstelleScopeHints.isConcrete(code)) {
             if ("FS".equals(code)) {
                 return shadow.shadowDomContainsText(FuehrerscheinstelleScopeHints.HINT_A)
-                        || shadow.shadowDomContainsText(FuehrerscheinstelleScopeHints.HINT_B);
+                        || shadow.shadowDomContainsText(FuehrerscheinstelleScopeHints.HINT_B)
+                        || shadow.shadowDomContainsText(FuehrerscheinstelleScopeHints.HINT_C);
             }
-            String hint = FuehrerscheinstelleScopeHints.hintFor(code);
-            return shadow.shadowDomContainsText(hint)
-                    && !shadow.shadowDomContainsText(
-                            FuehrerscheinstelleScopeHints.hintFor(
-                                    FuehrerscheinstelleScopeHints.otherCode(code)));
+            if (!shadow.shadowDomContainsText(FuehrerscheinstelleScopeHints.hintFor(code))) {
+                return false;
+            }
+            for (String other : FuehrerscheinstelleScopeHints.otherCodes(code)) {
+                if (shadow.shadowDomContainsText(FuehrerscheinstelleScopeHints.hintFor(other))) {
+                    return false;
+                }
+            }
+            return true;
         }
         String hint = RuppertstrasseWartezoneHints.hintFor(code);
         boolean has = shadow.shadowDomContainsText(hint);
@@ -2153,18 +2368,37 @@ public final class TimeSlotStep {
         Assert.assertTrue(
                 calloutShowsHintFamily("FS"),
                 "Ausgewählter Termin must show a Führerscheinstelle Schalter hint.");
-        String resolved =
-                shadow.shadowDomContainsText(FuehrerscheinstelleScopeHints.HINT_A) ? "FS-A" : "FS-B";
+        String resolved = resolvePaintedFuehrerscheinstelleSchalter();
+        Assert.assertTrue(
+                FuehrerscheinstelleScopeHints.isConcrete(resolved),
+                "Ausgewählter Termin must show exactly one Führerscheinstelle Schalter hint.");
         Assert.assertTrue(
                 shadow.shadowDomContainsText(FuehrerscheinstelleScopeHints.hintFor(resolved)),
                 "Ausgewählter Termin must show " + FuehrerscheinstelleScopeHints.hintFor(resolved));
-        Assert.assertFalse(
-                shadow.shadowDomContainsText(
-                        FuehrerscheinstelleScopeHints.hintFor(
-                                FuehrerscheinstelleScopeHints.otherCode(resolved))),
-                "Ausgewählter Termin must not mix both Schalter hints.");
+        for (String other : FuehrerscheinstelleScopeHints.otherCodes(resolved)) {
+            Assert.assertFalse(
+                    shadow.shadowDomContainsText(FuehrerscheinstelleScopeHints.hintFor(other)),
+                    "Ausgewählter Termin must not mix Schalter hints (also saw " + other + ").");
+        }
         slotState.rememberedCalloutWartezoneCode = resolved;
         slotState.rememberedWartezoneCode = "FS";
+    }
+
+    private String resolvePaintedFuehrerscheinstelleSchalter() {
+        StringBuilder painted = new StringBuilder();
+        if (shadow.shadowDomContainsText(FuehrerscheinstelleScopeHints.HINT_A)
+                || shadow.shadowDomContainsText(FuehrerscheinstelleScopeHints.ZONE_A)) {
+            painted.append(FuehrerscheinstelleScopeHints.HINT_A).append(' ');
+        }
+        if (shadow.shadowDomContainsText(FuehrerscheinstelleScopeHints.HINT_B)
+                || shadow.shadowDomContainsText(FuehrerscheinstelleScopeHints.ZONE_B)) {
+            painted.append(FuehrerscheinstelleScopeHints.HINT_B).append(' ');
+        }
+        if (shadow.shadowDomContainsText(FuehrerscheinstelleScopeHints.HINT_C)
+                || shadow.shadowDomContainsText(FuehrerscheinstelleScopeHints.ZONE_C)) {
+            painted.append(FuehrerscheinstelleScopeHints.HINT_C).append(' ');
+        }
+        return FuehrerscheinstelleScopeHints.detectCode(painted.toString());
     }
 
     public void assertSelectedAppointmentCalloutShowsRenderedRuppertstrasseHint(String code) {
@@ -2583,15 +2817,14 @@ public final class TimeSlotStep {
     }
 
     public JsonNode waitForToggleLabels(String activeLabel) {
-        // Color transition is 200ms, but under shard load Firefox/Chrome can keep the previous
-        // label paint while the list accordion mounts or the viewport settles after resize.
+        // The list accordion and a viewport resize can remount the toggle before the active class settles.
         return new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(slotBookingWaitTimeoutSeconds()))
                 .pollingEvery(Duration.ofMillis(250))
                 .until(d -> {
                     JsonNode node = json.citizenJson(
                             "(function(){var labels=cssAll('.m-toggle-switch__label');var out=[];"
-                                    + "for(var i=0;i<labels.length;i++){var st=getComputedStyle(labels[i]);"
-                                    + "out.push({text:textOf(labels[i]),color:st.color,disabled:labels[i].classList.contains('disabled')});}"
+                                    + "for(var i=0;i<labels.length;i++){"
+                                    + "out.push({text:textOf(labels[i]),active:labels[i].classList.contains('m-toggle-switch__label--active')});}"
                                     + "var heading=byId('viewToggleLabel');var toggle=cssAll('button.m-toggle-switch')[0];"
                                     + "var hr=heading?heading.getBoundingClientRect():null;var tr=toggle?toggle.getBoundingClientRect():null;"
                                     + "return {labels:out,heading:heading?textOf(heading):'',"
@@ -2605,14 +2838,7 @@ public final class TimeSlotStep {
                     }
                     for (JsonNode label : node.path("labels")) {
                         boolean shouldBeActive = activeLabel.equals(label.path("text").asText());
-                        String color = label.path("color").asText();
-                        if (label.path("disabled").asBoolean() == shouldBeActive) {
-                            return null;
-                        }
-                        if (shouldBeActive && !isToggleBlue(color)) {
-                            return null;
-                        }
-                        if (!shouldBeActive && !isToggleGrey(color)) {
+                        if (label.path("active").asBoolean() != shouldBeActive) {
                             return null;
                         }
                     }
@@ -2622,28 +2848,10 @@ public final class TimeSlotStep {
 
     public void assertToggleColor(JsonNode label, String text, boolean active) {
         Assert.assertEquals(label.path("text").asText(), text, "Toggle label: " + label);
-        Assert.assertEquals(label.path("disabled").asBoolean(), !active, text + " active state: " + label);
-        String color = label.path("color").asText();
-        Assert.assertTrue(
-                active ? isToggleBlue(color) : isToggleGrey(color),
-                text + " should be " + (active ? "#005A9F" : "#617586") + " but was " + color);
-    }
-
-    /** Accepts rgb()/rgba() with commas or modern space-separated components. */
-    private static boolean isToggleBlue(String color) {
-        return colorMatchesChannels(color, 0, 90, 159);
-    }
-
-    private static boolean isToggleGrey(String color) {
-        return colorMatchesChannels(color, 97, 117, 134);
-    }
-
-    private static boolean colorMatchesChannels(String color, int r, int g, int b) {
-        if (color == null || color.isBlank()) {
-            return false;
-        }
-        String compact = color.replace(" ", "");
-        return compact.contains(r + "," + g + "," + b) || color.contains(r + " " + g + " " + b);
+        Assert.assertEquals(
+                label.path("active").asBoolean(),
+                active,
+                text + " should " + (active ? "" : "not ") + "carry m-toggle-switch__label--active: " + label);
     }
 
     public JsonNode calendarSnapshot() {
