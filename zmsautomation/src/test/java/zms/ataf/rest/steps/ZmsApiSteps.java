@@ -83,6 +83,11 @@ public class ZmsApiSteps {
     private String rememberedScopeProviderSource;
     /** Warehouse ticketprinter count before finishing the current E-Kiosk walk-in (ZMSKVR-1126). */
     private Integer rememberedTicketprinterCount;
+    /** ZMS-3212 / ZMS-3503: scope whose emergency may need cleanup. */
+    private Integer emergencyScopeId;
+    private Boolean emergencyEnabledBeforeScenario;
+    /** True when the alarm was already on before this scenario changed it. */
+    private Boolean emergencyActivatedBeforeScenario;
     /** ZMS-3213: display numbers in call order (oldest first) for Aufrufmonitor assertions. */
     private final List<String> callDisplayNumbersInCallOrder = new ArrayList<>();
     private final Map<String, JsonNode> callDisplayProcessesByLabel = new HashMap<>();
@@ -101,6 +106,9 @@ public class ZmsApiSteps {
         rememberedScopeProviderId = null;
         rememberedScopeProviderSource = null;
         rememberedTicketprinterCount = null;
+        emergencyScopeId = null;
+        emergencyEnabledBeforeScenario = null;
+        emergencyActivatedBeforeScenario = null;
         rememberedDisplayNumber = null;
         rememberedQueueNumber = null;
         firstClerkCallResponse = null;
@@ -124,6 +132,28 @@ public class ZmsApiSteps {
 
     @After
     public void deleteOpeningHoursLeftByTheScenario() {
+        AssertionError emergencyFailure = null;
+        try {
+            restoreEmergencyLeftByTheScenario();
+        } catch (RuntimeException | AssertionError e) {
+            emergencyFailure = e instanceof AssertionError
+                    ? (AssertionError) e
+                    : new AssertionError("Emergency teardown failed", e);
+        }
+        try {
+            finishScenarioCleanup();
+        } catch (RuntimeException | AssertionError later) {
+            if (emergencyFailure != null) {
+                later.addSuppressed(emergencyFailure);
+            }
+            throw later;
+        }
+        if (emergencyFailure != null) {
+            throw emergencyFailure;
+        }
+    }
+
+    private void finishScenarioCleanup() {
         unlockDayClosureLeftByTheScenario();
         Integer id = createdAvailabilityId;
         createdAvailabilityId = null;
@@ -140,6 +170,63 @@ public class ZmsApiSteps {
         }
         deleteScenarioProcesses();
         deleteLastProcessIfStillOpen();
+    }
+
+    private void restoreEmergencyLeftByTheScenario() {
+        Integer scopeId = emergencyScopeId;
+        if (scopeId == null) {
+            return;
+        }
+        Boolean previousEnabled = emergencyEnabledBeforeScenario;
+        boolean wasActive = Boolean.TRUE.equals(emergencyActivatedBeforeScenario);
+        try {
+            if (wasActive) {
+                if (!isEmergencyActivated(fetchScopeEmergencyStatus(scopeId))) {
+                    Response trigger = postOrDeleteEmergency(scopeId, true);
+                    if (trigger.getStatusCode() == 401 || trigger.getStatusCode() == 403) {
+                        cachedXAuthKey = null;
+                        iUpdateTheWorkstationWithScopeAndCounterWithTheXAuthKey(scopeId, "4");
+                        trigger = postOrDeleteEmergency(scopeId, true);
+                    }
+                    Assertions.assertThat(trigger.getStatusCode())
+                            .as("teardown POST /scope/%d/emergency/ body=%s",
+                                    scopeId, truncate(trigger.asString(), 500))
+                            .isEqualTo(200);
+                }
+            } else {
+                Response stop = postOrDeleteEmergency(scopeId, false);
+                if (stop.getStatusCode() == 401 || stop.getStatusCode() == 403) {
+                    cachedXAuthKey = null;
+                    iUpdateTheWorkstationWithScopeAndCounterWithTheXAuthKey(scopeId, "4");
+                    stop = postOrDeleteEmergency(scopeId, false);
+                }
+                Assertions.assertThat(stop.getStatusCode())
+                        .as("teardown DELETE /scope/%d/emergency/ body=%s",
+                                scopeId, truncate(stop.asString(), 500))
+                        .isEqualTo(200);
+            }
+            if (previousEnabled != null) {
+                Response restore = setScopeEmergencyEnabled(scopeId, previousEnabled);
+                if (restore.getStatusCode() == 401 || restore.getStatusCode() == 403) {
+                    cachedXAuthKey = null;
+                    iUpdateTheWorkstationWithScopeAndCounterWithTheXAuthKey(scopeId, "4");
+                    restore = setScopeEmergencyEnabled(scopeId, previousEnabled);
+                }
+                Assertions.assertThat(restore.getStatusCode())
+                        .as("teardown restore emergencyEnabled=%s for scope %d body=%s",
+                                previousEnabled, scopeId, truncate(restore.asString(), 500))
+                        .isEqualTo(200);
+            }
+            emergencyScopeId = null;
+            emergencyEnabledBeforeScenario = null;
+            emergencyActivatedBeforeScenario = null;
+        } catch (RuntimeException | AssertionError e) {
+            ScenarioLogManager.getLogger().error(
+                    "Could not restore emergency state for scope {}: {}", scopeId, e.getMessage());
+            throw e instanceof AssertionError
+                    ? (AssertionError) e
+                    : new AssertionError("Emergency teardown failed for scope " + scopeId, e);
+        }
     }
 
     private void unlockDayClosureLeftByTheScenario() {
@@ -582,6 +669,136 @@ public class ZmsApiSteps {
         } else {
             workstationScopeId = scopeId;
         }
+    }
+
+    /** ZMS-3212 / ZMS-3503: POST /scope/{id}/emergency/ */
+    @When("I trigger the emergency for scope {int} with the X-AuthKey")
+    public void iTriggerTheEmergencyForScopeWithTheXAuthKey(int scopeId) {
+        rememberEmergencyScope(scopeId);
+        response = postOrDeleteEmergency(scopeId, true);
+        CommonApiSteps.setResponse(response);
+        Assertions.assertThat(response.getStatusCode())
+                .as("POST /scope/%d/emergency/ body=%s", scopeId, truncate(response.asString(), 800))
+                .isEqualTo(200);
+    }
+
+    /** ZMS-3503: DELETE /scope/{id}/emergency/ */
+    @When("I stop the emergency for scope {int} with the X-AuthKey")
+    public void iStopTheEmergencyForScopeWithTheXAuthKey(int scopeId) {
+        rememberEmergencyScope(scopeId);
+        response = postOrDeleteEmergency(scopeId, false);
+        CommonApiSteps.setResponse(response);
+        Assertions.assertThat(response.getStatusCode())
+                .as("DELETE /scope/%d/emergency/ body=%s", scopeId, truncate(response.asString(), 800))
+                .isEqualTo(200);
+    }
+
+    @When("I set emergencyEnabled on scope {int} to {word} with the X-AuthKey")
+    public void iSetEmergencyEnabledOnScopeToWithTheXAuthKey(int scopeId, String enabledWord) {
+        boolean enabled = Boolean.parseBoolean(enabledWord);
+        rememberEmergencyScope(scopeId);
+        response = setScopeEmergencyEnabled(scopeId, enabled);
+        CommonApiSteps.setResponse(response);
+        Assertions.assertThat(response.getStatusCode())
+                .as("POST /scope/%d/ emergencyEnabled=%s body=%s",
+                        scopeId, enabled, truncate(response.asString(), 800))
+                .isEqualTo(200);
+    }
+
+    @Then("scope {int} emergency activated flag should be {int} with the X-AuthKey")
+    public void scopeEmergencyActivatedFlagShouldBeWithTheXAuthKey(int scopeId, int expected) {
+        iUpdateTheWorkstationWithScopeAndCounterWithTheXAuthKey(scopeId, "4");
+        JsonNode emergency = fetchScopeEmergencyStatus(scopeId);
+        JsonNode activated = emergency.get("activated");
+        // Compressed scope JSON drops activated when it matches the schema default false.
+        int actual;
+        if (activated == null || activated.isNull() || activated.isMissingNode()) {
+            actual = 0;
+        } else if (activated.isBoolean()) {
+            actual = activated.asBoolean() ? 1 : 0;
+        } else {
+            actual = activated.asInt(0);
+        }
+        Assertions.assertThat(actual)
+                .as("scope %d status.emergency=%s", scopeId, emergency)
+                .isEqualTo(expected);
+    }
+
+    private void rememberEmergencyScope(int scopeId) {
+        if (emergencyScopeId != null) {
+            return;
+        }
+        JsonNode scope = fetchScope(scopeId, 1);
+        emergencyActivatedBeforeScenario = isEmergencyActivated(scope.path("status").path("emergency"));
+        emergencyEnabledBeforeScenario = "1".equals(
+                scope.path("preferences").path("workstation").path("emergencyEnabled").asText("0"));
+        emergencyScopeId = scopeId;
+    }
+
+    /** Compressed scope JSON omits activated when it is the schema default false. */
+    private static boolean isEmergencyActivated(JsonNode emergency) {
+        JsonNode activated = emergency.get("activated");
+        if (activated == null || activated.isNull() || activated.isMissingNode()) {
+            return false;
+        }
+        if (activated.isBoolean()) {
+            return activated.asBoolean();
+        }
+        return activated.asInt(0) == 1;
+    }
+
+    private Response postOrDeleteEmergency(int scopeId, boolean trigger) {
+        String authKey = getOrLoginXAuthKey();
+        var spec = given()
+                .baseUri(apiBaseUri())
+                .header("X-AuthKey", authKey)
+                .contentType("application/json")
+                .body("{}");
+        if (trigger) {
+            return spec.when().post("/scope/" + scopeId + "/emergency/");
+        }
+        return spec.when().delete("/scope/" + scopeId + "/emergency/");
+    }
+
+    private Response setScopeEmergencyEnabled(int scopeId, boolean enabled) {
+        String authKey = getOrLoginXAuthKey();
+        JsonNode scope = fetchScope(scopeId, 1);
+        ObjectNode body = (ObjectNode) scope.deepCopy();
+        ObjectNode preferences = body.has("preferences") && body.get("preferences").isObject()
+                ? (ObjectNode) body.get("preferences")
+                : body.putObject("preferences");
+        ObjectNode workstation = preferences.has("workstation") && preferences.get("workstation").isObject()
+                ? (ObjectNode) preferences.get("workstation")
+                : preferences.putObject("workstation");
+        workstation.put("emergencyEnabled", enabled ? "1" : "0");
+        return given()
+                .baseUri(apiBaseUri())
+                .header("X-AuthKey", authKey)
+                .contentType("application/json")
+                .body(toJson(body))
+                .when()
+                .post("/scope/" + scopeId + "/");
+    }
+
+    private JsonNode fetchScope(int scopeId, int resolveReferences) {
+        String authKey = getOrLoginXAuthKey();
+        Response scopeResponse = given()
+                .baseUri(apiBaseUri())
+                .header("X-AuthKey", authKey)
+                .queryParam("resolveReferences", resolveReferences)
+                .when()
+                .get("/scope/" + scopeId + "/");
+        Assertions.assertThat(scopeResponse.getStatusCode())
+                .as("GET /scope/%d/ body=%s", scopeId, truncate(scopeResponse.asString(), 800))
+                .isEqualTo(200);
+        JsonNode scope = parseDataNode(scopeResponse);
+        Assertions.assertThat(scope).as("scope %d payload", scopeId).isNotNull();
+        return scope;
+    }
+
+    private JsonNode fetchScopeEmergencyStatus(int scopeId) {
+        JsonNode scope = fetchScope(scopeId, 1);
+        return scope.path("status").path("emergency");
     }
 
     @When("I queue a walk-in at scope {int} with service {string} and name {string} with the X-AuthKey")
