@@ -423,17 +423,17 @@ public class CounterProcessingStationPage extends AdminPage {
             "Parked row with Name '" + customerName + "' not visible in " + APPOINTMENT_PARKED_TABLE_LOCATOR_ID + "!");
     }
 
-    public void isCustomerVisibleInParkingTable(String token) {
-        String numOnly = token == null ? "" : token.replaceAll("\\D+", "");
+    public void isCustomerVisibleInParkingTable(String numberOrName) {
+        String numOnly = numberOrName == null ? "" : numberOrName.replaceAll("\\D+", "");
         if (!numOnly.isBlank()) {
             try {
                 isCustomerVisibleInParkingTableByNumber(numOnly);
                 return;
             } catch (org.openqa.selenium.TimeoutException ignore) {
-                ScenarioLogManager.getLogger().warn("No parked row found by Nr. '" + numOnly + "', falling back to Name: " + token);
+                ScenarioLogManager.getLogger().warn("No parked row found by Nr. '" + numOnly + "', falling back to Name: " + numberOrName);
             }
         }
-        isCustomerVisibleInParkingTableByName(token);
+        isCustomerVisibleInParkingTableByName(numberOrName);
     }
 
     public void isCustomerVisibleInMissedTable(String transactionNumber, boolean isSpontaneousCustomer) {
@@ -1928,7 +1928,13 @@ public class CounterProcessingStationPage extends AdminPage {
         Assert.assertNotNull(serviceText, "Service \"" + fragment + "\" is missing on the edit form.");
         Assert.assertTrue(serviceText.contains("(" + minutes + " min)"),
                 "Service duration changed. expected (" + minutes + " min). actual=" + serviceText);
-        int doubled = Integer.parseInt(minutes) * 2;
+        int doubled;
+        try {
+            doubled = Integer.parseInt(minutes) * 2;
+        } catch (NumberFormatException e) {
+            Assert.fail("Noted service minutes are not a number: " + minutes, e);
+            return;
+        }
         Assert.assertFalse(serviceText.contains("(" + doubled + " min)"),
                 "Service duration was doubled. actual=" + serviceText);
         WebElement slotCount = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("appointmentForm_slotCount")));
