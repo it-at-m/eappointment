@@ -6,7 +6,7 @@ Local development uses **Podman** with **Dev Containers**. Start the stack with:
 devcontainer up --workspace-folder .
 ```
 
-This creates and starts the local container setup used for development and testing. It also auto-detects your host architecture (`amd64` vs `arm64`) and pulls the matching local PHP base image tag for `zms-web`.
+This creates and starts the local container setup used for development and testing. It also auto-detects your host architecture (`amd64` vs `arm64`) and pulls the matching local PHP base image tag for `zms-web` with the Podman or Docker CLI before Compose starts. That CLI pull is what registers the tag. Ubuntu's `/usr/bin/docker-compose` is Compose v1 and pulls through Podman's Docker API, which can finish the download and still report the image as unknown, so Compose downloads it again and `zms-web` fails to start.
 
 To wipe Podman completely on the host and recreate the stack, see [Quick reset of the local environment](/setup-and-development/getting-started/quick-reset-local-environment).
 
