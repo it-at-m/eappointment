@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-10-20T10:21:41.582Z",
+  "publishedAt": "2026-10-20T10:53:10.430Z",
   "branches": [
     {
       "name": "next",
@@ -204,6 +204,12 @@
       "slug": "feature-zmskvr-1622-contrast-for-fullscreen-button",
       "runId": "38560619644",
       "runStartedAt": "2026-10-14T12:00:31Z"
+    },
+    {
+      "name": "feature-zmskvr-1627-dynamic-slot-time",
+      "slug": "feature-zmskvr-1627-dynamic-slot-time",
+      "runId": "39409880265",
+      "runStartedAt": "2026-10-20T10:42:54Z"
     },
     {
       "name": "feature-zmskvr-1656-calendar-list-toggle",

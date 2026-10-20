@@ -1,0 +1,46 @@
+{
+  "branch": "feature-zmskvr-1627-dynamic-slot-time",
+  "branchSlug": "feature-zmskvr-1627-dynamic-slot-time",
+  "runId": "39409880265",
+  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/39409880265",
+  "runStartedAt": "2026-10-20T10:42:54Z",
+  "publishedAt": "2026-10-20T10:53:10.430Z",
+  "features": {
+    "feature-ui-zmscalldisplay-queue-zms-3213-zmsalt-3213-zms-3250-zmsalt-3250-call-order": {
+      "status": "passed",
+      "shard": "zmscalldisplay",
+      "browser": "chrome",
+      "rel": "ui/zmscalldisplay/queue/zms-3213_zmsalt-3213_zms-3250_zmsalt-3250_call_order.feature",
+      "runId": "39409880265",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/39409880265",
+      "runStartedAt": "2026-10-20T10:42:54Z",
+      "browsers": {
+        "chrome": {
+          "status": "passed",
+          "shard": "zmscalldisplay",
+          "runId": "39409880265",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/39409880265",
+          "runStartedAt": "2026-10-20T10:42:54Z"
+        }
+      }
+    },
+    "feature-ui-zmscalldisplay-zmskvr-1581-zmskvr-166-missing-scope": {
+      "status": "passed",
+      "shard": "zmscalldisplay",
+      "browser": "chrome",
+      "rel": "ui/zmscalldisplay/zmskvr-1581_zmskvr-166_missing_scope.feature",
+      "runId": "39409880265",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/39409880265",
+      "runStartedAt": "2026-10-20T10:42:54Z",
+      "browsers": {
+        "chrome": {
+          "status": "passed",
+          "shard": "zmscalldisplay",
+          "runId": "39409880265",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/39409880265",
+          "runStartedAt": "2026-10-20T10:42:54Z"
+        }
+      }
+    }
+  }
+}
