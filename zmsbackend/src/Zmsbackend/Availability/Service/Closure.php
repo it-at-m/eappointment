@@ -79,11 +79,10 @@ class Closure extends \BO\Zmsbackend\Base
         $query = new \BO\Zmsbackend\Availability\Repository\Closure(\BO\Zmsbackend\Query\Base::DELETE);
         $query->addConditionId($closure->getId());
 
-        if (App::$cache) {
-            App::$cache->delete('closuresByScope-' . $closure->scopeId);
-        }
+        $deleted = $this->deleteItem($query);
+        $this->invalidateCaches((int) $closure->scopeId);
 
-        return ($this->deleteItem($query));
+        return $deleted;
     }
 
     public function createOne($scopeId, DateTime $date)
@@ -98,14 +97,40 @@ class Closure extends \BO\Zmsbackend\Base
             )
         );
 
-        if (App::$cache) {
-            App::$cache->delete('closuresByScope-' . $scopeId);
-        }
-
         $this->writeItem($query);
         $id = $this->getWriter()->lastInsertId();
+        $this->invalidateCaches((int) $scopeId);
 
         return $this->readEntity($id);
+    }
+
+    /**
+     * Clear closure list cache and scope caches that embed closures
+     * (scope-{id}-{resolveReferences}, department/cluster lists, in-process static).
+     *
+     * Always delete scope-* keys (do not gate on CacheInterface::has()): some adapters
+     * return false for existing keys, which would leave stale scope.closure for the
+     * month overview after toggle.
+     */
+    protected function invalidateCaches(int $scopeId): void
+    {
+        if ($scopeId < 1) {
+            return;
+        }
+
+        if (App::$cache) {
+            App::$cache->delete('closuresByScope-' . $scopeId);
+            for ($resolveReferences = 0; $resolveReferences <= 3; $resolveReferences++) {
+                App::$cache->delete("scope-{$scopeId}-{$resolveReferences}");
+            }
+        }
+
+        $scope = new \BO\Zmsentities\Scope(['id' => $scopeId]);
+        (new \BO\Zmsbackend\Scope\Service\Scope())->removeCacheByContext($scope);
+
+        for ($resolveReferences = 0; $resolveReferences <= 3; $resolveReferences++) {
+            unset(\BO\Zmsbackend\Scope\Service\Scope::$cache["{$scopeId}-{$resolveReferences}"]);
+        }
     }
 
     public function readEntity(string|false $id): Entity

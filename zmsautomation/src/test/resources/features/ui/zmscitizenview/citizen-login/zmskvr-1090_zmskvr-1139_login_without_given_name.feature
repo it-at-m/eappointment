@@ -1,5 +1,5 @@
 #language: en
-@web @zmscitizenview @booking @citizen-login @ZMSKVR-1090 @ZMSKVR-1139 @executeLocally @jumpin @pickupCalendar
+@web @zmscitizenview @booking @citizen-login @ZMSKVR-1090 @ZMSKVR-1139 @ZMSKVR-954 @ZMSKVR-964 @executeLocally @jumpin @pickupCalendar
 Feature: CitizenView: Bürger-Login without given_name completes Vorname on Kontakt
   As a citizen whose BayernID / BundID token has no given_name
   I want to log in, complete Vorname on Kontakt, and book
@@ -9,6 +9,7 @@ Feature: CitizenView: Bürger-Login without given_name completes Vorname on Kont
   # Keycloak user ataf_citizen_no_given has Nachname only (no firstName → no given_name claim).
   # Kontakt keeps SSO Nachname; the citizen provides Vorname. Stored familyName is "Vorname Nachname".
   # ICS DESCRIPTION is Terminnummer/Leistung only (no client name) — assert structure, not familyName.
+  # ZMSKVR-954 / ZMSKVR-964: IDP → Kontakt prefill (Nachname; Vorname completed by citizen).
   # API sibling: rest/.../citizen-login/zmskvr-1090_zmskvr-1139_login_without_given_name_citizenapi.feature
 
   Background:

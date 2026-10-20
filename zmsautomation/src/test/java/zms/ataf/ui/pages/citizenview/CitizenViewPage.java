@@ -117,15 +117,27 @@ public class CitizenViewPage extends BasePage {
         providerLocation.setSlotWaitBridge(
                 seconds -> {
                     // Keep-only / Ort toggle often lands on an empty day-part; page quietly.
-                    if (!timeSlot.waitUntilAppointmentSlotsReadyQuiet(seconds)) {
+                    // After a full quiet wait, skip paging when the blue empty-state callout is
+                    // already settled (only empty Feuerwache 10579 etc.) — paging races that assert.
+                    if (timeSlot.waitUntilAppointmentSlotsReadyQuiet(seconds)) {
+                        return;
+                    }
+                    if (!timeSlot.deepMucSpinnerVisible()
+                            && timeSlot.isNoAppointmentInfoCalloutPresent()) {
                         ScenarioLogManager.getLogger()
                                 .info(
-                                        "zmscitizenview: Ort toggle had no timeslot yet; paging calendar days");
-                        timeSlot.waitUntilSlotsReadyForBooking();
+                                        "zmscitizenview: Ort toggle settled on blue empty-state callout; skip day paging");
+                        return;
                     }
+                    ScenarioLogManager.getLogger()
+                            .info(
+                                    "zmscitizenview: Ort toggle had no timeslot yet; paging calendar days");
+                    timeSlot.waitUntilSlotsReadyForBooking();
                 },
                 () -> timeSlot.slotBookingWaitTimeoutSeconds(),
                 () -> timeSlot.deepMucSpinnerVisible());
+        providerLocation.setEmptyAwareSettle(
+                seconds -> timeSlot.waitUntilSlotsOrEmptyCallout(seconds));
         bookingStepper = new BookingStepperStep(CONTEXT, shadow, DEFAULT_EXPLICIT_WAIT_TIME);
         jumpInError = new JumpInErrorStep(CONTEXT, shadow, DEFAULT_EXPLICIT_WAIT_TIME);
         contact = new ContactStep(CONTEXT, shadow, this, DEFAULT_EXPLICIT_WAIT_TIME);
@@ -631,6 +643,26 @@ public class CitizenViewPage extends BasePage {
         contact.assertMaxLengthCounterError(fieldId, maxChars);
     }
 
+    public void assertBothFreitextCharacterCountersVisible(int maxChars) {
+        contact.assertBothFreitextCharacterCountersVisible(maxChars);
+    }
+
+    public void assertFreitextCharacterCounterUpdatesLive(String fieldId, int maxChars) {
+        contact.assertFreitextCharacterCounterUpdatesLive(fieldId, maxChars);
+    }
+
+    public void assertContactFieldHasNoCharacterCounter(String fieldId) {
+        contact.assertContactFieldHasNoCharacterCounter(fieldId);
+    }
+
+    public void assertContactFieldInputBlockedAtMax(String fieldId, int maxChars) {
+        contact.assertContactFieldInputBlockedAtMax(fieldId, maxChars);
+    }
+
+    public void assertBothFreitextCharacterCountersVisibleOnMobile(int maxChars) {
+        contact.assertBothFreitextCharacterCountersVisibleOnMobile(maxChars);
+    }
+
     public void assertCharacterCountFontSizeDesktop() {
         contact.assertCharacterCountFontSizeDesktop();
     }
@@ -953,12 +985,25 @@ public class CitizenViewPage extends BasePage {
         providerLocation.assertProviderCheckboxAbsent(officeId);
     }
 
+    /** ZMSKVR-590: only the JumpIn office is checked among Ort checkboxes. */
+    public void assertOnlyProviderCheckedAmongOrtCheckboxes(int officeId) {
+        providerLocation.assertOnlyProviderCheckedAmongOrtCheckboxes(officeId);
+    }
+
     /**
      * Ort checkboxes start selected. Ranked Bürgerbüros follow frequency order. Scheidplatz has no
      * frequency rank in the catalog, so it follows them. Each checkbox also shows its address.
      */
     public void assertOfficesCheckedInFrequencyOrder() {
         providerLocation.assertOfficesCheckedInFrequencyOrder();
+    }
+
+    public void assertFeuerwacheCheckboxesInNumericOrder() {
+        providerLocation.assertFeuerwacheCheckboxesInNumericOrder();
+    }
+
+    public void assertFeuerwacheListTitlesInNumericOrder() {
+        timeSlot.assertFeuerwacheListTitlesInNumericOrder();
     }
 
     /** Login resume must keep several Ort checkboxes on (ZMSKVR-1002). */
@@ -1758,6 +1803,10 @@ public class CitizenViewPage extends BasePage {
 
     public void assertOverviewServiceVisible(int serviceId, String serviceName) {
         overview.assertOverviewServiceVisible(serviceId, serviceName);
+    }
+
+    public void assertOverviewServiceWithCount(int serviceId, int count, String serviceName) {
+        overview.assertOverviewServiceWithCount(serviceId, count, serviceName);
     }
 
     public void waitForPreconfirmPageAfterUpdate() {
