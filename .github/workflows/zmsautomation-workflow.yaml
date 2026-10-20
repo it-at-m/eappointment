@@ -1168,6 +1168,22 @@ jobs:
           compression-level: 0
           overwrite: true
 
+  # Stable check for branch protection. A manual run of any module posts this
+  # name on that commit. It does not run on pull_request or push.
+  zmsautomation:
+    name: zmsautomation
+    needs: [generate-matrix, zms-automation]
+    if: always() && !cancelled()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require the selected tests to pass
+        run: |
+          set -euo pipefail
+          echo "generate-matrix=${{ needs.generate-matrix.result }}"
+          echo "zms-automation=${{ needs.zms-automation.result }}"
+          test "${{ needs.generate-matrix.result }}" = "success"
+          test "${{ needs.zms-automation.result }}" = "success"
+
   publish-cucumber-status:
     name: Publish cucumber status JSON
     needs: zms-automation
