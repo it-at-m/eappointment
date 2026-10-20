@@ -1,10 +1,7 @@
 services:
   # zmsbase uses per-arch tags. devcontainer initializeCommand runs
-  # .devcontainer/scripts/sync-php-base-tag.sh (see devcontainer.json) sets ZMS_PHP_BASE_TAG from host uname,
-  # then pull-php-base-image.sh pulls that tag with the podman/docker CLI.
-  # The CLI pull is required on Ubuntu, where /usr/bin/docker-compose is Compose v1:
-  # its Podman API pull can drop the tag, so `up` downloads the image twice and
-  # zms-web fails with "image not known".
+  # .devcontainer/scripts/sync-php-base-tag.sh (see devcontainer.json), which sets
+  # ZMS_PHP_BASE_TAG from the host architecture and pulls that image.
   # Fallback default is amd64 for plain `docker compose` without that step.
   web:
     container_name: zms-web
