@@ -106,23 +106,29 @@ class ProcessStatusFree extends Process
         string $slotType,
         int|null $slotsRequired,
         bool $groupData,
-        bool $useAvailabilityQuery = false
+        bool $useAvailabilityQuery = false,
+        ?\DateTimeInterface $appointmentTime = null
     ) {
         $query = $useAvailabilityQuery
             ? \BO\Zmsbackend\Process\Repository\ProcessStatusFree::QUERY_SELECT_PROCESSLIST_DAYS_AVAILABILITY
             : \BO\Zmsbackend\Process\Repository\ProcessStatusFree::QUERY_SELECT_PROCESSLIST_DAYS;
 
+        $condition = \BO\Zmsbackend\Process\Repository\ProcessStatusFree::buildDaysCondition($days);
+        $params = [
+            'slotType' => $slotType,
+            'forceRequiredSlots' =>
+                ($slotsRequired === null || $slotsRequired < 1) ? 1 : intval($slotsRequired),
+        ];
+        if ($appointmentTime !== null) {
+            // Reserving only needs to verify the requested time, not every slot on that day.
+            $condition .= ' AND s.time = :appointmentTime';
+            $params['appointmentTime'] = $appointmentTime->format('H:i:s');
+        }
+
         return $this->fetchHandle(
-            sprintf(
-                $query,
-                \BO\Zmsbackend\Process\Repository\ProcessStatusFree::buildDaysCondition($days)
-            )
+            sprintf($query, $condition)
             . ($groupData ? \BO\Zmsbackend\Process\Repository\ProcessStatusFree::GROUPBY_SELECT_PROCESSLIST_DAY : ''),
-            [
-                'slotType' => $slotType,
-                'forceRequiredSlots' =>
-                    ($slotsRequired === null || $slotsRequired < 1) ? 1 : intval($slotsRequired),
-            ]
+            $params
         );
     }
 
@@ -131,10 +137,18 @@ class ProcessStatusFree extends Process
         \DateTimeInterface $now,
         string $slotType = 'public',
         int|null $slotsRequired = null,
-        bool $groupData = false
+        bool $groupData = false,
+        ?\DateTimeInterface $appointmentTime = null
     ): Collection {
         list($calendar, $dayquery, $days) = $this->prepareCalendarAndDays($calendar, $now, $slotsRequired);
-        $processData = $this->getProcessDataHandle($days, $slotType, $slotsRequired, $groupData);
+        $processData = $this->getProcessDataHandle(
+            $days,
+            $slotType,
+            $slotsRequired,
+            $groupData,
+            false,
+            $appointmentTime
+        );
         $processList = new Collection();
         $scopeList = [];
         while ($item = $processData->fetch(\PDO::FETCH_ASSOC)) {
@@ -436,7 +450,14 @@ class ProcessStatusFree extends Process
             (null !== $userAccount),
             true
         );
-        $freeProcessList = $this->readFreeProcesses($process->toCalendar(), $now, $slotType, $slotsRequired);
+        $freeProcessList = $this->readFreeProcesses(
+            $process->toCalendar(),
+            $now,
+            $slotType,
+            $slotsRequired,
+            false,
+            $appointment->toDateTime()
+        );
 
         if (!$freeProcessList->getAppointmentList()->hasAppointment($appointment) || ! $slotList) {
             throw new \BO\Zmsbackend\Process\Exception\ProcessReserveFailed();
