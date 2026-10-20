@@ -2825,7 +2825,7 @@ public final class TimeSlotStep {
                     JsonNode node = json.citizenJson(
                             "(function(){var labels=cssAll('.m-toggle-switch__label');var out=[];"
                                     + "for(var i=0;i<labels.length;i++){var st=getComputedStyle(labels[i]);"
-                                    + "out.push({text:textOf(labels[i]),color:st.color,disabled:labels[i].classList.contains('disabled')});}"
+                                    + "out.push({text:textOf(labels[i]),color:st.color,active:labels[i].classList.contains('m-toggle-switch__label--active')});}"
                                     + "var heading=byId('viewToggleLabel');var toggle=cssAll('button.m-toggle-switch')[0];"
                                     + "var hr=heading?heading.getBoundingClientRect():null;var tr=toggle?toggle.getBoundingClientRect():null;"
                                     + "return {labels:out,heading:heading?textOf(heading):'',"
@@ -2840,7 +2840,7 @@ public final class TimeSlotStep {
                     for (JsonNode label : node.path("labels")) {
                         boolean shouldBeActive = activeLabel.equals(label.path("text").asText());
                         String color = label.path("color").asText();
-                        if (label.path("disabled").asBoolean() == shouldBeActive) {
+                        if (label.path("active").asBoolean() != shouldBeActive) {
                             return null;
                         }
                         if (shouldBeActive && !isToggleBlue(color)) {
@@ -2856,7 +2856,7 @@ public final class TimeSlotStep {
 
     public void assertToggleColor(JsonNode label, String text, boolean active) {
         Assert.assertEquals(label.path("text").asText(), text, "Toggle label: " + label);
-        Assert.assertEquals(label.path("disabled").asBoolean(), !active, text + " active state: " + label);
+        Assert.assertEquals(label.path("active").asBoolean(), active, text + " active state: " + label);
         String color = label.path("color").asText();
         Assert.assertTrue(
                 active ? isToggleBlue(color) : isToggleGrey(color),
