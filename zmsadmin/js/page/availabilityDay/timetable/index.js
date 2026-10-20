@@ -51,11 +51,17 @@ export const getLanes = (items) => {
     return lanes
 }
 
+const getOpenings = items => items.filter(item => item.type === "openinghours")
+
+export const getLaneCount = items => {
+    const lanes = getLanes(getOpenings(items))
+    return lanes.size ? Math.max(...lanes.values()) + 1 : 1
+}
+
 export const renderOpenings = (items, onSelect) => {
-    const openings = items.filter(item => item.type === "openinghours")
+    const openings = getOpenings(items)
     const lanes = getLanes(openings)
-    const laneCount = lanes.size ? Math.max(...lanes.values()) + 1 : 1
-    return openings.map((data, key) => <OpeningTimebar key={key} {...{ data, onSelect, lane: lanes.get(data), laneCount }} />)
+    return openings.map((data, key) => <OpeningTimebar key={key} {...{ data, onSelect, lane: lanes.get(data) }} />)
 }
 
 export const renderFooter = () => {}
