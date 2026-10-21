@@ -25,6 +25,8 @@ jobs:
           extensions: mbstring, xml, ctype, iconv, intl, curl
           tools: composer
           coverage: none
+      - name: Show PHP version
+        run: php -v
       - name: Install python3
         run: sudo apt install -y python3 python3-click python3-git
       - name: Referencing local Modules and Libraries
