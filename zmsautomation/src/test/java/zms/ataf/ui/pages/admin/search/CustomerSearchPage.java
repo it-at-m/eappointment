@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.RemoteWebDriver;
@@ -31,6 +32,22 @@ public class CustomerSearchPage extends AdminPage {
         super(driver, context);
     }
 
+    private void clickOrJs(By locator) {
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        WebElement button = wait.until(ExpectedConditions.presenceOfElementLocated(locator));
+        ((JavascriptExecutor) DRIVER).executeScript("arguments[0].scrollIntoView({block:'center'});", button);
+        try {
+            new WebDriverWait(DRIVER, Duration.ofSeconds(5))
+                    .ignoring(StaleElementReferenceException.class)
+                    .until(ExpectedConditions.elementToBeClickable(button))
+                    .click();
+        } catch (Exception e) {
+            ScenarioLogManager.getLogger().warn("Normal click failed, trying JS click for {}", locator);
+            button = wait.until(ExpectedConditions.presenceOfElementLocated(locator));
+            ((JavascriptExecutor) DRIVER).executeScript("arguments[0].click();", button);
+        }
+    }
+
     public void search(String query) {
         CONTEXT.set();
         ScenarioLogManager.getLogger().info("Kundensuche: query {}", query);
@@ -38,12 +55,20 @@ public class CustomerSearchPage extends AdminPage {
         WebElement field = findElementByLocatorType(input, LocatorType.XPATH, true);
         field.clear();
         enterTextInWebElement(DEFAULT_EXPLICIT_WAIT_TIME, query, field);
-        clickOnWebElement(
-                DEFAULT_EXPLICIT_WAIT_TIME,
-                "//form[contains(@action,'/search/')]//button[normalize-space()='Suche']",
-                LocatorType.XPATH,
-                false,
-                CONTEXT);
+        By search = By.xpath("//form[contains(@action,'/search/')]//button[normalize-space()='Suche']");
+        WebDriverWait clickWait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        WebElement button = clickWait.until(ExpectedConditions.presenceOfElementLocated(search));
+        ((JavascriptExecutor) DRIVER).executeScript("arguments[0].scrollIntoView({block:'center'});", button);
+        try {
+            new WebDriverWait(DRIVER, Duration.ofSeconds(5))
+                    .ignoring(StaleElementReferenceException.class)
+                    .until(ExpectedConditions.elementToBeClickable(button))
+                    .click();
+        } catch (Exception e) {
+            ScenarioLogManager.getLogger().warn("Normal click failed, trying JS click for Kundensuche...");
+            button = clickWait.until(ExpectedConditions.presenceOfElementLocated(search));
+            ((JavascriptExecutor) DRIVER).executeScript("arguments[0].click();", button);
+        }
         new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
                 .until(ExpectedConditions.presenceOfElementLocated(By.xpath("//th[normalize-space()='Terminstatus']")));
     }
@@ -218,14 +243,15 @@ public class CustomerSearchPage extends AdminPage {
 
     public void deleteOpenAppointment() {
         CONTEXT.set();
-        clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "button.process-delete", LocatorType.CSSSELECTOR, false, CONTEXT);
+        // Firefox often reports Löschen as present but not clickable on the edit form.
+        clickOrJs(By.cssSelector("button.process-delete"));
         WebElement messageTitleElement = findElementByLocatorType("section.board.dialog h2.board__heading", LocatorType.CSSSELECTOR, false);
         Assert.assertTrue(messageTitleElement.getText().contains("Eintrag löschen"), "Delete confirmation did not open.");
-        clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "a.button.button--destructive.button-ok", LocatorType.CSSSELECTOR, false, CONTEXT);
+        clickOrJs(By.cssSelector("a.button.button--destructive.button-ok"));
         messageTitleElement = findElementByLocatorType("h2.message__heading.title", LocatorType.CSSSELECTOR, false);
         Assert.assertEquals(messageTitleElement.getText(), "Vorgang gelöscht", "Deleting the open appointment did not succeed.");
         // The dialog covers a spinner that stays on the form, so do not wait for that spinner first.
-        clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "button.button-ok", LocatorType.CSSSELECTOR, false);
+        clickOrJs(By.cssSelector("button.button-ok"));
         new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
                 .until(ExpectedConditions.invisibilityOfElementLocated(By.cssSelector("h2.message__heading.title")));
     }
