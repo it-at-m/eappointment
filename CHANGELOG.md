@@ -3,7 +3,7 @@
 <h2>        Security
 </h2>
 <ul>
-<li>CVE-2026-109618 and CVE-2026-109619: remote code execution in PHP. Module images built from this tag run PHP 8.4.27.
+<li>21.10.2026 - CVE-2026-109618 and CVE-2026-109619: remote code execution in PHP. Module images built from this tag run PHP 8.4.27.
 </li>
 </ul>
 
