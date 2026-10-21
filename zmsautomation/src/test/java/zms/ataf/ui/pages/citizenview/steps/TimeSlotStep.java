@@ -1086,11 +1086,21 @@ public final class TimeSlotStep {
         Assert.assertFalse(
                 shadow.deepElementExists("#timeslot-grid-provider-" + slotState.hiddenOfficeId),
                 "Cleared office " + slotState.hiddenOfficeId + " should leave the available times");
-        JsonNode titles = new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(defaultWaitSeconds))
-                .until(d -> {
-                    JsonNode node = locationTitles().path("titles");
-                    return node.size() > 0 ? node : null;
-                });
+        // Unchecking an office refetches the multi-office day. Headings stay hidden while that
+        // request is in flight, and under shard load it outlasts the normal 60s wait.
+        if (!finishInFlightCalendarLoad()) {
+            Assert.fail(
+                    "Cleared office "
+                            + slotState.hiddenOfficeId
+                            + " left the calendar loading, so the remaining headings never returned");
+        }
+        JsonNode titles =
+                new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(slotBookingWaitTimeoutSeconds()))
+                        .until(
+                                d -> {
+                                    JsonNode node = locationTitles().path("titles");
+                                    return node.size() > 0 ? node : null;
+                                });
         for (JsonNode title : titles) {
             Assert.assertNotEquals(
                     title.path("id").asText(),
