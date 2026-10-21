@@ -22,6 +22,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.HasDownloads;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -42,6 +43,8 @@ import zms.ataf.helpers.BerlinTime;
 
 public class StatisticsPage extends BasePage {
     protected final StatisticsPageContext CONTEXT;
+
+    private List<String> scopeIdsForNextFilter = List.of();
 
     //aktueller Monat (auf deutsch)
     private final String currentMonth = BerlinTime.today().getMonth().getDisplayName(TextStyle.FULL_STANDALONE, Locale.GERMAN);
@@ -64,37 +67,88 @@ public class StatisticsPage extends BasePage {
         return currentMonth;
     }
 
+    /** Filename expected from the last {@link #applyDateRangeFilter}; null when no filter was applied. */
+    protected String expectedClientStatisticWorkbookName() {
+        return CONTEXT.expectedClientStatisticWorkbookName();
+    }
+
     public void navigateToPage() {
         CONTEXT.navigateToPage();
     }
 
     /** Login and SSO flow aligned with AdminPage (same pattern as zmsadmin). */
     public void clickOnLoginButton() throws Exception {
-        ScenarioLogManager.getLogger().info("Trying to click on \"Login\" button...");
-        clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "//button[@type='submit' and @value='keycloak']", LocatorType.XPATH, false);
-        ScenarioLogManager.getLogger().info("SSO-Login page detected!");
-
         final StringBuilder clearUserName = new StringBuilder();
-        final StringBuilder clearPassword = new StringBuilder();
         Exception exception = null;
         try {
             AuthenticationHelper.getUserName().access(clearUserName::append);
-            AuthenticationHelper.getUserPassword().access(clearPassword::append);
-            String assigned = AccountCheckout.assignWorkstationLogin(clearUserName.toString());
+            loginWithKeycloakUser(AccountCheckout.assignWorkstationLogin(clearUserName.toString()));
+        } catch (Exception e) {
+            ScenarioLogManager.getLogger().error(e.getMessage(), e);
+            exception = e;
+        } finally {
             clearUserName.setLength(0);
-            clearUserName.append(assigned);
+            if (exception != null) {
+                throw exception;
+            }
+        }
+    }
+
+    /**
+     * True when SSO already landed on the statistics scope form (e.g. after zmsadmin
+     * login in the same browser). Without this, Anmelden waits for a Keycloak button
+     * that never appears. Do not treat the overview header alone as logged-in on the
+     * login page — that skips Anmelden while {@code select[@name=scope]} is missing.
+     */
+    private boolean isAlreadyLoggedIn() {
+        return isWebElementVisible(2, "//*[contains(text(),'Sie sind bereits angemeldet')]", LocatorType.XPATH, false)
+                || isWebElementVisible(2, "//select[@name='scope']", LocatorType.XPATH, false)
+                || isStatisticsOverviewVisible();
+    }
+
+    private boolean isStatisticsOverviewVisible() {
+        return isWebElementVisible(
+                2,
+                "//h1[normalize-space()='Übersicht verfügbarer Statistiken']",
+                LocatorType.XPATH,
+                false)
+                || isWebElementVisible(
+                        2,
+                        "//h1[normalize-space()='Willkommen zurück']",
+                        LocatorType.XPATH,
+                        false)
+                || isWebElementVisible(
+                        1,
+                        "//a[contains(@href,'reportclient') or normalize-space()='Kundenstatistik']",
+                        LocatorType.XPATH,
+                        false);
+    }
+
+    /** Keycloak login for one statistics user. The caller checks the account out. */
+    public void loginWithKeycloakUser(String username) throws Exception {
+        if (isAlreadyLoggedIn()) {
+            ScenarioLogManager.getLogger().info("Already logged in to statistics, skipping SSO login.");
+            return;
+        }
+        ScenarioLogManager.getLogger().info("Trying to click on \"Login\" button...");
+        clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "//button[@type='submit' and @value='keycloak']", LocatorType.XPATH, false);
+        ScenarioLogManager.getLogger().info("SSO-Login page detected!");
+        final StringBuilder clearPassword = new StringBuilder();
+        Exception exception = null;
+        try {
+            AuthenticationHelper.getUserPassword().access(clearPassword::append);
             WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
             wait.until(ExpectedConditions.presenceOfElementLocated(By.id("username")));
             if ("chrome".equals(
                     TestPropertiesHelper.getPropertyAsString("browser", true, DefaultValues.BROWSER))) {
                 wait.until(ExpectedConditions.presenceOfElementLocated(By.id("kc-login")));
-                String credentials = URLEncoder.encode(clearUserName.toString(), StandardCharsets.UTF_8) + ":"
+                String credentials = URLEncoder.encode(username, StandardCharsets.UTF_8) + ":"
                         + URLEncoder.encode(clearPassword.toString(), StandardCharsets.UTF_8) + "@";
                 DRIVER.navigate().to(DRIVER.getCurrentUrl().replaceFirst("^(https?://)", "$1" + credentials));
             }
 
             ScenarioLogManager.getLogger().info("Trying to enter user name...");
-            enterTextInWebElement(DEFAULT_EXPLICIT_WAIT_TIME, clearUserName.toString(), "username", LocatorType.ID);
+            enterTextInWebElement(DEFAULT_EXPLICIT_WAIT_TIME, username, "username", LocatorType.ID);
 
             ScenarioLogManager.getLogger().info("Trying to enter password...");
             enterTextInWebElement(DEFAULT_EXPLICIT_WAIT_TIME, clearPassword.toString(), "password", LocatorType.ID);
@@ -111,7 +165,6 @@ public class StatisticsPage extends BasePage {
             ScenarioLogManager.getLogger().error(e.getMessage(), e);
             exception = e;
         } finally {
-            clearUserName.setLength(0);
             clearPassword.setLength(0);
             if (exception != null) {
                 throw exception;
@@ -123,6 +176,11 @@ public class StatisticsPage extends BasePage {
 
     /** First scope selection: select Standort in the initial dropdown (name=scope), same as zmsadmin. Used after login before overview. */
     public void selectLocation(String location) {
+        if (isStatisticsOverviewVisible()) {
+            ScenarioLogManager.getLogger().info(
+                    "Statistics overview already open; skipping first Standort select for \"{}\".", location);
+            return;
+        }
         CONTEXT.set();
         ScenarioLogManager.getLogger().info("Trying to select location \"" + location + "\" (first scope, like zmsadmin)");
         selectDropDownListValueByVisibleText(DEFAULT_EXPLICIT_WAIT_TIME, "scope", LocatorType.NAME, location);
@@ -131,6 +189,10 @@ public class StatisticsPage extends BasePage {
 
     /** First scope selection: confirm with "Auswahl bestätigen", same as zmsadmin. Navigates to statistics overview. */
     public void clickOnApplySelectionButton() {
+        if (isStatisticsOverviewVisible()) {
+            ScenarioLogManager.getLogger().info("Statistics overview already open; skipping Auswahl bestätigen.");
+            return;
+        }
         ScenarioLogManager.getLogger().info("Trying to click on \"Auswahl bestätigen\" button...");
         CONTEXT.set();
         // Same locator as AdminPage; JS click avoids navigation timeout and stale element when stats app is slow
@@ -145,11 +207,11 @@ public class StatisticsPage extends BasePage {
 
     public void checkIfTheOverviewPageIsOpen() {
         ScenarioLogManager.getLogger().info("Checking if the overview page is visible.");
-        Assert.assertTrue(
-                isWebElementVisible(DEFAULT_EXPLICIT_WAIT_TIME, "//h1[normalize-space()='Übersicht verfügbarer Statistiken']", LocatorType.XPATH, true),
-                "'Overview page is not visible!");
-        Assert.assertTrue(isWebElementVisible(DEFAULT_EXPLICIT_WAIT_TIME, "//div[@data-includeurl='/terminvereinbarung/statistic']", LocatorType.XPATH, true),
-                "'Overview page is not visible!");
+        // After admin→statistic SSO the landing page is often "Willkommen zurück"
+        // with the Auswertungen sidebar (no data-includeurl shell wrapper).
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        wait.withMessage("Statistics overview / welcome page is not visible!");
+        wait.until(driver -> isStatisticsOverviewVisible());
     }
 
     /** Use JS click and wait for sub-page to avoid navigation timeout when opening Kundenstatistik. */
@@ -186,6 +248,18 @@ public class StatisticsPage extends BasePage {
         ((JavascriptExecutor) DRIVER).executeScript("arguments[0].click();", link);
         new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
                 .until(ExpectedConditions.presenceOfElementLocated(By.xpath("//h1[contains(normalize-space(),'Dienstleistungsstatistik')]")));
+    }
+
+    public void clickOnCapacityStatistics() {
+        ScenarioLogManager.getLogger().info("Trying to click on \"Terminkapazität\" button in the sidebar...");
+        CONTEXT.set();
+        By linkLocator = By.xpath("//a[normalize-space()='Terminkapazität']");
+        WebElement link = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(ExpectedConditions.elementToBeClickable(linkLocator));
+        scrollToCenterByVisibleElement(link);
+        ((JavascriptExecutor) DRIVER).executeScript("arguments[0].click();", link);
+        new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(ExpectedConditions.presenceOfElementLocated(By.xpath("//h1[contains(normalize-space(),'Terminkapazität')]")));
     }
 
     // --- Second scope selection (statistics table/report filter; different UI, after opening Kundenstatistik/Dienstleistungsstatistik) ---
@@ -242,6 +316,34 @@ public class StatisticsPage extends BasePage {
         }
     }
 
+    /**
+     * Selects exactly the given Standorte in the report filter. A plain click replaces the selection;
+     * several Standorte are set together so the report is not limited to the workstation scope.
+     */
+    public void selectScopesInStatisticsTableFilter(List<String> locations) {
+        ScenarioLogManager.getLogger().info("Selecting scopes in statistics table filter: " + locations);
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        WebElement select = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("scope-select")));
+        Object result = ((JavascriptExecutor) DRIVER).executeScript(
+                "var sel = arguments[0]; var wanted = arguments[1]; var ids = [];"
+                        + "for (var i = 0; i < sel.options.length; i++) { sel.options[i].selected = false; }"
+                        + "for (var w = 0; w < wanted.length; w++) {"
+                        + "  var hits = [];"
+                        + "  for (var i = 0; i < sel.options.length; i++) {"
+                        + "    if (sel.options[i].text.indexOf(wanted[w]) !== -1) hits.push(i);"
+                        + "  }"
+                        + "  if (hits.length !== 1) return wanted[w] + ' matches ' + hits.length;"
+                        + "  sel.options[hits[0]].selected = true;"
+                        + "  ids.push(sel.options[hits[0]].value);"
+                        + "}"
+                        + "sel.dispatchEvent(new Event('change', {bubbles: true}));"
+                        + "return 'ok|' + ids.join(',');",
+                select, locations);
+        String selection = String.valueOf(result);
+        Assert.assertTrue(selection.startsWith("ok|"), "Standortauswahl failed: " + selection);
+        scopeIdsForNextFilter = List.of(selection.substring(3).split(","));
+    }
+
     /** Second scope context: set date range in the statistics table filter panel (after opening a statistics sub-page). */
     public void applyDateRangeFilter(LocalDate from, LocalDate to) {
         ScenarioLogManager.getLogger().info("Applying date range in statistics table filter...");
@@ -255,21 +357,61 @@ public class StatisticsPage extends BasePage {
 
         String fromIso = from.format(DateTimeFormatter.ISO_LOCAL_DATE);
         String toIso = to.format(DateTimeFormatter.ISO_LOCAL_DATE);
+        CONTEXT.setExpectedClientStatisticWorkbookName("clientstatistic_" + fromIso + "_" + toIso + ".xlsx");
 
         ScenarioLogManager.getLogger().info("Setting statistics date range from " + fromIso + " to " + toIso);
         setDateInputByJs("from", fromIso);
         setDateInputByJs("to", toIso);
 
         ScenarioLogManager.getLogger().info("Submitting statistics filter with Übernehmen button via JavaScript click...");
-        try {
-            WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
-            WebElement submitButton = wait.until(ExpectedConditions.elementToBeClickable(
-                    By.cssSelector("form.form--base.panel--heavy .reportfilter-actions button[type='submit']")));
-            scrollToCenterByVisibleElement(submitButton);
-            ((JavascriptExecutor) DRIVER).executeScript("arguments[0].click();", submitButton);
-        } catch (Exception e) {
-            ScenarioLogManager.getLogger().error("Failed to submit statistics filter form", e);
-        }
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        WebElement submitButton = wait.until(ExpectedConditions.elementToBeClickable(
+                By.cssSelector("form.form--base.panel--heavy .reportfilter-actions button[type='submit']")));
+        scrollToCenterByVisibleElement(submitButton);
+        String urlBeforeSubmit = DRIVER.getCurrentUrl();
+        List<String> requiredScopeIds = scopeIdsForNextFilter;
+        scopeIdsForNextFilter = List.of();
+        ((JavascriptExecutor) DRIVER).executeScript("arguments[0].click();", submitButton);
+        waitForReloadedStatistic(urlBeforeSubmit, requiredScopeIds);
+    }
+
+    /** Submits the report filter as it stands, including a Standort chosen just before. */
+    public void applyStatisticsFilter() {
+        ScenarioLogManager.getLogger().info("Submitting the statistics filter...");
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        WebElement submitButton = wait.until(ExpectedConditions.elementToBeClickable(
+                By.cssSelector("form.form--base.panel--heavy .reportfilter-actions button[type='submit']")));
+        scrollToCenterByVisibleElement(submitButton);
+        String urlBeforeSubmit = DRIVER.getCurrentUrl();
+        List<String> requiredScopeIds = scopeIdsForNextFilter;
+        scopeIdsForNextFilter = List.of();
+        ((JavascriptExecutor) DRIVER).executeScript("arguments[0].click();", submitButton);
+        waitForReloadedStatistic(urlBeforeSubmit, requiredScopeIds);
+    }
+
+    private void waitForReloadedStatistic(String urlBeforeSubmit, List<String> requiredScopeIds) {
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        wait.withMessage("Statistic filter did not reload for scopes " + requiredScopeIds);
+        wait.until(driver -> {
+            String url = driver.getCurrentUrl();
+            if (url.equals(urlBeforeSubmit)) {
+                return false;
+            }
+            Object state = ((JavascriptExecutor) driver).executeScript("return document.readyState");
+            if (!"complete".equals(state)) {
+                return false;
+            }
+            for (String scopeId : requiredScopeIds) {
+                if (!url.contains(scopeId)) {
+                    return false;
+                }
+            }
+            try {
+                return driver.findElements(By.cssSelector("table.table--base")).stream().anyMatch(WebElement::isDisplayed);
+            } catch (StaleElementReferenceException exception) {
+                return false;
+            }
+        });
     }
 
     private void setDateInputByJs(String fieldName, String isoValue) {
@@ -330,6 +472,63 @@ public class StatisticsPage extends BasePage {
         } catch (NoSuchElementException e) {
             Assert.fail("No info statistics, could not find the row element for the current year (" + BerlinTime.today().getYear() + ").");
         }
+    }
+
+    /** Period table first column: year link opens the full-year report (not a month). */
+    public void clickOnCurrentYear() {
+        int year = BerlinTime.today().getYear();
+        String yearText = Integer.toString(year);
+        ScenarioLogManager.getLogger().info("Trying to click on current year link ({})...", yearText);
+        try {
+            WebElement yearLink = DRIVER.findElement(By.xpath(
+                    "//table[contains(@class,'table--base')]//tr[.//a[normalize-space()='"
+                            + yearText
+                            + "']]/td[1]//a[normalize-space()='"
+                            + yearText
+                            + "']"));
+            yearLink.click();
+            return;
+        } catch (NoSuchElementException ignored) {
+            // Warehouse period chips can omit the year when only "_" is cached; open by URL.
+        }
+        String current = DRIVER.getCurrentUrl();
+        Assert.assertTrue(
+                current.contains("/report/capacity/scope/"),
+                "Expected Terminkapazität scope URL before selecting year " + yearText + ", was: " + current);
+        // Keep Standort scopes; drop from/to day filters so the year report can render.
+        String path = current.replaceFirst("\\?.*$", "");
+        String target = path.replaceFirst(
+                "/report/capacity/scope/(?:[^/?#]*)?",
+                "/report/capacity/scope/" + yearText);
+        if (!target.endsWith("/")) {
+            target = target + "/";
+        }
+        String scopesQuery = scopesQueryParams(current);
+        if (!scopesQuery.isEmpty()) {
+            target = target + "?" + scopesQuery;
+        }
+        ScenarioLogManager.getLogger().info("No year chip for {}; navigating to {}", yearText, target);
+        DRIVER.navigate().to(target);
+        new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(ExpectedConditions.urlContains("/report/capacity/scope/" + yearText));
+    }
+
+    /** Query string with only scopes[…] / scopes%5B…%5D params (no from/to day range). */
+    private static String scopesQueryParams(String url) {
+        int q = url.indexOf('?');
+        if (q < 0 || q + 1 >= url.length()) {
+            return "";
+        }
+        StringBuilder scopes = new StringBuilder();
+        for (String part : url.substring(q + 1).split("&")) {
+            if (part.startsWith("scopes[") || part.startsWith("scopes%5B") || part.startsWith("scopes%5b")) {
+                if (scopes.length() > 0) {
+                    scopes.append('&');
+                }
+                scopes.append(part);
+            }
+        }
+        return scopes.toString();
     }
 
     public void checkIfTheStatisticForTheSelectedMonthIsOpen() {

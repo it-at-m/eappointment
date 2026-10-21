@@ -24,7 +24,9 @@ public class CitizenViewPageContext extends Context {
     public static final String TITLE = "Terminvereinbarung Bürgeransicht Webcomponent";
 
     private WindowType windowType;
-    String lastCitizenViewUrl;
+    public String lastCitizenViewUrl;
+    /** Keycloak username last assigned for Bürger-Login; Meine Termine re-login reuses it. */
+    public String lastCitizenLoginUsername;
 
     CitizenViewPageContext(RemoteWebDriver driver) {
         super(driver);
@@ -68,10 +70,38 @@ public class CitizenViewPageContext extends Context {
     }
 
     /**
+     * Opens zmscitizenview on a service-only jump-in ({@code #/services/{id}}). Lands on the
+     * combination step with that service selected.
+     */
+    public void navigateWithJumpInService(String serviceId) {
+        navigateWithJumpInRoute("#/services/" + serviceId);
+    }
+
+    /**
      * Opens zmscitizenview on the jump-in route: service and location preselected; UI shows the
      * service combination (quantity) step, not the service finder.
      */
     public void navigateWithJumpIn(String serviceId, String locationId) {
+        navigateWithJumpIn(serviceId, locationId, false);
+    }
+
+    /**
+     * Jump-in with {@code ?exclusiveLocation=1} (ZMSKVR-852): only the preselected Ort is offered.
+     */
+    public void navigateWithExclusiveJumpIn(String serviceId, String locationId) {
+        navigateWithJumpIn(serviceId, locationId, true);
+    }
+
+    public void navigateWithJumpIn(String serviceId, String locationId, boolean exclusiveLocation) {
+        navigateWithJumpInRoute(
+                "#/services/" + serviceId + "/locations/" + locationId, exclusiveLocation);
+    }
+
+    private void navigateWithJumpInRoute(String route) {
+        navigateWithJumpInRoute(route, false);
+    }
+
+    private void navigateWithJumpInRoute(String route, boolean exclusiveLocation) {
         String citizenViewUrl;
         if (RunnerUtils.isJiraBasedTestExecution()) {
             citizenViewUrl = Objects.requireNonNull(Environment.contains(TestExecutionContext.get().ENVIRONMENT))
@@ -87,7 +117,17 @@ public class CitizenViewPageContext extends Context {
         windowType = new WindowType(NAME, new System(NAME, citizenViewUrl));
         int hashIdx = citizenViewUrl.indexOf('#');
         String base = hashIdx >= 0 ? citizenViewUrl.substring(0, hashIdx) : citizenViewUrl;
-        String jumpInUrl = base + "#/services/" + serviceId + "/locations/" + locationId;
+        // A hash change on the open page does not remount the widget, so a second booking
+        // stays on the confirmation of the first. A new query loads the jump-in from scratch.
+        String jumpInUrl = appendJumpInQuery(base, exclusiveLocation, false) + route;
+        try {
+            String currentUrl = DRIVER.getCurrentUrl();
+            if (currentUrl != null && currentUrl.startsWith(base.split("\\?")[0])) {
+                jumpInUrl = appendJumpInQuery(base, exclusiveLocation, true) + route;
+            }
+        } catch (RuntimeException ignored) {
+            ScenarioLogManager.getLogger().debug("Jump-in has no current page yet.");
+        }
         try {
             DRIVER.navigate().to(jumpInUrl);
         } catch (TimeoutException e) {
@@ -99,6 +139,33 @@ public class CitizenViewPageContext extends Context {
         rememberAppointmentCredentialsFromLaterResponses();
         // Vue + offices-and-services fetch: wait until error callout or combination UI is present
         waitJumpInDomSettled();
+    }
+
+    /**
+     * Query before the hash so {@code zms-appointment.ce.vue} reads {@code exclusiveLocation} from
+     * {@code URLSearchParams}. {@code zmsjump} forces a remount when the page is already open.
+     */
+    private static String appendJumpInQuery(String base, boolean exclusiveLocation, boolean forceRemount) {
+        StringBuilder q = new StringBuilder();
+        int qIdx = base.indexOf('?');
+        String path = qIdx >= 0 ? base.substring(0, qIdx) : base;
+        String existing = qIdx >= 0 ? base.substring(qIdx + 1) : "";
+        if (!existing.isBlank()) {
+            q.append(existing);
+        }
+        if (forceRemount) {
+            if (q.length() > 0) {
+                q.append('&');
+            }
+            q.append("zmsjump=").append(java.lang.System.nanoTime());
+        }
+        if (exclusiveLocation) {
+            if (q.length() > 0) {
+                q.append('&');
+            }
+            q.append("exclusiveLocation=1");
+        }
+        return q.length() == 0 ? path : path + "?" + q;
     }
 
     /**
@@ -160,6 +227,15 @@ public class CitizenViewPageContext extends Context {
             }
         }
         ScenarioLogManager.getLogger().warn("Jump-in DOM still unsettled after 25s (half-blank risk).");
+    }
+
+    /** A mail link can be the first citizen page. Open it when no window is registered, otherwise switch to the open one. */
+    public void openCitizenViewIfNotAlreadyOpen() {
+        if (windowType == null) {
+            navigateToPage();
+        } else {
+            set();
+        }
     }
 
     @Override

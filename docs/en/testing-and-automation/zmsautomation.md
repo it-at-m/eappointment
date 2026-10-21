@@ -25,7 +25,8 @@ This module contains API and UI tests for ZMS using [ATAF](https://it-at-m.githu
   - `ui/zmsadmin/` - Admin UI features
   - `ui/zmsstatistic/` - Statistik UI features
   - `ui/zmscitizenview/` - CitizenView UI (Service Finder + full booking E2E)
-- `src/main/resources/db/migration/` - Flyway database migrations
+- `src/main/resources/db/migration/` - Flyway migrations (history table `flyway_migration`, before hourly)
+- `src/main/resources/db/migration-after-hourly/` - Flyway migrations (history table `flyway_migration_after_hourly`, after hourly / before minutly)
 
 ## Running Tests
 
@@ -34,6 +35,8 @@ This module contains API and UI tests for ZMS using [ATAF](https://it-at-m.githu
 The `zmsautomation-test` script handles database setup, migrations, and test execution. Scenarios inside one Maven run execute together: 32 at a time for `-Pataf-api`, 16 browsers at a time for `-Pataf-ui`. Pass `-Ddataproviderthreadcount=1` to run one scenario at a time. How that parallelism was introduced, including the login pools and the races it exposed, is in [How We Parallelized zmsautomation](./how-we-parallelized-zmsautomation.md).
 
 Each log line starts with the worker thread in brackets, for example `[29]`. TestNG reuses that thread for the next scenario, so lines with the same number belong to one scenario until that thread logs `Starting scenario`. Scroll up to the latest `Starting scenario` line with that number to see which test those lines belong to.
+
+A local run also writes one log file per scenario to `zmsautomation/logs`. The file name comes from the scenario name. Previous runs of the same scenario are kept as dated `.log.gz` files. The directory is gitignored.
 
 ```bash
 # Run all [ATAF](https://it-at-m.github.io/agile-test-automation-framework/) tests (API + UI)
@@ -68,9 +71,10 @@ The script will:
 2. Clear caches
 3. Reset database (drop tables)
 4. Import base database (`.resources/zms.sql`)
-5. Run Flyway migrations (Maven plugin)
+5. Run Flyway migrations from `db/migration` into history table `flyway_migration`
 6. Run PHP migrations (`zmsbackend` migrate)
-7. Run hourly cronjob (with retries)
+7. Run hourly cronjob (with retries; falls back to bundled `dldb/*.json` only if live SADB fails)
+   7b. Run Flyway migrations from `db/migration-after-hourly` into `flyway_migration_after_hourly` — pins that must win over hourly provider reimport; after hourly, before minutly
 8. Run minutely cronjob and slot calculation (`calculateSlots`)
 9. Perform HTTP health checks (zmsbackend, citizen API, CitizenView, optional refarch-gateway)
 10. Set up display/browser tooling (Xvfb, driver checks)
@@ -232,7 +236,16 @@ cd zmsautomation && mvn test
 
 ## Database Setup
 
-[ATAF](https://it-at-m.github.io/agile-test-automation-framework/) tests automatically run Flyway migrations before executing tests. Migrations are under `src/main/resources/db/migration/`.
+[ATAF](https://it-at-m.github.io/agile-test-automation-framework/) setup via `zmsautomation-test` runs **two** Flyway paths with separate history tables:
+
+| Folder                                          | History table                   | When                                   |
+| ----------------------------------------------- | ------------------------------- | -------------------------------------- |
+| `src/main/resources/db/migration/`              | `flyway_migration`              | Step 5, before hourly                  |
+| `src/main/resources/db/migration-after-hourly/` | `flyway_migration_after_hourly` | Step 7b, after hourly / before minutly |
+
+Use `db/migration` for normal ATAF seed data. Use `db/migration-after-hourly` for pins that must win over the hourly DLDB/SADB provider reimport (for example `provider.data.slotTimeInMinutes`). Do **not** put those pins in `locations_de.json` (offline fallback only) or `munich_sadb_overwrite.json` (application overwrites).
+
+Naming is Flyway-style (`V###__description.sql`). After-hourly uses `baselineVersion=0` so `V001` is applied. Each setup clears the history rows so versioned migrations re-run (important for `CURDATE()`).
 
 ## Some Test Tag Examples
 
@@ -282,6 +295,8 @@ Manual runs (`workflow_dispatch`) expose the usual module/browser/tag inputs plu
 | `serial_scenarios` | Don't run scenarios in parallel. When checked, each job passes `-Ddataproviderthreadcount=1`. Off by default, including the nightly schedule.                                                                                      |
 
 Scheduled nightly runs always use the POM version (no override) and take a screenshot after each step. The version must exist on Maven Central. A manual run takes those screenshots only when per-step screenshots is checked.
+
+After a UI run, open **`ATAF-FAILED-SCREENSHOTS.html`** at the root of the `zmsautomation-ataf-reports-…` artifact (or `zmsautomation/target/index.html` locally). Each card shows the failed step, error, and last screenshot. Click a card for every step screenshot of that scenario, with the failed shot first.
 
 ## zmsautomation in Safari on macOS outside the container
 

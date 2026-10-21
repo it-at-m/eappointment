@@ -212,9 +212,172 @@ public class CounterProcessingStationPage extends AdminPage {
         );
     }
 
+    /**
+     * After an API walk-in the Warteschlange can stay empty until the queue table is
+     * reloaded. Match the name cell (not digits stripped from "Zmskvr1341…").
+     */
+    public void assertCustomerVisibleInQueueByName(String familyName) {
+        ScenarioLogManager.getLogger().info(
+                "Checking for customer \"{}\" by name in waiting list...", familyName);
+        CONTEXT.waitForSpinners();
+        showSpontaneousCustomers(true);
+        // Name may sit in an <a> with a sibling call-count <small>; match the cell text flexibly.
+        By nameCell = By.xpath(
+                "//table[@id='table-queued-appointments']"
+                        + "//td[contains(@class,'callnextclient')]"
+                        + "[contains(normalize-space(.)," + xpathLiteral(familyName) + ")]");
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        wait.ignoring(StaleElementReferenceException.class);
+        long[] lastReload = { 0L };
+        // Return boolean only — a held WebElement goes stale when the queue reloads under us.
+        wait.withMessage("Customer \"" + familyName + "\" did not appear in the waiting list.")
+                .until(driver -> {
+                    List<WebElement> found = driver.findElements(nameCell);
+                    for (WebElement element : found) {
+                        try {
+                            if (element.isDisplayed()) {
+                                return true;
+                            }
+                        } catch (StaleElementReferenceException ignored) {
+                            // row replaced mid-poll
+                        }
+                    }
+                    long now = System.currentTimeMillis();
+                    if (now - lastReload[0] >= 2000L) {
+                        lastReload[0] = now;
+                        try {
+                            reloadQueueLists();
+                        } catch (RuntimeException ignored) {
+                            // loader or missing reload link — next poll retries
+                        }
+                        showSpontaneousCustomers(true);
+                    }
+                    return false;
+                });
+    }
+
+    /**
+     * ZMSKVR-467 / ZMSKVR-545: queue must show the full plain-text snippets (including {@code <})
+     * without cutting off at angle brackets or interpreting markup.
+     */
+    public void assertQueueRowShowsPlainTextSnippets(String familyName, String... snippets) {
+        WebElement row = queueRowForScenarioWalkIn(familyName);
+        String visible = row.getText().replace('\u00a0', ' ');
+        for (String snippet : snippets) {
+            if (snippet == null || snippet.isBlank()) {
+                continue;
+            }
+            Assert.assertTrue(
+                    visible.contains(snippet),
+                    "Queue row for \"" + familyName + "\" should contain plain text \"" + snippet
+                            + "\", but was: " + visible);
+        }
+    }
+
+    /** ZMSKVR-467: no live {@code <script>} nodes inside the customer's queue row. */
+    public void assertQueueRowHasNoScriptElements(String familyName) {
+        WebElement row = queueRowForScenarioWalkIn(familyName);
+        List<WebElement> scripts = row.findElements(By.tagName("script"));
+        Assert.assertTrue(
+                scripts.isEmpty(),
+                "Queue row for \"" + familyName + "\" must not contain <script> elements, found "
+                        + scripts.size());
+    }
+
+    /**
+     * ZMSKVR-467: after ProcessPlainText normalization / Twig {@code |e}, the row HTML must not
+     * contain an unescaped script open-tag (which the old bug would interpret).
+     */
+    public void assertQueueRowDoesNotContainRawMarkup(String familyName, String rawMarkup) {
+        WebElement row = queueRowForScenarioWalkIn(familyName);
+        String html = row.getAttribute("innerHTML");
+        Assert.assertNotNull(html, "Queue row innerHTML");
+        Assert.assertFalse(
+                html.toLowerCase(Locale.ROOT).contains(rawMarkup.toLowerCase(Locale.ROOT)),
+                "Queue row for \"" + familyName + "\" must not contain raw markup \"" + rawMarkup
+                        + "\", innerHTML=" + html);
+    }
+
+    /**
+     * ZMSKVR-467: freitext must not become a live link (queue UI has legitimate {@code <a>}
+     * controls, so check href targets only).
+     */
+    public void assertQueueRowHasNoLinksTo(String familyName, String hrefFragment) {
+        WebElement row = queueRowForScenarioWalkIn(familyName);
+        List<WebElement> links = row.findElements(By.cssSelector("a[href]"));
+        for (WebElement link : links) {
+            String href = link.getAttribute("href");
+            Assert.assertFalse(
+                    href != null && href.toLowerCase(Locale.ROOT).contains(hrefFragment.toLowerCase(Locale.ROOT)),
+                    "Queue row for \"" + familyName + "\" must not link to \"" + hrefFragment
+                            + "\", found href=" + href);
+        }
+    }
+
+    /**
+     * Prefer the waiting number from {@link #clickOnAddSpontaneousCustomer()} so repeated runs
+     * with the same family name do not assert against an older walk-in row.
+     */
+    private WebElement queueRowForScenarioWalkIn(String familyName) {
+        String waitingNumber = TestDataHelper.getTestData("new_waiting_number");
+        if (waitingNumber != null && !waitingNumber.isBlank()) {
+            isCustomerVisibleInQueue(waitingNumber, true);
+            return queueRowForWaitingNumber(waitingNumber);
+        }
+        assertCustomerVisibleInQueueByName(familyName);
+        return queueRowForFamilyName(familyName);
+    }
+
+    private WebElement queueRowForWaitingNumber(String waitingNumber) {
+        String shown = waitingNumber.trim();
+        String numOnly = shown.replaceAll("\\D+", "");
+        By row = By.xpath(
+                "//table[@id='table-queued-appointments']/tbody/tr["
+                        + ".//td[normalize-space()=" + xpathLiteral(shown)
+                        + " or normalize-space()=" + xpathLiteral(numOnly) + "]]");
+        return new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .ignoring(StaleElementReferenceException.class)
+                .until(ExpectedConditions.visibilityOfElementLocated(row));
+    }
+
+    private WebElement queueRowForFamilyName(String familyName) {
+        By row = By.xpath(
+                "//table[@id='table-queued-appointments']/tbody/tr["
+                        + ".//td[contains(@class,'callnextclient') and contains(normalize-space(.),"
+                        + xpathLiteral(familyName) + ")]]");
+        return new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .ignoring(StaleElementReferenceException.class)
+                .until(ExpectedConditions.visibilityOfElementLocated(row));
+    }
+
+    /** XPath 1.0 string literal safe for values that may contain {@code '} or {@code "}. */
+    private static String xpathLiteral(String value) {
+        if (value == null) {
+            return "''";
+        }
+        if (!value.contains("'")) {
+            return "'" + value + "'";
+        }
+        if (!value.contains("\"")) {
+            return "\"" + value + "\"";
+        }
+        StringBuilder sb = new StringBuilder("concat(");
+        boolean first = true;
+        for (String part : value.split("'", -1)) {
+            if (!first) {
+                sb.append(", \"'\", ");
+            }
+            first = false;
+            sb.append("'").append(part).append("'");
+        }
+        sb.append(")");
+        return sb.toString();
+    }
+
     public void isCustomerVisibleInParkingTableByNumber(String number) {
-        String numOnly = number == null ? "" : number.replaceAll("\\D+", "");
-        ScenarioLogManager.getLogger().info("Checking parked list by Nr. (" + numOnly + ")...");
+        String shown = number == null ? "" : number.trim();
+        String numOnly = shown.replaceAll("\\D+", "");
+        ScenarioLogManager.getLogger().info("Checking parked list by Nr. (" + shown + ")...");
     
         CONTEXT.waitForSpinners();
     
@@ -224,15 +387,18 @@ public class CounterProcessingStationPage extends AdminPage {
     
         scrollToCenterByVisibleElement(findElementByLocatorType(APPOINTMENT_PARKED_TABLE_LOCATOR_ID, LocatorType.ID, false));
     
-        // 3rd column (Nr.) = td with 2 preceding siblings
+        // Prefer the full display number (prefix scopes e.g. N3); digits-only as fallback.
+        String nrMatch = shown.matches(".*\\p{L}.*")
+                ? "normalize-space(.)='" + shown + "'"
+                : "(normalize-space(.)='" + shown + "' or normalize-space(.)='" + numOnly + "')";
         By rowByNr = By.xpath(
             "//table[@id='" + APPOINTMENT_PARKED_TABLE_LOCATOR_ID + "']" +
-            "//tbody/tr[td[count(preceding-sibling::td)=2][normalize-space(.)='" + numOnly + "']]");
+            "//tbody/tr[td[count(preceding-sibling::td)=2][" + nrMatch + "]]");
         org.openqa.selenium.WebElement row =
             wait.until(org.openqa.selenium.support.ui.ExpectedConditions.presenceOfElementLocated(rowByNr));
     
         org.testng.Assert.assertTrue(row.isDisplayed(),
-            "Parked row with Nr. '" + numOnly + "' not visible in " + APPOINTMENT_PARKED_TABLE_LOCATOR_ID + "!");
+            "Parked row with Nr. '" + shown + "' not visible in " + APPOINTMENT_PARKED_TABLE_LOCATOR_ID + "!");
     }
 
     public void isCustomerVisibleInParkingTableByName(String customerName) {
@@ -257,17 +423,17 @@ public class CounterProcessingStationPage extends AdminPage {
             "Parked row with Name '" + customerName + "' not visible in " + APPOINTMENT_PARKED_TABLE_LOCATOR_ID + "!");
     }
 
-    public void isCustomerVisibleInParkingTable(String token) {
-        String numOnly = token == null ? "" : token.replaceAll("\\D+", "");
+    public void isCustomerVisibleInParkingTable(String numberOrName) {
+        String numOnly = numberOrName == null ? "" : numberOrName.replaceAll("\\D+", "");
         if (!numOnly.isBlank()) {
             try {
                 isCustomerVisibleInParkingTableByNumber(numOnly);
                 return;
             } catch (org.openqa.selenium.TimeoutException ignore) {
-                ScenarioLogManager.getLogger().warn("No parked row found by Nr. '" + numOnly + "', falling back to Name: " + token);
+                ScenarioLogManager.getLogger().warn("No parked row found by Nr. '" + numOnly + "', falling back to Name: " + numberOrName);
             }
         }
-        isCustomerVisibleInParkingTableByName(token);
+        isCustomerVisibleInParkingTableByName(numberOrName);
     }
 
     public void isCustomerVisibleInMissedTable(String transactionNumber, boolean isSpontaneousCustomer) {
@@ -279,6 +445,98 @@ public class CounterProcessingStationPage extends AdminPage {
         showSpontaneousCustomers(isSpontaneousCustomer);
         // Use the transaction number to verify its presence in the 'Nr.' column
         checkForValuesInMissedTableColumn("Nr.", transactionNumber);
+    }
+
+    /**
+     * "wieder aufnehmen" has no OK button, so the success lightbox stays open.
+     * The status change is already saved; a reload shows the queue without that dialog.
+     */
+    public void resumeMissedAppointment(String displayNumber, String familyName) {
+        ScenarioLogManager.getLogger().info("Resuming missed appointment \"" + displayNumber + "\"...");
+        CONTEXT.waitForSpinners();
+        By resumeLink = By.xpath(appointmentRow(APPOINTMENT_MISSED_TABLE_LOCATOR_ID, displayNumber, familyName)
+                + "//a[contains(@class,'process-reset')]");
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        WebElement link = wait.until(ExpectedConditions.elementToBeClickable(resumeLink));
+        scrollToCenterByVisibleElement(link);
+        link.click();
+        WebElement heading = wait.until(ExpectedConditions.visibilityOfElementLocated(
+                By.xpath("//*[contains(@class,'message__heading') and contains(., 'Erfolgreiche Wiederaufnahme')]")));
+        Assert.assertTrue(heading.isDisplayed(), "The resume success message is not visible.");
+        String body = DRIVER.findElement(By.cssSelector(".message--success .message__body")).getText();
+        Assert.assertTrue(body.contains("erfolgreich zum Aufruf zurückgesetzt"),
+                "The resume message does not confirm the appointment is back in the queue: " + body);
+        DRIVER.navigate().refresh();
+        CONTEXT.waitForSpinners();
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id(APPOINTMENT_QUEUE_TABLE_LOCATOR_ID)));
+    }
+
+    /** The queue replaces this link while a row comes back, and a loader can cover it, so the click is retried. */
+    public void reloadQueueLists() {
+        By reloadLink = By.cssSelector(".queue-table a.reload");
+        By loader = By.cssSelector("div.loader");
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        wait.ignoring(StaleElementReferenceException.class, ElementClickInterceptedException.class);
+        wait.until(driver -> {
+            if (driver.findElements(loader).stream().anyMatch(WebElement::isDisplayed)) {
+                return false;
+            }
+            List<WebElement> links = driver.findElements(reloadLink);
+            if (links.isEmpty() || !links.get(0).isDisplayed()) {
+                return false;
+            }
+            scrollToCenterByVisibleElement(links.get(0));
+            links.get(0).click();
+            return true;
+        });
+        CONTEXT.waitForSpinners();
+    }
+
+    /** After a no-show the row returns without a call link until the lockout ends. */
+    public void waitUntilCustomerIsBackInQueue(String familyName) {
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        wait.ignoring(StaleElementReferenceException.class);
+        wait.until(driver -> {
+            List<WebElement> tables = driver.findElements(By.id(APPOINTMENT_QUEUE_TABLE_LOCATOR_ID));
+            return !tables.isEmpty() && tables.get(0).getText().contains(familyName);
+        });
+    }
+
+    public void assertResumedAppointmentShowsOnlyItsTime(String displayNumber, String familyName) {
+        String text = queueTimeText(displayNumber, familyName);
+        Assert.assertTrue(text.matches("\\d{2}:\\d{2}"),
+                "In the first minute Uhrzeit should be only the appointment time, but was: " + text);
+        Assert.assertFalse(text.contains("+00:00"),
+                "Uhrzeit shows a zero waiting time: " + text);
+    }
+
+    public void assertResumedAppointmentShowsWholeMinutes(String displayNumber, String familyName) {
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        wait.ignoring(StaleElementReferenceException.class);
+        String[] seen = {""};
+        wait.withMessage(() -> "Uhrzeit does not show the waiting time as whole minutes, but was: " + seen[0]);
+        String text = wait.until(driver -> {
+            String value = queueTimeText(displayNumber, familyName);
+            seen[0] = value;
+            if (value.matches("\\d{2}:\\d{2} \\+[1-9]\\d* Min\\.")) {
+                return value;
+            }
+            return null;
+        });
+        Assert.assertNotNull(text, "Uhrzeit does not show the waiting time as whole minutes.");
+    }
+
+    private String queueTimeText(String displayNumber, String familyName) {
+        By cell = By.xpath(appointmentRow(APPOINTMENT_QUEUE_TABLE_LOCATOR_ID, displayNumber, familyName) + "/td[2]");
+        WebElement time = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .ignoring(StaleElementReferenceException.class)
+                .until(ExpectedConditions.visibilityOfElementLocated(cell));
+        return time.getText().replace('\u00a0', ' ').replaceAll("\\s+", " ").trim();
+    }
+
+    private static String appointmentRow(String tableId, String displayNumber, String familyName) {
+        return "//table[@id='" + tableId + "']//tr[td[normalize-space(.)='" + displayNumber
+                + "'] and td[contains(normalize-space(.), \"" + familyName + "\")]]";
     }
 
     public void isCustomerVisibleInFinishedTable(String customer) {
@@ -419,6 +677,29 @@ public class CounterProcessingStationPage extends AdminPage {
                 "Expected priority \"" + priorityLabel + "\" for " + familyName + ", but found \"" + selected + "\".");
     }
 
+    /**
+     * ZMS-3507 / ZMSALT-3541: after Weiterleiten the target queue keeps the source waiting number
+     * and shows the forward note in the Anmerkung column.
+     */
+    public void assertQueuedCustomerHasNote(String displayNumber, String expectedNote) {
+        CONTEXT.set();
+        showSpontaneousCustomers(true);
+        CONTEXT.waitForSpinners();
+        String shown = displayNumber == null ? "" : displayNumber.trim();
+        String numOnly = shown.replaceAll("\\D+", "");
+        By rowByNumber = By.xpath(
+                "//table[@id='table-queued-appointments']"
+                        + "//tbody/tr[.//td[normalize-space()='" + shown + "'"
+                        + " or normalize-space()='" + numOnly + "']]");
+        WebElement row = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(ExpectedConditions.visibilityOfElementLocated(rowByNumber));
+        String rowText = row.getText().replaceAll("[\\r\\n]+", " ").trim();
+        Assert.assertTrue(
+                rowText.contains(expectedNote),
+                "Queue row for waiting number \"" + shown + "\" should contain note \""
+                        + expectedNote + "\", but was: " + rowText);
+    }
+
     public void deleteQueuedAppointmentByFamilyName(String familyName) {
         CONTEXT.set();
         if ("true".equals(TestDataHelper.getTestData("appointment_booked_as_walk_in"))) {
@@ -526,8 +807,21 @@ public class CounterProcessingStationPage extends AdminPage {
     }
 
     public boolean hasBookAppointmentButton() {
-        List<WebElement> buttons = DRIVER.findElements(By.cssSelector("button.process-reserve"));
-        return !buttons.isEmpty() && buttons.get(0).isDisplayed();
+        // Edge rebuilds the appointment form under us; a found button can go stale before isDisplayed.
+        for (int attempt = 0; attempt < 5; attempt++) {
+            try {
+                List<WebElement> buttons = DRIVER.findElements(By.cssSelector("button.process-reserve"));
+                for (WebElement button : buttons) {
+                    if (button.isDisplayed()) {
+                        return true;
+                    }
+                }
+                return false;
+            } catch (StaleElementReferenceException ignored) {
+                // retry with a fresh find
+            }
+        }
+        return false;
     }
 
     public void selectWalkInCustomer() {
@@ -550,6 +844,40 @@ public class CounterProcessingStationPage extends AdminPage {
                 select);
     }
 
+    /** A late button reload can drop Termin buchen after the slot is already selected. */
+    private WebElement waitForBookAppointmentButton(WebDriverWait wait) {
+        long[] lastRefresh = { 0L };
+        return wait.ignoring(StaleElementReferenceException.class).until(driver -> {
+            List<WebElement> buttons = driver.findElements(By.cssSelector("button.process-reserve"));
+            for (WebElement button : buttons) {
+                if (button.isDisplayed() && button.isEnabled()) {
+                    return button;
+                }
+            }
+            refreshAppointmentButtonsIfSlotSelected(lastRefresh);
+            return null;
+        });
+    }
+
+    private void refreshAppointmentButtonsIfSlotSelected(long[] lastRefresh) {
+        long now = System.currentTimeMillis();
+        if (now - lastRefresh[0] < 2000L) {
+            return;
+        }
+        List<WebElement> selects = DRIVER.findElements(By.id(APPOINTMENT_TIME_LOCATOR_ID));
+        if (selects.isEmpty()) {
+            return;
+        }
+        String value = selects.get(0).getAttribute("value");
+        if (value == null || value.isBlank() || "00-00".equals(value)) {
+            return;
+        }
+        lastRefresh[0] = now;
+        ScenarioLogManager.getLogger()
+                .warn("Termin buchen is missing while slot {} is selected; loading the booking button again.", value);
+        fireProcessTimeChange(selects.get(0));
+    }
+
     public void selectTimeInNewAppointmentDropDownList(String time) {
         selectTimeInNewAppointmentDropDownList(time, Set.of(), false);
     }
@@ -559,6 +887,11 @@ public class CounterProcessingStationPage extends AdminPage {
     }
 
     public void selectTimeInNewAppointmentDropDownList(String time, Set<String> excludedTimes, boolean fallBackToWalkIn) {
+        selectTimeInNewAppointmentDropDownList(time, excludedTimes, fallBackToWalkIn, true);
+    }
+
+    public void selectTimeInNewAppointmentDropDownList(
+            String time, Set<String> excludedTimes, boolean fallBackToWalkIn, boolean allowNextDay) {
         TestDataHelper.setTestData("appointment_booked_as_walk_in", "false");
         ScenarioLogManager.getLogger().info("Trying to select time \"" + time + "\" in new appointment drop down list...");
         Pattern timeSlotPattern = Pattern.compile("([0-9][0-9]:[0-9][0-9]) \\(noch ([0-9]) frei\\)");
@@ -590,7 +923,7 @@ public class CounterProcessingStationPage extends AdminPage {
                             if (fallBackToWalkIn && selectWalkInOption(newAppointmentTimeDropDownListSelections, newAppointmentTimeDropDownList)) {
                                 break;
                             }
-                            return moveToNextDayWithSlots(daysAhead);
+                            return nextDayOrFail(daysAhead, allowNextDay);
                         }
                         WebElement webElement;
                         if (time.equals("<beliebig>")) {
@@ -635,7 +968,7 @@ public class CounterProcessingStationPage extends AdminPage {
                     }
                     return true;
                 } else {
-                    return moveToNextDayWithSlots(daysAhead);
+                    return nextDayOrFail(daysAhead, allowNextDay);
                 }
             });
         } catch (Exception e) {
@@ -647,6 +980,13 @@ public class CounterProcessingStationPage extends AdminPage {
      * Today's Terminkunde list is empty once fewer than three hours remain until 23:55.
      * The next day is opened for the whole day, so the form moves there and the time list is read again.
      */
+    private boolean nextDayOrFail(int[] daysAhead, boolean allowNextDay) {
+        if (!allowNextDay) {
+            Assert.fail("No appointment slot is left today.");
+        }
+        return moveToNextDayWithSlots(daysAhead);
+    }
+
     private boolean moveToNextDayWithSlots(int[] daysAhead) {
         if (daysAhead[0] >= 7) {
             return false;
@@ -684,6 +1024,20 @@ public class CounterProcessingStationPage extends AdminPage {
         Assert.assertEquals(newAppointmentEmailTextField.getAttribute("value"), email,
                 "Entering email \"" + email + "\" in new appointment text field has failed...");
         TestDataHelper.setTestData("new_appointment_customer_email", email);
+    }
+
+    /** ZMSKVR-1396 / ZMSKVR-1687: appointment form E-Mail must expose browser autofill hints. */
+    public void assertNewAppointmentEmailFieldSupportsAutofill() {
+        ScenarioLogManager.getLogger().info("Asserting new-appointment email input type and autocomplete");
+        WebElement emailField = findElementByLocatorType("email", LocatorType.NAME, true);
+        Assert.assertEquals(
+                emailField.getAttribute("type"),
+                "email",
+                "Appointment E-Mail field must use type=\"email\"");
+        Assert.assertEquals(
+                emailField.getAttribute("autocomplete"),
+                "email",
+                "Appointment E-Mail field must use autocomplete=\"email\"");
     }
 
     public void enterNoteInNewAppointmentTextField(String note) {
@@ -764,15 +1118,16 @@ public class CounterProcessingStationPage extends AdminPage {
         CONTEXT.waitForSpinners();
     
         WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME * 2L));
+        // Cap each Termin-buchen poll so a vanished slot can reselect instead of burning 120s.
+        WebDriverWait bookButtonWait = new WebDriverWait(DRIVER, Duration.ofSeconds(20));
         AtomicReference<String> newAppointmentNumber = new AtomicReference<>("");
         AtomicBoolean validationErrorsVisible = new AtomicBoolean(false);
         Set<String> skippedTimes = new HashSet<>();
         final int maxBookingAttempts = 6;
-        boolean bookingAttempted = false;
         fillCustomTextfieldsForSpontaneousCustomerIfNeeded();
     
         for (int attempt = 1; attempt <= maxBookingAttempts; attempt++) {
-            if (attempt > 1 && bookingAttempted) {
+            if (attempt > 1) {
                 String previousTime = TestDataHelper.getTestData("new_appointment_time");
                 if (previousTime != null && !previousTime.isBlank()) {
                     skippedTimes.add(previousTime);
@@ -782,19 +1137,22 @@ public class CounterProcessingStationPage extends AdminPage {
                                 + attempt + "/" + maxBookingAttempts + ")...");
                 CONTEXT.waitForSpinners();
                 selectTimeInNewAppointmentDropDownList("<nächste>", skippedTimes);
+                fillCustomTextfieldsForSpontaneousCustomerIfNeeded();
             }
     
-            WebElement bookButton = wait.until(
-                    ExpectedConditions.elementToBeClickable(
-                            By.cssSelector("button.process-reserve")
-                    )
-            );
+            WebElement bookButton;
+            try {
+                bookButton = waitForBookAppointmentButton(bookButtonWait);
+            } catch (TimeoutException e) {
+                ScenarioLogManager.getLogger().warn(
+                        "Termin buchen not ready (attempt " + attempt + "/" + maxBookingAttempts
+                                + "); will try another slot.");
+                continue;
+            }
     
-            bookingAttempted = false;
             try {
                 ((JavascriptExecutor) DRIVER).executeScript("arguments[0].scrollIntoView({block:'center'});", bookButton);
                 ((JavascriptExecutor) DRIVER).executeScript("arguments[0].click();", bookButton);
-                bookingAttempted = true;
             } catch (StaleElementReferenceException | ElementClickInterceptedException | TimeoutException e) {
                 ScenarioLogManager.getLogger().warn(
                         "Book click did not complete (attempt " + attempt + "/" + maxBookingAttempts + ").");
@@ -960,6 +1318,21 @@ public class CounterProcessingStationPage extends AdminPage {
         return appointmentNumberMatcher.group(1);
     }
 
+    public void saveAppointmentWithOneMoreSlot() {
+        CONTEXT.set();
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        WebElement slotCount = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("appointmentForm_slotCount")));
+        new Select(slotCount).selectByValue("2");
+        WebElement note = DRIVER.findElement(By.name("amendment"));
+        note.clear();
+        note.sendKeys("Muster Hinweis");
+        clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "//button[contains(@class,'process-save')]", LocatorType.XPATH, false, CONTEXT);
+        WebElement dialog = wait.until(ExpectedConditions.visibilityOfElementLocated(
+                By.xpath("//*[contains(@class,'dialog')][contains(.,'erfolgreich aktualisiert')]")));
+        dialog.findElement(By.cssSelector("button.button-ok")).click();
+        wait.until(ExpectedConditions.invisibilityOf(dialog));
+    }
+
     public void clickOnEditProcessButton() {
         ScenarioLogManager.getLogger().info("Trying to click on \"edit process\" button...");
         clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "//button[contains(text(),'Termin bearbeiten')]", LocatorType.XPATH, false, CONTEXT);
@@ -991,7 +1364,37 @@ public class CounterProcessingStationPage extends AdminPage {
 
     public void clickOnCloseButton() {
         ScenarioLogManager.getLogger().info("Trying to click on \"Close\"  button...");
-        clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "//button[contains(text(),'Schließen')]", LocatorType.XPATH, false);
+        CONTEXT.set();
+        // text() misses the button when Firefox splits the label. The success dialog's
+        // Schließen is the button-ok; the mail form uses button-abort.
+        By close = By.xpath("//button[contains(@class,'button-ok') and normalize-space(.)='Schließen']");
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        WebElement button = wait.ignoring(StaleElementReferenceException.class).until(driver -> {
+            for (WebElement candidate : driver.findElements(close)) {
+                try {
+                    if (candidate.isDisplayed()) {
+                        return candidate;
+                    }
+                } catch (StaleElementReferenceException ignored) {
+                    // dialog re-rendered
+                }
+            }
+            return null;
+        });
+        ((JavascriptExecutor) DRIVER).executeScript("arguments[0].scrollIntoView({block:'center'});", button);
+        try {
+            button.click();
+        } catch (StaleElementReferenceException | ElementClickInterceptedException e) {
+            button = wait.ignoring(StaleElementReferenceException.class).until(driver -> {
+                for (WebElement candidate : driver.findElements(close)) {
+                    if (candidate.isDisplayed()) {
+                        return candidate;
+                    }
+                }
+                return null;
+            });
+            ((JavascriptExecutor) DRIVER).executeScript("arguments[0].click();", button);
+        }
     }
 
     public void clickOnOkButton() {
@@ -1256,6 +1659,119 @@ public class CounterProcessingStationPage extends AdminPage {
         areValuesVisibleInTableColumn(APPOINTMENT_PARKED_TABLE_LOCATOR_ID, LocatorType.ID, column, searchStrings);
     }
 
+    /** ZMSKVR-1113 / ZMSKVR-1182: Zimmernummer sits between Nr. and Name in Geparkte Termine. */
+    public void assertParkedTableZimmernummerColumnBetweenNrAndName() {
+        ScenarioLogManager.getLogger()
+                .info("Asserting Zimmernummer column sits between Nr. and Name in parked appointments");
+        CONTEXT.waitForSpinners();
+        By parkedTable = By.id(APPOINTMENT_PARKED_TABLE_LOCATOR_ID);
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(parkedTable));
+        scrollToCenterByVisibleElement(findElementByLocatorType(APPOINTMENT_PARKED_TABLE_LOCATOR_ID, LocatorType.ID, false));
+        List<WebElement> headers = DRIVER.findElements(
+                By.cssSelector("#" + APPOINTMENT_PARKED_TABLE_LOCATOR_ID + " thead th"));
+        // Keep empty <th> labels so indexes match physical columns (Zimmernummer adjacency).
+        List<String> labels = headers.stream()
+                .map(header -> header.getText().replace('\u00a0', ' ').trim())
+                .toList();
+        int nr = indexOfHeader(labels, "Nr.");
+        int room = indexOfHeader(labels, "Zimmernummer");
+        int name = indexOfHeaderStartsWith(labels, "Name");
+        Assert.assertTrue(nr >= 0, "Parked table missing Nr. column. Headers: " + labels);
+        Assert.assertTrue(room >= 0, "Parked table missing Zimmernummer column. Headers: " + labels);
+        Assert.assertTrue(name >= 0, "Parked table missing Name column. Headers: " + labels);
+        Assert.assertEquals(room, nr + 1, "Zimmernummer must follow Nr. Headers: " + labels);
+        Assert.assertEquals(name, room + 1, "Name must follow Zimmernummer. Headers: " + labels);
+    }
+
+    /**
+     * ZMSKVR-1113 / ZMSKVR-1182: parked row shows the Platz-Nr. from the call that parked it.
+     * Match Nr. by the full display number first (prefix scopes like N3). Digits-only matching
+     * alone can hit a leftover row when another process shares the numeric suffix.
+     */
+    public void assertParkedAppointmentShowsRoomNumber(String token, String roomNumber) {
+        String shown = token == null ? "" : token.trim();
+        String numOnly = shown.replaceAll("\\D+", "");
+        ScenarioLogManager.getLogger()
+                .info("Asserting parked appointment shows expected Zimmernummer");
+        CONTEXT.waitForSpinners();
+        By parkedTable = By.id(APPOINTMENT_PARKED_TABLE_LOCATOR_ID);
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(parkedTable));
+        scrollToCenterByVisibleElement(findElementByLocatorType(APPOINTMENT_PARKED_TABLE_LOCATOR_ID, LocatorType.ID, false));
+        List<WebElement> headers = DRIVER.findElements(
+                By.cssSelector("#" + APPOINTMENT_PARKED_TABLE_LOCATOR_ID + " thead th"));
+        List<String> labels = headers.stream()
+                .map(header -> header.getText().replace('\u00a0', ' ').trim())
+                .toList();
+        int nr = indexOfHeader(labels, "Nr.");
+        int room = indexOfHeader(labels, "Zimmernummer");
+        Assert.assertTrue(nr >= 0, "Parked table missing Nr. column. Headers: " + labels);
+        Assert.assertTrue(room >= 0, "Parked table missing Zimmernummer column. Headers: " + labels);
+        String nrMatch = shown.matches(".*\\p{L}.*")
+                ? "normalize-space(.)='" + shown + "'"
+                : "(normalize-space(.)='" + shown + "' or normalize-space(.)='" + numOnly + "')";
+        By roomCell = By.xpath(
+                "//table[@id='" + APPOINTMENT_PARKED_TABLE_LOCATOR_ID + "']"
+                        + "//tbody/tr[td[count(preceding-sibling::td)=" + nr + "][" + nrMatch + "]]"
+                        + "/td[count(preceding-sibling::td)=" + room + "]");
+        WebElement cell = wait.until(ExpectedConditions.visibilityOfElementLocated(roomCell));
+        Assert.assertEquals(
+                cell.getText().trim(),
+                roomNumber,
+                "Parked appointment " + shown + " must show Zimmernummer " + roomNumber);
+    }
+
+    /**
+     * Same Zimmernummer check, keyed by the unique customer name (avoids Nr. collisions).
+     */
+    public void assertParkedAppointmentForCustomerShowsRoomNumber(String customerName, String roomNumber) {
+        ScenarioLogManager.getLogger()
+                .info("Asserting parked appointment for customer shows expected Zimmernummer");
+        CONTEXT.waitForSpinners();
+        By parkedTable = By.id(APPOINTMENT_PARKED_TABLE_LOCATOR_ID);
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(parkedTable));
+        scrollToCenterByVisibleElement(findElementByLocatorType(APPOINTMENT_PARKED_TABLE_LOCATOR_ID, LocatorType.ID, false));
+        List<WebElement> headers = DRIVER.findElements(
+                By.cssSelector("#" + APPOINTMENT_PARKED_TABLE_LOCATOR_ID + " thead th"));
+        List<String> labels = headers.stream()
+                .map(header -> header.getText().replace('\u00a0', ' ').trim())
+                .toList();
+        int room = indexOfHeader(labels, "Zimmernummer");
+        int name = indexOfHeaderStartsWith(labels, "Name");
+        Assert.assertTrue(room >= 0, "Parked table missing Zimmernummer column. Headers: " + labels);
+        Assert.assertTrue(name >= 0, "Parked table missing Name column. Headers: " + labels);
+        By roomCell = By.xpath(
+                "//table[@id='" + APPOINTMENT_PARKED_TABLE_LOCATOR_ID + "']"
+                        + "//tbody/tr[td[count(preceding-sibling::td)=" + name + "]"
+                        + "[starts-with(normalize-space(.),'" + customerName + "')]]"
+                        + "/td[count(preceding-sibling::td)=" + room + "]");
+        WebElement cell = wait.until(ExpectedConditions.visibilityOfElementLocated(roomCell));
+        Assert.assertEquals(
+                cell.getText().trim(),
+                roomNumber,
+                "Parked appointment for " + customerName + " must show Zimmernummer " + roomNumber);
+    }
+
+    private static int indexOfHeader(List<String> labels, String expected) {
+        for (int i = 0; i < labels.size(); i++) {
+            if (expected.equals(labels.get(i))) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    private static int indexOfHeaderStartsWith(List<String> labels, String prefix) {
+        for (int i = 0; i < labels.size(); i++) {
+            if (labels.get(i).startsWith(prefix)) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
     public void checkForValuesInFinishedTableColumn(String column, String... searchStrings) {
         ScenarioLogManager.getLogger().info("Checking for values to be visible in '{}' column of the finished table...", column);
         CONTEXT.waitForSpinners();
@@ -1380,6 +1896,112 @@ public class CounterProcessingStationPage extends AdminPage {
     }
 
     /**
+     * The create form shows each service as "name (N min)". Editing a walk-in used to double N
+     * in that list and in Termindauer. The values are stored here and checked again on the edit form.
+     */
+    public void noteServiceAndAnotherDuration(String serviceFragment) {
+        CONTEXT.set();
+        CONTEXT.waitForSpinners();
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        By spans = By.cssSelector("ul[aria-label='Dienstleistungen Auswahlliste'] span");
+        wait.until(ExpectedConditions.numberOfElementsToBeMoreThan(spans, 1));
+        String serviceText = shortestDurationLabel(serviceFragment, true);
+        String otherText = shortestDurationLabel(serviceFragment, false);
+        Assert.assertNotNull(serviceText, "Service \"" + serviceFragment + "\" has no duration on the form.");
+        Assert.assertNotNull(otherText, "No second service duration is visible on the form.");
+        Matcher matcher = Pattern.compile("\\((\\d+) min\\)").matcher(serviceText);
+        Assert.assertTrue(matcher.find(), "No minute count on \"" + serviceText + "\".");
+        TestDataHelper.setTestData("noted_service_minutes", matcher.group(1));
+        TestDataHelper.setTestData("noted_service_fragment", serviceFragment);
+        TestDataHelper.setTestData("noted_other_service_text", otherText);
+    }
+
+    public void assertNotedDurationsStillShown() {
+        CONTEXT.set();
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        wait.until(ExpectedConditions.textToBePresentInElementValue(
+                By.name("familyName"), TestDataHelper.getTestData("customer_name")));
+        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("button.process-save")));
+        String minutes = TestDataHelper.getTestData("noted_service_minutes");
+        String fragment = TestDataHelper.getTestData("noted_service_fragment");
+        String serviceText = shortestDurationLabel(fragment, true);
+        Assert.assertNotNull(serviceText, "Service \"" + fragment + "\" is missing on the edit form.");
+        Assert.assertTrue(serviceText.contains("(" + minutes + " min)"),
+                "Service duration changed. expected (" + minutes + " min). actual=" + serviceText);
+        int doubled;
+        try {
+            doubled = Integer.parseInt(minutes) * 2;
+        } catch (NumberFormatException e) {
+            Assert.fail("Noted service minutes are not a number: " + minutes, e);
+            return;
+        }
+        Assert.assertFalse(serviceText.contains("(" + doubled + " min)"),
+                "Service duration was doubled. actual=" + serviceText);
+        WebElement slotCount = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("appointmentForm_slotCount")));
+        String selected = new Select(slotCount).getFirstSelectedOption().getText().trim();
+        Assert.assertEquals(selected, minutes,
+                "Termindauer was " + selected + " minutes instead of " + minutes + ".");
+        String other = TestDataHelper.getTestData("noted_other_service_text");
+        boolean otherUnchanged = durationLabels().stream().anyMatch(other::equals);
+        Assert.assertTrue(otherUnchanged, "Another service duration changed. expected \"" + other + "\".");
+    }
+
+    public void saveWalkInAppointmentWithNote(String note) {
+        CONTEXT.set();
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        WebElement amendment = wait.until(ExpectedConditions.visibilityOfElementLocated(By.name("amendment")));
+        amendment.clear();
+        amendment.sendKeys(note);
+        clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "//button[contains(@class,'process-save')]", LocatorType.XPATH, false, CONTEXT);
+        WebElement dialog = wait.until(ExpectedConditions.visibilityOfElementLocated(
+                By.xpath("//*[contains(@class,'dialog')][contains(.,'erfolgreich aktualisiert')]")));
+        dialog.findElement(By.cssSelector("button.button-ok")).click();
+        wait.until(ExpectedConditions.invisibilityOf(dialog));
+    }
+
+    private String shortestDurationLabel(String serviceFragment, boolean matchingFragment) {
+        String best = null;
+        for (String text : durationLabels()) {
+            boolean matches = text.contains(serviceFragment);
+            if (matches != matchingFragment) {
+                continue;
+            }
+            if (best == null || text.length() < best.length()) {
+                best = text;
+            }
+        }
+        return best;
+    }
+
+    private List<String> durationLabels() {
+        return DRIVER.findElements(By.cssSelector("ul[aria-label='Dienstleistungen Auswahlliste'] span")).stream()
+                .map(this::normalizedText)
+                .filter(text -> text.matches(".*\\(\\d+ min\\).*"))
+                .collect(Collectors.toList());
+    }
+
+    private String normalizedText(WebElement element) {
+        return String.valueOf(((JavascriptExecutor) DRIVER).executeScript(
+                "return (arguments[0].textContent || '').replace(/\\s+/g, ' ').trim();", element));
+    }
+
+    /**
+     * ZMSKVR-230: "Termindauer in Minuten" on the create/edit appointment form after services are selected.
+     */
+    public void assertTermindauerMinutes(int minutes) {
+        CONTEXT.set();
+        CONTEXT.waitForSpinners();
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        WebElement slotCount = wait.until(
+                ExpectedConditions.visibilityOfElementLocated(By.id("appointmentForm_slotCount")));
+        String selected = new Select(slotCount).getFirstSelectedOption().getText().trim();
+        Assert.assertEquals(
+                selected,
+                String.valueOf(minutes),
+                "Termindauer in Minuten was " + selected + " instead of " + minutes + ".");
+    }
+
+    /**
      * The Auswahlliste label is "name (45 min)". Selecting the service hides that row and moves
      * the plain name to the Abwahlliste, so the label is read from text content.
      * Termindauer then shows the same number. The broken mapping showed 135.
@@ -1399,9 +2021,7 @@ public class CounterProcessingStationPage extends AdminPage {
         Assert.assertFalse(
                 text.contains("(" + wrongMinutes + " min)"),
                 "Service duration must not be (" + wrongMinutes + " min). actual=" + text);
-        WebElement slotCount = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("appointmentForm_slotCount")));
-        String selected = new Select(slotCount).getFirstSelectedOption().getText().trim();
-        Assert.assertEquals(selected, String.valueOf(minutes), "Termindauer select. actual=" + selected);
+        assertTermindauerMinutes(minutes);
         List<WebElement> dates = DRIVER.findElements(By.id("process_selected_date"));
         if (!dates.isEmpty()) {
             String iso = dates.get(0).getAttribute("value");
@@ -1411,41 +2031,112 @@ public class CounterProcessingStationPage extends AdminPage {
         }
     }
 
-    /** Gesamtübersicht cell for the booked number. The title is "HH:mm – HH:mm". */
-    public void assertOverallCalendarAppointmentSpansMinutes(int minutes) {
+    /**
+     * Opens the queue envelope dialog for a Terminkunde row matched by family name.
+     * Subject defaults use {@code process.displayNumber} (prefix scopes and plain process id).
+     */
+    public void openCustomMailForQueuedCustomer(String familyName) {
         CONTEXT.set();
         CONTEXT.waitForSpinners();
-        String number = TestDataHelper.getTestData("new_appointment_number");
-        Assert.assertNotNull(number, "No booked appointment number for the Gesamtübersicht.");
-        String iso = TestDataHelper.getTestData("new_appointment_iso_date");
-        if (iso == null || iso.isBlank()) {
-            String german = TestDataHelper.getTestData("new_appointment_date");
-            if (german != null && !german.isBlank()) {
-                iso = LocalDate.parse(german, DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.GERMAN))
-                        .format(DateTimeFormatter.ISO_LOCAL_DATE);
-            } else {
-                iso = BerlinTime.today().format(DateTimeFormatter.ISO_LOCAL_DATE);
-            }
-        }
-        WebElement from = findElementByLocatorType("calendar-date-from", LocatorType.ID, false);
-        WebElement until = findElementByLocatorType("calendar-date-until", LocatorType.ID, false);
-        ((JavascriptExecutor) DRIVER).executeScript(
-                "arguments[0].value=arguments[2]; arguments[1].value=arguments[2];", from, until, iso);
-        Select scopes = new Select(findElementByLocatorType("scope-select", LocatorType.ID, false));
-        scopes.deselectAll();
-        scopes.selectByValue("319");
-        clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "//button[normalize-space()='Übernehmen']", LocatorType.XPATH, false, CONTEXT);
-        By cellLabel = By.xpath(
-                "//span[contains(@class,'overall-calendar-termin-label') and normalize-space(.)='" + number + "']");
+        ScenarioLogManager.getLogger().info("Opening queue custom-mail dialog for {}", familyName);
+        String mailLink = "//table[@id='table-queued-appointments']//tr["
+                + "td[contains(@class,'callnextclient') and normalize-space(.)='" + familyName + "']]"
+                + "//a[contains(@class,'process-custom-mail-send')]";
+        clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, mailLink, LocatorType.XPATH, false, CONTEXT);
         WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
-        WebElement label = wait.until(ExpectedConditions.visibilityOfElementLocated(cellLabel));
-        WebElement cell = label.findElement(By.xpath("./parent::*"));
-        String title = cell.getAttribute("title");
-        Assert.assertNotNull(title, "Gesamtübersicht cell for " + number + " has no time title.");
-        Matcher matcher = Pattern.compile("(\\d{2}:\\d{2})\\s*[–-]\\s*(\\d{2}:\\d{2})").matcher(title);
-        Assert.assertTrue(matcher.find(), "Could not read the appointment span from \"" + title + "\".");
-        int span = (int) java.time.Duration.between(LocalTime.parse(matcher.group(1)), LocalTime.parse(matcher.group(2)))
-                .toMinutes();
-        Assert.assertEquals(span, minutes, "Gesamtübersicht span for " + number + " from title \"" + title + "\".");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(
+                By.cssSelector(".dialog form[name='mail'] input[name='subject']")));
     }
+
+    public String getCustomMailSubject() {
+        WebElement subject = findElementByLocatorType(
+                ".dialog form[name='mail'] input[name='subject']", LocatorType.CSSSELECTOR, false);
+        return subject.getAttribute("value");
+    }
+
+    public void assertCustomMailSubjectContainsDisplayNumber() {
+        String displayNumber = TestDataHelper.getTestData("new_appointment_number");
+        Assert.assertNotNull(displayNumber, "new_appointment_number was not set after booking");
+        Assert.assertFalse(displayNumber.isBlank(), "new_appointment_number is blank");
+        String subject = getCustomMailSubject();
+        ScenarioLogManager.getLogger().info(
+                "Custom-mail subject=\"{}\" expected displayNumber=\"{}\"", subject, displayNumber);
+        Assert.assertTrue(
+                subject.contains(displayNumber),
+                "Mail subject must contain display number " + displayNumber + ", was: " + subject);
+        Assert.assertFalse(
+                subject.matches("(?s).*\\b(Termin|Wartenummer)\\s+0\\b.*"),
+                "Mail subject must not fall back to display number 0, was: " + subject);
+        Assert.assertTrue(
+                subject.startsWith("Information zu Ihrem Termin " + displayNumber + " am ")
+                        || subject.startsWith("Information zu Ihrer Wartenummer " + displayNumber + " am "),
+                "Mail subject must lead with the appointment/waiting number, was: " + subject);
+    }
+
+    public void setCustomMailSubject(String subject) {
+        WebElement field = findElementByLocatorType(
+                ".dialog form[name='mail'] input[name='subject']", LocatorType.CSSSELECTOR, false);
+        field.click();
+        field.clear();
+        if (subject != null && !subject.isEmpty()) {
+            field.sendKeys(subject);
+        }
+        Assert.assertEquals(
+                field.getAttribute("value"),
+                subject == null ? "" : subject,
+                "Setting custom-mail subject failed");
+    }
+
+    public void submitCustomMailForm() {
+        ScenarioLogManager.getLogger().info("Submitting queue custom-mail form");
+        clickOnWebElement(
+                DEFAULT_EXPLICIT_WAIT_TIME,
+                ".dialog form[name='mail'] button.button-submit",
+                LocatorType.CSSSELECTOR,
+                false,
+                CONTEXT);
+        CONTEXT.waitForSpinners();
+    }
+
+    public void assertCustomMailFormError(String expectedMessage) {
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        WebElement error = wait.until(ExpectedConditions.visibilityOfElementLocated(
+                By.xpath("//div[contains(@class,'dialog')]//div[contains(@class,'message--error')]"
+                        + "[contains(.,'" + expectedMessage + "')]")));
+        Assert.assertTrue(
+                error.isDisplayed(),
+                "Expected custom-mail form error: " + expectedMessage);
+    }
+
+    public void assertCustomMailSentSuccess() {
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        WebElement heading = wait.until(ExpectedConditions.visibilityOfElementLocated(
+                By.xpath("//*[contains(@class,'message__heading') and contains(.,'E-Mail versendet')]")));
+        Assert.assertTrue(heading.isDisplayed(), "Custom-mail success heading missing");
+        WebElement body = wait.until(ExpectedConditions.visibilityOfElementLocated(
+                By.xpath("//*[contains(@class,'message__body')]"
+                        + "[contains(.,'Der Versand der E-Mail war erfolgreich.')]")));
+        Assert.assertTrue(body.isDisplayed(), "Custom-mail success body missing");
+        clickOnWebElement(
+                DEFAULT_EXPLICIT_WAIT_TIME,
+                "//*[contains(@class,'message--success')]//button[contains(@class,'button-ok')]",
+                LocatorType.XPATH,
+                false,
+                CONTEXT);
+        wait.until(ExpectedConditions.invisibilityOf(heading));
+    }
+
+    public void closeCustomMailDialog() {
+        ScenarioLogManager.getLogger().info("Closing queue custom-mail dialog");
+        clickOnWebElement(
+                DEFAULT_EXPLICIT_WAIT_TIME,
+                ".dialog form[name='mail'] button.button-abort",
+                LocatorType.CSSSELECTOR,
+                false,
+                CONTEXT);
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        wait.until(ExpectedConditions.invisibilityOfElementLocated(
+                By.cssSelector(".dialog form[name='mail']")));
+    }
+
 }

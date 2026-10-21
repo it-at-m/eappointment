@@ -168,6 +168,7 @@ const collectCucumberFeatures = () => {
       title: parsed.title || path.basename(rel),
       tags: parsed.tags,
       scenarioCount: parsed.scenarioCount,
+      mobileScenarioCount: parsed.mobileScenarioCount || 0,
       sourceUrl: `${FEATURE_SOURCE_BASE}/${rel}`,
       testType,
       module,
@@ -181,6 +182,7 @@ const collectCucumberFeatures = () => {
       category,
       submodule: submodule || "",
       scenarioCount: parsed.scenarioCount,
+      mobileScenarioCount: parsed.mobileScenarioCount || 0,
     };
   };
 
@@ -957,6 +959,20 @@ const publishAssetsWithoutMdNames = (outDir) => {
     for (const [from, to] of replacements) {
       if (text.includes(from)) {
         text = text.split(from).join(to);
+        changed = true;
+      }
+    }
+    // The router does not store "index.md.<hash>.js". It builds
+    // `/assets/${page}.md.${hash}.js` and then swaps in ".lean.js".
+    // Renaming the file is not enough; the built URL has to drop ".md" too.
+    if (file.endsWith(".js")) {
+      const patched = text.replace(
+        /\/assets\/\$\{([A-Za-z_$][\w$]*)\}\.\$\{([A-Za-z_$][\w$]*)\}\.js/g,
+        (_match, pageVar, hashVar) =>
+          `/assets/\${${pageVar}.replace(/\\.md$/, "")}.\${${hashVar}}.js`
+      );
+      if (patched !== text) {
+        text = patched;
         changed = true;
       }
     }

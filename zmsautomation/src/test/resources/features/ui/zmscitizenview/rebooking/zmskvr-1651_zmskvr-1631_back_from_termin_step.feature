@@ -1,11 +1,12 @@
 #language: en
-@web @zmscitizenview @rebooking @citizen @ZMSKVR-1631 @ZMSKVR-1651 @executeLocally @jumpin @pickupCalendar
+@web @zmscitizenview @rebooking @citizen @ZMSKVR-1631 @ZMSKVR-1651 @ZMSKVR-957 @ZMSKVR-968 @executeLocally @jumpin @pickupCalendar
 Feature: CitizenView: back from the Termin step to reschedule or cancel
   As a citizen who started rescheduling an existing appointment
   I want to leave the Termin step without choosing a new time
   So that I can cancel the appointment or keep it
 
   # Abholung 10295182 at Bürgerbüro Ruppertstraße KVR-II/211 (10492), same jump-in as ZMSKVR-353.
+  # ZMSKVR-957 / ZMSKVR-968: Termin-Detail Verschieben/Absagen actions after leaving Termin.
   # Termin verschieben opens the Termin step. Verschieben abbrechen is the return to
   # Verschiebung/Absage (Termin verschieben and Termin absagen) for the same appointment.
   # The scenario cancels that appointment so the process is not left behind.

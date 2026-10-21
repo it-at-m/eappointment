@@ -184,6 +184,7 @@ class Scope extends Base implements MappingInterface
             'preferences__appointment__infoForAllAppointments' => 'scope.info_for_all_appointments',
             'preferences__appointment__endInDaysDefault' => 'scope.Termine_bis',
             'preferences__appointment__multipleSlotsEnabled' => 'scope.mehrfachtermine',
+            'preferences__appointment__rebookingDisabled' => 'scope.rebooking_disabled',
             'preferences__appointment__reservationDuration' => 'scope.reservierungsdauer',
             'preferences__appointment__activationDuration' => 'scope.aktivierungsdauer',
             'preferences__appointment__startInDaysDefault' => 'scope.Termine_ab',
@@ -349,6 +350,7 @@ class Scope extends Base implements MappingInterface
         $data['Termine_bis'] = $entity->getPreference('appointment', 'endInDaysDefault');
         $data['Termine_ab'] = $entity->getPreference('appointment', 'startInDaysDefault');
         $data['mehrfachtermine'] = $entity->getPreference('appointment', 'multipleSlotsEnabled', true);
+        $data['rebooking_disabled'] = $entity->getPreference('appointment', 'rebookingDisabled', true);
         $data['reservierungsdauer'] = $entity->getPreference('appointment', 'reservationDuration');
         $data['aktivierungsdauer'] = $entity->getPreference('appointment', 'activationDuration');
         $data['anmerkungPflichtfeld'] = $entity->getPreference('client', 'amendmentActivated', true);

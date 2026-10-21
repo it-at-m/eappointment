@@ -505,6 +505,7 @@ const buildRemoteCatalog = async (branch, sha, paths) => {
       title: parsed.title || fileName,
       tags: parsed.tags,
       scenarioCount: parsed.scenarioCount,
+      mobileScenarioCount: parsed.mobileScenarioCount || 0,
       sourceUrl: cucumberFeatureSourceUrl(rel, branch),
       testType,
       module,
@@ -837,7 +838,7 @@ export function cucumberGhRunCommand(entry) {
   const testLayer = entry?.testType === "rest" ? "api" : "ui";
   const branch = cucumberSelectedBranch.value || CUCUMBER_DEFAULT_BRANCH;
   const fields = [
-    ["run_main_next_matrix", "false"],
+    ["run_next_matrix", "false"],
     ["run_all_in_one_job", "false"],
     ["module_admin", "false"],
     ["module_citizenview", "false"],

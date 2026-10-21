@@ -2,23 +2,31 @@ name: ☕ zmsautomation-maven-build
 
 on:
   pull_request:
+    paths:
+      - "zmsautomation/**"
+      - ".github/workflows/zmsautomation-maven-build.yml"
   push:
-    branches: [main, next]
+    branches:
+      - next
+    paths:
+      - "zmsautomation/**"
+      - ".github/workflows/zmsautomation-maven-build.yml"
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref == 'refs/heads/next' && github.ref || github.run_id }}
+  group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
+
+permissions:
+  contents: read
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
     env:
       TZ: Europe/Berlin
     steps:
-      - uses: it-at-m/lhm_actions/action-templates/actions/action-checkout@e967c9de8fb0197faf7a294d153efa76de5cec27 # v1.6.0
-      - uses: it-at-m/lhm_actions/action-templates/actions/action-maven-build@e967c9de8fb0197faf7a294d153efa76de5cec27 # v1.6.0
+      - uses: it-at-m/lhm_actions/action-templates/actions/action-checkout@808f574bd8867b31524b254679fc34fb1fd78ea2 # v1.6.2
+      - uses: it-at-m/lhm_actions/action-templates/actions/action-maven-build@808f574bd8867b31524b254679fc34fb1fd78ea2 # v1.6.2
         with:
           app-path: zmsautomation
           java-version: "21"

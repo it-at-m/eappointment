@@ -7,6 +7,7 @@ namespace BO\Zmscitizenapi\Services\Availability;
 use BO\Zmscitizenapi\Models\AvailableCalendar;
 use BO\Zmscitizenapi\Services\Captcha\CaptchaRequirementTrait;
 use BO\Zmscitizenapi\Services\Captcha\TokenValidationService;
+use BO\Zmscitizenapi\Services\Core\AppointmentProcessLimitsValidationService;
 use BO\Zmscitizenapi\Services\Core\ValidationService;
 use BO\Zmscitizenapi\Services\Core\ZmsApiFacadeService;
 
@@ -40,8 +41,17 @@ class AvailableCalendarService
             return $errors;
         }
 
-        return ZmsApiFacadeService::getCalendarAvailability(
+        $eligibleOffices = AppointmentProcessLimitsValidationService::filterOfficeIdsWithinRequestLimits(
             $clientData->officeIds,
+            $clientData->serviceIds,
+            $clientData->serviceCounts
+        );
+        if (!empty($eligibleOffices['errors'])) {
+            return $eligibleOffices;
+        }
+
+        return ZmsApiFacadeService::getCalendarAvailability(
+            $eligibleOffices['officeIds'],
             $clientData->serviceIds,
             $clientData->serviceCounts,
             $clientData->startDate,

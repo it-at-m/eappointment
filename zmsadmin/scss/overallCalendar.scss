@@ -202,10 +202,19 @@ $day-h: 2.2rem;
   align-items: center;
   justify-content: center;
   font-size: 1.25rem;
+  color: #fff;
+  background: $color-button-default;
+  border: 2px solid #fff;
   transition: transform .25s ease, box-shadow .25s ease;
 
-  &:hover, &:focus {
+  &:hover, &:focus-visible {
     transform: scale(1.08);
+    background: $color-button-default-hover;
+  }
+
+  &:focus-visible {
+    outline: 3px solid $color-button-default;
+    outline-offset: 2px;
   }
 
   &.is-active i::before {

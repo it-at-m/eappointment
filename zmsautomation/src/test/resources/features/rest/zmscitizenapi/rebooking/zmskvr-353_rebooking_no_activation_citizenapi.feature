@@ -1,4 +1,4 @@
-@rest @zmscitizenapi @rebooking @citizen @ZMSKVR-353 @ZMSKVR-951 @pickupCalendar
+@rest @zmscitizenapi @rebooking @citizen @ZMSKVR-353 @ZMSKVR-951 @ZMSKVR-957 @ZMSKVR-968 @pickupCalendar
 Feature: ZMSKVR-353 Guest rebooking confirms without a second activation — Citizen API
   As a citizen API client
   I want confirm of a reserved rebooking slot to succeed when I prove the original appointment
@@ -6,6 +6,7 @@ Feature: ZMSKVR-353 Guest rebooking confirms without a second activation — Cit
 
   # Abholung 10295182 at 10492 matches the reserved-hash / already-activated UI features.
   # Confirm without login is allowed only when sourceProcessId+sourceAuthKey load a different confirmed process.
+  # ZMSKVR-957 / ZMSKVR-968: API twin for Termin-Detail Verschieben (rebooking on).
 
   Background:
     Given the Citizen API is available

@@ -1,19 +1,19 @@
-#language: de
-Funktionalität: Die Anzahl einer Dienstleistung setzt sich zurück, wenn sie nach "Liste leeren" erneut ausgewählt wird.
+#language: en
+Feature: A service count resets when the service is selected again after "Liste leeren".
 
 	@web @zmsadmin @booking @clerk @ZMSKVR-69 @ZMSKVR-1579 @automatisiert @executeLocally
-	Szenario: Anzahl der Dienstleistung wird nach Liste leeren und erneutem Auswählen zurückgesetzt
-		Wenn Sie zur Webseite der Administration navigieren.
-		Dann sollten Sie sich am Start des Zeitmanagementsystem befinden.
-		Wenn Sie im Zeitmanagementsystem auf die Schaltfläche "Anmelden" klicken.
-		Und Sie für "Standort" den Wert "KfZ Zulassungsstelle (KVR-II/4111) Versicherung" auswählen.
-		Und Sie in Feld "Platz-Nr. oder Tresen" den Text "12" eingeben.
-		Und Sie im Zeitmanagementsystem auf die Schaltfläche "Auswahl bestätigen" klicken.
-		Dann wird die Seite Sachbearbeiterplatz angezeigt.
-		Wenn Sie im Zeitmanagementsystem unter Termin erstellen die Dienstleistung "Probleme bei Kfz-Versicherung oder Kfz-Steuer" auswählen.
-		Und Sie die Anzahl der ausgewählten Dienstleistung "Probleme bei Kfz-Versicherung oder Kfz-Steuer" um 2 erhöhen.
-		Dann ist die Anzahl der ausgewählten Dienstleistung "Probleme bei Kfz-Versicherung oder Kfz-Steuer" 3.
-		Wenn Sie im Zeitmanagementsystem unter Termin erstellen auf die Schaltfläche "Liste leeren" klicken.
-		Dann ist die Dienstleistung "Probleme bei Kfz-Versicherung oder Kfz-Steuer" nicht in der ausgewählten Liste.
-		Wenn Sie im Zeitmanagementsystem unter Termin erstellen die Dienstleistung "Probleme bei Kfz-Versicherung oder Kfz-Steuer" auswählen.
-		Dann ist die Anzahl der ausgewählten Dienstleistung "Probleme bei Kfz-Versicherung oder Kfz-Steuer" 1.
+	Scenario: The service count resets after clearing the list and selecting the service again
+		When I open the administration website.
+		Then I should be on the administration start page.
+		When I click the button "Anmelden" in the administration.
+		And I select for "Standort" the value "KfZ Zulassungsstelle (KVR-II/4111) Versicherung".
+		And I enter in the field "Platz-Nr. oder Tresen" the text "12".
+		And I click the button "Auswahl bestätigen" in the administration.
+		Then the workstation page is displayed.
+		When I select the service "Probleme bei Kfz-Versicherung oder Kfz-Steuer" under create appointment in the administration.
+		And I increase the count of the selected service "Probleme bei Kfz-Versicherung oder Kfz-Steuer" by 2.
+		Then the count of the selected service "Probleme bei Kfz-Versicherung oder Kfz-Steuer" is 3.
+		When I click the button "Liste leeren" under create appointment in the administration.
+		Then the service "Probleme bei Kfz-Versicherung oder Kfz-Steuer" is not in the selected list.
+		When I select the service "Probleme bei Kfz-Versicherung oder Kfz-Steuer" under create appointment in the administration.
+		Then the count of the selected service "Probleme bei Kfz-Versicherung oder Kfz-Steuer" is 1.

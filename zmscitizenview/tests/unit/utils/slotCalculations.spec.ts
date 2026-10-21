@@ -20,11 +20,7 @@ describe("slotCalculations", () => {
     });
 
     it("returns max slots from multiple providers", () => {
-      const providers = [
-        { slots: 2 },
-        { slots: 5 },
-        { slots: 3 },
-      ] as any[];
+      const providers = [{ slots: 2 }, { slots: 5 }, { slots: 3 }] as any[];
       expect(getMaxSlotOfProvider(providers)).toBe(5);
     });
 
@@ -34,10 +30,7 @@ describe("slotCalculations", () => {
     });
 
     it("ignores providers with 0 slots", () => {
-      const providers = [
-        { slots: 0 },
-        { slots: 3 },
-      ] as any[];
+      const providers = [{ slots: 0 }, { slots: 3 }] as any[];
       expect(getMaxSlotOfProvider(providers)).toBe(3);
     });
   });
@@ -57,10 +50,7 @@ describe("slotCalculations", () => {
     });
 
     it("ignores providers with no slotsPerAppointment", () => {
-      const providers = [
-        { id: "1" },
-        { slotsPerAppointment: "5" },
-      ] as any[];
+      const providers = [{ id: "1" }, { slotsPerAppointment: "5" }] as any[];
       expect(getMinSlotsPerAppointmentOfProvider(providers)).toBe(5);
     });
 
@@ -96,10 +86,7 @@ describe("slotCalculations", () => {
     });
 
     it("returns MAX_SLOTS when no provider has valid slotsPerAppointment", () => {
-      const providers = [
-        { slotsPerAppointment: "0" },
-        { id: "2" },
-      ] as any[];
+      const providers = [{ slotsPerAppointment: "0" }, { id: "2" }] as any[];
       expect(getEffectiveMinSlotsPerAppointment(providers)).toBe(25);
     });
   });
@@ -238,12 +225,34 @@ describe("slotCalculations", () => {
       expect(result.totalSlots).toBe(9);
     });
 
-    it("ensures minimum count of 1", () => {
+    it("allows count of 0 when even quantity 1 exceeds the slot cap", () => {
       const providers = [{ slots: 5 }] as any[];
       // requested: 3, subSlots: 8, limit: 10
-      // available = 10-8 = 2, max = floor(2/5) = 0, but min is 1
+      // available = 10-8 = 2, max = floor(2/5) = 0
       const result = adjustMainServiceCount(3, providers, 8, 10);
+      expect(result.adjustedCount).toBe(0);
+      expect(result.totalSlots).toBe(8);
+    });
+
+    it("allows count of 0 when service slots alone exceed slotsPerAppointment", () => {
+      const providers = [{ slots: 3 }] as any[];
+      const result = adjustMainServiceCount(1, providers, 0, 1);
+      expect(result.adjustedCount).toBe(0);
+      expect(result.totalSlots).toBe(0);
+    });
+
+    it("starts at 1 when requested 0 but at least one unit fits", () => {
+      const providers = [{ slots: 3 }] as any[];
+      const result = adjustMainServiceCount(0, providers, 0, 3);
       expect(result.adjustedCount).toBe(1);
+      expect(result.totalSlots).toBe(3);
+    });
+
+    it("keeps minimum 1 when clamping a high request that still fits once", () => {
+      const providers = [{ slots: 3 }] as any[];
+      const result = adjustMainServiceCount(5, providers, 0, 3);
+      expect(result.adjustedCount).toBe(1);
+      expect(result.totalSlots).toBe(3);
     });
 
     it("accounts for subservice slots", () => {

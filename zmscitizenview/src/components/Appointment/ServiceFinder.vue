@@ -56,7 +56,8 @@
         :id="`service-${service?.id}`"
         :link="serviceInfoLink"
         :max="maxValueOfService"
-        :min="1"
+        :min="minValueOfService"
+        :disabled="isServiceCounterDisabled"
       />
       <div
         v-if="variantServices.length > 1"
@@ -71,8 +72,12 @@
             :key="variant.variantId ?? ''"
             :id="'variant-' + variant.variantId"
             :value="variant.variantId?.toString() ?? ''"
-            :label="t(`appointmentTypes.${variant.variantId}`)"
-            :hint="getVariantHint(variant.variantId ?? 0, t)"
+            :label="
+              getVariant(variant.variantId, variant.variantOverwrite)?.name
+            "
+            :hint="
+              getVariant(variant.variantId, variant.variantOverwrite)?.hint
+            "
           />
         </muc-radio-button-group>
       </div>
@@ -217,7 +222,6 @@ import { handleApiResponseForDownTime } from "@/utils/apiStatusService";
 import { calculateEstimatedDuration } from "@/utils/calculateEstimatedDuration";
 import {
   getServiceBaseURL,
-  getVariantHint,
   OFTEN_SEARCHED_SERVICES,
   shouldAddImplicitPresenceVariant,
   VARIANT_ID_PRESENCE,
@@ -237,6 +241,7 @@ import {
   getMaxSlotOfProvider,
 } from "@/utils/slotCalculations";
 import { trackAppointmentEvent } from "@/utils/trackAppointmentEvent";
+import { useVariant } from "@/utils/useVariant";
 
 const isCaptchaValid = ref<boolean>(false);
 const servicesRef = ref(null);
@@ -249,6 +254,8 @@ const props = defineProps<{
   exclusiveLocation: string | undefined;
   t: (key: string) => string;
 }>();
+
+const getVariant = useVariant(props.t);
 
 const emit = defineEmits<{
   (e: "next"): void;
@@ -403,8 +410,10 @@ watch(countOfService, (newCountOfService) => {
 });
 
 const setServiceData = (selectedService: ServiceImpl) => {
+  // Keep every office that offers the service. Jump-in only preselects Ort;
+  // narrowing providers here collapsed shared-booking peers into a single tile.
   service.value!.providers = getProviders(selectedService.id, null);
-  service.value!.count = Math.max(1, countOfService.value || 1);
+  service.value!.count = countOfService.value > 0 ? countOfService.value : 1;
 
   minSlotsPerAppointment.value = getEffectiveMinSlotsPerAppointment(
     service.value!.providers
@@ -455,56 +464,47 @@ const setServiceData = (selectedService: ServiceImpl) => {
       );
   }
 
-  // Calculate currentSlots including main service and all subservices
+  // Clamp main count: 1+ when it fits, 0 only when quantity 1 exceeds the cap.
+  const subServiceSlots = calculateSubserviceSlots(service.value!.subServices);
+  const { adjustedCount } = adjustMainServiceCount(
+    service.value!.count || 1,
+    service.value!.providers,
+    subServiceSlots,
+    minSlotsPerAppointment.value
+  );
+  service.value!.count = adjustedCount;
+  countOfService.value = adjustedCount;
+
+  let remainingSlots =
+    minSlotsPerAppointment.value > 0
+      ? minSlotsPerAppointment.value -
+        getMaxSlotOfProvider(service.value!.providers) * adjustedCount
+      : Number.POSITIVE_INFINITY;
+
+  if (service.value!.subServices) {
+    if (remainingSlots <= 0 || adjustedCount === 0) {
+      service.value!.subServices.forEach((subservice) => {
+        subservice.count = 0;
+      });
+    } else {
+      service.value!.subServices.forEach((subservice) => {
+        const slotsPerUnit = getMaxSlotOfProvider(subservice.providers);
+        if (remainingSlots >= slotsPerUnit && slotsPerUnit > 0) {
+          const maxSubCount = Math.floor(remainingSlots / slotsPerUnit);
+          subservice.count = Math.min(subservice.count, maxSubCount);
+          remainingSlots -= slotsPerUnit * subservice.count;
+        } else {
+          subservice.count = 0;
+        }
+      });
+    }
+  }
+
   currentSlots.value = calculateTotalSlots(
     service.value!.providers,
     service.value!.count || 0,
     service.value!.subServices
   );
-
-  // Validate and adjust counts if they exceed minSlotsPerAppointment
-  if (
-    currentSlots.value > minSlotsPerAppointment.value &&
-    minSlotsPerAppointment.value > 0
-  ) {
-    // Reduce counts to fit within the limit
-    let remainingSlots = minSlotsPerAppointment.value;
-
-    // First, ensure main service has at least 1
-    const mainServiceSlots = getMaxSlotOfProvider(service.value!.providers);
-    if (remainingSlots >= mainServiceSlots) {
-      const maxMainCount = Math.floor(remainingSlots / mainServiceSlots);
-      service.value!.count = Math.min(service.value!.count || 1, maxMainCount);
-      countOfService.value = service.value!.count;
-      remainingSlots -= mainServiceSlots * service.value!.count;
-    }
-
-    // Then adjust subservices
-    if (service.value!.subServices && remainingSlots > 0) {
-      service.value!.subServices.forEach((subservice) => {
-        const subServiceSlots = getMaxSlotOfProvider(subservice.providers);
-        if (remainingSlots >= subServiceSlots) {
-          const maxSubCount = Math.floor(remainingSlots / subServiceSlots);
-          subservice.count = Math.min(subservice.count, maxSubCount);
-          remainingSlots -= subServiceSlots * subservice.count;
-        } else {
-          subservice.count = 0;
-        }
-      });
-    } else if (service.value!.subServices) {
-      // No remaining slots, set all subservices to 0
-      service.value!.subServices.forEach((subservice) => {
-        subservice.count = 0;
-      });
-    }
-
-    // Recalculate currentSlots after adjustments
-    currentSlots.value = calculateTotalSlots(
-      service.value!.providers,
-      service.value!.count || 0,
-      service.value!.subServices
-    );
-  }
 };
 
 const getProviders = (serviceId: string, providers: string[] | null) => {
@@ -573,7 +573,17 @@ const changeAppointmentCountOfSubservice = (id: string, count: number) => {
       minSlotsPerAppointment.value
     );
 
+    // ZMSKVR-1088: keep list order; record click order for reserve only.
+    const wasUnselected = (subservice.count || 0) <= 0;
     subservice.count = adjustedCount;
+    const order = (service.value!.subServiceSelectionOrder ??= []);
+    if (wasUnselected && adjustedCount > 0 && !order.includes(String(id))) {
+      order.push(String(id));
+    } else if (adjustedCount <= 0) {
+      service.value!.subServiceSelectionOrder = order.filter(
+        (selectedId) => selectedId !== String(id)
+      );
+    }
     currentSlots.value = totalSlots;
   }
 };
@@ -595,11 +605,8 @@ const showEstimatedDuration = computed(() => {
 });
 
 /**
- * Calculates the maximum count of the selected service, considering both:
- * - maxQuantity: the service's own limit on how many can be selected
- * - minSlotsPerAppointment: the minimum slot limit across all providers (main + sub)
- *
- * The effective max is the minimum of these two constraints.
+ * Maximum count for the selected service from maxQuantity and slotsPerAppointment.
+ * 0 when the service does not fit even once (counter stays at 0, Weiter disabled).
  */
 const maxValueOfService = computed(() => {
   if (!service.value) return 0;
@@ -607,17 +614,21 @@ const maxValueOfService = computed(() => {
   const mainServiceSlots = getMaxSlotOfProvider(service.value.providers || []);
   const subServiceSlots = calculateSubserviceSlots(service.value.subServices);
 
-  // Main service must have at least 1, so use Math.max(1, ...)
-  return Math.max(
-    1,
-    calculateMaxCountBySlots(
-      mainServiceSlots,
-      service.value.maxQuantity,
-      minSlotsPerAppointment.value,
-      subServiceSlots
-    )
+  return calculateMaxCountBySlots(
+    mainServiceSlots,
+    service.value.maxQuantity,
+    minSlotsPerAppointment.value,
+    subServiceSlots
   );
 });
+
+/** Counter min is 1 when a booking is possible; 0 when slotsPerAppointment blocks qty 1. */
+const minValueOfService = computed(() => (maxValueOfService.value > 0 ? 1 : 0));
+
+/** MucCounter treats max=0 as unlimited; disable both buttons when nothing fits. */
+const isServiceCounterDisabled = computed(
+  () => maxValueOfService.value === 0 && (countOfService.value ?? 0) === 0
+);
 
 const setOftenSearchedService = (serviceId: string) => {
   const foundService = services.value.find(
@@ -686,18 +697,40 @@ onMounted(() => {
     countOfService.value = service.value.count
       ? service.value.count
       : countOfService.value;
-    currentSlots.value = calculateTotalSlots(
-      service.value.providers || [],
-      service.value.count || 0,
-      service.value.subServices
-    );
 
-    // Calculate minSlotsPerAppointment if providers are available
-    if (service.value.providers && service.value.providers.length > 0) {
+    // Stepper back destroys ServiceFinder (v-if on Leistung). Remount starts with
+    // empty offices/relations until fetch returns, while minSlots defaults to 25.
+    // Keep the spa already on selectedService.providers so quantity caps stay
+    // correct for that paint (ZMSKVR-1083 / ZMSKVR-1226).
+    if (service.value.providers?.length) {
       minSlotsPerAppointment.value = getEffectiveMinSlotsPerAppointment(
         service.value.providers
       );
+      currentSlots.value = calculateTotalSlots(
+        service.value.providers,
+        service.value.count || 0,
+        service.value.subServices
+      );
     }
+
+    const refreshCombinationFromCatalog = () => {
+      if (!service.value) {
+        return;
+      }
+      // Refresh providers/slots from local catalog (peers already on selectedService).
+      setServiceData(service.value);
+      currentSlots.value = calculateTotalSlots(
+        service.value.providers || [],
+        service.value.count || 0,
+        service.value.subServices
+      );
+      if (service.value.providers && service.value.providers.length > 0) {
+        minSlotsPerAppointment.value = getEffectiveMinSlotsPerAppointment(
+          service.value.providers
+        );
+      }
+    };
+
     if (services.value.length === 0) {
       fetchServicesAndProviders(
         props.preselectedServiceId ?? undefined,
@@ -715,14 +748,10 @@ onMounted(() => {
         services.value = (data as any).services;
         relations.value = (data as any).relations;
         offices.value = (data as any).offices;
-
-        // Recalculate minSlotsPerAppointment when navigating back
-        if (service.value) {
-          minSlotsPerAppointment.value = getEffectiveMinSlotsPerAppointment(
-            service.value.providers || []
-          );
-        }
+        refreshCombinationFromCatalog();
       });
+    } else {
+      refreshCombinationFromCatalog();
     }
   } else {
     fetchServicesAndProviders(
@@ -899,7 +928,16 @@ const needsVariantSelection = computed(
 );
 const isNextDisabled = computed(() => {
   const captchaBlocks = showCaptcha.value && !isCaptchaValid.value;
-  return captchaBlocks || needsVariantSelection.value;
+  const noBookableQuantity = (countOfService.value ?? 0) < 1;
+  const overSlotCap =
+    minSlotsPerAppointment.value > 0 &&
+    currentSlots.value > minSlotsPerAppointment.value;
+  return (
+    captchaBlocks ||
+    needsVariantSelection.value ||
+    noBookableQuantity ||
+    overSlotCap
+  );
 });
 </script>
 

@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.ElementClickInterceptedException;
+import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.RemoteWebDriver;
@@ -99,6 +101,55 @@ public class ProcessingStationSection extends CounterProcessingStationPage {
                 + "'Ja, Kunde erschienen' became visible after clicking 'Aufruf nächster Kunde'.");
     }
 
+    /**
+     * Precall Kundeninformationen board (only via Aufruf nächster Kunde when the process has Anmerkung).
+     */
+    public void assertPrecallConfirmationVisible() {
+        ScenarioLogManager.getLogger().info("Checking precall Kundeninformationen confirmation...");
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        wait.withMessage("Precall Kundeninformationen heading is not visible!");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(
+                "//section[contains(@class,'client-precall')]//h2[contains(.,'Kundeninformationen')]"
+                        + " | //*[contains(@class,'client-precall')]//*[contains(.,'Kundeninformationen')]"
+        )));
+        wait.withMessage("Precall question 'Möchten Sie den Kunden aufrufen?' is not visible!");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(
+                "//*[contains(.,'Möchten Sie den Kunden aufrufen?')]"
+        )));
+        wait.withMessage("Precall button 'Ja, Kunden jetzt aufrufen' is not visible!");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(
+                "//button[text()='Ja, Kunden jetzt aufrufen' and contains(@class, 'client-precall_button-success')]"
+        )));
+    }
+
+    /**
+     * After another clerk already called the process, confirming precall must not assign it here.
+     * Wait for a settled failure signal (has_called_process, ProcessNotCallable, or client-next
+     * after cancel fallback). Do not treat a blank mid-load panel as success.
+     */
+    public void assertPrecallConfirmDidNotTakeCustomer() {
+        ScenarioLogManager.getLogger().info(
+                "Checking that precall confirm did not take a customer already held elsewhere...");
+        By alreadyCalled = By.xpath(
+                "//section[contains(@class,'message--error')]//*[contains(text(),"
+                        + "'Bitte schließen Sie den aktuellen Vorgang zuerst ab.')]");
+        By notCallable = By.xpath(
+                "//*[contains(@class,'exceptionData-headline') and contains(.,"
+                        + "'Termin kann nicht aufgerufen oder bearbeitet werden')]");
+        // client-next replaces client-precall after cancel fallback; not the queue-table call button.
+        By settledClientNext = By.cssSelector("section.client-next, section.board.client-next");
+        By calledSuccess = By.xpath("//button[contains(@class,'client-called_button-success')]");
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        wait.withMessage(
+                "Expected has_called_process, ProcessNotCallable, or settled client-next after precall confirm!");
+        wait.until(driver -> !driver.findElements(alreadyCalled).isEmpty()
+                || !driver.findElements(notCallable).isEmpty()
+                || !driver.findElements(settledClientNext).isEmpty());
+        Assert.assertTrue(
+                DRIVER.findElements(calledSuccess).isEmpty(),
+                "UI must not show 'Ja, Kunde erschienen' after losing the precall race.");
+    }
+
     public void callCustomerWithSpecificNote(String note) {
         ScenarioLogManager.getLogger().info("Trying to call customer with note \"" + note + "\"...");
         final String CUSTOMER_NR_USING_NOTE_XPATH = "//tr[td[contains(., '" + note + "')]]/td[@class='callnextclient']/a";
@@ -117,8 +168,72 @@ public class ProcessingStationSection extends CounterProcessingStationPage {
 
     public void callCustomerFromQueueWithName(String name) {
         ScenarioLogManager.getLogger().info("Trying to call customer from queue with name \"" + name + "\"...");
-        WebElement link = getTableCellElement("table-queued-appointments", LocatorType.ID, "Name (Aufrufe)", name);
-        link.findElement(By.cssSelector("a")).click();
+        clickQueueCallLinkWhenReady(queueCallLinkByName(name));
+    }
+
+    /** After the no-show lockout ends, the bold lockout text is replaced by the call link. */
+    public void waitUntilCustomerCallLinkVisible(String name) {
+        long[] lastReload = {0L};
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        wait.ignoring(StaleElementReferenceException.class, ElementClickInterceptedException.class);
+        wait.withMessage("Call link for \"" + name + "\" did not return after ending the no-show lockout.");
+        wait.until(driver -> {
+            if (driver.findElements(queueCallLinkByName(name)).stream().anyMatch(WebElement::isDisplayed)) {
+                return true;
+            }
+            long now = System.currentTimeMillis();
+            if (now - lastReload[0] < 2000L) {
+                return false;
+            }
+            lastReload[0] = now;
+            for (WebElement reload : driver.findElements(By.cssSelector(".queue-table a.reload"))) {
+                try {
+                    if (!reload.isDisplayed()) {
+                        continue;
+                    }
+                    scrollToCenterByVisibleElement(reload);
+                    reload.click();
+                    break;
+                } catch (StaleElementReferenceException | ElementClickInterceptedException ignored) {
+                    // Queue reload is still painting.
+                }
+            }
+            return false;
+        });
+    }
+
+    private static By queueCallLinkByName(String name) {
+        // Repeat calls keep the count in a sibling <small>; the <a> text stays the family name.
+        // During the five-minute no-show lockout there is no <a> — only bold text.
+        return By.xpath(
+                "//table[@id='table-queued-appointments']//td[contains(@class,'callnextclient')]"
+                        + "//a[@title='Diesen Bürger aufrufen' and normalize-space(.)='" + name + "']");
+    }
+
+    /**
+     * Queue / cluster refresh can cover the call link with {@code div.loader}. Static loader
+     * nodes also sit in the page, so we retry on intercept instead of requiring every loader gone.
+     */
+    private void clickQueueCallLinkWhenReady(By callLink) {
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        wait.ignoring(StaleElementReferenceException.class, ElementClickInterceptedException.class);
+        wait.withMessage("Call link not clickable (lockout still on, or loader covering the row): " + callLink);
+        wait.until(driver -> {
+            List<WebElement> links = driver.findElements(callLink);
+            for (WebElement link : links) {
+                try {
+                    if (!link.isDisplayed()) {
+                        continue;
+                    }
+                    scrollToCenterByVisibleElement(link);
+                    link.click();
+                    return true;
+                } catch (StaleElementReferenceException | ElementClickInterceptedException ignored) {
+                    // Cluster / queue reload or loader covered the row — try again.
+                }
+            }
+            return false;
+        });
     }
 
     public void callCustomerFromParkingTableWithNumber(String number) {
@@ -486,6 +601,252 @@ public class ProcessingStationSection extends CounterProcessingStationPage {
                 "//section[contains(@class,'message--error')]//*[contains(text(),"
                         + "'Bitte schließen Sie den aktuellen Vorgang zuerst ab.')]"
         )));
+    }
+
+    /**
+     * Queue pick after another workstation already called the process
+     * ({@code processnotcallable.twig} via GET /process/{id}/).
+     */
+    public void assertProcessNotCallableByOtherWorkstationVisible() {
+        ScenarioLogManager.getLogger().info(
+            "Checking ProcessNotCallable error (already handled by another workstation)...");
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        wait.withMessage("ProcessNotCallable headline is not visible!");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(
+                "//*[contains(@class,'exceptionData-headline') and contains(.,"
+                        + "'Termin kann nicht aufgerufen oder bearbeitet werden')]"
+        )));
+        wait.withMessage("ProcessNotCallable body about another workstation is not visible!");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(
+                "//*[contains(.,'bereits von einem anderen Arbeitsplatz bearbeitet wird')]"
+        )));
+        wait.withMessage("ProcessNotCallable status 'aufgerufen' is not visible!");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(
+                "//*[contains(.,'Aktueller Status') and contains(.,'aufgerufen')]"
+        )));
+    }
+
+    public void openWorkstationCallForProcessId(String processId) {
+        ScenarioLogManager.getLogger().info("Opening workstation call for process {}...", processId);
+        Assert.assertTrue(processId != null && processId.matches("\\d+"),
+                "Expected numeric process id, got: " + processId);
+        By callLink = By.cssSelector("a[data-process='" + processId + "']");
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(Math.min(DEFAULT_EXPLICIT_WAIT_TIME, 15)));
+        wait.ignoring(StaleElementReferenceException.class, ElementClickInterceptedException.class);
+        try {
+            wait.until(driver -> {
+                List<WebElement> links = driver.findElements(callLink);
+                if (links.isEmpty() || !links.get(0).isDisplayed()) {
+                    return false;
+                }
+                scrollToCenterByVisibleElement(links.get(0));
+                links.get(0).click();
+                return true;
+            });
+            return;
+        } catch (TimeoutException | ElementClickInterceptedException ignored) {
+            // Fall through to direct navigation when the queue row never becomes clickable.
+        }
+        openWorkstationUrlWithProcessParam("calledprocess", processId);
+    }
+
+    /** ZMSKVR-405 / ZMSKVR-375: open workstation with ?calledprocess= or ?selectedprocess=. */
+    public void openWorkstationUrlWithProcessParam(String paramName, String processId) {
+        Assert.assertTrue(
+                "calledprocess".equals(paramName) || "selectedprocess".equals(paramName),
+                "Expected calledprocess or selectedprocess, got: " + paramName);
+        Assert.assertTrue(processId != null && processId.matches("\\d+"),
+                "Expected numeric process id, got: " + processId);
+        String current = DRIVER.getCurrentUrl();
+        String base = current.replaceAll("[?#].*$", "");
+        if (!base.endsWith("/")) {
+            base = base + "/";
+        }
+        String url = base + "?" + paramName + "=" + processId;
+        ScenarioLogManager.getLogger().info("Navigating to workstation URL {}", url);
+        DRIVER.navigate().to(url);
+    }
+
+    /**
+     * ZMSKVR-375: open admin ProcessDelete ({@code /process/{id}/delete/}) which GETs the process
+     * then runs {@code validateProcessScopeAccess} — wrong Standort → MatchScopeFailed.
+     */
+    public void openProcessDeleteUrlForProcessId(String processId) {
+        Assert.assertTrue(processId != null && processId.matches("\\d+"),
+                "Expected numeric process id, got: " + processId);
+        String current = DRIVER.getCurrentUrl().replaceAll("[?#].*$", "");
+        String adminRoot = current.replaceAll("(/workstation/).*$", "/");
+        if (!adminRoot.contains("/admin/")) {
+            adminRoot = current.replaceAll("(.*?/admin/).*$", "$1");
+        }
+        if (!adminRoot.endsWith("/")) {
+            adminRoot = adminRoot + "/";
+        }
+        String url = adminRoot + "process/" + processId + "/delete/?initiator=admin";
+        ScenarioLogManager.getLogger().info("Navigating to ProcessDelete URL {}", url);
+        DRIVER.navigate().to(url);
+    }
+
+    /** ZMSKVR-405: ProcessNotFound exception board. */
+    public void assertProcessNotFoundVisible() {
+        ScenarioLogManager.getLogger().info("Checking ProcessNotFound error...");
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        wait.withMessage("ProcessNotFound headline is not visible!");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(
+                "//*[contains(@class,'exceptionData-headline') and contains(.,"
+                        + "'Die Vorgangsnummer existiert nicht')]"
+        )));
+        wait.withMessage("ProcessNotFound Abbrechen button is not visible!");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(
+                "//section[contains(@class,'exception')]//button[normalize-space()='Abbrechen']"
+        )));
+    }
+
+    /** ZMSKVR-405 / ZMSKVR-549: ProcessNotCurrentDate for ?calledprocess= on a non-today appointment. */
+    public void assertProcessNotCurrentDateVisible() {
+        ScenarioLogManager.getLogger().info("Checking ProcessNotCurrentDate error...");
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        wait.withMessage("ProcessNotCurrentDate headline is not visible!");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(
+                "//*[contains(@class,'exceptionData-headline') and contains(.,'Termin nicht aufrufbar')]"
+        )));
+        wait.withMessage("ProcessNotCurrentDate body about today's date is not visible!");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(
+                "//*[contains(.,'liegt nicht am heutigen Tag')]"
+        )));
+        wait.withMessage("ProcessNotCurrentDate Bearbeiten button is not visible!");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(
+                "//section[contains(@class,'exception')]//button[normalize-space()='Bearbeiten']"
+        )));
+        wait.withMessage("ProcessNotCurrentDate Abbrechen button is not visible!");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(
+                "//section[contains(@class,'exception')]//button[normalize-space()='Abbrechen']"
+        )));
+    }
+
+    /** ZMSKVR-375: ProcessNotCallable with a specific German status label (e.g. vorbestätigt, reserviert). */
+    public void assertProcessNotCallableWithStatusVisible(String germanStatus) {
+        ScenarioLogManager.getLogger().info(
+                "Checking ProcessNotCallable error with status \"{}\"...", germanStatus);
+        try {
+            waitForProcessNotCallableBoard(germanStatus);
+        } catch (TimeoutException first) {
+            // Firefox after a long Orleansplatz checkout sometimes lands on the plain workstation;
+            // one hard reload of the same ?calledprocess= / ?selectedprocess= URL recovers it.
+            String url = DRIVER.getCurrentUrl();
+            if (url != null && (url.contains("calledprocess=") || url.contains("selectedprocess="))) {
+                ScenarioLogManager.getLogger().warn(
+                        "ProcessNotCallable board missing; reloading workstation URL {}", url);
+                DRIVER.navigate().to(url);
+                waitForProcessNotCallableBoard(germanStatus);
+                return;
+            }
+            throw first;
+        }
+    }
+
+    private void waitForProcessNotCallableBoard(String germanStatus) {
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        wait.withMessage("ProcessNotCallable headline is not visible!");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(
+                "//*[contains(@class,'exceptionData-headline') and contains(.,"
+                        + "'Termin kann nicht aufgerufen oder bearbeitet werden')]"
+        )));
+        wait.withMessage("ProcessNotCallable status \"" + germanStatus + "\" is not visible!");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(
+                "//*[contains(.,'Aktueller Status') and contains(.," + xpathLiteral(germanStatus) + ")]"
+        )));
+        wait.withMessage("ProcessNotCallable Abbrechen button is not visible!");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(
+                "//section[contains(@class,'exception')]//button[normalize-space()='Abbrechen']"
+        )));
+    }
+
+    /** ZMSKVR-375 / ZMSKVR-693: WorkstationProcessMatchScopeFailed. */
+    public void assertWorkstationProcessMatchScopeFailedVisible(String expectedScopeHint) {
+        ScenarioLogManager.getLogger().info(
+                "Checking WorkstationProcessMatchScopeFailed error (scope hint \"{}\")...",
+                expectedScopeHint);
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        wait.withMessage("Scope-mismatch headline is not visible!");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(
+                "//*[contains(@class,'exceptionData-headline') and contains(.,'Zugriff verweigert')]"
+        )));
+        wait.withMessage("Scope-mismatch body is not visible!");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(
+                "//*[contains(.,'gehört nicht zu diesem Standort')]"
+        )));
+        if (expectedScopeHint != null && !expectedScopeHint.isBlank()) {
+            wait.withMessage("Scope-mismatch belonging line is not visible!");
+            wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(
+                    "//*[contains(.,'Der Termin gehört zu:') and contains(.,"
+                            + xpathLiteral(expectedScopeHint) + ")]"
+            )));
+        }
+        wait.withMessage("Scope-mismatch Wechseln button is not visible!");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(
+                "//section[contains(@class,'exception')]//button[normalize-space()='Wechseln']"
+        )));
+        wait.withMessage("Scope-mismatch Abbrechen button is not visible!");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(
+                "//section[contains(@class,'exception')]//button[normalize-space()='Abbrechen']"
+        )));
+    }
+
+    public void clickExceptionButton(String buttonLabel) {
+        ScenarioLogManager.getLogger().info("Clicking exception board button \"{}\"...", buttonLabel);
+        By button = By.xpath(
+                "//section[contains(@class,'exception')]//button[normalize-space()="
+                        + xpathLiteral(buttonLabel) + "]");
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        WebElement el = wait.until(ExpectedConditions.elementToBeClickable(button));
+        scrollToCenterByVisibleElement(el);
+        el.click();
+    }
+
+    /** XPath 1.0 string literal safe for values that may contain {@code '} or {@code "}. */
+    private static String xpathLiteral(String value) {
+        if (value == null) {
+            return "''";
+        }
+        if (!value.contains("'")) {
+            return "'" + value + "'";
+        }
+        if (!value.contains("\"")) {
+            return "\"" + value + "\"";
+        }
+        StringBuilder sb = new StringBuilder("concat(");
+        boolean first = true;
+        for (String part : value.split("'", -1)) {
+            if (!first) {
+                sb.append(", \"'\", ");
+            }
+            first = false;
+            sb.append('\'').append(part).append('\'');
+        }
+        sb.append(')');
+        return sb.toString();
+    }
+
+    public void assertNoExceptionBoardVisible() {
+        ScenarioLogManager.getLogger().info("Checking that no exception board is visible...");
+        Assert.assertTrue(
+                DRIVER.findElements(By.cssSelector("section.exception, section.board.exception")).isEmpty()
+                        || DRIVER.findElements(By.cssSelector(".exceptionData-headline")).stream()
+                                .noneMatch(WebElement::isDisplayed),
+                "Exception board should be gone after Abbrechen.");
+    }
+
+    /** After Wechseln on scope mismatch: Standort selection form. */
+    public void assertWorkstationSelectPageVisible() {
+        ScenarioLogManager.getLogger().info("Checking workstation Standort selection page...");
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        wait.withMessage("Standort selection (scope) is not visible after Wechseln!");
+        wait.until(ExpectedConditions.or(
+                ExpectedConditions.presenceOfElementLocated(By.name("scope")),
+                ExpectedConditions.urlContains("workstation/select"),
+                ExpectedConditions.urlContains("workstationSelect")
+        ));
     }
 
     public void assertCustomerAppearedButtonVisible() {
