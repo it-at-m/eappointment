@@ -25,6 +25,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 
 import ataf.core.helpers.TestDataHelper;
 import ataf.core.logging.ScenarioLogManager;
+import zms.ataf.helpers.AccountCheckout;
 import config.TestConfig;
 import io.cucumber.java.After;
 import io.cucumber.java.Before;
@@ -431,6 +432,17 @@ public class CitizenApiSteps {
         return raw;
     }
 
+    /**
+     * Office 10286848 is scope 130. The day-lock scenario closes that scope's only bookable day
+     * and holds {@code scope:130:day-closure} until it reopens the day. Readers must take the
+     * same lock first or they observe the closed day.
+     */
+    private static void holdForstenriederDayClosure(List<Integer> officeIds) {
+        if (officeIds.contains(10286848)) {
+            AccountCheckout.checkout("scope:130:day-closure");
+        }
+    }
+
     private static String envOrDefault(String name, String fallback) {
         String value = System.getenv(name);
         if (value == null || value.isBlank()) {
@@ -446,6 +458,7 @@ public class CitizenApiSteps {
 
     @When("I request available days for office {int} and service {int} with service count {int}")
     public void iRequestAvailableDaysForOfficeAndService(int officeId, int serviceId, int serviceCount) {
+        holdForstenriederDayClosure(List.of(officeId));
         lastOfficeId = officeId;
         lastServiceId = serviceId;
         lastServiceCount = serviceCount;
@@ -463,6 +476,7 @@ public class CitizenApiSteps {
             String officeIdsCsv, int serviceId, int serviceCount) {
         List<Integer> officeIds = parseOfficeIdsCsv(officeIdsCsv);
         Assertions.assertThat(officeIds).as("officeIds csv").isNotEmpty();
+        holdForstenriederDayClosure(officeIds);
         lastOfficeId = officeIds.get(0);
         lastServiceId = serviceId;
         lastServiceCount = serviceCount;
@@ -480,6 +494,7 @@ public class CitizenApiSteps {
         List<Integer> serviceIds = parseOfficeIdsCsv(serviceIdsCsv);
         Assertions.assertThat(officeIds).as("officeIds csv").isNotEmpty();
         Assertions.assertThat(serviceIds).as("serviceIds csv").isNotEmpty();
+        holdForstenriederDayClosure(officeIds);
         List<Integer> serviceCounts = serviceIds.stream().map(id -> 1).collect(Collectors.toList());
         lastOfficeId = officeIds.get(0);
         lastServiceId = serviceIds.get(0);
@@ -494,6 +509,7 @@ public class CitizenApiSteps {
         List<Integer> serviceCounts = parseOfficeIdsCsv(serviceCountsCsv);
         Assertions.assertThat(serviceIds).as("serviceIds csv").isNotEmpty();
         Assertions.assertThat(serviceCounts).as("serviceCounts csv").hasSameSizeAs(serviceIds);
+        holdForstenriederDayClosure(List.of(officeId));
         lastOfficeId = officeId;
         lastServiceId = serviceIds.get(0);
         lastServiceCount = serviceCounts.get(0);

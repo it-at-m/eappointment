@@ -824,14 +824,13 @@ public final class MyAppointmentsStep {
             if (myAppointmentsFinishedLoading()) {
                 return;
             }
-            if (attempt == 5) {
-                break;
+            if (attempt < 5) {
+                ScenarioLogManager.getLogger()
+                        .warn(
+                                "zmscitizenview: Meine Termine has no Neuer Termin (attempt {}/5)",
+                                attempt);
+                reloadMyAppointments();
             }
-            ScenarioLogManager.getLogger()
-                    .warn(
-                            "zmscitizenview: Meine Termine has no Neuer Termin (attempt {}/5)",
-                            attempt);
-            reloadMyAppointments();
         }
         Assert.assertTrue(
                 myAppointmentsFinishedLoading(),

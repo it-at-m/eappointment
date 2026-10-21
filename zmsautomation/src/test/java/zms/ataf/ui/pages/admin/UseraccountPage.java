@@ -152,13 +152,27 @@ public class UseraccountPage extends BasePage {
         if (value == null || value.isBlank()) {
             return;
         }
-        new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME)).until(driver -> {
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        wait.ignoring(StaleElementReferenceException.class);
+        final long[] lastNudge = {0L};
+        wait.until(driver -> {
             List<WebElement> fields = driver.findElements(By.cssSelector("input[name='changePassword[]']"));
-            return fields.size() == 2
-                    && fields.stream().allMatch(input -> {
-                        String v = input.getAttribute("value");
-                        return v != null && v.length() >= 6;
-                    });
+            if (fields.size() == 2
+                    && fields.stream().allMatch(input -> passwordFieldValue(input).length() >= 6)) {
+                return true;
+            }
+            // The add form fills these on jQuery ready. Under parallel load that handler can
+            // miss the first paint; a change event runs the same fill again.
+            long now = System.currentTimeMillis();
+            if (now - lastNudge[0] > 2000L) {
+                lastNudge[0] = now;
+                ScenarioLogManager.getLogger()
+                        .warn("Keycloak password fields are still empty; re-firing the provider change.");
+                ((JavascriptExecutor) driver).executeScript(
+                        "var sel=document.getElementById('useOidcProvider');"
+                                + "if(sel){sel.dispatchEvent(new Event('change',{bubbles:true}));}");
+            }
+            return false;
         });
     }
 
@@ -433,10 +447,15 @@ public class UseraccountPage extends BasePage {
         if (!match.find()) {
             return false;
         }
-        int red = Integer.parseInt(match.group(1));
-        int green = Integer.parseInt(match.group(2));
-        int blue = Integer.parseInt(match.group(3));
-        return red >= 180 && green <= 90 && blue <= 90 && red > green + 80 && red > blue + 80;
+        try {
+            int red = Integer.parseInt(match.group(1));
+            int green = Integer.parseInt(match.group(2));
+            int blue = Integer.parseInt(match.group(3));
+            // red >= 180 and green/blue <= 90 already imply red exceeds each by more than 80.
+            return red >= 180 && green <= 90 && blue <= 90;
+        } catch (NumberFormatException ignored) {
+            return false;
+        }
     }
 
     private void submitNewUserForm() {

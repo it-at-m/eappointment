@@ -14,7 +14,7 @@ Feature: Calendar and list views for available times
   # Opening another date closes the one that was open.
   # Führungszeugnis at Forstenrieder Allee Team 1 is two slots at 10:00, so the calendar and the list show Vormittag.
   # Früher and Später stay while more than one location is offered, including that morning.
-  # The active toggle label is #005A9F and the inactive label is #617586.
+  # MucToggle marks the current side with m-toggle-switch__label--active. The component ships no label colors.
   # The heading is Datum und Uhrzeit. On desktop the toggle sits beside it; on a phone it sits under it.
   # A selected time is the primary button: white text on #005A9F.
 

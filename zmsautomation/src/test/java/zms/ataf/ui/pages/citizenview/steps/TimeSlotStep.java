@@ -210,6 +210,12 @@ public final class TimeSlotStep {
                             "zmscitizenview: no timeslot for office {} yet (attempt {}); try Später",
                             officeId,
                             attempt);
+            if (deepMucSpinnerVisible()) {
+                if (!finishInFlightCalendarLoad()) {
+                    return;
+                }
+                continue;
+            }
             if (clickCitizenViewLaterOnceIfAvailable()) {
                 CitizenViewWaits.sleepQuiet(1200L);
                 try {
@@ -880,6 +886,12 @@ public final class TimeSlotStep {
                             "zmscitizenview: open hour missing Ruppertstraße (titles={}); try Später / next day ({}/15)",
                             titles,
                             attempt + 1);
+            if (deepMucSpinnerVisible()) {
+                if (!finishInFlightCalendarLoad()) {
+                    break;
+                }
+                continue;
+            }
             if (clickCitizenViewLaterOnceIfAvailable()) {
                 waitUntilAppointmentSlotsReadyQuiet(Math.min(30, slotBookingWaitTimeoutSeconds()));
                 continue;
@@ -1074,11 +1086,21 @@ public final class TimeSlotStep {
         Assert.assertFalse(
                 shadow.deepElementExists("#timeslot-grid-provider-" + slotState.hiddenOfficeId),
                 "Cleared office " + slotState.hiddenOfficeId + " should leave the available times");
-        JsonNode titles = new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(defaultWaitSeconds))
-                .until(d -> {
-                    JsonNode node = locationTitles().path("titles");
-                    return node.size() > 0 ? node : null;
-                });
+        // Unchecking an office refetches the multi-office day. Headings stay hidden while that
+        // request is in flight, and under shard load it outlasts the normal 60s wait.
+        if (!finishInFlightCalendarLoad()) {
+            Assert.fail(
+                    "Cleared office "
+                            + slotState.hiddenOfficeId
+                            + " left the calendar loading, so the remaining headings never returned");
+        }
+        JsonNode titles =
+                new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(slotBookingWaitTimeoutSeconds()))
+                        .until(
+                                d -> {
+                                    JsonNode node = locationTitles().path("titles");
+                                    return node.size() > 0 ? node : null;
+                                });
         for (JsonNode title : titles) {
             Assert.assertNotEquals(
                     title.path("id").asText(),
@@ -1380,6 +1402,12 @@ public final class TimeSlotStep {
                             "zmscitizenview: still missing timeslots for providers {} (attempt {}); try Später",
                             remaining,
                             attempt);
+            if (deepMucSpinnerVisible()) {
+                if (!finishInFlightCalendarLoad()) {
+                    break;
+                }
+                continue;
+            }
             if (clickCitizenViewLaterOnceIfAvailable()) {
                 CitizenViewWaits.sleepQuiet(1200L);
                 try {
@@ -1894,6 +1922,11 @@ public final class TimeSlotStep {
             int waitSec = day == 0 ? timeout : Math.min(45, timeout);
             if (waitUntilAppointmentSlotsReadyQuiet(waitSec)) {
                 break;
+            }
+            if (deepMucSpinnerVisible()) {
+                if (!finishInFlightCalendarLoad() || deepTimeslotClickablePresent()) {
+                    break;
+                }
             }
             if (deepTimeslotClickablePresent() || !openNextCalendarDayAndWaitForSlots()) {
                 break;
@@ -2817,15 +2850,14 @@ public final class TimeSlotStep {
     }
 
     public JsonNode waitForToggleLabels(String activeLabel) {
-        // Color transition is 200ms, but under shard load Firefox/Chrome can keep the previous
-        // label paint while the list accordion mounts or the viewport settles after resize.
+        // The list accordion and a viewport resize can remount the toggle before the active class settles.
         return new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(slotBookingWaitTimeoutSeconds()))
                 .pollingEvery(Duration.ofMillis(250))
                 .until(d -> {
                     JsonNode node = json.citizenJson(
                             "(function(){var labels=cssAll('.m-toggle-switch__label');var out=[];"
-                                    + "for(var i=0;i<labels.length;i++){var st=getComputedStyle(labels[i]);"
-                                    + "out.push({text:textOf(labels[i]),color:st.color,disabled:labels[i].classList.contains('disabled')});}"
+                                    + "for(var i=0;i<labels.length;i++){"
+                                    + "out.push({text:textOf(labels[i]),active:labels[i].classList.contains('m-toggle-switch__label--active')});}"
                                     + "var heading=byId('viewToggleLabel');var toggle=cssAll('button.m-toggle-switch')[0];"
                                     + "var hr=heading?heading.getBoundingClientRect():null;var tr=toggle?toggle.getBoundingClientRect():null;"
                                     + "return {labels:out,heading:heading?textOf(heading):'',"
@@ -2839,14 +2871,7 @@ public final class TimeSlotStep {
                     }
                     for (JsonNode label : node.path("labels")) {
                         boolean shouldBeActive = activeLabel.equals(label.path("text").asText());
-                        String color = label.path("color").asText();
-                        if (label.path("disabled").asBoolean() == shouldBeActive) {
-                            return null;
-                        }
-                        if (shouldBeActive && !isToggleBlue(color)) {
-                            return null;
-                        }
-                        if (!shouldBeActive && !isToggleGrey(color)) {
+                        if (label.path("active").asBoolean() != shouldBeActive) {
                             return null;
                         }
                     }
@@ -2856,28 +2881,10 @@ public final class TimeSlotStep {
 
     public void assertToggleColor(JsonNode label, String text, boolean active) {
         Assert.assertEquals(label.path("text").asText(), text, "Toggle label: " + label);
-        Assert.assertEquals(label.path("disabled").asBoolean(), !active, text + " active state: " + label);
-        String color = label.path("color").asText();
-        Assert.assertTrue(
-                active ? isToggleBlue(color) : isToggleGrey(color),
-                text + " should be " + (active ? "#005A9F" : "#617586") + " but was " + color);
-    }
-
-    /** Accepts rgb()/rgba() with commas or modern space-separated components. */
-    private static boolean isToggleBlue(String color) {
-        return colorMatchesChannels(color, 0, 90, 159);
-    }
-
-    private static boolean isToggleGrey(String color) {
-        return colorMatchesChannels(color, 97, 117, 134);
-    }
-
-    private static boolean colorMatchesChannels(String color, int r, int g, int b) {
-        if (color == null || color.isBlank()) {
-            return false;
-        }
-        String compact = color.replace(" ", "");
-        return compact.contains(r + "," + g + "," + b) || color.contains(r + " " + g + " " + b);
+        Assert.assertEquals(
+                label.path("active").asBoolean(),
+                active,
+                text + " should " + (active ? "" : "not ") + "carry m-toggle-switch__label--active: " + label);
     }
 
     public JsonNode calendarSnapshot() {
@@ -3026,8 +3033,39 @@ public final class TimeSlotStep {
             return false;
         }
         CitizenViewWaits.sleepQuiet(1200L);
-        waitUntilAppointmentSlotsReadyQuiet(Math.min(45, slotBookingWaitTimeoutSeconds()));
+        // Shard load makes a multi-office day fetch take longer than 45s. Waiting
+        // only 45s and then opening another day drops the response that is about to arrive.
+        waitUntilAppointmentSlotsReadyQuiet(slotBookingWaitTimeoutSeconds());
+        if (deepMucSpinnerVisible()) {
+            ScenarioLogManager.getLogger()
+                    .info(
+                            "zmscitizenview: next calendar day still loading after {}s; not paging further",
+                            slotBookingWaitTimeoutSeconds());
+            return false;
+        }
         return true;
+    }
+
+    /**
+     * A visible MucSpinner is an in-flight available-calendar request, not an empty day.
+     *
+     * @return false when that request is still running after the full slot wait
+     */
+    private boolean finishInFlightCalendarLoad() {
+        if (!deepMucSpinnerVisible()) {
+            return true;
+        }
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: calendar still loading; waiting out the in-flight request");
+        waitUntilAppointmentSlotsReadyQuiet(slotBookingWaitTimeoutSeconds());
+        if (!deepMucSpinnerVisible()) {
+            return true;
+        }
+        ScenarioLogManager.getLogger()
+                .info(
+                        "zmscitizenview: calendar request still in flight after {}s; not opening another day",
+                        slotBookingWaitTimeoutSeconds());
+        return false;
     }
 
     /**
@@ -3261,6 +3299,12 @@ public final class TimeSlotStep {
                             "zmscitizenview: no timeslot for provider {} in current view (attempt {}); try Später",
                             officeId,
                             attempt);
+            if (deepMucSpinnerVisible()) {
+                if (!finishInFlightCalendarLoad()) {
+                    break;
+                }
+                continue;
+            }
             if (clickCitizenViewLaterOnceIfAvailable()) {
                 CitizenViewWaits.sleepQuiet(1200L);
                 waitUntilAppointmentSlotsReadyQuiet(Math.min(45, slotBookingWaitTimeoutSeconds()));
