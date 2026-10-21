@@ -298,6 +298,153 @@ describe("AppointmentView", () => {
       );
     });
 
+    it("returns to the service step and keeps the selected services", async () => {
+      const wrapper = createWrapper({ appointmentHash: undefined });
+      wrapper.vm.currentView = 3;
+      wrapper.vm.captchaToken = "expired-token";
+      wrapper.vm.reservationStartMs = Date.now();
+      wrapper.vm.selectedServiceMap = new Map([["service1", 2]]);
+      await nextTick();
+
+      wrapper.vm.restartBookingToServices();
+      await nextTick();
+
+      expect(wrapper.vm.currentView).toBe(0);
+      expect(wrapper.vm.captchaToken).toBeUndefined();
+      expect(wrapper.vm.reservationStartMs).toBeNull();
+      expect(wrapper.vm.selectedServiceMap.get("service1")).toBe(2);
+      expect(wrapper.find('[data-test="service-finder"]').exists()).toBe(true);
+    });
+
+    it("restarts a reschedule on Übersicht and refetches a fresh captcha token", async () => {
+      const hash = buildAppointmentHash();
+      const replaceState = vi
+        .spyOn(history, "replaceState")
+        .mockImplementation(() => {});
+      const originalLocation = window.location;
+      delete (window as any).location;
+      (window as any).location = {
+        href: `http://localhost:8082/#/appointment/${hash}`,
+        hash: `#/appointment/${hash}`,
+        origin: "http://localhost:8082",
+        pathname: "/",
+      };
+
+      vi.mocked(ZMSAppointmentAPI.fetchAppointment).mockResolvedValue({
+        processId: 12345,
+        authKey: "test-auth-key",
+        captchaToken: "fresh-captcha-token",
+        officeId: 10427,
+        status: "confirmed",
+      } as any);
+      vi.mocked(globalThis.fetch).mockResolvedValue({
+        status: 200,
+        json: async () => ({ offices: [], services: [], relations: [] }),
+      } as any);
+
+      const wrapper = createWrapper({ appointmentHash: hash });
+      await nextTick();
+      await Promise.resolve();
+      await nextTick();
+
+      wrapper.vm.currentView = 1;
+      wrapper.vm.isRebooking = true;
+      wrapper.vm.captchaToken = "expired-token";
+      wrapper.vm.rebookedAppointment = { processId: 12345 } as any;
+      await nextTick();
+
+      const fetchCallsBeforeRestart = vi.mocked(
+        ZMSAppointmentAPI.fetchAppointment
+      ).mock.calls.length;
+      wrapper.vm.restartBookingToServices();
+      await nextTick();
+      await Promise.resolve();
+      await nextTick();
+
+      expect(wrapper.vm.currentView).toBe(3);
+      expect(wrapper.vm.isRebooking).toBe(false);
+      expect(wrapper.vm.rebookOrCancelDialog).toBe(true);
+      expect(wrapper.vm.captchaToken).toBe("fresh-captcha-token");
+      expect(replaceState).not.toHaveBeenCalled();
+      expect(
+        vi.mocked(ZMSAppointmentAPI.fetchAppointment).mock.calls.length
+      ).toBeGreaterThan(fetchCallsBeforeRestart);
+
+      replaceState.mockRestore();
+      (window as any).location = originalLocation;
+    });
+
+    it("restarts a reschedule by replacing the hash to the appointment jump-in", async () => {
+      const hash = buildAppointmentHash();
+      const replaceState = vi
+        .spyOn(history, "replaceState")
+        .mockImplementation(() => {});
+      const originalLocation = window.location;
+      delete (window as any).location;
+      (window as any).location = {
+        href: "http://localhost:8082/#/services/1072015/locations/10427",
+        hash: "#/services/1072015/locations/10427",
+        origin: "http://localhost:8082",
+        pathname: "/",
+      };
+
+      vi.mocked(ZMSAppointmentAPI.fetchAppointment).mockResolvedValue({
+        processId: 12345,
+        authKey: "test-auth-key",
+        captchaToken: "fresh-captcha-token",
+        officeId: 10427,
+        status: "confirmed",
+      } as any);
+      vi.mocked(globalThis.fetch).mockResolvedValue({
+        status: 200,
+        json: async () => ({ offices: [], services: [], relations: [] }),
+      } as any);
+
+      const wrapper = createWrapper({ appointmentHash: hash });
+      await nextTick();
+      await Promise.resolve();
+      await nextTick();
+
+      wrapper.vm.currentView = 1;
+      wrapper.vm.isRebooking = true;
+      await nextTick();
+
+      wrapper.vm.restartBookingToServices();
+      await nextTick();
+
+      expect(replaceState).toHaveBeenCalledWith(
+        null,
+        "",
+        `http://localhost:8082/#/appointment/${hash}`
+      );
+      expect(wrapper.vm.currentView).toBe(3);
+      expect(wrapper.vm.isRebooking).toBe(false);
+
+      replaceState.mockRestore();
+      (window as any).location = originalLocation;
+    });
+
+    it("offers restart booking when the reservation is no longer reserved", async () => {
+      const wrapper = createWrapper({ appointmentHash: undefined });
+      wrapper.vm.currentView = 3;
+      wrapper.vm.currentContext = "preconfirm";
+      wrapper.vm.captchaToken = "expired-token";
+      wrapper.vm.reservationStartMs = Date.now();
+      wrapper.vm.errorStates.errorStateMap.apiErrorProcessNotReservedAnymore.value = true;
+      await nextTick();
+
+      const callout = wrapper.find('[data-test="muc-callout"]');
+      expect(callout.text()).toContain(
+        de.apiErrorProcessNotReservedAnymoreText
+      );
+      expect(callout.text()).toContain(de.restartBooking);
+
+      await callout.find('[data-test="muc-button"]').trigger("click");
+      expect(wrapper.vm.currentView).toBe(0);
+      expect(wrapper.vm.captchaToken).toBeUndefined();
+      expect(wrapper.vm.reservationStartMs).toBeNull();
+    });
+
     it("shows customer info after calendar selection", async () => {
       const wrapper = createWrapper({ appointmentHash: undefined });
       wrapper.vm.currentView = 2;
@@ -581,6 +728,27 @@ describe("AppointmentView", () => {
   });
 
   describe("Rebooking Flow", () => {
+    it("explains a disabled reschedule link and keeps the appointment summary", async () => {
+      const wrapper = createWrapperWithAppointmentHash();
+      wrapper.vm.appointment = {
+        timestamp: nowUnixSeconds() + 3600,
+        scope: { rebookingDisabled: true },
+      } as any;
+
+      wrapper.vm.nextRescheduleAppointment();
+      await nextTick();
+
+      expect(wrapper.vm.isRebooking).toBe(false);
+      expect(wrapper.vm.rebookOrCancelDialog).toBe(true);
+      expect(wrapper.vm.currentView).toBe(3);
+      expect(wrapper.vm.errorStates.apiErrorRebookingDisabled.value).toBe(true);
+      expect(wrapper.find('[data-test="appointment-summary"]').exists()).toBe(
+        true
+      );
+      expect(wrapper.text()).toContain(de.apiErrorRebookingDisabledHeader);
+      expect(wrapper.text()).toContain(de.apiErrorRebookingDisabledText);
+    });
+
     it("starts at summary and disables previous steps when appointmentHash is present", async () => {
       const wrapper = createWrapperWithAppointmentHash();
       wrapper.vm.currentView = 3;
@@ -2800,6 +2968,97 @@ describe("AppointmentView", () => {
       ).toBeNull();
     });
 
+    it("login resume restores combinable subservice counts for back-navigation", async () => {
+      vi.stubGlobal(
+        "fetch",
+        vi.fn().mockResolvedValue({
+          status: 200,
+          json: async () => ({
+            ...catalogResponse,
+            services: [
+              {
+                id: "123",
+                name: "Test Service",
+                maxQuantity: 2,
+                combinable: {
+                  a: { "123": [789] },
+                  b: { "456": [789] },
+                  c: { "321": [789] },
+                },
+              },
+              { id: "456", name: "Sub Service", maxQuantity: 2 },
+              { id: "321", name: "Other Peer", maxQuantity: 2 },
+            ],
+            relations: [
+              { serviceId: "123", officeId: "789", slots: 1 },
+              { serviceId: "456", officeId: "789", slots: 1 },
+              { serviceId: "321", officeId: "789", slots: 1 },
+            ],
+          }),
+        })
+      );
+
+      localStorage.setItem(
+        LOCALSTORAGE_PARAM_APPOINTMENT_DATA,
+        JSON.stringify({
+          ...uiStoragePayload,
+          selectedServiceMap: { "123": 1, "456": 1 },
+        })
+      );
+
+      const hash = buildAppointmentHash({
+        id: "hash-proc",
+        authKey: "hash-auth-key",
+      });
+
+      vi.mocked(ZMSAppointmentAPI.fetchAppointment).mockResolvedValue({
+        processId: "hash-proc",
+        authKey: "hash-auth-key",
+        timestamp: Math.floor(Date.now() / 1000) + 3600,
+        familyName: "Mustermann",
+        email: "max@example.com",
+        officeId: "789",
+        scope: {},
+        subRequestCounts: [{ id: "456", name: "Sub Service", count: 1 }],
+        serviceId: "123",
+        serviceName: "Test Service",
+        serviceCount: 1,
+        status: "reserved",
+      } as any);
+
+      const wrapper = createWrapper({
+        showLoginOption: true,
+        appointmentHash: hash,
+        locationId: undefined,
+        serviceId: undefined,
+      });
+
+      await vi.waitFor(() => {
+        expect(wrapper.vm.selectedService?.subServices?.length).toBeGreaterThan(
+          0
+        );
+      });
+
+      const sub = wrapper.vm.selectedService?.subServices?.find(
+        (entry: { id: string }) => String(entry.id) === "456"
+      );
+      expect(sub?.count).toBe(1);
+      expect(wrapper.vm.selectedServiceMap.get("456")).toBe(1);
+      expect(
+        wrapper.vm.selectedService?.subServices?.map((s: { id: string }) =>
+          String(s.id)
+        )
+      ).toEqual(["456", "321"]);
+      expect(
+        wrapper.vm.selectedService?.subServices?.find(
+          (entry: { id: string }) => String(entry.id) === "321"
+        )?.count
+      ).toBe(0);
+      // Booked office on selectedProvider only — do not pin Ort filter.
+      expect(wrapper.vm.selectedProvider?.id).toBe("789");
+      expect(wrapper.vm.preselectedLocationId).toBeUndefined();
+    });
+
     it("login resume of a reserved appointment without contact stays on the form", async () => {
       localStorage.setItem(
         LOCALSTORAGE_PARAM_APPOINTMENT_DATA,
@@ -2840,6 +3099,59 @@ describe("AppointmentView", () => {
 
       expect(wrapper.vm.currentView).toBe(2);
       expect(wrapper.vm.rebookOrCancelDialog).toBe(false);
+    });
+
+    it("login resume does not pull Zurück from Kontakt back when appointment fetch settles", async () => {
+      localStorage.setItem(
+        LOCALSTORAGE_PARAM_APPOINTMENT_DATA,
+        JSON.stringify(uiStoragePayload)
+      );
+
+      const hash = buildAppointmentHash({
+        id: "hash-proc",
+        authKey: "hash-auth-key",
+      });
+
+      let resolveAppointment: (value: any) => void = () => {};
+      vi.mocked(ZMSAppointmentAPI.fetchAppointment).mockImplementation(
+        () =>
+          new Promise((resolve) => {
+            resolveAppointment = resolve;
+          }) as any
+      );
+
+      const wrapper = createWrapper({
+        showLoginOption: true,
+        appointmentHash: hash,
+      });
+
+      await vi.waitFor(() => {
+        expect(wrapper.vm.currentView).toBe(2);
+      });
+
+      wrapper.vm.decreaseCurrentView();
+      expect(wrapper.vm.currentView).toBe(1);
+
+      resolveAppointment({
+        processId: "hash-proc",
+        authKey: "hash-auth-key",
+        timestamp: Math.floor(Date.now() / 1000) + 3600,
+        familyName: "",
+        email: "noreply-terminvereinbarung@muenchen.de",
+        officeId: "789",
+        scope: {},
+        subRequestCounts: [],
+        serviceId: "123",
+        serviceName: "Test Service",
+        serviceCount: 1,
+        status: "reserved",
+      });
+
+      await vi.waitFor(() => {
+        expect(wrapper.vm.appointment?.processId).toBe("hash-proc");
+      });
+
+      expect(wrapper.vm.currentView).toBe(1);
     });
 
     it("does not restore authKey or PII from legacy localStorage when hash is missing", async () => {

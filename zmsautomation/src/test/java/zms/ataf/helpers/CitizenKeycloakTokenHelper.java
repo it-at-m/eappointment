@@ -18,16 +18,24 @@ public final class CitizenKeycloakTokenHelper {
     }
 
     public static String fetchAccessToken() {
-        String tokenUri = TestConfig.getKeycloakTokenUri();
         String username = TestPropertiesHelper.getPropertyAsString("citizenUserName", true, "citizen");
-        String password = TestPropertiesHelper.getPropertyAsString("citizenUserPassword", true, "vorschau");
         if (username == null || username.isBlank()) {
             username = "citizen";
         }
+        return fetchAccessToken(username);
+    }
+
+    /**
+     * Password grant for an explicit Keycloak Bürger user (for example {@code ataf_citizen_no_given}).
+     * Non-{@code citizen} names stay pinned via {@link AccountCheckout#assignCitizenLogin}.
+     */
+    public static String fetchAccessToken(String loginName) {
+        String tokenUri = TestConfig.getKeycloakTokenUri();
+        String password = TestPropertiesHelper.getPropertyAsString("citizenUserPassword", true, "vorschau");
         if (password == null || password.isBlank()) {
             password = "vorschau";
         }
-        username = AccountCheckout.assignCitizenLogin(username);
+        String username = AccountCheckout.assignCitizenLogin(loginName);
 
         ScenarioLogManager.getLogger().info(
             "Citizen Keycloak password grant at {} as user {}",
@@ -47,7 +55,8 @@ public final class CitizenKeycloakTokenHelper {
         response.then().statusCode(200);
         String accessToken = response.jsonPath().getString("access_token");
         if (accessToken == null || accessToken.isBlank()) {
-            throw new IllegalStateException("Keycloak password grant returned no access_token for citizen user.");
+            throw new IllegalStateException(
+                    "Keycloak password grant returned no access_token for citizen user " + username + ".");
         }
         return accessToken;
     }

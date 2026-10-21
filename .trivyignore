@@ -2,3 +2,8 @@
 
 ## Ignore ALTCHA related CVE - we're not using the obfuscation feature
 CVE-2025-65849
+
+## braces through 3.0.3 (CVE-2026-93687) has no patched release.
+## Dev-only, via @parcel/watcher and fast-glob. Those globs are not fed untrusted brace patterns.
+## Drop this once a fixed braces version is in the lockfiles.
+CVE-2026-93687

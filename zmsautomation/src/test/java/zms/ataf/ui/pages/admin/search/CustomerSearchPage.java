@@ -3,9 +3,13 @@ package zms.ataf.ui.pages.admin.search;
 import java.time.Duration;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -28,6 +32,22 @@ public class CustomerSearchPage extends AdminPage {
         super(driver, context);
     }
 
+    private void clickOrJs(By locator) {
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        WebElement button = wait.until(ExpectedConditions.presenceOfElementLocated(locator));
+        ((JavascriptExecutor) DRIVER).executeScript("arguments[0].scrollIntoView({block:'center'});", button);
+        try {
+            new WebDriverWait(DRIVER, Duration.ofSeconds(5))
+                    .ignoring(StaleElementReferenceException.class)
+                    .until(ExpectedConditions.elementToBeClickable(button))
+                    .click();
+        } catch (Exception e) {
+            ScenarioLogManager.getLogger().warn("Normal click failed, trying JS click for {}", locator);
+            button = wait.until(ExpectedConditions.presenceOfElementLocated(locator));
+            ((JavascriptExecutor) DRIVER).executeScript("arguments[0].click();", button);
+        }
+    }
+
     public void search(String query) {
         CONTEXT.set();
         ScenarioLogManager.getLogger().info("Kundensuche: query {}", query);
@@ -35,12 +55,20 @@ public class CustomerSearchPage extends AdminPage {
         WebElement field = findElementByLocatorType(input, LocatorType.XPATH, true);
         field.clear();
         enterTextInWebElement(DEFAULT_EXPLICIT_WAIT_TIME, query, field);
-        clickOnWebElement(
-                DEFAULT_EXPLICIT_WAIT_TIME,
-                "//form[contains(@action,'/search/')]//button[normalize-space()='Suche']",
-                LocatorType.XPATH,
-                false,
-                CONTEXT);
+        By search = By.xpath("//form[contains(@action,'/search/')]//button[normalize-space()='Suche']");
+        WebDriverWait clickWait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        WebElement button = clickWait.until(ExpectedConditions.presenceOfElementLocated(search));
+        ((JavascriptExecutor) DRIVER).executeScript("arguments[0].scrollIntoView({block:'center'});", button);
+        try {
+            new WebDriverWait(DRIVER, Duration.ofSeconds(5))
+                    .ignoring(StaleElementReferenceException.class)
+                    .until(ExpectedConditions.elementToBeClickable(button))
+                    .click();
+        } catch (Exception e) {
+            ScenarioLogManager.getLogger().warn("Normal click failed, trying JS click for Kundensuche...");
+            button = clickWait.until(ExpectedConditions.presenceOfElementLocated(search));
+            ((JavascriptExecutor) DRIVER).executeScript("arguments[0].click();", button);
+        }
         new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
                 .until(ExpectedConditions.presenceOfElementLocated(By.xpath("//th[normalize-space()='Terminstatus']")));
     }
@@ -97,16 +125,39 @@ public class CustomerSearchPage extends AdminPage {
     public void assertListedInOrder(String... familyNames) {
         CONTEXT.set();
         List<WebElement> rows = DRIVER.findElements(By.xpath("//table[contains(@class,'table--base')]/tbody/tr"));
+        // First hit per name only — leftover rows from a prior failed cleanup must not
+        // inflate the list when relative order of the expected names is still correct.
         List<String> found = new ArrayList<>();
         for (WebElement row : rows) {
             String text = row.getText();
             for (String familyName : familyNames) {
-                if (text.contains(familyName)) {
+                if (text.contains(familyName) && !found.contains(familyName)) {
                     found.add(familyName);
                 }
             }
         }
         Assert.assertEquals(found, List.of(familyNames), "Kundensuche row order. Found: " + found);
+    }
+
+    /**
+     * Compares the name cell, not the whole row. A shorter name is contained in a longer one,
+     * so a row-text contains-check would count both names on the longer row.
+     * Walk-in ids come from a random free slot, so same-day results have no stable order.
+     */
+    public void assertNames(List<String> expected) {
+        CONTEXT.set();
+        List<WebElement> rows = DRIVER.findElements(By.xpath(
+                "//div[contains(@class,'searchresults')]//table[@data-processList-count]"
+                        + "/tbody/tr[td[1]//a and not(preceding-sibling::tr[th])]"));
+        Set<String> found = new LinkedHashSet<>();
+        for (WebElement row : rows) {
+            String cell = row.findElement(By.xpath("./td[1]")).getText().replace('\u00a0', ' ').trim();
+            String name = cell.replaceFirst("\\s*\\(.*$", "").trim();
+            if (expected.contains(name)) {
+                found.add(name);
+            }
+        }
+        Assert.assertEquals(found, new LinkedHashSet<>(expected), "Kundensuche names. Found: " + found);
     }
 
     public void assertStatusWithoutCall(String familyName, String statusLabel, String bookingStamp) {
@@ -115,6 +166,23 @@ public class CustomerSearchPage extends AdminPage {
 
     public void assertStatusWithCall(String familyName, String statusLabel, String bookingStamp, String callStamp) {
         assertStatusRow(familyName, statusLabel, bookingStamp, callStamp);
+    }
+
+    public void assertOneAppointmentWithoutFollowUpRows(String familyName, String numberWithoutLetters) {
+        CONTEXT.set();
+        new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(ExpectedConditions.presenceOfElementLocated(
+                        By.xpath("//table[contains(@class,'table--base')]//td[contains(.,'" + familyName + "')]")));
+        List<WebElement> rows = DRIVER.findElements(By.cssSelector("table.table--base tbody tr"));
+        List<String> texts = new ArrayList<>();
+        for (WebElement row : rows) {
+            texts.add(row.getText().replace('\u00a0', ' '));
+        }
+        long followUps = texts.stream().filter(text -> text.contains("(Folgetermin)")).count();
+        long named = texts.stream().filter(text -> text.contains(familyName) && text.contains(numberWithoutLetters)).count();
+        Assert.assertEquals(followUps, 0L, "Follow-up slot rows are listed. Rows: " + texts);
+        Assert.assertEquals(named, 1L,
+                "The appointment should appear once. Other appointments can contain the same digits. Rows: " + texts);
     }
 
     public String bookingDateDaysAgo(int daysAgo) {
@@ -146,5 +214,96 @@ public class CustomerSearchPage extends AdminPage {
                     text.contains("Terminaufruf: " + callStamp),
                     "Call time missing for " + familyName + ". Expected " + callStamp + ". Row: " + text);
         }
+    }
+
+    public void openFoundAppointment(String familyName) {
+        CONTEXT.set();
+        WebElement link = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(ExpectedConditions.elementToBeClickable(By.xpath(
+                        "//table[contains(@class,'table--base')]//a[contains(.,'" + familyName + "')]")));
+        link.click();
+    }
+
+    public void assertEditFormOpen(String familyName) {
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        wait.until(ExpectedConditions.urlContains("selectedprocess="));
+        String url = DRIVER.getCurrentUrl();
+        Assert.assertTrue(url.contains("/workstation"), "The result link did not open the workstation: " + url);
+        Assert.assertFalse(url.contains("/counter"), "The result link opened the counter: " + url);
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("form[data-saved-process]")));
+        WebElement name = wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("input[name='familyName']")));
+        Assert.assertEquals(name.getAttribute("value"), familyName,
+                "The edit form does not show " + familyName + ".");
+        Assert.assertTrue(
+                wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("button.process-save"))).isDisplayed(),
+                "The edit form has no save button.");
+        Assert.assertTrue(DRIVER.findElements(By.cssSelector(".message--error")).isEmpty(),
+                "Opening the appointment shows an error.");
+    }
+
+    public void deleteOpenAppointment() {
+        CONTEXT.set();
+        // Firefox often reports Löschen as present but not clickable on the edit form.
+        clickOrJs(By.cssSelector("button.process-delete"));
+        WebElement messageTitleElement = findElementByLocatorType("section.board.dialog h2.board__heading", LocatorType.CSSSELECTOR, false);
+        Assert.assertTrue(messageTitleElement.getText().contains("Eintrag löschen"), "Delete confirmation did not open.");
+        clickOrJs(By.cssSelector("a.button.button--destructive.button-ok"));
+        messageTitleElement = findElementByLocatorType("h2.message__heading.title", LocatorType.CSSSELECTOR, false);
+        Assert.assertEquals(messageTitleElement.getText(), "Vorgang gelöscht", "Deleting the open appointment did not succeed.");
+        // The dialog covers a spinner that stays on the form, so do not wait for that spinner first.
+        clickOrJs(By.cssSelector("button.button-ok"));
+        new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(ExpectedConditions.invisibilityOfElementLocated(By.cssSelector("h2.message__heading.title")));
+    }
+
+    /**
+     * Innenrevision lands on Suche. The left navigation, and the Kundensuche field inside it, stay hidden.
+     * The login does not stop on the location page.
+     */
+    public void assertCustomerSearchIsTheStartPage() {
+        CONTEXT.set();
+        new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(ExpectedConditions.urlContains("/search/"));
+        String url = DRIVER.getCurrentUrl();
+        Assert.assertFalse(url.contains("/workstation/select/"),
+                "The login stopped on the location page: " + url);
+        WebElement title = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("h1.main-title")));
+        Assert.assertEquals(title.getText().trim(), "Suche", "The start page is not the customer search.");
+        Assert.assertTrue(DRIVER.findElements(By.cssSelector("nav.navigation-primary")).isEmpty(),
+                "The left menu is visible.");
+        Assert.assertTrue(DRIVER.findElements(By.xpath("//label[normalize-space()='Kundensuche']")).isEmpty(),
+                "The Kundensuche field is visible.");
+        Assert.assertTrue(DRIVER.findElements(By.cssSelector("select[name='scope']")).isEmpty(),
+                "The location selection is shown.");
+        Assert.assertTrue(DRIVER.findElements(By.cssSelector(".message--error")).isEmpty(),
+                "The customer search shows an error.");
+    }
+
+    /** The search on the Suche page. The sidebar Suche button is not on this page. */
+    public void submitOverallSearch(String query) {
+        CONTEXT.set();
+        ScenarioLogManager.getLogger().info("Suche: query {}", query);
+        WebElement field = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(ExpectedConditions.visibilityOfElementLocated(By.id("search-query")));
+        field.clear();
+        enterTextInWebElement(DEFAULT_EXPLICIT_WAIT_TIME, query, field);
+        clickOnWebElement(
+                DEFAULT_EXPLICIT_WAIT_TIME,
+                "//form[.//input[@id='search-query']]//button[normalize-space()='Übernehmen']",
+                LocatorType.XPATH,
+                false,
+                CONTEXT);
+        // Übernehmen re-renders the Suche page. Edge can replace #search-query between
+        // findElements and getAttribute, so a stale node has to be polled again.
+        new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .ignoring(StaleElementReferenceException.class)
+                .until(driver -> {
+                    List<WebElement> fields = driver.findElements(By.id("search-query"));
+                    if (fields.isEmpty()) {
+                        return false;
+                    }
+                    return query.equals(fields.get(0).getAttribute("value"));
+                });
     }
 }

@@ -37,7 +37,6 @@ class ProcessPreconfirm extends \BO\Zmsbackend\Api\BaseController
         $userAccount = (new \BO\Zmsbackend\Helper\User($request))->readWorkstation()->getUseraccount();
         $process = (new \BO\Zmsbackend\Process\Service\Process())->readEntity($entity->id, $entity->authKey, 2);
 
-        //$this->validateProcessLimits($process); Should be moved to zmscitizenapi.
         if ('reserved' != $process->status) {
             throw new \BO\Zmsbackend\Process\Exception\ProcessNotReservedAnymore();
         }
@@ -72,22 +71,6 @@ class ProcessPreconfirm extends \BO\Zmsbackend\Api\BaseController
             throw new \BO\Zmsbackend\Process\Exception\ProcessNotFound();
         } elseif ($authCheck['authKey'] !== $entity->authKey) {
             throw new \BO\Zmsbackend\Process\Exception\AuthKeyMatchFailed();
-        }
-    }
-
-    /**
-     * @psalm-api
-     *
-     * @return void
-     */
-    protected function validateProcessLimits(\BO\Zmsentities\Process $process)
-    {
-        if (! (new \BO\Zmsbackend\Process\Service\Process())->isAppointmentSlotCountAllowed($process)) {
-            throw new \BO\Zmsbackend\Process\Exception\MoreThanAllowedSlotsPerAppointment();
-        }
-
-        if (! (new \BO\Zmsbackend\Process\Service\Process())->isServiceQuantityAllowed($process)) {
-            throw new \BO\Zmsbackend\Process\Exception\MoreThanAllowedQuantityPerService();
         }
     }
 }

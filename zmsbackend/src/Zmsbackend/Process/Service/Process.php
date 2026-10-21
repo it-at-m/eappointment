@@ -860,76 +860,15 @@ class Process extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfaces\R
         $processes = $this->readProcessListByMailAddress($entity->getClients()->getFirst()->email, $entity->scope->id);
         $activeAppointments = 0;
         foreach ($processes as $process) {
+            // Skip the process under change so list order cannot short-circuit the limit
+            // check (a reserved sibling with a lower id used to make preconfirm succeed).
             if ($entity->id == $process->id) {
-                return true;
+                continue;
             }
 
             if (in_array($process->getStatus(), ['preconfirmed', 'confirmed'])) {
                 $activeAppointments++;
                 if ($activeAppointments >= $maxAppointmentsPerMail) {
-                    return false;
-                }
-            }
-        }
-
-        return true;
-    }
-
-    public function isAppointmentSlotCountAllowed(Entity $entity): bool
-    {
-        if (empty($entity->scope)) {
-            return true;
-        }
-
-        $maxSlotsPerAppointment = $entity->scope->getSlotsPerAppointment();
-
-        if ($maxSlotsPerAppointment === null || $maxSlotsPerAppointment < 1) {
-            $maxSlotsPerAppointment = \BO\Zmsbackend\Slot\Service\Slot::MAX_SLOTS;
-        }
-
-        $appointment = $entity->getAppointments()->getFirst();
-        if (!$appointment) {
-            return true;
-        }
-
-        $slotCount = (int) ($appointment->slotCount ?? 0);
-        if ($slotCount <= 0) {
-            return true;
-        }
-
-        return $slotCount <= (int) $maxSlotsPerAppointment;
-    }
-
-    public function isServiceQuantityAllowed(Entity $entity): bool
-    {
-        if (empty($entity->scope) || empty($entity->requests)) {
-            return true;
-        }
-
-        try {
-            $providerId = $entity->scope->getProviderId();
-        } catch (\Exception $e) {
-            return true;
-        }
-        if (!$providerId) {
-            return true;
-        }
-
-        $requestCounts = [];
-        foreach ($entity->requests as $request) {
-            $requestId = $request->getId();
-            if (!isset($requestCounts[$requestId])) {
-                $requestCounts[$requestId] = 0;
-            }
-            $requestCounts[$requestId]++;
-        }
-
-        $requestRelationDb = new \BO\Zmsbackend\RequestRelation\Service\RequestRelation();
-        foreach ($requestCounts as $requestId => $count) {
-            $requestRelation = $requestRelationDb->readEntity($requestId, $providerId, 0);
-            if ($requestRelation) {
-                $maxQuantity = $requestRelation->getMaxQuantity();
-                if ($maxQuantity !== null && $maxQuantity > 0 && $count > (int) $maxQuantity) {
                     return false;
                 }
             }

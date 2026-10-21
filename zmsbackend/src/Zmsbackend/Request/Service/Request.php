@@ -506,6 +506,8 @@ class Request extends \BO\Zmsbackend\Base
 
     public function writeImportEntity($request, $source = 'dldb')
     {
+        (new \BO\Zmsentities\Request($request))->testValid();
+
         $query = new \BO\Zmsbackend\Request\Repository\Request(\BO\Zmsbackend\Query\Base::REPLACE);
         $query->addValues([
             'source' => $source,

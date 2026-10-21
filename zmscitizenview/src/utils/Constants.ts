@@ -117,12 +117,6 @@ export const VARIANT_ID_LARGE_CLIENT = 7;
 export const VIDEO_CONSULTATION_INFO_URL =
   "https://stadt.muenchen.de/infos/videoberatung.html";
 
-export const VARIANTS_WITH_HINTS = [
-  VARIANT_ID_PRESENCE,
-  VARIANT_ID_TELEPHONE,
-  VARIANT_ID_VIDEO,
-] as const;
-
 export const VARIANT_IDS_WITH_ADDRESS = [
   VARIANT_ID_PRESENCE,
   VARIANT_ID_LARGE_CLIENT,
@@ -142,54 +136,6 @@ export function isVariantWithAddress(variantId: number | null): boolean {
     (VARIANT_IDS_WITH_ADDRESS as readonly number[]).includes(variantId)
   );
 }
-
-export function isVariantWithHint(variantId: number | null): boolean {
-  return (
-    variantId != null &&
-    (VARIANTS_WITH_HINTS as readonly number[]).includes(variantId)
-  );
-}
-
-export const getVariantHint = (
-  variantId: number,
-  t: (key: string) => string
-): string | undefined => {
-  return (VARIANTS_WITH_HINTS as readonly number[]).includes(variantId)
-    ? t(`locationVariantText.${variantId}`)
-    : undefined;
-};
-
-export const getAppointmentLocationVariantHint = (
-  variantId: number | null,
-  t: (key: string) => string
-): string | undefined => {
-  if (variantId == null) return undefined;
-
-  if (
-    variantId === VARIANT_ID_SMALL_CLIENT ||
-    variantId === VARIANT_ID_LARGE_CLIENT
-  ) {
-    return t(`locationVariantText.${VARIANT_ID_PRESENCE}`);
-  }
-
-  return getVariantHint(variantId, t);
-};
-
-export const getAppointmentLocationVariantLabel = (
-  variantId: number | null,
-  t: (key: string) => string
-): string | undefined => {
-  if (variantId == null) return undefined;
-
-  if (
-    variantId === VARIANT_ID_SMALL_CLIENT ||
-    variantId === VARIANT_ID_LARGE_CLIENT
-  ) {
-    return t(`appointmentTypes.${VARIANT_ID_PRESENCE}`);
-  }
-
-  return t(`appointmentTypes.${variantId}`);
-};
 
 export function shouldAddImplicitPresenceVariant(
   variantIds: Array<number | null | undefined>

@@ -1,14 +1,27 @@
 <template>
-  <div v-if="isExpired">
+  <div v-if="isReservationExpired">
     <muc-callout type="error">
       <template #content>
-        <p>{{ t("apiErrorSessionTimeoutText") }}</p>
+        <p>{{ t("apiErrorProcessNotReservedAnymoreText") }}</p>
+        <div
+          class="m-button-group"
+          style="margin-top: 1rem"
+        >
+          <muc-button
+            icon="arrow-right"
+            @click="restartBooking"
+          >
+            <template #default>{{ t("restartBooking") }}</template>
+          </muc-button>
+        </div>
       </template>
-      <template #header>{{ t("apiErrorSessionTimeoutHeader") }}</template>
+      <template #header>{{
+        t("apiErrorProcessNotReservedAnymoreHeader")
+      }}</template>
     </muc-callout>
   </div>
   <div
-    v-if="showLoginOption && !isExpired"
+    v-if="showLoginOption && !isReservationExpired"
     class="login-option-block"
     :class="{ 'login-option-block--with-error': showLoginErrorBanner }"
   >
@@ -67,7 +80,7 @@
     </muc-banner>
   </div>
   <h2
-    v-if="!isExpired"
+    v-if="!isReservationExpired"
     class="m-component-form__title"
     :class="{
       'm-component-form__title--after-login-error': showLoginErrorBanner,
@@ -76,7 +89,7 @@
     {{ t("contactDetails") }}
   </h2>
   <form
-    v-if="!isExpired"
+    v-if="!isReservationExpired"
     ref="contactForm"
     class="m-form m-form--default"
   >
@@ -194,7 +207,10 @@
       />
     </fieldset>
   </form>
-  <div class="m-button-group">
+  <div
+    v-if="!isReservationExpired"
+    class="m-button-group"
+  >
     <muc-button
       icon="arrow-left"
       icon-shown-left
@@ -204,7 +220,7 @@
       <template #default>{{ t("back") }}</template>
     </muc-button>
     <muc-button
-      v-if="!isExpired"
+      v-if="!isReservationExpired"
       :disabled="loadingStates.isUpdatingAppointment.value"
       :icon="'arrow-right'"
       @click="nextStep"
@@ -270,7 +286,8 @@ const props = defineProps<{
   t: (key: string, params?: Record<string, unknown>) => string;
 }>();
 
-const emit = defineEmits<(e: "next" | "back" | "login") => void>();
+const emit =
+  defineEmits<(e: "next" | "back" | "login" | "restartBooking") => void>();
 
 const { customerData } = inject<CustomerDataProvider>(
   "customerData"
@@ -314,10 +331,10 @@ const loadingStates = inject("loadingStates", {
   isCancelingAppointment: Ref<boolean>;
 };
 
-const { isExpired } = useReservationTimer();
+const { isReservationExpired } = useReservationTimer();
 
 const showLoginErrorBanner = computed(
-  () => Boolean(props.loginFailed) && !isExpired.value
+  () => Boolean(props.loginFailed) && !isReservationExpired.value
 );
 
 const showErrorMessage = ref<boolean>(false);
@@ -486,6 +503,7 @@ const nextStep = () => {
   }
 };
 const previousStep = () => emit("back");
+const restartBooking = () => emit("restartBooking");
 </script>
 
 <style lang="scss" scoped>

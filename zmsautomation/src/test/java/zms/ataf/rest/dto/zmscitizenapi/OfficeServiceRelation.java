@@ -14,4 +14,5 @@ public class OfficeServiceRelation {
     private Integer officeId;
     private Integer serviceId;
     private Integer slots;
+    private Integer maxQuantity;
 }

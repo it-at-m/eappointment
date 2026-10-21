@@ -1,24 +1,48 @@
 package zms.ataf.ui.pages.statistics.evaluations;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.Month;
+import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.HasDownloads;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.testng.Assert;
 
 import ataf.core.logging.ScenarioLogManager;
 import ataf.web.model.LocatorType;
+import ataf.web.utils.DriverUtil;
 import zms.ataf.ui.pages.statistics.StatisticsPage;
 import zms.ataf.ui.pages.statistics.StatisticsPageContext;
 
 
 public class ServiceStatisticsPage extends StatisticsPage {
+
+    private static final String WORKBOOK_NAME = "requeststatistic_.*\\.xlsx";
+
+    private Map<String, String> workbooksBeforeClick = Map.of();
+
+    private Path downloadedWorkbook;
+
+    private String pendingWorkbookName;
+
+    private long pendingWorkbookSize = -1;
 
     public ServiceStatisticsPage(RemoteWebDriver driver, StatisticsPageContext statisticsPageContext) {
         super(driver, statisticsPageContext);
@@ -56,6 +80,15 @@ public class ServiceStatisticsPage extends StatisticsPage {
         }
     }
 
+    @Override
+    public void clickDownloadButton() {
+        downloadedWorkbook = null;
+        workbooksBeforeClick = workbookNames();
+        pendingWorkbookName = null;
+        pendingWorkbookSize = -1;
+        super.clickDownloadButton();
+    }
+
     public void isServiceStatisticDownloaded() {
         isStatisticDownloaded("requeststatistic_\\d{4}-\\d{1,2}(-\\d{2})?\\.xlsx");
     }
@@ -72,5 +105,226 @@ public class ServiceStatisticsPage extends StatisticsPage {
                 "//table[@class='table--base']//tr[th[contains(normalize-space(.),'" + serviceName + "')]]",
                 LocatorType.XPATH, true);
         scrollToCenterByVisibleElement(row);
+    }
+
+    public void assertStatisticValues(List<Map<String, String>> rows) {
+        for (Map<String, String> row : rows) {
+            String label = row.get("Dienstleistung");
+            WebElement tableRow = findElementByLocatorType(
+                    "//table[contains(@class,'table--base')]//tr[th[contains(normalize-space(.),\"" + label + "\")]]",
+                    LocatorType.XPATH, true);
+            scrollToCenterByVisibleElement(tableRow);
+            String duration = tableRow.findElement(By.xpath("./td[1]")).getText();
+            String sum = tableRow.findElement(By.xpath("./td[2]")).getText();
+            Assert.assertEquals(normalizeTime(duration), normalizeTime(row.get("Bearbeitungsdauer")),
+                    label + " Bearbeitungsdauer");
+            Assert.assertEquals(normalizeCount(sum), normalizeCount(row.get("Summe")), label + " Summe");
+        }
+    }
+
+    public void assertDayColumn(LocalDate day, boolean visible) {
+        String header = day.format(DateTimeFormatter.ofPattern("dd.MM."));
+        List<WebElement> columns = DRIVER.findElements(By.xpath(
+                "//table[contains(@class,'table--base')]//thead//th[contains(@class,'statistik') and normalize-space(.)='"
+                        + header + "']"));
+        if (visible) {
+            Assert.assertFalse(columns.isEmpty(), "Expected the day column " + header);
+            return;
+        }
+        Assert.assertTrue(columns.isEmpty(), "The day column " + header + " should be hidden");
+    }
+
+    public void assertDownloadedDayColumn(LocalDate day, boolean visible) throws IOException {
+        String header = day.format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
+        List<String> headers = RequestStatisticWorkbook.columnHeaders(workbookFromThisDownload());
+        boolean present = headers.contains(header);
+        if (visible) {
+            Assert.assertTrue(present, "Expected the downloaded day column " + header + ". Headers: " + headers);
+            return;
+        }
+        Assert.assertFalse(present, "The downloaded day column " + header + " should be hidden. Headers: " + headers);
+    }
+
+    public void assertDownloadedStatisticValues(List<Map<String, String>> rows) throws IOException {
+        Assert.assertFalse(rows == null || rows.isEmpty(), "Expected at least one service statistic row.");
+        String marker = rows.get(0).get("Dienstleistung");
+        Map<String, String[]> workbook = null;
+        // Parallel shards share period filenames; newest lock can briefly grab another scope's XLSX.
+        for (int attempt = 1; attempt <= 3; attempt++) {
+            Path path = workbookFromThisDownload();
+            workbook = RequestStatisticWorkbook.rows(path);
+            if (workbook.containsKey(marker)) {
+                break;
+            }
+            ScenarioLogManager.getLogger().warn(
+                    "Service XLSX {} missing row '{}'; rows={}; re-downloading ({}/3)",
+                    path.getFileName(),
+                    marker,
+                    workbook.keySet(),
+                    attempt);
+            clickDownloadButton();
+        }
+        for (Map<String, String> row : rows) {
+            String label = row.get("Dienstleistung");
+            String[] cells = workbook.get(label);
+            Assert.assertNotNull(cells, "XLSX row missing: " + label + ". Rows: " + workbook.keySet());
+            Assert.assertEquals(normalizeTime(cells[0]), normalizeTime(row.get("Bearbeitungsdauer")),
+                    label + " XLSX Bearbeitungsdauer");
+            Assert.assertEquals(normalizeCount(cells[1]), normalizeCount(row.get("Summe")), label + " XLSX Summe");
+        }
+    }
+
+    private Path workbookFromThisDownload() {
+        if (downloadedWorkbook != null) {
+            return downloadedWorkbook;
+        }
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        wait.withMessage("The statistic workbook from this download did not finish.");
+        if (DriverUtil.isLocalExecution()) {
+            Path downloads = Paths.get(System.getProperty("user.home"), "Downloads");
+            downloadedWorkbook = wait.until(ignored -> stableNewLocalWorkbook(downloads));
+            return downloadedWorkbook;
+        }
+        HasDownloads.DownloadedFile file = wait.until(ignored -> stableNewRemoteWorkbook());
+        try {
+            Path directory = Files.createTempDirectory("requeststatistic-");
+            ((HasDownloads) DRIVER).downloadFile(file.getName(), directory);
+            downloadedWorkbook = directory.resolve(file.getName());
+            return downloadedWorkbook;
+        } catch (IOException exception) {
+            throw new IllegalStateException("Could not copy the statistic workbook " + file.getName(), exception);
+        }
+    }
+
+    /**
+     * Parallel scenarios share {@code ~/Downloads}. Lock onto the earliest new workbook after
+     * our click so a later download from another scenario cannot steal this wait.
+     */
+    private Path stableNewLocalWorkbook(Path downloads) {
+        List<Path> newcomers;
+        try (Stream<Path> list = Files.list(downloads)) {
+            newcomers = list.filter(Files::isRegularFile)
+                    .filter(path -> isNewWorkbook(
+                            path.getFileName().toString(), sizeOf(path), path.toFile().lastModified()))
+                    .sorted(Comparator.comparingLong(path -> path.toFile().lastModified()))
+                    .collect(Collectors.toList());
+        } catch (IOException exception) {
+            return null;
+        }
+        if (newcomers.isEmpty()) {
+            return null;
+        }
+        if (pendingWorkbookName == null) {
+            // Newest first: same period filename is overwritten in-scenario; earliest can be a
+            // stale parallel download (Summe from the previous single-scope export).
+            pendingWorkbookName = newcomers.get(newcomers.size() - 1).getFileName().toString();
+            pendingWorkbookSize = -1;
+        }
+        Path locked = downloads.resolve(pendingWorkbookName);
+        if (!Files.isRegularFile(locked)) {
+            return null;
+        }
+        long size = sizeOf(locked);
+        if (size <= 0) {
+            return null;
+        }
+        return rememberStableSize(pendingWorkbookName, size) ? locked : null;
+    }
+
+    private HasDownloads.DownloadedFile stableNewRemoteWorkbook() {
+        List<HasDownloads.DownloadedFile> newcomers = ((HasDownloads) DRIVER).getDownloadedFiles().stream()
+                .filter(candidate -> isNewWorkbook(
+                        candidate.getName(), candidate.getSize(), candidate.getLastModifiedTime()))
+                .filter(candidate -> candidate.getSize() > 0)
+                .sorted(Comparator.comparingLong(HasDownloads.DownloadedFile::getLastModifiedTime))
+                .collect(Collectors.toList());
+        if (newcomers.isEmpty()) {
+            return null;
+        }
+        if (pendingWorkbookName == null) {
+            pendingWorkbookName = newcomers.get(newcomers.size() - 1).getName();
+            pendingWorkbookSize = -1;
+        }
+        HasDownloads.DownloadedFile locked = ((HasDownloads) DRIVER).getDownloadedFiles().stream()
+                .filter(candidate -> pendingWorkbookName.equals(candidate.getName()))
+                .filter(candidate -> candidate.getSize() > 0)
+                .findFirst()
+                .orElse(null);
+        if (locked == null) {
+            return null;
+        }
+        return rememberStableSize(locked.getName(), locked.getSize()) ? locked : null;
+    }
+
+    private boolean isNewWorkbook(String name, long size, long modified) {
+        if (!name.matches(WORKBOOK_NAME) || size <= 0) {
+            return false;
+        }
+        String previous = workbooksBeforeClick.get(name);
+        return previous == null || !previous.equals(size + ":" + modified);
+    }
+
+    private static long sizeOf(Path path) {
+        try {
+            return Files.size(path);
+        } catch (IOException exception) {
+            return -1;
+        }
+    }
+
+    private boolean rememberStableSize(String name, long size) {
+        boolean stable = name.equals(pendingWorkbookName) && size == pendingWorkbookSize;
+        pendingWorkbookSize = size;
+        return stable;
+    }
+
+    private Map<String, String> workbookNames() {
+        try {
+            if (DriverUtil.isLocalExecution()) {
+                Path downloads = Paths.get(System.getProperty("user.home"), "Downloads");
+                if (!Files.isDirectory(downloads)) {
+                    return Map.of();
+                }
+                try (Stream<Path> list = Files.list(downloads)) {
+                    return list.filter(Files::isRegularFile)
+                            .filter(path -> path.getFileName().toString().matches(WORKBOOK_NAME))
+                            .collect(Collectors.toMap(
+                                    path -> path.getFileName().toString(),
+                                    path -> sizeOf(path) + ":" + path.toFile().lastModified(),
+                                    (left, right) -> right));
+                }
+            }
+            return ((HasDownloads) DRIVER).getDownloadedFiles().stream()
+                    .filter(candidate -> candidate.getName().matches(WORKBOOK_NAME))
+                    .collect(Collectors.toMap(
+                            HasDownloads.DownloadedFile::getName,
+                            candidate -> candidate.getSize() + ":" + candidate.getLastModifiedTime(),
+                            (left, right) -> right));
+        } catch (IOException exception) {
+            return Map.of();
+        }
+    }
+
+    private static String normalizeTime(String value) {
+        String trimmed = value == null ? "" : value.replace('\u00a0', ' ').trim();
+        String[] parts = trimmed.split(":");
+        if (parts.length != 2) {
+            return trimmed;
+        }
+        try {
+            int minutes = Integer.parseInt(parts[0].trim());
+            int seconds = Integer.parseInt(parts[1].trim());
+            return minutes + ":" + String.format("%02d", seconds);
+        } catch (NumberFormatException exception) {
+            return trimmed;
+        }
+    }
+
+    private static String normalizeCount(String value) {
+        String trimmed = value == null ? "" : value.replace('\u00a0', ' ').trim();
+        if (trimmed.endsWith(".0")) {
+            trimmed = trimmed.substring(0, trimmed.length() - 2);
+        }
+        return trimmed;
     }
 }

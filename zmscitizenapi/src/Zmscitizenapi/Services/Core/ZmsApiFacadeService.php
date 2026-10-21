@@ -46,6 +46,11 @@ class ZmsApiFacadeService
     public static function warmOfficesAndServicesCache(): array
     {
         $refreshedKeys = ZmsApiClientService::refreshSourceCaches();
+        // Offices copy slotsPerAppointment from this cache. Rebuild it before the
+        // offices-and-services payload, or the new source is mapped onto the old limit.
+        self::getScopes(true);
+        $refreshedKeys[] = self::CACHE_KEY_SCOPES;
+
         $cacheKey = self::CACHE_KEY_OFFICES_AND_SERVICES;
         $result = self::rebuildServicesAndOfficesCache(false, $cacheKey);
         $refreshedKeys[] = $cacheKey;
@@ -134,7 +139,8 @@ class ZmsApiFacadeService
                     whitelistedMails: ((string) $matchingScope->getWhitelistedMails() === '' ? null : (string) $matchingScope->getWhitelistedMails()),
                     activationDuration: MapperService::extractActivationDuration($matchingScope),
                     reservationDuration: (int) MapperService::extractReservationDuration($matchingScope),
-                    hint: ($matchingScope && trim((string) $matchingScope->getScopeHint()) !== '')  ? (string) $matchingScope->getScopeHint() : null
+                    hint: ($matchingScope && trim((string) $matchingScope->getScopeHint()) !== '')  ? (string) $matchingScope->getScopeHint() : null,
+                    rebookingDisabled: $matchingScope->isRebookingDisabled()
                 ) : null,
                 slotsPerAppointment: $matchingScope ? ((string) $matchingScope->getSlotsPerAppointment() === '' ? null : (string) $matchingScope->getSlotsPerAppointment()) : null
             );
@@ -150,11 +156,11 @@ class ZmsApiFacadeService
     /**
      * @SuppressWarnings(PHPMD.NPathComplexity)
      */
-    public static function getScopes(): ThinnedScopeList|array
+    public static function getScopes(bool $forceRefresh = false): ThinnedScopeList|array
     {
         $cacheKey = self::CACHE_KEY_SCOPES;
 
-        if (\App::$cache && ($cachedData = \App::$cache->get($cacheKey))) {
+        if (!$forceRefresh && \App::$cache && ($cachedData = \App::$cache->get($cacheKey))) {
             return $cachedData;
         }
 
@@ -196,7 +202,8 @@ class ZmsApiFacadeService
                     whitelistedMails: ((string) $matchingScope->getWhitelistedMails() === '' ? null : (string) $matchingScope->getWhitelistedMails()),
                     reservationDuration: (int) MapperService::extractReservationDuration($matchingScope),
                     activationDuration: MapperService::extractActivationDuration($matchingScope),
-                    hint: ($matchingScope && trim((string) $matchingScope->getScopeHint()) !== '') ? (string) $matchingScope->getScopeHint() : null
+                    hint: ($matchingScope && trim((string) $matchingScope->getScopeHint()) !== '') ? (string) $matchingScope->getScopeHint() : null,
+                    rebookingDisabled: $matchingScope->isRebookingDisabled()
                 );
             }
         }
@@ -228,7 +235,12 @@ class ZmsApiFacadeService
                 continue;
             }
 
-            $services[] = new Service(id: (int) $request->getId(), name: $request->getName(), maxQuantity: $additionalData['maxQuantity'] ?? 1);
+            $services[] = new Service(
+                id: (int) $request->getId(),
+                name: $request->getName(),
+                maxQuantity: $additionalData['maxQuantity'] ?? 1,
+                variantOverwrite: $additionalData['variantOverwrite'] ?? null
+            );
         }
 
         $result = new ServiceList($services);
@@ -369,7 +381,8 @@ class ZmsApiFacadeService
             whitelistedMails: ((string) $matchingScope->getWhitelistedMails() === '' ? null : (string) $matchingScope->getWhitelistedMails()),
             reservationDuration: MapperService::extractReservationDuration($matchingScope),
             activationDuration: MapperService::extractActivationDuration($matchingScope),
-            hint: ((string) $matchingScope->getScopeHint() === '' ? null : (string) $matchingScope->getScopeHint())
+            hint: ((string) $matchingScope->getScopeHint() === '' ? null : (string) $matchingScope->getScopeHint()),
+            rebookingDisabled: $matchingScope->isRebookingDisabled()
         );
     }
 
@@ -403,7 +416,13 @@ class ZmsApiFacadeService
                 $requestId = $relation->request->id;
                 if (isset($requestMap[$requestId])) {
                     $request = $requestMap[$requestId];
-                    $services[] = new Service(id: (int) $request->id, name: $request->name, maxQuantity: $request->getAdditionalData()['maxQuantity'] ?? 1);
+                    $additionalData = $request->getAdditionalData();
+                    $services[] = new Service(
+                        id: (int) $request->id,
+                        name: $request->name,
+                        maxQuantity: $additionalData['maxQuantity'] ?? 1,
+                        variantOverwrite: $additionalData['variantOverwrite'] ?? null
+                    );
                 }
             }
         }

@@ -11,6 +11,7 @@ This handbook is the main entry point on [GitHub Pages](https://it-at-m.github.i
 - [Project History](./overview/project-history.md)
 - [Devcontainer and Podman](./setup-and-development/getting-started/devcontainer.md)
 - [Local Database and Cache Operations](./setup-and-development/local-database-and-cache-operations.md)
+- [Xdebug (local zms-web)](./setup-and-development/xdebug.md)
 - [Dependency Upgrade Check](./setup-and-development/dependency-upgrade-check.md)
 - [PHP Base Images](./setup-and-development/php-base-images.md)
 - [Unit Testing in ZMS](./testing-and-automation/testing-unit.md)

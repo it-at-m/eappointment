@@ -13,6 +13,10 @@
       "slots": {
         "type": ["integer", "null"],
         "description": "Number of slots available for the relation"
+      },
+      "maxQuantity": {
+        "type": ["integer", "null"],
+        "description": "Maximum times this service can be selected at this office"
       }
     },
     "required": ["officeId", "serviceId", "slots"],

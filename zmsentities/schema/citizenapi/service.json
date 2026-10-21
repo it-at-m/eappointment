@@ -64,6 +64,18 @@
         "null"
       ],
       "description": "Indicates whether the service is visible on the start page (ServiceFinder)"
+    },
+    "variantOverwrite": {
+      "type": ["object", "null"],
+      "description": "Optional locale-specific overrides for variant labels and hints",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string" },
+          "hint": { "type": "string" }
+        },
+        "additionalProperties": false
+      }
     }
   },
   "required": [

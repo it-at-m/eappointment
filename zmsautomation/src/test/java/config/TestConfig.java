@@ -56,6 +56,20 @@ public final class TestConfig {
     }
 
     /**
+     * Citizen API base as the Bürgeransicht browser uses (via refarch-gateway).
+     * Captcha JWTs bind to client IP; UI inject must mint the token on this path so
+     * available-calendar from the browser accepts it. REST steps keep
+     * {@link #getCitizenApiBaseUri()} (direct to zms-web).
+     */
+    public static String getCitizenApiBrowserBaseUri() {
+        return getConfigValue(
+            "CITIZEN_API_BROWSER_BASE_URI",
+            "CITIZEN_API_BROWSER_BASE_URI",
+            "http://refarch-gateway:8080/buergeransicht/api/citizen"
+        );
+    }
+
+    /**
      * Request timeout in milliseconds.
      * Default: 30000 (30 seconds)
      */

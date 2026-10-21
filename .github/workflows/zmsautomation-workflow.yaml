@@ -1,10 +1,10 @@
 name: ⚙️ zmsautomation
 run-name: >-
   ${{
-    github.event_name == 'schedule' && 'zmsautomation | ⏰ scheduled | UI × chrome+firefox, API once | next'
-    || (github.event_name == 'workflow_dispatch' && inputs.run_main_next_matrix
+    github.event_name == 'schedule' && 'zmsautomation | ⏰ scheduled | UI × chrome+firefox+edge, API once | next'
+    || (github.event_name == 'workflow_dispatch' && inputs.run_next_matrix
         && format(
-             'zmsautomation | ▶️ manual | full shard matrix | UI × chrome+firefox, API once | next{0}{1}',
+             'zmsautomation | ▶️ manual | full shard matrix | UI × chrome+firefox+edge, API once | next{0}{1}',
              inputs.ataf_version != '' && format(' | ATAF {0}', inputs.ataf_version) || '',
              inputs.serial_scenarios && ' | serial scenarios' || ''
            ))
@@ -12,7 +12,7 @@ run-name: >-
          'zmsautomation | ▶️ manual | {0} | {1}{2}{3}{4}',
          github.ref_name,
          format('{0}{1}{2}', inputs.browser_chrome && '🌐 chrome' || '', inputs.browser_firefox && format('{0}🦊 firefox', inputs.browser_chrome && ' + ' || '') || '', inputs.browser_edge && format('{0}🪟 edge', (inputs.browser_chrome || inputs.browser_firefox) && ' + ' || '') || ''),
-         inputs.cucumber_tag_expressions != '' && format(' | {0}', inputs.cucumber_tag_expressions) || (inputs.use_custom_tags && ' | custom tags' || ''),
+         inputs.cucumber_tag_expressions != '' && format(' | {0}', inputs.cucumber_tag_expressions) || (inputs.use_custom_tags && ' | custom tags' || '') || (inputs.viewport_mobile_only && ' | 📱 @mobile' || ''),
          inputs.ataf_version != '' && format(' | ATAF {0}', inputs.ataf_version) || '',
          inputs.serial_scenarios && ' | serial scenarios' || ''
        )
@@ -21,10 +21,10 @@ run-name: >-
 on:
   workflow_dispatch:
     inputs:
-      run_main_next_matrix:
+      run_next_matrix:
         description: |
           Run the full scheduled shard matrix: next; UI modules (zmsadmin,
-          zmscitizenview, zmsstatistic, zmsticketprinter) on chrome + firefox; API modules (zmsapi,
+          zmscitizenview, zmsstatistic, zmsticketprinter, zmscalldisplay) on chrome + firefox + edge; API modules (zmsapi,
           zmscitizenapi) once each. Ignores module/browser inputs below.
         required: true
         type: boolean
@@ -51,10 +51,18 @@ on:
         type: boolean
         default: true
       module_citizenview:
-        description: "Citizenview UI tests (@zmscitizenview)"
+        description: "Citizenview UI tests (@zmscitizenview), including @mobile"
         required: true
         type: boolean
         default: true
+      viewport_mobile_only:
+        description: |
+          📱 Run only @mobile UI scenarios (phone 390×844). Used by zmscitizenview.
+          Ignores module checkboxes and run_all_in_one_job (same idea as custom tags).
+          Ignored when cucumber_tag_expressions is set or use_custom_tags is enabled.
+        required: true
+        type: boolean
+        default: false
       module_statistic:
         description: "Statistic UI tests (@zmsstatistic)"
         required: true
@@ -62,6 +70,11 @@ on:
         default: true
       module_ticketprinter:
         description: "Ticketprinter UI tests (@zmsticketprinter)"
+        required: true
+        type: boolean
+        default: true
+      module_calldisplay:
+        description: "Call display UI tests (@zmscalldisplay)"
         required: true
         type: boolean
         default: true
@@ -95,10 +108,12 @@ on:
         default: both
       cucumber_tag_expressions:
         description: |
-          Optional. Newline-separated Cucumber tag expressions; each line runs sequentially.
-          If this field is set, only those tags run (module checkboxes are ignored).
-          @ignore is excluded automatically.
-          Examples: @ZMSKVR-833, @smoke
+          Optional. Cucumber tag expression(s). Newlines (or commas) join with OR into
+          one filter so the job runs Flyway/setup once. Module checkboxes are ignored
+          when this field is set. @ignore is excluded automatically.
+          Examples: @ZMSKVR-833
+                    @ZMSKVR-1083 or @ZMSKVR-1226
+                    @ZMSKVR-1440
         required: false
         default: ""
       browser_chrome:
@@ -162,7 +177,7 @@ jobs:
 
           FULL_MATRIX=false
           MATRIX_BRANCHES='["next"]'
-          if [[ "${{ github.event_name }}" == "schedule" || "${{ inputs.run_main_next_matrix }}" == "true" ]]; then
+          if [[ "${{ github.event_name }}" == "schedule" || "${{ inputs.run_next_matrix }}" == "true" ]]; then
             FULL_MATRIX=true
           fi
 
@@ -172,6 +187,7 @@ jobs:
               --arg citizenview "$(append_not_ignore '@zmscitizenview')" \
               --arg statistic "$(append_not_ignore '@zmsstatistic')" \
               --arg ticketprinter "$(append_not_ignore '@zmsticketprinter')" \
+              --arg calldisplay "$(append_not_ignore '@zmscalldisplay')" \
               --arg zmsapi "$(append_not_ignore '@zmsapi')" \
               --arg zmscitizenapi "$(append_not_ignore '@zmscitizenapi')" \
               --argjson branches "$MATRIX_BRANCHES" \
@@ -184,9 +200,10 @@ jobs:
                         {shard: "zmsadmin", test_layer: "ui", tag_filter: $admin},
                         {shard: "zmscitizenview", test_layer: "ui", tag_filter: $citizenview},
                         {shard: "zmsstatistic", test_layer: "ui", tag_filter: $statistic},
-                        {shard: "zmsticketprinter", test_layer: "ui", tag_filter: $ticketprinter}
+                        {shard: "zmsticketprinter", test_layer: "ui", tag_filter: $ticketprinter},
+                        {shard: "zmscalldisplay", test_layer: "ui", tag_filter: $calldisplay}
                       ][] as $shard
-                    | ["chrome", "firefox"][] as $browser
+                    | ["chrome", "firefox", "edge"][] as $browser
                     | $shard + {branch: $branch, browser: $browser, use_custom_tags: false}
                   ]
                   + [
@@ -258,6 +275,27 @@ jobs:
                   )
                 }
                 ' > matrix.json
+            elif [[ "${{ inputs.viewport_mobile_only }}" == "true" ]]; then
+              MOBILE_TAG_FILTER="$(append_not_ignore '@mobile')"
+              jq -n \
+                --arg branch "$BRANCH" \
+                --argjson browsers "$BROWSERS_JSON" \
+                --arg tag_filter "$MOBILE_TAG_FILTER" \
+                '
+                {
+                  include: [
+                    $browsers[] as $browser
+                    | {
+                        branch: $branch,
+                        browser: $browser,
+                        shard: "mobile",
+                        test_layer: "ui",
+                        tag_filter: $tag_filter,
+                        use_custom_tags: false
+                      }
+                  ]
+                }
+                ' > matrix.json
             elif [[ "${{ inputs.run_all_in_one_job }}" == "true" ]]; then
               TAG_FILTER="$(append_not_ignore '')"
               jq -n \
@@ -287,12 +325,14 @@ jobs:
                 --arg citizenview "$(append_not_ignore '@zmscitizenview')" \
                 --arg statistic "$(append_not_ignore '@zmsstatistic')" \
                 --arg ticketprinter "$(append_not_ignore '@zmsticketprinter')" \
+                --arg calldisplay "$(append_not_ignore '@zmscalldisplay')" \
                 --arg zmsapi "$(append_not_ignore '@zmsapi')" \
                 --arg zmscitizenapi "$(append_not_ignore '@zmscitizenapi')" \
                 --argjson module_admin "${{ inputs.module_admin }}" \
                 --argjson module_citizenview "${{ inputs.module_citizenview }}" \
                 --argjson module_statistic "${{ inputs.module_statistic }}" \
                 --argjson module_ticketprinter "${{ inputs.module_ticketprinter }}" \
+                --argjson module_calldisplay "${{ inputs.module_calldisplay }}" \
                 --argjson module_zmsapi "${{ inputs.module_zmsapi }}" \
                 --argjson module_zmscitizenapi "${{ inputs.module_zmscitizenapi }}" \
                 '
@@ -311,6 +351,9 @@ jobs:
                         else empty end,
                         if $module_ticketprinter then
                           {shard: "zmsticketprinter", test_layer: "ui", tag_filter: $ticketprinter, use_custom_tags: false}
+                        else empty end,
+                        if $module_calldisplay then
+                          {shard: "zmscalldisplay", test_layer: "ui", tag_filter: $calldisplay, use_custom_tags: false}
                         else empty end
                       ][] as $shard
                       | $browsers[] as $browser
@@ -372,11 +415,14 @@ jobs:
         run: cp .devcontainer/.env.template .devcontainer/.env
 
       - name: Login to GitHub Container Registry
-        uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4
+        uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4
         with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          max_attempts: 5
+          retry_wait_seconds: 30
+          timeout_minutes: 5
+          command: |
+            echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io \
+              -u "${{ github.actor }}" --password-stdin
 
       - name: Compute image tags
         id: tags
@@ -519,6 +565,25 @@ jobs:
 
           docker exec -u root -e TARGET_BROWSER="$TARGET_BROWSER" "$WEB_CONT" bash -lc '
             set -euo pipefail
+
+            fetch_url() {
+              local url="$1"
+              local dest="$2"
+              local attempt
+              for attempt in 1 2 3 4 5; do
+                if curl -fsSL -o "$dest" "$url"; then
+                  return 0
+                fi
+                echo "Download failed (attempt ${attempt}/5): ${url}" >&2
+                rm -f "$dest"
+                if [ "$attempt" -lt 5 ]; then
+                  sleep $((attempt * 5))
+                fi
+              done
+              echo "Download failed after 5 attempts: ${url}" >&2
+              return 1
+            }
+
             apt-get update
 
             # ATAF 0.3.4 ships Selenium 4.46, which speaks Chrome DevTools protocol
@@ -554,8 +619,9 @@ jobs:
             if [[ "${TARGET_BROWSER:-}" == "edge" ]]; then
               mkdir -p /etc/apt/keyrings
               rm -f /etc/apt/keyrings/microsoft.gpg
-              curl -fsSL https://packages.microsoft.com/keys/microsoft.asc \
-                | gpg --batch --yes --no-tty --dearmor -o /etc/apt/keyrings/microsoft.gpg
+              fetch_url https://packages.microsoft.com/keys/microsoft.asc /tmp/microsoft.asc
+              gpg --batch --yes --no-tty --dearmor -o /etc/apt/keyrings/microsoft.gpg /tmp/microsoft.asc
+              rm -f /tmp/microsoft.asc
               echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/microsoft.gpg] https://packages.microsoft.com/repos/edge stable main" \
                 > /etc/apt/sources.list.d/microsoft-edge.list
               apt-get update
@@ -563,8 +629,9 @@ jobs:
 
               EDGE_VERSION="$(microsoft-edge --version | awk "{print \$3}")"
               EDGE_VERSION="${EDGE_VERSION%%-*}"
-              curl -fsSL -o /tmp/msedgedriver.zip \
-                "https://msedgedriver.microsoft.com/${EDGE_VERSION}/edgedriver_linux64.zip"
+              fetch_url \
+                "https://msedgedriver.microsoft.com/${EDGE_VERSION}/edgedriver_linux64.zip" \
+                /tmp/msedgedriver.zip
               unzip -o /tmp/msedgedriver.zip -d /tmp
               mv /tmp/msedgedriver /usr/local/bin/msedgedriver
               chmod +x /usr/local/bin/msedgedriver
@@ -573,8 +640,9 @@ jobs:
 
             if ! command -v geckodriver >/dev/null 2>&1; then
               GECKODRIVER_VERSION="v0.36.0"
-              wget -O /tmp/geckodriver.tar.gz \
-                "https://github.com/mozilla/geckodriver/releases/download/${GECKODRIVER_VERSION}/geckodriver-${GECKODRIVER_VERSION}-linux64.tar.gz"
+              fetch_url \
+                "https://github.com/mozilla/geckodriver/releases/download/${GECKODRIVER_VERSION}/geckodriver-${GECKODRIVER_VERSION}-linux64.tar.gz" \
+                /tmp/geckodriver.tar.gz
               tar -xzf /tmp/geckodriver.tar.gz -C /tmp
               mv /tmp/geckodriver /usr/local/bin/geckodriver
               chmod +x /usr/local/bin/geckodriver
@@ -584,8 +652,9 @@ jobs:
             if ! command -v mvn >/dev/null 2>&1; then
               apt-get install -y --no-install-recommends gnupg
               rm -f /usr/share/keyrings/adoptium.gpg
-              curl -fsSL https://packages.adoptium.net/artifactory/api/gpg/key/public \
-                | gpg --batch --yes --no-tty --dearmor -o /usr/share/keyrings/adoptium.gpg
+              fetch_url https://packages.adoptium.net/artifactory/api/gpg/key/public /tmp/adoptium.asc
+              gpg --batch --yes --no-tty --dearmor -o /usr/share/keyrings/adoptium.gpg /tmp/adoptium.asc
+              rm -f /tmp/adoptium.asc
               echo "deb [signed-by=/usr/share/keyrings/adoptium.gpg] https://packages.adoptium.net/artifactory/deb $(. /etc/os-release && echo $VERSION_CODENAME) main" \
                 > /etc/apt/sources.list.d/adoptium.list
               apt-get update
@@ -595,10 +664,12 @@ jobs:
               export PATH="$JAVA_HOME/bin:$PATH"
 
               MAVEN_VERSION="3.9.12"
-              curl -fsSL -o /tmp/maven.tar.gz \
-                "https://archive.apache.org/dist/maven/maven-3/${MAVEN_VERSION}/binaries/apache-maven-${MAVEN_VERSION}-bin.tar.gz"
-              curl -fsSL -o /tmp/maven.tar.gz.sha512 \
-                "https://archive.apache.org/dist/maven/maven-3/${MAVEN_VERSION}/binaries/apache-maven-${MAVEN_VERSION}-bin.tar.gz.sha512"
+              fetch_url \
+                "https://archive.apache.org/dist/maven/maven-3/${MAVEN_VERSION}/binaries/apache-maven-${MAVEN_VERSION}-bin.tar.gz" \
+                /tmp/maven.tar.gz
+              fetch_url \
+                "https://archive.apache.org/dist/maven/maven-3/${MAVEN_VERSION}/binaries/apache-maven-${MAVEN_VERSION}-bin.tar.gz.sha512" \
+                /tmp/maven.tar.gz.sha512
               echo "$(cat /tmp/maven.tar.gz.sha512)  /tmp/maven.tar.gz" | sha512sum -c - \
                 && tar -xzf /tmp/maven.tar.gz -C /opt \
                 && ln -s /opt/apache-maven-${MAVEN_VERSION}/bin/mvn /usr/local/bin/mvn
@@ -777,10 +848,32 @@ jobs:
               TAG_LINES=("")
             else
               while IFS= read -r line; do
-                line="$(printf '%s' "$line" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
-                [[ -n "$line" ]] && TAG_LINES+=("$line")
+                line="$(printf '%s' "$line" | tr -d '\r' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
+                # Allow comma-separated tags on one line as well as newlines.
+                if [[ "$line" == *","* ]]; then
+                  IFS=',' read -r -a parts <<< "$line"
+                  for part in "${parts[@]}"; do
+                    part="$(printf '%s' "$part" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
+                    [[ -n "$part" ]] && TAG_LINES+=("$part")
+                  done
+                elif [[ -n "$line" ]]; then
+                  TAG_LINES+=("$line")
+                fi
               done <<< "$CUSTOM_SOURCE"
               [[ ${#TAG_LINES[@]} -eq 0 ]] && TAG_LINES=("")
+            fi
+            # One OR expression → one zmsautomation-test (Flyway/setup once).
+            if [[ ${#TAG_LINES[@]} -gt 1 ]]; then
+              combined=""
+              for part in "${TAG_LINES[@]}"; do
+                [[ -z "$part" ]] && continue
+                if [[ -z "$combined" ]]; then
+                  combined="$part"
+                else
+                  combined="$combined or $part"
+                fi
+              done
+              TAG_LINES=("$combined")
             fi
           else
             TAG_LINES=("$MATRIX_TAG_FILTER")
@@ -855,14 +948,43 @@ jobs:
             '{branch: $branch, branchSlug: $slug, shard: $shard, browser: $browser}' \
             > branch-meta.json
 
+      # Zip root: ATAF-FAILED-SCREENSHOTS.html (failed shot + step + error). Click → all step shots.
+      - name: Promote failed-screenshot gallery to artifact root
+        if: always()
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -euo pipefail
+          SCRIPT=zmsautomation/scripts/generate-failed-screenshot-gallery.py
+          SHOTS=zmsautomation/target/screenshots
+          [[ -f "$SCRIPT" ]] || { echo "Gallery script missing"; exit 0; }
+          JSON_ARGS=()
+          [[ -f zmsautomation/target/cucumber.json ]] && JSON_ARGS+=(--cucumber-json zmsautomation/target/cucumber.json)
+          [[ -f zmsautomation/target/cucumber-api.json ]] && JSON_ARGS+=(--cucumber-json zmsautomation/target/cucumber-api.json)
+          if [[ ${#JSON_ARGS[@]} -eq 0 ]]; then
+            echo "No cucumber.json; skip gallery promote"
+            exit 0
+          fi
+          rm -rf failed-screenshot-galleries ATAF-FAILED-SCREENSHOTS.html
+          python3 "$SCRIPT" \
+            "${JSON_ARGS[@]}" \
+            --screenshots-dir "$SHOTS" \
+            --out-dir . \
+            --failures-subdir failed-screenshot-galleries \
+            --index-name ATAF-FAILED-SCREENSHOTS.html \
+            --title "ATAF failed screenshots (${{ matrix.shard }} · ${{ matrix.browser }})"
+
       - name: Upload test reports (best effort)
         id: upload-test-reports
         if: always()
         continue-on-error: true
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: zmsautomation-ataf-reports-${{ github.run_id }}-${{ github.run_attempt }}-${{ steps.tags.outputs.branch_slug }}-${{ matrix.shard }}-${{ matrix.browser }}
           path: |
+            ATAF-FAILED-SCREENSHOTS.html
+            failed-screenshot-galleries/**
+            zmsautomation/target/index.html
             zmsautomation/target/cucumber.json
             zmsautomation/target/cucumber-api.json
             branch-meta.json
@@ -881,10 +1003,13 @@ jobs:
         id: upload-test-reports-retry-1
         if: always() && steps.upload-test-reports.outcome == 'failure'
         continue-on-error: true
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: zmsautomation-ataf-reports-${{ github.run_id }}-${{ github.run_attempt }}-${{ steps.tags.outputs.branch_slug }}-${{ matrix.shard }}-${{ matrix.browser }}
           path: |
+            ATAF-FAILED-SCREENSHOTS.html
+            failed-screenshot-galleries/**
+            zmsautomation/target/index.html
             zmsautomation/target/cucumber.json
             zmsautomation/target/cucumber-api.json
             branch-meta.json
@@ -903,10 +1028,13 @@ jobs:
         id: upload-test-reports-retry-2
         if: always() && steps.upload-test-reports-retry-1.outcome == 'failure'
         continue-on-error: true
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: zmsautomation-ataf-reports-${{ github.run_id }}-${{ github.run_attempt }}-${{ steps.tags.outputs.branch_slug }}-${{ matrix.shard }}-${{ matrix.browser }}
           path: |
+            ATAF-FAILED-SCREENSHOTS.html
+            failed-screenshot-galleries/**
+            zmsautomation/target/index.html
             zmsautomation/target/cucumber.json
             zmsautomation/target/cucumber-api.json
             branch-meta.json
@@ -924,10 +1052,13 @@ jobs:
       - name: Retry upload test reports (3/3)
         if: always() && steps.upload-test-reports-retry-2.outcome == 'failure'
         continue-on-error: true
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: zmsautomation-ataf-reports-${{ github.run_id }}-${{ github.run_attempt }}-${{ steps.tags.outputs.branch_slug }}-${{ matrix.shard }}-${{ matrix.browser }}
           path: |
+            ATAF-FAILED-SCREENSHOTS.html
+            failed-screenshot-galleries/**
+            zmsautomation/target/index.html
             zmsautomation/target/cucumber.json
             zmsautomation/target/cucumber-api.json
             branch-meta.json
@@ -978,7 +1109,7 @@ jobs:
         id: upload-container-logs
         if: always()
         continue-on-error: true
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: zmsautomation-container-logs-${{ github.run_id }}-${{ github.run_attempt }}-${{ steps.tags.outputs.branch_slug }}-${{ matrix.shard }}-${{ matrix.browser }}
           path: artifacts/container-logs.tar.gz
@@ -995,7 +1126,7 @@ jobs:
         id: upload-container-logs-retry-1
         if: always() && steps.upload-container-logs.outcome == 'failure'
         continue-on-error: true
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: zmsautomation-container-logs-${{ github.run_id }}-${{ github.run_attempt }}-${{ steps.tags.outputs.branch_slug }}-${{ matrix.shard }}-${{ matrix.browser }}
           path: artifacts/container-logs.tar.gz
@@ -1012,7 +1143,7 @@ jobs:
         id: upload-container-logs-retry-2
         if: always() && steps.upload-container-logs-retry-1.outcome == 'failure'
         continue-on-error: true
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: zmsautomation-container-logs-${{ github.run_id }}-${{ github.run_attempt }}-${{ steps.tags.outputs.branch_slug }}-${{ matrix.shard }}-${{ matrix.browser }}
           path: artifacts/container-logs.tar.gz
@@ -1028,7 +1159,7 @@ jobs:
       - name: Retry upload container logs (3/3)
         if: always() && steps.upload-container-logs-retry-2.outcome == 'failure'
         continue-on-error: true
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: zmsautomation-container-logs-${{ github.run_id }}-${{ github.run_attempt }}-${{ steps.tags.outputs.branch_slug }}-${{ matrix.shard }}-${{ matrix.browser }}
           path: artifacts/container-logs.tar.gz
@@ -1036,6 +1167,34 @@ jobs:
           retention-days: 7
           compression-level: 0
           overwrite: true
+
+  # A workflow_dispatch job check is ignored on the pull request. A commit
+  # status named zmsautomation is what the pull request and branch protection see.
+  # The job name must stay different: GitHub requires both when the names match.
+  record-zmsautomation-status:
+    name: Record zmsautomation status
+    needs: [generate-matrix, zms-automation]
+    if: always() && !cancelled()
+    runs-on: ubuntu-latest
+    permissions:
+      statuses: write
+    steps:
+      - name: Post zmsautomation on the commit
+        env:
+          GH_TOKEN: ${{ github.token }}
+          STATE: ${{ (needs.generate-matrix.result == 'success' && needs.zms-automation.result == 'success') && 'success' || 'failure' }}
+        run: |
+          set -euo pipefail
+          if [ "${STATE}" = "success" ]; then
+            description="Manual zmsautomation run passed"
+          else
+            description="Manual zmsautomation run failed"
+          fi
+          gh api --method POST "repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" \
+            -f state="${STATE}" \
+            -f context="zmsautomation" \
+            -f description="${description}" \
+            -f target_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
 
   publish-cucumber-status:
     name: Publish cucumber status JSON
@@ -1051,7 +1210,7 @@ jobs:
 
       - name: Download cucumber reports
         continue-on-error: true
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
         with:
           pattern: zmsautomation-ataf-reports-*
           path: cucumber-reports

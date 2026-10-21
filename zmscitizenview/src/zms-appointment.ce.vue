@@ -1,6 +1,6 @@
 <template>
   <link
-    href="https://assets.muenchen.de/mde/1.1.15/css/style.css"
+    href="https://assets.muenchen.de/mde/1.1.27/css/style.css"
     rel="stylesheet"
     @load="onStylesheetLoaded"
     @error="onStylesheetLoaded"
@@ -85,9 +85,6 @@ const parseUrlHash = () => {
   return normalized.split("/");
 };
 
-const url = new URL(window.location.href);
-const params = new URLSearchParams(url.search);
-
 // Initialize refs
 const serviceId = ref<string | undefined>(undefined);
 const locationId = ref<string | undefined>(undefined);
@@ -113,6 +110,9 @@ const extractRouteParams = (urlElements: string[]) => {
   if (urlElements.length === 3 && urlElements[1] === "appointment") {
     appointmentHash.value = urlElements[2];
   }
+  // Read search params from the current location (not a module-load snapshot) so
+  // zmsjump remounts and exclusiveLocation=1 stay in sync with the address bar.
+  const params = new URLSearchParams(new URL(window.location.href).search);
   if (params.get("exclusiveLocation")) {
     exclusiveLocation.value = "1";
   }
