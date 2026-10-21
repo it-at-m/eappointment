@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-10-21T07:11:01.205Z",
+  "publishedAt": "2026-10-21T11:35:39.098Z",
   "branches": [
     {
       "name": "next",
@@ -178,8 +178,8 @@
     {
       "name": "feature-zmskvr-1494-required-field-rename-database-columns-using-expand-contract-migration",
       "slug": "feature-zmskvr-1494-required-field-rename-database-columns-using-expand-contract-migration",
-      "runId": "39395989406",
-      "runStartedAt": "2026-10-20T08:47:52Z"
+      "runId": "39587903162",
+      "runStartedAt": "2026-10-21T10:53:37Z"
     },
     {
       "name": "feature-zmskvr-1575-profile-view-for-everyone",
