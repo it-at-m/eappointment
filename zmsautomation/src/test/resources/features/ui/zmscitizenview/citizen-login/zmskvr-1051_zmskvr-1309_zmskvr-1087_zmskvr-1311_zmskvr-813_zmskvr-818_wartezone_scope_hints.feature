@@ -1,6 +1,6 @@
 #language: en
 @web @zmscitizenview @citizen-login @jumpin @executeLocally
-@ZMSKVR-924 @ZMSKVR-1019 @ZMSKVR-1051 @ZMSKVR-1309 @ZMSKVR-1087 @ZMSKVR-1311 @ZMSKVR-1530 @ZMSKVR-1541 @ZMSKVR-843 @ZMSKVR-1014
+@ZMSKVR-924 @ZMSKVR-1019 @ZMSKVR-1051 @ZMSKVR-1309 @ZMSKVR-1087 @ZMSKVR-1311 @ZMSKVR-1530 @ZMSKVR-1541 @ZMSKVR-843 @ZMSKVR-1014 @ZMSKVR-813 @ZMSKVR-818
 Feature: Ruppertstraße Wartezone and scope hints stay consistent through booking and Mein Bereich
   As a citizen
   I want the Wartebereich and Standort-Hinweis to match the booked scope
@@ -19,6 +19,9 @@ Feature: Ruppertstraße Wartezone and scope hints stay consistent through bookin
   #                        HTML markers use <div> because containsParagraphTag/DOMParser
   #                        treats inline HTML as already containing <p>)
   #   ZMSKVR-1014  Testfall overview Hinweis block formatting
+  #   ZMSKVR-813   story   Kundenhinweis (scope.hint) on Übersicht Ort after Adresse
+  #   ZMSKVR-818   Testfall same — provider summary asserts Wartezone / Kundenhinweis
+  #                        under Ort (v-if omits empty hint; no separate empty-space scenario)
   #
   # API sibling: rest/.../citizen-login/zmskvr-1051_zmskvr-1309_wartezone_scope_hints_citizenapi.feature
   # (same-time reserve switches Wartebereich / Schalter).

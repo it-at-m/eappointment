@@ -1,5 +1,5 @@
 #language: en
-@web @zmscitizenview @rebooking @citizen @ZMSKVR-353 @ZMSKVR-951 @executeLocally @jumpin @pickupCalendar
+@web @zmscitizenview @rebooking @citizen @ZMSKVR-353 @ZMSKVR-951 @ZMSKVR-957 @ZMSKVR-968 @executeLocally @jumpin @pickupCalendar
 Feature: CitizenView: guest rebooking confirms without a second activation
   As a citizen who already activated an appointment
   I want rebooking to confirm the new slot immediately
@@ -7,6 +7,7 @@ Feature: CitizenView: guest rebooking confirms without a second activation
 
   # Abholung 10295182 at Bürgerbüro Ruppertstraße KVR-II/211 (10492), same jump-in as ZMSKVR-1500.
   # First booking still uses preconfirm + activation mail. Rebooking must skip that step.
+  # ZMSKVR-957 / ZMSKVR-968: Termin-Detail Verschieben modal → Termin → confirm (rebooking on).
 
   Background:
     Given the Citizen API is available

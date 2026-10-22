@@ -1,0 +1,15 @@
+id: allow citizen without given name login for ZMSKVR-1090
+author: ZMS Development
+realm: zms
+changes:
+  # Keycloak's default user profile requires firstName. Without Vorname the account
+  # gets VERIFY_PROFILE / "Account is not fully set up" and password grant + browser
+  # login fail. BayernID/BundID can omit given_name — keep firstName optional and
+  # clear required actions so ataf_citizen_no_given can authenticate.
+  - updateRealmProfileAttribute:
+      name: firstName
+      required:
+        roles: []
+  - updateUser:
+      name: ataf_citizen_no_given
+      requiredActions: []

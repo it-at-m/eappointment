@@ -860,8 +860,10 @@ class Process extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfaces\R
         $processes = $this->readProcessListByMailAddress($entity->getClients()->getFirst()->email, $entity->scope->id);
         $activeAppointments = 0;
         foreach ($processes as $process) {
+            // Skip the process under change so list order cannot short-circuit the limit
+            // check (a reserved sibling with a lower id used to make preconfirm succeed).
             if ($entity->id == $process->id) {
-                return true;
+                continue;
             }
 
             if (in_array($process->getStatus(), ['preconfirmed', 'confirmed'])) {

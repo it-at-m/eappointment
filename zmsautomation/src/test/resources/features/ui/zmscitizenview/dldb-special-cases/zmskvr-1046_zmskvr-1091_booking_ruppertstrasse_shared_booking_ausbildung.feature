@@ -1,12 +1,15 @@
 #language: en
-@web @zmscitizenview @dldb-special-cases @citizen @ZMSKVR-1046 @executeLocally
+@web @zmscitizenview @dldb-special-cases @citizen @ZMSKVR-1046 @ZMSKVR-1091 @executeLocally
 Feature: CitizenView: Ruppertstraße shared booking (Ort 10489, Slots 10489 + 10313237)
   As a citizen
   I want Wohnsitzanmeldung slots from Haupt and Ausbildung to appear under one Ort
   So that sharedBookingOfficeIds pools capacity while booking still lands on the real OfficeID
 
+  # ZMSKVR-1091 (wird getestet von): Ort collapse, slots from shared peers, Ausbildung booking,
+  # and combination filter (Haushaltsbescheinigung + Personendaten excludes Ausbildung).
   # Ort display id is the lowest peer (10489). Timeslot buttons expose the real owner via
   # data-provider-id / provider-{officeId}-timeslot-* (may be 10489 or 10313237).
+  # API sibling: rest/.../zmskvr-1046_zmskvr-1091_booking_ruppertstrasse_shared_booking_ausbildung_citizenapi.feature
 
   Background:
     Given the Citizen API is available

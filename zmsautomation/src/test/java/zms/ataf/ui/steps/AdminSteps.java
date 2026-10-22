@@ -97,7 +97,33 @@ public class AdminSteps {
     public void dann_sollten_sie_sich_am_start_des_zeitmanagementsystem_befinden() {
         Assert.assertEquals(WindowControls.getActiveWindow().getWindowTitle(), AdminPageContext.START_PAGE_TITLE,
                 "This is not the start page of the \"" + AdminPageContext.NAME + "\"");
-        WindowControls.getActiveWindow().setWindowType(WindowType.getSystemWindowType("Admin"));
+        // ATAF WindowType uses a shared HashMap; parallel shards can CME while iterating.
+        setActiveWindowTypeSafely("zmsadmin");
+    }
+
+    /**
+     * Retries {@link WindowType#getSystemWindowType(String)} under parallel shard load. The ATAF
+     * map is a plain HashMap mutated from {@code new WindowType(...)} on every navigate.
+     */
+    private static void setActiveWindowTypeSafely(String systemName) {
+        for (int attempt = 1; attempt <= 8; attempt++) {
+            try {
+                WindowControls.getActiveWindow().setWindowType(WindowType.getSystemWindowType(systemName));
+                return;
+            } catch (java.util.ConcurrentModificationException e) {
+                ScenarioLogManager.getLogger()
+                        .warn(
+                                "WindowType.getSystemWindowType(\"{}\") raced (attempt {}/8); retrying",
+                                systemName,
+                                attempt);
+                try {
+                    Thread.sleep(10L * attempt);
+                } catch (InterruptedException ie) {
+                    Thread.currentThread().interrupt();
+                    return;
+                }
+            }
+        }
     }
 
     @When("I click the button {string} in the administration.")
@@ -115,6 +141,9 @@ public class AdminSteps {
             break;
         case "Alle Änderungen aktivieren":
             AUTHORITIES_AND_LOCATIONS_PAGE.clickOnSaveButton();
+            break;
+        case "Ausnahme":
+            AUTHORITIES_AND_LOCATIONS_PAGE.clickOnAusnahmeButton();
             break;
         case "Aufruf nächster Kunde":
             PROCESSING_STATION_SECTION.callNextCustomer();
@@ -303,6 +332,157 @@ public class AdminSteps {
         AUTHORITIES_AND_LOCATIONS_PAGE.clickOnLocationEntry(location);
     }
 
+    @Then("the administration navigation should not show {string}.")
+    public void theAdministrationNavigationShouldNotShow(String label) {
+        ADMIN_PAGE.assertNavigationDoesNotShow(TestDataHelper.transformTestData(label));
+    }
+
+    @Then("the Notruf trigger button should not be visible.")
+    public void theNotrufTriggerButtonShouldNotBeVisible() {
+        ADMIN_PAGE.assertNotrufTriggerNotVisible();
+    }
+
+    @When("I minimize the Notruf overlay.")
+    public void iMinimizeTheNotrufOverlay() {
+        ADMIN_PAGE.minimizeNotrufOverlay();
+    }
+
+    @Then("the Notruffunktion checkbox label should contain {string}.")
+    public void theNotruffunktionCheckboxLabelShouldContain(String expected) {
+        AUTHORITIES_AND_LOCATIONS_PAGE.assertNotruffunktionCheckboxLabelContains(
+                TestDataHelper.transformTestData(expected));
+    }
+
+    @Then("the Notruffunktion checkbox should be checked.")
+    public void theNotruffunktionCheckboxShouldBeChecked() {
+        AUTHORITIES_AND_LOCATIONS_PAGE.assertNotruffunktionCheckboxChecked(true);
+    }
+
+    @When("I uncheck the Notruffunktion checkbox.")
+    public void iUncheckTheNotruffunktionCheckbox() {
+        AUTHORITIES_AND_LOCATIONS_PAGE.setNotruffunktionCheckbox(false);
+    }
+
+    @When("I check the Notruffunktion checkbox.")
+    public void iCheckTheNotruffunktionCheckbox() {
+        AUTHORITIES_AND_LOCATIONS_PAGE.setNotruffunktionCheckbox(true);
+    }
+
+    @Then("the availability hint field for citizens should be visible on the location form.")
+    public void theAvailabilityHintFieldForCitizensShouldBeVisibleOnTheLocationForm() {
+        ScenarioLogManager.getLogger()
+                .info("Assert Hinweismeldungen bzgl. der Terminverfügbarkeiten field on Standort form");
+        AUTHORITIES_AND_LOCATIONS_PAGE.assertAvailabilityHintFieldLegendVisible();
+    }
+
+    @Then("the location form starts with the read-only Name and Anschrift fields.")
+    public void theLocationFormStartsWithTheReadOnlyNameAndAnschriftFields() {
+        AUTHORITIES_AND_LOCATIONS_PAGE.assertLocationFormStartsWithReadOnlyNameAndAddress();
+    }
+
+    @Then("the location source and provider fields are hidden.")
+    public void theLocationSourceAndProviderFieldsAreHidden() {
+        AUTHORITIES_AND_LOCATIONS_PAGE.assertLocationSourceAndProviderFieldsHidden();
+    }
+
+    @Then("the location source and provider fields are editable.")
+    public void theLocationSourceAndProviderFieldsAreEditable() {
+        AUTHORITIES_AND_LOCATIONS_PAGE.assertLocationSourceAndProviderFieldsEditable();
+    }
+
+    @Then("the owner {string} can be opened for editing under authorities and locations.")
+    public void theOwnerCanBeOpenedForEditingUnderAuthoritiesAndLocations(String ownerName) {
+        AUTHORITIES_AND_LOCATIONS_PAGE.assertOwnerCanBeOpenedForEditing(
+                TestDataHelper.transformTestData(ownerName));
+    }
+
+    @When("I open the owner {string} for editing under authorities and locations.")
+    public void iOpenTheOwnerForEditingUnderAuthoritiesAndLocations(String ownerName) {
+        AUTHORITIES_AND_LOCATIONS_PAGE.openOwnerForEditing(TestDataHelper.transformTestData(ownerName));
+    }
+
+    @Then("the owner form offers adding a Referat and deleting the owner.")
+    public void theOwnerFormOffersAddingAReferatAndDeletingTheOwner() {
+        AUTHORITIES_AND_LOCATIONS_PAGE.assertOwnerFormOffersAddReferatAndDelete();
+    }
+
+    private static final String[] STANDORT_ZERO_RESET_FIELDS = {
+        "Terminvergabe ab",
+        "Terminvergabe bis",
+        "Reservierungsdauer",
+        "Aktivierungsdauer",
+        "Löschverzögerung",
+        "Wiederholungsaufrufe",
+        "Durchschnittliche Bearbeitungszeit"
+    };
+
+    @When("I clear the Standort integer fields Terminvergabe ab, Terminvergabe bis, Reservierungsdauer, Aktivierungsdauer, Löschverzögerung, Wiederholungsaufrufe and Durchschnittliche Bearbeitungszeit.")
+    public void iClearTheStandortIntegerFieldsListedInZmskvr1459() {
+        AUTHORITIES_AND_LOCATIONS_PAGE.clearStandortIntegerFields(STANDORT_ZERO_RESET_FIELDS);
+    }
+
+    @Then("those Standort integer fields show the value {string}.")
+    public void thoseStandortIntegerFieldsShowTheValue(String expected) {
+        AUTHORITIES_AND_LOCATIONS_PAGE.assertStandortIntegerFieldsShow(
+                TestDataHelper.transformTestData(expected), STANDORT_ZERO_RESET_FIELDS);
+    }
+
+    @Then("the Löschverzögerung description mentions no extra delay when set to 0.")
+    public void theLoeschverzoegerungDescriptionMentionsNoExtraDelayWhenSetTo0() {
+        AUTHORITIES_AND_LOCATIONS_PAGE.assertLoeschverzoegerungDescriptionMentionsNoExtraDelay();
+    }
+
+    @When("I save the location configuration.")
+    public void iSaveTheLocationConfiguration() {
+        AUTHORITIES_AND_LOCATIONS_PAGE.saveLocationChanges();
+    }
+
+    @Then("the location configuration is saved successfully.")
+    public void theLocationConfigurationIsSavedSuccessfully() {
+        AUTHORITIES_AND_LOCATIONS_PAGE.assertLocationSavedSuccessfully();
+    }
+
+    @When("I open the department {string} for editing under authorities and locations.")
+    public void iOpenTheDepartmentForEditingUnderAuthoritiesAndLocations(String departmentName) {
+        AUTHORITIES_AND_LOCATIONS_PAGE.openDepartmentForEditing(
+                TestDataHelper.transformTestData(departmentName));
+    }
+
+    @When("I clear the Behörde integer field for the email reminder minutes.")
+    public void iClearTheBehoerdeIntegerFieldForTheEmailReminderMinutes() {
+        AUTHORITIES_AND_LOCATIONS_PAGE.clearDepartmentReminderMinutesField();
+    }
+
+    @Then("the Behörde email reminder minutes field shows the value {string}.")
+    public void theBehoerdeEmailReminderMinutesFieldShowsTheValue(String expected) {
+        AUTHORITIES_AND_LOCATIONS_PAGE.assertDepartmentReminderMinutesShows(
+                TestDataHelper.transformTestData(expected));
+    }
+
+    @When("I type {string} into the Standort integer field {string}.")
+    public void iTypeIntoTheStandortIntegerField(String text, String label) {
+        AUTHORITIES_AND_LOCATIONS_PAGE.typeIntoStandortIntegerField(
+                TestDataHelper.transformTestData(label), TestDataHelper.transformTestData(text));
+    }
+
+    @Then("the Standort integer field {string} does not contain letters.")
+    public void theStandortIntegerFieldDoesNotContainLetters(String label) {
+        AUTHORITIES_AND_LOCATIONS_PAGE.assertStandortIntegerFieldHasNoLetters(
+                TestDataHelper.transformTestData(label));
+    }
+
+    @When("I set the Standort integer field {string} to {string}.")
+    public void iSetTheStandortIntegerFieldTo(String label, String value) {
+        AUTHORITIES_AND_LOCATIONS_PAGE.setStandortIntegerField(
+                TestDataHelper.transformTestData(label), TestDataHelper.transformTestData(value));
+    }
+
+    @Then("the location form shows a validation for {string}.")
+    public void theLocationFormShowsAValidationFor(String label) {
+        AUTHORITIES_AND_LOCATIONS_PAGE.assertStandortFieldValidationVisible(
+                TestDataHelper.transformTestData(label));
+    }
+
     @And("I open the opening-hours accordion {string}.")
     public void und_sie_die_oeffnungszeit_accordion_oeffnen(String accordionTitle) {
         accordionTitle = TestDataHelper.transformTestData(accordionTitle);
@@ -312,6 +492,94 @@ public class AdminSteps {
     @Then("the opening hours page for the location should be visible.")
     public void theOpeningHoursPageForTheLocationShouldBeVisible() {
         AUTHORITIES_AND_LOCATIONS_PAGE.assertOpeningHoursDayPage();
+    }
+
+    @When("I ensure the day closure is unlocked.")
+    public void iEnsureTheDayClosureIsUnlocked() {
+        AUTHORITIES_AND_LOCATIONS_PAGE.ensureDayClosureUnlocked();
+    }
+
+    @Then("the day-closure banner should show that booking is not locked.")
+    public void theDayClosureBannerShouldShowThatBookingIsNotLocked() {
+        AUTHORITIES_AND_LOCATIONS_PAGE.assertDayClosureBannerUnlocked();
+    }
+
+    @Then("the day-closure banner should show that booking is locked.")
+    public void theDayClosureBannerShouldShowThatBookingIsLocked() {
+        AUTHORITIES_AND_LOCATIONS_PAGE.assertDayClosureBannerLocked();
+    }
+
+    @When("I click the day-closure button {string}.")
+    public void iClickTheDayClosureButton(String label) {
+        AUTHORITIES_AND_LOCATIONS_PAGE.clickDayClosureButton(TestDataHelper.transformTestData(label));
+    }
+
+    @Then("the day-closure confirm dialog should contain {string}.")
+    public void theDayClosureConfirmDialogShouldContain(String message) {
+        AUTHORITIES_AND_LOCATIONS_PAGE.assertDayClosureConfirmDialog(TestDataHelper.transformTestData(message));
+    }
+
+    @When("I confirm the day-closure dialog.")
+    public void iConfirmTheDayClosureDialog() {
+        AUTHORITIES_AND_LOCATIONS_PAGE.confirmDayClosureDialog();
+    }
+
+    @When("I cancel the day-closure dialog.")
+    public void iCancelTheDayClosureDialog() {
+        AUTHORITIES_AND_LOCATIONS_PAGE.abortDayClosureDialog();
+    }
+
+    @After(value = "@ZMSKVR-42 or @ZMSKVR-289", order = 10001)
+    public void unlockDayClosureLeftByUiScenario() {
+        // Prefer API cleanup in ZmsApiSteps (exact scope/date), which also runs when the
+        // banner assertion never flipped day_closure_ui_locked. Page unlock only when
+        // scope/date were never recorded (e.g. still on the day view after a partial lock).
+        String scope;
+        String date;
+        String lockedFlag;
+        try {
+            scope = TestDataHelper.getTestData("day_closure_ui_scope");
+            date = TestDataHelper.getTestData("day_closure_ui_date");
+            lockedFlag = TestDataHelper.getTestData("day_closure_ui_locked");
+        } catch (NullPointerException | IllegalStateException ignored) {
+            return;
+        }
+        if (scope != null && !scope.isBlank() && date != null && !date.isBlank()) {
+            return;
+        }
+        if (!"true".equals(lockedFlag)) {
+            return;
+        }
+        try {
+            AUTHORITIES_AND_LOCATIONS_PAGE.ensureDayClosureUnlocked();
+            TestDataHelper.setTestData("day_closure_ui_locked", "false");
+        } catch (RuntimeException | AssertionError e) {
+            ScenarioLogManager.getLogger().warn(
+                    "Could not unlock UI day closure leftover from the page: {}", e.getMessage());
+        }
+    }
+
+    @When("I open the opening-hours month overview.")
+    public void iOpenTheOpeningHoursMonthOverview() {
+        AUTHORITIES_AND_LOCATIONS_PAGE.clickMonthOverviewLink();
+    }
+
+    @Then("the month overview should show the locked-day icon for day {string}.")
+    public void theMonthOverviewShouldShowTheLockedDayIconForDay(String day) {
+        AUTHORITIES_AND_LOCATIONS_PAGE.assertMonthLockedDayIconForDay(TestDataHelper.transformTestData(day));
+    }
+
+    /** ZMSKVR-933 / ZMSKVR-934: Terminabstand (#AvDaySlottime) on Öffnungszeiten. */
+    @Then("the opening hours slot time should be {int} minutes.")
+    public void theOpeningHoursSlotTimeShouldBeMinutes(int expectedMinutes) {
+        int found = AUTHORITIES_AND_LOCATIONS_PAGE.getOpeningHoursSlotTimeInMinutes();
+        Assert.assertEquals(
+                found,
+                expectedMinutes,
+                "Expected Öffnungszeiten Terminabstand (AvDaySlottime) to be "
+                        + expectedMinutes
+                        + " minutes, was "
+                        + found);
     }
 
     @When("I open the opening hour with the note {string} for editing.")
@@ -382,6 +650,28 @@ public class AdminSteps {
     @Then("the button {string} should be enabled for saving the opening hours.")
     public void dann_die_schaltflaeche_sollte_zum_speichern_der_oeffnungszeiten_aktiv_sein(String button) {
         AUTHORITIES_AND_LOCATIONS_PAGE.assertOpeningHoursSaveButtonEnabled(TestDataHelper.transformTestData(button));
+    }
+
+    /** ZMSKVR-536 / ZMSKVR-725: neue Öffnungszeit leaves Uhrzeit von/bis empty. */
+    @Then("the opening hours time fields should be empty.")
+    public void theOpeningHoursTimeFieldsShouldBeEmpty() {
+        AUTHORITIES_AND_LOCATIONS_PAGE.assertOpeningHoursTimeFieldsEmpty();
+    }
+
+    /**
+     * ZMSKVR-536 / ZMSKVR-725: save without Uhrzeit is blocked by validation
+     * (footer button stays enabled; publish is rejected).
+     */
+    @When("I try to save the opening hours without a time.")
+    public void iTryToSaveTheOpeningHoursWithoutATime() {
+        AUTHORITIES_AND_LOCATIONS_PAGE.clickSaveOpeningHoursExpectingEmptyTimeValidation();
+    }
+
+    @Then("the opening hours time fields should show {string} to {string}.")
+    public void theOpeningHoursTimeFieldsShouldShow(String from, String until) {
+        AUTHORITIES_AND_LOCATIONS_PAGE.assertOpeningHoursTimeFieldsEqual(
+                resolveOpeningTime(TestDataHelper.transformTestData(from)),
+                resolveOpeningTime(TestDataHelper.transformTestData(until)));
     }
 
     private String resolveClosingDate(String text) {
@@ -601,6 +891,21 @@ public class AdminSteps {
                 TestDataHelper.transformTestData(password));
     }
 
+    @When("I enter the new user username {string}.")
+    public void iEnterTheNewUserUsername(String username) {
+        USERACCOUNT_PAGE.enterNewUserUsername(TestDataHelper.transformTestData(username));
+    }
+
+    @Then("the default Keycloak provider should be selected for the new user.")
+    public void theDefaultKeycloakProviderShouldBeSelectedForTheNewUser() {
+        USERACCOUNT_PAGE.assertDefaultKeycloakProviderSelected();
+    }
+
+    @When("I select the signed-in department for the new user.")
+    public void iSelectTheSignedInDepartmentForTheNewUser() {
+        USERACCOUNT_PAGE.selectSignedInDepartment();
+    }
+
     @When("I save the new user.")
     public void iSaveTheNewUser() {
         USERACCOUNT_PAGE.saveNewUser();
@@ -609,6 +914,12 @@ public class AdminSteps {
     @Then("the new user form asks for a department and outlines Behörde in red.")
     public void theNewUserFormAsksForADepartmentAndOutlinesTheFieldInRed() {
         USERACCOUNT_PAGE.assertDepartmentIsRequired();
+    }
+
+    /** ZMSKVR-533 / ZMSKVR-661 */
+    @Then("the new user form shows the username character restriction.")
+    public void theNewUserFormShowsTheUsernameCharacterRestriction() {
+        USERACCOUNT_PAGE.assertUsernameCharacterRestriction();
     }
 
     @Then("the status link is visible in the page footer.")
@@ -751,11 +1062,25 @@ public class AdminSteps {
     @When("I book a walk-in customer with service {string}, name {string}, free text {string} and second free text {string}.")
     public void sie_einen_spontankunden_mit_freitextfeldern_buchen(
             String service, String name, String freeText, String secondFreeText) {
+        bookWalkInWithOptionalNote(service, name, null, freeText, secondFreeText);
+    }
+
+    @When("I book a walk-in customer with service {string}, name {string}, note {string}, free text {string} and second free text {string}.")
+    public void sie_einen_spontankunden_mit_anmerkung_und_freitextfeldern_buchen(
+            String service, String name, String note, String freeText, String secondFreeText) {
+        bookWalkInWithOptionalNote(service, name, note, freeText, secondFreeText);
+    }
+
+    private void bookWalkInWithOptionalNote(
+            String service, String name, String note, String freeText, String secondFreeText) {
         wenn_sie_im_zeitmanagementsystem_unter_terminvereinbarung_neu_die_dienstleistung_string_auswaehlen(service);
         COUNTER_PROCESSING_STATION_PAGE.selectWalkInCustomer();
         COUNTER_PROCESSING_STATION_PAGE.enterNameInNewAppointmentTextField(name);
         String email = name.toLowerCase(Locale.ROOT).replaceAll("[^a-z0-9]", "") + "@mailinator.com";
         COUNTER_PROCESSING_STATION_PAGE.enterEmailInNewAppointmentTextField(email);
+        if (note != null && !note.isBlank()) {
+            COUNTER_PROCESSING_STATION_PAGE.enterNoteInNewAppointmentTextField(note);
+        }
         COUNTER_PROCESSING_STATION_PAGE.fillCustomTextfield("customTextfield", freeText);
         COUNTER_PROCESSING_STATION_PAGE.fillCustomTextfield("customTextfield2", secondFreeText);
         COUNTER_PROCESSING_STATION_PAGE.clickOnAddSpontaneousCustomer();
@@ -764,6 +1089,31 @@ public class AdminSteps {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Then("the queue shows customer {string} with plain text {string} and {string}.")
+    public void theQueueShowsCustomerWithPlainTextAnd(String familyName, String first, String second) {
+        COUNTER_PROCESSING_STATION_PAGE.assertQueueRowShowsPlainTextSnippets(familyName, first, second);
+    }
+
+    @Then("the queue shows customer {string} with plain text {string}.")
+    public void theQueueShowsCustomerWithPlainText(String familyName, String snippet) {
+        COUNTER_PROCESSING_STATION_PAGE.assertQueueRowShowsPlainTextSnippets(familyName, snippet);
+    }
+
+    @Then("the queue row for customer {string} has no script elements.")
+    public void theQueueRowForCustomerHasNoScriptElements(String familyName) {
+        COUNTER_PROCESSING_STATION_PAGE.assertQueueRowHasNoScriptElements(familyName);
+    }
+
+    @Then("the queue row for customer {string} does not contain raw markup {string}.")
+    public void theQueueRowForCustomerDoesNotContainRawMarkup(String familyName, String rawMarkup) {
+        COUNTER_PROCESSING_STATION_PAGE.assertQueueRowDoesNotContainRawMarkup(familyName, rawMarkup);
+    }
+
+    @Then("the queue row for customer {string} has no links to {string}.")
+    public void theQueueRowForCustomerHasNoLinksTo(String familyName, String hrefFragment) {
+        COUNTER_PROCESSING_STATION_PAGE.assertQueueRowHasNoLinksTo(familyName, hrefFragment);
     }
 
     @When("I return to the workstation.")
@@ -795,6 +1145,11 @@ public class AdminSteps {
     public void zeigt_das_terminformular_die_dauer(String service, int minutes, int wrongMinutes) {
         COUNTER_PROCESSING_STATION_PAGE.assertAppointmentFormDuration(
                 TestDataHelper.transformTestData(service), minutes, wrongMinutes);
+    }
+
+    @Then("the Termindauer on the appointment form is {int} minutes.")
+    public void theTermindauerOnTheAppointmentFormIsMinutes(int minutes) {
+        COUNTER_PROCESSING_STATION_PAGE.assertTermindauerMinutes(minutes);
     }
 
     @When("I book the already selected appointment for {string}.")
@@ -1478,6 +1833,12 @@ public class AdminSteps {
                 TestDataHelper.transformTestData(kunde), prioritaet);
     }
 
+    @Then("the queued customer {string} has the note {string}.")
+    public void hat_der_wartende_kunde_die_anmerkung(String termin, String anmerkung) {
+        COUNTER_PROCESSING_STATION_PAGE.assertQueuedCustomerHasNote(
+                TestDataHelper.transformTestData(termin), anmerkung);
+    }
+
     @When("I forward the appointment to {string} with the note {string}.")
     public void wenn_sie_den_termin_weiterleiten(String standort, String anmerkung) {
         PROCESSING_STATION_SECTION.clickOnForwardAppointment();
@@ -1524,6 +1885,23 @@ public class AdminSteps {
     @Then("the appointment {string} appears under parked appointments.")
     public void erscheint_der_termin_unter_geparkte_termine(String termin) {
         PROCESSING_STATION_SECTION.isCustomerVisibleInParkingTable(TestDataHelper.transformTestData(termin));
+    }
+
+    @Then("the parked appointments table has a Zimmernummer column between Nr. and Name.")
+    public void theParkedAppointmentsTableHasAZimmernummerColumnBetweenNrAndName() {
+        COUNTER_PROCESSING_STATION_PAGE.assertParkedTableZimmernummerColumnBetweenNrAndName();
+    }
+
+    @Then("the parked appointment {string} shows room number {string}.")
+    public void theParkedAppointmentShowsRoomNumber(String termin, String roomNumber) {
+        COUNTER_PROCESSING_STATION_PAGE.assertParkedAppointmentShowsRoomNumber(
+                TestDataHelper.transformTestData(termin), TestDataHelper.transformTestData(roomNumber));
+    }
+
+    @Then("the parked appointment for customer {string} shows room number {string}.")
+    public void theParkedAppointmentForCustomerShowsRoomNumber(String customer, String roomNumber) {
+        COUNTER_PROCESSING_STATION_PAGE.assertParkedAppointmentForCustomerShowsRoomNumber(
+                TestDataHelper.transformTestData(customer), TestDataHelper.transformTestData(roomNumber));
     }
 
     @Given("the finished appointment table is displayed.")
@@ -1822,9 +2200,65 @@ public class AdminSteps {
         PROCESSING_STATION_SECTION.openWorkstationCallForProcessId(processId);
     }
 
+    @When("the clerk opens the workstation with {string} for process {string}.")
+    public void theClerkOpensTheWorkstationWithParamForProcess(String paramName, String processId) {
+        PROCESSING_STATION_SECTION.openWorkstationUrlWithProcessParam(paramName, processId);
+    }
+
+    @When("the clerk opens the workstation with {string} for the last ZMS API process.")
+    public void theClerkOpensTheWorkstationWithParamForTheLastZmsApiProcess(String paramName) {
+        String processId = TestDataHelper.getTestData("zmsapi_last_process_id");
+        Assert.assertTrue(processId != null && !processId.isBlank(),
+                "Queue or reserve a process via ZMS API before opening the workstation URL");
+        PROCESSING_STATION_SECTION.openWorkstationUrlWithProcessParam(paramName, processId);
+    }
+
+    @When("the clerk opens the process delete URL for the last ZMS API process.")
+    public void theClerkOpensTheProcessDeleteUrlForTheLastZmsApiProcess() {
+        String processId = TestDataHelper.getTestData("zmsapi_last_process_id");
+        Assert.assertTrue(processId != null && !processId.isBlank(),
+                "Queue or reserve a process via ZMS API before opening ProcessDelete");
+        PROCESSING_STATION_SECTION.openProcessDeleteUrlForProcessId(processId);
+    }
+
     @Then("the error that the process cannot be called because another workstation holds it appears.")
     public void theErrorThatTheProcessCannotBeCalledBecauseAnotherWorkstationHoldsItAppears() {
         PROCESSING_STATION_SECTION.assertProcessNotCallableByOtherWorkstationVisible();
+    }
+
+    @Then("the ProcessNotFound error is displayed.")
+    public void theProcessNotFoundErrorIsDisplayed() {
+        PROCESSING_STATION_SECTION.assertProcessNotFoundVisible();
+    }
+
+    @Then("the ProcessNotCurrentDate error is displayed.")
+    public void theProcessNotCurrentDateErrorIsDisplayed() {
+        PROCESSING_STATION_SECTION.assertProcessNotCurrentDateVisible();
+    }
+
+    @Then("the ProcessNotCallable error with status {string} is displayed.")
+    public void theProcessNotCallableErrorWithStatusIsDisplayed(String germanStatus) {
+        PROCESSING_STATION_SECTION.assertProcessNotCallableWithStatusVisible(germanStatus);
+    }
+
+    @Then("the WorkstationProcessMatchScopeFailed error for location {string} is displayed.")
+    public void theWorkstationProcessMatchScopeFailedErrorForLocationIsDisplayed(String locationHint) {
+        PROCESSING_STATION_SECTION.assertWorkstationProcessMatchScopeFailedVisible(locationHint);
+    }
+
+    @When("I click the exception button {string}.")
+    public void iClickTheExceptionButton(String buttonLabel) {
+        PROCESSING_STATION_SECTION.clickExceptionButton(buttonLabel);
+    }
+
+    @Then("the workstation exception board is gone.")
+    public void theWorkstationExceptionBoardIsGone() {
+        PROCESSING_STATION_SECTION.assertNoExceptionBoardVisible();
+    }
+
+    @Then("the workstation Standort selection page is displayed.")
+    public void theWorkstationStandortSelectionPageIsDisplayed() {
+        PROCESSING_STATION_SECTION.assertWorkstationSelectPageVisible();
     }
 
     @And("the button {string} is visible.")
@@ -2064,6 +2498,8 @@ public class AdminSteps {
     /**
      * Citizen cancel refuses an appointment that is already before {@code App::$now}.
      * After the queue check, put the same reserved row back in the future so it can be deleted.
+     * Use the later of {@code ZMS_TIMEADJUST} and wall-clock Berlin time — under shard load the
+     * suite clock can lag App::$now, and suiteClock+30m would still be uncancellable.
      */
     @When("the reserved appointment is moved back to after the suite clock.")
     public void theReservedAppointmentIsMovedBackToAfterTheSuiteClock() {
@@ -2072,7 +2508,10 @@ public class AdminSteps {
             throw new IllegalStateException("No reserved appointment was captured from the citizen view.");
         }
         int processId = process.getProcessId();
-        LocalDateTime appointment = suiteClock().plusMinutes(30);
+        LocalDateTime suite = suiteClock();
+        LocalDateTime wall = LocalDateTime.now(BerlinTime.ZONE);
+        LocalDateTime baseline = suite.isAfter(wall) ? suite : wall;
+        LocalDateTime appointment = baseline.plusMinutes(60);
         String sql = """
                 UPDATE buerger
                    SET Datum = ?, Uhrzeit = ?
@@ -2095,7 +2534,8 @@ public class AdminSteps {
                     "Could not move reserved appointment " + processId + " back after the suite clock.", e);
         }
         ScenarioLogManager.getLogger().info(
-                "Reserved process {} is back at {} so it can be cancelled", processId, appointment);
+                "Reserved process {} is back at {} (suite={}, wall={}) so it can be cancelled",
+                processId, appointment, suite, wall);
     }
 
     @When("I sign in at the workstation of the reserved appointment.")

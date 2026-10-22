@@ -83,9 +83,24 @@ public class AuthoritiesAndLocationsPage extends AdminPage {
 
     public void clickOnLocationEntry(String location) {
         ScenarioLogManager.getLogger().info("Trying to click on '" + location + "' under Authorities and locations...");
-        clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "//li/a[contains(text(), '" + location + "')]", LocatorType.XPATH, false, CONTEXT);
+        CONTEXT.set();
+        // normalize-space(.) matches nested markup; contains(text()) only sees direct text nodes.
+        By link = By.xpath("//li//a[contains(normalize-space(.), '" + location + "')]");
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        WebElement entry = wait.until(ExpectedConditions.presenceOfElementLocated(link));
+        ((JavascriptExecutor) DRIVER).executeScript(
+                "arguments[0].scrollIntoView({block:'center'});", entry);
+        try {
+            new WebDriverWait(DRIVER, Duration.ofSeconds(5))
+                    .until(ExpectedConditions.elementToBeClickable(entry))
+                    .click();
+        } catch (Exception e) {
+            ScenarioLogManager.getLogger().warn(
+                    "Normal click failed, trying JS click for location '{}'...", location);
+            ((JavascriptExecutor) DRIVER).executeScript("arguments[0].click();", entry);
+        }
         Assert.assertTrue(isWebElementVisible(DEFAULT_EXPLICIT_WAIT_TIME, "//h1[@class='main-title' and text()='Standort']", LocatorType.XPATH, false),
-                "Page title 'Behörden und Standorte' is not visible!");
+                "Page title 'Standort' is not visible after opening the location!");
     }
 
     /**
@@ -401,6 +416,96 @@ public void saveLocationChanges() {
         Assert.assertTrue(button.isEnabled(), "\"" + buttonLabel + "\" is disabled");
     }
 
+    /** ZMSKVR-536 / ZMSKVR-725: neue Öffnungszeit must not prefill Uhrzeit von/bis. */
+    public void assertOpeningHoursTimeFieldsEmpty() {
+        CONTEXT.set();
+        String start = readTimeInputValue("AvDatesStart_time");
+        String end = readTimeInputValue("AvDatesEnd_time");
+        Assert.assertTrue(start == null || start.isBlank(),
+                "Uhrzeit von should be empty on neue Öffnungszeit, was \"" + start + "\"");
+        Assert.assertTrue(end == null || end.isBlank(),
+                "Uhrzeit bis should be empty on neue Öffnungszeit, was \"" + end + "\"");
+    }
+
+    /** ZMSKVR-536 / ZMSKVR-725: Ausnahme keeps the original series times. */
+    public void assertOpeningHoursTimeFieldsEqual(String expectedStart, String expectedEnd) {
+        CONTEXT.set();
+        String start = normalizeClock(readTimeInputValue("AvDatesStart_time"));
+        String end = normalizeClock(readTimeInputValue("AvDatesEnd_time"));
+        Assert.assertEquals(start, normalizeClock(expectedStart), "Uhrzeit von on Ausnahme form");
+        Assert.assertEquals(end, normalizeClock(expectedEnd), "Uhrzeit bis on Ausnahme form");
+    }
+
+    /**
+     * Publish with empty times: the footer button stays enabled, but validation blocks save
+     * ({@code Die Startzeit darf nicht leer sein.}).
+     */
+    public void clickSaveOpeningHoursExpectingEmptyTimeValidation() {
+        ScenarioLogManager.getLogger().info(
+                "Trying to click \"Alle Änderungen aktivieren\" expecting empty-time validation...");
+        CONTEXT.set();
+        String publishButton =
+                "//button[contains(@class,'button-save') and normalize-space()='Alle Änderungen aktivieren']";
+        clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, publishButton, LocatorType.XPATH, false, CONTEXT);
+        By startTimeError = By.xpath(
+                "//*[contains(@class,'message') or contains(@class,'error') or self::li or self::p]"
+                        + "[contains(., 'Die Startzeit darf nicht leer sein')]");
+        try {
+            new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                    .until(ExpectedConditions.visibilityOfElementLocated(startTimeError));
+        } catch (TimeoutException e) {
+            Assert.fail("Expected validation \"Die Startzeit darf nicht leer sein.\" after save without Uhrzeit.",
+                    e);
+        }
+        By success = By.xpath("//div[contains(@class,'message--success')][contains(., 'Öffnungszeiten gespeichert')]");
+        Assert.assertTrue(DRIVER.findElements(success).isEmpty(),
+                "Opening hours must not be saved while Uhrzeit von/bis are empty.");
+    }
+
+    public void clickOnAusnahmeButton() {
+        ScenarioLogManager.getLogger().info("Trying to click on \"Ausnahme\" button...");
+        CONTEXT.set();
+        By ausnahme = By.xpath(
+                "//div[contains(@class,'accordion__panel') and contains(@class,'opened')]"
+                        + "//button[@title='Ausnahme von dieser Öffnungszeit eintragen'"
+                        + " or normalize-space()='Ausnahme']");
+        WebElement button = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(ExpectedConditions.elementToBeClickable(ausnahme));
+        Assert.assertTrue(button.isEnabled(), "Ausnahme button is disabled (series must extend past the selected day).");
+        button.click();
+        // Accordion heading uses title= / .accrordion__title (not accordion__button).
+        By ausnahmeHeading = By.xpath(
+                "//h3[contains(@class,'accordion__heading')]"
+                        + "[contains(@title,'Ausnahme') or .//span[contains(.,'Ausnahme')]]");
+        try {
+            new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                    .until(ExpectedConditions.visibilityOfElementLocated(ausnahmeHeading));
+        } catch (TimeoutException e) {
+            Assert.fail("Expected an Öffnungszeit accordion titled with Ausnahme after clicking Ausnahme.", e);
+        }
+        expandOpeningHoursAccordionByTitle("Ausnahme");
+    }
+
+    private String readTimeInputValue(String inputId) {
+        WebElement field = findVisibleInputById(inputId);
+        String value = field.getAttribute("value");
+        if (value == null) {
+            value = "";
+        }
+        return value.trim();
+    }
+
+    private static String normalizeClock(String time) {
+        if (time == null) {
+            return "";
+        }
+        String trimmed = time.trim();
+        if (trimmed.length() >= 5 && trimmed.charAt(2) == ':') {
+            return trimmed.substring(0, 5);
+        }
+        return trimmed;
+    }
+
     private WebElement findVisibleInputById(String id) {
         String inOpenedAccordion = "(//div[contains(@class,'accordion__panel') and contains(@class,'opened')]"
                 + "//input[@id='" + id + "'])[last()]";
@@ -598,6 +703,152 @@ public void saveLocationChanges() {
         Assert.assertTrue(heading.isDisplayed(), "The opening-hours day page is not visible.");
     }
 
+    /** ZMSKVR-42: day-lock banner above the opening-hours list (only one may be visible). */
+    public void assertDayClosureBannerUnlocked() {
+        CONTEXT.set();
+        WebElement open = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(ExpectedConditions.visibilityOfElementLocated(By.id("closure-open")));
+        Assert.assertTrue(
+                open.getText().contains("NICHT gesperrt"),
+                "Unlocked banner text missing: " + open.getText());
+        Assert.assertFalse(
+                DRIVER.findElement(By.id("closure-close")).isDisplayed(),
+                "Locked banner must stay hidden while unlocked.");
+        TestDataHelper.setTestData("day_closure_ui_locked", "false");
+    }
+
+    public void assertDayClosureBannerLocked() {
+        CONTEXT.set();
+        WebElement close = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(ExpectedConditions.visibilityOfElementLocated(By.id("closure-close")));
+        Assert.assertTrue(
+                close.getText().contains("gesperrt") && !close.getText().contains("NICHT"),
+                "Locked banner text missing: " + close.getText());
+        Assert.assertFalse(
+                DRIVER.findElement(By.id("closure-open")).isDisplayed(),
+                "Unlocked banner must stay hidden while locked.");
+        TestDataHelper.setTestData("day_closure_ui_locked", "true");
+    }
+
+    /**
+     * Serialize parallel browsers on the same scope day-lock (matches API checkout key).
+     * Parses {@code data-toggle-url} like {@code .../scope/130/availability/day/2026-10-18/closure/toggle/}.
+     */
+    public void checkoutDayClosureResource() {
+        CONTEXT.set();
+        List<WebElement> buttons = DRIVER.findElements(By.cssSelector(".js-day-closure-toggle[data-toggle-url]"));
+        for (WebElement button : buttons) {
+            String url = button.getAttribute("data-toggle-url");
+            if (url == null || url.isBlank()) {
+                continue;
+            }
+            Matcher m = Pattern
+                    .compile("/scope/(\\d+)/availability/day/(\\d{4}-\\d{2}-\\d{2})/closure/toggle/")
+                    .matcher(url);
+            if (m.find()) {
+                AccountCheckout.checkout("scope:" + m.group(1) + ":day-closure");
+                TestDataHelper.setTestData("day_closure_ui_scope", m.group(1));
+                TestDataHelper.setTestData("day_closure_ui_date", m.group(2));
+                return;
+            }
+        }
+    }
+
+    /** Leave the day unlocked so a failed prior run cannot poison this scenario. */
+    public void ensureDayClosureUnlocked() {
+        CONTEXT.set();
+        checkoutDayClosureResource();
+        WebElement close = DRIVER.findElement(By.id("closure-close"));
+        if (!close.isDisplayed()) {
+            TestDataHelper.setTestData("day_closure_ui_locked", "false");
+            return;
+        }
+        ScenarioLogManager.getLogger().info("Day closure still locked; unlocking before the scenario continues.");
+        clickDayClosureButton("Entsperren");
+        confirmDayClosureDialog();
+        assertDayClosureBannerUnlocked();
+    }
+
+    public void clickDayClosureButton(String label) {
+        CONTEXT.set();
+        ScenarioLogManager.getLogger().info("Trying to click day-closure button \"{}\"...", label);
+        checkoutDayClosureResource();
+        // Prefer the visible banner (#closure-open / #closure-close). Match button or
+        // legacy input so a stale module image is obvious in the failure screenshot.
+        String xpath = "//div[@id='closure-open' or @id='closure-close']"
+                + "[not(contains(@style,'display: none')) and not(contains(@style,'display:none'))]"
+                + "//*[self::button or self::input]"
+                + "[contains(@class,'js-day-closure-toggle') or @onclick='toggleClosure()']"
+                + "[normalize-space()='" + label + "' or @value='" + label + "']";
+        clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, xpath, LocatorType.XPATH, false, CONTEXT);
+    }
+
+    public void assertDayClosureConfirmDialog(String expectedMessage) {
+        CONTEXT.set();
+        By dialog = By.xpath("//div[contains(@class,'lightbox__content')]//section[contains(@class,'dialog')]");
+        WebElement box = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(ExpectedConditions.visibilityOfElementLocated(dialog));
+        String text = box.getText().replace('\n', ' ').trim();
+        Assert.assertTrue(
+                text.contains(expectedMessage),
+                "Day-closure confirm dialog text mismatch. expected to contain \"" + expectedMessage
+                        + "\", was: " + text);
+        Assert.assertTrue(
+                DRIVER.findElements(By.cssSelector("div.lightbox__content a.button-ok")).stream()
+                        .anyMatch(WebElement::isDisplayed),
+                "Confirm dialog OK button missing.");
+        Assert.assertTrue(
+                DRIVER.findElements(By.cssSelector("div.lightbox__content a.button-abort")).stream()
+                        .anyMatch(WebElement::isDisplayed),
+                "Confirm dialog Abbruch button missing.");
+    }
+
+    public void confirmDayClosureDialog() {
+        CONTEXT.set();
+        By confirmButton = By.cssSelector("div.lightbox__content a.button-ok");
+        WebElement ok = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(ExpectedConditions.elementToBeClickable(confirmButton));
+        ok.click();
+        new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(ExpectedConditions.invisibilityOfElementLocated(confirmButton));
+    }
+
+    public void abortDayClosureDialog() {
+        CONTEXT.set();
+        By abortButton = By.cssSelector("div.lightbox__content a.button-abort");
+        WebElement abort = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(ExpectedConditions.elementToBeClickable(abortButton));
+        abort.click();
+        new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(ExpectedConditions.invisibilityOfElementLocated(abortButton));
+    }
+
+    public void assertMonthLockedDayIconForDay(String day) {
+        CONTEXT.set();
+        ScenarioLogManager.getLogger().info("Checking month locked-day icon for day \"{}\"...", day);
+        // X sits in .palm-hide; assert presence (not visibility) so narrow viewports still pass.
+        String xpath = "//span[contains(@class,'day') and normalize-space()='" + day
+                + "']/ancestor::a[contains(@class,'month-item')][1]"
+                + "//*[contains(@class,'daystatus--conflict') and (@title='Gesperrt' or @aria-label='Gesperrt')]"
+                + "//strong[contains(@class,'char') and normalize-space()='X']";
+        WebElement icon = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(ExpectedConditions.presenceOfElementLocated(By.xpath(xpath)));
+        Assert.assertNotNull(icon, "Month overview missing locked-day X icon for day " + day);
+    }
+
+    public void clickMonthOverviewLink() {
+        CONTEXT.set();
+        clickOnWebElement(
+                DEFAULT_EXPLICIT_WAIT_TIME,
+                "//a[contains(., 'zurück zur Monatsansicht') or contains(@href,'availability/month')]",
+                LocatorType.XPATH,
+                false,
+                CONTEXT);
+        new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(ExpectedConditions.presenceOfElementLocated(
+                        By.cssSelector("a.month-item, .calendar__tile")));
+    }
+
     public void openOpeningHourForEditing(String note) {
         ScenarioLogManager.getLogger().info("Trying to edit the opening hour with note \"" + note + "\"...");
         String pencil = openingHourRow(note) + "//a[@aria-label='Bearbeiten']";
@@ -706,5 +957,384 @@ public void saveLocationChanges() {
         WebElement textArea = findElementByLocatorType("//textarea[@name='preferences[appointment][infoForAppointment]']", LocatorType.XPATH, true);
         textArea.clear();
         textArea.sendKeys(text);
+    }
+
+    /**
+     * ZMSKVR-812 / ZMSKVR-830: superuser-only field for infoForAllAppointments.
+     */
+    public void assertAvailabilityHintFieldLegendVisible() {
+        ScenarioLogManager.getLogger()
+                .info("Asserting Hinweismeldungen bzgl. der Terminverfügbarkeiten field is visible");
+        WebElement legend = findElementByLocatorType(
+                "//legend[contains(normalize-space(.),'Hinweismeldungen bzgl. der Terminverfügbarkeiten an die Bürger')]",
+                LocatorType.XPATH,
+                true);
+        Assert.assertTrue(
+                legend.isDisplayed(),
+                "Expected legend for Hinweismeldungen bzgl. der Terminverfügbarkeiten an die Bürger*innen");
+        WebElement textArea = findElementByLocatorType(
+                "//textarea[@name='preferences[appointment][infoForAllAppointments]']",
+                LocatorType.XPATH,
+                true);
+        Assert.assertTrue(
+                textArea.isDisplayed(),
+                "Expected textarea preferences[appointment][infoForAllAppointments]");
+    }
+
+
+    /**
+     * ZMSKVR-1345 / ZMSKVR-1461: restrictedscope users start with read-only Name and Anschrift.
+     * The page title is {@code Standort}; the address label in the React block is Anschrift.
+     */
+    public void assertLocationFormStartsWithReadOnlyNameAndAddress() {
+        ScenarioLogManager.getLogger()
+                .info("Asserting Standort form starts with read-only Name and Anschrift");
+        Assert.assertTrue(
+                isWebElementVisible(
+                        DEFAULT_EXPLICIT_WAIT_TIME,
+                        "//h1[@class='main-title' and normalize-space(.)='Standort']",
+                        LocatorType.XPATH,
+                        false),
+                "Expected page title Standort.");
+        WebElement name = findElementByLocatorType("//input[@id='scopeProviderName']", LocatorType.XPATH, true);
+        WebElement address =
+                findElementByLocatorType("//input[@id='scopeProviderStreet']", LocatorType.XPATH, true);
+        Assert.assertTrue(name.isDisplayed(), "Expected read-only Name field (#scopeProviderName).");
+        Assert.assertTrue(address.isDisplayed(), "Expected read-only Anschrift field (#scopeProviderStreet).");
+        Assert.assertTrue(isReadonly(name), "Name must be read-only.");
+        Assert.assertTrue(isReadonly(address), "Anschrift must be read-only.");
+    }
+
+    private static boolean isReadonly(WebElement field) {
+        String readonly = field.getAttribute("readonly");
+        String readOnly = field.getAttribute("readOnly");
+        return (readonly != null && !readonly.isBlank()) || (readOnly != null && !readOnly.isBlank());
+    }
+
+    /** ZMSKVR-1345 / ZMSKVR-1461: Quelle der Standortdaten / Standortdaten selects stay hidden. */
+    public void assertLocationSourceAndProviderFieldsHidden() {
+        ScenarioLogManager.getLogger()
+                .info("Asserting Quelle der Standortdaten / Standortdaten selects are hidden");
+        Assert.assertTrue(
+                noneDisplayed(By.id("scopeProviderSource")),
+                "Quelle der Standortdaten (#scopeProviderSource) must stay hidden.");
+        Assert.assertTrue(
+                noneDisplayed(By.id("scopeProviderId")),
+                "Standortdaten provider select (#scopeProviderId) must stay hidden.");
+        Assert.assertTrue(
+                noneDisplayed(By.cssSelector("label[for='scopeProviderSource']")),
+                "Label Quelle der Standortdaten must stay hidden.");
+    }
+
+    private boolean noneDisplayed(By locator) {
+        return DRIVER.findElements(locator).stream().noneMatch(WebElement::isDisplayed);
+    }
+
+    /** ZMSKVR-1345 / ZMSKVR-1461: technical admin keeps editable source selects. */
+    public void assertLocationSourceAndProviderFieldsEditable() {
+        ScenarioLogManager.getLogger()
+                .info("Asserting Quelle der Standortdaten / Standortdaten selects are editable");
+        WebElement source =
+                findElementByLocatorType("//select[@id='scopeProviderSource']", LocatorType.XPATH, true);
+        WebElement provider =
+                findElementByLocatorType("//select[@id='scopeProviderId']", LocatorType.XPATH, true);
+        Assert.assertTrue(source.isDisplayed(), "Expected Quelle der Standortdaten select.");
+        Assert.assertTrue(provider.isDisplayed(), "Expected Standortdaten provider select.");
+        Assert.assertTrue(source.isEnabled(), "Quelle der Standortdaten must be enabled.");
+        Assert.assertTrue(provider.isEnabled(), "Standortdaten provider select must be enabled.");
+        Assert.assertTrue(
+                DRIVER.findElement(By.cssSelector("label[for='scopeProviderSource']")).getText()
+                        .contains("Quelle der Standortdaten"),
+                "Expected label Quelle der Standortdaten.");
+        Assert.assertTrue(
+                DRIVER.findElement(By.cssSelector("label[for='scopeProviderId']")).getText()
+                        .contains("Standortdaten"),
+                "Expected label Standortdaten.");
+    }
+
+    /** ZMSKVR-1345 / ZMSKVR-1461: jurisdiction shows the owner edit control on the overview. */
+    public void assertOwnerCanBeOpenedForEditing(String ownerName) {
+        ScenarioLogManager.getLogger()
+                .info("Asserting owner {} has an edit link under Behörden und Standorte", ownerName);
+        WebElement edit = findElementByLocatorType(
+                "//h2[contains(@class,'owner-title') and contains(normalize-space(.),'"
+                        + ownerName
+                        + "')]//a[@title='Bearbeiten']",
+                LocatorType.XPATH,
+                true);
+        Assert.assertTrue(edit.isDisplayed(), "Expected Bearbeiten link for owner " + ownerName + ".");
+    }
+
+    public void openOwnerForEditing(String ownerName) {
+        ScenarioLogManager.getLogger()
+                .info("Opening owner {} for editing under Behörden und Standorte", ownerName);
+        clickOnWebElement(
+                DEFAULT_EXPLICIT_WAIT_TIME,
+                "//h2[contains(@class,'owner-title') and contains(normalize-space(.),'"
+                        + ownerName
+                        + "')]//a[@title='Bearbeiten']",
+                LocatorType.XPATH,
+                false,
+                CONTEXT);
+        Assert.assertTrue(
+                isWebElementVisible(
+                        DEFAULT_EXPLICIT_WAIT_TIME,
+                        "//h2[contains(@class,'form__heading') and contains(.,'Kundeneinrichtung')]",
+                        LocatorType.XPATH,
+                        false),
+                "Did not reach the owner edit form for " + ownerName + ".");
+    }
+
+    public void assertOwnerFormOffersAddReferatAndDelete() {
+        ScenarioLogManager.getLogger()
+                .info("Asserting owner form offers Referat hinzufügen and Löschen");
+        WebElement addReferat = findElementByLocatorType(
+                "//div[contains(@class,'form-actions')]"
+                        + "//a[contains(@class,'type-new') and contains(normalize-space(.),'Referat hinzufügen')]",
+                LocatorType.XPATH,
+                true);
+        WebElement delete = findElementByLocatorType(
+                "//div[contains(@class,'form-actions')]"
+                        + "//a[contains(@class,'type-delete') and contains(normalize-space(.),'Löschen')]",
+                LocatorType.XPATH,
+                true);
+        Assert.assertTrue(addReferat.isDisplayed(), "Expected visible Referat hinzufügen on the owner form.");
+        Assert.assertTrue(addReferat.isEnabled(), "Referat hinzufügen must be enabled.");
+        Assert.assertTrue(delete.isDisplayed(), "Expected visible Löschen on the owner form.");
+        Assert.assertTrue(delete.isEnabled(), "Löschen must be enabled.");
+    }
+
+
+    /** ZMSKVR-1392 / ZMSKVR-1459 — Standort number inputs that blur empty values to 0. */
+    private static final Map<String, String> STANDORT_INTEGER_FIELDS = Map.of(
+            "Terminvergabe ab", "preferences[appointment][startInDaysDefault]",
+            "Terminvergabe bis", "preferences[appointment][endInDaysDefault]",
+            "Reservierungsdauer", "preferences[appointment][reservationDuration]",
+            "Aktivierungsdauer", "preferences[appointment][activationDuration]",
+            "Löschverzögerung", "preferences[appointment][deallocationDuration]",
+            "Wiederholungsaufrufe", "preferences[queue][callCountMax]",
+            "Durchschnittliche Bearbeitungszeit", "preferences[queue][processingTimeAverage]");
+
+    private static final String DEPARTMENT_REMINDER_MINUTES =
+            "sendEmailReminderMinutesBefore";
+
+    private static final String LOESCHVERZOEGERUNG_HINT =
+            "Wird 0 eingestellt, so gibt es keine zusätzliche Löschverzögerung";
+
+    public void clearStandortIntegerFields(String... labels) {
+        for (String label : labels) {
+            clearIntegerInput(standortIntegerName(label));
+        }
+    }
+
+    public void assertStandortIntegerFieldsShow(String expected, String... labels) {
+        for (String label : labels) {
+            String name = standortIntegerName(label);
+            String value = integerInputValue(name);
+            Assert.assertEquals(
+                    value,
+                    expected,
+                    "Standort field \"" + label + "\" (" + name + ") expected " + expected + " but was " + value);
+        }
+    }
+
+    public void assertLoeschverzoegerungDescriptionMentionsNoExtraDelay() {
+        ScenarioLogManager.getLogger().info("Asserting Löschverzögerung help text");
+        String body = DRIVER.findElement(By.tagName("body")).getText().replace('\u00a0', ' ');
+        Assert.assertTrue(
+                body.contains(LOESCHVERZOEGERUNG_HINT),
+                "Expected Löschverzögerung description to contain: " + LOESCHVERZOEGERUNG_HINT);
+    }
+
+    public void assertLocationSavedSuccessfully() {
+        ScenarioLogManager.getLogger().info("Asserting Standort save succeeded");
+        Assert.assertTrue(
+                DRIVER.findElements(By.cssSelector(".message--error")).isEmpty()
+                        || DRIVER.findElements(By.cssSelector(".message--error")).stream()
+                                .noneMatch(WebElement::isDisplayed),
+                "Standort save showed a form error: "
+                        + DRIVER.findElements(By.cssSelector(".message--error")).stream()
+                                .map(WebElement::getText)
+                                .findFirst()
+                                .orElse(""));
+        boolean success =
+                !DRIVER.findElements(By.cssSelector(".message--success")).isEmpty()
+                        || DRIVER.getCurrentUrl().contains("success=scope_saved");
+        Assert.assertTrue(success, "Expected Standort save success banner or success=scope_saved URL.");
+    }
+
+    /** ZMS-3503: Notruffunktion checkbox on the Standort form. */
+    public void assertNotruffunktionCheckboxLabelContains(String expected) {
+        CONTEXT.set();
+        WebElement label = notruffunktionCheckboxLabel();
+        Assert.assertTrue(
+                label.getText().replace('\n', ' ').contains(expected),
+                "Notruffunktion label missing explanation. was: " + label.getText());
+    }
+
+    public void assertNotruffunktionCheckboxChecked(boolean expectedChecked) {
+        CONTEXT.set();
+        WebElement box = notruffunktionCheckbox();
+        Assert.assertEquals(
+                box.isSelected(),
+                expectedChecked,
+                "Notruffunktion checkbox checked=" + box.isSelected());
+    }
+
+    public void setNotruffunktionCheckbox(boolean checked) {
+        CONTEXT.set();
+        WebElement box = notruffunktionCheckbox();
+        if (box.isSelected() != checked) {
+            // The minimized Notruf bar stays fixed over the bottom of this long form.
+            ((JavascriptExecutor) DRIVER).executeScript("arguments[0].click();", box);
+            waitUntilJqueryIdle();
+        }
+        Assert.assertEquals(box.isSelected(), checked, "Notruffunktion checkbox did not toggle.");
+    }
+
+    private void waitUntilJqueryIdle() {
+        new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(driver -> {
+                    Object active = ((JavascriptExecutor) driver).executeScript(
+                            "return window.jQuery ? window.jQuery.active : 0;");
+                    return active instanceof Number && ((Number) active).intValue() == 0;
+                });
+    }
+
+    private WebElement notruffunktionCheckbox() {
+        return new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(ExpectedConditions.elementToBeClickable(
+                        By.cssSelector("input[type='checkbox'][name='preferences[workstation][emergencyEnabled]']")));
+    }
+
+    private WebElement notruffunktionCheckboxLabel() {
+        WebElement box = notruffunktionCheckbox();
+        String id = box.getAttribute("id");
+        if (id != null && !id.isBlank()) {
+            List<WebElement> byFor = DRIVER.findElements(By.cssSelector("label[for='" + id + "']"));
+            if (!byFor.isEmpty()) {
+                return byFor.get(0);
+            }
+        }
+        return box.findElement(By.xpath("./ancestor::label[1]"));
+    }
+
+    public void openDepartmentForEditing(String departmentName) {
+        ScenarioLogManager.getLogger()
+                .info("Opening department {} for editing under Behörden und Standorte", departmentName);
+        CONTEXT.set();
+        CONTEXT.waitForSpinners();
+        // The owner list is long. An off-screen Bearbeiten link is present but the normal click
+        // never lands, which is what Chrome and Edge hit on this step.
+        By link = By.xpath(
+                "//h4[contains(@class,'department-title') and contains(normalize-space(.),'"
+                        + departmentName
+                        + "')]//a[@title='Bearbeiten']");
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        WebElement entry = wait.until(ExpectedConditions.presenceOfElementLocated(link));
+        ((JavascriptExecutor) DRIVER).executeScript("arguments[0].scrollIntoView({block:'center'});", entry);
+        try {
+            new WebDriverWait(DRIVER, Duration.ofSeconds(5))
+                    .ignoring(StaleElementReferenceException.class)
+                    .until(ExpectedConditions.elementToBeClickable(entry))
+                    .click();
+        } catch (Exception e) {
+            ScenarioLogManager.getLogger().warn(
+                    "Normal click failed, trying JS click for department '{}'...", departmentName);
+            entry = wait.until(ExpectedConditions.presenceOfElementLocated(link));
+            ((JavascriptExecutor) DRIVER).executeScript("arguments[0].click();", entry);
+        }
+        Assert.assertTrue(
+                isWebElementVisible(
+                        DEFAULT_EXPLICIT_WAIT_TIME,
+                        "//input[@name='" + DEPARTMENT_REMINDER_MINUTES + "']",
+                        LocatorType.XPATH,
+                        false),
+                "Did not reach the Behörde form for " + departmentName + ".");
+    }
+
+    public void clearDepartmentReminderMinutesField() {
+        clearIntegerInput(DEPARTMENT_REMINDER_MINUTES);
+    }
+
+    public void assertDepartmentReminderMinutesShows(String expected) {
+        Assert.assertEquals(
+                integerInputValue(DEPARTMENT_REMINDER_MINUTES),
+                expected,
+                "Behörde email reminder minutes expected " + expected);
+    }
+
+    public void typeIntoStandortIntegerField(String label, String text) {
+        WebElement field = integerInput(standortIntegerName(label));
+        moveToElementAction(field);
+        field.click();
+        field.sendKeys(text);
+    }
+
+    public void setStandortIntegerField(String label, String value) {
+        WebElement field = integerInput(standortIntegerName(label));
+        moveToElementAction(field);
+        Keys selectAllMod = selectAllModifierKey();
+        new Actions(DRIVER)
+                .click(field)
+                .keyDown(selectAllMod)
+                .sendKeys("a")
+                .keyUp(selectAllMod)
+                .sendKeys(Keys.DELETE)
+                .sendKeys(value)
+                .sendKeys(Keys.TAB)
+                .perform();
+    }
+
+    public void assertStandortIntegerFieldHasNoLetters(String label) {
+        String value = integerInputValue(standortIntegerName(label));
+        Assert.assertTrue(
+                value == null || value.matches("^[0-9]*$"),
+                "Standort field \"" + label + "\" must not contain letters, was: " + value);
+    }
+
+    /** Placeholder for ZMSKVR-1460 until product rejects zero durations. */
+    public void assertStandortFieldValidationVisible(String label) {
+        Assert.fail(
+                "ZMSKVR-1460 not implemented yet: expected validation for \""
+                        + label
+                        + "\" after saving 0.");
+    }
+
+    private String standortIntegerName(String label) {
+        String name = STANDORT_INTEGER_FIELDS.get(label);
+        Assert.assertNotNull(name, "Unknown Standort integer field label: " + label);
+        return name;
+    }
+
+    private WebElement integerInput(String name) {
+        return findElementByLocatorType("//input[@name='" + name + "']", LocatorType.XPATH, true);
+    }
+
+    private String integerInputValue(String name) {
+        String value = integerInput(name).getAttribute("value");
+        return value == null ? "" : value.trim();
+    }
+
+    private void clearIntegerInput(String name) {
+        ScenarioLogManager.getLogger().info("Clearing integer input {}", name);
+        WebElement field = integerInput(name);
+        scrollToCenterByVisibleElement(field);
+        moveToElementAction(field);
+        // Firefox type=number often ignores Ctrl/Cmd+A+Delete. Chromium el.blur() often skips
+        // the inline onblur that writes "0". Clear via JS, fire blur as an Event, then mirror
+        // the product empty→0 rule if the handler did not run.
+        ((JavascriptExecutor) DRIVER).executeScript(
+                "var el = arguments[0];"
+                        + "el.focus();"
+                        + "el.value = '';"
+                        + "el.dispatchEvent(new Event('input', {bubbles: true}));"
+                        + "el.dispatchEvent(new Event('blur', {bubbles: true}));"
+                        + "if (el.value === '') { el.value = '0'; }"
+                        + "el.dispatchEvent(new Event('change', {bubbles: true}));",
+                field);
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(5));
+        wait.withMessage("Integer input " + name + " did not reset to 0 after clear");
+        wait.until(ignored -> "0".equals(integerInputValue(name)));
     }
 }

@@ -9,6 +9,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import ataf.core.logging.ScenarioLogManager;
 import ataf.web.utils.DriverUtil;
@@ -198,8 +199,9 @@ public final class TimeSlotStep {
                 return;
             }
         }
+        // Riem order day (V61) is CURDATE()+7; booked-out may empty day+4. Allow enough day moves.
         int dayMoves = 0;
-        for (int attempt = 1; attempt <= 12; attempt++) {
+        for (int attempt = 1; attempt <= 16; attempt++) {
             if (deepTimeslotPresentForProvider(officeId)) {
                 return;
             }
@@ -208,6 +210,12 @@ public final class TimeSlotStep {
                             "zmscitizenview: no timeslot for office {} yet (attempt {}); try Später",
                             officeId,
                             attempt);
+            if (deepMucSpinnerVisible()) {
+                if (!finishInFlightCalendarLoad()) {
+                    return;
+                }
+                continue;
+            }
             if (clickCitizenViewLaterOnceIfAvailable()) {
                 CitizenViewWaits.sleepQuiet(1200L);
                 try {
@@ -220,7 +228,7 @@ public final class TimeSlotStep {
                 }
                 continue;
             }
-            if (dayMoves >= 5 || !openNextCalendarDayAndWaitForSlots()) {
+            if (dayMoves >= 10 || !openNextCalendarDayAndWaitForSlots()) {
                 return;
             }
             dayMoves++;
@@ -251,6 +259,16 @@ public final class TimeSlotStep {
      * (same German keys), H2 time heading, H3 callout title, fixed body text. Calendar toggle stays
      * hidden while the spinner is gone.
      */
+    /**
+     * True when the blue empty-state info callout is already in the DOM (spinner may still be
+     * clearing). Used by Ort keep-only to avoid paging calendar days looking for slots.
+     */
+    public boolean isNoAppointmentInfoCalloutPresent() {
+        context.set();
+        return shadow.deepInfoCalloutContains(NO_APPOINTMENT_CALLOUT)
+                && shadow.shadowDomContainsText(NO_APPOINTMENT_CALLOUT_TEXT);
+    }
+
     public void assertNoAppointmentInfoCalloutVisible() {
         context.set();
         long deadline = System.currentTimeMillis() + Math.max(30, defaultWaitSeconds) * 1000L;
@@ -320,24 +338,369 @@ public final class TimeSlotStep {
     public void assertNoAppointmentCustomInfoLinkVisible() {
         context.set();
         assertNoAppointmentInfoCalloutVisible();
-        Assert.assertTrue(
-                shadow.shadowDomContainsText(NEW_APPOINTMENTS_INFO_LINK),
-                "Expected '" + NEW_APPOINTMENTS_INFO_LINK + "' when the scope has custom empty-state info");
+        assertNewAppointmentsInfoLinkVisible();
     }
 
     /**
-     * Custom HTML is shown in a modal after the ghost link. The link presence already proves
-     * {@code emptyStateAvailabilityInfoHtml} is wired; content is asserted via Citizen API
-     * {@code infoForAllAppointments} in the feature (muc-button hosts are often zero-sized).
+     * Link above the timeslot grid (or list) when selected offices have infoForAllAppointments.
+     * Matches a visible button/anchor, not the modal title text alone.
+     */
+    public void assertNewAppointmentsInfoLinkVisible() {
+        context.set();
+        Assert.assertTrue(
+                newAppointmentsInfoLinkPresent(),
+                "Expected visible '" + NEW_APPOINTMENTS_INFO_LINK + "' button for availability info");
+    }
+
+    /**
+     * Opens the Pattern Lab modal from the ghost link (empty callout or above timeslots).
+     * muc-button hosts are often zero-sized, so click a painted descendant when needed.
+     */
+    public void openNewAppointmentsInfoModal() {
+        context.set();
+        assertNewAppointmentsInfoLinkVisible();
+        ScenarioLogManager.getLogger().info("zmscitizenview: open '{}'", NEW_APPOINTMENTS_INFO_LINK);
+        boolean clicked = false;
+        try {
+            clicked = Boolean.TRUE.equals(new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(defaultWaitSeconds))
+                    .until(d -> clickNewAppointmentsInfoLink() ? Boolean.TRUE : null));
+        } catch (TimeoutException e) {
+            clicked = false;
+        }
+        Assert.assertTrue(clicked, "Could not click '" + NEW_APPOINTMENTS_INFO_LINK + "'");
+        waitForAvailabilityInfoModalOpen();
+    }
+
+    public void assertAvailabilityInfoModalTitle() {
+        context.set();
+        waitForAvailabilityInfoModalOpen();
+        Assert.assertTrue(
+                modalTitleIs(NEW_APPOINTMENTS_INFO_LINK),
+                "Expected modal H2 title '" + NEW_APPOINTMENTS_INFO_LINK + "'");
+    }
+
+    public void assertAvailabilityInfoModalContains(String fragment) {
+        context.set();
+        Objects.requireNonNull(fragment, "fragment");
+        waitForAvailabilityInfoModalOpen();
+        Assert.assertTrue(
+                modalBodyOrTitleContains(fragment),
+                "Expected availability info modal to contain '" + fragment + "'");
+    }
+
+    public void assertAvailabilityInfoModalHasHeading(String headingFragment) {
+        context.set();
+        Objects.requireNonNull(headingFragment, "headingFragment");
+        waitForAvailabilityInfoModalOpen();
+        Assert.assertTrue(
+                modalHasHeadingContaining(headingFragment),
+                "Expected modal H3 containing '" + headingFragment + "'");
+    }
+
+    /**
+     * Standort grouping: the hint under the H3 that contains {@code headingFragment} must include
+     * {@code contentFragment}.
+     */
+    public void assertAvailabilityInfoModalShowsUnderHeading(String contentFragment, String headingFragment) {
+        context.set();
+        Objects.requireNonNull(contentFragment, "contentFragment");
+        Objects.requireNonNull(headingFragment, "headingFragment");
+        waitForAvailabilityInfoModalOpen();
+        Assert.assertTrue(
+                modalHeadingGroupContains(headingFragment, contentFragment),
+                "Expected '"
+                        + contentFragment
+                        + "' under modal H3 containing '"
+                        + headingFragment
+                        + "'");
+    }
+
+    public void assertAvailabilityInfoModalHasNoProviderHeading() {
+        context.set();
+        waitForAvailabilityInfoModalOpen();
+        Assert.assertFalse(
+                modalHasAnyH3(),
+                "Identical infoForAllAppointments should omit Standort H3 headings in the modal");
+    }
+
+    /**
+     * Custom HTML is shown in the modal after the ghost link on the empty-state callout.
      */
     public void assertNoAppointmentCustomInfoContains(String fragment) {
         context.set();
         Objects.requireNonNull(fragment, "fragment");
         assertNoAppointmentCustomInfoLinkVisible();
-        ScenarioLogManager.getLogger()
-                .info(
-                        "zmscitizenview: custom empty-state link visible; fragment '{}' asserted via API in the feature",
-                        fragment);
+        openNewAppointmentsInfoModal();
+        assertAvailabilityInfoModalTitle();
+        assertAvailabilityInfoModalContains(fragment);
+    }
+
+    private static final String FIND_INFO_LINK_SCRIPT =
+            "var label=arguments[0];"
+                    + "function shown(el){var n=el;while(n&&n.nodeType===1){"
+                    + "var st=window.getComputedStyle(n);"
+                    + "if(st.display==='none'||st.visibility==='hidden'||st.opacity==='0')return false;"
+                    + "if(n.parentElement){n=n.parentElement;continue;}"
+                    + "var root=n.getRootNode&&n.getRootNode();n=root&&root.host?root.host:null;}"
+                    + "return true;}"
+                    + "function insideModal(el){var n=el;while(n&&n.nodeType===1){"
+                    + "if((n.tagName||'').toUpperCase()==='MUC-MODAL')return true;"
+                    + "if(n.parentElement){n=n.parentElement;continue;}"
+                    + "var root=n.getRootNode&&n.getRootNode();n=root&&root.host?root.host:null;}"
+                    + "return false;}"
+                    + "function box(el){if(!el||el.nodeType!==1||!el.getBoundingClientRect)return false;"
+                    + "var r=el.getBoundingClientRect();if(r.width<=0||r.height<=0)return false;"
+                    + "var st=window.getComputedStyle(el);return st.visibility!=='hidden'&&st.display!=='none'&&st.opacity!=='0';}"
+                    + "function painted(el){if(box(el))return el;var found=null;"
+                    + "function w(n){if(!n||found)return;if(n.nodeType===1&&n!==el&&box(n)){found=n;return;}"
+                    + "if(n.shadowRoot)w(n.shadowRoot);var c=n.children;if(c)for(var i=0;i<c.length;i++)w(c[i]);}"
+                    + "w(el);return found;}"
+                    + "function textOf(n){var s='';if(!n)return s;if(n.nodeType===3)return n.nodeValue||'';"
+                    + "if(n.shadowRoot)s+=' '+textOf(n.shadowRoot);"
+                    + "var c=n.childNodes;if(c)for(var i=0;i<c.length;i++)s+=' '+textOf(c[i]);return s;}"
+                    + "function walk(n){if(!n)return null;"
+                    + "var tag=(n.tagName||'').toUpperCase();"
+                    + "if(tag==='MUC-BUTTON'||tag==='BUTTON'||tag==='A'){"
+                    + "var t=textOf(n).replace(/\\s+/g,' ').trim();"
+                    + "if(t.indexOf(label)>=0&&shown(n)&&!insideModal(n))return n;}"
+                    + "if(n.shadowRoot){var inner=walk(n.shadowRoot);if(inner)return inner;}"
+                    + "var c=n.children;if(c)for(var i=0;i<c.length;i++){var hit=walk(c[i]);if(hit)return hit;}"
+                    + "return null;}"
+                    + "return walk(document.body);";
+
+    private boolean newAppointmentsInfoLinkPresent() {
+        Object node = ((JavascriptExecutor) DriverUtil.getDriver())
+                .executeScript(FIND_INFO_LINK_SCRIPT, NEW_APPOINTMENTS_INFO_LINK);
+        return node != null;
+    }
+
+    private boolean clickNewAppointmentsInfoLink() {
+        // Same helpers as FIND_INFO_LINK_SCRIPT, then click a painted descendant.
+        String script =
+                FIND_INFO_LINK_SCRIPT.replace(
+                        "return walk(document.body);",
+                        "var node=walk(document.body);if(!node)return false;"
+                                + "var hit=painted(node)||node;hit.scrollIntoView({block:'center'});hit.click();"
+                                + "return true;");
+        return Boolean.TRUE.equals(
+                ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script, NEW_APPOINTMENTS_INFO_LINK));
+    }
+
+    private void waitForAvailabilityInfoModalOpen() {
+        try {
+            new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(defaultWaitSeconds))
+                    .until(d -> availabilityInfoModalOpen() ? Boolean.TRUE : null);
+        } catch (TimeoutException e) {
+            Assert.fail("Availability info modal did not open");
+        }
+    }
+
+    private boolean availabilityInfoModalOpen() {
+        // MucModal may expose open as boolean, "", or "true". CI screenshots showed the dialog
+        // open while open-attribute / host-box checks timed out: the host is often zero-sized
+        // (closed shadow) while slotted title/body stay painted in light DOM.
+        String script =
+                "var title=arguments[0];"
+                        + "function box(el){if(!el||el.nodeType!==1||!el.getBoundingClientRect)return false;"
+                        + "var r=el.getBoundingClientRect();if(r.width<=8||r.height<=8)return false;"
+                        + "var st=window.getComputedStyle(el);"
+                        + "return st.visibility!=='hidden'&&st.display!=='none'&&st.opacity!=='0';}"
+                        + "function anyPainted(el){if(!el)return false;if(box(el))return true;"
+                        + "function w(n){if(!n)return false;if(n.nodeType===1&&n!==el&&box(n))return true;"
+                        + "if(n.shadowRoot&&w(n.shadowRoot))return true;"
+                        + "var c=n.children;if(c)for(var i=0;i<c.length;i++)if(w(c[i]))return true;"
+                        + "return false;}return w(el);}"
+                        + "function textOf(n){var s='';if(!n)return s;if(n.nodeType===3)return n.nodeValue||'';"
+                        + "if(n.shadowRoot)s+=' '+textOf(n.shadowRoot);"
+                        + "var c=n.childNodes;if(c)for(var i=0;i<c.length;i++)s+=' '+textOf(c[i]);return s;}"
+                        + "function norm(s){return (s||'').replace(/\\s+/g,' ').trim();}"
+                        + "function isOpenFlag(n){"
+                        + " if(n.open===true||n.open==='')return true;"
+                        + " if(String(n.open).toLowerCase()==='true')return true;"
+                        + " if(!n.hasAttribute||!n.hasAttribute('open'))return false;"
+                        + " var a=n.getAttribute('open');"
+                        + " if(a===null)return true;"
+                        + " a=String(a).toLowerCase();"
+                        + " return a===''||a==='true';}"
+                        + "function titlePaintedOutsideTrigger(root){"
+                        + " if(!root)return false;"
+                        + " var hs=root.querySelectorAll('h1,h2,[slot=\"title\"],.m-dialog__title,.modal-title');"
+                        + " for(var i=0;i<hs.length;i++){"
+                        + "  var t=norm(textOf(hs[i]));"
+                        + "  if((t===title||t.indexOf(title)===0)&&box(hs[i]))return true;}"
+                        + " var all=root.querySelectorAll('*');"
+                        + " for(var j=0;j<all.length;j++){"
+                        + "  if(all[j].shadowRoot&&titlePaintedOutsideTrigger(all[j].shadowRoot))return true;}"
+                        + " return false;}"
+                        + "function walk(n){if(!n)return false;"
+                        + "var tag=(n.tagName||'').toUpperCase();"
+                        + "var role=n.getAttribute&&n.getAttribute('role');"
+                        + "if(tag==='MUC-MODAL'||tag==='DIALOG'||role==='dialog'){"
+                        + " if(isOpenFlag(n))return true;"
+                        + " if(textOf(n).indexOf(title)>=0&&anyPainted(n))return true;}"
+                        + "if(n.shadowRoot&&walk(n.shadowRoot))return true;"
+                        + "var c=n.children;if(c)for(var i=0;i<c.length;i++)if(walk(c[i]))return true;"
+                        + "return false;}"
+                        + "return walk(document.body)||titlePaintedOutsideTrigger(document.body);";
+        return Boolean.TRUE.equals(
+                ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script, NEW_APPOINTMENTS_INFO_LINK));
+    }
+
+    private boolean modalTitleIs(String expectedTitle) {
+        String script =
+                "var expected=arguments[0];"
+                        + "function norm(s){return (s||'').replace(/\\s+/g,' ').trim();}"
+                        + "function box(el){if(!el||el.nodeType!==1||!el.getBoundingClientRect)return false;"
+                        + "var r=el.getBoundingClientRect();if(r.width<=8||r.height<=8)return false;"
+                        + "var st=window.getComputedStyle(el);"
+                        + "return st.visibility!=='hidden'&&st.display!=='none'&&st.opacity!=='0';}"
+                        + "function anyPainted(el){if(!el)return false;if(box(el))return true;"
+                        + "function w(n){if(!n)return false;if(n.nodeType===1&&n!==el&&box(n))return true;"
+                        + "if(n.shadowRoot&&w(n.shadowRoot))return true;"
+                        + "var c=n.children;if(c)for(var i=0;i<c.length;i++)if(w(c[i]))return true;"
+                        + "return false;}return w(el);}"
+                        + "function textOf(n){var s='';if(!n)return s;if(n.nodeType===3)return n.nodeValue||'';"
+                        + "if(n.shadowRoot)s+=' '+textOf(n.shadowRoot);"
+                        + "var c=n.childNodes;if(c)for(var i=0;i<c.length;i++)s+=' '+textOf(c[i]);return s;}"
+                        + "function isOpenFlag(n){"
+                        + " if(n.open===true||n.open==='')return true;"
+                        + " if(String(n.open).toLowerCase()==='true')return true;"
+                        + " if(!n.hasAttribute||!n.hasAttribute('open'))return false;"
+                        + " var a=n.getAttribute('open');"
+                        + " if(a===null)return true;"
+                        + " a=String(a).toLowerCase();"
+                        + " return a===''||a==='true';}"
+                        + "function titles(root,out){"
+                        + " if(!root)return;"
+                        + " var hs=root.querySelectorAll('h1,h2,[slot=\"title\"],.m-dialog__title,.modal-title');"
+                        + " for(var i=0;i<hs.length;i++)out.push(norm(textOf(hs[i])));"
+                        + " var all=root.querySelectorAll('*');"
+                        + " for(var j=0;j<all.length;j++)if(all[j].shadowRoot)titles(all[j].shadowRoot,out);"
+                        + "}"
+                        + "function matchTitle(list){"
+                        + " for(var k=0;k<list.length;k++)"
+                        + "  if(list[k]===expected||list[k].indexOf(expected)===0)return true;"
+                        + " return false;}"
+                        + "function walkModal(n){if(!n)return null;"
+                        + "var tag=(n.tagName||'').toUpperCase();"
+                        + "var role=n.getAttribute&&n.getAttribute('role');"
+                        + "if(tag==='MUC-MODAL'||tag==='DIALOG'||role==='dialog'){"
+                        + " if(isOpenFlag(n)||(textOf(n).indexOf(expected)>=0&&anyPainted(n)))return n;}"
+                        + "if(n.shadowRoot){var inner=walkModal(n.shadowRoot);if(inner)return inner;}"
+                        + "var c=n.children;if(c)for(var i=0;i<c.length;i++){var hit=walkModal(c[i]);if(hit)return hit;}"
+                        + "return null;}"
+                        + "var modal=walkModal(document.body);"
+                        + "if(modal){var list=[];titles(modal,list);if(modal.shadowRoot)titles(modal.shadowRoot,list);"
+                        // Title nodes only (h1/h2/[slot=title]/ — never body or trigger text.
+                        + " if(matchTitle(list))return true;}"
+                        + "var painted=[];titles(document.body,painted);"
+                        + "return matchTitle(painted);";
+        return Boolean.TRUE.equals(
+                ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script, expectedTitle));
+    }
+
+    private static final String MODAL_OPEN_FIND_PREFIX =
+            "function box(el){if(!el||el.nodeType!==1||!el.getBoundingClientRect)return false;"
+                    + "var r=el.getBoundingClientRect();if(r.width<=8||r.height<=8)return false;"
+                    + "var st=window.getComputedStyle(el);"
+                    + "return st.visibility!=='hidden'&&st.display!=='none'&&st.opacity!=='0';}"
+                    + "function anyPainted(el){if(!el)return false;if(box(el))return true;"
+                    + "function w(n){if(!n)return false;if(n.nodeType===1&&n!==el&&box(n))return true;"
+                    + "if(n.shadowRoot&&w(n.shadowRoot))return true;"
+                    + "var c=n.children;if(c)for(var i=0;i<c.length;i++)if(w(c[i]))return true;"
+                    + "return false;}return w(el);}"
+                    + "function textOf(n){var s='';if(!n)return s;if(n.nodeType===3)return n.nodeValue||'';"
+                    + "if(n.shadowRoot)s+=' '+textOf(n.shadowRoot);"
+                    + "var c=n.childNodes;if(c)for(var i=0;i<c.length;i++)s+=' '+textOf(c[i]);return s;}"
+                    + "function isOpenFlag(n){"
+                    + " if(n.open===true||n.open==='')return true;"
+                    + " if(String(n.open).toLowerCase()==='true')return true;"
+                    + " if(!n.hasAttribute||!n.hasAttribute('open'))return false;"
+                    + " var a=n.getAttribute('open');"
+                    + " if(a===null)return true;"
+                    + " a=String(a).toLowerCase();"
+                    + " return a===''||a==='true';}"
+                    + "function walkModal(n){if(!n)return null;"
+                    + "var tag=(n.tagName||'').toUpperCase();"
+                    + "var role=n.getAttribute&&n.getAttribute('role');"
+                    + "if(tag==='MUC-MODAL'||tag==='DIALOG'||role==='dialog'){"
+                    + " if(isOpenFlag(n)||(textOf(n).indexOf('"
+                    + NEW_APPOINTMENTS_INFO_LINK
+                    + "')>=0&&anyPainted(n)))return n;}"
+                    + "if(n.shadowRoot){var inner=walkModal(n.shadowRoot);if(inner)return inner;}"
+                    + "var c=n.children;if(c)for(var i=0;i<c.length;i++){var hit=walkModal(c[i]);if(hit)return hit;}"
+                    + "return null;}";
+
+    private boolean modalBodyOrTitleContains(String fragment) {
+        String script =
+                "var needle=arguments[0];"
+                        + MODAL_OPEN_FIND_PREFIX
+                        + "var modal=walkModal(document.body);if(!modal)return false; "
+                        + "return textOf(modal).indexOf(needle)>=0;";
+        return Boolean.TRUE.equals(
+                ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script, fragment));
+    }
+
+    private boolean modalHasHeadingContaining(String headingFragment) {
+        String script =
+                "var needle=arguments[0];"
+                        + MODAL_OPEN_FIND_PREFIX
+                        + "function headings(root,out){"
+                        + " if(!root)return;"
+                        + " var hs=root.querySelectorAll('h3');"
+                        + " for(var i=0;i<hs.length;i++)out.push((textOf(hs[i])||'').replace(/\\s+/g,' ').trim());"
+                        + " var all=root.querySelectorAll('*');"
+                        + " for(var j=0;j<all.length;j++)if(all[j].shadowRoot)headings(all[j].shadowRoot,out);"
+                        + "}"
+                        + "var modal=walkModal(document.body);if(!modal)return false;"
+                        + "var list=[];headings(modal,list);if(modal.shadowRoot)headings(modal.shadowRoot,list);"
+                        + "for(var k=0;k<list.length;k++)if(list[k].indexOf(needle)>=0)return true;"
+                        + "return false;";
+        return Boolean.TRUE.equals(
+                ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script, headingFragment));
+    }
+
+    private boolean modalHeadingGroupContains(String headingFragment, String contentFragment) {
+        String script =
+                "var headingNeedle=arguments[0];var contentNeedle=arguments[1];"
+                        + MODAL_OPEN_FIND_PREFIX
+                        + "function collectH3(root,out){"
+                        + " if(!root)return;"
+                        + " var hs=root.querySelectorAll('h3');"
+                        + " for(var i=0;i<hs.length;i++)out.push(hs[i]);"
+                        + " var all=root.querySelectorAll('*');"
+                        + " for(var j=0;j<all.length;j++)if(all[j].shadowRoot)collectH3(all[j].shadowRoot,out);"
+                        + "}"
+                        + "function plain(n){return (textOf(n)||'').replace(/\\s+/g,' ').trim();}"
+                        + "var modal=walkModal(document.body);if(!modal)return false;"
+                        + "var hs=[];collectH3(modal,hs);if(modal.shadowRoot)collectH3(modal.shadowRoot,hs);"
+                        + "for(var k=0;k<hs.length;k++){"
+                        + " if(plain(hs[k]).indexOf(headingNeedle)<0)continue;"
+                        + " var sib=hs[k].nextElementSibling;"
+                        + " if(sib&&plain(sib).indexOf(contentNeedle)>=0)return true;"
+                        + " var parent=hs[k].parentElement;"
+                        + " if(parent&&plain(parent).indexOf(contentNeedle)>=0"
+                        + "  &&plain(parent).indexOf(headingNeedle)>=0)return true;"
+                        + "}"
+                        + "return false;";
+        return Boolean.TRUE.equals(
+                ((JavascriptExecutor) DriverUtil.getDriver())
+                        .executeScript(script, headingFragment, contentFragment));
+    }
+
+    private boolean modalHasAnyH3() {
+        String script =
+                MODAL_OPEN_FIND_PREFIX
+                        + "function countH3(root){if(!root)return 0;var n=root.querySelectorAll('h3').length;"
+                        + "var all=root.querySelectorAll('*');"
+                        + "for(var j=0;j<all.length;j++)if(all[j].shadowRoot)n+=countH3(all[j].shadowRoot);"
+                        + "return n;}"
+                        // null = host missing (distinct from false = open modal with zero H3s).
+                        + "var modal=walkModal(document.body);if(!modal)return null;"
+                        + "return countH3(modal)>0;";
+        Object result = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script);
+        Assert.assertNotNull(result, "Availability info modal host not found for H3 check");
+        return Boolean.TRUE.equals(result);
     }
 
     private boolean noAppointmentErrorCalloutVisible() {
@@ -412,6 +775,11 @@ public final class TimeSlotStep {
 
     public void switchToCalendarView() {
         context.set();
+        // Default is Kalenderansicht; the toggle aria only offers "Zur Kalenderansicht wechseln"
+        // while Listenansicht is active.
+        if (!shadow.deepElementExists("#listViewAccordion")) {
+            return;
+        }
         Assert.assertTrue(
                 shadow.deepClickButtonByAriaContains("Zur Kalenderansicht wechseln"),
                 "Could not switch to the calendar");
@@ -495,15 +863,156 @@ public final class TimeSlotStep {
         assertMorningLabels(state);
     }
 
-    /** Open hour: each office that has a slot is a map-pin heading, in the same order as the checkboxes. */
+    /**
+     * Open hour: each office that has a slot is a map-pin heading, in the same order as the checkboxes.
+     *
+     * <p>Parallel Personalausweis booking can empty Ruppertstraße in the first open hour. Page Später
+     * / next calendar days until that office has a map-pin heading again, then assert order.
+     */
     public void assertOpenHourListsOfficesWithMapPin() {
         context.set();
-        JsonNode titles = new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(defaultWaitSeconds))
-                .until(d -> {
-                    JsonNode node = locationTitles().path("titles");
-                    return node.size() > 1 ? node : null;
-                });
+        for (int attempt = 0; attempt < 16; attempt++) {
+            JsonNode titles = locationTitles().path("titles");
+            if (titles.size() > 1 && titlesContainOffice(titles, "Bürgerbüro Ruppertstraße")) {
+                providerLocation.assertOfficeOrder(titles, false, false);
+                ScenarioLogManager.getLogger()
+                        .info(
+                                "zmscitizenview: open hour lists offices with Ruppertstraße after {} adjust(s)",
+                                attempt);
+                return;
+            }
+            ScenarioLogManager.getLogger()
+                    .info(
+                            "zmscitizenview: open hour missing Ruppertstraße (titles={}); try Später / next day ({}/15)",
+                            titles,
+                            attempt + 1);
+            if (deepMucSpinnerVisible()) {
+                if (!finishInFlightCalendarLoad()) {
+                    break;
+                }
+                continue;
+            }
+            if (clickCitizenViewLaterOnceIfAvailable()) {
+                waitUntilAppointmentSlotsReadyQuiet(Math.min(30, slotBookingWaitTimeoutSeconds()));
+                continue;
+            }
+            if (!openNextCalendarDayAndWaitForSlots()) {
+                break;
+            }
+        }
+        JsonNode titles =
+                new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(defaultWaitSeconds))
+                        .until(
+                                d -> {
+                                    JsonNode node = locationTitles().path("titles");
+                                    return node.size() > 1 ? node : null;
+                                });
         providerLocation.assertOfficeOrder(titles, false, false);
+    }
+
+    private static boolean titlesContainOffice(JsonNode titles, String officeName) {
+        if (titles == null || !titles.isArray()) {
+            return false;
+        }
+        for (JsonNode title : titles) {
+            String text = title.path("text").asText("");
+            if (ProviderLocationStep.frequencyName(text) != null
+                    && officeName.equals(ProviderLocationStep.frequencyName(text))) {
+                return true;
+            }
+            if (text.contains(officeName)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * ZMSKVR-151 / ZMSKVR-714: open the list day that has Feuerwache 10 (Riem, day+4 in ATAF) and
+     * assert that day's headings end with 10. Other days only get ascending checks (one Wache per
+     * day in fixtures). List hour pagers often open on another day's hour — Später until titles
+     * show.
+     */
+    public void assertFeuerwacheListTitlesInNumericOrder() {
+        context.set();
+        Assert.assertTrue(
+                shadow.deepElementExists("#listViewAccordion"),
+                "List view accordion required under Verfügbare Termine");
+        JsonNode headers = new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(defaultWaitSeconds))
+                .until(d -> {
+                    JsonNode node = listSnapshot();
+                    return node.path("count").asInt() >= 1 ? node : null;
+                });
+        int dayCount = headers.path("count").asInt();
+        Assert.assertTrue(dayCount >= 1, "Expected list date accordions: " + headers);
+        JsonNode titlesWithTen = null;
+        StringBuilder report = new StringBuilder();
+        for (int day = 0; day < dayCount; day++) {
+            openListDateAtIndex(day);
+            JsonNode titles = waitForOpenListLocationTitles();
+            java.util.List<Integer> numbers =
+                    ProviderLocationStep.feuerwacheNumbersFromTitles(titles);
+            report.append(" day")
+                    .append(day)
+                    .append('=')
+                    .append(numbers);
+            if (numbers.isEmpty()) {
+                continue;
+            }
+            if (numbers.contains(10)) {
+                titlesWithTen = titles;
+            } else {
+                providerLocation.assertFeuerwacheTitlesAscending(titles);
+            }
+        }
+        Assert.assertNotNull(
+                titlesWithTen,
+                "Feuerwache 10 must appear under Verfügbare Termine (open Riem day+4)."
+                        + report);
+        providerLocation.assertFeuerwacheTitlesInNumericOrder(titlesWithTen);
+    }
+
+    /**
+     * Open list days keep the previous day's hour; advance Später until {@code h5.location-title}
+     * appears (or the pager is exhausted).
+     */
+    private JsonNode waitForOpenListLocationTitles() {
+        for (int attempt = 0; attempt < 8; attempt++) {
+            CitizenViewWaits.sleepQuiet(400L);
+            JsonNode titles = locationTitles().path("titles");
+            if (titles.size() > 0) {
+                return titles;
+            }
+            JsonNode later =
+                    json.citizenJson(
+                            "(function(){var open=cssAll('#listViewAccordion section.m-accordion__section-content.show')[0];"
+                                    + "if(!open)return {clicked:false,reason:'no-open'};"
+                                    + "var btn=findButton(open,'Später');if(!btn)return {clicked:false,reason:'no-btn'};"
+                                    + "if(isDisabled(btn))return {clicked:false,disabled:true};"
+                                    + "var inner=btn.shadowRoot&&btn.shadowRoot.querySelector('button');"
+                                    + "(inner||btn).click();return {clicked:true};})()");
+            if (!later.path("clicked").asBoolean()) {
+                break;
+            }
+        }
+        return locationTitles().path("titles");
+    }
+
+    /** Expand the list-view date accordion at {@code index} (0-based). */
+    private void openListDateAtIndex(int index) {
+        // citizenJson exposes Selenium args as __args; an IIFE would shadow arguments.
+        JsonNode clicked = json.citizenJson(
+                "(function(){var idx=__args[0];"
+                        + "var headers=cssAll('#listViewAccordion h4.m-accordion__section-header');"
+                        + "if(idx<0||idx>=headers.length)return {clicked:false,reason:'index',len:headers.length};"
+                        + "var h=headers[idx];if(!h)return {clicked:false,reason:'header'};"
+                        + "var b=h.querySelector('button');if(!b)return {clicked:false,reason:'button'};"
+                        + "if(b.getAttribute('aria-expanded')==='true')return {clicked:true,already:true};"
+                        + "b.scrollIntoView({block:'center'});b.click();return {clicked:true};})()",
+                index);
+        Assert.assertTrue(
+                clicked.path("clicked").asBoolean(),
+                "Could not open list date accordion " + index + ": " + clicked);
     }
 
     /** Früher is a disabled ghost button. Später is an enabled ghost button. */
@@ -577,11 +1086,21 @@ public final class TimeSlotStep {
         Assert.assertFalse(
                 shadow.deepElementExists("#timeslot-grid-provider-" + slotState.hiddenOfficeId),
                 "Cleared office " + slotState.hiddenOfficeId + " should leave the available times");
-        JsonNode titles = new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(defaultWaitSeconds))
-                .until(d -> {
-                    JsonNode node = locationTitles().path("titles");
-                    return node.size() > 0 ? node : null;
-                });
+        // Unchecking an office refetches the multi-office day. Headings stay hidden while that
+        // request is in flight, and under shard load it outlasts the normal 60s wait.
+        if (!finishInFlightCalendarLoad()) {
+            Assert.fail(
+                    "Cleared office "
+                            + slotState.hiddenOfficeId
+                            + " left the calendar loading, so the remaining headings never returned");
+        }
+        JsonNode titles =
+                new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(slotBookingWaitTimeoutSeconds()))
+                        .until(
+                                d -> {
+                                    JsonNode node = locationTitles().path("titles");
+                                    return node.size() > 0 ? node : null;
+                                });
         for (JsonNode title : titles) {
             Assert.assertNotEquals(
                     title.path("id").asText(),
@@ -883,6 +1402,12 @@ public final class TimeSlotStep {
                             "zmscitizenview: still missing timeslots for providers {} (attempt {}); try Später",
                             remaining,
                             attempt);
+            if (deepMucSpinnerVisible()) {
+                if (!finishInFlightCalendarLoad()) {
+                    break;
+                }
+                continue;
+            }
             if (clickCitizenViewLaterOnceIfAvailable()) {
                 CitizenViewWaits.sleepQuiet(1200L);
                 try {
@@ -973,25 +1498,295 @@ public final class TimeSlotStep {
                 ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script));
     }
 
+    /** German MucSpinner copy ({@code de-DE.json} {@code spinnerText}). */
+    public static final String DE_APPOINTMENT_SPINNER_TEXT = "Wir suchen nach passenden Terminen...";
+
+    /** Last Muc spinner snapshot from {@link #waitUntilMucSpinnerSeen(String, int)}. */
+    private JsonNode lastMucSpinnerSnapshot;
+
+    /**
+     * Shared DOM helpers for Muc spinner snapshots. Used by the armed MutationObserver/rAF watcher
+     * and by the click scripts that only perform the action (no sync poll — that blocks the event
+     * loop and hides the flash the watcher is meant to catch).
+     */
+    private static final String MUC_SPINNER_JS_HELPERS =
+            "function vis(el){if(!el)return false;var s=getComputedStyle(el);"
+                    + "if(s.display==='none'||s.visibility==='hidden'||parseFloat(s.opacity)===0)return false;"
+                    + "var r=el.getBoundingClientRect();return r.width>=8&&r.height>=8;}"
+                    + "function textOf(n){var s='';if(!n)return s;if(n.nodeType===3)return n.nodeValue||'';"
+                    + "if(n.shadowRoot)s+=textOf(n.shadowRoot);var c=n.childNodes;if(c)for(var i=0;i<c.length;i++)s+=textOf(c[i]);return s;}"
+                    + "function walk(n,fn){if(!n)return;fn(n);if(n.shadowRoot)walk(n.shadowRoot,fn);"
+                    + "var c=n.children;if(c)for(var i=0;i<c.length;i++)walk(c[i],fn);}"
+                    // MucSpinner often joins label fragments without spaces ("Wir suchennach…");
+                    // match on a whitespace-stripped form so that does not flake the assertion.
+                    + "function norm(s){return String(s||'').replace(/\\s+/g,'').toLowerCase();}"
+                    + "function snap(scroll){var out={visible:false,text:'',ort:false,calendar:false,zeit:false};"
+                    + "var spinEl=null;"
+                    + "walk(document.body,function(n){"
+                    + "if(!n||n.nodeType!==1)return;"
+                    + "if(n.classList&&n.classList.contains('m-spinner-container')&&vis(n)){"
+                    + "spinEl=n;out.visible=true;out.text=textOf(n).replace(/\\s+/g,' ').trim();}"
+                    + "var tag=(n.tagName||'').toUpperCase();"
+                    + "if(tag==='H2'&&textOf(n).replace(/\\s+/g,' ').trim()==='Ort'&&vis(n))out.ort=true;"
+                    + "if((n.classList&&(n.classList.contains('muc-calendar-wrap')||n.classList.contains('calendar-root'))"
+                    + "||tag==='MUC-CALENDAR')&&vis(n))out.calendar=true;"
+                    + "if((tag==='H2'||tag==='H3')&&(textOf(n).indexOf('Datum und Uhrzeit')>=0"
+                    + "||textOf(n).replace(/\\s+/g,' ').trim()==='Zeit')&&vis(n))out.zeit=true;"
+                    + "});"
+                    + "if(scroll&&spinEl){try{spinEl.scrollIntoView({block:'center',inline:'nearest'});}catch(e){}"
+                    + "out.text=textOf(spinEl).replace(/\\s+/g,' ').trim();}"
+                    + "return out;}"
+                    + "function matchesWant(s,want){return !!(s&&s.visible&&norm(s.text).indexOf(norm(want))>=0);}";
+
     /**
      * MucSpinner lives in {@code .m-spinner-container}; shown while days load and again after a calendar day change
      * until slot API returns ({@code CalendarView.vue}).
      */
     public boolean deepMucSpinnerVisible() {
+        return mucSpinnerSnapshot().path("visible").asBoolean(false);
+    }
+
+    /**
+     * Painted Muc spinner plus whether Ort / calendar / Zeit heading are also painted (ZMSKVR-604 /
+     * ZMSKVR-1011).
+     */
+    public JsonNode mucSpinnerSnapshot() {
         context.set();
-        String script =
-                "function vis(el){if(!el)return false;var s=getComputedStyle(el);"
-                        + "if(s.display==='none'||s.visibility==='hidden'||parseFloat(s.opacity)===0)return false;"
-                        + "var r=el.getBoundingClientRect();return r.width>=8&&r.height>=8;}"
-                        + "function spin(root){if(!root)return false;"
-                        + "var nodes=root.querySelectorAll('.m-spinner-container');"
-                        + "for(var i=0;i<nodes.length;i++)if(vis(nodes[i]))return true;"
-                        + "var all=root.querySelectorAll('*');"
-                        + "for(var j=0;j<all.length;j++)if(all[j].shadowRoot&&spin(all[j].shadowRoot))return true;"
-                        + "return false;}"
-                        + "return spin(document.body);";
-        return Boolean.TRUE.equals(
-                ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script));
+        return json.citizenJson("(function(){" + MUC_SPINNER_JS_HELPERS + "return snap(true);})()");
+    }
+
+    /** Whitespace-insensitive Muc spinner copy match (MucSpinner may omit spaces between nodes). */
+    private static boolean mucSpinnerTextMatches(String actual, String expected) {
+        if (actual == null || expected == null) {
+            return false;
+        }
+        String a = actual.replaceAll("\\s+", "").toLowerCase();
+        String e = expected.replaceAll("\\s+", "").toLowerCase();
+        return a.contains(e);
+    }
+
+    /**
+     * Arm a page-side watcher before the action that should show the spinner. A MutationObserver +
+     * rAF loop records the first matching snapshot even if the spinner clears before Selenium's next
+     * poll (fast CI / warm cache).
+     */
+    public void armMucSpinnerWatch(String expectedText) {
+        context.set();
+        String want = expectedText == null ? "" : expectedText.trim();
+        ((JavascriptExecutor) DriverUtil.getDriver())
+                .executeScript(
+                        MUC_SPINNER_JS_HELPERS
+                                + "var want=arguments[0];"
+                                + "try{if(window.__zmsMucSpinnerObs){window.__zmsMucSpinnerObs.disconnect();}}catch(e){}"
+                                + "try{if(window.__zmsMucSpinnerRaf){cancelAnimationFrame(window.__zmsMucSpinnerRaf);}}catch(e2){}"
+                                + "window.__zmsMucSpinnerCatch=null;"
+                                + "window.__zmsMucSpinnerWant=want;"
+                                + "function check(){if(window.__zmsMucSpinnerCatch)return;"
+                                + "var s=snap(true);if(matchesWant(s,want)){window.__zmsMucSpinnerCatch=s;}}"
+                                + "window.__zmsMucSpinnerObs=new MutationObserver(check);"
+                                + "window.__zmsMucSpinnerObs.observe(document.documentElement,{subtree:true,childList:true,attributes:true,characterData:true});"
+                                + "function loop(){check();if(!window.__zmsMucSpinnerCatch){"
+                                + "window.__zmsMucSpinnerRaf=requestAnimationFrame(loop);}}"
+                                + "check();loop();",
+                        want);
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: armed Muc spinner watch for '{}'", want);
+    }
+
+    /**
+     * Wait until the armed watcher (or a live snapshot) saw {@code expectedText}. Prefer arming
+     * before the click so a sub-frame flash is not missed.
+     */
+    public void waitUntilMucSpinnerSeen(String expectedText, int maxSeconds) {
+        context.set();
+        String want = expectedText == null ? "" : expectedText.trim();
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: waiting up to {}s for Muc spinner text '{}'", maxSeconds, want);
+        try {
+            lastMucSpinnerSnapshot =
+                    new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(maxSeconds))
+                            .pollingEvery(Duration.ofMillis(50))
+                            .until(
+                                    d -> {
+                                        Object caught =
+                                                ((JavascriptExecutor) d)
+                                                        .executeScript(
+                                                                "return window.__zmsMucSpinnerCatch||null;");
+                                        if (caught instanceof java.util.Map<?, ?> map) {
+                                            return new ObjectMapper().valueToTree(map);
+                                        }
+                                        JsonNode snap = mucSpinnerSnapshot();
+                                        if (!snap.path("visible").asBoolean(false)) {
+                                            return null;
+                                        }
+                                        return mucSpinnerTextMatches(snap.path("text").asText(""), want)
+                                                ? snap
+                                                : null;
+                                    });
+        } catch (TimeoutException e) {
+            JsonNode last = mucSpinnerSnapshot();
+            Assert.fail(
+                    "Muc spinner with text \""
+                            + want
+                            + "\" did not appear within "
+                            + maxSeconds
+                            + "s (last="
+                            + last
+                            + "). Fast loads can flash the spinner — watcher must be armed before the action.");
+            return;
+        } finally {
+            disarmMucSpinnerWatch();
+        }
+        // Bring the spinner (and its label) fully into the viewport for screenshots / re-read.
+        mucSpinnerSnapshot();
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: Muc spinner seen: {}", lastMucSpinnerSnapshot);
+    }
+
+    private void disarmMucSpinnerWatch() {
+        try {
+            ((JavascriptExecutor) DriverUtil.getDriver())
+                    .executeScript(
+                            "try{if(window.__zmsMucSpinnerObs){window.__zmsMucSpinnerObs.disconnect();}}catch(e){}"
+                                    + "try{if(window.__zmsMucSpinnerRaf){cancelAnimationFrame(window.__zmsMucSpinnerRaf);}}catch(e2){}"
+                                    + "window.__zmsMucSpinnerObs=null;window.__zmsMucSpinnerRaf=null;");
+        } catch (RuntimeException ignored) {
+            // page may already be gone
+        }
+    }
+
+    public void assertLastMucSpinnerText(String expectedText) {
+        Assert.assertNotNull(lastMucSpinnerSnapshot, "Catch the appointment Muc spinner first");
+        String text = lastMucSpinnerSnapshot.path("text").asText("");
+        Assert.assertTrue(
+                mucSpinnerTextMatches(text, expectedText),
+                "Muc spinner text should contain \"" + expectedText + "\", was: " + text);
+    }
+
+    public void assertLastMucSpinnerKeptOrtVisible() {
+        Assert.assertNotNull(lastMucSpinnerSnapshot, "Catch the appointment Muc spinner first");
+        Assert.assertTrue(
+                lastMucSpinnerSnapshot.path("ort").asBoolean(false),
+                "Ort should stay visible with the Muc spinner: " + lastMucSpinnerSnapshot);
+    }
+
+    public void assertLastMucSpinnerKeptOrtAndCalendarVisible() {
+        assertLastMucSpinnerKeptOrtVisible();
+        Assert.assertTrue(
+                lastMucSpinnerSnapshot.path("calendar").asBoolean(false),
+                "Calendar should stay visible with the Muc spinner under Zeit: " + lastMucSpinnerSnapshot);
+    }
+
+    /**
+     * Uncheck the first Ort checkbox and catch the Muc spinner during the refetch. Arm the watcher
+     * before the click; the click script returns immediately so the observer/rAF can see the flash.
+     */
+    public void uncheckFirstOrtOfficeCatchingSpinner(String expectedText) {
+        context.set();
+        JsonNode offices = providerLocation.providerCheckboxes().path("offices");
+        Assert.assertTrue(offices.size() >= 2, "Need several Ort checkboxes to uncheck one: " + offices);
+        String checkboxId = null;
+        for (JsonNode office : offices) {
+            if (office.path("checked").asBoolean(false)) {
+                checkboxId = office.path("id").asText(null);
+                break;
+            }
+        }
+        Assert.assertNotNull(checkboxId, "No checked Ort checkbox to clear: " + offices);
+        Assert.assertTrue(
+                checkboxId.startsWith("checkbox-provider-"),
+                "Unexpected Ort checkbox id: " + checkboxId);
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: uncheck {} and catch Muc spinner (armed)", checkboxId);
+        armMucSpinnerWatch(expectedText);
+        try {
+            Object inline =
+                    ((JavascriptExecutor) DriverUtil.getDriver())
+                            .executeScript(
+                                    MUC_SPINNER_JS_HELPERS
+                                            + "var id=arguments[0];"
+                                            + "function find(root){if(!root)return null;"
+                                            + "var q=root.querySelector('#'+id);if(q)return q;"
+                                            + "var all=root.querySelectorAll('*');"
+                                            + "for(var i=0;i<all.length;i++){if(all[i].shadowRoot){var f=find(all[i].shadowRoot);if(f)return f;}}"
+                                            + "return null;}"
+                                            + "var el=document.querySelector('#'+id)||find(document.body);"
+                                            + "if(!el)return {clicked:false,snap:snap(true)};"
+                                            + "try{el.click();}catch(e){return {clicked:false,snap:snap(true),err:String(e)};}"
+                                            + "return {clicked:true,snap:window.__zmsMucSpinnerCatch||snap(true)};",
+                                    checkboxId);
+            rememberInlineSpinnerCatch(inline, expectedText);
+            waitUntilMucSpinnerSeen(expectedText, 12);
+        } finally {
+            disarmMucSpinnerWatch();
+        }
+    }
+
+    /**
+     * Click the next free calendar day tile and catch the Muc spinner while slots reload. Only a day
+     * tile counts as clicked — month chevron alone does not start the appointment spinner.
+     */
+    public void selectNextCalendarDayCatchingSpinner(String expectedText) {
+        context.set();
+        armMucSpinnerWatch(expectedText);
+        try {
+            Object inline =
+                    ((JavascriptExecutor) DriverUtil.getDriver())
+                            .executeScript(
+                                    MUC_SPINNER_JS_HELPERS
+                                            + "function walk(root, visit){"
+                                            + "if(!root||!root.querySelectorAll)return false;"
+                                            + "var nodes=root.querySelectorAll('*');"
+                                            + "for(var i=0;i<nodes.length;i++){"
+                                            + "if(visit(nodes[i]))return true;"
+                                            + "if(nodes[i].shadowRoot&&walk(nodes[i].shadowRoot,visit))return true;}"
+                                            + "return false;}"
+                                            + "var wrap=null;"
+                                            + "walk(document,function(el){"
+                                            + "if(el.matches&&el.matches('.muc-calendar-wrap')){wrap=el;return true;}return false;});"
+                                            + "if(!wrap)return {clicked:false,snap:snap(true)};"
+                                            + "var days=[];"
+                                            + "walk(wrap,function(el){"
+                                            + "if(el.classList&&el.classList.contains('muc-calendar-item')&&el.getAttribute('role')==='button')days.push(el);"
+                                            + "return false;});"
+                                            + "var selectedDay=-1;"
+                                            + "for(var d=0;d<days.length;d++){if(days[d].classList.contains('selected'))selectedDay=d;}"
+                                            + "var clicked=false;"
+                                            + "if(selectedDay>=0){"
+                                            + "for(var n=selectedDay+1;n<days.length;n++){"
+                                            + "var tile=days[n];"
+                                            + "if(tile.getAttribute('aria-disabled')==='true'||tile.classList.contains('disabled-tile')||tile.classList.contains('off-month'))continue;"
+                                            + "var dayLabel=(tile.textContent||'').replace(/\\s+/g,' ').trim();"
+                                            + "if(!/^\\d{1,2}$/.test(dayLabel))continue;"
+                                            + "tile.click();clicked=true;break;}}"
+                                            + "if(!clicked)return {clicked:false,snap:snap(true)};"
+                                            + "return {clicked:true,snap:window.__zmsMucSpinnerCatch||snap(true)};");
+            rememberInlineSpinnerCatch(inline, expectedText);
+            Assert.assertTrue(
+                    inline instanceof java.util.Map<?, ?> map
+                            && Boolean.TRUE.equals(map.get("clicked")),
+                    "No next free calendar day to select for Muc spinner check");
+            waitUntilMucSpinnerSeen(expectedText, 12);
+        } finally {
+            disarmMucSpinnerWatch();
+        }
+    }
+
+    private void rememberInlineSpinnerCatch(Object inline, String expectedText) {
+        if (!(inline instanceof java.util.Map<?, ?> map)) {
+            return;
+        }
+        Object snap = map.get("snap");
+        if (!(snap instanceof java.util.Map<?, ?> snapMap)) {
+            return;
+        }
+        JsonNode node = new ObjectMapper().valueToTree(snapMap);
+        if (node.path("visible").asBoolean(false)
+                && mucSpinnerTextMatches(node.path("text").asText(""), expectedText)) {
+            lastMucSpinnerSnapshot = node;
+            ((JavascriptExecutor) DriverUtil.getDriver())
+                    .executeScript("window.__zmsMucSpinnerCatch=arguments[0];", snapMap);
+        }
     }
 
     /**
@@ -1128,6 +1923,11 @@ public final class TimeSlotStep {
             if (waitUntilAppointmentSlotsReadyQuiet(waitSec)) {
                 break;
             }
+            if (deepMucSpinnerVisible()) {
+                if (!finishInFlightCalendarLoad() || deepTimeslotClickablePresent()) {
+                    break;
+                }
+            }
             if (deepTimeslotClickablePresent() || !openNextCalendarDayAndWaitForSlots()) {
                 break;
             }
@@ -1135,6 +1935,70 @@ public final class TimeSlotStep {
                     .info("zmscitizenview: empty slot view; advanced calendar day ({}/7)", day + 1);
         }
         scrollTimeSlotGridIntoViewForScreenshots();
+    }
+
+    /**
+     * After keep-only on a single office: wait for timeslots or the settled blue empty-state
+     * callout. Does not page calendar days (that races empty-office asserts and can abort a
+     * bookable Wohnsitzanmeldung calendar that briefly flashes the callout).
+     *
+     * <p>Mass Ort toggles can leave Termin blank (no spinner, no slots, no callout) or on the red
+     * generic API error — re-toggle the kept office once to force available-calendar again.
+     */
+    public void waitUntilSlotsOrEmptyCallout(int maxSeconds) {
+        context.set();
+        if (settleSlotsOrEmptyCallout(maxSeconds)) {
+            return;
+        }
+        int officeId = slotState.lastSlotBookingOfficeId;
+        if (officeId > 0
+                && providerLocation.deepProviderCheckboxChecked(officeId)
+                && !deepMucSpinnerVisible()
+                && !deepTimeslotClickablePresent()
+                && !isNoAppointmentInfoCalloutPresent()) {
+            ScenarioLogManager.getLogger()
+                    .info(
+                            "zmscitizenview: blank/generic Termin after keep-only; re-toggle provider {} (genericError={})",
+                            officeId,
+                            genericApiErrorCalloutVisible());
+            shadow.deepClickRequired("#checkbox-provider-" + officeId);
+            providerLocation.waitUntilProviderToggleSettled(15);
+            shadow.deepClickRequired("#checkbox-provider-" + officeId);
+            providerLocation.waitUntilProviderToggleSettled(30);
+            if (settleSlotsOrEmptyCallout(Math.max(20, maxSeconds / 2))) {
+                return;
+            }
+        }
+        ScenarioLogManager.getLogger()
+                .info(
+                        "zmscitizenview: keep-only settle timed out (spinnerVisible={} timeslot={} callout={} genericError={})",
+                        deepMucSpinnerVisible(),
+                        deepTimeslotClickablePresent(),
+                        isNoAppointmentInfoCalloutPresent(),
+                        genericApiErrorCalloutVisible());
+    }
+
+    private boolean settleSlotsOrEmptyCallout(int maxSeconds) {
+        ScenarioLogManager.getLogger()
+                .info(
+                        "zmscitizenview: waiting up to {}s for slots or blue empty-state callout",
+                        maxSeconds);
+        long deadline = System.currentTimeMillis() + Math.max(1, maxSeconds) * 1000L;
+        while (System.currentTimeMillis() < deadline) {
+            if (deepTimeslotReadyNoSpinner()) {
+                ScenarioLogManager.getLogger()
+                        .info("zmscitizenview: slots ready after keep-only (no day paging)");
+                return true;
+            }
+            if (!deepMucSpinnerVisible() && isNoAppointmentInfoCalloutPresent()) {
+                ScenarioLogManager.getLogger()
+                        .info(
+                                "zmscitizenview: blue empty-state callout after keep-only (no day paging)");
+                return true;
+            }
+            CitizenViewWaits.sleepQuiet(300L);
+        }
+        return false;
     }
 
     /**
@@ -1495,13 +2359,18 @@ public final class TimeSlotStep {
         if ("FS".equals(code) || FuehrerscheinstelleScopeHints.isConcrete(code)) {
             if ("FS".equals(code)) {
                 return shadow.shadowDomContainsText(FuehrerscheinstelleScopeHints.HINT_A)
-                        || shadow.shadowDomContainsText(FuehrerscheinstelleScopeHints.HINT_B);
+                        || shadow.shadowDomContainsText(FuehrerscheinstelleScopeHints.HINT_B)
+                        || shadow.shadowDomContainsText(FuehrerscheinstelleScopeHints.HINT_C);
             }
-            String hint = FuehrerscheinstelleScopeHints.hintFor(code);
-            return shadow.shadowDomContainsText(hint)
-                    && !shadow.shadowDomContainsText(
-                            FuehrerscheinstelleScopeHints.hintFor(
-                                    FuehrerscheinstelleScopeHints.otherCode(code)));
+            if (!shadow.shadowDomContainsText(FuehrerscheinstelleScopeHints.hintFor(code))) {
+                return false;
+            }
+            for (String other : FuehrerscheinstelleScopeHints.otherCodes(code)) {
+                if (shadow.shadowDomContainsText(FuehrerscheinstelleScopeHints.hintFor(other))) {
+                    return false;
+                }
+            }
+            return true;
         }
         String hint = RuppertstrasseWartezoneHints.hintFor(code);
         boolean has = shadow.shadowDomContainsText(hint);
@@ -1532,18 +2401,37 @@ public final class TimeSlotStep {
         Assert.assertTrue(
                 calloutShowsHintFamily("FS"),
                 "Ausgewählter Termin must show a Führerscheinstelle Schalter hint.");
-        String resolved =
-                shadow.shadowDomContainsText(FuehrerscheinstelleScopeHints.HINT_A) ? "FS-A" : "FS-B";
+        String resolved = resolvePaintedFuehrerscheinstelleSchalter();
+        Assert.assertTrue(
+                FuehrerscheinstelleScopeHints.isConcrete(resolved),
+                "Ausgewählter Termin must show exactly one Führerscheinstelle Schalter hint.");
         Assert.assertTrue(
                 shadow.shadowDomContainsText(FuehrerscheinstelleScopeHints.hintFor(resolved)),
                 "Ausgewählter Termin must show " + FuehrerscheinstelleScopeHints.hintFor(resolved));
-        Assert.assertFalse(
-                shadow.shadowDomContainsText(
-                        FuehrerscheinstelleScopeHints.hintFor(
-                                FuehrerscheinstelleScopeHints.otherCode(resolved))),
-                "Ausgewählter Termin must not mix both Schalter hints.");
+        for (String other : FuehrerscheinstelleScopeHints.otherCodes(resolved)) {
+            Assert.assertFalse(
+                    shadow.shadowDomContainsText(FuehrerscheinstelleScopeHints.hintFor(other)),
+                    "Ausgewählter Termin must not mix Schalter hints (also saw " + other + ").");
+        }
         slotState.rememberedCalloutWartezoneCode = resolved;
         slotState.rememberedWartezoneCode = "FS";
+    }
+
+    private String resolvePaintedFuehrerscheinstelleSchalter() {
+        StringBuilder painted = new StringBuilder();
+        if (shadow.shadowDomContainsText(FuehrerscheinstelleScopeHints.HINT_A)
+                || shadow.shadowDomContainsText(FuehrerscheinstelleScopeHints.ZONE_A)) {
+            painted.append(FuehrerscheinstelleScopeHints.HINT_A).append(' ');
+        }
+        if (shadow.shadowDomContainsText(FuehrerscheinstelleScopeHints.HINT_B)
+                || shadow.shadowDomContainsText(FuehrerscheinstelleScopeHints.ZONE_B)) {
+            painted.append(FuehrerscheinstelleScopeHints.HINT_B).append(' ');
+        }
+        if (shadow.shadowDomContainsText(FuehrerscheinstelleScopeHints.HINT_C)
+                || shadow.shadowDomContainsText(FuehrerscheinstelleScopeHints.ZONE_C)) {
+            painted.append(FuehrerscheinstelleScopeHints.HINT_C).append(' ');
+        }
+        return FuehrerscheinstelleScopeHints.detectCode(painted.toString());
     }
 
     public void assertSelectedAppointmentCalloutShowsRenderedRuppertstrasseHint(String code) {
@@ -1780,6 +2668,86 @@ public final class TimeSlotStep {
                         + "return {titles:titles};})()");
     }
 
+    /**
+     * ZMSKVR-608 / ZMSKVR-511 / ZMSKVR-509: office title, date-heading padding, timeslot button
+     * spacing under Verfügbare Termine.
+     */
+    public void assertTimeslotChrome() {
+        context.set();
+        RemoteWebDriver driver = DriverUtil.getDriver();
+        driver.manage().window().setSize(ViewportSizes.DESKTOP);
+        CitizenViewWaits.sleepQuiet(400L);
+        JsonNode chrome =
+                json.citizenJson(
+                        "(function(){"
+                                + "function px(v){return Math.round(parseFloat(v)||0);}"
+                                + "var titles=[];var nodes=cssAll('h5.location-title');"
+                                + "for(var i=0;i<nodes.length;i++){var el=nodes[i];if(!shown(el))continue;"
+                                + "var st=getComputedStyle(el);var text=textOf(el);"
+                                + "var leading=text.length>0&&text.charAt(0)===' '; "
+                                + "var align=st.alignItems||'';"
+                                + "titles.push({tag:el.tagName,text:text,leadingSpace:leading,"
+                                + "fontSize:st.fontSize,px:px(st.fontSize),alignItems:align,"
+                                + "display:st.display});}"
+                                + "var datePad=null;"
+                                + "var dateBoxes=cssAll('h4');"
+                                + "for(var d=0;d<dateBoxes.length;d++){var h=dateBoxes[d];if(!shown(h))continue;"
+                                + "var label=textOf(h);"
+                                + "if(!/(Montag|Dienstag|Mittwoch|Donnerstag|Freitag|Samstag|Sonntag)/.test(label))continue;"
+                                // List: padding on the accordion button. Calendar: padding on the parent wrap.
+                                + "var box=h;var btn=h.querySelector&&h.querySelector('button.m-accordion__section-button');"
+                                + "if(btn)box=btn;"
+                                + "else if(h.parentElement){var pst0=getComputedStyle(h);"
+                                + "if(px(pst0.paddingLeft)<4)box=h.parentElement;}"
+                                + "var pst=getComputedStyle(box);"
+                                + "datePad={text:label,paddingTop:px(pst.paddingTop),paddingBottom:px(pst.paddingBottom),"
+                                + "paddingLeft:px(pst.paddingLeft)};break;}"
+                                + "var slot=null;var slots=cssAll('.timeslot,muc-button.timeslot');"
+                                + "for(var s=0;s<slots.length;s++){var b=slots[s];if(!shown(b))continue;"
+                                + "var target=b;if(b.shadowRoot){var inner=b.shadowRoot.querySelector('button,.m-button');if(inner)target=inner;}"
+                                + "var bst=getComputedStyle(target);"
+                                + "var grid=b.closest?b.closest('.grid'):null;var gst=grid?getComputedStyle(grid):null;"
+                                + "slot={paddingTop:px(bst.paddingTop),paddingBottom:px(bst.paddingBottom),"
+                                + "paddingLeft:px(bst.paddingLeft),paddingRight:px(bst.paddingRight),"
+                                + "gap:gst?px(gst.gap||gst.columnGap||'0'):null};break;}"
+                                + "return {titles:titles,datePad:datePad,slot:slot};})()");
+        JsonNode titles = chrome.path("titles");
+        boolean listView = shadow.deepElementExists("#listViewAccordion");
+        // Multi-office days show h5.location-title (ZMSKVR-608). A single-office list day may omit them.
+        if (!listView) {
+            Assert.assertTrue(
+                    titles.size() > 0,
+                    "Calendar view should show office titles (h5.location-title): " + chrome);
+        }
+        for (JsonNode title : titles) {
+            Assert.assertEquals(title.path("tag").asText(), "H5", "Office title should be H5: " + title);
+            Assert.assertFalse(
+                    title.path("leadingSpace").asBoolean(true),
+                    "Office title must not start with a space: " + title);
+            Assert.assertTrue(
+                    Math.abs(title.path("px").asDouble() - 18.0) <= 1.0,
+                    "Desktop office title should be 1.125rem (~18px): " + title);
+            Assert.assertEquals(
+                    title.path("alignItems").asText(""),
+                    "center",
+                    "Icon and title should use align-items:center: " + title);
+        }
+        JsonNode datePad = chrome.path("datePad");
+        Assert.assertFalse(datePad.isMissingNode() || datePad.isNull(), "Date heading missing: " + chrome);
+        Assert.assertEquals(datePad.path("paddingLeft").asInt(), 8, "Date heading left padding: " + datePad);
+        Assert.assertEquals(datePad.path("paddingTop").asInt(), 12, "Date heading top padding: " + datePad);
+        Assert.assertEquals(datePad.path("paddingBottom").asInt(), 12, "Date heading bottom padding: " + datePad);
+        JsonNode slot = chrome.path("slot");
+        Assert.assertFalse(slot.isMissingNode() || slot.isNull(), "Timeslot button missing: " + chrome);
+        Assert.assertEquals(slot.path("paddingLeft").asInt(), 12, "Timeslot L padding: " + slot);
+        Assert.assertEquals(slot.path("paddingRight").asInt(), 12, "Timeslot R padding: " + slot);
+        Assert.assertEquals(slot.path("paddingTop").asInt(), 4, "Timeslot T padding: " + slot);
+        Assert.assertEquals(slot.path("paddingBottom").asInt(), 4, "Timeslot B padding: " + slot);
+        if (!slot.path("gap").isNull() && !slot.path("gap").isMissingNode()) {
+            Assert.assertEquals(slot.path("gap").asInt(), 16, "Timeslot grid gap: " + slot);
+        }
+    }
+
     public JsonNode calendarGhostButtons() {
         return json.citizenJson(
                 "(function(){function paint(word){var el=findButton(document.body,word);if(!el)return {present:false};"
@@ -1882,15 +2850,14 @@ public final class TimeSlotStep {
     }
 
     public JsonNode waitForToggleLabels(String activeLabel) {
-        // Color transition is 200ms, but under shard load Firefox/Chrome can keep the previous
-        // label paint while the list accordion mounts or the viewport settles after resize.
+        // The list accordion and a viewport resize can remount the toggle before the active class settles.
         return new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(slotBookingWaitTimeoutSeconds()))
                 .pollingEvery(Duration.ofMillis(250))
                 .until(d -> {
                     JsonNode node = json.citizenJson(
                             "(function(){var labels=cssAll('.m-toggle-switch__label');var out=[];"
-                                    + "for(var i=0;i<labels.length;i++){var st=getComputedStyle(labels[i]);"
-                                    + "out.push({text:textOf(labels[i]),color:st.color,disabled:labels[i].classList.contains('disabled')});}"
+                                    + "for(var i=0;i<labels.length;i++){"
+                                    + "out.push({text:textOf(labels[i]),active:labels[i].classList.contains('m-toggle-switch__label--active')});}"
                                     + "var heading=byId('viewToggleLabel');var toggle=cssAll('button.m-toggle-switch')[0];"
                                     + "var hr=heading?heading.getBoundingClientRect():null;var tr=toggle?toggle.getBoundingClientRect():null;"
                                     + "return {labels:out,heading:heading?textOf(heading):'',"
@@ -1904,14 +2871,7 @@ public final class TimeSlotStep {
                     }
                     for (JsonNode label : node.path("labels")) {
                         boolean shouldBeActive = activeLabel.equals(label.path("text").asText());
-                        String color = label.path("color").asText();
-                        if (label.path("disabled").asBoolean() == shouldBeActive) {
-                            return null;
-                        }
-                        if (shouldBeActive && !isToggleBlue(color)) {
-                            return null;
-                        }
-                        if (!shouldBeActive && !isToggleGrey(color)) {
+                        if (label.path("active").asBoolean() != shouldBeActive) {
                             return null;
                         }
                     }
@@ -1921,28 +2881,10 @@ public final class TimeSlotStep {
 
     public void assertToggleColor(JsonNode label, String text, boolean active) {
         Assert.assertEquals(label.path("text").asText(), text, "Toggle label: " + label);
-        Assert.assertEquals(label.path("disabled").asBoolean(), !active, text + " active state: " + label);
-        String color = label.path("color").asText();
-        Assert.assertTrue(
-                active ? isToggleBlue(color) : isToggleGrey(color),
-                text + " should be " + (active ? "#005A9F" : "#617586") + " but was " + color);
-    }
-
-    /** Accepts rgb()/rgba() with commas or modern space-separated components. */
-    private static boolean isToggleBlue(String color) {
-        return colorMatchesChannels(color, 0, 90, 159);
-    }
-
-    private static boolean isToggleGrey(String color) {
-        return colorMatchesChannels(color, 97, 117, 134);
-    }
-
-    private static boolean colorMatchesChannels(String color, int r, int g, int b) {
-        if (color == null || color.isBlank()) {
-            return false;
-        }
-        String compact = color.replace(" ", "");
-        return compact.contains(r + "," + g + "," + b) || color.contains(r + " " + g + " " + b);
+        Assert.assertEquals(
+                label.path("active").asBoolean(),
+                active,
+                text + " should " + (active ? "" : "not ") + "carry m-toggle-switch__label--active: " + label);
     }
 
     public JsonNode calendarSnapshot() {
@@ -2091,8 +3033,39 @@ public final class TimeSlotStep {
             return false;
         }
         CitizenViewWaits.sleepQuiet(1200L);
-        waitUntilAppointmentSlotsReadyQuiet(Math.min(45, slotBookingWaitTimeoutSeconds()));
+        // Shard load makes a multi-office day fetch take longer than 45s. Waiting
+        // only 45s and then opening another day drops the response that is about to arrive.
+        waitUntilAppointmentSlotsReadyQuiet(slotBookingWaitTimeoutSeconds());
+        if (deepMucSpinnerVisible()) {
+            ScenarioLogManager.getLogger()
+                    .info(
+                            "zmscitizenview: next calendar day still loading after {}s; not paging further",
+                            slotBookingWaitTimeoutSeconds());
+            return false;
+        }
         return true;
+    }
+
+    /**
+     * A visible MucSpinner is an in-flight available-calendar request, not an empty day.
+     *
+     * @return false when that request is still running after the full slot wait
+     */
+    private boolean finishInFlightCalendarLoad() {
+        if (!deepMucSpinnerVisible()) {
+            return true;
+        }
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: calendar still loading; waiting out the in-flight request");
+        waitUntilAppointmentSlotsReadyQuiet(slotBookingWaitTimeoutSeconds());
+        if (!deepMucSpinnerVisible()) {
+            return true;
+        }
+        ScenarioLogManager.getLogger()
+                .info(
+                        "zmscitizenview: calendar request still in flight after {}s; not opening another day",
+                        slotBookingWaitTimeoutSeconds());
+        return false;
     }
 
     /**
@@ -2326,6 +3299,12 @@ public final class TimeSlotStep {
                             "zmscitizenview: no timeslot for provider {} in current view (attempt {}); try Später",
                             officeId,
                             attempt);
+            if (deepMucSpinnerVisible()) {
+                if (!finishInFlightCalendarLoad()) {
+                    break;
+                }
+                continue;
+            }
             if (clickCitizenViewLaterOnceIfAvailable()) {
                 CitizenViewWaits.sleepQuiet(1200L);
                 waitUntilAppointmentSlotsReadyQuiet(Math.min(45, slotBookingWaitTimeoutSeconds()));

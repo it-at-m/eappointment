@@ -199,6 +199,97 @@ public final class CombinationStep {
                 "Combinable list did not expand after Alle Leistungen anzeigen.");
     }
 
+    /** ZMSKVR-514: after expand, "Weniger Leistungen anzeigen" with chevron-up. */
+    public void assertShowLessServicesButtonVisible(boolean visible) {
+        context.set();
+        JsonNode btn = showLessServicesButtonSnapshot();
+        Assert.assertEquals(
+                btn.path("visible").asBoolean(false),
+                visible,
+                visible
+                        ? "Expected Weniger Leistungen anzeigen on the service step: " + btn
+                        : "Weniger Leistungen anzeigen should be hidden: " + btn);
+        if (visible) {
+            Assert.assertTrue(
+                    btn.path("chevronUp").asBoolean(false),
+                    "Weniger Leistungen anzeigen should use chevron-up: " + btn);
+        }
+    }
+
+    /**
+     * ZMSKVR-514 / ZMSKVR-1185: collapse back to three peers and scroll to the start of the
+     * Leistung list (not the page bottom).
+     */
+    public void showLessCombinableServices() {
+        context.set();
+        Assert.assertTrue(
+                clickShowLessServicesButton(),
+                "Could not click Weniger Leistungen anzeigen.");
+        new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(defaultWaitSeconds))
+                .until(d -> countVisibleCombinableServices() == 3);
+        Assert.assertEquals(
+                countVisibleCombinableServices(),
+                3,
+                "Combinable list did not collapse after Weniger Leistungen anzeigen.");
+        // Product scrolls servicesRef (Leistung h2). Sticky chrome / short pages leave pageY
+        // non-zero even when that heading is already in the upper viewport — assert the heading
+        // band, not an absolute pageY.
+        try {
+            new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(defaultWaitSeconds))
+                    .until(d -> combinableListStartInUpperViewport(combinableListScrollSnapshot()));
+        } catch (TimeoutException e) {
+            throw new AssertionError(
+                    "After Weniger Leistungen anzeigen the Leistung list start should be in the"
+                            + " upper viewport: "
+                            + combinableListScrollSnapshot(),
+                    e);
+        }
+        JsonNode scroll = combinableListScrollSnapshot();
+        Assert.assertTrue(
+                combinableListStartInUpperViewport(scroll),
+                "After Weniger Leistungen anzeigen the Leistung list start should be in the upper"
+                        + " viewport: "
+                        + scroll);
+    }
+
+    private static boolean combinableListStartInUpperViewport(JsonNode scroll) {
+        if (scroll.path("nearPageBottom").asBoolean(false)) {
+            return false;
+        }
+        // Prefer the Leistung h2 (servicesRef). Fall back to the selected primary service row —
+        // on phone the sticky Anmelden can cover the h2 while the list start is still on screen.
+        if (scroll.path("headingFound").asBoolean(false)) {
+            double listTop = scroll.path("listTop").asDouble(9999);
+            if (listTop > -120 && listTop < 320) {
+                return true;
+            }
+        }
+        double primaryTop = scroll.path("primaryTop").asDouble(9999);
+        return primaryTop > -40 && primaryTop < 280;
+    }
+
+    /**
+     * ZMSKVR-529: disabled plus/minus use transparent background, grey border and grey icon
+     * (#7A8D9F).
+     */
+    public void assertDisabledCounterColors(String label) {
+        context.set();
+        JsonNode style = disabledCounterStyle(label);
+        Assert.assertTrue(
+                style.path("found").asBoolean(false),
+                "No disabled plus/minus for \"" + label + "\": " + style);
+        Assert.assertTrue(
+                style.path("transparentBg").asBoolean(false),
+                "Disabled counter for \"" + label + "\" should have a transparent/white background: "
+                        + style);
+        Assert.assertTrue(
+                style.path("greyBorder").asBoolean(false),
+                "Disabled counter for \"" + label + "\" should use border #7a8d9f: " + style);
+        Assert.assertTrue(
+                style.path("greyIcon").asBoolean(false),
+                "Disabled counter for \"" + label + "\" should use icon/color #7a8d9f: " + style);
+    }
+
     public void assertSecondaryPlusAndMinus(String label) {
         context.set();
         JsonNode counter = waitForServiceCounter(label);
@@ -388,6 +479,99 @@ public final class CombinationStep {
                 "Service counter for \"" + label + "\" should still be " + count + ".");
     }
 
+    /**
+     * Art des Termins (Vor-Ort / Telefon / Video): duration stays hidden until a variant
+     * is chosen ({@code showEstimatedDuration} in ServiceFinder.vue).
+     *
+     * <p>muc-radio-button uses a closed shadow root, so {@code input.checked} is not readable.
+     * Click the host (or any light-DOM match), then wait for the duration clock — that is the
+     * Vue signal that {@code selectedVariant} stuck.
+     */
+    public void selectAppointmentType(String label) {
+        context.set();
+        ScenarioLogManager.getLogger().info("zmscitizenview: select appointment type '{}'", label);
+        shadow.waitUntilShadowContains("Art des Termins", defaultWaitSeconds);
+        String clickScript =
+                "var label=arguments[0];"
+                        + "function textOf(n){var s='';if(!n)return s;if(n.nodeType===3)return n.nodeValue||'';"
+                        + "if(n.shadowRoot)s+=' '+textOf(n.shadowRoot);"
+                        + "var c=n.childNodes;if(c)for(var i=0;i<c.length;i++)s+=' '+textOf(c[i]);return s;}"
+                        + "function labelOf(n){"
+                        + " var attr='';"
+                        + " if(n.getAttribute)attr=n.getAttribute('label')||n.getAttribute('aria-label')||'';"
+                        + " if(!attr&&typeof n.label==='string')attr=n.label;"
+                        + " return (attr||textOf(n)).replace(/\\s+/g,' ').trim();}"
+                        + "function matches(n){"
+                        + " var t=labelOf(n);"
+                        + " return t===label||t.indexOf(label+' ')===0||t.indexOf(label)>=0;}"
+                        + "function clickable(n){"
+                        + " if(!n)return null;"
+                        + " if(n.shadowRoot){var inp=n.shadowRoot.querySelector("
+                        + "  'input[type=radio],button,.m-radio,[role=radio],label');"
+                        + "  if(inp)return inp;}"
+                        + " if((n.tagName||'').toUpperCase()==='INPUT'&&(n.type||'')==='radio')return n;"
+                        + " return n;}"
+                        + "function hostRadio(n){var cur=n;while(cur&&cur.nodeType===1){"
+                        + " if((cur.tagName||'').toUpperCase()==='MUC-RADIO-BUTTON')return cur;"
+                        + " if(cur.parentElement){cur=cur.parentElement;continue;}"
+                        + " var root=cur.getRootNode&&cur.getRootNode();cur=root&&root.host?root.host:null;}"
+                        + " return n;}"
+                        + "function walk(n){if(!n)return false;"
+                        + " var tag=(n.tagName||'').toUpperCase();"
+                        + " var role=n.getAttribute&&n.getAttribute('role');"
+                        + " if(tag==='MUC-RADIO-BUTTON'||tag==='LABEL'||role==='radio'){"
+                        + "  if(matches(n)){"
+                        + "   var node=hostRadio(n);"
+                        + "   var hit=clickable(node)||node;"
+                        + "   hit.scrollIntoView({block:'center'});"
+                        // Closed shadow: host click + value on the group when possible.
+                        + "   hit.click();"
+                        + "   if(node!==hit)try{node.click();}catch(e){}"
+                        + "   var val='';"
+                        + "   if(node.getAttribute)val=node.getAttribute('value')||'';"
+                        + "   if(!val&&node.value!=null&&typeof node.value!=='object')val=String(node.value);"
+                        + "   if(val){var g=node;while(g&&g.nodeType===1){"
+                        + "    if((g.tagName||'').toUpperCase()==='MUC-RADIO-BUTTON-GROUP'){"
+                        + "     try{g.value=val;}catch(e1){}"
+                        + "     try{g.modelValue=val;}catch(e2){}"
+                        + "     try{g.setAttribute('value',val);}catch(e3){}"
+                        + "     try{g.dispatchEvent(new CustomEvent('update:modelValue',"
+                        + "      {detail:val,bubbles:true}));}catch(e4){}"
+                        + "     try{g.dispatchEvent(new Event('change',{bubbles:true}));}catch(e5){}"
+                        + "     break;}"
+                        + "    if(g.parentElement){g=g.parentElement;continue;}"
+                        + "    var root=g.getRootNode&&g.getRootNode();g=root&&root.host?root.host:null;}}"
+                        + "   return true;}"
+                        + " }"
+                        + " if(n.shadowRoot&&walk(n.shadowRoot))return true;"
+                        + " var c=n.children;if(c)for(var i=0;i<c.length;i++)if(walk(c[i]))return true;"
+                        + " return false;}"
+                        + "return walk(document.body);";
+        // Duration clock is light-DOM Vue UI; it appears only after selectedVariant is set.
+        String durationScript =
+                "function textOf(n){var s='';if(!n)return s;if(n.nodeType===3)return n.nodeValue||'';"
+                        + "if(n.shadowRoot)s+=' '+textOf(n.shadowRoot);"
+                        + "var c=n.childNodes;if(c)for(var i=0;i<c.length;i++)s+=' '+textOf(c[i]);return s;}"
+                        + "return textOf(document.body).indexOf('Voraussichtliche Termindauer')>=0;";
+        boolean selected = false;
+        try {
+            selected = Boolean.TRUE.equals(new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(defaultWaitSeconds))
+                    .until(d -> {
+                        Object clicked =
+                                ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(clickScript, label);
+                        if (!Boolean.TRUE.equals(clicked)) {
+                            return null;
+                        }
+                        Object duration =
+                                ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(durationScript);
+                        return Boolean.TRUE.equals(duration) ? Boolean.TRUE : null;
+                    }));
+        } catch (TimeoutException e) {
+            selected = false;
+        }
+        Assert.assertTrue(selected, "Could not select appointment type '" + label + "'.");
+    }
+
     public boolean durationClockIsVisible() {
         String script =
                 "function shown(el){var n=el;while(n&&n.nodeType===1){"
@@ -455,6 +639,144 @@ public final class CombinationStep {
                         + "if(tag!=='BUTTON'&&tag!=='MUC-BUTTON')return false;"
                         + "return norm(n.textContent||'').indexOf('Alle Leistungen anzeigen')>=0&&shown(n);});";
         return Boolean.TRUE.equals(((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script));
+    }
+
+    private JsonNode showLessServicesButtonSnapshot() {
+        String script =
+                "function shown(el){var n=el;while(n&&n.nodeType===1){"
+                        + "var st=window.getComputedStyle(n);"
+                        + "if(st.display==='none'||st.visibility==='hidden'||st.opacity==='0')return false;"
+                        + "if(n.parentElement){n=n.parentElement;continue;}"
+                        + "var root=n.getRootNode&&n.getRootNode();n=root&&root.host?root.host:null;}return true;}"
+                        + "function norm(t){return (t||'').replace(/\\s+/g,' ').trim();}"
+                        + "function walk(n,fn){if(!n)return null;if(n.nodeType===1){var hit=fn(n);if(hit)return hit;}"
+                        + "if(n.shadowRoot){var inner=walk(n.shadowRoot,fn);if(inner)return inner;}"
+                        + "var c=n.children;if(c)for(var i=0;i<c.length;i++){var next=walk(c[i],fn);if(next)return next;}return null;}"
+                        + "var btn=walk(document.body,function(n){"
+                        + "var tag=(n.tagName||'').toUpperCase();"
+                        + "if(tag!=='BUTTON'&&tag!=='MUC-BUTTON')return null;"
+                        + "if(norm(n.textContent||'').indexOf('Weniger Leistungen anzeigen')<0||!shown(n))return null;"
+                        + "return n;});"
+                        + "if(!btn)return JSON.stringify({visible:false});"
+                        + "var blob=' '+(btn.getAttribute('icon')||'');"
+                        + "var uses=btn.querySelectorAll?btn.querySelectorAll('use'):[];"
+                        + "for(var u=0;u<uses.length;u++){blob+=' '+(uses[u].getAttribute('href')||'')"
+                        + "+' '+(uses[u].getAttribute('xlink:href')||'');}"
+                        + "if(btn.shadowRoot){var su=btn.shadowRoot.querySelectorAll('use');"
+                        + "for(var s=0;s<su.length;s++){blob+=' '+(su[s].getAttribute('href')||'')"
+                        + "+' '+(su[s].getAttribute('xlink:href')||'');}}"
+                        + "blob=blob.toLowerCase();"
+                        + "return JSON.stringify({visible:true,chevronUp:blob.indexOf('chevron-up')>=0,blob:blob});";
+        Object raw = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script);
+        try {
+            return new com.fasterxml.jackson.databind.ObjectMapper()
+                    .readTree(raw == null ? "{\"visible\":false}" : String.valueOf(raw));
+        } catch (Exception e) {
+            throw new AssertionError("Could not read Weniger Leistungen anzeigen: " + raw, e);
+        }
+    }
+
+    private boolean clickShowLessServicesButton() {
+        String script =
+                "function shown(el){var n=el;while(n&&n.nodeType===1){"
+                        + "var st=window.getComputedStyle(n);"
+                        + "if(st.display==='none'||st.visibility==='hidden'||st.opacity==='0')return false;"
+                        + "if(n.parentElement){n=n.parentElement;continue;}"
+                        + "var root=n.getRootNode&&n.getRootNode();n=root&&root.host?root.host:null;}return true;}"
+                        + "function norm(t){return (t||'').replace(/\\s+/g,' ').trim();}"
+                        + "function walk(n,fn){if(!n)return null;if(n.nodeType===1){var hit=fn(n);if(hit)return hit;}"
+                        + "if(n.shadowRoot){var inner=walk(n.shadowRoot,fn);if(inner)return inner;}"
+                        + "var c=n.children;if(c)for(var i=0;i<c.length;i++){var next=walk(c[i],fn);if(next)return next;}return null;}"
+                        + "var btn=walk(document.body,function(n){"
+                        + "var tag=(n.tagName||'').toUpperCase();"
+                        + "if(tag!=='BUTTON'&&tag!=='MUC-BUTTON')return null;"
+                        + "if(norm(n.textContent||'').indexOf('Weniger Leistungen anzeigen')<0||!shown(n))return null;"
+                        + "return n;});"
+                        + "if(!btn)return false;btn.scrollIntoView({block:'center'});btn.click();return true;";
+        return Boolean.TRUE.equals(((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script));
+    }
+
+    private JsonNode combinableListScrollSnapshot() {
+        String script =
+                "function shown(el){var n=el;while(n&&n.nodeType===1){"
+                        + "var st=window.getComputedStyle(n);"
+                        + "if(st.display==='none'||st.visibility==='hidden'||st.opacity==='0')return false;"
+                        + "if(n.parentElement){n=n.parentElement;continue;}"
+                        + "var root=n.getRootNode&&n.getRootNode();n=root&&root.host?root.host:null;}return true;}"
+                        + "function walk(n,fn){if(!n)return null;if(n.nodeType===1){var hit=fn(n);if(hit)return hit;}"
+                        + "if(n.shadowRoot){var inner=walk(n.shadowRoot,fn);if(inner)return inner;}"
+                        + "var c=n.children;if(c)for(var i=0;i<c.length;i++){var next=walk(c[i],fn);if(next)return next;}return null;}"
+                        + "var heading=walk(document.body,function(n){"
+                        + "var tag=(n.tagName||'').toUpperCase();"
+                        + "if(tag!=='H2'||!shown(n))return null;"
+                        + "var t=(n.textContent||'').replace(/\\s+/g,' ').trim();"
+                        // Exact "Leistung" — not "Kombinierbare Leistungen" further down the step.
+                        + "if(t==='Leistung')return n;return null;});"
+                        + "var listTop=heading?heading.getBoundingClientRect().top:9999;"
+                        + "var primary=walk(document.body,function(n){"
+                        + "var tag=(n.tagName||'').toUpperCase();"
+                        + "if((tag!=='A'&&tag!=='BUTTON')||!shown(n))return null;"
+                        + "var t=(n.textContent||'').replace(/\\s+/g,' ').trim();"
+                        + "if(t==='Personalausweis')return n;return null;});"
+                        + "var primaryTop=primary?primary.getBoundingClientRect().top:9999;"
+                        + "var doc=document.documentElement;"
+                        + "var maxScroll=Math.max(0,(doc.scrollHeight||0)-(window.innerHeight||0));"
+                        + "var y=window.pageYOffset||doc.scrollTop||0;"
+                        // Short pages clamp near the bottom even after a top scroll; only flag real bottoms.
+                        + "var nearBottom=maxScroll>200&&y>maxScroll-80;"
+                        + "return JSON.stringify({headingFound:!!heading,listTop:listTop,"
+                        + "primaryTop:primaryTop,pageY:y,maxScroll:maxScroll,nearPageBottom:nearBottom});";
+        Object raw = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script);
+        try {
+            return new com.fasterxml.jackson.databind.ObjectMapper()
+                    .readTree(raw == null ? "{}" : String.valueOf(raw));
+        } catch (Exception e) {
+            throw new AssertionError("Could not read combinable list scroll: " + raw, e);
+        }
+    }
+
+    private JsonNode disabledCounterStyle(String label) {
+        String script =
+                "var label=arguments[0];"
+                        + "function norm(t){return (t||'').replace(/\\s+/g,' ').trim();}"
+                        + "function key(t){return norm(t).replace(/-/g,'').toLowerCase();}"
+                        + "var labelKey=key(label);"
+                        + "function shown(el){var n=el;while(n&&n.nodeType===1){"
+                        + "var st=window.getComputedStyle(n);"
+                        + "if(st.display==='none'||st.visibility==='hidden'||st.opacity==='0')return false;"
+                        + "if(n.parentElement){n=n.parentElement;continue;}"
+                        + "var root=n.getRootNode&&n.getRootNode();n=root&&root.host?root.host:null;}return true;}"
+                        + "function isDisabled(el){if(!el)return true;"
+                        + "function off(node){return !!(node&&(node.disabled||node.hasAttribute&&node.hasAttribute('disabled')"
+                        + "||(node.getAttribute&&node.getAttribute('aria-disabled')==='true')));}"
+                        + "if(off(el))return true;var host=el.getRootNode&&el.getRootNode().host;return off(host);}"
+                        + "function rgbClose(c,r,g,b){var m=/rgba?\\((\\d+),\\s*(\\d+),\\s*(\\d+)/.exec(c||'');"
+                        + "if(!m)return false;return Math.abs(+m[1]-r)<=8&&Math.abs(+m[2]-g)<=8&&Math.abs(+m[3]-b)<=8;}"
+                        + "function paint(btn){var target=btn;"
+                        + "if(btn.shadowRoot){var inner=btn.shadowRoot.querySelector('button,.m-button,.counter-btn--disabled');if(inner)target=inner;}"
+                        + "var st=getComputedStyle(target);"
+                        + "var bg=st.backgroundColor||'';var bd=st.borderTopColor||st.borderColor||'';var col=st.color||'';"
+                        + "var transparentBg=bg==='transparent'||bg==='rgba(0, 0, 0, 0)'||rgbClose(bg,255,255,255);"
+                        + "var greyBorder=rgbClose(bd,122,141,159);var greyIcon=rgbClose(col,122,141,159);"
+                        + "return {found:true,bg:bg,border:bd,color:col,transparentBg:transparentBg,greyBorder:greyBorder,greyIcon:greyIcon};}"
+                        + "function walk(n,fn){if(!n)return null;if(n.nodeType===1){var hit=fn(n);if(hit)return hit;}"
+                        + "if(n.shadowRoot){var inner=walk(n.shadowRoot,fn);if(inner)return inner;}"
+                        + "var c=n.children;if(c)for(var i=0;i<c.length;i++){var next=walk(c[i],fn);if(next)return next;}return null;}"
+                        + "var btn=walk(document.body,function(n){"
+                        + "if((n.tagName||'').toUpperCase()!=='BUTTON'||!shown(n))return null;"
+                        + "var aria=(n.getAttribute('aria-label')||'');"
+                        + "if(key(aria).indexOf(labelKey)<0)return null;"
+                        + "if(!isDisabled(n))return null;"
+                        + "return n;});"
+                        + "if(!btn)return JSON.stringify({found:false});"
+                        + "return JSON.stringify(paint(btn));";
+        Object raw = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script, label);
+        try {
+            return new com.fasterxml.jackson.databind.ObjectMapper()
+                    .readTree(raw == null ? "{\"found\":false}" : String.valueOf(raw));
+        } catch (Exception e) {
+            throw new AssertionError("Could not read disabled counter style for \"" + label + "\": " + raw, e);
+        }
     }
 
     public boolean clickShowAllServicesButton() {

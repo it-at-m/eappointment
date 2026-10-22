@@ -9,6 +9,7 @@ import java.util.Map;
 import org.testng.Assert;
 
 import ataf.core.helpers.TestDataHelper;
+import ataf.core.logging.ScenarioLogManager;
 import ataf.web.controls.WindowControls;
 import ataf.web.model.WindowType;
 import ataf.web.utils.DriverUtil;
@@ -54,7 +55,29 @@ public class StatisticsSteps {
     public void dann_sollten_sie_sich_am_start_des_zeitmanagementsystem_befinden() {
         Assert.assertEquals(WindowControls.getActiveWindow().getWindowTitle(), StatisticsPageContext.TITLE,
                 "This is not the start page of the \"" + StatisticsPageContext.NAME + "\"");
-        WindowControls.getActiveWindow().setWindowType(WindowType.getSystemWindowType("Statistik"));
+        // ATAF WindowType uses a shared HashMap; parallel shards can CME while iterating.
+        setActiveWindowTypeSafely("zmsstatistic");
+    }
+
+    private static void setActiveWindowTypeSafely(String systemName) {
+        for (int attempt = 1; attempt <= 8; attempt++) {
+            try {
+                WindowControls.getActiveWindow().setWindowType(WindowType.getSystemWindowType(systemName));
+                return;
+            } catch (java.util.ConcurrentModificationException e) {
+                ScenarioLogManager.getLogger()
+                        .warn(
+                                "WindowType.getSystemWindowType(\"{}\") raced (attempt {}/8); retrying",
+                                systemName,
+                                attempt);
+                try {
+                    Thread.sleep(10L * attempt);
+                } catch (InterruptedException ie) {
+                    Thread.currentThread().interrupt();
+                    return;
+                }
+            }
+        }
     }
 
     @When("I click the button {string} in the statistics.")
@@ -280,6 +303,64 @@ public class StatisticsSteps {
     @Then("the downloaded citizen statistics list each calendar day at most once.")
     public void theDownloadedCitizenStatisticsListEachCalendarDayAtMostOnce() throws Exception {
         CUSTOMER_STATISTICS_PAGE.assertDownloadedEachCalendarDayAtMostOnce();
+    }
+
+    @Then("the downloaded citizen statistics include the customer total column headers.")
+    public void theDownloadedCitizenStatisticsIncludeTheCustomerTotalColumnHeaders() throws Exception {
+        CUSTOMER_STATISTICS_PAGE.assertDownloadedCustomerTotalHeaders();
+    }
+
+    @Then("the citizen statistics show the E-Kiosk column group.")
+    public void theCitizenStatisticsShowTheEKioskColumnGroup() {
+        CUSTOMER_STATISTICS_PAGE.assertEKioskColumnGroupVisible();
+    }
+
+    @Then("the E-Kiosk appeared count for today is at least {string}.")
+    public void theEKioskAppearedCountForTodayIsAtLeast(String minimum) {
+        String today = DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.GERMANY).format(BerlinTime.today());
+        CUSTOMER_STATISTICS_PAGE.assertEKioskAppearedOnDateAtLeast(today, parseNonNegativeInt(minimum));
+    }
+
+    @Then("the E-Kiosk appeared count for today is greater than the remembered clientscope ticketprinter count.")
+    public void theEKioskAppearedCountForTodayIsGreaterThanTheRememberedClientscopeTicketprinterCount() {
+        String today = DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.GERMANY).format(BerlinTime.today());
+        int baseline = rememberedTicketprinterBaseline();
+        CUSTOMER_STATISTICS_PAGE.assertEKioskAppearedOnDateAtLeast(today, baseline + 1);
+    }
+
+    @Then("the downloaded citizen statistics include the E-Kiosk column headers.")
+    public void theDownloadedCitizenStatisticsIncludeTheEKioskColumnHeaders() throws Exception {
+        CUSTOMER_STATISTICS_PAGE.assertDownloadedEKioskHeaders();
+    }
+
+    @Then("the downloaded citizen statistics E-Kiosk appeared count for today is at least {string}.")
+    public void theDownloadedCitizenStatisticsEKioskAppearedCountForTodayIsAtLeast(String minimum)
+            throws Exception {
+        String today = DateTimeFormatter.ofPattern("dd.MM.yy", Locale.GERMANY).format(BerlinTime.today());
+        CUSTOMER_STATISTICS_PAGE.assertDownloadedEKioskAppearedOnDateAtLeast(
+                today, parseNonNegativeInt(minimum));
+    }
+
+    @Then("the downloaded citizen statistics E-Kiosk appeared count for today is greater than the remembered clientscope ticketprinter count.")
+    public void theDownloadedCitizenStatisticsEKioskAppearedCountForTodayIsGreaterThanTheRememberedClientscopeTicketprinterCount()
+            throws Exception {
+        String today = DateTimeFormatter.ofPattern("dd.MM.yy", Locale.GERMANY).format(BerlinTime.today());
+        int baseline = rememberedTicketprinterBaseline();
+        CUSTOMER_STATISTICS_PAGE.assertDownloadedEKioskAppearedOnDateAtLeast(today, baseline + 1);
+    }
+
+    private static int parseNonNegativeInt(String value) {
+        try {
+            return Integer.parseInt(value);
+        } catch (NumberFormatException e) {
+            throw new AssertionError("Expected a non-negative integer, got \"" + value + "\"", e);
+        }
+    }
+
+    private static int rememberedTicketprinterBaseline() {
+        String raw = TestDataHelper.getTestData("ekiosk_ticketprinter_baseline");
+        Assert.assertNotNull(raw, "Remember clientscope ticketprinter count before finishing the walk-in.");
+        return parseNonNegativeInt(raw);
     }
 
     @Then("the citizen statistics are downloaded.")

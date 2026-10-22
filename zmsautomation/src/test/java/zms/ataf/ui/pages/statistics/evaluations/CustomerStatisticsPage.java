@@ -177,6 +177,85 @@ public class CustomerStatisticsPage extends StatisticsPage {
         assertUniqueDates(dates, "Excel export");
     }
 
+    /** ZMSKVR-1405 / ZMSKVR-1441: Excel columns C and D are the customer totals. */
+    public void assertDownloadedCustomerTotalHeaders() throws IOException {
+        List<String> headers = ClientStatisticWorkbook.columnHeaders(workbookFromThisDownload());
+        ScenarioLogManager.getLogger().info("Kundenstatistik Excel headers: {}", headers);
+        Assert.assertTrue(headers.size() > 3, "Excel header row too short: " + headers);
+        Assert.assertEquals(headers.get(2), "Kunden Erschienen",
+                "Column C must be Kunden Erschienen. Headers: " + headers);
+        Assert.assertEquals(headers.get(3), "Kunden Nicht Erschienen",
+                "Column D must be Kunden Nicht Erschienen. Headers: " + headers);
+    }
+
+    /** ZMSKVR-1126 / ZMSKVR-1196: GUI table header includes davon E-Kiosk. */
+    public void assertEKioskColumnGroupVisible() {
+        ScenarioLogManager.getLogger().info("Checking Kundenstatistik for davon E-Kiosk headers.");
+        Assert.assertTrue(
+                isWebElementVisible(
+                        DEFAULT_EXPLICIT_WAIT_TIME,
+                        "//th[contains(normalize-space(.), 'davon E-Kiosk')]",
+                        LocatorType.XPATH,
+                        false),
+                "Kundenstatistik must show header 'davon E-Kiosk'.");
+        Assert.assertTrue(
+                DRIVER.findElements(By.cssSelector("td.colTicketprinter")).size() > 0
+                        || DRIVER.getPageSource().contains("colTicketprinter"),
+                "Kundenstatistik must include E-Kiosk appeared column cells.");
+    }
+
+    public void assertEKioskAppearedOnDateAtLeast(String date, int minimum) {
+        ScenarioLogManager.getLogger()
+                .info("Verifying E-Kiosk appeared on {} is at least {}.", date, minimum);
+        WebElement cell = findElementByLocatorType(
+                "//table[@class='table--base']"
+                        + "//tr[td[@class='colDatumTag statistik'][text()='" + date + "']]"
+                        + "/td[@class='colTicketprinter statistik']",
+                LocatorType.XPATH,
+                true);
+        scrollToCenterByVisibleElement(cell);
+        String text = cell.getText().trim();
+        int actual;
+        try {
+            actual = Integer.parseInt(text);
+        } catch (NumberFormatException e) {
+            throw new AssertionError("E-Kiosk appeared on " + date + " is not a number: \"" + text + "\"", e);
+        }
+        Assert.assertTrue(
+                actual >= minimum,
+                "E-Kiosk appeared on " + date + " must be >= " + minimum + ", was " + actual);
+    }
+
+    /** ZMSKVR-1126 / ZMSKVR-1196: Excel export includes E-Kiosk column headers. */
+    public void assertDownloadedEKioskHeaders() throws IOException {
+        List<String> headers = ClientStatisticWorkbook.columnHeaders(workbookFromThisDownload());
+        ScenarioLogManager.getLogger().info("Kundenstatistik Excel headers: {}", headers);
+        Assert.assertTrue(
+                headers.contains("Erschienen (E-Kiosk)"),
+                "Excel must include Erschienen (E-Kiosk). Headers: " + headers);
+        Assert.assertTrue(
+                headers.contains("Nicht Erschienen (E-Kiosk)"),
+                "Excel must include Nicht Erschienen (E-Kiosk). Headers: " + headers);
+    }
+
+    public void assertDownloadedEKioskAppearedOnDateAtLeast(String dayDate, int minimum) throws IOException {
+        String value = ClientStatisticWorkbook.dayColumnValue(
+                workbookFromThisDownload(), dayDate, "Erschienen (E-Kiosk)");
+        ScenarioLogManager.getLogger()
+                .info("Excel E-Kiosk appeared on {} is \"{}\" (min {}).", dayDate, value, minimum);
+        Assert.assertFalse(value.isBlank(), "Excel has no Erschienen (E-Kiosk) value for " + dayDate);
+        int actual;
+        try {
+            actual = Integer.parseInt(value.trim());
+        } catch (NumberFormatException e) {
+            throw new AssertionError(
+                    "Excel Erschienen (E-Kiosk) on " + dayDate + " is not a number: \"" + value + "\"", e);
+        }
+        Assert.assertTrue(
+                actual >= minimum,
+                "Excel E-Kiosk appeared on " + dayDate + " must be >= " + minimum + ", was " + actual);
+    }
+
     private List<String> uiDayDates() {
         WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
         wait.until(driver -> !driver.findElements(By.cssSelector("td.colDatumTag.statistik")).isEmpty()
@@ -229,37 +308,87 @@ public class CustomerStatisticsPage extends StatisticsPage {
         }
     }
 
+    /**
+     * Parallel scenarios share {@code ~/Downloads}. Prefer the workbook whose name matches the
+     * filter date range from this scenario; otherwise lock onto the earliest newcomer so a later
+     * download from another scenario cannot steal this wait.
+     */
     private Path stableNewLocalWorkbook(Path downloads) {
-        Path newest;
+        List<Path> newcomers;
         try (Stream<Path> list = Files.list(downloads)) {
-            newest = list.filter(Files::isRegularFile)
-                    .filter(path -> isNewWorkbook(path.getFileName().toString(), sizeOf(path), path.toFile().lastModified()))
-                    .max(Comparator.comparingLong(path -> path.toFile().lastModified()))
-                    .orElse(null);
+            newcomers = list.filter(Files::isRegularFile)
+                    .filter(path -> isNewWorkbook(
+                            path.getFileName().toString(), sizeOf(path), path.toFile().lastModified()))
+                    .sorted(Comparator.comparingLong(path -> path.toFile().lastModified()))
+                    .collect(Collectors.toList());
         } catch (IOException exception) {
             return null;
         }
-        if (newest == null) {
-            pendingWorkbookName = null;
-            pendingWorkbookSize = -1;
+        if (newcomers.isEmpty()) {
             return null;
         }
-        long size = sizeOf(newest);
-        return rememberStableSize(newest.getFileName().toString(), size) ? newest : null;
+        if (pendingWorkbookName == null) {
+            String chosen = preferExpectedWorkbookName(newcomers.stream()
+                    .map(path -> path.getFileName().toString())
+                    .collect(Collectors.toList()));
+            if (chosen == null) {
+                return null;
+            }
+            pendingWorkbookName = chosen;
+            pendingWorkbookSize = -1;
+        }
+        Path locked = downloads.resolve(pendingWorkbookName);
+        if (!Files.isRegularFile(locked)) {
+            return null;
+        }
+        long size = sizeOf(locked);
+        if (size <= 0) {
+            return null;
+        }
+        return rememberStableSize(pendingWorkbookName, size) ? locked : null;
     }
 
     private HasDownloads.DownloadedFile stableNewRemoteWorkbook() {
-        HasDownloads.DownloadedFile newest = ((HasDownloads) DRIVER).getDownloadedFiles().stream()
-                .filter(candidate -> isNewWorkbook(candidate.getName(), candidate.getSize(), candidate.getLastModifiedTime()))
+        List<HasDownloads.DownloadedFile> newcomers = ((HasDownloads) DRIVER).getDownloadedFiles().stream()
+                .filter(candidate -> isNewWorkbook(
+                        candidate.getName(), candidate.getSize(), candidate.getLastModifiedTime()))
                 .filter(candidate -> candidate.getSize() > 0)
-                .max(Comparator.comparingLong(HasDownloads.DownloadedFile::getLastModifiedTime))
-                .orElse(null);
-        if (newest == null) {
-            pendingWorkbookName = null;
-            pendingWorkbookSize = -1;
+                .sorted(Comparator.comparingLong(HasDownloads.DownloadedFile::getLastModifiedTime))
+                .collect(Collectors.toList());
+        if (newcomers.isEmpty()) {
             return null;
         }
-        return rememberStableSize(newest.getName(), newest.getSize()) ? newest : null;
+        if (pendingWorkbookName == null) {
+            String chosen = preferExpectedWorkbookName(newcomers.stream()
+                    .map(HasDownloads.DownloadedFile::getName)
+                    .collect(Collectors.toList()));
+            if (chosen == null) {
+                return null;
+            }
+            pendingWorkbookName = chosen;
+            pendingWorkbookSize = -1;
+        }
+        HasDownloads.DownloadedFile locked = ((HasDownloads) DRIVER).getDownloadedFiles().stream()
+                .filter(candidate -> pendingWorkbookName.equals(candidate.getName()))
+                .filter(candidate -> candidate.getSize() > 0)
+                .findFirst()
+                .orElse(null);
+        if (locked == null) {
+            return null;
+        }
+        return rememberStableSize(locked.getName(), locked.getSize()) ? locked : null;
+    }
+
+    /**
+     * When the filter set an expected filename, wait for that file only — do not latch onto a
+     * parallel scenario's Dec→Jan (or other) download that appeared first in {@code ~/Downloads}.
+     */
+    private String preferExpectedWorkbookName(List<String> names) {
+        String expected = expectedClientStatisticWorkbookName();
+        if (expected != null) {
+            return names.contains(expected) ? expected : null;
+        }
+        return names.get(0);
     }
 
     private boolean isNewWorkbook(String name, long size, long modified) {
@@ -280,7 +409,6 @@ public class CustomerStatisticsPage extends StatisticsPage {
 
     private boolean rememberStableSize(String name, long size) {
         boolean stable = name.equals(pendingWorkbookName) && size == pendingWorkbookSize;
-        pendingWorkbookName = name;
         pendingWorkbookSize = size;
         return stable;
     }

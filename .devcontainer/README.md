@@ -76,9 +76,13 @@ return await fetch('http://refarch-gateway:8080/buergeransicht/api/citizen/offic
 
 If the curl+CORS check shows no `Access-Control-Allow-Origin`, fix the gateway first; if curl shows CORS OK but Selenium still fails, compare the **exact** page origin (scheme/host/port) to `allowedOriginPatterns`.
 
+## Xdebug
+
+`.devcontainer/php/xdebug.ini` is gitignored (copy from `xdebug.ini.example`). Toggle `xdebug.mode=off` vs `debug,develop` locally, then `podman exec zms-web apache2ctl graceful`. Full steps: [docs/en/setup-and-development/xdebug.md](../docs/en/setup-and-development/xdebug.md).
+
 ## Unit Testing
 
-Local `zms-web` enables Xdebug (`start_with_request=yes`). For PHPUnit, turn it off or tests (especially zmsadmin) are very slow on macOS:
+With Xdebug left on, PHPUnit (especially zmsadmin) is very slow on macOS. Prefer disabling Xdebug for the container (see above), or only for PHPUnit:
 
 ```bash
 podman exec -it zms-web bash -lc 'export XDEBUG_MODE=off; cd zmsadmin && ./vendor/bin/phpunit --no-coverage'

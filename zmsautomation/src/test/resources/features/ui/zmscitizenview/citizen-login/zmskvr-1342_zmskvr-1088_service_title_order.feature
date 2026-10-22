@@ -1,11 +1,12 @@
 #language: en
-@web @zmscitizenview @citizen-login @ZMSKVR-1088 @ZMSKVR-1342 @executeLocally @jumpin
+@web @zmscitizenview @citizen-login @ZMSKVR-1088 @ZMSKVR-1342 @ZMSKVR-1258 @ZMSKVR-1261 @executeLocally @jumpin
 Feature: Logged-in appointment titles keep booking service order
   As a logged-in citizen
   I want combined services in the appointment title in the order I booked them
   So that Meine Termine and the detail page match my Leistung selection
 
   # ZMSKVR-1088, tested by ZMSKVR-1342.
+  # Also covers ZMSKVR-1258 / ZMSKVR-1261 #3: Non-Pass first + Pass services book Hauptkalender 10489.
   # Wohnsitzanmeldung 1063475 at Hauptkalender 10489, then Reisepass and Personalausweis
   # on the combination step. Titles must not sort A–Z (Personalausweis first).
   # Teaser H3 and detail H1 both use formatMultilineTitle (main service, then subservices).

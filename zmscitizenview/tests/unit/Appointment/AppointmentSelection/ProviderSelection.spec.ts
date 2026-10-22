@@ -616,6 +616,53 @@ describe("ProviderSelection (UI via AppointmentSelection)", () => {
     });
   });
 
+  it("keeps only the preselected office when exclusiveLocation is set even if alternatives are allowed", async () => {
+    const wrapper = createWrapper({
+      selectedService: {
+        id: "service1",
+        providers: [
+          {
+            name: "Office A",
+            id: "1",
+            showAlternativeLocations: true,
+            address: { street: "Test", house_number: "1" },
+            scope: { id: "1" },
+          },
+          {
+            name: "Office B",
+            id: "2",
+            showAlternativeLocations: true,
+            address: { street: "Test", house_number: "2" },
+            scope: { id: "2" },
+          },
+          {
+            name: "Office C",
+            id: "3",
+            showAlternativeLocations: true,
+            address: { street: "Test", house_number: "3" },
+            scope: { id: "3" },
+          },
+        ],
+      },
+      props: {
+        preselectedOfficeId: "2",
+        exclusiveLocation: "1",
+      },
+    });
+
+    await wrapper.vm.showSelectionForProvider({
+      name: "Office B",
+      id: "2",
+      address: { street: "Test", house_number: "2" },
+      scope: { id: "2" },
+    });
+    await nextTick();
+
+    expect(wrapper.vm.selectedProviders).toEqual({
+      "2": true,
+    });
+  });
+
   it("checks only the preselected office when it has showAlternativeLocations false", async () => {
     const wrapper = createWrapper({
       selectedService: {

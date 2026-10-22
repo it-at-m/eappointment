@@ -46,6 +46,11 @@ class ZmsApiFacadeService
     public static function warmOfficesAndServicesCache(): array
     {
         $refreshedKeys = ZmsApiClientService::refreshSourceCaches();
+        // Offices copy slotsPerAppointment from this cache. Rebuild it before the
+        // offices-and-services payload, or the new source is mapped onto the old limit.
+        self::getScopes(true);
+        $refreshedKeys[] = self::CACHE_KEY_SCOPES;
+
         $cacheKey = self::CACHE_KEY_OFFICES_AND_SERVICES;
         $result = self::rebuildServicesAndOfficesCache(false, $cacheKey);
         $refreshedKeys[] = $cacheKey;
@@ -151,11 +156,11 @@ class ZmsApiFacadeService
     /**
      * @SuppressWarnings(PHPMD.NPathComplexity)
      */
-    public static function getScopes(): ThinnedScopeList|array
+    public static function getScopes(bool $forceRefresh = false): ThinnedScopeList|array
     {
         $cacheKey = self::CACHE_KEY_SCOPES;
 
-        if (\App::$cache && ($cachedData = \App::$cache->get($cacheKey))) {
+        if (!$forceRefresh && \App::$cache && ($cachedData = \App::$cache->get($cacheKey))) {
             return $cachedData;
         }
 

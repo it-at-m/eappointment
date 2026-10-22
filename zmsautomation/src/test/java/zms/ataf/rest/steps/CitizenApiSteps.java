@@ -8,6 +8,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
+import java.util.AbstractMap;
 import java.util.Locale;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -24,6 +25,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 
 import ataf.core.helpers.TestDataHelper;
 import ataf.core.logging.ScenarioLogManager;
+import zms.ataf.helpers.AccountCheckout;
 import config.TestConfig;
 import io.cucumber.java.After;
 import io.cucumber.java.Before;
@@ -210,6 +212,27 @@ public class CitizenApiSteps {
             .containsExactlyInAnyOrderElementsOf(expected);
     }
 
+    /**
+     * ZMSKVR-151: offices-and-services {@code priority} mirrors DLDB
+     * {@code LOCATION_PRIO_BY_DISPLAY_NAME} (Feuerwache and Bürgerbüro rows).
+     */
+    @Then("office {int} should have priority {int}")
+    public void officeShouldHavePriority(int officeId, int expectedPriority) {
+        Assertions.assertThat(lastOfficesAndServicesResponse)
+            .as("Request offices-and-services first")
+            .isNotNull();
+        Office office = findOfficeById(lastOfficesAndServicesResponse, officeId);
+        Assertions.assertThat(office)
+            .as("Expected office %d in offices-and-services", officeId)
+            .isNotNull();
+        Assertions.assertThat(office.getPriority())
+            .as(
+                "office %d (%s) priority — LOCATION_PRIO_BY_DISPLAY_NAME / provider.data.prio",
+                officeId,
+                office.getName())
+            .isEqualTo(expectedPriority);
+    }
+
     @Then("office {int} should use a slot time of {int} minutes and service {int} should take {int} slot")
     public void officeShouldUseSlotTimeAndServiceShouldTakeSlots(
             int officeId, int slotTimeInMinutes, int serviceId, int slots) {
@@ -307,23 +330,56 @@ public class CitizenApiSteps {
             .isEqualTo(maxQuantity);
     }
 
-    private OfficeServiceRelation requireRelation(int officeId, int serviceId) {
+    @Then("office {int} and service {int} should have a relation")
+    public void officeAndServiceShouldHaveARelation(int officeId, int serviceId) {
+        Assertions.assertThat(findRelation(officeId, serviceId))
+            .as("Expected relation office %d service %d in offices-and-services", officeId, serviceId)
+            .isNotNull();
+    }
+
+    @Then("office {int} and service {int} should not have a relation")
+    public void officeAndServiceShouldNotHaveARelation(int officeId, int serviceId) {
+        Assertions.assertThat(findRelation(officeId, serviceId))
+            .as("Office %d must not offer service %d in offices-and-services", officeId, serviceId)
+            .isNull();
+    }
+
+    @Then("office {int} disabledByServices should include {int}")
+    public void officeDisabledByServicesShouldInclude(int officeId, int serviceId) {
         Assertions.assertThat(lastOfficesAndServicesResponse)
             .as("Request offices-and-services first")
             .isNotNull();
-        OfficeServiceRelation relation = null;
-        if (lastOfficesAndServicesResponse.getRelations() != null) {
-            for (OfficeServiceRelation candidate : lastOfficesAndServicesResponse.getRelations()) {
-                if (candidate != null
-                        && officeId == (candidate.getOfficeId() == null ? -1 : candidate.getOfficeId())
-                        && serviceId == (candidate.getServiceId() == null ? -1 : candidate.getServiceId())) {
-                    relation = candidate;
-                    break;
-                }
+        Office office = findOfficeById(lastOfficesAndServicesResponse, officeId);
+        Assertions.assertThat(office)
+            .as("Expected office %d in offices-and-services", officeId)
+            .isNotNull();
+        Assertions.assertThat(office.getDisabledByServices())
+            .as("office %d disabledByServices", officeId)
+            .isNotNull()
+            .contains(serviceId);
+    }
+
+    private OfficeServiceRelation findRelation(int officeId, int serviceId) {
+        Assertions.assertThat(lastOfficesAndServicesResponse)
+            .as("Request offices-and-services first")
+            .isNotNull();
+        if (lastOfficesAndServicesResponse.getRelations() == null) {
+            return null;
+        }
+        for (OfficeServiceRelation candidate : lastOfficesAndServicesResponse.getRelations()) {
+            if (candidate != null
+                    && officeId == (candidate.getOfficeId() == null ? -1 : candidate.getOfficeId())
+                    && serviceId == (candidate.getServiceId() == null ? -1 : candidate.getServiceId())) {
+                return candidate;
             }
         }
+        return null;
+    }
+
+    private OfficeServiceRelation requireRelation(int officeId, int serviceId) {
         return java.util.Objects.requireNonNull(
-                relation, "relation office " + officeId + " service " + serviceId);
+                findRelation(officeId, serviceId),
+                "relation office " + officeId + " service " + serviceId);
     }
 
     /**
@@ -376,6 +432,17 @@ public class CitizenApiSteps {
         return raw;
     }
 
+    /**
+     * Office 10286848 is scope 130. The day-lock scenario closes that scope's only bookable day
+     * and holds {@code scope:130:day-closure} until it reopens the day. Readers must take the
+     * same lock first or they observe the closed day.
+     */
+    private static void holdForstenriederDayClosure(List<Integer> officeIds) {
+        if (officeIds.contains(10286848)) {
+            AccountCheckout.checkout("scope:130:day-closure");
+        }
+    }
+
     private static String envOrDefault(String name, String fallback) {
         String value = System.getenv(name);
         if (value == null || value.isBlank()) {
@@ -391,6 +458,7 @@ public class CitizenApiSteps {
 
     @When("I request available days for office {int} and service {int} with service count {int}")
     public void iRequestAvailableDaysForOfficeAndService(int officeId, int serviceId, int serviceCount) {
+        holdForstenriederDayClosure(List.of(officeId));
         lastOfficeId = officeId;
         lastServiceId = serviceId;
         lastServiceCount = serviceCount;
@@ -408,6 +476,7 @@ public class CitizenApiSteps {
             String officeIdsCsv, int serviceId, int serviceCount) {
         List<Integer> officeIds = parseOfficeIdsCsv(officeIdsCsv);
         Assertions.assertThat(officeIds).as("officeIds csv").isNotEmpty();
+        holdForstenriederDayClosure(officeIds);
         lastOfficeId = officeIds.get(0);
         lastServiceId = serviceId;
         lastServiceCount = serviceCount;
@@ -425,6 +494,7 @@ public class CitizenApiSteps {
         List<Integer> serviceIds = parseOfficeIdsCsv(serviceIdsCsv);
         Assertions.assertThat(officeIds).as("officeIds csv").isNotEmpty();
         Assertions.assertThat(serviceIds).as("serviceIds csv").isNotEmpty();
+        holdForstenriederDayClosure(officeIds);
         List<Integer> serviceCounts = serviceIds.stream().map(id -> 1).collect(Collectors.toList());
         lastOfficeId = officeIds.get(0);
         lastServiceId = serviceIds.get(0);
@@ -439,6 +509,7 @@ public class CitizenApiSteps {
         List<Integer> serviceCounts = parseOfficeIdsCsv(serviceCountsCsv);
         Assertions.assertThat(serviceIds).as("serviceIds csv").isNotEmpty();
         Assertions.assertThat(serviceCounts).as("serviceCounts csv").hasSameSizeAs(serviceIds);
+        holdForstenriederDayClosure(List.of(officeId));
         lastOfficeId = officeId;
         lastServiceId = serviceIds.get(0);
         lastServiceCount = serviceCounts.get(0);
@@ -469,6 +540,50 @@ public class CitizenApiSteps {
         Assertions.assertThat(lastAvailableCalendarResponse.getFirstAvailableDayForOffice(officeId))
             .as("Expected no bookable day for office %d when the appointment no longer fits", officeId)
             .isNull();
+    }
+
+    /** ZMSKVR-42: pin the first bookable citizen day so day-lock can target it. */
+    @When("I remember the first bookable day for office {int}")
+    public void iRememberTheFirstBookableDayForOffice(int officeId) {
+        Assertions.assertThat(lastAvailableCalendarResponse)
+            .as("Request available days first")
+            .isNotNull();
+        String date = lastAvailableCalendarResponse.getFirstAvailableDayForOffice(officeId);
+        Assertions.assertThat(date)
+            .as("Expected a bookable day to remember for office %d", officeId)
+            .isNotBlank();
+        TestDataHelper.setTestData("day_closure_date", date);
+        ScenarioLogManager.getLogger().info("Remembered citizen bookable day {} for office {}", date, officeId);
+    }
+
+    @Then("the available calendar should not include the remembered bookable day for office {int}")
+    public void theAvailableCalendarShouldNotIncludeTheRememberedBookableDayForOffice(int officeId) {
+        Assertions.assertThat(response.getStatusCode())
+            .as("GET /available-calendar/")
+            .isEqualTo(200);
+        Assertions.assertThat(lastAvailableCalendarResponse)
+            .as("Request available days first")
+            .isNotNull();
+        String date = TestDataHelper.getTestData("day_closure_date");
+        Assertions.assertThat(date).as("remembered day_closure_date").isNotBlank();
+        Assertions.assertThat(lastAvailableCalendarResponse.isBookableDayForOffice(date, officeId))
+            .as("Locked day %s should not stay bookable for office %d", date, officeId)
+            .isFalse();
+    }
+
+    @Then("the available calendar should include the remembered bookable day for office {int}")
+    public void theAvailableCalendarShouldIncludeTheRememberedBookableDayForOffice(int officeId) {
+        Assertions.assertThat(response.getStatusCode())
+            .as("GET /available-calendar/")
+            .isEqualTo(200);
+        Assertions.assertThat(lastAvailableCalendarResponse)
+            .as("Request available days first")
+            .isNotNull();
+        String date = TestDataHelper.getTestData("day_closure_date");
+        Assertions.assertThat(date).as("remembered day_closure_date").isNotBlank();
+        Assertions.assertThat(lastAvailableCalendarResponse.isBookableDayForOffice(date, officeId))
+            .as("Unlocked day %s should be bookable again for office %d", date, officeId)
+            .isTrue();
     }
 
     @Then("the available calendar should include appointments for offices {string}")
@@ -561,7 +676,7 @@ public class CitizenApiSteps {
         if (lastAvailableCalendarResponse == null) {
             throw new IllegalStateException("Request available days first.");
         }
-        String date = lastAvailableCalendarResponse.getFirstAvailableDay();
+        String date = refetchCalendarUntilFirstAvailableDay(null);
         if (date == null) {
             throw new IllegalStateException("No available day in last response.");
         }
@@ -581,12 +696,54 @@ public class CitizenApiSteps {
         if (lastAvailableCalendarResponse == null) {
             throw new IllegalStateException("Request available days first.");
         }
-        String date = lastAvailableCalendarResponse.getFirstAvailableDayForOffice(officeId);
+        String date = refetchCalendarUntilFirstAvailableDay(officeId);
         if (date == null) {
             throw new IllegalStateException(
                 "No available day with appointments for office " + officeId + " in last calendar response.");
         }
         iRequestAvailableAppointmentsForDateOfficeAndService(date, officeId, lastServiceId, lastServiceCount);
+    }
+
+    /**
+     * Parallel shard runs briefly empty a calendar (reservations). Refetch with backoff before
+     * failing spa / booking scenarios that need at least one day.
+     *
+     * @param officeId when non-null, require a day with appointments for that office bucket
+     */
+    private String refetchCalendarUntilFirstAvailableDay(Integer officeId) {
+        for (int attempt = 1; attempt <= 8; attempt++) {
+            String date =
+                    officeId == null
+                            ? lastAvailableCalendarResponse.getFirstAvailableDay()
+                            : lastAvailableCalendarResponse.getFirstAvailableDayForOffice(officeId);
+            if (date != null) {
+                return date;
+            }
+            if (cachedCalendarOfficeIds == null
+                    || cachedCalendarServiceIds == null
+                    || cachedCalendarServiceCounts == null
+                    || attempt == 8) {
+                return null;
+            }
+            ScenarioLogManager.getLogger().info(String.format(
+                    "Citizen API calendar has no available day%s; requesting it again (%d/8)",
+                    officeId == null ? "" : (" for office " + officeId),
+                    attempt));
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException interrupted) {
+                Thread.currentThread().interrupt();
+                return null;
+            }
+            lastAvailableCalendarResponse = fetchAvailableCalendar(
+                    parseOfficeIdsCsv(cachedCalendarOfficeIds),
+                    cachedCalendarServiceIds,
+                    cachedCalendarServiceCounts);
+            if (lastAvailableCalendarResponse == null) {
+                return null;
+            }
+        }
+        return null;
     }
 
     /**
@@ -848,16 +1005,18 @@ public class CitizenApiSteps {
                 .isNotNull();
         Assertions.assertThat(hint).contains(FuehrerscheinstelleScopeHints.zoneFor(code));
         Assertions.assertThat(info).contains(FuehrerscheinstelleScopeHints.hintFor(code));
-        Assertions.assertThat(info)
-                .doesNotContain(
-                        FuehrerscheinstelleScopeHints.hintFor(
-                                FuehrerscheinstelleScopeHints.otherCode(code)));
+        Assertions.assertThat(FuehrerscheinstelleScopeHints.paintsOnly(hint + " " + info, code))
+                .as("scope.hint=%s infoForAppointment=%s must not mix Schalter markers", hint, info)
+                .isTrue();
         FuehrerscheinstelleScopeHints.rememberApiSchalterCode(code);
         ScenarioLogManager.getLogger()
                 .info("Citizen API appointment matched Führerscheinstelle Schalter {}", code);
     }
 
-    /** ZMSKVR-924 / ZMSKVR-1019: second same-timestamp reserve lands on the other Schalter. */
+    /**
+     * ZMSKVR-924 / ZMSKVR-1019: second same-timestamp reserve on the V55 switch day lands on
+     * the A↔B partner. After-hourly V002 keeps Schalter C off that day.
+     */
     @Then("the appointment scope should be the other Führerscheinstelle Schalter")
     public void theAppointmentScopeShouldBeTheOtherFuehrerscheinstelleSchalter() {
         String first = FuehrerscheinstelleScopeHints.rememberedApiSchalterCode();
@@ -873,8 +1032,11 @@ public class CitizenApiSteps {
                 .isEqualTo(expected);
         Assertions.assertThat(hint)
                 .as("second reserve scope.hint=%s", hint)
-                .contains(FuehrerscheinstelleScopeHints.zoneFor(expected));
-        Assertions.assertThat(info).contains(FuehrerscheinstelleScopeHints.hintFor(expected));
+                .contains(FuehrerscheinstelleScopeHints.zoneFor(code));
+        Assertions.assertThat(info).contains(FuehrerscheinstelleScopeHints.hintFor(code));
+        Assertions.assertThat(FuehrerscheinstelleScopeHints.paintsOnly(hint + " " + info, code))
+                .as("second reserve must not mix Schalter markers (hint=%s info=%s)", hint, info)
+                .isTrue();
         FuehrerscheinstelleScopeHints.rememberApiSchalterCode(code);
         ScenarioLogManager.getLogger()
                 .info("Citizen API second reserve switched Schalter {} → {}", first, code);
@@ -1728,9 +1890,65 @@ public class CitizenApiSteps {
         postAppointmentUpdate(familyName, email, customTextfield != null ? customTextfield : "", true, false);
     }
 
+    @When("I update the appointment with family name {string} and customTextfield {string} as the logged-in citizen")
+    public void iUpdateTheAppointmentWithFamilyNameAndCustomTextfieldAsTheLoggedInCitizen(
+            String familyName, String customTextfield) {
+        String email = familyName.toLowerCase(Locale.ROOT).replaceAll("[^a-z0-9]", "") + "@mailinator.com";
+        setBookingContactEmail(email);
+        postAppointmentUpdate(familyName, email, customTextfield != null ? customTextfield : "", true, true);
+    }
+
+    @When("I authenticate as Keycloak citizen {string}")
+    public void iAuthenticateAsKeycloakCitizen(String loginName) {
+        citizenAccessToken = CitizenKeycloakTokenHelper.fetchAccessToken(loginName);
+        ScenarioLogManager.getLogger().info("Citizen API: authenticated as Keycloak citizen {}", loginName);
+    }
+
+    @Then("the citizen access token should omit claim {string}")
+    public void theCitizenAccessTokenShouldOmitClaim(String claimName) {
+        String token = requireCitizenAccessToken();
+        String[] parts = token.split("\\.");
+        Assertions.assertThat(parts.length)
+                .as("JWT parts")
+                .isGreaterThanOrEqualTo(2);
+        String payloadJson =
+                new String(java.util.Base64.getUrlDecoder().decode(padBase64Url(parts[1])), java.nio.charset.StandardCharsets.UTF_8);
+        com.fasterxml.jackson.databind.JsonNode payload;
+        try {
+            payload = new com.fasterxml.jackson.databind.ObjectMapper().readTree(payloadJson);
+        } catch (Exception e) {
+            throw new IllegalStateException("Could not parse citizen access token payload", e);
+        }
+        com.fasterxml.jackson.databind.JsonNode claim = payload.get(claimName);
+        boolean missingOrBlank =
+                claim == null || claim.isNull() || (claim.isTextual() && claim.asText().isBlank());
+        Assertions.assertThat(missingOrBlank)
+                .as("citizen JWT claim %s must be omitted or blank. payload=%s", claimName, payloadJson)
+                .isTrue();
+        ScenarioLogManager.getLogger()
+                .info("Citizen API: access token omits or blanks claim {}", claimName);
+    }
+
+    private static String padBase64Url(String value) {
+        int pad = (4 - (value.length() % 4)) % 4;
+        return value + "====".substring(0, pad);
+    }
+
+    @When("I attempt to update the appointment with family name {string} and customTextfield {string}")
+    public void iAttemptToUpdateTheAppointmentWithFamilyNameAndCustomTextfield(
+            String familyName, String customTextfield) {
+        String email = familyName.toLowerCase(Locale.ROOT).replaceAll("[^a-z0-9]", "") + "@mailinator.com";
+        postAppointmentUpdate(familyName, email, customTextfield != null ? customTextfield : "", false, false);
+    }
+
     @When("I update the appointment with contact details and customTextfield {string} as the logged-in citizen")
     public void iUpdateTheAppointmentWithContactDetailsAndCustomTextfieldAsTheLoggedInCitizen(String customTextfield) {
         postAppointmentUpdate(scenarioContactFamilyName(), scenarioContactEmail(), customTextfield != null ? customTextfield : "", true, true);
+    }
+
+    @When("I update the appointment with contact details and telephone {string}")
+    public void iUpdateTheAppointmentWithContactDetailsAndTelephone(String telephone) {
+        postAppointmentUpdate(scenarioContactFamilyName(), scenarioContactEmail(), "", telephone, true, false);
     }
 
     @When("I update the appointment with contact details and telephone {string} as the logged-in citizen")
@@ -1789,6 +2007,33 @@ public class CitizenApiSteps {
                 previousProcessId));
     }
 
+    @When("I preconfirm the remembered {string} appointment")
+    public void iPreconfirmTheRememberedAppointment(String label) {
+        useRememberedAsCurrentProcess(label);
+        // Stub has only processId/authKey; postPreconfirm(true) asserts serviceId/officeId.
+        iFetchTheAppointmentForTheCurrentProcess();
+        postPreconfirm(true);
+    }
+
+    @When("I attempt to preconfirm the remembered {string} appointment")
+    public void iAttemptToPreconfirmTheRememberedAppointment(String label) {
+        useRememberedAsCurrentProcess(label);
+        postPreconfirm(false);
+    }
+
+    private void useRememberedAsCurrentProcess(String label) {
+        RememberedAppointment remembered = requireRemembered(label);
+        ThinnedProcess stub = new ThinnedProcess();
+        stub.setProcessId(remembered.processId);
+        stub.setAuthKey(remembered.authKey);
+        lastReserveProcess = stub;
+        setLastReserveProcess(stub);
+        ScenarioLogManager.getLogger().info(String.format(
+                "Citizen API using remembered \"%s\" processId=%d as current process",
+                label,
+                remembered.processId));
+    }
+
     @When("I reserve an appointment with the first available slot using the remembered {string} appointment as source")
     public void iReserveUsingTheRememberedAppointmentAsSource(String label) {
         RememberedAppointment source = requireRemembered(label);
@@ -1824,6 +2069,18 @@ public class CitizenApiSteps {
             .as("my appointments should include process %s", remembered.processId)
             .isNotNull();
         Assertions.assertThat(match.getServiceId()).isEqualTo(serviceId);
+    }
+
+    @Then("my appointments include the remembered {string} appointment with familyName {string}")
+    public void myAppointmentsIncludeTheRememberedAppointmentWithFamilyName(String label, String familyName) {
+        RememberedAppointment remembered = requireRemembered(label);
+        ThinnedProcess match = findMyAppointment(remembered.processId);
+        Assertions.assertThat(match)
+                .as("my appointments should include process %s", remembered.processId)
+                .isNotNull();
+        Assertions.assertThat(contactValue(match.getFamilyName()))
+                .as("my-appointments familyName for process %s", remembered.processId)
+                .isEqualTo(familyName);
     }
 
     @Then("my appointments do not include the remembered {string} appointment")
@@ -2029,7 +2286,19 @@ public class CitizenApiSteps {
     }
 
     private ThinnedProcess requireCurrentProcess() {
-        ThinnedProcess process = lastReserveProcess != null ? lastReserveProcess : getBookingProcess();
+        // UI sync writes the ThreadLocal booking process; prefer it when it points at a
+        // different appointment than the last API reserve (mail-limit sibling flows).
+        ThinnedProcess booked = getBookingProcess();
+        if (booked != null
+                && booked.getProcessId() != null
+                && booked.getAuthKey() != null
+                && !booked.getAuthKey().isBlank()
+                && (lastReserveProcess == null
+                        || lastReserveProcess.getProcessId() == null
+                        || !lastReserveProcess.getProcessId().equals(booked.getProcessId()))) {
+            lastReserveProcess = booked;
+        }
+        ThinnedProcess process = lastReserveProcess != null ? lastReserveProcess : booked;
         if (process == null) {
             throw new IllegalStateException("Reserve an appointment first.");
         }
@@ -2147,6 +2416,135 @@ public class CitizenApiSteps {
     }
 
     /**
+     * ZMSKVR-97 / ZMSKVR-535: confirm returns {@code icsContent} from Munich {@code icsappointment.twig}
+     * with Terminnummer ({@code displayNumber}), Leistung URL, and cancel hash link.
+     *
+     * @param displayNumberMode {@code plain} when displayNumber equals the process id;
+     *     {@code prefixed} when it is {@code displayNumberPrefix} + padded counter (not the bare
+     *     process id). Citizen confirm currently keeps the process id for prefix scopes because
+     *     the thinned scope omits {@code queue.displayNumberPrefix}.
+     */
+    @Then("the confirm endpoint icsContent should contain {string}")
+    public void theConfirmEndpointIcsContentShouldContain(String expected) {
+        response.then().statusCode(200);
+        ThinnedProcess process =
+                lastReserveProcess != null ? lastReserveProcess : parseDataResponse(response, ThinnedProcess.class);
+        Assertions.assertThat(process).as("confirm process").isNotNull();
+        String unfolded = unfoldIcs(process.getIcsContent());
+        Assertions.assertThat(unfolded)
+                .as("confirm-appointment icsContent should contain '%s'", expected)
+                .contains(expected);
+        ScenarioLogManager.getLogger()
+                .info("Citizen API: confirm icsContent contains {}", expected);
+    }
+
+    @Then("the confirm endpoint icsContent should match the Munich template with {string} displayNumber")
+    public void theConfirmEndpointIcsContentShouldMatchTheMunichTemplateWithDisplayNumber(
+            String displayNumberMode) {
+        response.then().statusCode(200);
+        ThinnedProcess process =
+                lastReserveProcess != null ? lastReserveProcess : parseDataResponse(response, ThinnedProcess.class);
+        Assertions.assertThat(process).as("confirm process").isNotNull();
+        Assertions.assertThat(process.getProcessId()).as("processId").isNotNull();
+        Assertions.assertThat(process.getIcsContent())
+                .as("confirm-appointment icsContent")
+                .isNotBlank()
+                .contains("BEGIN:VCALENDAR")
+                .contains("BEGIN:VEVENT");
+        String displayNumber = process.getDisplayNumber();
+        Assertions.assertThat(displayNumber).as("displayNumber on confirm").isNotBlank();
+        if ("plain".equalsIgnoreCase(displayNumberMode)) {
+            Assertions.assertThat(displayNumber)
+                    .as("plain displayNumber equals processId")
+                    .isEqualTo(String.valueOf(process.getProcessId()));
+        } else if ("prefixed".equalsIgnoreCase(displayNumberMode)) {
+            // Product form: prefix + zero-padded counter (see ProcessRepository::getNewDisplayNumber).
+            Assertions.assertThat(displayNumber)
+                    .as("prefixed displayNumber is not the bare processId")
+                    .isNotEqualTo(String.valueOf(process.getProcessId()))
+                    .matches("[A-Za-z].*");
+        } else {
+            throw new IllegalArgumentException(
+                    "Unknown displayNumber mode \"" + displayNumberMode + "\" (use prefixed|plain).");
+        }
+        String unfolded = unfoldIcs(process.getIcsContent());
+        Assertions.assertThat(unfolded)
+                .as("ICS DESCRIPTION Terminnummer")
+                .contains("Terminnummer: " + displayNumber);
+        Assertions.assertThat(unfolded)
+                .as("ICS UID displayNumber")
+                .contains("-" + displayNumber);
+        Assertions.assertThat(unfolded)
+                .as("ICS cancel/reschedule link")
+                .contains("#/appointment/");
+        Assertions.assertThat(process.getServiceId()).as("serviceId").isNotNull();
+        String leistungServiceId = icsLeistungServiceId(process.getServiceId());
+        Assertions.assertThat(unfolded)
+                .as("ICS Leistung URL (public request id for variants)")
+                .contains("https://stadt.muenchen.de/service/info/" + leistungServiceId);
+        Assertions.assertThat(unfolded).as("ICS LOCATION present").contains("LOCATION:");
+        Integer officeId = process.getOfficeId() != null ? process.getOfficeId() : lastOfficeId;
+        if (Integer.valueOf(10492).equals(officeId)) {
+            Assertions.assertThat(unfolded)
+                    .as("ICS LOCATION street for Bürgerbüro Ruppertstraße (10492)")
+                    .contains("Ruppertstraße");
+        }
+    }
+
+    /**
+     * Munich {@code icsappointment.twig} links {@code request.id}. Phone/video variants (V26 zms
+     * ids 1/2) publish parent DLDB {@code 1080455} in that URL, not the internal serviceId.
+     */
+    public static String icsLeistungServiceId(Integer serviceId) {
+        if (serviceId == null) {
+            return null;
+        }
+        if (serviceId == 1 || serviceId == 2) {
+            return "1080455";
+        }
+        return String.valueOf(serviceId);
+    }
+
+    private static String unfoldIcs(String icsContent) {
+        if (icsContent == null) {
+            return "";
+        }
+        return icsContent.replaceAll("\\R[ \\t]", "").replace("\\n", "\n").replace("\\,", ",");
+    }
+
+    /**
+     * Reloads the booking process from GET /appointment/ so UI-synced credentials also carry
+     * displayNumber and serviceId for ICS asserts.
+     */
+    public static ThinnedProcess refreshBookingProcessFromAppointmentApi() {
+        ThinnedProcess process = getBookingProcess();
+        if (process == null || process.getProcessId() == null || process.getAuthKey() == null) {
+            throw new IllegalStateException(
+                    "Need processId/authKey on the booking process before refreshing from /appointment/.");
+        }
+        Response appointmentResponse =
+                given()
+                        .baseUri(TestConfig.getCitizenApiBaseUri())
+                        .queryParam("processId", process.getProcessId())
+                        .queryParam("authKey", process.getAuthKey())
+                        .when()
+                        .get("/appointment/");
+        appointmentResponse.then().statusCode(200);
+        ThinnedProcess appointment;
+        try {
+            appointment = appointmentResponse.as(ThinnedProcess.class);
+        } catch (Exception e) {
+            throw new IllegalStateException(
+                    "Could not parse GET /appointment/ for ICS asserts.", e);
+        }
+        Assertions.assertThat(appointment)
+                .as("GET /appointment/ payload")
+                .isNotNull();
+        setBookingProcess(appointment);
+        return appointment;
+    }
+
+    /**
      * Assert scope.provider.lat and lon are present (non-null numbers) on the current response.
      * Soft-delete/cancel responses intentionally clear geo; do not use this helper there.
      */
@@ -2238,8 +2636,9 @@ public class CitizenApiSteps {
 
     @Then("I cancel the appointment")
     public void iCancelTheAppointment() {
-        // Prefer the most recent process data, but fall back to the shared booking context.
-        ThinnedProcess process = lastReserveProcess != null ? lastReserveProcess : getBookingProcess();
+        // UI sync writes ThreadLocal; prefer it when it shares processId but has a newer authKey
+        // (update-appointment can rotate the key after reserve left lastReserveProcess stale).
+        ThinnedProcess process = processForCancel();
         if (process == null) {
             throw new IllegalStateException("No appointment process available to delete. Reserve and confirm first.");
         }
@@ -2251,25 +2650,46 @@ public class CitizenApiSteps {
         }
         lastDisplayNumberBeforeCancel = process.getDisplayNumber();
 
-        ScenarioLogManager.getLogger().info(String.format(
-            "Citizen API /cancel-appointment/ for processId=%d", pid
-        ));
-
-        response = given()
-            .baseUri(baseUri != null ? baseUri : TestConfig.getCitizenApiBaseUri())
-            .contentType("application/json")
-            .body(Map.of("processId", pid, "authKey", auth))
-        .when()
-            .post("/cancel-appointment/");
-
-        CommonApiSteps.setResponse(response);
-
+        response = postCancelAppointment(pid, auth);
         String cancelBody = response.asString();
-        ScenarioLogManager.getLogger().info(String.format(
-            "Citizen API /cancel-appointment/ status=%d body=%s",
-            response.getStatusCode(),
-            cancelBody.length() > 1250 ? cancelBody.substring(0, 1250) + "..." : cancelBody
-        ));
+        int status = response.getStatusCode();
+
+        // Stale authKey after UI update / parallel reserve: retry once with the other credential source.
+        if (status == 406 && cancelBody.contains("authKeyMismatch")) {
+            ThinnedProcess alternate = alternateProcessForCancel(process);
+            if (alternate != null
+                    && alternate.getAuthKey() != null
+                    && !alternate.getAuthKey().equals(auth)) {
+                ScenarioLogManager.getLogger().info(
+                        "Citizen API cancel authKeyMismatch; retrying processId={} with alternate authKey", pid);
+                process = alternate;
+                auth = alternate.getAuthKey();
+                response = postCancelAppointment(pid, auth);
+                cancelBody = response.asString();
+                status = response.getStatusCode();
+            }
+        }
+
+        // Past-slot cancel after DB clock moves: bump the reserved row into the future and retry once.
+        if (status == 406 && cancelBody.contains("appointmentCanNotBeCanceled")) {
+            ScenarioLogManager.getLogger().info(
+                    "Citizen API cancel appointmentCanNotBeCanceled; bumping processId={} forward and retrying",
+                    pid);
+            bumpReservedAppointmentIntoFuture(pid);
+            response = postCancelAppointment(pid, auth);
+            cancelBody = response.asString();
+            status = response.getStatusCode();
+        }
+
+        // Prior cancel or After from a sibling already removed it — treat as done.
+        if (status == 406 && cancelAlreadyGone(cancelBody)) {
+            ScenarioLogManager.getLogger().info(
+                    "Citizen API cancel already gone ({}); continuing", cancelBodyErrorCode(cancelBody));
+            process.setStatus("deleted");
+            lastReserveProcess = process;
+            setLastReserveProcess(process);
+            return;
+        }
 
         // Basic sanity: 200 and a non-empty payload with a thinned process.
         response.then().statusCode(200);
@@ -2303,11 +2723,118 @@ public class CitizenApiSteps {
     }
 
     /**
+     * Prefer ThreadLocal booking credentials when they share processId with {@code lastReserveProcess}
+     * but carry a different authKey (UI update / localStorage sync after reserve).
+     */
+    private ThinnedProcess processForCancel() {
+        ThinnedProcess booked = getBookingProcess();
+        if (lastReserveProcess == null) {
+            return booked;
+        }
+        if (booked == null
+                || booked.getProcessId() == null
+                || booked.getAuthKey() == null
+                || lastReserveProcess.getProcessId() == null) {
+            return lastReserveProcess;
+        }
+        if (booked.getProcessId().equals(lastReserveProcess.getProcessId())
+                && !booked.getAuthKey().equals(lastReserveProcess.getAuthKey())) {
+            return booked;
+        }
+        return lastReserveProcess;
+    }
+
+    private ThinnedProcess alternateProcessForCancel(ThinnedProcess primary) {
+        ThinnedProcess booked = getBookingProcess();
+        if (primary == lastReserveProcess) {
+            return booked;
+        }
+        return lastReserveProcess;
+    }
+
+    private Response postCancelAppointment(int processId, String authKey) {
+        ScenarioLogManager.getLogger().info(String.format(
+            "Citizen API /cancel-appointment/ for processId=%d", processId
+        ));
+        Response cancelResponse = given()
+            .baseUri(baseUri != null ? baseUri : TestConfig.getCitizenApiBaseUri())
+            .contentType("application/json")
+            .body(Map.of("processId", processId, "authKey", authKey))
+        .when()
+            .post("/cancel-appointment/");
+        CommonApiSteps.setResponse(cancelResponse);
+        String cancelBody = cancelResponse.asString();
+        ScenarioLogManager.getLogger().info(String.format(
+            "Citizen API /cancel-appointment/ status=%d body=%s",
+            cancelResponse.getStatusCode(),
+            cancelBody.length() > 1250 ? cancelBody.substring(0, 1250) + "..." : cancelBody
+        ));
+        return cancelResponse;
+    }
+
+    private static boolean cancelAlreadyGone(String cancelBody) {
+        return cancelBody != null && (cancelBody.contains("authKeyMismatch")
+                || cancelBody.contains("appointmentNotFound")
+                || cancelBody.contains("processNotFound"));
+    }
+
+    private static String cancelBodyErrorCode(String cancelBody) {
+        if (cancelBody == null) {
+            return "unknown";
+        }
+        for (String code : List.of("authKeyMismatch", "appointmentNotFound", "processNotFound",
+                "appointmentCanNotBeCanceled")) {
+            if (cancelBody.contains(code)) {
+                return code;
+            }
+        }
+        return "unknown";
+    }
+
+    /**
+     * Push a still-reserved row past both suite clock and wall clock so citizen cancel accepts it.
+     */
+    private void bumpReservedAppointmentIntoFuture(int processId) {
+        java.time.LocalDateTime suite;
+        String adjusted = System.getenv("ZMS_TIMEADJUST");
+        if (adjusted != null && !adjusted.isBlank()) {
+            suite = java.time.LocalDateTime.parse(
+                    adjusted.trim(), java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        } else {
+            suite = java.time.LocalDateTime.now(BerlinTime.ZONE);
+        }
+        java.time.LocalDateTime wall = java.time.LocalDateTime.now(BerlinTime.ZONE);
+        java.time.LocalDateTime baseline = suite.isAfter(wall) ? suite : wall;
+        java.time.LocalDateTime appointment = baseline.plusMinutes(90);
+        String sql = """
+                UPDATE buerger
+                   SET Datum = ?, Uhrzeit = ?
+                 WHERE BuergerID = ?
+                   AND bestaetigt = 0
+                   AND vorlaeufigeBuchung = 1
+                """;
+        try (Connection connection = openZmsConnection();
+                PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setString(1, appointment.toLocalDate().toString());
+            statement.setString(
+                    2, appointment.toLocalTime().format(java.time.format.DateTimeFormatter.ofPattern("HH:mm:ss")));
+            statement.setInt(3, processId);
+            int updated = statement.executeUpdate();
+            ScenarioLogManager.getLogger().info(
+                    "Bumped reserved process {} to {} for cancel retry (rows={})",
+                    processId, appointment, updated);
+        } catch (SQLException e) {
+            ScenarioLogManager.getLogger().warn(
+                    "Could not bump reserved process {} before cancel retry: {}", processId, e.toString());
+        }
+    }
+
+    /**
      * Cancel the current process if one exists and is not already deleted. Never fails the scenario:
      * used from {@link #cancelLeftoverAppointmentAfterScenario()} after both passing and failing runs.
      */
     public void cancelLeftoverAppointmentQuietly() {
-        ThinnedProcess process = lastReserveProcess != null ? lastReserveProcess : getBookingProcess();
+        ThinnedProcess process = processForCancel();
         if (process == null || process.getProcessId() == null || process.getAuthKey() == null) {
             return;
         }
@@ -2332,12 +2859,32 @@ public class CitizenApiSteps {
                 .body(Map.of("processId", processId, "authKey", authKey))
             .when()
                 .post("/cancel-appointment/");
+            int status = cancelResponse.getStatusCode();
+            String body = cancelResponse.asString();
             ScenarioLogManager.getLogger().info(String.format(
                 "Best-effort /cancel-appointment/ processId=%d http=%d",
                 processId,
-                cancelResponse.getStatusCode()
+                status
             ));
-            return cancelResponse.getStatusCode() == 200;
+            if (status == 200 || cancelAlreadyGone(body)) {
+                return true;
+            }
+            if (status == 406 && body.contains("appointmentCanNotBeCanceled")) {
+                bumpReservedAppointmentIntoFuture(processId);
+                Response retry = given()
+                    .baseUri(baseUri != null ? baseUri : TestConfig.getCitizenApiBaseUri())
+                    .contentType("application/json")
+                    .body(Map.of("processId", processId, "authKey", authKey))
+                .when()
+                    .post("/cancel-appointment/");
+                ScenarioLogManager.getLogger().info(String.format(
+                    "Best-effort /cancel-appointment/ retry processId=%d http=%d",
+                    processId,
+                    retry.getStatusCode()
+                ));
+                return retry.getStatusCode() == 200 || cancelAlreadyGone(retry.asString());
+            }
+            return false;
         } catch (Exception e) {
             ScenarioLogManager.getLogger().warn(
                 String.format("Best-effort cancel failed for processId=%d: %s", processId, e)
@@ -2598,6 +3145,63 @@ public class CitizenApiSteps {
                 }
             }
         }
+    }
+
+    /**
+     * ZMSKVR-389 / ZMSKVR-418: thinned process keeps main serviceCount and each
+     * subRequestCounts entry. CSV form {@code Name:count, Name:count}.
+     */
+    @Then("the appointment should list services with counts {string}")
+    public void theAppointmentShouldListServicesWithCounts(String nameCountCsv) {
+        ThinnedProcess process =
+                lastReserveProcess != null ? lastReserveProcess : parseDataResponse(response, ThinnedProcess.class);
+        Assertions.assertThat(process).as("appointment process").isNotNull();
+        List<AbstractMap.SimpleEntry<String, Integer>> expected = parseServiceNameCounts(nameCountCsv);
+        Assertions.assertThat(expected).as("expected Name:count pairs").isNotEmpty();
+        Assertions.assertThat(process.getServiceName())
+                .as("main serviceName")
+                .isEqualTo(expected.get(0).getKey());
+        Assertions.assertThat(process.getServiceCount())
+                .as("main serviceCount for %s", expected.get(0).getKey())
+                .isEqualTo(expected.get(0).getValue());
+        List<ThinnedProcess.SubRequestCount> subs =
+                process.getSubRequestCounts() == null ? List.of() : process.getSubRequestCounts();
+        Assertions.assertThat(subs)
+                .as("subRequestCounts size for %s", nameCountCsv)
+                .hasSize(expected.size() - 1);
+        for (int i = 1; i < expected.size(); i++) {
+            ThinnedProcess.SubRequestCount sub = subs.get(i - 1);
+            Assertions.assertThat(sub).as("subRequestCounts[%d]", i - 1).isNotNull();
+            Assertions.assertThat(sub.getName())
+                    .as("subRequestCounts[%d].name", i - 1)
+                    .isEqualTo(expected.get(i).getKey());
+            Assertions.assertThat(sub.getCount())
+                    .as("subRequestCounts[%d].count for %s", i - 1, expected.get(i).getKey())
+                    .isEqualTo(expected.get(i).getValue());
+        }
+    }
+
+    private static List<AbstractMap.SimpleEntry<String, Integer>> parseServiceNameCounts(String nameCountCsv) {
+        List<AbstractMap.SimpleEntry<String, Integer>> parsed = new ArrayList<>();
+        for (String part : nameCountCsv.split(",")) {
+            String trimmed = part.trim();
+            if (trimmed.isEmpty()) {
+                continue;
+            }
+            int colon = trimmed.lastIndexOf(':');
+            Assertions.assertThat(colon)
+                    .as("expected Name:count token, got \"%s\"", trimmed)
+                    .isGreaterThan(0);
+            String name = trimmed.substring(0, colon).trim();
+            String countToken = trimmed.substring(colon + 1).trim();
+            try {
+                parsed.add(new AbstractMap.SimpleEntry<>(name, Integer.parseInt(countToken)));
+            } catch (NumberFormatException ex) {
+                throw new IllegalArgumentException(
+                        "expected Name:count token with integer count, got \"" + trimmed + "\"", ex);
+            }
+        }
+        return parsed;
     }
 
     /** Unfolded ICS SUMMARY value, or null when the property is absent. */

@@ -1,8 +1,12 @@
-@rest @zmscitizenapi @dldb-special-cases @citizen @ZMSKVR-1046
+@rest @zmscitizenapi @dldb-special-cases @citizen @ZMSKVR-1046 @ZMSKVR-1091
 Feature: Citizen API: Ruppertstraße shared booking (Haupt 10489 + Ausbildung 10313237)
   As a citizen API client
   I want available-calendar with both shared-booking peers to return office buckets for Haupt and Ausbildung
   So that reserve/book uses the real officeId while capacity is pooled (no duplicate timestamps)
+
+  # ZMSKVR-1091 (wird getestet von): sharedBookingOfficeIds, pooled calendar without duplicate
+  # timestamps, reserve on Haupt/Ausbildung, and combination filter excluding Ausbildung.
+  # UI sibling: ui/.../zmskvr-1046_zmskvr-1091_booking_ruppertstrasse_shared_booking_ausbildung.feature
 
   Background:
     Given the Citizen API is available
