@@ -89,7 +89,7 @@
           <dependency>
             <groupId>com.mysql</groupId>
             <artifactId>mysql-connector-j</artifactId>
-            <version>26.7.0</version>
+            <version>26.10.0</version>
           </dependency>
         </dependencies>
       </plugin>
@@ -221,7 +221,7 @@
         <dependency>
           <groupId>com.mysql</groupId>
           <artifactId>mysql-connector-j</artifactId>
-          <version>26.7.0</version>
+          <version>26.10.0</version>
         </dependency>
         <dependency>
           <groupId>org.apache.logging.log4j</groupId>
@@ -321,7 +321,7 @@
         <dependency>
           <groupId>com.mysql</groupId>
           <artifactId>mysql-connector-j</artifactId>
-          <version>26.7.0</version>
+          <version>26.10.0</version>
         </dependency>
         <dependency>
           <groupId>org.apache.logging.log4j</groupId>
@@ -420,7 +420,7 @@
         <dependency>
           <groupId>com.mysql</groupId>
           <artifactId>mysql-connector-j</artifactId>
-          <version>26.7.0</version>
+          <version>26.10.0</version>
         </dependency>
         <dependency>
           <groupId>org.apache.logging.log4j</groupId>
