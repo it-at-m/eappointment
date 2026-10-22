@@ -8,11 +8,11 @@ Feature: Spontankunden opening hours stay editable on a locked day
     When I open the administration website.
     Then I should be on the administration start page.
     When I click the button "Anmelden" in the administration.
-    And I select for "Standort" the value "Bürgerbüro Ruppertstraße (KVR-II/211) Abholung".
-    And I enter in the field "Platz-Nr. oder Tresen" the text "13".
+    And I select for "Standort" the value "Bürgerbüro Leonrodstraße (KVR-II/232 KP) Abholung".
+    And I enter in the field "Platz-Nr. oder Tresen" the text "12".
     And I click the button "Auswahl bestätigen" in the administration.
     And I click the entry "Behörden und Standorte" in the Administration menu.
-    And I click the opening-hours entry of "Bürgerbüro Ruppertstraße (KVR-II/211) Abholung" under authorities and locations.
+    And I click the opening-hours entry of "Bürgerbüro Leonrodstraße (KVR-II/232 KP) Abholung" under authorities and locations.
     And I click day "<heute_tag>" under opening hours.
     And I click the button "neue Öffnungszeit" in the administration.
     And I open the opening-hours accordion "Neue Öffnungszeit".
