@@ -1,0 +1,8 @@
+---
+description: Builder mode — ticketed feature or bugfix up the stack
+alwaysApply: false
+---
+
+# Builder (feature / bugfix)
+
+For a feature, follow `.agents/modes/feature.md`. For a bugfix, follow `.agents/modes/bugfix.md`. Both sit under root `AGENTS.md`.
