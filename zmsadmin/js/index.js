@@ -37,6 +37,7 @@ import focusFirstErrorElement from './element/form/focusFirstErrorElement'
 import maxChars from './element/form/maxChars'
 import validateClusterScopes from './element/form/validateClusterScopes'
 import scopeMultiselect from './element/form/scopeMultiselect'
+import appointmentsPerMailLimit from './element/form/appointmentsPerMailLimit'
 import DialogHandler from './lib/dialogHandler'
 
 // Import JS from patternlab
@@ -131,6 +132,7 @@ $('form').each(function () {
     }
     preventFormResubmit(this);
     focusFirstErrorElement(this);
+    appointmentsPerMailLimit(this);
 })
 
 $('textarea.maxchars').each(function () {
