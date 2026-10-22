@@ -21,7 +21,7 @@ services:
       - default
 
   mail-viewer:
-    image: node:24
+    image: node:24.22.1@sha256:6449e19d8184d84062525b6a7524def03146c2cb04a7f08b076680d0e8e4240a
     container_name: zms-mail-viewer
     working_dir: /workspace/.devcontainer/mail-viewer
     volumes:
@@ -45,7 +45,7 @@ services:
     restart: unless-stopped
 
   citizenview:
-    image: node:24
+    image: node:24.22.1@sha256:6449e19d8184d84062525b6a7524def03146c2cb04a7f08b076680d0e8e4240a
     container_name: zms-citizenview
     working_dir: /workspace/zmscitizenview
     volumes:
