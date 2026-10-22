@@ -1,11 +1,13 @@
 #language: en
-@web @zmscitizenview @booking @citizen @ZMSKVR-1083 @ZMSKVR-1226 @executeLocally @jumpin
+@web @zmscitizenview @booking @citizen @ZMSKVR-1083 @ZMSKVR-1226 @ZMSKVR-1240 @ZMSKVR-445 @ZMSKVR-481 @ZMSKVR-482 @ZMSKVR-486 @executeLocally @jumpin
 Feature: CitizenView: quantity follows slotsPerAppointment
   As a citizen combining KfZ services
   I want the plus control to stop when slotsPerAppointment is full
   So that maxQuantity alone cannot push the booking over the spa budget
 
-  # ZMSKVR-1083 (#1865), tested by ZMSKVR-1226.
+  # ZMSKVR-1083 (#1865), tested by ZMSKVR-1226 / ZMSKVR-1240; ZMSKVR-445 / ZMSKVR-481 / ZMSKVR-482
+  # (KfZ spa=2, disabled plus; old Bürgeransicht Hinweis not asserted). Also ZMSKVR-486.
+  # Combined duration under spa (e.g. Ausfuhr + Rotes Handel = 35) is the DLDB sum.
   # Office 10416: slotTimeInMinutes=5, spa=8, Ausfuhrkennzeichen 1064268 slots=3 /
   # maxQuantity=3 → UI max min(3, floor(8/3))=2. Rotes Dauerkennzeichen Handel
   # 1064374 slots=4; 1+1 uses 7 of 8. Jump-in Ausfuhr already lists combinable

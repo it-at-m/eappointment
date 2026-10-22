@@ -1,5 +1,5 @@
 #language: en
-@web @zmscitizenview @callouts @citizen @ZMSKVR-1235 @ZMSKVR-1244 @ZMSKVR-695 @ZMSKVR-653 @ZMSKVR-584 @ZMSKVR-1456 @ZMSKVR-805 @ZMSKVR-811 @ZMSKVR-652 @ZMSKVR-564 @ZMSKVR-101 @ZMSKVR-94 @ZMSKVR-801 @ZMSKVR-730 @ZMSKVR-1528 @executeLocally @jumpin
+@web @zmscitizenview @callouts @citizen @ZMSKVR-1235 @ZMSKVR-1244 @ZMSKVR-695 @ZMSKVR-653 @ZMSKVR-584 @ZMSKVR-1456 @ZMSKVR-805 @ZMSKVR-811 @ZMSKVR-652 @ZMSKVR-564 @ZMSKVR-101 @ZMSKVR-94 @ZMSKVR-801 @ZMSKVR-730 @ZMSKVR-1528 @ZMSKVR-812 @ZMSKVR-830 @executeLocally @jumpin
 Feature: CitizenView: no appointment available info callout
   As a citizen
   I want a clear blue info callout when no appointment is available
@@ -23,12 +23,15 @@ Feature: CitizenView: no appointment available info callout
   #   ZMSKVR-564   story   callout headlines H2/H3 (this callout)
   #   ZMSKVR-730   bug     jump-in selects earliest day of THAT office
   #   ZMSKVR-1528  bug     after empty Ort, restore providers → calendar back; blue not red
+  #   ZMSKVR-812 / ZMSKVR-830  modal open from empty-state link (see also
+  #     zmskvr-812_zmskvr-830_availability_info_modal.feature for above-slots / grouping)
   #
   # Sibling features (same product area, other callout / calendar rules)
   #   ZMSKVR-614 / ZMSKVR-696 / ZMSKVR-475
   #     → ui/.../callouts/zmskvr-88_zmskvr-472_zmskvr-1458_slot_taken_callout.feature
-  #   ZMSKVR-1457 / ZMSKVR-1524
-  #     → ui/.../calendar/zmskvr-1524_…_calendar_day_fits_duration.feature
+  #   ZMSKVR-1457 / ZMSKVR-1524 / ZMSKVR-770 / ZMSKVR-822
+  #     → ui/.../calendar/zmskvr-490_…_calendar_day_fits_duration.feature
+  #     (Vorlauf / non-bookable days via available-calendar; earliest day also ZMSKVR-730 below)
   #
   # Historical / out of Bürgeransicht-2 ATAF scope
   #   ZMSALT-1857  closed predecessor (zmsproxymuc era) — not retested here
@@ -89,6 +92,7 @@ Feature: CitizenView: no appointment available info callout
     Then the selected calendar day should be 2 Berlin days from today in the citizen view
     And the no appointment available info callout should not be visible in the citizen view
 
+  @feuerwache-capacity-lock
   Scenario: Day booked out while on Termin refreshes to the blue info callout
     Given I open zmscitizenview with jump-in service "10389330" and location "10582"
     Then the service combination step should be visible
@@ -103,6 +107,7 @@ Feature: CitizenView: no appointment available info callout
     When I continue from the service combination step
     Then the no appointment available info callout should be visible in the citizen view
 
+  @feuerwache-capacity-lock
   Scenario: Jump-in to Riem after every seat was reserved shows the blue info callout
     When I reserve every available appointment for office 10575 and service 10389330
     Given I open zmscitizenview with jump-in service "10389330" and location "10575"

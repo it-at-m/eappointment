@@ -10,7 +10,7 @@ FROM composer:2@sha256:4d71c3c2109c61d5415544264b59ad4087e4c5b7244481723664138fd
 FROM node:22-trixie@sha256:8433642fe11d391a7ff1f702352ac1b0ea3e378d3fb2c22de2b292036d79cd2c AS node-tools
 
 # Main dev image
-FROM php:8.4-apache-trixie@sha256:3f9ad397f38f7fe1e0e92b6cb5398e5d117f7d70cad1b6768bea3c1efc3c2d90
+FROM php:8.4-apache-trixie@sha256:4c3048eb4688bd9a9a925ff91748dd0cea2104ffffcd06ec6c5947b490f2350c
 
 # Set by docker buildx --platform=... (linux/amd64 | linux/arm64)
 ARG TARGETARCH

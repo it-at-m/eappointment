@@ -1,11 +1,13 @@
 package zms.ataf.ui.pages.citizenview.steps;
 
 import java.time.Duration;
+import java.util.Locale;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
@@ -16,6 +18,7 @@ import ataf.core.logging.ScenarioLogManager;
 import ataf.web.utils.DriverUtil;
 import zms.ataf.helpers.AccountCheckout;
 import zms.ataf.helpers.RandomNameHelper;
+import zms.ataf.helpers.ViewportSizes;
 import zms.ataf.ui.pages.citizenview.CitizenViewPage;
 import zms.ataf.ui.pages.citizenview.CitizenViewPageContext;
 import zms.ataf.ui.pages.citizenview.support.CitizenViewWaits;
@@ -87,6 +90,51 @@ public final class ContactStep {
     public void fillContactDetailsRandomWithoutOptionalRemarks() {
         fillContactDetailsRandom(false);
     }
+
+    /**
+     * ZMSKVR-87 / ZMSKVR-715: same mailinator address the Citizen API derives from a fixed family
+     * name ({@code familyname@mailinator.com}).
+     */
+    public void fillContactDetailsWithFamilyName(String familyName) {
+        context.set();
+        shadow.waitUntilShadowContains("Kontaktdaten", Math.max(30, defaultWaitSeconds));
+        try {
+            Thread.sleep(600L);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+        String email = familyName.toLowerCase(Locale.ROOT).replaceAll("[^a-z0-9]", "") + "@mailinator.com";
+        lastContactFirstName = "Muster";
+        lastContactLastName = familyName;
+        lastContactEmail = email;
+        zms.ataf.rest.steps.CitizenApiSteps.setBookingContactEmail(email);
+        ScenarioLogManager.getLogger()
+                .info(
+                        "zmscitizenview: Kontakt — Vorname={} Nachname={} E-Mail={}",
+                        lastContactFirstName,
+                        familyName,
+                        email);
+        Assert.assertTrue(
+                shadow.deepSetById("firstname", lastContactFirstName),
+                "Kontakt: could not set Vorname (muc-input shadow)");
+        Assert.assertTrue(
+                shadow.deepSetById("lastname", familyName),
+                "Kontakt: could not set Nachname (muc-input shadow)");
+        Assert.assertTrue(
+                shadow.deepSetById("mailaddress", email),
+                "Kontakt: could not set E-Mail (muc-input shadow)");
+        if (deepContactPhoneFieldExists()) {
+            shadow.deepSetById("telephonenumber", CONTACT_PHONE_E2E);
+        }
+        fillRequiredCustomTextAreasInShadow();
+        fillOptionalContactRemarksIfPresent();
+        try {
+            Thread.sleep(500L);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+    }
+
     private void fillContactDetailsRandom(boolean fillOptionalRemarks) {
         context.set();
         shadow.waitUntilShadowContains("Kontaktdaten", Math.max(30, defaultWaitSeconds));
@@ -255,6 +303,112 @@ public final class ContactStep {
         lastContactPhone = CONTACT_PHONE_E2E;
         lastContactCustomText = CONTACT_LOREM_REQUIRED;
     }
+
+    /**
+     * ZMSKVR-1090: SSO user has Nachname only ({@code given_name} missing). Prefill must keep
+     * Vorname empty and Nachname from the token; the citizen completes Vorname before booking.
+     */
+    public void assertSsoLastNamePrefillWithoutGivenName(String expectedLastName) {
+        context.set();
+        shadow.waitUntilShadowContains("Kontaktdaten", Math.max(30, defaultWaitSeconds));
+        CitizenViewWaits.waitWithThreeWindows(
+                () -> expectedLastName.equals(shadow.deepGetById("lastname")),
+                "SSO Nachname prefill on Kontakt");
+        String first = shadow.deepGetById("firstname");
+        String last = shadow.deepGetById("lastname");
+        Assert.assertEquals(
+                last,
+                expectedLastName,
+                "Nachname should be prefilled from family_name. Was: " + last);
+        Assert.assertTrue(
+                first == null || first.isBlank(),
+                "Vorname must stay empty when given_name is missing. Was: " + first);
+        ScenarioLogManager.getLogger()
+                .info(
+                        "zmscitizenview: Kontakt SSO prefill — Vorname empty, Nachname={}",
+                        expectedLastName);
+    }
+
+    /**
+     * Completes Kontakt after SSO without given_name: sets Vorname, keeps Nachname, fills mail /
+     * phone / required Zusatzfelder like {@link #fillContactDetailsRandom()}.
+     */
+    public void completeContactWithMissingGivenName(String firstName, String expectedLastName) {
+        context.set();
+        assertSsoLastNamePrefillWithoutGivenName(expectedLastName);
+        String email =
+                RandomNameHelper.getEmailConformName(firstName + " " + expectedLastName)
+                        + "@mailinator.com";
+        lastContactFirstName = firstName;
+        lastContactLastName = expectedLastName;
+        lastContactEmail = email;
+        lastContactPhone = CONTACT_PHONE_E2E;
+        lastContactCustomText = CONTACT_LOREM_REQUIRED;
+        zms.ataf.rest.steps.CitizenApiSteps.setBookingContactEmail(email);
+        Assert.assertTrue(
+                shadow.deepSetById("firstname", firstName),
+                "Kontakt: could not set Vorname after SSO without given_name");
+        Assert.assertTrue(
+                shadow.deepSetById("mailaddress", email),
+                "Kontakt: could not set E-Mail after SSO without given_name");
+        if (deepContactPhoneFieldExists()) {
+            shadow.deepSetById("telephonenumber", CONTACT_PHONE_E2E);
+        }
+        fillRequiredCustomTextAreasInShadow();
+        fillOptionalContactRemarksIfPresent();
+        ScenarioLogManager.getLogger()
+                .info(
+                        "zmscitizenview: Kontakt completed Vorname={} Nachname={} E-Mail={}",
+                        firstName,
+                        expectedLastName,
+                        email);
+    }
+
+    public void loginViaBuergerLoginWithKeycloakAs(String loginName) throws Exception {
+        context.set();
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: click in-app Anmelden (Bürger-Login as {})", loginName);
+        try {
+            new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(defaultWaitSeconds))
+                    .until(d -> clickInAppBuergerLoginAnmelden());
+        } catch (TimeoutException e) {
+            ScenarioLogManager.getLogger()
+                    .warn("zmscitizenview: in-app Anmelden not found; falling back to any Anmelden button");
+            shadow.waitForAndClickButtonContaining("Anmelden", defaultWaitSeconds);
+        }
+
+        String password =
+                TestPropertiesHelper.getPropertyAsString("citizenUserPassword", true, "vorschau");
+        String username = AccountCheckout.assignCitizenLogin(loginName);
+        context.lastCitizenLoginUsername = username;
+        completeKeycloakLoginForm(username, password);
+
+        CitizenViewWaits.waitWithThreeWindows(
+                () -> shadow.shadowDomContainsText("Sie sind angemeldet"),
+                "Logged-in callout after Keycloak Bürger-Login");
+        if (!shadow.shadowDomContainsText("Sie sind angemeldet.")) {
+            ScenarioLogManager.getLogger()
+                    .warn("zmscitizenview: Bürger-Login callout missing; submitting Keycloak again");
+            if (!DriverUtil.getDriver().findElements(By.id("username")).isEmpty()) {
+                completeKeycloakLoginForm(username, password);
+            } else if (shadow.shadowDomContainsText("Anmelden")) {
+                clickInAppBuergerLoginAnmelden();
+                if (!DriverUtil.getDriver().findElements(By.id("username")).isEmpty()) {
+                    completeKeycloakLoginForm(username, password);
+                }
+            }
+            CitizenViewWaits.waitWithThreeWindows(
+                    () -> shadow.shadowDomContainsText("Sie sind angemeldet"),
+                    "Logged-in callout after Keycloak Bürger-Login retry");
+        }
+        Assert.assertTrue(
+                shadow.shadowDomContainsText("Sie sind angemeldet."),
+                "Expected 'Sie sind angemeldet.' after Bürger-Login as " + loginName + ".");
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: Bürger-Login completed as {}", username);
+        page.trySetBookingProcessFromPage();
+    }
+
     public boolean deepContactCustomTextFieldExists() {
         // MucTextArea binds the control as id="textarea-{prop}" (prop "remarks" is not on the host).
         return shadow.deepElementExists("#textarea-remarks")
@@ -324,6 +478,7 @@ public final class ContactStep {
         String password =
                 TestPropertiesHelper.getPropertyAsString("citizenUserPassword", true, "vorschau");
         username = AccountCheckout.assignCitizenLogin(username);
+        context.lastCitizenLoginUsername = username;
         completeKeycloakLoginForm(username, password);
 
         CitizenViewWaits.waitWithThreeWindows(
@@ -369,7 +524,9 @@ public final class ContactStep {
         if (!shadow.shadowDomContainsText("Sie sind angemeldet.")) {
             String username = TestPropertiesHelper.getPropertyAsString("citizenUserName", true, "citizen");
             String password = TestPropertiesHelper.getPropertyAsString("citizenUserPassword", true, "vorschau");
-            completeKeycloakLoginForm(AccountCheckout.assignCitizenLogin(username), password);
+            username = AccountCheckout.assignCitizenLogin(username);
+            context.lastCitizenLoginUsername = username;
+            completeKeycloakLoginForm(username, password);
         }
         CitizenViewWaits.waitWithThreeWindows(() -> shadow.shadowDomContainsText("Sie sind angemeldet"), "Logged-in callout");
         Assert.assertTrue(shadow.shadowDomContainsText("Sie sind angemeldet."), "Expected 'Sie sind angemeldet.'.");
@@ -461,6 +618,363 @@ public final class ContactStep {
                 shadow.shadowDomContainsText("Sie sind angemeldet."),
                 "Expected 'Sie sind angemeldet.' after Bürger-Login on Kontakt form.");
     }
+    /**
+     * ZMSKVR-718: fill a contact field to its max length and assert the counter error copy.
+     *
+     * @param fieldId host id ({@code firstname}, {@code lastname}, {@code mailaddress}, {@code remarks}, …)
+     * @param maxChars maximum characters shown in the error (50 for name/mail, 250 for remarks)
+     */
+    public void assertMaxLengthCounterError(String fieldId, int maxChars) {
+        context.set();
+        // Name/mail: error at length >= max. Remarks: error at plainTextCharCount > max, and the
+        // MucTextArea maxlength attribute blocks ordinary typing at exactly max.
+        boolean remarks = fieldId != null && fieldId.startsWith("remarks");
+        int fillLen = remarks ? maxChars + 1 : maxChars;
+        if (remarks) {
+            Assert.assertTrue(
+                    deepSetByIdBypassingMaxlength(fieldId, "x".repeat(fillLen)),
+                    "Could not fill #" + fieldId + " past maxlength");
+        } else {
+            Assert.assertTrue(shadow.deepSetById(fieldId, "x".repeat(fillLen)), "Could not fill #" + fieldId);
+        }
+        CitizenViewWaits.sleepQuiet(300L);
+        String expected =
+                "Ihre Eingabe in diesem Feld darf " + maxChars + " Zeichen nicht überschreiten.";
+        Assert.assertTrue(
+                fieldGroupContainsText(fieldId, expected),
+                "Expected max-length counter error on #" + fieldId + " only: " + expected);
+    }
+
+    /** True when {@code expected} appears in the Muc form-group that owns {@code fieldId}. */
+    private boolean fieldGroupContainsText(String fieldId, String expected) {
+        String script =
+                "var want=arguments[0],expected=arguments[1]==null?'':String(arguments[1]);"
+                        + "var ids=[];ids.push(want);"
+                        + "if(want.indexOf('textarea-')===0)ids.push(want.slice(9));else ids.push('textarea-'+want);"
+                        + "if(want.indexOf('input-')===0)ids.push(want.slice(6));else ids.push('input-'+want);"
+                        + "function byId(root,id){try{if(root.getElementById)return root.getElementById(id);}catch(e0){}"
+                        + "try{return root.querySelector('#'+id.replace(/([^a-zA-Z0-9_-])/g,'\\\\$1'));}catch(e1){"
+                        + "return root.querySelector('[id=\"'+id.replace(/\"/g,'')+'\"]');}}"
+                        + "function resolve(el){if(!el)return null;if(el.tagName==='INPUT'||el.tagName==='TEXTAREA')return el;"
+                        + "if(el.shadowRoot){var q=el.shadowRoot.querySelector('input:not([type=hidden]),textarea');if(q)return q;}"
+                        + "return el;}"
+                        + "function scanRoot(root){if(!root)return null;for(var i=0;i<ids.length;i++){var el=byId(root,ids[i]);if(el)return resolve(el);}"
+                        + "var nodes=root.querySelectorAll('*');for(var j=0;j<nodes.length;j++){if(nodes[j].shadowRoot){var r2=scanRoot(nodes[j].shadowRoot);if(r2)return r2;}}return null;}"
+                        + "var e=scanRoot(document);if(!e)e=scanRoot(document.body);if(!e)return false;"
+                        + "var n=e;"
+                        + "for(var g=0;g<12&&n;g++){"
+                        + "if(n.classList&&n.classList.contains('m-form-group')){"
+                        + "return (n.textContent||'').indexOf(expected)>=0;}"
+                        + "if(n.parentElement){n=n.parentElement;continue;}"
+                        + "var root=n.getRootNode&&n.getRootNode();n=root&&root.host?root.host:null;}"
+                        + "return false;";
+        Object o =
+                ((JavascriptExecutor) DriverUtil.getDriver())
+                        .executeScript(script, fieldId, expected);
+        return Boolean.TRUE.equals(o);
+    }
+
+    /**
+     * Like {@link ShadowDom#deepSetById} but clears the HTML maxlength so remarks can exceed 250
+     * (product shows the overflow error only when {@code plainTextCharCount > 250}).
+     */
+    private boolean deepSetByIdBypassingMaxlength(String fieldId, String value) {
+        String script =
+                "var want=arguments[0],v=arguments[1]==null?'':String(arguments[1]);"
+                        + "var ids=[];ids.push(want);"
+                        + "if(want.indexOf('textarea-')===0)ids.push(want.slice(9));else ids.push('textarea-'+want);"
+                        + "if(want.indexOf('input-')===0)ids.push(want.slice(6));else ids.push('input-'+want);"
+                        + "function byId(root,id){try{if(root.getElementById)return root.getElementById(id);}catch(e0){}"
+                        + "try{return root.querySelector('#'+id.replace(/([^a-zA-Z0-9_-])/g,'\\\\$1'));}catch(e1){"
+                        + "return root.querySelector('[id=\"'+id.replace(/\"/g,'')+'\"]');}}"
+                        + "function resolve(el){if(!el)return null;if(el.tagName==='INPUT'||el.tagName==='TEXTAREA')return el;"
+                        + "if(el.shadowRoot){var q=el.shadowRoot.querySelector('input:not([type=hidden]),textarea');if(q)return q;}return null;}"
+                        + "function scanRoot(root){if(!root)return null;for(var i=0;i<ids.length;i++){var el=byId(root,ids[i]);var r=resolve(el);if(r)return r;}"
+                        + "var nodes=root.querySelectorAll('*');for(var j=0;j<nodes.length;j++){if(nodes[j].shadowRoot){var r2=scanRoot(nodes[j].shadowRoot);if(r2)return r2;}}return null;}"
+                        + "var e=scanRoot(document);if(!e)e=scanRoot(document.body);"
+                        + "if(!e)return false;e.removeAttribute('maxlength');e.scrollIntoView({block:'center'});e.focus();e.value=v;"
+                        + "try{e.dispatchEvent(new InputEvent('input',{bubbles:true,cancelable:true,inputType:'insertReplacementText',data:v}));}"
+                        + "catch(ex){e.dispatchEvent(new Event('input',{bubbles:true}));}"
+                        + "e.dispatchEvent(new Event('change',{bubbles:true}));return true;";
+        Object o =
+                ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script, fieldId, value);
+        return Boolean.TRUE.equals(o);
+    }
+
+    /**
+     * ZMSKVR-416 / ZMSKVR-571: both Freitext MucTextAreas show Patternlab {@code n/max} counters
+     * ({@code .m-character-count__status}). Story originally said 100; product max is 250
+     * (backend ProcessPlainText).
+     */
+    public void assertBothFreitextCharacterCountersVisible(int maxChars) {
+        context.set();
+        assertRemarksFieldExists("remarks");
+        assertRemarksFieldExists("remarks2");
+        for (String fieldId : new String[] {"remarks", "remarks2"}) {
+            Assert.assertTrue(shadow.deepSetById(fieldId, ""), "Could not clear #" + fieldId);
+            CitizenViewWaits.sleepQuiet(150L);
+            String status = characterCountStatusForField(fieldId);
+            Assert.assertEquals(
+                    status,
+                    "0/" + maxChars,
+                    "Freitext #" + fieldId + " counter should show 0/" + maxChars + ", was " + status);
+        }
+    }
+
+    /**
+     * ZMSKVR-571: counter status updates while typing and deleting (Patternlab {@code n/max}).
+     */
+    public void assertFreitextCharacterCounterUpdatesLive(String fieldId, int maxChars) {
+        context.set();
+        assertRemarksFieldExists(fieldId);
+        Assert.assertTrue(shadow.deepSetById(fieldId, ""), "Could not clear #" + fieldId);
+        CitizenViewWaits.sleepQuiet(150L);
+        Assert.assertEquals(
+                characterCountStatusForField(fieldId),
+                "0/" + maxChars,
+                "#" + fieldId + " counter should start at 0/" + maxChars);
+
+        String five = "abcde";
+        Assert.assertTrue(shadow.deepSetById(fieldId, five), "Could not fill #" + fieldId);
+        CitizenViewWaits.sleepQuiet(150L);
+        Assert.assertEquals(
+                characterCountStatusForField(fieldId),
+                five.length() + "/" + maxChars,
+                "#" + fieldId + " counter should track typed length");
+
+        String two = "ab";
+        Assert.assertTrue(shadow.deepSetById(fieldId, two), "Could not shorten #" + fieldId);
+        CitizenViewWaits.sleepQuiet(150L);
+        Assert.assertEquals(
+                characterCountStatusForField(fieldId),
+                two.length() + "/" + maxChars,
+                "#" + fieldId + " counter should track deletions");
+    }
+
+    /**
+     * ZMSKVR-416: Vorname / Nachname / E-Mail use MucInput maxlength without a character counter.
+     */
+    public void assertContactFieldHasNoCharacterCounter(String fieldId) {
+        context.set();
+        Assert.assertTrue(
+                resolveContactControl(fieldId) != null,
+                "Contact field #" + fieldId + " must be present");
+        Assert.assertFalse(
+                fieldGroupHasCharacterCount(fieldId),
+                "Contact field #" + fieldId + " must not show .m-character-count (only Freitext does)");
+    }
+
+    /**
+     * ZMSKVR-416 / ZMSKVR-571: HTML maxlength blocks further keyboard input at {@code maxChars}.
+     */
+    public void assertContactFieldInputBlockedAtMax(String fieldId, int maxChars) {
+        context.set();
+        WebElement control = resolveContactControl(fieldId);
+        Assert.assertNotNull(control, "Contact field #" + fieldId + " not found");
+        String maxAttr = control.getAttribute("maxlength");
+        Assert.assertEquals(
+                maxAttr,
+                String.valueOf(maxChars),
+                "#" + fieldId + " maxlength attribute");
+        control.clear();
+        control.sendKeys("x".repeat(maxChars + 15));
+        CitizenViewWaits.sleepQuiet(150L);
+        String value = control.getAttribute("value");
+        Assert.assertNotNull(value, "#" + fieldId + " value missing after typing");
+        Assert.assertEquals(
+                value.length(),
+                maxChars,
+                "#" + fieldId + " should stop accepting input at " + maxChars + " chars, was len="
+                        + value.length());
+    }
+
+    /** ZMSKVR-571: Freitext counters stay visible on the phone viewport. */
+    public void assertBothFreitextCharacterCountersVisibleOnMobile(int maxChars) {
+        context.set();
+        RemoteWebDriver driver = DriverUtil.getDriver();
+        driver.manage().window().setSize(ViewportSizes.MOBILE);
+        CitizenViewWaits.sleepQuiet(400L);
+        assertBothFreitextCharacterCountersVisible(maxChars);
+    }
+
+    private void assertRemarksFieldExists(String fieldId) {
+        Assert.assertTrue(
+                shadow.deepElementExists("#" + fieldId)
+                        || shadow.deepElementExists("textarea#textarea-" + fieldId)
+                        || shadow.deepElementExists("#textarea-" + fieldId)
+                        || shadow.deepElementExists("muc-text-area#" + fieldId),
+                "Expected Freitext MucTextArea #" + fieldId);
+    }
+
+    private String characterCountStatusForField(String fieldId) {
+        String script =
+                "var want=arguments[0];"
+                        + "var ids=[];ids.push(want);"
+                        + "if(want.indexOf('textarea-')===0)ids.push(want.slice(9));else ids.push('textarea-'+want);"
+                        + "function byId(root,id){try{if(root.getElementById)return root.getElementById(id);}catch(e0){}"
+                        + "try{return root.querySelector('#'+id.replace(/([^a-zA-Z0-9_-])/g,'\\\\$1'));}catch(e1){"
+                        + "return root.querySelector('[id=\"'+id.replace(/\"/g,'')+'\"]');}}"
+                        + "function resolve(el){if(!el)return null;if(el.tagName==='INPUT'||el.tagName==='TEXTAREA')return el;"
+                        + "if(el.shadowRoot){var q=el.shadowRoot.querySelector('input:not([type=hidden]),textarea');if(q)return q;}"
+                        + "return null;}"
+                        + "function scanRoot(root){if(!root)return null;for(var i=0;i<ids.length;i++){var el=byId(root,ids[i]);var r=resolve(el);if(r)return r;}"
+                        + "var nodes=root.querySelectorAll('*');for(var j=0;j<nodes.length;j++){if(nodes[j].shadowRoot){var r2=scanRoot(nodes[j].shadowRoot);if(r2)return r2;}}return null;}"
+                        + "var e=scanRoot(document);if(!e)e=scanRoot(document.body);if(!e)return null;"
+                        + "var host=e;for(var g=0;g<10&&host;g++){"
+                        + "var group=host;for(var k=0;k<8&&group;k++){"
+                        + "if(group.classList&&group.classList.contains('m-form-group')){"
+                        + "var st=group.querySelector('.m-character-count__status');"
+                        + "if(st)return (st.textContent||'').replace(/\\s+/g,'').trim();}"
+                        + "if(group.parentElement){group=group.parentElement;continue;}"
+                        + "var root=group.getRootNode&&group.getRootNode();group=root&&root.host?root.host:null;}"
+                        + "if(host.parentElement){host=host.parentElement;continue;}"
+                        + "var r=host.getRootNode&&host.getRootNode();host=r&&r.host?r.host:null;}"
+                        + "return null;";
+        Object o = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script, fieldId);
+        return o == null ? null : String.valueOf(o);
+    }
+
+    private boolean fieldGroupHasCharacterCount(String fieldId) {
+        String script =
+                "var want=arguments[0];"
+                        + "var ids=[];ids.push(want);"
+                        + "if(want.indexOf('textarea-')===0)ids.push(want.slice(9));else ids.push('textarea-'+want);"
+                        + "if(want.indexOf('input-')===0)ids.push(want.slice(6));else ids.push('input-'+want);"
+                        + "function byId(root,id){try{if(root.getElementById)return root.getElementById(id);}catch(e0){}"
+                        + "try{return root.querySelector('#'+id.replace(/([^a-zA-Z0-9_-])/g,'\\\\$1'));}catch(e1){"
+                        + "return root.querySelector('[id=\"'+id.replace(/\"/g,'')+'\"]');}}"
+                        + "function resolve(el){if(!el)return null;if(el.tagName==='INPUT'||el.tagName==='TEXTAREA')return el;"
+                        + "if(el.shadowRoot){var q=el.shadowRoot.querySelector('input:not([type=hidden]),textarea');if(q)return q;}"
+                        + "return null;}"
+                        + "function scanRoot(root){if(!root)return null;for(var i=0;i<ids.length;i++){var el=byId(root,ids[i]);var r=resolve(el);if(r)return r;}"
+                        + "var nodes=root.querySelectorAll('*');for(var j=0;j<nodes.length;j++){if(nodes[j].shadowRoot){var r2=scanRoot(nodes[j].shadowRoot);if(r2)return r2;}}return null;}"
+                        + "var e=scanRoot(document);if(!e)e=scanRoot(document.body);if(!e)return false;"
+                        + "var n=e;for(var g=0;g<12&&n;g++){"
+                        + "if(n.classList&&n.classList.contains('m-form-group')){"
+                        + "return !!n.querySelector('.m-character-count');}"
+                        + "if(n.parentElement){n=n.parentElement;continue;}"
+                        + "var root=n.getRootNode&&n.getRootNode();n=root&&root.host?root.host:null;}"
+                        + "return false;";
+        Object o = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script, fieldId);
+        return Boolean.TRUE.equals(o);
+    }
+
+    private WebElement resolveContactControl(String fieldId) {
+        String script =
+                "var want=arguments[0];"
+                        + "var ids=[];ids.push(want);"
+                        + "if(want.indexOf('textarea-')===0)ids.push(want.slice(9));else ids.push('textarea-'+want);"
+                        + "if(want.indexOf('input-')===0)ids.push(want.slice(6));else ids.push('input-'+want);"
+                        + "function byId(root,id){try{if(root.getElementById)return root.getElementById(id);}catch(e0){}"
+                        + "try{return root.querySelector('#'+id.replace(/([^a-zA-Z0-9_-])/g,'\\\\$1'));}catch(e1){"
+                        + "return root.querySelector('[id=\"'+id.replace(/\"/g,'')+'\"]');}}"
+                        + "function resolve(el){if(!el)return null;if(el.tagName==='INPUT'||el.tagName==='TEXTAREA')return el;"
+                        + "if(el.shadowRoot){var q=el.shadowRoot.querySelector('input:not([type=hidden]),textarea');if(q)return q;}"
+                        + "return null;}"
+                        + "function scanRoot(root){if(!root)return null;for(var i=0;i<ids.length;i++){var el=byId(root,ids[i]);var r=resolve(el);if(r)return r;}"
+                        + "var nodes=root.querySelectorAll('*');for(var j=0;j<nodes.length;j++){if(nodes[j].shadowRoot){var r2=scanRoot(nodes[j].shadowRoot);if(r2)return r2;}}return null;}"
+                        + "var e=scanRoot(document);if(!e)e=scanRoot(document.body);return e;";
+        Object o = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script, fieldId);
+        return o instanceof WebElement ? (WebElement) o : null;
+    }
+
+    /** ZMSKVR-716: Muc character counter stays at .875rem on desktop (MucTextArea only). */
+    public void assertCharacterCountFontSizeDesktop() {
+        context.set();
+        RemoteWebDriver driver = DriverUtil.getDriver();
+        driver.manage().window().setSize(ViewportSizes.DESKTOP);
+        CitizenViewWaits.sleepQuiet(400L);
+        Assert.assertTrue(
+                shadow.deepElementExists("#remarks")
+                        || shadow.deepElementExists("textarea#textarea-remarks")
+                        || shadow.deepElementExists("#textarea-remarks"),
+                "Expected remarks MucTextArea (only MucTextArea paints .m-character-count)");
+        // Counter is a MucTextArea sibling — fill remarks so length/maxlength paint.
+        Assert.assertTrue(shadow.deepSetById("remarks", "x".repeat(48)), "Could not fill #remarks");
+        CitizenViewWaits.sleepQuiet(200L);
+        String script =
+                "function walk(n,fn){if(!n)return null;if(n.nodeType===1){var hit=fn(n);if(hit)return hit;}"
+                        + "if(n.shadowRoot){var i=walk(n.shadowRoot,fn);if(i)return i;}"
+                        + "var c=n.children;if(c)for(var k=0;k<c.length;k++){var x=walk(c[k],fn);if(x)return x;}return null;}"
+                        + "var el=walk(document.body,function(n){"
+                        + "if(n.classList&&n.classList.contains('m-character-count'))return n;return null;});"
+                        + "if(!el)return null;"
+                        + "var fs=getComputedStyle(el).fontSize;return {fontSize:fs,px:parseFloat(fs)};";
+        Object raw = ((JavascriptExecutor) driver).executeScript(script);
+        Assert.assertNotNull(raw, "No .m-character-count on the Kontakt form");
+        @SuppressWarnings("unchecked")
+        java.util.Map<String, Object> map = (java.util.Map<String, Object>) raw;
+        double px = ((Number) map.get("px")).doubleValue();
+        // 0.875rem at 16px root = 14px
+        Assert.assertTrue(
+                Math.abs(px - 14.0) <= 1.0,
+                "Counter font-size on desktop should be .875rem (~14px), was " + map);
+    }
+
+    /**
+     * ZMSKVR-719: long remarks grow the textarea ({@code lines + 2}) so the counter sits in the
+     * reserved bottom band instead of covering typed text.
+     */
+    public void assertRemarksTextareaGrowsWithoutCounterOverlap() {
+        context.set();
+        RemoteWebDriver driver = DriverUtil.getDriver();
+        driver.manage().window().setSize(ViewportSizes.MOBILE);
+        CitizenViewWaits.sleepQuiet(400L);
+        Assert.assertTrue(
+                shadow.deepElementExists("#remarks")
+                        || shadow.deepElementExists("textarea#textarea-remarks")
+                        || shadow.deepElementExists("#textarea-remarks"),
+                "Expected remarks textarea (custom textfield) for the overlap check");
+        String longText =
+                ("Lorem ipsum dolor sit amet, consectetuer adipiscing elit. ").repeat(4);
+        Assert.assertTrue(shadow.deepSetById("remarks", longText), "Could not fill remarks");
+        // textfieldRows grows on input; give Vue a tick
+        CitizenViewWaits.sleepQuiet(500L);
+        String script =
+                "function walk(n,fn){if(!n)return null;if(n.nodeType===1){var hit=fn(n);if(hit)return hit;}"
+                        + "if(n.shadowRoot){var i=walk(n.shadowRoot,fn);if(i)return i;}"
+                        + "var c=n.children;if(c)for(var k=0;k<c.length;k++){var x=walk(c[k],fn);if(x)return x;}return null;}"
+                        + "var ta=walk(document.body,function(n){"
+                        + "if((n.tagName||'').toUpperCase()==='TEXTAREA'&&((n.id||'').indexOf('remarks')>=0||(n.getAttribute('id')||'')==='textarea-remarks'))return n;"
+                        + "return null;});"
+                        + "if(!ta)return {found:false};"
+                        + "var counter=walk(ta.getRootNode&&ta.getRootNode().host?ta.getRootNode().host:document.body,function(n){"
+                        + "if(n.classList&&n.classList.contains('m-character-count'))return n;return null;});"
+                        + "if(!counter){var host=ta;for(var g=0;g<8&&host;g++){"
+                        + "counter=walk(host,function(n){if(n.classList&&n.classList.contains('m-character-count'))return n;return null;});"
+                        + "if(counter)break;"
+                        + "if(host.parentElement)host=host.parentElement;else{var r=host.getRootNode&&host.getRootNode();host=r&&r.host?r.host:null;}}}"
+                        + "var tr=ta.getBoundingClientRect();var rows=parseInt(ta.getAttribute('rows')||'0',10);"
+                        + "var lineH=parseFloat(getComputedStyle(ta).lineHeight)||20;"
+                        + "var cr=null;var inReservedBand=false;var noInnerScroll=false;"
+                        + "if(counter){cr=counter.getBoundingClientRect();"
+                        // Counter is drawn inside the textarea box; product keeps ~2 empty rows for it.
+                        + "var bandTop=tr.bottom-Math.max(lineH*2.2,28);"
+                        + "inReservedBand=cr.top>=bandTop-4&&cr.bottom<=tr.bottom+4;"
+                        + "noInnerScroll=ta.scrollHeight<=ta.clientHeight+2;}"
+                        + "return {found:true,rows:rows,height:tr.height,hasCounter:!!counter,"
+                        + "inReservedBand:inReservedBand,noInnerScroll:noInnerScroll,"
+                        + "lineH:lineH};";
+        Object raw = ((JavascriptExecutor) driver).executeScript(script);
+        Assert.assertNotNull(raw, "Could not measure remarks textarea");
+        @SuppressWarnings("unchecked")
+        java.util.Map<String, Object> map = (java.util.Map<String, Object>) raw;
+        Assert.assertTrue(Boolean.TRUE.equals(map.get("found")), "remarks textarea missing: " + map);
+        Assert.assertTrue(
+                ((Number) map.get("rows")).intValue() >= 4 || ((Number) map.get("height")).doubleValue() >= 80,
+                "Remarks textarea should grow with long input: " + map);
+        Assert.assertTrue(
+                Boolean.TRUE.equals(map.get("hasCounter")),
+                "Remarks character counter missing: " + map);
+        Assert.assertTrue(
+                Boolean.TRUE.equals(map.get("inReservedBand")),
+                "Counter should sit in the reserved bottom band of the grown textarea: " + map);
+        Assert.assertTrue(
+                Boolean.TRUE.equals(map.get("noInnerScroll")),
+                "Grown remarks textarea should fit its text without inner scroll under the counter: "
+                        + map);
+    }
+
     void completeKeycloakLoginForm(String username, String password) throws Exception {
         var driver = DriverUtil.getDriver();
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(defaultWaitSeconds));

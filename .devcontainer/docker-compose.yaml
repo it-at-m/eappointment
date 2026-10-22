@@ -1,6 +1,7 @@
 services:
   # zmsbase uses per-arch tags. devcontainer initializeCommand runs
-  # .devcontainer/scripts/sync-php-base-tag.sh (see devcontainer.json) sets ZMS_PHP_BASE_TAG from host uname.
+  # .devcontainer/scripts/sync-php-base-tag.sh (see devcontainer.json), which sets
+  # ZMS_PHP_BASE_TAG from the host architecture and pulls that image.
   # Fallback default is amd64 for plain `docker compose` without that step.
   web:
     container_name: zms-web
@@ -147,7 +148,7 @@ services:
     restart: unless-stopped
 
   keycloak:
-    image: quay.io/keycloak/keycloak:26.8.0@sha256:27b3230fbabb8c9ff3c66c864cf09dcd8a41aca82e5100679d109ef0eeb05741
+    image: quay.io/keycloak/keycloak:26.8.1@sha256:79c623a22abacf3fe6c00a5fb30f5b7843d717b234033b80995891c06116d244
     container_name: zms-keycloak
     hostname: keycloak
     command:
@@ -170,7 +171,7 @@ services:
     restart: unless-stopped
 
   init-keycloak-token:
-    image: curlimages/curl:8.22.0
+    image: curlimages/curl:8.23.0
     container_name: zms-init-keycloak-token
     depends_on:
       keycloak:
@@ -202,7 +203,7 @@ services:
     restart: "no"
 
   init-keycloak:
-    image: eclipse-temurin:25-jre-alpine@sha256:3c0a9084927a221ccd1d007fcaf614465672c0af37aaa834c5184483afe56d61
+    image: eclipse-temurin:25-jre-alpine@sha256:b7528962e65d43064d8a8b67ba175367896bc948363ea2d3fcd7f10d34e1f048
     container_name: zms-init-keycloak
     # Jar volume is :ro. keycloakmigration Log4j writes logs/logfile.log under cwd,
     # so run from /tmp (entrypoint.sh uses java -jar keycloakmigration.jar).
