@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-10-21T11:35:39.098Z",
+  "publishedAt": "2026-10-22T05:38:39.859Z",
   "branches": [
     {
       "name": "next",
@@ -228,6 +228,12 @@
       "slug": "feature-ZMSKVR-501-timeout-warning-banner",
       "runId": "39254897520",
       "runStartedAt": "2026-10-19T12:48:08Z"
+    },
+    {
+      "name": "feature-zmskvr-834-overlapping-availabilities",
+      "slug": "feature-zmskvr-834-overlapping-availabilities",
+      "runId": "39725552089",
+      "runStartedAt": "2026-10-22T05:00:32Z"
     },
     {
       "name": "feature-zmskvr-909-announce-callout-status",
