@@ -1,6 +1,10 @@
 # syntax=docker/dockerfile:1
-ARG PHP_VERSION
-FROM ghcr.io/it-at-m/eappointment/zmsbase:${PHP_VERSION}-dev as build
+ARG PHP_VERSION=8.4
+# Digests pinned for supply-chain integrity; override via build-args when retargeting.
+# Both args must be declared before the first FROM so every stage can use them.
+ARG ZMSBASE_DEV_DIGEST=sha256:9076830c5b7be0f201cba148efceb07e73d3c7062f63788424c381d03b99d650
+ARG ZMSBASE_BASE_DIGEST=sha256:d4e1f38f4cce6b7963a8eaa8cdee4a6099ed2688270b53d286c6f092c81ed84c
+FROM ghcr.io/it-at-m/eappointment/zmsbase:${PHP_VERSION}-dev@${ZMSBASE_DEV_DIGEST} as build
 RUN useradd --shell /bin/bash --create-home build
 COPY --chown=build:build . /build
 ARG MODULE
@@ -17,7 +21,7 @@ RUN --mount=type=secret,id=composer_auth,required=false,mode=0444 \
     bash -c 'if [ -f /run/secrets/composer_auth ]; then export COMPOSER_AUTH="$(cat /run/secrets/composer_auth)"; fi; make live'
 
 ARG PHP_VERSION
-FROM ghcr.io/it-at-m/eappointment/zmsbase:${PHP_VERSION}-base
+FROM ghcr.io/it-at-m/eappointment/zmsbase:${PHP_VERSION}-base@${ZMSBASE_BASE_DIGEST}
 RUN docker-apt-clean-install libfcgi-bin
 ARG MODULE
 COPY --from=build --chown=0:0 /build/${MODULE} /var/www/html

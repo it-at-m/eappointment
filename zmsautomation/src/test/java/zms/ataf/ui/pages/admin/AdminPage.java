@@ -315,4 +315,42 @@ public class AdminPage extends BasePage {
         return true;
     }
 
+    /** ZMS-3212 / ZMSALT-3577: Tresen login must not show Sachbearbeiterplatz. */
+    public void assertNavigationDoesNotShow(String label) {
+        CONTEXT.set();
+        waitForPrimaryNavigation();
+        String compact = label.replace("\u00ad", "").replace("-", "");
+        boolean visible = DRIVER.findElements(By.cssSelector("nav.navigation-primary a")).stream()
+                .filter(WebElement::isDisplayed)
+                .map(a -> a.getText().replace("\u00ad", "").replace("\n", "").replace("-", "").trim())
+                .anyMatch(t -> t.equalsIgnoreCase(compact) || t.contains(compact));
+        Assert.assertFalse(visible, "Navigation must not show \"" + label + "\" for Tresen login.");
+    }
+
+    /** Active Notruf covers the page until Ausblenden is used. */
+    public void minimizeNotrufOverlay() {
+        CONTEXT.set();
+        ScenarioLogManager.getLogger().info("Minimizing the Notruf overlay...");
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        WebElement hide = wait.until(ExpectedConditions.elementToBeClickable(
+                By.cssSelector("button.emergency__button-hide")));
+        hide.click();
+        wait.until(ExpectedConditions.presenceOfElementLocated(
+                By.cssSelector(".emergency[data-minimized]")));
+    }
+
+    /** ZMS-3212: NOTRUF trigger is only rendered when workstation.name is set. */
+    public void assertNotrufTriggerNotVisible() {
+        CONTEXT.set();
+        waitForPrimaryNavigation();
+        List<WebElement> triggers = DRIVER.findElements(By.cssSelector("button.emergency__button-trigger"));
+        boolean visible = triggers.stream().anyMatch(WebElement::isDisplayed);
+        Assert.assertFalse(visible, "NOTRUF trigger must stay hidden without Platz-Nr.");
+    }
+
+    private void waitForPrimaryNavigation() {
+        new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("nav.navigation-primary")));
+    }
+
 }
