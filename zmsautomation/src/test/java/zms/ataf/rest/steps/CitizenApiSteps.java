@@ -8,6 +8,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
+import java.util.AbstractMap;
 import java.util.Locale;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -24,6 +25,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 
 import ataf.core.helpers.TestDataHelper;
 import ataf.core.logging.ScenarioLogManager;
+import zms.ataf.helpers.AccountCheckout;
 import config.TestConfig;
 import io.cucumber.java.After;
 import io.cucumber.java.Before;
@@ -430,6 +432,17 @@ public class CitizenApiSteps {
         return raw;
     }
 
+    /**
+     * Office 10286848 is scope 130. The day-lock scenario closes that scope's only bookable day
+     * and holds {@code scope:130:day-closure} until it reopens the day. Readers must take the
+     * same lock first or they observe the closed day.
+     */
+    private static void holdForstenriederDayClosure(List<Integer> officeIds) {
+        if (officeIds.contains(10286848)) {
+            AccountCheckout.checkout("scope:130:day-closure");
+        }
+    }
+
     private static String envOrDefault(String name, String fallback) {
         String value = System.getenv(name);
         if (value == null || value.isBlank()) {
@@ -445,6 +458,7 @@ public class CitizenApiSteps {
 
     @When("I request available days for office {int} and service {int} with service count {int}")
     public void iRequestAvailableDaysForOfficeAndService(int officeId, int serviceId, int serviceCount) {
+        holdForstenriederDayClosure(List.of(officeId));
         lastOfficeId = officeId;
         lastServiceId = serviceId;
         lastServiceCount = serviceCount;
@@ -462,6 +476,7 @@ public class CitizenApiSteps {
             String officeIdsCsv, int serviceId, int serviceCount) {
         List<Integer> officeIds = parseOfficeIdsCsv(officeIdsCsv);
         Assertions.assertThat(officeIds).as("officeIds csv").isNotEmpty();
+        holdForstenriederDayClosure(officeIds);
         lastOfficeId = officeIds.get(0);
         lastServiceId = serviceId;
         lastServiceCount = serviceCount;
@@ -479,6 +494,7 @@ public class CitizenApiSteps {
         List<Integer> serviceIds = parseOfficeIdsCsv(serviceIdsCsv);
         Assertions.assertThat(officeIds).as("officeIds csv").isNotEmpty();
         Assertions.assertThat(serviceIds).as("serviceIds csv").isNotEmpty();
+        holdForstenriederDayClosure(officeIds);
         List<Integer> serviceCounts = serviceIds.stream().map(id -> 1).collect(Collectors.toList());
         lastOfficeId = officeIds.get(0);
         lastServiceId = serviceIds.get(0);
@@ -493,6 +509,7 @@ public class CitizenApiSteps {
         List<Integer> serviceCounts = parseOfficeIdsCsv(serviceCountsCsv);
         Assertions.assertThat(serviceIds).as("serviceIds csv").isNotEmpty();
         Assertions.assertThat(serviceCounts).as("serviceCounts csv").hasSameSizeAs(serviceIds);
+        holdForstenriederDayClosure(List.of(officeId));
         lastOfficeId = officeId;
         lastServiceId = serviceIds.get(0);
         lastServiceCount = serviceCounts.get(0);
@@ -523,6 +540,50 @@ public class CitizenApiSteps {
         Assertions.assertThat(lastAvailableCalendarResponse.getFirstAvailableDayForOffice(officeId))
             .as("Expected no bookable day for office %d when the appointment no longer fits", officeId)
             .isNull();
+    }
+
+    /** ZMSKVR-42: pin the first bookable citizen day so day-lock can target it. */
+    @When("I remember the first bookable day for office {int}")
+    public void iRememberTheFirstBookableDayForOffice(int officeId) {
+        Assertions.assertThat(lastAvailableCalendarResponse)
+            .as("Request available days first")
+            .isNotNull();
+        String date = lastAvailableCalendarResponse.getFirstAvailableDayForOffice(officeId);
+        Assertions.assertThat(date)
+            .as("Expected a bookable day to remember for office %d", officeId)
+            .isNotBlank();
+        TestDataHelper.setTestData("day_closure_date", date);
+        ScenarioLogManager.getLogger().info("Remembered citizen bookable day {} for office {}", date, officeId);
+    }
+
+    @Then("the available calendar should not include the remembered bookable day for office {int}")
+    public void theAvailableCalendarShouldNotIncludeTheRememberedBookableDayForOffice(int officeId) {
+        Assertions.assertThat(response.getStatusCode())
+            .as("GET /available-calendar/")
+            .isEqualTo(200);
+        Assertions.assertThat(lastAvailableCalendarResponse)
+            .as("Request available days first")
+            .isNotNull();
+        String date = TestDataHelper.getTestData("day_closure_date");
+        Assertions.assertThat(date).as("remembered day_closure_date").isNotBlank();
+        Assertions.assertThat(lastAvailableCalendarResponse.isBookableDayForOffice(date, officeId))
+            .as("Locked day %s should not stay bookable for office %d", date, officeId)
+            .isFalse();
+    }
+
+    @Then("the available calendar should include the remembered bookable day for office {int}")
+    public void theAvailableCalendarShouldIncludeTheRememberedBookableDayForOffice(int officeId) {
+        Assertions.assertThat(response.getStatusCode())
+            .as("GET /available-calendar/")
+            .isEqualTo(200);
+        Assertions.assertThat(lastAvailableCalendarResponse)
+            .as("Request available days first")
+            .isNotNull();
+        String date = TestDataHelper.getTestData("day_closure_date");
+        Assertions.assertThat(date).as("remembered day_closure_date").isNotBlank();
+        Assertions.assertThat(lastAvailableCalendarResponse.isBookableDayForOffice(date, officeId))
+            .as("Unlocked day %s should be bookable again for office %d", date, officeId)
+            .isTrue();
     }
 
     @Then("the available calendar should include appointments for offices {string}")
@@ -615,7 +676,7 @@ public class CitizenApiSteps {
         if (lastAvailableCalendarResponse == null) {
             throw new IllegalStateException("Request available days first.");
         }
-        String date = lastAvailableCalendarResponse.getFirstAvailableDay();
+        String date = refetchCalendarUntilFirstAvailableDay(null);
         if (date == null) {
             throw new IllegalStateException("No available day in last response.");
         }
@@ -635,12 +696,54 @@ public class CitizenApiSteps {
         if (lastAvailableCalendarResponse == null) {
             throw new IllegalStateException("Request available days first.");
         }
-        String date = lastAvailableCalendarResponse.getFirstAvailableDayForOffice(officeId);
+        String date = refetchCalendarUntilFirstAvailableDay(officeId);
         if (date == null) {
             throw new IllegalStateException(
                 "No available day with appointments for office " + officeId + " in last calendar response.");
         }
         iRequestAvailableAppointmentsForDateOfficeAndService(date, officeId, lastServiceId, lastServiceCount);
+    }
+
+    /**
+     * Parallel shard runs briefly empty a calendar (reservations). Refetch with backoff before
+     * failing spa / booking scenarios that need at least one day.
+     *
+     * @param officeId when non-null, require a day with appointments for that office bucket
+     */
+    private String refetchCalendarUntilFirstAvailableDay(Integer officeId) {
+        for (int attempt = 1; attempt <= 8; attempt++) {
+            String date =
+                    officeId == null
+                            ? lastAvailableCalendarResponse.getFirstAvailableDay()
+                            : lastAvailableCalendarResponse.getFirstAvailableDayForOffice(officeId);
+            if (date != null) {
+                return date;
+            }
+            if (cachedCalendarOfficeIds == null
+                    || cachedCalendarServiceIds == null
+                    || cachedCalendarServiceCounts == null
+                    || attempt == 8) {
+                return null;
+            }
+            ScenarioLogManager.getLogger().info(String.format(
+                    "Citizen API calendar has no available day%s; requesting it again (%d/8)",
+                    officeId == null ? "" : (" for office " + officeId),
+                    attempt));
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException interrupted) {
+                Thread.currentThread().interrupt();
+                return null;
+            }
+            lastAvailableCalendarResponse = fetchAvailableCalendar(
+                    parseOfficeIdsCsv(cachedCalendarOfficeIds),
+                    cachedCalendarServiceIds,
+                    cachedCalendarServiceCounts);
+            if (lastAvailableCalendarResponse == null) {
+                return null;
+            }
+        }
+        return null;
     }
 
     /**
@@ -3042,6 +3145,63 @@ public class CitizenApiSteps {
                 }
             }
         }
+    }
+
+    /**
+     * ZMSKVR-389 / ZMSKVR-418: thinned process keeps main serviceCount and each
+     * subRequestCounts entry. CSV form {@code Name:count, Name:count}.
+     */
+    @Then("the appointment should list services with counts {string}")
+    public void theAppointmentShouldListServicesWithCounts(String nameCountCsv) {
+        ThinnedProcess process =
+                lastReserveProcess != null ? lastReserveProcess : parseDataResponse(response, ThinnedProcess.class);
+        Assertions.assertThat(process).as("appointment process").isNotNull();
+        List<AbstractMap.SimpleEntry<String, Integer>> expected = parseServiceNameCounts(nameCountCsv);
+        Assertions.assertThat(expected).as("expected Name:count pairs").isNotEmpty();
+        Assertions.assertThat(process.getServiceName())
+                .as("main serviceName")
+                .isEqualTo(expected.get(0).getKey());
+        Assertions.assertThat(process.getServiceCount())
+                .as("main serviceCount for %s", expected.get(0).getKey())
+                .isEqualTo(expected.get(0).getValue());
+        List<ThinnedProcess.SubRequestCount> subs =
+                process.getSubRequestCounts() == null ? List.of() : process.getSubRequestCounts();
+        Assertions.assertThat(subs)
+                .as("subRequestCounts size for %s", nameCountCsv)
+                .hasSize(expected.size() - 1);
+        for (int i = 1; i < expected.size(); i++) {
+            ThinnedProcess.SubRequestCount sub = subs.get(i - 1);
+            Assertions.assertThat(sub).as("subRequestCounts[%d]", i - 1).isNotNull();
+            Assertions.assertThat(sub.getName())
+                    .as("subRequestCounts[%d].name", i - 1)
+                    .isEqualTo(expected.get(i).getKey());
+            Assertions.assertThat(sub.getCount())
+                    .as("subRequestCounts[%d].count for %s", i - 1, expected.get(i).getKey())
+                    .isEqualTo(expected.get(i).getValue());
+        }
+    }
+
+    private static List<AbstractMap.SimpleEntry<String, Integer>> parseServiceNameCounts(String nameCountCsv) {
+        List<AbstractMap.SimpleEntry<String, Integer>> parsed = new ArrayList<>();
+        for (String part : nameCountCsv.split(",")) {
+            String trimmed = part.trim();
+            if (trimmed.isEmpty()) {
+                continue;
+            }
+            int colon = trimmed.lastIndexOf(':');
+            Assertions.assertThat(colon)
+                    .as("expected Name:count token, got \"%s\"", trimmed)
+                    .isGreaterThan(0);
+            String name = trimmed.substring(0, colon).trim();
+            String countToken = trimmed.substring(colon + 1).trim();
+            try {
+                parsed.add(new AbstractMap.SimpleEntry<>(name, Integer.parseInt(countToken)));
+            } catch (NumberFormatException ex) {
+                throw new IllegalArgumentException(
+                        "expected Name:count token with integer count, got \"" + trimmed + "\"", ex);
+            }
+        }
+        return parsed;
     }
 
     /** Unfolded ICS SUMMARY value, or null when the property is absent. */

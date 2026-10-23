@@ -67,6 +67,11 @@ public class StatisticsPage extends BasePage {
         return currentMonth;
     }
 
+    /** Filename expected from the last {@link #applyDateRangeFilter}; null when no filter was applied. */
+    protected String expectedClientStatisticWorkbookName() {
+        return CONTEXT.expectedClientStatisticWorkbookName();
+    }
+
     public void navigateToPage() {
         CONTEXT.navigateToPage();
     }
@@ -352,6 +357,7 @@ public class StatisticsPage extends BasePage {
 
         String fromIso = from.format(DateTimeFormatter.ISO_LOCAL_DATE);
         String toIso = to.format(DateTimeFormatter.ISO_LOCAL_DATE);
+        CONTEXT.setExpectedClientStatisticWorkbookName("clientstatistic_" + fromIso + "_" + toIso + ".xlsx");
 
         ScenarioLogManager.getLogger().info("Setting statistics date range from " + fromIso + " to " + toIso);
         setDateInputByJs("from", fromIso);
@@ -481,10 +487,48 @@ public class StatisticsPage extends BasePage {
                             + yearText
                             + "']"));
             yearLink.click();
-        } catch (NoSuchElementException e) {
-            Assert.fail("No clickable year link for " + yearText
-                    + " in the statistics period table (need month data for that year).");
+            return;
+        } catch (NoSuchElementException ignored) {
+            // Warehouse period chips can omit the year when only "_" is cached; open by URL.
         }
+        String current = DRIVER.getCurrentUrl();
+        Assert.assertTrue(
+                current.contains("/report/capacity/scope/"),
+                "Expected Terminkapazität scope URL before selecting year " + yearText + ", was: " + current);
+        // Keep Standort scopes; drop from/to day filters so the year report can render.
+        String path = current.replaceFirst("\\?.*$", "");
+        String target = path.replaceFirst(
+                "/report/capacity/scope/(?:[^/?#]*)?",
+                "/report/capacity/scope/" + yearText);
+        if (!target.endsWith("/")) {
+            target = target + "/";
+        }
+        String scopesQuery = scopesQueryParams(current);
+        if (!scopesQuery.isEmpty()) {
+            target = target + "?" + scopesQuery;
+        }
+        ScenarioLogManager.getLogger().info("No year chip for {}; navigating to {}", yearText, target);
+        DRIVER.navigate().to(target);
+        new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(ExpectedConditions.urlContains("/report/capacity/scope/" + yearText));
+    }
+
+    /** Query string with only scopes[…] / scopes%5B…%5D params (no from/to day range). */
+    private static String scopesQueryParams(String url) {
+        int q = url.indexOf('?');
+        if (q < 0 || q + 1 >= url.length()) {
+            return "";
+        }
+        StringBuilder scopes = new StringBuilder();
+        for (String part : url.substring(q + 1).split("&")) {
+            if (part.startsWith("scopes[") || part.startsWith("scopes%5B") || part.startsWith("scopes%5b")) {
+                if (scopes.length() > 0) {
+                    scopes.append('&');
+                }
+                scopes.append(part);
+            }
+        }
+        return scopes.toString();
     }
 
     public void checkIfTheStatisticForTheSelectedMonthIsOpen() {

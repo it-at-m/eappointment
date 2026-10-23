@@ -173,11 +173,33 @@ public class ProcessingStationSection extends CounterProcessingStationPage {
 
     /** After the no-show lockout ends, the bold lockout text is replaced by the call link. */
     public void waitUntilCustomerCallLinkVisible(String name) {
+        long[] lastReload = {0L};
         WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
-        wait.ignoring(StaleElementReferenceException.class);
+        wait.ignoring(StaleElementReferenceException.class, ElementClickInterceptedException.class);
         wait.withMessage("Call link for \"" + name + "\" did not return after ending the no-show lockout.");
-        wait.until(driver -> driver.findElements(queueCallLinkByName(name)).stream()
-                .anyMatch(WebElement::isDisplayed));
+        wait.until(driver -> {
+            if (driver.findElements(queueCallLinkByName(name)).stream().anyMatch(WebElement::isDisplayed)) {
+                return true;
+            }
+            long now = System.currentTimeMillis();
+            if (now - lastReload[0] < 2000L) {
+                return false;
+            }
+            lastReload[0] = now;
+            for (WebElement reload : driver.findElements(By.cssSelector(".queue-table a.reload"))) {
+                try {
+                    if (!reload.isDisplayed()) {
+                        continue;
+                    }
+                    scrollToCenterByVisibleElement(reload);
+                    reload.click();
+                    break;
+                } catch (StaleElementReferenceException | ElementClickInterceptedException ignored) {
+                    // Queue reload is still painting.
+                }
+            }
+            return false;
+        });
     }
 
     private static By queueCallLinkByName(String name) {
@@ -706,6 +728,24 @@ public class ProcessingStationSection extends CounterProcessingStationPage {
     public void assertProcessNotCallableWithStatusVisible(String germanStatus) {
         ScenarioLogManager.getLogger().info(
                 "Checking ProcessNotCallable error with status \"{}\"...", germanStatus);
+        try {
+            waitForProcessNotCallableBoard(germanStatus);
+        } catch (TimeoutException first) {
+            // Firefox after a long Orleansplatz checkout sometimes lands on the plain workstation;
+            // one hard reload of the same ?calledprocess= / ?selectedprocess= URL recovers it.
+            String url = DRIVER.getCurrentUrl();
+            if (url != null && (url.contains("calledprocess=") || url.contains("selectedprocess="))) {
+                ScenarioLogManager.getLogger().warn(
+                        "ProcessNotCallable board missing; reloading workstation URL {}", url);
+                DRIVER.navigate().to(url);
+                waitForProcessNotCallableBoard(germanStatus);
+                return;
+            }
+            throw first;
+        }
+    }
+
+    private void waitForProcessNotCallableBoard(String germanStatus) {
         WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
         wait.withMessage("ProcessNotCallable headline is not visible!");
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(

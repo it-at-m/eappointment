@@ -708,7 +708,7 @@ function renderMultiDayCalendar(days) {
     const fullscreenButton = document.getElementById('calendar-fullscreen');
     if (fullscreenButton) {
         if (next.children.length) {
-            fullscreenButton.style.display = 'inline-block';
+            fullscreenButton.style.display = 'flex';
         } else {
             fullscreenButton.style.display = 'none';
             exitCalendarFullscreen();

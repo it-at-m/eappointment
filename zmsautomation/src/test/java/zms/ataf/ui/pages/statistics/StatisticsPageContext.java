@@ -25,8 +25,22 @@ public class StatisticsPageContext extends Context {
     public static final String TITLE = "Anmeldung - ZMS Statistik";
     private WindowType windowType;
 
+    /**
+     * Shared across StatisticsPage / CustomerStatisticsPage instances in one scenario.
+     * Download filename is {@code clientstatistic_{from}_{to}.xlsx}.
+     */
+    private String expectedClientStatisticWorkbookName;
+
     StatisticsPageContext(RemoteWebDriver driver) {
         super(driver);
+    }
+
+    public void setExpectedClientStatisticWorkbookName(String name) {
+        expectedClientStatisticWorkbookName = name;
+    }
+
+    public String expectedClientStatisticWorkbookName() {
+        return expectedClientStatisticWorkbookName;
     }
 
     public void navigateToPage() {
