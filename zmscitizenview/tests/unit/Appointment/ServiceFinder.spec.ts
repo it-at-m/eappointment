@@ -171,7 +171,14 @@ describe("ServiceFinder", () => {
           },
           MucSelect: {
             name: "MucSelect",
-            template: '<div class="muc-select-stub"></div>',
+            template: `
+              <div class="muc-select-stub choices">
+                <input class="choices__input" />
+                <div class="choices__list--dropdown">
+                  <div role="listbox"></div>
+                </div>
+              </div>
+            `,
             props: [
               "id",
               "items",
@@ -279,6 +286,24 @@ describe("ServiceFinder", () => {
       expect(wrapper.vm.service).toStrictEqual(selectedService);
       expect(wrapper.text()).toContain(selectedService.name);
     });
+
+    it("should select an exact-ID result through the Choices input", async () => {
+      const wrapper = createWrapper(null);
+      await new Promise((resolve) => setTimeout(resolve, 0));
+      await nextTick();
+
+      const input = wrapper.find(".choices__input");
+      await input.setValue(mockServices[0].id);
+      await nextTick();
+
+      const row = wrapper.find("[data-exact-id-result]");
+      expect(row.element.parentElement?.getAttribute("role")).toBe("listbox");
+
+      await row.trigger("mousedown");
+      await nextTick();
+
+      expect(wrapper.text()).toContain(mockServices[0].name);
+    });
   });
 
   describe("Service Count", () => {
@@ -307,7 +332,9 @@ describe("ServiceFinder", () => {
       // Mimic stepper back: ServiceFinder remounts with selectedService still at
       // qty 2 while offices/relations fetch has not finished (spa must not fall
       // back to MAX_SLOTS=25 or plus would enable again).
-      vi.mocked(fetch).mockReturnValueOnce(new Promise(() => {}) as Promise<Response>);
+      vi.mocked(fetch).mockReturnValueOnce(
+        new Promise(() => {}) as Promise<Response>
+      );
       const service = {
         id: "1064268",
         name: "Ausfuhrkennzeichen",

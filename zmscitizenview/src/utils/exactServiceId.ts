@@ -77,12 +77,16 @@ const hideNameMatches = (dropdown: ParentNode) => {
     });
 };
 
+const resultList = (dropdown: ParentNode): ParentNode =>
+  dropdown.querySelector<HTMLElement>('[role="listbox"]') ?? dropdown;
+
 const showIdSearchResult = <T extends ServiceIdMatch>(
   dropdown: ParentNode,
   match: T | undefined,
   noResultMessage: string,
   onSelect: (service: T) => void
 ) => {
+  const list = resultList(dropdown);
   const row = document.createElement("div");
   row.setAttribute(RESULT_ROW_ATTRIBUTE, "true");
   row.className = "choices__item choices__item--choice";
@@ -90,7 +94,7 @@ const showIdSearchResult = <T extends ServiceIdMatch>(
   if (!match) {
     row.classList.add("choices__notice", "has-no-results");
     row.textContent = noResultMessage;
-    dropdown.appendChild(row);
+    list.appendChild(row);
     return;
   }
 
@@ -102,7 +106,7 @@ const showIdSearchResult = <T extends ServiceIdMatch>(
     mouseEvent.stopPropagation();
     onSelect(match);
   });
-  dropdown.appendChild(row);
+  list.appendChild(row);
 };
 
 export const handleExactServiceIdInput = <T extends ServiceIdMatch>(
@@ -141,6 +145,8 @@ export const handleExactServiceIdKeydown = <T extends ServiceIdMatch>(
   const input = searchFieldFrom(event);
   if (!input || !isExactServiceIdQuery(input.value)) return;
   if (!isIdSearchNavigationKey(event.key)) return;
+  // Enter confirms an IME composition. Let that key reach the field.
+  if (event.isComposing) return;
 
   // Arrow keys would move the highlight onto a hidden name match.
   event.preventDefault();
