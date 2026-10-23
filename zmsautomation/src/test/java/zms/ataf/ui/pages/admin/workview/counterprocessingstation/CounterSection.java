@@ -157,12 +157,24 @@ public class CounterSection extends CounterProcessingStationPage {
         Assert.assertTrue(
                 matcher.find(),
                 "Traffic light background for " + color + " was \"" + background + "\".");
-        int actualRed = Integer.parseInt(matcher.group(1));
-        int actualGreen = Integer.parseInt(matcher.group(2));
-        int actualBlue = Integer.parseInt(matcher.group(3));
+        int actualRed;
+        int actualGreen;
+        int actualBlue;
         String alphaGroup = matcher.group(4);
+        double alpha = Double.NaN;
+        try {
+            actualRed = Integer.parseInt(matcher.group(1));
+            actualGreen = Integer.parseInt(matcher.group(2));
+            actualBlue = Integer.parseInt(matcher.group(3));
+            if (alphaGroup != null) {
+                alpha = Double.parseDouble(alphaGroup);
+            }
+        } catch (NumberFormatException e) {
+            throw new AssertionError(
+                    "Traffic light background for " + color + " was \"" + background + "\".", e);
+        }
         boolean pure = near(actualRed, red) && near(actualGreen, green) && near(actualBlue, blue);
-        boolean translucent = alphaGroup != null && Math.abs(Double.parseDouble(alphaGroup) - 0.5d) <= 0.05d;
+        boolean translucent = alphaGroup != null && Math.abs(alpha - 0.5d) <= 0.05d;
         boolean blendedOnWhite = alphaGroup == null
                 && near(actualRed, blended(red))
                 && near(actualGreen, blended(green))
