@@ -1687,9 +1687,7 @@ public class ZmsApiSteps {
         for (int i = 0; i < count; i++) {
             queueResolvedWalkIn(scopeId, request, "Muster Ampel " + i + " " + System.nanoTime(), null, authKey);
             int processId = lastProcess == null ? 0 : lastProcess.path("id").asInt();
-            if (processId > 0 && !scenarioProcessIds.contains(processId)) {
-                scenarioProcessIds.add(processId);
-            }
+            trackProcess(processId, scopeId);
         }
         ScenarioLogManager.getLogger().info(
                 "Queued {} walk-ins at scope {} for Ampel coverage (auth={})",
