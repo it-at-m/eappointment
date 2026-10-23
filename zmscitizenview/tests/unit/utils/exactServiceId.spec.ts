@@ -42,8 +42,10 @@ describe("exactServiceId", () => {
         <div class="choices">
           <input class="choices__input choices__input--cloned" />
           <div class="choices__list choices__list--dropdown">
-            <div class="choices__item choices__item--choice">Reisepass</div>
-            <div class="choices__item choices__item--choice">Personalausweis</div>
+            <div role="listbox">
+              <div class="choices__item choices__item--choice">Reisepass</div>
+              <div class="choices__item choices__item--choice">Personalausweis</div>
+            </div>
           </div>
         </div>
       `;
@@ -83,6 +85,11 @@ describe("exactServiceId", () => {
 
       expect(reachedChoices).not.toHaveBeenCalled();
       expect(visibleLabels(form)).toEqual(["Gewerbe-Anmeldung"]);
+      expect(
+        form
+          .querySelector("[data-exact-id-result]")
+          ?.parentElement?.getAttribute("role")
+      ).toBe("listbox");
       form.remove();
     });
 
@@ -100,7 +107,7 @@ describe("exactServiceId", () => {
     });
 
     it("selects the exact service on enter and ignores arrow keys", () => {
-      const { form, input } = mountSearch();
+      const { form, input, reachedChoices } = mountSearch();
       options.onSelect.mockClear();
       input.value = "3";
       input.dispatchEvent(
@@ -112,6 +119,18 @@ describe("exactServiceId", () => {
         new KeyboardEvent("keydown", { key: "Enter", bubbles: true })
       );
       expect(options.onSelect).toHaveBeenCalledWith(services[0]);
+
+      options.onSelect.mockClear();
+      reachedChoices.mockClear();
+      input.dispatchEvent(
+        new KeyboardEvent("keydown", {
+          key: "Enter",
+          bubbles: true,
+          isComposing: true,
+        })
+      );
+      expect(options.onSelect).not.toHaveBeenCalled();
+      expect(reachedChoices).toHaveBeenCalled();
       form.remove();
     });
   });
