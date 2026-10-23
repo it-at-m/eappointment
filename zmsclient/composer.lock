@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "29d576a523885d82c419834c33692662",
+    "content-hash": "d3a696bb49e98522a9b267995599c457",
     "packages": [
         {
             "name": "aronduby/dump",
@@ -201,7 +201,7 @@
             "dist": {
                 "type": "path",
                 "url": "../mellon",
-                "reference": "83847facc10f2015404233e52f6b7e5235a62b74"
+                "reference": "814436242caabce131b10494b4de1501893bfd8c"
             },
             "require": {
                 "ext-json": ">=0",
@@ -214,7 +214,7 @@
                 "phpunit/phpunit": "^13",
                 "roave/security-advisories": "dev-latest",
                 "squizlabs/php_codesniffer": "*",
-                "vimeo/psalm": "6.20.0"
+                "vimeo/psalm": "6.20.1"
             },
             "type": "library",
             "autoload": {
@@ -251,7 +251,7 @@
             "dist": {
                 "type": "path",
                 "url": "../zmsentities",
-                "reference": "2523f283a5f59037393a9ce503954831267e30fd"
+                "reference": "e994f33d23863f2885ada0b052a57269ff346ceb"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -274,7 +274,7 @@
                 "phpunit/phpunit": "^13",
                 "roave/security-advisories": "dev-latest",
                 "squizlabs/php_codesniffer": "*",
-                "vimeo/psalm": "6.20.0"
+                "vimeo/psalm": "6.20.1"
             },
             "type": "library",
             "autoload": {
@@ -309,7 +309,7 @@
             "dist": {
                 "type": "path",
                 "url": "../zmsslim",
-                "reference": "8c0900ba15c10389361dd315e7e8e4c2ddbb6dc7"
+                "reference": "54914ee32930f345249942d4e36b77ea3138243c"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -340,7 +340,7 @@
                 "phpunit/phpunit": "^13",
                 "roave/security-advisories": "dev-latest",
                 "squizlabs/php_codesniffer": "*",
-                "vimeo/psalm": "6.20.0"
+                "vimeo/psalm": "6.20.1"
             },
             "type": "library",
             "autoload": {
@@ -5511,22 +5511,22 @@
         },
         {
             "name": "tracy/tracy",
-            "version": "v2.12.1",
+            "version": "v2.12.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nette/tracy.git",
-                "reference": "90d24872cd97202f79281aac7eb09c27ec48bf69"
+                "reference": "2664bd9456cb745ff1fb0b31efa79fe2f411bef3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nette/tracy/zipball/90d24872cd97202f79281aac7eb09c27ec48bf69",
-                "reference": "90d24872cd97202f79281aac7eb09c27ec48bf69",
+                "url": "https://api.github.com/repos/nette/tracy/zipball/2664bd9456cb745ff1fb0b31efa79fe2f411bef3",
+                "reference": "2664bd9456cb745ff1fb0b31efa79fe2f411bef3",
                 "shasum": ""
             },
             "require": {
                 "ext-json": "*",
                 "ext-session": "*",
-                "php": "8.2 - 8.5"
+                "php": "8.2 - 8.6"
             },
             "conflict": {
                 "nette/di": "<3.0"
@@ -5540,7 +5540,7 @@
                 "nette/tester": "^2.6",
                 "nette/utils": "^3.0 || ^4.0",
                 "phpstan/extension-installer": "^1.4@stable",
-                "phpstan/phpstan": "^2.1@stable",
+                "phpstan/phpstan": "^2.3@stable",
                 "psr/log": "^1.0 || ^2.0 || ^3.0"
             },
             "type": "library",
@@ -5568,26 +5568,27 @@
                 {
                     "name": "David Grudl",
                     "homepage": "https://davidgrudl.com"
-                },
-                {
-                    "name": "Nette Community",
-                    "homepage": "https://nette.org/contributors"
                 }
             ],
-            "description": "😎  Tracy: the addictive tool to ease debugging PHP code for cool developers. Friendly design, logging, profiler, advanced features like debugging AJAX calls or CLI support. You will love it.",
+            "description": "😎 Tracy: the addictive PHP debugger. Clear error pages with full context, a debug bar, readable dumps, AJAX and CLI support, and logging with e-mail alerts in production.",
             "homepage": "https://tracy.nette.org",
             "keywords": [
-                "Xdebug",
-                "debug",
+                "debug bar",
                 "debugger",
+                "debugging",
+                "dump",
+                "error handler",
+                "logging",
                 "nette",
-                "profiler"
+                "tracy",
+                "var_dump",
+                "whoops"
             ],
             "support": {
                 "issues": "https://github.com/nette/tracy/issues",
-                "source": "https://github.com/nette/tracy/tree/v2.12.1"
+                "source": "https://github.com/nette/tracy/tree/v2.12.2"
             },
-            "time": "2026-08-18T10:56:11+00:00"
+            "time": "2026-10-21T05:14:18+00:00"
         },
         {
             "name": "twig/intl-extra",
@@ -11185,16 +11186,16 @@
         },
         {
             "name": "vimeo/psalm",
-            "version": "6.20.0",
+            "version": "6.20.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/vimeo/psalm.git",
-                "reference": "804f03c0c183d149fcd4b8c7c0c9b3fbf836d34c"
+                "reference": "376425b8e67b79773add388e16b4f6be5693dc87"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/vimeo/psalm/zipball/804f03c0c183d149fcd4b8c7c0c9b3fbf836d34c",
-                "reference": "804f03c0c183d149fcd4b8c7c0c9b3fbf836d34c",
+                "url": "https://api.github.com/repos/vimeo/psalm/zipball/376425b8e67b79773add388e16b4f6be5693dc87",
+                "reference": "376425b8e67b79773add388e16b4f6be5693dc87",
                 "shasum": ""
             },
             "require": {
@@ -11299,7 +11300,7 @@
                 "issues": "https://github.com/vimeo/psalm/issues",
                 "source": "https://github.com/vimeo/psalm"
             },
-            "time": "2026-10-09T15:20:18+00:00"
+            "time": "2026-10-20T11:18:42+00:00"
         },
         {
             "name": "webmozart/assert",

@@ -1,4 +1,35 @@
-## Release Muc-49 (02.10.2026)
+## Release Muc-50 Updated (23.10.2026)
+
+<h2>        Bug
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1639'>ZMSKVR-1639</a>] -         &quot;Abbrechen-Button&quot; im Terminaufruf setzt den Terminstatus zurück
+</li>
+</ul>
+                                                                                                                                                                                                                                    
+<h2>        Story
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1202'>ZMSKVR-1202</a>] -         Optimierung der Datenbankabfragen in ProcessStatusFree und Day für schnellere Terminreservierungen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1319'>ZMSKVR-1319</a>] -         MSE Terminvarianten „Planeinsicht Grundstücksentwässerung“ (Kleinkunde / Gewerbekunde) mit separaten Kalendern
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1440'>ZMSKVR-1440</a>] -         Bürgerfrontend: Benutzerfreundliche Lösung für Captcha-Timeout
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1620'>ZMSKVR-1620</a>] -         Umbuchung in der Bürgeransicht auf Scope-/Kalenderebene konfigurieren
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1622'>ZMSKVR-1622</a>] -         Gesamtübersicht: Wechsel zum Vollbildmodus als Link enfügen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1656'>ZMSKVR-1656</a>] -         Optimiertes Toggle-Pattern übernehmen
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-501'>ZMSKVR-501</a>] -         Warnhinweis vor Time-Out
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-981'>ZMSKVR-981</a>] -         Schritt 4: Übersicht - Checkbox-Titel als Überschriften
+</li>
+</ul>
+
+
+## Release Muc-49 Updated (21.10.2026)
 
 <h2>        Security
 </h2>
@@ -6,6 +37,9 @@
 <li>21.10.2026 - CVE-2026-109618 and CVE-2026-109619: remote code execution in PHP. Module images built from this tag run PHP 8.4.27.
 </li>
 </ul>
+
+
+## Release Muc-49 (02.10.2026)
 
 <h2>        Bug
 </h2>

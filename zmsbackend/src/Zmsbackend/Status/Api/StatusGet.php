@@ -31,6 +31,7 @@ class StatusGet extends \BO\Zmsbackend\Api\BaseController
         $includeProcessStats = $validator->getParameter('includeProcessStats')->isNumber()->setDefault(1)->getValue();
         $status = (new \BO\Zmsbackend\Status\Service\Status())->readEntity(\App::$now, $includeProcessStats);
         $status['version'] = \BO\Zmsbackend\Helper\Version::getArray();
+        $status['phpVersion'] = PHP_VERSION;
         if (\App::DEBUG) {
             $status['opcache'] = [
                 'config' => opcache_get_configuration(),

@@ -21,7 +21,7 @@ services:
       - default
 
   mail-viewer:
-    image: node:24
+    image: node:24.22.1@sha256:6449e19d8184d84062525b6a7524def03146c2cb04a7f08b076680d0e8e4240a
     container_name: zms-mail-viewer
     working_dir: /workspace/.devcontainer/mail-viewer
     volumes:
@@ -45,7 +45,7 @@ services:
     restart: unless-stopped
 
   citizenview:
-    image: node:24
+    image: node:24.22.1@sha256:6449e19d8184d84062525b6a7524def03146c2cb04a7f08b076680d0e8e4240a
     container_name: zms-citizenview
     working_dir: /workspace/zmscitizenview
     volumes:
@@ -67,7 +67,7 @@ services:
     restart: unless-stopped
 
   db:
-    image: mariadb:10.11
+    image: mariadb:10.11.19@sha256:0d0945c57f75b3a3b9ebe71aedaaad005fa5305054e8fca3d2e42a8c92b43b5e
     container_name: zms-db
     restart: unless-stopped
     environment:
@@ -83,7 +83,7 @@ services:
       - "3306:3306"
 
   phpmyadmin:
-    image: phpmyadmin:5
+    image: phpmyadmin:5.2.3@sha256:62a50b1419fe55b9b4c3cd6f5aed03a18f8f5b4a236f24735d76400bea75a5ff
     container_name: zms-phpmyadmin
     restart: unless-stopped
     ports:
@@ -171,7 +171,7 @@ services:
     restart: unless-stopped
 
   init-keycloak-token:
-    image: curlimages/curl:8.23.0
+    image: curlimages/curl:8.23.0@sha256:11e64e28c5f58c8d93ee95fcf22ac055f48b0bc440e0ce7d8013bbb5ad6aa8ac
     container_name: zms-init-keycloak-token
     depends_on:
       keycloak:
@@ -203,7 +203,7 @@ services:
     restart: "no"
 
   init-keycloak:
-    image: eclipse-temurin:25-jre-alpine@sha256:3c0a9084927a221ccd1d007fcaf614465672c0af37aaa834c5184483afe56d61
+    image: eclipse-temurin:25-jre-alpine@sha256:b7528962e65d43064d8a8b67ba175367896bc948363ea2d3fcd7f10d34e1f048
     container_name: zms-init-keycloak
     # Jar volume is :ro. keycloakmigration Log4j writes logs/logfile.log under cwd,
     # so run from /tmp (entrypoint.sh uses java -jar keycloakmigration.jar).

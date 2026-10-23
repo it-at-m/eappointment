@@ -37,8 +37,10 @@ class StatusTest extends Base
         $this->assertStringContainsString('Aktive Sitzungen der Mitarbeitenden', $body);
         $this->assertStringContainsString('Auslastung der Datenbankverbindungen', $body);
         $this->assertStringContainsString('Nur für technische Administration sichtbar', $body);
-        $this->assertStringContainsString('PHP-Version', $body);
+        $this->assertStringContainsString('zmsadmin PHP-Version', $body);
         $this->assertStringContainsString(PHP_VERSION, $body);
+        $this->assertStringContainsString('zmsbackend PHP-Version', $body);
+        $this->assertStringContainsString('1.2.3-zmsbackend', $body);
         $this->assertStringContainsString('Automatische Tests', $body);
         $this->assertStringContainsString('zmsautomation', $body);
         $this->assertStringContainsString('branch=next', $body);

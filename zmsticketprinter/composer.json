@@ -24,7 +24,7 @@
         }
     },
     "require-dev": {
-        "vimeo/psalm": "6.20.0",
+        "vimeo/psalm": "6.20.1",
         "phpmd/phpmd": "@stable",
         "squizlabs/php_codesniffer": "*",
         "phpunit/phpunit": "^13",
