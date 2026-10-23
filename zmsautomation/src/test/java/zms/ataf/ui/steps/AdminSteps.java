@@ -1446,6 +1446,31 @@ public class AdminSteps {
         //COUNTER_PROCESSING_STATION_PAGE.checkQueueElementsVisibleWithoutSMS();
     }
 
+    @Then("the average waiting time labels under information are visible.")
+    public void sind_die_durchschnittlichen_wartezeiten_unter_informationen_sichtbar() {
+        COUNTER_SECTION.assertAverageWaitingTimeLabelsVisible();
+    }
+
+    @Then("the waiting traffic light under information is {string}.")
+    public void ist_die_ampel_unter_informationen(String colorClass) {
+        COUNTER_SECTION.assertWaitingTrafficLightClass(colorClass);
+    }
+
+    @Then("the waiting traffic light under information matches the Wartende count.")
+    public void stimmt_die_ampel_unter_informationen_mit_der_wartenden_zahl() {
+        COUNTER_SECTION.assertWaitingTrafficLightMatchesCount();
+    }
+
+    @Then("the number of waiting customers under information is at least {int}.")
+    public void ist_die_anzahl_der_wartenden_unter_informationen_mindestens(int minimum) {
+        COUNTER_SECTION.assertWaitingClientsAtLeast(minimum);
+    }
+
+    @When("I reload the counter waiting information.")
+    public void ich_lade_die_tresen_warteinformationen_neu() {
+        COUNTER_SECTION.reloadAndReadWaitingClientsOnCounter();
+    }
+
     @Then("the select-location page opens.")
     public void dann_oeffnet_sich_die_standort_auswaehlen_seite() {
         ADMIN_PAGE.checkForLocationPage();
@@ -1460,6 +1485,8 @@ public class AdminSteps {
     @When("the current number of waiting customers under information is remembered.")
     public void die_aktuelle_anzahl_der_wartenden_unter_informationen_gemerkt_wird() {
         rememberedWaitingClients = COUNTER_SECTION.readWaitingClientsOnCounter();
+        TestDataHelper.setTestData(
+                "waiting_clients_under_information", Integer.toString(rememberedWaitingClients));
         ScenarioLogManager.getLogger().info(
                 "Wartende under Informationen before the appointment: {}", rememberedWaitingClients);
     }
