@@ -1485,6 +1485,8 @@ public class AdminSteps {
     @When("the current number of waiting customers under information is remembered.")
     public void die_aktuelle_anzahl_der_wartenden_unter_informationen_gemerkt_wird() {
         rememberedWaitingClients = COUNTER_SECTION.readWaitingClientsOnCounter();
+        TestDataHelper.setTestData(
+                "waiting_clients_under_information", Integer.toString(rememberedWaitingClients));
         ScenarioLogManager.getLogger().info(
                 "Wartende under Informationen before the appointment: {}", rememberedWaitingClients);
     }
