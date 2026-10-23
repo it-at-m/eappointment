@@ -815,7 +815,12 @@ public class ZmsApiSteps {
 
     private void queueWalkIn(int scopeId, String serviceName, String familyName, String amendment) {
         String authKey = getOrLoginXAuthKey();
-        JsonNode request = findScopeRequestByName(scopeId, serviceName, authKey);
+        queueResolvedWalkIn(
+                scopeId, findScopeRequestByName(scopeId, serviceName, authKey), familyName, amendment, authKey);
+    }
+
+    private void queueResolvedWalkIn(
+            int scopeId, JsonNode request, String familyName, String amendment, String authKey) {
         ObjectNode scope = MAPPER.createObjectNode();
         scope.put("id", scopeId);
         ObjectNode appointment = MAPPER.createObjectNode();
@@ -1664,6 +1669,79 @@ public class ZmsApiSteps {
             if (processId > 0 && !scenarioProcessIds.contains(processId)) {
                 scenarioProcessIds.add(processId);
             }
+        }
+    }
+
+    /**
+     * ZMS-3152 / ZMSALT-3381: seed enough walk-ins to hit Ampel bands (green/yellow/orange/red).
+     */
+    @When("I queue {int} walk-ins at scope {int} with service {string} with the X-AuthKey")
+    public void iQueueManyWalkInsAtScopeWithServiceWithTheXAuthKey(int count, int scopeId, String serviceName) {
+        Assertions.assertThat(count).isBetween(1, 50);
+        String authKey = getOrLoginXAuthKey();
+        iUpdateTheWorkstationWithScopeAndCounterWithTheXAuthKey(scopeId, "22");
+        Assertions.assertThat(response.getStatusCode())
+            .as("POST /workstation/ for scope %d body=%s", scopeId, truncate(response.asString(), 1000))
+            .isEqualTo(200);
+        JsonNode request = findScopeRequestByName(scopeId, serviceName, authKey);
+        for (int i = 0; i < count; i++) {
+            queueResolvedWalkIn(scopeId, request, "Muster Ampel " + i + " " + System.nanoTime(), null, authKey);
+            int processId = lastProcess == null ? 0 : lastProcess.path("id").asInt();
+            trackProcess(processId, scopeId);
+        }
+        ScenarioLogManager.getLogger().info(
+                "Queued {} walk-ins at scope {} for Ampel coverage (auth={})",
+                count, scopeId, authKey != null && !authKey.isBlank());
+    }
+
+    /**
+     * Adds only the walk-ins missing between the remembered Wartende count and {@code target},
+     * so a queue that is already partly full still lands on yellow (11), orange (21) or red (41).
+     */
+    @When("I queue the walk-ins still needed at scope {int} with service {string} to reach {int} waiting customers with the X-AuthKey")
+    public void iQueueTheWalkInsStillNeededToReach(int scopeId, String serviceName, int target) {
+        String raw = TestDataHelper.getTestData("waiting_clients_under_information");
+        Assertions.assertThat(raw)
+            .as("Remember the Wartende count under Informationen before queueing walk-ins")
+            .isNotBlank();
+        int current;
+        try {
+            current = Integer.parseInt(raw.trim());
+        } catch (NumberFormatException e) {
+            throw new IllegalStateException(
+                    "Remembered Wartende count is not a number: \"" + raw + "\"", e);
+        }
+        int delta = target - current;
+        Assertions.assertThat(delta)
+            .as("Wartende is %d, so adding walk-ins cannot bring it down to %d", current, target)
+            .isGreaterThanOrEqualTo(0);
+        if (delta == 0) {
+            ScenarioLogManager.getLogger().info("Wartende is already {} at scope {}", current, scopeId);
+            return;
+        }
+        iQueueManyWalkInsAtScopeWithServiceWithTheXAuthKey(delta, scopeId, serviceName);
+    }
+
+    @Then("the walk-ins created in this scenario are still queued")
+    public void theWalkInsCreatedInThisScenarioAreStillQueued() {
+        Assertions.assertThat(scenarioProcessIds)
+            .as("Queue walk-ins before asserting they are still queued")
+            .isNotEmpty();
+        String authKey = getOrLoginXAuthKey();
+        for (Integer processId : scenarioProcessIds) {
+            Response processResponse = given()
+                .baseUri(apiBaseUri())
+                .header("X-AuthKey", authKey)
+            .when()
+                .get("/process/" + processId + "/");
+            Assertions.assertThat(processResponse.getStatusCode())
+                .as("GET /process/%d/ body=%s", processId, truncate(processResponse.asString(), 1000))
+                .isEqualTo(200);
+            JsonNode process = parseDataNode(processResponse);
+            Assertions.assertThat(process).as("process %d payload", processId).isNotNull();
+            Assertions.assertThat(process.path("status").asText(""))
+                .as("walk-in process %d should stay queued for the Ampel Wartende count", processId)
+                .isEqualTo("queued");
         }
     }
 
