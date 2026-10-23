@@ -1706,7 +1706,13 @@ public class ZmsApiSteps {
         Assertions.assertThat(raw)
             .as("Remember the Wartende count under Informationen before queueing walk-ins")
             .isNotBlank();
-        int current = Integer.parseInt(raw.trim());
+        int current;
+        try {
+            current = Integer.parseInt(raw.trim());
+        } catch (NumberFormatException e) {
+            throw new IllegalStateException(
+                    "Remembered Wartende count is not a number: \"" + raw + "\"", e);
+        }
         int delta = target - current;
         Assertions.assertThat(delta)
             .as("Wartende is %d, so adding walk-ins cannot bring it down to %d", current, target)
