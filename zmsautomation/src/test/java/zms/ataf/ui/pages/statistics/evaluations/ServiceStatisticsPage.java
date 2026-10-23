@@ -146,7 +146,24 @@ public class ServiceStatisticsPage extends StatisticsPage {
     }
 
     public void assertDownloadedStatisticValues(List<Map<String, String>> rows) throws IOException {
-        Map<String, String[]> workbook = RequestStatisticWorkbook.rows(workbookFromThisDownload());
+        Assert.assertFalse(rows == null || rows.isEmpty(), "Expected at least one service statistic row.");
+        String marker = rows.get(0).get("Dienstleistung");
+        Map<String, String[]> workbook = null;
+        // Parallel shards share period filenames; newest lock can briefly grab another scope's XLSX.
+        for (int attempt = 1; attempt <= 3; attempt++) {
+            Path path = workbookFromThisDownload();
+            workbook = RequestStatisticWorkbook.rows(path);
+            if (workbook.containsKey(marker)) {
+                break;
+            }
+            ScenarioLogManager.getLogger().warn(
+                    "Service XLSX {} missing row '{}'; rows={}; re-downloading ({}/3)",
+                    path.getFileName(),
+                    marker,
+                    workbook.keySet(),
+                    attempt);
+            clickDownloadButton();
+        }
         for (Map<String, String> row : rows) {
             String label = row.get("Dienstleistung");
             String[] cells = workbook.get(label);
@@ -198,7 +215,9 @@ public class ServiceStatisticsPage extends StatisticsPage {
             return null;
         }
         if (pendingWorkbookName == null) {
-            pendingWorkbookName = newcomers.get(0).getFileName().toString();
+            // Newest first: same period filename is overwritten in-scenario; earliest can be a
+            // stale parallel download (Summe from the previous single-scope export).
+            pendingWorkbookName = newcomers.get(newcomers.size() - 1).getFileName().toString();
             pendingWorkbookSize = -1;
         }
         Path locked = downloads.resolve(pendingWorkbookName);
@@ -223,7 +242,7 @@ public class ServiceStatisticsPage extends StatisticsPage {
             return null;
         }
         if (pendingWorkbookName == null) {
-            pendingWorkbookName = newcomers.get(0).getName();
+            pendingWorkbookName = newcomers.get(newcomers.size() - 1).getName();
             pendingWorkbookSize = -1;
         }
         HasDownloads.DownloadedFile locked = ((HasDownloads) DRIVER).getDownloadedFiles().stream()

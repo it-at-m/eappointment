@@ -309,8 +309,9 @@ public class CustomerStatisticsPage extends StatisticsPage {
     }
 
     /**
-     * Parallel scenarios share {@code ~/Downloads}. Lock onto the earliest new workbook after
-     * our click so a later download from another scenario cannot steal this wait.
+     * Parallel scenarios share {@code ~/Downloads}. Prefer the workbook whose name matches the
+     * filter date range from this scenario; otherwise lock onto the earliest newcomer so a later
+     * download from another scenario cannot steal this wait.
      */
     private Path stableNewLocalWorkbook(Path downloads) {
         List<Path> newcomers;
@@ -327,7 +328,13 @@ public class CustomerStatisticsPage extends StatisticsPage {
             return null;
         }
         if (pendingWorkbookName == null) {
-            pendingWorkbookName = newcomers.get(0).getFileName().toString();
+            String chosen = preferExpectedWorkbookName(newcomers.stream()
+                    .map(path -> path.getFileName().toString())
+                    .collect(Collectors.toList()));
+            if (chosen == null) {
+                return null;
+            }
+            pendingWorkbookName = chosen;
             pendingWorkbookSize = -1;
         }
         Path locked = downloads.resolve(pendingWorkbookName);
@@ -352,7 +359,13 @@ public class CustomerStatisticsPage extends StatisticsPage {
             return null;
         }
         if (pendingWorkbookName == null) {
-            pendingWorkbookName = newcomers.get(0).getName();
+            String chosen = preferExpectedWorkbookName(newcomers.stream()
+                    .map(HasDownloads.DownloadedFile::getName)
+                    .collect(Collectors.toList()));
+            if (chosen == null) {
+                return null;
+            }
+            pendingWorkbookName = chosen;
             pendingWorkbookSize = -1;
         }
         HasDownloads.DownloadedFile locked = ((HasDownloads) DRIVER).getDownloadedFiles().stream()
@@ -364,6 +377,18 @@ public class CustomerStatisticsPage extends StatisticsPage {
             return null;
         }
         return rememberStableSize(locked.getName(), locked.getSize()) ? locked : null;
+    }
+
+    /**
+     * When the filter set an expected filename, wait for that file only — do not latch onto a
+     * parallel scenario's Dec→Jan (or other) download that appeared first in {@code ~/Downloads}.
+     */
+    private String preferExpectedWorkbookName(List<String> names) {
+        String expected = expectedClientStatisticWorkbookName();
+        if (expected != null) {
+            return names.contains(expected) ? expected : null;
+        }
+        return names.get(0);
     }
 
     private boolean isNewWorkbook(String name, long size, long modified) {

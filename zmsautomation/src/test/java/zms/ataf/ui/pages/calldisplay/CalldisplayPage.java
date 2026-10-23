@@ -88,6 +88,57 @@ public class CalldisplayPage extends BasePage {
                         + ". currentUrl=" + DRIVER.getCurrentUrl());
     }
 
+    /**
+     * ZMS-3213 / ZMSALT-3250: newest called waiting number is top-left
+     * (first {@code span.terminkundennummer} in document order).
+     */
+    public void assertWaitingNumbersNewestFirst(String newerNumber, String olderNumber) {
+        assertVisible();
+        waitForWaitingNumber(newerNumber);
+        waitForWaitingNumber(olderNumber);
+        List<String> numbers = DRIVER.findElements(By.cssSelector("span.terminkundennummer")).stream()
+                .map(el -> {
+                    String appointment = el.getAttribute("data-appointment");
+                    if (appointment != null && !appointment.isBlank()) {
+                        return appointment.trim();
+                    }
+                    return el.getText() == null ? "" : el.getText().trim();
+                })
+                .filter(text -> text != null && !text.isBlank())
+                .toList();
+        int newerIndex = numbers.indexOf(newerNumber);
+        int olderIndex = numbers.indexOf(olderNumber);
+        Assert.assertTrue(
+                newerIndex >= 0,
+                "Call display does not show newer number " + newerNumber + " in " + numbers
+                        + ". currentUrl=" + DRIVER.getCurrentUrl());
+        Assert.assertTrue(
+                olderIndex >= 0,
+                "Call display does not show older number " + olderNumber + " in " + numbers
+                        + ". currentUrl=" + DRIVER.getCurrentUrl());
+        Assert.assertTrue(
+                newerIndex < olderIndex,
+                "Newest call " + newerNumber + " must appear before older call " + olderNumber
+                        + " but order was " + numbers + ". currentUrl=" + DRIVER.getCurrentUrl());
+    }
+
+    private void waitForWaitingNumber(String number) {
+        try {
+            new WebDriverWait(DRIVER, Duration.ofSeconds(Math.max(DEFAULT_EXPLICIT_WAIT_TIME, 20)))
+                    .until(ExpectedConditions.or(
+                            ExpectedConditions.presenceOfElementLocated(
+                                    By.cssSelector("span.terminkundennummer[data-appointment='" + number + "']")),
+                            ExpectedConditions.presenceOfElementLocated(
+                                    By.xpath("//span[contains(@class,'terminkundennummer')]"
+                                            + "[normalize-space()='" + number + "']"))));
+        } catch (TimeoutException e) {
+            Assert.fail(
+                    "Call display did not show waiting number " + number
+                            + " within timeout. currentUrl=" + DRIVER.getCurrentUrl(),
+                    e);
+        }
+    }
+
     private List<String> listedLocations() {
         Matcher matcher = SCOPE_LIST.matcher(DRIVER.getPageSource());
         Assert.assertTrue(matcher.find(), "Call display did not publish collections.scopelist.");
