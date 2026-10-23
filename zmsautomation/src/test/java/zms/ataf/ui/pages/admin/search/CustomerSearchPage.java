@@ -34,18 +34,34 @@ public class CustomerSearchPage extends AdminPage {
 
     private void clickOrJs(By locator) {
         WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
-        WebElement button = wait.until(ExpectedConditions.presenceOfElementLocated(locator));
-        ((JavascriptExecutor) DRIVER).executeScript("arguments[0].scrollIntoView({block:'center'});", button);
-        try {
-            new WebDriverWait(DRIVER, Duration.ofSeconds(5))
-                    .ignoring(StaleElementReferenceException.class)
-                    .until(ExpectedConditions.elementToBeClickable(button))
-                    .click();
-        } catch (Exception e) {
-            ScenarioLogManager.getLogger().warn("Normal click failed, trying JS click for {}", locator);
-            button = wait.until(ExpectedConditions.presenceOfElementLocated(locator));
-            ((JavascriptExecutor) DRIVER).executeScript("arguments[0].click();", button);
+        StaleElementReferenceException staleElement = null;
+        for (int attempt = 1; attempt <= 3; attempt++) {
+            try {
+                WebElement button = wait.until(ExpectedConditions.presenceOfElementLocated(locator));
+                ((JavascriptExecutor) DRIVER)
+                        .executeScript("arguments[0].scrollIntoView({block:'center'});", button);
+                try {
+                    new WebDriverWait(DRIVER, Duration.ofSeconds(5))
+                            .until(ExpectedConditions.elementToBeClickable(button))
+                            .click();
+                } catch (StaleElementReferenceException stale) {
+                    throw stale;
+                } catch (Exception e) {
+                    ScenarioLogManager.getLogger().warn("Normal click failed, trying JS click for {}", locator);
+                    button = wait.until(ExpectedConditions.presenceOfElementLocated(locator));
+                    ((JavascriptExecutor) DRIVER)
+                            .executeScript(
+                                    "arguments[0].scrollIntoView({block:'center'}); arguments[0].click();",
+                                    button);
+                }
+                return;
+            } catch (StaleElementReferenceException stale) {
+                staleElement = stale;
+                ScenarioLogManager.getLogger()
+                        .warn("Stale element on click attempt {} for {}", attempt, locator);
+            }
         }
+        throw staleElement;
     }
 
     public void search(String query) {
