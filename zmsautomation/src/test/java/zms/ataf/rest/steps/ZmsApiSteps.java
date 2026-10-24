@@ -2078,6 +2078,83 @@ public class ZmsApiSteps {
         reserveConfirmedAppointment(scopeId, serviceName, familyName, email, amendment, true);
     }
 
+    @When("I reserve an appointment at scope {int} with services {string} and name {string} for {int} slots with the X-AuthKey")
+    public void iReserveAnAppointmentAtScopeWithServicesAndNameForSlots(
+            int scopeId, String services, String familyName, int slots) {
+        String authKey = getOrLoginXAuthKey();
+        List<JsonNode> requests = new ArrayList<>();
+        int configuredSlots = 0;
+        for (String serviceName : services.split(",\\s*")) {
+            JsonNode request = findScopeRequestByName(scopeId, serviceName, authKey);
+            Assertions.assertThat(request.path("name").asText())
+                    .as("scope %d request list", scopeId)
+                    .isEqualToIgnoringCase(serviceName);
+            int timeSlotCount = request.path("timeSlotCount").asInt(0);
+            Assertions.assertThat(timeSlotCount)
+                    .as("timeSlotCount for %s at scope %d", serviceName, scopeId)
+                    .isPositive();
+            configuredSlots += timeSlotCount;
+            requests.add(request);
+        }
+        Assertions.assertThat(configuredSlots)
+                .as("configured slots for %s at scope %d", services, scopeId)
+                .isEqualTo(slots);
+        String email = familyName.toLowerCase(Locale.ROOT).replaceAll("[^a-z0-9]", "") + "@mailinator.com";
+        reserveConfirmedAppointment(scopeId, requests, slots, familyName, email);
+    }
+
+    @Then("the process log for the last process shows slot count {int} for services {string}")
+    public void theProcessLogForTheLastProcessShowsSlotCountForServices(int slots, String services) {
+        Assertions.assertThat(lastProcess)
+                .as("Reserve an appointment before reading its log")
+                .isNotNull();
+        int processId = lastProcess.path("id").asInt();
+        Assertions.assertThat(processId).isPositive();
+        String familyName = lastProcess.path("clients").path(0).path("familyName").asText();
+        String authKey = getOrLoginXAuthKey();
+        response = given()
+                .baseUri(baseUri != null ? baseUri : TestConfig.getBaseUri())
+                .header("X-AuthKey", authKey)
+                .queryParam("searchQuery", familyName)
+        .when()
+                .get("/log/process/");
+        CommonApiSteps.setResponse(response);
+        Assertions.assertThat(response.getStatusCode())
+                .as("GET /log/process/ body=%s", truncate(response.asString(), 1000))
+                .isEqualTo(200);
+        ArrayNode logs = parseDataArray(response);
+        Assertions.assertThat(logs)
+                .as("GET /log/process/ data for %s", familyName)
+                .isNotNull();
+        List<String> expectedServices = new ArrayList<>();
+        for (String serviceName : services.split(",\\s*")) {
+            expectedServices.add(serviceName);
+        }
+        StringBuilder seen = new StringBuilder();
+        for (JsonNode log : logs) {
+            seen.append("reference=").append(log.path("reference").asText())
+                    .append(" slot_count=").append(log.path("slot_count").asText())
+                    .append(" services=").append(log.path("services").asText())
+                    .append('\n');
+            if (log.path("reference").asInt() != processId || log.path("slot_count").asInt(-1) != slots) {
+                continue;
+            }
+            String listed = log.path("services").asText("");
+            boolean allListed = true;
+            for (String serviceName : expectedServices) {
+                if (!listed.contains(serviceName)) {
+                    allListed = false;
+                    break;
+                }
+            }
+            if (allListed) {
+                return;
+            }
+        }
+        Assertions.fail("No log for process " + processId + " shows slot_count " + slots
+                + " and services " + services + ". Rows:\n" + seen);
+    }
+
     @When("I remember the last process display number and queue number")
     public void iRememberTheLastProcessDisplayNumberAndQueueNumber() {
         Assertions.assertThat(lastProcess)
@@ -2510,6 +2587,74 @@ public class ZmsApiSteps {
 
         response = postConfirmedWithDeadlockRetry(authKey, reserved);
         CommonApiSteps.setResponse(response);
+        rememberProcess(parseDataNode(response));
+    }
+
+    private void reserveConfirmedAppointment(
+            int scopeId,
+            List<JsonNode> requests,
+            int slotsRequired,
+            String familyName,
+            String email) {
+        String authKey = getOrLoginXAuthKey();
+        JsonNode freeList = fetchFreeProcessesLookingAhead(scopeId, requests, slotsRequired, authKey);
+        ArrayNode requestNodes = MAPPER.createArrayNode();
+        for (JsonNode request : requests) {
+            requestNodes.add(request.deepCopy());
+        }
+
+        JsonNode reserved = null;
+        long earliest = Instant.now().getEpochSecond();
+        for (int i = 0; i < freeList.size(); i++) {
+            long appointment = freeList.get(i).path("appointments").path(0).path("date").asLong(0);
+            if (appointment > 0 && appointment < earliest) {
+                continue;
+            }
+            ObjectNode process = freeList.get(i).deepCopy();
+            process.set("requests", requestNodes.deepCopy());
+            ObjectNode client = MAPPER.createObjectNode();
+            client.put("familyName", familyName);
+            client.put("email", email);
+            client.put("surveyAccepted", 1);
+            process.set("clients", MAPPER.createArrayNode().add(client));
+
+            response = given()
+                    .baseUri(baseUri != null ? baseUri : TestConfig.getBaseUri())
+                    .header("X-AuthKey", authKey)
+                    .contentType("application/json")
+                    .queryParam("slotType", "intern")
+                    .queryParam("clientkey", "")
+                    .queryParam("slotsRequired", slotsRequired)
+                    .body(toJson(process))
+            .when()
+                    .post("/process/status/reserved/");
+            CommonApiSteps.setResponse(response);
+            if (response.getStatusCode() == 200) {
+                reserved = parseDataNode(response);
+                Assertions.assertThat(reserved)
+                        .as("POST /process/status/reserved/ returned 200 without data: %s",
+                                truncate(response.asString(), 1000))
+                        .isNotNull();
+                break;
+            }
+            boolean slotTaken = response.getStatusCode() == 404
+                    && response.asString().contains("Failed to reserve process. Maybe someone was faster.");
+            if (slotTaken && i < freeList.size() - 1) {
+                continue;
+            }
+            throw new IllegalStateException(
+                    "POST /process/status/reserved/ failed with " + response.getStatusCode() + ": "
+                            + truncate(response.asString(), 1000));
+        }
+        Assertions.assertThat(reserved)
+                .as("POST /process/status/reserved/ for scope %d and %d slots", scopeId, slotsRequired)
+                .isNotNull();
+
+        response = postConfirmedWithDeadlockRetry(authKey, reserved);
+        CommonApiSteps.setResponse(response);
+        Assertions.assertThat(response.getStatusCode())
+                .as("POST /process/status/confirmed/ body=%s", truncate(response.asString(), 1000))
+                .isEqualTo(200);
         rememberProcess(parseDataNode(response));
     }
 
@@ -4195,6 +4340,52 @@ public class ZmsApiSteps {
             .isNotNull()
             .isNotEmpty();
         return lastEmpty;
+    }
+
+    private JsonNode fetchFreeProcessesLookingAhead(
+            int scopeId, List<JsonNode> requests, int slotsRequired, String authKey) {
+        LocalDate start = BerlinTime.today();
+        long earliestEpoch = Instant.now().getEpochSecond();
+        JsonNode lastEmpty = null;
+        for (int offset = 0; offset < 8; offset++) {
+            LocalDate day = start.plusDays(offset);
+            Response freeResponse = given()
+                    .baseUri(baseUri != null ? baseUri : TestConfig.getBaseUri())
+                    .header("X-AuthKey", authKey)
+                    .contentType("application/json")
+                    .queryParam("slotType", "intern")
+                    .queryParam("slotsRequired", slotsRequired)
+                    .body(toJson(freeProcessCalendar(scopeId, requests, day)))
+            .when()
+                    .post("/process/status/free/");
+            JsonNode freeList = parseDataArray(freeResponse);
+            if (freeList != null && !freeList.isEmpty()) {
+                long dayStart = day.atStartOfDay(java.time.ZoneId.of("Europe/Berlin")).toEpochSecond();
+                long dayEnd = dayStart + 86_400L;
+                long from = offset == 0 ? Math.max(earliestEpoch, dayStart) : dayStart;
+                if (slotsBetween(freeList, from, dayEnd).isEmpty()) {
+                    lastEmpty = freeList;
+                    continue;
+                }
+                return freeList;
+            }
+            lastEmpty = freeList;
+        }
+        Assertions.assertThat(lastEmpty)
+                .as("POST /process/status/free/ for scope %d and %d slots from %s", scopeId, slotsRequired, start)
+                .isNotNull()
+                .isNotEmpty();
+        return lastEmpty;
+    }
+
+    private ObjectNode freeProcessCalendar(int scopeId, List<JsonNode> requests, LocalDate day) {
+        ObjectNode calendar = freeProcessCalendar(scopeId, requests.get(0), day);
+        ArrayNode requestNodes = MAPPER.createArrayNode();
+        for (JsonNode request : requests) {
+            requestNodes.add(request.deepCopy());
+        }
+        calendar.set("requests", requestNodes);
+        return calendar;
     }
 
     private ObjectNode freeProcessCalendar(int scopeId, JsonNode request, LocalDate day) {
