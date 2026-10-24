@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-10-24T12:11:57.993Z",
+  "publishedAt": "2026-10-24T12:34:47.046Z",
   "branches": [
     {
       "name": "next",
@@ -406,8 +406,8 @@
     {
       "name": "test-zmskvr-1018-zmskvr-1388-freitext-length",
       "slug": "test-zmskvr-1018-zmskvr-1388-freitext-length",
-      "runId": "40092217890",
-      "runStartedAt": "2026-10-24T12:01:19Z"
+      "runId": "40093747079",
+      "runStartedAt": "2026-10-24T12:23:46Z"
     },
     {
       "name": "test-zmskvr-1046-zmskvr-1091-shared-booking-tag",
