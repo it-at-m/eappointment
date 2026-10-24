@@ -1416,6 +1416,9 @@ public class AdminSteps {
 
     @When("the clerk calls the customer {string} from the waiting list.")
     public void wenn_der_sachbearbeiter_den_kunden_mit_dem_namen_aus_der_warteliste_aufruft(String name) {
+        if ("true".equals(TestDataHelper.getTestData("appointment_booked_as_walk_in"))) {
+            COUNTER_PROCESSING_STATION_PAGE.showSpontaneousCustomers(true);
+        }
         PROCESSING_STATION_SECTION.callCustomerFromQueueWithName(TestDataHelper.transformTestData(name));
     }
 
