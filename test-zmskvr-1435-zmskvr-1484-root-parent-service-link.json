@@ -1,0 +1,60 @@
+{
+  "branch": "test-zmskvr-1435-zmskvr-1484-root-parent-service-link",
+  "branchSlug": "test-zmskvr-1435-zmskvr-1484-root-parent-service-link",
+  "runId": "40116115842",
+  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/40116115842",
+  "runStartedAt": "2026-10-24T17:26:22Z",
+  "publishedAt": "2026-10-24T17:40:21.699Z",
+  "features": {
+    "feature-rest-zmscitizenapi-booking-zmskvr-1435-zmskvr-1484-root-parent-service-link": {
+      "status": "failed",
+      "shard": "custom",
+      "browser": "chrome",
+      "browsers": {
+        "chrome": {
+          "status": "failed",
+          "shard": "custom",
+          "runId": "40116115842",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/40116115842",
+          "runStartedAt": "2026-10-24T17:26:22Z"
+        },
+        "firefox": {
+          "status": "failed",
+          "shard": "custom",
+          "runId": "40116115842",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/40116115842",
+          "runStartedAt": "2026-10-24T17:26:22Z"
+        }
+      },
+      "rel": "rest/zmscitizenapi/booking/zmskvr-1435_zmskvr-1484_root_parent_service_link.feature",
+      "runId": "40116115842",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/40116115842",
+      "runStartedAt": "2026-10-24T17:26:22Z"
+    },
+    "feature-ui-zmscitizenview-booking-zmskvr-1435-zmskvr-1484-root-parent-service-link": {
+      "status": "passed",
+      "shard": "custom",
+      "browser": "chrome",
+      "browsers": {
+        "chrome": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "40116115842",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/40116115842",
+          "runStartedAt": "2026-10-24T17:26:22Z"
+        },
+        "firefox": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "40116115842",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/40116115842",
+          "runStartedAt": "2026-10-24T17:26:22Z"
+        }
+      },
+      "rel": "ui/zmscitizenview/booking/zmskvr-1435_zmskvr-1484_root_parent_service_link.feature",
+      "runId": "40116115842",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/40116115842",
+      "runStartedAt": "2026-10-24T17:26:22Z"
+    }
+  }
+}
