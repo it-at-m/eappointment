@@ -32,5 +32,5 @@ Feature: Variant mail and calendar use the public root parent id
     When I confirm the appointment
     Then the confirm endpoint response should include a thinned booking process with processId, authKey, officeId, and serviceId
     And the appointment status should be "confirmed"
-    And the confirm endpoint icsContent should contain "https://stadt.muenchen.de/service/info/1080455/" and not "https://stadt.muenchen.de/service/info/2/,https://stadt.muenchen.de/service/info/3/,https://stadt.muenchen.de/service/info//"
+    And the confirm endpoint icsContent should contain "https://stadt.muenchen.de/service/info/1080455" and not "https://stadt.muenchen.de/service/info/2/,https://stadt.muenchen.de/service/info/3/,https://stadt.muenchen.de/service/info//"
     When I cancel the appointment
