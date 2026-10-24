@@ -1,10 +1,10 @@
 {
   "branch": "test-zmskvr-1377-zmskvr-1485-opening-hours-form",
   "branchSlug": "test-zmskvr-1377-zmskvr-1485-opening-hours-form",
-  "runId": "40100493806",
-  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/40100493806",
-  "runStartedAt": "2026-10-24T13:59:25Z",
-  "publishedAt": "2026-10-24T14:10:49.516Z",
+  "runId": "40101548887",
+  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/40101548887",
+  "runStartedAt": "2026-10-24T14:13:38Z",
+  "publishedAt": "2026-10-24T14:23:33.645Z",
   "features": {
     "feature-ui-zmsadmin-opening-hours-zmskvr-1377-zmskvr-1485-opening-hours-form": {
       "status": "failed",
@@ -14,22 +14,22 @@
         "chrome": {
           "status": "failed",
           "shard": "custom",
-          "runId": "40100493806",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/40100493806",
-          "runStartedAt": "2026-10-24T13:59:25Z"
+          "runId": "40101548887",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/40101548887",
+          "runStartedAt": "2026-10-24T14:13:38Z"
         },
         "firefox": {
           "status": "failed",
           "shard": "custom",
-          "runId": "40100493806",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/40100493806",
-          "runStartedAt": "2026-10-24T13:59:25Z"
+          "runId": "40101548887",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/40101548887",
+          "runStartedAt": "2026-10-24T14:13:38Z"
         }
       },
       "rel": "ui/zmsadmin/opening-hours/zmskvr-1377_zmskvr-1485_opening_hours_form.feature",
-      "runId": "40100493806",
-      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/40100493806",
-      "runStartedAt": "2026-10-24T13:59:25Z"
+      "runId": "40101548887",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/40101548887",
+      "runStartedAt": "2026-10-24T14:13:38Z"
     }
   }
 }
