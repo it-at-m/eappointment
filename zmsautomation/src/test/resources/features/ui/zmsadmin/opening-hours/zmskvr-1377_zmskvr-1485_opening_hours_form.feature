@@ -26,11 +26,12 @@ Feature: A new opening hour opens at once and is checked only when it is saved
     Then the new opening-hours form is already open.
     And exactly one opening-hours form is open.
     And the opening hours time fields should be empty.
-    And the opening-hours table shows only a hyphen for "Neue Öffnungszeit".
     And no opening-hours validation is shown.
     When I select for "Öffnungszeiten Anmerkung" the value "Anmerkung".
     And I select for "Öffnungszeiten Typ" the value "Terminkunden".
-    And I select for appointment desks under "Insgesamt" the count 1.
+    Then the opening-hours table shows only a hyphen for "<TestData.Anmerkung>".
+    And no opening-hours validation is shown.
+    When I select for appointment desks under "Insgesamt" the count 1.
     And I select for appointment desks under "Internet" the count 1.
     And I enter in the field "Uhrzeit von" the text "<naechste_oeffnungszeit>".
     Then the opening-hours table shows "<naechste_oeffnungszeit>" for "<TestData.Anmerkung>".
