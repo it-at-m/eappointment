@@ -47,6 +47,7 @@ import io.cucumber.java.en.When;
 import io.restassured.response.Response;
 import zms.ataf.helpers.AccountCheckout;
 import zms.ataf.helpers.BerlinTime;
+import zms.ataf.helpers.PlainTextLengthSample;
 import zms.ataf.rest.dto.common.ApiResponse;
 import zms.ataf.rest.dto.zmsapi.StatusResponse;
 
@@ -1895,6 +1896,96 @@ public class ZmsApiSteps {
         Assertions.assertThat(lastProcess.path("amendment").asText())
             .as("last process amendment must not contain %s", forbidden)
             .doesNotContain(forbidden);
+    }
+
+    @When("I queue a walk-in at scope 368 with the 250-character free text sample")
+    public void iQueueAWalkInWithTheFreeTextSample() {
+        queueWalkInWithPlainTextFields(
+                368,
+                "Spontan eAT/eRA",
+                "Muster Zmskvr1018Api",
+                PlainTextLengthSample.amendmentWithBreak(),
+                PlainTextLengthSample.customTextAtLimit(),
+                "");
+    }
+
+    @When("I queue a walk-in at scope 368 with the free text sample written as break tags")
+    public void iQueueAWalkInWithTheFreeTextSampleAsBreakTags() {
+        queueWalkInWithPlainTextFields(
+                368,
+                "Spontan eAT/eRA",
+                "Muster Zmskvr1018Tags",
+                PlainTextLengthSample.amendmentWithBreak().replace("\n", "<br />"),
+                PlainTextLengthSample.customTextAtLimitWithBreakTags(),
+                "");
+    }
+
+    @When("I save the last process again with the free text sample written as break tags")
+    public void iSaveTheLastProcessAgainWithBreakTags() {
+        Assertions.assertThat(lastProcess).as("last process before resave").isNotNull();
+        int processId = lastProcess.path("id").asInt();
+        String processAuthKey = lastProcess.path("authKey").asText();
+        Assertions.assertThat(processId).as("process id").isPositive();
+        Assertions.assertThat(processAuthKey).as("process authKey").isNotBlank();
+        ObjectNode body = lastProcess.deepCopy();
+        body.put("customTextfield", PlainTextLengthSample.customTextAtLimitWithBreakTags());
+        body.put("amendment", PlainTextLengthSample.amendmentWithBreak().replace("\n", "<br />"));
+        String authKey = getOrLoginXAuthKey();
+        response = given()
+            .baseUri(apiBaseUri())
+            .header("X-AuthKey", authKey)
+            .contentType("application/json")
+            .queryParam("initiator", "admin")
+            .body(toJson(body))
+        .when()
+            .post("/process/" + processId + "/" + processAuthKey + "/");
+        CommonApiSteps.setResponse(response);
+        Assertions.assertThat(response.getStatusCode())
+            .as("POST /process/%d/ with break tags body=%s", processId, truncate(response.asString(), 1000))
+            .isEqualTo(200);
+        JsonNode saved = parseDataNode(response);
+        if (saved != null && saved.path("id").asInt() <= 0 && saved.path("process").path("id").asInt() > 0) {
+            saved = saved.path("process");
+        }
+        rememberProcess(saved);
+    }
+
+    @Then("the last process customTextfield should be the 250-character newline and tab sample")
+    public void theLastProcessCustomTextfieldShouldBeTheLimitSample() {
+        reloadLastProcessFromApi();
+        String actual = lastProcess.path("customTextfield").asText();
+        Assertions.assertThat(actual)
+            .as("stored customTextfield")
+            .isEqualTo(PlainTextLengthSample.customTextAtLimit());
+        Assertions.assertThat(actual).doesNotContain("<br");
+        Assertions.assertThat(actual.indexOf('\n')).isNotNegative();
+        Assertions.assertThat(actual.indexOf('\t')).isNotNegative();
+    }
+
+    @Then("the last process amendment should keep its newline and tab")
+    public void theLastProcessAmendmentShouldKeepItsNewlineAndTab() {
+        reloadLastProcessFromApi();
+        Assertions.assertThat(lastProcess.path("amendment").asText())
+            .as("stored amendment")
+            .isEqualTo(PlainTextLengthSample.amendmentWithBreak());
+    }
+
+    private void reloadLastProcessFromApi() {
+        Assertions.assertThat(lastProcess).as("last process").isNotNull();
+        int processId = lastProcess.path("id").asInt();
+        Assertions.assertThat(processId).as("process id").isPositive();
+        String authKey = getOrLoginXAuthKey();
+        response = given()
+            .baseUri(apiBaseUri())
+            .header("X-AuthKey", authKey)
+            .queryParam("resolveReferences", 1)
+        .when()
+            .get("/process/" + processId + "/");
+        CommonApiSteps.setResponse(response);
+        Assertions.assertThat(response.getStatusCode())
+            .as("GET /process/%d/ body=%s", processId, truncate(response.asString(), 800))
+            .isEqualTo(200);
+        rememberProcess(parseDataNode(response));
     }
 
     @Then("the last process customTextfield should not contain {string}")

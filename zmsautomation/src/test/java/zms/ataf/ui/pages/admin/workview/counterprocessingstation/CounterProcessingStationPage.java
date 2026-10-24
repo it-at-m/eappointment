@@ -31,6 +31,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 
 import ataf.core.helpers.TestDataHelper;
+import zms.ataf.helpers.PlainTextLengthSample;
 import ataf.core.helpers.TestPropertiesHelper;
 import ataf.core.logging.ScenarioLogManager;
 import ataf.core.properties.DefaultValues;
@@ -707,9 +708,24 @@ public class CounterProcessingStationPage extends AdminPage {
             CONTEXT.waitForSpinners();
         }
         ScenarioLogManager.getLogger().info("Deleting queued appointment for {}", familyName);
-        String deleteLink = "//table[@id='table-queued-appointments']//tr["
-                + "td[contains(@class,'callnextclient') and normalize-space(.)='" + familyName + "']]"
-                + "//a[contains(@class,'process-delete')]";
+        // After a no-show the name cell also contains the call count and the lockout text,
+        // so an exact name match misses the row. The waiting number stays in its own cell.
+        String waitingNumber = TestDataHelper.getTestData("new_waiting_number");
+        String deleteLink;
+        if ("true".equals(TestDataHelper.getTestData("appointment_booked_as_walk_in"))
+                && waitingNumber != null && !waitingNumber.isBlank()) {
+            String shown = waitingNumber.trim();
+            String numOnly = shown.replaceAll("\\D+", "");
+            deleteLink = "//table[@id='table-queued-appointments']/tbody/tr["
+                    + ".//td[normalize-space()=" + xpathLiteral(shown)
+                    + " or normalize-space()=" + xpathLiteral(numOnly) + "]]"
+                    + "//a[contains(@class,'process-delete')]";
+        } else {
+            deleteLink = "//table[@id='table-queued-appointments']//tr["
+                    + "td[contains(@class,'callnextclient') and normalize-space(.)="
+                    + xpathLiteral(familyName) + "]]"
+                    + "//a[contains(@class,'process-delete')]";
+        }
         clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, deleteLink, LocatorType.XPATH, false, CONTEXT);
         WebElement messageTitleElement = findElementByLocatorType("section.board.dialog h2.board__heading", LocatorType.CSSSELECTOR, false);
         Assert.assertTrue(
@@ -1944,6 +1960,97 @@ public class CounterProcessingStationPage extends AdminPage {
         String other = TestDataHelper.getTestData("noted_other_service_text");
         boolean otherUnchanged = durationLabels().stream().anyMatch(other::equals);
         Assert.assertTrue(otherUnchanged, "Another service duration changed. expected \"" + other + "\".");
+    }
+
+    /**
+     * ZMSKVR-1018 / ZMSKVR-1388: set a textarea without sendKeys, so a tab stays in the value
+     * instead of moving focus. Dispatches input so the maxlength guard sees the real length.
+     */
+    public void setNamedTextarea(String fieldName, String value) {
+        CONTEXT.set();
+        WebElement textarea = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(ExpectedConditions.visibilityOfElementLocated(By.name(fieldName)));
+        ((JavascriptExecutor) DRIVER).executeScript(
+                "arguments[0].focus(); arguments[0].value = arguments[1];"
+                        + "arguments[0].dispatchEvent(new Event('input', {bubbles:true}));"
+                        + "arguments[0].dispatchEvent(new Event('change', {bubbles:true}));",
+                textarea,
+                value);
+        Assert.assertEquals(
+                textarea.getAttribute("value"),
+                value,
+                "textarea " + fieldName + " did not keep the newline and tab");
+    }
+
+    public void assertEditFormKeepsFreeTextSample() {
+        CONTEXT.set();
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        WebElement custom = wait.until(ExpectedConditions.visibilityOfElementLocated(By.name("customTextfield")));
+        Assert.assertEquals(
+                custom.getAttribute("value"),
+                PlainTextLengthSample.customTextAtLimit(),
+                "Edit form must reload the 250-character Freitext with its newline and tab, not break tags");
+        WebElement amendment = wait.until(ExpectedConditions.visibilityOfElementLocated(By.name("amendment")));
+        Assert.assertEquals(
+                amendment.getAttribute("value"),
+                PlainTextLengthSample.amendmentWithBreak(),
+                "Edit form must reload the Anmerkung newline and tab");
+    }
+
+    public void saveAppointmentForm() {
+        CONTEXT.set();
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        clickOnWebElement(
+                DEFAULT_EXPLICIT_WAIT_TIME,
+                "//button[contains(@class,'process-save')]",
+                LocatorType.XPATH,
+                false,
+                CONTEXT);
+        WebElement dialog = wait.until(ExpectedConditions.visibilityOfElementLocated(
+                By.xpath("//*[contains(@class,'dialog')][contains(.,'erfolgreich aktualisiert')]")));
+        dialog.findElement(By.cssSelector("button.button-ok")).click();
+        wait.until(ExpectedConditions.invisibilityOf(dialog));
+    }
+
+    public void assertQueueShowsFreeTextLineBreaks(String familyName) {
+        WebElement row = queueRowForScenarioWalkIn(familyName);
+        assertFreeTextCellBreaks(row, ".queue-table-free-text", "ATAF Anmerkung", "zweite Zeile");
+        assertFreeTextCellBreaks(row, ".queue-table-free-text", "ATAF Hinweis Zeile", "Folge");
+    }
+
+    private void assertFreeTextCellBreaks(WebElement root, String css, String line1, String line2) {
+        WebElement match = null;
+        for (WebElement cell : root.findElements(By.cssSelector(css))) {
+            String text = cell.getText();
+            if (text.contains(line1) && text.contains(line2)) {
+                match = cell;
+                break;
+            }
+        }
+        Assert.assertNotNull(
+                match,
+                "Expected a free-text cell containing \"" + line1 + "\" and \"" + line2 + "\"");
+        String text = match.getText();
+        Assert.assertFalse(
+                text.contains("<br"),
+                "Free-text cell must show a line break, not the characters <br. text=" + text);
+        assertBreakSitsBetween(match.getAttribute("innerHTML"), line1, line2);
+    }
+
+    private static void assertBreakSitsBetween(String html, String line1, String line2) {
+        Assert.assertNotNull(html, "free-text innerHTML");
+        int start = html.indexOf(line1);
+        int end = start < 0 ? -1 : html.indexOf(line2, start + line1.length());
+        Assert.assertTrue(
+                start >= 0 && end > start,
+                "Free-text html should contain \"" + line1 + "\" before \"" + line2 + "\". html=" + html);
+        String between = html.substring(start + line1.length(), end);
+        Assert.assertTrue(
+                between.contains("<br"),
+                "The rendered break must sit between \"" + line1 + "\" and \"" + line2 + "\". between=" + between);
+        Assert.assertFalse(
+                between.toLowerCase(Locale.ROOT).contains("&lt;br"),
+                "The break between the lines must not be escaped text. between=" + between);
     }
 
     public void saveWalkInAppointmentWithNote(String note) {
