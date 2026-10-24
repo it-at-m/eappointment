@@ -2218,24 +2218,6 @@ public class ZmsApiSteps {
             .isTrue();
     }
 
-    private void reloadLastProcessFromApi() {
-        Assertions.assertThat(lastProcess).as("last process").isNotNull();
-        int processId = lastProcess.path("id").asInt();
-        Assertions.assertThat(processId).as("process id").isPositive();
-        String authKey = getOrLoginXAuthKey();
-        response = given()
-            .baseUri(apiBaseUri())
-            .header("X-AuthKey", authKey)
-            .queryParam("resolveReferences", 1)
-        .when()
-            .get("/process/" + processId + "/");
-        CommonApiSteps.setResponse(response);
-        Assertions.assertThat(response.getStatusCode())
-            .as("GET /process/%d/ body=%s", processId, truncate(response.asString(), 800))
-            .isEqualTo(200);
-        rememberProcess(parseDataNode(response));
-    }
-
     private static boolean waitingTimeIsReset(JsonNode process) {
         JsonNode waiting = process.path("queue").path("waitingTime");
         if (waiting.isMissingNode() || waiting.isNull()) {

@@ -1067,6 +1067,16 @@ public class AdminSteps {
         CUSTOMER_SEARCH_PAGE.search(TestDataHelper.transformTestData(query));
     }
 
+    @Then("the customer search shows log entries for {string}.")
+    public void theCustomerSearchShowsLogEntriesFor(String familyName) {
+        CUSTOMER_SEARCH_PAGE.assertLogEntriesFor(TestDataHelper.transformTestData(familyName));
+    }
+
+    @Then("the customer search log for {string} shows the booked slot count {int}.")
+    public void theCustomerSearchLogShowsTheBookedSlotCount(String familyName, int slots) {
+        CUSTOMER_SEARCH_PAGE.assertLogShowsBookedSlots(TestDataHelper.transformTestData(familyName), slots);
+    }
+
     @Then("customer search is the start page, without a menu, a Kundensuche field, or a location prompt.")
     public void customerSearchIsTheStartPageWithoutAMenu() {
         CUSTOMER_SEARCH_PAGE.assertCustomerSearchIsTheStartPage();
