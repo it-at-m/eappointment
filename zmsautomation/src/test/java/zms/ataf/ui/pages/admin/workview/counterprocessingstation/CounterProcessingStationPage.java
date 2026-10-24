@@ -258,7 +258,7 @@ public class CounterProcessingStationPage extends AdminPage {
 
     public void assertQueueRowHasNoCallCount(String familyName) {
         String text = waitForQueueNameCellText(familyName);
-        Assert.assertFalse(text.matches(".*\\(\\d+\\).*"),
+        Assert.assertFalse(text.matches("(?s).*\\(\\d+\\).*"),
                 "Expected no call count for " + familyName + " but the row was: " + text);
         Assert.assertFalse(text.contains("nicht anwesend"),
                 "Expected no no-show lockout for " + familyName + " but the row was: " + text);
@@ -268,9 +268,14 @@ public class CounterProcessingStationPage extends AdminPage {
         String text = waitForQueueNameCellText(familyName);
         Assert.assertTrue(text.contains("(1)"),
                 "Expected call count (1) for " + familyName + " but the row was: " + text);
-        Assert.assertTrue(
-                text.matches("(?s).*kann in \\d{2}:\\d{2} Minuten wieder aufgerufen werden.*"),
+        Matcher countdown = Pattern.compile("kann in\\s+(\\d{2}):(\\d{2})\\s+Minuten wieder aufgerufen werden")
+                .matcher(text);
+        Assert.assertTrue(countdown.find(),
                 "Expected a five-minute countdown for " + familyName + " but the row was: " + text);
+        int remainingSeconds = Integer.parseInt(countdown.group(1)) * 60 + Integer.parseInt(countdown.group(2));
+        Assert.assertTrue(remainingSeconds <= 300 && remainingSeconds >= 180,
+                "Expected the countdown to be near five minutes for " + familyName
+                        + ", was " + countdown.group(1) + ":" + countdown.group(2) + ".");
     }
 
     private String waitForQueueNameCellText(String familyName) {
