@@ -1,6 +1,8 @@
 package zms.ataf.ui.pages.citizenview.steps;
 
 import java.time.Duration;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.TimeoutException;
@@ -395,12 +397,14 @@ public final class CombinationStep {
         context.set();
         JsonNode counter = waitForServiceCounter(label);
         String href = counter.path("href").asText("");
+        Matcher serviceInfo = Pattern
+                .compile("^https://stadt\\.muenchen\\.de/service/info/(\\d+)/?(?:[?#].*)?$")
+                .matcher(href);
         Assert.assertTrue(
-                href.contains("stadt.muenchen.de/service/info/" + serviceId),
-                "\"" + label + "\" should link to service " + serviceId + ", href was " + href);
-        Assert.assertFalse(
-                href.matches("(?s).*stadt\\.muenchen\\.de/service/info/?$"),
-                "\"" + label + "\" link is missing the service id, href was " + href);
+                serviceInfo.matches(),
+                "\"" + label + "\" should link to https://stadt.muenchen.de/service/info/"
+                        + serviceId + ", href was " + href);
+        String segment = serviceInfo.group(1);
         for (String forbidden : forbiddenIds.split(",")) {
             String id = forbidden.trim();
             if (id.isEmpty()) {
@@ -409,10 +413,15 @@ public final class CombinationStep {
             if (!id.matches("\\d+")) {
                 throw new IllegalArgumentException("Forbidden service id must be digits, got \"" + id + "\".");
             }
-            Assert.assertFalse(
-                    href.matches("(?s).*stadt\\.muenchen\\.de/service/info/" + id + "([/?#].*)?"),
+            Assert.assertNotEquals(
+                    segment,
+                    id,
                     "\"" + label + "\" must not link to internal service " + id + ", href was " + href);
         }
+        Assert.assertEquals(
+                segment,
+                serviceId,
+                "\"" + label + "\" should link to service " + serviceId + ", href was " + href);
     }
 
     /** ZMSKVR-249: on a wide window the count and buttons sit left of the service name. */
