@@ -988,17 +988,40 @@ public class ZmsApiSteps {
             .isEqualTo(200);
         response = postProcessCalled(holderAuthKey, true, booked);
         CommonApiSteps.setResponse(response);
-        Assertions.assertThat(response.getStatusCode())
-            .as("POST /workstation/process/called/ (holder) body=%s", truncate(response.asString(), 1000))
-            .isEqualTo(200);
-        JsonNode assigned = refreshAssignedProcessFromWorkstation(holderAuthKey);
+        JsonNode assigned = null;
+        for (int attempt = 1; attempt <= 3; attempt++) {
+            Assertions.assertThat(response.getStatusCode())
+                .as("POST /workstation/process/called/ (holder) body=%s", truncate(response.asString(), 1000))
+                .isEqualTo(200);
+            assigned = workstationProcess(holderAuthKey);
+            if (assigned != null
+                    && assigned.path("id").asInt() == processId
+                    && "called".equals(processStatusText(assigned))) {
+                break;
+            }
+            // A recycled pool login runs PROCESS_RESET (NutzerID 0, aufrufzeit 00:00:00).
+            // The status CASE then reports a called Terminkunde as confirmed, and a
+            // workstation GET with no process must not fall back to the pre-call body.
+            ScenarioLogManager.getLogger().warn(
+                    "Holder call attempt {} left process {} as {}; workstation={}",
+                    attempt,
+                    processId,
+                    processStatusText(assigned),
+                    truncate(assigned == null ? "none" : assigned.toString(), 400));
+            if (attempt == 3) {
+                break;
+            }
+            pauseMillis(400);
+            response = postProcessCalled(holderAuthKey, true, booked);
+            CommonApiSteps.setResponse(response);
+        }
         Assertions.assertThat(assigned).as("holder assigned process after call").isNotNull();
         Assertions.assertThat(assigned.path("id").asInt())
             .as("holder workstation must hold process id=%d; body=%s",
-                processId, truncate(response.asString(), 800))
+                processId, truncate(assigned.toString(), 800))
             .isEqualTo(processId);
-        Assertions.assertThat(assigned.path("status").asText())
-            .as("process status after holder call")
+        Assertions.assertThat(processStatusText(assigned))
+            .as("process status after holder call body=%s", truncate(assigned.toString(), 800))
             .isEqualTo("called");
         rememberProcess(assigned);
 
@@ -1348,22 +1371,22 @@ public class ZmsApiSteps {
             freeList = fetchFreeProcessesLookingAhead(scopeId, request, authKey, earliest);
         }
 
-        List<JsonNode> candidates = slotsBetween(freeList, earliest, Math.min(soon, endOfToday));
+        List<JsonNode> candidates = internSlotCandidates(
+                freeList, earliest, soon, endOfToday, minutesAhead, now, scopeId);
         if (candidates.isEmpty()) {
-            candidates = slotsBetween(freeList, earliest, endOfToday);
-            if (!candidates.isEmpty()) {
+            // ZMSKVR-42 locks scope 133 today for about a second. The free list is then
+            // empty, and the next day's first slot can sit just outside the 24h window.
+            for (int attempt = 1; attempt <= 4 && candidates.isEmpty(); attempt++) {
+                pauseMillis(1000);
                 ScenarioLogManager.getLogger().info(
-                        "No intern slot in the next minutes for scope {}; using a later slot today",
-                        scopeId);
-            }
-        }
-        if (minutesAhead > 0 && candidates.isEmpty()) {
-            long reminderHorizon = now + 24 * 60 * 60;
-            candidates = slotsBetween(freeList, earliest, reminderHorizon);
-            if (!candidates.isEmpty()) {
-                ScenarioLogManager.getLogger().info(
-                        "No intern slot today for scope {}; using the next slot inside the reminder window",
-                        scopeId);
+                        "No intern slot for scope {} from epoch {}; refreshing free list ({})",
+                        scopeId,
+                        earliest,
+                        attempt);
+                long retryNow = Instant.now().getEpochSecond();
+                freeList = fetchFreeProcessesLookingAhead(scopeId, request, authKey, earliest);
+                candidates = internSlotCandidates(
+                        freeList, earliest, soon, endOfToday, minutesAhead, retryNow, scopeId);
             }
         }
         Assertions.assertThat(candidates)
@@ -3991,6 +4014,70 @@ public class ZmsApiSteps {
         requests.add(request.deepCopy());
         calendar.set("requests", requests);
         return calendar;
+    }
+
+    private List<JsonNode> internSlotCandidates(
+            JsonNode freeList,
+            long earliest,
+            long soon,
+            long endOfToday,
+            int minutesAhead,
+            long now,
+            int scopeId) {
+        List<JsonNode> candidates = slotsBetween(freeList, earliest, Math.min(soon, endOfToday));
+        if (candidates.isEmpty()) {
+            candidates = slotsBetween(freeList, earliest, endOfToday);
+            if (!candidates.isEmpty()) {
+                ScenarioLogManager.getLogger().info(
+                        "No intern slot in the next minutes for scope {}; using a later slot today",
+                        scopeId);
+            }
+        }
+        if (minutesAhead > 0 && candidates.isEmpty()) {
+            candidates = slotsBetween(freeList, earliest, now + 24 * 60 * 60);
+            if (!candidates.isEmpty()) {
+                ScenarioLogManager.getLogger().info(
+                        "No intern slot today for scope {}; using the next slot inside the reminder window",
+                        scopeId);
+            }
+        }
+        return candidates;
+    }
+
+    /** Workstation process only. A missing assignment is not the pre-call {@code lastProcess}. */
+    private JsonNode workstationProcess(String authKey) {
+        Response workstationResponse = given()
+            .baseUri(baseUri != null ? baseUri : TestConfig.getBaseUri())
+            .header("X-AuthKey", authKey)
+            .queryParam("resolveReferences", 2)
+        .when()
+            .get("/workstation/");
+        JsonNode workstation = parseDataNode(workstationResponse);
+        JsonNode process = workstation != null ? workstation.path("process") : null;
+        if (process != null && process.has("id") && process.path("id").asInt() > 0) {
+            return process;
+        }
+        return null;
+    }
+
+    private static String processStatusText(JsonNode process) {
+        if (process == null || process.isMissingNode() || process.isNull()) {
+            return "";
+        }
+        String status = process.path("status").asText("");
+        if (status.isBlank()) {
+            status = process.path("queue").path("status").asText("");
+        }
+        return status;
+    }
+
+    private static void pauseMillis(long millis) {
+        try {
+            Thread.sleep(millis);
+        } catch (InterruptedException interrupted) {
+            Thread.currentThread().interrupt();
+            throw new IllegalStateException("Interrupted while retrying an ATAF API step", interrupted);
+        }
     }
 
     private JsonNode refreshAssignedProcessFromWorkstation(String authKey) {
