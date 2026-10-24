@@ -106,6 +106,127 @@ class QueueListTest extends EntityCommonTests
         $this->assertEquals(null, $nextProcess);
     }
 
+    public function testGetNextProcessExcludesNumericQueueNumber(): void {
+        $now = new \DateTimeImmutable(self::DEFAULT_TIME);
+
+        $processList = new \BO\Zmsentities\Collection\ProcessList();
+
+        $process = (new \BO\Zmsentities\Process())->getExample();
+        $process->id = 111111;
+        $process->status = 'queued';
+        $process->queue->number = 123456;
+        $process->queue->withAppointment = false;
+        $process->queue->callCount = 0;
+        $process->queue->lastCallTime = 0;
+        $process->queue->arrivalTime = $now->modify('-5 minutes')->getTimestamp();
+
+        $processList->addEntity($process);
+
+        $queueList = $processList->toQueueList($now);
+
+        $this->assertEquals(111111, $queueList->getNextProcess($now)->id);
+
+        $this->assertNull($queueList->getNextProcess($now, '123456'));
+    }
+
+    public function testGetNextProcessSkipsAppointmentDuringRecallCooldown(): void {
+        $now = new \DateTimeImmutable(self::DEFAULT_TIME);
+
+        $processList = new \BO\Zmsentities\Collection\ProcessList();
+
+        $appointmentProcess =(new \BO\Zmsentities\Process())->getExample();
+        $appointmentProcess->id = 111111;
+        $appointmentProcess->status = 'queued';
+        $appointmentProcess->queue->withAppointment = true;
+        $appointmentProcess->queue->number = 111111;
+        $appointmentProcess->queue->arrivalTime = $now->modify('-10 minutes')->getTimestamp();
+        $appointmentProcess->queue->lastCallTime = 0;
+        $appointmentProcess->queue->callCount = 1;
+        $appointmentProcess->timeoutTime = $now->modify('-2 minutes')->format('Y-m-d H:i:s');
+        $appointmentProcess->getFirstAppointment()->date = $now->modify('-10 minutes')->getTimestamp();
+
+        $spontaneousProcess = (new \BO\Zmsentities\Process())->getExample();
+        $spontaneousProcess->id = 222222;
+        $spontaneousProcess->status = 'queued';
+        $spontaneousProcess->queue->withAppointment = false;
+        $spontaneousProcess->queue->number = 222222;
+        $spontaneousProcess->queue->arrivalTime = $now->modify('-5 minutes')->getTimestamp();
+        $spontaneousProcess->queue->lastCallTime = 0;
+
+        $processList->addEntity($appointmentProcess);
+        $processList->addEntity($spontaneousProcess);
+
+        $queueList = $processList->toQueueList($now);
+
+        $nextProcess = $queueList->getNextProcess($now);
+
+        $this->assertEquals(222222, $nextProcess->id);
+    }
+
+    public function testGetNextProcessAllowsAppointmentAfterRecallCooldown(): void {
+        $now = new \DateTimeImmutable(self::DEFAULT_TIME);
+
+        $processList = new \BO\Zmsentities\Collection\ProcessList();
+
+        $appointmentProcess = (new \BO\Zmsentities\Process())->getExample();
+        $appointmentProcess->id = 111111;
+        $appointmentProcess->status = 'queued';
+        $appointmentProcess->queue->withAppointment = true;
+        $appointmentProcess->queue->number = 111111;
+        $appointmentProcess->queue->arrivalTime = $now->modify('-10 minutes')->getTimestamp();
+        $appointmentProcess->queue->lastCallTime = 0;
+        $appointmentProcess->queue->callCount = 1;
+        $appointmentProcess->timeoutTime = $now->modify('-5 minutes')->format('Y-m-d H:i:s');
+        $appointmentProcess->getFirstAppointment()->date = $now->modify('-10 minutes')->getTimestamp();
+
+        $spontaneousProcess = (new \BO\Zmsentities\Process())->getExample();
+        $spontaneousProcess->id = 222222;
+        $spontaneousProcess->status = 'queued';
+        $spontaneousProcess->queue->number = 222222;
+        $spontaneousProcess->queue->arrivalTime = $now->modify('-5 minutes')->getTimestamp();
+        $spontaneousProcess->queue->lastCallTime = 0;
+
+        $processList->addEntity($appointmentProcess);
+        $processList->addEntity($spontaneousProcess);
+
+        $queueList = $processList->toQueueList($now);
+
+        $nextProcess = $queueList->getNextProcess($now);
+
+        $this->assertEquals(111111, $nextProcess->id);
+    }
+
+    public function testGetNextProcessSkipsFutureAppointmentForWaitingSpontaneousCustomer(): void {
+        $now = new \DateTimeImmutable(self::DEFAULT_TIME);
+
+        $processList = new \BO\Zmsentities\Collection\ProcessList();
+
+        $appointmentProcess = (new \BO\Zmsentities\Process())->getExample();
+        $appointmentProcess->id = 111111;
+        $appointmentProcess->status = 'confirmed';
+        $appointmentProcess->queue->withAppointment = true;
+        $appointmentProcess->queue->number = 111111;
+        $appointmentProcess->queue->arrivalTime = $now->getTimestamp();
+        $appointmentProcess->queue->lastCallTime = 0;
+        $appointmentProcess->getFirstAppointment()->date = $now->modify('+10 minutes')->getTimestamp();
+
+        $spontaneousProcess = (new \BO\Zmsentities\Process())->getExample();
+        $spontaneousProcess->id = 222222;
+        $spontaneousProcess->status = 'queued';
+        $spontaneousProcess->queue->withAppointment = false;
+        $spontaneousProcess->queue->number = 222222;
+        $spontaneousProcess->queue->arrivalTime = $now->modify('-5 minutes')->getTimestamp();
+
+        $processList->addEntity($appointmentProcess);
+        $processList->addEntity($spontaneousProcess);
+        
+        $queueList = $processList->toQueueList($now);
+
+        $nextProcess = $queueList->getNextProcess($now);
+
+        $this->assertEquals(222222, $nextProcess->id);
+    }
+
     public function testSetProcess()
     {
         $entity = $this->getExample();
