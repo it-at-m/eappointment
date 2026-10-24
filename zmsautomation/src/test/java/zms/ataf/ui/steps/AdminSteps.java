@@ -888,8 +888,11 @@ public class AdminSteps {
     }
 
     @When("I book an appointment customer with service {string} and name {string}.")
-    public void sie_einen_terminkunden_mit_der_dienstleistung_und_dem_namen_buchen(String service, String name) {
-        wenn_sie_im_zeitmanagementsystem_unter_terminvereinbarung_neu_die_dienstleistung_string_auswaehlen(service);
+    public void sie_einen_terminkunden_mit_der_dienstleistung_und_dem_namen_buchen(String services, String name) {
+        for (String service : services.split(",\\s*")) {
+            wenn_sie_im_zeitmanagementsystem_unter_terminvereinbarung_neu_die_dienstleistung_string_auswaehlen(service);
+        }
+        COUNTER_PROCESSING_STATION_PAGE.waitUntilSlotCountMatchesSelectedServices();
         selectCounterAppointmentTimeOrWalkIn();
         wenn_sie_im_zeitmanagementsystem_unter_terminvereinbarung_neu_den_namen_string_eingeben(name);
         wenn_sie_im_zeitmanagementsystem_unter_terminvereinbarung_neu_die_email_adresse_string_eingeben("<mailinator>");
@@ -1065,6 +1068,16 @@ public class AdminSteps {
     @When("I search for {string} in the customer search.")
     public void sie_in_der_kundensuche_nach_suchen(String query) {
         CUSTOMER_SEARCH_PAGE.search(TestDataHelper.transformTestData(query));
+    }
+
+    @Then("the customer search shows log entries for {string}.")
+    public void theCustomerSearchShowsLogEntriesFor(String familyName) {
+        CUSTOMER_SEARCH_PAGE.assertLogEntriesFor(TestDataHelper.transformTestData(familyName));
+    }
+
+    @Then("the customer search log for {string} shows the booked slot count {int}.")
+    public void theCustomerSearchLogShowsTheBookedSlotCount(String familyName, int slots) {
+        CUSTOMER_SEARCH_PAGE.assertLogShowsBookedSlots(TestDataHelper.transformTestData(familyName), slots);
     }
 
     @Then("customer search is the start page, without a menu, a Kundensuche field, or a location prompt.")

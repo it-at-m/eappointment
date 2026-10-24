@@ -1149,6 +1149,45 @@ public class CounterProcessingStationPage extends AdminPage {
         TestDataHelper.setTestData("new_appointment_service", service);
     }
 
+    /**
+     * The duration select follows the selected services. Wait until it shows their slot sum
+     * before a time is picked, so a later service is not booked against the previous duration.
+     */
+    public void waitUntilSlotCountMatchesSelectedServices() {
+        By boxes = By.cssSelector("#deselect-requests li input[data-slots]");
+        By slotCount = By.id("appointmentForm_slotCount");
+        new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .ignoring(StaleElementReferenceException.class)
+                .withMessage("Termindauer did not follow the selected services.")
+                .until(driver -> {
+                    int sum = 0;
+                    int visible = 0;
+                    for (WebElement box : driver.findElements(boxes)) {
+                        WebElement row = box.findElement(By.xpath("./ancestor::li[1]"));
+                        if (!row.isDisplayed()) {
+                            continue;
+                        }
+                        String slots = box.getAttribute("data-slots");
+                        if (slots == null || !slots.matches("\\d+")) {
+                            return false;
+                        }
+                        visible++;
+                        sum += Integer.parseInt(slots);
+                    }
+                    if (visible == 0) {
+                        return false;
+                    }
+                    if (sum < 1) {
+                        sum = 1;
+                    }
+                    List<WebElement> duration = driver.findElements(slotCount);
+                    if (duration.isEmpty()) {
+                        return true;
+                    }
+                    return Integer.toString(sum).equals(duration.get(0).getAttribute("value"));
+                });
+    }
+
     public void increaseSelectedServiceCount(String service, int times) {
         ScenarioLogManager.getLogger().info("Increasing the count of selected service \"{}\" by {}", service, times);
         By plus = By.xpath(selectedServiceRow(service) + "//input[@class='plus']");
