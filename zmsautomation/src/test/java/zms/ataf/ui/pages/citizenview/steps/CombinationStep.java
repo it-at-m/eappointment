@@ -386,6 +386,35 @@ public final class CombinationStep {
                 "\"" + label + "\" should link to its service description, href was " + href);
     }
 
+    /**
+     * ZMSKVR-1435: the Hauptdienstleistung link uses the public root parent id.
+     * {@code forbiddenIds} are comma-separated internal ids that must not be the path segment.
+     */
+    public void assertServiceDescriptionLinkExcludesInternalIds(
+            String label, String serviceId, String forbiddenIds) {
+        context.set();
+        JsonNode counter = waitForServiceCounter(label);
+        String href = counter.path("href").asText("");
+        Assert.assertTrue(
+                href.contains("stadt.muenchen.de/service/info/" + serviceId),
+                "\"" + label + "\" should link to service " + serviceId + ", href was " + href);
+        Assert.assertFalse(
+                href.matches("(?s).*stadt\\.muenchen\\.de/service/info/?$"),
+                "\"" + label + "\" link is missing the service id, href was " + href);
+        for (String forbidden : forbiddenIds.split(",")) {
+            String id = forbidden.trim();
+            if (id.isEmpty()) {
+                continue;
+            }
+            if (!id.matches("\\d+")) {
+                throw new IllegalArgumentException("Forbidden service id must be digits, got \"" + id + "\".");
+            }
+            Assert.assertFalse(
+                    href.matches("(?s).*stadt\\.muenchen\\.de/service/info/" + id + "([/?#].*)?"),
+                    "\"" + label + "\" must not link to internal service " + id + ", href was " + href);
+        }
+    }
+
     /** ZMSKVR-249: on a wide window the count and buttons sit left of the service name. */
     public void assertCountBesideNameOnDesktop(String label) {
         context.set();

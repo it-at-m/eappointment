@@ -218,6 +218,45 @@ public class ZmsApiMailSteps {
     }
 
     /**
+     * ZMSKVR-1435: the service link in the mail is the public root parent id.
+     * {@code absent} is a comma-separated list of strings that must not appear, such as the
+     * internal variant URL.
+     */
+    @Then("the confirmation mail should contain {string} and not {string}")
+    public void theConfirmationMailShouldContainAndNot(String expected, String absent) {
+        ThinnedProcess booking = CitizenApiSteps.getBookingProcess();
+        Assertions.assertThat(booking)
+                .as("booking process for confirmation mail body assert")
+                .isNotNull();
+        Assertions.assertThat(booking.getProcessId())
+                .as("processId for confirmation mail body assert")
+                .isNotNull();
+        String html = htmlForProcessContaining(String.valueOf(booking.getProcessId()), expected);
+        Assertions.assertThat(html)
+                .as("confirmation mail for process %s should contain '%s'", booking.getProcessId(), expected)
+                .contains(expected);
+        for (String part : absent.split(",")) {
+            String needle = part.trim();
+            if (needle.isEmpty()) {
+                continue;
+            }
+            Assertions.assertThat(html)
+                    .as(
+                            "confirmation mail for process %s must not contain '%s'. html=%s",
+                            booking.getProcessId(),
+                            needle,
+                            abbreviate(html))
+                    .doesNotContain(needle);
+        }
+        ScenarioLogManager.getLogger()
+                .info(
+                        "zmsapi: confirmation mail for process {} contains {} and not {}",
+                        booking.getProcessId(),
+                        expected,
+                        absent);
+    }
+
+    /**
      * ZMSKVR-418: confirmation mail lists each booked service with its count.
      * Stock templates use {@code Name … Anzahl: N}; Munich templates use {@code Nx Name}.
      * CSV form {@code Name:count, Name:count}. Name and count must appear in the same entry
