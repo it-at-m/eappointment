@@ -256,6 +256,61 @@ public class CounterProcessingStationPage extends AdminPage {
                 });
     }
 
+    public void assertQueueRowHasNoCallCount(String familyName) {
+        String text = waitForQueueNameCellText(familyName);
+        Assert.assertFalse(text.matches(".*\\(\\d+\\).*"),
+                "Expected no call count for " + familyName + " but the row was: " + text);
+        Assert.assertFalse(text.contains("nicht anwesend"),
+                "Expected no no-show lockout for " + familyName + " but the row was: " + text);
+    }
+
+    public void assertQueueRowShowsMissedCallCountdown(String familyName) {
+        String text = waitForQueueNameCellText(familyName);
+        Assert.assertTrue(text.contains("(1)"),
+                "Expected call count (1) for " + familyName + " but the row was: " + text);
+        Assert.assertTrue(
+                text.matches("(?s).*kann in \\d{2}:\\d{2} Minuten wieder aufgerufen werden.*"),
+                "Expected a five-minute countdown for " + familyName + " but the row was: " + text);
+    }
+
+    private String waitForQueueNameCellText(String familyName) {
+        CONTEXT.waitForSpinners();
+        showSpontaneousCustomers(true);
+        By nameCell = By.xpath(
+                "//table[@id='table-queued-appointments']"
+                        + "//td[contains(@class,'callnextclient')]"
+                        + "[contains(normalize-space(.)," + xpathLiteral(familyName) + ")]");
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        wait.ignoring(StaleElementReferenceException.class);
+        long[] lastReload = {0L};
+        AtomicReference<String> text = new AtomicReference<>();
+        wait.withMessage("Customer \"" + familyName + "\" did not appear in the waiting list.")
+                .until(driver -> {
+                    for (WebElement element : driver.findElements(nameCell)) {
+                        try {
+                            if (element.isDisplayed()) {
+                                text.set(element.getText().replace('\u00a0', ' ').trim());
+                                return true;
+                            }
+                        } catch (StaleElementReferenceException ignored) {
+                            // row replaced mid-poll
+                        }
+                    }
+                    long now = System.currentTimeMillis();
+                    if (now - lastReload[0] >= 2000L) {
+                        lastReload[0] = now;
+                        try {
+                            reloadQueueLists();
+                        } catch (RuntimeException ignored) {
+                            // loader or missing reload link — next poll retries
+                        }
+                        showSpontaneousCustomers(true);
+                    }
+                    return false;
+                });
+        return text.get();
+    }
+
     /**
      * ZMSKVR-467 / ZMSKVR-545: queue must show the full plain-text snippets (including {@code <})
      * without cutting off at angle brackets or interpreting markup.
@@ -707,9 +762,24 @@ public class CounterProcessingStationPage extends AdminPage {
             CONTEXT.waitForSpinners();
         }
         ScenarioLogManager.getLogger().info("Deleting queued appointment for {}", familyName);
-        String deleteLink = "//table[@id='table-queued-appointments']//tr["
-                + "td[contains(@class,'callnextclient') and normalize-space(.)='" + familyName + "']]"
-                + "//a[contains(@class,'process-delete')]";
+        // After a no-show the name cell also contains the call count and the lockout text,
+        // so an exact name match misses the row. The waiting number stays in its own cell.
+        String waitingNumber = TestDataHelper.getTestData("new_waiting_number");
+        String deleteLink;
+        if ("true".equals(TestDataHelper.getTestData("appointment_booked_as_walk_in"))
+                && waitingNumber != null && !waitingNumber.isBlank()) {
+            String shown = waitingNumber.trim();
+            String numOnly = shown.replaceAll("\\D+", "");
+            deleteLink = "//table[@id='table-queued-appointments']/tbody/tr["
+                    + ".//td[normalize-space()=" + xpathLiteral(shown)
+                    + " or normalize-space()=" + xpathLiteral(numOnly) + "]]"
+                    + "//a[contains(@class,'process-delete')]";
+        } else {
+            deleteLink = "//table[@id='table-queued-appointments']//tr["
+                    + "td[contains(@class,'callnextclient') and normalize-space(.)="
+                    + xpathLiteral(familyName) + "]]"
+                    + "//a[contains(@class,'process-delete')]";
+        }
         clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, deleteLink, LocatorType.XPATH, false, CONTEXT);
         WebElement messageTitleElement = findElementByLocatorType("section.board.dialog h2.board__heading", LocatorType.CSSSELECTOR, false);
         Assert.assertTrue(

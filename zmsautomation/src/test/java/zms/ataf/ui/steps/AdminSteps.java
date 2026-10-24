@@ -2018,6 +2018,18 @@ public class AdminSteps {
         }
     }
 
+    @Then("the queue row for {string} has no call count.")
+    public void theQueueRowForHasNoCallCount(String familyName) {
+        COUNTER_PROCESSING_STATION_PAGE.assertQueueRowHasNoCallCount(
+                TestDataHelper.transformTestData(familyName));
+    }
+
+    @Then("the queue row for {string} shows one missed call and a five-minute countdown.")
+    public void theQueueRowForShowsOneMissedCallAndAFiveMinuteCountdown(String familyName) {
+        COUNTER_PROCESSING_STATION_PAGE.assertQueueRowShowsMissedCallCountdown(
+                TestDataHelper.transformTestData(familyName));
+    }
+
     @Then("the waiting time H:mm:ss for {string} should be between {string} and {string}.")
     public void die_wartezeit_fuer_den_gegebenen_kunden_sollte_zwischen_zwei_werte_liegen(String kunde, String minimaleWartezeit, String maximaleWartezeit) {
         ScenarioLogManager.getLogger().info("Verifying if waiting time for {} is between {} and {}.", kunde, minimaleWartezeit, maximaleWartezeit);
