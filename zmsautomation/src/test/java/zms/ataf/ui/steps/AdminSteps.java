@@ -667,6 +667,86 @@ public class AdminSteps {
         AUTHORITIES_AND_LOCATIONS_PAGE.clickSaveOpeningHoursExpectingEmptyTimeValidation();
     }
 
+    @When("I open the next opening-hours day that can still be saved.")
+    public void iOpenTheNextOpeningHoursDayThatCanStillBeSaved() {
+        ensureUpcomingOpeningTimes();
+        LocalDate day = upcomingOpeningOnLaterDay ? BerlinTime.today().plusDays(1) : BerlinTime.today();
+        AUTHORITIES_AND_LOCATIONS_PAGE.clickOpeningHoursCalendarDay(day);
+    }
+
+    @Then("exactly one opening-hours form is open.")
+    public void exactlyOneOpeningHoursFormIsOpen() {
+        AUTHORITIES_AND_LOCATIONS_PAGE.assertExactlyOneOpeningHoursFormOpen();
+    }
+
+    @Then("the new opening-hours form is already open.")
+    public void theNewOpeningHoursFormIsAlreadyOpen() {
+        AUTHORITIES_AND_LOCATIONS_PAGE.assertNewOpeningHoursFormAlreadyOpen();
+    }
+
+    @Then("the opening-hours table shows only a hyphen for {string}.")
+    public void theOpeningHoursTableShowsOnlyAHyphenFor(String note) {
+        AUTHORITIES_AND_LOCATIONS_PAGE.assertOpeningHoursTableClockIsHyphen(
+                TestDataHelper.transformTestData(note));
+    }
+
+    @Then("the opening-hours table shows {string} for {string}.")
+    public void theOpeningHoursTableShowsFor(String time, String note) {
+        AUTHORITIES_AND_LOCATIONS_PAGE.assertOpeningHoursTableClockContains(
+                TestDataHelper.transformTestData(note), resolveOpeningTime(time));
+    }
+
+    @Then("the opening-hours table shows the entered times for {string}.")
+    public void theOpeningHoursTableShowsTheEnteredTimesFor(String note) {
+        ensureUpcomingOpeningTimes();
+        AUTHORITIES_AND_LOCATIONS_PAGE.assertOpeningHoursTableClockContains(
+                TestDataHelper.transformTestData(note), upcomingOpeningStart, mismatchedOpeningEnd);
+    }
+
+    @Then("no opening-hours validation is shown.")
+    public void noOpeningHoursValidationIsShown() {
+        AUTHORITIES_AND_LOCATIONS_PAGE.assertNoOpeningHoursValidationShown();
+    }
+
+    @When("I enter an opening-hours end time that does not match the slot length.")
+    public void iEnterAnOpeningHoursEndTimeThatDoesNotMatchTheSlotLength() {
+        ensureUpcomingOpeningTimes();
+        int slot = AUTHORITIES_AND_LOCATIONS_PAGE.getOpeningHoursSlotTimeInMinutes();
+        org.testng.Assert.assertTrue(slot > 1,
+                "Need a slot longer than one minute to build an uneven window, was " + slot);
+        mismatchedOpeningEnd = LocalTime.parse(upcomingOpeningStart).plusMinutes(1).format(OPENING_CLOCK);
+        AUTHORITIES_AND_LOCATIONS_PAGE.enterClosingTime(mismatchedOpeningEnd);
+    }
+
+    @When("I save the opening hours expecting a slot error.")
+    public void iSaveTheOpeningHoursExpectingASlotError() {
+        AUTHORITIES_AND_LOCATIONS_PAGE.clickSaveOpeningHoursExpectingSlotError();
+    }
+
+    @Then("the opening hours keep the note {string} and the start time {string}.")
+    public void theOpeningHoursKeepTheNoteAndTheStartTime(String note, String start) {
+        AUTHORITIES_AND_LOCATIONS_PAGE.assertOpenedOpeningHoursKept(
+                TestDataHelper.transformTestData(note),
+                resolveOpeningTime(start),
+                mismatchedOpeningEnd);
+    }
+
+    @When("I enter an opening-hours end time that matches the slot length.")
+    public void iEnterAnOpeningHoursEndTimeThatMatchesTheSlotLength() {
+        ensureUpcomingOpeningTimes();
+        int slot = AUTHORITIES_AND_LOCATIONS_PAGE.getOpeningHoursSlotTimeInMinutes();
+        LocalTime start = LocalTime.parse(upcomingOpeningStart);
+        LocalTime end = start.plusMinutes(slot);
+        org.testng.Assert.assertTrue(end.isAfter(start),
+                "Slot of " + slot + " minutes does not fit after " + upcomingOpeningStart + " on the same day.");
+        AUTHORITIES_AND_LOCATIONS_PAGE.enterClosingTime(end.format(OPENING_CLOCK));
+    }
+
+    @When("I discard the unsaved opening hour.")
+    public void iDiscardTheUnsavedOpeningHour() {
+        AUTHORITIES_AND_LOCATIONS_PAGE.discardUnsavedOpeningHours();
+    }
+
     @Then("the opening hours time fields should show {string} to {string}.")
     public void theOpeningHoursTimeFieldsShouldShow(String from, String until) {
         AUTHORITIES_AND_LOCATIONS_PAGE.assertOpeningHoursTimeFieldsEqual(
@@ -698,6 +778,7 @@ public class AdminSteps {
     private String upcomingOpeningStart;
     private String upcomingOpeningEnd;
     private boolean upcomingOpeningOnLaterDay;
+    private String mismatchedOpeningEnd;
 
     /** Next full hour in Berlin. After 22:00 that hour no longer fits today, so use 08:00–09:00 on a later day. */
     private void ensureUpcomingOpeningTimes() {

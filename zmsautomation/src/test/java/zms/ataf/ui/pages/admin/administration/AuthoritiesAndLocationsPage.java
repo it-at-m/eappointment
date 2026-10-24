@@ -2,6 +2,7 @@ package zms.ataf.ui.pages.admin.administration;
 
 import java.time.DayOfWeek;
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Locale;
@@ -434,6 +435,131 @@ public void saveLocationChanges() {
         String end = normalizeClock(readTimeInputValue("AvDatesEnd_time"));
         Assert.assertEquals(start, normalizeClock(expectedStart), "Uhrzeit von on Ausnahme form");
         Assert.assertEquals(end, normalizeClock(expectedEnd), "Uhrzeit bis on Ausnahme form");
+    }
+
+    /** Opens the month-calendar day. Moves to the next month when the day is not in the current month. */
+    public void clickOpeningHoursCalendarDay(LocalDate date) {
+        CONTEXT.set();
+        LocalDate today = BerlinTime.today();
+        if (date.getYear() != today.getYear() || date.getMonthValue() != today.getMonthValue()) {
+            clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "//a[@title='Monat vor']", LocatorType.XPATH, false, CONTEXT);
+            new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                    .until(ExpectedConditions.presenceOfElementLocated(
+                            By.cssSelector("table.availability-monthtable_calendar")));
+        }
+        String day = Integer.toString(date.getDayOfMonth());
+        String xpath = "//table[contains(@class,'availability-monthtable_calendar')]"
+                + "//tbody//a[contains(@class,'month-item')]"
+                + "[.//span[@class='day' and normalize-space()='" + day + "']]";
+        clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, xpath, LocatorType.XPATH, false, CONTEXT);
+    }
+
+    public void assertExactlyOneOpeningHoursFormOpen() {
+        CONTEXT.set();
+        new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .ignoring(StaleElementReferenceException.class)
+                .until(driver -> driver.findElements(By.cssSelector(".accordion__panel.opened")).size() == 1);
+        Assert.assertTrue(findVisibleInputById("AvDayDescription").isDisplayed(),
+                "The open opening-hours form has no note field.");
+    }
+
+    /** Neue Öffnungszeit selects the new row, so the form is expanded without a second click. */
+    public void assertNewOpeningHoursFormAlreadyOpen() {
+        CONTEXT.set();
+        By trigger = By.xpath(
+                "//h3[contains(@class,'accordion__heading')][contains(@title,'Neue Öffnungszeit')]/button");
+        WebElement button = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(ExpectedConditions.visibilityOfElementLocated(trigger));
+        Assert.assertEquals(button.getAttribute("aria-expanded"), "true",
+                "Neue Öffnungszeit should already be expanded.");
+        assertExactlyOneOpeningHoursFormOpen();
+    }
+
+    public void assertOpeningHoursTableClockIsHyphen(String note) {
+        String text = waitForOpeningHoursClock(note);
+        Assert.assertEquals(text, "-",
+                "Uhrzeit for \"" + note + "\" should be a hyphen until a time is entered, was \"" + text + "\".");
+        Assert.assertFalse(text.toLowerCase(Locale.ROOT).contains("invalid"),
+                "Uhrzeit shows an invalid date: " + text);
+    }
+
+    public void assertOpeningHoursTableClockContains(String note, String... parts) {
+        String text = waitForOpeningHoursClock(note);
+        for (String part : parts) {
+            Assert.assertTrue(text.contains(normalizeClock(part)),
+                    "Uhrzeit for \"" + note + "\" should contain \"" + part + "\", was \"" + text + "\".");
+        }
+        Assert.assertFalse(text.toLowerCase(Locale.ROOT).contains("invalid"),
+                "Uhrzeit shows an invalid date: " + text);
+    }
+
+    public void assertNoOpeningHoursValidationShown() {
+        CONTEXT.set();
+        boolean visible = DRIVER.findElements(By.cssSelector("div.message--error")).stream()
+                .anyMatch(element -> {
+                    try {
+                        return element.isDisplayed();
+                    } catch (StaleElementReferenceException ignored) {
+                        return false;
+                    }
+                });
+        Assert.assertFalse(visible, "An opening-hours validation message is visible before save.");
+    }
+
+    public void clickSaveOpeningHoursExpectingSlotError() {
+        ScenarioLogManager.getLogger().info("Saving opening hours and expecting a slot-length error...");
+        CONTEXT.set();
+        String publishButton =
+                "//button[contains(@class,'button-save') and normalize-space()='Alle Änderungen aktivieren']";
+        clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, publishButton, LocatorType.XPATH, false, CONTEXT);
+        By slotError = By.xpath("//div[contains(@class,'message--error')]"
+                + "[contains(., 'Zeitschlitze müssen sich gleichmäßig')]");
+        try {
+            new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                    .until(ExpectedConditions.visibilityOfElementLocated(slotError));
+        } catch (TimeoutException e) {
+            Assert.fail("Expected the slot-length validation after save.", e);
+        }
+        assertExactlyOneOpeningHoursFormOpen();
+    }
+
+    public void assertOpenedOpeningHoursKept(String note, String start, String end) {
+        CONTEXT.set();
+        WebElement noteField = findVisibleInputById("AvDayDescription");
+        Assert.assertEquals(noteField.getAttribute("value"), note, "The note was cleared after the failed save.");
+        Assert.assertEquals(normalizeClock(readTimeInputValue("AvDatesStart_time")), normalizeClock(start),
+                "Uhrzeit von was cleared after the failed save.");
+        Assert.assertEquals(normalizeClock(readTimeInputValue("AvDatesEnd_time")), normalizeClock(end),
+                "Uhrzeit bis was cleared after the failed save.");
+    }
+
+    public void discardUnsavedOpeningHours() {
+        CONTEXT.set();
+        By abort = By.xpath("//div[contains(@class,'form-actions')]//button[normalize-space()='Abbrechen']");
+        WebElement button = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(ExpectedConditions.elementToBeClickable(abort));
+        button.click();
+        new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .ignoring(StaleElementReferenceException.class)
+                .until(driver -> driver.findElements(By.xpath(openingHourRow("Neue Öffnungszeit"))).isEmpty());
+    }
+
+    private String waitForOpeningHoursClock(String note) {
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        wait.ignoring(StaleElementReferenceException.class);
+        wait.withMessage("Uhrzeit cell for \"" + note + "\" did not appear.");
+        return wait.until(driver -> {
+            List<WebElement> rows = driver.findElements(By.xpath(openingHourRow(note)));
+            if (rows.isEmpty()) {
+                return null;
+            }
+            List<WebElement> cells = rows.get(0).findElements(By.xpath("./td"));
+            if (cells.size() < 6) {
+                return null;
+            }
+            String text = cells.get(5).getText().replace('\u00a0', ' ').trim().replaceAll("\\s+", " ");
+            return text.isEmpty() ? null : text;
+        });
     }
 
     /**
