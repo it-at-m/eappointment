@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-10-24T10:35:28.075Z",
+  "publishedAt": "2026-10-24T11:34:49.629Z",
   "branches": [
     {
       "name": "next",
@@ -402,6 +402,12 @@
       "slug": "test-zms-opening-hours-holiday-dialog",
       "runId": "37127133211",
       "runStartedAt": "2026-10-03T13:43:10Z"
+    },
+    {
+      "name": "test-zmskvr-1018-zmskvr-1388-freitext-length",
+      "slug": "test-zmskvr-1018-zmskvr-1388-freitext-length",
+      "runId": "40089747681",
+      "runStartedAt": "2026-10-24T11:24:01Z"
     },
     {
       "name": "test-zmskvr-1046-zmskvr-1091-shared-booking-tag",
