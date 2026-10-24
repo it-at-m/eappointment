@@ -541,7 +541,8 @@ public void saveLocationChanges() {
         button.click();
         new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
                 .ignoring(StaleElementReferenceException.class)
-                .until(driver -> driver.findElements(By.xpath(openingHourRow("Neue Öffnungszeit"))).isEmpty());
+                .until(driver -> driver.findElements(By.xpath(
+                        "//h3[contains(@class,'accordion__heading')][contains(@title,'Neue Öffnungszeit')]")).isEmpty());
     }
 
     private String waitForOpeningHoursClock(String note) {
