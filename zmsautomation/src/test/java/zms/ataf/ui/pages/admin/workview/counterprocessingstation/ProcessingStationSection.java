@@ -2,6 +2,7 @@ package zms.ataf.ui.pages.admin.workview.counterprocessingstation;
 
 import java.time.Duration;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.openqa.selenium.By;
@@ -529,6 +530,35 @@ public class ProcessingStationSection extends CounterProcessingStationPage {
         ScenarioLogManager.getLogger().info("Checking if service match and is visible under 'Kundeninformation'...");
         Assert.assertEquals(getWebElementText(DEFAULT_EXPLICIT_WAIT_TIME, "//following-sibling::dt[contains(text(),'Anliegen')]/following-sibling::dd[1]/ul/li",
                 LocatorType.XPATH, CONTEXT), service, "Service does not match expected value!");
+    }
+
+    /**
+     * ZMSKVR-1018: Kundeninformationen shows the newline itself. The characters {@code <br />}
+     * must not appear, and the cell must render a real break.
+     */
+    public void assertCalledFreeTextLineBreaks(String line1, String line2) {
+        ScenarioLogManager.getLogger().info("Checking Kundeninformationen line breaks for {} / {}", line1, line2);
+        WebElement board = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("section.client-called")));
+        WebElement match = null;
+        for (WebElement cell : board.findElements(By.cssSelector("dd.process-free-text"))) {
+            String text = cell.getText();
+            if (text.contains(line1) && text.contains(line2)) {
+                match = cell;
+                break;
+            }
+        }
+        Assert.assertNotNull(
+                match,
+                "Kundeninformationen should show \"" + line1 + "\" and \"" + line2 + "\" as text");
+        String text = match.getText();
+        Assert.assertFalse(text.contains("<br"), "Kundeninformationen must not show the characters <br. text=" + text);
+        String html = match.getAttribute("innerHTML");
+        Assert.assertNotNull(html, "Kundeninformationen free-text html");
+        Assert.assertTrue(html.contains("<br"), "Kundeninformationen should render the newline. html=" + html);
+        Assert.assertFalse(
+                html.toLowerCase(Locale.ROOT).contains("&lt;br"),
+                "Kundeninformationen must not escape a break tag into the text. html=" + html);
     }
 
     public void checkForNoteUnderCustomerInformation(String expectedNote) {
