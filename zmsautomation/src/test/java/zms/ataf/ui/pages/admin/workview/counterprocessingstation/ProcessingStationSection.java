@@ -555,10 +555,18 @@ public class ProcessingStationSection extends CounterProcessingStationPage {
         Assert.assertFalse(text.contains("<br"), "Kundeninformationen must not show the characters <br. text=" + text);
         String html = match.getAttribute("innerHTML");
         Assert.assertNotNull(html, "Kundeninformationen free-text html");
-        Assert.assertTrue(html.contains("<br"), "Kundeninformationen should render the newline. html=" + html);
+        int start = html.indexOf(line1);
+        int end = start < 0 ? -1 : html.indexOf(line2, start + line1.length());
+        Assert.assertTrue(
+                start >= 0 && end > start,
+                "Kundeninformationen html should contain \"" + line1 + "\" before \"" + line2 + "\". html=" + html);
+        String between = html.substring(start + line1.length(), end);
+        Assert.assertTrue(
+                between.contains("<br"),
+                "The rendered break must sit between \"" + line1 + "\" and \"" + line2 + "\". between=" + between);
         Assert.assertFalse(
-                html.toLowerCase(Locale.ROOT).contains("&lt;br"),
-                "Kundeninformationen must not escape a break tag into the text. html=" + html);
+                between.toLowerCase(Locale.ROOT).contains("&lt;br"),
+                "The break between the lines must not be escaped text. between=" + between);
     }
 
     public void checkForNoteUnderCustomerInformation(String expectedNote) {
