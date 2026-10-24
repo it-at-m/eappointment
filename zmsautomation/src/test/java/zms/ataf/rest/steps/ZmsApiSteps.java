@@ -813,6 +813,61 @@ public class ZmsApiSteps {
         queueWalkIn(scopeId, serviceName, familyName, amendment);
     }
 
+    @When("I queue a walk-in at scope {int} with service {string}, name {string} and priority {int} with the X-AuthKey")
+    public void iQueueAWalkInAtScopeWithServiceNameAndPriorityWithTheXAuthKey(
+            int scopeId, String serviceName, String familyName, int priority) {
+        String authKey = getOrLoginXAuthKey();
+        JsonNode request = findScopeRequestByName(scopeId, serviceName, authKey);
+        ObjectNode scope = MAPPER.createObjectNode();
+        scope.put("id", scopeId);
+        ObjectNode appointment = MAPPER.createObjectNode();
+        appointment.set("scope", scope.deepCopy());
+        appointment.put("date", 0);
+        ObjectNode client = MAPPER.createObjectNode();
+        client.put("familyName", familyName);
+        client.put("email", familyName.toLowerCase(Locale.ROOT).replaceAll("[^a-z0-9]", "") + "@mailinator.com");
+        client.put("surveyAccepted", 1);
+        ObjectNode process = MAPPER.createObjectNode();
+        process.put("status", "queued");
+        process.put("priority", priority);
+        process.put("customTextfield", "ATAF Hinweis");
+        process.set("scope", scope);
+        process.set("appointments", MAPPER.createArrayNode().add(appointment));
+        process.set("requests", MAPPER.createArrayNode().add(request.deepCopy()));
+        process.set("clients", MAPPER.createArrayNode().add(client));
+
+        response = given()
+            .baseUri(baseUri != null ? baseUri : TestConfig.getBaseUri())
+            .header("X-AuthKey", authKey)
+            .contentType("application/json")
+            .body(toJson(process))
+        .when()
+            .post("/workstation/process/waitingnumber/");
+        CommonApiSteps.setResponse(response);
+        Assertions.assertThat(response.getStatusCode())
+            .as("POST /workstation/process/waitingnumber/ body=%s", truncate(response.asString(), 1000))
+            .isEqualTo(200);
+        JsonNode queued = parseDataNode(response);
+        rememberProcess(queued);
+        int processId = queued == null ? 0 : queued.path("id").asInt();
+        trackProcess(processId, scopeId);
+    }
+
+    @When("I cancel the assigned process with action {string} with the X-AuthKey")
+    public void iCancelTheAssignedProcessWithActionWithTheXAuthKey(String action) {
+        String authKey = getOrLoginXAuthKey();
+        response = given()
+            .baseUri(baseUri != null ? baseUri : TestConfig.getBaseUri())
+            .header("X-AuthKey", authKey)
+            .queryParam("action", action)
+        .when()
+            .delete("/workstation/process/");
+        CommonApiSteps.setResponse(response);
+        Assertions.assertThat(response.getStatusCode())
+            .as("DELETE /workstation/process/?action=%s body=%s", action, truncate(response.asString(), 1000))
+            .isEqualTo(200);
+    }
+
     private void queueWalkIn(int scopeId, String serviceName, String familyName, String amendment) {
         String authKey = getOrLoginXAuthKey();
         queueResolvedWalkIn(
@@ -2041,6 +2096,80 @@ public class ZmsApiSteps {
         Assertions.assertThat(lastProcess.path("priority").asInt())
             .as("priority of process %s", lastProcess.path("id").asInt())
             .isEqualTo(priority);
+    }
+
+    @Then("the last process is queued with call count {int} and priority {int}")
+    public void theLastProcessIsQueuedWithCallCountAndPriority(int callCount, int priority) {
+        reloadLastProcessFromApi();
+        Assertions.assertThat(lastProcess.path("status").asText())
+            .as("status of process %s", lastProcess.path("id").asInt())
+            .isEqualTo("queued");
+        Assertions.assertThat(lastProcess.path("queue").path("callCount").asInt())
+            .as("callCount of process %s body=%s", lastProcess.path("id").asInt(), truncate(lastProcess.toString(), 800))
+            .isEqualTo(callCount);
+        Assertions.assertThat(lastProcess.path("priority").asInt())
+            .as("priority of process %s", lastProcess.path("id").asInt())
+            .isEqualTo(priority);
+        if (callCount == 0) {
+            Assertions.assertThat(waitingTimeIsReset(lastProcess))
+                .as("waiting time after abort should be reset, was %s",
+                    lastProcess.path("queue").path("waitingTime"))
+                .isTrue();
+        }
+    }
+
+    @Then("the last process has a repeat-call timeout")
+    public void theLastProcessHasARepeatCallTimeout() {
+        reloadLastProcessFromApi();
+        Assertions.assertThat(timeoutIsSet(lastProcess))
+            .as("timeoutTime of process %s was %s",
+                lastProcess.path("id").asInt(), lastProcess.path("timeoutTime"))
+            .isTrue();
+    }
+
+    private void reloadLastProcessFromApi() {
+        Assertions.assertThat(lastProcess).as("last process").isNotNull();
+        int processId = lastProcess.path("id").asInt();
+        Assertions.assertThat(processId).as("process id").isPositive();
+        String authKey = getOrLoginXAuthKey();
+        response = given()
+            .baseUri(apiBaseUri())
+            .header("X-AuthKey", authKey)
+            .queryParam("resolveReferences", 1)
+        .when()
+            .get("/process/" + processId + "/");
+        CommonApiSteps.setResponse(response);
+        Assertions.assertThat(response.getStatusCode())
+            .as("GET /process/%d/ body=%s", processId, truncate(response.asString(), 800))
+            .isEqualTo(200);
+        rememberProcess(parseDataNode(response));
+    }
+
+    private static boolean waitingTimeIsReset(JsonNode process) {
+        JsonNode waiting = process.path("queue").path("waitingTime");
+        if (waiting.isMissingNode() || waiting.isNull()) {
+            return true;
+        }
+        if (waiting.isNumber()) {
+            return waiting.asLong() == 0L;
+        }
+        String text = waiting.asText("").trim();
+        return text.isEmpty() || "0".equals(text) || "00:00:00".equals(text);
+    }
+
+    private static boolean timeoutIsSet(JsonNode process) {
+        JsonNode timeout = process.get("timeoutTime");
+        if (timeout == null || timeout.isNull() || timeout.isMissingNode()) {
+            return false;
+        }
+        if (timeout.isNumber()) {
+            return timeout.asLong() > 0L;
+        }
+        String text = timeout.asText("").trim();
+        return !text.isEmpty()
+            && !"0".equals(text)
+            && !"00:00:00".equals(text)
+            && !"null".equalsIgnoreCase(text);
     }
 
     @When("I delete the last process with the X-AuthKey")
