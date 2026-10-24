@@ -484,11 +484,7 @@ public void saveLocationChanges() {
     }
 
     public void assertOpeningHoursTableClockContains(String note, String... parts) {
-        String text = waitForOpeningHoursClock(note);
-        for (String part : parts) {
-            Assert.assertTrue(text.contains(normalizeClock(part)),
-                    "Uhrzeit for \"" + note + "\" should contain \"" + part + "\", was \"" + text + "\".");
-        }
+        String text = waitForOpeningHoursClock(note, parts);
         Assert.assertFalse(text.toLowerCase(Locale.ROOT).contains("invalid"),
                 "Uhrzeit shows an invalid date: " + text);
     }
@@ -545,10 +541,15 @@ public void saveLocationChanges() {
                         "//h3[contains(@class,'accordion__heading')][contains(@title,'Neue Öffnungszeit')]")).isEmpty());
     }
 
-    private String waitForOpeningHoursClock(String note) {
+    /**
+     * The table row is refreshed by the slot calculation after a field change, so a clock
+     * that should show a time has to be polled until that time is visible.
+     */
+    private String waitForOpeningHoursClock(String note, String... requiredParts) {
         WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
         wait.ignoring(StaleElementReferenceException.class);
-        wait.withMessage("Uhrzeit cell for \"" + note + "\" did not appear.");
+        String expected = requiredParts.length == 0 ? "a value" : String.join(", ", requiredParts);
+        wait.withMessage("Uhrzeit cell for \"" + note + "\" did not show " + expected + ".");
         return wait.until(driver -> {
             List<WebElement> rows = driver.findElements(By.xpath(openingHourRow(note)));
             if (rows.isEmpty()) {
@@ -559,7 +560,15 @@ public void saveLocationChanges() {
                 return null;
             }
             String text = cells.get(5).getText().replace('\u00a0', ' ').trim().replaceAll("\\s+", " ");
-            return text.isEmpty() ? null : text;
+            if (text.isEmpty()) {
+                return null;
+            }
+            for (String part : requiredParts) {
+                if (!text.contains(normalizeClock(part))) {
+                    return null;
+                }
+            }
+            return text;
         });
     }
 
