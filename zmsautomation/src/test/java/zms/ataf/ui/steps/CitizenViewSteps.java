@@ -1649,6 +1649,20 @@ public class CitizenViewSteps {
         page.assertPassOnlyCombinationServicesVisible();
     }
 
+    @When("I enter the 250-character required free text with newlines and a tab in the citizen view")
+    public void iEnterTheRequiredFreeTextAtTheLimit() {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: required Freitext at 250 with newline and tab");
+        page.assertRequiredFreeTextCountsNewlinesAndTab();
+    }
+
+    @Then("the required free text of 251 characters including a newline and a tab stays on the contact form")
+    public void theFreeTextOverLimitStaysOnTheContactForm() {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: Freitext of 251 with newline and tab is rejected");
+        page.assertFreeTextOverLimitStaysOnContactForm();
+    }
+
     @When("I fill contact details without continuing in the citizen view")
     public void iFillContactDetailsWithoutContinuing() {
         ScenarioLogManager.getLogger()
