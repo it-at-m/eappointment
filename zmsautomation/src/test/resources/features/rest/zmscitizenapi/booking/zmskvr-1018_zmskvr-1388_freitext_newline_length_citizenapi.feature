@@ -21,7 +21,8 @@ Feature: Citizen API counts newlines and tabs inside the required free-text limi
     And I reserve an appointment with the first available slot
     And I update the reserved Feuerwache appointment with the 250-character free text
     Then the response status code should be 200
-    And the appointment customTextfield should be the 250-character newline and tab sample
+    When I fetch the appointment for the current process
+    Then the appointment customTextfield should be the 250-character newline and tab sample
     When I cancel the appointment
 
   Scenario: Break tags in a 250-character free text are stored as newlines
@@ -30,7 +31,8 @@ Feature: Citizen API counts newlines and tabs inside the required free-text limi
     And I reserve an appointment with the first available slot
     And I update the reserved Feuerwache appointment with the free text sample written as break tags
     Then the response status code should be 200
-    And the appointment customTextfield should be the 250-character newline and tab sample
+    When I fetch the appointment for the current process
+    Then the appointment customTextfield should be the 250-character newline and tab sample
     When I cancel the appointment
 
   Scenario: One character over the limit is rejected when the text contains a newline and a tab

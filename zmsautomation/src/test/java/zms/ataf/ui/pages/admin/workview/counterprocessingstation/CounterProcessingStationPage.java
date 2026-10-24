@@ -2034,12 +2034,23 @@ public class CounterProcessingStationPage extends AdminPage {
         Assert.assertFalse(
                 text.contains("<br"),
                 "Free-text cell must show a line break, not the characters <br. text=" + text);
-        String html = match.getAttribute("innerHTML");
+        assertBreakSitsBetween(match.getAttribute("innerHTML"), line1, line2);
+    }
+
+    private static void assertBreakSitsBetween(String html, String line1, String line2) {
         Assert.assertNotNull(html, "free-text innerHTML");
-        Assert.assertTrue(html.contains("<br"), "Free-text cell should render the newline as a break. html=" + html);
+        int start = html.indexOf(line1);
+        int end = start < 0 ? -1 : html.indexOf(line2, start + line1.length());
+        Assert.assertTrue(
+                start >= 0 && end > start,
+                "Free-text html should contain \"" + line1 + "\" before \"" + line2 + "\". html=" + html);
+        String between = html.substring(start + line1.length(), end);
+        Assert.assertTrue(
+                between.contains("<br"),
+                "The rendered break must sit between \"" + line1 + "\" and \"" + line2 + "\". between=" + between);
         Assert.assertFalse(
-                html.toLowerCase(Locale.ROOT).contains("&lt;br"),
-                "Free-text cell must not escape a break tag into visible text. html=" + html);
+                between.toLowerCase(Locale.ROOT).contains("&lt;br"),
+                "The break between the lines must not be escaped text. between=" + between);
     }
 
     public void saveWalkInAppointmentWithNote(String note) {
