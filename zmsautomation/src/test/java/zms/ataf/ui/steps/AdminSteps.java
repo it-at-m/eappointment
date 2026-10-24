@@ -888,8 +888,11 @@ public class AdminSteps {
     }
 
     @When("I book an appointment customer with service {string} and name {string}.")
-    public void sie_einen_terminkunden_mit_der_dienstleistung_und_dem_namen_buchen(String service, String name) {
-        wenn_sie_im_zeitmanagementsystem_unter_terminvereinbarung_neu_die_dienstleistung_string_auswaehlen(service);
+    public void sie_einen_terminkunden_mit_der_dienstleistung_und_dem_namen_buchen(String services, String name) {
+        for (String service : services.split(",\\s*")) {
+            wenn_sie_im_zeitmanagementsystem_unter_terminvereinbarung_neu_die_dienstleistung_string_auswaehlen(service);
+        }
+        COUNTER_PROCESSING_STATION_PAGE.waitUntilSlotCountMatchesSelectedServices();
         selectCounterAppointmentTimeOrWalkIn();
         wenn_sie_im_zeitmanagementsystem_unter_terminvereinbarung_neu_den_namen_string_eingeben(name);
         wenn_sie_im_zeitmanagementsystem_unter_terminvereinbarung_neu_die_email_adresse_string_eingeben("<mailinator>");
