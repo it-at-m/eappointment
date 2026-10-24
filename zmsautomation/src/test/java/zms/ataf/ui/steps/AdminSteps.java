@@ -1453,6 +1453,9 @@ public class AdminSteps {
 
     @When("the clerk calls the customer {string} from the waiting list.")
     public void wenn_der_sachbearbeiter_den_kunden_mit_dem_namen_aus_der_warteliste_aufruft(String name) {
+        if ("true".equals(TestDataHelper.getTestData("appointment_booked_as_walk_in"))) {
+            COUNTER_PROCESSING_STATION_PAGE.showSpontaneousCustomers(true);
+        }
         PROCESSING_STATION_SECTION.callCustomerFromQueueWithName(TestDataHelper.transformTestData(name));
     }
 
@@ -2053,6 +2056,18 @@ public class AdminSteps {
         } else {
             COUNTER_PROCESSING_STATION_PAGE.assertCustomerVisibleInQueueByName(resolved);
         }
+    }
+
+    @Then("the queue row for {string} has no call count.")
+    public void theQueueRowForHasNoCallCount(String familyName) {
+        COUNTER_PROCESSING_STATION_PAGE.assertQueueRowHasNoCallCount(
+                TestDataHelper.transformTestData(familyName));
+    }
+
+    @Then("the queue row for {string} shows one missed call and a five-minute countdown.")
+    public void theQueueRowForShowsOneMissedCallAndAFiveMinuteCountdown(String familyName) {
+        COUNTER_PROCESSING_STATION_PAGE.assertQueueRowShowsMissedCallCountdown(
+                TestDataHelper.transformTestData(familyName));
     }
 
     @Then("the waiting time H:mm:ss for {string} should be between {string} and {string}.")
