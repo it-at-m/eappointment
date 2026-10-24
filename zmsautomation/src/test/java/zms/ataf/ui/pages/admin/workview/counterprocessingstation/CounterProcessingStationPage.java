@@ -708,9 +708,24 @@ public class CounterProcessingStationPage extends AdminPage {
             CONTEXT.waitForSpinners();
         }
         ScenarioLogManager.getLogger().info("Deleting queued appointment for {}", familyName);
-        String deleteLink = "//table[@id='table-queued-appointments']//tr["
-                + "td[contains(@class,'callnextclient') and normalize-space(.)='" + familyName + "']]"
-                + "//a[contains(@class,'process-delete')]";
+        // After a no-show the name cell also contains the call count and the lockout text,
+        // so an exact name match misses the row. The waiting number stays in its own cell.
+        String waitingNumber = TestDataHelper.getTestData("new_waiting_number");
+        String deleteLink;
+        if ("true".equals(TestDataHelper.getTestData("appointment_booked_as_walk_in"))
+                && waitingNumber != null && !waitingNumber.isBlank()) {
+            String shown = waitingNumber.trim();
+            String numOnly = shown.replaceAll("\\D+", "");
+            deleteLink = "//table[@id='table-queued-appointments']/tbody/tr["
+                    + ".//td[normalize-space()=" + xpathLiteral(shown)
+                    + " or normalize-space()=" + xpathLiteral(numOnly) + "]]"
+                    + "//a[contains(@class,'process-delete')]";
+        } else {
+            deleteLink = "//table[@id='table-queued-appointments']//tr["
+                    + "td[contains(@class,'callnextclient') and normalize-space(.)="
+                    + xpathLiteral(familyName) + "]]"
+                    + "//a[contains(@class,'process-delete')]";
+        }
         clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, deleteLink, LocatorType.XPATH, false, CONTEXT);
         WebElement messageTitleElement = findElementByLocatorType("section.board.dialog h2.board__heading", LocatorType.CSSSELECTOR, false);
         Assert.assertTrue(
