@@ -8,7 +8,11 @@ use BO\Slim\Middleware\RequestSanitizerMiddleware;
 use BO\Slim\Tests\TestLogger;
 use PHPUnit\Framework\MockObject\MockObject;
 use Psr\Http\Message\ServerRequestInterface;
+use Slim\Psr7\Headers;
+use Slim\Psr7\Request as SlimRequest;
 use Slim\Psr7\Response;
+use Slim\Psr7\Stream;
+use Slim\Psr7\Uri;
 
 class RequestSanitizerMiddlewareTest extends MiddlewareTestCase
 {
@@ -62,6 +66,23 @@ class RequestSanitizerMiddlewareTest extends MiddlewareTestCase
         $this->expectExceptionMessage('Sanitization error');
 
         $this->middleware->process($request, $handler);
+    }
+
+    public function testKeepsNewlineAndTabAndStripsOtherControls(): void
+    {
+        $uri = new Uri('http', 'localhost', 80, '/process/queue/');
+        $request = (new SlimRequest('POST', $uri, new Headers([]), [], [], new Stream(fopen('php://temp', 'wb+'))))
+            ->withParsedBody([
+                'customTextfield' => "ATAF\n\tZeile\x00\x0B",
+                'padded' => '  leading',
+            ]);
+        $handler = new RequestHandlerMock();
+
+        $this->middleware->process($request, $handler);
+
+        $body = $handler->getRequest()->getParsedBody();
+        $this->assertSame("ATAF\n\tZeile", $body['customTextfield']);
+        $this->assertSame('leading', $body['padded']);
     }
 
     public function testRejectsNonPositiveLimits(): void

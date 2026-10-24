@@ -49,6 +49,7 @@ import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import zms.ataf.helpers.AccountCheckout;
 import zms.ataf.helpers.BerlinTime;
+import zms.ataf.helpers.PlainTextLengthSample;
 import zms.ataf.helpers.RandomNameHelper;
 import zms.ataf.rest.steps.CitizenApiSteps;
 import zms.ataf.ui.pages.admin.AdminPage;
@@ -1063,6 +1064,42 @@ public class AdminSteps {
     public void sie_einen_spontankunden_mit_freitextfeldern_buchen(
             String service, String name, String freeText, String secondFreeText) {
         bookWalkInWithOptionalNote(service, name, null, freeText, secondFreeText);
+    }
+
+    @When("I book a walk-in with a 250-character free text, a newline and a tab")
+    public void iBookAWalkInWithFreeTextAtTheLimit() {
+        String name = "Muster Zmskvr1018";
+        wenn_sie_im_zeitmanagementsystem_unter_terminvereinbarung_neu_die_dienstleistung_string_auswaehlen(
+                "Spontan eAT/eRA");
+        COUNTER_PROCESSING_STATION_PAGE.selectWalkInCustomer();
+        COUNTER_PROCESSING_STATION_PAGE.enterNameInNewAppointmentTextField(name);
+        TestDataHelper.setTestData("customer_name", name);
+        COUNTER_PROCESSING_STATION_PAGE.enterEmailInNewAppointmentTextField("muster.zmskvr1018@mailinator.com");
+        COUNTER_PROCESSING_STATION_PAGE.setNamedTextarea("amendment", PlainTextLengthSample.amendmentWithBreak());
+        COUNTER_PROCESSING_STATION_PAGE.setNamedTextarea(
+                "customTextfield", PlainTextLengthSample.customTextAtLimit());
+        COUNTER_PROCESSING_STATION_PAGE.clickOnAddSpontaneousCustomer();
+    }
+
+    @Then("the edit form keeps the 250-character free text with its newline and tab")
+    public void theEditFormKeepsTheFreeTextSample() {
+        COUNTER_PROCESSING_STATION_PAGE.assertEditFormKeepsFreeTextSample();
+    }
+
+    @When("I save the appointment without changing the free text")
+    public void iSaveTheAppointmentWithoutChangingTheFreeText() {
+        COUNTER_PROCESSING_STATION_PAGE.saveAppointmentForm();
+    }
+
+    @Then("the queue shows the free text and the note as line breaks")
+    public void theQueueShowsTheFreeTextAsLineBreaks() {
+        COUNTER_PROCESSING_STATION_PAGE.assertQueueShowsFreeTextLineBreaks("Muster Zmskvr1018");
+    }
+
+    @Then("customer information shows the free text and the note as line breaks")
+    public void customerInformationShowsTheFreeTextAsLineBreaks() {
+        PROCESSING_STATION_SECTION.assertCalledFreeTextLineBreaks("ATAF Anmerkung", "zweite Zeile");
+        PROCESSING_STATION_SECTION.assertCalledFreeTextLineBreaks("ATAF Hinweis Zeile", "Folge");
     }
 
     @When("I book a walk-in customer with service {string}, name {string}, note {string}, free text {string} and second free text {string}.")

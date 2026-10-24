@@ -1680,6 +1680,14 @@ public class CitizenViewPage extends BasePage {
         contact.fillContactDetailsRandomWithoutOptionalRemarks();
     }
 
+    public void assertRequiredFreeTextCountsNewlinesAndTab() {
+        contact.assertRequiredFreeTextCountsNewlinesAndTab();
+    }
+
+    public void assertFreeTextOverLimitStaysOnContactForm() {
+        contact.assertFreeTextOverLimitStaysOnContactForm();
+    }
+
     public void assertContactFormVisible() {
         contact.assertContactFormVisible();
     }
