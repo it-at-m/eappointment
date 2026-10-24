@@ -1,0 +1,35 @@
+{
+  "branch": "test-zmskvr-1216-zmskvr-1329-search-log-slots",
+  "branchSlug": "test-zmskvr-1216-zmskvr-1329-search-log-slots",
+  "runId": "40111199574",
+  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/40111199574",
+  "runStartedAt": "2026-10-24T16:21:42Z",
+  "publishedAt": "2026-10-24T16:30:54.498Z",
+  "features": {
+    "feature-ui-zmsadmin-citizen-search-zmskvr-1216-zmskvr-1329-search-log-slots": {
+      "status": "passed",
+      "shard": "custom",
+      "browser": "chrome",
+      "browsers": {
+        "chrome": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "40111199574",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/40111199574",
+          "runStartedAt": "2026-10-24T16:21:42Z"
+        },
+        "firefox": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "40111199574",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/40111199574",
+          "runStartedAt": "2026-10-24T16:21:42Z"
+        }
+      },
+      "rel": "ui/zmsadmin/citizen-search/zmskvr-1216_zmskvr-1329_search_log_slots.feature",
+      "runId": "40111199574",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/40111199574",
+      "runStartedAt": "2026-10-24T16:21:42Z"
+    }
+  }
+}
