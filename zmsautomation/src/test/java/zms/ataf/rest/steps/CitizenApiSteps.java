@@ -2488,6 +2488,30 @@ public class CitizenApiSteps {
                 .info("Citizen API: confirm icsContent contains {}", expected);
     }
 
+    /** ZMSKVR-1435: ICS Leistung URL is the public root parent, not an internal variant id. */
+    @Then("the confirm endpoint icsContent should contain {string} and not {string}")
+    public void theConfirmEndpointIcsContentShouldContainAndNot(String expected, String absent) {
+        response.then().statusCode(200);
+        ThinnedProcess process =
+                lastReserveProcess != null ? lastReserveProcess : parseDataResponse(response, ThinnedProcess.class);
+        Assertions.assertThat(process).as("confirm process").isNotNull();
+        String unfolded = unfoldIcs(process.getIcsContent());
+        Assertions.assertThat(unfolded)
+                .as("confirm-appointment icsContent should contain '%s'", expected)
+                .contains(expected);
+        for (String part : absent.split(",")) {
+            String needle = part.trim();
+            if (needle.isEmpty()) {
+                continue;
+            }
+            Assertions.assertThat(unfolded)
+                    .as("confirm-appointment icsContent must not contain '%s'", needle)
+                    .doesNotContain(needle);
+        }
+        ScenarioLogManager.getLogger()
+                .info("Citizen API: confirm icsContent contains {} and not {}", expected, absent);
+    }
+
     @Then("the confirm endpoint icsContent should match the Munich template with {string} displayNumber")
     public void theConfirmEndpointIcsContentShouldMatchTheMunichTemplateWithDisplayNumber(
             String displayNumberMode) {

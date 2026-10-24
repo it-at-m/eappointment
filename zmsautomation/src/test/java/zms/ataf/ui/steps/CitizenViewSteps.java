@@ -260,6 +260,18 @@ public class CitizenViewSteps {
         page.assertServiceDescriptionLink(TestDataHelper.transformTestData(label), serviceId);
     }
 
+    @Then("the service {string} links to service {string} and not {string} on muenchen.de")
+    public void theServiceLinksToServiceAndNotInternalIds(String label, String serviceId, String forbiddenIds) {
+        ScenarioLogManager.getLogger()
+                .info(
+                        "zmscitizenview: {} links to service {} and not {}",
+                        label,
+                        serviceId,
+                        forbiddenIds);
+        page.assertServiceDescriptionLinkExcludesInternalIds(
+                TestDataHelper.transformTestData(label), serviceId, forbiddenIds);
+    }
+
     @Then("the count for {string} sits beside the name on desktop")
     public void theCountSitsBesideTheNameOnDesktop(String label) {
         ScenarioLogManager.getLogger()

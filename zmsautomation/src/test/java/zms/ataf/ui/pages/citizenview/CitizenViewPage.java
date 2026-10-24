@@ -712,6 +712,12 @@ public class CitizenViewPage extends BasePage {
         combination.assertServiceDescriptionLink(label, serviceId);
     }
 
+    /** ZMSKVR-1435: public root parent id, not an internal variant id and not an empty path. */
+    public void assertServiceDescriptionLinkExcludesInternalIds(
+            String label, String serviceId, String forbiddenIds) {
+        combination.assertServiceDescriptionLinkExcludesInternalIds(label, serviceId, forbiddenIds);
+    }
+
     /** ZMSKVR-249: on a wide window the count and buttons sit left of the service name. */
     public void assertCountBesideNameOnDesktop(String label) {
         combination.assertCountBesideNameOnDesktop(label);
