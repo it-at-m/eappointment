@@ -1730,11 +1730,16 @@ public class CounterProcessingStationPage extends AdminPage {
             return;
         }
     
-        // Toggle open and wait; retry once if needed (accounts for animation/rerenders)
-        for (int attempt = 0; attempt < 2; attempt++) {
-            header.click();
+        // Toggle open and wait. The queue reload can replace the header between find and click.
+        for (int attempt = 0; attempt < 3; attempt++) {
             try {
-                // brief settle for animation
+                header = wait.until(org.openqa.selenium.support.ui.ExpectedConditions.elementToBeClickable(headerToggle));
+                scrollToCenterByVisibleElement(header);
+                header.click();
+            } catch (org.openqa.selenium.StaleElementReferenceException stale) {
+                continue;
+            }
+            try {
                 Thread.sleep(200);
             } catch (InterruptedException ie) {
                 Thread.currentThread().interrupt();
@@ -1743,12 +1748,9 @@ public class CounterProcessingStationPage extends AdminPage {
             try {
                 wait.until(org.openqa.selenium.support.ui.ExpectedConditions
                         .visibilityOfElementLocated(finishedTable));
-                return; // opened successfully
+                return;
             } catch (org.openqa.selenium.TimeoutException e) {
-                if (attempt == 0) {
-                    // re-fetch header and try once more
-                    header = DRIVER.findElement(headerToggle);
-                } else {
+                if (attempt == 2) {
                     org.testng.Assert.fail("Finished appointments table did not become visible after toggling.");
                 }
             }
