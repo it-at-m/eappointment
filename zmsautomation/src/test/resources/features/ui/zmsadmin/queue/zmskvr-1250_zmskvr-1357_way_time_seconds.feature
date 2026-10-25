@@ -2,7 +2,7 @@
 Feature: Way, waiting and processing times stay exact to the second in the queue
 
 	# ZMSKVR-1250 tested by ZMSKVR-1357.
-	# Scope 121, Bürgerbüro Pasing Serviceschalter. The current hour gets intern slots so the
+	# Scope 133, Bürgerbüro Orleansplatz. The current hour gets intern slots so the
 	# appointment can be called today. A walk-in arrives now; the appointment prefers that hour.
 	# The queue table only shows the clock time. Waiting, way and processing appear on the call,
 	# while processing, and in the finished table as HH:MM:SS. The archive stores fractional minutes.
@@ -11,16 +11,16 @@ Feature: Way, waiting and processing times stay exact to the second in the queue
 	Scenario: A walk-in and an appointment keep seconds from the queue through the archive
 		Given the ZMS API is available
 		And I am logged in to the ZMS API as "ataf"
-		And appointment slots exist for scope 121 in the current hour
-		When I update the workstation with scope 121 and counter "4" with the X-AuthKey
+		And appointment slots exist for scope 133 in the current hour
+		When I update the workstation with scope 133 and counter "13" with the X-AuthKey
 		Then the response status code should be 200
-		When I reserve an appointment at scope 121 with service "Führungszeugnis" and name "Muster Zmskvr1357Termin" in the current hour when a slot is still free with the X-AuthKey
+		When I reserve an appointment at scope 133 with service "Führungszeugnis" and name "Muster Zmskvr1357Termin" in the current hour when a slot is still free with the X-AuthKey
 		Then the response status code should be 200
 		When I open the administration website.
 		Then I should be on the administration start page.
 		When I click the button "Anmelden" in the administration.
-		And I select for "Standort" the value "Bürgerbüro Pasing (KVR-II/235 Team 1) Serviceschalter".
-		And I enter in the field "Platz-Nr. oder Tresen" the text "4".
+		And I select for "Standort" the value "Bürgerbüro Orleansplatz (KVR-II/231)".
+		And I enter in the field "Platz-Nr. oder Tresen" the text "13".
 		And I click the button "Auswahl bestätigen" in the administration.
 		Then the workstation page is displayed.
 		When I book a walk-in customer named "Muster Zmskvr1357Walk" for service "Führungszeugnis".
