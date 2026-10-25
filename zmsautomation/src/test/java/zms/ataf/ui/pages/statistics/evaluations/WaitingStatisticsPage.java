@@ -136,8 +136,21 @@ public class WaitingStatisticsPage extends StatisticsPage {
         ScenarioLogManager.getLogger().info("{} {} cell: {}", heading, hourLabel, values);
         Assert.assertTrue(values.size() >= 3, heading + " " + hourLabel + " cell was " + text);
         Assert.assertEquals(values.get(0), Integer.toString(count), heading + " count");
-        Assert.assertEquals(values.get(1), waiting, heading + " waiting time");
-        Assert.assertEquals(values.get(2), way, heading + " way time");
+        Assert.assertEquals(values.get(1), pageClock(waiting), heading + " waiting time");
+        Assert.assertEquals(values.get(2), pageClock(way), heading + " way time");
+    }
+
+    /** The page prints minutes without a leading zero ({@code 0:05}). The workbook keeps {@code 00:05}. */
+    private static String pageClock(String padded) {
+        int colon = padded.indexOf(':');
+        if (colon <= 0) {
+            return padded;
+        }
+        try {
+            return Integer.parseInt(padded.substring(0, colon)) + padded.substring(colon);
+        } catch (NumberFormatException exception) {
+            return padded;
+        }
     }
 
     private static void assertSheet(

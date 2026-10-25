@@ -21,8 +21,9 @@ Feature: Way, waiting and processing times stay exact to the second in the queue
 		Then the workstation page is displayed.
 		When I book a walk-in customer named "Muster Zmskvr1357Walk" for service "Führungszeugnis".
 		Then the queued walk-in "Muster Zmskvr1357Walk" shows a clock time and the queue table has no way time
-		When I book an appointment customer named "Muster Zmskvr1357Termin" for service "Führungszeugnis" in the current hour when a slot is still free.
-		Then the queued appointment "Muster Zmskvr1357Termin" shows a clock time and the queue table has no way time
+		When I reserve an appointment at scope 121 with service "Führungszeugnis" and name "Muster Zmskvr1357Termin" in the current hour when a slot is still free with the X-AuthKey
+		Then the response status code should be 200
+		And the queued appointment "Muster Zmskvr1357Termin" shows a clock time and the queue table has no way time
 		And the customer "Muster Zmskvr1357Walk" arrived 4 seconds ago
 		When I show spontaneous customers in the queue.
 		And the clerk calls the customer "Muster Zmskvr1357Walk" from the waiting list.

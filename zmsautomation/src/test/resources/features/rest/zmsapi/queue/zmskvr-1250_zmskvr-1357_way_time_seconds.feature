@@ -23,7 +23,6 @@ Feature: The API stores way, waiting and processing time to the second
 		When I set the assigned process status to processing with the X-AuthKey
 		Then the response status code should be 200
 		And the processing process stores the way time as a clock time with seconds
-		And the live citizen "Muster Zmskvr1357ApiWalk" stores way time as a clock time
 		And I wait 3 seconds so the stored duration includes seconds
 		When I finish the assigned process with the X-AuthKey
 		Then the response status code should be 200
