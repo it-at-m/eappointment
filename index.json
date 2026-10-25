@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-10-25T15:49:35.623Z",
+  "publishedAt": "2026-10-25T16:42:03.924Z",
   "branches": [
     {
       "name": "next",
@@ -574,8 +574,8 @@
     {
       "name": "test-zmskvr-1348-zmskvr-1479-changelog-link",
       "slug": "test-zmskvr-1348-zmskvr-1479-changelog-link",
-      "runId": "40208059985",
-      "runStartedAt": "2026-10-25T15:40:32Z"
+      "runId": "40212200921",
+      "runStartedAt": "2026-10-25T16:32:52Z"
     },
     {
       "name": "test-zmskvr-1349-zmskvr-1580-status-access",

@@ -1,10 +1,10 @@
 {
   "branch": "test-zmskvr-1348-zmskvr-1479-changelog-link",
   "branchSlug": "test-zmskvr-1348-zmskvr-1479-changelog-link",
-  "runId": "40208059985",
-  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/40208059985",
-  "runStartedAt": "2026-10-25T15:40:32Z",
-  "publishedAt": "2026-10-25T15:49:35.623Z",
+  "runId": "40212200921",
+  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/40212200921",
+  "runStartedAt": "2026-10-25T16:32:52Z",
+  "publishedAt": "2026-10-25T16:42:03.924Z",
   "features": {
     "feature-ui-zmsadmin-configuration-zmskvr-1348-zmskvr-1479-changelog-link": {
       "status": "passed",
@@ -14,22 +14,22 @@
         "chrome": {
           "status": "passed",
           "shard": "custom",
-          "runId": "40208059985",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/40208059985",
-          "runStartedAt": "2026-10-25T15:40:32Z"
+          "runId": "40212200921",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/40212200921",
+          "runStartedAt": "2026-10-25T16:32:52Z"
         },
         "firefox": {
           "status": "passed",
           "shard": "custom",
-          "runId": "40208059985",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/40208059985",
-          "runStartedAt": "2026-10-25T15:40:32Z"
+          "runId": "40212200921",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/40212200921",
+          "runStartedAt": "2026-10-25T16:32:52Z"
         }
       },
       "rel": "ui/zmsadmin/configuration/zmskvr-1348_zmskvr-1479_changelog_link.feature",
-      "runId": "40208059985",
-      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/40208059985",
-      "runStartedAt": "2026-10-25T15:40:32Z"
+      "runId": "40212200921",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/40212200921",
+      "runStartedAt": "2026-10-25T16:32:52Z"
     }
   }
 }
