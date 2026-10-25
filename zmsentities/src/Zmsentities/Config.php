@@ -15,8 +15,8 @@ class Config extends Schema\Entity
     {
         return [
             'appointments' => [
-                'urlChange' => 'https://service.berlin.de/terminvereinbarung/termin/manage/',
-                'urlAppointments' => 'https://service.berlin.de/terminvereinbarung/',
+                'urlChange' => 'https://stadt.muenchen.de/buergerservice/terminvereinbarung.html',
+                'urlAppointments' => 'https://stadt.muenchen.de/buergerservice/terminvereinbarung.html',
             ],
             'changelog' => [
                 'urlReleaseNotes' => 'https://it-at-m.github.io/eappointment/overview/changelog.html'
@@ -31,8 +31,8 @@ class Config extends Schema\Entity
                 'refreshInterval' => 5
             ],
             'support' => [
-                'eMail' => 'hotline@itdz-berlin.de',
-                'telephone' => '(030) 9222-2000'
+                'eMail' => 'noreply-terminvereinbarung@muenchen.de',
+                'telephone' => '089/233-96000'
             ]
         ];
     }
