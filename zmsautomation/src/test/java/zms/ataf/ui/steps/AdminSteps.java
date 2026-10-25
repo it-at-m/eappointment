@@ -2299,7 +2299,7 @@ public class AdminSteps {
     }
 
     private static long flooredSeconds(double minutes) {
-        return (long) Math.floor(minutes * 60.0d + 1.0e-6d);
+        return (long) Math.floor(minutes * 60.0d);
     }
 
     private static void assertClockTimeWithSeconds(String value, String label) {
