@@ -1,10 +1,10 @@
 {
   "branch": "test-zmskvr-1250-zmskvr-1357-way-time-seconds",
   "branchSlug": "test-zmskvr-1250-zmskvr-1357-way-time-seconds",
-  "runId": "40196072227",
-  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/40196072227",
-  "runStartedAt": "2026-10-25T13:06:02Z",
-  "publishedAt": "2026-10-25T13:15:36.339Z",
+  "runId": "40197755222",
+  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/40197755222",
+  "runStartedAt": "2026-10-25T13:28:20Z",
+  "publishedAt": "2026-10-25T13:38:46.378Z",
   "features": {
     "feature-rest-zmsapi-queue-zmskvr-1250-zmskvr-1357-way-time-seconds": {
       "status": "failed",
@@ -14,22 +14,22 @@
         "chrome": {
           "status": "failed",
           "shard": "custom",
-          "runId": "40196072227",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/40196072227",
-          "runStartedAt": "2026-10-25T13:06:02Z"
+          "runId": "40197755222",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/40197755222",
+          "runStartedAt": "2026-10-25T13:28:20Z"
         },
         "firefox": {
           "status": "failed",
           "shard": "custom",
-          "runId": "40196072227",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/40196072227",
-          "runStartedAt": "2026-10-25T13:06:02Z"
+          "runId": "40197755222",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/40197755222",
+          "runStartedAt": "2026-10-25T13:28:20Z"
         }
       },
       "rel": "rest/zmsapi/queue/zmskvr-1250_zmskvr-1357_way_time_seconds.feature",
-      "runId": "40196072227",
-      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/40196072227",
-      "runStartedAt": "2026-10-25T13:06:02Z"
+      "runId": "40197755222",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/40197755222",
+      "runStartedAt": "2026-10-25T13:28:20Z"
     },
     "feature-ui-zmsadmin-queue-zmskvr-1250-zmskvr-1357-way-time-seconds": {
       "status": "failed",
@@ -39,22 +39,22 @@
         "chrome": {
           "status": "failed",
           "shard": "custom",
-          "runId": "40196072227",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/40196072227",
-          "runStartedAt": "2026-10-25T13:06:02Z"
+          "runId": "40197755222",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/40197755222",
+          "runStartedAt": "2026-10-25T13:28:20Z"
         },
         "firefox": {
           "status": "failed",
           "shard": "custom",
-          "runId": "40196072227",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/40196072227",
-          "runStartedAt": "2026-10-25T13:06:02Z"
+          "runId": "40197755222",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/40197755222",
+          "runStartedAt": "2026-10-25T13:28:20Z"
         }
       },
       "rel": "ui/zmsadmin/queue/zmskvr-1250_zmskvr-1357_way_time_seconds.feature",
-      "runId": "40196072227",
-      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/40196072227",
-      "runStartedAt": "2026-10-25T13:06:02Z"
+      "runId": "40197755222",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/40197755222",
+      "runStartedAt": "2026-10-25T13:28:20Z"
     },
     "feature-ui-zmsstatistic-waiting-zmskvr-1250-zmskvr-1357-waiting-statistic": {
       "status": "failed",
@@ -64,22 +64,22 @@
         "chrome": {
           "status": "failed",
           "shard": "custom",
-          "runId": "40196072227",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/40196072227",
-          "runStartedAt": "2026-10-25T13:06:02Z"
+          "runId": "40197755222",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/40197755222",
+          "runStartedAt": "2026-10-25T13:28:20Z"
         },
         "firefox": {
           "status": "failed",
           "shard": "custom",
-          "runId": "40196072227",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/40196072227",
-          "runStartedAt": "2026-10-25T13:06:02Z"
+          "runId": "40197755222",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/40197755222",
+          "runStartedAt": "2026-10-25T13:28:20Z"
         }
       },
       "rel": "ui/zmsstatistic/waiting/zmskvr-1250_zmskvr-1357_waiting_statistic.feature",
-      "runId": "40196072227",
-      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/40196072227",
-      "runStartedAt": "2026-10-25T13:06:02Z"
+      "runId": "40197755222",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/40197755222",
+      "runStartedAt": "2026-10-25T13:28:20Z"
     }
   }
 }
