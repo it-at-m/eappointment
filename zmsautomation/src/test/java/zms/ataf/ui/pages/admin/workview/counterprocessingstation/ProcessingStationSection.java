@@ -172,6 +172,14 @@ public class ProcessingStationSection extends CounterProcessingStationPage {
         clickQueueCallLinkWhenReady(queueCallLinkByName(name));
     }
 
+    public void assertCalledCustomerName(String name) {
+        By nameDetail = By.xpath("//section[contains(@class,'board client')]//dt[contains(.,'Name')]"
+                + "/following-sibling::dd[1][contains(.,\"" + name + "\")]");
+        new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .withMessage("Called customer should show " + name)
+                .until(ExpectedConditions.visibilityOfElementLocated(nameDetail));
+    }
+
     /** After the no-show lockout ends, the bold lockout text is replaced by the call link. */
     public void waitUntilCustomerCallLinkVisible(String name) {
         long[] lastReload = {0L};

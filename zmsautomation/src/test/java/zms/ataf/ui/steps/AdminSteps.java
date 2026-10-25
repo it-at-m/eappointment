@@ -1574,6 +1574,11 @@ public class AdminSteps {
         PROCESSING_STATION_SECTION.validateCustomerCallWithNumber(TestDataHelper.transformTestData(termin));
     }
 
+    @Then("the called customer named {string} is shown.")
+    public void theCalledCustomerNamedIsShown(String name) {
+        PROCESSING_STATION_SECTION.assertCalledCustomerName(TestDataHelper.transformTestData(name));
+    }
+
     @Then("the counter page is opened.")
     public void dann_wird_die_seite_tresen_geoeffnet() {
         COUNTER_SECTION.checkInformationVisible();

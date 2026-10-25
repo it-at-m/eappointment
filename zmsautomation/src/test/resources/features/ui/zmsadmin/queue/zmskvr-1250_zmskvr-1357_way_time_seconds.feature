@@ -29,7 +29,7 @@ Feature: Way, waiting and processing times stay exact to the second in the queue
 		And the customer "Muster Zmskvr1357Walk" arrived 4 seconds ago
 		When I show spontaneous customers in the queue.
 		And the clerk calls the customer "Muster Zmskvr1357Walk" from the waiting list.
-		Then the waiting customer "Muster Zmskvr1357Walk" is called.
+		Then the called customer named "Muster Zmskvr1357Walk" is shown.
 		And the called customer shows the waiting time as a clock time with seconds
 		And the time since the customer call counts in seconds
 		And I wait 3 seconds so the stored duration includes seconds
@@ -43,7 +43,7 @@ Feature: Way, waiting and processing times stay exact to the second in the queue
 		When I hide spontaneous customers in the queue.
 		And the customer "Muster Zmskvr1357Termin" arrived 4 seconds ago
 		And the clerk calls the customer "Muster Zmskvr1357Termin" from the waiting list.
-		Then the waiting customer "Muster Zmskvr1357Termin" is called.
+		Then the called customer named "Muster Zmskvr1357Termin" is shown.
 		And the called customer shows the waiting time as a clock time with seconds
 		And the time since the customer call counts in seconds
 		And I wait 3 seconds so the stored duration includes seconds
