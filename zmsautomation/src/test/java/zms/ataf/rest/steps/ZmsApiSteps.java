@@ -1167,14 +1167,20 @@ public class ZmsApiSteps {
         Thread.sleep(seconds * 1000L);
     }
 
+    @When("the customer {string} arrived {int} seconds ago")
+    public void theCustomerArrivedSecondsAgo(String familyName, int seconds) {
+        Assertions.assertThat(seconds).isBetween(1, 15);
+        WaitingTimeArchive.stampArrivalSecondsAgo(TestDataHelper.transformTestData(familyName), seconds);
+    }
+
     @Then("the called process stores the waiting time as a clock time with seconds")
     public void theCalledProcessStoresTheWaitingTimeAsAClockTimeWithSeconds() {
-        assertQueueClock(lastProcess, "waitingTime");
+        WaitingTimeArchive.assertStoredClock(processIdOf(lastProcess), "waiting_time");
     }
 
     @Then("the processing process stores the way time as a clock time with seconds")
     public void theProcessingProcessStoresTheWayTimeAsAClockTimeWithSeconds() {
-        assertQueueClock(lastProcess, "wayTime");
+        WaitingTimeArchive.assertStoredClock(processIdOf(lastProcess), "way_time");
     }
 
     @Then("the archived citizen {string} stores waiting, way and processing time to the second")
@@ -1182,16 +1188,13 @@ public class ZmsApiSteps {
         WaitingTimeArchive.assertArchivedSecondPrecision(familyName);
     }
 
-    private void assertQueueClock(JsonNode process, String field) {
+    private int processIdOf(JsonNode process) {
         Assertions.assertThat(process).as("process after the queue action").isNotNull();
-        String value = process.path("queue").path(field).asText("");
-        Assertions.assertThat(value)
-            .as("queue.%s body=%s", field, truncate(process.toString(), 800))
-            .matches("\\d{2}:\\d{2}:\\d{2}");
-        int seconds = LocalTime.parse(value).toSecondOfDay();
-        Assertions.assertThat(seconds)
-            .as("queue.%s", field)
-            .isBetween(1, 299);
+        int processId = process.path("id").asInt(0);
+        Assertions.assertThat(processId)
+            .as("process id body=%s", truncate(process.toString(), 500))
+            .isPositive();
+        return processId;
     }
 
     @When("I try to call the last process at the workstation with the X-AuthKey")

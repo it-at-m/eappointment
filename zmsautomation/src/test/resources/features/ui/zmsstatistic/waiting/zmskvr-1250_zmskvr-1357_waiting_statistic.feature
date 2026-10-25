@@ -18,7 +18,7 @@ Feature: Waiting statistic averages way and waiting time for the appointment hou
 		Then the response status code should be 200
 		When I queue a walk-in at scope 136 with service "Führungszeugnis" and name "Muster Zmskvr1357StatWalk" with the X-AuthKey
 		Then the response status code should be 200
-		And I wait 3 seconds so the stored duration includes seconds
+		And the customer "Muster Zmskvr1357StatWalk" arrived 4 seconds ago
 		When I call the last process at the workstation with the X-AuthKey
 		Then the response status code should be 200
 		And the called process stores the waiting time as a clock time with seconds
@@ -34,7 +34,7 @@ Feature: Waiting statistic averages way and waiting time for the appointment hou
 		When I reserve an appointment at scope 136 with service "Führungszeugnis" and name "Muster Zmskvr1357StatTermin" in the current hour when a slot is still free with the X-AuthKey
 		Then the response status code should be 200
 		And the process status should be "confirmed"
-		And I wait 3 seconds so the stored duration includes seconds
+		And the customer "Muster Zmskvr1357StatTermin" arrived 4 seconds ago
 		When I call the last appointment at the workstation with the X-AuthKey
 		Then the called process stores the waiting time as a clock time with seconds
 		And I wait 3 seconds so the stored duration includes seconds

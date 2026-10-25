@@ -127,13 +127,21 @@ final class WaitingStatisticWorkbook {
     private static String cellText(Element cell, String[] shared) throws IOException {
         String type = cell.getAttribute("t");
         if ("s".equals(type)) {
-            int sharedIndex = Integer.parseInt(directValue(cell));
+            int sharedIndex = sharedStringIndex(directValue(cell));
             return sharedIndex >= 0 && sharedIndex < shared.length ? shared[sharedIndex] : "";
         }
         if ("inlineStr".equals(type)) {
             return textOf(cell).trim();
         }
         return directValue(cell);
+    }
+
+    private static int sharedStringIndex(String value) throws IOException {
+        try {
+            return Integer.parseInt(value);
+        } catch (NumberFormatException exception) {
+            throw new IOException("Workbook shared string index is not a number: " + value, exception);
+        }
     }
 
     private static String directValue(Element cell) {

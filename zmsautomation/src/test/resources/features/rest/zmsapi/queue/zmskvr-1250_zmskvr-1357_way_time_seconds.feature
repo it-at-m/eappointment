@@ -9,13 +9,13 @@ Feature: The API stores way, waiting and processing time to the second
 	@rest @zmsapi @queue @system @ZMSKVR-1357 @ZMSKVR-1250 @executeLocally
 	Scenario: A walk-in and an appointment keep seconds in the process and in both archive tables
 		Given the ZMS API is available
-		And I am logged in to the ZMS API as "agent_queue"
+		And I am logged in to the ZMS API as "ataf"
 		And appointment slots exist for scope 169 in the current hour
 		When I update the workstation with scope 169 and counter "4" with the X-AuthKey
 		Then the response status code should be 200
 		When I queue a walk-in at scope 169 with service "Führungszeugnis" and name "Muster Zmskvr1357ApiWalk" with the X-AuthKey
 		Then the response status code should be 200
-		And I wait 3 seconds so the stored duration includes seconds
+		And the customer "Muster Zmskvr1357ApiWalk" arrived 4 seconds ago
 		When I call the last process at the workstation with the X-AuthKey
 		Then the response status code should be 200
 		And the called process stores the waiting time as a clock time with seconds
@@ -31,7 +31,7 @@ Feature: The API stores way, waiting and processing time to the second
 		When I reserve an appointment at scope 169 with service "Führungszeugnis" and name "Muster Zmskvr1357ApiTermin" in the current hour when a slot is still free with the X-AuthKey
 		Then the response status code should be 200
 		And the process status should be "confirmed"
-		And I wait 3 seconds so the stored duration includes seconds
+		And the customer "Muster Zmskvr1357ApiTermin" arrived 4 seconds ago
 		When I call the last appointment at the workstation with the X-AuthKey
 		Then the called process stores the waiting time as a clock time with seconds
 		And I wait 3 seconds so the stored duration includes seconds

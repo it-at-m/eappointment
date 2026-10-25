@@ -101,6 +101,60 @@ public final class WaitingTimeArchive {
         return (int) Math.round(minutes * 60.0d);
     }
 
+    /**
+     * A future appointment slot has no wait until the customer has an arrival.
+     * The daily calculator also skips a zero waiting time, so the row would never
+     * appear in the hour average. Stamp the arrival a few seconds before the call.
+     */
+    public static void stampArrivalSecondsAgo(String familyName, int seconds) {
+        String clock = BerlinTime.now().minusSeconds(seconds).format(TIME);
+        try (Connection connection = open();
+                PreparedStatement update = connection.prepareStatement(
+                        "UPDATE buerger SET wsm_aufnahmezeit = ? WHERE Name = ?")) {
+            update.setString(1, clock);
+            update.setString(2, familyName);
+            int rows = update.executeUpdate();
+            Assert.assertEquals(rows, 1,
+                    "Expected one buerger row for " + familyName + " when stamping arrival " + clock);
+            ScenarioLogManager.getLogger().info("Stamped arrival {} for {}", clock, familyName);
+        } catch (SQLException exception) {
+            throw new IllegalStateException("Could not stamp arrival for " + familyName, exception);
+        }
+    }
+
+    /** Live {@code buerger.waiting_time} or {@code way_time} after the status change has committed. */
+    public static void assertStoredClock(int processId, String column) {
+        String sql = "SELECT TIME_FORMAT(waiting_time, '%H:%i:%s'), TIME_FORMAT(way_time, '%H:%i:%s'), "
+                + "TIME_FORMAT(wsm_aufnahmezeit, '%H:%i:%s'), TIME_FORMAT(Uhrzeit, '%H:%i:%s'), "
+                + "TIME_FORMAT(aufrufzeit, '%H:%i:%s'), Name FROM buerger WHERE BuergerID = ?";
+        try (Connection connection = open();
+                PreparedStatement query = connection.prepareStatement(sql)) {
+            query.setInt(1, processId);
+            try (ResultSet rows = query.executeQuery()) {
+                Assert.assertTrue(rows.next(), "No live buerger row for id " + processId);
+                String waiting = rows.getString(1);
+                String way = rows.getString(2);
+                String detail = "id=" + processId
+                        + " name=" + rows.getString(6)
+                        + " waiting=" + waiting
+                        + " way=" + way
+                        + " arrival=" + rows.getString(3)
+                        + " uhrzeit=" + rows.getString(4)
+                        + " call=" + rows.getString(5);
+                ScenarioLogManager.getLogger().info("Stored clocks {}", detail);
+                String value = "way_time".equals(column) ? way : waiting;
+                Assert.assertNotNull(value, column + " is empty. " + detail);
+                Assert.assertTrue(CLOCK.matcher(value).matches(),
+                        column + " should be HH:MM:SS. " + detail);
+                int storedSeconds = LocalTime.parse(value, TIME).toSecondOfDay();
+                Assert.assertTrue(storedSeconds >= 1 && storedSeconds < 300,
+                        column + " should keep a few seconds. " + detail);
+            }
+        } catch (SQLException exception) {
+            throw new IllegalStateException("Could not read " + column + " for id " + processId, exception);
+        }
+    }
+
     public static void assertLiveClockTimes(String familyName) {
         try (Connection connection = open();
                 PreparedStatement query = connection.prepareStatement(
@@ -262,6 +316,17 @@ public final class WaitingTimeArchive {
                 familyName + " " + column + " is unexpectedly long: " + minutes + " minutes");
     }
 
+    private static int hourOf(String timestamp) {
+        if (timestamp == null || timestamp.length() < 2) {
+            return -1;
+        }
+        try {
+            return Integer.parseInt(timestamp.substring(0, 2));
+        } catch (NumberFormatException exception) {
+            throw new IllegalArgumentException("Archive timestamp is not a clock time: " + timestamp, exception);
+        }
+    }
+
     private static void assertClock(String value, String column) {
         Assert.assertNotNull(value, column + " is empty");
         Assert.assertTrue(CLOCK.matcher(value).matches(),
@@ -343,9 +408,7 @@ public final class WaitingTimeArchive {
 
     private static ArchivedTimes mapRow(ResultSet rows) throws SQLException {
         String timestamp = rows.getString(3);
-        int hour = timestamp == null || timestamp.length() < 2
-                ? -1
-                : Integer.parseInt(timestamp.substring(0, 2));
+        int hour = hourOf(timestamp);
         return new ArchivedTimes(
                 rows.getInt(1),
                 rows.getDate(2).toLocalDate(),

@@ -15,7 +15,7 @@ Feature: Way, waiting and processing times stay exact to the second in the queue
 		When I open the administration website.
 		Then I should be on the administration start page.
 		When I click the button "Anmelden" in the administration.
-		And I select for "Standort" the value "Bürgerbüro Pasing (KVR-II/235 Team 1) Serviceschalter" in the administration.
+		And I select for "Standort" the value "Bürgerbüro Pasing (KVR-II/235 Team 1) Serviceschalter".
 		And I enter in the field "Platz-Nr. oder Tresen" the text "4".
 		And I click the button "Auswahl bestätigen" in the administration.
 		Then the workstation page is displayed.
@@ -23,7 +23,7 @@ Feature: Way, waiting and processing times stay exact to the second in the queue
 		Then the queued walk-in "Muster Zmskvr1357Walk" shows a clock time and the queue table has no way time
 		When I book an appointment customer named "Muster Zmskvr1357Termin" for service "Führungszeugnis" in the current hour when a slot is still free.
 		Then the queued appointment "Muster Zmskvr1357Termin" shows a clock time and the queue table has no way time
-		And I wait 3 seconds so the stored duration includes seconds
+		And the customer "Muster Zmskvr1357Walk" arrived 4 seconds ago
 		When I show spontaneous customers in the queue.
 		And the clerk calls the customer "Muster Zmskvr1357Walk" from the waiting list.
 		Then the waiting customer "Muster Zmskvr1357Walk" is called.
@@ -38,6 +38,7 @@ Feature: Way, waiting and processing times stay exact to the second in the queue
 		And I finish the statistics processing if it is open.
 		Then the finished times for "Muster Zmskvr1357Walk" match the archived seconds
 		When I hide spontaneous customers in the queue.
+		And the customer "Muster Zmskvr1357Termin" arrived 4 seconds ago
 		And the clerk calls the customer "Muster Zmskvr1357Termin" from the waiting list.
 		Then the waiting customer "Muster Zmskvr1357Termin" is called.
 		And the called customer shows the waiting time as a clock time with seconds
