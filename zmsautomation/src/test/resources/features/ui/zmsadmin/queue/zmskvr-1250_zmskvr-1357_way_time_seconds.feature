@@ -12,6 +12,10 @@ Feature: Way, waiting and processing times stay exact to the second in the queue
 		Given the ZMS API is available
 		And I am logged in to the ZMS API as "ataf"
 		And appointment slots exist for scope 121 in the current hour
+		When I update the workstation with scope 121 and counter "4" with the X-AuthKey
+		Then the response status code should be 200
+		When I reserve an appointment at scope 121 with service "Führungszeugnis" and name "Muster Zmskvr1357Termin" in the current hour when a slot is still free with the X-AuthKey
+		Then the response status code should be 200
 		When I open the administration website.
 		Then I should be on the administration start page.
 		When I click the button "Anmelden" in the administration.
@@ -21,8 +25,6 @@ Feature: Way, waiting and processing times stay exact to the second in the queue
 		Then the workstation page is displayed.
 		When I book a walk-in customer named "Muster Zmskvr1357Walk" for service "Führungszeugnis".
 		Then the queued walk-in "Muster Zmskvr1357Walk" shows a clock time and the queue table has no way time
-		When I reserve an appointment at scope 121 with service "Führungszeugnis" and name "Muster Zmskvr1357Termin" in the current hour when a slot is still free with the X-AuthKey
-		Then the response status code should be 200
 		And the queued appointment "Muster Zmskvr1357Termin" shows a clock time and the queue table has no way time
 		And the customer "Muster Zmskvr1357Walk" arrived 4 seconds ago
 		When I show spontaneous customers in the queue.
