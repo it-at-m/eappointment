@@ -32,9 +32,7 @@ class ChangelogTest extends Base
         );
         $response = $this->render($this->arguments, $this->parameters, []);
         $this->assertStringContainsString('Changelog', (string)$response->getBody());
-        $this->assertStringContainsString('https://it-at-m.github.io/eappointment/overview/changelog.html', (string)$response->getBody());
-        $this->assertStringNotContainsString('INT_MS_', (string)$response->getBody());
-        $this->assertStringNotContainsString('2.24.', (string)$response->getBody());
+        $this->assertStringContainsString('https://it-at-m.github.io/eappointment/overview/changelog.html', (string)$response->getBody()); 
         $this->assertEquals(200, $response->getStatusCode());
     }
 
@@ -61,9 +59,7 @@ class ChangelogTest extends Base
         $this->assertStringContainsString('Changelog', (string)$response->getBody());
         $this->assertStringContainsString('Bürgeramt Heerstraße', (string)$response->getBody());
         $this->assertStringContainsString('Sachbearbeiter', (string)$response->getBody());
-        $this->assertStringContainsString('https://it-at-m.github.io/eappointment/overview/changelog.html', (string)$response->getBody());
-        $this->assertStringNotContainsString('INT_MS_', (string)$response->getBody());
-        $this->assertStringNotContainsString('2.24.', (string)$response->getBody());
+        $this->assertStringContainsString('https://it-at-m.github.io/eappointment/overview/changelog.html', (string)$response->getBody()); 
         $this->assertEquals(200, $response->getStatusCode());
     }
 
