@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-10-25T15:09:30.215Z",
+  "publishedAt": "2026-10-25T15:49:35.623Z",
   "branches": [
     {
       "name": "next",
@@ -570,6 +570,12 @@
       "slug": "test-zmskvr-1345-zmskvr-1461-scope-source-access",
       "runId": "38774879244",
       "runStartedAt": "2026-10-15T17:08:49Z"
+    },
+    {
+      "name": "test-zmskvr-1348-zmskvr-1479-changelog-link",
+      "slug": "test-zmskvr-1348-zmskvr-1479-changelog-link",
+      "runId": "40208059985",
+      "runStartedAt": "2026-10-25T15:40:32Z"
     },
     {
       "name": "test-zmskvr-1349-zmskvr-1580-status-access",
