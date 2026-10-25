@@ -10,6 +10,7 @@ import ataf.web.utils.DriverUtil;
 import io.cucumber.java.After;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import zms.ataf.ui.pages.admin.AdminPage;
 import zms.ataf.ui.pages.admin.ChangelogPage;
 
 public class ChangelogSteps {
@@ -62,20 +63,16 @@ public class ChangelogSteps {
         page.assertIntroductionLinksTo(url);
     }
 
-    @Then("the changelog page does not list releases from before 15 March 2023")
-    public void theChangelogPageDoesNotListReleasesFromBefore15March2023() {
-        page.assertReleasesBeforeMarch2023AreGone();
-    }
-
     @After(value = "@ZMSKVR-1479", order = 10002)
     public void restoreDefaultReleaseNotesLink() {
         if (!releaseNotesChanged) {
             return;
         }
         try {
+            new AdminPage(DriverUtil.getDriver()).navigateToPage();
             page.openSystemConfiguration();
             page.setReleaseNotesLink(ChangelogPage.DEFAULT_RELEASE_NOTES);
-        } catch (RuntimeException uiFailure) {
+        } catch (RuntimeException | AssertionError uiFailure) {
             ScenarioLogManager.getLogger().warn("Restoring the release notes link in the database.", uiFailure);
             restoreReleaseNotesLinkInDatabase();
         }

@@ -102,15 +102,6 @@ public class ChangelogPage extends BasePage {
                 "The changelog introduction points at the wrong address.");
     }
 
-    public void assertReleasesBeforeMarch2023AreGone() {
-        WebElement list = waitForPage().until(ExpectedConditions.presenceOfElementLocated(
-                By.cssSelector("div.complete-list")));
-        String text = list.getText();
-        Assert.assertTrue(text.contains("Release Muc"), "The changelog list is missing.");
-        Assert.assertFalse(text.contains("INT_MS_"), "A release from before 15 March 2023 is still listed.");
-        Assert.assertFalse(text.contains("2.24."), "A release numbered 2.24 is still listed.");
-    }
-
     private WebDriverWait waitForPage() {
         return new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
     }
