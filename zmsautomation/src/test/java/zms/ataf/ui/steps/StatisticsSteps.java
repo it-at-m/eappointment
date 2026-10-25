@@ -19,11 +19,13 @@ import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import zms.ataf.helpers.AccountCheckout;
 import zms.ataf.helpers.BerlinTime;
+import zms.ataf.helpers.WaitingTimeArchive;
 import zms.ataf.ui.pages.statistics.StatisticsPage;
 import zms.ataf.ui.pages.statistics.StatisticsPageContext;
 import zms.ataf.ui.pages.statistics.evaluations.CapacityStatisticsPage;
 import zms.ataf.ui.pages.statistics.evaluations.CustomerStatisticsPage;
 import zms.ataf.ui.pages.statistics.evaluations.ServiceStatisticsPage;
+import zms.ataf.ui.pages.statistics.evaluations.WaitingStatisticsPage;
 
 
 public class StatisticsSteps {
@@ -31,12 +33,14 @@ public class StatisticsSteps {
     private final CustomerStatisticsPage CUSTOMER_STATISTICS_PAGE;
     private final ServiceStatisticsPage SERVICE_STATISTICS_PAGE;
     private final CapacityStatisticsPage CAPACITY_STATISTICS_PAGE;
+    private final WaitingStatisticsPage WAITING_STATISTICS_PAGE;
 
     public StatisticsSteps() {
         STATISTICS_PAGE = new StatisticsPage(DriverUtil.getDriver());
         CUSTOMER_STATISTICS_PAGE = new CustomerStatisticsPage(DriverUtil.getDriver(), STATISTICS_PAGE.getContext());
         SERVICE_STATISTICS_PAGE = new ServiceStatisticsPage(DriverUtil.getDriver(), STATISTICS_PAGE.getContext());
         CAPACITY_STATISTICS_PAGE = new CapacityStatisticsPage(DriverUtil.getDriver(), STATISTICS_PAGE.getContext());
+        WAITING_STATISTICS_PAGE = new WaitingStatisticsPage(DriverUtil.getDriver(), STATISTICS_PAGE.getContext());
     }
 
     @When("I open the statistics website.")
@@ -212,6 +216,9 @@ public class StatisticsSteps {
         case "Terminkapazität":
             STATISTICS_PAGE.clickOnCapacityStatistics();
             break;
+        case "Wartestatistik":
+            WAITING_STATISTICS_PAGE.openFromSidebar();
+            break;
         default:
             throw new IllegalArgumentException("For button \"" + button + "\" no action is implemented yet!");
         }
@@ -275,6 +282,37 @@ public class StatisticsSteps {
                 throw new IllegalArgumentException("For column \"" + spalte + "\" no action is implemented yet!");
             }
         }
+    }
+
+    @And("I filter the waiting statistic to the calculated day")
+    public void iFilterTheWaitingStatisticToTheCalculatedDay() {
+        java.util.List<WaitingTimeArchive.HourAverage> averages = WaitingTimeArchive.calculatedAverages();
+        LocalDate day = averages.get(0).day;
+        Assert.assertTrue(averages.stream().allMatch(hour -> hour.day.equals(day)),
+                "The waiting statistic check needs one archive day: " + day);
+        STATISTICS_PAGE.applyDateRangeFilter(day, day);
+    }
+
+    @When("I calculate the waiting statistic for {string} and {string}")
+    public void iCalculateTheWaitingStatisticForAnd(String firstCustomer, String secondCustomer) {
+        WaitingTimeArchive.calculateAndExpect(
+                TestDataHelper.transformTestData(firstCustomer),
+                TestDataHelper.transformTestData(secondCustomer));
+    }
+
+    @Then("the waiting statistic shows those hour averages")
+    public void theWaitingStatisticShowsThoseHourAverages() {
+        WAITING_STATISTICS_PAGE.assertHourAverages(WaitingTimeArchive.calculatedAverages());
+    }
+
+    @When("I download the waiting statistic")
+    public void iDownloadTheWaitingStatistic() {
+        WAITING_STATISTICS_PAGE.downloadWorkbook();
+    }
+
+    @Then("the waiting statistic workbook shows those hour averages")
+    public void theWaitingStatisticWorkbookShowsThoseHourAverages() throws Exception {
+        WAITING_STATISTICS_PAGE.assertDownloadedHourAverages(WaitingTimeArchive.calculatedAverages());
     }
 
     @When("I click the download button in the statistics.")

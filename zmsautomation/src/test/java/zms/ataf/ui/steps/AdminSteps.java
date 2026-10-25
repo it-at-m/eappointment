@@ -49,6 +49,7 @@ import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import zms.ataf.helpers.AccountCheckout;
 import zms.ataf.helpers.BerlinTime;
+import zms.ataf.helpers.WaitingTimeArchive;
 import zms.ataf.helpers.PlainTextLengthSample;
 import zms.ataf.helpers.RandomNameHelper;
 import zms.ataf.rest.steps.CitizenApiSteps;
@@ -2200,6 +2201,107 @@ public class AdminSteps {
                 effektiveBearbeitungszeit.toString()
         );
         Assert.assertTrue(effektiveBearbeitungszeit.compareTo(minDuration) >= 0 && effektiveBearbeitungszeit.compareTo(maxDuration) <= 0, errorMessage);
+    }
+
+    @When("I book a walk-in customer named {string} for service {string}.")
+    public void iBookAWalkInCustomerNamedForService(String name, String service) {
+        name = TestDataHelper.transformTestData(name);
+        wenn_sie_im_zeitmanagementsystem_unter_terminvereinbarung_neu_die_dienstleistung_string_auswaehlen(service);
+        COUNTER_PROCESSING_STATION_PAGE.selectWalkInCustomer();
+        COUNTER_PROCESSING_STATION_PAGE.enterNameInNewAppointmentTextField(name);
+        String email = name.toLowerCase(Locale.ROOT).replaceAll("[^a-z0-9]", "") + "@mailinator.com";
+        COUNTER_PROCESSING_STATION_PAGE.enterEmailInNewAppointmentTextField(email);
+        COUNTER_PROCESSING_STATION_PAGE.clickOnAddSpontaneousCustomer();
+        try {
+            wenn_sie_im_zeitmanagementsystem_auf_die_schaltflaeche_string_klicken("Schließen");
+        } catch (Exception exception) {
+            throw new RuntimeException(exception);
+        }
+    }
+
+    @When("I book an appointment customer named {string} for service {string} in the current hour when a slot is still free.")
+    public void iBookAnAppointmentCustomerNamedInTheCurrentHour(String name, String service) {
+        name = TestDataHelper.transformTestData(name);
+        wenn_sie_im_zeitmanagementsystem_unter_terminvereinbarung_neu_die_dienstleistung_string_auswaehlen(service);
+        COUNTER_PROCESSING_STATION_PAGE.waitUntilSlotCountMatchesSelectedServices();
+        COUNTER_PROCESSING_STATION_PAGE.selectTimeInNewAppointmentDropDownList("<aktuelle Stunde>", java.util.Set.of(), false);
+        wenn_sie_im_zeitmanagementsystem_unter_terminvereinbarung_neu_den_namen_string_eingeben(name);
+        wenn_sie_im_zeitmanagementsystem_unter_terminvereinbarung_neu_die_email_adresse_string_eingeben("<mailinator>");
+        bookNamedAppointmentOrWalkIn(
+                TestDataHelper.getTestData("customer_name"),
+                TestDataHelper.getTestData("customer_email"));
+    }
+
+    @When("I show spontaneous customers in the queue.")
+    public void iShowSpontaneousCustomersInTheQueue() {
+        COUNTER_PROCESSING_STATION_PAGE.showSpontaneousCustomers(true);
+    }
+
+    @When("I hide spontaneous customers in the queue.")
+    public void iHideSpontaneousCustomersInTheQueue() {
+        COUNTER_PROCESSING_STATION_PAGE.showSpontaneousCustomers(false);
+    }
+
+    @Then("the queued walk-in {string} shows a clock time and the queue table has no way time")
+    public void theQueuedWalkInShowsAClockTime(String familyName) {
+        COUNTER_PROCESSING_STATION_PAGE.assertQueuedCustomerShowsClockTime(
+                TestDataHelper.transformTestData(familyName), true);
+    }
+
+    @Then("the queued appointment {string} shows a clock time and the queue table has no way time")
+    public void theQueuedAppointmentShowsAClockTime(String familyName) {
+        COUNTER_PROCESSING_STATION_PAGE.assertQueuedCustomerShowsClockTime(
+                TestDataHelper.transformTestData(familyName), false);
+    }
+
+    @Then("the called customer shows the waiting time as a clock time with seconds")
+    public void theCalledCustomerShowsTheWaitingTimeAsAClockTimeWithSeconds() {
+        assertClockTimeWithSeconds(PROCESSING_STATION_SECTION.waitingTimeOnCustomerInformation(), "Waiting time");
+    }
+
+    @Then("the time since the customer call counts in seconds")
+    public void theTimeSinceTheCustomerCallCountsInSeconds() {
+        String clock = PROCESSING_STATION_SECTION.timeSinceCustomerCall();
+        Assert.assertTrue(clock.matches("\\d{2}:\\d{2}"), "Time since the call should be mm:ss and was " + clock);
+    }
+
+    @Then("the processing customer shows the waiting time as a clock time with seconds")
+    public void theProcessingCustomerShowsTheWaitingTimeAsAClockTimeWithSeconds() {
+        assertClockTimeWithSeconds(PROCESSING_STATION_SECTION.waitingTimeOnCustomerInformation(), "Waiting time");
+    }
+
+    @Then("the live citizen {string} stores way time as a clock time")
+    public void theLiveCitizenStoresWayTimeAsAClockTime(String familyName) {
+        WaitingTimeArchive.assertLiveClockTimes(TestDataHelper.transformTestData(familyName));
+    }
+
+    @Then("the finished times for {string} match the archived seconds")
+    public void theFinishedTimesMatchTheArchivedSeconds(String familyName) {
+        familyName = TestDataHelper.transformTestData(familyName);
+        WaitingTimeArchive.ArchivedTimes archive = WaitingTimeArchive.assertArchivedSecondPrecision(familyName);
+        Assert.assertEquals(
+                COUNTER_PROCESSING_STATION_PAGE.getFinishedAppointmentWaitingTime(familyName).toSeconds(),
+                flooredSeconds(archive.waitingMinutes),
+                "Finished waiting time");
+        Assert.assertEquals(
+                COUNTER_PROCESSING_STATION_PAGE.getFinishedAppointmentWayTime(familyName).toSeconds(),
+                flooredSeconds(archive.wayMinutes),
+                "Finished way time");
+        Assert.assertEquals(
+                COUNTER_PROCESSING_STATION_PAGE.getFinishedAppointmentProcessingTime(familyName).toSeconds(),
+                flooredSeconds(archive.processingMinutes),
+                "Finished processing time");
+    }
+
+    private static long flooredSeconds(double minutes) {
+        return (long) Math.floor(minutes * 60.0d + 1.0e-6d);
+    }
+
+    private static void assertClockTimeWithSeconds(String value, String label) {
+        Assert.assertTrue(value.matches("\\d{2}:\\d{2}:\\d{2}"), label + " should be HH:MM:SS and was " + value);
+        LocalTime parsed = LocalTime.parse(value, DateTimeFormatter.ofPattern("HH:mm:ss"));
+        Assert.assertTrue(parsed.toSecondOfDay() >= 1 && parsed.toSecondOfDay() < 300,
+                label + " should keep the seconds and was " + value);
     }
 
     @When("I select {string} in the cluster-location dropdown in the location-table menu.")

@@ -604,6 +604,24 @@ public class ProcessingStationSection extends CounterProcessingStationPage {
         Assert.assertTrue(isWebElementVisible(DEFAULT_EXPLICIT_WAIT_TIME, "clock", LocatorType.ID, false));
     }
 
+    public String waitingTimeOnCustomerInformation() {
+        String waiting = getWebElementText(
+                DEFAULT_EXPLICIT_WAIT_TIME,
+                "//dt[contains(.,'Wartezeit')]/following-sibling::dd[1]",
+                LocatorType.XPATH,
+                CONTEXT).trim();
+        ScenarioLogManager.getLogger().info("Waiting time on the customer card: {}", waiting);
+        return waiting;
+    }
+
+    public String timeSinceCustomerCall() {
+        WebElement clock = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(ExpectedConditions.visibilityOfElementLocated(By.id("clock")));
+        String text = clock.getText().trim();
+        ScenarioLogManager.getLogger().info("Time since the customer call: {}", text);
+        return text;
+    }
+
     public void assertCallOtherProcessConfirmDialogVisible() {
         ScenarioLogManager.getLogger().info("Checking confirm dialog for switching queue customer...");
         WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));

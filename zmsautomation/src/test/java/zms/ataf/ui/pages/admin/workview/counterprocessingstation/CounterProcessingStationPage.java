@@ -159,6 +159,20 @@ public class CounterProcessingStationPage extends AdminPage {
         }
     }
 
+    /** The queue list shows the clock time. Way, wait and processing appear only after the call. */
+    public void assertQueuedCustomerShowsClockTime(String familyName, boolean spontaneous) {
+        showSpontaneousCustomers(spontaneous);
+        By row = By.xpath("//table[@id='table-queued-appointments']//tr[.//a[normalize-space(.)="
+                + xpathLiteral(familyName) + "]]");
+        WebElement found = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(ExpectedConditions.visibilityOfElementLocated(row));
+        Assert.assertTrue(found.getText().matches("(?s).*\\d{2}:\\d{2}.*"),
+                "Queued row for " + familyName + " has no clock time: " + found.getText());
+        String header = DRIVER.findElement(By.cssSelector("#table-queued-appointments thead")).getText();
+        Assert.assertFalse(header.contains("Wegezeit"),
+                "Way time is not a column of the waiting queue. Header: " + header);
+    }
+
     public void isCustomerVisibleInQueue(String transactionNumber, boolean isSpontaneousCustomer) {
 
         String numOnly = transactionNumber == null
@@ -996,6 +1010,7 @@ public class CounterProcessingStationPage extends AdminPage {
                     switch (time) {
                     case "<beliebig>":
                     case "<nächste>":
+                    case "<aktuelle Stunde>":
                         List<WebElement> bookableTimeSlots = options.stream()
                                 .filter(option -> !option.getText().contains("Spontankunde"))
                                 .filter(option -> {
@@ -1013,6 +1028,15 @@ public class CounterProcessingStationPage extends AdminPage {
                         if (time.equals("<beliebig>")) {
                             final SecureRandom SECURE_RANDOM = new SecureRandom();
                             webElement = bookableTimeSlots.get(SECURE_RANDOM.nextInt(bookableTimeSlots.size()));
+                        } else if (time.equals("<aktuelle Stunde>")) {
+                            webElement = slotInCurrentHourOrNext(bookableTimeSlots, timeSlotPattern, daysAhead[0]);
+                            if (webElement == null) {
+                                if (fallBackToWalkIn && selectWalkInOption(
+                                        newAppointmentTimeDropDownListSelections, newAppointmentTimeDropDownList)) {
+                                    break;
+                                }
+                                return nextDayOrFail(daysAhead, allowNextDay);
+                            }
                         } else {
                             webElement = bookableTimeSlots.get(0);
                         }
@@ -1058,6 +1082,41 @@ public class CounterProcessingStationPage extends AdminPage {
         } catch (Exception e) {
             Assert.fail("Selecting time \"" + TestDataHelper.getTestData("new_appointment_time") + "\" in new appointment drop down list has failed,", e);
         }
+    }
+
+    /**
+     * Prefer a free slot that is still ahead and in the current Berlin hour, so a walk-in
+     * booked now and this appointment share the statistic hour. Otherwise the next future slot.
+     */
+    private WebElement slotInCurrentHourOrNext(List<WebElement> slots, Pattern timeSlotPattern, int daysAhead) {
+        int hour = BerlinTime.now().getHour();
+        LocalTime now = BerlinTime.now();
+        WebElement sameHour = null;
+        WebElement later = null;
+        for (WebElement option : slots) {
+            Matcher matcher = timeSlotPattern.matcher(option.getText());
+            if (!matcher.find()) {
+                continue;
+            }
+            LocalTime slot = LocalTime.parse(matcher.group(1));
+            if (daysAhead == 0 && !slot.isAfter(now)) {
+                continue;
+            }
+            if (later == null) {
+                later = option;
+            }
+            if (daysAhead == 0 && slot.getHour() == hour && sameHour == null) {
+                sameHour = option;
+            }
+        }
+        if (sameHour != null) {
+            ScenarioLogManager.getLogger().info("Using a free slot in the current hour.");
+            return sameHour;
+        }
+        if (later != null) {
+            ScenarioLogManager.getLogger().info("No free slot left in the current hour; using the next future slot.");
+        }
+        return later;
     }
 
     /**
@@ -1719,6 +1778,16 @@ public class CounterProcessingStationPage extends AdminPage {
         Duration waitingTime = Duration.ofHours(time.getHour()).plusMinutes(time.getMinute()).plusSeconds(time.getSecond());
 
         return waitingTime;
+    }
+
+    public Duration getFinishedAppointmentWayTime(String customer) {
+        ScenarioLogManager.getLogger().info("Trying to get way time for " + customer + " under the finished appointments table...");
+        isCustomerVisibleInFinishedTable(customer);
+        String xpath = "//table[@id='table-finished-appointments']//tr[td[position() = 3 and contains(., '"
+                + customer + "')]]/td[7]";
+        String wayTimeText = DRIVER.findElement(By.xpath(xpath)).getText();
+        LocalTime time = LocalTime.parse(wayTimeText, DateTimeFormatter.ofPattern("H:mm:ss"));
+        return Duration.ofHours(time.getHour()).plusMinutes(time.getMinute()).plusSeconds(time.getSecond());
     }
 
     public Duration getFinishedAppointmentProcessingTime(String customer) {
