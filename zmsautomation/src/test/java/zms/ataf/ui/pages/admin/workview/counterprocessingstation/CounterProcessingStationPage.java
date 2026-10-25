@@ -768,23 +768,31 @@ public class CounterProcessingStationPage extends AdminPage {
             CONTEXT.waitForSpinners();
         }
         ScenarioLogManager.getLogger().info("Deleting queued appointment for {}", familyName);
-        // After a no-show the name cell also contains the call count and the lockout text,
-        // so an exact name match misses the row. The waiting number stays in its own cell.
+        // new_waiting_number is only the last walk-in in this scenario. Several rows must be
+        // deleted by name. After a no-show the name cell also contains the call count and the
+        // lockout text, so that row is found by the waiting number instead.
+        String nameLink = "//table[@id='table-queued-appointments']//tr["
+                + "td[contains(@class,'callnextclient') and normalize-space(.)="
+                + xpathLiteral(familyName) + "]]"
+                + "//a[contains(@class,'process-delete')]";
+        String deleteLink = nameLink;
         String waitingNumber = TestDataHelper.getTestData("new_waiting_number");
-        String deleteLink;
-        if ("true".equals(TestDataHelper.getTestData("appointment_booked_as_walk_in"))
-                && waitingNumber != null && !waitingNumber.isBlank()) {
-            String shown = waitingNumber.trim();
-            String numOnly = shown.replaceAll("\\D+", "");
-            deleteLink = "//table[@id='table-queued-appointments']/tbody/tr["
-                    + ".//td[normalize-space()=" + xpathLiteral(shown)
-                    + " or normalize-space()=" + xpathLiteral(numOnly) + "]]"
-                    + "//a[contains(@class,'process-delete')]";
-        } else {
-            deleteLink = "//table[@id='table-queued-appointments']//tr["
-                    + "td[contains(@class,'callnextclient') and normalize-space(.)="
-                    + xpathLiteral(familyName) + "]]"
-                    + "//a[contains(@class,'process-delete')]";
+        boolean walkIn = "true".equals(TestDataHelper.getTestData("appointment_booked_as_walk_in"));
+        try {
+            new WebDriverWait(DRIVER, Duration.ofSeconds(5))
+                    .until(ExpectedConditions.presenceOfElementLocated(By.xpath(nameLink)));
+        } catch (TimeoutException nameMissing) {
+            if (walkIn && waitingNumber != null && !waitingNumber.isBlank()) {
+                String shown = waitingNumber.trim();
+                String numOnly = shown.replaceAll("\\D+", "");
+                deleteLink = "//table[@id='table-queued-appointments']/tbody/tr["
+                        + ".//td[normalize-space()=" + xpathLiteral(shown)
+                        + " or normalize-space()=" + xpathLiteral(numOnly) + "]]"
+                        + "//a[contains(@class,'process-delete')]";
+                ScenarioLogManager.getLogger().info(
+                        "Name cell for {} is not an exact match; deleting waiting number {}",
+                        familyName, shown);
+            }
         }
         clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, deleteLink, LocatorType.XPATH, false, CONTEXT);
         WebElement messageTitleElement = findElementByLocatorType("section.board.dialog h2.board__heading", LocatorType.CSSSELECTOR, false);
