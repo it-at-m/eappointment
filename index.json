@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-10-25T09:56:26.495Z",
+  "publishedAt": "2026-10-25T13:15:36.339Z",
   "branches": [
     {
       "name": "next",
@@ -528,6 +528,12 @@
       "slug": "test-zmskvr-1249-zmskvr-1583-sunday-opening-hours-range",
       "runId": "37194954540",
       "runStartedAt": "2026-10-04T10:18:41Z"
+    },
+    {
+      "name": "test-zmskvr-1250-zmskvr-1357-way-time-seconds",
+      "slug": "test-zmskvr-1250-zmskvr-1357-way-time-seconds",
+      "runId": "40196072227",
+      "runStartedAt": "2026-10-25T13:06:02Z"
     },
     {
       "name": "test-zmskvr-1258-zmskvr-1261-pass-mix-rup",
