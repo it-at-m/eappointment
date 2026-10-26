@@ -15,35 +15,56 @@ export interface SlotSubservice {
  * at most providers but 1 slot at one provider, we count 3 slots to be
  * conservative with the slot limit.
  */
+const serviceLength = (provider: OfficeImpl): number => {
+  const slots = provider.slots && provider.slots > 0 ? provider.slots : 0;
+  if (slots <= 0) {
+    return 0;
+  }
+  const slotTime =
+    provider.slotTimeInMinutes && provider.slotTimeInMinutes > 0
+      ? provider.slotTimeInMinutes
+      : 0;
+  return slotTime > 0 ? slots * slotTime : slots;
+};
+
 export const getMaxSlotOfProvider = (providers: OfficeImpl[]): number => {
   let maxSlot = 1; // Default to 1 slot minimum
   providers.forEach((provider) => {
-    if (provider.slots && provider.slots > maxSlot) {
-      maxSlot = provider.slots;
+    const length = serviceLength(provider);
+    if (length > maxSlot) {
+      maxSlot = length;
     }
   });
   return maxSlot;
 };
 
 /**
- * Gets the minimum slotsPerAppointment across all providers.
+ * Gets the minimum maxAppointmentLengthInMinutes across all providers.
  * We use MIN (not max) because we need to ensure the booking works at
  * ALL providers that offer this service. If Provider A allows 10 slots
  * and Provider B allows 3 slots, we must limit to 3 to work everywhere.
  */
+const slotCeiling = (provider: OfficeImpl): number => {
+  const slotTime =
+    provider.slotTimeInMinutes && provider.slotTimeInMinutes > 0
+      ? provider.slotTimeInMinutes
+      : 1;
+  return MAX_SLOTS * slotTime;
+};
+
+const configuredMinutes = (provider: OfficeImpl): number => {
+  const parsed = parseInt(provider.maxAppointmentLengthInMinutes ?? "");
+  return parsed > 0 ? parsed : 0;
+};
+
 export const getMinSlotsPerAppointmentOfProvider = (
   providers: OfficeImpl[]
 ): number => {
   let minSlot = 0;
   providers.forEach((provider) => {
-    if (
-      provider.slotsPerAppointment &&
-      parseInt(provider.slotsPerAppointment) > 0
-    ) {
-      const providerSlots = parseInt(provider.slotsPerAppointment);
-      if (minSlot === 0 || providerSlots < minSlot) {
-        minSlot = providerSlots;
-      }
+    const minutes = configuredMinutes(provider);
+    if (minutes > 0 && (minSlot === 0 || minutes < minSlot)) {
+      minSlot = minutes;
     }
   });
   return minSlot;
@@ -55,10 +76,20 @@ export const getMinSlotsPerAppointmentOfProvider = (
 export const getEffectiveMinSlotsPerAppointment = (
   providers: OfficeImpl[]
 ): number => {
-  const minSlotsOfProvider = getMinSlotsPerAppointmentOfProvider(providers);
-  return minSlotsOfProvider > 0
-    ? Math.min(minSlotsOfProvider, MAX_SLOTS)
-    : MAX_SLOTS;
+  if (providers.length === 0) {
+    return MAX_SLOTS;
+  }
+
+  let minimum = 0;
+  providers.forEach((provider) => {
+    const ceiling = slotCeiling(provider);
+    const configured = configuredMinutes(provider);
+    const budget = configured > 0 ? Math.min(configured, ceiling) : ceiling;
+    if (minimum === 0 || budget < minimum) {
+      minimum = budget;
+    }
+  });
+  return minimum;
 };
 
 /**
@@ -127,7 +158,7 @@ export const exceedsSlotLimit = (
 /**
  * Adjusts the main service count to fit within slot limits.
  * When at least one unit fits, count stays at least 1 (same as before the zero-count
- * path). Returns 0 only when quantity 1 already exceeds slotsPerAppointment.
+ * path). Returns 0 only when quantity 1 already exceeds maxAppointmentLengthInMinutes.
  */
 export const adjustMainServiceCount = (
   requestedCount: number,

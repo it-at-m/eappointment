@@ -87,7 +87,7 @@ export interface Office {
    * @type {string}
    * @memberof Office
    */
-  slotsPerAppointment?: string;
+  maxAppointmentLengthInMinutes?: string;
   /**
    *
    * @type {number}

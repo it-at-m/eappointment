@@ -23,7 +23,7 @@ export function toOfficeImpl(office: Office): OfficeImpl {
     office.disabledByServices,
     office.allowDisabledServicesMix,
     office.scope,
-    office.slotsPerAppointment,
+    office.maxAppointmentLengthInMinutes,
     office.slots,
     office.priority || 1,
     office.parentId,

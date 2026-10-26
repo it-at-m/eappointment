@@ -2843,7 +2843,7 @@ describe("AppointmentView", () => {
           postal_code: "12345",
           city: "Test City",
         },
-        slotsPerAppointment: "2",
+        maxAppointmentLengthInMinutes: "2",
       } as any;
       wrapper.vm.selectedTimeslot = uiStoragePayload.selectedTimeslot;
       wrapper.vm.customerData = {
@@ -2880,7 +2880,7 @@ describe("AppointmentView", () => {
       expect(stored).not.toContain("captcha-secret");
       expect(stored).not.toContain("customerData");
       expect(stored).not.toContain("captchaToken");
-      expect(stored).not.toContain("slotsPerAppointment");
+      expect(stored).not.toContain("maxAppointmentLengthInMinutes");
       expect(stored).not.toContain("Test Provider");
       const parsed = JSON.parse(stored as string);
       expect(parsed.appointment).toBeUndefined();
@@ -2910,7 +2910,7 @@ describe("AppointmentView", () => {
           selectedProvider: {
             id: "789",
             name: "Legacy Provider Object",
-            slotsPerAppointment: "9",
+            maxAppointmentLengthInMinutes: "9",
           },
           appointment: {
             processId: "legacy-id",

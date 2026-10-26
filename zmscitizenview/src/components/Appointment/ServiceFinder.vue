@@ -528,7 +528,7 @@ const getProviders = (serviceId: string, providers: string[] | null) => {
         office.disabledByServices,
         office.allowDisabledServicesMix,
         office.scope,
-        office.slotsPerAppointment,
+        office.maxAppointmentLengthInMinutes,
         office.slots,
         office.priority || 1,
         office.parentId,
@@ -605,7 +605,7 @@ const showEstimatedDuration = computed(() => {
 });
 
 /**
- * Maximum count for the selected service from maxQuantity and slotsPerAppointment.
+ * Maximum count for the selected service from maxQuantity and maxAppointmentLengthInMinutes.
  * 0 when the service does not fit even once (counter stays at 0, Weiter disabled).
  */
 const maxValueOfService = computed(() => {
@@ -622,7 +622,7 @@ const maxValueOfService = computed(() => {
   );
 });
 
-/** Counter min is 1 when a booking is possible; 0 when slotsPerAppointment blocks qty 1. */
+/** Counter min is 1 when a booking is possible; 0 when maxAppointmentLengthInMinutes blocks qty 1. */
 const minValueOfService = computed(() => (maxValueOfService.value > 0 ? 1 : 0));
 
 /** MucCounter treats max=0 as unlimited; disable both buttons when nothing fits. */

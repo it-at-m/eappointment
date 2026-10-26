@@ -40,25 +40,28 @@ describe("slotCalculations", () => {
       expect(getMinSlotsPerAppointmentOfProvider([])).toBe(0);
     });
 
-    it("returns minimum slotsPerAppointment from multiple providers", () => {
+    it("returns minimum maxAppointmentLengthInMinutes from multiple providers", () => {
       const providers = [
-        { slotsPerAppointment: "10" },
-        { slotsPerAppointment: "3" },
-        { slotsPerAppointment: "7" },
+        { maxAppointmentLengthInMinutes: "10" },
+        { maxAppointmentLengthInMinutes: "3" },
+        { maxAppointmentLengthInMinutes: "7" },
       ] as any[];
       expect(getMinSlotsPerAppointmentOfProvider(providers)).toBe(3);
     });
 
-    it("ignores providers with no slotsPerAppointment", () => {
-      const providers = [{ id: "1" }, { slotsPerAppointment: "5" }] as any[];
+    it("ignores providers with no maxAppointmentLengthInMinutes", () => {
+      const providers = [
+        { id: "1" },
+        { maxAppointmentLengthInMinutes: "5" },
+      ] as any[];
       expect(getMinSlotsPerAppointmentOfProvider(providers)).toBe(5);
     });
 
-    it("ignores providers with 0 or negative slotsPerAppointment", () => {
+    it("ignores providers with 0 or negative maxAppointmentLengthInMinutes", () => {
       const providers = [
-        { slotsPerAppointment: "0" },
-        { slotsPerAppointment: "-1" },
-        { slotsPerAppointment: "4" },
+        { maxAppointmentLengthInMinutes: "0" },
+        { maxAppointmentLengthInMinutes: "-1" },
+        { maxAppointmentLengthInMinutes: "4" },
       ] as any[];
       expect(getMinSlotsPerAppointmentOfProvider(providers)).toBe(4);
     });
@@ -71,22 +74,25 @@ describe("slotCalculations", () => {
 
     it("returns minimum from providers when less than MAX_SLOTS", () => {
       const providers = [
-        { slotsPerAppointment: "10" },
-        { slotsPerAppointment: "5" },
+        { maxAppointmentLengthInMinutes: "10" },
+        { maxAppointmentLengthInMinutes: "5" },
       ] as any[];
       expect(getEffectiveMinSlotsPerAppointment(providers)).toBe(5);
     });
 
     it("caps at MAX_SLOTS when provider value exceeds it", () => {
       const providers = [
-        { slotsPerAppointment: "30" },
-        { slotsPerAppointment: "50" },
+        { maxAppointmentLengthInMinutes: "30" },
+        { maxAppointmentLengthInMinutes: "50" },
       ] as any[];
       expect(getEffectiveMinSlotsPerAppointment(providers)).toBe(25);
     });
 
-    it("returns MAX_SLOTS when no provider has valid slotsPerAppointment", () => {
-      const providers = [{ slotsPerAppointment: "0" }, { id: "2" }] as any[];
+    it("returns MAX_SLOTS when no provider has valid maxAppointmentLengthInMinutes", () => {
+      const providers = [
+        { maxAppointmentLengthInMinutes: "0" },
+        { id: "2" },
+      ] as any[];
       expect(getEffectiveMinSlotsPerAppointment(providers)).toBe(25);
     });
   });
@@ -234,7 +240,7 @@ describe("slotCalculations", () => {
       expect(result.totalSlots).toBe(8);
     });
 
-    it("allows count of 0 when service slots alone exceed slotsPerAppointment", () => {
+    it("allows count of 0 when service slots alone exceed maxAppointmentLengthInMinutes", () => {
       const providers = [{ slots: 3 }] as any[];
       const result = adjustMainServiceCount(1, providers, 0, 1);
       expect(result.adjustedCount).toBe(0);
