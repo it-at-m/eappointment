@@ -9,7 +9,7 @@ import java.nio.file.Path;
 import java.time.DayOfWeek;
 import java.time.Duration;
 import java.time.Instant;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -3488,38 +3488,55 @@ public class ZmsApiSteps {
             .as("opening hours day")
             .isNotNull();
         String authKey = getOrLoginXAuthKey();
+        calculateSlotsForSavedOpeningHour();
         int windowMinutes = durationMinutes(slotChangeStart, slotChangeEnd);
         JsonNode request = shortestRequestThatFits(scopeId, authKey, slotChangeExpectedMinutes, windowMinutes);
         savedOpeningServiceSlots = request.path("timeSlotCount").asInt();
-        JsonNode slot = freeSlotOnSavedOpeningHour(scopeId, request, authKey);
-        ObjectNode process = (ObjectNode) slot.deepCopy();
-        process.put("amendment", "ZMSKVR-1627");
-        process.set("requests", MAPPER.createArrayNode().add(request.deepCopy()));
-        ObjectNode client = MAPPER.createObjectNode();
-        client.put("familyName", "Muster Zmskvr1627");
-        client.put("email", "musterzmskvr1627@mailinator.com");
-        client.put("surveyAccepted", 1);
-        process.set("clients", MAPPER.createArrayNode().add(client));
-        response = given()
-            .baseUri(apiBaseUri())
-            .header("X-AuthKey", authKey)
-            .contentType("application/json")
-            .queryParam("slotType", "intern")
-            .queryParam("clientkey", "")
-            .queryParam("slotsRequired", savedOpeningServiceSlots)
-            .body(toJson(process))
-        .when()
-            .post("/process/status/reserved/");
-        CommonApiSteps.setResponse(response);
-        Assertions.assertThat(response.getStatusCode())
-            .as("POST /process/status/reserved/ body=%s", truncate(response.asString(), 800))
-            .isEqualTo(200);
-        response = postConfirmedWithDeadlockRetry(authKey, parseDataNode(response));
-        CommonApiSteps.setResponse(response);
-        Assertions.assertThat(response.getStatusCode())
-            .as("POST /process/status/confirmed/ body=%s", truncate(response.asString(), 800))
-            .isEqualTo(200);
-        rememberProcess(parseDataNode(response));
+        List<JsonNode> slots = freeSlotsOnSavedOpeningHour(scopeId, request, authKey);
+        AssertionError lastFailure = null;
+        for (JsonNode slot : slots) {
+            ObjectNode process = (ObjectNode) slot.deepCopy();
+            process.put("amendment", "ZMSKVR-1627");
+            process.set("requests", MAPPER.createArrayNode().add(request.deepCopy()));
+            ObjectNode client = MAPPER.createObjectNode();
+            client.put("familyName", "Muster Zmskvr1627");
+            client.put("email", "musterzmskvr1627@mailinator.com");
+            client.put("surveyAccepted", 1);
+            process.set("clients", MAPPER.createArrayNode().add(client));
+            response = given()
+                .baseUri(apiBaseUri())
+                .header("X-AuthKey", authKey)
+                .contentType("application/json")
+                .queryParam("slotType", "intern")
+                .queryParam("clientkey", "")
+                .queryParam("slotsRequired", savedOpeningServiceSlots)
+                .body(toJson(process))
+            .when()
+                .post("/process/status/reserved/");
+            CommonApiSteps.setResponse(response);
+            if (response.getStatusCode() != 200) {
+                continue;
+            }
+            response = postConfirmedWithDeadlockRetry(authKey, parseDataNode(response));
+            CommonApiSteps.setResponse(response);
+            if (response.getStatusCode() != 200) {
+                continue;
+            }
+            rememberProcess(parseDataNode(response));
+            int slotMinutes = lastProcess.path("appointments").path(0)
+                .path("availability").path("slotTimeInMinutes").asInt(0);
+            if (slotMinutes == slotChangeExpectedMinutes) {
+                return;
+            }
+            iDeleteTheLastProcessWithTheXAuthKey();
+            lastFailure = new AssertionError(
+                "saved series slot " + slotChangeExpectedMinutes + " but booked slot " + slotMinutes);
+        }
+        if (lastFailure != null) {
+            throw lastFailure;
+        }
+        Assertions.fail("no free intern slot in the saved window at scope " + scopeId
+            + " on opening hours " + slotChangeAvailabilityId);
     }
 
     @Then("the last appointment uses the saved slot length with the X-AuthKey")
@@ -3742,49 +3759,110 @@ public class ZmsApiSteps {
         return best;
     }
 
-    private JsonNode freeSlotOnSavedOpeningHour(int scopeId, JsonNode request, String authKey) {
+    private void calculateSlotsForSavedOpeningHour() {
+        Path backend = Path.of(System.getProperty("user.dir")).resolve("../zmsbackend").normalize();
+        if (!Files.isRegularFile(backend.resolve("bin/script_bootstrap.php"))) {
+            backend = Path.of("/var/www/html/zmsbackend");
+        }
+        Path bootstrap = backend.resolve("bin/script_bootstrap.php").toAbsolutePath();
+        Assertions.assertThat(Files.isRegularFile(bootstrap))
+            .as("backend bootstrap %s", bootstrap)
+            .isTrue();
+        Path script = null;
+        try {
+            script = Files.createTempFile("zmskvr1627-slots", ".php");
+            Files.writeString(script, "<?php\nrequire " + MAPPER.writeValueAsString(bootstrap.toString()) + ";\n"
+                + "$availability = (new \\BO\\Zmsbackend\\Availability\\Service\\Availability())"
+                + "->readEntity((int) $argv[1]);\n"
+                + "if (!$availability || !$availability->hasId()) { fwrite(STDERR, \"missing\\n\"); exit(1); }\n"
+                + "(new \\BO\\Zmsbackend\\Slot\\Service\\Slot())"
+                + "->writeByAvailability($availability, new \\DateTimeImmutable('now'));\n"
+                + "\\BO\\Zmsbackend\\Connection\\Select::writeCommit();\n"
+                + "echo \"ok\\n\";\n");
+        } catch (IOException io) {
+            throw new IllegalStateException("Could not write the slot calculation script", io);
+        }
+        ProcessBuilder builder = new ProcessBuilder(
+            phpBinary(), script.toString(), Integer.toString(slotChangeAvailabilityId));
+        builder.directory(backend.toFile());
+        builder.environment().putIfAbsent("ZMS_ENV", "dev");
+        builder.redirectErrorStream(true);
+        String logged;
+        try {
+            Process calculated = builder.start();
+            logged = new String(calculated.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
+            boolean finished = calculated.waitFor(60, TimeUnit.SECONDS);
+            Assertions.assertThat(finished)
+                .as("slot calculation did not finish. output=%s", truncate(logged, 800))
+                .isTrue();
+            Assertions.assertThat(calculated.exitValue())
+                .as("slot calculation output=%s", truncate(logged, 800))
+                .isEqualTo(0);
+        } catch (InterruptedException interrupted) {
+            Thread.currentThread().interrupt();
+            throw new IllegalStateException("Interrupted while calculating slots", interrupted);
+        } catch (IOException io) {
+            throw new IllegalStateException("Could not calculate slots for opening hours "
+                + slotChangeAvailabilityId, io);
+        } finally {
+            if (script != null) {
+                try {
+                    Files.deleteIfExists(script);
+                } catch (IOException ignored) {
+                    // The temp script is only needed for this run.
+                }
+            }
+        }
+    }
+
+    private List<JsonNode> freeSlotsOnSavedOpeningHour(int scopeId, JsonNode request, String authKey) {
         long windowStart = slotChangeDay.atTime(LocalTime.parse(normalizeClock(slotChangeStart)))
             .atZone(BerlinTime.ZONE)
             .toEpochSecond();
         long windowEnd = slotChangeDay.atTime(LocalTime.parse(normalizeClock(slotChangeEnd)))
             .atZone(BerlinTime.ZONE)
             .toEpochSecond();
-        JsonNode matched = null;
-        for (int offset = 0; offset < 8 && matched == null; offset++) {
-            LocalDate day = slotChangeDay.plusDays(offset);
-            Response freeResponse = given()
-                .baseUri(apiBaseUri())
-                .header("X-AuthKey", authKey)
-                .contentType("application/json")
-                .queryParam("slotType", "intern")
-                .queryParam("slotsRequired", request.path("timeSlotCount").asInt(1))
-                .body(toJson(freeProcessCalendar(scopeId, request, day)))
-            .when()
-                .post("/process/status/free/");
-            JsonNode freeList = parseDataArray(freeResponse);
-            if (freeList == null) {
-                continue;
-            }
+        List<JsonNode> matched = new ArrayList<>();
+        Response freeResponse = given()
+            .baseUri(apiBaseUri())
+            .header("X-AuthKey", authKey)
+            .contentType("application/json")
+            .queryParam("slotType", "intern")
+            .queryParam("slotsRequired", request.path("timeSlotCount").asInt(1))
+            .body(toJson(freeProcessCalendar(scopeId, request, slotChangeDay)))
+        .when()
+            .post("/process/status/free/");
+        JsonNode freeList = parseDataArray(freeResponse);
+        if (freeList != null) {
+            long now = Instant.now().getEpochSecond();
             for (JsonNode candidate : freeList) {
-                JsonNode appointment = candidate.path("appointments").path(0);
-                if (appointment.path("availability").path("id").asInt(0) != slotChangeAvailabilityId) {
-                    continue;
+                long date = appointmentEpoch(candidate.path("appointments").path(0));
+                if (date > now && date >= windowStart && date < windowEnd) {
+                    matched.add(candidate);
                 }
-                long date = appointment.path("date").asLong(0);
-                if (offset == 0 && (date < windowStart || date >= windowEnd)) {
-                    continue;
-                }
-                if (date <= Instant.now().getEpochSecond()) {
-                    continue;
-                }
-                matched = candidate;
-                break;
             }
         }
         Assertions.assertThat(matched)
-            .as("free intern slot on opening hours %s at scope %d", slotChangeAvailabilityId, scopeId)
-            .isNotNull();
+            .as("free intern slots between %s and %s at scope %d (status %s)",
+                slotChangeStart, slotChangeEnd, scopeId, freeResponse.getStatusCode())
+            .isNotEmpty();
         return matched;
+    }
+
+    private static long appointmentEpoch(JsonNode appointment) {
+        JsonNode date = appointment.path("date");
+        if (date.isNumber() && date.asLong() > 1_000_000_000L) {
+            return date.asLong();
+        }
+        String text = date.asText("").trim();
+        if (text.chars().allMatch(Character::isDigit) && text.length() >= 10) {
+            return Long.parseLong(text);
+        }
+        String normalized = text.replace(' ', 'T');
+        if (normalized.length() == 16) {
+            normalized = normalized + ":00";
+        }
+        return LocalDateTime.parse(normalized).atZone(BerlinTime.ZONE).toEpochSecond();
     }
 
     private static FutureHour nextFullHour() {
