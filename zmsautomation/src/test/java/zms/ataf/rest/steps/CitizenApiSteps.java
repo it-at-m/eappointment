@@ -75,8 +75,9 @@ public class CitizenApiSteps {
     private String lastDisplayNumberBeforeCancel;
     private OfficesAndServicesResponse lastOfficesAndServicesResponse;
     /** ZMSKVR-1627: cap the public catalog returned before the scope was saved again. */
-    static String rememberedOfficeCap;
-    static boolean rememberedOfficeCapSet;
+    /** Per scenario thread. A parallel scenario's @Before must not clear another scenario's cap. */
+    private static final ThreadLocal<String> rememberedOfficeCap = new ThreadLocal<>();
+    private static final ThreadLocal<Boolean> rememberedOfficeCapSet = ThreadLocal.withInitial(() -> Boolean.FALSE);
     private Integer rebookingSourceProcessId;
     private String rebookingSourceAuthKey;
     private String citizenAccessToken;
@@ -109,8 +110,8 @@ public class CitizenApiSteps {
         lastAvailableAppointmentsResponse = null;
         lastAppointmentDate = null;
         lastOfficesAndServicesResponse = null;
-        rememberedOfficeCap = null;
-        rememberedOfficeCapSet = false;
+        rememberedOfficeCap.remove();
+        rememberedOfficeCapSet.set(Boolean.FALSE);
         rebookingSourceProcessId = null;
         rebookingSourceAuthKey = null;
         citizenAccessToken = null;
@@ -301,17 +302,18 @@ public class CitizenApiSteps {
 
     @When("I remember the appointment cap shown for office {int}")
     public void iRememberTheAppointmentCapShownForOffice(int officeId) {
-        rememberedOfficeCap = officeCap(officeId);
-        rememberedOfficeCapSet = true;
+        rememberedOfficeCap.set(officeCap(officeId));
+        rememberedOfficeCapSet.set(Boolean.TRUE);
     }
 
     @Then("office {int} should still show the remembered appointment cap")
     public void officeShouldStillShowTheRememberedAppointmentCap(int officeId) {
-        Assertions.assertThat(rememberedOfficeCapSet)
+        Assertions.assertThat(Boolean.TRUE.equals(rememberedOfficeCapSet.get()))
             .as("remember the citizen catalog cap first")
             .isTrue();
         String actual = officeCap(officeId);
-        if (rememberedOfficeCap == null || rememberedOfficeCap.isBlank()) {
+        String remembered = rememberedOfficeCap.get();
+        if (remembered == null || remembered.isBlank()) {
             Assertions.assertThat(actual == null || actual.isBlank())
                 .as("office %d maxAppointmentLengthInMinutes, was %s", officeId, actual)
                 .isTrue();
@@ -319,17 +321,17 @@ public class CitizenApiSteps {
         }
         Assertions.assertThat(actual)
             .as("office %d maxAppointmentLengthInMinutes", officeId)
-            .isEqualTo(rememberedOfficeCap);
+            .isEqualTo(remembered);
     }
 
     @Then("office {int} should show the appointment cap that was just saved")
     public void officeShouldShowTheAppointmentCapThatWasJustSaved(int officeId) {
-        Assertions.assertThat(ZmsApiSteps.citizenCatalogSavedCap)
+        Assertions.assertThat(ZmsApiSteps.citizenCatalogSavedCap())
             .as("saved appointment cap")
             .isNotBlank();
         Assertions.assertThat(officeCap(officeId))
             .as("office %d maxAppointmentLengthInMinutes", officeId)
-            .isEqualTo(ZmsApiSteps.citizenCatalogSavedCap);
+            .isEqualTo(ZmsApiSteps.citizenCatalogSavedCap());
     }
 
     @When("I warm the citizen source cache")
@@ -342,10 +344,10 @@ public class CitizenApiSteps {
      */
     @After(order = -10000)
     public void warmCitizenCatalogAfterCapRestore() {
-        if (!ZmsApiSteps.citizenCatalogNeedsWarmup) {
+        if (!ZmsApiSteps.citizenCatalogNeedsWarmup()) {
             return;
         }
-        ZmsApiSteps.citizenCatalogNeedsWarmup = false;
+        ZmsApiSteps.setCitizenCatalogNeedsWarmup(false);
         warmCitizenSourceCache();
     }
 
@@ -3482,11 +3484,11 @@ public class CitizenApiSteps {
     }
 
     static boolean hasRememberedOfficeCap() {
-        return rememberedOfficeCapSet;
+        return Boolean.TRUE.equals(rememberedOfficeCapSet.get());
     }
 
     static String rememberedOfficeCap() {
-        return rememberedOfficeCap;
+        return rememberedOfficeCap.get();
     }
 
     private String officeCap(int officeId) {

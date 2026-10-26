@@ -78,9 +78,12 @@ public class ZmsApiSteps {
     private int historyScopeId;
     /** ZMSKVR-1627: series whose slot length this scenario changed, and the cap to write back. */
     private Integer slotChangeAvailabilityId;
-    /** Cap written for the citizen catalog scenario, and whether that catalog must be warmed after restore. */
-    static String citizenCatalogSavedCap;
-    static boolean citizenCatalogNeedsWarmup;
+    /**
+     * Cap written for the citizen catalog scenario, and whether that catalog must be warmed after restore.
+     * Thread-local so a parallel scenario cannot clear the value mid-scenario.
+     */
+    private static final ThreadLocal<String> citizenCatalogSavedCap = new ThreadLocal<>();
+    private static final ThreadLocal<Boolean> citizenCatalogNeedsWarmup = ThreadLocal.withInitial(() -> Boolean.FALSE);
     private int slotChangeExpectedMinutes;
     private LocalDate slotChangeDay;
     private String slotChangeStart;
@@ -151,6 +154,8 @@ public class ZmsApiSteps {
         slotChangeSelectedDate = null;
         minuteCapScopeId = null;
         minuteCapBefore = null;
+        citizenCatalogSavedCap.remove();
+        citizenCatalogNeedsWarmup.set(Boolean.FALSE);
         lastProcessDeleted = false;
         dayClosureScopeId = null;
         dayClosureDate = null;
@@ -3389,6 +3394,27 @@ public class ZmsApiSteps {
             .isEqualTo(200);
     }
 
+    static String citizenCatalogSavedCap() {
+        return citizenCatalogSavedCap.get();
+    }
+
+    static boolean citizenCatalogNeedsWarmup() {
+        return Boolean.TRUE.equals(citizenCatalogNeedsWarmup.get());
+    }
+
+    static void setCitizenCatalogNeedsWarmup(boolean needed) {
+        citizenCatalogNeedsWarmup.set(needed);
+    }
+
+    /**
+     * Holds the scope until this scenario's teardown, so a parallel scenario cannot
+     * read or change the appointment cap in between.
+     */
+    @Given("scope {int} is held until this scenario ends")
+    public void scopeIsHeldUntilThisScenarioEnds(int scopeId) {
+        AccountCheckout.checkout("scope:" + scopeId + ":zmskvr-1627");
+    }
+
     /**
      * ZMSKVR-1627: the citizen catalog is already cached, so the saved cap must differ from that cached value.
      */
@@ -3399,17 +3425,17 @@ public class ZmsApiSteps {
             .isTrue();
         String shown = CitizenApiSteps.rememberedOfficeCap();
         int minutes = shown != null && "90".equals(shown.trim()) ? 45 : 90;
-        citizenCatalogSavedCap = Integer.toString(minutes);
-        citizenCatalogNeedsWarmup = true;
+        citizenCatalogSavedCap.set(Integer.toString(minutes));
+        citizenCatalogNeedsWarmup.set(Boolean.TRUE);
         iSetTheAppointmentCapForScopeToMinutes(scopeId, minutes);
     }
 
     @Then("scope {int} appointment cap should be the value just saved with the X-AuthKey")
     public void scopeAppointmentCapShouldBeTheValueJustSaved(int scopeId) {
-        Assertions.assertThat(citizenCatalogSavedCap)
+        Assertions.assertThat(citizenCatalogSavedCap())
             .as("saved appointment cap")
             .isNotBlank();
-        scopeAppointmentCapShouldBeMinutes(scopeId, Integer.parseInt(citizenCatalogSavedCap));
+        scopeAppointmentCapShouldBeMinutes(scopeId, Integer.parseInt(citizenCatalogSavedCap()));
     }
 
     @Then("scope {int} appointment cap should be {int} minutes with the X-AuthKey")
