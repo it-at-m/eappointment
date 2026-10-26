@@ -7,7 +7,8 @@ Feature: A called appointment can be parked so it does not block the queue, and 
 		When I open the administration website.
 		And I click the button "Anmelden" in the administration.
 		And I select for "Standort" the value "Bürgerbüro Orleansplatz (KVR-II/231 KP) Abholung".
-		And I enter in the field "Platz-Nr. oder Tresen" the text "13".
+		# Dedicated desk — parallel Orleansplatz scenarios on Platz 13 pollute the queue mid-park wait.
+		And I enter in the field "Platz-Nr. oder Tresen" the text "57".
 		And I click the button "Auswahl bestätigen" in the administration.
 		Then the workstation page is displayed.
 		When the customers already waiting are finished as no-shows.

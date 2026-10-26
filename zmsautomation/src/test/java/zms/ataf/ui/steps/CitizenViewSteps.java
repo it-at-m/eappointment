@@ -260,6 +260,18 @@ public class CitizenViewSteps {
         page.assertServiceDescriptionLink(TestDataHelper.transformTestData(label), serviceId);
     }
 
+    @Then("the service {string} links to service {string} and not {string} on muenchen.de")
+    public void theServiceLinksToServiceAndNotInternalIds(String label, String serviceId, String forbiddenIds) {
+        ScenarioLogManager.getLogger()
+                .info(
+                        "zmscitizenview: {} links to service {} and not {}",
+                        label,
+                        serviceId,
+                        forbiddenIds);
+        page.assertServiceDescriptionLinkExcludesInternalIds(
+                TestDataHelper.transformTestData(label), serviceId, forbiddenIds);
+    }
+
     @Then("the count for {string} sits beside the name on desktop")
     public void theCountSitsBesideTheNameOnDesktop(String label) {
         ScenarioLogManager.getLogger()
@@ -1596,6 +1608,20 @@ public class CitizenViewSteps {
         page.assertOverviewServiceVisible(serviceId, label);
     }
 
+    /** ZMSKVR-418: Übersicht / confirm / cancel list main + sub services with their booked counts. */
+    @Then("the appointment overview should show {int}x service {int} named {string} in the citizen view")
+    public void theAppointmentOverviewShouldShowCountServiceNamed(
+            int count, int serviceId, String serviceName) {
+        String label = TestDataHelper.transformTestData(serviceName);
+        ScenarioLogManager.getLogger()
+                .info(
+                        "zmscitizenview: assert overview shows {}x service {} named {}",
+                        count,
+                        serviceId,
+                        label);
+        page.assertOverviewServiceWithCount(serviceId, count, label);
+    }
+
     @Then("the booking summary should show {string} for provider {int} in the citizen view")
     public void theBookingSummaryShouldShowLocationForProvider(String locationLabel, int officeId) {
         String label = TestDataHelper.transformTestData(locationLabel);
@@ -1633,6 +1659,20 @@ public class CitizenViewSteps {
         ScenarioLogManager.getLogger()
                 .info("zmscitizenview: assert only Pass calendar services offered on combination step");
         page.assertPassOnlyCombinationServicesVisible();
+    }
+
+    @When("I enter the 250-character required free text with newlines and a tab in the citizen view")
+    public void iEnterTheRequiredFreeTextAtTheLimit() {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: required Freitext at 250 with newline and tab");
+        page.assertRequiredFreeTextCountsNewlinesAndTab();
+    }
+
+    @Then("the required free text of 251 characters including a newline and a tab stays on the contact form")
+    public void theFreeTextOverLimitStaysOnTheContactForm() {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: Freitext of 251 with newline and tab is rejected");
+        page.assertFreeTextOverLimitStaysOnContactForm();
     }
 
     @When("I fill contact details without continuing in the citizen view")
@@ -1849,6 +1889,31 @@ public class CitizenViewSteps {
             Thread.currentThread().interrupt();
             throw new RuntimeException("Wait for " + minutes + " minutes was interrupted", e);
         }
+    }
+
+    @When("I wait up to {int} seconds for the timeout warning banner in the citizen view")
+    public void iWaitUpToSecondsForTheTimeoutWarningBanner(int seconds) {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: wait up to {}s for timeout warning banner", seconds);
+        page.waitUntilTimeoutWarningBannerVisible(seconds);
+    }
+
+    @Then("the timeout warning banner should be visible in the citizen view")
+    public void theTimeoutWarningBannerShouldBeVisible() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: assert timeout warning banner visible");
+        page.assertTimeoutWarningBannerVisible();
+    }
+
+    @Then("the timeout warning banner should not be visible in the citizen view")
+    public void theTimeoutWarningBannerShouldNotBeVisible() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: assert timeout warning banner not visible");
+        page.assertTimeoutWarningBannerNotVisible();
+    }
+
+    @Then("the timeout warning countdown should tick down in the citizen view")
+    public void theTimeoutWarningCountdownShouldTickDown() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: assert timeout warning countdown ticks");
+        page.assertTimeoutWarningCountdownTicksDown();
     }
 
     @Then("service {string} should still be selected with quantity {int} in the citizen view")

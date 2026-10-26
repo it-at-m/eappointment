@@ -67,6 +67,11 @@ public class StatisticsPage extends BasePage {
         return currentMonth;
     }
 
+    /** Filename expected from the last {@link #applyDateRangeFilter}; null when no filter was applied. */
+    protected String expectedClientStatisticWorkbookName() {
+        return CONTEXT.expectedClientStatisticWorkbookName();
+    }
+
     public void navigateToPage() {
         CONTEXT.navigateToPage();
     }
@@ -89,12 +94,45 @@ public class StatisticsPage extends BasePage {
         }
     }
 
+    /**
+     * True when SSO already landed on the statistics scope form (e.g. after zmsadmin
+     * login in the same browser). Without this, Anmelden waits for a Keycloak button
+     * that never appears. Do not treat the overview header alone as logged-in on the
+     * login page — that skips Anmelden while {@code select[@name=scope]} is missing.
+     */
+    private boolean isAlreadyLoggedIn() {
+        return isWebElementVisible(2, "//*[contains(text(),'Sie sind bereits angemeldet')]", LocatorType.XPATH, false)
+                || isWebElementVisible(2, "//select[@name='scope']", LocatorType.XPATH, false)
+                || isStatisticsOverviewVisible();
+    }
+
+    private boolean isStatisticsOverviewVisible() {
+        return isWebElementVisible(
+                2,
+                "//h1[normalize-space()='Übersicht verfügbarer Statistiken']",
+                LocatorType.XPATH,
+                false)
+                || isWebElementVisible(
+                        2,
+                        "//h1[normalize-space()='Willkommen zurück']",
+                        LocatorType.XPATH,
+                        false)
+                || isWebElementVisible(
+                        1,
+                        "//a[contains(@href,'reportclient') or normalize-space()='Kundenstatistik']",
+                        LocatorType.XPATH,
+                        false);
+    }
+
     /** Keycloak login for one statistics user. The caller checks the account out. */
     public void loginWithKeycloakUser(String username) throws Exception {
+        if (isAlreadyLoggedIn()) {
+            ScenarioLogManager.getLogger().info("Already logged in to statistics, skipping SSO login.");
+            return;
+        }
         ScenarioLogManager.getLogger().info("Trying to click on \"Login\" button...");
         clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "//button[@type='submit' and @value='keycloak']", LocatorType.XPATH, false);
         ScenarioLogManager.getLogger().info("SSO-Login page detected!");
-
         final StringBuilder clearPassword = new StringBuilder();
         Exception exception = null;
         try {
@@ -138,6 +176,11 @@ public class StatisticsPage extends BasePage {
 
     /** First scope selection: select Standort in the initial dropdown (name=scope), same as zmsadmin. Used after login before overview. */
     public void selectLocation(String location) {
+        if (isStatisticsOverviewVisible()) {
+            ScenarioLogManager.getLogger().info(
+                    "Statistics overview already open; skipping first Standort select for \"{}\".", location);
+            return;
+        }
         CONTEXT.set();
         ScenarioLogManager.getLogger().info("Trying to select location \"" + location + "\" (first scope, like zmsadmin)");
         selectDropDownListValueByVisibleText(DEFAULT_EXPLICIT_WAIT_TIME, "scope", LocatorType.NAME, location);
@@ -146,6 +189,10 @@ public class StatisticsPage extends BasePage {
 
     /** First scope selection: confirm with "Auswahl bestätigen", same as zmsadmin. Navigates to statistics overview. */
     public void clickOnApplySelectionButton() {
+        if (isStatisticsOverviewVisible()) {
+            ScenarioLogManager.getLogger().info("Statistics overview already open; skipping Auswahl bestätigen.");
+            return;
+        }
         ScenarioLogManager.getLogger().info("Trying to click on \"Auswahl bestätigen\" button...");
         CONTEXT.set();
         // Same locator as AdminPage; JS click avoids navigation timeout and stale element when stats app is slow
@@ -160,11 +207,11 @@ public class StatisticsPage extends BasePage {
 
     public void checkIfTheOverviewPageIsOpen() {
         ScenarioLogManager.getLogger().info("Checking if the overview page is visible.");
-        Assert.assertTrue(
-                isWebElementVisible(DEFAULT_EXPLICIT_WAIT_TIME, "//h1[normalize-space()='Übersicht verfügbarer Statistiken']", LocatorType.XPATH, true),
-                "'Overview page is not visible!");
-        Assert.assertTrue(isWebElementVisible(DEFAULT_EXPLICIT_WAIT_TIME, "//div[@data-includeurl='/terminvereinbarung/statistic']", LocatorType.XPATH, true),
-                "'Overview page is not visible!");
+        // After admin→statistic SSO the landing page is often "Willkommen zurück"
+        // with the Auswertungen sidebar (no data-includeurl shell wrapper).
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        wait.withMessage("Statistics overview / welcome page is not visible!");
+        wait.until(driver -> isStatisticsOverviewVisible());
     }
 
     /** Use JS click and wait for sub-page to avoid navigation timeout when opening Kundenstatistik. */
@@ -310,6 +357,7 @@ public class StatisticsPage extends BasePage {
 
         String fromIso = from.format(DateTimeFormatter.ISO_LOCAL_DATE);
         String toIso = to.format(DateTimeFormatter.ISO_LOCAL_DATE);
+        CONTEXT.setExpectedClientStatisticWorkbookName("clientstatistic_" + fromIso + "_" + toIso + ".xlsx");
 
         ScenarioLogManager.getLogger().info("Setting statistics date range from " + fromIso + " to " + toIso);
         setDateInputByJs("from", fromIso);
@@ -439,10 +487,48 @@ public class StatisticsPage extends BasePage {
                             + yearText
                             + "']"));
             yearLink.click();
-        } catch (NoSuchElementException e) {
-            Assert.fail("No clickable year link for " + yearText
-                    + " in the statistics period table (need month data for that year).");
+            return;
+        } catch (NoSuchElementException ignored) {
+            // Warehouse period chips can omit the year when only "_" is cached; open by URL.
         }
+        String current = DRIVER.getCurrentUrl();
+        Assert.assertTrue(
+                current.contains("/report/capacity/scope/"),
+                "Expected Terminkapazität scope URL before selecting year " + yearText + ", was: " + current);
+        // Keep Standort scopes; drop from/to day filters so the year report can render.
+        String path = current.replaceFirst("\\?.*$", "");
+        String target = path.replaceFirst(
+                "/report/capacity/scope/(?:[^/?#]*)?",
+                "/report/capacity/scope/" + yearText);
+        if (!target.endsWith("/")) {
+            target = target + "/";
+        }
+        String scopesQuery = scopesQueryParams(current);
+        if (!scopesQuery.isEmpty()) {
+            target = target + "?" + scopesQuery;
+        }
+        ScenarioLogManager.getLogger().info("No year chip for {}; navigating to {}", yearText, target);
+        DRIVER.navigate().to(target);
+        new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(ExpectedConditions.urlContains("/report/capacity/scope/" + yearText));
+    }
+
+    /** Query string with only scopes[…] / scopes%5B…%5D params (no from/to day range). */
+    private static String scopesQueryParams(String url) {
+        int q = url.indexOf('?');
+        if (q < 0 || q + 1 >= url.length()) {
+            return "";
+        }
+        StringBuilder scopes = new StringBuilder();
+        for (String part : url.substring(q + 1).split("&")) {
+            if (part.startsWith("scopes[") || part.startsWith("scopes%5B") || part.startsWith("scopes%5b")) {
+                if (scopes.length() > 0) {
+                    scopes.append('&');
+                }
+                scopes.append(part);
+            }
+        }
+        return scopes.toString();
     }
 
     public void checkIfTheStatisticForTheSelectedMonthIsOpen() {

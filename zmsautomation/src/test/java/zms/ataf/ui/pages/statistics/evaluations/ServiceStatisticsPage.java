@@ -146,7 +146,24 @@ public class ServiceStatisticsPage extends StatisticsPage {
     }
 
     public void assertDownloadedStatisticValues(List<Map<String, String>> rows) throws IOException {
-        Map<String, String[]> workbook = RequestStatisticWorkbook.rows(workbookFromThisDownload());
+        Assert.assertFalse(rows == null || rows.isEmpty(), "Expected at least one service statistic row.");
+        String marker = rows.get(0).get("Dienstleistung");
+        Map<String, String[]> workbook = null;
+        // Parallel shards share period filenames; newest lock can briefly grab another scope's XLSX.
+        for (int attempt = 1; attempt <= 3; attempt++) {
+            Path path = workbookFromThisDownload();
+            workbook = RequestStatisticWorkbook.rows(path);
+            if (workbook.containsKey(marker)) {
+                break;
+            }
+            ScenarioLogManager.getLogger().warn(
+                    "Service XLSX {} missing row '{}'; rows={}; re-downloading ({}/3)",
+                    path.getFileName(),
+                    marker,
+                    workbook.keySet(),
+                    attempt);
+            clickDownloadButton();
+        }
         for (Map<String, String> row : rows) {
             String label = row.get("Dienstleistung");
             String[] cells = workbook.get(label);
@@ -179,42 +196,64 @@ public class ServiceStatisticsPage extends StatisticsPage {
         }
     }
 
+    /**
+     * Parallel scenarios share {@code ~/Downloads}. Lock onto the earliest new workbook after
+     * our click so a later download from another scenario cannot steal this wait.
+     */
     private Path stableNewLocalWorkbook(Path downloads) {
-        Path newest;
+        List<Path> newcomers;
         try (Stream<Path> list = Files.list(downloads)) {
-            newest = list.filter(Files::isRegularFile)
-                    .filter(path -> isNewWorkbook(path.getFileName().toString(), sizeOf(path), path.toFile().lastModified()))
-                    .max(Comparator.comparingLong(path -> path.toFile().lastModified()))
-                    .orElse(null);
+            newcomers = list.filter(Files::isRegularFile)
+                    .filter(path -> isNewWorkbook(
+                            path.getFileName().toString(), sizeOf(path), path.toFile().lastModified()))
+                    .sorted(Comparator.comparingLong(path -> path.toFile().lastModified()))
+                    .collect(Collectors.toList());
         } catch (IOException exception) {
             return null;
         }
-        if (newest == null) {
-            pendingWorkbookName = null;
+        if (newcomers.isEmpty()) {
+            return null;
+        }
+        if (pendingWorkbookName == null) {
+            // Newest first: same period filename is overwritten in-scenario; earliest can be a
+            // stale parallel download (Summe from the previous single-scope export).
+            pendingWorkbookName = newcomers.get(newcomers.size() - 1).getFileName().toString();
             pendingWorkbookSize = -1;
+        }
+        Path locked = downloads.resolve(pendingWorkbookName);
+        if (!Files.isRegularFile(locked)) {
             return null;
         }
-        long size;
-        try {
-            size = Files.size(newest);
-        } catch (IOException exception) {
+        long size = sizeOf(locked);
+        if (size <= 0) {
             return null;
         }
-        return rememberStableSize(newest.getFileName().toString(), size) ? newest : null;
+        return rememberStableSize(pendingWorkbookName, size) ? locked : null;
     }
 
     private HasDownloads.DownloadedFile stableNewRemoteWorkbook() {
-        HasDownloads.DownloadedFile newest = ((HasDownloads) DRIVER).getDownloadedFiles().stream()
-                .filter(candidate -> isNewWorkbook(candidate.getName(), candidate.getSize(), candidate.getLastModifiedTime()))
+        List<HasDownloads.DownloadedFile> newcomers = ((HasDownloads) DRIVER).getDownloadedFiles().stream()
+                .filter(candidate -> isNewWorkbook(
+                        candidate.getName(), candidate.getSize(), candidate.getLastModifiedTime()))
                 .filter(candidate -> candidate.getSize() > 0)
-                .max(Comparator.comparingLong(HasDownloads.DownloadedFile::getLastModifiedTime))
-                .orElse(null);
-        if (newest == null) {
-            pendingWorkbookName = null;
-            pendingWorkbookSize = -1;
+                .sorted(Comparator.comparingLong(HasDownloads.DownloadedFile::getLastModifiedTime))
+                .collect(Collectors.toList());
+        if (newcomers.isEmpty()) {
             return null;
         }
-        return rememberStableSize(newest.getName(), newest.getSize()) ? newest : null;
+        if (pendingWorkbookName == null) {
+            pendingWorkbookName = newcomers.get(newcomers.size() - 1).getName();
+            pendingWorkbookSize = -1;
+        }
+        HasDownloads.DownloadedFile locked = ((HasDownloads) DRIVER).getDownloadedFiles().stream()
+                .filter(candidate -> pendingWorkbookName.equals(candidate.getName()))
+                .filter(candidate -> candidate.getSize() > 0)
+                .findFirst()
+                .orElse(null);
+        if (locked == null) {
+            return null;
+        }
+        return rememberStableSize(locked.getName(), locked.getSize()) ? locked : null;
     }
 
     private boolean isNewWorkbook(String name, long size, long modified) {
@@ -235,7 +274,6 @@ public class ServiceStatisticsPage extends StatisticsPage {
 
     private boolean rememberStableSize(String name, long size) {
         boolean stable = name.equals(pendingWorkbookName) && size == pendingWorkbookSize;
-        pendingWorkbookName = name;
         pendingWorkbookSize = size;
         return stable;
     }
