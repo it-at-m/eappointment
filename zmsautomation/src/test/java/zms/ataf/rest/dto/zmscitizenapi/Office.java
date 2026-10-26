@@ -34,7 +34,7 @@ public class Office {
      * transformer). CitizenView sorts offices by this descending.
      */
     private Integer priority;
-    private String slotsPerAppointment;
+    private String maxAppointmentLengthInMinutes;
     /** Shared-booking peers (e.g. Haupt 10489 + KVR-II/2252 10313237). */
     private List<Integer> sharedBookingOfficeIds;
     private List<Integer> allowDisabledServicesMix;

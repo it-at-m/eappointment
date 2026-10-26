@@ -11,7 +11,7 @@ Feature: ZMSKVR-1083 / ZMSKVR-1226 slotsPerAppointment — Citizen API
   #   slotsPerAppointment — total slots allowed per appointment (spa, from scope)
   #   maxQuantity         — maximum times a service can be selected
   #
-  # Office 10416 / scope 70: slotTimeInMinutes=5, spa=8
+  # Office 10416 / scope 70: slotTimeInMinutes=5, maxAppointmentLengthInMinutes=40 (was 8 slots)
   #   Ausfuhrkennzeichen 1064268: slots=3, service maxQuantity=3
   #   Rotes Dauerkennzeichen Handel 1064374: slots=4
   # Relation maxQuantity for Ausfuhr is 0 (unlimited at relation); service maxQuantity
@@ -39,7 +39,7 @@ Feature: ZMSKVR-1083 / ZMSKVR-1226 slotsPerAppointment — Citizen API
   # ZMSKVR-137: slotTimeInMinutes present on offices-and-services (via office assertions).
   @ZMSKVR-137
   Scenario: Office 10416 exposes slotTimeInMinutes, slots, slotsPerAppointment, and maxQuantity
-    Then office 10416 should have slotsPerAppointment "8"
+    Then office 10416 should have maxAppointmentLengthInMinutes "40"
     And office 10416 should use a slot time of 5 minutes and service 1064268 should take 3 slot
     And office 10416 and service 1064374 should take 4 slots
     And service 1064268 should have maxQuantity 3
@@ -112,7 +112,7 @@ Feature: ZMSKVR-1083 / ZMSKVR-1226 slotsPerAppointment — Citizen API
     When I cancel the appointment
 
   Scenario: Office 10489 exposes unset slotsPerAppointment and a 5-minute slot grid
-    Then office 10489 should have no slotsPerAppointment
+    Then office 10489 should have no maxAppointmentLengthInMinutes
     And office 10489 should use a slot time of 5 minutes and service 1063475 should take 3 slot
     And office 10489 and service 1080843 should take 1 slots
 

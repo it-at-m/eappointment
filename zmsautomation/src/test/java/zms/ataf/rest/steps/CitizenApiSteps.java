@@ -265,8 +265,8 @@ public class CitizenApiSteps {
             .isEqualTo(slots);
     }
 
-    @Then("office {int} should have slotsPerAppointment {string}")
-    public void officeShouldHaveSlotsPerAppointment(int officeId, String expected) {
+    @Then("office {int} should have maxAppointmentLengthInMinutes {string}")
+    public void officeShouldHaveMaxAppointmentLengthInMinutes(int officeId, String expected) {
         Assertions.assertThat(lastOfficesAndServicesResponse)
             .as("Request offices-and-services first")
             .isNotNull();
@@ -274,13 +274,13 @@ public class CitizenApiSteps {
         Assertions.assertThat(office)
             .as("Expected office %d in offices-and-services", officeId)
             .isNotNull();
-        Assertions.assertThat(office.getSlotsPerAppointment())
-            .as("office %d slotsPerAppointment", officeId)
+        Assertions.assertThat(office.getMaxAppointmentLengthInMinutes())
+            .as("office %d maxAppointmentLengthInMinutes", officeId)
             .isEqualTo(expected);
     }
 
-    @Then("office {int} should have no slotsPerAppointment")
-    public void officeShouldHaveNoSlotsPerAppointment(int officeId) {
+    @Then("office {int} should have no maxAppointmentLengthInMinutes")
+    public void officeShouldHaveNoMaxAppointmentLengthInMinutes(int officeId) {
         Assertions.assertThat(lastOfficesAndServicesResponse)
             .as("Request offices-and-services first")
             .isNotNull();
@@ -288,9 +288,9 @@ public class CitizenApiSteps {
         Assertions.assertThat(office)
             .as("Expected office %d in offices-and-services", officeId)
             .isNotNull();
-        String spa = office.getSlotsPerAppointment();
-        Assertions.assertThat(spa == null || spa.isBlank())
-            .as("office %d slotsPerAppointment should be unset (fallback 25), was %s", officeId, spa)
+        String cap = office.getMaxAppointmentLengthInMinutes();
+        Assertions.assertThat(cap == null || cap.isBlank())
+            .as("office %d maxAppointmentLengthInMinutes should be unset (fallback 25 slots), was %s", officeId, cap)
             .isTrue();
     }
 
@@ -3089,8 +3089,8 @@ public class CitizenApiSteps {
         Assertions.assertThat((Object) response.jsonPath().get("scope.infoForAllAppointments"))
             .as("scope.infoForAllAppointments must be null")
             .isNull();
-        Assertions.assertThat((Object) response.jsonPath().get("scope.slotsPerAppointment"))
-            .as("scope.slotsPerAppointment must be null")
+        Assertions.assertThat((Object) response.jsonPath().get("scope.maxAppointmentLengthInMinutes"))
+            .as("scope.maxAppointmentLengthInMinutes must be null")
             .isNull();
         Assertions.assertThat((Object) response.jsonPath().get("scope.appointmentsPerMail"))
             .as("scope.appointmentsPerMail must be null")
