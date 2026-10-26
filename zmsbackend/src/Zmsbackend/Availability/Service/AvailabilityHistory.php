@@ -46,7 +46,8 @@ class AvailabilityHistory extends \BO\Zmsbackend\Base
             self::ACTION_DLDB_SLOT_UPDATE,
             $availability,
             'dldb',
-            self::AUTOMATED_SLOT_COMMENT
+            self::AUTOMATED_SLOT_COMMENT,
+            true
         );
     }
 
@@ -147,7 +148,8 @@ class AvailabilityHistory extends \BO\Zmsbackend\Base
         string $action,
         Availability $availability,
         ?string $changedBy,
-        ?string $comment = null
+        ?string $comment = null,
+        bool $throwOnFailure = false
     ): void {
         try {
             $scopeId = (int) ($availability->scope['id'] ?? 0);
@@ -156,6 +158,9 @@ class AvailabilityHistory extends \BO\Zmsbackend\Base
                     'action' => $action,
                     'availability_id' => $availability->id,
                 ]);
+                if ($throwOnFailure) {
+                    throw new \RuntimeException('availability_history skipped: missing scope_id');
+                }
                 return;
             }
 
@@ -181,6 +186,9 @@ class AvailabilityHistory extends \BO\Zmsbackend\Base
                 'availability_id' => $availability->id,
                 'exception' => $exception->getMessage(),
             ]);
+            if ($throwOnFailure) {
+                throw $exception;
+            }
         }
     }
 
