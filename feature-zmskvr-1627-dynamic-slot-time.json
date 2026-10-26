@@ -1,10 +1,10 @@
 {
   "branch": "feature-zmskvr-1627-dynamic-slot-time",
   "branchSlug": "feature-zmskvr-1627-dynamic-slot-time",
-  "runId": "39412566613",
-  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/39412566613",
-  "runStartedAt": "2026-10-20T11:06:08Z",
-  "publishedAt": "2026-10-20T11:15:57.192Z",
+  "runId": "40341161974",
+  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/40341161974",
+  "runStartedAt": "2026-10-26T14:36:26Z",
+  "publishedAt": "2026-10-26T14:46:45.656Z",
   "features": {
     "feature-ui-zmscalldisplay-queue-zms-3213-zmsalt-3213-zms-3250-zmsalt-3250-call-order": {
       "status": "passed",
@@ -41,6 +41,56 @@
           "runStartedAt": "2026-10-20T11:06:08Z"
         }
       }
+    },
+    "feature-rest-zmscitizenapi-booking-zmskvr-1083-zmskvr-1226-slots-per-appointment-citizenapi": {
+      "status": "passed",
+      "shard": "custom",
+      "browser": "chrome",
+      "browsers": {
+        "chrome": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "40341161974",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/40341161974",
+          "runStartedAt": "2026-10-26T14:36:26Z"
+        },
+        "firefox": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "40341161974",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/40341161974",
+          "runStartedAt": "2026-10-26T14:36:26Z"
+        }
+      },
+      "rel": "rest/zmscitizenapi/booking/zmskvr-1083_zmskvr-1226_slots_per_appointment_citizenapi.feature",
+      "runId": "40341161974",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/40341161974",
+      "runStartedAt": "2026-10-26T14:36:26Z"
+    },
+    "feature-ui-zmscitizenview-booking-zmskvr-1083-zmskvr-1226-slots-per-appointment": {
+      "status": "passed",
+      "shard": "custom",
+      "browser": "chrome",
+      "browsers": {
+        "chrome": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "40341161974",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/40341161974",
+          "runStartedAt": "2026-10-26T14:36:26Z"
+        },
+        "firefox": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "40341161974",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/40341161974",
+          "runStartedAt": "2026-10-26T14:36:26Z"
+        }
+      },
+      "rel": "ui/zmscitizenview/booking/zmskvr-1083_zmskvr-1226_slots_per_appointment.feature",
+      "runId": "40341161974",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/40341161974",
+      "runStartedAt": "2026-10-26T14:36:26Z"
     }
   }
 }
