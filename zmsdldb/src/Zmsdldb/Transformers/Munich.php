@@ -2,6 +2,7 @@
 
 namespace BO\Zmsdldb\Transformers;
 
+use BO\Zmsentities\Helper\FiveMinuteGrid;
 use Httpful\Request;
 use Psr\Log\LoggerInterface;
 
@@ -473,9 +474,9 @@ class Munich
 
         $this->applyLocationRules($mappedLocation, $mappedLocation['displayName']);
 
-        $durationCommonDivisor = $this->processServiceReferences($location, $mappedLocation, $mappedServices);
+        $this->processServiceReferences($location, $mappedLocation, $mappedServices);
 
-        $this->calculateSlotTimes($mappedLocation, $durationCommonDivisor);
+        $this->calculateSlotTimes($mappedLocation);
 
         return $mappedLocation;
     }
@@ -559,10 +560,8 @@ class Munich
         }
     }
 
-    private function processServiceReferences(array $location, array &$mappedLocation, array &$mappedServices): ?int
+    private function processServiceReferences(array $location, array &$mappedLocation, array &$mappedServices): void
     {
-        $durationCommonDivisor = null;
-
         foreach ($location['extendedServiceReferences'] ?? [] as $reference) {
             if (!isset($mappedServices[$reference['refId']])) {
                 continue;
@@ -624,29 +623,22 @@ class Munich
                 }
             }
 
-            if ($durationCommonDivisor === null) {
-                $durationCommonDivisor = $serviceRef['duration'];
-            } else {
-                $durationCommonDivisor = $this->getSlotTime($durationCommonDivisor, $serviceRef['duration']);
-            }
-
             $mappedLocation['services'][] = $serviceRef;
             $mappedServices[$reference['refId']]['locations'][] = $locationRef;
         }
-
-        return $durationCommonDivisor;
     }
 
-    private function calculateSlotTimes(array &$mappedLocation, ?int $durationCommonDivisor): void
+    private function calculateSlotTimes(array &$mappedLocation): void
     {
         foreach ($mappedLocation['services'] as $key => $service) {
-            /** @psalm-suppress RiskyTruthyFalsyComparison */
-            if ($durationCommonDivisor && isset($service['duration'])) {
-                $mappedLocation['services'][$key]['appointment']['slots'] = (string) ((int)($service['duration'] / $durationCommonDivisor));
+            $duration = (int) ($service['duration'] ?? 0);
+            if ($duration > 0) {
+                $mappedLocation['services'][$key]['appointment']['slots'] =
+                    (string) FiveMinuteGrid::slotsForDuration($duration);
             }
         }
 
-        $mappedLocation['slotTimeInMinutes'] = $durationCommonDivisor;
+        $mappedLocation['slotTimeInMinutes'] = FiveMinuteGrid::MINUTES;
         $mappedLocation['forceSlotTimeUpdate'] = true;
     }
 
@@ -683,37 +675,5 @@ class Munich
         }
 
         return [$serviceId];
-    }
-
-    /**
-     * Calculate greatest common divisor for slot times
-     */
-    protected function getSlotTime(int|string $a, int|string $b): int
-    {
-        $a = (int) $a;
-        $b = (int) $b;
-
-        if ($a <= 0 || $b <= 0) {
-            return 5;
-        }
-
-        $slotTime = $this->getGreatestCommonDivisor($a, $b);
-
-        if ($slotTime >= 5 && $slotTime % 5 === 0) {
-            return $slotTime;
-        }
-
-        return 5;
-    }
-
-    protected function getGreatestCommonDivisor(int $a, int $b): int
-    {
-        while ($b !== 0) {
-            $tmp = $b;
-            $b = $a % $b;
-            $a = $tmp;
-        }
-
-        return abs($a);
     }
 }
