@@ -307,7 +307,9 @@ describe("ServiceFinder", () => {
       // Mimic stepper back: ServiceFinder remounts with selectedService still at
       // qty 2 while offices/relations fetch has not finished (spa must not fall
       // back to MAX_SLOTS=25 or plus would enable again).
-      vi.mocked(fetch).mockReturnValueOnce(new Promise(() => {}) as Promise<Response>);
+      vi.mocked(fetch).mockReturnValueOnce(
+        new Promise(() => {}) as Promise<Response>
+      );
       const service = {
         id: "1064268",
         name: "Ausfuhrkennzeichen",
@@ -318,7 +320,7 @@ describe("ServiceFinder", () => {
             id: "10416",
             name: "KfZ Zulassungsstelle",
             slots: 3,
-            slotsPerAppointment: "8",
+            maxAppointmentLengthInMinutes: "40",
             slotTimeInMinutes: 5,
           },
         ],

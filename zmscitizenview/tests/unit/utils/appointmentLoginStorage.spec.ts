@@ -45,7 +45,9 @@ describe("appointmentLoginStorage", () => {
 
     it("returns null for invalid hash", () => {
       expect(parseAppointmentHash("not-valid-base64!!!")).toBeNull();
-      expect(parseAppointmentHash(btoa(JSON.stringify({ id: "1" })))).toBeNull();
+      expect(
+        parseAppointmentHash(btoa(JSON.stringify({ id: "1" })))
+      ).toBeNull();
     });
   });
 
@@ -56,9 +58,9 @@ describe("appointmentLoginStorage", () => {
       setAppointmentAuthHashForLogin("99", "key");
 
       const encoded = encodeAppointmentAuthHash("99", "key");
-      expect(sessionStorage.getItem(SESSIONSTORAGE_PARAM_APPOINTMENT_AUTH_HASH)).toBe(
-        encoded
-      );
+      expect(
+        sessionStorage.getItem(SESSIONSTORAGE_PARAM_APPOINTMENT_AUTH_HASH)
+      ).toBe(encoded);
       expect(replaceStateSpy).toHaveBeenCalledWith(
         null,
         "",
@@ -104,7 +106,10 @@ describe("appointmentLoginStorage", () => {
           timestamp: 1,
           currentView: 3,
           selectedService: { id: "legacy-svc", name: "Secret name" },
-          selectedProvider: { id: "legacy-off", slotsPerAppointment: "1" },
+          selectedProvider: {
+            id: "legacy-off",
+            maxAppointmentLengthInMinutes: "1",
+          },
           selectedServiceMap: { "legacy-svc": 2 },
           appointment: { authKey: "must-not-leak" },
           customerData: { email: "x@y.z" },
@@ -127,7 +132,9 @@ describe("appointmentLoginStorage", () => {
     it("clears localStorage", () => {
       saveUiToLocalStorage(uiData);
       clearAppointmentLocalStorage();
-      expect(localStorage.getItem(LOCALSTORAGE_PARAM_APPOINTMENT_DATA)).toBeNull();
+      expect(
+        localStorage.getItem(LOCALSTORAGE_PARAM_APPOINTMENT_DATA)
+      ).toBeNull();
     });
   });
 
@@ -142,7 +149,10 @@ describe("appointmentLoginStorage", () => {
 
     it("restores hash from sessionStorage into the URL", () => {
       const encoded = encodeAppointmentAuthHash("1", "k");
-      sessionStorage.setItem(SESSIONSTORAGE_PARAM_APPOINTMENT_AUTH_HASH, encoded);
+      sessionStorage.setItem(
+        SESSIONSTORAGE_PARAM_APPOINTMENT_AUTH_HASH,
+        encoded
+      );
       const replaceStateSpy = vi.spyOn(history, "replaceState");
 
       expect(resolveAppointmentAuthHash()).toBe(encoded);

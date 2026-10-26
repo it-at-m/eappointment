@@ -29,7 +29,7 @@ export class OfficeImpl implements Office {
 
   scope?: Scope;
 
-  slotsPerAppointment?: string;
+  maxAppointmentLengthInMinutes?: string;
 
   slots?: number;
 
@@ -49,7 +49,7 @@ export class OfficeImpl implements Office {
     disabledByServices: string[] | undefined,
     allowDisabledServicesMix: boolean | number[] | undefined,
     scope: Scope | undefined,
-    slotsPerAppointment: string | undefined,
+    maxAppointmentLengthInMinutes: string | undefined,
     slots: number | undefined,
     priority: number = 1,
     parentId: number | undefined = undefined,
@@ -66,7 +66,7 @@ export class OfficeImpl implements Office {
     this.disabledByServices = disabledByServices;
     this.allowDisabledServicesMix = allowDisabledServicesMix;
     this.scope = scope;
-    this.slotsPerAppointment = slotsPerAppointment;
+    this.maxAppointmentLengthInMinutes = maxAppointmentLengthInMinutes;
     this.slots = slots;
     this.priority = priority;
     this.parentId = parentId;
