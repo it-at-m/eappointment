@@ -30,7 +30,7 @@
             },
             "client": {
                 "appointmentsPerMail": "",
-                "slotsPerAppointment": "",
+                "maxAppointmentLengthInMinutes": "",
                 "whitelistedMails": "",
                 "amendmentLabel": "Zusatzinformationen zum Anliegen",
                 "customTextfieldLabel": "Zusatzfeld zum Anliegen",
@@ -312,9 +312,9 @@
                             "description": "allowed appointments per e-mail address",
                             "default": ""
                         },
-                        "slotsPerAppointment": {
+                        "maxAppointmentLengthInMinutes": {
                             "type": ["string", "null", "integer"],
-                            "description": "allowed slots per appointment",
+                            "description": "maximum appointment length in minutes",
                             "default": ""
                         },
                         "whitelistedMails": {

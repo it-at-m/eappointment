@@ -207,7 +207,7 @@
         },
         "client": {
             "appointmentsPerMail": "",
-            "slotsPerAppointment": "",
+            "maxAppointmentLengthInMinutes": "",
             "whitelistedMails": "",
             "amendmentLabel": "Zusatzinformationen zum Anliegen",
             "customTextfieldLabel": "Zusatzfeld zum Anliegen",

@@ -228,11 +228,11 @@ class Scope extends Schema\Entity implements Useraccount\AccessInterface
         return ($appointmentsPerMail) ? $appointmentsPerMail : null;
     }
 
-    public function getSlotsPerAppointment(): mixed
+    public function getMaxAppointmentLengthInMinutes(): mixed
     {
-        $slotsPerAppointment = $this->toProperty()->preferences->client->slotsPerAppointment->get();
+        $maxAppointmentLengthInMinutes = $this->toProperty()->preferences->client->maxAppointmentLengthInMinutes->get();
 
-        return ($slotsPerAppointment) ? $slotsPerAppointment : null;
+        return ($maxAppointmentLengthInMinutes) ? $maxAppointmentLengthInMinutes : null;
     }
 
     public function getWhitelistedMails(): mixed
