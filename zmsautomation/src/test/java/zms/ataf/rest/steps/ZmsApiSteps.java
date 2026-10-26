@@ -3404,6 +3404,14 @@ public class ZmsApiSteps {
         iSetTheAppointmentCapForScopeToMinutes(scopeId, minutes);
     }
 
+    @Then("scope {int} appointment cap should be the value just saved with the X-AuthKey")
+    public void scopeAppointmentCapShouldBeTheValueJustSaved(int scopeId) {
+        Assertions.assertThat(citizenCatalogSavedCap)
+            .as("saved appointment cap")
+            .isNotBlank();
+        scopeAppointmentCapShouldBeMinutes(scopeId, Integer.parseInt(citizenCatalogSavedCap));
+    }
+
     @Then("scope {int} appointment cap should be {int} minutes with the X-AuthKey")
     public void scopeAppointmentCapShouldBeMinutes(int scopeId, int minutes) {
         String actual = readAppointmentCap(scopeId);

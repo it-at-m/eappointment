@@ -746,6 +746,22 @@ class Scope extends \BO\Zmsbackend\Base
             }
         }
 
+        // Offices-and-services warmup reads /source/{name}/. That snapshot embeds the cap, so a
+        // scope save has to drop it or the catalog keeps the previous minutes.
+        $sourceName = '';
+        if (isset($scope['source']) && is_string($scope['source'])) {
+            $sourceName = $scope['source'];
+        }
+        if ($sourceName === '' && isset($scope['provider']['source']) && is_string($scope['provider']['source'])) {
+            $sourceName = $scope['provider']['source'];
+        }
+        if ($sourceName !== '') {
+            (new \BO\Zmsbackend\Source\Service\Source())->removeCache($sourceName);
+            for ($resolveReferences = 0; $resolveReferences <= 2; $resolveReferences++) {
+                $invalidatedKeys[] = "source-{$sourceName}-{$resolveReferences}";
+            }
+        }
+
         if (!empty($invalidatedKeys) && \App::$log) {
             \App::$log->info('Scope cache invalidated', [
                 'scope_id' => isset($scope->id) ? $scope->id : 'unknown',
