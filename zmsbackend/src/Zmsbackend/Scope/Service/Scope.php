@@ -326,7 +326,9 @@ class Scope extends \BO\Zmsbackend\Base
 
     public function readList(int $resolveReferences = 0, bool $disableCache = false): Collection
     {
-        $cacheKey = "scopeReadList-$resolveReferences";
+        // The suffix changes on every scope save. Deleting the previous key did not stop a
+        // later read from serving that list, and the citizen catalog kept the old cap.
+        $cacheKey = 'scopeReadList-' . $resolveReferences . '-' . $this->scopeListCacheGeneration();
 
         if (!$disableCache && \App::$cache && \App::$cache->has($cacheKey)) {
             $result = \App::$cache->get($cacheKey);
@@ -701,12 +703,12 @@ class Scope extends \BO\Zmsbackend\Base
         }
 
         // Invalidate scope list cache for all resolveReferences levels (0, 1, 2)
+        $generation = $this->bumpScopeListCacheGeneration();
+        $invalidatedKeys[] = 'scopeReadListGeneration=' . $generation;
         for ($resolveReferences = 0; $resolveReferences <= 2; $resolveReferences++) {
-            $key = "scopeReadList-{$resolveReferences}";
-            if (\App::$cache->has($key)) {
-                \App::$cache->delete($key);
-                $invalidatedKeys[] = $key;
-            }
+            $key = 'scopeReadList-' . $resolveReferences . '-' . ($generation - 1);
+            \App::$cache->delete($key);
+            $invalidatedKeys[] = $key;
         }
 
         // Invalidate scopeReadByDepartmentId cache for all resolveReferences levels (0, 1, 2)
@@ -768,6 +770,28 @@ class Scope extends \BO\Zmsbackend\Base
                 'invalidated_keys' => $invalidatedKeys
             ]);
         }
+    }
+
+    private function scopeListCacheGeneration(): int
+    {
+        if (!\App::$cache) {
+            return 0;
+        }
+        $generation = \App::$cache->get('scopeReadListGeneration');
+
+        return is_numeric($generation) ? (int) $generation : 0;
+    }
+
+    private function bumpScopeListCacheGeneration(): int
+    {
+        if (!\App::$cache) {
+            return 0;
+        }
+        $generation = $this->scopeListCacheGeneration() + 1;
+        // Outlive the scope-list entries so a later read cannot fall back onto a stale key.
+        \App::$cache->set('scopeReadListGeneration', $generation, 86400 * 30);
+
+        return $generation;
     }
 
     /**
