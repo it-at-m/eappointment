@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-10-26T14:46:45.656Z",
+  "publishedAt": "2026-10-26T14:52:44.536Z",
   "branches": [
     {
       "name": "next",
@@ -233,7 +233,7 @@
       "name": "feature-zmskvr-834-overlapping-availabilities",
       "slug": "feature-zmskvr-834-overlapping-availabilities",
       "runId": "40329101884",
-      "runStartedAt": "2026-10-26T13:16:04Z"
+      "runStartedAt": "2026-10-26T14:17:23Z"
     },
     {
       "name": "feature-zmskvr-909-announce-callout-status",
