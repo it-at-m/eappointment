@@ -9,8 +9,10 @@ import java.nio.file.Path;
 import java.time.DayOfWeek;
 import java.time.Duration;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.format.DateTimeParseException;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -3772,13 +3774,17 @@ public class ZmsApiSteps {
         try {
             script = Files.createTempFile("zmskvr1627-slots", ".php");
             Files.writeString(script, "<?php\nrequire " + MAPPER.writeValueAsString(bootstrap.toString()) + ";\n"
+                + "\\BO\\Zmsbackend\\Connection\\Select::setTransaction(true);\n"
+                + "\\BO\\Zmsbackend\\Connection\\Select::getWriteConnection();\n"
                 + "$availability = (new \\BO\\Zmsbackend\\Availability\\Service\\Availability())"
-                + "->readEntity((int) $argv[1]);\n"
-                + "if (!$availability || !$availability->hasId()) { fwrite(STDERR, \"missing\\n\"); exit(1); }\n"
-                + "(new \\BO\\Zmsbackend\\Slot\\Service\\Slot())"
+                + "->readEntity((int) $argv[1], 2);\n"
+                + "if (!$availability || !$availability->hasId()) { fwrite(STDERR, \"missing availability\\n\"); exit(1); }\n"
+                + "$wrote = (new \\BO\\Zmsbackend\\Slot\\Service\\Slot())"
                 + "->writeByAvailability($availability, new \\DateTimeImmutable('now'));\n"
                 + "\\BO\\Zmsbackend\\Connection\\Select::writeCommit();\n"
-                + "echo \"ok\\n\";\n");
+                + "$note = json_encode($availability['processingNote'] ?? []);\n"
+                + "if (!$wrote) { fwrite(STDERR, \"not written {$note}\\n\"); exit(1); }\n"
+                + "echo \"ok {$note}\\n\";\n");
         } catch (IOException io) {
             throw new IllegalStateException("Could not write the slot calculation script", io);
         }
@@ -3786,12 +3792,27 @@ public class ZmsApiSteps {
             phpBinary(), script.toString(), Integer.toString(slotChangeAvailabilityId));
         builder.directory(backend.toFile());
         builder.environment().putIfAbsent("ZMS_ENV", "dev");
+        builder.environment().put("ZMS_CRONROOT", "1");
         builder.redirectErrorStream(true);
         String logged;
         try {
             Process calculated = builder.start();
-            logged = new String(calculated.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
+            StringBuffer output = new StringBuffer();
+            Thread reader = new Thread(() -> {
+                try {
+                    output.append(new String(calculated.getInputStream().readAllBytes(), StandardCharsets.UTF_8));
+                } catch (IOException io) {
+                    output.append(io.getMessage());
+                }
+            }, "zmskvr1627-slots");
+            reader.setDaemon(true);
+            reader.start();
             boolean finished = calculated.waitFor(60, TimeUnit.SECONDS);
+            if (!finished) {
+                calculated.destroyForcibly();
+            }
+            reader.join(2000L);
+            logged = output.toString();
             Assertions.assertThat(finished)
                 .as("slot calculation did not finish. output=%s", truncate(logged, 800))
                 .isTrue();
@@ -3843,8 +3864,9 @@ public class ZmsApiSteps {
             }
         }
         Assertions.assertThat(matched)
-            .as("free intern slots between %s and %s at scope %d (status %s)",
-                slotChangeStart, slotChangeEnd, scopeId, freeResponse.getStatusCode())
+            .as("free intern slots between %s and %s at scope %d (status %s, rows %s, body %s)",
+                slotChangeStart, slotChangeEnd, scopeId, freeResponse.getStatusCode(),
+                freeList == null ? 0 : freeList.size(), truncate(freeResponse.asString(), 500))
             .isNotEmpty();
         return matched;
     }
@@ -3855,6 +3877,9 @@ public class ZmsApiSteps {
             return date.asLong();
         }
         String text = date.asText("").trim();
+        if (text.isEmpty()) {
+            return 0L;
+        }
         if (text.chars().allMatch(Character::isDigit) && text.length() >= 10) {
             return Long.parseLong(text);
         }
@@ -3862,7 +3887,11 @@ public class ZmsApiSteps {
         if (normalized.length() == 16) {
             normalized = normalized + ":00";
         }
-        return LocalDateTime.parse(normalized).atZone(BerlinTime.ZONE).toEpochSecond();
+        try {
+            return LocalDateTime.parse(normalized).atZone(BerlinTime.ZONE).toEpochSecond();
+        } catch (DateTimeParseException ignored) {
+            return 0L;
+        }
     }
 
     private static FutureHour nextFullHour() {
