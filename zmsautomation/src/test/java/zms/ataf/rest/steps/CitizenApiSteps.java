@@ -74,6 +74,9 @@ public class CitizenApiSteps {
     private String lastAppointmentDate;
     private String lastDisplayNumberBeforeCancel;
     private OfficesAndServicesResponse lastOfficesAndServicesResponse;
+    /** ZMSKVR-1627: cap the public catalog returned before the scope was saved again. */
+    static String rememberedOfficeCap;
+    static boolean rememberedOfficeCapSet;
     private Integer rebookingSourceProcessId;
     private String rebookingSourceAuthKey;
     private String citizenAccessToken;
@@ -106,6 +109,8 @@ public class CitizenApiSteps {
         lastAvailableAppointmentsResponse = null;
         lastAppointmentDate = null;
         lastOfficesAndServicesResponse = null;
+        rememberedOfficeCap = null;
+        rememberedOfficeCapSet = false;
         rebookingSourceProcessId = null;
         rebookingSourceAuthKey = null;
         citizenAccessToken = null;
@@ -292,6 +297,56 @@ public class CitizenApiSteps {
         Assertions.assertThat(cap == null || cap.isBlank())
             .as("office %d maxAppointmentLengthInMinutes should be unset (fallback 25 slots), was %s", officeId, cap)
             .isTrue();
+    }
+
+    @When("I remember the appointment cap shown for office {int}")
+    public void iRememberTheAppointmentCapShownForOffice(int officeId) {
+        rememberedOfficeCap = officeCap(officeId);
+        rememberedOfficeCapSet = true;
+    }
+
+    @Then("office {int} should still show the remembered appointment cap")
+    public void officeShouldStillShowTheRememberedAppointmentCap(int officeId) {
+        Assertions.assertThat(rememberedOfficeCapSet)
+            .as("remember the citizen catalog cap first")
+            .isTrue();
+        String actual = officeCap(officeId);
+        if (rememberedOfficeCap == null || rememberedOfficeCap.isBlank()) {
+            Assertions.assertThat(actual == null || actual.isBlank())
+                .as("office %d maxAppointmentLengthInMinutes, was %s", officeId, actual)
+                .isTrue();
+            return;
+        }
+        Assertions.assertThat(actual)
+            .as("office %d maxAppointmentLengthInMinutes", officeId)
+            .isEqualTo(rememberedOfficeCap);
+    }
+
+    @Then("office {int} should show the appointment cap that was just saved")
+    public void officeShouldShowTheAppointmentCapThatWasJustSaved(int officeId) {
+        Assertions.assertThat(ZmsApiSteps.citizenCatalogSavedCap)
+            .as("saved appointment cap")
+            .isNotBlank();
+        Assertions.assertThat(officeCap(officeId))
+            .as("office %d maxAppointmentLengthInMinutes", officeId)
+            .isEqualTo(ZmsApiSteps.citizenCatalogSavedCap);
+    }
+
+    @When("I warm the citizen source cache")
+    public void iWarmTheCitizenSourceCache() {
+        warmCitizenSourceCache();
+    }
+
+    /**
+     * Runs after the ZMS API teardown has written the original cap back.
+     */
+    @After(order = -10000)
+    public void warmCitizenCatalogAfterCapRestore() {
+        if (!ZmsApiSteps.citizenCatalogNeedsWarmup) {
+            return;
+        }
+        ZmsApiSteps.citizenCatalogNeedsWarmup = false;
+        warmCitizenSourceCache();
     }
 
     @Then("office {int} and service {int} should take {int} slots")
@@ -3424,6 +3479,46 @@ public class CitizenApiSteps {
             }
         }
         return null;
+    }
+
+    static boolean hasRememberedOfficeCap() {
+        return rememberedOfficeCapSet;
+    }
+
+    static String rememberedOfficeCap() {
+        return rememberedOfficeCap;
+    }
+
+    private String officeCap(int officeId) {
+        Assertions.assertThat(lastOfficesAndServicesResponse)
+            .as("Request offices-and-services first")
+            .isNotNull();
+        Office office = findOfficeById(lastOfficesAndServicesResponse, officeId);
+        Assertions.assertThat(office)
+            .as("Expected office %d in offices-and-services", officeId)
+            .isNotNull();
+        return office.getMaxAppointmentLengthInMinutes();
+    }
+
+    private void warmCitizenSourceCache() {
+        String token = System.getenv("SOURCE_CACHE_WARMUP_TOKEN");
+        if (token == null || token.isBlank()) {
+            token = "local-warmup-token";
+        }
+        response = given()
+            .baseUri(baseUri != null ? baseUri : TestConfig.getCitizenApiBaseUri())
+            .header("X-Source-Cache-Warmup-Token", token)
+            .contentType("application/json")
+        .when()
+            .post("/source-cache/warmup/");
+        CommonApiSteps.setResponse(response);
+        String body = response.asString();
+        if (body.length() > 800) {
+            body = body.substring(0, 800);
+        }
+        Assertions.assertThat(response.getStatusCode())
+            .as("POST /source-cache/warmup/ body=%s", body)
+            .isEqualTo(200);
     }
 
     private <T> T parseDataResponse(Response response, Class<T> dataClass) {

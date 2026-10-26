@@ -78,6 +78,9 @@ public class ZmsApiSteps {
     private int historyScopeId;
     /** ZMSKVR-1627: series whose slot length this scenario changed, and the cap to write back. */
     private Integer slotChangeAvailabilityId;
+    /** Cap written for the citizen catalog scenario, and whether that catalog must be warmed after restore. */
+    static String citizenCatalogSavedCap;
+    static boolean citizenCatalogNeedsWarmup;
     private int slotChangeExpectedMinutes;
     private LocalDate slotChangeDay;
     private String slotChangeStart;
@@ -3384,6 +3387,21 @@ public class ZmsApiSteps {
         Assertions.assertThat(response.getStatusCode())
             .as("POST /scope/%d/ cap=%d body=%s", scopeId, minutes, truncate(response.asString(), 800))
             .isEqualTo(200);
+    }
+
+    /**
+     * ZMSKVR-1627: the citizen catalog is already cached, so the saved cap must differ from that cached value.
+     */
+    @When("I set a different appointment cap for scope {int} with the X-AuthKey")
+    public void iSetADifferentAppointmentCapForScope(int scopeId) {
+        Assertions.assertThat(CitizenApiSteps.hasRememberedOfficeCap())
+            .as("remember the citizen catalog cap first")
+            .isTrue();
+        String shown = CitizenApiSteps.rememberedOfficeCap();
+        int minutes = shown != null && "90".equals(shown.trim()) ? 45 : 90;
+        citizenCatalogSavedCap = Integer.toString(minutes);
+        citizenCatalogNeedsWarmup = true;
+        iSetTheAppointmentCapForScopeToMinutes(scopeId, minutes);
     }
 
     @Then("scope {int} appointment cap should be {int} minutes with the X-AuthKey")
