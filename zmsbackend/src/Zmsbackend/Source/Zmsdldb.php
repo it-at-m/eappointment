@@ -105,9 +105,16 @@ class Zmsdldb extends \BO\Zmsbackend\Base
             }
 
             $scopes = (new \BO\Zmsbackend\Scope\Service\Scope())->readByProviderId($provider->getId());
+            $slotChange = new \BO\Zmsbackend\Availability\Service\AvailabilitySlotChange();
             foreach ($scopes as $scope) {
-                (new \BO\Zmsbackend\Availability\Service\AvailabilitySlotChange())
-                    ->apply((int) $scope->getId(), $slotMinutes, $now);
+                $scopeId = (int) $scope->getId();
+                $slotChange->apply($scopeId, $slotMinutes, $now);
+                $slotChange->raiseToCoverLongestService(
+                    $scopeId,
+                    (string) $provider->getId(),
+                    (string) $provider->source,
+                    $slotMinutes
+                );
             }
         }
     }
