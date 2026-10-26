@@ -111,7 +111,7 @@ public class AuthoritiesAndLocationsPage extends AdminPage {
     public void setMaxSlotsForLocation(String location, String number) {
         ScenarioLogManager.getLogger().info("Trying to set the maximal slots for location: " + location);
         WebElement field = findElementByLocatorType(
-            "//input[@name='preferences[client][slotsPerAppointment]']", LocatorType.XPATH, true);
+            "//input[@name='preferences[client][maxAppointmentLengthInMinutes]']", LocatorType.XPATH, true);
         moveToElementAction(field);
         Keys selectAllMod = selectAllModifierKey();
         new Actions(DRIVER)
@@ -142,7 +142,7 @@ public class AuthoritiesAndLocationsPage extends AdminPage {
     /** @see #setMaxSlotsForLocation(String, String) */
     public String getMaxSlotsForLocation(String location) {
         ScenarioLogManager.getLogger().info("Trying to get the maximal slots for location: " + location);
-        return findElementByLocatorType("//input[@name='preferences[client][slotsPerAppointment]']", LocatorType.XPATH, true).getAttribute("value");
+        return findElementByLocatorType("//input[@name='preferences[client][maxAppointmentLengthInMinutes]']", LocatorType.XPATH, true).getAttribute("value");
     }
 
     /** @see #setMaxSlotsForLocation(String, String) */

@@ -92,7 +92,7 @@ public class OfficeDeserializer extends StdDeserializer<Office> {
 
         office.setDisabledByServices(intArrayOrNull(objNode.get("disabledByServices")));
         office.setPriority(intOrNull(objNode.get("priority")));
-        office.setSlotsPerAppointment(textOrNull(objNode.get("slotsPerAppointment")));
+        office.setMaxAppointmentLengthInMinutes(textOrNull(objNode.get("maxAppointmentLengthInMinutes")));
         office.setSharedBookingOfficeIds(intArrayOrNull(objNode.get("sharedBookingOfficeIds")));
         office.setAllowDisabledServicesMix(intArrayOrNull(objNode.get("allowDisabledServicesMix")));
     }
