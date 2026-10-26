@@ -3636,8 +3636,8 @@ public class ZmsApiSteps {
     }
 
     private static int durationMinutes(String start, String end) {
-        LocalTime from = LocalTime.parse(normalizeClock(start));
-        String endClock = normalizeClock(end);
+        LocalTime from = LocalTime.parse(normalizeClock(start == null ? "" : start.trim()));
+        String endClock = normalizeClock(end == null ? "" : end.trim());
         int minutes;
         if ("00:00:00".equals(endClock) || "24:00:00".equals(endClock)) {
             minutes = (int) Duration.between(from, LocalTime.MIDNIGHT).toMinutes();
@@ -3650,16 +3650,8 @@ public class ZmsApiSteps {
         return minutes;
     }
 
-    private static String normalizeClock(String value) {
-        String trimmed = value == null ? "" : value.trim();
-        if (trimmed.length() == 5) {
-            return trimmed + ":00";
-        }
-        return trimmed;
-    }
-
     private static String clockText(String value) {
-        String normalized = normalizeClock(value);
+        String normalized = normalizeClock(value == null ? "" : value.trim());
         return normalized.length() >= 5 ? normalized.substring(0, 5) : normalized;
     }
 
