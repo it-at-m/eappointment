@@ -136,8 +136,11 @@ class AppointmentProcessLimitsValidationService
         $appointment = $process->getFirstAppointment();
         $slotCount = $appointment ? (int) $appointment->getSlotCount() : null;
         $slotTimeInMinutes = 0;
-        if ($appointment && isset($appointment->availability)) {
-            $slotTimeInMinutes = (int) $appointment->availability->slotTimeInMinutes;
+        if (
+            $appointment
+            && \BO\Zmsentities\Helper\Property::__keyExists('availability', $appointment)
+        ) {
+            $slotTimeInMinutes = (int) $appointment->getAvailability()->slotTimeInMinutes;
         }
         $maxAppointmentLengthInMinutes = self::readSlotsPerAppointmentFromProcess($process);
         // Free-process payloads often omit client.maxAppointmentLengthInMinutes; fall back to the office scope.

@@ -54,10 +54,15 @@ class Zmsdldb extends \BO\Zmsbackend\Base
         \BO\Zmsbackend\Connection\Select::writeCommit();
 
         if ($updateAvailability) {
-            $this->updateAvailability($providers);
-            // writeCommit() opens a new transaction. Without this commit the slot
-            // cut is rolled back when the import process exits.
-            \BO\Zmsbackend\Connection\Select::writeCommit();
+            try {
+                $this->updateAvailability($providers);
+                // writeCommit() opens a new transaction. Without this commit the slot
+                // cut is rolled back when the import process exits.
+                \BO\Zmsbackend\Connection\Select::writeCommit();
+            } catch (\Throwable $exception) {
+                \BO\Zmsbackend\Connection\Select::writeRollback();
+                throw $exception;
+            }
         }
     }
 
