@@ -98,13 +98,13 @@
             ],
             "description": "Additional display information for no appointments"
         },
-        "slotsPerAppointment": {
+        "maxAppointmentLengthInMinutes": {
             "type": [
                 "string",
                 "null",
                 "integer"
             ],
-            "description": "Number of slots that can be booked per appointment"
+            "description": "Maximum appointment length in minutes"
         },
         "appointmentsPerMail": {
             "type": [

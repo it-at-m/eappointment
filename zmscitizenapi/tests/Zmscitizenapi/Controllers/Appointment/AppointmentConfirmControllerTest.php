@@ -102,7 +102,7 @@ class AppointmentConfirmControllerTest extends ControllerTestCase
                 'rebookingDisabled' => false,
                 'infoForAppointment' => null,
                 'infoForAllAppointments' => null,
-                'slotsPerAppointment' => null,
+                'maxAppointmentLengthInMinutes' => null,
                 "appointmentsPerMail" => null,
                 "whitelistedMails" => null,
                 "reservationDuration" => null,

@@ -28,7 +28,7 @@ class ThinnedScope extends Entity implements JsonSerializable
     public ?bool $captchaActivatedRequired;
     public ?string $infoForAppointment;
     public ?string $infoForAllAppointments;
-    public ?string $slotsPerAppointment;
+    public ?string $maxAppointmentLengthInMinutes;
     public ?string $appointmentsPerMail;
     public ?string $whitelistedMails;
     public ?int $reservationDuration;
@@ -36,7 +36,7 @@ class ThinnedScope extends Entity implements JsonSerializable
     public ?string $hint;
     public ?bool $rebookingDisabled;
 
-    public function __construct(int $id = 0, ?ThinnedProvider $provider = null, ?string $shortName = null, ?string $emailFrom = null, ?bool $emailRequired = null, ?bool $telephoneActivated = null, ?bool $telephoneRequired = null, ?bool $customTextfieldActivated = null, ?bool $customTextfieldRequired = null, ?string $customTextfieldLabel = null, ?bool $customTextfield2Activated = null, ?bool $customTextfield2Required = null, ?string $customTextfield2Label = null, ?bool $captchaActivatedRequired = null, ?string $infoForAppointment = null, ?string $infoForAllAppointments = null, ?string $slotsPerAppointment = null, ?string $appointmentsPerMail = null, ?string $whitelistedMails = null, ?int $reservationDuration = null, ?int $activationDuration = null, ?string $hint = null, ?bool $rebookingDisabled = null)
+    public function __construct(int $id = 0, ?ThinnedProvider $provider = null, ?string $shortName = null, ?string $emailFrom = null, ?bool $emailRequired = null, ?bool $telephoneActivated = null, ?bool $telephoneRequired = null, ?bool $customTextfieldActivated = null, ?bool $customTextfieldRequired = null, ?string $customTextfieldLabel = null, ?bool $customTextfield2Activated = null, ?bool $customTextfield2Required = null, ?string $customTextfield2Label = null, ?bool $captchaActivatedRequired = null, ?string $infoForAppointment = null, ?string $infoForAllAppointments = null, ?string $maxAppointmentLengthInMinutes = null, ?string $appointmentsPerMail = null, ?string $whitelistedMails = null, ?int $reservationDuration = null, ?int $activationDuration = null, ?string $hint = null, ?bool $rebookingDisabled = null)
     {
         $this->id = $id;
         $this->provider = $provider;
@@ -54,7 +54,7 @@ class ThinnedScope extends Entity implements JsonSerializable
         $this->captchaActivatedRequired = $captchaActivatedRequired;
         $this->infoForAppointment = $infoForAppointment;
         $this->infoForAllAppointments = $infoForAllAppointments;
-        $this->slotsPerAppointment = $slotsPerAppointment;
+        $this->maxAppointmentLengthInMinutes = $maxAppointmentLengthInMinutes;
         $this->appointmentsPerMail = $appointmentsPerMail;
         $this->whitelistedMails = $whitelistedMails;
         $this->reservationDuration = $reservationDuration;
@@ -154,9 +154,9 @@ class ThinnedScope extends Entity implements JsonSerializable
         return $this->infoForAllAppointments;
     }
 
-    public function getSlotsPerAppointment(): ?string
+    public function getMaxAppointmentLengthInMinutes(): ?string
     {
-        return $this->slotsPerAppointment;
+        return $this->maxAppointmentLengthInMinutes;
     }
 
     public function getAppointmentsPerMail(): ?string
@@ -209,7 +209,7 @@ class ThinnedScope extends Entity implements JsonSerializable
             'captchaActivatedRequired' => $this->captchaActivatedRequired,
             'infoForAppointment' => $this->infoForAppointment,
             'infoForAllAppointments' => $this->infoForAllAppointments,
-            'slotsPerAppointment' => $this->slotsPerAppointment,
+            'maxAppointmentLengthInMinutes' => $this->maxAppointmentLengthInMinutes,
             'appointmentsPerMail' => $this->appointmentsPerMail,
             'whitelistedMails' => $this->whitelistedMails,
             'reservationDuration' => $this->reservationDuration,

@@ -183,14 +183,14 @@ class MapperService
                         ? ($providerScope->infoForAllAppointments === '' ? null : $providerScope->infoForAllAppointments)
                         : null,
                     appointmentsPerMail: isset($providerScope->appointmentsPerMail) ? ($providerScope->appointmentsPerMail === '' ? null : $providerScope->appointmentsPerMail) : null,
-                    slotsPerAppointment: isset($providerScope->slotsPerAppointment) ? ($providerScope->slotsPerAppointment === '' ? null : $providerScope->slotsPerAppointment) : null,
+                    maxAppointmentLengthInMinutes: isset($providerScope->maxAppointmentLengthInMinutes) ? ($providerScope->maxAppointmentLengthInMinutes === '' ? null : $providerScope->maxAppointmentLengthInMinutes) : null,
                     whitelistedMails: isset($providerScope->whitelistedMails) ? ($providerScope->whitelistedMails === '' ? null : $providerScope->whitelistedMails) : null,
                     reservationDuration: (int) self::extractReservationDuration($providerScope),
                     activationDuration: self::extractActivationDuration($providerScope),
                     hint: isset($providerScope->hint) ? (trim($providerScope->hint) === '' ? null : $providerScope->hint) : null,
                     rebookingDisabled: $providerScope->isRebookingDisabled()
                 ) : null,
-                slotsPerAppointment: isset($providerScope) && !isset($providerScope['errors']) && isset($providerScope->slotsPerAppointment) ? ($providerScope->slotsPerAppointment === '' ? null : $providerScope->slotsPerAppointment) : null,
+                maxAppointmentLengthInMinutes: isset($providerScope) && !isset($providerScope['errors']) && isset($providerScope->maxAppointmentLengthInMinutes) ? ($providerScope->maxAppointmentLengthInMinutes === '' ? null : $providerScope->maxAppointmentLengthInMinutes) : null,
                 parentId: isset($provider->parent_id) ? (int) $provider->parent_id : null,
                 allowDisabledServicesMix: self::resolveAllowDisabledServicesMix($provider),
                 sharedBookingOfficeIds: self::resolveSharedBookingOfficeIds($provider)
@@ -365,9 +365,9 @@ class MapperService
             infoForAllAppointments: $scope->getInfoForAllAppointments() === null
                 ? null
                 : (string) $scope->getInfoForAllAppointments(),
-            slotsPerAppointment: $scope->getSlotsPerAppointment() === null
+            maxAppointmentLengthInMinutes: $scope->getMaxAppointmentLengthInMinutes() === null
                 ? null
-                : (string) $scope->getSlotsPerAppointment(),
+                : (string) $scope->getMaxAppointmentLengthInMinutes(),
             appointmentsPerMail: $scope->getAppointmentsPerMail() !== null
                 ? (string) $scope->getAppointmentsPerMail()
                 : null,
@@ -501,7 +501,7 @@ class MapperService
             $scope->preferences = [
                 'client' => [
                     'appointmentsPerMail' => $thinnedProcess->scope->getAppointmentsPerMail() ?? null,
-                    'slotsPerAppointment' => $thinnedProcess->scope->getSlotsPerAppointment() ?? null,
+                    'maxAppointmentLengthInMinutes' => $thinnedProcess->scope->getMaxAppointmentLengthInMinutes() ?? null,
                     "whitelistedMails" => $thinnedProcess->scope->getWhitelistedMails() ?? null,
                     'emailFrom' => $thinnedProcess->scope->getEmailFrom() ?? null,
                     'emailRequired' => $thinnedProcess->scope->isEmailRequired() ?? false,

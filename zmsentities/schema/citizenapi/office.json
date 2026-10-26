@@ -150,12 +150,12 @@
             },
             "description": "Peer office IDs that share one Ort checkbox but pool calendar capacity (all IDs queried; backend round-robins across the group)."
         },
-        "slotsPerAppointment": {
+        "maxAppointmentLengthInMinutes": {
             "type": [
                 "string",
                 "null"
             ],
-            "description": "Number of slots that can be booked per appointment at this office"
+            "description": "Maximum appointment length in minutes at this office"
         }
     },
     "required": [
