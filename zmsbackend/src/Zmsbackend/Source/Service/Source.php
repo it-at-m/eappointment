@@ -94,8 +94,10 @@ class Source extends \BO\Zmsbackend\Base
                 ));
             $entity['requestrelation'] = (new RequestRelationList())
                 ->addList((new \BO\Zmsbackend\RequestRelation\Service\RequestRelation())->readListBySource($entity->source));
+            // Always read scopes from the database. A cached scope list kept the previous
+            // appointment cap after a save, so offices-and-services warmup republished it.
             $entity['scopes'] = (new ScopeList())
-                ->addList((new \BO\Zmsbackend\Scope\Service\Scope())->readList($resolveReferences - 1, $disableCache));
+                ->addList((new \BO\Zmsbackend\Scope\Service\Scope())->readList($resolveReferences - 1, true));
         }
 
         return $entity;
