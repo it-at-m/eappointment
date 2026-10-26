@@ -281,6 +281,10 @@ class FiveMinuteSlotConversion extends \BO\Zmsbackend\Base
                 ]
             );
         }
+
+        if ($write) {
+            \BO\Zmsbackend\Connection\Select::writeCommit();
+        }
     }
 
     /**
