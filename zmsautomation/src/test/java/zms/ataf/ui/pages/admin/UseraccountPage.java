@@ -447,10 +447,15 @@ public class UseraccountPage extends BasePage {
         if (!match.find()) {
             return false;
         }
-        int red = Integer.parseInt(match.group(1));
-        int green = Integer.parseInt(match.group(2));
-        int blue = Integer.parseInt(match.group(3));
-        return red >= 180 && green <= 90 && blue <= 90 && red > green + 80 && red > blue + 80;
+        try {
+            int red = Integer.parseInt(match.group(1));
+            int green = Integer.parseInt(match.group(2));
+            int blue = Integer.parseInt(match.group(3));
+            // red >= 180 and green/blue <= 90 already imply red exceeds each by more than 80.
+            return red >= 180 && green <= 90 && blue <= 90;
+        } catch (NumberFormatException ignored) {
+            return false;
+        }
     }
 
     private void submitNewUserForm() {

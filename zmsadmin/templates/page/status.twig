@@ -66,6 +66,14 @@
                 <small>(Nur für technische Administration sichtbar)</small>
             </th>
         </tr>
+        <tr class="status-php-version">
+            <th>zmsadmin PHP-Version</th>
+            <td>{{ phpVersion }}</td>
+        </tr>
+        <tr class="status-backend-php-version">
+            <th>zmsbackend PHP-Version</th>
+            <td>{{ status.phpVersion }}</td>
+        </tr>
         <tr class="status-process-confirmed-external">
             <th>Anzahl der gebuchten Termine mit Bürgerlogin</th>
             <td>{{ status.processes.confirmedWithExternalUserId|default(0) }}</td>

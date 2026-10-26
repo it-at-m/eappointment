@@ -41,6 +41,7 @@
       "minor": "15",
       "patch": "03"
     },
+    "phpVersion": "1.2.3-zmsbackend",
     "useraccounts": {
       "activeSessions": 7
     }

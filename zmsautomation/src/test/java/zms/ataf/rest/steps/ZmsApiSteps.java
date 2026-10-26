@@ -47,6 +47,7 @@ import io.cucumber.java.en.When;
 import io.restassured.response.Response;
 import zms.ataf.helpers.AccountCheckout;
 import zms.ataf.helpers.BerlinTime;
+import zms.ataf.helpers.PlainTextLengthSample;
 import zms.ataf.rest.dto.common.ApiResponse;
 import zms.ataf.rest.dto.zmsapi.StatusResponse;
 
@@ -813,9 +814,69 @@ public class ZmsApiSteps {
         queueWalkIn(scopeId, serviceName, familyName, amendment);
     }
 
-    private void queueWalkIn(int scopeId, String serviceName, String familyName, String amendment) {
+    @When("I queue a walk-in at scope {int} with service {string}, name {string} and priority {int} with the X-AuthKey")
+    public void iQueueAWalkInAtScopeWithServiceNameAndPriorityWithTheXAuthKey(
+            int scopeId, String serviceName, String familyName, int priority) {
         String authKey = getOrLoginXAuthKey();
         JsonNode request = findScopeRequestByName(scopeId, serviceName, authKey);
+        ObjectNode scope = MAPPER.createObjectNode();
+        scope.put("id", scopeId);
+        ObjectNode appointment = MAPPER.createObjectNode();
+        appointment.set("scope", scope.deepCopy());
+        appointment.put("date", 0);
+        ObjectNode client = MAPPER.createObjectNode();
+        client.put("familyName", familyName);
+        client.put("email", familyName.toLowerCase(Locale.ROOT).replaceAll("[^a-z0-9]", "") + "@mailinator.com");
+        client.put("surveyAccepted", 1);
+        ObjectNode process = MAPPER.createObjectNode();
+        process.put("status", "queued");
+        process.put("priority", priority);
+        process.put("customTextfield", "ATAF Hinweis");
+        process.set("scope", scope);
+        process.set("appointments", MAPPER.createArrayNode().add(appointment));
+        process.set("requests", MAPPER.createArrayNode().add(request.deepCopy()));
+        process.set("clients", MAPPER.createArrayNode().add(client));
+
+        response = given()
+            .baseUri(baseUri != null ? baseUri : TestConfig.getBaseUri())
+            .header("X-AuthKey", authKey)
+            .contentType("application/json")
+            .body(toJson(process))
+        .when()
+            .post("/workstation/process/waitingnumber/");
+        CommonApiSteps.setResponse(response);
+        Assertions.assertThat(response.getStatusCode())
+            .as("POST /workstation/process/waitingnumber/ body=%s", truncate(response.asString(), 1000))
+            .isEqualTo(200);
+        JsonNode queued = parseDataNode(response);
+        rememberProcess(queued);
+        int processId = queued == null ? 0 : queued.path("id").asInt();
+        trackProcess(processId, scopeId);
+    }
+
+    @When("I cancel the assigned process with action {string} with the X-AuthKey")
+    public void iCancelTheAssignedProcessWithActionWithTheXAuthKey(String action) {
+        String authKey = getOrLoginXAuthKey();
+        response = given()
+            .baseUri(baseUri != null ? baseUri : TestConfig.getBaseUri())
+            .header("X-AuthKey", authKey)
+            .queryParam("action", action)
+        .when()
+            .delete("/workstation/process/");
+        CommonApiSteps.setResponse(response);
+        Assertions.assertThat(response.getStatusCode())
+            .as("DELETE /workstation/process/?action=%s body=%s", action, truncate(response.asString(), 1000))
+            .isEqualTo(200);
+    }
+
+    private void queueWalkIn(int scopeId, String serviceName, String familyName, String amendment) {
+        String authKey = getOrLoginXAuthKey();
+        queueResolvedWalkIn(
+                scopeId, findScopeRequestByName(scopeId, serviceName, authKey), familyName, amendment, authKey);
+    }
+
+    private void queueResolvedWalkIn(
+            int scopeId, JsonNode request, String familyName, String amendment, String authKey) {
         ObjectNode scope = MAPPER.createObjectNode();
         scope.put("id", scopeId);
         ObjectNode appointment = MAPPER.createObjectNode();
@@ -983,17 +1044,40 @@ public class ZmsApiSteps {
             .isEqualTo(200);
         response = postProcessCalled(holderAuthKey, true, booked);
         CommonApiSteps.setResponse(response);
-        Assertions.assertThat(response.getStatusCode())
-            .as("POST /workstation/process/called/ (holder) body=%s", truncate(response.asString(), 1000))
-            .isEqualTo(200);
-        JsonNode assigned = refreshAssignedProcessFromWorkstation(holderAuthKey);
+        JsonNode assigned = null;
+        for (int attempt = 1; attempt <= 3; attempt++) {
+            Assertions.assertThat(response.getStatusCode())
+                .as("POST /workstation/process/called/ (holder) body=%s", truncate(response.asString(), 1000))
+                .isEqualTo(200);
+            assigned = workstationProcess(holderAuthKey);
+            if (assigned != null
+                    && assigned.path("id").asInt() == processId
+                    && "called".equals(processStatusText(assigned))) {
+                break;
+            }
+            // A recycled pool login runs PROCESS_RESET (NutzerID 0, aufrufzeit 00:00:00).
+            // The status CASE then reports a called Terminkunde as confirmed, and a
+            // workstation GET with no process must not fall back to the pre-call body.
+            ScenarioLogManager.getLogger().warn(
+                    "Holder call attempt {} left process {} as {}; workstation={}",
+                    attempt,
+                    processId,
+                    processStatusText(assigned),
+                    truncate(assigned == null ? "none" : assigned.toString(), 400));
+            if (attempt == 3) {
+                break;
+            }
+            pauseMillis(400);
+            response = postProcessCalled(holderAuthKey, true, booked);
+            CommonApiSteps.setResponse(response);
+        }
         Assertions.assertThat(assigned).as("holder assigned process after call").isNotNull();
         Assertions.assertThat(assigned.path("id").asInt())
             .as("holder workstation must hold process id=%d; body=%s",
-                processId, truncate(response.asString(), 800))
+                processId, truncate(assigned.toString(), 800))
             .isEqualTo(processId);
-        Assertions.assertThat(assigned.path("status").asText())
-            .as("process status after holder call")
+        Assertions.assertThat(processStatusText(assigned))
+            .as("process status after holder call body=%s", truncate(assigned.toString(), 800))
             .isEqualTo("called");
         rememberProcess(assigned);
 
@@ -1343,22 +1427,22 @@ public class ZmsApiSteps {
             freeList = fetchFreeProcessesLookingAhead(scopeId, request, authKey, earliest);
         }
 
-        List<JsonNode> candidates = slotsBetween(freeList, earliest, Math.min(soon, endOfToday));
+        List<JsonNode> candidates = internSlotCandidates(
+                freeList, earliest, soon, endOfToday, minutesAhead, now, scopeId);
         if (candidates.isEmpty()) {
-            candidates = slotsBetween(freeList, earliest, endOfToday);
-            if (!candidates.isEmpty()) {
+            // ZMSKVR-42 locks scope 133 today for about a second. The free list is then
+            // empty, and the next day's first slot can sit just outside the 24h window.
+            for (int attempt = 1; attempt <= 4 && candidates.isEmpty(); attempt++) {
+                pauseMillis(1000);
                 ScenarioLogManager.getLogger().info(
-                        "No intern slot in the next minutes for scope {}; using a later slot today",
-                        scopeId);
-            }
-        }
-        if (minutesAhead > 0 && candidates.isEmpty()) {
-            long reminderHorizon = now + 24 * 60 * 60;
-            candidates = slotsBetween(freeList, earliest, reminderHorizon);
-            if (!candidates.isEmpty()) {
-                ScenarioLogManager.getLogger().info(
-                        "No intern slot today for scope {}; using the next slot inside the reminder window",
-                        scopeId);
+                        "No intern slot for scope {} from epoch {}; refreshing free list ({})",
+                        scopeId,
+                        earliest,
+                        attempt);
+                long retryNow = Instant.now().getEpochSecond();
+                freeList = fetchFreeProcessesLookingAhead(scopeId, request, authKey, earliest);
+                candidates = internSlotCandidates(
+                        freeList, earliest, soon, endOfToday, minutesAhead, retryNow, scopeId);
             }
         }
         Assertions.assertThat(candidates)
@@ -1667,6 +1751,79 @@ public class ZmsApiSteps {
         }
     }
 
+    /**
+     * ZMS-3152 / ZMSALT-3381: seed enough walk-ins to hit Ampel bands (green/yellow/orange/red).
+     */
+    @When("I queue {int} walk-ins at scope {int} with service {string} with the X-AuthKey")
+    public void iQueueManyWalkInsAtScopeWithServiceWithTheXAuthKey(int count, int scopeId, String serviceName) {
+        Assertions.assertThat(count).isBetween(1, 50);
+        String authKey = getOrLoginXAuthKey();
+        iUpdateTheWorkstationWithScopeAndCounterWithTheXAuthKey(scopeId, "22");
+        Assertions.assertThat(response.getStatusCode())
+            .as("POST /workstation/ for scope %d body=%s", scopeId, truncate(response.asString(), 1000))
+            .isEqualTo(200);
+        JsonNode request = findScopeRequestByName(scopeId, serviceName, authKey);
+        for (int i = 0; i < count; i++) {
+            queueResolvedWalkIn(scopeId, request, "Muster Ampel " + i + " " + System.nanoTime(), null, authKey);
+            int processId = lastProcess == null ? 0 : lastProcess.path("id").asInt();
+            trackProcess(processId, scopeId);
+        }
+        ScenarioLogManager.getLogger().info(
+                "Queued {} walk-ins at scope {} for Ampel coverage (auth={})",
+                count, scopeId, authKey != null && !authKey.isBlank());
+    }
+
+    /**
+     * Adds only the walk-ins missing between the remembered Wartende count and {@code target},
+     * so a queue that is already partly full still lands on yellow (11), orange (21) or red (41).
+     */
+    @When("I queue the walk-ins still needed at scope {int} with service {string} to reach {int} waiting customers with the X-AuthKey")
+    public void iQueueTheWalkInsStillNeededToReach(int scopeId, String serviceName, int target) {
+        String raw = TestDataHelper.getTestData("waiting_clients_under_information");
+        Assertions.assertThat(raw)
+            .as("Remember the Wartende count under Informationen before queueing walk-ins")
+            .isNotBlank();
+        int current;
+        try {
+            current = Integer.parseInt(raw.trim());
+        } catch (NumberFormatException e) {
+            throw new IllegalStateException(
+                    "Remembered Wartende count is not a number: \"" + raw + "\"", e);
+        }
+        int delta = target - current;
+        Assertions.assertThat(delta)
+            .as("Wartende is %d, so adding walk-ins cannot bring it down to %d", current, target)
+            .isGreaterThanOrEqualTo(0);
+        if (delta == 0) {
+            ScenarioLogManager.getLogger().info("Wartende is already {} at scope {}", current, scopeId);
+            return;
+        }
+        iQueueManyWalkInsAtScopeWithServiceWithTheXAuthKey(delta, scopeId, serviceName);
+    }
+
+    @Then("the walk-ins created in this scenario are still queued")
+    public void theWalkInsCreatedInThisScenarioAreStillQueued() {
+        Assertions.assertThat(scenarioProcessIds)
+            .as("Queue walk-ins before asserting they are still queued")
+            .isNotEmpty();
+        String authKey = getOrLoginXAuthKey();
+        for (Integer processId : scenarioProcessIds) {
+            Response processResponse = given()
+                .baseUri(apiBaseUri())
+                .header("X-AuthKey", authKey)
+            .when()
+                .get("/process/" + processId + "/");
+            Assertions.assertThat(processResponse.getStatusCode())
+                .as("GET /process/%d/ body=%s", processId, truncate(processResponse.asString(), 1000))
+                .isEqualTo(200);
+            JsonNode process = parseDataNode(processResponse);
+            Assertions.assertThat(process).as("process %d payload", processId).isNotNull();
+            Assertions.assertThat(process.path("status").asText(""))
+                .as("walk-in process %d should stay queued for the Ampel Wartende count", processId)
+                .isEqualTo("queued");
+        }
+    }
+
     @When("the appointments created in this scenario are deleted.")
     public void dieInDiesemSzenarioAngelegtenTermineGeloeschtWerden() {
         iDeleteTheProcessesCreatedInThisScenarioWithTheXAuthKey();
@@ -1796,6 +1953,96 @@ public class ZmsApiSteps {
             .doesNotContain(forbidden);
     }
 
+    @When("I queue a walk-in at scope 368 with the 250-character free text sample")
+    public void iQueueAWalkInWithTheFreeTextSample() {
+        queueWalkInWithPlainTextFields(
+                368,
+                "Spontan eAT/eRA",
+                "Muster Zmskvr1018Api",
+                PlainTextLengthSample.amendmentWithBreak(),
+                PlainTextLengthSample.customTextAtLimit(),
+                "");
+    }
+
+    @When("I queue a walk-in at scope 368 with the free text sample written as break tags")
+    public void iQueueAWalkInWithTheFreeTextSampleAsBreakTags() {
+        queueWalkInWithPlainTextFields(
+                368,
+                "Spontan eAT/eRA",
+                "Muster Zmskvr1018Tags",
+                PlainTextLengthSample.amendmentWithBreak().replace("\n", "<br />"),
+                PlainTextLengthSample.customTextAtLimitWithBreakTags(),
+                "");
+    }
+
+    @When("I save the last process again with the free text sample written as break tags")
+    public void iSaveTheLastProcessAgainWithBreakTags() {
+        Assertions.assertThat(lastProcess).as("last process before resave").isNotNull();
+        int processId = lastProcess.path("id").asInt();
+        String processAuthKey = lastProcess.path("authKey").asText();
+        Assertions.assertThat(processId).as("process id").isPositive();
+        Assertions.assertThat(processAuthKey).as("process authKey").isNotBlank();
+        ObjectNode body = lastProcess.deepCopy();
+        body.put("customTextfield", PlainTextLengthSample.customTextAtLimitWithBreakTags());
+        body.put("amendment", PlainTextLengthSample.amendmentWithBreak().replace("\n", "<br />"));
+        String authKey = getOrLoginXAuthKey();
+        response = given()
+            .baseUri(apiBaseUri())
+            .header("X-AuthKey", authKey)
+            .contentType("application/json")
+            .queryParam("initiator", "admin")
+            .body(toJson(body))
+        .when()
+            .post("/process/" + processId + "/" + processAuthKey + "/");
+        CommonApiSteps.setResponse(response);
+        Assertions.assertThat(response.getStatusCode())
+            .as("POST /process/%d/ with break tags body=%s", processId, truncate(response.asString(), 1000))
+            .isEqualTo(200);
+        JsonNode saved = parseDataNode(response);
+        if (saved != null && saved.path("id").asInt() <= 0 && saved.path("process").path("id").asInt() > 0) {
+            saved = saved.path("process");
+        }
+        rememberProcess(saved);
+    }
+
+    @Then("the last process customTextfield should be the 250-character newline and tab sample")
+    public void theLastProcessCustomTextfieldShouldBeTheLimitSample() {
+        reloadLastProcessFromApi();
+        String actual = lastProcess.path("customTextfield").asText();
+        Assertions.assertThat(actual)
+            .as("stored customTextfield")
+            .isEqualTo(PlainTextLengthSample.customTextAtLimit());
+        Assertions.assertThat(actual).doesNotContain("<br");
+        Assertions.assertThat(actual.indexOf('\n')).isNotNegative();
+        Assertions.assertThat(actual.indexOf('\t')).isNotNegative();
+    }
+
+    @Then("the last process amendment should keep its newline and tab")
+    public void theLastProcessAmendmentShouldKeepItsNewlineAndTab() {
+        reloadLastProcessFromApi();
+        Assertions.assertThat(lastProcess.path("amendment").asText())
+            .as("stored amendment")
+            .isEqualTo(PlainTextLengthSample.amendmentWithBreak());
+    }
+
+    private void reloadLastProcessFromApi() {
+        Assertions.assertThat(lastProcess).as("last process").isNotNull();
+        int processId = lastProcess.path("id").asInt();
+        Assertions.assertThat(processId).as("process id").isPositive();
+        String authKey = getOrLoginXAuthKey();
+        response = given()
+            .baseUri(apiBaseUri())
+            .header("X-AuthKey", authKey)
+            .queryParam("resolveReferences", 1)
+        .when()
+            .get("/process/" + processId + "/");
+        CommonApiSteps.setResponse(response);
+        Assertions.assertThat(response.getStatusCode())
+            .as("GET /process/%d/ body=%s", processId, truncate(response.asString(), 800))
+            .isEqualTo(200);
+        rememberProcess(parseDataNode(response));
+    }
+
     @Then("the last process customTextfield should not contain {string}")
     public void theLastProcessCustomTextfieldShouldNotContain(String forbidden) {
         Assertions.assertThat(lastProcess).as("last process").isNotNull();
@@ -1829,6 +2076,83 @@ public class ZmsApiSteps {
             int scopeId, String serviceName, String familyName, String amendment) {
         String email = familyName.toLowerCase(Locale.ROOT).replaceAll("[^a-z0-9]", "") + "@mailinator.com";
         reserveConfirmedAppointment(scopeId, serviceName, familyName, email, amendment, true);
+    }
+
+    @When("I reserve an appointment at scope {int} with services {string} and name {string} for {int} slots with the X-AuthKey")
+    public void iReserveAnAppointmentAtScopeWithServicesAndNameForSlots(
+            int scopeId, String services, String familyName, int slots) {
+        String authKey = getOrLoginXAuthKey();
+        List<JsonNode> requests = new ArrayList<>();
+        int configuredSlots = 0;
+        for (String serviceName : services.split(",\\s*")) {
+            JsonNode request = findScopeRequestByName(scopeId, serviceName, authKey);
+            Assertions.assertThat(request.path("name").asText())
+                    .as("scope %d request list", scopeId)
+                    .isEqualToIgnoringCase(serviceName);
+            int timeSlotCount = request.path("timeSlotCount").asInt(0);
+            Assertions.assertThat(timeSlotCount)
+                    .as("timeSlotCount for %s at scope %d", serviceName, scopeId)
+                    .isPositive();
+            configuredSlots += timeSlotCount;
+            requests.add(request);
+        }
+        Assertions.assertThat(configuredSlots)
+                .as("configured slots for %s at scope %d", services, scopeId)
+                .isEqualTo(slots);
+        String email = familyName.toLowerCase(Locale.ROOT).replaceAll("[^a-z0-9]", "") + "@mailinator.com";
+        reserveConfirmedAppointment(scopeId, requests, slots, familyName, email);
+    }
+
+    @Then("the process log for the last process shows slot count {int} for services {string}")
+    public void theProcessLogForTheLastProcessShowsSlotCountForServices(int slots, String services) {
+        Assertions.assertThat(lastProcess)
+                .as("Reserve an appointment before reading its log")
+                .isNotNull();
+        int processId = lastProcess.path("id").asInt();
+        Assertions.assertThat(processId).isPositive();
+        String familyName = lastProcess.path("clients").path(0).path("familyName").asText();
+        String authKey = getOrLoginXAuthKey();
+        response = given()
+                .baseUri(baseUri != null ? baseUri : TestConfig.getBaseUri())
+                .header("X-AuthKey", authKey)
+                .queryParam("searchQuery", familyName)
+        .when()
+                .get("/log/process/");
+        CommonApiSteps.setResponse(response);
+        Assertions.assertThat(response.getStatusCode())
+                .as("GET /log/process/ body=%s", truncate(response.asString(), 1000))
+                .isEqualTo(200);
+        ArrayNode logs = parseDataArray(response);
+        Assertions.assertThat(logs)
+                .as("GET /log/process/ data for %s", familyName)
+                .isNotNull();
+        List<String> expectedServices = new ArrayList<>();
+        for (String serviceName : services.split(",\\s*")) {
+            expectedServices.add(serviceName);
+        }
+        StringBuilder seen = new StringBuilder();
+        for (JsonNode log : logs) {
+            seen.append("reference=").append(log.path("reference").asText())
+                    .append(" slot_count=").append(log.path("slot_count").asText())
+                    .append(" services=").append(log.path("services").asText())
+                    .append('\n');
+            if (log.path("reference").asInt() != processId || log.path("slot_count").asInt(-1) != slots) {
+                continue;
+            }
+            String listed = log.path("services").asText("");
+            boolean allListed = true;
+            for (String serviceName : expectedServices) {
+                if (!listed.contains(serviceName)) {
+                    allListed = false;
+                    break;
+                }
+            }
+            if (allListed) {
+                return;
+            }
+        }
+        Assertions.fail("No log for process " + processId + " shows slot_count " + slots
+                + " and services " + services + ". Rows:\n" + seen);
     }
 
     @When("I remember the last process display number and queue number")
@@ -1940,6 +2264,62 @@ public class ZmsApiSteps {
         Assertions.assertThat(lastProcess.path("priority").asInt())
             .as("priority of process %s", lastProcess.path("id").asInt())
             .isEqualTo(priority);
+    }
+
+    @Then("the last process is queued with call count {int} and priority {int}")
+    public void theLastProcessIsQueuedWithCallCountAndPriority(int callCount, int priority) {
+        reloadLastProcessFromApi();
+        Assertions.assertThat(lastProcess.path("status").asText())
+            .as("status of process %s", lastProcess.path("id").asInt())
+            .isEqualTo("queued");
+        Assertions.assertThat(lastProcess.path("queue").path("callCount").asInt())
+            .as("callCount of process %s body=%s", lastProcess.path("id").asInt(), truncate(lastProcess.toString(), 800))
+            .isEqualTo(callCount);
+        Assertions.assertThat(lastProcess.path("priority").asInt())
+            .as("priority of process %s", lastProcess.path("id").asInt())
+            .isEqualTo(priority);
+        if (callCount == 0) {
+            Assertions.assertThat(waitingTimeIsReset(lastProcess))
+                .as("waiting time after abort should be reset, was %s",
+                    lastProcess.path("queue").path("waitingTime"))
+                .isTrue();
+        }
+    }
+
+    @Then("the last process has a repeat-call timeout")
+    public void theLastProcessHasARepeatCallTimeout() {
+        reloadLastProcessFromApi();
+        Assertions.assertThat(timeoutIsSet(lastProcess))
+            .as("timeoutTime of process %s was %s",
+                lastProcess.path("id").asInt(), lastProcess.path("timeoutTime"))
+            .isTrue();
+    }
+
+    private static boolean waitingTimeIsReset(JsonNode process) {
+        JsonNode waiting = process.path("queue").path("waitingTime");
+        if (waiting.isMissingNode() || waiting.isNull()) {
+            return true;
+        }
+        if (waiting.isNumber()) {
+            return waiting.asLong() == 0L;
+        }
+        String text = waiting.asText("").trim();
+        return text.isEmpty() || "0".equals(text) || "00:00:00".equals(text);
+    }
+
+    private static boolean timeoutIsSet(JsonNode process) {
+        JsonNode timeout = process.get("timeoutTime");
+        if (timeout == null || timeout.isNull() || timeout.isMissingNode()) {
+            return false;
+        }
+        if (timeout.isNumber()) {
+            return timeout.asLong() > 0L;
+        }
+        String text = timeout.asText("").trim();
+        return !text.isEmpty()
+            && !"0".equals(text)
+            && !"00:00:00".equals(text)
+            && !"null".equalsIgnoreCase(text);
     }
 
     @When("I delete the last process with the X-AuthKey")
@@ -2207,6 +2587,74 @@ public class ZmsApiSteps {
 
         response = postConfirmedWithDeadlockRetry(authKey, reserved);
         CommonApiSteps.setResponse(response);
+        rememberProcess(parseDataNode(response));
+    }
+
+    private void reserveConfirmedAppointment(
+            int scopeId,
+            List<JsonNode> requests,
+            int slotsRequired,
+            String familyName,
+            String email) {
+        String authKey = getOrLoginXAuthKey();
+        JsonNode freeList = fetchFreeProcessesLookingAhead(scopeId, requests, slotsRequired, authKey);
+        ArrayNode requestNodes = MAPPER.createArrayNode();
+        for (JsonNode request : requests) {
+            requestNodes.add(request.deepCopy());
+        }
+
+        JsonNode reserved = null;
+        long earliest = Instant.now().getEpochSecond();
+        for (int i = 0; i < freeList.size(); i++) {
+            long appointment = freeList.get(i).path("appointments").path(0).path("date").asLong(0);
+            if (appointment > 0 && appointment < earliest) {
+                continue;
+            }
+            ObjectNode process = freeList.get(i).deepCopy();
+            process.set("requests", requestNodes.deepCopy());
+            ObjectNode client = MAPPER.createObjectNode();
+            client.put("familyName", familyName);
+            client.put("email", email);
+            client.put("surveyAccepted", 1);
+            process.set("clients", MAPPER.createArrayNode().add(client));
+
+            response = given()
+                    .baseUri(baseUri != null ? baseUri : TestConfig.getBaseUri())
+                    .header("X-AuthKey", authKey)
+                    .contentType("application/json")
+                    .queryParam("slotType", "intern")
+                    .queryParam("clientkey", "")
+                    .queryParam("slotsRequired", slotsRequired)
+                    .body(toJson(process))
+            .when()
+                    .post("/process/status/reserved/");
+            CommonApiSteps.setResponse(response);
+            if (response.getStatusCode() == 200) {
+                reserved = parseDataNode(response);
+                Assertions.assertThat(reserved)
+                        .as("POST /process/status/reserved/ returned 200 without data: %s",
+                                truncate(response.asString(), 1000))
+                        .isNotNull();
+                break;
+            }
+            boolean slotTaken = response.getStatusCode() == 404
+                    && response.asString().contains("Failed to reserve process. Maybe someone was faster.");
+            if (slotTaken && i < freeList.size() - 1) {
+                continue;
+            }
+            throw new IllegalStateException(
+                    "POST /process/status/reserved/ failed with " + response.getStatusCode() + ": "
+                            + truncate(response.asString(), 1000));
+        }
+        Assertions.assertThat(reserved)
+                .as("POST /process/status/reserved/ for scope %d and %d slots", scopeId, slotsRequired)
+                .isNotNull();
+
+        response = postConfirmedWithDeadlockRetry(authKey, reserved);
+        CommonApiSteps.setResponse(response);
+        Assertions.assertThat(response.getStatusCode())
+                .as("POST /process/status/confirmed/ body=%s", truncate(response.asString(), 1000))
+                .isEqualTo(200);
         rememberProcess(parseDataNode(response));
     }
 
@@ -3894,6 +4342,52 @@ public class ZmsApiSteps {
         return lastEmpty;
     }
 
+    private JsonNode fetchFreeProcessesLookingAhead(
+            int scopeId, List<JsonNode> requests, int slotsRequired, String authKey) {
+        LocalDate start = BerlinTime.today();
+        long earliestEpoch = Instant.now().getEpochSecond();
+        JsonNode lastEmpty = null;
+        for (int offset = 0; offset < 8; offset++) {
+            LocalDate day = start.plusDays(offset);
+            Response freeResponse = given()
+                    .baseUri(baseUri != null ? baseUri : TestConfig.getBaseUri())
+                    .header("X-AuthKey", authKey)
+                    .contentType("application/json")
+                    .queryParam("slotType", "intern")
+                    .queryParam("slotsRequired", slotsRequired)
+                    .body(toJson(freeProcessCalendar(scopeId, requests, day)))
+            .when()
+                    .post("/process/status/free/");
+            JsonNode freeList = parseDataArray(freeResponse);
+            if (freeList != null && !freeList.isEmpty()) {
+                long dayStart = day.atStartOfDay(java.time.ZoneId.of("Europe/Berlin")).toEpochSecond();
+                long dayEnd = dayStart + 86_400L;
+                long from = offset == 0 ? Math.max(earliestEpoch, dayStart) : dayStart;
+                if (slotsBetween(freeList, from, dayEnd).isEmpty()) {
+                    lastEmpty = freeList;
+                    continue;
+                }
+                return freeList;
+            }
+            lastEmpty = freeList;
+        }
+        Assertions.assertThat(lastEmpty)
+                .as("POST /process/status/free/ for scope %d and %d slots from %s", scopeId, slotsRequired, start)
+                .isNotNull()
+                .isNotEmpty();
+        return lastEmpty;
+    }
+
+    private ObjectNode freeProcessCalendar(int scopeId, List<JsonNode> requests, LocalDate day) {
+        ObjectNode calendar = freeProcessCalendar(scopeId, requests.get(0), day);
+        ArrayNode requestNodes = MAPPER.createArrayNode();
+        for (JsonNode request : requests) {
+            requestNodes.add(request.deepCopy());
+        }
+        calendar.set("requests", requestNodes);
+        return calendar;
+    }
+
     private ObjectNode freeProcessCalendar(int scopeId, JsonNode request, LocalDate day) {
         ObjectNode calendar = MAPPER.createObjectNode();
         ObjectNode dayNode = MAPPER.createObjectNode();
@@ -3913,6 +4407,70 @@ public class ZmsApiSteps {
         requests.add(request.deepCopy());
         calendar.set("requests", requests);
         return calendar;
+    }
+
+    private List<JsonNode> internSlotCandidates(
+            JsonNode freeList,
+            long earliest,
+            long soon,
+            long endOfToday,
+            int minutesAhead,
+            long now,
+            int scopeId) {
+        List<JsonNode> candidates = slotsBetween(freeList, earliest, Math.min(soon, endOfToday));
+        if (candidates.isEmpty()) {
+            candidates = slotsBetween(freeList, earliest, endOfToday);
+            if (!candidates.isEmpty()) {
+                ScenarioLogManager.getLogger().info(
+                        "No intern slot in the next minutes for scope {}; using a later slot today",
+                        scopeId);
+            }
+        }
+        if (minutesAhead > 0 && candidates.isEmpty()) {
+            candidates = slotsBetween(freeList, earliest, now + 24 * 60 * 60);
+            if (!candidates.isEmpty()) {
+                ScenarioLogManager.getLogger().info(
+                        "No intern slot today for scope {}; using the next slot inside the reminder window",
+                        scopeId);
+            }
+        }
+        return candidates;
+    }
+
+    /** Workstation process only. A missing assignment is not the pre-call {@code lastProcess}. */
+    private JsonNode workstationProcess(String authKey) {
+        Response workstationResponse = given()
+            .baseUri(baseUri != null ? baseUri : TestConfig.getBaseUri())
+            .header("X-AuthKey", authKey)
+            .queryParam("resolveReferences", 2)
+        .when()
+            .get("/workstation/");
+        JsonNode workstation = parseDataNode(workstationResponse);
+        JsonNode process = workstation != null ? workstation.path("process") : null;
+        if (process != null && process.has("id") && process.path("id").asInt() > 0) {
+            return process;
+        }
+        return null;
+    }
+
+    private static String processStatusText(JsonNode process) {
+        if (process == null || process.isMissingNode() || process.isNull()) {
+            return "";
+        }
+        String status = process.path("status").asText("");
+        if (status.isBlank()) {
+            status = process.path("queue").path("status").asText("");
+        }
+        return status;
+    }
+
+    private static void pauseMillis(long millis) {
+        try {
+            Thread.sleep(millis);
+        } catch (InterruptedException interrupted) {
+            Thread.currentThread().interrupt();
+            throw new IllegalStateException("Interrupted while retrying an ATAF API step", interrupted);
+        }
     }
 
     private JsonNode refreshAssignedProcessFromWorkstation(String authKey) {
