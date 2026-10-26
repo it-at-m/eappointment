@@ -3677,7 +3677,7 @@ public class ZmsApiSteps {
         if (availabilityId != null) {
             availability.put("id", availabilityId);
         }
-        availability.put("type", "openinghours");
+        availability.put("type", "appointment");
         availability.put("kind", "default");
         availability.put("description", "ATAF-ZMSKVR-1627");
         availability.put("startDate", dayEpoch);
@@ -3685,6 +3685,7 @@ public class ZmsApiSteps {
         availability.put("startTime", hour.start);
         availability.put("endTime", hour.end);
         availability.put("slotTimeInMinutes", slotMinutes);
+        availability.put("multipleSlotsAllowed", 1);
         ObjectNode bookable = MAPPER.createObjectNode();
         bookable.put("startInDays", 0);
         bookable.put("endInDays", 60);
