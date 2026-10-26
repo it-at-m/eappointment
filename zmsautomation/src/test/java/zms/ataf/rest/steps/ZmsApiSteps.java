@@ -3907,7 +3907,11 @@ public class ZmsApiSteps {
             return 0L;
         }
         if (text.chars().allMatch(Character::isDigit) && text.length() >= 10) {
-            return Long.parseLong(text);
+            try {
+                return Long.parseLong(text);
+            } catch (NumberFormatException ignored) {
+                return 0L;
+            }
         }
         String normalized = text.replace(' ', 'T');
         if (normalized.length() == 16) {
