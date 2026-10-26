@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-10-26T19:43:10.299Z",
+  "publishedAt": "2026-10-26T20:20:17.548Z",
   "branches": [
     {
       "name": "next",
@@ -208,8 +208,8 @@
     {
       "name": "feature-zmskvr-1627-dynamic-slot-time",
       "slug": "feature-zmskvr-1627-dynamic-slot-time",
-      "runId": "40387932617",
-      "runStartedAt": "2026-10-26T19:34:24Z"
+      "runId": "40393184693",
+      "runStartedAt": "2026-10-26T20:09:53Z"
     },
     {
       "name": "feature-zmskvr-1656-calendar-list-toggle",
