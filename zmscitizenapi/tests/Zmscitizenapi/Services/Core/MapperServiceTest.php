@@ -321,7 +321,7 @@ class MapperServiceTest extends TestCase
                 'captchaActivatedRequired' => null,
                 'infoForAppointment' => null,
                 'infoForAllAppointments' => null,
-                'slotsPerAppointment' => null
+                'maxAppointmentLengthInMinutes' => null
             ],
             'subRequestCounts' => [],
             'serviceId' => 0,
@@ -360,7 +360,7 @@ class MapperServiceTest extends TestCase
         $this->assertEquals($scope['captchaActivatedRequired'], $result->scope->captchaActivatedRequired);
         $this->assertEquals($scope['infoForAppointment'], $result->scope->infoForAppointment);
         $this->assertEquals($scope['infoForAllAppointments'], $result->scope->infoForAllAppointments);
-        $this->assertEquals($scope['slotsPerAppointment'], $result->scope->slotsPerAppointment);
+        $this->assertEquals($scope['maxAppointmentLengthInMinutes'], $result->scope->maxAppointmentLengthInMinutes);
         $this->assertEquals($expectedResponse['subRequestCounts'], $result->subRequestCounts);
         $this->assertEquals($expectedResponse['serviceId'], $result->serviceId);
         $this->assertEquals($expectedResponse['serviceCount'], $result->serviceCount);
@@ -880,7 +880,7 @@ class MapperServiceTest extends TestCase
         $this->assertNull($result->captchaActivatedRequired);
         $this->assertNull($result->infoForAppointment);
         $this->assertNull($result->infoForAllAppointments);
-        $this->assertNull($result->slotsPerAppointment);
+        $this->assertNull($result->maxAppointmentLengthInMinutes);
         $this->assertFalse($result->isRebookingDisabled());
     }
 

@@ -24,7 +24,7 @@ class Office extends Entity implements JsonSerializable
     public ?array $disabledByServices = [];
     public int $priority = 1;
     public ?ThinnedScope $scope = null;
-    public ?string $slotsPerAppointment = null;
+    public ?string $maxAppointmentLengthInMinutes = null;
     public ?int $parentId = null;
     public ?array $allowDisabledServicesMix = null;
     public ?array $sharedBookingOfficeIds = null;
@@ -42,7 +42,7 @@ class Office extends Entity implements JsonSerializable
         ?array $disabledByServices = [],
         int $priority = 1,
         ?ThinnedScope $scope = null,
-        ?string $slotsPerAppointment = null,
+        ?string $maxAppointmentLengthInMinutes = null,
         ?int $parentId = null,
         ?array $allowDisabledServicesMix = null,
         ?array $sharedBookingOfficeIds = null
@@ -59,7 +59,7 @@ class Office extends Entity implements JsonSerializable
         $this->scope = $scope;
         $this->priority = $priority;
         $this->disabledByServices = $disabledByServices;
-        $this->slotsPerAppointment = $slotsPerAppointment;
+        $this->maxAppointmentLengthInMinutes = $maxAppointmentLengthInMinutes;
         $this->parentId = $parentId;
         $this->allowDisabledServicesMix = $allowDisabledServicesMix;
         $this->sharedBookingOfficeIds = $sharedBookingOfficeIds;
@@ -91,7 +91,7 @@ class Office extends Entity implements JsonSerializable
             'disabledByServices' => $this->disabledByServices,
             'priority' => $this->priority,
             'scope' => $this->scope?->toArray(),
-            'slotsPerAppointment' => $this->slotsPerAppointment,
+            'maxAppointmentLengthInMinutes' => $this->maxAppointmentLengthInMinutes,
             'parentId' => $this->parentId,
             'allowDisabledServicesMix' => $this->allowDisabledServicesMix,
             'sharedBookingOfficeIds' => $this->sharedBookingOfficeIds,

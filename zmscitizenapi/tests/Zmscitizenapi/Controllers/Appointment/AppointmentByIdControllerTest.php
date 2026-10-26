@@ -121,7 +121,7 @@ class AppointmentByIdControllerTest extends ControllerTestCase
                 "rebookingDisabled" => false,
                 "infoForAppointment" => null,
                 "infoForAllAppointments" => null,
-                "slotsPerAppointment" => null,
+                "maxAppointmentLengthInMinutes" => null,
                 "appointmentsPerMail" => 1,
                 "whitelistedMails" => null,
                 "reservationDuration" => 15,

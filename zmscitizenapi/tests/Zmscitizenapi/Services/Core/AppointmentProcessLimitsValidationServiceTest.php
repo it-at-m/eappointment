@@ -137,7 +137,7 @@ class AppointmentProcessLimitsValidationServiceTest extends TestCase
             authKey: 'fb43',
             familyName: 'Muster',
             email: 'muster@mailinator.com',
-            scope: new ThinnedScope(slotsPerAppointment: '8'),
+            scope: new ThinnedScope(maxAppointmentLengthInMinutes: '8'),
             slotCount: 7,
             status: 'reserved'
         );
@@ -151,7 +151,7 @@ class AppointmentProcessLimitsValidationServiceTest extends TestCase
             authKey: 'fb43',
             familyName: 'Muster',
             email: 'muster@mailinator.com',
-            scope: new ThinnedScope(slotsPerAppointment: '8'),
+            scope: new ThinnedScope(maxAppointmentLengthInMinutes: '8'),
             slotCount: 9,
             status: 'reserved'
         );
@@ -168,7 +168,7 @@ class AppointmentProcessLimitsValidationServiceTest extends TestCase
                 'id' => 70,
                 'preferences' => [
                     'client' => [
-                        'slotsPerAppointment' => '8',
+                        'maxAppointmentLengthInMinutes' => '8',
                     ],
                 ],
             ]),
@@ -176,6 +176,7 @@ class AppointmentProcessLimitsValidationServiceTest extends TestCase
                 new Appointment([
                     'date' => time(),
                     'slotCount' => 9,
+                    'availability' => ['slotTimeInMinutes' => 1],
                 ]),
             ],
         ]);

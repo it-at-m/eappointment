@@ -724,7 +724,7 @@ class AvailableCalendarControllerTest extends ControllerTestCase
     public function testTooManySlotsPerAppointmentRejectsBeforeCalendarLookup()
     {
         $source = json_decode($this->readFixture('GET_SourceGet_dldb.json'), true);
-        $source['data']['scopes'][0]['preferences']['client']['slotsPerAppointment'] = '1';
+        $source['data']['scopes'][0]['preferences']['client']['maxAppointmentLengthInMinutes'] = '1';
 
         $this->setApiCalls([
             [

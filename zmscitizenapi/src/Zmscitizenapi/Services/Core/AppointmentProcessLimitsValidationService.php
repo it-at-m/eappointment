@@ -20,11 +20,15 @@ class AppointmentProcessLimitsValidationService
 
     public static function validateProcessLimits(
         ?int $slotCount,
-        mixed $slotsPerAppointment,
+        mixed $maxAppointmentLengthInMinutes,
         array $serviceIdToCount,
-        int $officeId
+        int $officeId,
+        int $slotTimeInMinutes = 0
     ): array {
-        $errors = self::validateSlotLimit($slotCount, $slotsPerAppointment)['errors'];
+        if ($slotTimeInMinutes < 1 && $officeId > 0) {
+            $slotTimeInMinutes = self::indexSlotTimeByOffice()[$officeId] ?? 0;
+        }
+        $errors = self::validateSlotLimit($slotCount, $maxAppointmentLengthInMinutes, $slotTimeInMinutes)['errors'];
         if ($officeId > 0 && $serviceIdToCount !== []) {
             $errors = array_merge(
                 $errors,
@@ -40,9 +44,15 @@ class AppointmentProcessLimitsValidationService
 
     public static function validateThinnedProcessLimits(ThinnedProcess $process): array
     {
+        $officeId = (int) ($process->officeId ?? 0);
+        if ($officeId < 1 && $process->scope?->provider) {
+            $officeId = (int) $process->scope->provider->id;
+        }
+
         return self::validateSlotLimit(
             $process->slotCount,
-            $process->scope?->getSlotsPerAppointment()
+            $process->scope?->getMaxAppointmentLengthInMinutes(),
+            $officeId > 0 ? (self::indexSlotTimeByOffice()[$officeId] ?? 0) : 0
         );
     }
 
@@ -65,8 +75,9 @@ class AppointmentProcessLimitsValidationService
         return self::validateRequestLimitsWithMaps(
             $serviceIdToCount,
             self::computeRequiredSlotCount($serviceIdToCount, $relationMaps['slots']),
-            self::readSlotsPerAppointmentByOffice($officeId),
-            $relationMaps['maxQuantity']
+            self::readMaxAppointmentLengthByOffice($officeId),
+            $relationMaps['maxQuantity'],
+            self::indexSlotTimeByOffice()[$officeId] ?? 0
         );
     }
 
@@ -85,7 +96,8 @@ class AppointmentProcessLimitsValidationService
         array $serviceCounts
     ): array {
         $serviceIdToCount = self::buildServiceCountMap($serviceIds, $serviceCounts);
-        $slotsPerAppointmentByOffice = self::indexSlotsPerAppointmentByOffice();
+        $maxAppointmentLengthInMinutesByOffice = self::indexSlotsPerAppointmentByOffice();
+        $slotTimeByOffice = self::indexSlotTimeByOffice();
         $relationMapsByOffice = self::indexRelationMapsByOffice();
 
         $eligible = [];
@@ -101,8 +113,9 @@ class AppointmentProcessLimitsValidationService
             $limitErrors = self::validateRequestLimitsWithMaps(
                 $serviceIdToCount,
                 self::computeRequiredSlotCount($serviceIdToCount, $relationMaps['slots']),
-                $slotsPerAppointmentByOffice[$officeId] ?? null,
-                $relationMaps['maxQuantity']
+                $maxAppointmentLengthInMinutesByOffice[$officeId] ?? null,
+                $relationMaps['maxQuantity'],
+                $slotTimeByOffice[$officeId] ?? 0
             );
             if (!empty($limitErrors['errors'])) {
                 $lastErrors = $limitErrors;
@@ -127,17 +140,22 @@ class AppointmentProcessLimitsValidationService
     ): array {
         $appointment = $process->getFirstAppointment();
         $slotCount = $appointment ? (int) $appointment->getSlotCount() : null;
-        $slotsPerAppointment = self::readSlotsPerAppointmentFromProcess($process);
-        // Free-process payloads often omit client.slotsPerAppointment; fall back to the office scope.
-        if (($slotsPerAppointment === null || $slotsPerAppointment === '') && $officeId > 0) {
-            $slotsPerAppointment = self::readSlotsPerAppointmentByOffice($officeId);
+        $slotTimeInMinutes = 0;
+        if ($appointment && isset($appointment->availability)) {
+            $slotTimeInMinutes = (int) $appointment->availability->slotTimeInMinutes;
+        }
+        $maxAppointmentLengthInMinutes = self::readSlotsPerAppointmentFromProcess($process);
+        // Free-process payloads often omit client.maxAppointmentLengthInMinutes; fall back to the office scope.
+        if (($maxAppointmentLengthInMinutes === null || $maxAppointmentLengthInMinutes === '') && $officeId > 0) {
+            $maxAppointmentLengthInMinutes = self::readMaxAppointmentLengthByOffice($officeId);
         }
 
         return self::validateProcessLimits(
             $slotCount,
-            $slotsPerAppointment,
+            $maxAppointmentLengthInMinutes,
             self::buildServiceCountMap($serviceIds, $serviceCounts),
-            $officeId
+            $officeId,
+            $slotTimeInMinutes
         );
     }
 
@@ -171,12 +189,12 @@ class AppointmentProcessLimitsValidationService
         if (
             !isset($process->scope)
             || !is_object($process->scope)
-            || !method_exists($process->scope, 'getSlotsPerAppointment')
+            || !method_exists($process->scope, 'getMaxAppointmentLengthInMinutes')
         ) {
             return null;
         }
 
-        return $process->scope->getSlotsPerAppointment();
+        return $process->scope->getMaxAppointmentLengthInMinutes();
     }
 
     /**
@@ -190,8 +208,9 @@ class AppointmentProcessLimitsValidationService
     private static function validateRequestLimitsWithMaps(
         array $serviceIdToCount,
         ?int $requiredSlotCount,
-        mixed $slotsPerAppointment,
-        array $maxQuantityByServiceId
+        mixed $maxAppointmentLengthInMinutes,
+        array $maxQuantityByServiceId,
+        int $slotTimeInMinutes
     ): array {
         if ($requiredSlotCount === null) {
             // Missing relation or slots < 1: do not fall through to quantity-only checks.
@@ -205,7 +224,11 @@ class AppointmentProcessLimitsValidationService
 
         return [
             'errors' => array_merge(
-                self::validateSlotLimit($requiredSlotCount, $slotsPerAppointment)['errors'],
+                self::validateSlotLimit(
+                    $requiredSlotCount,
+                    $maxAppointmentLengthInMinutes,
+                    $slotTimeInMinutes
+                )['errors'],
                 self::validateServiceQuantityLimits(
                     $serviceIdToCount,
                     $maxQuantityByServiceId
@@ -214,13 +237,13 @@ class AppointmentProcessLimitsValidationService
         ];
     }
 
-    private static function readSlotsPerAppointmentByOffice(int $officeId): mixed
+    private static function readMaxAppointmentLengthByOffice(int $officeId): mixed
     {
         return self::indexSlotsPerAppointmentByOffice()[$officeId] ?? null;
     }
 
     /**
-     * @return array<int, int> officeId => minimum slotsPerAppointment across scopes
+     * @return array<int, int> officeId => minimum maxAppointmentLengthInMinutes across scopes
      */
     private static function indexSlotsPerAppointmentByOffice(): array
     {
@@ -243,11 +266,11 @@ class AppointmentProcessLimitsValidationService
             if ($officeId <= 0) {
                 continue;
             }
-            $slotsPerAppointment = $scope->getSlotsPerAppointment();
-            if ($slotsPerAppointment === null || $slotsPerAppointment === '') {
+            $maxAppointmentLengthInMinutes = $scope->getMaxAppointmentLengthInMinutes();
+            if ($maxAppointmentLengthInMinutes === null || $maxAppointmentLengthInMinutes === '') {
                 continue;
             }
-            $parsed = (int) $slotsPerAppointment;
+            $parsed = (int) $maxAppointmentLengthInMinutes;
             if ($parsed < 1) {
                 continue;
             }
@@ -270,14 +293,21 @@ class AppointmentProcessLimitsValidationService
         return $map;
     }
 
-    public static function validateSlotLimit(?int $slotCount, mixed $slotsPerAppointment): array
-    {
+    public static function validateSlotLimit(
+        ?int $slotCount,
+        mixed $maxAppointmentLengthInMinutes,
+        int $slotTimeInMinutes = 0
+    ): array {
         if ($slotCount === null || $slotCount <= 0) {
             return ['errors' => [self::getError('processInvalid')]];
         }
 
-        $maxSlots = self::resolveMaxSlots($slotsPerAppointment);
-        if ($slotCount > $maxSlots) {
+        $minutesPerSlot = $slotTimeInMinutes > 0 ? $slotTimeInMinutes : 1;
+        $requiredMinutes = $slotCount * $minutesPerSlot;
+        $slotCeiling = self::MAX_SLOTS_FALLBACK * $minutesPerSlot;
+        $configured = self::positiveMinutes($maxAppointmentLengthInMinutes);
+        $limit = $configured === null ? $slotCeiling : min($configured, $slotCeiling);
+        if ($requiredMinutes > $limit) {
             return ['errors' => [self::getError('tooManySlotsPerAppointment')]];
         }
 
@@ -299,17 +329,39 @@ class AppointmentProcessLimitsValidationService
         return ['errors' => []];
     }
 
-    private static function resolveMaxSlots(mixed $slotsPerAppointment): int
+    private static function positiveMinutes(mixed $maxAppointmentLengthInMinutes): ?int
     {
-        if ($slotsPerAppointment === null || $slotsPerAppointment === '') {
-            return self::MAX_SLOTS_FALLBACK;
+        if ($maxAppointmentLengthInMinutes === null || $maxAppointmentLengthInMinutes === '') {
+            return null;
         }
-        $parsed = (int) $slotsPerAppointment;
+        $parsed = (int) $maxAppointmentLengthInMinutes;
         if ($parsed < 1) {
-            return self::MAX_SLOTS_FALLBACK;
+            return null;
         }
 
         return $parsed;
+    }
+
+    /**
+     * @return array<int, int> officeId => provider slot length in minutes
+     */
+    private static function indexSlotTimeByOffice(): array
+    {
+        $providers = ZmsApiClientService::getOffices();
+        if (!$providers) {
+            return [];
+        }
+
+        $byOffice = [];
+        foreach ($providers as $provider) {
+            $officeId = (int) $provider->id;
+            $minutes = (int) ($provider->data['slotTimeInMinutes'] ?? 0);
+            if ($officeId > 0 && $minutes > 0) {
+                $byOffice[$officeId] = $minutes;
+            }
+        }
+
+        return $byOffice;
     }
 
     private static function readMaxQuantityByOffice(int $officeId): array

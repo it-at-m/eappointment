@@ -192,7 +192,7 @@ class MyAppointmentsControllerTest extends ControllerTestCase
                     'rebookingDisabled' => false,
                     'infoForAppointment' => '',
                     'infoForAllAppointments' => '',
-                    'slotsPerAppointment' => null,
+                    'maxAppointmentLengthInMinutes' => null,
                     "appointmentsPerMail" => '1',
                     "whitelistedMails" => '',
                     "reservationDuration" => 15,
