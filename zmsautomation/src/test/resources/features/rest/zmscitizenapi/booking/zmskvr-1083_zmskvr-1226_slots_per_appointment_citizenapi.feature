@@ -39,6 +39,7 @@ Feature: ZMSKVR-1083 / ZMSKVR-1226 slotsPerAppointment — Citizen API
   # ZMSKVR-137: slotTimeInMinutes present on offices-and-services (via office assertions).
   @ZMSKVR-137
   Scenario: Office 10416 exposes slotTimeInMinutes, slots, slotsPerAppointment, and maxQuantity
+    Given scope 70 is held until this scenario ends
     Then office 10416 should have maxAppointmentLengthInMinutes "40"
     And office 10416 should use a slot time of 5 minutes and service 1064268 should take 3 slot
     And office 10416 and service 1064374 should take 4 slots
@@ -46,6 +47,7 @@ Feature: ZMSKVR-1083 / ZMSKVR-1226 slotsPerAppointment — Citizen API
     And office 10416 and service 1064268 should have relation maxQuantity 0
 
   Scenario: Under-spa reserve for two Ausfuhr units succeeds and is cancelled
+    Given scope 70 is held until this scenario ends
     When I request available days for office 10416 and service 1064268 with service count 2
     And I request available appointments for the first available day
     And I reserve an appointment with the first available slot
@@ -54,6 +56,7 @@ Feature: ZMSKVR-1083 / ZMSKVR-1226 slotsPerAppointment — Citizen API
     When I cancel the appointment
 
   Scenario: Over-spa reserve for three Ausfuhr units is rejected
+    Given scope 70 is held until this scenario ends
     # Discover a timestamp under spa (count 2), then reserve with count 3.
     # Request-side spa validation rejects before free-slot lookup (400, not 404).
     When I request available days for office 10416 and service 1064268 with service count 2
@@ -84,6 +87,7 @@ Feature: ZMSKVR-1083 / ZMSKVR-1226 slotsPerAppointment — Citizen API
     When I cancel the appointment
 
   Scenario: Preconfirm rejects a reserved process planted over spa
+    Given scope 70 is held until this scenario ends
     When I request available days for office 10416 and service 1064268 with service count 2
     And I request available appointments for the first available day
     And I reserve an appointment with the first available slot
@@ -97,6 +101,7 @@ Feature: ZMSKVR-1083 / ZMSKVR-1226 slotsPerAppointment — Citizen API
     When I cancel the appointment
 
   Scenario: Confirm rejects a preconfirmed process planted over spa
+    Given scope 70 is held until this scenario ends
     When I request available days for office 10416 and service 1064268 with service count 2
     And I request available appointments for the first available day
     And I reserve an appointment with the first available slot

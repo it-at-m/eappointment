@@ -18,6 +18,7 @@ Feature: The citizen catalog shows a changed appointment cap
     And I am logged in to the ZMS API as "system_admin"
 
   Scenario: A changed appointment cap is on the next citizen catalog read
+    Given scope 70 is held until this scenario ends
     When I request the offices and services endpoint
     Then the response status code should be 200
     And the response should contain offices and services
