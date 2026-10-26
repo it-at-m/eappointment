@@ -44,15 +44,10 @@ class AppointmentProcessLimitsValidationService
 
     public static function validateThinnedProcessLimits(ThinnedProcess $process): array
     {
-        $officeId = (int) ($process->officeId ?? 0);
-        if ($officeId < 1 && $process->scope?->provider) {
-            $officeId = (int) $process->scope->provider->id;
-        }
-
         return self::validateSlotLimit(
             $process->slotCount,
             $process->scope?->getMaxAppointmentLengthInMinutes(),
-            $officeId > 0 ? (self::indexSlotTimeByOffice()[$officeId] ?? 0) : 0
+            (int) ($process->slotTimeInMinutes ?? 0)
         );
     }
 
