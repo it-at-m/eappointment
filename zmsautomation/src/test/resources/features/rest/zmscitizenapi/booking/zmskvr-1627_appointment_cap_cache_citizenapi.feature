@@ -24,7 +24,8 @@ Feature: The citizen catalog keeps the appointment cap until the source cache is
     And the response should contain offices and services
     When I remember the appointment cap shown for office 10416
     And I set a different appointment cap for scope 70 with the X-AuthKey
-    And I request the offices and services endpoint
+    Then scope 70 appointment cap should be the value just saved with the X-AuthKey
+    When I request the offices and services endpoint
     Then the response status code should be 200
     And the response should contain offices and services
     And office 10416 should still show the remembered appointment cap
