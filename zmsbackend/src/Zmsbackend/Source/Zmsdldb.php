@@ -95,18 +95,18 @@ class Zmsdldb extends \BO\Zmsbackend\Base
     protected function updateAvailability($providers): void
     {
         foreach ($providers as $provider) {
-            $providerData = $provider->data;
-
+            $newSlotMinutes = (int) ($provider->data['slotTimeInMinutes'] ?? 0);
             $scopes = (new \BO\Zmsbackend\Scope\Service\Scope())->readByProviderId($provider->getId());
             foreach ($scopes as $scope) {
                 $availabilities = (new \BO\Zmsbackend\Availability\Service\Availability())->readList($scope->getId());
+                $this->rescaleSlotsPerAppointment($scope, $availabilities, $newSlotMinutes);
 
                 foreach ($availabilities as $availability) {
-                    if ((int) $availability->slotTimeInMinutes === (int) $providerData['slotTimeInMinutes']) {
+                    if ((int) $availability->slotTimeInMinutes === $newSlotMinutes) {
                         continue;
                     }
 
-                    $availability->slotTimeInMinutes = $providerData['slotTimeInMinutes'];
+                    $availability->slotTimeInMinutes = $newSlotMinutes;
                     $availability->version = $availability->version + 1;
                     $updated = (new \BO\Zmsbackend\Availability\Service\Availability())
                         ->updateEntity($availability->getId(), $availability, 2);
@@ -115,6 +115,36 @@ class Zmsdldb extends \BO\Zmsbackend\Base
                 }
             }
         }
+    }
+
+    /**
+     * slotsPerAppointment counts slots. Scale it once, from the single previous length.
+     * Mixed lengths on one Standort have no single factor, so the cap is left unchanged.
+     *
+     * @param iterable<mixed> $availabilities
+     */
+    private function rescaleSlotsPerAppointment($scope, iterable $availabilities, int $newSlotMinutes): void
+    {
+        if ($newSlotMinutes < 1) {
+            return;
+        }
+
+        $oldMinutes = [];
+        foreach ($availabilities as $availability) {
+            $current = (int) $availability->slotTimeInMinutes;
+            if ($current > 0 && $current !== $newSlotMinutes) {
+                $oldMinutes[$current] = true;
+            }
+        }
+        if (count($oldMinutes) !== 1) {
+            return;
+        }
+
+        (new \BO\Zmsbackend\Scope\Service\Scope())->writeScaledSlotsPerAppointment(
+            (int) $scope->getId(),
+            (int) array_key_first($oldMinutes),
+            $newSlotMinutes
+        );
     }
 
     protected function writeRequestRelationList(): void

@@ -762,4 +762,55 @@ class Scope extends \BO\Zmsbackend\Base
         $departmentId = isset($scope->id) ? $this->readDepartmentIdByScopeId($scope->id) : null;
         $this->removeCacheByContext($scope, $departmentId);
     }
+
+    /**
+     * A positive cap is a slot count. Scale it so the maximum length in minutes stays the same.
+     * Null and 0 stay unlimited and are left untouched.
+     */
+    public function writeScaledSlotsPerAppointment(int $scopeId, int $oldSlotMinutes, int $newSlotMinutes): ?int
+    {
+        $scaled = \BO\Zmsentities\Helper\FiveMinuteGrid::scaledSlotsPerAppointment(
+            $this->readSlotsPerAppointment($scopeId),
+            $oldSlotMinutes,
+            $newSlotMinutes
+        );
+        if ($scaled === null) {
+            return null;
+        }
+
+        $this->perform(
+            'UPDATE `standort` SET `slots_per_appointment` = :slots WHERE `StandortID` = :scopeId',
+            [
+                'slots' => $scaled,
+                'scopeId' => $scopeId,
+            ]
+        );
+        (new \BO\Zmsbackend\Preferences\Service\Preferences())->replaceProperty(
+            'scope',
+            $scopeId,
+            'client',
+            'slotsPerAppointment',
+            (string) $scaled
+        );
+        $scope = $this->readEntity($scopeId, 0, true);
+        if ($scope !== null && $scope->hasId()) {
+            $this->removeCache($scope);
+        }
+
+        return $scaled;
+    }
+
+    public function readSlotsPerAppointment(int $scopeId): ?int
+    {
+        $value = $this->fetchValue(
+            'SELECT `slots_per_appointment` FROM `standort` WHERE `StandortID` = :scopeId',
+            ['scopeId' => $scopeId]
+        );
+        if ($value === false || $value === null || $value === '') {
+            return null;
+        }
+        $slots = (int) $value;
+
+        return $slots > 0 ? $slots : null;
+    }
 }

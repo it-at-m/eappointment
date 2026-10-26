@@ -26,4 +26,20 @@ class FiveMinuteGrid
 
         return intdiv($durationMinutes, self::MINUTES);
     }
+
+    /**
+     * Keep the same maximum appointment length in minutes.
+     * An empty limit stays empty. Returns null when nothing should be written.
+     */
+    public static function scaledSlotsPerAppointment(?int $current, int $oldSlotMinutes, int $newSlotMinutes = self::MINUTES): ?int
+    {
+        if ($current === null || $current < 1 || $oldSlotMinutes < 1 || $newSlotMinutes < 1) {
+            return null;
+        }
+        if ($oldSlotMinutes === $newSlotMinutes) {
+            return null;
+        }
+
+        return intdiv(($current * $oldSlotMinutes) + $newSlotMinutes - 1, $newSlotMinutes);
+    }
 }
