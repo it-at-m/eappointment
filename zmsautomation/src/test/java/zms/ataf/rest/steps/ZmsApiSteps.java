@@ -3383,7 +3383,16 @@ public class ZmsApiSteps {
     @Then("scope {int} appointment cap should be {int} minutes with the X-AuthKey")
     public void scopeAppointmentCapShouldBeMinutes(int scopeId, int minutes) {
         String actual = readAppointmentCap(scopeId);
-        int parsed = actual == null ? 0 : Integer.parseInt(actual.trim());
+        int parsed = 0;
+        if (actual != null) {
+            try {
+                parsed = Integer.parseInt(actual.trim());
+            } catch (NumberFormatException e) {
+                throw new AssertionError(
+                    "scope " + scopeId + " maxAppointmentLengthInMinutes is not a number: \"" + actual + "\"",
+                    e);
+            }
+        }
         Assertions.assertThat(parsed)
             .as("scope %d maxAppointmentLengthInMinutes", scopeId)
             .isEqualTo(minutes);
