@@ -54,7 +54,7 @@
                     },
                     "client": {
                         "appointmentsPerMail": "",
-                        "slotsPerAppointment": "",
+                        "maxAppointmentLengthInMinutes": "",
                         "whitelistedMails": "",
                         "amendmentActivated": "0",
                         "amendmentLabel": "",
