@@ -96,44 +96,53 @@ class AvailabilitySlotChangeTest extends \BO\Zmsbackend\Tests\Service\Base
         $this->assertNull($this->readCopiedRow('2016-04-16'));
     }
 
-    public function testRescalesSlotsPerAppointmentToTheSameMinuteBudget(): void
+    public function testKeepsTheMinuteCapWhenTheSlotLengthChanges(): void
     {
-        $this->assertSame(54, AvailabilitySlotChange::scaledSlotsPerAppointment(3, 90, 5));
-        $this->assertSame(3, AvailabilitySlotChange::scaledSlotsPerAppointment(54, 5, 90));
-        $this->assertSame(1, AvailabilitySlotChange::scaledSlotsPerAppointment(1, 10, 15));
-        $this->assertNull(AvailabilitySlotChange::scaledSlotsPerAppointment(null, 90, 5));
-        $this->assertNull(AvailabilitySlotChange::scaledSlotsPerAppointment(0, 90, 5));
-
-        $this->writeSlotsPerAppointment(3);
+        $this->writeMaxAppointmentLength(270);
         $this->writeAvailability('2016-04-01', '2016-06-30', '08:00:00', '17:00:00', 90);
         $this->insertProcess(self::BOOKED_PROCESS_ID, '2016-04-15', 'confirmed');
 
         $service = new AvailabilitySlotChange();
         $service->apply(self::SCOPE_ID, 5, static::$now);
-        $this->assertSame(54, $this->readSlotsPerAppointment());
+        $this->assertSame(270, $this->readMaxAppointmentLength());
 
         $service->apply(self::SCOPE_ID, 5, static::$now);
-        $this->assertSame(54, $this->readSlotsPerAppointment());
+        $this->assertSame(270, $this->readMaxAppointmentLength());
     }
 
-    public function testLeavesAnEmptySlotsPerAppointmentAlone(): void
+    public function testRaisesTheCapWhenAServiceGrowsPastIt(): void
     {
-        $this->writeSlotsPerAppointment(null);
+        $this->assertSame(90, AvailabilitySlotChange::raisedMaxAppointmentLengthInMinutes(30, 90));
+        $this->assertNull(AvailabilitySlotChange::raisedMaxAppointmentLengthInMinutes(120, 90));
+        $this->assertNull(AvailabilitySlotChange::raisedMaxAppointmentLengthInMinutes(null, 90));
+        $this->assertNull(AvailabilitySlotChange::raisedMaxAppointmentLengthInMinutes(0, 90));
+
+        $this->writeMaxAppointmentLength(30);
+        $this->insertPublicService(18);
+
+        (new AvailabilitySlotChange())->raiseToCoverLongestService(self::SCOPE_ID, '9999999', 'dldb', 5);
+
+        $this->assertSame(90, $this->readMaxAppointmentLength());
+    }
+
+    public function testLeavesAnEmptyCapAlone(): void
+    {
+        $this->writeMaxAppointmentLength(null);
         $this->writeAvailability('2016-04-01', '2016-06-30', '08:00:00', '17:00:00', 90);
 
         (new AvailabilitySlotChange())->apply(self::SCOPE_ID, 5, static::$now);
 
-        $this->assertNull($this->readSlotsPerAppointment());
+        $this->assertNull($this->readMaxAppointmentLength());
     }
 
-    public function testDoesNotRescaleSlotsPerAppointmentWhenTheOpeningStays(): void
+    public function testLeavesTheCapWhenTheOpeningStays(): void
     {
-        $this->writeSlotsPerAppointment(3);
+        $this->writeMaxAppointmentLength(270);
         $this->writeAvailability('2016-04-01', '2016-06-30', '08:00:00', '09:00:00', 60);
 
         (new AvailabilitySlotChange())->apply(self::SCOPE_ID, 90, static::$now);
 
-        $this->assertSame(3, $this->readSlotsPerAppointment());
+        $this->assertSame(270, $this->readMaxAppointmentLength());
     }
 
     public function testDoesNothingWhenTheSlotAlreadyMatches(): void
@@ -164,22 +173,30 @@ class AvailabilitySlotChangeTest extends \BO\Zmsbackend\Tests\Service\Base
             'DELETE FROM `buerger` WHERE `BuergerID` IN (:booked, :cancelled)',
             ['booked' => self::BOOKED_PROCESS_ID, 'cancelled' => self::CANCELLED_PROCESS_ID]
         );
-        $this->writeSlotsPerAppointment(null);
+        $this->writeMaxAppointmentLength(null);
+        (new AvailabilityService())->perform(
+            'DELETE FROM `request_provider` WHERE `request__id` = :requestId AND `provider__id` = :providerId',
+            ['requestId' => '991627', 'providerId' => '9999999']
+        );
+        (new AvailabilityService())->perform(
+            'DELETE FROM `preferences` WHERE `entity` = :entity AND `id` = :scopeId AND `name` = :name',
+            ['entity' => 'scope', 'scopeId' => self::SCOPE_ID, 'name' => 'maxAppointmentLengthInMinutes']
+        );
         parent::tearDown();
     }
 
-    private function writeSlotsPerAppointment(?int $slots): void
+    private function writeMaxAppointmentLength(?int $minutes): void
     {
         (new AvailabilityService())->perform(
-            'UPDATE `standort` SET `slots_per_appointment` = :slots WHERE `StandortID` = :scopeId',
-            ['slots' => $slots, 'scopeId' => self::SCOPE_ID]
+            'UPDATE `standort` SET `max_appointment_length_in_minutes` = :minutes WHERE `StandortID` = :scopeId',
+            ['minutes' => $minutes, 'scopeId' => self::SCOPE_ID]
         );
     }
 
-    private function readSlotsPerAppointment(): ?int
+    private function readMaxAppointmentLength(): ?int
     {
         $value = (new AvailabilityService())->fetchValue(
-            'SELECT `slots_per_appointment` FROM `standort` WHERE `StandortID` = :scopeId',
+            'SELECT `max_appointment_length_in_minutes` FROM `standort` WHERE `StandortID` = :scopeId',
             ['scopeId' => self::SCOPE_ID]
         );
         if ($value === false || $value === null || $value === '') {
@@ -187,6 +204,22 @@ class AvailabilitySlotChangeTest extends \BO\Zmsbackend\Tests\Service\Base
         }
 
         return (int) $value;
+    }
+
+    private function insertPublicService(float $slots): void
+    {
+        (new AvailabilityService())->perform(
+            'REPLACE INTO `request_provider`
+                (`source`, `request__id`, `provider__id`, `slots`, `bookable`, `public_visibility`)
+             VALUES
+                (:source, :requestId, :providerId, :slots, 1, 1)',
+            [
+                'source' => 'dldb',
+                'requestId' => '991627',
+                'providerId' => '9999999',
+                'slots' => $slots,
+            ]
+        );
     }
 
     private function writeAvailability(

@@ -159,7 +159,7 @@ class MailTest extends \BO\Zmsbackend\Tests\Service\Base
                             "customTextfieldActivated" => "0",
                             "customTextfield2Activated" => "0",
                             "appointmentsPerMail" => "",
-                            "slotsPerAppointment" => "",
+                            "maxAppointmentLengthInMinutes" => "",
                             "whitelistedMails" => "",
                             "customTextfieldLabel" => "",
                             "customTextfield2Label" => "",

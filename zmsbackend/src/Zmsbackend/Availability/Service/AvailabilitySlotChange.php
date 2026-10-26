@@ -31,31 +31,57 @@ class AvailabilitySlotChange extends \BO\Zmsbackend\Base
 
         $latest = (new \BO\Zmsbackend\Process\Service\Process())->readLatestBookedDate($scopeId, $now);
         $cut = $this->cutDate($latest, $now);
-        $changedFrom = [];
         foreach ($rows as $row) {
-            if ($this->applyToRow($row, $newSlotMinutes, $cut)) {
-                $changedFrom[(int) $row['slot_minutes']] = true;
-            }
-        }
-        if (count($changedFrom) === 1) {
-            $this->rescaleSlotsPerAppointment($scopeId, (int) array_key_first($changedFrom), $newSlotMinutes);
+            $this->applyToRow($row, $newSlotMinutes, $cut);
         }
     }
 
     /**
-     * Keep the same maximum appointment length in minutes when the slot length changes.
-     * An empty limit stays empty. Returns null when nothing should be written.
+     * A positive cap below the longest public service is raised to that duration.
+     * An empty cap stays empty. Returns null when nothing should be written.
      */
-    public static function scaledSlotsPerAppointment(?int $current, int $oldSlotMinutes, int $newSlotMinutes): ?int
+    public static function raisedMaxAppointmentLengthInMinutes(?int $current, int $longestServiceMinutes): ?int
     {
-        if ($current === null || $current < 1 || $oldSlotMinutes < 1 || $newSlotMinutes < 1) {
+        if ($current === null || $current < 1 || $longestServiceMinutes < 1) {
             return null;
         }
-        if ($oldSlotMinutes === $newSlotMinutes) {
+        if ($current >= $longestServiceMinutes) {
             return null;
         }
 
-        return intdiv(($current * $oldSlotMinutes) + $newSlotMinutes - 1, $newSlotMinutes);
+        return $longestServiceMinutes;
+    }
+
+    public function raiseToCoverLongestService(
+        int $scopeId,
+        string $providerId,
+        string $source,
+        int $slotMinutes
+    ): void {
+        if ($scopeId < 1 || $providerId === '' || $slotMinutes < 1) {
+            return;
+        }
+
+        $slots = $this->fetchValue(
+            \BO\Zmsbackend\Availability\Repository\Availability::QUERY_LONGEST_PUBLIC_SERVICE_SLOTS,
+            [
+                'providerId' => $providerId,
+                'source' => $source,
+            ]
+        );
+        if ($slots === false || $slots === null || $slots === '') {
+            return;
+        }
+
+        $raised = self::raisedMaxAppointmentLengthInMinutes(
+            $this->readMaxAppointmentLengthInMinutes($scopeId),
+            (int) ceil(((float) $slots) * $slotMinutes)
+        );
+        if ($raised === null) {
+            return;
+        }
+
+        $this->writeMaxAppointmentLengthInMinutes($scopeId, $raised);
     }
 
     /**
@@ -119,23 +145,21 @@ class AvailabilitySlotChange extends \BO\Zmsbackend\Base
         return true;
     }
 
-    private function rescaleSlotsPerAppointment(int $scopeId, int $oldSlotMinutes, int $newSlotMinutes): void
+    private function writeMaxAppointmentLengthInMinutes(int $scopeId, int $minutes): void
     {
-        $scaled = self::scaledSlotsPerAppointment(
-            $this->readSlotsPerAppointment($scopeId),
-            $oldSlotMinutes,
-            $newSlotMinutes
-        );
-        if ($scaled === null) {
-            return;
-        }
-
         $this->perform(
-            \BO\Zmsbackend\Availability\Repository\Availability::QUERY_UPDATE_SLOTS_PER_APPOINTMENT,
+            \BO\Zmsbackend\Availability\Repository\Availability::QUERY_UPDATE_MAX_APPOINTMENT_LENGTH,
             [
-                'slots' => $scaled,
+                'minutes' => $minutes,
                 'scopeId' => $scopeId,
             ]
+        );
+        (new \BO\Zmsbackend\Preferences\Service\Preferences())->replaceProperty(
+            'scope',
+            $scopeId,
+            'client',
+            'maxAppointmentLengthInMinutes',
+            (string) $minutes
         );
         $scope = (new \BO\Zmsbackend\Scope\Service\Scope())->readEntity($scopeId, 0, true);
         if ($scope !== null && $scope->hasId()) {
@@ -143,10 +167,10 @@ class AvailabilitySlotChange extends \BO\Zmsbackend\Base
         }
     }
 
-    private function readSlotsPerAppointment(int $scopeId): ?int
+    private function readMaxAppointmentLengthInMinutes(int $scopeId): ?int
     {
         $value = $this->fetchValue(
-            \BO\Zmsbackend\Availability\Repository\Availability::QUERY_READ_SLOTS_PER_APPOINTMENT,
+            \BO\Zmsbackend\Availability\Repository\Availability::QUERY_READ_MAX_APPOINTMENT_LENGTH,
             ['scopeId' => $scopeId]
         );
         if ($value === false || $value === null || $value === '') {

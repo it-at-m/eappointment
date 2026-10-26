@@ -198,7 +198,7 @@ class Scope extends Base implements MappingInterface
             'preferences__client__telephoneActivated' => 'scope.telefonaktiviert',
             'preferences__client__telephoneRequired' => 'scope.telefonPflichtfeld',
             'preferences__client__appointmentsPerMail' => 'scope.appointments_per_mail',
-            'preferences__client__slotsPerAppointment' => 'scope.slots_per_appointment',
+            'preferences__client__maxAppointmentLengthInMinutes' => 'scope.max_appointment_length_in_minutes',
             'preferences__client__whitelistedMails' => 'scope.whitelisted_mails',
             'preferences__client__customTextfieldActivated' => 'scope.custom_text_field_active',
             'preferences__client__customTextfieldRequired' => 'scope.custom_text_field_required',
@@ -367,7 +367,10 @@ class Scope extends Base implements MappingInterface
         $data['custom_text_field2_label'] = $entity->getPreference('client', 'customTextfield2Label');
         $data['captcha_activated_required'] = $entity->getPreference('client', 'captchaActivatedRequired');
         $data['appointments_per_mail'] = (int) $entity->getPreference('client', 'appointmentsPerMail');
-        $data['slots_per_appointment'] = (int) $entity->getPreference('client', 'slotsPerAppointment');
+        $data['max_appointment_length_in_minutes'] = (int) $entity->getPreference(
+            'client',
+            'maxAppointmentLengthInMinutes'
+        );
         $data['info_for_appointment'] = $entity->getPreference('appointment', 'infoForAppointment');
         $data['whitelisted_mails'] = $entity->getPreference('client', 'whitelistedMails');
         $data['admin_mail_on_appointment'] = $entity->getPreference('client', 'adminMailOnAppointment', true);
@@ -493,8 +496,8 @@ class Scope extends Base implements MappingInterface
             'preferences__client__appointmentsPerMail' => null
         ]);
 
-        $this->setIfEmpty($data, 'preferences__client__slotsPerAppointment', [
-            'preferences__client__slotsPerAppointment' => null
+        $this->setIfEmpty($data, 'preferences__client__maxAppointmentLengthInMinutes', [
+            'preferences__client__maxAppointmentLengthInMinutes' => null
         ]);
 
         $this->setIfEmpty($data, 'preferences__client__whitelistedMails', [
