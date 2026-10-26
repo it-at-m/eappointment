@@ -77,8 +77,10 @@ public class ZmsApiSteps {
     /** ZMSKVR-1627: series whose slot length this scenario changed, and the cap to write back. */
     private Integer slotChangeAvailabilityId;
     private int slotChangeExpectedMinutes;
+    private LocalDate slotChangeDay;
     private String slotChangeStart;
     private String slotChangeEnd;
+    private int savedOpeningServiceSlots;
     private ObjectNode slotChangeRestoreBody;
     private LocalDate slotChangeSelectedDate;
     private Integer minuteCapScopeId;
@@ -136,8 +138,10 @@ public class ZmsApiSteps {
         historyScopeId = 0;
         slotChangeAvailabilityId = null;
         slotChangeExpectedMinutes = 0;
+        slotChangeDay = null;
         slotChangeStart = null;
         slotChangeEnd = null;
+        savedOpeningServiceSlots = 0;
         slotChangeRestoreBody = null;
         slotChangeSelectedDate = null;
         minuteCapScopeId = null;
@@ -3420,6 +3424,7 @@ public class ZmsApiSteps {
                 .isEqualTo(200);
             slotChangeAvailabilityId = createdAvailabilityId;
             slotChangeExpectedMinutes = 30;
+            slotChangeDay = hour.day;
             slotChangeStart = hour.start;
             slotChangeEnd = hour.end;
             return;
@@ -3451,6 +3456,89 @@ public class ZmsApiSteps {
         Assertions.assertThat(clockText(saved.path("endTime").asText()))
             .as("endTime")
             .isEqualTo(clockText(slotChangeEnd));
+    }
+
+    @When("I clear the appointment cap for scope {int} with the X-AuthKey")
+    public void iClearTheAppointmentCapForScope(int scopeId) {
+        AccountCheckout.checkout("scope:" + scopeId + ":zmskvr-1627");
+        if (minuteCapScopeId == null) {
+            minuteCapBefore = readAppointmentCap(scopeId);
+            minuteCapScopeId = scopeId;
+        }
+        response = postAppointmentCap(scopeId, "");
+        CommonApiSteps.setResponse(response);
+        Assertions.assertThat(response.getStatusCode())
+            .as("POST /scope/%d/ clear cap body=%s", scopeId, truncate(response.asString(), 800))
+            .isEqualTo(200);
+    }
+
+    @Then("scope {int} should have no appointment cap with the X-AuthKey")
+    public void scopeShouldHaveNoAppointmentCap(int scopeId) {
+        Assertions.assertThat(readAppointmentCap(scopeId))
+            .as("scope %d maxAppointmentLengthInMinutes", scopeId)
+            .isNull();
+    }
+
+    @When("I reserve an appointment on the saved opening hour at scope {int} with the X-AuthKey")
+    public void iReserveAnAppointmentOnTheSavedOpeningHour(int scopeId) {
+        Assertions.assertThat(slotChangeAvailabilityId)
+            .as("opening hours id")
+            .isNotNull();
+        Assertions.assertThat(slotChangeDay)
+            .as("opening hours day")
+            .isNotNull();
+        String authKey = getOrLoginXAuthKey();
+        int windowMinutes = durationMinutes(slotChangeStart, slotChangeEnd);
+        JsonNode request = shortestRequestThatFits(scopeId, authKey, slotChangeExpectedMinutes, windowMinutes);
+        savedOpeningServiceSlots = request.path("timeSlotCount").asInt();
+        JsonNode slot = freeSlotOnSavedOpeningHour(scopeId, request, authKey);
+        ObjectNode process = (ObjectNode) slot.deepCopy();
+        process.put("amendment", "ZMSKVR-1627");
+        process.set("requests", MAPPER.createArrayNode().add(request.deepCopy()));
+        ObjectNode client = MAPPER.createObjectNode();
+        client.put("familyName", "Muster Zmskvr1627");
+        client.put("email", "musterzmskvr1627@mailinator.com");
+        client.put("surveyAccepted", 1);
+        process.set("clients", MAPPER.createArrayNode().add(client));
+        response = given()
+            .baseUri(apiBaseUri())
+            .header("X-AuthKey", authKey)
+            .contentType("application/json")
+            .queryParam("slotType", "intern")
+            .queryParam("clientkey", "")
+            .queryParam("slotsRequired", savedOpeningServiceSlots)
+            .body(toJson(process))
+        .when()
+            .post("/process/status/reserved/");
+        CommonApiSteps.setResponse(response);
+        Assertions.assertThat(response.getStatusCode())
+            .as("POST /process/status/reserved/ body=%s", truncate(response.asString(), 800))
+            .isEqualTo(200);
+        response = postConfirmedWithDeadlockRetry(authKey, parseDataNode(response));
+        CommonApiSteps.setResponse(response);
+        Assertions.assertThat(response.getStatusCode())
+            .as("POST /process/status/confirmed/ body=%s", truncate(response.asString(), 800))
+            .isEqualTo(200);
+        rememberProcess(parseDataNode(response));
+    }
+
+    @Then("the last appointment uses the saved slot length with the X-AuthKey")
+    public void theLastAppointmentUsesTheSavedSlotLength() {
+        Assertions.assertThat(lastProcess)
+            .as("confirmed appointment")
+            .isNotNull();
+        JsonNode appointment = lastProcess.path("appointments").path(0);
+        int slotMinutes = appointment.path("availability").path("slotTimeInMinutes").asInt(0);
+        int slotCount = appointment.path("slotCount").asInt(0);
+        Assertions.assertThat(slotMinutes)
+            .as("appointment availability.slotTimeInMinutes")
+            .isEqualTo(slotChangeExpectedMinutes);
+        Assertions.assertThat(slotCount)
+            .as("appointment slotCount")
+            .isEqualTo(savedOpeningServiceSlots);
+        Assertions.assertThat(slotCount * slotMinutes)
+            .as("duration in minutes")
+            .isEqualTo(savedOpeningServiceSlots * slotChangeExpectedMinutes);
     }
 
     @When("I restore the opening hour and the appointment cap with the X-AuthKey")
@@ -3509,6 +3597,7 @@ public class ZmsApiSteps {
         createdAvailabilityId = null;
         slotChangeAvailabilityId = chosen.path("id").asInt();
         slotChangeExpectedMinutes = next;
+        slotChangeDay = slotChangeSelectedDate;
         slotChangeStart = chosen.path("startTime").asText();
         slotChangeEnd = chosen.path("endTime").asText();
     }
@@ -3596,6 +3685,10 @@ public class ZmsApiSteps {
         availability.put("startTime", hour.start);
         availability.put("endTime", hour.end);
         availability.put("slotTimeInMinutes", slotMinutes);
+        ObjectNode bookable = MAPPER.createObjectNode();
+        bookable.put("startInDays", 0);
+        bookable.put("endInDays", 60);
+        availability.set("bookable", bookable);
         ObjectNode scope = MAPPER.createObjectNode();
         scope.put("id", scopeId);
         availability.set("scope", scope);
@@ -3618,6 +3711,79 @@ public class ZmsApiSteps {
             .body(toJson(body))
         .when()
             .post("/availability/");
+    }
+
+    private JsonNode shortestRequestThatFits(int scopeId, String authKey, int slotMinutes, int windowMinutes) {
+        Response requestResponse = given()
+            .baseUri(apiBaseUri())
+            .header("X-AuthKey", authKey)
+        .when()
+            .get("/scope/" + scopeId + "/request/");
+        ArrayNode requests = parseDataArray(requestResponse);
+        Assertions.assertThat(requests)
+            .as("GET /scope/%d/request/ body=%s", scopeId, truncate(requestResponse.asString(), 400))
+            .isNotNull()
+            .isNotEmpty();
+        JsonNode best = null;
+        int bestSlots = Integer.MAX_VALUE;
+        for (JsonNode candidate : requests) {
+            int slots = candidate.path("timeSlotCount").asInt(0);
+            if (slots < 1 || slots * slotMinutes > windowMinutes || slots >= bestSlots) {
+                continue;
+            }
+            best = candidate;
+            bestSlots = slots;
+        }
+        Assertions.assertThat(best)
+            .as("scope %d service whose slots fit a %d minute window at %d minutes per slot",
+                scopeId, windowMinutes, slotMinutes)
+            .isNotNull();
+        return best;
+    }
+
+    private JsonNode freeSlotOnSavedOpeningHour(int scopeId, JsonNode request, String authKey) {
+        long windowStart = slotChangeDay.atTime(LocalTime.parse(normalizeClock(slotChangeStart)))
+            .atZone(BerlinTime.ZONE)
+            .toEpochSecond();
+        long windowEnd = slotChangeDay.atTime(LocalTime.parse(normalizeClock(slotChangeEnd)))
+            .atZone(BerlinTime.ZONE)
+            .toEpochSecond();
+        JsonNode matched = null;
+        for (int offset = 0; offset < 8 && matched == null; offset++) {
+            LocalDate day = slotChangeDay.plusDays(offset);
+            Response freeResponse = given()
+                .baseUri(apiBaseUri())
+                .header("X-AuthKey", authKey)
+                .contentType("application/json")
+                .queryParam("slotType", "intern")
+                .queryParam("slotsRequired", request.path("timeSlotCount").asInt(1))
+                .body(toJson(freeProcessCalendar(scopeId, request, day)))
+            .when()
+                .post("/process/status/free/");
+            JsonNode freeList = parseDataArray(freeResponse);
+            if (freeList == null) {
+                continue;
+            }
+            for (JsonNode candidate : freeList) {
+                JsonNode appointment = candidate.path("appointments").path(0);
+                if (appointment.path("availability").path("id").asInt(0) != slotChangeAvailabilityId) {
+                    continue;
+                }
+                long date = appointment.path("date").asLong(0);
+                if (offset == 0 && (date < windowStart || date >= windowEnd)) {
+                    continue;
+                }
+                if (date <= Instant.now().getEpochSecond()) {
+                    continue;
+                }
+                matched = candidate;
+                break;
+            }
+        }
+        Assertions.assertThat(matched)
+            .as("free intern slot on opening hours %s at scope %d", slotChangeAvailabilityId, scopeId)
+            .isNotNull();
+        return matched;
     }
 
     private static FutureHour nextFullHour() {

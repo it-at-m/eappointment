@@ -25,3 +25,22 @@ Feature: The appointment cap stays in minutes when the slot length changes
     And scope 96 appointment cap should be 90 minutes with the X-AuthKey
     When I restore the opening hour and the appointment cap with the X-AuthKey
     Then the response status code should be 200
+
+  Scenario: The appointment cap can be set and cleared
+    Given I am logged in to the ZMS API as "system_admin"
+    When I set the appointment cap for scope 96 to 90 minutes with the X-AuthKey
+    Then scope 96 appointment cap should be 90 minutes with the X-AuthKey
+    When I clear the appointment cap for scope 96 with the X-AuthKey
+    Then scope 96 should have no appointment cap with the X-AuthKey
+    When I restore the opening hour and the appointment cap with the X-AuthKey
+    Then the response status code should be 200
+
+  Scenario: An appointment on the saved series uses that slot length
+    Given I am logged in to the ZMS API as "system_admin"
+    When I save a future opening hour at scope 96 with a new slot length with the X-AuthKey
+    Then the saved opening hour uses the new slot length with the X-AuthKey
+    When I reserve an appointment on the saved opening hour at scope 96 with the X-AuthKey
+    Then the last appointment uses the saved slot length with the X-AuthKey
+    When I delete the last process with the X-AuthKey
+    And I restore the opening hour and the appointment cap with the X-AuthKey
+    Then the response status code should be 200
