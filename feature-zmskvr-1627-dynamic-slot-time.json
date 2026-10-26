@@ -1,10 +1,10 @@
 {
   "branch": "feature-zmskvr-1627-dynamic-slot-time",
   "branchSlug": "feature-zmskvr-1627-dynamic-slot-time",
-  "runId": "40362587021",
-  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/40362587021",
-  "runStartedAt": "2026-10-26T16:48:07Z",
-  "publishedAt": "2026-10-26T16:56:02.948Z",
+  "runId": "40369403054",
+  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/40369403054",
+  "runStartedAt": "2026-10-26T17:31:23Z",
+  "publishedAt": "2026-10-26T17:38:50.583Z",
   "features": {
     "feature-ui-zmscalldisplay-queue-zms-3213-zmsalt-3213-zms-3250-zmsalt-3250-call-order": {
       "status": "passed",
@@ -5379,16 +5379,16 @@
       "shard": "custom",
       "browser": "chrome",
       "rel": "rest/zmsapi/opening-hours/zmskvr-1627_minute_cap_stays_when_slot_length_changes.feature",
-      "runId": "40362587021",
-      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/40362587021",
-      "runStartedAt": "2026-10-26T16:48:07Z",
+      "runId": "40369403054",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/40369403054",
+      "runStartedAt": "2026-10-26T17:31:23Z",
       "browsers": {
         "chrome": {
           "status": "passed",
           "shard": "custom",
-          "runId": "40362587021",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/40362587021",
-          "runStartedAt": "2026-10-26T16:48:07Z"
+          "runId": "40369403054",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/40369403054",
+          "runStartedAt": "2026-10-26T17:31:23Z"
         }
       }
     }
