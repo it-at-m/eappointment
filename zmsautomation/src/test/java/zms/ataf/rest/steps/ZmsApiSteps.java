@@ -7,9 +7,11 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.DayOfWeek;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -72,6 +74,15 @@ public class ZmsApiSteps {
     private Integer createdAvailabilityId;
     private Integer historyAvailabilityId;
     private int historyScopeId;
+    /** ZMSKVR-1627: series whose slot length this scenario changed, and the cap to write back. */
+    private Integer slotChangeAvailabilityId;
+    private int slotChangeExpectedMinutes;
+    private String slotChangeStart;
+    private String slotChangeEnd;
+    private ObjectNode slotChangeRestoreBody;
+    private LocalDate slotChangeSelectedDate;
+    private Integer minuteCapScopeId;
+    private String minuteCapBefore;
     private boolean lastProcessDeleted;
     /** ZMSKVR-42: unlock in @After if the scenario left a day locked. */
     private Integer dayClosureScopeId;
@@ -123,6 +134,14 @@ public class ZmsApiSteps {
         createdAvailabilityId = null;
         historyAvailabilityId = null;
         historyScopeId = 0;
+        slotChangeAvailabilityId = null;
+        slotChangeExpectedMinutes = 0;
+        slotChangeStart = null;
+        slotChangeEnd = null;
+        slotChangeRestoreBody = null;
+        slotChangeSelectedDate = null;
+        minuteCapScopeId = null;
+        minuteCapBefore = null;
         lastProcessDeleted = false;
         dayClosureScopeId = null;
         dayClosureDate = null;
@@ -156,6 +175,13 @@ public class ZmsApiSteps {
 
     private void finishScenarioCleanup() {
         unlockDayClosureLeftByTheScenario();
+        AssertionError restoreFailure = null;
+        try {
+            restoreMinuteCapLeftByTheScenario();
+            restoreSlotLengthLeftByTheScenario();
+        } catch (AssertionError failed) {
+            restoreFailure = failed;
+        }
         Integer id = createdAvailabilityId;
         createdAvailabilityId = null;
         if (id != null) {
@@ -171,6 +197,9 @@ public class ZmsApiSteps {
         }
         deleteScenarioProcesses();
         deleteLastProcessIfStillOpen();
+        if (restoreFailure != null) {
+            throw restoreFailure;
+        }
     }
 
     private void restoreEmergencyLeftByTheScenario() {
@@ -3332,6 +3361,328 @@ public class ZmsApiSteps {
             .body(toJson(body))
         .when()
             .post("/availability/");
+    }
+
+    /**
+     * ZMSKVR-1627: scope 29 is unused by other scenarios. 90 minutes stays 90 after the slot length changes.
+     */
+    @When("I set the appointment cap for scope {int} to {int} minutes with the X-AuthKey")
+    public void iSetTheAppointmentCapForScopeToMinutes(int scopeId, int minutes) {
+        AccountCheckout.checkout("scope:" + scopeId + ":zmskvr-1627");
+        if (minuteCapScopeId == null) {
+            minuteCapBefore = readAppointmentCap(scopeId);
+            minuteCapScopeId = scopeId;
+        }
+        response = postAppointmentCap(scopeId, Integer.toString(minutes));
+        CommonApiSteps.setResponse(response);
+        Assertions.assertThat(response.getStatusCode())
+            .as("POST /scope/%d/ cap=%d body=%s", scopeId, minutes, truncate(response.asString(), 800))
+            .isEqualTo(200);
+    }
+
+    @Then("scope {int} appointment cap should be {int} minutes with the X-AuthKey")
+    public void scopeAppointmentCapShouldBeMinutes(int scopeId, int minutes) {
+        String actual = readAppointmentCap(scopeId);
+        int parsed = actual == null ? 0 : Integer.parseInt(actual.trim());
+        Assertions.assertThat(parsed)
+            .as("scope %d maxAppointmentLengthInMinutes", scopeId)
+            .isEqualTo(minutes);
+    }
+
+    /**
+     * Saves a future 60-minute hour at 20 minutes, then again at 30. Both divide that hour.
+     * An overlapping series is updated to another length that still divides its own window.
+     */
+    @When("I save a future opening hour at scope {int} with a new slot length with the X-AuthKey")
+    public void iSaveAFutureOpeningHourAtScopeWithANewSlotLength(int scopeId) {
+        AccountCheckout.checkout("scope:" + scopeId + ":zmskvr-1627");
+        FutureHour hour = nextFullHour();
+        response = postFutureOpeningHour(scopeId, null, hour, 20);
+        CommonApiSteps.setResponse(response);
+        if (response.getStatusCode() == 200) {
+            rememberCreatedOpeningHours();
+            Assertions.assertThat(createdAvailabilityId)
+                .as("opening hours id from POST /availability/ body=%s", truncate(response.asString(), 800))
+                .isNotNull();
+            response = postFutureOpeningHour(scopeId, createdAvailabilityId, hour, 30);
+            CommonApiSteps.setResponse(response);
+            Assertions.assertThat(response.getStatusCode())
+                .as("POST /availability/ slot 30 body=%s", truncate(response.asString(), 800))
+                .isEqualTo(200);
+            slotChangeAvailabilityId = createdAvailabilityId;
+            slotChangeExpectedMinutes = 30;
+            slotChangeStart = hour.start;
+            slotChangeEnd = hour.end;
+            return;
+        }
+        changeExistingOpeningHourSlot(scopeId, truncate(response.asString(), 800));
+    }
+
+    @Then("the saved opening hour uses the new slot length with the X-AuthKey")
+    public void theSavedOpeningHourUsesTheNewSlotLength() {
+        Assertions.assertThat(slotChangeAvailabilityId)
+            .as("opening hours id")
+            .isNotNull();
+        response = given()
+            .baseUri(apiBaseUri())
+            .header("X-AuthKey", getOrLoginXAuthKey())
+        .when()
+            .get("/availability/" + slotChangeAvailabilityId + "/");
+        CommonApiSteps.setResponse(response);
+        Assertions.assertThat(response.getStatusCode())
+            .as("GET /availability/%d/ body=%s", slotChangeAvailabilityId, truncate(response.asString(), 800))
+            .isEqualTo(200);
+        JsonNode saved = parseDataNode(response);
+        Assertions.assertThat(saved.path("slotTimeInMinutes").asInt())
+            .as("slotTimeInMinutes")
+            .isEqualTo(slotChangeExpectedMinutes);
+        Assertions.assertThat(clockText(saved.path("startTime").asText()))
+            .as("startTime")
+            .isEqualTo(clockText(slotChangeStart));
+        Assertions.assertThat(clockText(saved.path("endTime").asText()))
+            .as("endTime")
+            .isEqualTo(clockText(slotChangeEnd));
+    }
+
+    @When("I restore the opening hour and the appointment cap with the X-AuthKey")
+    public void iRestoreTheOpeningHourAndTheAppointmentCap() {
+        restoreMinuteCapLeftByTheScenario();
+        restoreSlotLengthLeftByTheScenario();
+        if (createdAvailabilityId != null) {
+            iDeleteTheOpeningHoursCreatedForTheCurrentWeek();
+        }
+    }
+
+    private void changeExistingOpeningHourSlot(int scopeId, String createFailure) {
+        LocalDate today = BerlinTime.today();
+        response = given()
+            .baseUri(apiBaseUri())
+            .header("X-AuthKey", getOrLoginXAuthKey())
+            .queryParam("startDate", today.toString())
+            .queryParam("endDate", today.plusDays(21).toString())
+        .when()
+            .get("/scope/" + scopeId + "/availability/");
+        CommonApiSteps.setResponse(response);
+        ArrayNode rows = response.getStatusCode() == 200 ? parseDataArray(response) : null;
+        ObjectNode chosen = null;
+        if (rows != null) {
+            for (JsonNode row : rows) {
+                if (row instanceof ObjectNode && row.path("id").asInt() > 0 && row.hasNonNull("startTime")) {
+                    chosen = (ObjectNode) row;
+                    break;
+                }
+            }
+        }
+        if (chosen == null) {
+            Assertions.fail("Could not save a future opening hour at scope " + scopeId + ": " + createFailure);
+            return;
+        }
+        int current = chosen.path("slotTimeInMinutes").asInt();
+        int duration = durationMinutes(chosen.path("startTime").asText(), chosen.path("endTime").asText());
+        int next = differentSlotLength(current, duration);
+        Assertions.assertThat(next)
+            .as("a slot length other than %d that divides %d minutes", current, duration)
+            .isPositive();
+        slotChangeRestoreBody = (ObjectNode) chosen.deepCopy();
+        stripAvailabilityMeta(slotChangeRestoreBody);
+        ObjectNode update = (ObjectNode) chosen.deepCopy();
+        update.put("slotTimeInMinutes", next);
+        stripAvailabilityMeta(update);
+        long startEpoch = chosen.path("startDate").asLong();
+        LocalDate seriesStart = Instant.ofEpochSecond(startEpoch).atZone(BerlinTime.ZONE).toLocalDate();
+        slotChangeSelectedDate = seriesStart.isAfter(today) ? seriesStart : today;
+        response = postAvailabilityBody(update, slotChangeSelectedDate);
+        CommonApiSteps.setResponse(response);
+        Assertions.assertThat(response.getStatusCode())
+            .as("POST /availability/ id=%s slot %d body=%s",
+                chosen.path("id").asText(), next, truncate(response.asString(), 800))
+            .isEqualTo(200);
+        createdAvailabilityId = null;
+        slotChangeAvailabilityId = chosen.path("id").asInt();
+        slotChangeExpectedMinutes = next;
+        slotChangeStart = chosen.path("startTime").asText();
+        slotChangeEnd = chosen.path("endTime").asText();
+    }
+
+    private void restoreMinuteCapLeftByTheScenario() {
+        Integer scopeId = minuteCapScopeId;
+        if (scopeId == null) {
+            return;
+        }
+        String previous = minuteCapBefore;
+        minuteCapScopeId = null;
+        minuteCapBefore = null;
+        response = postAppointmentCap(scopeId, previous == null ? "" : previous);
+        CommonApiSteps.setResponse(response);
+        Assertions.assertThat(response.getStatusCode())
+            .as("restore scope %d cap body=%s", scopeId, truncate(response.asString(), 800))
+            .isEqualTo(200);
+    }
+
+    private void restoreSlotLengthLeftByTheScenario() {
+        ObjectNode original = slotChangeRestoreBody;
+        slotChangeRestoreBody = null;
+        if (original == null) {
+            return;
+        }
+        LocalDate selected = slotChangeSelectedDate == null ? BerlinTime.today() : slotChangeSelectedDate;
+        slotChangeSelectedDate = null;
+        response = postAvailabilityBody(original, selected);
+        CommonApiSteps.setResponse(response);
+        Assertions.assertThat(response.getStatusCode())
+            .as("restore opening hours %s body=%s",
+                original.path("id").asText(), truncate(response.asString(), 800))
+            .isEqualTo(200);
+    }
+
+    private String readAppointmentCap(int scopeId) {
+        JsonNode value = fetchScope(scopeId, 1)
+            .path("preferences")
+            .path("client")
+            .get("maxAppointmentLengthInMinutes");
+        if (value == null || value.isNull() || value.isMissingNode()) {
+            return null;
+        }
+        String text = value.asText().trim();
+        if (text.isEmpty() || "0".equals(text)) {
+            return null;
+        }
+        return text;
+    }
+
+    private Response postAppointmentCap(int scopeId, String minutes) {
+        JsonNode scope = fetchScope(scopeId, 1);
+        ObjectNode body = (ObjectNode) scope.deepCopy();
+        ObjectNode preferences = body.has("preferences") && body.get("preferences").isObject()
+            ? (ObjectNode) body.get("preferences")
+            : body.putObject("preferences");
+        ObjectNode client = preferences.has("client") && preferences.get("client").isObject()
+            ? (ObjectNode) preferences.get("client")
+            : preferences.putObject("client");
+        client.put("maxAppointmentLengthInMinutes", minutes);
+        return given()
+            .baseUri(apiBaseUri())
+            .header("X-AuthKey", getOrLoginXAuthKey())
+            .contentType("application/json")
+            .body(toJson(body))
+        .when()
+            .post("/scope/" + scopeId + "/");
+    }
+
+    private Response postFutureOpeningHour(int scopeId, Integer availabilityId, FutureHour hour, int slotMinutes) {
+        ObjectNode weekday = MAPPER.createObjectNode();
+        for (DayOfWeek day : DayOfWeek.values()) {
+            weekday.put(day.name().toLowerCase(Locale.ROOT), day == hour.day.getDayOfWeek() ? 1 : 0);
+        }
+        long dayEpoch = hour.day.atTime(12, 0).atZone(BerlinTime.ZONE).toEpochSecond();
+        ObjectNode availability = MAPPER.createObjectNode();
+        if (availabilityId != null) {
+            availability.put("id", availabilityId);
+        }
+        availability.put("type", "openinghours");
+        availability.put("kind", "default");
+        availability.put("description", "ATAF-ZMSKVR-1627");
+        availability.put("startDate", dayEpoch);
+        availability.put("endDate", dayEpoch);
+        availability.put("startTime", hour.start);
+        availability.put("endTime", hour.end);
+        availability.put("slotTimeInMinutes", slotMinutes);
+        ObjectNode scope = MAPPER.createObjectNode();
+        scope.put("id", scopeId);
+        availability.set("scope", scope);
+        availability.set("weekday", weekday);
+        ObjectNode workstationCount = MAPPER.createObjectNode();
+        workstationCount.put("intern", 1);
+        workstationCount.put("public", 1);
+        availability.set("workstationCount", workstationCount);
+        return postAvailabilityBody(availability, hour.day);
+    }
+
+    private Response postAvailabilityBody(ObjectNode availability, LocalDate selectedDate) {
+        ObjectNode body = MAPPER.createObjectNode();
+        body.set("availabilityList", MAPPER.createArrayNode().add(availability));
+        body.put("selectedDate", selectedDate.toString());
+        return given()
+            .baseUri(apiBaseUri())
+            .header("X-AuthKey", getOrLoginXAuthKey())
+            .contentType("application/json")
+            .body(toJson(body))
+        .when()
+            .post("/availability/");
+    }
+
+    private static FutureHour nextFullHour() {
+        ZonedDateTime now = ZonedDateTime.now(BerlinTime.ZONE);
+        ZonedDateTime start = now.withMinute(0).withSecond(0).withNano(0).plusHours(1);
+        ZonedDateTime end = start.plusHours(1);
+        DateTimeFormatter clock = DateTimeFormatter.ofPattern("HH:mm:ss");
+        if (!start.toLocalDate().equals(now.toLocalDate()) || !end.toLocalDate().equals(start.toLocalDate())) {
+            return new FutureHour(now.toLocalDate().plusDays(1), "08:00:00", "09:00:00");
+        }
+        return new FutureHour(
+            start.toLocalDate(),
+            start.toLocalTime().format(clock),
+            end.toLocalTime().format(clock));
+    }
+
+    private static int differentSlotLength(int current, int durationMinutes) {
+        int[] candidates = {30, 20, 15, 10, 5, 60, 45, 25};
+        for (int candidate : candidates) {
+            if (candidate != current && durationMinutes > 0 && durationMinutes % candidate == 0) {
+                return candidate;
+            }
+        }
+        return -1;
+    }
+
+    private static int durationMinutes(String start, String end) {
+        LocalTime from = LocalTime.parse(normalizeClock(start));
+        String endClock = normalizeClock(end);
+        int minutes;
+        if ("00:00:00".equals(endClock) || "24:00:00".equals(endClock)) {
+            minutes = (int) Duration.between(from, LocalTime.MIDNIGHT).toMinutes();
+            if (minutes <= 0) {
+                minutes += 24 * 60;
+            }
+        } else {
+            minutes = (int) Duration.between(from, LocalTime.parse(endClock)).toMinutes();
+        }
+        return minutes;
+    }
+
+    private static String normalizeClock(String value) {
+        String trimmed = value == null ? "" : value.trim();
+        if (trimmed.length() == 5) {
+            return trimmed + ":00";
+        }
+        return trimmed;
+    }
+
+    private static String clockText(String value) {
+        String normalized = normalizeClock(value);
+        return normalized.length() >= 5 ? normalized.substring(0, 5) : normalized;
+    }
+
+    private static void stripAvailabilityMeta(ObjectNode availability) {
+        availability.remove("$schema");
+        availability.remove("$ref");
+        JsonNode scope = availability.get("scope");
+        if (scope instanceof ObjectNode scopeNode) {
+            scopeNode.remove("$schema");
+            scopeNode.remove("$ref");
+        }
+    }
+
+    private static final class FutureHour {
+        private final LocalDate day;
+        private final String start;
+        private final String end;
+
+        private FutureHour(LocalDate day, String start, String end) {
+            this.day = day;
+            this.start = start;
+            this.end = end;
+        }
     }
 
     @When("I delete the opening hours created for the current week with the X-AuthKey")
