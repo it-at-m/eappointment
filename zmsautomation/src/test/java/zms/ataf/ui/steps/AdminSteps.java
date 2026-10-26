@@ -49,6 +49,7 @@ import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import zms.ataf.helpers.AccountCheckout;
 import zms.ataf.helpers.BerlinTime;
+import zms.ataf.helpers.PlainTextLengthSample;
 import zms.ataf.helpers.RandomNameHelper;
 import zms.ataf.rest.steps.CitizenApiSteps;
 import zms.ataf.ui.pages.admin.AdminPage;
@@ -667,6 +668,86 @@ public class AdminSteps {
         AUTHORITIES_AND_LOCATIONS_PAGE.clickSaveOpeningHoursExpectingEmptyTimeValidation();
     }
 
+    @When("I open the next opening-hours day that can still be saved.")
+    public void iOpenTheNextOpeningHoursDayThatCanStillBeSaved() {
+        ensureUpcomingOpeningTimes();
+        LocalDate day = upcomingOpeningOnLaterDay ? BerlinTime.today().plusDays(1) : BerlinTime.today();
+        AUTHORITIES_AND_LOCATIONS_PAGE.clickOpeningHoursCalendarDay(day);
+    }
+
+    @Then("exactly one opening-hours form is open.")
+    public void exactlyOneOpeningHoursFormIsOpen() {
+        AUTHORITIES_AND_LOCATIONS_PAGE.assertExactlyOneOpeningHoursFormOpen();
+    }
+
+    @Then("the new opening-hours form is already open.")
+    public void theNewOpeningHoursFormIsAlreadyOpen() {
+        AUTHORITIES_AND_LOCATIONS_PAGE.assertNewOpeningHoursFormAlreadyOpen();
+    }
+
+    @Then("the opening-hours table shows only a hyphen for {string}.")
+    public void theOpeningHoursTableShowsOnlyAHyphenFor(String note) {
+        AUTHORITIES_AND_LOCATIONS_PAGE.assertOpeningHoursTableClockIsHyphen(
+                TestDataHelper.transformTestData(note));
+    }
+
+    @Then("the opening-hours table shows {string} for {string}.")
+    public void theOpeningHoursTableShowsFor(String time, String note) {
+        AUTHORITIES_AND_LOCATIONS_PAGE.assertOpeningHoursTableClockContains(
+                TestDataHelper.transformTestData(note), resolveOpeningTime(time));
+    }
+
+    @Then("the opening-hours table shows the entered times for {string}.")
+    public void theOpeningHoursTableShowsTheEnteredTimesFor(String note) {
+        ensureUpcomingOpeningTimes();
+        AUTHORITIES_AND_LOCATIONS_PAGE.assertOpeningHoursTableClockContains(
+                TestDataHelper.transformTestData(note), upcomingOpeningStart, mismatchedOpeningEnd);
+    }
+
+    @Then("no opening-hours validation is shown.")
+    public void noOpeningHoursValidationIsShown() {
+        AUTHORITIES_AND_LOCATIONS_PAGE.assertNoOpeningHoursValidationShown();
+    }
+
+    @When("I enter an opening-hours end time that does not match the slot length.")
+    public void iEnterAnOpeningHoursEndTimeThatDoesNotMatchTheSlotLength() {
+        ensureUpcomingOpeningTimes();
+        int slot = AUTHORITIES_AND_LOCATIONS_PAGE.getOpeningHoursSlotTimeInMinutes();
+        org.testng.Assert.assertTrue(slot > 1,
+                "Need a slot longer than one minute to build an uneven window, was " + slot);
+        mismatchedOpeningEnd = LocalTime.parse(upcomingOpeningStart).plusMinutes(1).format(OPENING_CLOCK);
+        AUTHORITIES_AND_LOCATIONS_PAGE.enterClosingTime(mismatchedOpeningEnd);
+    }
+
+    @When("I save the opening hours expecting a slot error.")
+    public void iSaveTheOpeningHoursExpectingASlotError() {
+        AUTHORITIES_AND_LOCATIONS_PAGE.clickSaveOpeningHoursExpectingSlotError();
+    }
+
+    @Then("the opening hours keep the note {string} and the start time {string}.")
+    public void theOpeningHoursKeepTheNoteAndTheStartTime(String note, String start) {
+        AUTHORITIES_AND_LOCATIONS_PAGE.assertOpenedOpeningHoursKept(
+                TestDataHelper.transformTestData(note),
+                resolveOpeningTime(start),
+                mismatchedOpeningEnd);
+    }
+
+    @When("I enter an opening-hours end time that matches the slot length.")
+    public void iEnterAnOpeningHoursEndTimeThatMatchesTheSlotLength() {
+        ensureUpcomingOpeningTimes();
+        int slot = AUTHORITIES_AND_LOCATIONS_PAGE.getOpeningHoursSlotTimeInMinutes();
+        LocalTime start = LocalTime.parse(upcomingOpeningStart);
+        LocalTime end = start.plusMinutes(slot);
+        org.testng.Assert.assertTrue(end.isAfter(start),
+                "Slot of " + slot + " minutes does not fit after " + upcomingOpeningStart + " on the same day.");
+        AUTHORITIES_AND_LOCATIONS_PAGE.enterClosingTime(end.format(OPENING_CLOCK));
+    }
+
+    @When("I discard the unsaved opening hour.")
+    public void iDiscardTheUnsavedOpeningHour() {
+        AUTHORITIES_AND_LOCATIONS_PAGE.discardUnsavedOpeningHours();
+    }
+
     @Then("the opening hours time fields should show {string} to {string}.")
     public void theOpeningHoursTimeFieldsShouldShow(String from, String until) {
         AUTHORITIES_AND_LOCATIONS_PAGE.assertOpeningHoursTimeFieldsEqual(
@@ -698,6 +779,7 @@ public class AdminSteps {
     private String upcomingOpeningStart;
     private String upcomingOpeningEnd;
     private boolean upcomingOpeningOnLaterDay;
+    private String mismatchedOpeningEnd;
 
     /** Next full hour in Berlin. After 22:00 that hour no longer fits today, so use 08:00–09:00 on a later day. */
     private void ensureUpcomingOpeningTimes() {
@@ -806,8 +888,11 @@ public class AdminSteps {
     }
 
     @When("I book an appointment customer with service {string} and name {string}.")
-    public void sie_einen_terminkunden_mit_der_dienstleistung_und_dem_namen_buchen(String service, String name) {
-        wenn_sie_im_zeitmanagementsystem_unter_terminvereinbarung_neu_die_dienstleistung_string_auswaehlen(service);
+    public void sie_einen_terminkunden_mit_der_dienstleistung_und_dem_namen_buchen(String services, String name) {
+        for (String service : services.split(",\\s*")) {
+            wenn_sie_im_zeitmanagementsystem_unter_terminvereinbarung_neu_die_dienstleistung_string_auswaehlen(service);
+        }
+        COUNTER_PROCESSING_STATION_PAGE.waitUntilSlotCountMatchesSelectedServices();
         selectCounterAppointmentTimeOrWalkIn();
         wenn_sie_im_zeitmanagementsystem_unter_terminvereinbarung_neu_den_namen_string_eingeben(name);
         wenn_sie_im_zeitmanagementsystem_unter_terminvereinbarung_neu_die_email_adresse_string_eingeben("<mailinator>");
@@ -985,6 +1070,16 @@ public class AdminSteps {
         CUSTOMER_SEARCH_PAGE.search(TestDataHelper.transformTestData(query));
     }
 
+    @Then("the customer search shows log entries for {string}.")
+    public void theCustomerSearchShowsLogEntriesFor(String familyName) {
+        CUSTOMER_SEARCH_PAGE.assertLogEntriesFor(TestDataHelper.transformTestData(familyName));
+    }
+
+    @Then("the customer search log for {string} shows the booked slot count {int}.")
+    public void theCustomerSearchLogShowsTheBookedSlotCount(String familyName, int slots) {
+        CUSTOMER_SEARCH_PAGE.assertLogShowsBookedSlots(TestDataHelper.transformTestData(familyName), slots);
+    }
+
     @Then("customer search is the start page, without a menu, a Kundensuche field, or a location prompt.")
     public void customerSearchIsTheStartPageWithoutAMenu() {
         CUSTOMER_SEARCH_PAGE.assertCustomerSearchIsTheStartPage();
@@ -1063,6 +1158,42 @@ public class AdminSteps {
     public void sie_einen_spontankunden_mit_freitextfeldern_buchen(
             String service, String name, String freeText, String secondFreeText) {
         bookWalkInWithOptionalNote(service, name, null, freeText, secondFreeText);
+    }
+
+    @When("I book a walk-in with a 250-character free text, a newline and a tab")
+    public void iBookAWalkInWithFreeTextAtTheLimit() {
+        String name = "Muster Zmskvr1018";
+        wenn_sie_im_zeitmanagementsystem_unter_terminvereinbarung_neu_die_dienstleistung_string_auswaehlen(
+                "Spontan eAT/eRA");
+        COUNTER_PROCESSING_STATION_PAGE.selectWalkInCustomer();
+        COUNTER_PROCESSING_STATION_PAGE.enterNameInNewAppointmentTextField(name);
+        TestDataHelper.setTestData("customer_name", name);
+        COUNTER_PROCESSING_STATION_PAGE.enterEmailInNewAppointmentTextField("muster.zmskvr1018@mailinator.com");
+        COUNTER_PROCESSING_STATION_PAGE.setNamedTextarea("amendment", PlainTextLengthSample.amendmentWithBreak());
+        COUNTER_PROCESSING_STATION_PAGE.setNamedTextarea(
+                "customTextfield", PlainTextLengthSample.customTextAtLimit());
+        COUNTER_PROCESSING_STATION_PAGE.clickOnAddSpontaneousCustomer();
+    }
+
+    @Then("the edit form keeps the 250-character free text with its newline and tab")
+    public void theEditFormKeepsTheFreeTextSample() {
+        COUNTER_PROCESSING_STATION_PAGE.assertEditFormKeepsFreeTextSample();
+    }
+
+    @When("I save the appointment without changing the free text")
+    public void iSaveTheAppointmentWithoutChangingTheFreeText() {
+        COUNTER_PROCESSING_STATION_PAGE.saveAppointmentForm();
+    }
+
+    @Then("the queue shows the free text and the note as line breaks")
+    public void theQueueShowsTheFreeTextAsLineBreaks() {
+        COUNTER_PROCESSING_STATION_PAGE.assertQueueShowsFreeTextLineBreaks("Muster Zmskvr1018");
+    }
+
+    @Then("customer information shows the free text and the note as line breaks")
+    public void customerInformationShowsTheFreeTextAsLineBreaks() {
+        PROCESSING_STATION_SECTION.assertCalledFreeTextLineBreaks("ATAF Anmerkung", "zweite Zeile");
+        PROCESSING_STATION_SECTION.assertCalledFreeTextLineBreaks("ATAF Hinweis Zeile", "Folge");
     }
 
     @When("I book a walk-in customer with service {string}, name {string}, note {string}, free text {string} and second free text {string}.")
@@ -1416,6 +1547,9 @@ public class AdminSteps {
 
     @When("the clerk calls the customer {string} from the waiting list.")
     public void wenn_der_sachbearbeiter_den_kunden_mit_dem_namen_aus_der_warteliste_aufruft(String name) {
+        if ("true".equals(TestDataHelper.getTestData("appointment_booked_as_walk_in"))) {
+            COUNTER_PROCESSING_STATION_PAGE.showSpontaneousCustomers(true);
+        }
         PROCESSING_STATION_SECTION.callCustomerFromQueueWithName(TestDataHelper.transformTestData(name));
     }
 
@@ -1446,6 +1580,31 @@ public class AdminSteps {
         //COUNTER_PROCESSING_STATION_PAGE.checkQueueElementsVisibleWithoutSMS();
     }
 
+    @Then("the average waiting time labels under information are visible.")
+    public void sind_die_durchschnittlichen_wartezeiten_unter_informationen_sichtbar() {
+        COUNTER_SECTION.assertAverageWaitingTimeLabelsVisible();
+    }
+
+    @Then("the waiting traffic light under information is {string}.")
+    public void ist_die_ampel_unter_informationen(String colorClass) {
+        COUNTER_SECTION.assertWaitingTrafficLightClass(colorClass);
+    }
+
+    @Then("the waiting traffic light under information matches the Wartende count.")
+    public void stimmt_die_ampel_unter_informationen_mit_der_wartenden_zahl() {
+        COUNTER_SECTION.assertWaitingTrafficLightMatchesCount();
+    }
+
+    @Then("the number of waiting customers under information is at least {int}.")
+    public void ist_die_anzahl_der_wartenden_unter_informationen_mindestens(int minimum) {
+        COUNTER_SECTION.assertWaitingClientsAtLeast(minimum);
+    }
+
+    @When("I reload the counter waiting information.")
+    public void ich_lade_die_tresen_warteinformationen_neu() {
+        COUNTER_SECTION.reloadAndReadWaitingClientsOnCounter();
+    }
+
     @Then("the select-location page opens.")
     public void dann_oeffnet_sich_die_standort_auswaehlen_seite() {
         ADMIN_PAGE.checkForLocationPage();
@@ -1460,6 +1619,8 @@ public class AdminSteps {
     @When("the current number of waiting customers under information is remembered.")
     public void die_aktuelle_anzahl_der_wartenden_unter_informationen_gemerkt_wird() {
         rememberedWaitingClients = COUNTER_SECTION.readWaitingClientsOnCounter();
+        TestDataHelper.setTestData(
+                "waiting_clients_under_information", Integer.toString(rememberedWaitingClients));
         ScenarioLogManager.getLogger().info(
                 "Wartende under Informationen before the appointment: {}", rememberedWaitingClients);
     }
@@ -1989,6 +2150,18 @@ public class AdminSteps {
         } else {
             COUNTER_PROCESSING_STATION_PAGE.assertCustomerVisibleInQueueByName(resolved);
         }
+    }
+
+    @Then("the queue row for {string} has no call count.")
+    public void theQueueRowForHasNoCallCount(String familyName) {
+        COUNTER_PROCESSING_STATION_PAGE.assertQueueRowHasNoCallCount(
+                TestDataHelper.transformTestData(familyName));
+    }
+
+    @Then("the queue row for {string} shows one missed call and a five-minute countdown.")
+    public void theQueueRowForShowsOneMissedCallAndAFiveMinuteCountdown(String familyName) {
+        COUNTER_PROCESSING_STATION_PAGE.assertQueueRowShowsMissedCallCountdown(
+                TestDataHelper.transformTestData(familyName));
     }
 
     @Then("the waiting time H:mm:ss for {string} should be between {string} and {string}.")

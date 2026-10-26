@@ -153,6 +153,11 @@
           "description": "patch level, this value increments with bugfixes"
         }
       }
+    },
+    "phpVersion": {
+      "type": "string",
+      "description": "PHP version of the zmsbackend process that built this status response.",
+      "example": "8.4.27"
     }
   }
 }

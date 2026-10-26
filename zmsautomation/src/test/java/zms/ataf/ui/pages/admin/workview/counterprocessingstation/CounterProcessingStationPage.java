@@ -31,6 +31,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 
 import ataf.core.helpers.TestDataHelper;
+import zms.ataf.helpers.PlainTextLengthSample;
 import ataf.core.helpers.TestPropertiesHelper;
 import ataf.core.logging.ScenarioLogManager;
 import ataf.core.properties.DefaultValues;
@@ -256,6 +257,66 @@ public class CounterProcessingStationPage extends AdminPage {
                 });
     }
 
+    public void assertQueueRowHasNoCallCount(String familyName) {
+        String text = waitForQueueNameCellText(familyName);
+        Assert.assertFalse(text.matches("(?s).*\\(\\d+\\).*"),
+                "Expected no call count for " + familyName + " but the row was: " + text);
+        Assert.assertFalse(text.contains("nicht anwesend"),
+                "Expected no no-show lockout for " + familyName + " but the row was: " + text);
+    }
+
+    public void assertQueueRowShowsMissedCallCountdown(String familyName) {
+        String text = waitForQueueNameCellText(familyName);
+        Assert.assertTrue(text.contains("(1)"),
+                "Expected call count (1) for " + familyName + " but the row was: " + text);
+        Matcher countdown = Pattern.compile("kann in\\s+(\\d{2}):(\\d{2})\\s+Minuten wieder aufgerufen werden")
+                .matcher(text);
+        Assert.assertTrue(countdown.find(),
+                "Expected a five-minute countdown for " + familyName + " but the row was: " + text);
+        int remainingSeconds = Integer.parseInt(countdown.group(1)) * 60 + Integer.parseInt(countdown.group(2));
+        Assert.assertTrue(remainingSeconds <= 300 && remainingSeconds >= 180,
+                "Expected the countdown to be near five minutes for " + familyName
+                        + ", was " + countdown.group(1) + ":" + countdown.group(2) + ".");
+    }
+
+    private String waitForQueueNameCellText(String familyName) {
+        CONTEXT.waitForSpinners();
+        showSpontaneousCustomers(true);
+        By nameCell = By.xpath(
+                "//table[@id='table-queued-appointments']"
+                        + "//td[contains(@class,'callnextclient')]"
+                        + "[contains(normalize-space(.)," + xpathLiteral(familyName) + ")]");
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        wait.ignoring(StaleElementReferenceException.class);
+        long[] lastReload = {0L};
+        AtomicReference<String> text = new AtomicReference<>();
+        wait.withMessage("Customer \"" + familyName + "\" did not appear in the waiting list.")
+                .until(driver -> {
+                    for (WebElement element : driver.findElements(nameCell)) {
+                        try {
+                            if (element.isDisplayed()) {
+                                text.set(element.getText().replace('\u00a0', ' ').trim());
+                                return true;
+                            }
+                        } catch (StaleElementReferenceException ignored) {
+                            // row replaced mid-poll
+                        }
+                    }
+                    long now = System.currentTimeMillis();
+                    if (now - lastReload[0] >= 2000L) {
+                        lastReload[0] = now;
+                        try {
+                            reloadQueueLists();
+                        } catch (RuntimeException ignored) {
+                            // loader or missing reload link — next poll retries
+                        }
+                        showSpontaneousCustomers(true);
+                    }
+                    return false;
+                });
+        return text.get();
+    }
+
     /**
      * ZMSKVR-467 / ZMSKVR-545: queue must show the full plain-text snippets (including {@code <})
      * without cutting off at angle brackets or interpreting markup.
@@ -423,17 +484,17 @@ public class CounterProcessingStationPage extends AdminPage {
             "Parked row with Name '" + customerName + "' not visible in " + APPOINTMENT_PARKED_TABLE_LOCATOR_ID + "!");
     }
 
-    public void isCustomerVisibleInParkingTable(String token) {
-        String numOnly = token == null ? "" : token.replaceAll("\\D+", "");
+    public void isCustomerVisibleInParkingTable(String numberOrName) {
+        String numOnly = numberOrName == null ? "" : numberOrName.replaceAll("\\D+", "");
         if (!numOnly.isBlank()) {
             try {
                 isCustomerVisibleInParkingTableByNumber(numOnly);
                 return;
             } catch (org.openqa.selenium.TimeoutException ignore) {
-                ScenarioLogManager.getLogger().warn("No parked row found by Nr. '" + numOnly + "', falling back to Name: " + token);
+                ScenarioLogManager.getLogger().warn("No parked row found by Nr. '" + numOnly + "', falling back to Name: " + numberOrName);
             }
         }
-        isCustomerVisibleInParkingTableByName(token);
+        isCustomerVisibleInParkingTableByName(numberOrName);
     }
 
     public void isCustomerVisibleInMissedTable(String transactionNumber, boolean isSpontaneousCustomer) {
@@ -707,9 +768,32 @@ public class CounterProcessingStationPage extends AdminPage {
             CONTEXT.waitForSpinners();
         }
         ScenarioLogManager.getLogger().info("Deleting queued appointment for {}", familyName);
-        String deleteLink = "//table[@id='table-queued-appointments']//tr["
-                + "td[contains(@class,'callnextclient') and normalize-space(.)='" + familyName + "']]"
+        // new_waiting_number is only the last walk-in in this scenario. Several rows must be
+        // deleted by name. After a no-show the name cell also contains the call count and the
+        // lockout text, so that row is found by the waiting number instead.
+        String nameLink = "//table[@id='table-queued-appointments']//tr["
+                + "td[contains(@class,'callnextclient') and normalize-space(.)="
+                + xpathLiteral(familyName) + "]]"
                 + "//a[contains(@class,'process-delete')]";
+        String deleteLink = nameLink;
+        String waitingNumber = TestDataHelper.getTestData("new_waiting_number");
+        boolean walkIn = "true".equals(TestDataHelper.getTestData("appointment_booked_as_walk_in"));
+        try {
+            new WebDriverWait(DRIVER, Duration.ofSeconds(5))
+                    .until(ExpectedConditions.presenceOfElementLocated(By.xpath(nameLink)));
+        } catch (TimeoutException nameMissing) {
+            if (walkIn && waitingNumber != null && !waitingNumber.isBlank()) {
+                String shown = waitingNumber.trim();
+                String numOnly = shown.replaceAll("\\D+", "");
+                deleteLink = "//table[@id='table-queued-appointments']/tbody/tr["
+                        + ".//td[normalize-space()=" + xpathLiteral(shown)
+                        + " or normalize-space()=" + xpathLiteral(numOnly) + "]]"
+                        + "//a[contains(@class,'process-delete')]";
+                ScenarioLogManager.getLogger().info(
+                        "Name cell for {} is not an exact match; deleting waiting number {}",
+                        familyName, shown);
+            }
+        }
         clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, deleteLink, LocatorType.XPATH, false, CONTEXT);
         WebElement messageTitleElement = findElementByLocatorType("section.board.dialog h2.board__heading", LocatorType.CSSSELECTOR, false);
         Assert.assertTrue(
@@ -1071,6 +1155,45 @@ public class CounterProcessingStationPage extends AdminPage {
                 isWebElementVisible(DEFAULT_EXPLICIT_WAIT_TIME, "//ul[@aria-label='Dienstleistungen Abwahlliste']//span[contains(text(),'" + service + "')]",
                         LocatorType.XPATH, false), "Selecting service \"" + service + "\" in new appointment multi list has failed...");
         TestDataHelper.setTestData("new_appointment_service", service);
+    }
+
+    /**
+     * The duration select follows the selected services. Wait until it shows their slot sum
+     * before a time is picked, so a later service is not booked against the previous duration.
+     */
+    public void waitUntilSlotCountMatchesSelectedServices() {
+        By boxes = By.cssSelector("#deselect-requests li input[data-slots]");
+        By slotCount = By.id("appointmentForm_slotCount");
+        new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .ignoring(StaleElementReferenceException.class)
+                .withMessage("Termindauer did not follow the selected services.")
+                .until(driver -> {
+                    int sum = 0;
+                    int visible = 0;
+                    for (WebElement box : driver.findElements(boxes)) {
+                        WebElement row = box.findElement(By.xpath("./ancestor::li[1]"));
+                        if (!row.isDisplayed()) {
+                            continue;
+                        }
+                        String slots = box.getAttribute("data-slots");
+                        if (slots == null || !slots.matches("\\d+")) {
+                            return false;
+                        }
+                        visible++;
+                        sum += Integer.parseInt(slots);
+                    }
+                    if (visible == 0) {
+                        return false;
+                    }
+                    if (sum < 1) {
+                        sum = 1;
+                    }
+                    List<WebElement> duration = driver.findElements(slotCount);
+                    if (duration.isEmpty()) {
+                        return true;
+                    }
+                    return Integer.toString(sum).equals(duration.get(0).getAttribute("value"));
+                });
     }
 
     public void increaseSelectedServiceCount(String service, int times) {
@@ -1928,7 +2051,13 @@ public class CounterProcessingStationPage extends AdminPage {
         Assert.assertNotNull(serviceText, "Service \"" + fragment + "\" is missing on the edit form.");
         Assert.assertTrue(serviceText.contains("(" + minutes + " min)"),
                 "Service duration changed. expected (" + minutes + " min). actual=" + serviceText);
-        int doubled = Integer.parseInt(minutes) * 2;
+        int doubled;
+        try {
+            doubled = Integer.parseInt(minutes) * 2;
+        } catch (NumberFormatException e) {
+            Assert.fail("Noted service minutes are not a number: " + minutes, e);
+            return;
+        }
         Assert.assertFalse(serviceText.contains("(" + doubled + " min)"),
                 "Service duration was doubled. actual=" + serviceText);
         WebElement slotCount = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("appointmentForm_slotCount")));
@@ -1938,6 +2067,97 @@ public class CounterProcessingStationPage extends AdminPage {
         String other = TestDataHelper.getTestData("noted_other_service_text");
         boolean otherUnchanged = durationLabels().stream().anyMatch(other::equals);
         Assert.assertTrue(otherUnchanged, "Another service duration changed. expected \"" + other + "\".");
+    }
+
+    /**
+     * ZMSKVR-1018 / ZMSKVR-1388: set a textarea without sendKeys, so a tab stays in the value
+     * instead of moving focus. Dispatches input so the maxlength guard sees the real length.
+     */
+    public void setNamedTextarea(String fieldName, String value) {
+        CONTEXT.set();
+        WebElement textarea = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(ExpectedConditions.visibilityOfElementLocated(By.name(fieldName)));
+        ((JavascriptExecutor) DRIVER).executeScript(
+                "arguments[0].focus(); arguments[0].value = arguments[1];"
+                        + "arguments[0].dispatchEvent(new Event('input', {bubbles:true}));"
+                        + "arguments[0].dispatchEvent(new Event('change', {bubbles:true}));",
+                textarea,
+                value);
+        Assert.assertEquals(
+                textarea.getAttribute("value"),
+                value,
+                "textarea " + fieldName + " did not keep the newline and tab");
+    }
+
+    public void assertEditFormKeepsFreeTextSample() {
+        CONTEXT.set();
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        WebElement custom = wait.until(ExpectedConditions.visibilityOfElementLocated(By.name("customTextfield")));
+        Assert.assertEquals(
+                custom.getAttribute("value"),
+                PlainTextLengthSample.customTextAtLimit(),
+                "Edit form must reload the 250-character Freitext with its newline and tab, not break tags");
+        WebElement amendment = wait.until(ExpectedConditions.visibilityOfElementLocated(By.name("amendment")));
+        Assert.assertEquals(
+                amendment.getAttribute("value"),
+                PlainTextLengthSample.amendmentWithBreak(),
+                "Edit form must reload the Anmerkung newline and tab");
+    }
+
+    public void saveAppointmentForm() {
+        CONTEXT.set();
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        clickOnWebElement(
+                DEFAULT_EXPLICIT_WAIT_TIME,
+                "//button[contains(@class,'process-save')]",
+                LocatorType.XPATH,
+                false,
+                CONTEXT);
+        WebElement dialog = wait.until(ExpectedConditions.visibilityOfElementLocated(
+                By.xpath("//*[contains(@class,'dialog')][contains(.,'erfolgreich aktualisiert')]")));
+        dialog.findElement(By.cssSelector("button.button-ok")).click();
+        wait.until(ExpectedConditions.invisibilityOf(dialog));
+    }
+
+    public void assertQueueShowsFreeTextLineBreaks(String familyName) {
+        WebElement row = queueRowForScenarioWalkIn(familyName);
+        assertFreeTextCellBreaks(row, ".queue-table-free-text", "ATAF Anmerkung", "zweite Zeile");
+        assertFreeTextCellBreaks(row, ".queue-table-free-text", "ATAF Hinweis Zeile", "Folge");
+    }
+
+    private void assertFreeTextCellBreaks(WebElement root, String css, String line1, String line2) {
+        WebElement match = null;
+        for (WebElement cell : root.findElements(By.cssSelector(css))) {
+            String text = cell.getText();
+            if (text.contains(line1) && text.contains(line2)) {
+                match = cell;
+                break;
+            }
+        }
+        Assert.assertNotNull(
+                match,
+                "Expected a free-text cell containing \"" + line1 + "\" and \"" + line2 + "\"");
+        String text = match.getText();
+        Assert.assertFalse(
+                text.contains("<br"),
+                "Free-text cell must show a line break, not the characters <br. text=" + text);
+        assertBreakSitsBetween(match.getAttribute("innerHTML"), line1, line2);
+    }
+
+    private static void assertBreakSitsBetween(String html, String line1, String line2) {
+        Assert.assertNotNull(html, "free-text innerHTML");
+        int start = html.indexOf(line1);
+        int end = start < 0 ? -1 : html.indexOf(line2, start + line1.length());
+        Assert.assertTrue(
+                start >= 0 && end > start,
+                "Free-text html should contain \"" + line1 + "\" before \"" + line2 + "\". html=" + html);
+        String between = html.substring(start + line1.length(), end);
+        Assert.assertTrue(
+                between.contains("<br"),
+                "The rendered break must sit between \"" + line1 + "\" and \"" + line2 + "\". between=" + between);
+        Assert.assertFalse(
+                between.toLowerCase(Locale.ROOT).contains("&lt;br"),
+                "The break between the lines must not be escaped text. between=" + between);
     }
 
     public void saveWalkInAppointmentWithNote(String note) {

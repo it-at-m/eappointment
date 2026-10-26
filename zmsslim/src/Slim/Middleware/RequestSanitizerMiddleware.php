@@ -114,7 +114,9 @@ class RequestSanitizerMiddleware implements MiddlewareInterface
             throw new \RuntimeException('String exceeds maximum length');
         }
 
-        $value = preg_replace('/[\x00-\x1F\x7F]/u', '', $value) ?? '';
+        // Tab, LF and CR stay. Freitext and Anmerkung count them and render them as line breaks.
+        // Other controls (null, vertical tab, form feed, DEL) are still removed.
+        $value = preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/u', '', $value) ?? '';
         $value = trim($value);
         if (!mb_check_encoding($value, 'UTF-8')) {
             $this->logger->logWarning('Invalid string encoding detected.', ['value' => $value]);
