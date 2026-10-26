@@ -288,15 +288,15 @@
 
                     {{ formgroup(
                         {
-                            "label": "Anzahl an maximal buchbaren Slots pro Termin:"
+                            "label": "Maximale Terminlänge in Minuten:"
                         },
                         [{
                             "type":"input",
                             "parameter": {
-                                "name": "preferences[client][slotsPerAppointment]",
-                                "value": scope.preferences.client.slotsPerAppointment,
-                                "maxlength": 2,
-                                "max": 99,
+                                "name": "preferences[client][maxAppointmentLengthInMinutes]",
+                                "value": scope.preferences.client.maxAppointmentLengthInMinutes,
+                                "maxlength": 4,
+                                "max": 9999,
                                 "integer": true,
                                 "integerNullable": true
                             }
