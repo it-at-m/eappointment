@@ -1,6 +1,6 @@
 -- ATAF Flyway path: db/migration-after-hourly → flyway_migration_after_hourly
 --
--- V001 opens Schalter C (347 / OeffnungszeitID 136550) for CURDATE()…+14 days with one
+-- V001 opens Schalter C (347 / OeffnungszeitID 136570) for CURDATE()…+14 days with one
 -- internet seat. That band overlaps the V55 scope-switch day (136513 / 136514) which must
 -- stay A/B-only so "second same-timestamp reserve switches Schalter" stays A↔B.
 -- Split C around that day; keep 25-minute coverage on every other day for ZMSKVR-933.
@@ -47,7 +47,7 @@ SET @read_sql := IF(
   'SELECT 1',
   CONCAT(
     'SET @c_start := (SELECT `', @start_col,
-    '` FROM `oeffnungszeit` WHERE `OeffnungszeitID` = 136550 LIMIT 1)'
+    '` FROM `oeffnungszeit` WHERE `OeffnungszeitID` = 136570 LIMIT 1)'
   )
 );
 PREPARE ataf_mah_v002_cstart FROM @read_sql;
@@ -59,7 +59,7 @@ SET @read_sql := IF(
   'SELECT 1',
   CONCAT(
     'SET @c_end := (SELECT `', @end_col,
-    '` FROM `oeffnungszeit` WHERE `OeffnungszeitID` = 136550 LIMIT 1)'
+    '` FROM `oeffnungszeit` WHERE `OeffnungszeitID` = 136570 LIMIT 1)'
   )
 );
 PREPARE ataf_mah_v002_cend FROM @read_sql;
@@ -102,21 +102,21 @@ SET @trim_sql := IF(
       CONCAT(
         'UPDATE `oeffnungszeit` SET `Endedatum` = ''', @before_end,
         ''', `end_date` = ''', @before_end,
-        ''' WHERE `OeffnungszeitID` = 136550'
+        ''' WHERE `OeffnungszeitID` = 136570'
       ),
       IF(
         @has_en > 0,
         CONCAT(
           'UPDATE `oeffnungszeit` SET `end_date` = ''', @before_end,
-          ''' WHERE `OeffnungszeitID` = 136550'
+          ''' WHERE `OeffnungszeitID` = 136570'
         ),
         CONCAT(
           'UPDATE `oeffnungszeit` SET `Endedatum` = ''', @before_end,
-          ''' WHERE `OeffnungszeitID` = 136550'
+          ''' WHERE `OeffnungszeitID` = 136570'
         )
       )
     ),
-    'DELETE FROM `oeffnungszeit` WHERE `OeffnungszeitID` = 136550'
+    'DELETE FROM `oeffnungszeit` WHERE `OeffnungszeitID` = 136570'
   )
 );
 PREPARE ataf_mah_v002_trim FROM @trim_sql;
