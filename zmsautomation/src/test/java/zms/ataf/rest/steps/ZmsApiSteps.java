@@ -3364,7 +3364,7 @@ public class ZmsApiSteps {
     }
 
     /**
-     * ZMSKVR-1627: scope 29 is unused by other scenarios. 90 minutes stays 90 after the slot length changes.
+     * ZMSKVR-1627: scope 96 is unused by other scenarios. 90 minutes stays 90 after the slot length changes.
      */
     @When("I set the appointment cap for scope {int} to {int} minutes with the X-AuthKey")
     public void iSetTheAppointmentCapForScopeToMinutes(int scopeId, int minutes) {
