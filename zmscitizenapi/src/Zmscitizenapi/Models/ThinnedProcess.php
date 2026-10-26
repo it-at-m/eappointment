@@ -30,6 +30,8 @@ class ThinnedProcess extends Entity implements JsonSerializable
     public ?string $status;
     public ?string $captchaToken;
     public ?int $slotCount;
+    /** Booked series slot length. Used for the minute cap. Omitted from the API payload. */
+    public ?int $slotTimeInMinutes = null;
     public ?string $displayNumber;
     public ?string $icsContent;
 

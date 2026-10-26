@@ -420,7 +420,7 @@ class MapperService
         $contactName = $scope['contact']['name'] ?? null;
         $providerId = $scope['provider']['id'] ?? 0;
 
-        return new ThinnedProcess(
+        $thinnedProcess = new ThinnedProcess(
             processId: (int) $myProcess->id,
             timestamp: (isset($myProcess->appointments[0]) && isset($myProcess->appointments[0]->date)) ? strval($myProcess->appointments[0]->date) : null,
             authKey: $myProcess->authKey,
@@ -442,6 +442,54 @@ class MapperService
             displayNumber: ($myProcess->getDisplayNumber() ?: null),
             icsContent: isset($icsContent) ? $icsContent : null
         );
+        $thinnedProcess->slotTimeInMinutes = self::slotTimeInMinutesFromProcess($myProcess, $scope);
+
+        return $thinnedProcess;
+    }
+
+    /**
+     * Slot length the booked slotCount was counted in. The office provider is the fallback.
+     */
+    private static function slotTimeInMinutesFromProcess(Process $process, Scope $scope): ?int
+    {
+        $minutes = self::positiveSlotTime(self::readAppointmentSlotTime($process));
+        if ($minutes !== null) {
+            return $minutes;
+        }
+
+        $providerData = $scope['provider']['data'] ?? null;
+        if (!is_array($providerData)) {
+            return null;
+        }
+
+        return self::positiveSlotTime($providerData['slotTimeInMinutes'] ?? null);
+    }
+
+    private static function readAppointmentSlotTime(Process $process): mixed
+    {
+        $appointment = $process->appointments[0] ?? null;
+        if (!is_object($appointment) && !is_array($appointment)) {
+            return null;
+        }
+        $availability = $appointment['availability'] ?? null;
+        if (!is_array($availability) && !$availability instanceof \ArrayAccess) {
+            return null;
+        }
+        if (!isset($availability['slotTimeInMinutes'])) {
+            return null;
+        }
+
+        return $availability['slotTimeInMinutes'];
+    }
+
+    private static function positiveSlotTime(mixed $minutes): ?int
+    {
+        if ($minutes === null || $minutes === '') {
+            return null;
+        }
+        $parsed = (int) $minutes;
+
+        return $parsed > 0 ? $parsed : null;
     }
 
     public static function thinnedProcessToProcess(ThinnedProcess $thinnedProcess): Process
