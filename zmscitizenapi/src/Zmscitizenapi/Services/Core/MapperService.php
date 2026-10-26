@@ -468,7 +468,7 @@ class MapperService
     private static function readAppointmentSlotTime(Process $process): mixed
     {
         $appointment = $process->appointments[0] ?? null;
-        if (!is_object($appointment) && !is_array($appointment)) {
+        if (!is_array($appointment) && !$appointment instanceof \ArrayAccess) {
             return null;
         }
         $availability = $appointment['availability'] ?? null;
