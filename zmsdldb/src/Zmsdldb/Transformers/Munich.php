@@ -2,7 +2,6 @@
 
 namespace BO\Zmsdldb\Transformers;
 
-use BO\Zmsentities\Helper\FiveMinuteGrid;
 use Httpful\Request;
 use Psr\Log\LoggerInterface;
 
@@ -630,18 +629,14 @@ class Munich
 
     private function calculateSlotTimes(array &$mappedLocation): void
     {
-        $durations = [];
         foreach ($mappedLocation['services'] as $key => $service) {
             $duration = (int) ($service['duration'] ?? 0);
             if ($duration > 0) {
-                $durations[] = $duration;
-                $mappedLocation['services'][$key]['appointment']['slots'] =
-                    (string) FiveMinuteGrid::slotsForDuration($duration);
+                $mappedLocation['services'][$key]['appointment']['slots'] = (string) intdiv($duration, 5);
             }
         }
 
-        $mappedLocation['slotTimeInMinutes'] = FiveMinuteGrid::MINUTES;
-        $mappedLocation['appointmentIntervalInMinutes'] = FiveMinuteGrid::appointmentInterval($durations);
+        $mappedLocation['slotTimeInMinutes'] = 5;
         $mappedLocation['forceSlotTimeUpdate'] = true;
     }
 

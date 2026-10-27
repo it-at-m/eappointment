@@ -26,7 +26,7 @@ class Day extends \BO\Zmsbackend\Base
                     'year' => $dateTime->format('Y'),
                     'month' => $dateTime->format('m'),
                     'slotsRequired' => $slotsRequired > 1 ? round($slotsRequired, 0) : 1,
-                    'appointmentInterval' => $intervals[$scopeId] ?? \BO\Zmsentities\Helper\FiveMinuteGrid::MINUTES,
+                    'appointmentInterval' => $intervals[$scopeId] ?? 5,
                 ]);
             }
         }
@@ -45,7 +45,7 @@ class Day extends \BO\Zmsbackend\Base
         $scopeIds = array_values(array_unique(array_filter($scopeIds)));
         $intervals = [];
         foreach ($scopeIds as $scopeId) {
-            $intervals[$scopeId] = \BO\Zmsentities\Helper\FiveMinuteGrid::MINUTES;
+            $intervals[$scopeId] = 5;
         }
         if ($scopeIds === []) {
             return $intervals;
@@ -75,10 +75,41 @@ class Day extends \BO\Zmsbackend\Base
             $durations[(int) $row['scopeId']][] = $slots * $minutes;
         }
         foreach ($durations as $scopeId => $scopeDurations) {
-            $intervals[$scopeId] = \BO\Zmsentities\Helper\FiveMinuteGrid::appointmentInterval($scopeDurations);
+            $intervals[$scopeId] = $this->appointmentInterval($scopeDurations);
         }
 
         return $intervals;
+    }
+
+    /**
+     * @param list<int> $durationMinutes
+     */
+    private function appointmentInterval(array $durationMinutes): int
+    {
+        $interval = 0;
+        foreach ($durationMinutes as $duration) {
+            $duration = (int) $duration;
+            if ($duration < 1) {
+                continue;
+            }
+            $interval = $interval === 0 ? $duration : $this->greatestCommonDivisor($interval, $duration);
+        }
+        if ($interval >= 5 && $interval % 5 === 0) {
+            return $interval;
+        }
+
+        return 5;
+    }
+
+    private function greatestCommonDivisor(int $a, int $b): int
+    {
+        while ($b !== 0) {
+            $remainder = $a % $b;
+            $a = $b;
+            $b = $remainder;
+        }
+
+        return abs($a);
     }
 
     /**

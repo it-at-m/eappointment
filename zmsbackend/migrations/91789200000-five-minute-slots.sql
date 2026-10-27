@@ -71,44 +71,30 @@ WHERE `b`.`hatFolgetermine` IS NULL OR `b`.`hatFolgetermine` <> `t`.`steps` - 1;
 
 UPDATE `preferences` `pref`
 INNER JOIN `standort` `s` ON `s`.`StandortID` = `pref`.`id`
-INNER JOIN `tmp_scope_minutes` `m` ON `m`.`scope_id` = `s`.`StandortID`
-SET `pref`.`value` = CAST(((`s`.`slots_per_appointment` * `m`.`minutes` + 4) DIV 5) AS CHAR)
+INNER JOIN `provider` `p` ON `p`.`id` = `s`.`InfoDienstleisterID` AND `p`.`source` = `s`.`source`
+SET `pref`.`value` = CAST(
+    CAST(`pref`.`value` AS UNSIGNED) * (
+        CAST(JSON_UNQUOTE(JSON_EXTRACT(`p`.`data`, '$.slotTimeInMinutes')) AS UNSIGNED) DIV 5
+    ) AS CHAR
+)
 WHERE `pref`.`entity` = 'scope'
   AND `pref`.`groupName` = 'client'
   AND `pref`.`name` = 'slotsPerAppointment'
-  AND `m`.`kinds` = 1
-  AND `m`.`minutes` > 5
-  AND MOD(`m`.`minutes`, 5) = 0
-  AND `s`.`slots_per_appointment` > 0;
-
-INSERT INTO `preferences` (`entity`, `id`, `groupName`, `name`, `value`)
-SELECT 'scope',
-       `s`.`StandortID`,
-       'client',
-       'slotsPerAppointment',
-       CAST(((`s`.`slots_per_appointment` * `m`.`minutes` + 4) DIV 5) AS CHAR)
-FROM `standort` `s`
-INNER JOIN `tmp_scope_minutes` `m` ON `m`.`scope_id` = `s`.`StandortID`
-WHERE `m`.`kinds` = 1
-  AND `m`.`minutes` > 5
-  AND MOD(`m`.`minutes`, 5) = 0
-  AND `s`.`slots_per_appointment` > 0
-  AND NOT EXISTS (
-      SELECT 1
-      FROM `preferences` `pref`
-      WHERE `pref`.`entity` = 'scope'
-        AND `pref`.`id` = `s`.`StandortID`
-        AND `pref`.`groupName` = 'client'
-        AND `pref`.`name` = 'slotsPerAppointment'
-  );
+  AND `pref`.`value` REGEXP '^[0-9]+$'
+  AND CAST(`pref`.`value` AS UNSIGNED) > 0
+  AND JSON_VALID(`p`.`data`)
+  AND CAST(JSON_UNQUOTE(JSON_EXTRACT(`p`.`data`, '$.slotTimeInMinutes')) AS UNSIGNED) > 5
+  AND MOD(CAST(JSON_UNQUOTE(JSON_EXTRACT(`p`.`data`, '$.slotTimeInMinutes')) AS UNSIGNED), 5) = 0;
 
 UPDATE `standort` `s`
-INNER JOIN `tmp_scope_minutes` `m` ON `m`.`scope_id` = `s`.`StandortID`
-SET `s`.`slots_per_appointment` = (`s`.`slots_per_appointment` * `m`.`minutes` + 4) DIV 5
-WHERE `m`.`kinds` = 1
-  AND `m`.`minutes` > 5
-  AND MOD(`m`.`minutes`, 5) = 0
-  AND `s`.`slots_per_appointment` > 0;
+INNER JOIN `provider` `p` ON `p`.`id` = `s`.`InfoDienstleisterID` AND `p`.`source` = `s`.`source`
+SET `s`.`slots_per_appointment` = `s`.`slots_per_appointment` * (
+    CAST(JSON_UNQUOTE(JSON_EXTRACT(`p`.`data`, '$.slotTimeInMinutes')) AS UNSIGNED) DIV 5
+)
+WHERE `s`.`slots_per_appointment` > 0
+  AND JSON_VALID(`p`.`data`)
+  AND CAST(JSON_UNQUOTE(JSON_EXTRACT(`p`.`data`, '$.slotTimeInMinutes')) AS UNSIGNED) > 5
+  AND MOD(CAST(JSON_UNQUOTE(JSON_EXTRACT(`p`.`data`, '$.slotTimeInMinutes')) AS UNSIGNED), 5) = 0;
 
 UPDATE `request_provider` `rp`
 INNER JOIN `provider` `p` ON `p`.`id` = `rp`.`provider__id` AND `p`.`source` = `rp`.`source`
