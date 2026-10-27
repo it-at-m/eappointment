@@ -729,12 +729,16 @@ public void saveLocationChanges() {
         // A holiday in the range asks to continue, then the save dialog asks again.
         // Confirm each dialog until the success message is on the page.
         By confirmButton = By.xpath("//div[contains(@class,'lightbox__content')]//a[@data-action-ok]");
-        By success = By.xpath("//div[contains(@class,'message--success')][contains(., 'Öffnungszeiten gespeichert')]");
+        // A same-day appointment window (V22) overlaps the new Spontankunden row.
+        // The save still sticks; the bar is message--warning instead of message--success.
+        By saved = By.xpath(
+                "//div[contains(@class,'message--success') or contains(@class,'message--warning')]"
+                        + "[contains(., 'Öffnungszeiten gespeichert')]");
         WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
         wait.ignoring(StaleElementReferenceException.class);
         try {
             wait.until(driver -> {
-                if (driver.findElements(success).stream().anyMatch(this::isShown)) {
+                if (driver.findElements(saved).stream().anyMatch(this::isShown)) {
                     return true;
                 }
                 for (WebElement ok : driver.findElements(confirmButton)) {
@@ -750,7 +754,8 @@ public void saveLocationChanges() {
         }
         String message = getWebElementText(
             DEFAULT_EXPLICIT_WAIT_TIME,
-            "//div[contains(@class,'message--success')]",
+            "//div[contains(@class,'message--success') or contains(@class,'message--warning')]"
+                    + "[contains(., 'Öffnungszeiten gespeichert')]",
             LocatorType.XPATH,
             CONTEXT
         ).replaceAll("\\n", "").trim();
@@ -759,8 +764,8 @@ public void saveLocationChanges() {
                 .format(DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.GERMANY));
 
         Assert.assertTrue(
-                message.contains("Öffnungszeiten gespeichert, " + today),
-                "Success message does not contain today's date!"
+                message.contains(today),
+                "Success message does not contain today's date! " + message
         );
     }
 
