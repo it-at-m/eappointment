@@ -1,12 +1,16 @@
 -- One pass onto a 5-minute slot. Opening hours, service slot counts, the
 -- appointment cap, and provider slot length move together. A booked appointment
--- keeps its process number. hatFolgetermine is scaled so the length in minutes
--- stays the same on the 5-minute slot. No Folgetermin rows are inserted.
--- The slot grid is not rebuilt here. calculateSlots does that, one location
--- at a time, after this migration.
+-- keeps its process number. Each extra 5-minute step gets a Folgetermin row
+-- with its own process number. hatFolgetermine on the parent is the number of
+-- those steps. The slot grid is not rebuilt here. calculateSlots does that,
+-- one location at a time, after this migration.
 
 DROP TEMPORARY TABLE IF EXISTS `tmp_scope_minutes`;
 DROP TEMPORARY TABLE IF EXISTS `tmp_parents`;
+DROP TEMPORARY TABLE IF EXISTS `tmp_step`;
+DROP TEMPORARY TABLE IF EXISTS `tmp_followups`;
+DROP TEMPORARY TABLE IF EXISTS `tmp_free_ids`;
+DROP PROCEDURE IF EXISTS `zms_five_minute_require_process_ids`;
 
 CREATE TEMPORARY TABLE `tmp_scope_minutes` (
     `scope_id` INT UNSIGNED NOT NULL PRIMARY KEY,
@@ -62,12 +66,116 @@ WHERE `src`.`minutes` > 0
   AND TIME_TO_SEC(`src`.`Uhrzeit`)
       + ((((IFNULL(`src`.`hatFolgetermine`, 0) + 1) * `src`.`minutes`) DIV 5 - 1) * 300) < 86400;
 
+CREATE TEMPORARY TABLE `tmp_step` (
+    `n` INT NOT NULL PRIMARY KEY
+);
+
+INSERT INTO `tmp_step` (`n`)
+WITH RECURSIVE `seq` AS (
+    SELECT 1 AS `n`
+    UNION ALL
+    SELECT `n` + 1 FROM `seq` WHERE `n` < 287
+)
+SELECT `n` FROM `seq`;
+
+CREATE TEMPORARY TABLE `tmp_followups` (
+    `seq` INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `parent_id` INT UNSIGNED NOT NULL,
+    `uhrzeit` TIME NOT NULL
+);
+
+INSERT INTO `tmp_followups` (`parent_id`, `uhrzeit`)
+SELECT `t`.`parent_id`,
+       SEC_TO_TIME(TIME_TO_SEC(`p`.`Uhrzeit`) + (`nums`.`n` * 300))
+FROM `tmp_parents` `t`
+INNER JOIN `buerger` `p` ON `p`.`BuergerID` = `t`.`parent_id`
+INNER JOIN `tmp_step` `nums` ON `nums`.`n` < `t`.`steps`
+LEFT JOIN `buerger` `child`
+    ON `child`.`istFolgeterminvon` = `t`.`parent_id`
+   AND `child`.`Datum` = `p`.`Datum`
+   AND `child`.`StandortID` = `p`.`StandortID`
+   AND `child`.`Uhrzeit` = SEC_TO_TIME(TIME_TO_SEC(`p`.`Uhrzeit`) + (`nums`.`n` * 300))
+   AND (`child`.`status` IS NULL OR `child`.`status` <> 'deleted')
+WHERE `t`.`steps` > 1
+  AND `child`.`BuergerID` IS NULL
+ORDER BY `t`.`parent_id`, `nums`.`n`;
+
+CREATE TEMPORARY TABLE `tmp_free_ids` (
+    `seq` INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `process_id` INT UNSIGNED NOT NULL
+);
+
+SET @needed = (SELECT COUNT(*) FROM `tmp_followups`);
+
+SET @free_id_sql = CONCAT(
+    'INSERT INTO `tmp_free_ids` (`process_id`) ',
+    'SELECT `ps`.`processId` FROM `process_sequence` `ps` ',
+    'LEFT JOIN `buerger` `b` ON `b`.`BuergerID` = `ps`.`processId` ',
+    'WHERE `b`.`BuergerID` IS NULL ',
+    'ORDER BY `ps`.`processId` LIMIT ',
+    @needed
+);
+
+PREPARE `zms_followup_ids` FROM @free_id_sql;
+EXECUTE `zms_followup_ids`;
+DEALLOCATE PREPARE `zms_followup_ids`;
+
+DELIMITER $$
+
+CREATE PROCEDURE `zms_five_minute_require_process_ids`(IN `needed` INT, IN `available` INT)
+BEGIN
+    IF `available` < `needed` THEN
+        SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = 'Not enough free process ids for Folgetermine';
+    END IF;
+END$$
+
+DELIMITER ;
+
+SET @available = (SELECT COUNT(*) FROM `tmp_free_ids`);
+CALL `zms_five_minute_require_process_ids`(@needed, @available);
+DROP PROCEDURE `zms_five_minute_require_process_ids`;
+
 START TRANSACTION;
 
 UPDATE `buerger` `b`
 INNER JOIN `tmp_parents` `t` ON `t`.`parent_id` = `b`.`BuergerID`
 SET `b`.`hatFolgetermine` = `t`.`steps` - 1
 WHERE `b`.`hatFolgetermine` IS NULL OR `b`.`hatFolgetermine` <> `t`.`steps` - 1;
+
+INSERT INTO `buerger` (
+    `BuergerID`,
+    `StandortID`,
+    `Datum`,
+    `Uhrzeit`,
+    `Name`,
+    `IPAdresse`,
+    `IPTimeStamp`,
+    `hatFolgetermine`,
+    `istFolgeterminvon`,
+    `absagecode`,
+    `vorlaeufigeBuchung`,
+    `bestaetigt`,
+    `apiClientID`,
+    `status`
+)
+SELECT `ids`.`process_id`,
+       `p`.`StandortID`,
+       `p`.`Datum`,
+       `f`.`uhrzeit`,
+       '(Folgetermin)',
+       `p`.`IPAdresse`,
+       UNIX_TIMESTAMP(),
+       0,
+       `f`.`parent_id`,
+       LOWER(HEX(RANDOM_BYTES(32))),
+       `p`.`vorlaeufigeBuchung`,
+       `p`.`bestaetigt`,
+       `p`.`apiClientID`,
+       `p`.`status`
+FROM `tmp_followups` `f`
+INNER JOIN `tmp_free_ids` `ids` ON `ids`.`seq` = `f`.`seq`
+INNER JOIN `buerger` `p` ON `p`.`BuergerID` = `f`.`parent_id`;
 
 UPDATE `preferences` `pref`
 INNER JOIN `standort` `s` ON `s`.`StandortID` = `pref`.`id`
