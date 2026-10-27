@@ -29,16 +29,20 @@ class Day extends \BO\Zmsbackend\Query\Base
     ';
 
     /**
-     * Keep a free start only when it lands on the location's appointment step,
-     * measured from the opening start. Stored slots stay every 5 minutes.
+     * On a 5-minute grid, keep a free start only when it lands on the location's
+     * appointment step, measured from the opening start. Any other stored slot
+     * length already is the step, so those starts stay.
      */
     const string QUERY_ON_APPOINTMENT_INTERVAL = '
-        AND MOD(
-            TIME_TO_SEC(s.`time`) - TIME_TO_SEC(
-                IF(a.`appointment_start_time`, a.`appointment_start_time`, a.`start_time`)
-            ),
-            GREATEST(c.`appointmentInterval`, 1) * 60
-        ) = 0
+        AND (
+            IFNULL(s.`slotTimeInMinutes`, 0) <> 5
+            OR MOD(
+                TIME_TO_SEC(s.`time`) - TIME_TO_SEC(
+                    IF(a.`appointment_start_time`, a.`appointment_start_time`, a.`start_time`)
+                ),
+                GREATEST(c.`appointmentInterval`, 1) * 60
+            ) = 0
+        )
     ';
 
     const string QUERY_DROP_TEMPORARY_SCOPELIST = 'DROP TEMPORARY TABLE IF EXISTS calendarscope;';
