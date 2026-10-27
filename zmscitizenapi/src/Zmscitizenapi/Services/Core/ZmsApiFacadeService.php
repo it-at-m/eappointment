@@ -59,6 +59,7 @@ class ZmsApiFacadeService
             $warmed = self::loadOfficesAndServicesCache($namespace);
             CacheBootstrap::publishNamespace(\App::$CACHE_DIR, $namespace);
         } catch (\Throwable $exception) {
+            CacheBootstrap::abortStaging();
             \App::$cache = $live;
             throw $exception;
         }
@@ -117,7 +118,9 @@ class ZmsApiFacadeService
         }
 
         $officeIds = [];
-        foreach (self::getOffices(true) as $office) {
+        // OfficeList keeps the offices on a property. The list itself is an
+        // ArrayObject whose storage stays empty, so iterating it yields nothing.
+        foreach (self::getOffices(true)->offices as $office) {
             if (!$office instanceof Office) {
                 continue;
             }

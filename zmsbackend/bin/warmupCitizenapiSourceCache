@@ -23,6 +23,7 @@ if (\App::$cache instanceof \Psr\SimpleCache\CacheInterface) {
         \BO\Slim\Helper\CacheBootstrap::publishNamespace(\App::$CACHE_DIR, $standbyNamespace);
         \App::$log->info('Published the rebuilt API cache');
     } catch (\Throwable $exception) {
+        \BO\Slim\Helper\CacheBootstrap::abortStaging();
         \App::$cache = $live;
         \App::$log->error('Failed to rebuild the shared API cache', [
             'error' => $exception->getMessage(),

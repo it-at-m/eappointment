@@ -29,7 +29,7 @@ class ZmsApiClientService
             if (!$forceRefresh && \App::$cache && ($cached = \App::$cache->get($cacheKey))) {
                 return is_array($cached) ? $cached : [];
             }
-            $result = \App::$http->readGetResult('/merged-mailtemplates/' . $providerId . '/');
+            $result = \App::$http->readGetResult('/merged-mailtemplates/' . $providerId . '/', null, null);
             $templates = $result?->getCollection();
             if (!is_iterable($templates)) {
                 return [];

@@ -51,6 +51,14 @@ class SourceCacheWarmupControllerTest extends ControllerTestCase
                     'resolveReferences' => 2,
                 ],
                 'response' => $this->readFixture("GET_SourceGet_dldb.json")
+            ],
+            [
+                'function' => 'readGetResult',
+                'url' => '/merged-mailtemplates/9999998/'
+            ],
+            [
+                'function' => 'readGetResult',
+                'url' => '/merged-mailtemplates/9999999/'
             ]
         ]);
         $response = $this->render([], [
@@ -103,6 +111,14 @@ class SourceCacheWarmupControllerTest extends ControllerTestCase
                     'resolveReferences' => 2,
                 ],
                 'response' => $this->readFixture("GET_SourceGet_dldb.json")
+            ],
+            [
+                'function' => 'readGetResult',
+                'url' => '/merged-mailtemplates/9999998/'
+            ],
+            [
+                'function' => 'readGetResult',
+                'url' => '/merged-mailtemplates/9999999/'
             ]
         ]);
 
@@ -145,6 +161,14 @@ class SourceCacheWarmupControllerTest extends ControllerTestCase
                     'resolveReferences' => 2,
                 ],
                 'response' => $this->readFixture("GET_SourceGet_dldb.json")
+            ],
+            [
+                'function' => 'readGetResult',
+                'url' => '/merged-mailtemplates/9999998/'
+            ],
+            [
+                'function' => 'readGetResult',
+                'url' => '/merged-mailtemplates/9999999/'
             ]
         ]);
 
@@ -160,6 +184,7 @@ class SourceCacheWarmupControllerTest extends ControllerTestCase
         $this->assertContains('processed_services_by_office_9999998', $body['refreshedKeys']);
         $this->assertContains('processed_services_by_office_9999998_unpublished', $body['refreshedKeys']);
         $this->assertNotEquals(['stale' => true], \App::$cache->get('processed_services_by_office_9999998'));
+        $this->assertNotEquals(['stale' => true], \App::$cache->get('processed_services_by_office_9999998_unpublished'));
         $this->assertNotNull(\App::$cache->get('processed_services_by_office_9999998'));
         $this->assertNotNull(\App::$cache->get('processed_services_by_office_9999998_unpublished'));
     }

@@ -16,6 +16,13 @@ final class CacheBootstrap
 {
     private const string ACTIVE_FILE = '.active-namespace';
 
+    private const string LOCK_FILE = '.staging.lock';
+
+    /** @var resource|null */
+    private static $stagingLock = null;
+
+    private static ?string $stagingBaseNamespace = null;
+
     /**
      * @return array{0: string, 1: int}
      */
@@ -49,15 +56,24 @@ final class CacheBootstrap
     public static function openStaging(string $cacheDir, int $ttl): array
     {
         self::validateDirectory($cacheDir);
-        $next = self::activeNamespace($cacheDir) === 'g1' ? 'g2' : 'g1';
-        $target = self::namespaceDirectory($cacheDir, $next);
-        self::removeTree($target);
-        $source = self::namespaceDirectory($cacheDir, self::activeNamespace($cacheDir));
-        if (is_dir($source)) {
-            self::copyTree($source, $target);
-        }
+        self::acquireStagingLock($cacheDir);
+        try {
+            $active = self::activeNamespace($cacheDir);
+            $next = $active === 'g1' ? 'g2' : 'g1';
+            self::$stagingBaseNamespace = $active;
+            $target = self::namespaceDirectory($cacheDir, $next);
+            self::removeTree($target);
+            $source = self::namespaceDirectory($cacheDir, $active);
+            if (is_dir($source)) {
+                self::copyTree($source, $target);
+            }
 
-        return [self::openNamespace($cacheDir, $ttl, $next), $next];
+            return [self::openNamespace($cacheDir, $ttl, $next), $next];
+        } catch (\Throwable $exception) {
+            self::$stagingBaseNamespace = null;
+            self::releaseStagingLock();
+            throw $exception;
+        }
     }
 
     public static function openNamespace(string $cacheDir, int $ttl, string $namespace): CacheInterface
@@ -71,16 +87,34 @@ final class CacheBootstrap
 
     public static function publishNamespace(string $cacheDir, string $namespace): void
     {
-        if ($namespace !== 'g1' && $namespace !== 'g2') {
-            throw new \InvalidArgumentException('Unknown cache namespace');
-        }
+        try {
+            if ($namespace !== 'g1' && $namespace !== 'g2') {
+                throw new \InvalidArgumentException('Unknown cache namespace');
+            }
 
-        self::validateDirectory($cacheDir);
-        $path = $cacheDir . '/' . self::ACTIVE_FILE;
-        $temporary = $path . '.tmp';
-        if (file_put_contents($temporary, $namespace) === false || !rename($temporary, $path)) {
-            throw new \RuntimeException('Could not publish the standby cache');
+            self::validateDirectory($cacheDir);
+            if (
+                self::$stagingBaseNamespace !== null
+                && self::activeNamespace($cacheDir) !== self::$stagingBaseNamespace
+            ) {
+                throw new \RuntimeException('The live cache changed while the standby copy was built');
+            }
+
+            $path = $cacheDir . '/' . self::ACTIVE_FILE;
+            $temporary = $path . '.tmp';
+            if (file_put_contents($temporary, $namespace) === false || !rename($temporary, $path)) {
+                throw new \RuntimeException('Could not publish the standby cache');
+            }
+            self::$stagingBaseNamespace = null;
+        } finally {
+            self::releaseStagingLock();
         }
+    }
+
+    public static function abortStaging(): void
+    {
+        self::$stagingBaseNamespace = null;
+        self::releaseStagingLock();
     }
 
     public static function createFromEnv(?string $fallbackCacheDir = null): CacheInterface
@@ -167,6 +201,31 @@ final class CacheBootstrap
             unlink($item->getPathname());
         }
         rmdir($directory);
+    }
+
+    private static function acquireStagingLock(string $cacheDir): void
+    {
+        $handle = fopen($cacheDir . '/' . self::LOCK_FILE, 'c');
+        if ($handle === false || !flock($handle, LOCK_EX)) {
+            if (is_resource($handle)) {
+                fclose($handle);
+            }
+            throw new \RuntimeException('Could not lock the cache warmup');
+        }
+
+        self::$stagingLock = $handle;
+    }
+
+    private static function releaseStagingLock(): void
+    {
+        if (!is_resource(self::$stagingLock)) {
+            self::$stagingLock = null;
+            return;
+        }
+
+        flock(self::$stagingLock, LOCK_UN);
+        fclose(self::$stagingLock);
+        self::$stagingLock = null;
     }
 
     private static function getenvInt(string $name, int $default): int
