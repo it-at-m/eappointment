@@ -858,6 +858,21 @@ public final class TimeSlotStep {
     }
 
     public void assertCalendarGroupsByMorning() {
+        // The two 10:00 slots are tomorrow. The calendar can still be on today.
+        for (int day = 0; day < 4; day++) {
+            JsonNode snap = calendarSnapshot();
+            if (morningLabel(snap) != null) {
+                assertMorningLabels(snap);
+                ScenarioLogManager.getLogger()
+                        .info("zmscitizenview: calendar groups the short day into Vormittag after {} day move(s)", day);
+                return;
+            }
+            if (day == 3 || !openNextCalendarDayAndWaitForSlots()) {
+                break;
+            }
+            ScenarioLogManager.getLogger()
+                    .info("zmscitizenview: short day not on this date; opened next calendar day (move {})", day + 1);
+        }
         JsonNode state = new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(defaultWaitSeconds))
                 .until(d -> morningLabel(calendarSnapshot()));
         assertMorningLabels(state);
