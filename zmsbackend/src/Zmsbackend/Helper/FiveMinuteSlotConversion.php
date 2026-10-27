@@ -245,45 +245,60 @@ class FiveMinuteSlotConversion extends \BO\Zmsbackend\Base
      */
     private function retargetProviders(array $providers, bool $write): void
     {
-        foreach ($providers as $provider) {
-            if ($provider['minutes'] <= FiveMinuteGrid::MINUTES) {
-                continue;
+        if ($write) {
+            \BO\Zmsbackend\Connection\Select::setTransaction();
+            $connection = \BO\Zmsbackend\Connection\Select::getWriteConnection();
+            if (!$connection->inTransaction()) {
+                $connection->beginTransaction();
             }
-            if (!FiveMinuteGrid::isMultiple($provider['minutes'])) {
-                throw new \RuntimeException(
-                    'Provider ' . $provider['source'] . ':' . $provider['id']
-                    . ' has slot length ' . $provider['minutes']
-                );
-            }
-            $this->report['providers']++;
-            if (!$write) {
-                continue;
-            }
-
-            $factor = intdiv($provider['minutes'], FiveMinuteGrid::MINUTES);
-            $this->perform(
-                'UPDATE `request_provider`
-                 SET `slots` = `slots` * :factor
-                 WHERE `provider__id` = :id AND `source` = :source AND `slots` > 0',
-                [
-                    'factor' => $factor,
-                    'id' => $provider['id'],
-                    'source' => $provider['source'],
-                ]
-            );
-            $this->perform(
-                'UPDATE `provider`
-                 SET `data` = JSON_SET(`data`, \'$.slotTimeInMinutes\', 5)
-                 WHERE `id` = :id AND `source` = :source AND JSON_VALID(`data`)',
-                [
-                    'id' => $provider['id'],
-                    'source' => $provider['source'],
-                ]
-            );
         }
 
-        if ($write) {
-            \BO\Zmsbackend\Connection\Select::writeCommit();
+        try {
+            foreach ($providers as $provider) {
+                if ($provider['minutes'] <= FiveMinuteGrid::MINUTES) {
+                    continue;
+                }
+                if (!FiveMinuteGrid::isMultiple($provider['minutes'])) {
+                    throw new \RuntimeException(
+                        'Provider ' . $provider['source'] . ':' . $provider['id']
+                        . ' has slot length ' . $provider['minutes']
+                    );
+                }
+                $this->report['providers']++;
+                if (!$write) {
+                    continue;
+                }
+
+                $factor = intdiv($provider['minutes'], FiveMinuteGrid::MINUTES);
+                $this->perform(
+                    'UPDATE `request_provider`
+                     SET `slots` = `slots` * :factor
+                     WHERE `provider__id` = :id AND `source` = :source AND `slots` > 0',
+                    [
+                        'factor' => $factor,
+                        'id' => $provider['id'],
+                        'source' => $provider['source'],
+                    ]
+                );
+                $this->perform(
+                    'UPDATE `provider`
+                     SET `data` = JSON_SET(`data`, \'$.slotTimeInMinutes\', 5)
+                     WHERE `id` = :id AND `source` = :source AND JSON_VALID(`data`)',
+                    [
+                        'id' => $provider['id'],
+                        'source' => $provider['source'],
+                    ]
+                );
+            }
+
+            if ($write) {
+                \BO\Zmsbackend\Connection\Select::writeCommit();
+            }
+        } catch (\Throwable $exception) {
+            if ($write) {
+                \BO\Zmsbackend\Connection\Select::writeRollback();
+            }
+            throw $exception;
         }
     }
 
@@ -364,7 +379,8 @@ class FiveMinuteSlotConversion extends \BO\Zmsbackend\Base
              FROM `buerger`
              WHERE `StandortID` = :scopeId
                AND (`istFolgeterminvon` IS NULL OR `istFolgeterminvon` = 0)
-               AND `Uhrzeit` <> \'00:00:00\'',
+               AND `Uhrzeit` <> \'00:00:00\'
+               AND (`status` IS NULL OR `status` <> \'deleted\')',
             ['scopeId' => $scopeId]
         );
     }
