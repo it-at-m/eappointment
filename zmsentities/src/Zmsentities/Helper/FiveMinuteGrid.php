@@ -28,6 +28,41 @@ class FiveMinuteGrid
     }
 
     /**
+     * The step between start times offered in the calendar.
+     * This is the greatest common divisor of the service durations, which is
+     * the step the calendar used before every location was stored as 5 minutes.
+     *
+     * @param list<int> $durationMinutes
+     */
+    public static function appointmentInterval(array $durationMinutes): int
+    {
+        $interval = 0;
+        foreach ($durationMinutes as $duration) {
+            $duration = (int) $duration;
+            if ($duration < 1) {
+                continue;
+            }
+            $interval = $interval === 0 ? $duration : self::greatestCommonDivisor($interval, $duration);
+        }
+        if ($interval >= self::MINUTES && $interval % self::MINUTES === 0) {
+            return $interval;
+        }
+
+        return self::MINUTES;
+    }
+
+    private static function greatestCommonDivisor(int $a, int $b): int
+    {
+        while ($b !== 0) {
+            $remainder = $a % $b;
+            $a = $b;
+            $b = $remainder;
+        }
+
+        return abs($a);
+    }
+
+    /**
      * Keep the same maximum appointment length in minutes.
      * An empty limit stays empty. Returns null when nothing should be written.
      */

@@ -33,6 +33,7 @@ class MunichSlotTimeTest extends TestCase
         $location = $result['locations']['data'][0];
 
         self::assertSame(5, $location['slotTimeInMinutes']);
+        self::assertSame(30, $location['appointmentIntervalInMinutes']);
         self::assertTrue($location['forceSlotTimeUpdate']);
         self::assertSame('12', $location['services'][0]['appointment']['slots']);
         self::assertSame('18', $location['services'][1]['appointment']['slots']);

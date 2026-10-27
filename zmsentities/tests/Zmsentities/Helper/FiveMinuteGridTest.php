@@ -24,6 +24,17 @@ class FiveMinuteGridTest extends TestCase
         self::assertFalse(FiveMinuteGrid::isMultiple(0));
     }
 
+    public function testStartTimesStayOnTheOldStep(): void
+    {
+        self::assertSame(30, FiveMinuteGrid::appointmentInterval([60, 90]));
+        self::assertSame(10, FiveMinuteGrid::appointmentInterval([20, 30]));
+        self::assertSame(15, FiveMinuteGrid::appointmentInterval([15, 45]));
+        self::assertSame(5, FiveMinuteGrid::appointmentInterval([10, 15]));
+        self::assertSame(60, FiveMinuteGrid::appointmentInterval([60]));
+        self::assertSame(5, FiveMinuteGrid::appointmentInterval([12]));
+        self::assertSame(5, FiveMinuteGrid::appointmentInterval([]));
+    }
+
     public function testCapKeepsTheSameMaximumLengthInMinutes(): void
     {
         self::assertSame(12, FiveMinuteGrid::scaledSlotsPerAppointment(1, 60, 5));

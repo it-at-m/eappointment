@@ -41,6 +41,7 @@ class ProcessStatusFree extends \BO\Zmsbackend\Query\Base
                 WHERE cc.StandortID = s.scopeID AND cc.year = s.year
                     AND cc.month = s.month AND cc.day = s.day
             )
+            ' . \BO\Zmsbackend\Day\Repository\Day::QUERY_ON_APPOINTMENT_INTERVAL . '
             GROUP BY s.slotID
             HAVING ancestorCount >= slotsRequired
         ) AS available
@@ -97,6 +98,7 @@ class ProcessStatusFree extends \BO\Zmsbackend\Query\Base
                 ) occ ON occ.slotID = h.slotID
                 LEFT JOIN closures cc ON (s.scopeID = cc.StandortID AND s.year = cc.year AND s.month = cc.month and s.day = cc.day)
             WHERE cc.id IS NULL
+            ' . \BO\Zmsbackend\Day\Repository\Day::QUERY_ON_APPOINTMENT_INTERVAL . '
             ) AS tmp_ancestor
             GROUP BY slotID
             HAVING ancestorCount >= slotsRequired
