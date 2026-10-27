@@ -10,11 +10,21 @@ if (!isset($argv[1]) || $argv[1] !== '--commit') {
 }
 
 if (\App::$cache instanceof \Psr\SimpleCache\CacheInterface) {
+    $live = \App::$cache;
     try {
-        \App::$cache->clear();
-        \App::$log->info('Cleared the API cache before warming the citizen API');
+        [$staging, $standbyNamespace] = \BO\Slim\Helper\CacheBootstrap::openStaging(
+            \App::$CACHE_DIR,
+            \App::$SOURCE_CACHE_TTL
+        );
+        \App::$cache = $staging;
+        (new \BO\Zmsbackend\Helper\WarmSharedCache())->write();
+        // Readers stay on the previous cache until this switch. The copy keeps
+        // every entry the rebuild does not replace.
+        \BO\Slim\Helper\CacheBootstrap::publishNamespace(\App::$CACHE_DIR, $standbyNamespace);
+        \App::$log->info('Published the rebuilt API cache');
     } catch (\Throwable $exception) {
-        \App::$log->error('Failed to clear the API cache before warming the citizen API', [
+        \App::$cache = $live;
+        \App::$log->error('Failed to rebuild the shared API cache', [
             'error' => $exception->getMessage(),
         ]);
     }
@@ -56,13 +66,4 @@ if ($url === '') {
     }
 }
 
-// After the citizen request. That request clears the citizen cache, and a
-// shared directory would wipe a backend rebuild that ran first.
-try {
-    (new \BO\Zmsbackend\Helper\WarmSharedCache())->write();
-} catch (\Throwable $exception) {
-    \App::$log->error('Failed to rebuild the shared API cache', [
-        'error' => $exception->getMessage(),
-    ]);
-}
 exit(0);

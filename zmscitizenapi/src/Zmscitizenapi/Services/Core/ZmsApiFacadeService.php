@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace BO\Zmscitizenapi\Services\Core;
 
+use BO\Slim\Helper\CacheBootstrap;
 use BO\Slim\LoggerService;
 use BO\Zmscitizenapi\Exceptions\UnauthorizedException;
 use BO\Zmscitizenapi\Models\AuthenticatedUser;
@@ -38,28 +39,47 @@ class ZmsApiFacadeService
     private const string CACHE_KEY_SERVICES_BY_OFFICE_PREFIX = 'processed_services_by_office_';
 
     /**
-     * Drop the citizen API cache, then load source, scopes, offices, services,
-     * the combined offices-and-services lists, each office's services, and
-     * merged mail templates.
+     * Build the next citizen API cache beside the one that is serving, then
+     * switch to it when source, scopes, offices, services, the combined lists,
+     * each office's services, and merged mail templates are loaded.
      *
      * @return array{result: OfficeServiceAndRelationList|array, refreshedKeys: list<string>}
      */
     public static function warmOfficesAndServicesCache(): array
     {
-        if (\App::$cache) {
-            \App::$cache->clear();
+        if (!\App::$cache) {
+            return self::loadOfficesAndServicesCache();
         }
 
+        $live = \App::$cache;
+        [$staging, $namespace] = CacheBootstrap::openStaging(\App::$CACHE_DIR, \App::$SOURCE_CACHE_TTL);
+        \App::$cache = $staging;
+        try {
+            $warmed = self::loadOfficesAndServicesCache();
+            CacheBootstrap::publishNamespace(\App::$CACHE_DIR, $namespace);
+        } catch (\Throwable $exception) {
+            \App::$cache = $live;
+            throw $exception;
+        }
+
+        return $warmed;
+    }
+
+    /**
+     * @return array{result: OfficeServiceAndRelationList|array, refreshedKeys: list<string>}
+     */
+    private static function loadOfficesAndServicesCache(): array
+    {
         $refreshedKeys = ZmsApiClientService::refreshSourceCaches();
         // Offices copy slotsPerAppointment from this cache. Rebuild it before the
         // offices-and-services payload, or the new source is mapped onto the old limit.
         self::getScopes(true);
         $refreshedKeys[] = self::CACHE_KEY_SCOPES;
 
-        self::getOffices(false);
-        self::getOffices(true);
-        self::getServices(false);
-        self::getServices(true);
+        self::getOffices(false, true);
+        self::getOffices(true, true);
+        self::getServices(false, true);
+        self::getServices(true, true);
         $refreshedKeys[] = self::CACHE_KEY_OFFICES;
         $refreshedKeys[] = self::CACHE_KEY_OFFICES . '_unpublished';
         $refreshedKeys[] = self::CACHE_KEY_SERVICES;
@@ -105,7 +125,7 @@ class ZmsApiFacadeService
             }
 
             foreach ([false, true] as $showUnpublished) {
-                self::getServicesByOfficeId($officeId, $showUnpublished);
+                self::getServicesByOfficeId($officeId, $showUnpublished, true);
                 $key = self::CACHE_KEY_SERVICES_BY_OFFICE_PREFIX . $officeId . ($showUnpublished ? '_unpublished' : '');
                 if (\App::$cache->get($key)) {
                     $keys[] = $key;
@@ -113,7 +133,7 @@ class ZmsApiFacadeService
             }
 
             try {
-                ZmsApiClientService::getMergedMailTemplates($officeId);
+                ZmsApiClientService::getMergedMailTemplates($officeId, true);
             } catch (\Throwable $exception) {
                 LoggerService::logError($exception, null, null, [
                     'officeId' => $officeId,
@@ -146,11 +166,11 @@ class ZmsApiFacadeService
     /**
      * @SuppressWarnings(PHPMD.NPathComplexity)
      */
-    public static function getOffices(bool $showUnpublished = false): OfficeList
+    public static function getOffices(bool $showUnpublished = false, bool $forceRefresh = false): OfficeList
     {
         $cacheKey = self::CACHE_KEY_OFFICES . ($showUnpublished ? '_unpublished' : '');
 
-        if (\App::$cache && ($cachedData = \App::$cache->get($cacheKey))) {
+        if (!$forceRefresh && \App::$cache && ($cachedData = \App::$cache->get($cacheKey))) {
             return $cachedData;
         }
 
@@ -278,11 +298,11 @@ class ZmsApiFacadeService
         return $result;
     }
 
-    public static function getServices(bool $showUnpublished = false): ServiceList|array
+    public static function getServices(bool $showUnpublished = false, bool $forceRefresh = false): ServiceList|array
     {
         $cacheKey = self::CACHE_KEY_SERVICES . ($showUnpublished ? '_unpublished' : '');
 
-        if (\App::$cache && ($cachedData = \App::$cache->get($cacheKey))) {
+        if (!$forceRefresh && \App::$cache && ($cachedData = \App::$cache->get($cacheKey))) {
             return $cachedData;
         }
 
@@ -449,11 +469,11 @@ class ZmsApiFacadeService
         );
     }
 
-    public static function getServicesByOfficeId(int $officeId, bool $showUnpublished = false): ServiceList|array
+    public static function getServicesByOfficeId(int $officeId, bool $showUnpublished = false, bool $forceRefresh = false): ServiceList|array
     {
         $cacheKey = self::CACHE_KEY_SERVICES_BY_OFFICE_PREFIX . $officeId . ($showUnpublished ? '_unpublished' : '');
 
-        if (\App::$cache && ($cachedData = \App::$cache->get($cacheKey))) {
+        if (!$forceRefresh && \App::$cache && ($cachedData = \App::$cache->get($cacheKey))) {
             return $cachedData;
         }
 

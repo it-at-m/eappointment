@@ -29,7 +29,7 @@ class CacheBootstrapTest extends TestCase
         putenv('SOURCE_CACHE_TTL');
         LoggerService::$cache = null;
         if (is_dir($this->tempDir)) {
-            @rmdir($this->tempDir);
+            $this->removeDir($this->tempDir);
         }
         parent::tearDown();
     }
@@ -48,9 +48,43 @@ class CacheBootstrapTest extends TestCase
         $this->assertSame(1800, $ttl);
     }
 
+    public function testLiveCacheStaysUntilTheStandbyCacheIsPublished(): void
+    {
+        $live = CacheBootstrap::create($this->tempDir, 60);
+        $live->set('kept', 'old');
+
+        [$staging, $namespace] = CacheBootstrap::openStaging($this->tempDir, 60);
+        $this->assertSame('old', $staging->get('kept'));
+        $staging->set('kept', 'new');
+
+        $this->assertSame('old', $live->get('kept'));
+        $this->assertSame('old', CacheBootstrap::create($this->tempDir, 60)->get('kept'));
+
+        CacheBootstrap::publishNamespace($this->tempDir, $namespace);
+
+        $this->assertSame('old', $live->get('kept'));
+        $this->assertSame('new', CacheBootstrap::create($this->tempDir, 60)->get('kept'));
+    }
+
     public function testValidateDirectoryThrowsForUnwritablePath(): void
     {
         $this->expectException(\RuntimeException::class);
         CacheBootstrap::validateDirectory('/dev/null/not-a-writable-cache-dir');
+    }
+
+    private function removeDir(string $directory): void
+    {
+        $iterator = new \RecursiveIteratorIterator(
+            new \RecursiveDirectoryIterator($directory, \FilesystemIterator::SKIP_DOTS),
+            \RecursiveIteratorIterator::CHILD_FIRST
+        );
+        foreach ($iterator as $item) {
+            if ($item->isDir()) {
+                rmdir($item->getPathname());
+                continue;
+            }
+            unlink($item->getPathname());
+        }
+        rmdir($directory);
     }
 }

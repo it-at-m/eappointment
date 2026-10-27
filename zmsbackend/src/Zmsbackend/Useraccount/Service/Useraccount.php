@@ -948,7 +948,7 @@ class Useraccount extends \BO\Zmsbackend\Base
         return $this->executeSearchByDepartmentIdsQuery($departmentIds, $parameter, $resolveReferences, $workstation);
     }
 
-    public function readListRole($roleName, int $resolveReferences = 0, $workstation = null)
+    public function readListRole($roleName, int $resolveReferences = 0, $workstation = null, bool $disableCache = false)
     {
         $version = $this->getUseraccountCacheVersion();
         $workstationKey = '';
@@ -961,7 +961,7 @@ class Useraccount extends \BO\Zmsbackend\Base
         );
         $result = null;
 
-        if (App::$cache && App::$cache->has($cacheKey)) {
+        if (!$disableCache && App::$cache && App::$cache->has($cacheKey)) {
             $result = App::$cache->get($cacheKey);
             if ($result && App::$log) {
                 App::$log->info('Useraccount role list cache hit', [

@@ -31,16 +31,16 @@ class WarmSharedCache extends \BO\Zmsbackend\Base
     private function warmCatalog(): void
     {
         $this->safely(function () {
-            (new \BO\Zmsbackend\Config\Service\Config())->readEntity();
+            (new \BO\Zmsbackend\Config\Service\Config())->readEntity(true);
         });
         $this->safely(function () {
-            (new \BO\Zmsbackend\Dayoff\Service\DayOff())->readCommon();
+            (new \BO\Zmsbackend\Dayoff\Service\DayOff())->readCommon(true);
         });
 
         foreach ($this->sourceNames() as $source) {
             foreach (self::RESOLVE_LEVELS as $level) {
                 $this->safely(function () use ($source, $level) {
-                    (new \BO\Zmsbackend\Source\Service\Source())->readEntity($source, $level);
+                    (new \BO\Zmsbackend\Source\Service\Source())->readEntity($source, $level, true);
                 });
             }
             $this->warmProviders($source);
@@ -71,13 +71,13 @@ class WarmSharedCache extends \BO\Zmsbackend\Base
             }
             foreach (self::RESOLVE_LEVELS as $level) {
                 $this->safely(function () use ($providerService, $source, $providerId, $level) {
-                    $providerService->readEntity($source, $providerId, $level);
+                    $providerService->readEntity($source, $providerId, $level, true);
                 });
                 $this->safely(function () use ($providerService, $providerId, $level) {
-                    $providerService->readEntityById($providerId, $level);
+                    $providerService->readEntityById($providerId, $level, true);
                 });
                 $this->safely(function () use ($scopeService, $providerId, $level) {
-                    $scopeService->readByProviderId($providerId, $level);
+                    $scopeService->readByProviderId($providerId, $level, true);
                 });
             }
         }
@@ -89,7 +89,7 @@ class WarmSharedCache extends \BO\Zmsbackend\Base
         $list = null;
         foreach (self::RESOLVE_LEVELS as $level) {
             $this->safely(function () use ($requests, $source, $level, &$list) {
-                $loaded = $requests->readListBySource($source, $level);
+                $loaded = $requests->readListBySource($source, $level, true);
                 if ($level === 0) {
                     $list = $loaded;
                 }
@@ -106,10 +106,10 @@ class WarmSharedCache extends \BO\Zmsbackend\Base
             }
             foreach (self::RESOLVE_LEVELS as $level) {
                 $this->safely(function () use ($requests, $source, $requestId, $level) {
-                    $requests->readEntity($source, $requestId, $level);
+                    $requests->readEntity($source, $requestId, $level, true);
                 });
                 $this->safely(function () use ($requests, $requestId, $level) {
-                    $requests->readEntityById($requestId, $level);
+                    $requests->readEntityById($requestId, $level, true);
                 });
             }
         }
@@ -134,10 +134,10 @@ class WarmSharedCache extends \BO\Zmsbackend\Base
             }
             foreach (self::RESOLVE_LEVELS as $level) {
                 $this->safely(function () use ($departmentService, $departmentId, $level) {
-                    $departmentService->readEntity($departmentId, $level);
+                    $departmentService->readEntity($departmentId, $level, true);
                 });
                 $this->safely(function () use ($scopeService, $departmentId, $level) {
-                    $scopeService->readByDepartmentId((int) $departmentId, $level);
+                    $scopeService->readByDepartmentId((int) $departmentId, $level, true);
                 });
             }
         }
@@ -161,7 +161,7 @@ class WarmSharedCache extends \BO\Zmsbackend\Base
             }
             foreach (self::RESOLVE_LEVELS as $level) {
                 $this->safely(function () use ($clusterService, $clusterId, $level) {
-                    $clusterService->readEntity($clusterId, $level);
+                    $clusterService->readEntity($clusterId, $level, true);
                 });
             }
         }
@@ -173,7 +173,7 @@ class WarmSharedCache extends \BO\Zmsbackend\Base
         $scopes = null;
         foreach (self::RESOLVE_LEVELS as $level) {
             $this->safely(function () use ($scopeService, $level, &$scopes) {
-                $loaded = $scopeService->readList($level);
+                $loaded = $scopeService->readList($level, true);
                 if ($level === 0) {
                     $scopes = $loaded;
                 }
@@ -190,7 +190,7 @@ class WarmSharedCache extends \BO\Zmsbackend\Base
             }
             foreach (self::RESOLVE_LEVELS as $level) {
                 $this->safely(function () use ($scopeService, $scopeId, $level) {
-                    $scopeService->readEntity($scopeId, $level);
+                    $scopeService->readEntity($scopeId, $level, true);
                 });
             }
         }
@@ -202,16 +202,16 @@ class WarmSharedCache extends \BO\Zmsbackend\Base
         $roles = $this->roleNames();
         foreach (self::RESOLVE_LEVELS as $level) {
             $this->safely(function () use ($users, $level) {
-                $users->readList($level);
+                $users->readList($level, true);
             });
             foreach ($roles as $roleName) {
                 $this->safely(function () use ($users, $roleName, $level) {
-                    $users->readListRole($roleName, $level);
+                    $users->readListRole($roleName, $level, null, true);
                 });
             }
         }
         $this->safely(function () use ($users) {
-            $users->readSearch([]);
+            $users->readSearch([], 0, null, true);
         });
 
         $accounts = null;
@@ -232,7 +232,7 @@ class WarmSharedCache extends \BO\Zmsbackend\Base
             }
             foreach (self::RESOLVE_LEVELS as $level) {
                 $this->safely(function () use ($users, $login, $level) {
-                    $users->readEntity($login, $level);
+                    $users->readEntity($login, $level, true);
                 });
             }
             $this->warmWorkstationCopy($users, $account, $roles);
@@ -254,14 +254,14 @@ class WarmSharedCache extends \BO\Zmsbackend\Base
         $workstation = new \BO\Zmsentities\Workstation();
         $workstation->useraccount = $account;
         $this->safely(function () use ($users, $workstation) {
-            $users->readList(0, false, $workstation);
+            $users->readList(0, true, $workstation);
         });
         $this->safely(function () use ($users, $workstation) {
-            $users->readSearch([], 0, $workstation);
+            $users->readSearch([], 0, $workstation, true);
         });
         foreach ($roles as $roleName) {
             $this->safely(function () use ($users, $roleName, $workstation) {
-                $users->readListRole($roleName, 0, $workstation);
+                $users->readListRole($roleName, 0, $workstation, true);
             });
         }
     }

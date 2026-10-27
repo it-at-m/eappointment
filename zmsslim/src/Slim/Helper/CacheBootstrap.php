@@ -14,6 +14,8 @@ use Symfony\Component\Cache\Psr16Cache;
  */
 final class CacheBootstrap
 {
+    private const string ACTIVE_FILE = '.active-namespace';
+
     /**
      * @return array{0: string, 1: int}
      */
@@ -32,11 +34,53 @@ final class CacheBootstrap
     {
         self::validateDirectory($cacheDir);
 
-        $psr6 = new FilesystemAdapter(namespace: '', defaultLifetime: $ttl, directory: $cacheDir);
-        $cache = new Psr16Cache($psr6);
+        $cache = self::openNamespace($cacheDir, $ttl, self::activeNamespace($cacheDir));
         LoggerService::$cache = $cache;
 
         return $cache;
+    }
+
+    /**
+     * Copy the cache that is serving into the standby namespace.
+     * Callers refresh entries there, then publishNamespace() switches readers over.
+     *
+     * @return array{0: CacheInterface, 1: string}
+     */
+    public static function openStaging(string $cacheDir, int $ttl): array
+    {
+        self::validateDirectory($cacheDir);
+        $next = self::activeNamespace($cacheDir) === 'g1' ? 'g2' : 'g1';
+        $target = self::namespaceDirectory($cacheDir, $next);
+        self::removeTree($target);
+        $source = self::namespaceDirectory($cacheDir, self::activeNamespace($cacheDir));
+        if (is_dir($source)) {
+            self::copyTree($source, $target);
+        }
+
+        return [self::openNamespace($cacheDir, $ttl, $next), $next];
+    }
+
+    public static function openNamespace(string $cacheDir, int $ttl, string $namespace): CacheInterface
+    {
+        if ($namespace !== '' && $namespace !== 'g1' && $namespace !== 'g2') {
+            throw new \InvalidArgumentException('Unknown cache namespace');
+        }
+
+        return new Psr16Cache(new FilesystemAdapter(namespace: $namespace, defaultLifetime: $ttl, directory: $cacheDir));
+    }
+
+    public static function publishNamespace(string $cacheDir, string $namespace): void
+    {
+        if ($namespace !== 'g1' && $namespace !== 'g2') {
+            throw new \InvalidArgumentException('Unknown cache namespace');
+        }
+
+        self::validateDirectory($cacheDir);
+        $path = $cacheDir . '/' . self::ACTIVE_FILE;
+        $temporary = $path . '.tmp';
+        if (file_put_contents($temporary, $namespace) === false || !rename($temporary, $path)) {
+            throw new \RuntimeException('Could not publish the standby cache');
+        }
     }
 
     public static function createFromEnv(?string $fallbackCacheDir = null): CacheInterface
@@ -57,6 +101,72 @@ final class CacheBootstrap
         if (!is_writable($cacheDir)) {
             throw new \RuntimeException(sprintf('Cache directory "%s" is not writable', $cacheDir));
         }
+    }
+
+    private static function activeNamespace(string $cacheDir): string
+    {
+        $path = $cacheDir . '/' . self::ACTIVE_FILE;
+        if (!is_file($path)) {
+            return '';
+        }
+
+        $value = trim((string) file_get_contents($path));
+        if ($value === 'g1' || $value === 'g2') {
+            return $value;
+        }
+
+        return '';
+    }
+
+    private static function namespaceDirectory(string $cacheDir, string $namespace): string
+    {
+        $folder = $namespace === '' ? '@' : $namespace;
+
+        return rtrim($cacheDir, '/') . '/' . $folder;
+    }
+
+    private static function copyTree(string $source, string $target): void
+    {
+        if (!is_dir($target) && !mkdir($target, 0750, true) && !is_dir($target)) {
+            throw new \RuntimeException(sprintf('Cache directory "%s" could not be created', $target));
+        }
+
+        $iterator = new \RecursiveIteratorIterator(
+            new \RecursiveDirectoryIterator($source, \FilesystemIterator::SKIP_DOTS),
+            \RecursiveIteratorIterator::SELF_FIRST
+        );
+        foreach ($iterator as $item) {
+            $destination = $target . substr($item->getPathname(), strlen($source));
+            if ($item->isDir()) {
+                if (!is_dir($destination) && !mkdir($destination, 0750, true) && !is_dir($destination)) {
+                    throw new \RuntimeException(sprintf('Cache directory "%s" could not be created', $destination));
+                }
+                continue;
+            }
+            if (!copy($item->getPathname(), $destination)) {
+                throw new \RuntimeException(sprintf('Cache file "%s" could not be copied', $item->getPathname()));
+            }
+        }
+    }
+
+    private static function removeTree(string $directory): void
+    {
+        if (!is_dir($directory)) {
+            return;
+        }
+
+        $iterator = new \RecursiveIteratorIterator(
+            new \RecursiveDirectoryIterator($directory, \FilesystemIterator::SKIP_DOTS),
+            \RecursiveIteratorIterator::CHILD_FIRST
+        );
+        foreach ($iterator as $item) {
+            if ($item->isDir()) {
+                rmdir($item->getPathname());
+                continue;
+            }
+            unlink($item->getPathname());
+        }
+        rmdir($directory);
     }
 
     private static function getenvInt(string $name, int $default): int

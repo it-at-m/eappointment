@@ -22,11 +22,11 @@ use BO\Zmsentities\Collection\ScopeList;
 class ZmsApiClientService
 {
     /** @psalm-api */
-    public static function getMergedMailTemplates(int $providerId): array
+    public static function getMergedMailTemplates(int $providerId, bool $forceRefresh = false): array
     {
         try {
             $cacheKey = 'merged_mailtemplates_' . $providerId;
-            if (\App::$cache && ($cached = \App::$cache->get($cacheKey))) {
+            if (!$forceRefresh && \App::$cache && ($cached = \App::$cache->get($cacheKey))) {
                 return is_array($cached) ? $cached : [];
             }
             $result = \App::$http->readGetResult('/merged-mailtemplates/' . $providerId . '/');
