@@ -1521,6 +1521,11 @@ public class AdminSteps {
         AUTHORITIES_AND_LOCATIONS_PAGE.deleteOpeningHoursOfType(TestDataHelper.transformTestData(type));
     }
 
+    @When("I delete the opening hours of type {string} when that row is on the day.")
+    public void wenn_sie_die_oeffnungszeit_vom_typ_loeschen_falls_vorhanden(String type) {
+        AUTHORITIES_AND_LOCATIONS_PAGE.deleteOpeningHoursOfType(TestDataHelper.transformTestData(type), false);
+    }
+
     @When("the customers already waiting are finished as no-shows.")
     public void die_bereits_wartenden_kunden_als_nicht_erschienen_abgeschlossen_werden() {
         PROCESSING_STATION_SECTION.dismissCustomersAlreadyWaiting();

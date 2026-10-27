@@ -794,15 +794,26 @@ public void saveLocationChanges() {
      * (e.g. {@code Spontankunden}). The lightbox DELETE is persisted immediately.
      */
     public void deleteOpeningHoursOfType(String type) {
+        deleteOpeningHoursOfType(type, true);
+    }
+
+    /**
+     * @param required when false, a day with no row of this type is left unchanged
+     */
+    public void deleteOpeningHoursOfType(String type, boolean required) {
         CONTEXT.set();
         CONTEXT.waitForSpinners();
         ScenarioLogManager.getLogger().info("Trying to delete opening hours of type \"" + type + "\"...");
         By trash = By.xpath("//table[contains(@class,'table--base')]//tr[td[normalize-space()='" + type
                 + "']]//a[.//i[contains(@class,'fa-trash-alt')]]");
-        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(required ? DEFAULT_EXPLICIT_WAIT_TIME : 5));
         try {
             wait.until(ExpectedConditions.elementToBeClickable(trash));
         } catch (TimeoutException e) {
+            if (!required) {
+                ScenarioLogManager.getLogger().info("No opening-hours row of type \"" + type + "\" to delete");
+                return;
+            }
             Assert.fail("No opening-hours row of type \"" + type + "\" to delete", e);
         }
         int deleted = 0;
