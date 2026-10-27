@@ -258,19 +258,6 @@ class Process extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfaces\R
     }
 
     /**
-     * One Folgetermin at $time on the same day as the parent appointment.
-     */
-    public function writeFollowUpAppointment(Entity $process, string $time, \DateTimeInterface $now): Entity
-    {
-        $followUp = clone $process;
-        $appointment = clone $process->getFirstAppointment();
-        $appointment->setTime($time);
-        $followUp->appointments = new AppointmentList([$appointment]);
-
-        return $this->writeNewProcess($followUp, $now, (int) $process->getId(), 0);
-    }
-
-    /**
      * write a new process to DB
      *
      */

@@ -64,7 +64,12 @@ class Slot extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\Map
             AND s.month = MONTH(b.Datum)
             AND s.day = DAY(b.Datum)
             AND s.scopeID = b.StandortID
-            AND b.Uhrzeit BETWEEN s.time AND SEC_TO_TIME(TIME_TO_SEC(s.time) + (s.slotTimeInMinutes * 60) - 1)
+            AND (b.istFolgeterminvon IS NULL OR b.istFolgeterminvon = 0)
+            AND s.time < ADDTIME(
+                b.Uhrzeit,
+                SEC_TO_TIME((IFNULL(b.hatFolgetermine, 0) + 1) * s.slotTimeInMinutes * 60)
+            )
+            AND ADDTIME(s.time, SEC_TO_TIME(s.slotTimeInMinutes * 60)) > b.Uhrzeit
             AND s.status = "free"
           LEFT JOIN slot_process sp ON b.BuergerID = sp.processID
         WHERE
@@ -88,7 +93,12 @@ class Slot extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\Map
             AND s.day = DAY(b.Datum)
             AND s.scopeID = b.StandortID
             AND s.status = "free"
-            AND b.Uhrzeit BETWEEN s.time AND SEC_TO_TIME(TIME_TO_SEC(s.time) + (s.slotTimeInMinutes * 60) - 1)
+            AND (b.istFolgeterminvon IS NULL OR b.istFolgeterminvon = 0)
+            AND s.time < ADDTIME(
+                b.Uhrzeit,
+                SEC_TO_TIME((IFNULL(b.hatFolgetermine, 0) + 1) * s.slotTimeInMinutes * 60)
+            )
+            AND ADDTIME(s.time, SEC_TO_TIME(s.slotTimeInMinutes * 60)) > b.Uhrzeit
         WHERE
           b.BuergerID = :processId
     ';
@@ -132,13 +142,18 @@ class Slot extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\Map
               LEFT JOIN slot s ON sp.slotID = s.slotID
             WHERE (
                 b.BuergerID IS NULL
+                OR (b.istFolgeterminvon IS NOT NULL AND b.istFolgeterminvon <> 0)
                 OR (
                   b.updateTimestamp > sp.updateTimestamp
                   AND (
-                    b.Uhrzeit NOT BETWEEN s.time AND SEC_TO_TIME(TIME_TO_SEC(s.time) + (s.slotTimeInMinutes * 60) - 1)
-                    OR s.month != MONTH(b.Datum)
+                    s.month != MONTH(b.Datum)
                     OR s.day != DAY(b.Datum)
                     OR s.scopeID != b.StandortID
+                    OR s.time >= ADDTIME(
+                        b.Uhrzeit,
+                        SEC_TO_TIME((IFNULL(b.hatFolgetermine, 0) + 1) * s.slotTimeInMinutes * 60)
+                    )
+                    OR ADDTIME(s.time, SEC_TO_TIME(s.slotTimeInMinutes * 60)) <= b.Uhrzeit
                   )
                 )
               ) 
