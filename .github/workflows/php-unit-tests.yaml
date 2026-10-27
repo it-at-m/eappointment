@@ -113,7 +113,7 @@ jobs:
   zmsbackend-test:
     runs-on: ubuntu-latest
     container:
-      image: "ghcr.io/it-at-m/eappointment/zmsbase:8.4-dev@sha256:9076830c5b7be0f201cba148efceb07e73d3c7062f63788424c381d03b99d650"
+      image: "ghcr.io/it-at-m/eappointment/zmsbase:8.4-dev@sha256:a1b8d46aab3e1ddf703a79c192cfcf9d23817cbddb9db0c69abdb23beeece59c"
     services:
       mariadb:
         image: mariadb:10.11@sha256:0d0945c57f75b3a3b9ebe71aedaaad005fa5305054e8fca3d2e42a8c92b43b5e
