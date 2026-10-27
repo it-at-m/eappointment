@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-10-27T09:35:21.273Z",
+  "publishedAt": "2026-10-27T09:41:09.156Z",
   "branches": [
     {
       "name": "next",
@@ -312,6 +312,12 @@
       "slug": "fix-zmskvr-1654-rename-wohnsitzanmeldung",
       "runId": "34974252590",
       "runStartedAt": "2026-09-15T13:19:24Z"
+    },
+    {
+      "name": "fix-zmskvr-1697-innenrevision",
+      "slug": "fix-zmskvr-1697-innenrevision",
+      "runId": "40478154824",
+      "runStartedAt": "2026-10-27T09:05:27Z"
     },
     {
       "name": "fix-zmskvr-353-rebooking-no-activation",
