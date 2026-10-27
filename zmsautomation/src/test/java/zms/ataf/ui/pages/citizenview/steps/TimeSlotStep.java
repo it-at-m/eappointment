@@ -1333,7 +1333,10 @@ public final class TimeSlotStep {
                 continue;
             }
             if (!clickCitizenViewLaterOnceIfAvailable()) {
-                return;
+                // Chrome can switch views before Später is clickable. Leaving now
+                // checks a calendar hour that does not contain the selected time.
+                CitizenViewWaits.sleepQuiet(400L);
+                continue;
             }
             pages++;
             CitizenViewWaits.sleepQuiet(500L);
