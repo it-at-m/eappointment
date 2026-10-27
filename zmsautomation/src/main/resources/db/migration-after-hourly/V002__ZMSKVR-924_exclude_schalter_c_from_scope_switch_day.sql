@@ -76,8 +76,13 @@ SET @do_split := IF(
   0
 );
 
-SET @before_end := DATE_SUB(@switch_day, INTERVAL 1 DAY);
-SET @after_start := DATE_ADD(@switch_day, INTERVAL 1 DAY);
+-- DATE_FORMAT forces YYYY-MM-DD. CONCAT of a raw DATE user variable can emit a
+-- value that lands outside the GET window (today … +21) while slot calculation
+-- still treats the row as bookable.
+SET @before_end := DATE_FORMAT(DATE_SUB(@switch_day, INTERVAL 1 DAY), '%Y-%m-%d');
+SET @after_start := DATE_FORMAT(DATE_ADD(@switch_day, INTERVAL 1 DAY), '%Y-%m-%d');
+SET @c_end := DATE_FORMAT(@c_end, '%Y-%m-%d');
+SET @c_start := DATE_FORMAT(@c_start, '%Y-%m-%d');
 
 SET @has_standort := (
   SELECT COUNT(*) FROM information_schema.COLUMNS
