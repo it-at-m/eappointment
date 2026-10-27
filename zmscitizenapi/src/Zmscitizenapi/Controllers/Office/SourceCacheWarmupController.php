@@ -11,7 +11,7 @@ use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
 /**
- * Drop the citizen API cache and load offices, services, and the combined list again (ZMSKVR-1191).
+ * Drop the citizen API cache and load offices, services, per-office lists, and mail templates again (ZMSKVR-1191).
  */
 class SourceCacheWarmupController extends BaseController
 {

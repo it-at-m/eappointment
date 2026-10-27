@@ -39,7 +39,8 @@ class ZmsApiFacadeService
 
     /**
      * Drop the citizen API cache, then load source, scopes, offices, services,
-     * and the combined offices-and-services list again.
+     * the combined offices-and-services lists, each office's services, and
+     * merged mail templates.
      *
      * @return array{result: OfficeServiceAndRelationList|array, refreshedKeys: list<string>}
      */
@@ -67,6 +68,11 @@ class ZmsApiFacadeService
         $cacheKey = self::CACHE_KEY_OFFICES_AND_SERVICES;
         $result = self::rebuildServicesAndOfficesCache(false, $cacheKey);
         $refreshedKeys[] = $cacheKey;
+        self::rebuildServicesAndOfficesCache(true, $cacheKey . '_unpublished');
+        $refreshedKeys[] = $cacheKey . '_unpublished';
+        foreach (self::warmOfficeCaches() as $officeKey) {
+            $refreshedKeys[] = $officeKey;
+        }
 
         $refreshedKeys = array_values(array_unique($refreshedKeys));
         LoggerService::logInfo('Offices-and-services cache warmed', [
@@ -77,6 +83,50 @@ class ZmsApiFacadeService
             'result' => $result,
             'refreshedKeys' => $refreshedKeys,
         ];
+    }
+
+    /**
+     * @return list<string>
+     */
+    private static function warmOfficeCaches(): array
+    {
+        $keys = [];
+        if (!\App::$cache) {
+            return $keys;
+        }
+
+        foreach (self::getOffices(true) as $office) {
+            if (!$office instanceof Office) {
+                continue;
+            }
+            $officeId = (int) $office->id;
+            if ($officeId <= 0) {
+                continue;
+            }
+
+            foreach ([false, true] as $showUnpublished) {
+                self::getServicesByOfficeId($officeId, $showUnpublished);
+                $key = self::CACHE_KEY_SERVICES_BY_OFFICE_PREFIX . $officeId . ($showUnpublished ? '_unpublished' : '');
+                if (\App::$cache->get($key)) {
+                    $keys[] = $key;
+                }
+            }
+
+            try {
+                ZmsApiClientService::getMergedMailTemplates($officeId);
+            } catch (\Throwable $exception) {
+                LoggerService::logError($exception, null, null, [
+                    'officeId' => $officeId,
+                    'context' => 'cache warmup mail templates',
+                ]);
+            }
+            $mailKey = 'merged_mailtemplates_' . $officeId;
+            if (\App::$cache->get($mailKey)) {
+                $keys[] = $mailKey;
+            }
+        }
+
+        return $keys;
     }
 
     /**
