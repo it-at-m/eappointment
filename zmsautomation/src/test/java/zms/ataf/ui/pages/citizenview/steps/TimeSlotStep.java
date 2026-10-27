@@ -867,7 +867,7 @@ public final class TimeSlotStep {
                         .info("zmscitizenview: calendar groups the short day into Vormittag after {} day move(s)", day);
                 return;
             }
-            if (day == 3 || !openNextCalendarDayAndWaitForSlots()) {
+            if (!openNextCalendarDayAndWaitForSlots()) {
                 break;
             }
             ScenarioLogManager.getLogger()
