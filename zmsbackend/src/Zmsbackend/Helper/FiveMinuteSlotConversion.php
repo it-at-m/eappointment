@@ -36,21 +36,33 @@ class FiveMinuteSlotConversion extends \BO\Zmsbackend\Base
         $providers = $this->readProviderSlotMinutes();
         $this->assertServiceDurationsAlign($providers);
 
+        $prepared = [];
         foreach ($this->readScopeIds() as $scopeId) {
-            $this->convertScope($scopeId, $now, $write);
+            $work = $this->prepareScope($scopeId);
+            if ($work !== null) {
+                $prepared[$scopeId] = $work;
+            }
+        }
+        foreach ($prepared as $scopeId => $work) {
+            $this->applyScope($scopeId, $work, $now, $write);
         }
         $this->retargetProviders($providers, $write);
 
         return $this->report;
     }
 
-    private function convertScope(int $scopeId, \DateTimeInterface $now, bool $write): void
+    /**
+     * @param array{
+     *     planned: list<array{processId: int, times: list<string>, followUpCount: int}>,
+     *     followUpRows: int,
+     *     openingHourIds: list<int>,
+     *     oldCapMinutes: int|null,
+     *     scaleCap: bool,
+     *     needsWrite: bool
+     * } $work
+     */
+    private function applyScope(int $scopeId, array $work, \DateTimeInterface $now, bool $write): void
     {
-        $work = $this->prepareScope($scopeId);
-        if ($work === null) {
-            return;
-        }
-
         $this->report['followUps'] += $work['followUpRows'];
         $this->report['openingHours'] += count($work['openingHourIds']);
         if ($work['scaleCap']) {
