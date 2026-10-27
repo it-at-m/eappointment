@@ -2,11 +2,17 @@
 
 namespace BO\Zmsbackend\Helper;
 
+use BO\Slim\Helper\ProcessPool;
 use BO\Zmsbackend\Application as App;
 
 /**
  * Rebuild every shared cache entry whose key does not depend on a search text
  * or a department set chosen on the request.
+ *
+ * Lists and other single keys are written here. Each provider, request,
+ * department, cluster, scope, and account is then handed to a worker. Account
+ * jobs start after the catalog jobs so a department scope key already exists
+ * before several accounts read it.
  *
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
@@ -14,21 +20,182 @@ class WarmSharedCache extends \BO\Zmsbackend\Base
 {
     private const array RESOLVE_LEVELS = [0, 1, 2];
 
-    public function write(): void
+    public function write(?string $namespace = null): void
     {
         if (!App::$cache) {
             return;
         }
 
-        $this->warmCatalog();
-        $this->warmUseraccounts();
+        $catalogJobs = [];
+        $this->warmCatalog($catalogJobs);
+        $this->dispatch($catalogJobs, $namespace);
+        $userJobs = [];
+        $this->warmUseraccounts($userJobs);
+        $this->dispatch($userJobs, $namespace);
 
         if (App::$log) {
             App::$log->info('Rebuilt the shared API cache');
         }
     }
 
-    private function warmCatalog(): void
+    /**
+     * @param list<array{kind: string, id: string, source?: string}> $jobs
+     */
+    public function writeJobs(array $jobs): void
+    {
+        $users = new \BO\Zmsbackend\Useraccount\Service\Useraccount();
+        $roles = null;
+        foreach ($jobs as $job) {
+            if (!is_array($job)) {
+                continue;
+            }
+            $kind = isset($job['kind']) ? (string) $job['kind'] : '';
+            $id = isset($job['id']) ? (string) $job['id'] : '';
+            if ($kind === '' || $id === '') {
+                continue;
+            }
+            $source = isset($job['source']) ? (string) $job['source'] : '';
+            if ($kind === 'user' && $roles === null) {
+                $roles = $this->roleNames();
+            }
+            $this->safely(function () use ($kind, $id, $source, $users, &$roles) {
+                $this->writeOne($kind, $id, $source, $users, $roles ?? []);
+            });
+        }
+    }
+
+    /**
+     * @param list<array{kind: string, id: string, source?: string}> $jobs
+     */
+    private function dispatch(array $jobs, ?string $namespace): void
+    {
+        $script = dirname(__DIR__, 3) . '/bin/warmSharedCacheWorker';
+        $workers = min(ProcessPool::workerCount(), count($jobs));
+        if ($jobs === [] || $namespace === null || $workers < 2 || !is_file($script)) {
+            $this->writeJobs($jobs);
+            return;
+        }
+
+        $chunks = array_chunk($jobs, (int) ceil(count($jobs) / $workers));
+        $files = [];
+        try {
+            $commands = [];
+            foreach ($chunks as $chunk) {
+                $file = tempnam(sys_get_temp_dir(), 'zms-warm-');
+                if ($file === false) {
+                    throw new \RuntimeException('Could not create a warmup job file');
+                }
+                file_put_contents($file, json_encode(array_values($chunk), JSON_THROW_ON_ERROR));
+                $files[] = $file;
+                $commands[] = [ProcessPool::phpBinary(), $script, '--namespace=' . $namespace, '--jobs=' . $file];
+            }
+
+            if (App::$log) {
+                App::$log->info('Rebuilding shared cache entries in parallel', [
+                    'workers' => count($commands),
+                    'jobs' => count($jobs),
+                ]);
+            }
+
+            $failed = ProcessPool::run($commands, dirname($script, 2));
+            foreach ($failed as $index) {
+                if (App::$log) {
+                    App::$log->error('A cache warmup worker failed', ['worker' => $index]);
+                }
+                $this->writeJobs($chunks[$index]);
+            }
+        } catch (\Throwable $exception) {
+            $this->logFailure($exception);
+            $this->writeJobs($jobs);
+        } finally {
+            foreach ($files as $file) {
+                if (is_file($file)) {
+                    unlink($file);
+                }
+            }
+        }
+    }
+
+    /**
+     * @param array<int, string> $roles
+     */
+    private function writeOne(
+        string $kind,
+        string $id,
+        string $source,
+        \BO\Zmsbackend\Useraccount\Service\Useraccount $users,
+        array $roles
+    ): void {
+        if ($kind === 'user') {
+            $account = null;
+            foreach (self::RESOLVE_LEVELS as $level) {
+                $loaded = $users->readEntity($id, $level, true);
+                if ($level === 1 && $loaded instanceof \BO\Zmsentities\Useraccount) {
+                    $account = $loaded;
+                }
+            }
+            if ($account instanceof \BO\Zmsentities\Useraccount) {
+                $this->warmWorkstationCopy($users, $account, $roles);
+            }
+            return;
+        }
+
+        $providers = new \BO\Zmsbackend\Provider\Service\Provider();
+        $scopes = new \BO\Zmsbackend\Scope\Service\Scope();
+        $requests = new \BO\Zmsbackend\Request\Service\Request();
+        $departments = new \BO\Zmsbackend\Department\Service\Department();
+        $clusters = new \BO\Zmsbackend\Cluster\Service\Cluster();
+        foreach (self::RESOLVE_LEVELS as $level) {
+            if ($kind === 'provider') {
+                $this->writeProvider($providers, $scopes, $source, $id, $level);
+            } elseif ($kind === 'request') {
+                $this->writeRequest($requests, $source, $id, $level);
+            } elseif ($kind === 'department') {
+                $this->writeDepartment($departments, $scopes, $id, $level);
+            } elseif ($kind === 'cluster') {
+                $clusters->readEntity($id, $level, true);
+            } elseif ($kind === 'scope') {
+                $scopes->readEntity($id, $level, true);
+            }
+        }
+    }
+
+    private function writeProvider(
+        \BO\Zmsbackend\Provider\Service\Provider $providers,
+        \BO\Zmsbackend\Scope\Service\Scope $scopes,
+        string $source,
+        string $id,
+        int $level
+    ): void {
+        $providers->readEntity($source, $id, $level, true);
+        $providers->readEntityById($id, $level, true);
+        $scopes->readByProviderId($id, $level, true);
+    }
+
+    private function writeRequest(
+        \BO\Zmsbackend\Request\Service\Request $requests,
+        string $source,
+        string $id,
+        int $level
+    ): void {
+        $requests->readEntity($source, $id, $level, true);
+        $requests->readEntityById($id, $level, true);
+    }
+
+    private function writeDepartment(
+        \BO\Zmsbackend\Department\Service\Department $departments,
+        \BO\Zmsbackend\Scope\Service\Scope $scopes,
+        string $id,
+        int $level
+    ): void {
+        $departments->readEntity($id, $level, true);
+        $scopes->readByDepartmentId((int) $id, $level, true);
+    }
+
+    /**
+     * @param list<array{kind: string, id: string, source?: string}> $jobs
+     */
+    private function warmCatalog(array &$jobs): void
     {
         $this->safely(function () {
             (new \BO\Zmsbackend\Config\Service\Config())->readEntity(true);
@@ -43,16 +210,19 @@ class WarmSharedCache extends \BO\Zmsbackend\Base
                     (new \BO\Zmsbackend\Source\Service\Source())->readEntity($source, $level, true);
                 });
             }
-            $this->warmProviders($source);
-            $this->warmRequests($source);
+            $this->warmProviders($source, $jobs);
+            $this->warmRequests($source, $jobs);
         }
 
-        $this->warmDepartments();
-        $this->warmClusters();
-        $this->warmScopes();
+        $this->warmDepartments($jobs);
+        $this->warmClusters($jobs);
+        $this->warmScopes($jobs);
     }
 
-    private function warmProviders(string $source): void
+    /**
+     * @param list<array{kind: string, id: string, source?: string}> $jobs
+     */
+    private function warmProviders(string $source, array &$jobs): void
     {
         $providers = null;
         $this->safely(function () use ($source, &$providers) {
@@ -62,28 +232,19 @@ class WarmSharedCache extends \BO\Zmsbackend\Base
             return;
         }
 
-        $providerService = new \BO\Zmsbackend\Provider\Service\Provider();
-        $scopeService = new \BO\Zmsbackend\Scope\Service\Scope();
         foreach ($providers as $provider) {
             $providerId = (string) $provider->getId();
             if ($providerId === '') {
                 continue;
             }
-            foreach (self::RESOLVE_LEVELS as $level) {
-                $this->safely(function () use ($providerService, $source, $providerId, $level) {
-                    $providerService->readEntity($source, $providerId, $level, true);
-                });
-                $this->safely(function () use ($providerService, $providerId, $level) {
-                    $providerService->readEntityById($providerId, $level, true);
-                });
-                $this->safely(function () use ($scopeService, $providerId, $level) {
-                    $scopeService->readByProviderId($providerId, $level, true);
-                });
-            }
+            $jobs[] = ['kind' => 'provider', 'id' => $providerId, 'source' => $source];
         }
     }
 
-    private function warmRequests(string $source): void
+    /**
+     * @param list<array{kind: string, id: string, source?: string}> $jobs
+     */
+    private function warmRequests(string $source, array &$jobs): void
     {
         $requests = new \BO\Zmsbackend\Request\Service\Request();
         $list = null;
@@ -104,18 +265,14 @@ class WarmSharedCache extends \BO\Zmsbackend\Base
             if ($requestId === '') {
                 continue;
             }
-            foreach (self::RESOLVE_LEVELS as $level) {
-                $this->safely(function () use ($requests, $source, $requestId, $level) {
-                    $requests->readEntity($source, $requestId, $level, true);
-                });
-                $this->safely(function () use ($requests, $requestId, $level) {
-                    $requests->readEntityById($requestId, $level, true);
-                });
-            }
+            $jobs[] = ['kind' => 'request', 'id' => $requestId, 'source' => $source];
         }
     }
 
-    private function warmDepartments(): void
+    /**
+     * @param list<array{kind: string, id: string, source?: string}> $jobs
+     */
+    private function warmDepartments(array &$jobs): void
     {
         $departments = null;
         $this->safely(function () use (&$departments) {
@@ -125,25 +282,19 @@ class WarmSharedCache extends \BO\Zmsbackend\Base
             return;
         }
 
-        $departmentService = new \BO\Zmsbackend\Department\Service\Department();
-        $scopeService = new \BO\Zmsbackend\Scope\Service\Scope();
         foreach ($departments as $department) {
             $departmentId = (string) $department->getId();
             if ($departmentId === '') {
                 continue;
             }
-            foreach (self::RESOLVE_LEVELS as $level) {
-                $this->safely(function () use ($departmentService, $departmentId, $level) {
-                    $departmentService->readEntity($departmentId, $level, true);
-                });
-                $this->safely(function () use ($scopeService, $departmentId, $level) {
-                    $scopeService->readByDepartmentId((int) $departmentId, $level, true);
-                });
-            }
+            $jobs[] = ['kind' => 'department', 'id' => $departmentId];
         }
     }
 
-    private function warmClusters(): void
+    /**
+     * @param list<array{kind: string, id: string, source?: string}> $jobs
+     */
+    private function warmClusters(array &$jobs): void
     {
         $clusters = null;
         $this->safely(function () use (&$clusters) {
@@ -153,21 +304,19 @@ class WarmSharedCache extends \BO\Zmsbackend\Base
             return;
         }
 
-        $clusterService = new \BO\Zmsbackend\Cluster\Service\Cluster();
         foreach ($clusters as $cluster) {
             $clusterId = (string) $cluster->getId();
             if ($clusterId === '') {
                 continue;
             }
-            foreach (self::RESOLVE_LEVELS as $level) {
-                $this->safely(function () use ($clusterService, $clusterId, $level) {
-                    $clusterService->readEntity($clusterId, $level, true);
-                });
-            }
+            $jobs[] = ['kind' => 'cluster', 'id' => $clusterId];
         }
     }
 
-    private function warmScopes(): void
+    /**
+     * @param list<array{kind: string, id: string, source?: string}> $jobs
+     */
+    private function warmScopes(array &$jobs): void
     {
         $scopeService = new \BO\Zmsbackend\Scope\Service\Scope();
         $scopes = null;
@@ -188,15 +337,14 @@ class WarmSharedCache extends \BO\Zmsbackend\Base
             if ($scopeId === null || $scopeId === '') {
                 continue;
             }
-            foreach (self::RESOLVE_LEVELS as $level) {
-                $this->safely(function () use ($scopeService, $scopeId, $level) {
-                    $scopeService->readEntity($scopeId, $level, true);
-                });
-            }
+            $jobs[] = ['kind' => 'scope', 'id' => (string) $scopeId];
         }
     }
 
-    private function warmUseraccounts(): void
+    /**
+     * @param list<array{kind: string, id: string, source?: string}> $jobs
+     */
+    private function warmUseraccounts(array &$jobs): void
     {
         $users = new \BO\Zmsbackend\Useraccount\Service\Useraccount();
         $roles = $this->roleNames();
@@ -230,12 +378,7 @@ class WarmSharedCache extends \BO\Zmsbackend\Base
             if ($login === '') {
                 continue;
             }
-            foreach (self::RESOLVE_LEVELS as $level) {
-                $this->safely(function () use ($users, $login, $level) {
-                    $users->readEntity($login, $level, true);
-                });
-            }
-            $this->warmWorkstationCopy($users, $account, $roles);
+            $jobs[] = ['kind' => 'user', 'id' => $login];
         }
     }
 

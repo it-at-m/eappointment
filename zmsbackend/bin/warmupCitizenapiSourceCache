@@ -17,7 +17,7 @@ if (\App::$cache instanceof \Psr\SimpleCache\CacheInterface) {
             \App::$SOURCE_CACHE_TTL
         );
         \App::$cache = $staging;
-        (new \BO\Zmsbackend\Helper\WarmSharedCache())->write();
+        (new \BO\Zmsbackend\Helper\WarmSharedCache())->write($standbyNamespace);
         // Readers stay on the previous cache until this switch. The copy keeps
         // every entry the rebuild does not replace.
         \BO\Slim\Helper\CacheBootstrap::publishNamespace(\App::$CACHE_DIR, $standbyNamespace);

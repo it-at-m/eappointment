@@ -1,0 +1,56 @@
+#!/usr/bin/env php
+<?php
+
+$namespace = '';
+$officesFile = '';
+foreach (array_slice($argv, 1) as $arg) {
+    if (str_starts_with($arg, '--namespace=')) {
+        $namespace = substr($arg, strlen('--namespace='));
+    } elseif (str_starts_with($arg, '--offices=')) {
+        $officesFile = substr($arg, strlen('--offices='));
+    }
+}
+
+$root = realpath(__DIR__ . '/..');
+if ($root === false) {
+    fwrite(STDERR, "warmOfficeCaches: cannot find the citizenapi root\n");
+    exit(1);
+}
+chdir($root);
+if (is_file($root . '/vendor/autoload.php')) {
+    require $root . '/vendor/autoload.php';
+} else {
+    require $root . '/../../vendor/autoload.php';
+}
+require $root . '/config.php';
+
+\BO\Slim\Bootstrap::initForCli();
+
+if ($namespace !== 'g1' && $namespace !== 'g2') {
+    fwrite(STDERR, "warmOfficeCaches: unknown namespace\n");
+    exit(1);
+}
+if ($officesFile === '' || !is_file($officesFile)) {
+    fwrite(STDERR, "warmOfficeCaches: missing office list\n");
+    exit(1);
+}
+
+$officeIds = json_decode((string) file_get_contents($officesFile), true);
+if (!is_array($officeIds)) {
+    fwrite(STDERR, "warmOfficeCaches: invalid office list\n");
+    exit(1);
+}
+
+\App::$http = new \BO\Zmsclient\Http(\App::ZMS_API_URL);
+if (\App::$httpPassword !== false) {
+    \App::$http->setUserInfo(\App::$httpUser, \App::$httpPassword);
+}
+\App::$cache = \BO\Slim\Helper\CacheBootstrap::openNamespace(
+    \App::$CACHE_DIR,
+    \App::$SOURCE_CACHE_TTL,
+    $namespace
+);
+
+\BO\Zmscitizenapi\Services\Core\ZmsApiFacadeService::warmOfficeCacheByIds($officeIds);
+
+exit(0);

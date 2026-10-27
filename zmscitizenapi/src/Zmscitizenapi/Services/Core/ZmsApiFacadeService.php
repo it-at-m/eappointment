@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace BO\Zmscitizenapi\Services\Core;
 
 use BO\Slim\Helper\CacheBootstrap;
+use BO\Slim\Helper\ProcessPool;
 use BO\Slim\LoggerService;
 use BO\Zmscitizenapi\Exceptions\UnauthorizedException;
 use BO\Zmscitizenapi\Models\AuthenticatedUser;
@@ -55,7 +56,7 @@ class ZmsApiFacadeService
         [$staging, $namespace] = CacheBootstrap::openStaging(\App::$CACHE_DIR, \App::$SOURCE_CACHE_TTL);
         \App::$cache = $staging;
         try {
-            $warmed = self::loadOfficesAndServicesCache();
+            $warmed = self::loadOfficesAndServicesCache($namespace);
             CacheBootstrap::publishNamespace(\App::$CACHE_DIR, $namespace);
         } catch (\Throwable $exception) {
             \App::$cache = $live;
@@ -68,7 +69,7 @@ class ZmsApiFacadeService
     /**
      * @return array{result: OfficeServiceAndRelationList|array, refreshedKeys: list<string>}
      */
-    private static function loadOfficesAndServicesCache(): array
+    private static function loadOfficesAndServicesCache(?string $namespace = null): array
     {
         $refreshedKeys = ZmsApiClientService::refreshSourceCaches();
         // Offices copy slotsPerAppointment from this cache. Rebuild it before the
@@ -90,7 +91,7 @@ class ZmsApiFacadeService
         $refreshedKeys[] = $cacheKey;
         self::rebuildServicesAndOfficesCache(true, $cacheKey . '_unpublished');
         $refreshedKeys[] = $cacheKey . '_unpublished';
-        foreach (self::warmOfficeCaches() as $officeKey) {
+        foreach (self::warmOfficeCaches($namespace) as $officeKey) {
             $refreshedKeys[] = $officeKey;
         }
 
@@ -108,13 +109,14 @@ class ZmsApiFacadeService
     /**
      * @return list<string>
      */
-    private static function warmOfficeCaches(): array
+    private static function warmOfficeCaches(?string $namespace): array
     {
         $keys = [];
         if (!\App::$cache) {
             return $keys;
         }
 
+        $officeIds = [];
         foreach (self::getOffices(true) as $office) {
             if (!$office instanceof Office) {
                 continue;
@@ -123,22 +125,17 @@ class ZmsApiFacadeService
             if ($officeId <= 0) {
                 continue;
             }
+            $officeIds[] = $officeId;
+        }
 
+        self::warmOfficesInParallel($officeIds, $namespace);
+
+        foreach ($officeIds as $officeId) {
             foreach ([false, true] as $showUnpublished) {
-                self::getServicesByOfficeId($officeId, $showUnpublished, true);
                 $key = self::CACHE_KEY_SERVICES_BY_OFFICE_PREFIX . $officeId . ($showUnpublished ? '_unpublished' : '');
                 if (\App::$cache->get($key)) {
                     $keys[] = $key;
                 }
-            }
-
-            try {
-                ZmsApiClientService::getMergedMailTemplates($officeId, true);
-            } catch (\Throwable $exception) {
-                LoggerService::logError($exception, null, null, [
-                    'officeId' => $officeId,
-                    'context' => 'cache warmup mail templates',
-                ]);
             }
             $mailKey = 'merged_mailtemplates_' . $officeId;
             if (\App::$cache->get($mailKey)) {
@@ -147,6 +144,99 @@ class ZmsApiFacadeService
         }
 
         return $keys;
+    }
+
+    /**
+     * @param list<int> $officeIds
+     */
+    public static function warmOfficeCacheByIds(array $officeIds): void
+    {
+        foreach ($officeIds as $officeId) {
+            $id = (int) $officeId;
+            if ($id <= 0) {
+                continue;
+            }
+            try {
+                self::warmOneOffice($id);
+            } catch (\Throwable $exception) {
+                LoggerService::logError($exception, null, null, [
+                    'officeId' => $id,
+                    'context' => 'cache warmup office',
+                ]);
+            }
+        }
+    }
+
+    private static function warmOneOffice(int $officeId): void
+    {
+        foreach ([false, true] as $showUnpublished) {
+            self::getServicesByOfficeId($officeId, $showUnpublished, true);
+        }
+
+        try {
+            ZmsApiClientService::getMergedMailTemplates($officeId, true);
+        } catch (\Throwable $exception) {
+            LoggerService::logError($exception, null, null, [
+                'officeId' => $officeId,
+                'context' => 'cache warmup mail templates',
+            ]);
+        }
+    }
+
+    /**
+     * PHPUnit builds this cache in the test process. A worker would miss the
+     * mocked backend client, so tests stay on the in-process loop.
+     *
+     * @param list<int> $officeIds
+     */
+    private static function warmOfficesInParallel(array $officeIds, ?string $namespace): void
+    {
+        $script = dirname(__DIR__, 4) . '/bin/warmOfficeCaches';
+        $testing = class_exists(\PHPUnit\Framework\TestCase::class, false);
+        $workers = min(ProcessPool::workerCount(), count($officeIds));
+        if ($officeIds === [] || $namespace === null || $testing || $workers < 2 || !is_file($script)) {
+            self::warmOfficeCacheByIds($officeIds);
+            return;
+        }
+
+        $chunks = array_chunk($officeIds, (int) ceil(count($officeIds) / $workers));
+        $files = [];
+        try {
+            $commands = [];
+            foreach ($chunks as $chunk) {
+                $file = tempnam(sys_get_temp_dir(), 'zms-office-');
+                if ($file === false) {
+                    throw new \RuntimeException('Could not create an office warmup file');
+                }
+                file_put_contents($file, json_encode(array_values($chunk), JSON_THROW_ON_ERROR));
+                $files[] = $file;
+                $commands[] = [ProcessPool::phpBinary(), $script, '--namespace=' . $namespace, '--offices=' . $file];
+            }
+
+            LoggerService::logInfo('Rebuilding office caches in parallel', [
+                'workers' => count($commands),
+                'offices' => count($officeIds),
+            ]);
+
+            $failed = ProcessPool::run($commands, dirname($script, 2));
+            foreach ($failed as $index) {
+                LoggerService::logError(new \RuntimeException('An office cache worker failed'), null, null, [
+                    'worker' => $index,
+                ]);
+                self::warmOfficeCacheByIds($chunks[$index]);
+            }
+        } catch (\Throwable $exception) {
+            LoggerService::logError($exception, null, null, [
+                'context' => 'cache warmup office workers',
+            ]);
+            self::warmOfficeCacheByIds($officeIds);
+        } finally {
+            foreach ($files as $file) {
+                if (is_file($file)) {
+                    unlink($file);
+                }
+            }
+        }
     }
 
     /**
