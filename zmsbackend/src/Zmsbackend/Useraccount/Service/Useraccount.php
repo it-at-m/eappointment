@@ -587,75 +587,40 @@ class Useraccount extends \BO\Zmsbackend\Base
     }
 
     /**
+     * The department set is chosen on the request, so this list is not cached.
+     *
      * @SuppressWarnings(NPathComplexity)
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function readCollectionByDepartmentIds($departmentIds, int $resolveReferences = 0, bool $disableCache = false, $workstation = null)
     {
-        sort($departmentIds);
-        $version = $this->getUseraccountCacheVersion();
-        $workstationKey = '';
-        if ($workstation && !$workstation->getUseraccount()->isSuperUser()) {
-            $workstationKey = '-workstation-' . $workstation->getUseraccount()->id;
-        }
-        $cacheKey = "useraccountReadByDepartmentIds-v{$version}-" . implode(',', $departmentIds) . "-$resolveReferences$workstationKey";
-        $result = null;
-
-        if (!$disableCache && App::$cache && App::$cache->has($cacheKey)) {
-            $result = App::$cache->get($cacheKey);
-            if ($result && App::$log) {
-                App::$log->info('Useraccount department list cache hit', [
-                    'cache_key' => $cacheKey,
-                    'department_ids' => $departmentIds,
-                    'resolveReferences' => $resolveReferences,
-                    'count' => $result->count()
-                ]);
-            }
-        }
-
-        if (empty($result)) {
-            $collection = new Collection();
-            $query = new \BO\Zmsbackend\Useraccount\Repository\Useraccount(\BO\Zmsbackend\Query\Base::SELECT);
-            $query->addResolvedReferences($resolveReferences)
+        $collection = new Collection();
+        $query = new \BO\Zmsbackend\Useraccount\Repository\Useraccount(\BO\Zmsbackend\Query\Base::SELECT);
+        $query->addResolvedReferences($resolveReferences)
             ->addConditionDepartmentIds($departmentIds)
             ->addEntityMapping()
             ->addOrderByName();
 
-            // Exclude superusers if workstation user is not superuser
-            if ($workstation && !$workstation->getUseraccount()->isSuperUser()) {
-                $query->addConditionExcludeSuperusers();
-            }
+        if ($workstation && !$workstation->getUseraccount()->isSuperUser()) {
+            $query->addConditionExcludeSuperusers();
+        }
 
-            $result = $this->fetchList($query, new Entity());
-            if (count($result)) {
-                foreach ($result as $entity) {
-                    $collection->addEntity($entity);
-                }
-                if (0 < $resolveReferences) {
-                    $departmentMap = $this->readAssignedDepartmentListsForAll($collection, $resolveReferences - 1);
-                    foreach ($collection as $entity) {
-                        if (isset($departmentMap[$entity->id])) {
-                            $entity->departments = $departmentMap[$entity->id];
-                        }
+        $result = $this->fetchList($query, new Entity());
+        if (count($result)) {
+            foreach ($result as $entity) {
+                $collection->addEntity($entity);
+            }
+            if (0 < $resolveReferences) {
+                $departmentMap = $this->readAssignedDepartmentListsForAll($collection, $resolveReferences - 1);
+                foreach ($collection as $entity) {
+                    if (isset($departmentMap[$entity->id])) {
+                        $entity->departments = $departmentMap[$entity->id];
                     }
-                }
-            }
-            $result = $collection;
-
-            if (App::$cache) {
-                App::$cache->set($cacheKey, $result);
-                $this->registerCacheKeyForDepartments($departmentIds, $cacheKey);
-                if (App::$log) {
-                    App::$log->info('Useraccount department list cache set', [
-                        'cache_key' => $cacheKey,
-                        'department_ids' => $departmentIds,
-                        'resolveReferences' => $resolveReferences,
-                        'count' => $result->count()
-                    ]);
                 }
             }
         }
 
-        return $result;
+        return $collection;
     }
 
     public function writeEntity(\BO\Zmsentities\Useraccount $entity, int $resolveReferences = 0)
@@ -945,54 +910,42 @@ class Useraccount extends \BO\Zmsbackend\Base
     }
 
     /**
-     * @SuppressWarnings(NPathComplexity)
-     *
+     * An empty query is the user list page and can be rebuilt. A typed search cannot.
      */
     public function readSearch(array $parameter, int $resolveReferences = 0, $workstation = null, bool $disableCache = false)
     {
-        $queryString = isset($parameter['query']) ? $parameter['query'] : '';
-        $cacheKey = $this->buildSearchCacheKey('useraccountReadSearch', $resolveReferences, $workstation, $queryString);
-        $result = $this->getCachedResult($cacheKey, $disableCache, 'Useraccount search cache hit', [
-            'query' => $queryString,
-            'resolveReferences' => $resolveReferences
-        ]);
-
-        if (empty($result)) {
-            $result = $this->executeSearchQuery($parameter, $resolveReferences, $workstation);
-            $this->setCachedResult($cacheKey, $result, [self::CACHE_INDEX_GLOBAL], 'Useraccount search cache set', [
+        $queryString = isset($parameter['query']) ? (string) $parameter['query'] : '';
+        $cacheKey = null;
+        $result = null;
+        if ($queryString === '') {
+            $cacheKey = $this->buildSearchCacheKey('useraccountReadSearch', $resolveReferences, $workstation, $queryString);
+            $result = $this->getCachedResult($cacheKey, $disableCache, 'Useraccount search cache hit', [
                 'query' => $queryString,
                 'resolveReferences' => $resolveReferences
             ]);
+        }
+
+        if (empty($result)) {
+            $result = $this->executeSearchQuery($parameter, $resolveReferences, $workstation);
+            if ($cacheKey !== null) {
+                $this->setCachedResult($cacheKey, $result, [self::CACHE_INDEX_GLOBAL], 'Useraccount search cache set', [
+                    'query' => $queryString,
+                    'resolveReferences' => $resolveReferences
+                ]);
+            }
         }
 
         return $result;
     }
 
     /**
-     * @SuppressWarnings(NPathComplexity)
+     * The department set is chosen on the request, so this search is not cached.
      *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function readSearchByDepartmentIds(array $departmentIds, array $parameter, int $resolveReferences = 0, $workstation = null, bool $disableCache = false)
     {
-        sort($departmentIds);
-        $queryString = isset($parameter['query']) ? $parameter['query'] : '';
-        $cacheKey = $this->buildSearchCacheKey('useraccountReadSearchByDepartmentIds', $resolveReferences, $workstation, $queryString, $departmentIds);
-        $result = $this->getCachedResult($cacheKey, $disableCache, 'Useraccount search by department cache hit', [
-            'department_ids' => $departmentIds,
-            'query' => $queryString,
-            'resolveReferences' => $resolveReferences
-        ]);
-
-        if (empty($result)) {
-            $result = $this->executeSearchByDepartmentIdsQuery($departmentIds, $parameter, $resolveReferences, $workstation);
-            $this->setCachedResult($cacheKey, $result, $departmentIds, 'Useraccount search by department cache set', [
-                'department_ids' => $departmentIds,
-                'query' => $queryString,
-                'resolveReferences' => $resolveReferences
-            ]);
-        }
-
-        return $result;
+        return $this->executeSearchByDepartmentIdsQuery($departmentIds, $parameter, $resolveReferences, $workstation);
     }
 
     public function readListRole($roleName, int $resolveReferences = 0, $workstation = null)
@@ -1055,74 +1008,31 @@ class Useraccount extends \BO\Zmsbackend\Base
     }
 
     /**
+     * The department set is chosen on the request, so this list is not cached.
+     *
      * @SuppressWarnings(NPathComplexity)
-     *
-     * @param bool $disableCache
-     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function readListByRoleAndDepartmentIds($roleName, array $departmentIds, int $resolveReferences = 0, bool $disableCache = false, $workstation = null)
     {
-        sort($departmentIds);
-        $version = $this->getUseraccountCacheVersion();
-        $workstationKey = '';
+        if (empty($roleName) || empty($departmentIds)) {
+            return new Collection();
+        }
+
+        $query = new \BO\Zmsbackend\Useraccount\Repository\Useraccount(\BO\Zmsbackend\Query\Base::SELECT);
+        $query->addResolvedReferences($resolveReferences)
+            ->addEntityMapping()
+            ->addOrderByName();
+
+        $query->addConditionRoleName($roleName);
+        $query->addConditionDepartmentIds($departmentIds);
+
         if ($workstation && !$workstation->getUseraccount()->isSuperUser()) {
-            $workstationKey = '-workstation-' . $workstation->getUseraccount()->id;
+            $query->addConditionExcludeSuperusers();
         }
 
-        $cacheKey = $this->sanitizeCacheKey(
-            "useraccountReadByRoleAndDepartmentIds-v{$version}-$roleName-" . implode(',', $departmentIds) . "-$resolveReferences$workstationKey"
-        );
-        $result = null;
-
-        if (!$disableCache && App::$cache && App::$cache->has($cacheKey)) {
-            $result = App::$cache->get($cacheKey);
-            if ($result && App::$log) {
-                App::$log->info('Useraccount role and department list cache hit', [
-                    'cache_key' => $cacheKey,
-                    'role_name' => $roleName,
-                    'department_ids' => $departmentIds,
-                    'resolveReferences' => $resolveReferences,
-                    'count' => $result->count()
-                ]);
-            }
-        }
-
-        if (empty($result)) {
-            if (empty($roleName) || empty($departmentIds)) {
-                return new Collection();
-            }
-
-            $query = new \BO\Zmsbackend\Useraccount\Repository\Useraccount(\BO\Zmsbackend\Query\Base::SELECT);
-            $query->addResolvedReferences($resolveReferences)
-                ->addEntityMapping()
-                ->addOrderByName();
-
-            $query->addConditionRoleName($roleName);
-            $query->addConditionDepartmentIds($departmentIds);
-
-            if ($workstation && !$workstation->getUseraccount()->isSuperUser()) {
-                $query->addConditionExcludeSuperusers();
-            }
-
-            $statement = $this->fetchStatement($query);
-            $result = $this->readListStatement($statement, $resolveReferences);
-
-            if (App::$cache) {
-                App::$cache->set($cacheKey, $result);
-                $this->registerCacheKeyForDepartments($departmentIds, $cacheKey);
-                if (App::$log) {
-                    App::$log->info('Useraccount role and department list cache set', [
-                        'cache_key' => $cacheKey,
-                        'role_name' => $roleName,
-                        'department_ids' => $departmentIds,
-                        'resolveReferences' => $resolveReferences,
-                        'count' => $result->count()
-                    ]);
-                }
-            }
-        }
-
-        return $result;
+        $statement = $this->fetchStatement($query);
+        return $this->readListStatement($statement, $resolveReferences);
     }
 
     /**
