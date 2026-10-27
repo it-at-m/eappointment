@@ -38,18 +38,31 @@ class ZmsApiFacadeService
     private const string CACHE_KEY_SERVICES_BY_OFFICE_PREFIX = 'processed_services_by_office_';
 
     /**
-     * Fetch fresh source data and overwrite the public offices-and-services cache in place.
-     * Existing entries stay readable until the new values are written.
+     * Drop the citizen API cache, then load source, scopes, offices, services,
+     * and the combined offices-and-services list again.
      *
      * @return array{result: OfficeServiceAndRelationList|array, refreshedKeys: list<string>}
      */
     public static function warmOfficesAndServicesCache(): array
     {
+        if (\App::$cache) {
+            \App::$cache->clear();
+        }
+
         $refreshedKeys = ZmsApiClientService::refreshSourceCaches();
         // Offices copy slotsPerAppointment from this cache. Rebuild it before the
         // offices-and-services payload, or the new source is mapped onto the old limit.
         self::getScopes(true);
         $refreshedKeys[] = self::CACHE_KEY_SCOPES;
+
+        self::getOffices(false);
+        self::getOffices(true);
+        self::getServices(false);
+        self::getServices(true);
+        $refreshedKeys[] = self::CACHE_KEY_OFFICES;
+        $refreshedKeys[] = self::CACHE_KEY_OFFICES . '_unpublished';
+        $refreshedKeys[] = self::CACHE_KEY_SERVICES;
+        $refreshedKeys[] = self::CACHE_KEY_SERVICES . '_unpublished';
 
         $cacheKey = self::CACHE_KEY_OFFICES_AND_SERVICES;
         $result = self::rebuildServicesAndOfficesCache(false, $cacheKey);

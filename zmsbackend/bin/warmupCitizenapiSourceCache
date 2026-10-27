@@ -9,6 +9,17 @@ if (!isset($argv[1]) || $argv[1] !== '--commit') {
     exit(0);
 }
 
+if (\App::$cache instanceof \Psr\SimpleCache\CacheInterface) {
+    try {
+        \App::$cache->clear();
+        \App::$log->info('Cleared the API cache before warming the citizen API');
+    } catch (\Throwable $exception) {
+        \App::$log->error('Failed to clear the API cache before warming the citizen API', [
+            'error' => $exception->getMessage(),
+        ]);
+    }
+}
+
 $url = getenv('ZMS_CITIZENAPI_WARMUP_URL') ?: '';
 if ($url === '') {
     \App::$log->info('Skipping citizenapi source cache warmup (ZMS_CITIZENAPI_WARMUP_URL unset)');

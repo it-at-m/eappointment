@@ -463,7 +463,7 @@
  * @swagger
  * /source-cache/warmup/:
  *   post:
- *     summary: Refresh the offices-and-services source cache in place
+ *     summary: Clear the cache, then reload offices, services, and the combined list
  *     tags:
  *       - cache
  *     parameters:
