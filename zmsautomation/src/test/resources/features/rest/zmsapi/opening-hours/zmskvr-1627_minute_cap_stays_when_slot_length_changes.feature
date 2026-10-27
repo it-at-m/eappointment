@@ -6,7 +6,8 @@ Feature: The appointment cap stays in minutes when the slot length changes
   So that changing Terminabstand does not rescale the appointment budget
 
   # ZMSKVR-1627. No separate "wird getestet von" issue is linked on the pull request.
-  # Scope 96 (Standesamt München Geburtenbüro, office 10469) is not used by another scenario.
+  # Scope 96 (Standesamt München Geburtenbüro, office 10469) is not used outside this feature.
+  # The three scenarios share it, so each holds scope 96 until it finishes.
   # Its provider row exists, so the scope can be saved.
   # The cap is set to 90 minutes. A future 60-minute hour is saved at 20 minutes per slot,
   # then saved again at 30. Both lengths divide that hour. If that hour overlaps an
@@ -18,7 +19,8 @@ Feature: The appointment cap stays in minutes when the slot length changes
     Given the ZMS API is available
 
   Scenario: Saving a different slot length leaves the minute cap unchanged
-    Given I am logged in to the ZMS API as "system_admin"
+    Given scope 96 is held until this scenario ends
+    And I am logged in to the ZMS API as "system_admin"
     When I set the appointment cap for scope 96 to 90 minutes with the X-AuthKey
     And I save a future opening hour at scope 96 with a new slot length with the X-AuthKey
     Then the saved opening hour uses the new slot length with the X-AuthKey
@@ -27,7 +29,8 @@ Feature: The appointment cap stays in minutes when the slot length changes
     Then the response status code should be 200
 
   Scenario: The appointment cap can be set and cleared
-    Given I am logged in to the ZMS API as "system_admin"
+    Given scope 96 is held until this scenario ends
+    And I am logged in to the ZMS API as "system_admin"
     When I set the appointment cap for scope 96 to 90 minutes with the X-AuthKey
     Then scope 96 appointment cap should be 90 minutes with the X-AuthKey
     When I clear the appointment cap for scope 96 with the X-AuthKey
@@ -36,7 +39,8 @@ Feature: The appointment cap stays in minutes when the slot length changes
     Then the response status code should be 200
 
   Scenario: An appointment on the saved series uses that slot length
-    Given I am logged in to the ZMS API as "system_admin"
+    Given scope 96 is held until this scenario ends
+    And I am logged in to the ZMS API as "system_admin"
     When I save a future opening hour at scope 96 with a new slot length with the X-AuthKey
     Then the saved opening hour uses the new slot length with the X-AuthKey
     When I reserve an appointment on the saved opening hour at scope 96 with the X-AuthKey
