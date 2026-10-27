@@ -9,7 +9,9 @@
 SET @slot_seconds := 900;
 SET @rounded_start :=
   SEC_TO_TIME(CEILING(TIME_TO_SEC(CURTIME()) / @slot_seconds) * @slot_seconds);
-SET @use_next_day := TIME_TO_SEC(@rounded_start) >= TIME_TO_SEC('23:30:00');
+-- A 15-minute slot that ends exactly at 23:45 is not bookable. Leave two slots
+-- so the suite can still reserve one after setup. Otherwise use tomorrow morning.
+SET @use_next_day := TIME_TO_SEC(@rounded_start) + (2 * @slot_seconds) >= TIME_TO_SEC('23:45:00');
 SET @day := IF(@use_next_day, DATE_ADD(CURDATE(), INTERVAL 1 DAY), CURDATE());
 SET @start := IF(@use_next_day, '09:00:00', @rounded_start);
 SET @end := IF(@use_next_day, '11:00:00', '23:45:00');
