@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-10-27T11:38:42.844Z",
+  "publishedAt": "2026-10-28T00:24:40.936Z",
   "branches": [
     {
       "name": "next",
@@ -348,6 +348,12 @@
       "slug": "fix-zmsstatistic-psalm-alerts",
       "runId": "34109819115",
       "runStartedAt": "2026-09-07T10:08:06Z"
+    },
+    {
+      "name": "hourly-cache-reset",
+      "slug": "hourly-cache-reset",
+      "runId": "40602601087",
+      "runStartedAt": "2026-10-27T23:30:35Z"
     },
     {
       "name": "maintenance-gh-3481-english-cucumber",
