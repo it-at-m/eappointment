@@ -23,6 +23,7 @@ Dieses Handbuch ist die Hauptanlaufstelle auf [GitHub Pages](https://it-at-m.git
 - [DLDB-Schnittstellendokumentation](./operations/dldb-interface-documentation.md)
 - [Terminvarianten Ruppertstraße (ZMSKVR-1046)](./operations/ruppertstrasse-booking-variants.md) — Multi-Scope-RR, Shared Booking, Pass exklusiv/gemischt
 - [Monolog-Logging](./operations/monolog-logging.md) — `App::$log`, `DEBUGLEVEL`
+- [Gemeinsamer Cache-Aufbau](./operations/shared-cache-warmup.md) — Bereitschaftskopie, stündliche Veröffentlichung
 - [Monitoring und Status](./operations/monitoring-and-status.md) — Grafana, `GET /status/`
 
 ## Repository-Umfang
