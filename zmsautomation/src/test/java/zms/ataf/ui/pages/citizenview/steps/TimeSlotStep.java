@@ -790,8 +790,23 @@ public final class TimeSlotStep {
     public void assertListDateAccordions(int expectedCount) {
         context.set();
         JsonNode state = waitForListAccordionCount(expectedCount);
+        Assert.assertEquals(state.path("count").asInt(), expectedCount, "Date accordion count: " + state);
+        rememberListAccordions(state);
+    }
+
+    public void assertLoadedListDateAccordions() {
+        context.set();
+        JsonNode state = new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(defaultWaitSeconds))
+                .until(d -> {
+                    JsonNode node = listSnapshot();
+                    return node.path("count").asInt() > 0 ? node : null;
+                });
+        rememberListAccordions(state);
+    }
+
+    private void rememberListAccordions(JsonNode state) {
         slotState.listAccordionCount = state.path("count").asInt();
-        Assert.assertEquals(slotState.listAccordionCount, expectedCount, "Date accordion count: " + state);
+        Assert.assertTrue(slotState.listAccordionCount > 0, "Date accordion count: " + state);
         Assert.assertEquals(state.path("expanded").get(0).asText(), "true", "The first date stays open: " + state);
         for (int i = 1; i < state.path("expanded").size(); i++) {
             Assert.assertEquals(
@@ -804,6 +819,31 @@ public final class TimeSlotStep {
                     "Date heading should be a weekday and a date: " + label.asText());
         }
         slotState.openListHeading = state.path("labels").get(0).asText();
+    }
+
+    /** The next month can arrive across more than one render, so wait until the count stops growing. */
+    private JsonNode waitForListToGrow(int before) {
+        long deadline = System.currentTimeMillis() + defaultWaitSeconds * 1000L;
+        int last = before;
+        int stableReads = 0;
+        JsonNode settled = null;
+        while (System.currentTimeMillis() < deadline) {
+            JsonNode snap = listSnapshot();
+            int now = snap.path("count").asInt();
+            if (now > before && now == last) {
+                stableReads++;
+                if (stableReads >= 2) {
+                    settled = snap;
+                    break;
+                }
+            } else {
+                stableReads = now > before ? 1 : 0;
+            }
+            last = now;
+            CitizenViewWaits.sleepQuiet(300L);
+        }
+        Assert.assertNotNull(settled, "Mehr laden did not add dates past " + before);
+        return settled;
     }
 
     public void assertOpenListGroupsByHour() {
@@ -1167,13 +1207,18 @@ public final class TimeSlotStep {
 
     public void loadMoreListDates() {
         JsonNode before = waitForListAccordionCount(slotState.listAccordionCount);
+        int beforeCount = before.path("count").asInt();
         slotState.openListHeading = before.path("labels").get(0).asText();
         Assert.assertTrue(shadow.clickButtonContaining("Mehr laden"), "Could not click Mehr laden");
-        new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(defaultWaitSeconds))
-                .until(d -> listSnapshot().path("count").asInt() > slotState.listAccordionCount);
-        JsonNode after = listSnapshot();
+        JsonNode after = waitForListToGrow(beforeCount);
         int count = after.path("count").asInt();
-        Assert.assertTrue(count > slotState.listAccordionCount && count <= slotState.listAccordionCount + 3, "Mehr laden adds at most three dates: " + after);
+        // The list opens on five dates. A short month shows fewer, so the same click also
+        // fills that gap and can add more than three visible dates. Once five are showing,
+        // Mehr laden adds at most three.
+        int allowed = beforeCount + 3 + Math.max(0, 5 - beforeCount);
+        Assert.assertTrue(
+                count > beforeCount && count <= allowed,
+                "Mehr laden adds at most three dates once five are shown: " + after);
         Assert.assertEquals(after.path("labels").get(0).asText(), slotState.openListHeading, "Mehr laden keeps the open date");
         Assert.assertEquals(after.path("expanded").get(0).asText(), "true", "The open date stays open after Mehr laden");
         slotState.listAccordionCount = count;
