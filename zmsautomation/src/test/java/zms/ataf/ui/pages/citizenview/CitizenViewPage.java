@@ -1135,10 +1135,6 @@ public class CitizenViewPage extends BasePage {
         timeSlot.assertLoadedListDateAccordions();
     }
 
-    public void loadMoreListDatesUntil(int minimum) {
-        timeSlot.loadMoreListDatesUntil(minimum);
-    }
-
     public void assertOpenListGroupsByHour() {
         timeSlot.assertOpenListGroupsByHour();
     }
