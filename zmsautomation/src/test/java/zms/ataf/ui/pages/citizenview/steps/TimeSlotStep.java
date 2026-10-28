@@ -790,8 +790,55 @@ public final class TimeSlotStep {
     public void assertListDateAccordions(int expectedCount) {
         context.set();
         JsonNode state = waitForListAccordionCount(expectedCount);
+        Assert.assertEquals(state.path("count").asInt(), expectedCount, "Date accordion count: " + state);
+        rememberListAccordions(state);
+    }
+
+    public void assertLoadedListDateAccordions() {
+        context.set();
+        JsonNode state = new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(defaultWaitSeconds))
+                .until(d -> {
+                    JsonNode node = listSnapshot();
+                    return node.path("count").asInt() > 0 ? node : null;
+                });
+        rememberListAccordions(state);
+    }
+
+    /**
+     * The daylist is only the rest of the current month. Near the end of the month that is
+     * fewer than five dates, so Mehr laden has to fetch the next month before five can show.
+     * That click can reveal more than three because the window was already wider than the
+     * dates on screen. The later Mehr laden step still checks the at-most-three increase.
+     */
+    public void loadMoreListDatesUntil(int minimum) {
+        context.set();
+        JsonNode state = listSnapshot();
+        int count = state.path("count").asInt();
+        int clicks = 0;
+        while (count < minimum) {
+            Assert.assertTrue(clicks < 4, "Mehr laden did not reach " + minimum + " dates: " + state);
+            String openHeading = state.path("labels").get(0).asText();
+            Assert.assertTrue(shadow.clickButtonContaining("Mehr laden"), "Could not click Mehr laden: " + state);
+            int before = count;
+            state = waitForListToGrow(before);
+            count = state.path("count").asInt();
+            Assert.assertEquals(
+                    state.path("labels").get(0).asText(), openHeading, "Mehr laden keeps the open date: " + state);
+            Assert.assertEquals(
+                    state.path("expanded").get(0).asText(),
+                    "true",
+                    "The open date stays open after Mehr laden: " + state);
+            clicks++;
+        }
+        slotState.listAccordionCount = count;
+        if (state.path("labels").size() > 0) {
+            slotState.openListHeading = state.path("labels").get(0).asText();
+        }
+    }
+
+    private void rememberListAccordions(JsonNode state) {
         slotState.listAccordionCount = state.path("count").asInt();
-        Assert.assertEquals(slotState.listAccordionCount, expectedCount, "Date accordion count: " + state);
+        Assert.assertTrue(slotState.listAccordionCount > 0, "Date accordion count: " + state);
         Assert.assertEquals(state.path("expanded").get(0).asText(), "true", "The first date stays open: " + state);
         for (int i = 1; i < state.path("expanded").size(); i++) {
             Assert.assertEquals(
@@ -804,6 +851,31 @@ public final class TimeSlotStep {
                     "Date heading should be a weekday and a date: " + label.asText());
         }
         slotState.openListHeading = state.path("labels").get(0).asText();
+    }
+
+    /** The next month can arrive across more than one render, so wait until the count stops growing. */
+    private JsonNode waitForListToGrow(int before) {
+        long deadline = System.currentTimeMillis() + defaultWaitSeconds * 1000L;
+        int last = before;
+        int stableReads = 0;
+        JsonNode settled = null;
+        while (System.currentTimeMillis() < deadline) {
+            JsonNode snap = listSnapshot();
+            int now = snap.path("count").asInt();
+            if (now > before && now == last) {
+                stableReads++;
+                if (stableReads >= 2) {
+                    settled = snap;
+                    break;
+                }
+            } else {
+                stableReads = now > before ? 1 : 0;
+            }
+            last = now;
+            CitizenViewWaits.sleepQuiet(300L);
+        }
+        Assert.assertNotNull(settled, "Mehr laden did not add dates past " + before);
+        return settled;
     }
 
     public void assertOpenListGroupsByHour() {
