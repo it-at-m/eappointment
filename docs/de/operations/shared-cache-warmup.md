@@ -32,14 +32,14 @@ flowchart LR
 4. Eine Anfrage, die schon einen Adapter hat, behält ihn. Die nächste Anfrage liest den Zeiger und öffnet die veröffentlichte Generation.
 5. Ein fehlgeschlagener Aufbau ruft `abortStaging()` auf, veröffentlicht nicht und lässt die vorherige Generation liegen.
 
-Der erste Stundenlauf veröffentlicht zweimal. Das Backend findet keinen Zeiger, baut `g1` und veröffentlicht es. Der Citizen-Aufbau kopiert danach `g1` nach `g2`, frischt die Citizen-Schlüssel auf und veröffentlicht `g2`. Spätere Läufe tauschen nur noch `g1` und `g2`.
+Der erste Stundenlauf veröffentlicht `g1` aus dem Backend. `g2` wird nur veröffentlicht, wenn `ZMS_CITIZENAPI_WARMUP_URL` gesetzt ist und dieser POST gelingt. Spätere Läufe tauschen die Generation, die gerade lebt.
 
 ## Reihenfolge
 
 `zmsbackend/cron/cronjob.hourly` ruft nach dem DLDB-Import `bin/warmupCitizenapiSourceCache --commit` auf.
 
 1. Das Backend baut den gemeinsamen API-Cache in die Bereitschaftskopie und veröffentlicht sie.
-2. Dasselbe Skript sendet den Citizen-Aufbau per POST. Die URL ist `ZMS_CITIZENAPI_WARMUP_URL`. Der Header `X-Source-Cache-Warmup-Token` wird gesendet, wenn `SOURCE_CACHE_WARMUP_TOKEN` gesetzt ist. Eine leere URL überspringt den Aufruf. Das Curl-Timeout ist 180 Sekunden. Ein fehlgeschlagener Aufruf wird geloggt, das Skript endet trotzdem mit Exit 0.
+2. Dasselbe Skript sendet den Citizen-Aufbau per POST. Die URL ist `ZMS_CITIZENAPI_WARMUP_URL`. Der Header `X-Source-Cache-Warmup-Token` wird gesendet, wenn `SOURCE_CACHE_WARMUP_TOKEN` gesetzt ist. Eine leere URL überspringt den Aufruf. Das Curl-Timeout ist 180 Sekunden. Ein fehlgeschlagener Citizen-Aufruf wird geloggt. Das Skript endet mit Status 0, außer der gemeinsame Cache-Aufbau ist fehlgeschlagen.
 3. `POST /source-cache/warmup/` öffnet die andere Generation, kopiert den Cache, den das Backend gerade veröffentlicht hat, frischt die Citizen-Schlüssel auf und veröffentlicht. Dieser POST ist eine neue PHP-Anfrage und liest deshalb den veröffentlichten Backend-Cache. Citizen-Schlüssel, die die Slot-Länge aus `/source/{name}/` übernehmen, sehen damit den neuen Wert.
 
 `GET /offices-and-services/` bleibt Cache-Aside: ein Treffer wird so ausgeliefert, wie er liegt, ein Fehltreffer baut diese Antwort weiterhin neu.
@@ -84,4 +84,4 @@ podman exec -it zms-web bash -lc "cd zmsbackend && bin/warmupCitizenapiSourceCac
 podman exec -it zms-web bash -lc "./cli modules clear-local-cache"
 ```
 
-`clear-local-cache` entfernt den Inhalt des Cache-Verzeichnisses. Die nächste Anfrage nutzt `@`, bis ein Stundenlauf `g1` und danach `g2` veröffentlicht.
+`clear-local-cache` entfernt den Inhalt des Cache-Verzeichnisses. Die nächste Anfrage nutzt `@`, bis ein Stundenlauf die Backend-Generation veröffentlicht. Die zweite Generation wird nur veröffentlicht, wenn der Citizen-Aufbau gelingt.

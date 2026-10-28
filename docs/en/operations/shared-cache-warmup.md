@@ -32,14 +32,14 @@ flowchart LR
 4. A request that already has an adapter keeps it. The next request reads the pointer and opens the published generation.
 5. A failed rebuild calls `abortStaging()`, does not publish, and leaves the previous generation in place.
 
-The first hourly run publishes twice. The backend finds no pointer, builds `g1`, and publishes it. The citizen warmup then copies `g1` into `g2`, refreshes the citizen keys, and publishes `g2`. Later runs only swap `g1` and `g2`.
+The first hourly run publishes `g1` from the backend. It publishes `g2` only when `ZMS_CITIZENAPI_WARMUP_URL` is set and that POST succeeds. Later runs swap the generation that is live.
 
 ## Order
 
 `zmsbackend/cron/cronjob.hourly` calls `bin/warmupCitizenapiSourceCache --commit` after the DLDB import.
 
 1. The backend rebuilds the shared API cache into the standby and publishes it.
-2. The same script POSTs the citizen warmup. The URL is `ZMS_CITIZENAPI_WARMUP_URL`. The header `X-Source-Cache-Warmup-Token` is sent when `SOURCE_CACHE_WARMUP_TOKEN` is set. An empty URL skips the call. The curl timeout is 180 seconds. A failed call is logged and the script still exits 0.
+2. The same script POSTs the citizen warmup. The URL is `ZMS_CITIZENAPI_WARMUP_URL`. The header `X-Source-Cache-Warmup-Token` is sent when `SOURCE_CACHE_WARMUP_TOKEN` is set. An empty URL skips the call. The curl timeout is 180 seconds. A failed citizen call is logged. The script exits with status 0 unless the shared-cache rebuild failed.
 3. `POST /source-cache/warmup/` opens the other generation, copies the cache the backend just published, refreshes the citizen keys, and publishes. That POST is a new PHP request, so it reads the published backend cache. Citizen keys that copy slot length from `/source/{name}/` therefore see the new value.
 
 `GET /offices-and-services/` stays cache-aside: a hit is served as stored, and a miss still rebuilds that response.
@@ -84,4 +84,4 @@ podman exec -it zms-web bash -lc "cd zmsbackend && bin/warmupCitizenapiSourceCac
 podman exec -it zms-web bash -lc "./cli modules clear-local-cache"
 ```
 
-`clear-local-cache` removes the cache directory contents. The next request uses `@` until an hourly run publishes `g1` and then `g2`.
+`clear-local-cache` removes the cache directory contents. The next request uses `@` until an hourly run publishes the backend generation. The second generation is published only when the citizen warmup succeeds.

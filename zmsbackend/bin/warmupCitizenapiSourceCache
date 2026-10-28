@@ -9,6 +9,7 @@ if (!isset($argv[1]) || $argv[1] !== '--commit') {
     exit(0);
 }
 
+$sharedCacheFailed = false;
 if (\App::$cache instanceof \Psr\SimpleCache\CacheInterface) {
     $live = \App::$cache;
     try {
@@ -28,6 +29,7 @@ if (\App::$cache instanceof \Psr\SimpleCache\CacheInterface) {
         \App::$log->error('Failed to rebuild the shared API cache', [
             'error' => $exception->getMessage(),
         ]);
+        $sharedCacheFailed = true;
     }
 }
 
@@ -67,4 +69,4 @@ if ($url === '') {
     }
 }
 
-exit(0);
+exit($sharedCacheFailed ? 1 : 0);

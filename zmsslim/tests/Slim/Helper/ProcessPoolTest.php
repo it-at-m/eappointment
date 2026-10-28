@@ -42,4 +42,17 @@ class ProcessPoolTest extends TestCase
 
         self::assertSame([1], $failed);
     }
+
+    public function testRunStopsAWorkerThatPassesTheDeadline(): void
+    {
+        $started = time();
+        $failed = ProcessPool::run(
+            [[PHP_BINARY, '-r', 'sleep(30);']],
+            sys_get_temp_dir(),
+            1
+        );
+
+        self::assertSame([0], $failed);
+        self::assertLessThan(15, time() - $started);
+    }
 }
