@@ -32,7 +32,7 @@ flowchart LR
 4. A request that already has an adapter keeps it. The next request reads the pointer and opens the published generation.
 5. A failed rebuild calls `abortStaging()`, does not publish, and leaves the previous generation in place.
 
-The first hourly run publishes `g1` from the backend. It publishes `g2` only when `ZMS_CITIZENAPI_WARMUP_URL` is set and that POST succeeds. Later runs swap the generation that is live.
+If the backend rebuild succeeds, the first hourly run publishes `g1` from the backend. If it fails, the backend publishes nothing, and the citizen warmup still runs. `g2` is published only when `ZMS_CITIZENAPI_WARMUP_URL` is set and that POST succeeds. Later runs swap the generation that is live.
 
 ## Order
 
@@ -84,4 +84,4 @@ podman exec -it zms-web bash -lc "cd zmsbackend && bin/warmupCitizenapiSourceCac
 podman exec -it zms-web bash -lc "./cli modules clear-local-cache"
 ```
 
-`clear-local-cache` removes the cache directory contents. The next request uses `@` until an hourly run publishes the backend generation. The second generation is published only when the citizen warmup succeeds.
+`clear-local-cache` removes the cache directory contents. The next request uses `@` until a warmup run publishes the backend generation. The second generation is published only when the citizen warmup succeeds.

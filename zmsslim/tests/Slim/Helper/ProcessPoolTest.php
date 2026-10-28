@@ -55,4 +55,29 @@ class ProcessPoolTest extends TestCase
         self::assertSame([0], $failed);
         self::assertLessThan(15, time() - $started);
     }
+
+    public function testRunClosesWorkersAlreadyStartedWhenOpeningAnotherThrows(): void
+    {
+        $started = time();
+        try {
+            ProcessPool::run(
+                [
+                    [PHP_BINARY, '-r', 'sleep(30);'],
+                    [],
+                ],
+                sys_get_temp_dir(),
+                30
+            );
+            self::fail('an empty command must throw');
+        } catch (\ValueError $exception) {
+            self::assertSame(
+                'proc_open(): Argument #1 ($command) must have at least one element',
+                $exception->getMessage()
+            );
+        }
+
+        self::assertLessThan(15, time() - $started);
+        $left = shell_exec("ps -eo args | grep -F 'sleep(30);' | grep -v grep | wc -l");
+        self::assertSame(0, (int) $left);
+    }
 }

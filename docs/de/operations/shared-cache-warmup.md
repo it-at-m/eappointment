@@ -32,7 +32,7 @@ flowchart LR
 4. Eine Anfrage, die schon einen Adapter hat, behält ihn. Die nächste Anfrage liest den Zeiger und öffnet die veröffentlichte Generation.
 5. Ein fehlgeschlagener Aufbau ruft `abortStaging()` auf, veröffentlicht nicht und lässt die vorherige Generation liegen.
 
-Der erste Stundenlauf veröffentlicht `g1` aus dem Backend. `g2` wird nur veröffentlicht, wenn `ZMS_CITIZENAPI_WARMUP_URL` gesetzt ist und dieser POST gelingt. Spätere Läufe tauschen die Generation, die gerade lebt.
+Wenn der Backend-Aufbau gelingt, veröffentlicht der erste Stundenlauf `g1` aus dem Backend. Wenn er fehlschlägt, veröffentlicht das Backend nichts, und der Citizen-Aufbau läuft trotzdem. `g2` wird nur veröffentlicht, wenn `ZMS_CITIZENAPI_WARMUP_URL` gesetzt ist und dieser POST gelingt. Spätere Läufe tauschen die Generation, die gerade lebt.
 
 ## Reihenfolge
 
@@ -84,4 +84,4 @@ podman exec -it zms-web bash -lc "cd zmsbackend && bin/warmupCitizenapiSourceCac
 podman exec -it zms-web bash -lc "./cli modules clear-local-cache"
 ```
 
-`clear-local-cache` entfernt den Inhalt des Cache-Verzeichnisses. Die nächste Anfrage nutzt `@`, bis ein Stundenlauf die Backend-Generation veröffentlicht. Die zweite Generation wird nur veröffentlicht, wenn der Citizen-Aufbau gelingt.
+`clear-local-cache` entfernt den Inhalt des Cache-Verzeichnisses. Die nächste Anfrage nutzt `@`, bis ein Aufbau die Backend-Generation veröffentlicht. Die zweite Generation wird nur veröffentlicht, wenn der Citizen-Aufbau gelingt.

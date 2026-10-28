@@ -49,17 +49,17 @@ final class ProcessPool
 
         $running = [];
         $failed = [];
-        foreach ($commands as $index => $command) {
-            $worker = self::open($command, $cwd);
-            if ($worker === null) {
-                $failed[] = $index;
-                continue;
-            }
-            $running[$index] = $worker;
-        }
-
-        $deadline = time() + max(1, $deadlineSeconds);
         try {
+            foreach ($commands as $index => $command) {
+                $worker = self::open($command, $cwd);
+                if ($worker === null) {
+                    $failed[] = $index;
+                    continue;
+                }
+                $running[$index] = $worker;
+            }
+
+            $deadline = time() + max(1, $deadlineSeconds);
             self::wait($running, $failed, $deadline);
         } catch (\Throwable $exception) {
             foreach ($running as $worker) {
