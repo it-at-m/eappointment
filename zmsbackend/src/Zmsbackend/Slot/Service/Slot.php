@@ -347,10 +347,11 @@ class Slot extends \BO\Zmsbackend\Base
     ) {
         $createdAt = time();
         $rows = [];
+        $slotRepository = new \BO\Zmsbackend\Slot\Repository\Slot(\BO\Zmsbackend\Query\Base::INSERT);
         foreach ($slotlist as $slot) {
             $slot = clone $slot;
             $slot->status = 'free';
-            $values = (new \BO\Zmsbackend\Slot\Repository\Slot())->reverseEntityMapping($slot, $availability, $time);
+            $values = $slotRepository->reverseEntityMapping($slot, $availability, $time);
             $values['createTimestamp'] = $createdAt;
             $rows[] = $values;
         }
