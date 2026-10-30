@@ -20,7 +20,10 @@ foreach ($argv as $arg) {
     }
 }
 if (preg_grep('#^--commit$#', $argv)) {
-    \App::$log->info('Start slot calculation', ['time' => $now->format('c')]);
+    \App::$log->info('Start slot calculation', [
+        'time' => $now->format('c'),
+        'scope_ids' => $scopeIds,
+    ]);
     $calculator = new \BO\Zmsbackend\Helper\CalculateSlots((bool) preg_grep('#^--?v(erbose)?$#', $argv));
     try {
         $stepStart = microtime(true);
@@ -39,6 +42,7 @@ if (preg_grep('#^--commit$#', $argv)) {
         $calculator->dumpLogs();
         \App::$log->error('Slot calculation lock timeout', [
             'trace' => $exception->getTraceAsString(),
+            'scope_ids' => $scopeIds,
         ]);
         if ($scopeIds !== []) {
             exit(1);

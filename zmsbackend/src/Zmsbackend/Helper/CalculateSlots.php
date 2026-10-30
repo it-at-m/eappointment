@@ -26,28 +26,49 @@ class CalculateSlots
         $this->startTime = microtime(true);
     }
 
-    public function log(string $message): static
-    {
+    public function log(
+        string $message,
+        ?int $scopeId = null,
+        ?int $availabilityId = null,
+        ?float $durationSeconds = null
+    ): static {
         $time = $this->getSpendTime();
         $memory = memory_get_usage() / (1024 * 1024);
         $text = sprintf("[CalculateSlots %07.3fs %07.1fmb] %s", "$time", $memory, $message);
-        $this->logList[] = $text;
-        if ($this->verbose) {
-            \App::$log->info($message, [
-                'component' => 'CalculateSlots',
-                'elapsed' => $time,
-                'memory_mb' => $memory,
-            ]);
+        $context = [
+            'component' => 'CalculateSlots',
+            'elapsed' => $time,
+            'memory_mb' => $memory,
+            'scope_id' => $scopeId,
+            'availability_id' => $availabilityId,
+        ];
+        if ($durationSeconds !== null) {
+            $context['duration_seconds'] = $durationSeconds;
         }
+        $emit = $this->verbose || $availabilityId !== null;
+        if ($emit) {
+            \App::$log->info($message, $context);
+        }
+        $this->logList[] = [
+            'text' => $text,
+            'scope_id' => $scopeId,
+            'availability_id' => $availabilityId,
+            'emitted' => $emit,
+        ];
         return $this;
     }
 
     public function dumpLogs(): void
     {
-        foreach ($this->logList as $text) {
-            if (!$this->verbose) {
-                \App::$log->info($text, ['component' => 'CalculateSlots']);
+        foreach ($this->logList as $entry) {
+            if ($entry['emitted']) {
+                continue;
             }
+            \App::$log->info($entry['text'], [
+                'component' => 'CalculateSlots',
+                'scope_id' => $entry['scope_id'],
+                'availability_id' => $entry['availability_id'],
+            ]);
         }
         $this->verbose = true;
     }
@@ -146,11 +167,11 @@ class CalculateSlots
         foreach ($scopeIds as $key => $scopeId) {
             $scope = $scopeService->readEntity($scopeId, 1);
             if ($scope === null) {
-                $this->log("Skip missing scope $scopeId");
+                $this->log("Skip missing scope $scopeId", $scopeId);
                 continue;
             }
             if ($this->writeCalculatedScope($scope, $now)) {
-                $this->log("Calculated slots $key/" . ($total - 1) . " for $scope");
+                $this->log("Calculated slots $key/" . ($total - 1) . " for $scope", (int) $scope->id);
             }
         }
     }
@@ -195,9 +216,6 @@ class CalculateSlots
     {
         $slotQuery = new \BO\Zmsbackend\Slot\Service\Slot();
         $updatedList = $slotQuery->writeByScope($scope, $now);
-        foreach ($updatedList as $availability) {
-            $this->log("Updated $availability with reason " . json_encode($availability['processingNote']));
-        }
         if (count($updatedList)) {
             $this->writePostProcessingByScope($scope, $now);
             \BO\Zmsbackend\Connection\Select::writeCommitWithStartLock();
@@ -388,14 +406,14 @@ class CalculateSlots
     {
         $slotQuery = new \BO\Zmsbackend\Slot\Service\Slot();
         if ($slotsProcessed = $slotQuery->deleteSlotProcessOnProcess($scope->id)) {
-            $this->log("Finished to free $slotsProcessed slots for changed/deleted processes");
+            $this->log("Finished to free $slotsProcessed slots for changed/deleted processes", (int) $scope->id);
         }
         $slotQuery->writeCanceledByTimeAndScope($now, $scope);
         $slotQuery->deleteSlotProcessOnSlot($scope->id);
         //$this->log("Finished to free slots for cancelled availabilities");
 
         if ($slotsProcessed = $slotQuery->updateSlotProcessMapping($scope->id)) {
-            $this->log("Updated Slot-Process-Mapping, mapped $slotsProcessed processes");
+            $this->log("Updated Slot-Process-Mapping, mapped $slotsProcessed processes", (int) $scope->id);
         }
     }
 

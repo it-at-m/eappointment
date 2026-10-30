@@ -286,9 +286,11 @@ class Slot extends \BO\Zmsbackend\Base
                 return ($cancelledSlots > 0) ? true : false;
             }
 
+            $scope = $availability->scope ?? null;
             \App::$log->info('availability: ', [
                 'generate_new' => $generateNew,
-                'availability_id' => $availability->id,
+                'scope_id' => is_object($scope) && isset($scope->id) ? (int) $scope->id : null,
+                'availability_id' => (int) $availability->id,
                 'cancelledSlots' => $cancelledSlots
             ]);
 
@@ -328,7 +330,16 @@ class Slot extends \BO\Zmsbackend\Base
         $updatedList = new \BO\Zmsentities\Collection\AvailabilityList();
         foreach ($availabilityList as $availability) {
             $availability->scope = clone $scope; //dayoff is required
-            if ($this->writeByAvailability($availability, $now)) {
+            $availabilityStarted = microtime(true);
+            $changed = $this->writeByAvailability($availability, $now);
+            \App::$log->info($changed ? 'Updated availability' : 'Availability unchanged', [
+                'scope_id' => (int) $scope->id,
+                'availability_id' => (int) $availability->id,
+                'duration_seconds' => round(microtime(true) - $availabilityStarted, 2),
+                'changed' => (bool) $changed,
+                'reason' => $availability['processingNote'] ?? [],
+            ]);
+            if ($changed) {
                 $updatedList->addEntity($availability);
             }
         }
@@ -706,7 +717,10 @@ class Slot extends \BO\Zmsbackend\Base
             try {
                 $status = $status && $this->perform($query);
             } catch (\PDOException $e) {
-                \App::$log->error("Failed to optimize table with query: $query. Error: " . $e->getMessage(), []);
+                \App::$log->error("Failed to optimize table with query: $query. Error: " . $e->getMessage(), [
+                    'scope_id' => null,
+                    'availability_id' => null,
+                ]);
 
                 return false;
             }
