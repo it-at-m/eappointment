@@ -15,7 +15,11 @@
     style="background-color: var(--color-neutrals-blue-xlight)"
   >
     <div class="container">
-      <form class="m-form m-form--default">
+      <form
+        class="m-form m-form--default"
+        @input.capture="onServiceSearchInput"
+        @keydown.capture="onServiceSearchKeydown"
+      >
         <muc-select
           id="service-search"
           :model-value="service"
@@ -194,6 +198,8 @@
 </template>
 
 <script setup lang="ts">
+import type { ExactServiceIdSearchOptions } from "@/utils/exactServiceId";
+
 import {
   MucButton,
   MucCounter,
@@ -230,6 +236,10 @@ import {
   createErrorStates,
   handleApiResponse as handleErrorApiResponse,
 } from "@/utils/errorHandler";
+import {
+  handleExactServiceIdInput,
+  handleExactServiceIdKeydown,
+} from "@/utils/exactServiceId";
 import {
   adjustMainServiceCount,
   adjustSubserviceCount,
@@ -360,9 +370,12 @@ const onServiceSelected = (selected: ServiceImpl | undefined) => {
     return;
   }
 
-  updateServiceLinkId(getServiceInfoId(selected));
+  const source =
+    services.value.find((entry) => entry.id == selected.id) ?? selected;
+
+  updateServiceLinkId(getServiceInfoId(source));
   selectedVariant.value = "";
-  service.value = selected;
+  service.value = source as ServiceImpl;
 };
 
 watch(service, (newService) => {
@@ -852,6 +865,20 @@ const showOnStartPage = (service: Service) => service.showOnStartPage === true;
 const filteredServices = computed(() => {
   return services.value.filter(showOnStartPage);
 });
+
+const exactIdSearchOptions = (): ExactServiceIdSearchOptions<Service> => ({
+  services: services.value.filter(showOnStartPage),
+  noResultMessage: props.t("noServiceFound"),
+  onSelect: (match) => onServiceSelected(match as ServiceImpl),
+});
+
+const onServiceSearchInput = (event: Event) => {
+  handleExactServiceIdInput(event, exactIdSearchOptions());
+};
+
+const onServiceSearchKeydown = (event: KeyboardEvent) => {
+  handleExactServiceIdKeydown(event, exactIdSearchOptions());
+};
 
 /**
  * Collects all service variants (appointment types) for the currently selected service.
