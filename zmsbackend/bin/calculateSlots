@@ -1,7 +1,7 @@
 #!/usr/bin/env php
 <?php
 ini_set('memory_limit', '1024M');
-require_once(__DIR__."/script_bootstrap.php");
+require_once(__DIR__ . "/script_bootstrap.php");
 
 $dates = preg_grep('#^\d\d\d\d-\d\d?-\d\d?#', $argv);
 $now = new \DateTimeImmutable();
@@ -13,13 +13,23 @@ if (count($dates)) {
 if (preg_grep('#^--repair$#', $argv)) {
     // repair flag consumed by CalculateSlots via argv
 }
+$scopeIds = [];
+foreach ($argv as $arg) {
+    if (str_starts_with($arg, '--scopes=')) {
+        $scopeIds = array_values(array_filter(array_map('intval', explode(',', substr($arg, 9)))));
+    }
+}
 if (preg_grep('#^--commit$#', $argv)) {
     \App::$log->info('Start slot calculation', ['time' => $now->format('c')]);
     $calculator = new \BO\Zmsbackend\Helper\CalculateSlots((bool) preg_grep('#^--?v(erbose)?$#', $argv));
     try {
         $stepStart = microtime(true);
-        $delete = (bool) preg_grep('#^--delete$#', $argv);
-        $calculator->writeCalculations($now, $delete);
+        if ($scopeIds !== []) {
+            $calculator->writeScopeIds($now, $scopeIds);
+        } else {
+            $delete = (bool) preg_grep('#^--delete$#', $argv);
+            $calculator->writeCalculations($now, $delete);
+        }
         \App::$log->info('Slot calculation finished', [
             'duration_seconds' => round(microtime(true) - $stepStart, 2),
         ]);
@@ -29,6 +39,9 @@ if (preg_grep('#^--commit$#', $argv)) {
         \App::$log->error('Slot calculation lock timeout', [
             'trace' => $exception->getTraceAsString(),
         ]);
+        if ($scopeIds !== []) {
+            exit(1);
+        }
     } catch (\Exception $exception) {
         $calculator->dumpLogs();
         throw $exception;
