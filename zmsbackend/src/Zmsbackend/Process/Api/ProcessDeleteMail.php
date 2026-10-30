@@ -31,26 +31,55 @@ class ProcessDeleteMail extends \BO\Zmsbackend\Api\BaseController
         array $args
     ) {
         $input = Validator::input()->isJson()->assertValid()->getValue();
-        $process = new Process($input);
+        $requestProcess = new Process($input);
         $initiator = Validator::param('initiator')->isString()->getValue();
 
-        $process->testValid();
-        $this->testProcessAccess($process);
-        $process = (new ProcessRepository())->readEntity($process->id, $process->authKey);
+        $requestProcess->testValid();
+        $this->testProcessAccess($requestProcess);
+
+        $process = (new ProcessRepository())->readEntity(
+            $requestProcess->id,
+            $requestProcess->authKey
+        );
+
         if (!$process instanceof Process) {
             throw new \BO\Zmsbackend\Process\Exception\ProcessNotFound();
         }
+
         $this->testEmailRequired($process);
+
+        // Ursprüngliche Buchungsdaten ausschließlich für die Absagemail.
+        $mailProcess = clone $process;
+        $originalAppointment = $requestProcess->getAppointments()->getFirst();
+
+        if (
+            'admin' === $initiator &&
+            $originalAppointment !== null &&
+            (int) $originalAppointment->date > 0
+        ) {
+            (new \BO\Zmsbackend\Helper\User($request))
+                ->checkPermissions('appointment');
+
+            // Ursprüngliches Datum einschließlich Uhrzeit übernehmen.
+            $mailProcess->getFirstAppointment()->date =
+                $originalAppointment->date;
+
+            // Ursprüngliche Dienstleistungen einschließlich Anzahl übernehmen.
+            if (isset($input['requests'])) {
+                $mailProcess->requests = clone $requestProcess->getRequests();
+            }
+        }
 
         \BO\Zmsbackend\Connection\Select::getWriteConnection();
 
-        $mail = $this->writeMail($process, $initiator);
+        $mail = $this->writeMail($mailProcess, $initiator);
 
         $message = \BO\Zmsbackend\Api\Response\Message::create($request);
         $message->data = $mail;
 
         $response = Render::withLastModified($response, time(), '0');
         $response = Render::withJson($response, $message, 200);
+
         return $response;
     }
 
