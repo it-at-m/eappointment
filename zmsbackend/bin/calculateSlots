@@ -32,6 +32,7 @@ if (preg_grep('#^--commit$#', $argv)) {
         }
         \App::$log->info('Slot calculation finished', [
             'duration_seconds' => round(microtime(true) - $stepStart, 2),
+            'scope_ids' => $scopeIds !== [] ? $scopeIds : $calculator->calculatedScopeIds(),
         ]);
     } catch (\BO\Zmsbackend\Exception\Pdo\LockTimeout $exception) {
         $calculator->log("Unexpected end due to lock timeout, showing tracelog:");

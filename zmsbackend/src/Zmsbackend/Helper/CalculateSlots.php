@@ -17,6 +17,9 @@ class CalculateSlots
 
     protected $logList = [];
 
+    /** @var list<int> */
+    private array $calculatedScopeIds = [];
+
     public function __construct(bool $verbose = false)
     {
         $this->verbose = $verbose;
@@ -47,6 +50,14 @@ class CalculateSlots
             }
         }
         $this->verbose = true;
+    }
+
+    /**
+     * @return list<int>
+     */
+    public function calculatedScopeIds(): array
+    {
+        return $this->calculatedScopeIds;
     }
 
     public function getSpendTime(): float
@@ -206,6 +217,7 @@ class CalculateSlots
                 $scopeIds[] = $scopeId;
             }
         }
+        $this->calculatedScopeIds = $scopeIds;
         $workerCount = min(self::MAX_WORKERS, count($scopeIds));
         if ($workerCount <= 1) {
             $this->writeScopeIds($now, $scopeIds);
