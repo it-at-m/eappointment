@@ -62,9 +62,7 @@ FROM (
 ) `src`
 WHERE `src`.`minutes` > 0
   AND MOD(`src`.`minutes`, 5) = 0
-  AND ((IFNULL(`src`.`hatFolgetermine`, 0) + 1) * `src`.`minutes`) DIV 5 >= 1
-  AND TIME_TO_SEC(`src`.`Uhrzeit`)
-      + ((((IFNULL(`src`.`hatFolgetermine`, 0) + 1) * `src`.`minutes`) DIV 5 - 1) * 300) < 86400;
+  AND ((IFNULL(`src`.`hatFolgetermine`, 0) + 1) * `src`.`minutes`) DIV 5 >= 1;
 
 CREATE TEMPORARY TABLE `tmp_step` (
     `n` INT NOT NULL PRIMARY KEY
@@ -98,6 +96,7 @@ LEFT JOIN `buerger` `child`
    AND (`child`.`status` IS NULL OR `child`.`status` <> 'deleted')
 WHERE `t`.`steps` > 1
   AND `child`.`BuergerID` IS NULL
+  AND TIME_TO_SEC(`p`.`Uhrzeit`) + (`nums`.`n` * 300) < 86400
 ORDER BY `t`.`parent_id`, `nums`.`n`;
 
 CREATE TEMPORARY TABLE `tmp_free_ids` (

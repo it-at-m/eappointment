@@ -60,23 +60,45 @@ class Slot extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\Map
           NOW() updateTimestamp
         FROM slot s
           INNER JOIN buerger b ON
-            s.year = YEAR(b.Datum)
-            AND s.month = MONTH(b.Datum)
-            AND s.day = DAY(b.Datum)
-            AND s.scopeID = b.StandortID
+            s.scopeID = b.StandortID
             AND s.status = "free"
             AND (
               (
                 s.slotTimeInMinutes = 5
                 AND (b.istFolgeterminvon IS NULL OR b.istFolgeterminvon = 0)
-                AND s.time < ADDTIME(
-                    b.Uhrzeit,
-                    SEC_TO_TIME((IFNULL(b.hatFolgetermine, 0) + 1) * s.slotTimeInMinutes * 60)
+                AND (
+                  (
+                    s.year = YEAR(b.Datum)
+                    AND s.month = MONTH(b.Datum)
+                    AND s.day = DAY(b.Datum)
+                    AND s.time < ADDTIME(
+                        b.Uhrzeit,
+                        SEC_TO_TIME((IFNULL(b.hatFolgetermine, 0) + 1) * s.slotTimeInMinutes * 60)
+                    )
+                    AND ADDTIME(s.time, SEC_TO_TIME(s.slotTimeInMinutes * 60)) > b.Uhrzeit
+                  )
+                  OR (
+                    ADDTIME(
+                        b.Uhrzeit,
+                        SEC_TO_TIME((IFNULL(b.hatFolgetermine, 0) + 1) * s.slotTimeInMinutes * 60)
+                    ) >= "24:00:00"
+                    AND STR_TO_DATE(CONCAT(s.year, '-', s.month, '-', s.day), "%Y-%m-%d")
+                        = DATE_ADD(b.Datum, INTERVAL 1 DAY)
+                    AND s.time < SUBTIME(
+                        ADDTIME(
+                            b.Uhrzeit,
+                            SEC_TO_TIME((IFNULL(b.hatFolgetermine, 0) + 1) * s.slotTimeInMinutes * 60)
+                        ),
+                        "24:00:00"
+                    )
+                  )
                 )
-                AND ADDTIME(s.time, SEC_TO_TIME(s.slotTimeInMinutes * 60)) > b.Uhrzeit
               )
               OR (
                 IFNULL(s.slotTimeInMinutes, 0) <> 5
+                AND s.year = YEAR(b.Datum)
+                AND s.month = MONTH(b.Datum)
+                AND s.day = DAY(b.Datum)
                 AND b.Uhrzeit BETWEEN s.time
                   AND SEC_TO_TIME(TIME_TO_SEC(s.time) + (s.slotTimeInMinutes * 60) - 1)
               )
@@ -157,11 +179,36 @@ class Slot extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\Map
                 OR (
                   b.updateTimestamp > sp.updateTimestamp
                   AND (
-                    s.month != MONTH(b.Datum)
-                    OR s.day != DAY(b.Datum)
-                    OR s.scopeID != b.StandortID
+                    s.scopeID != b.StandortID
+                    OR (
+                      NOT (
+                        s.year = YEAR(b.Datum)
+                        AND s.month = MONTH(b.Datum)
+                        AND s.day = DAY(b.Datum)
+                      )
+                      AND NOT (
+                        s.slotTimeInMinutes = 5
+                        AND (b.istFolgeterminvon IS NULL OR b.istFolgeterminvon = 0)
+                        AND ADDTIME(
+                            b.Uhrzeit,
+                            SEC_TO_TIME((IFNULL(b.hatFolgetermine, 0) + 1) * s.slotTimeInMinutes * 60)
+                        ) >= "24:00:00"
+                        AND STR_TO_DATE(CONCAT(s.year, '-', s.month, '-', s.day), "%Y-%m-%d")
+                            = DATE_ADD(b.Datum, INTERVAL 1 DAY)
+                        AND s.time < SUBTIME(
+                            ADDTIME(
+                                b.Uhrzeit,
+                                SEC_TO_TIME((IFNULL(b.hatFolgetermine, 0) + 1) * s.slotTimeInMinutes * 60)
+                            ),
+                            "24:00:00"
+                        )
+                      )
+                    )
                     OR (
                       s.slotTimeInMinutes = 5
+                      AND s.year = YEAR(b.Datum)
+                      AND s.month = MONTH(b.Datum)
+                      AND s.day = DAY(b.Datum)
                       AND (
                         s.time >= ADDTIME(
                             b.Uhrzeit,
