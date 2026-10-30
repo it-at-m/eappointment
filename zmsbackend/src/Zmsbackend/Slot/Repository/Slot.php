@@ -261,13 +261,12 @@ class Slot extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\Map
     LIMIT 1
 ';
 
-    const string QUERY_SELECT_SLOTS_FOR_DAY = '
-    SELECT slotID, time FROM slot WHERE
+    const string QUERY_SELECT_SLOTS_IN_RANGE = '
+    SELECT slotID, time, year, month, day FROM slot WHERE
       scopeID = :scopeID
       AND availabilityID = :availabilityID
-      AND year = :year
-      AND month = :month
-      AND day = :day
+      AND year >= :yearFrom
+      AND year <= :yearTo
 ';
 
     /**
