@@ -76,10 +76,10 @@ sequenceDiagram
 
 ### Pipeline gap today
 
-Current migrate runs inside the **live** `zmsapi` deployment:
+Current migrate runs inside the **live** `zmsbackend` deployment:
 
 ```bash
-bin/migrate --update   # inside running zmsapi container
+bin/migrate --update   # inside running zmsbackend container
 ```
 
 At expand time that container is still the **old image** — it does not contain the new migration files.
@@ -87,8 +87,8 @@ At expand time that container is still the **old image** — it does not contain
 **Required change:** **Migrate Expand** must run from the **new tagged image** before Provision, e.g. a one-off migration job:
 
 ```bash
-bin/migrate --update --phase=pre
-# executed in a container started from the new zmsapi image, before Helm upgrade
+bin/migrate --update --phase=expand
+# executed in a container started from the new zmsbackend image, before Helm upgrade
 ```
 
 Contract can use the same job pattern after Provision, or run migrate inside the updated deployment once it carries the new tag.
@@ -119,11 +119,11 @@ Keep one folder: `zmsbackend/migrations/`. Differentiate by **filename prefix** 
 
 ```bash
 # Pre-deploy job (from new tagged image, before Helm)
-bin/migrate --update --phase=pre
+bin/migrate --update --phase=expand
 # Applies: *-expand-* AND unprefixed *.sql (additive only)
 
 # Post-deploy job (after Helm --wait)
-bin/migrate --update --phase=post
+bin/migrate --update --phase=contract
 # Applies: *-contract-* only
 ```
 
