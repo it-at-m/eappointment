@@ -8,31 +8,10 @@ class ClientIp
 {
     public static function getClientIp(): string
     {
-        $headers = [
-            'HTTP_CLIENT_IP',
-            'HTTP_X_FORWARDED_FOR',
-            'HTTP_X_FORWARDED',
-            'HTTP_X_CLUSTER_CLIENT_IP',
-            'HTTP_FORWARDED_FOR',
-            'HTTP_FORWARDED',
-            'REMOTE_ADDR',
-        ];
-
-        foreach ($headers as $header) {
-            if (!isset($_SERVER[$header])) {
-                continue;
-            }
-
-            $headerValue = $_SERVER[$header];
-            if (!is_string($headerValue) || $headerValue === '') {
-                continue;
-            }
-
-            $ips = array_map('trim', explode(',', $headerValue));
-            foreach ($ips as $ip) {
-                if (filter_var($ip, FILTER_VALIDATE_IP)) {
-                    return $ip;
-                }
+        if (isset($_SERVER['REMOTE_ADDR']) && is_string($_SERVER['REMOTE_ADDR'])) {
+            $remoteAddr = trim($_SERVER['REMOTE_ADDR']);
+            if (filter_var($remoteAddr, FILTER_VALIDATE_IP)) {
+                return $remoteAddr;
             }
         }
 
