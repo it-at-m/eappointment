@@ -1,0 +1,38 @@
+#!/usr/bin/env php
+<?php
+
+require_once(__DIR__ . '/script_bootstrap.php');
+
+$namespace = '';
+$jobsFile = '';
+foreach (array_slice($argv, 1) as $arg) {
+    if (str_starts_with($arg, '--namespace=')) {
+        $namespace = substr($arg, strlen('--namespace='));
+    } elseif (str_starts_with($arg, '--jobs=')) {
+        $jobsFile = substr($arg, strlen('--jobs='));
+    }
+}
+
+if ($namespace !== 'g1' && $namespace !== 'g2') {
+    fwrite(STDERR, "warmSharedCacheWorker: unknown namespace\n");
+    exit(1);
+}
+if ($jobsFile === '' || !is_file($jobsFile)) {
+    fwrite(STDERR, "warmSharedCacheWorker: missing job list\n");
+    exit(1);
+}
+
+$jobs = json_decode((string) file_get_contents($jobsFile), true);
+if (!is_array($jobs)) {
+    fwrite(STDERR, "warmSharedCacheWorker: invalid job list\n");
+    exit(1);
+}
+
+\App::$cache = \BO\Slim\Helper\CacheBootstrap::openNamespace(
+    \App::$CACHE_DIR,
+    \App::$SOURCE_CACHE_TTL,
+    $namespace
+);
+(new \BO\Zmsbackend\Helper\WarmSharedCache())->writeJobs($jobs);
+
+exit(0);

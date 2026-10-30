@@ -25,3 +25,5 @@ podman exec -it zms-web bash -lc "cd zmsbackend && ./cron/cronjob.hourly --city=
 podman exec -it zms-web bash -lc "cd zmsbackend && ./cron/cronjob.minutly"
 podman exec -it zms-web bash -lc "./cli modules clear-local-cache"
 ```
+
+The hourly cron rebuilds the shared API cache into a standby copy and switches readers only when that copy is ready. See [Shared cache warmup](../operations/shared-cache-warmup.md).

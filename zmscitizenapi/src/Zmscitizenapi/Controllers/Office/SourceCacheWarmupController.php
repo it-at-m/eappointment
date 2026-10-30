@@ -11,7 +11,7 @@ use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
 /**
- * Proactively refresh the offices-and-services source cache in place (ZMSKVR-1191).
+ * Build the next cache beside the current one, then switch when offices, services, per-office lists, and mail templates are loaded (ZMSKVR-1191).
  */
 class SourceCacheWarmupController extends BaseController
 {
