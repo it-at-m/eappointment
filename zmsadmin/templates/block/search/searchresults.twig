@@ -207,9 +207,9 @@
 
                 Seite: {{ currentPage }}
 
-                {% if processSearchTotal is defined and (currentPage * currentPerPage) < processSearchTotal %}
-                    <a href="?{{ nextParams|url_encode }}">Nächste Seite &gt;</a>
-                {% elseif currentPage < 100 and not processSearchTotal is defined %}
+                {% set hasMoreProcesses = processSearchTotal is defined and (currentPage * currentPerPage) < processSearchTotal %}
+                {% set hasMoreLogs = logList is defined and logList|length >= currentPerPage %}
+                {% if hasMoreProcesses or hasMoreLogs %}
                     <a href="?{{ nextParams|url_encode }}">Nächste Seite &gt;</a>
                 {% endif %}
             </div>
