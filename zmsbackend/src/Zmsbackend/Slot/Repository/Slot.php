@@ -82,7 +82,7 @@ class Slot extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\Map
                         b.Uhrzeit,
                         SEC_TO_TIME((IFNULL(b.hatFolgetermine, 0) + 1) * s.slotTimeInMinutes * 60)
                     ) >= "24:00:00"
-                    AND STR_TO_DATE(CONCAT(s.year, '-', s.month, '-', s.day), "%Y-%m-%d")
+                    AND STR_TO_DATE(CONCAT(s.year, "-", s.month, "-", s.day), "%Y-%m-%d")
                         = DATE_ADD(b.Datum, INTERVAL 1 DAY)
                     AND s.time < SUBTIME(
                         ADDTIME(
@@ -193,7 +193,7 @@ class Slot extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\Map
                             b.Uhrzeit,
                             SEC_TO_TIME((IFNULL(b.hatFolgetermine, 0) + 1) * s.slotTimeInMinutes * 60)
                         ) >= "24:00:00"
-                        AND STR_TO_DATE(CONCAT(s.year, '-', s.month, '-', s.day), "%Y-%m-%d")
+                        AND STR_TO_DATE(CONCAT(s.year, "-", s.month, "-", s.day), "%Y-%m-%d")
                             = DATE_ADD(b.Datum, INTERVAL 1 DAY)
                         AND s.time < SUBTIME(
                             ADDTIME(
