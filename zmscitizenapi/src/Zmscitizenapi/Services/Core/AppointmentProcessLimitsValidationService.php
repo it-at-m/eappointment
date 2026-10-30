@@ -11,7 +11,7 @@ use BO\Zmsentities\Process;
 class AppointmentProcessLimitsValidationService
 {
     /** Must match Slot::MAX_SLOTS / citizenview MAX_SLOTS */
-    private const int MAX_SLOTS_FALLBACK = 25;
+    private const int MAX_SLOTS_FALLBACK = 48;
 
     private static function getError(string $key): array
     {

@@ -25,7 +25,7 @@ export function getServiceBaseURL(): string {
   return import.meta.env.VITE_VUE_APP_SERVICE_BASE_URL;
 }
 
-export const MAX_SLOTS = 25;
+export const MAX_SLOTS = 48;
 
 export const OFTEN_SEARCHED_SERVICES = new Map<string, string>([
   ["1063475", "shortNameResidenceRegistration"],

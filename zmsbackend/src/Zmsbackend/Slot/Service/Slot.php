@@ -18,7 +18,7 @@ class Slot extends \BO\Zmsbackend\Base
     /**
      * maximum number of slots per appointment
      */
-    const int MAX_SLOTS = 25;
+    const int MAX_SLOTS = 48;
 
     const int MAX_DAYS_OF_SLOT_CALCULATION = 180;
 
@@ -336,9 +336,9 @@ class Slot extends \BO\Zmsbackend\Base
     }
 
     /**
-     * A day used to send one lookup, one slot write, and up to 25 ancestor inserts for every slot.
+     * A day used to send one lookup, one slot write, and up to 48 ancestor inserts for every slot.
      * Read the day's slots once, write the slot rows together, then write the ancestor rows together.
-     * The ancestor chain is the same: each slot keeps itself and the previous slots, at most 25.
+     * The ancestor chain is the same: each slot keeps itself and the previous slots, at most 48.
      */
     protected function writeSlotListForDate(
         \DateTimeInterface $time,
@@ -484,7 +484,7 @@ class Slot extends \BO\Zmsbackend\Base
     }
 
     /**
-     * Same pairs as the old per-slot loop: level 1 is the slot itself, higher levels are earlier slots, capped at 25.
+     * Same pairs as the old per-slot loop: level 1 is the slot itself, higher levels are earlier slots, capped at 48.
      *
      * @param list<int> $slotIds
      * @return list<array{0: int, 1: int, 2: int}>
