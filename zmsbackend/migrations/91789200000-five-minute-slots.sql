@@ -106,19 +106,6 @@ CREATE TEMPORARY TABLE `tmp_free_ids` (
 
 SET @needed = (SELECT COUNT(*) FROM `tmp_followups`);
 
-SET @free_id_sql = CONCAT(
-    'INSERT INTO `tmp_free_ids` (`process_id`) ',
-    'SELECT `ps`.`processId` FROM `process_sequence` `ps` ',
-    'LEFT JOIN `buerger` `b` ON `b`.`BuergerID` = `ps`.`processId` ',
-    'WHERE `b`.`BuergerID` IS NULL ',
-    'ORDER BY `ps`.`processId` LIMIT ',
-    @needed
-);
-
-PREPARE `zms_followup_ids` FROM @free_id_sql;
-EXECUTE `zms_followup_ids`;
-DEALLOCATE PREPARE `zms_followup_ids`;
-
 DELIMITER $$
 
 CREATE PROCEDURE `zms_five_minute_require_process_ids`(IN `needed` INT, IN `available` INT)
@@ -131,11 +118,24 @@ END$$
 
 DELIMITER ;
 
+START TRANSACTION;
+
+SET @free_id_sql = CONCAT(
+    'INSERT INTO `tmp_free_ids` (`process_id`) ',
+    'SELECT `ps`.`processId` FROM `process_sequence` `ps` ',
+    'LEFT JOIN `buerger` `b` ON `b`.`BuergerID` = `ps`.`processId` ',
+    'WHERE `b`.`BuergerID` IS NULL ',
+    'ORDER BY `ps`.`processId` LIMIT ',
+    @needed,
+    ' FOR UPDATE'
+);
+
+PREPARE `zms_followup_ids` FROM @free_id_sql;
+EXECUTE `zms_followup_ids`;
+DEALLOCATE PREPARE `zms_followup_ids`;
+
 SET @available = (SELECT COUNT(*) FROM `tmp_free_ids`);
 CALL `zms_five_minute_require_process_ids`(@needed, @available);
-DROP PROCEDURE `zms_five_minute_require_process_ids`;
-
-START TRANSACTION;
 
 UPDATE `buerger` `b`
 INNER JOIN `tmp_parents` `t` ON `t`.`parent_id` = `b`.`BuergerID`
@@ -278,3 +278,5 @@ WHERE TIME_TO_SEC(`time_slot`) > 0
   AND MOD(TIME_TO_SEC(`time_slot`), 300) = 0;
 
 COMMIT;
+
+DROP PROCEDURE `zms_five_minute_require_process_ids`;
