@@ -10,6 +10,7 @@ import java.time.DayOfWeek;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -46,6 +47,7 @@ import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import io.restassured.response.Response;
 import zms.ataf.helpers.AccountCheckout;
+import zms.ataf.helpers.WaitingTimeArchive;
 import zms.ataf.helpers.BerlinTime;
 import zms.ataf.helpers.PlainTextLengthSample;
 import zms.ataf.rest.dto.common.ApiResponse;
@@ -1144,6 +1146,57 @@ public class ZmsApiSteps {
      * Used for ProcessNotCurrentDate / MatchScope / reserved-call coverage (ZMSKVR-405 / 375).
      * {@code allowClusterWideCall=false} so WorkstationProcessMatchScopeFailed can surface on call.
      */
+    @When("I call the last appointment at the workstation with the X-AuthKey")
+    public void iCallTheLastAppointmentAtTheWorkstationWithTheXAuthKey() {
+        Assertions.assertThat(lastProcess)
+            .as("Reserve an appointment before calling it")
+            .isNotNull();
+        String authKey = getOrLoginXAuthKey();
+        response = postProcessCalled(authKey, false, lastProcess);
+        CommonApiSteps.setResponse(response);
+        Assertions.assertThat(response.getStatusCode())
+            .as("POST /workstation/process/called/ body=%s", truncate(response.asString(), 1000))
+            .isEqualTo(200);
+        JsonNode workstation = parseDataNode(response);
+        rememberProcess(workstation != null ? workstation.path("process") : null);
+    }
+
+    @When("I wait {int} seconds so the stored duration includes seconds")
+    public void iWaitSecondsSoTheStoredDurationIncludesSeconds(int seconds) throws InterruptedException {
+        Assertions.assertThat(seconds).isBetween(1, 15);
+        Thread.sleep(seconds * 1000L);
+    }
+
+    @When("the customer {string} arrived {int} seconds ago")
+    public void theCustomerArrivedSecondsAgo(String familyName, int seconds) {
+        Assertions.assertThat(seconds).isBetween(1, 15);
+        WaitingTimeArchive.stampArrivalSecondsAgo(TestDataHelper.transformTestData(familyName), seconds);
+    }
+
+    @Then("the called process stores the waiting time as a clock time with seconds")
+    public void theCalledProcessStoresTheWaitingTimeAsAClockTimeWithSeconds() {
+        WaitingTimeArchive.assertStoredClock(processIdOf(lastProcess), "waiting_time");
+    }
+
+    @Then("the processing process stores the way time as a clock time with seconds")
+    public void theProcessingProcessStoresTheWayTimeAsAClockTimeWithSeconds() {
+        WaitingTimeArchive.assertStoredClock(processIdOf(lastProcess), "way_time");
+    }
+
+    @Then("the archived citizen {string} stores waiting, way and processing time to the second")
+    public void theArchivedCitizenStoresWaitingWayAndProcessingTimeToTheSecond(String familyName) {
+        WaitingTimeArchive.assertArchivedSecondPrecision(familyName);
+    }
+
+    private int processIdOf(JsonNode process) {
+        Assertions.assertThat(process).as("process after the queue action").isNotNull();
+        int processId = process.path("id").asInt(0);
+        Assertions.assertThat(processId)
+            .as("process id body=%s", truncate(process.toString(), 500))
+            .isPositive();
+        return processId;
+    }
+
     @When("I try to call the last process at the workstation with the X-AuthKey")
     public void iTryToCallTheLastProcessAtTheWorkstationWithTheXAuthKey() {
         Assertions.assertThat(lastProcess)
@@ -2076,6 +2129,77 @@ public class ZmsApiSteps {
             int scopeId, String serviceName, String familyName, String amendment) {
         String email = familyName.toLowerCase(Locale.ROOT).replaceAll("[^a-z0-9]", "") + "@mailinator.com";
         reserveConfirmedAppointment(scopeId, serviceName, familyName, email, amendment, true);
+    }
+
+    @When("I reserve an appointment at scope {int} with service {string} and name {string} in the current hour when a slot is still free with the X-AuthKey")
+    public void iReserveAnAppointmentInTheCurrentHourWhenASlotIsStillFree(
+            int scopeId, String serviceName, String familyName) {
+        String email = familyName.toLowerCase(Locale.ROOT).replaceAll("[^a-z0-9]", "") + "@mailinator.com";
+        String authKey = getOrLoginXAuthKey();
+        JsonNode request = findScopeRequestByName(scopeId, serviceName, authKey);
+        JsonNode freeList = fetchFreeProcessesLookingAhead(scopeId, request, authKey);
+        long earliest = Instant.now().getEpochSecond() + 60;
+        int hour = BerlinTime.now().getHour();
+        LocalDate today = BerlinTime.today();
+        List<JsonNode> sameHour = new ArrayList<>();
+        List<JsonNode> later = new ArrayList<>();
+        for (JsonNode slot : freeList) {
+            long date = slot.path("appointments").path(0).path("date").asLong(0);
+            if (date < earliest) {
+                continue;
+            }
+            ZonedDateTime when = Instant.ofEpochSecond(date).atZone(BerlinTime.ZONE);
+            if (when.toLocalDate().equals(today) && when.getHour() == hour) {
+                sameHour.add(slot);
+            } else {
+                later.add(slot);
+            }
+        }
+        List<JsonNode> chosen = sameHour.isEmpty() ? later : sameHour;
+        Assertions.assertThat(chosen)
+            .as("scope %d needs a future intern slot", scopeId)
+            .isNotEmpty();
+        if (sameHour.isEmpty()) {
+            ScenarioLogManager.getLogger().info(
+                    "No free slot left in the current hour at scope {}; using a later slot", scopeId);
+        }
+        JsonNode reserved = null;
+        for (int i = 0; i < chosen.size(); i++) {
+            ObjectNode process = chosen.get(i).deepCopy();
+            process.set("requests", MAPPER.createArrayNode().add(request.deepCopy()));
+            ObjectNode client = MAPPER.createObjectNode();
+            client.put("familyName", familyName);
+            client.put("email", email);
+            client.put("surveyAccepted", 1);
+            process.set("clients", MAPPER.createArrayNode().add(client));
+            response = given()
+                .baseUri(baseUri != null ? baseUri : TestConfig.getBaseUri())
+                .header("X-AuthKey", authKey)
+                .contentType("application/json")
+                .queryParam("slotType", "intern")
+                .queryParam("clientkey", "")
+                .queryParam("slotsRequired", 0)
+                .body(toJson(process))
+            .when()
+                .post("/process/status/reserved/");
+            CommonApiSteps.setResponse(response);
+            if (response.getStatusCode() == 200) {
+                reserved = parseDataNode(response);
+                break;
+            }
+            boolean slotTaken = response.getStatusCode() == 404
+                && response.asString().contains("Failed to reserve process. Maybe someone was faster.");
+            if (slotTaken && i < chosen.size() - 1) {
+                continue;
+            }
+            throw new IllegalStateException(
+                "POST /process/status/reserved/ failed with " + response.getStatusCode() + ": "
+                    + truncate(response.asString(), 1000));
+        }
+        Assertions.assertThat(reserved).as("POST /process/status/reserved/ for scope %d", scopeId).isNotNull();
+        response = postConfirmedWithDeadlockRetry(authKey, reserved);
+        CommonApiSteps.setResponse(response);
+        rememberProcess(parseDataNode(response));
     }
 
     @When("I reserve an appointment at scope {int} with services {string} and name {string} for {int} slots with the X-AuthKey")
@@ -3138,6 +3262,78 @@ public class ZmsApiSteps {
             .as("organisation hash for ticketprinter")
             .isNotBlank();
         ScenarioLogManager.getLogger().info("Ticketprinter session established for scope {}", scopeId);
+    }
+
+    @Given("appointment slots exist for scope {int} in the current hour")
+    public void appointmentSlotsExistForScopeInTheCurrentHour(int scopeId) {
+        AccountCheckout.checkout("scope:" + scopeId + ":zmskvr-1357");
+        LocalDate day = BerlinTime.today();
+        LocalTime now = BerlinTime.now().withSecond(0).withNano(0);
+        LocalTime start = ceilToFiveMinutes(now.plusMinutes(2));
+        LocalTime end = LocalTime.of(now.getHour(), 0).plusHours(1);
+        if (start.getHour() != now.getHour()
+                || java.time.Duration.between(start, end).toMinutes() < 5) {
+            if (now.getHour() < 23) {
+                start = LocalTime.of(now.getHour() + 1, 0);
+                end = start.getHour() == 23 ? LocalTime.of(23, 55) : start.plusHours(1);
+            } else {
+                day = day.plusDays(1);
+                start = LocalTime.of(8, 0);
+                end = LocalTime.of(9, 0);
+            }
+        }
+        ScenarioLogManager.getLogger().info(
+                "Opening intern slots at scope {} on {} from {} to {}", scopeId, day, start, end);
+        String authKey = getOrLoginXAuthKey();
+        long startEpoch = day.atStartOfDay(BerlinTime.ZONE).toEpochSecond();
+        ObjectNode weekday = MAPPER.createObjectNode();
+        for (java.time.DayOfWeek weekdayName : java.time.DayOfWeek.values()) {
+            weekday.put(weekdayName.name().toLowerCase(Locale.ROOT), weekdayName == day.getDayOfWeek() ? 1 : 0);
+        }
+        ObjectNode availability = MAPPER.createObjectNode();
+        availability.put("type", "openinghours");
+        availability.put("kind", "default");
+        availability.put("description", "ATAF-ZMSKVR-1357");
+        availability.put("startDate", startEpoch);
+        availability.put("endDate", startEpoch);
+        availability.put("startTime", start + ":00");
+        availability.put("endTime", end + ":00");
+        availability.put("slotTimeInMinutes", 5);
+        ObjectNode scope = MAPPER.createObjectNode();
+        scope.put("id", scopeId);
+        availability.set("scope", scope);
+        availability.set("weekday", weekday);
+        ObjectNode workstationCount = MAPPER.createObjectNode();
+        workstationCount.put("intern", 2);
+        workstationCount.put("public", 0);
+        availability.set("workstationCount", workstationCount);
+        ObjectNode body = MAPPER.createObjectNode();
+        body.set("availabilityList", MAPPER.createArrayNode().add(availability));
+        body.put("selectedDate", day.toString());
+        response = given()
+            .baseUri(apiBaseUri())
+            .header("X-AuthKey", authKey)
+            .contentType("application/json")
+            .body(toJson(body))
+        .when()
+            .post("/availability/");
+        CommonApiSteps.setResponse(response);
+        Assertions.assertThat(response.getStatusCode())
+            .as("POST /availability/ body=%s", truncate(response.asString(), 1000))
+            .isEqualTo(200);
+        ArrayNode created = parseDataArray(response);
+        if (created != null && !created.isEmpty() && created.get(0).path("id").asInt() > 0) {
+            createdAvailabilityId = created.get(0).path("id").asInt();
+        }
+    }
+
+    private static LocalTime ceilToFiveMinutes(LocalTime time) {
+        int minute = ((time.getMinute() + 4) / 5) * 5;
+        LocalTime rounded = time.withMinute(0).withSecond(0).withNano(0);
+        if (minute >= 60) {
+            return rounded.plusHours(1);
+        }
+        return rounded.withMinute(minute);
     }
 
     @Given("Spontankunden opening hours exist for scope {int} from {string} to {string}")
