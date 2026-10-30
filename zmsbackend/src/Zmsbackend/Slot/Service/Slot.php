@@ -23,6 +23,25 @@ class Slot extends \BO\Zmsbackend\Base
     const int MAX_DAYS_OF_SLOT_CALCULATION = 180;
 
     /**
+     * Columns written for one slot row, apart from slotID.
+     * @var list<string>
+     */
+    private const array SLOT_WRITE_COLUMNS = [
+        'scopeID',
+        'availabilityID',
+        'version',
+        'year',
+        'month',
+        'day',
+        'time',
+        'public',
+        'intern',
+        'status',
+        'slotTimeInMinutes',
+        'createTimestamp',
+    ];
+
+    /**
      * @return \BO\Zmsentities\Collection\SlotList
      *
      */
@@ -316,58 +335,199 @@ class Slot extends \BO\Zmsbackend\Base
         return $updatedList;
     }
 
+    /**
+     * A day used to send one lookup, one slot write, and up to 25 ancestor inserts for every slot.
+     * Read the day's slots once, write the slot rows together, then write the ancestor rows together.
+     * The ancestor chain is the same: each slot keeps itself and the previous slots, at most 25.
+     */
     protected function writeSlotListForDate(
         \DateTimeInterface $time,
         Collection $slotlist,
         AvailabilityEntity $availability
     ) {
-        $ancestors = [];
-        $hasAddedSlots = false;
-
+        $createdAt = time();
+        $rows = [];
         foreach ($slotlist as $slot) {
             $slot = clone $slot;
-            $slotID = $this->readByAvailability($slot, $availability, $time);
-            if ($slotID) {
-                $query = new \BO\Zmsbackend\Slot\Repository\Slot(\BO\Zmsbackend\Query\Base::UPDATE);
-                $query->addConditionSlotId($slotID);
-            } else {
-                $query = new \BO\Zmsbackend\Slot\Repository\Slot(\BO\Zmsbackend\Query\Base::INSERT);
-                $hasAddedSlots = true;
-            }
             $slot->status = 'free';
-            $values = $query->reverseEntityMapping($slot, $availability, $time);
-            $values['createTimestamp'] = time();
-            $query->addValues($values);
-            $writeStatus = $this->writeItem($query);
-            if ($writeStatus && !$slotID) {
-                $slotID = $this->getWriter()->lastInsertId();
-            }
-            $ancestors[] = $slotID;
-            // TODO: Check if slot changed before writing ancestor IDs
-            $this->writeAncestorIDs($slotID, $ancestors);
-            $status = $writeStatus ? $writeStatus : $status;
+            $values = (new \BO\Zmsbackend\Slot\Repository\Slot())->reverseEntityMapping($slot, $availability, $time);
+            $values['createTimestamp'] = $createdAt;
+            $rows[] = $values;
         }
-        if ($hasAddedSlots) {
+        if ($rows === []) {
+            return false;
+        }
+
+        $stored = $this->readSlotIdsForDay($availability, $time);
+        $updates = [];
+        $inserts = [];
+        foreach ($rows as $values) {
+            $clock = $this->slotClock((string) $values['time']);
+            $packed = [];
+            foreach (self::SLOT_WRITE_COLUMNS as $column) {
+                $packed[] = $values[$column];
+            }
+            if (isset($stored[$clock])) {
+                array_unshift($packed, $stored[$clock]);
+                $updates[] = $packed;
+            } else {
+                $inserts[] = $packed;
+            }
+        }
+        $this->writeExistingSlotRows($updates);
+        $this->writeNewSlotRows($inserts);
+        if ($inserts !== []) {
+            $stored = $this->readSlotIdsForDay($availability, $time);
             $availability['processingNote'][] = 'Added ' . $time->format('Y-m-d');
         }
-        return $status;
+
+        $orderedIds = [];
+        foreach ($rows as $values) {
+            $clock = $this->slotClock((string) $values['time']);
+            if (!isset($stored[$clock])) {
+                throw new \RuntimeException('Slot calculation did not store every slot for ' . $time->format('Y-m-d'));
+            }
+            $orderedIds[] = $stored[$clock];
+        }
+        $this->replaceAncestorRows($orderedIds);
+
+        return true;
     }
 
-    protected function writeAncestorIDs($slotID, array $ancestors): void
+    /**
+     * @return array<string, int> clock time => slotID, first row wins when a time is stored twice
+     */
+    private function readSlotIdsForDay(AvailabilityEntity $availability, \DateTimeInterface $time): array
     {
-        $this->perform(\BO\Zmsbackend\Slot\Repository\Slot::QUERY_DELETE_ANCESTOR, [
-            'slotID' => $slotID,
+        $rows = $this->fetchAll(\BO\Zmsbackend\Slot\Repository\Slot::QUERY_SELECT_SLOTS_FOR_DAY, [
+            'scopeID' => $availability->scope->id,
+            'availabilityID' => $availability->id,
+            'year' => $time->format('Y'),
+            'month' => $time->format('m'),
+            'day' => $time->format('d'),
         ]);
-        $ancestorLevel = count($ancestors);
-        foreach ($ancestors as $ancestorID) {
-            if ($ancestorLevel <= self::MAX_SLOTS) {
-                $this->perform(\BO\Zmsbackend\Slot\Repository\Slot::QUERY_INSERT_ANCESTOR, [
-                    'slotID' => $slotID,
-                    'ancestorID' => $ancestorID,
-                    'ancestorLevel' => $ancestorLevel,
-                ]);
+        $ids = [];
+        foreach ($rows as $row) {
+            $clock = $this->slotClock((string) $row['time']);
+            if (!isset($ids[$clock])) {
+                $ids[$clock] = (int) $row['slotID'];
             }
-            $ancestorLevel--;
+        }
+
+        return $ids;
+    }
+
+    private function slotClock(string $time): string
+    {
+        $parts = explode(':', $time);
+
+        return sprintf('%02d:%02d:%02d', (int) ($parts[0] ?? 0), (int) ($parts[1] ?? 0), (int) ($parts[2] ?? 0));
+    }
+
+    /**
+     * @param list<list<int|string>> $rows slotID plus SLOT_WRITE_COLUMNS
+     */
+    private function writeExistingSlotRows(array $rows): void
+    {
+        if ($rows === []) {
+            return;
+        }
+        $columns = array_merge(['slotID'], self::SLOT_WRITE_COLUMNS);
+        $assignments = [];
+        foreach (self::SLOT_WRITE_COLUMNS as $column) {
+            $assignments[] = sprintf('`%s` = VALUES(`%s`)', $column, $column);
+        }
+        $this->writeChunks(
+            'INSERT INTO `slot` (' . $this->quotedColumns($columns) . ') VALUES ',
+            ' ON DUPLICATE KEY UPDATE ' . implode(', ', $assignments),
+            $rows
+        );
+    }
+
+    /**
+     * @param list<list<int|string>> $rows SLOT_WRITE_COLUMNS, without slotID
+     */
+    private function writeNewSlotRows(array $rows): void
+    {
+        if ($rows === []) {
+            return;
+        }
+        $this->writeChunks(
+            'INSERT INTO `slot` (' . $this->quotedColumns(self::SLOT_WRITE_COLUMNS) . ') VALUES ',
+            '',
+            $rows
+        );
+    }
+
+    /**
+     * @param list<int> $slotIds chronological slot ids for one day
+     */
+    private function replaceAncestorRows(array $slotIds): void
+    {
+        if ($slotIds === []) {
+            return;
+        }
+        foreach (array_chunk($slotIds, 500) as $chunk) {
+            $marks = implode(',', array_fill(0, count($chunk), '?'));
+            $this->perform('DELETE FROM `slot_hiera` WHERE `slotID` IN (' . $marks . ')', $chunk);
+        }
+        $rows = $this->ancestorRows($slotIds);
+        if ($rows === []) {
+            return;
+        }
+        $this->writeChunks(
+            'INSERT INTO `slot_hiera` (`slotID`, `ancestorID`, `ancestorLevel`) VALUES ',
+            '',
+            $rows
+        );
+    }
+
+    /**
+     * Same pairs as the old per-slot loop: level 1 is the slot itself, higher levels are earlier slots, capped at 25.
+     *
+     * @param list<int> $slotIds
+     * @return list<array{0: int, 1: int, 2: int}>
+     */
+    private function ancestorRows(array $slotIds): array
+    {
+        $rows = [];
+        $count = count($slotIds);
+        for ($index = 0; $index < $count; $index++) {
+            $level = $index + 1;
+            for ($ancestor = 0; $ancestor <= $index; $ancestor++) {
+                if ($level <= self::MAX_SLOTS) {
+                    $rows[] = [$slotIds[$index], $slotIds[$ancestor], $level];
+                }
+                $level--;
+            }
+        }
+
+        return $rows;
+    }
+
+    /**
+     * @param list<string> $columns
+     */
+    private function quotedColumns(array $columns): string
+    {
+        return implode(',', array_map(static fn (string $column): string => '`' . $column . '`', $columns));
+    }
+
+    /**
+     * @param list<list<int|string>> $rows
+     */
+    private function writeChunks(string $sql, string $suffix, array $rows): void
+    {
+        foreach (array_chunk($rows, 200) as $chunk) {
+            $width = count($chunk[0]);
+            $tuple = '(' . implode(',', array_fill(0, $width, '?')) . ')';
+            $params = [];
+            foreach ($chunk as $row) {
+                foreach ($row as $value) {
+                    $params[] = $value;
+                }
+            }
+            $this->perform($sql . implode(',', array_fill(0, count($chunk), $tuple)) . $suffix, $params);
         }
     }
 

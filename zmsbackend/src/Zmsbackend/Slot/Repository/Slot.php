@@ -214,6 +214,15 @@ class Slot extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\Map
     LIMIT 1
 ';
 
+    const string QUERY_SELECT_SLOTS_FOR_DAY = '
+    SELECT slotID, time FROM slot WHERE
+      scopeID = :scopeID
+      AND availabilityID = :availabilityID
+      AND year = :year
+      AND month = :month
+      AND day = :day
+';
+
     /**
      * Lock multiple appointment slots in one statement.
      * Placeholders for time IN (...) are injected by Slot::lockSlotsForAppointment.
@@ -229,14 +238,6 @@ class Slot extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\Map
       AND time IN (%s)
     ORDER BY slotID ASC
     FOR UPDATE
-';
-
-    const string QUERY_INSERT_ANCESTOR = '
-    INSERT INTO slot_hiera SET slotID = :slotID, ancestorID = :ancestorID, ancestorLevel = :ancestorLevel
-';
-
-    const string QUERY_DELETE_ANCESTOR = '
-    DELETE FROM slot_hiera WHERE slotID = :slotID
 ';
 
     const string QUERY_CANCEL_AVAILABILITY = '
