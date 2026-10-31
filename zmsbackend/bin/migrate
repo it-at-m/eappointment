@@ -34,3 +34,33 @@ if (!$updateOption && $added) {
         'pending' => $added,
     ]);
 }
+
+if ($updateOption && $added > 0) {
+    $cacheClearFailed = false;
+    if (\App::$cache instanceof \Psr\SimpleCache\CacheInterface) {
+        try {
+            if (\App::$cache->clear() === false) {
+                $cacheClearFailed = true;
+                \App::$log->error('Failed to clear the API cache after applying migrations', [
+                    'applied' => $added,
+                ]);
+            } else {
+                \App::$log->info('Cleared the API cache after applying migrations', [
+                    'applied' => $added,
+                ]);
+            }
+        } catch (\Throwable $exception) {
+            $cacheClearFailed = true;
+            \App::$log->error('Failed to clear the API cache after applying migrations', [
+                'error' => $exception->getMessage(),
+            ]);
+        }
+    }
+
+    $warmup = __DIR__ . '/warmupCitizenapiSourceCache';
+    $command = escapeshellarg(\PHP_BINARY) . ' ' . escapeshellarg($warmup) . ' --commit';
+    passthru($command);
+    if ($cacheClearFailed) {
+        exit(1);
+    }
+}

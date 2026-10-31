@@ -66,7 +66,7 @@ class CalendarAvailabilityTest extends Base
     public function testServiceCountExceedsMaximum()
     {
         $this->expectException(\BO\Zmsbackend\Slot\Exception\Calendar\InvalidAvailabilityInput::class);
-        $this->expectExceptionMessage('serviceCount exceeds maximum of 25');
+        $this->expectExceptionMessage('serviceCount exceeds maximum of 48');
 
         $start = \App::$now;
         $end = (clone $start)->modify('+1 month');
@@ -78,7 +78,7 @@ class CalendarAvailabilityTest extends Base
             $end->format('Y-m-t'),
             '122217',
             '120703',
-            '26',
+            '49',
             'dldb',
             'dldb'
         );

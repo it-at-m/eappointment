@@ -1803,3 +1803,6 @@ UNLOCK TABLES;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
 -- Dump completed on 2025-09-07 19:30:22
+
+-- The five-minute rewrite is for live locations. This snapshot is the data the unit tests assert, so the import skips it.
+INSERT INTO `migrations` (`filename`) VALUES ('91789200000-five-minute-slots.sql');

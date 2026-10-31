@@ -306,7 +306,7 @@ describe("ServiceFinder", () => {
     it("keeps spa from selected providers before offices reload on remount", async () => {
       // Mimic stepper back: ServiceFinder remounts with selectedService still at
       // qty 2 while offices/relations fetch has not finished (spa must not fall
-      // back to MAX_SLOTS=25 or plus would enable again).
+      // back to MAX_SLOTS=48 or plus would enable again).
       vi.mocked(fetch).mockReturnValueOnce(new Promise(() => {}) as Promise<Response>);
       const service = {
         id: "1064268",
@@ -328,7 +328,7 @@ describe("ServiceFinder", () => {
       const wrapper = createWrapper(service);
       await nextTick();
       const counter = wrapper.findComponent({ name: "muc-counter" });
-      // min(maxQuantity 3, floor(8/3))=2 — not floor(25/3)=8 capped by maxQuantity 3
+      // min(maxQuantity 3, floor(8/3))=2 — not floor(48/3)=16 capped by maxQuantity 3
       expect(counter.props("max")).toBe(2);
     });
   });

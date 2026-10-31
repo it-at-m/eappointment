@@ -65,8 +65,8 @@ describe("slotCalculations", () => {
   });
 
   describe("getEffectiveMinSlotsPerAppointment", () => {
-    it("returns MAX_SLOTS (25) for empty providers", () => {
-      expect(getEffectiveMinSlotsPerAppointment([])).toBe(25);
+    it("returns MAX_SLOTS (48) for empty providers", () => {
+      expect(getEffectiveMinSlotsPerAppointment([])).toBe(48);
     });
 
     it("returns minimum from providers when less than MAX_SLOTS", () => {
@@ -79,15 +79,15 @@ describe("slotCalculations", () => {
 
     it("caps at MAX_SLOTS when provider value exceeds it", () => {
       const providers = [
-        { slotsPerAppointment: "30" },
+        { slotsPerAppointment: "60" },
         { slotsPerAppointment: "50" },
       ] as any[];
-      expect(getEffectiveMinSlotsPerAppointment(providers)).toBe(25);
+      expect(getEffectiveMinSlotsPerAppointment(providers)).toBe(48);
     });
 
     it("returns MAX_SLOTS when no provider has valid slotsPerAppointment", () => {
       const providers = [{ slotsPerAppointment: "0" }, { id: "2" }] as any[];
-      expect(getEffectiveMinSlotsPerAppointment(providers)).toBe(25);
+      expect(getEffectiveMinSlotsPerAppointment(providers)).toBe(48);
     });
   });
 

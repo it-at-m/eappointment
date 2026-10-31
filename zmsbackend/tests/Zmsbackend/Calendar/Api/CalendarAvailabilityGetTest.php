@@ -191,7 +191,7 @@ class CalendarAvailabilityGetTest extends \BO\Zmsbackend\Tests\Api\Base
             'endDate' => $end->format('Y-m-t'),
             'officeIds' => '122217',
             'serviceIds' => '120703',
-            'serviceCounts' => '26',
+            'serviceCounts' => '49',
         ], []);
     }
 }

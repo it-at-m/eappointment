@@ -18,9 +18,28 @@ class Slot extends \BO\Zmsbackend\Base
     /**
      * maximum number of slots per appointment
      */
-    const int MAX_SLOTS = 25;
+    const int MAX_SLOTS = 48;
 
     const int MAX_DAYS_OF_SLOT_CALCULATION = 180;
+
+    /**
+     * Columns written for one slot row, apart from slotID.
+     * @var list<string>
+     */
+    private const array SLOT_WRITE_COLUMNS = [
+        'scopeID',
+        'availabilityID',
+        'version',
+        'year',
+        'month',
+        'day',
+        'time',
+        'public',
+        'intern',
+        'status',
+        'slotTimeInMinutes',
+        'createTimestamp',
+    ];
 
     /**
      * @return \BO\Zmsentities\Collection\SlotList
@@ -267,9 +286,11 @@ class Slot extends \BO\Zmsbackend\Base
                 return ($cancelledSlots > 0) ? true : false;
             }
 
+            $scope = $availability->scope ?? null;
             \App::$log->info('availability: ', [
                 'generate_new' => $generateNew,
-                'availability_id' => $availability->id,
+                'scope_id' => is_object($scope) && isset($scope->id) ? (int) $scope->id : null,
+                'availability_id' => (int) $availability->id,
                 'cancelledSlots' => $cancelledSlots
             ]);
 
@@ -284,18 +305,18 @@ class Slot extends \BO\Zmsbackend\Base
         if (!$generateNew) {
             $time = $lastGeneratedSlotDate->modify('+1 day')->modify('00:00:00');
         }
-        $status = false;
+        $days = [];
         do {
             if ($availability->withData(['bookable' => ['startInDays' => 0]])->hasDate($time, $now)) {
-                $writeStatus = $this->writeSlotListForDate(
-                    $time,
-                    ($time->getTimestamp() < $startDate->getTimestamp()) ? $slotlistIntern : $slotlist,
-                    $availability
-                );
-                $status = $writeStatus ? $writeStatus : $status;
+                $days[] = [
+                    'time' => $time,
+                    'slotlist' => ($time->getTimestamp() < $startDate->getTimestamp()) ? $slotlistIntern : $slotlist,
+                ];
             }
             $time = $time->modify('+1day');
         } while ($time->getTimestamp() <= $stopDate->getTimestamp() && $time->getTimestamp() < $calculateSlotsUntilDate->getTimestamp());
+
+        $status = $this->writeSlotLists($days, $availability);
 
         return $status || (isset($cancelledSlots) && $cancelledSlots > 0);
     }
@@ -309,65 +330,292 @@ class Slot extends \BO\Zmsbackend\Base
         $updatedList = new \BO\Zmsentities\Collection\AvailabilityList();
         foreach ($availabilityList as $availability) {
             $availability->scope = clone $scope; //dayoff is required
-            if ($this->writeByAvailability($availability, $now)) {
+            $availabilityStarted = microtime(true);
+            $changed = $this->writeByAvailability($availability, $now);
+            \App::$log->info($changed ? 'Updated availability' : 'Availability unchanged', [
+                'scope_id' => (int) $scope->id,
+                'availability_id' => (int) $availability->id,
+                'duration_seconds' => round(microtime(true) - $availabilityStarted, 2),
+                'changed' => (bool) $changed,
+                'reason' => $availability['processingNote'] ?? [],
+            ]);
+            if ($changed) {
                 $updatedList->addEntity($availability);
             }
         }
         return $updatedList;
     }
 
-    protected function writeSlotListForDate(
-        \DateTimeInterface $time,
-        Collection $slotlist,
-        AvailabilityEntity $availability
-    ) {
-        $ancestors = [];
-        $hasAddedSlots = false;
+    /**
+     * Write every open day in a few statements.
+     * A day whose stored times already match keeps its ancestor rows.
+     * Days that need a new chain are written together: level 1 is the slot itself,
+     * higher levels are the earlier slots that day, at most 48.
+     *
+     * @param list<array{time: \DateTimeInterface, slotlist: Collection}> $days
+     */
+    private function writeSlotLists(array $days, AvailabilityEntity $availability): bool
+    {
+        $createdAt = time();
+        $slotRepository = new \BO\Zmsbackend\Slot\Repository\Slot(\BO\Zmsbackend\Query\Base::INSERT);
+        $prepared = [];
+        foreach ($days as $day) {
+            $rows = [];
+            foreach ($day['slotlist'] as $slot) {
+                $slot = clone $slot;
+                $slot->status = 'free';
+                $values = $slotRepository->reverseEntityMapping($slot, $availability, $day['time']);
+                $values['createTimestamp'] = $createdAt;
+                $rows[] = $values;
+            }
+            if ($rows !== []) {
+                $prepared[] = ['time' => $day['time'], 'rows' => $rows];
+            }
+        }
+        if ($prepared === []) {
+            return false;
+        }
 
-        foreach ($slotlist as $slot) {
-            $slot = clone $slot;
-            $slotID = $this->readByAvailability($slot, $availability, $time);
-            if ($slotID) {
-                $query = new \BO\Zmsbackend\Slot\Repository\Slot(\BO\Zmsbackend\Query\Base::UPDATE);
-                $query->addConditionSlotId($slotID);
-            } else {
-                $query = new \BO\Zmsbackend\Slot\Repository\Slot(\BO\Zmsbackend\Query\Base::INSERT);
-                $hasAddedSlots = true;
+        $storedByDay = $this->readSlotIdsBetween(
+            $availability,
+            $prepared[0]['time'],
+            $prepared[array_key_last($prepared)]['time']
+        );
+        $updates = [];
+        $inserts = [];
+        $added = [];
+        $unchanged = [];
+        foreach ($prepared as $day) {
+            $dateKey = $day['time']->format('Y-m-d');
+            $stored = $storedByDay[$dateKey] ?? [];
+            $clocks = [];
+            foreach ($day['rows'] as $values) {
+                $clock = $this->slotClock((string) $values['time']);
+                $clocks[] = $clock;
+                if (isset($stored[$clock])) {
+                    $updates[] = $this->packSlotRow($values, $stored[$clock]);
+                } else {
+                    $inserts[] = $this->packSlotRow($values);
+                    $added[$dateKey] = true;
+                }
             }
-            $slot->status = 'free';
-            $values = $query->reverseEntityMapping($slot, $availability, $time);
-            $values['createTimestamp'] = time();
-            $query->addValues($values);
-            $writeStatus = $this->writeItem($query);
-            if ($writeStatus && !$slotID) {
-                $slotID = $this->getWriter()->lastInsertId();
+            $unchanged[$dateKey] = $this->clocksMatchStored($stored, $clocks);
+        }
+
+        $this->writeExistingSlotRows($updates);
+        $this->writeNewSlotRows($inserts);
+        if ($inserts !== []) {
+            $storedByDay = $this->readSlotIdsBetween(
+                $availability,
+                $prepared[0]['time'],
+                $prepared[array_key_last($prepared)]['time']
+            );
+            foreach (array_keys($added) as $dateKey) {
+                $availability['processingNote'][] = 'Added ' . $dateKey;
             }
-            $ancestors[] = $slotID;
-            // TODO: Check if slot changed before writing ancestor IDs
-            $this->writeAncestorIDs($slotID, $ancestors);
-            $status = $writeStatus ? $writeStatus : $status;
         }
-        if ($hasAddedSlots) {
-            $availability['processingNote'][] = 'Added ' . $time->format('Y-m-d');
+
+        $rebuild = [];
+        foreach ($prepared as $day) {
+            $dateKey = $day['time']->format('Y-m-d');
+            if ($unchanged[$dateKey]) {
+                continue;
+            }
+            $stored = $storedByDay[$dateKey] ?? [];
+            $orderedIds = [];
+            foreach ($day['rows'] as $values) {
+                $clock = $this->slotClock((string) $values['time']);
+                if (!isset($stored[$clock])) {
+                    throw new \RuntimeException('Slot calculation did not store every slot for ' . $dateKey);
+                }
+                $orderedIds[] = $stored[$clock];
+            }
+            $rebuild[] = ['key' => $dateKey, 'ids' => $orderedIds];
         }
-        return $status;
+        $this->writeAncestorChains($rebuild);
+
+        return true;
     }
 
-    protected function writeAncestorIDs($slotID, array $ancestors): void
-    {
-        $this->perform(\BO\Zmsbackend\Slot\Repository\Slot::QUERY_DELETE_ANCESTOR, [
-            'slotID' => $slotID,
+    /**
+     * @return array<string, array<string, int>> date => clock time => slotID, first row wins when a time is stored twice
+     */
+    private function readSlotIdsBetween(
+        AvailabilityEntity $availability,
+        \DateTimeInterface $from,
+        \DateTimeInterface $to
+    ): array {
+        $rows = $this->fetchAll(\BO\Zmsbackend\Slot\Repository\Slot::QUERY_SELECT_SLOTS_IN_RANGE, [
+            'scopeID' => $availability->scope->id,
+            'availabilityID' => $availability->id,
+            'yearFrom' => $from->format('Y'),
+            'yearTo' => $to->format('Y'),
         ]);
-        $ancestorLevel = count($ancestors);
-        foreach ($ancestors as $ancestorID) {
-            if ($ancestorLevel <= self::MAX_SLOTS) {
-                $this->perform(\BO\Zmsbackend\Slot\Repository\Slot::QUERY_INSERT_ANCESTOR, [
-                    'slotID' => $slotID,
-                    'ancestorID' => $ancestorID,
-                    'ancestorLevel' => $ancestorLevel,
-                ]);
+        $fromKey = $from->format('Y-m-d');
+        $toKey = $to->format('Y-m-d');
+        $byDay = [];
+        foreach ($rows as $row) {
+            $dateKey = sprintf('%04d-%02d-%02d', $row['year'], $row['month'], $row['day']);
+            if ($dateKey < $fromKey || $dateKey > $toKey) {
+                continue;
             }
-            $ancestorLevel--;
+            $clock = $this->slotClock((string) $row['time']);
+            if (!isset($byDay[$dateKey][$clock])) {
+                $byDay[$dateKey][$clock] = (int) $row['slotID'];
+            }
+        }
+
+        return $byDay;
+    }
+
+    /**
+     * @param array<string, int> $stored
+     * @param list<string> $clocks
+     */
+    private function clocksMatchStored(array $stored, array $clocks): bool
+    {
+        if (count($stored) !== count($clocks)) {
+            return false;
+        }
+        foreach ($clocks as $clock) {
+            if (!isset($stored[$clock])) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * @return list<int|string>
+     */
+    private function packSlotRow(array $values, ?int $slotId = null): array
+    {
+        $packed = [];
+        foreach (self::SLOT_WRITE_COLUMNS as $column) {
+            $packed[] = $values[$column];
+        }
+        if ($slotId !== null) {
+            array_unshift($packed, $slotId);
+        }
+
+        return $packed;
+    }
+
+    private function slotClock(string $time): string
+    {
+        $parts = explode(':', $time);
+
+        return sprintf('%02d:%02d:%02d', (int) ($parts[0] ?? 0), (int) ($parts[1] ?? 0), (int) ($parts[2] ?? 0));
+    }
+
+    /**
+     * @param list<list<int|string>> $rows slotID plus SLOT_WRITE_COLUMNS
+     */
+    private function writeExistingSlotRows(array $rows): void
+    {
+        if ($rows === []) {
+            return;
+        }
+        $columns = array_merge(['slotID'], self::SLOT_WRITE_COLUMNS);
+        $assignments = [];
+        foreach (self::SLOT_WRITE_COLUMNS as $column) {
+            $assignments[] = sprintf('`%s` = VALUES(`%s`)', $column, $column);
+        }
+        $this->writeChunks(
+            'INSERT INTO `slot` (' . $this->quotedColumns($columns) . ') VALUES ',
+            ' ON DUPLICATE KEY UPDATE ' . implode(', ', $assignments),
+            $rows
+        );
+    }
+
+    /**
+     * @param list<list<int|string>> $rows SLOT_WRITE_COLUMNS, without slotID
+     */
+    private function writeNewSlotRows(array $rows): void
+    {
+        if ($rows === []) {
+            return;
+        }
+        $this->writeChunks(
+            'INSERT INTO `slot` (' . $this->quotedColumns(self::SLOT_WRITE_COLUMNS) . ') VALUES ',
+            '',
+            $rows
+        );
+    }
+
+    /**
+     * One chain for every day that changed. The pairs match the old per-slot loop.
+     *
+     * @param list<array{key: string, ids: list<int>}> $days
+     */
+    private function writeAncestorChains(array $days): void
+    {
+        if ($days === []) {
+            return;
+        }
+        $this->perform(
+            'CREATE TEMPORARY TABLE IF NOT EXISTS `zms_calc_slot_order` (
+                `dayKey` CHAR(10) NOT NULL,
+                `seq` SMALLINT UNSIGNED NOT NULL,
+                `slotID` INT UNSIGNED NOT NULL,
+                PRIMARY KEY (`dayKey`, `seq`)
+            ) ENGINE=MEMORY'
+        );
+        $this->perform('DELETE FROM `zms_calc_slot_order`');
+        $order = [];
+        foreach ($days as $day) {
+            $seq = 1;
+            foreach ($day['ids'] as $slotId) {
+                $order[] = [$day['key'], $seq, $slotId];
+                $seq++;
+            }
+        }
+        $this->writeChunks(
+            'INSERT INTO `zms_calc_slot_order` (`dayKey`, `seq`, `slotID`) VALUES ',
+            '',
+            $order
+        );
+        $this->perform(
+            'DELETE `h` FROM `slot_hiera` `h`
+            INNER JOIN `zms_calc_slot_order` `t` ON `t`.`slotID` = `h`.`slotID`'
+        );
+        $within = self::MAX_SLOTS - 1;
+        $this->perform(
+            'INSERT INTO `slot_hiera` (`slotID`, `ancestorID`, `ancestorLevel`)
+            SELECT `s`.`slotID`, `a`.`slotID`, `s`.`seq` - `a`.`seq` + 1
+            FROM `zms_calc_slot_order` `s`
+            INNER JOIN `zms_calc_slot_order` `a`
+              ON `a`.`dayKey` = `s`.`dayKey`
+             AND `a`.`seq` <= `s`.`seq`
+             AND `a`.`seq` + ' . $within . ' >= `s`.`seq`'
+        );
+        $this->perform('DELETE FROM `zms_calc_slot_order`');
+    }
+
+    /**
+     * @param list<string> $columns
+     */
+    private function quotedColumns(array $columns): string
+    {
+        return implode(',', array_map(static fn (string $column): string => '`' . $column . '`', $columns));
+    }
+
+    /**
+     * @param list<list<int|string>> $rows
+     */
+    private function writeChunks(string $sql, string $suffix, array $rows): void
+    {
+        foreach (array_chunk($rows, 1000) as $chunk) {
+            $width = count($chunk[0]);
+            $tuple = '(' . implode(',', array_fill(0, $width, '?')) . ')';
+            $params = [];
+            foreach ($chunk as $row) {
+                foreach ($row as $value) {
+                    $params[] = $value;
+                }
+            }
+            $this->perform($sql . implode(',', array_fill(0, count($chunk), $tuple)) . $suffix, $params);
         }
     }
 
@@ -410,22 +658,25 @@ class Slot extends \BO\Zmsbackend\Base
         return new \DateTimeImmutable($last['dateString'] . \BO\Zmsbackend\Connection\Select::$connectionTimezone);
     }
 
-    public function updateSlotProcessMapping($scopeID = null): int
+    public function updateSlotProcessMapping($scopeID = null, ?\DateTimeInterface $now = null): int
     {
-        if ($scopeID) {
-            $processIdList = $this->fetchAll(
-                \BO\Zmsbackend\Slot\Repository\Slot::QUERY_SELECT_MISSING_PROCESS
-                . \BO\Zmsbackend\Slot\Repository\Slot::QUERY_SELECT_MISSING_PROCESS_BY_SCOPE,
-                ['scopeID' => $scopeID]
-            );
-        } else {
-            $processIdList = $this->fetchAll(\BO\Zmsbackend\Slot\Repository\Slot::QUERY_SELECT_MISSING_PROCESS, []);
+        $fromDate = '1970-01-01';
+        if ($now !== null) {
+            $fromDate = \DateTimeImmutable::createFromInterface($now)->modify('-1 day')->format('Y-m-d');
         }
-        // Client side INSERT ... SELECT ... to reduce table locking
-        foreach ($processIdList as $processId) {
-            $this->perform(\BO\Zmsbackend\Slot\Repository\Slot::QUERY_INSERT_SLOT_PROCESS, array_values($processId));
+        $scoped = $scopeID !== null;
+        $params = [];
+        for ($branch = 0; $branch < 3; $branch++) {
+            $params[] = $fromDate;
+            if ($scoped) {
+                $params[] = $scopeID;
+            }
         }
-        return count($processIdList);
+
+        return $this->fetchAffected(
+            \BO\Zmsbackend\Slot\Repository\Slot::insertMissingProcessSql($scoped),
+            $params
+        );
     }
 
     public function deleteSlotProcessOnSlot($scopeID = null): void
@@ -443,20 +694,18 @@ class Slot extends \BO\Zmsbackend\Base
 
     public function deleteSlotProcessOnProcess($scopeID = null): int
     {
+        $select = \BO\Zmsbackend\Slot\Repository\Slot::QUERY_SELECT_DELETABLE_SLOT_PROCESS;
+        $params = [];
         if ($scopeID) {
-            $processIdList = $this->fetchAll(
-                \BO\Zmsbackend\Slot\Repository\Slot::QUERY_SELECT_DELETABLE_SLOT_PROCESS
-                . \BO\Zmsbackend\Slot\Repository\Slot::QUERY_SELECT_DELETABLE_SLOT_PROCESS_BY_SCOPE,
-                ['scopeID' => $scopeID]
-            );
-        } else {
-            $processIdList = $this->fetchAll(\BO\Zmsbackend\Slot\Repository\Slot::QUERY_SELECT_DELETABLE_SLOT_PROCESS);
+            $select .= \BO\Zmsbackend\Slot\Repository\Slot::QUERY_SELECT_DELETABLE_SLOT_PROCESS_BY_SCOPE;
+            $params['scopeID'] = $scopeID;
         }
-        // Client side INSERT ... SELECT ... to reduce table locking
-        foreach ($processIdList as $processId) {
-            $this->perform(\BO\Zmsbackend\Slot\Repository\Slot::QUERY_DELETE_SLOT_PROCESS_ID, $processId);
-        }
-        return count($processIdList);
+        // A process with one stale slot loses all of its slot rows. The mapping insert writes the current ones back.
+        $sql = 'DELETE sp_del FROM slot_process sp_del INNER JOIN (
+            SELECT processId FROM (' . $select . ') stale_ids
+        ) stale ON stale.processId = sp_del.processID';
+
+        return $this->fetchAffected($sql, $params);
     }
 
     public function writeSlotProcessMappingFor($processId): static
@@ -545,7 +794,10 @@ class Slot extends \BO\Zmsbackend\Base
             try {
                 $status = $status && $this->perform($query);
             } catch (\PDOException $e) {
-                \App::$log->error("Failed to optimize table with query: $query. Error: " . $e->getMessage(), []);
+                \App::$log->error("Failed to optimize table with query: $query. Error: " . $e->getMessage(), [
+                    'scope_id' => null,
+                    'availability_id' => null,
+                ]);
 
                 return false;
             }

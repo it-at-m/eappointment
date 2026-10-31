@@ -36,7 +36,7 @@ class ValidationService
     private const int MAX_FUTURE_DAYS = 365;
     // Maximum days in the future for appointments
     /** Must match {@see \BO\Zmsdb\Slot::MAX_SLOTS} */
-    private const int MAX_SERVICE_COUNT = 25;
+    private const int MAX_SERVICE_COUNT = 48;
     private const int AUTH_KEY_LEGACY_HEX_LENGTH = 4;
     private const int AUTH_KEY_NEW_HEX_LENGTH = 64;
 

@@ -337,7 +337,7 @@ class AvailableCalendarControllerTest extends ControllerTestCase
             'endDate' => '2024-09-04',
             'officeIds' => '102522',
             'serviceIds' => '1063424',
-            'serviceCounts' => '26',
+            'serviceCounts' => '49',
         ];
 
         $response = $this->render([], $parameters, []);
