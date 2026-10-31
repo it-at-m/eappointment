@@ -37,9 +37,59 @@ class Slot extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\Map
     const string QUERY_LAST_CHANGED_SCOPE = '
         SELECT MAX(updateTimestamp) AS dateString FROM slot WHERE scopeID = :scopeID;';
 
-    const string QUERY_INSERT_SLOT_PROCESS = '
-        INSERT INTO slot_process
-        VALUES(?,?,?) 
+    /**
+     * Active (free or full, not cancelled) slots of one scope and day with their current occupancy,
+     * used to decide which of several overlapping availabilities gets an appointment.
+     * Full slots are needed, otherwise a full slot looks like a gap in its availability.
+     */
+    const string QUERY_SELECT_SLOT_OCCUPANCY_BY_SCOPE_AND_DAY = '
+        SELECT
+            s.slotID,
+            s.availabilityID,
+            s.time,
+            s.slotTimeInMinutes,
+            s.public,
+            s.intern,
+            COUNT(sp.processID) AS confirmed
+        FROM slot s
+            LEFT JOIN slot_process sp ON sp.slotID = s.slotID
+        WHERE
+            s.scopeID = :scopeID
+            AND s.year = :year
+            AND s.month = :month
+            AND s.day = :day
+            AND s.status IN ("free", "full")
+        GROUP BY s.slotID
+        ORDER BY s.availabilityID, s.time
+    ';
+
+    const string QUERY_SELECT_PROCESS_FOR_SLOT_MAPPING = '
+        SELECT
+            b.BuergerID,
+            b.StandortID,
+            b.Datum,
+            b.Uhrzeit,
+            b.istFolgeterminvon,
+            b.hatFolgetermine
+        FROM buerger b
+        WHERE b.BuergerID = :processId
+    ';
+
+    const string QUERY_SELECT_FOLLOWING_PROCESS_IDS = '
+        SELECT b.BuergerID
+        FROM buerger b
+        WHERE b.istFolgeterminvon = :processId
+        ORDER BY b.Uhrzeit, b.BuergerID
+    ';
+
+    const string QUERY_SELECT_MAPPED_AVAILABILITY_BY_PROCESS = '
+        SELECT s.availabilityID
+        FROM slot_process sp
+            INNER JOIN slot s ON s.slotID = sp.slotID
+        WHERE
+            sp.processID = :processId
+            AND s.status IN ("free", "full")
+        LIMIT 1
     ';
 
     const string QUERY_SELECT_BY_SCOPE_AND_DAY = '
@@ -54,10 +104,9 @@ class Slot extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\Map
     ';
 
     const string QUERY_SELECT_MISSING_PROCESS = '
-        SELECT 
-          s.slotID,
+        SELECT DISTINCT
           b.BuergerID,
-          NOW() updateTimestamp
+          b.istFolgeterminvon
         FROM slot s
           INNER JOIN buerger b ON
             s.year = YEAR(b.Datum)
@@ -77,7 +126,7 @@ class Slot extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\Map
 
     const string QUERY_INSERT_SLOT_PROCESS_ID = '
         REPLACE INTO slot_process
-        SELECT 
+        SELECT
           s.slotID,
           b.BuergerID,
           NOW()
@@ -91,6 +140,7 @@ class Slot extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\Map
             AND b.Uhrzeit BETWEEN s.time AND SEC_TO_TIME(TIME_TO_SEC(s.time) + (s.slotTimeInMinutes * 60) - 1)
         WHERE
           b.BuergerID = :processId
+          AND s.availabilityID = :availabilityId
     ';
     const string QUERY_DELETE_SLOT_PROCESS_CANCELLED = '
         DELETE sp 
@@ -190,6 +240,21 @@ class Slot extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\Map
       AND year = ?
       AND month = ?
       AND day = ?
+      AND time IN (%s)
+    ORDER BY slotID ASC
+    FOR UPDATE
+';
+
+    /**
+     * Lock the slots of several overlapping availabilities in one statement (consistent slotID order)
+     */
+    public const string QUERY_SELECT_CANDIDATE_SLOTS_FOR_UPDATE = '
+    SELECT slotID FROM slot WHERE
+      scopeID = ?
+      AND year = ?
+      AND month = ?
+      AND day = ?
+      AND availabilityID IN (%s)
       AND time IN (%s)
     ORDER BY slotID ASC
     FOR UPDATE
