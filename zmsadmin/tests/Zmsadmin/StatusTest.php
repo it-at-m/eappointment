@@ -33,12 +33,15 @@ class StatusTest extends Base
         $this->assertStringContainsString('Anzahl der gebuchten Termine mit Bürgerlogin', $body);
         $booked = strpos($body, 'Anzahl der gebuchten Termine</th>');
         $withLogin = strpos($body, 'Anzahl der gebuchten Termine mit Bürgerlogin');
+        $multipleServices = strpos($body, 'Anzahl der gebuchten Termine mit mehr als einer Dienstleistung');
         $superuser = strpos($body, 'Technische Administration');
         $this->assertNotFalse($booked);
         $this->assertNotFalse($withLogin);
+        $this->assertNotFalse($multipleServices);
         $this->assertNotFalse($superuser);
         $this->assertGreaterThan($booked, $withLogin);
-        $this->assertLessThan($superuser, $withLogin);
+        $this->assertGreaterThan($withLogin, $multipleServices);
+        $this->assertLessThan($superuser, $multipleServices);
         $this->assertStringContainsString('Letzter Import Dienstleistungsdatenbank', $body);
         $this->assertStringContainsString('Anzahl noch nicht versendeter Mails', $body);
         $this->assertStringContainsString('Alter noch nicht versendeter Mails', $body);
@@ -93,6 +96,7 @@ class StatusTest extends Base
         $this->assertStringContainsString('Anzahl der aktuell aufgerufenen Termine', $body);
         $this->assertStringContainsString('Anzahl der aktuell geparkten Termine', $body);
         $this->assertStringContainsString('Anzahl der gebuchten Termine mit Bürgerlogin', $body);
+        $this->assertStringContainsString('Anzahl der gebuchten Termine mit mehr als einer Dienstleistung', $body);
         $this->assertStringNotContainsString('Letzter Import Dienstleistungsdatenbank', $body);
         $this->assertStringNotContainsString('Auslastung der Datenbankverbindungen', $body);
         $this->assertStringNotContainsString('Status des Datenbank-Clusters', $body);

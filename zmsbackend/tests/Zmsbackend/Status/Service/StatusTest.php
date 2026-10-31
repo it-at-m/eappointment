@@ -15,6 +15,7 @@ class StatusTest extends \BO\Zmsbackend\Tests\Service\Base
         $this->assertArrayHasKey('called', $status['processes']);
         $this->assertArrayHasKey('withExternalUserId', $status['processes']);
         $this->assertArrayHasKey('confirmedWithExternalUserId', $status['processes']);
+        $this->assertArrayHasKey('confirmedWithMultipleServices', $status['processes']);
         //var_dump(\BO\Zmsbackend\Connection\Select::getReadConnection()->getProfiler()->getProfiles());
     }
 }
