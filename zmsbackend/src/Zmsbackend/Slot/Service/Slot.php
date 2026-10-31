@@ -658,22 +658,25 @@ class Slot extends \BO\Zmsbackend\Base
         return new \DateTimeImmutable($last['dateString'] . \BO\Zmsbackend\Connection\Select::$connectionTimezone);
     }
 
-    public function updateSlotProcessMapping($scopeID = null): int
+    public function updateSlotProcessMapping($scopeID = null, ?\DateTimeInterface $now = null): int
     {
-        if ($scopeID) {
-            $processIdList = $this->fetchAll(
-                \BO\Zmsbackend\Slot\Repository\Slot::QUERY_SELECT_MISSING_PROCESS
-                . \BO\Zmsbackend\Slot\Repository\Slot::QUERY_SELECT_MISSING_PROCESS_BY_SCOPE,
-                ['scopeID' => $scopeID]
-            );
-        } else {
-            $processIdList = $this->fetchAll(\BO\Zmsbackend\Slot\Repository\Slot::QUERY_SELECT_MISSING_PROCESS, []);
+        $fromDate = '1970-01-01';
+        if ($now !== null) {
+            $fromDate = \DateTimeImmutable::createFromInterface($now)->modify('-1 day')->format('Y-m-d');
         }
-        // Client side INSERT ... SELECT ... to reduce table locking
-        foreach ($processIdList as $processId) {
-            $this->perform(\BO\Zmsbackend\Slot\Repository\Slot::QUERY_INSERT_SLOT_PROCESS, array_values($processId));
+        $scoped = $scopeID !== null;
+        $params = [];
+        for ($branch = 0; $branch < 3; $branch++) {
+            $params[] = $fromDate;
+            if ($scoped) {
+                $params[] = $scopeID;
+            }
         }
-        return count($processIdList);
+
+        return $this->fetchAffected(
+            \BO\Zmsbackend\Slot\Repository\Slot::insertMissingProcessSql($scoped),
+            $params
+        );
     }
 
     public function deleteSlotProcessOnSlot($scopeID = null): void
@@ -691,20 +694,18 @@ class Slot extends \BO\Zmsbackend\Base
 
     public function deleteSlotProcessOnProcess($scopeID = null): int
     {
+        $select = \BO\Zmsbackend\Slot\Repository\Slot::QUERY_SELECT_DELETABLE_SLOT_PROCESS;
+        $params = [];
         if ($scopeID) {
-            $processIdList = $this->fetchAll(
-                \BO\Zmsbackend\Slot\Repository\Slot::QUERY_SELECT_DELETABLE_SLOT_PROCESS
-                . \BO\Zmsbackend\Slot\Repository\Slot::QUERY_SELECT_DELETABLE_SLOT_PROCESS_BY_SCOPE,
-                ['scopeID' => $scopeID]
-            );
-        } else {
-            $processIdList = $this->fetchAll(\BO\Zmsbackend\Slot\Repository\Slot::QUERY_SELECT_DELETABLE_SLOT_PROCESS);
+            $select .= \BO\Zmsbackend\Slot\Repository\Slot::QUERY_SELECT_DELETABLE_SLOT_PROCESS_BY_SCOPE;
+            $params['scopeID'] = $scopeID;
         }
-        // Client side INSERT ... SELECT ... to reduce table locking
-        foreach ($processIdList as $processId) {
-            $this->perform(\BO\Zmsbackend\Slot\Repository\Slot::QUERY_DELETE_SLOT_PROCESS_ID, $processId);
-        }
-        return count($processIdList);
+        // A process with one stale slot loses all of its slot rows. The mapping insert writes the current ones back.
+        $sql = 'DELETE sp_del FROM slot_process sp_del INNER JOIN (
+            SELECT processId FROM (' . $select . ') stale_ids
+        ) stale ON stale.processId = sp_del.processID';
+
+        return $this->fetchAffected($sql, $params);
     }
 
     public function writeSlotProcessMappingFor($processId): static

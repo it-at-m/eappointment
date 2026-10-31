@@ -112,6 +112,79 @@ class Slot extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\Map
           AND s.scopeID = :scopeID
     ';
 
+    /**
+     * One insert for the pairs that are not mapped yet.
+     * The date argument drops appointments that can no longer meet a free slot.
+     * The outer select keeps slot_process out of the insert target.
+     */
+    public static function insertMissingProcessSql(bool $scoped): string
+    {
+        $scope = $scoped ? ' AND b.StandortID = ?' : '';
+        $from = $scoped
+            ? 'FROM buerger b FORCE INDEX (speed_test)'
+            : 'FROM buerger b FORCE INDEX (Datum)';
+        $sameDay = '
+            SELECT s.slotID, b.BuergerID AS processID, NOW() AS updateTimestamp
+            ' . $from . '
+            INNER JOIN slot s
+              ON s.scopeID = b.StandortID
+             AND s.status = "free"
+             AND s.slotTimeInMinutes = 5
+             AND s.year = YEAR(b.Datum)
+             AND s.month = MONTH(b.Datum)
+             AND s.day = DAY(b.Datum)
+             AND s.time < ADDTIME(b.Uhrzeit, SEC_TO_TIME((IFNULL(b.hatFolgetermine, 0) + 1) * s.slotTimeInMinutes * 60))
+             AND ADDTIME(s.time, SEC_TO_TIME(s.slotTimeInMinutes * 60)) > b.Uhrzeit
+            WHERE b.Datum >= ?' . $scope . '
+              AND IFNULL(b.istFolgeterminvon, 0) = 0
+              AND NOT EXISTS (
+                SELECT 1 FROM slot_process sp
+                WHERE sp.processID = b.BuergerID AND sp.slotID = s.slotID
+              )';
+        $nextDay = '
+            SELECT s.slotID, b.BuergerID AS processID, NOW() AS updateTimestamp
+            ' . $from . '
+            INNER JOIN slot s
+              ON s.scopeID = b.StandortID
+             AND s.status = "free"
+             AND s.slotTimeInMinutes = 5
+             AND IFNULL(b.istFolgeterminvon, 0) = 0
+             AND ADDTIME(b.Uhrzeit, SEC_TO_TIME((IFNULL(b.hatFolgetermine, 0) + 1) * s.slotTimeInMinutes * 60)) >= "24:00:00"
+             AND s.year = YEAR(DATE_ADD(b.Datum, INTERVAL 1 DAY))
+             AND s.month = MONTH(DATE_ADD(b.Datum, INTERVAL 1 DAY))
+             AND s.day = DAY(DATE_ADD(b.Datum, INTERVAL 1 DAY))
+             AND s.time < SUBTIME(
+                ADDTIME(b.Uhrzeit, SEC_TO_TIME((IFNULL(b.hatFolgetermine, 0) + 1) * s.slotTimeInMinutes * 60)),
+                "24:00:00"
+             )
+            WHERE b.Datum >= ?' . $scope . '
+              AND NOT EXISTS (
+                SELECT 1 FROM slot_process sp
+                WHERE sp.processID = b.BuergerID AND sp.slotID = s.slotID
+              )';
+        $other = '
+            SELECT s.slotID, b.BuergerID AS processID, NOW() AS updateTimestamp
+            ' . $from . '
+            INNER JOIN slot s
+              ON s.scopeID = b.StandortID
+             AND s.status = "free"
+             AND IFNULL(s.slotTimeInMinutes, 0) <> 5
+             AND s.year = YEAR(b.Datum)
+             AND s.month = MONTH(b.Datum)
+             AND s.day = DAY(b.Datum)
+             AND b.Uhrzeit BETWEEN s.time
+               AND SEC_TO_TIME(TIME_TO_SEC(s.time) + (s.slotTimeInMinutes * 60) - 1)
+            WHERE b.Datum >= ?' . $scope . '
+              AND NOT EXISTS (
+                SELECT 1 FROM slot_process sp
+                WHERE sp.processID = b.BuergerID
+              )';
+
+        return 'INSERT IGNORE INTO slot_process (slotID, processID, updateTimestamp)
+            SELECT missing.slotID, missing.processID, missing.updateTimestamp
+            FROM (' . $sameDay . ' UNION ALL ' . $nextDay . ' UNION ALL ' . $other . ') missing';
+    }
+
 
     const string QUERY_INSERT_SLOT_PROCESS_ID = '
         REPLACE INTO slot_process

@@ -199,7 +199,7 @@ class CalculateSlots
 
         $slotQuery->deleteSlotProcessOnSlot();
 
-        if ($slotsProcessed = $slotQuery->updateSlotProcessMapping()) {
+        if ($slotsProcessed = $slotQuery->updateSlotProcessMapping(null, $now)) {
             $this->log("Updated Slot-Process-Mapping, mapped $slotsProcessed processes");
         }
 
@@ -412,7 +412,7 @@ class CalculateSlots
         $slotQuery->deleteSlotProcessOnSlot($scope->id);
         //$this->log("Finished to free slots for cancelled availabilities");
 
-        if ($slotsProcessed = $slotQuery->updateSlotProcessMapping($scope->id)) {
+        if ($slotsProcessed = $slotQuery->updateSlotProcessMapping($scope->id, $now)) {
             $this->log("Updated Slot-Process-Mapping, mapped $slotsProcessed processes", (int) $scope->id);
         }
     }
