@@ -82,6 +82,6 @@
     "dompurify": "^3.4.17",
     "brace-expansion": "5.0.12",
     "js-yaml@4": "4.3.2",
-    "minimatch": "^11.0.1"
+    "minimatch": "^11.0.3"
   }
 }

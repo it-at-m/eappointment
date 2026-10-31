@@ -26,7 +26,7 @@
     "ws": "^8.22.1",
     "@opentelemetry/core": "^3.0.0",
     "brace-expansion": "5.0.12",
-    "minimatch": "^11.0.1",
+    "minimatch": "^11.0.3",
     "glob": "^14.0.3"
   },
   "devDependencies": {
