@@ -47,7 +47,7 @@
     "jquery": "^4.0.0",
     "js-cookie": "^3.0.8",
     "js-yaml": "^5.5.0",
-    "minimatch": "^10.2.5",
+    "minimatch": "^11.0.1",
     "moment": "^2.31.0",
     "monaco-editor": "^0.57.0",
     "parcel": "^2.16.4",
@@ -78,9 +78,11 @@
   "// overrides.dompurify": "monaco-editor depends on dompurify@3.4.8; override to ^3.4.15 (patched) until Monaco ships a newer dompurify.",
   "// overrides.brace-expansion": "Force 5.0.8 for CVE-2026-14257 (DoS via unbounded expansion length); no 1.x/2.x backport.",
   "// overrides.js-yaml@4": "Force nested js-yaml 4.x to 4.3.2 for CVE-2026-84375 (empty merge-key DoS) and CVE-2026-59870.",
+  "// overrides.minimatch": "Force ^11.0.1 for CVE-2026-118764 (DoS via crafted glob pattern expansion). No 10.x backport.",
   "overrides": {
     "dompurify": "^3.4.17",
     "brace-expansion": "5.0.12",
-    "js-yaml@4": "4.3.2"
+    "js-yaml@4": "4.3.2",
+    "minimatch": "^11.0.1"
   }
 }
