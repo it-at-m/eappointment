@@ -15,6 +15,10 @@
             <th>Anzahl der gebuchten Termine</th>
             <td>{{ status.processes.confirmed }}</td>
         </tr>
+        <tr class="status-process-confirmed-external">
+            <th>Anzahl der gebuchten Termine mit Bürgerlogin</th>
+            <td>{{ status.processes.confirmedWithExternalUserId|default(0) }}</td>
+        </tr>
         <tr class="status-process-confirmed">
             <th>Anzahl der Abholer für Dokumente</th>
             <td>{{ status.processes.pending }}</td>
@@ -73,10 +77,6 @@
         <tr class="status-backend-php-version">
             <th>zmsbackend PHP-Version</th>
             <td>{{ status.phpVersion }}</td>
-        </tr>
-        <tr class="status-process-confirmed-external">
-            <th>Anzahl der gebuchten Termine mit Bürgerlogin</th>
-            <td>{{ status.processes.confirmedWithExternalUserId|default(0) }}</td>
         </tr>
         <tr class="status-dldb-last">
             <th>Letzter Import Dienstleistungsdatenbank</th>
