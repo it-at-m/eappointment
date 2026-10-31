@@ -34,8 +34,8 @@
     "@vue/eslint-config-prettier": "10.2.0",
     "@vue/eslint-config-typescript": "14.9.0",
     "@vue/test-utils": "^2.4.11",
-    "eslint": "10.13.0",
-    "eslint-plugin-vue": "10.11.1",
+    "eslint": "10.14.0",
+    "eslint-plugin-vue": "10.12.0",
     "local-web-server": "^5.4.0",
     "lodash": "^4.18.0",
     "sass": "^1.105.2",
@@ -52,6 +52,8 @@
   "// overrides.immutable": "sass pins immutable@5.1.5; force ^5.1.9 (CVE-2026-59879, CVE-2026-59880).",
   "// overrides.nanoid": "postcss pins nanoid@3.3.16; force ^3.3.17 (CVE-2026-67213).",
   "// overrides.qs": "local-web-server -> co-body pins qs@6.15.3; force ^6.16.0 (CVE-2026-82417, CVE-2026-82562).",
+  "// overrides.minimatch": "Force ^11.0.1 for CVE-2026-118764 (DoS via crafted glob pattern expansion). No 10.x backport.",
+  "// overrides.glob": "Force ^14.0.2 for CVE-2026-118773 (aborted glob walks keep reading directories). js-beautify pins glob@13.",
   "overrides": {
     "vite-plugin-vuetify": {
       "make-dir": "5.1.0"
@@ -64,6 +66,8 @@
     "immutable": "^5.1.9",
     "brace-expansion": "5.0.12",
     "nanoid": "^6.0.2",
-    "qs": "^6.16.1"
+    "qs": "^6.17.1",
+    "minimatch": "^11.0.1",
+    "glob": "^14.0.2"
   }
 }

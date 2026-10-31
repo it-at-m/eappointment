@@ -790,8 +790,23 @@ public final class TimeSlotStep {
     public void assertListDateAccordions(int expectedCount) {
         context.set();
         JsonNode state = waitForListAccordionCount(expectedCount);
+        Assert.assertEquals(state.path("count").asInt(), expectedCount, "Date accordion count: " + state);
+        rememberListAccordions(state);
+    }
+
+    public void assertLoadedListDateAccordions() {
+        context.set();
+        JsonNode state = new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(defaultWaitSeconds))
+                .until(d -> {
+                    JsonNode node = listSnapshot();
+                    return node.path("count").asInt() > 0 ? node : null;
+                });
+        rememberListAccordions(state);
+    }
+
+    private void rememberListAccordions(JsonNode state) {
         slotState.listAccordionCount = state.path("count").asInt();
-        Assert.assertEquals(slotState.listAccordionCount, expectedCount, "Date accordion count: " + state);
+        Assert.assertTrue(slotState.listAccordionCount > 0, "Date accordion count: " + state);
         Assert.assertEquals(state.path("expanded").get(0).asText(), "true", "The first date stays open: " + state);
         for (int i = 1; i < state.path("expanded").size(); i++) {
             Assert.assertEquals(
@@ -804,6 +819,31 @@ public final class TimeSlotStep {
                     "Date heading should be a weekday and a date: " + label.asText());
         }
         slotState.openListHeading = state.path("labels").get(0).asText();
+    }
+
+    /** The next month can arrive across more than one render, so wait until the count stops growing. */
+    private JsonNode waitForListToGrow(int before) {
+        long deadline = System.currentTimeMillis() + defaultWaitSeconds * 1000L;
+        int last = before;
+        int stableReads = 0;
+        JsonNode settled = null;
+        while (System.currentTimeMillis() < deadline) {
+            JsonNode snap = listSnapshot();
+            int now = snap.path("count").asInt();
+            if (now > before && now == last) {
+                stableReads++;
+                if (stableReads >= 2) {
+                    settled = snap;
+                    break;
+                }
+            } else {
+                stableReads = now > before ? 1 : 0;
+            }
+            last = now;
+            CitizenViewWaits.sleepQuiet(300L);
+        }
+        Assert.assertNotNull(settled, "Mehr laden did not add dates past " + before);
+        return settled;
     }
 
     public void assertOpenListGroupsByHour() {
@@ -1167,13 +1207,18 @@ public final class TimeSlotStep {
 
     public void loadMoreListDates() {
         JsonNode before = waitForListAccordionCount(slotState.listAccordionCount);
+        int beforeCount = before.path("count").asInt();
         slotState.openListHeading = before.path("labels").get(0).asText();
         Assert.assertTrue(shadow.clickButtonContaining("Mehr laden"), "Could not click Mehr laden");
-        new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(defaultWaitSeconds))
-                .until(d -> listSnapshot().path("count").asInt() > slotState.listAccordionCount);
-        JsonNode after = listSnapshot();
+        JsonNode after = waitForListToGrow(beforeCount);
         int count = after.path("count").asInt();
-        Assert.assertTrue(count > slotState.listAccordionCount && count <= slotState.listAccordionCount + 3, "Mehr laden adds at most three dates: " + after);
+        // The list opens on five dates. A short month shows fewer, so the same click also
+        // fills that gap and can add more than three visible dates. Once five are showing,
+        // Mehr laden adds at most three.
+        int allowed = beforeCount + 3 + Math.max(0, 5 - beforeCount);
+        Assert.assertTrue(
+                count > beforeCount && count <= allowed,
+                "Mehr laden adds at most three dates once five are shown: " + after);
         Assert.assertEquals(after.path("labels").get(0).asText(), slotState.openListHeading, "Mehr laden keeps the open date");
         Assert.assertEquals(after.path("expanded").get(0).asText(), "true", "The open date stays open after Mehr laden");
         slotState.listAccordionCount = count;
@@ -1505,6 +1550,31 @@ public final class TimeSlotStep {
     private JsonNode lastMucSpinnerSnapshot;
 
     /**
+     * Day tiles inside {@code .muc-calendar-wrap}, including shadow roots. {@code freeDay} skips the
+     * selected tile, disabled tiles, and off-month tiles.
+     */
+    private static final String CALENDAR_DAY_TILES_JS =
+            "function calWalk(root, visit){"
+                    + "if(!root||!root.querySelectorAll)return false;"
+                    + "var nodes=root.querySelectorAll('*');"
+                    + "for(var i=0;i<nodes.length;i++){"
+                    + "if(visit(nodes[i]))return true;"
+                    + "if(nodes[i].shadowRoot&&calWalk(nodes[i].shadowRoot,visit))return true;}"
+                    + "return false;}"
+                    + "function calendarWrap(){var wrap=null;"
+                    + "calWalk(document,function(el){"
+                    + "if(el.matches&&el.matches('.muc-calendar-wrap')){wrap=el;return true;}return false;});"
+                    + "return wrap;}"
+                    + "function dayTiles(wrap){var days=[];"
+                    + "calWalk(wrap,function(el){"
+                    + "if(el.classList&&el.classList.contains('muc-calendar-item')&&el.getAttribute('role')==='button')days.push(el);"
+                    + "return false;});return days;}"
+                    + "function freeDay(tile){"
+                    + "if(!tile||tile.classList.contains('selected'))return false;"
+                    + "if(tile.getAttribute('aria-disabled')==='true'||tile.classList.contains('disabled-tile')||tile.classList.contains('off-month'))return false;"
+                    + "return /^\\d{1,2}$/.test((tile.textContent||'').replace(/\\s+/g,' ').trim());}";
+
+    /**
      * Shared DOM helpers for Muc spinner snapshots. Used by the armed MutationObserver/rAF watcher
      * and by the click scripts that only perform the action (no sync poll — that blocks the event
      * loop and hides the flash the watcher is meant to catch).
@@ -1723,53 +1793,106 @@ public final class TimeSlotStep {
     }
 
     /**
-     * Click the next free calendar day tile and catch the Muc spinner while slots reload. Only a day
-     * tile counts as clicked — month chevron alone does not start the appointment spinner.
+     * Click the next free calendar day tile and catch the Muc spinner while slots reload.
+     * On the last day of the month every later tile is off-month. The next-month chevron then jumps
+     * to the next bookable day when one exists; otherwise the first free day of the new month is
+     * clicked. The chevron click itself is not treated as success.
      */
     public void selectNextCalendarDayCatchingSpinner(String expectedText) {
         context.set();
         armMucSpinnerWatch(expectedText);
         try {
-            Object inline =
-                    ((JavascriptExecutor) DriverUtil.getDriver())
-                            .executeScript(
-                                    MUC_SPINNER_JS_HELPERS
-                                            + "function walk(root, visit){"
-                                            + "if(!root||!root.querySelectorAll)return false;"
-                                            + "var nodes=root.querySelectorAll('*');"
-                                            + "for(var i=0;i<nodes.length;i++){"
-                                            + "if(visit(nodes[i]))return true;"
-                                            + "if(nodes[i].shadowRoot&&walk(nodes[i].shadowRoot,visit))return true;}"
-                                            + "return false;}"
-                                            + "var wrap=null;"
-                                            + "walk(document,function(el){"
-                                            + "if(el.matches&&el.matches('.muc-calendar-wrap')){wrap=el;return true;}return false;});"
-                                            + "if(!wrap)return {clicked:false,snap:snap(true)};"
-                                            + "var days=[];"
-                                            + "walk(wrap,function(el){"
-                                            + "if(el.classList&&el.classList.contains('muc-calendar-item')&&el.getAttribute('role')==='button')days.push(el);"
-                                            + "return false;});"
-                                            + "var selectedDay=-1;"
-                                            + "for(var d=0;d<days.length;d++){if(days[d].classList.contains('selected'))selectedDay=d;}"
-                                            + "var clicked=false;"
-                                            + "if(selectedDay>=0){"
-                                            + "for(var n=selectedDay+1;n<days.length;n++){"
-                                            + "var tile=days[n];"
-                                            + "if(tile.getAttribute('aria-disabled')==='true'||tile.classList.contains('disabled-tile')||tile.classList.contains('off-month'))continue;"
-                                            + "var dayLabel=(tile.textContent||'').replace(/\\s+/g,' ').trim();"
-                                            + "if(!/^\\d{1,2}$/.test(dayLabel))continue;"
-                                            + "tile.click();clicked=true;break;}}"
-                                            + "if(!clicked)return {clicked:false,snap:snap(true)};"
-                                            + "return {clicked:true,snap:window.__zmsMucSpinnerCatch||snap(true)};");
+            Object inline = clickNextInMonthCalendarDay();
             rememberInlineSpinnerCatch(inline, expectedText);
-            Assert.assertTrue(
-                    inline instanceof java.util.Map<?, ?> map
-                            && Boolean.TRUE.equals(map.get("clicked")),
-                    "No next free calendar day to select for Muc spinner check");
+            boolean clicked = scriptClicked(inline);
+            if (!clicked) {
+                ScenarioLogManager.getLogger()
+                        .info("zmscitizenview: no later in-month day, opening the next month");
+                clickCalendarNextMonthChevron();
+                long deadline = System.currentTimeMillis() + 8_000L;
+                while (System.currentTimeMillis() < deadline && !clicked) {
+                    if (armedMucSpinnerMatches(expectedText)) {
+                        clicked = true;
+                        break;
+                    }
+                    Object rolled = clickFirstFreeUnselectedInMonthDay();
+                    rememberInlineSpinnerCatch(rolled, expectedText);
+                    clicked = scriptClicked(rolled);
+                    if (!clicked) {
+                        CitizenViewWaits.sleepQuiet(200L);
+                    }
+                }
+            }
+            Assert.assertTrue(clicked, "No next free calendar day to select for Muc spinner check");
             waitUntilMucSpinnerSeen(expectedText, 12);
         } finally {
             disarmMucSpinnerWatch();
         }
+    }
+
+    private static boolean scriptClicked(Object inline) {
+        return inline instanceof java.util.Map<?, ?> map && Boolean.TRUE.equals(map.get("clicked"));
+    }
+
+    private boolean armedMucSpinnerMatches(String expectedText) {
+        Object caught =
+                ((JavascriptExecutor) DriverUtil.getDriver())
+                        .executeScript("return window.__zmsMucSpinnerCatch||null;");
+        if (!(caught instanceof java.util.Map<?, ?> map) || !Boolean.TRUE.equals(map.get("visible"))) {
+            return false;
+        }
+        Object text = map.get("text");
+        return mucSpinnerTextMatches(text == null ? "" : String.valueOf(text), expectedText);
+    }
+
+    private Object clickNextInMonthCalendarDay() {
+        return ((JavascriptExecutor) DriverUtil.getDriver())
+                .executeScript(
+                        MUC_SPINNER_JS_HELPERS
+                                + CALENDAR_DAY_TILES_JS
+                                + "var wrap=calendarWrap();"
+                                + "if(!wrap)return {clicked:false,snap:snap(true)};"
+                                + "var days=dayTiles(wrap);"
+                                + "var selectedDay=-1;"
+                                + "for(var d=0;d<days.length;d++){if(days[d].classList.contains('selected'))selectedDay=d;}"
+                                + "var clicked=false;"
+                                + "if(selectedDay>=0){"
+                                + "for(var n=selectedDay+1;n<days.length;n++){"
+                                + "if(!freeDay(days[n]))continue;"
+                                + "days[n].click();clicked=true;break;}}"
+                                + "if(!clicked)return {clicked:false,snap:snap(true)};"
+                                + "return {clicked:true,snap:window.__zmsMucSpinnerCatch||snap(true)};");
+    }
+
+    private void clickCalendarNextMonthChevron() {
+        ((JavascriptExecutor) DriverUtil.getDriver())
+                .executeScript(
+                        CALENDAR_DAY_TILES_JS
+                                + "var wrap=calendarWrap();"
+                                + "if(!wrap)return false;"
+                                + "var clicked=false;"
+                                + "calWalk(wrap,function(el){"
+                                + "if(clicked||el.tagName!=='BUTTON'||el.disabled||el.getAttribute('aria-disabled')==='true')return false;"
+                                + "var useEl=el.querySelector('use');"
+                                + "var href=(useEl&&(useEl.getAttribute('href')||useEl.getAttribute('xlink:href')))||'';"
+                                + "if(href.indexOf('chevron-right')<0)return false;"
+                                + "el.click();clicked=true;return true;});"
+                                + "return clicked;");
+    }
+
+    private Object clickFirstFreeUnselectedInMonthDay() {
+        return ((JavascriptExecutor) DriverUtil.getDriver())
+                .executeScript(
+                        MUC_SPINNER_JS_HELPERS
+                                + CALENDAR_DAY_TILES_JS
+                                + "var wrap=calendarWrap();"
+                                + "if(!wrap)return {clicked:false,snap:snap(true)};"
+                                + "var days=dayTiles(wrap);"
+                                + "for(var n=0;n<days.length;n++){"
+                                + "if(!freeDay(days[n]))continue;"
+                                + "days[n].click();"
+                                + "return {clicked:true,snap:window.__zmsMucSpinnerCatch||snap(true)};}"
+                                + "return {clicked:false,snap:snap(true)};");
     }
 
     private void rememberInlineSpinnerCatch(Object inline, String expectedText) {
