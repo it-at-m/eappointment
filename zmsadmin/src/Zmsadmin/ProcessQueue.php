@@ -145,7 +145,7 @@ class ProcessQueue extends BaseController
         return $form;
     }
 
-    protected function readSelectedProcessWithWaitingnumber($selectedProcessId)
+    protected function readSelectedProcessWithWaitingnumber(string|int $selectedProcessId)
     {
         $result = null;
         if ($selectedProcessId) {
