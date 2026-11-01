@@ -510,7 +510,7 @@ class Scope extends \BO\Zmsbackend\Base
         return $scopeList;
     }
 
-    public function writeEntity(\BO\Zmsentities\Scope $entity, $parentId): Entity|null
+    public function writeEntity(\BO\Zmsentities\Scope $entity, string|int $parentId): Entity|null
     {
         self::$cache = [];
         $query = new \BO\Zmsbackend\Query\Scope(\BO\Zmsbackend\Query\Base::INSERT);

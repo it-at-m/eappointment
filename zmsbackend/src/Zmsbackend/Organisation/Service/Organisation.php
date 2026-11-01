@@ -129,7 +129,7 @@ class Organisation extends \BO\Zmsbackend\Base
         return ($this->deleteItem($query)) ? $entity : null;
     }
 
-    public function writeEntity(\BO\Zmsentities\Organisation $entity, $parentId)
+    public function writeEntity(\BO\Zmsentities\Organisation $entity, string|int $parentId)
     {
         $query = new \BO\Zmsbackend\Organisation\Repository\Organisation(\BO\Zmsbackend\Query\Base::INSERT);
         $values = $query->reverseEntityMapping($entity, $parentId);

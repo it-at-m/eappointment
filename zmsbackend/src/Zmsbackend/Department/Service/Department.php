@@ -181,7 +181,7 @@ class Department extends \BO\Zmsbackend\Base
         return ($entity && $entityDelete && $emailDelete) ? $entity : null;
     }
 
-    public function writeEntity(\BO\Zmsentities\Department $entity, $parentId)
+    public function writeEntity(\BO\Zmsentities\Department $entity, string|int $parentId)
     {
         self::$departmentCache = [];
         $query = new \BO\Zmsbackend\Department\Repository\Department(\BO\Zmsbackend\Query\Base::INSERT);
