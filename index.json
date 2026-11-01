@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-11-01T19:05:02.772Z",
+  "publishedAt": "2026-11-01T20:10:21.200Z",
   "branches": [
     {
       "name": "next",
@@ -352,8 +352,8 @@
     {
       "name": "fix/psalm-defaulted-param-types",
       "slug": "fix-psalm-defaulted-param-types",
-      "runId": "41335564252",
-      "runStartedAt": "2026-11-01T18:14:18Z"
+      "runId": "41341192413",
+      "runStartedAt": "2026-11-01T19:19:58Z"
     },
     {
       "name": "hourly-cache-reset",
