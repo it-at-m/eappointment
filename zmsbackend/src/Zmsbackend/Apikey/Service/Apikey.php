@@ -200,7 +200,7 @@ class Apikey extends \BO\Zmsbackend\Base
      *
      * @return Entity
      */
-    public function writeDeletedQuota($quotaId)
+    public function writeDeletedQuota(string|int $quotaId)
     {
         $query = new \BO\Zmsbackend\Apikey\Repository\Apiquota(\BO\Zmsbackend\Query\Base::DELETE);
         $query->addConditionQuotaId($quotaId);

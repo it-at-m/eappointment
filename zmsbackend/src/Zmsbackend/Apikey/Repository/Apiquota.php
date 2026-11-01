@@ -50,7 +50,7 @@ class Apiquota extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query
         return $mapping;
     }
 
-    public function addConditionQuotaId($quotaId): static
+    public function addConditionQuotaId(string|int $quotaId): static
     {
         $this->query->where('apiquota.quotaid', '=', $quotaId);
         return $this;

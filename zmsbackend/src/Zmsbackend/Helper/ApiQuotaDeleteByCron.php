@@ -37,7 +37,7 @@ class ApiQuotaDeleteByCron
         }
     }
 
-    protected function removeQuota($quotaId): void
+    protected function removeQuota(string|int $quotaId): void
     {
         $verbose = $this->verbose;
         if (! $verbose) {
