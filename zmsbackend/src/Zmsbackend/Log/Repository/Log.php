@@ -52,7 +52,7 @@ class Log extends \BO\Zmsbackend\Query\Base
         ];
     }
 
-    public function addConditionProcessId($processId): static
+    public function addConditionProcessId(string|int $processId): static
     {
         $this->query->where('log.reference_id', '=', $processId);
         $this->query->where('log.type', '=', 'buerger');

@@ -54,7 +54,7 @@ class ProcessStatus extends \BO\Zmsbackend\Process\Service\Process
      *
      * @return string
      */
-    public function readProcessStatus($processId, $authKey)
+    public function readProcessStatus(string|int $processId, $authKey)
     {
         $processData = $this->getReader()->fetchOne(
             'SELECT

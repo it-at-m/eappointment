@@ -39,7 +39,7 @@ class Process extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfaces\R
         return $process;
     }
 
-    public function readById($processId, int $resolveReferences = 1): Entity
+    public function readById(string|int $processId, int $resolveReferences = 1): Entity
     {
         $query = new \BO\Zmsbackend\Process\Repository\Process(\BO\Zmsbackend\Query\Base::SELECT);
         $query->addEntityMapping()
@@ -226,7 +226,7 @@ class Process extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfaces\R
     /**
      * update following process with new credentials (also change process id if necessary)
      */
-    public function updateFollowingProcesses($processId, \BO\Zmsentities\Process $processData): void
+    public function updateFollowingProcesses(string|int $processId, \BO\Zmsentities\Process $processData): void
     {
         $this->perform(\BO\Zmsbackend\Process\Repository\Process::QUERY_REASSIGN_PROCESS_CREDENTIALS, [
             'newProcessId' => $processData->getId(),
@@ -249,7 +249,7 @@ class Process extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfaces\R
     /**
      * update process requests with new credentials
      */
-    public function updateReassignedRequests($processId, $newProcessId): void
+    public function updateReassignedRequests(string|int $processId, $newProcessId): void
     {
         $this->perform(\BO\Zmsbackend\Process\Repository\Process::QUERY_REASSIGN_PROCESS_REQUESTS, [
             'newProcessId' => $newProcessId,
@@ -314,7 +314,7 @@ class Process extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfaces\R
      *
      * @return array{authKey: string}|null
      */
-    public function readAuthKeyByProcessId($processId)
+    public function readAuthKeyByProcessId(string|int $processId)
     {
         $query = new \BO\Zmsbackend\Process\Repository\Process(\BO\Zmsbackend\Query\Base::SELECT);
         $query
@@ -379,7 +379,7 @@ class Process extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfaces\R
     /**
      * Read list with following processes in DB
      */
-    public function readEntityList($processId, int $resolveReferences = 0)
+    public function readEntityList(string|int $processId, int $resolveReferences = 0)
     {
         $query = new \BO\Zmsbackend\Process\Repository\Process(\BO\Zmsbackend\Query\Base::SELECT);
         $query
@@ -619,7 +619,7 @@ class Process extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfaces\R
      *
      * @return bool
      */
-    public function writeDeletedEntity($processId): bool
+    public function writeDeletedEntity(string|int $processId): bool
     {
         $processEntityList = $this->readEntityList($processId);
         $status = false;
@@ -745,7 +745,7 @@ class Process extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfaces\R
         }
     }
 
-    protected function deleteRequestsForProcessId($processId): bool
+    protected function deleteRequestsForProcessId(string|int $processId): bool
     {
         $status = false;
         if (0 < $processId) {

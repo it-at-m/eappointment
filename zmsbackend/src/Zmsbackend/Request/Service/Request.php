@@ -203,7 +203,7 @@ class Request extends \BO\Zmsbackend\Base
         return $request->getSource() . ':' . $request->getId();
     }
 
-    public function readRequestByProcessId($processId, int $resolveReferences = 0)
+    public function readRequestByProcessId(string|int $processId, int $resolveReferences = 0)
     {
         $collection = new Collection();
         if ($processId) {

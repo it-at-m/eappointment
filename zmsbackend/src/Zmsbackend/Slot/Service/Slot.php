@@ -459,7 +459,7 @@ class Slot extends \BO\Zmsbackend\Base
         return count($processIdList);
     }
 
-    public function writeSlotProcessMappingFor($processId): static
+    public function writeSlotProcessMappingFor(string|int $processId): static
     {
         $this->perform(\BO\Zmsbackend\Slot\Repository\Slot::QUERY_INSERT_SLOT_PROCESS_ID, [
             'processId' => $processId,
@@ -467,7 +467,7 @@ class Slot extends \BO\Zmsbackend\Base
         return $this;
     }
 
-    public function deleteSlotProcessMappingFor($processId): static
+    public function deleteSlotProcessMappingFor(string|int $processId): static
     {
         $this->perform(\BO\Zmsbackend\Slot\Repository\Slot::QUERY_DELETE_SLOT_PROCESS_ID, [
             'processId' => $processId,

@@ -503,7 +503,7 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
         return $this;
     }
 
-    public function addConditionProcessIdFollow($processId): static
+    public function addConditionProcessIdFollow(string|int $processId): static
     {
         $this->query->where(function (\BO\Zmsbackend\Query\Builder\ConditionBuilder $condition) use ($processId) {
             $condition

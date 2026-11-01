@@ -234,7 +234,7 @@ class ProcessStatusArchived extends Process
         return $this->readArchivedEntity($archiveId, $resolveReferences);
     }
 
-    protected function writeXRequestsArchived($processId, $archiveId): void
+    protected function writeXRequestsArchived(string|int $processId, $archiveId): void
     {
         $query = new \BO\Zmsbackend\Request\Repository\XRequest(\BO\Zmsbackend\Query\Base::UPDATE);
         $query->addConditionProcessId($processId);

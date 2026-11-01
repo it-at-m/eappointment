@@ -57,7 +57,7 @@ class Request extends \BO\Zmsbackend\Query\Base
         return $this;
     }
 
-    public function addConditionProcessId($processId): static
+    public function addConditionProcessId(string|int $processId): static
     {
         $this->leftJoin(
             new \BO\Zmsbackend\Query\Alias("buergeranliegen", 'buergeranliegen'),
