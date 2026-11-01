@@ -185,7 +185,7 @@ class Workstation extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Qu
         return $this;
     }
 
-    public function addConditionWorkstationId($workstationId): static
+    public function addConditionWorkstationId(string|int $workstationId): static
     {
         $this->query->where('workstation.NutzerID', '=', $workstationId);
         return $this;

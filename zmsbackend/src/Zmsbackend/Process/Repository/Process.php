@@ -567,7 +567,7 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
         return $this;
     }
 
-    public function addConditionWorkstationId($workstationId): static
+    public function addConditionWorkstationId(string|int $workstationId): static
     {
         $this->query->where(function (\BO\Zmsbackend\Query\Builder\ConditionBuilder $query) use ($workstationId) {
             $query->andWith('process.NutzerID', '=', $workstationId);
