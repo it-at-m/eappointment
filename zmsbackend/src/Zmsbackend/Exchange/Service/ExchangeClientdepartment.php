@@ -16,7 +16,7 @@ class ExchangeClientdepartment extends \BO\Zmsbackend\Base
         $subjectid,
         \DateTimeInterface $datestart,
         \DateTimeInterface $dateend,
-        $period = 'day'
+        string $period = 'day'
     ): Exchange {
         $department = (new \BO\Zmsbackend\Department\Service\Department())->readEntity($subjectid);
         $organisation = (new \BO\Zmsbackend\Organisation\Service\Organisation())->readByDepartmentId($subjectid);
@@ -68,7 +68,7 @@ class ExchangeClientdepartment extends \BO\Zmsbackend\Base
         return $entity;
     }
 
-    public function readPeriodList($subjectid, $period = 'day'): Exchange
+    public function readPeriodList($subjectid, string $period = 'day'): Exchange
     {
         $department = (new \BO\Zmsbackend\Department\Service\Department())->readEntity($subjectid);
         $organisation = (new \BO\Zmsbackend\Organisation\Service\Organisation())->readByDepartmentId($subjectid);

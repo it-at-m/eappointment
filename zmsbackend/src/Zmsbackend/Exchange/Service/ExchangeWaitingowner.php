@@ -14,7 +14,7 @@ class ExchangeWaitingowner extends \BO\Zmsbackend\Base implements \BO\Zmsbackend
         $subjectid,
         \DateTimeInterface $datestart,
         \DateTimeInterface $dateend,
-        $period = 'day'
+        string $period = 'day'
     ) {
         $owner = (new \BO\Zmsbackend\Owner\Service\Owner())->readEntity($subjectid);
         $entity = new Exchange();
@@ -93,7 +93,7 @@ class ExchangeWaitingowner extends \BO\Zmsbackend\Base implements \BO\Zmsbackend
      * @return Exchange
      */
     #[\Override]
-    public function readPeriodList($subjectid, $period = 'day')
+    public function readPeriodList($subjectid, string $period = 'day')
     {
         $owner = (new \BO\Zmsbackend\Owner\Service\Owner())->readEntity($subjectid);
         $entity = new Exchange();

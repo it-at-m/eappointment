@@ -49,7 +49,7 @@ class MailQueue extends \BO\Zmsbackend\Query\Base
         return $this;
     }
 
-    public function addOrderBy(string $parameter, $order = 'ASC'): static
+    public function addOrderBy(string $parameter, string $order = 'ASC'): static
     {
         $this->query->orderBy('mailQueue.' . $parameter, $order);
         return $this;

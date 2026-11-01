@@ -14,7 +14,7 @@ class ExchangeWaitingscope extends \BO\Zmsbackend\Base implements \BO\Zmsbackend
         $subjectid,
         \DateTimeInterface $datestart,
         \DateTimeInterface $dateend,
-        $period = 'day'
+        string $period = 'day'
     ) {
         $scope = (new \BO\Zmsbackend\Scope\Service\Scope())->readEntity($subjectid);
         $entity = new Exchange();
@@ -89,7 +89,7 @@ class ExchangeWaitingscope extends \BO\Zmsbackend\Base implements \BO\Zmsbackend
      * @return Exchange
      */
     #[\Override]
-    public function readPeriodList($subjectid, $period = 'day')
+    public function readPeriodList($subjectid, string $period = 'day')
     {
         $scope = (new \BO\Zmsbackend\Scope\Service\Scope())->readEntity($subjectid);
         $entity = new Exchange();

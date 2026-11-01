@@ -22,7 +22,7 @@ class TemplateFinder
 
     protected $template;
 
-    public function __construct($defaultTemplate = "defaultplatz", $subPath = '/page/customized')
+    public function __construct(string $defaultTemplate = "defaultplatz", string $subPath = '/page/customized')
     {
         $this->subPath = $subPath;
         $this->template = $subPath . '/' . $defaultTemplate . '.twig';

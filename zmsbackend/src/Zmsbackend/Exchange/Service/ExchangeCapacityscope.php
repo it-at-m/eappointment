@@ -11,7 +11,7 @@ class ExchangeCapacityscope extends \BO\Zmsbackend\Base
         $subjectid,
         ?\DateTimeInterface $datestart = null,
         ?\DateTimeInterface $dateend = null,
-        $period = 'day'
+        string $period = 'day'
     ): Exchange {
         if (trim((string) $subjectid) === '') {
             throw new \InvalidArgumentException('Subject ID cannot be empty');
@@ -155,7 +155,7 @@ class ExchangeCapacityscope extends \BO\Zmsbackend\Base
      *
      * @SuppressWarnings(Unused)
      */
-    public function readPeriodList($subjectid, $period = 'day'): Exchange
+    public function readPeriodList($subjectid, string $period = 'day'): Exchange
     {
         $entity = new Exchange();
         $entity['title'] = "Terminkapazität ";

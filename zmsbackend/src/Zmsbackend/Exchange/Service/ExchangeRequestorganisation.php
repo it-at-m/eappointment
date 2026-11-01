@@ -16,7 +16,7 @@ class ExchangeRequestorganisation extends \BO\Zmsbackend\Base
         $subjectid,
         \DateTimeInterface $datestart,
         \DateTimeInterface $dateend,
-        $period = 'day'
+        string $period = 'day'
     ): Exchange {
         $organisation = (new \BO\Zmsbackend\Organisation\Service\Organisation())->readEntity($subjectid);
         $entity = new Exchange();
@@ -64,7 +64,7 @@ class ExchangeRequestorganisation extends \BO\Zmsbackend\Base
         return $entity;
     }
 
-    public function readPeriodList($subjectid, $period = 'day'): Exchange
+    public function readPeriodList($subjectid, string $period = 'day'): Exchange
     {
         $organisation = (new \BO\Zmsbackend\Organisation\Service\Organisation())->readEntity($subjectid);
         $entity = new Exchange();

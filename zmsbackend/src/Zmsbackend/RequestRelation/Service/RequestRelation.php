@@ -101,7 +101,7 @@ class RequestRelation extends \BO\Zmsbackend\Base
         return $this->readEntity($entity->getRequest()->getId(), $entity->getProvider()->getId());
     }
 
-    public function writeImportList($providerList, $source = 'dldb')
+    public function writeImportList($providerList, string $source = 'dldb')
     {
         foreach ($providerList as $provider) {
             // Do not import locations without address

@@ -95,7 +95,7 @@ abstract class Base
      */
     public function __construct(
         $queryType,
-        $prefix = '',
+        string $prefix = '',
         string|false $name = false,
         mixed $resolveLevel = null,
         array $withEntities = []

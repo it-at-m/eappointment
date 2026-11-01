@@ -193,7 +193,7 @@ class Ticketprinter extends \BO\Zmsbackend\Base
         return $scope;
     }
 
-    public function writeEntityWithHash($organisationId, $ticketprinterName = '')
+    public function writeEntityWithHash($organisationId, string $ticketprinterName = '')
     {
         $query = new \BO\Zmsbackend\Ticketprinter\Repository\Ticketprinter(\BO\Zmsbackend\Query\Base::INSERT);
         $ticketprinter = (new Entity())->getHashWith($organisationId);

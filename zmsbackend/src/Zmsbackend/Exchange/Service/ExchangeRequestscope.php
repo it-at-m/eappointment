@@ -16,7 +16,7 @@ class ExchangeRequestscope extends \BO\Zmsbackend\Base
         $subjectid,
         \DateTimeInterface $datestart,
         \DateTimeInterface $dateend,
-        $period = 'day'
+        string $period = 'day'
     ): Exchange {
         $scope = (new \BO\Zmsbackend\Scope\Service\Scope())->readEntity($subjectid);
         $entity = new Exchange();
@@ -65,7 +65,7 @@ class ExchangeRequestscope extends \BO\Zmsbackend\Base
         return $entity;
     }
 
-    public function readPeriodList($subjectid, $period = 'day'): Exchange
+    public function readPeriodList($subjectid, string $period = 'day'): Exchange
     {
         $scope = (new \BO\Zmsbackend\Scope\Service\Scope())->readEntity($subjectid);
         $entity = new Exchange();

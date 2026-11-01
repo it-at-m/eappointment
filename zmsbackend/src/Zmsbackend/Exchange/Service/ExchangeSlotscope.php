@@ -55,7 +55,7 @@ class ExchangeSlotscope extends \BO\Zmsbackend\Base
     /**
      * @SuppressWarnings(Unused)
      */
-    public function readPeriodList($subjectid, $period = 'day'): Exchange
+    public function readPeriodList($subjectid, string $period = 'day'): Exchange
     {
         $entity = new Exchange();
         $entity['title'] = "Slotbelegung ";

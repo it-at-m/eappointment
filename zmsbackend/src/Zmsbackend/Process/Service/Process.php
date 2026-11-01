@@ -122,7 +122,7 @@ class Process extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfaces\R
      *        If slotsRequired = 0, readFreeProcesses() uses the slotsRequired based on request-provider relation
      * @psalm-api
      */
-    public function updateEntityWithSlots(\BO\Zmsentities\Process $process, \DateTimeInterface $now, $slotType = "intern", $slotsRequired = 0, int $resolveReferences = 0, $userAccount = null)
+    public function updateEntityWithSlots(\BO\Zmsentities\Process $process, \DateTimeInterface $now, string $slotType = "intern", $slotsRequired = 0, int $resolveReferences = 0, $userAccount = null)
     {
         if ('intern' != $slotType) {
             return $this->updateEntity($process, $now, $resolveReferences, null, $userAccount);
@@ -194,7 +194,7 @@ class Process extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfaces\R
     /**
      * write a new process with appointment and keep id and authkey from original process
      */
-    public function writeEntityWithNewAppointment(\BO\Zmsentities\Process $process, \BO\Zmsentities\Appointment $appointment, \DateTimeInterface $now, $slotType = 'public', int $slotsRequired = 0, int $resolveReferences = 0, bool $keepReserved = false): Entity|null
+    public function writeEntityWithNewAppointment(\BO\Zmsentities\Process $process, \BO\Zmsentities\Appointment $appointment, \DateTimeInterface $now, string $slotType = 'public', int $slotsRequired = 0, int $resolveReferences = 0, bool $keepReserved = false): Entity|null
     {
         // clone to new process with id = 0 and new appointment to reserve
         $processNew = clone $process;

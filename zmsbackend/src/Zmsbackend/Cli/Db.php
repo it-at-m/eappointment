@@ -86,7 +86,7 @@ class Db
         return \BO\Zmsbackend\Connection\Select::getWriteConnection();
     }
 
-    public static function startTestDataImport($fixturesDirectory, $filename = 'mysql_zmsbo.sql'): void
+    public static function startTestDataImport($fixturesDirectory, string $filename = 'mysql_zmsbo.sql'): void
     {
         $defaultDatabaseName = \BO\Zmsbackend\Connection\Select::$dbname_zms;
 

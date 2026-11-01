@@ -73,7 +73,7 @@ class Provider extends \BO\Zmsbackend\Query\Base
     /**
      * @todo find calls and implement "sourceName"-parameter to remove default value
      */
-    public function addConditionRequestCsv($requestIdCsv, $sourceName = 'dldb'): void
+    public function addConditionRequestCsv($requestIdCsv, string $sourceName = 'dldb'): void
     {
         $requestIdList = explode(',', $requestIdCsv);
         $this->leftJoin(
