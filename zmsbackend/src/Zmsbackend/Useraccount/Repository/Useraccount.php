@@ -180,7 +180,7 @@ class Useraccount extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Qu
         return $this;
     }
 
-    public function addConditionUserId($userId): static
+    public function addConditionUserId(string|int $userId): static
     {
         $this->query->where('useraccount.NutzerID', '=', $userId);
         return $this;

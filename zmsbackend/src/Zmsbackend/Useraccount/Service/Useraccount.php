@@ -576,7 +576,7 @@ class Useraccount extends \BO\Zmsbackend\Base
         return $this->readResolvedReferences($entity, $resolveReferences);
     }
 
-    public function readEntityByUserId($userId, int $resolveReferences = 0)
+    public function readEntityByUserId(string|int $userId, int $resolveReferences = 0)
     {
         $query = new \BO\Zmsbackend\Useraccount\Repository\Useraccount(\BO\Zmsbackend\Query\Base::SELECT);
         $query->addEntityMapping()
