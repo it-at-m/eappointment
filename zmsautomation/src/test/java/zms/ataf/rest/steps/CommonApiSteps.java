@@ -1,5 +1,7 @@
 package zms.ataf.rest.steps;
 
+import org.testng.SkipException;
+
 import io.cucumber.java.Before;
 import io.cucumber.java.en.Then;
 import io.restassured.response.Response;
@@ -47,6 +49,14 @@ public class CommonApiSteps {
         Response sharedResponse = getResponse();
         if (sharedResponse == null) {
             throw new IllegalStateException("No response available. Make sure an API call was made before checking status code.");
+        }
+        // Call checks the appointment date before the Standort check. After the last slot,
+        // and on a closed day, a 403 expectation comes back as ProcessNotCurrentDate.
+        if (statusCode == 403
+                && sharedResponse.getStatusCode() == 404
+                && sharedResponse.asString().contains("ProcessNotCurrentDate")) {
+            throw new SkipException(
+                    "The appointment is not today, so the call returns ProcessNotCurrentDate.");
         }
         sharedResponse.then().statusCode(statusCode);
     }

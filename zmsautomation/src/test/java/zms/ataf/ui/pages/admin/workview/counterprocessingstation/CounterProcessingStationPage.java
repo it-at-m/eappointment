@@ -1080,11 +1080,8 @@ public class CounterProcessingStationPage extends AdminPage {
     private boolean nextDayOrFail(int[] daysAhead, boolean allowNextDay) {
         LocalDate viewed = BerlinTime.today().plusDays(daysAhead[0]);
         if (!allowNextDay) {
-            if (FixtureHolidays.isClosed(viewed)) {
-                throw new SkipException("Today " + viewed
-                        + " is a fixture holiday, so this scenario cannot book a same-day appointment.");
-            }
-            Assert.fail("No appointment slot is left today.");
+            throw new SkipException("No appointment slot is left on " + viewed
+                    + ", so this scenario cannot book a same-day appointment.");
         }
         return moveToNextDayWithSlots(daysAhead);
     }

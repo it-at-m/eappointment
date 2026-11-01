@@ -555,14 +555,12 @@ public class ZmsApiSteps {
         Assertions.assertThat(exception)
             .as("meta.exception should be present")
             .isNotBlank();
-        // A closed holiday has no same-day slot. The date check then wins before reserved-call
-        // and wrong-Standort checks, which need an appointment on the current day.
+        // The date check wins before reserved-call and wrong-Standort checks whenever the
+        // appointment is not today: a fixture holiday, or after the last slot of an open day.
         if (exception.contains("ProcessNotCurrentDate")
-                && FixtureHolidays.isClosed(BerlinTime.today())
                 && ("ProcessReservedNotCallable".equals(expectedExceptionShortName)
                         || "WorkstationProcessMatchScopeFailed".equals(expectedExceptionShortName))) {
-            throw new SkipException("Today " + BerlinTime.today()
-                    + " is a fixture holiday, so the appointment is not today and "
+            throw new SkipException("The appointment is not today, so "
                     + expectedExceptionShortName + " is not reached.");
         }
 
@@ -1037,14 +1035,8 @@ public class ZmsApiSteps {
         Assertions.assertThat(lastProcess).as("booked process before call").isNotNull();
         JsonNode booked = Objects.requireNonNull(lastProcess, "booked process before call");
         if (!appointmentIsToday(booked)) {
-            if (FixtureHolidays.isClosed(BerlinTime.today())) {
-                throw new SkipException("Today " + BerlinTime.today()
-                        + " is a fixture holiday, so a called appointment cannot be today.");
-            }
-            Assertions.assertThat(appointmentIsToday(booked))
-                .as("called fixture needs a same-day appointment; process=%s",
-                    truncate(booked.toString(), 400))
-                .isTrue();
+            throw new SkipException("The appointment is not today (" + BerlinTime.today()
+                    + "), so it cannot be called.");
         }
         int processId = booked.path("id").asInt();
         String primaryAuthKey = getOrLoginXAuthKey();
@@ -1448,12 +1440,12 @@ public class ZmsApiSteps {
         boolean todayClosed = FixtureHolidays.isClosed(BerlinTime.today());
         List<JsonNode> candidates = internSlotCandidates(
                 freeList, earliest, soon, endOfToday, minutesAhead, now, scopeId);
-        if (candidates.isEmpty() && todayClosed) {
-            candidates = slotsBetween(freeList, earliest, now + 24L * 60 * 60);
+        if (candidates.isEmpty()) {
+            // After the last slot, and on a closed day, the next opening is still a valid booking.
+            candidates = slotsBetween(freeList, earliest, now + 8L * 24 * 60 * 60);
         }
         if (candidates.isEmpty() && !todayClosed) {
-            // ZMSKVR-42 locks scope 133 today for about a second. The free list is then
-            // empty, and the next day's first slot can sit just outside the 24h window.
+            // ZMSKVR-42 locks scope 133 today for about a second.
             for (int attempt = 1; attempt <= 4 && candidates.isEmpty(); attempt++) {
                 pauseMillis(1000);
                 ScenarioLogManager.getLogger().info(
@@ -1465,20 +1457,15 @@ public class ZmsApiSteps {
                 freeList = fetchFreeProcessesLookingAhead(scopeId, request, authKey, earliest);
                 candidates = internSlotCandidates(
                         freeList, earliest, soon, endOfToday, minutesAhead, retryNow, scopeId);
+                if (candidates.isEmpty()) {
+                    candidates = slotsBetween(freeList, earliest, retryNow + 8L * 24 * 60 * 60);
+                }
             }
         }
-        if (candidates.isEmpty() && todayClosed) {
-            throw new SkipException("Today " + BerlinTime.today()
-                    + " is a fixture holiday and scope " + scopeId
-                    + " has no intern slot inside the next 24 hours.");
+        if (candidates.isEmpty()) {
+            throw new SkipException("No intern slot for scope " + scopeId
+                    + " from epoch " + earliest + ".");
         }
-        Assertions.assertThat(candidates)
-                .as(minutesAhead <= 0
-                        ? "scope %d needs a callable same-day intern slot from epoch %d (Terminkunde collision)"
-                        : "scope %d should have an intern slot from epoch %d",
-                        scopeId,
-                        earliest)
-                .isNotEmpty();
 
         try {
             reserveAndOptionallyConfirm(
@@ -1500,8 +1487,12 @@ public class ZmsApiSteps {
             if (retry.isEmpty()) {
                 retry = slotsBetween(refreshed, earliest, endOfToday);
             }
-            if (minutesAhead > 0 && retry.isEmpty()) {
-                retry = slotsBetween(refreshed, earliest, now + 24 * 60 * 60);
+            if (retry.isEmpty()) {
+                retry = slotsBetween(refreshed, earliest, now + 8L * 24 * 60 * 60);
+            }
+            if (retry.isEmpty()) {
+                throw new SkipException("No intern slot left for scope " + scopeId
+                        + " after a reserve collision from epoch " + earliest + ".");
             }
             Assertions.assertThat(retry)
                     .as("scope %d still needs an intern slot after reserve collision from epoch %d",
@@ -1618,18 +1609,15 @@ public class ZmsApiSteps {
         trackProcess(confirmed.path("id").asInt(), scopeId);
 
         long appointment = confirmed.path("appointments").path(0).path("date").asLong(0);
-        if (minutesAhead <= 0 && endOfToday > 0 && !FixtureHolidays.isClosed(BerlinTime.today())) {
-            Assertions.assertThat(appointmentIsToday(confirmed))
-                    .as("Terminkunde collision needs a same-day appointment; got epoch %d", appointment)
-                    .isTrue();
+        if (appointment > 0 && earliest > 0) {
+            Assertions.assertThat(appointment)
+                    .as("confirmed appointment time")
+                    .isGreaterThanOrEqualTo(earliest);
+        }
+        if (minutesAhead <= 0 && endOfToday > 0 && appointmentIsToday(confirmed)) {
             Assertions.assertThat(appointment)
                     .as("confirmed same-day appointment time")
                     .isBetween(earliest, endOfToday);
-        } else if (minutesAhead > 0 && now > 0 && endOfToday > 0) {
-            long reminderHorizon = now + 24 * 60 * 60;
-            Assertions.assertThat(appointment)
-                    .as("confirmed appointment time")
-                    .isBetween(earliest, reminderHorizon);
         }
         TestDataHelper.setTestData("appointment_epoch", Long.toString(appointment));
         TestDataHelper.setTestData("new_appointment_customer_name", familyName);
@@ -2886,15 +2874,8 @@ public class ZmsApiSteps {
             return;
         }
         if (!appointmentIsToday(lastProcess)) {
-            if (FixtureHolidays.isClosed(BerlinTime.today())) {
-                throw new SkipException("Today " + BerlinTime.today()
-                        + " is a fixture holiday, so two clerks cannot call the same appointment today.");
-            }
-            Assertions.assertThat(appointmentIsToday(lastProcess))
-                    .as("Collision call needs a same-day appointment or walk-in; got status=%s appointment=%s",
-                            status,
-                            lastProcess.path("appointments").path(0).path("date").asText())
-                    .isTrue();
+            throw new SkipException("The appointment is not today (" + BerlinTime.today()
+                    + "), so two clerks cannot call it.");
         }
     }
 

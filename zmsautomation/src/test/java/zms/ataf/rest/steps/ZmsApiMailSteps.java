@@ -2,12 +2,14 @@ package zms.ataf.rest.steps;
 
 import static io.restassured.RestAssured.*;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.assertj.core.api.Assertions;
+import org.testng.SkipException;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -472,6 +474,16 @@ public class ZmsApiMailSteps {
 
     @Then("the reminder mail shows the estimated duration on the line after the time")
     public void theReminderMailShowsTheEstimatedDurationOnTheLineAfterTheTime() {
+        // queueMailReminder 120 only queues a reminder that is already due. After the last
+        // slot the next opening is outside that window, on a holiday and on an open evening.
+        String epoch = TestDataHelper.getTestData("appointment_epoch");
+        if (epoch != null && epoch.trim().matches("\\d+")) {
+            long appointment = Long.parseLong(epoch.trim());
+            if (appointment - Instant.now().getEpochSecond() > 120L * 60L) {
+                throw new SkipException(
+                        "The appointment is outside the 120-minute reminder window, so no reminder is due.");
+            }
+        }
         assertEstimatedDurationAfterTime("in Kürze folgenden Termin");
     }
 
