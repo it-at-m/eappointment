@@ -28,7 +28,6 @@ import ataf.core.logging.ScenarioLogManager;
 import ataf.web.model.LocatorType;
 import zms.ataf.helpers.AccountCheckout;
 import zms.ataf.helpers.BerlinTime;
-import zms.ataf.helpers.FixtureHolidays;
 import zms.ataf.helpers.RandomNameHelper;
 import zms.ataf.ui.pages.admin.AdminPage;
 import zms.ataf.ui.pages.admin.AdminPageContext;
@@ -262,22 +261,9 @@ public void saveLocationChanges() {
 
     public void clickOnDayEntry(String day) {
         ScenarioLogManager.getLogger().info("Trying to click on entry for day \"" + day + "\"");
-        LocalDate today = BerlinTime.today();
-        Integer dayOfMonth = calendarDayNumber(day);
-        if (dayOfMonth != null && dayOfMonth == today.getDayOfMonth() && FixtureHolidays.isClosed(today)) {
-            clickOpeningHoursCalendarDay(FixtureHolidays.firstOpenOnOrAfter(today.plusDays(1)));
-            return;
-        }
+        // Stay on the requested day. Ticketprinter writes 00:05–23:55 for this tile and
+        // then checks the clock; a holiday redirect would leave the printer closed.
         clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "//span[@class='day' and contains(text(),'" + day + "')]/..", LocatorType.XPATH, false, CONTEXT);
-    }
-
-    /** Month tiles use {@code 01}…{@code 09}. {@code <heute_tag>} arrives the same way. */
-    private static Integer calendarDayNumber(String day) {
-        try {
-            return Integer.parseInt(day.trim());
-        } catch (NumberFormatException notADay) {
-            return null;
-        }
     }
 
     public void clickOnNewOpeningHoursButton() {
