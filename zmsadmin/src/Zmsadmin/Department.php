@@ -98,7 +98,7 @@ class Department extends BaseController
         return $input;
     }
 
-    protected function writeUpdatedEntity($input, $entityId)
+    protected function writeUpdatedEntity($input, string|int $entityId)
     {
         $entity = (new Entity($input))->withCleanedUpFormData();
         $entity->id = $entityId;

@@ -116,7 +116,7 @@ class Scope extends BaseController
         });
     }
 
-    protected function writeUploadedImage(\Psr\Http\Message\RequestInterface $request, $entityId, array $input): void
+    protected function writeUploadedImage(\Psr\Http\Message\RequestInterface $request, string|int $entityId, array $input): void
     {
         if (isset($input['removeImage']) && $input['removeImage']) {
             \App::$http->readDeleteResult('/scope/' . $entityId . '/imagedata/calldisplay/');

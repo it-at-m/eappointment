@@ -31,7 +31,7 @@ class FileUploader
         $this->imageData = $this->createImage($imageName);
     }
 
-    public function writeUploadToScope($entityId): static
+    public function writeUploadToScope(string|int $entityId): static
     {
         $this->imageData = \App::$http->readPostResult(
             '/scope/' . $entityId . '/imagedata/calldisplay/',
@@ -40,7 +40,7 @@ class FileUploader
         return $this;
     }
 
-    public function writeUploadToCluster($entityId): static
+    public function writeUploadToCluster(string|int $entityId): static
     {
         $this->imageData = \App::$http->readPostResult(
             '/cluster/' . $entityId . '/imagedata/calldisplay/',

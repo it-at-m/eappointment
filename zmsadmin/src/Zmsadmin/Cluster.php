@@ -78,7 +78,7 @@ class Cluster extends BaseController
         );
     }
 
-    protected function testOrganisation($entityId)
+    protected function testOrganisation(string|int $entityId)
     {
         try {
             $organisation = \App::$http->readGetResult('/cluster/' . $entityId . '/organisation/')->getEntity();

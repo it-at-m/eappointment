@@ -6,7 +6,7 @@ class Preferences extends \BO\Zmsbackend\Base
 {
     const string REPLACE_SKIPPED = 'skipped';
 
-    public function readProperty(string $entityName, $entityId, string $groupName, string $name, bool $forUpdate = false)
+    public function readProperty(string $entityName, string|int $entityId, string $groupName, string $name, bool $forUpdate = false)
     {
         $sql = \BO\Zmsbackend\Preferences\Repository\Preferences::QUERY_SELECT_PROPERTY;
         if ($forUpdate) {
@@ -20,7 +20,7 @@ class Preferences extends \BO\Zmsbackend\Base
         ]);
     }
 
-    public function readChangeDateTime(string $entityName, $entityId, string $groupName, string $name, bool $forUpdate = false): \DateTimeImmutable
+    public function readChangeDateTime(string $entityName, string|int $entityId, string $groupName, string $name, bool $forUpdate = false): \DateTimeImmutable
     {
         $sql = \BO\Zmsbackend\Preferences\Repository\Preferences::QUERY_SELECT_TIMESTAMP;
         if ($forUpdate) {
@@ -40,7 +40,7 @@ class Preferences extends \BO\Zmsbackend\Base
         return new \DateTimeImmutable($timeString);
     }
 
-    public function replaceProperty(string $entityName, $entityId, $groupName, $name, $value)
+    public function replaceProperty(string $entityName, string|int $entityId, $groupName, $name, $value)
     {
         $this->getWriter();
         $currentValue = $this->readProperty($entityName, $entityId, $groupName, $name, true);
@@ -64,7 +64,7 @@ class Preferences extends \BO\Zmsbackend\Base
      * @param key-of<TArray> $name
      *
      */
-    public function deleteProperty(string $entityName, $entityId, $groupName, $name)
+    public function deleteProperty(string $entityName, string|int $entityId, $groupName, $name)
     {
         return $this->perform(\BO\Zmsbackend\Preferences\Repository\Preferences::QUERY_DELETE_PROPERTY, [
             "entityName" => $entityName,

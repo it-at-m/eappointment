@@ -89,7 +89,7 @@ class ExchangeAccessFilter
     /**
      * @psalm-api
      */
-    protected static function getFilteredEntityByScope($entityId, $filteredKey): void
+    protected static function getFilteredEntityByScope(string|int $entityId, $filteredKey): void
     {
         if (! static::$workstation->getUseraccount()->hasPermissions(['scope'])) {
             return;
@@ -103,7 +103,7 @@ class ExchangeAccessFilter
     /**
      * @psalm-api
      */
-    protected static function getFilteredEntityByDepartment($entityId, $filteredKey): void
+    protected static function getFilteredEntityByDepartment(string|int $entityId, $filteredKey): void
     {
         if (! static::$workstation->getUseraccount()->hasPermissions(['department'])) {
             return;
@@ -117,7 +117,7 @@ class ExchangeAccessFilter
     /**
      * @psalm-api
      */
-    protected static function getFilteredEntityByOrganisation($entityId, $filteredKey): void
+    protected static function getFilteredEntityByOrganisation(string|int $entityId, $filteredKey): void
     {
         if (! static::$workstation->getUseraccount()->hasPermissions(['organisation'])) {
             return;
