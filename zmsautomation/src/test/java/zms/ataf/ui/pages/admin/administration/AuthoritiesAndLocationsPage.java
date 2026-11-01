@@ -28,6 +28,7 @@ import ataf.core.logging.ScenarioLogManager;
 import ataf.web.model.LocatorType;
 import zms.ataf.helpers.AccountCheckout;
 import zms.ataf.helpers.BerlinTime;
+import zms.ataf.helpers.FixtureHolidays;
 import zms.ataf.helpers.RandomNameHelper;
 import zms.ataf.ui.pages.admin.AdminPage;
 import zms.ataf.ui.pages.admin.AdminPageContext;
@@ -261,6 +262,11 @@ public void saveLocationChanges() {
 
     public void clickOnDayEntry(String day) {
         ScenarioLogManager.getLogger().info("Trying to click on entry for day \"" + day + "\"");
+        LocalDate today = BerlinTime.today();
+        if (Integer.toString(today.getDayOfMonth()).equals(day.trim()) && FixtureHolidays.isClosed(today)) {
+            clickOpeningHoursCalendarDay(FixtureHolidays.firstOpenOnOrAfter(today.plusDays(1)));
+            return;
+        }
         clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "//span[@class='day' and contains(text(),'" + day + "')]/..", LocatorType.XPATH, false, CONTEXT);
     }
 

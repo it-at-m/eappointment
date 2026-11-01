@@ -30,6 +30,7 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
+import org.testng.SkipException;
 
 import ataf.core.assertions.CustomAssertions;
 import ataf.core.helpers.TestDataHelper;
@@ -49,6 +50,7 @@ import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import zms.ataf.helpers.AccountCheckout;
 import zms.ataf.helpers.BerlinTime;
+import zms.ataf.helpers.FixtureHolidays;
 import zms.ataf.helpers.PlainTextLengthSample;
 import zms.ataf.helpers.RandomNameHelper;
 import zms.ataf.rest.steps.CitizenApiSteps;
@@ -672,6 +674,7 @@ public class AdminSteps {
     public void iOpenTheNextOpeningHoursDayThatCanStillBeSaved() {
         ensureUpcomingOpeningTimes();
         LocalDate day = upcomingOpeningOnLaterDay ? BerlinTime.today().plusDays(1) : BerlinTime.today();
+        day = FixtureHolidays.firstOpenOnOrAfter(day);
         AUTHORITIES_AND_LOCATIONS_PAGE.clickOpeningHoursCalendarDay(day);
     }
 
@@ -1637,6 +1640,13 @@ public class AdminSteps {
             appointment = Long.parseLong(TestDataHelper.getTestData("appointment_epoch"));
         } catch (NumberFormatException exception) {
             throw new AssertionError("Appointment time was not stored", exception);
+        }
+        if (FixtureHolidays.isClosed(BerlinTime.today())) {
+            long start = BerlinTime.today().atStartOfDay(java.time.ZoneId.of("Europe/Berlin")).toEpochSecond();
+            if (appointment < start || appointment >= start + 86_400L) {
+                throw new SkipException("Today " + BerlinTime.today()
+                        + " is a fixture holiday, so this appointment is not in today's waiting count.");
+            }
         }
         long now = Instant.now().getEpochSecond();
         if (appointment - now > 45) {
