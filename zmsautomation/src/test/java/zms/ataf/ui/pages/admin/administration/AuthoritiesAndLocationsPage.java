@@ -2,6 +2,7 @@ package zms.ataf.ui.pages.admin.administration;
 
 import java.time.DayOfWeek;
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Locale;
@@ -27,6 +28,7 @@ import ataf.core.logging.ScenarioLogManager;
 import ataf.web.model.LocatorType;
 import zms.ataf.helpers.AccountCheckout;
 import zms.ataf.helpers.BerlinTime;
+import zms.ataf.helpers.FixtureHolidays;
 import zms.ataf.helpers.RandomNameHelper;
 import zms.ataf.ui.pages.admin.AdminPage;
 import zms.ataf.ui.pages.admin.AdminPageContext;
@@ -260,7 +262,22 @@ public void saveLocationChanges() {
 
     public void clickOnDayEntry(String day) {
         ScenarioLogManager.getLogger().info("Trying to click on entry for day \"" + day + "\"");
+        LocalDate today = BerlinTime.today();
+        Integer dayOfMonth = calendarDayNumber(day);
+        if (dayOfMonth != null && dayOfMonth == today.getDayOfMonth() && FixtureHolidays.isClosed(today)) {
+            clickOpeningHoursCalendarDay(FixtureHolidays.firstOpenOnOrAfter(today.plusDays(1)));
+            return;
+        }
         clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "//span[@class='day' and contains(text(),'" + day + "')]/..", LocatorType.XPATH, false, CONTEXT);
+    }
+
+    /** Month tiles use {@code 01}…{@code 09}. {@code <heute_tag>} arrives the same way. */
+    private static Integer calendarDayNumber(String day) {
+        try {
+            return Integer.parseInt(day.trim());
+        } catch (NumberFormatException notADay) {
+            return null;
+        }
     }
 
     public void clickOnNewOpeningHoursButton() {
@@ -434,6 +451,144 @@ public void saveLocationChanges() {
         String end = normalizeClock(readTimeInputValue("AvDatesEnd_time"));
         Assert.assertEquals(start, normalizeClock(expectedStart), "Uhrzeit von on Ausnahme form");
         Assert.assertEquals(end, normalizeClock(expectedEnd), "Uhrzeit bis on Ausnahme form");
+    }
+
+    /** Opens the month-calendar day. Moves to the next month when the day is not in the current month. */
+    public void clickOpeningHoursCalendarDay(LocalDate date) {
+        CONTEXT.set();
+        LocalDate today = BerlinTime.today();
+        if (date.getYear() != today.getYear() || date.getMonthValue() != today.getMonthValue()) {
+            clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "//a[@title='Monat vor']", LocatorType.XPATH, false, CONTEXT);
+            new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                    .until(ExpectedConditions.presenceOfElementLocated(
+                            By.cssSelector("table.availability-monthtable_calendar")));
+        }
+        int dayOfMonth = date.getDayOfMonth();
+        String plain = Integer.toString(dayOfMonth);
+        String padded = String.format(java.util.Locale.ROOT, "%02d", dayOfMonth);
+        String xpath = "//table[contains(@class,'availability-monthtable_calendar')]"
+                + "//tbody//a[contains(@class,'month-item')]"
+                + "[.//span[@class='day' and (normalize-space()='" + plain
+                + "' or normalize-space()='" + padded + "')]]";
+        clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, xpath, LocatorType.XPATH, false, CONTEXT);
+    }
+
+    public void assertExactlyOneOpeningHoursFormOpen() {
+        CONTEXT.set();
+        new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .ignoring(StaleElementReferenceException.class)
+                .until(driver -> driver.findElements(By.cssSelector(".accordion__panel.opened")).size() == 1);
+        Assert.assertTrue(findVisibleInputById("AvDayDescription").isDisplayed(),
+                "The open opening-hours form has no note field.");
+    }
+
+    /** Neue Öffnungszeit selects the new row, so the form is expanded without a second click. */
+    public void assertNewOpeningHoursFormAlreadyOpen() {
+        CONTEXT.set();
+        By trigger = By.xpath(
+                "//h3[contains(@class,'accordion__heading')][contains(@title,'Neue Öffnungszeit')]/button");
+        WebElement button = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(ExpectedConditions.visibilityOfElementLocated(trigger));
+        Assert.assertEquals(button.getAttribute("aria-expanded"), "true",
+                "Neue Öffnungszeit should already be expanded.");
+        assertExactlyOneOpeningHoursFormOpen();
+    }
+
+    public void assertOpeningHoursTableClockIsHyphen(String note) {
+        String text = waitForOpeningHoursClock(note);
+        Assert.assertEquals(text, "-",
+                "Uhrzeit for \"" + note + "\" should be a hyphen until a time is entered, was \"" + text + "\".");
+        Assert.assertFalse(text.toLowerCase(Locale.ROOT).contains("invalid"),
+                "Uhrzeit shows an invalid date: " + text);
+    }
+
+    public void assertOpeningHoursTableClockContains(String note, String... parts) {
+        String text = waitForOpeningHoursClock(note, parts);
+        Assert.assertFalse(text.toLowerCase(Locale.ROOT).contains("invalid"),
+                "Uhrzeit shows an invalid date: " + text);
+    }
+
+    public void assertNoOpeningHoursValidationShown() {
+        CONTEXT.set();
+        boolean visible = DRIVER.findElements(By.cssSelector("div.message--error")).stream()
+                .anyMatch(element -> {
+                    try {
+                        return element.isDisplayed();
+                    } catch (StaleElementReferenceException ignored) {
+                        return false;
+                    }
+                });
+        Assert.assertFalse(visible, "An opening-hours validation message is visible before save.");
+    }
+
+    public void clickSaveOpeningHoursExpectingSlotError() {
+        ScenarioLogManager.getLogger().info("Saving opening hours and expecting a slot-length error...");
+        CONTEXT.set();
+        String publishButton =
+                "//button[contains(@class,'button-save') and normalize-space()='Alle Änderungen aktivieren']";
+        clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, publishButton, LocatorType.XPATH, false, CONTEXT);
+        By slotError = By.xpath("//div[contains(@class,'message--error')]"
+                + "[contains(., 'Zeitschlitze müssen sich gleichmäßig')]");
+        try {
+            new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                    .until(ExpectedConditions.visibilityOfElementLocated(slotError));
+        } catch (TimeoutException e) {
+            Assert.fail("Expected the slot-length validation after save.", e);
+        }
+        assertExactlyOneOpeningHoursFormOpen();
+    }
+
+    public void assertOpenedOpeningHoursKept(String note, String start, String end) {
+        CONTEXT.set();
+        WebElement noteField = findVisibleInputById("AvDayDescription");
+        Assert.assertEquals(noteField.getAttribute("value"), note, "The note was cleared after the failed save.");
+        Assert.assertEquals(normalizeClock(readTimeInputValue("AvDatesStart_time")), normalizeClock(start),
+                "Uhrzeit von was cleared after the failed save.");
+        Assert.assertEquals(normalizeClock(readTimeInputValue("AvDatesEnd_time")), normalizeClock(end),
+                "Uhrzeit bis was cleared after the failed save.");
+    }
+
+    public void discardUnsavedOpeningHours() {
+        CONTEXT.set();
+        By abort = By.xpath("//div[contains(@class,'form-actions')]//button[normalize-space()='Abbrechen']");
+        WebElement button = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(ExpectedConditions.elementToBeClickable(abort));
+        button.click();
+        new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .ignoring(StaleElementReferenceException.class)
+                .until(driver -> driver.findElements(By.xpath(
+                        "//h3[contains(@class,'accordion__heading')][contains(@title,'Neue Öffnungszeit')]")).isEmpty());
+    }
+
+    /**
+     * The table row is refreshed by the slot calculation after a field change, so a clock
+     * that should show a time has to be polled until that time is visible.
+     */
+    private String waitForOpeningHoursClock(String note, String... requiredParts) {
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        wait.ignoring(StaleElementReferenceException.class);
+        String expected = requiredParts.length == 0 ? "a value" : String.join(", ", requiredParts);
+        wait.withMessage("Uhrzeit cell for \"" + note + "\" did not show " + expected + ".");
+        return wait.until(driver -> {
+            List<WebElement> rows = driver.findElements(By.xpath(openingHourRow(note)));
+            if (rows.isEmpty()) {
+                return null;
+            }
+            List<WebElement> cells = rows.get(0).findElements(By.xpath("./td"));
+            if (cells.size() < 6) {
+                return null;
+            }
+            String text = cells.get(5).getText().replace('\u00a0', ' ').trim().replaceAll("\\s+", " ");
+            if (text.isEmpty()) {
+                return null;
+            }
+            for (String part : requiredParts) {
+                if (!text.contains(normalizeClock(part))) {
+                    return null;
+                }
+            }
+            return text;
+        });
     }
 
     /**
@@ -653,15 +808,26 @@ public void saveLocationChanges() {
      * (e.g. {@code Spontankunden}). The lightbox DELETE is persisted immediately.
      */
     public void deleteOpeningHoursOfType(String type) {
+        deleteOpeningHoursOfType(type, true);
+    }
+
+    /**
+     * @param required when false, a day with no row of this type is left unchanged
+     */
+    public void deleteOpeningHoursOfType(String type, boolean required) {
         CONTEXT.set();
         CONTEXT.waitForSpinners();
         ScenarioLogManager.getLogger().info("Trying to delete opening hours of type \"" + type + "\"...");
         By trash = By.xpath("//table[contains(@class,'table--base')]//tr[td[normalize-space()='" + type
                 + "']]//a[.//i[contains(@class,'fa-trash-alt')]]");
-        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(required ? DEFAULT_EXPLICIT_WAIT_TIME : 5));
         try {
             wait.until(ExpectedConditions.elementToBeClickable(trash));
         } catch (TimeoutException e) {
+            if (!required) {
+                ScenarioLogManager.getLogger().info("No opening-hours row of type \"" + type + "\" to delete");
+                return;
+            }
             Assert.fail("No opening-hours row of type \"" + type + "\" to delete", e);
         }
         int deleted = 0;

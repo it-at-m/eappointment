@@ -39,19 +39,19 @@ SET @upd_sql := (
     WHEN @has_de > 0 AND @has_en > 0 THEN
       CONCAT(
         'UPDATE `oeffnungszeit` SET `Timeslot` = ''00:25:00'', `time_slot` = ''00:25:00'' ',
-        'WHERE `OeffnungszeitID` IN (136380, 136381, 136513, 136514, 136550) ',
+        'WHERE `OeffnungszeitID` IN (136380, 136381, 136513, 136514) ',
         'OR `StandortID` IN (6, 256, 347) OR `scope_id` IN (6, 256, 347)'
       )
     WHEN @has_en > 0 THEN
       CONCAT(
         'UPDATE `oeffnungszeit` SET `time_slot` = ''00:25:00'' ',
-        'WHERE `OeffnungszeitID` IN (136380, 136381, 136513, 136514, 136550) ',
+        'WHERE `OeffnungszeitID` IN (136380, 136381, 136513, 136514) ',
         'OR `scope_id` IN (6, 256, 347)'
       )
     ELSE
       CONCAT(
         'UPDATE `oeffnungszeit` SET `Timeslot` = ''00:25:00'' ',
-        'WHERE `OeffnungszeitID` IN (136380, 136381, 136513, 136514, 136550) ',
+        'WHERE `OeffnungszeitID` IN (136380, 136381, 136513, 136514) ',
         'OR `StandortID` IN (6, 256, 347)'
       )
   END
@@ -75,7 +75,7 @@ SET @hours_sql := (
       '`start_time`,`appointment_start_time`,`end_time`,`appointment_end_time`,`time_slot`,',
       '`workstation_count`,`appointment_workstation_count`,`comment`,`internet_reduction`,',
       '`multiple_slots_allowed`,`open_from_days`,`open_until_days`,`updated_at`) VALUES ',
-      '(136550,347,''', @range_start, ''',''', @range_end, ''',1,0,127,''00:00:00'',''08:00:00'',',
+      '(136570,347,''', @range_start, ''',''', @range_end, ''',1,0,127,''00:00:00'',''08:00:00'',',
       '''00:00:00'',''18:00:00'',''00:25:00'',0,1,',
       '''ZMSKVR-933 ZMSKVR-934 Schalter C 25-minute slots'',0,1,0,30,NOW(),',
       '347,''', @range_start, ''',''', @range_end, ''',1,0,127,''00:00:00'',''08:00:00'',',
@@ -88,7 +88,7 @@ SET @hours_sql := (
       '`start_time`,`appointment_start_time`,`end_time`,`appointment_end_time`,`time_slot`,',
       '`workstation_count`,`appointment_workstation_count`,`comment`,`internet_reduction`,',
       '`multiple_slots_allowed`,`open_from_days`,`open_until_days`,`updated_at`) VALUES ',
-      '(136550,347,''', @range_start, ''',''', @range_end, ''',1,0,127,''00:00:00'',''08:00:00'',',
+      '(136570,347,''', @range_start, ''',''', @range_end, ''',1,0,127,''00:00:00'',''08:00:00'',',
       '''00:00:00'',''18:00:00'',''00:25:00'',0,1,',
       '''ZMSKVR-933 ZMSKVR-934 Schalter C 25-minute slots'',0,1,0,30,NOW())'
     )
@@ -98,7 +98,7 @@ SET @hours_sql := (
       '`Anfangszeit`,`Terminanfangszeit`,`Endzeit`,`Terminendzeit`,`Timeslot`,`Anzahlarbeitsplaetze`,',
       '`Anzahlterminarbeitsplaetze`,`kommentar`,`reduktionTermineImInternet`,`erlaubemehrfachslots`,',
       '`Offen_ab`,`Offen_bis`,`updateTimestamp`) VALUES ',
-      '(136550,347,''', @range_start, ''',''', @range_end, ''',1,0,127,''00:00:00'',''08:00:00'',',
+      '(136570,347,''', @range_start, ''',''', @range_end, ''',1,0,127,''00:00:00'',''08:00:00'',',
       '''00:00:00'',''18:00:00'',''00:25:00'',0,1,',
       '''ZMSKVR-933 ZMSKVR-934 Schalter C 25-minute slots'',0,1,0,30,NOW())'
     )

@@ -19,6 +19,7 @@ import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import zms.ataf.helpers.AccountCheckout;
 import zms.ataf.helpers.BerlinTime;
+import zms.ataf.helpers.FixtureHolidays;
 import zms.ataf.ui.pages.statistics.StatisticsPage;
 import zms.ataf.ui.pages.statistics.StatisticsPageContext;
 import zms.ataf.ui.pages.statistics.evaluations.CapacityStatisticsPage;
@@ -134,8 +135,8 @@ public class StatisticsSteps {
 
     @And("I filter the statistics from {int} days after today until {int} days after today.")
     public void iFilterTheStatisticsFromDaysAfterToday(int fromOffset, int untilOffset) {
-        LocalDate today = BerlinTime.today();
-        STATISTICS_PAGE.applyDateRangeFilter(today.plusDays(fromOffset), today.plusDays(untilOffset));
+        LocalDate[] range = FixtureHolidays.openRangeDaysAfterToday(fromOffset, untilOffset);
+        STATISTICS_PAGE.applyDateRangeFilter(range[0], range[1]);
     }
 
     @And("I apply the statistics filter.")
@@ -160,8 +161,8 @@ public class StatisticsSteps {
 
     @Then("the statistics date filter is still {int} days after today until {int} days after today.")
     public void theStatisticsDateFilterIsStill(int fromOffset, int untilOffset) {
-        LocalDate today = BerlinTime.today();
-        CAPACITY_STATISTICS_PAGE.assertDateFilter(today.plusDays(fromOffset), today.plusDays(untilOffset));
+        LocalDate[] range = FixtureHolidays.openRangeDaysAfterToday(fromOffset, untilOffset);
+        CAPACITY_STATISTICS_PAGE.assertDateFilter(range[0], range[1]);
     }
 
     private static String capacitySelect(String filter) {

@@ -2,6 +2,7 @@ package zms.ataf.ui.pages.admin.workview.counterprocessingstation;
 
 import java.time.Duration;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.openqa.selenium.By;
@@ -151,6 +152,7 @@ public class ProcessingStationSection extends CounterProcessingStationPage {
     }
 
     public void callCustomerWithSpecificNote(String note) {
+        openQueueOnBookedDay();
         ScenarioLogManager.getLogger().info("Trying to call customer with note \"" + note + "\"...");
         final String CUSTOMER_NR_USING_NOTE_XPATH = "//tr[td[contains(., '" + note + "')]]/td[@class='callnextclient']/a";
         Assert.assertTrue(isWebElementVisible(DEFAULT_EXPLICIT_WAIT_TIME, CUSTOMER_NR_USING_NOTE_XPATH, LocatorType.XPATH, true, CONTEXT),
@@ -159,6 +161,7 @@ public class ProcessingStationSection extends CounterProcessingStationPage {
     }
 
     public void callCustomerFromQueueWithNumber(String number) {
+        openQueueOnBookedDay();
         ScenarioLogManager.getLogger().info("Trying to call customer from queue with number \"" + number + "\"...");
         final String CUSTOMER_NR_USING_NUMBER_XPATH = "//table[@id='table-queued-appointments']/tbody/tr/td[3]/a[contains(text(), '" + number + "')]";
         Assert.assertTrue(isWebElementVisible(DEFAULT_EXPLICIT_WAIT_TIME, CUSTOMER_NR_USING_NUMBER_XPATH, LocatorType.XPATH, true, CONTEXT),
@@ -529,6 +532,43 @@ public class ProcessingStationSection extends CounterProcessingStationPage {
         ScenarioLogManager.getLogger().info("Checking if service match and is visible under 'Kundeninformation'...");
         Assert.assertEquals(getWebElementText(DEFAULT_EXPLICIT_WAIT_TIME, "//following-sibling::dt[contains(text(),'Anliegen')]/following-sibling::dd[1]/ul/li",
                 LocatorType.XPATH, CONTEXT), service, "Service does not match expected value!");
+    }
+
+    /**
+     * ZMSKVR-1018: Kundeninformationen shows the newline itself. The characters {@code <br />}
+     * must not appear, and the cell must render a real break.
+     */
+    public void assertCalledFreeTextLineBreaks(String line1, String line2) {
+        ScenarioLogManager.getLogger().info("Checking Kundeninformationen line breaks for {} / {}", line1, line2);
+        WebElement board = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("section.client-called")));
+        WebElement match = null;
+        for (WebElement cell : board.findElements(By.cssSelector("dd.process-free-text"))) {
+            String text = cell.getText();
+            if (text.contains(line1) && text.contains(line2)) {
+                match = cell;
+                break;
+            }
+        }
+        Assert.assertNotNull(
+                match,
+                "Kundeninformationen should show \"" + line1 + "\" and \"" + line2 + "\" as text");
+        String text = match.getText();
+        Assert.assertFalse(text.contains("<br"), "Kundeninformationen must not show the characters <br. text=" + text);
+        String html = match.getAttribute("innerHTML");
+        Assert.assertNotNull(html, "Kundeninformationen free-text html");
+        int start = html.indexOf(line1);
+        int end = start < 0 ? -1 : html.indexOf(line2, start + line1.length());
+        Assert.assertTrue(
+                start >= 0 && end > start,
+                "Kundeninformationen html should contain \"" + line1 + "\" before \"" + line2 + "\". html=" + html);
+        String between = html.substring(start + line1.length(), end);
+        Assert.assertTrue(
+                between.contains("<br"),
+                "The rendered break must sit between \"" + line1 + "\" and \"" + line2 + "\". between=" + between);
+        Assert.assertFalse(
+                between.toLowerCase(Locale.ROOT).contains("&lt;br"),
+                "The break between the lines must not be escaped text. between=" + between);
     }
 
     public void checkForNoteUnderCustomerInformation(String expectedNote) {

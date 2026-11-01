@@ -21,7 +21,7 @@ services:
       - default
 
   mail-viewer:
-    image: node:24
+    image: node:26.13.0@sha256:6d2c7d5d074bf72f81ddc252b4fbb5d625bc028eeda49cb4b8c2ff8eda1ee617
     container_name: zms-mail-viewer
     working_dir: /workspace/.devcontainer/mail-viewer
     volumes:
@@ -45,7 +45,7 @@ services:
     restart: unless-stopped
 
   citizenview:
-    image: node:24
+    image: node:26.13.0@sha256:6d2c7d5d074bf72f81ddc252b4fbb5d625bc028eeda49cb4b8c2ff8eda1ee617
     container_name: zms-citizenview
     working_dir: /workspace/zmscitizenview
     volumes:
@@ -67,7 +67,7 @@ services:
     restart: unless-stopped
 
   db:
-    image: mariadb:10.11
+    image: mariadb:10.11.19@sha256:d769e37960821dfdcf096954f6e7ac89f747e116c1bba98e48edd265dfc7deae
     container_name: zms-db
     restart: unless-stopped
     environment:
@@ -83,7 +83,7 @@ services:
       - "3306:3306"
 
   phpmyadmin:
-    image: phpmyadmin:5
+    image: phpmyadmin:5.2.3@sha256:fb0cb638f7d1c2529407921d86679b2b2faf5bb8542314821e9f16e7e3d2954f
     container_name: zms-phpmyadmin
     restart: unless-stopped
     ports:
@@ -148,7 +148,7 @@ services:
     restart: unless-stopped
 
   keycloak:
-    image: quay.io/keycloak/keycloak:26.8.1@sha256:79c623a22abacf3fe6c00a5fb30f5b7843d717b234033b80995891c06116d244
+    image: quay.io/keycloak/keycloak:26.8.1@sha256:3f3c5f8e03c614774b4bd9173b88391fefa4153bfc010d8012d59ad825377332
     container_name: zms-keycloak
     hostname: keycloak
     command:
@@ -171,7 +171,7 @@ services:
     restart: unless-stopped
 
   init-keycloak-token:
-    image: curlimages/curl:8.23.0
+    image: curlimages/curl:8.23.0@sha256:3fb7e13e5d179a845c97d78204f3f1064d1907037f26a3ebf91710571151fd93
     container_name: zms-init-keycloak-token
     depends_on:
       keycloak:
@@ -203,7 +203,7 @@ services:
     restart: "no"
 
   init-keycloak:
-    image: eclipse-temurin:25-jre-alpine@sha256:b7528962e65d43064d8a8b67ba175367896bc948363ea2d3fcd7f10d34e1f048
+    image: eclipse-temurin:25-jre-alpine@sha256:56f273059de6b13a6b49fe0ded691ed2d0399bbee76156a8f2d385f7524a3d43
     container_name: zms-init-keycloak
     # Jar volume is :ro. keycloakmigration Log4j writes logs/logfile.log under cwd,
     # so run from /tmp (entrypoint.sh uses java -jar keycloakmigration.jar).

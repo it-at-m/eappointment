@@ -147,31 +147,46 @@ public class ServiceStatisticsPage extends StatisticsPage {
 
     public void assertDownloadedStatisticValues(List<Map<String, String>> rows) throws IOException {
         Assert.assertFalse(rows == null || rows.isEmpty(), "Expected at least one service statistic row.");
-        String marker = rows.get(0).get("Dienstleistung");
-        Map<String, String[]> workbook = null;
-        // Parallel shards share period filenames; newest lock can briefly grab another scope's XLSX.
+        String mismatch = "The service statistic download did not match.";
+        // The same period filename is reused. A file can contain the service row and still
+        // be the previous export, so Summe 2 is accepted when this download should be 3.
         for (int attempt = 1; attempt <= 3; attempt++) {
             Path path = workbookFromThisDownload();
-            workbook = RequestStatisticWorkbook.rows(path);
-            if (workbook.containsKey(marker)) {
-                break;
+            mismatch = downloadedStatisticMismatch(rows, RequestStatisticWorkbook.rows(path));
+            if (mismatch == null) {
+                return;
             }
             ScenarioLogManager.getLogger().warn(
-                    "Service XLSX {} missing row '{}'; rows={}; re-downloading ({}/3)",
+                    "Service XLSX {} does not match ({}); re-downloading ({}/3)",
                     path.getFileName(),
-                    marker,
-                    workbook.keySet(),
+                    mismatch,
                     attempt);
-            clickDownloadButton();
+            if (attempt < 3) {
+                clickDownloadButton();
+            }
         }
+        Assert.fail(mismatch);
+    }
+
+    private static String downloadedStatisticMismatch(List<Map<String, String>> rows, Map<String, String[]> workbook) {
         for (Map<String, String> row : rows) {
             String label = row.get("Dienstleistung");
             String[] cells = workbook.get(label);
-            Assert.assertNotNull(cells, "XLSX row missing: " + label + ". Rows: " + workbook.keySet());
-            Assert.assertEquals(normalizeTime(cells[0]), normalizeTime(row.get("Bearbeitungsdauer")),
-                    label + " XLSX Bearbeitungsdauer");
-            Assert.assertEquals(normalizeCount(cells[1]), normalizeCount(row.get("Summe")), label + " XLSX Summe");
+            if (cells == null) {
+                return "XLSX row missing: " + label + ". Rows: " + workbook.keySet();
+            }
+            String expectedTime = normalizeTime(row.get("Bearbeitungsdauer"));
+            String actualTime = normalizeTime(cells[0]);
+            if (!expectedTime.equals(actualTime)) {
+                return label + " XLSX Bearbeitungsdauer expected [" + expectedTime + "] but found [" + actualTime + "]";
+            }
+            String expectedCount = normalizeCount(row.get("Summe"));
+            String actualCount = normalizeCount(cells[1]);
+            if (!expectedCount.equals(actualCount)) {
+                return label + " XLSX Summe expected [" + expectedCount + "] but found [" + actualCount + "]";
+            }
         }
+        return null;
     }
 
     private Path workbookFromThisDownload() {

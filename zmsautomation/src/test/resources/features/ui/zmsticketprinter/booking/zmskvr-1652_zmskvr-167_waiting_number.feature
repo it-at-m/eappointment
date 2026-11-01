@@ -12,6 +12,7 @@ Feature: Walk-in customers can draw a waiting number at the ticket printer when 
 		And I click the entry "Behörden und Standorte" in the Administration menu.
 		And I click the opening-hours entry of "Bürgerbüro Ruppertstraße (KVR-II/211) Abholung" under authorities and locations.
 		And I click day "<heute_tag>" under opening hours.
+		And I delete the opening hours of type "Terminkunden" when that row is on the day.
 		And I click the button "neue Öffnungszeit" in the administration.
 		And I open the opening-hours accordion "Neue Öffnungszeit".
 		And I select for "Öffnungszeiten Typ" the value "Spontankunden".
