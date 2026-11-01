@@ -249,7 +249,7 @@ class Process extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfaces\R
     /**
      * update process requests with new credentials
      */
-    public function updateReassignedRequests(string|int $processId, $newProcessId): void
+    public function updateReassignedRequests(string|int $processId, string|int $newProcessId): void
     {
         $this->perform(\BO\Zmsbackend\Process\Repository\Process::QUERY_REASSIGN_PROCESS_REQUESTS, [
             'newProcessId' => $newProcessId,
