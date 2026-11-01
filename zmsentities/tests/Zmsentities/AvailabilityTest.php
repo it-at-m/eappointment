@@ -760,6 +760,24 @@ class AvailabilityTest extends EntityCommonTests
      * @SuppressWarnings(Length)
      *
      */
+    public function testSortedByDuration()
+    {
+        $availabilityData = [
+            'type' => 'appointment',
+            'weekday' => ['monday' => '2'],
+            'repeat' => ['afterWeeks' => '1'],
+            'startDate' => strtotime('2016-04-04'),
+            'endDate' => strtotime('2016-04-04'),
+        ];
+        $list = new \BO\Zmsentities\Collection\AvailabilityList([
+            new Availability($availabilityData + ['id' => '3', 'startTime' => '08:00:00', 'endTime' => '18:00:00']),
+            new Availability($availabilityData + ['id' => '9', 'startTime' => '10:00:00', 'endTime' => '12:00:00']),
+            new Availability($availabilityData + ['id' => '4', 'startTime' => '13:00:00', 'endTime' => '15:00:00']),
+        ]);
+        // shorter first, equal duration: lower id first
+        $this->assertSame([4, 9, 3], array_keys($list->getSortedByDuration()));
+    }
+
     public function testConflicts()
     {
         $availability = new Availability([
@@ -930,14 +948,8 @@ class AvailabilityTest extends EntityCommonTests
             }
         }
     
-        // Availability 1 und 5 überschneiden sich jeweils 3 mal
-        $this->assertEquals(3, $list['Zwei Öffnungszeiten überschneiden sich.'][1]);
-        $this->assertEquals(3, $list['Zwei Öffnungszeiten überschneiden sich.'][5]);
-
-        // Availability 2, 4 und 6 überschneiden sich jeweils 2 mal
-        $this->assertEquals(2, $list['Zwei Öffnungszeiten überschneiden sich.'][2]);
-        $this->assertEquals(2, $list['Zwei Öffnungszeiten überschneiden sich.'][4]);
-        $this->assertEquals(2, $list['Zwei Öffnungszeiten überschneiden sich.'][6]);
+        // Überschneidende Öffnungszeiten (1, 2, 4, 6) sind erlaubt, ihre Arbeitsplätze werden addiert
+        $this->assertArrayNotHasKey('Zwei Öffnungszeiten überschneiden sich.', $list);
 
         // Availability 1 und 5 sind sich jeweils gleich
         $this->assertEquals(1, $list['Zwei Öffnungszeiten sind gleich.'][1]);

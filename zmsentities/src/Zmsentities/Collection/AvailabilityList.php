@@ -150,6 +150,45 @@ class AvailabilityList extends Base
         return $slotList;
     }
 
+    /**
+     * Availabilities keyed by id (or tempId), shorter availabilities first (then lower id).
+     * This is the only definition of which overlapping availability is preferred: the backend uses it to
+     * choose the availability of a booking (Slot::getRequiredSlotsByAvailability()). The only copy is the SQL
+     * fallback for unmapped bookings in Availability\Repository\Availability::getJoinExpression().
+     *
+     * @return array<int|string, Availability>
+     */
+    public function getSortedByDuration(): array
+    {
+        $availabilityList = iterator_to_array($this);
+        usort($availabilityList, function (Availability $left, Availability $right) {
+            $leftDuration = $left->getEndDateTime()->getSecondsOfDay() - $left->getStartDateTime()->getSecondsOfDay();
+            $rightDuration = $right->getEndDateTime()->getSecondsOfDay()
+                - $right->getStartDateTime()->getSecondsOfDay();
+            return [$leftDuration, (int) $left->id] <=> [$rightDuration, (int) $right->id];
+        });
+        $sorted = [];
+        foreach ($availabilityList as $index => $availability) {
+            $key = $availability->id ?: ($availability->tempId ?? "index-$index");
+            $sorted[$key] = $availability;
+        }
+        return $sorted;
+    }
+
+    /**
+     * One slot list per availability, keys and order as in getSortedByDuration()
+     *
+     * @return array<int|string, SlotList>
+     */
+    public function getSlotListByAvailability(): array
+    {
+        $slotLists = [];
+        foreach ($this->getSortedByDuration() as $key => $availability) {
+            $slotLists[$key] = $availability->getSlotList();
+        }
+        return $slotLists;
+    }
+
     public function getSlotListByType(mixed $type): SlotList
     {
         $slotList = new SlotList();
@@ -257,17 +296,13 @@ class AvailabilityList extends Base
     }
 
     /**
+     * Booked slots per availability, a booking in overlapping availabilities counts for one of them
+     *
      * @return array
      */
     public function getCalculatedSlotCount(\BO\Zmsentities\Collection\ProcessList $processList): array
     {
-        $slotCounts = [];
-        foreach ($this as $item) {
-            $itemId = $item->id;
-            $listWithAvailability = $processList->withAvailability($item);
-            $slotCounts[$itemId] = $listWithAvailability->getAppointmentList()->getCalculatedSlotCount();
-        }
-        return $slotCounts;
+        return $processList->getCalculatedSlotCountByAvailability($this);
     }
 
 

@@ -175,6 +175,17 @@ class SlotTest extends EntityCommonTests
         $entity->removeAppointment();
     }
 
+    public function testRemoveAppointmentWithNegativeFollowingSlot()
+    {
+        $appointment = (new \BO\Zmsentities\Appointment())->getExample();
+        $appointment->setTime('12:50');
+        $appointment->slotCount = 2;
+        $collection = new $this->collectionclass();
+        $collection->addEntity(new $this->entityclass(['public' => 2, 'intern' => 2, 'time' => '12:50']));
+        $collection->addEntity(new $this->entityclass(['public' => 0, 'intern' => -1, 'time' => '13:00']));
+        $this->assertFalse($collection->removeAppointment($appointment));
+    }
+
     public function testGetFreeProcessesFailed()
     {
         $this->expectException('\BO\Zmsentities\Exception\SlotRequiredWithoutReducing');
