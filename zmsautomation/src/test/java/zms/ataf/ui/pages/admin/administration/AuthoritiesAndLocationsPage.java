@@ -263,11 +263,21 @@ public void saveLocationChanges() {
     public void clickOnDayEntry(String day) {
         ScenarioLogManager.getLogger().info("Trying to click on entry for day \"" + day + "\"");
         LocalDate today = BerlinTime.today();
-        if (Integer.toString(today.getDayOfMonth()).equals(day.trim()) && FixtureHolidays.isClosed(today)) {
+        Integer dayOfMonth = calendarDayNumber(day);
+        if (dayOfMonth != null && dayOfMonth == today.getDayOfMonth() && FixtureHolidays.isClosed(today)) {
             clickOpeningHoursCalendarDay(FixtureHolidays.firstOpenOnOrAfter(today.plusDays(1)));
             return;
         }
         clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "//span[@class='day' and contains(text(),'" + day + "')]/..", LocatorType.XPATH, false, CONTEXT);
+    }
+
+    /** Month tiles use {@code 01}…{@code 09}. {@code <heute_tag>} arrives the same way. */
+    private static Integer calendarDayNumber(String day) {
+        try {
+            return Integer.parseInt(day.trim());
+        } catch (NumberFormatException notADay) {
+            return null;
+        }
     }
 
     public void clickOnNewOpeningHoursButton() {
@@ -453,10 +463,13 @@ public void saveLocationChanges() {
                     .until(ExpectedConditions.presenceOfElementLocated(
                             By.cssSelector("table.availability-monthtable_calendar")));
         }
-        String day = Integer.toString(date.getDayOfMonth());
+        int dayOfMonth = date.getDayOfMonth();
+        String plain = Integer.toString(dayOfMonth);
+        String padded = String.format(java.util.Locale.ROOT, "%02d", dayOfMonth);
         String xpath = "//table[contains(@class,'availability-monthtable_calendar')]"
                 + "//tbody//a[contains(@class,'month-item')]"
-                + "[.//span[@class='day' and normalize-space()='" + day + "']]";
+                + "[.//span[@class='day' and (normalize-space()='" + plain
+                + "' or normalize-space()='" + padded + "')]]";
         clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, xpath, LocatorType.XPATH, false, CONTEXT);
     }
 
