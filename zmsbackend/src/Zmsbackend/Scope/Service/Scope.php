@@ -415,7 +415,7 @@ class Scope extends \BO\Zmsbackend\Base
         return ($isInContingent) ? true : false;
     }
 
-    public function readQueueList(array $scopeIds, $dateTime, int $resolveReferences = 0, $withEntities = []): \BO\Zmsentities\Collection\QueueList
+    public function readQueueList(array $scopeIds, $dateTime, int $resolveReferences = 0, array $withEntities = []): \BO\Zmsentities\Collection\QueueList
     {
         if ($resolveReferences > 0) {
             $queueList = (new \BO\Zmsbackend\Process\Service\Process())
@@ -470,7 +470,7 @@ class Scope extends \BO\Zmsbackend\Base
         return $queueList->withEstimatedWaitingTime($timeAverage, $workstationCount, $dateTime);
     }
 
-    public function readScopesQueueListWithWaitingTime(Collection $scopes, \DateTimeInterface $dateTime, int $resolveReferences = 0, $withEntities = [])
+    public function readScopesQueueListWithWaitingTime(Collection $scopes, \DateTimeInterface $dateTime, int $resolveReferences = 0, array $withEntities = [])
     {
         $timeSum = 0;
         $workstationCount = 0;

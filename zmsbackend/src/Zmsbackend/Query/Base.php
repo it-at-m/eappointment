@@ -291,7 +291,7 @@ abstract class Base
     /**
      * @psalm-api
      */
-    public function setWithEntities($withEntities = []): void
+    public function setWithEntities(array $withEntities = []): void
     {
         $this->withEntities = $withEntities;
     }

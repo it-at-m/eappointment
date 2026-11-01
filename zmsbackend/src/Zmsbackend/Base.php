@@ -93,7 +93,7 @@ abstract class Base
         return $statement;
     }
 
-    protected static function pdoExceptionHandler(\Closure $pdoFunction, $parameters = [])
+    protected static function pdoExceptionHandler(\Closure $pdoFunction, array $parameters = [])
     {
         try {
             $statement = $pdoFunction($parameters);

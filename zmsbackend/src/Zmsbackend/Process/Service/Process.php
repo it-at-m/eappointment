@@ -414,7 +414,7 @@ class Process extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfaces\R
         $scopeIds,
         \DateTimeInterface $dateTime,
         int $resolveReferences = 0,
-        $withEntities = []
+        array $withEntities = []
     ) {
         $query = new \BO\Zmsbackend\Process\Repository\Process(\BO\Zmsbackend\Query\Base::SELECT, '', false, null, $withEntities);
         $query
