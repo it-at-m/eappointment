@@ -11,7 +11,7 @@ class ExchangeWaitingorganisation extends \BO\Zmsbackend\Base implements \BO\Zms
      */
     #[\Override]
     public function readEntity(
-        $subjectid,
+        string|int $subjectid,
         \DateTimeInterface $datestart,
         \DateTimeInterface $dateend,
         string $period = 'day'
@@ -93,7 +93,7 @@ class ExchangeWaitingorganisation extends \BO\Zmsbackend\Base implements \BO\Zms
      * @return Exchange
      */
     #[\Override]
-    public function readPeriodList($subjectid, string $period = 'day')
+    public function readPeriodList(string|int $subjectid, string $period = 'day')
     {
         $organisation = (new \BO\Zmsbackend\Organisation\Service\Organisation())->readEntity($subjectid);
         $entity = new Exchange();

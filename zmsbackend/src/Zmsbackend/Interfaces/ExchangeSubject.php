@@ -5,11 +5,11 @@ namespace BO\Zmsbackend\Interfaces;
 interface ExchangeSubject
 {
     public function readEntity(
-        $subjectid,
+        string|int $subjectid,
         \DateTimeInterface $datestart,
         \DateTimeInterface $dateend,
         string $period = 'day'
     );
     public function readSubjectList();
-    public function readPeriodList($subjectid, string $period = 'day');
+    public function readPeriodList(string|int $subjectid, string $period = 'day');
 }

@@ -7,7 +7,7 @@ use BO\Zmsentities\Exchange;
 class ExchangeSlotscope extends \BO\Zmsbackend\Base
 {
     public function readEntity(
-        $subjectid
+        string|int $subjectid
     ): Exchange {
         $scope = (new \BO\Zmsbackend\Scope\Service\Scope())->readEntity($subjectid);
         $entity = new Exchange();
@@ -55,7 +55,7 @@ class ExchangeSlotscope extends \BO\Zmsbackend\Base
     /**
      * @SuppressWarnings(Unused)
      */
-    public function readPeriodList($subjectid, string $period = 'day'): Exchange
+    public function readPeriodList(string|int $subjectid, string $period = 'day'): Exchange
     {
         $entity = new Exchange();
         $entity['title'] = "Slotbelegung ";

@@ -13,7 +13,7 @@ class ExchangeClientowner extends \BO\Zmsbackend\Base
     );
 
     public function readEntity(
-        $subjectid,
+        string|int $subjectid,
         \DateTimeInterface $datestart,
         \DateTimeInterface $dateend,
         string $period = 'day'
@@ -65,7 +65,7 @@ class ExchangeClientowner extends \BO\Zmsbackend\Base
         return $entity;
     }
 
-    public function readPeriodList($subjectid, string $period = 'day'): Exchange
+    public function readPeriodList(string|int $subjectid, string $period = 'day'): Exchange
     {
         $owner = (new \BO\Zmsbackend\Owner\Service\Owner())->readEntity($subjectid);
         $entity = new Exchange();
