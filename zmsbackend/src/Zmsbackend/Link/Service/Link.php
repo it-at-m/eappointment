@@ -63,7 +63,7 @@ class Link extends \BO\Zmsbackend\Base
         return $this->writeItem($query);
     }
 
-    public function deleteEntity($itemId): bool
+    public function deleteEntity(string|int $itemId): bool
     {
         $query = new \BO\Zmsbackend\Link\Repository\Link(\BO\Zmsbackend\Query\Base::DELETE);
         $query->addConditionLinkId($itemId);

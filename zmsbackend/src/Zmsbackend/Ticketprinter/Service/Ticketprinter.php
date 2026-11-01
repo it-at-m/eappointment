@@ -11,7 +11,7 @@ use BO\Zmsentities\Collection\TicketprinterList as Collection;
  */
 class Ticketprinter extends \BO\Zmsbackend\Base
 {
-    public function readEntity($itemId)
+    public function readEntity(string|int $itemId)
     {
         $query = new \BO\Zmsbackend\Ticketprinter\Repository\Ticketprinter(\BO\Zmsbackend\Query\Base::SELECT);
         $query
@@ -234,7 +234,7 @@ class Ticketprinter extends \BO\Zmsbackend\Base
         return $this->readList($statement);
     }
 
-    public function deleteEntity($itemId)
+    public function deleteEntity(string|int $itemId)
     {
         $query =  new \BO\Zmsbackend\Ticketprinter\Repository\Ticketprinter(\BO\Zmsbackend\Query\Base::DELETE);
         $query->addConditionTicketprinterId($itemId);

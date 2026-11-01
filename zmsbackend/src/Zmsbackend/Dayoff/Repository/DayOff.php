@@ -56,7 +56,7 @@ class DayOff extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\M
         return $this;
     }
 
-    public function addConditionDayOffId($itemId): static
+    public function addConditionDayOffId(string|int $itemId): static
     {
         $this->query->where('dayOff.FeiertagID', '=', $itemId);
         return $this;

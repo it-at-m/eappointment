@@ -172,7 +172,7 @@ class DayOff extends \BO\Zmsbackend\Base
         $this->removeCache();
     }
 
-    public function deleteEntity($itemId): bool
+    public function deleteEntity(string|int $itemId): bool
     {
         $query = new \BO\Zmsbackend\Dayoff\Repository\DayOff(\BO\Zmsbackend\Query\Base::DELETE);
         $query->addConditionDayOffId($itemId);

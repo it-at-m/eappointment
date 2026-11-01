@@ -118,7 +118,7 @@ class Organisation extends \BO\Zmsbackend\Base
         return $organisationList;
     }
 
-    public function deleteEntity($itemId)
+    public function deleteEntity(string|int $itemId)
     {
         $entity = $this->readEntity($itemId, 1);
         if (0 < $entity->toProperty()->departments->get()->count()) {

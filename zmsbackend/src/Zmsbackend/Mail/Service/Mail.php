@@ -233,7 +233,7 @@ class Mail extends \BO\Zmsbackend\Base
         return true;
     }
 
-    public function deleteEntity($itemId)
+    public function deleteEntity(string|int $itemId)
     {
         $query = \BO\Zmsbackend\Mail\Repository\MailQueue::QUERY_DELETE;
         $status = $this->perform($query, [$itemId]);

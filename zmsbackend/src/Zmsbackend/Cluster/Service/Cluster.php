@@ -63,7 +63,7 @@ class Cluster extends \BO\Zmsbackend\Base
         return $entity;
     }
 
-    public function readEntityWithOpenedScopeStatus($itemId, \DateTimeInterface $now, int $resolveReferences = 0)
+    public function readEntityWithOpenedScopeStatus(string|int $itemId, \DateTimeInterface $now, int $resolveReferences = 0)
     {
         $entity = $this->readEntity($itemId, $resolveReferences);
         foreach ($entity->scopes as $scope) {
@@ -261,7 +261,7 @@ class Cluster extends \BO\Zmsbackend\Base
         return $result;
     }
 
-    public function deleteEntity($itemId)
+    public function deleteEntity(string|int $itemId)
     {
         $result = false;
         $cluster = $this->readEntity($itemId);
