@@ -73,7 +73,7 @@ class Organisation extends \BO\Zmsbackend\Base
         return $this->readByScopeId($scope->id, $resolveReferences);
     }
 
-    public function readByOwnerId($ownerId, int $resolveReferences = 0): Collection
+    public function readByOwnerId(string|int $ownerId, int $resolveReferences = 0): Collection
     {
         $organisationList = new Collection();
         $query = new \BO\Zmsbackend\Organisation\Repository\Organisation(\BO\Zmsbackend\Query\Base::SELECT);

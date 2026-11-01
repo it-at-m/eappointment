@@ -46,7 +46,7 @@ class Organisation extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Q
         return $this;
     }
 
-    public function addConditionOwnerId($ownerId): static
+    public function addConditionOwnerId(string|int $ownerId): static
     {
         $this->query->where('organisation.KundenID', '=', $ownerId);
         return $this;

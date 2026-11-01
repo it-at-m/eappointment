@@ -180,7 +180,7 @@ class ProcessStatusArchived extends Process
         string|int $providerId,
         string|int $departmentId,
         string|int $organisationId,
-        $ownerId,
+        string|int $ownerId,
         $dateTime,
         ?int $processingTime
     ) {
