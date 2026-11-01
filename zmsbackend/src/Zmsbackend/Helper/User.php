@@ -247,7 +247,7 @@ class User
      * @return \BO\Zmsentities\Department
      *
      */
-    public static function checkDepartment($departmentId)
+    public static function checkDepartment(string|int $departmentId)
     {
         $workstation = static::readWorkstation(2);
         $userAccount = $workstation->getUseraccount();
@@ -295,7 +295,7 @@ class User
         }
     }
 
-    protected static function testReadDepartmentByOrganisation($departmentId, $userAccount)
+    protected static function testReadDepartmentByOrganisation(string|int $departmentId, $userAccount)
     {
         $organisation = (new \BO\Zmsbackend\Organisation\Service\Organisation())->readByDepartmentId($departmentId, 1);
         $organisation->departments = $organisation->getDepartmentList()->withAccess($userAccount);

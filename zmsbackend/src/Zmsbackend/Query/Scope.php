@@ -309,7 +309,7 @@ class Scope extends Base implements MappingInterface
         return $this;
     }
 
-    public function addConditionDepartmentId($departmentId): static
+    public function addConditionDepartmentId(string|int $departmentId): static
     {
         $this->query->where('scope.BehoerdenID', '=', $departmentId);
         return $this;

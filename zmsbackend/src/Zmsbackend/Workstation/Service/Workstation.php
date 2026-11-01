@@ -114,7 +114,7 @@ class Workstation extends \BO\Zmsbackend\Base
         return $workstation;
     }
 
-    public function readCollectionByDepartmentId($departmentId, int $resolveReferences = 0): Collection
+    public function readCollectionByDepartmentId(string|int $departmentId, int $resolveReferences = 0): Collection
     {
         $collection = new Collection();
         $query = new \BO\Zmsbackend\Workstation\Repository\Workstation(\BO\Zmsbackend\Query\Base::SELECT);

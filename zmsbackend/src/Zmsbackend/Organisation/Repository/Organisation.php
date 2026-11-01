@@ -70,7 +70,7 @@ class Organisation extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Q
         return $this;
     }
 
-    public function addConditionDepartmentId($departmentId): static
+    public function addConditionDepartmentId(string|int $departmentId): static
     {
         $this->leftJoin(
             new \BO\Zmsbackend\Query\Alias('behoerde', 'department'),

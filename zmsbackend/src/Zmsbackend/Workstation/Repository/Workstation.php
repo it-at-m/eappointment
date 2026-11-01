@@ -206,7 +206,7 @@ class Workstation extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Qu
         return $this;
     }
 
-    public function addConditionDepartmentId($departmentId): static
+    public function addConditionDepartmentId(string|int $departmentId): static
     {
         $this->leftJoin(
             new \BO\Zmsbackend\Query\Alias(\BO\Zmsbackend\Useraccount\Repository\Useraccount::TABLE_ASSIGNMENT, 'workstation_department'),

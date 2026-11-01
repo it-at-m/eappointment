@@ -156,7 +156,7 @@ class Department extends \BO\Zmsbackend\Base
         return $departmentList;
     }
 
-    public function deleteEntity($departmentId)
+    public function deleteEntity(string|int $departmentId)
     {
         $entity = $this->readEntity($departmentId, 1);
         if ($entity) {
@@ -210,7 +210,7 @@ class Department extends \BO\Zmsbackend\Base
         return $this->readEntity($lastInsertId);
     }
 
-    public function updateEntity($departmentId, \BO\Zmsentities\Department $entity)
+    public function updateEntity(string|int $departmentId, \BO\Zmsentities\Department $entity)
     {
         self::$departmentCache = [];
         $query = new \BO\Zmsbackend\Department\Repository\Department(\BO\Zmsbackend\Query\Base::UPDATE);
@@ -279,7 +279,7 @@ class Department extends \BO\Zmsbackend\Base
     }
 
     public function readQueueList(
-        $departmentId,
+        string|int $departmentId,
         \DateTimeInterface $dateTime,
         int $resolveReferences = 0
     ): \BO\Zmsentities\Collection\QueueList {

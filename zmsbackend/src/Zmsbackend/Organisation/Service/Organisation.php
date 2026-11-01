@@ -54,7 +54,7 @@ class Organisation extends \BO\Zmsbackend\Base
         return $this->readResolvedReferences($organisation, $resolveReferences);
     }
 
-    public function readByDepartmentId($departmentId, int $resolveReferences = 0)
+    public function readByDepartmentId(string|int $departmentId, int $resolveReferences = 0)
     {
         $query = new \BO\Zmsbackend\Organisation\Repository\Organisation(\BO\Zmsbackend\Query\Base::SELECT);
         $query->addEntityMapping()

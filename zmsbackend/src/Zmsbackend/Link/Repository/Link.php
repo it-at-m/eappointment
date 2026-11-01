@@ -38,7 +38,7 @@ class Link extends \BO\Zmsbackend\Query\Base
         return $this;
     }
 
-    public function addConditionDepartmentId($departmentId): static
+    public function addConditionDepartmentId(string|int $departmentId): static
     {
         $this->leftJoin(
             new \BO\Zmsbackend\Query\Alias('behoerde', 'link_department'),
@@ -55,7 +55,7 @@ class Link extends \BO\Zmsbackend\Query\Base
      * @return (int|mixed)[]
      *
      */
-    public function reverseEntityMapping(\BO\Zmsentities\Link $entity, $departmentId): array
+    public function reverseEntityMapping(\BO\Zmsentities\Link $entity, string|int $departmentId): array
     {
         $data = array();
         $data['behoerdenid'] = ($entity->organisation) ? 0 : $departmentId;

@@ -106,7 +106,7 @@ class Cluster extends \BO\Zmsbackend\Base
         return $entity;
     }
 
-    public function readByDepartmentId($departmentId, int $resolveReferences = 0, bool $disableCache = false): Collection
+    public function readByDepartmentId(string|int $departmentId, int $resolveReferences = 0, bool $disableCache = false): Collection
     {
         $clusterList = new Collection();
         $query = new \BO\Zmsbackend\Cluster\Repository\Cluster(\BO\Zmsbackend\Query\Base::SELECT);

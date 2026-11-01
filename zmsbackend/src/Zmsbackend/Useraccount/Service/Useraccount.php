@@ -132,7 +132,7 @@ class Useraccount extends \BO\Zmsbackend\Base
         return $foundAny;
     }
 
-    protected function getCacheIndexKey($departmentId): string
+    protected function getCacheIndexKey(string|int $departmentId): string
     {
         return self::CACHE_INDEX_PREFIX . $departmentId;
     }

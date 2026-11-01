@@ -80,7 +80,7 @@ class Department extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Que
         return $this;
     }
 
-    public function addConditionDepartmentId($departmentId): static
+    public function addConditionDepartmentId(string|int $departmentId): static
     {
         $this->query->where('department.BehoerdenID', '=', $departmentId);
         return $this;

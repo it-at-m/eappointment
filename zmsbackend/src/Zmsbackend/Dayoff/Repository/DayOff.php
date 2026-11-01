@@ -74,7 +74,7 @@ class DayOff extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\M
         return $this;
     }
 
-    public function addConditionDepartmentId($departmentId): static
+    public function addConditionDepartmentId(string|int $departmentId): static
     {
         $this->query->where('dayOff.BehoerdenID', '=', $departmentId);
         return $this;

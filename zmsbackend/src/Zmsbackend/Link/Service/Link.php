@@ -13,7 +13,7 @@ class Link extends \BO\Zmsbackend\Base
      *
      * @return \BO\Zmsentities\Collection\LinkList
      */
-    public function readByDepartmentId($departmentId, bool $disableCache = false)
+    public function readByDepartmentId(string|int $departmentId, bool $disableCache = false)
     {
         $cacheKey = "linksReadByDepartmentId-$departmentId";
 
@@ -50,7 +50,7 @@ class Link extends \BO\Zmsbackend\Base
      *
      * @return Entity
      */
-    public function writeEntity(Entity $entity, $departmentId)
+    public function writeEntity(Entity $entity, string|int $departmentId)
     {
         $query = new \BO\Zmsbackend\Link\Repository\Link(\BO\Zmsbackend\Query\Base::INSERT);
         $values = $query->reverseEntityMapping($entity, $departmentId);
