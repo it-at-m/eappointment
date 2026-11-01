@@ -29,7 +29,7 @@ class Mimepart extends \BO\Zmsbackend\Query\Base
         ];
     }
 
-    public function addConditionQueueId($queueId): static
+    public function addConditionQueueId(string|int $queueId): static
     {
         $this->query->where('mimepart.queueId', '=', $queueId);
         return $this;

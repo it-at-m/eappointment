@@ -260,7 +260,7 @@ class Mail extends \BO\Zmsbackend\Base
         (new \BO\Zmsbackend\Config\Service\Config())->replaceProperty('status__mailReminderLastRun', $now->format('Y-m-d H:i:s'));
     }
 
-    protected function readMultiPartByQueueId($queueId)
+    protected function readMultiPartByQueueId(string|int $queueId)
     {
         $query = new \BO\Zmsbackend\Mail\Repository\Mimepart(\BO\Zmsbackend\Query\Base::SELECT);
         $query->addEntityMapping()
