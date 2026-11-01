@@ -63,7 +63,7 @@ class MailTemplates extends \BO\Zmsbackend\Base
         return $this->fetchOne($query, new Mailtemplate());
     }
 
-    public function readTemplateById($templateId): Mailtemplate
+    public function readTemplateById(string|int $templateId): Mailtemplate
     {
         $query = new \BO\Zmsbackend\Mail\Repository\Mailtemplate(\BO\Zmsbackend\Query\Base::SELECT);
         $query->addEntityMapping()
@@ -71,7 +71,7 @@ class MailTemplates extends \BO\Zmsbackend\Base
         return $this->fetchOne($query, new Mailtemplate());
     }
 
-    public function deleteTemplateById($templateId): bool
+    public function deleteTemplateById(string|int $templateId): bool
     {
         $query = new \BO\Zmsbackend\Mail\Repository\Mailtemplate(\BO\Zmsbackend\Query\Base::DELETE);
         $query->addConditionId($templateId);
@@ -89,7 +89,7 @@ class MailTemplates extends \BO\Zmsbackend\Base
         //return $this->readEntity($templateName, 1);
     }
 
-    public function updateTemplateContentById($templateId, $templateContent)
+    public function updateTemplateContentById(string|int $templateId, $templateContent)
     {
         $query = new \BO\Zmsbackend\Mail\Repository\Mailtemplate(\BO\Zmsbackend\Query\Base::UPDATE);
         $query->addConditionId($templateId);
