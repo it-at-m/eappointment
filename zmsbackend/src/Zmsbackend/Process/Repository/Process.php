@@ -1102,7 +1102,7 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
         ProcessEntity $process,
         \DateTimeInterface $dateTime,
         int $parentProcess = 0,
-        $previousStatus = null
+        ?string $previousStatus = null
     ): void {
         $this->addValuesIPAdress($process);
         if (0 === $parentProcess) {
@@ -1160,7 +1160,7 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
         $this->addValues($data);
     }
 
-    public function addValuesStatusData(ProcessEntity $process, \DateTimeInterface $dateTime, $previousStatus = null): void
+    public function addValuesStatusData(ProcessEntity $process, \DateTimeInterface $dateTime, ?string $previousStatus = null): void
     {
         $data = array();
         $data['vorlaeufigeBuchung'] = ($process->status == 'reserved') ? 1 : 0;
@@ -1237,7 +1237,7 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
         $this->addValues($data);
     }
 
-    protected function addProcessingTimeData(ProcessEntity $process, \DateTimeInterface $dateTime, $previousStatus = null): void
+    protected function addProcessingTimeData(ProcessEntity $process, \DateTimeInterface $dateTime, ?string $previousStatus = null): void
     {
         $data = array();
         $timeoutTime = null;
@@ -1347,7 +1347,7 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
         $this->addValues($data);
     }
 
-    protected function addValuesWaitingTimeData(ProcessEntity $process, $previousStatus = null): void
+    protected function addValuesWaitingTimeData(ProcessEntity $process, ?string $previousStatus = null): void
     {
         $data = array();
         $hasWaitingTimeAlready = (

@@ -98,7 +98,7 @@ class Provider extends \BO\Zmsbackend\Base
      * @param null|true $isAssigned
      *
      */
-    public function readListBySource($source, int $resolveReferences = 0, bool|null $isAssigned = null, $requestIdCsv = null)
+    public function readListBySource($source, int $resolveReferences = 0, bool|null $isAssigned = null, ?string $requestIdCsv = null)
     {
         $this->testSource($source);
         $query = new \BO\Zmsbackend\Provider\Repository\Provider(\BO\Zmsbackend\Query\Base::SELECT);

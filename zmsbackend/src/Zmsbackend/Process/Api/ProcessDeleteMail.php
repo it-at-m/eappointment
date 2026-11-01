@@ -54,7 +54,7 @@ class ProcessDeleteMail extends \BO\Zmsbackend\Api\BaseController
         return $response;
     }
 
-    protected static function writeMail(Process $process, $initiator = null)
+    protected static function writeMail(Process $process, ?string $initiator = null)
     {
         $config = (new \BO\Zmsbackend\Config\Service\Config())->readEntity();
         $department = (new DepartmentRepository())->readByScopeId($process->scope->id);

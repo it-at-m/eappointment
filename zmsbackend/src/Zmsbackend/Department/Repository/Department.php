@@ -104,7 +104,7 @@ class Department extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Que
      * @return (mixed|string)[]
      *
      */
-    public function reverseEntityMapping(\BO\Zmsentities\Department $entity, $parentId = null): array
+    public function reverseEntityMapping(\BO\Zmsentities\Department $entity, int|string|null $parentId = null): array
     {
         $data = array();
         if (null !== $parentId) {

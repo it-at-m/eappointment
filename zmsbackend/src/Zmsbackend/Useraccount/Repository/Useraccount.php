@@ -301,7 +301,7 @@ class Useraccount extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Qu
         return $this;
     }
 
-    public function addConditionDepartmentIdsAndSearch(array $departmentIds, $queryString = null, bool $orWhere = false): self
+    public function addConditionDepartmentIdsAndSearch(array $departmentIds, ?string $queryString = null, bool $orWhere = false): self
     {
         $this->addConditionDepartmentIds($departmentIds);
 

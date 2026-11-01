@@ -410,7 +410,7 @@ class Slot extends \BO\Zmsbackend\Base
         return new \DateTimeImmutable($last['dateString'] . \BO\Zmsbackend\Connection\Select::$connectionTimezone);
     }
 
-    public function updateSlotProcessMapping($scopeID = null): int
+    public function updateSlotProcessMapping(int|string|null $scopeID = null): int
     {
         if ($scopeID) {
             $processIdList = $this->fetchAll(
@@ -428,7 +428,7 @@ class Slot extends \BO\Zmsbackend\Base
         return count($processIdList);
     }
 
-    public function deleteSlotProcessOnSlot($scopeID = null): void
+    public function deleteSlotProcessOnSlot(int|string|null $scopeID = null): void
     {
         if ($scopeID) {
             $this->perform(
@@ -441,7 +441,7 @@ class Slot extends \BO\Zmsbackend\Base
         }
     }
 
-    public function deleteSlotProcessOnProcess($scopeID = null): int
+    public function deleteSlotProcessOnProcess(int|string|null $scopeID = null): int
     {
         if ($scopeID) {
             $processIdList = $this->fetchAll(

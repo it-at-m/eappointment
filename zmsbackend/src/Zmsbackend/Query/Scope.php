@@ -331,7 +331,7 @@ class Scope extends Base implements MappingInterface
      * @return (int|mixed|string)[]
      *
      */
-    public function reverseEntityMapping(\BO\Zmsentities\Scope $entity, $parentId = null): array
+    public function reverseEntityMapping(\BO\Zmsentities\Scope $entity, int|string|null $parentId = null): array
     {
         $data = array();
         if ($parentId) {

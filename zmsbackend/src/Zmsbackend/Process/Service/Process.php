@@ -122,7 +122,7 @@ class Process extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfaces\R
      *        If slotsRequired = 0, readFreeProcesses() uses the slotsRequired based on request-provider relation
      * @psalm-api
      */
-    public function updateEntityWithSlots(\BO\Zmsentities\Process $process, \DateTimeInterface $now, ?string $slotType = "intern", $slotsRequired = 0, int $resolveReferences = 0, $userAccount = null)
+    public function updateEntityWithSlots(\BO\Zmsentities\Process $process, \DateTimeInterface $now, ?string $slotType = "intern", $slotsRequired = 0, int $resolveReferences = 0, ?\BO\Zmsentities\Useraccount $userAccount = null)
     {
         if ('intern' != $slotType) {
             return $this->updateEntity($process, $now, $resolveReferences, null, $userAccount);
@@ -582,7 +582,7 @@ class Process extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfaces\R
      * @return Entity|null
      *
      */
-    public function updateProcessStatus(Entity $process, string $status, \DateTimeInterface $dateTime, int $resolveReferences = 0, $userAccount = null)
+    public function updateProcessStatus(Entity $process, string $status, \DateTimeInterface $dateTime, int $resolveReferences = 0, ?\BO\Zmsentities\Useraccount $userAccount = null)
     {
         $process = (new ProcessStatus())
             ->writeUpdatedStatus($process, $status, $dateTime, $resolveReferences, $userAccount);
@@ -664,7 +664,7 @@ class Process extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfaces\R
      *
      * @return Entity|null
      */
-    public function writeCanceledEntity($processId, $authKey, $now = null, ?\BO\Zmsentities\Useraccount $useraccount = null)
+    public function writeCanceledEntity($processId, $authKey, ?\DateTimeInterface $now = null, ?\BO\Zmsentities\Useraccount $useraccount = null)
     {
         $canceledTimestamp = ($now) ? $now->getTimestamp() : (new \DateTimeImmutable())->getTimestamp();
         $newAuthKey = bin2hex(random_bytes(32));

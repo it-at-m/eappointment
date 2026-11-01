@@ -681,7 +681,7 @@ class Scope extends \BO\Zmsbackend\Base
     /**
      * @return void
      */
-    public function removeCacheByContext(Entity $scope, $departmentId = null)
+    public function removeCacheByContext(Entity $scope, int|string|null $departmentId = null)
     {
         if (!\App::$cache) {
             return;

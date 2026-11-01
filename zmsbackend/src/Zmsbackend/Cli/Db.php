@@ -10,7 +10,7 @@ class Db
 {
     public static $baseDSN = '';
 
-    public static function startExecuteSqlFile(string $file, $databaseName = null, bool $verbose = true): void
+    public static function startExecuteSqlFile(string $file, ?string $databaseName = null, bool $verbose = true): void
     {
         $databaseConnection = self::startUsingDatabase($databaseName, $verbose);
         $startedAt = microtime(true);
@@ -58,7 +58,7 @@ class Db
     /**
      * @psalm-api
      */
-    public static function executeSql($query, $databaseName = null): void
+    public static function executeSql($query, ?string $databaseName = null): void
     {
         $databaseConnection = self::startUsingDatabase($databaseName, false);
         $databaseConnection->exec($query);

@@ -315,7 +315,7 @@ class Useraccount extends \BO\Zmsbackend\Base
     /**
      * @SuppressWarnings(NPathComplexity)
      */
-    public function readList(int $resolveReferences = 0, bool $disableCache = false, $workstation = null)
+    public function readList(int $resolveReferences = 0, bool $disableCache = false, ?\BO\Zmsentities\Workstation $workstation = null)
     {
         $version = $this->getUseraccountCacheVersion();
         $workstationKey = '';
@@ -589,7 +589,7 @@ class Useraccount extends \BO\Zmsbackend\Base
     /**
      * @SuppressWarnings(NPathComplexity)
      */
-    public function readCollectionByDepartmentIds($departmentIds, int $resolveReferences = 0, bool $disableCache = false, $workstation = null)
+    public function readCollectionByDepartmentIds($departmentIds, int $resolveReferences = 0, bool $disableCache = false, ?\BO\Zmsentities\Workstation $workstation = null)
     {
         sort($departmentIds);
         $version = $this->getUseraccountCacheVersion();
@@ -948,7 +948,7 @@ class Useraccount extends \BO\Zmsbackend\Base
      * @SuppressWarnings(NPathComplexity)
      *
      */
-    public function readSearch(array $parameter, int $resolveReferences = 0, $workstation = null, bool $disableCache = false)
+    public function readSearch(array $parameter, int $resolveReferences = 0, ?\BO\Zmsentities\Workstation $workstation = null, bool $disableCache = false)
     {
         $queryString = isset($parameter['query']) ? $parameter['query'] : '';
         $cacheKey = $this->buildSearchCacheKey('useraccountReadSearch', $resolveReferences, $workstation, $queryString);
@@ -972,7 +972,7 @@ class Useraccount extends \BO\Zmsbackend\Base
      * @SuppressWarnings(NPathComplexity)
      *
      */
-    public function readSearchByDepartmentIds(array $departmentIds, array $parameter, int $resolveReferences = 0, $workstation = null, bool $disableCache = false)
+    public function readSearchByDepartmentIds(array $departmentIds, array $parameter, int $resolveReferences = 0, ?\BO\Zmsentities\Workstation $workstation = null, bool $disableCache = false)
     {
         sort($departmentIds);
         $queryString = isset($parameter['query']) ? $parameter['query'] : '';
@@ -995,7 +995,7 @@ class Useraccount extends \BO\Zmsbackend\Base
         return $result;
     }
 
-    public function readListRole($roleName, int $resolveReferences = 0, $workstation = null)
+    public function readListRole($roleName, int $resolveReferences = 0, ?\BO\Zmsentities\Workstation $workstation = null)
     {
         $version = $this->getUseraccountCacheVersion();
         $workstationKey = '';
@@ -1060,7 +1060,7 @@ class Useraccount extends \BO\Zmsbackend\Base
      * @param bool $disableCache
      *
      */
-    public function readListByRoleAndDepartmentIds($roleName, array $departmentIds, int $resolveReferences = 0, bool $disableCache = false, $workstation = null)
+    public function readListByRoleAndDepartmentIds($roleName, array $departmentIds, int $resolveReferences = 0, bool $disableCache = false, ?\BO\Zmsentities\Workstation $workstation = null)
     {
         sort($departmentIds);
         $version = $this->getUseraccountCacheVersion();

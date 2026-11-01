@@ -54,7 +54,7 @@ class AppointmentFormHelper
         return ($freeProcessList) ? $freeProcessList->toProcessListByTime()->sortByTimeKey() : null;
     }
 
-    public static function readRequestList(\Psr\Http\Message\RequestInterface $request, $workstation, $selectedScope = null)
+    public static function readRequestList(\Psr\Http\Message\RequestInterface $request, $workstation, ?Scope $selectedScope = null)
     {
         $scope = ($selectedScope) ? $selectedScope : static::readSelectedScope($request, $workstation);
         $requestList = null;
@@ -68,7 +68,7 @@ class AppointmentFormHelper
         return ($requestList) ? $requestList->sortByName() : new RequestList();
     }
 
-    public static function readSelectedScope(\Psr\Http\Message\RequestInterface $request, $workstation, $selectedProcess = null, int $resolveReferences = 1)
+    public static function readSelectedScope(\Psr\Http\Message\RequestInterface $request, $workstation, ?Process $selectedProcess = null, int $resolveReferences = 1)
     {
         $validator = $request->getAttribute('validator');
         $input = $request->getParsedBody();

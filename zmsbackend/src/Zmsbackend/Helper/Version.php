@@ -4,7 +4,7 @@ namespace BO\Zmsbackend\Helper;
 
 class Version
 {
-    public static function getString($path = null): string
+    public static function getString(?string $path = null): string
     {
         $path = ($path) ? $path : \App::APP_PATH;
         $file = $path . '/VERSION';
@@ -18,7 +18,7 @@ class Version
      * @return string[]
      *
      */
-    public static function getArray($path = null): array
+    public static function getArray(?string $path = null): array
     {
         $version = static::getString($path);
         $array = [];

@@ -86,7 +86,7 @@ class Organisation extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Q
      * @return (int|mixed|string)[]
      *
      */
-    public function reverseEntityMapping(\BO\Zmsentities\Organisation $entity, $parentId = null): array
+    public function reverseEntityMapping(\BO\Zmsentities\Organisation $entity, int|string|null $parentId = null): array
     {
         $data = array();
         if (null !== $parentId) {

@@ -25,7 +25,7 @@ class Calendar
 
     protected $dateTime;
 
-    public function __construct($selectedDate = null, $selectedWeek = null, ?int $selectedYear = null)
+    public function __construct(?string $selectedDate = null, ?string $selectedWeek = null, ?int $selectedYear = null)
     {
         if ($selectedWeek && $selectedYear) {
             $this->dateTime = $this->getDateTimeFromWeekAndYear($selectedWeek, $selectedYear);

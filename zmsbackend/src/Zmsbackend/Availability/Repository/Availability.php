@@ -37,7 +37,7 @@ class Availability extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Q
      *
      */
     #[\Override]
-    public function getEntityMapping($type = null)
+    public function getEntityMapping(?string $type = null)
     {
         $mapping = [
             'id' => 'availability.OeffnungszeitID',
