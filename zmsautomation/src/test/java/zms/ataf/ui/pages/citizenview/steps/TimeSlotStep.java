@@ -2800,10 +2800,15 @@ public final class TimeSlotStep {
         RemoteWebDriver driver = DriverUtil.getDriver();
         driver.manage().window().setSize(ViewportSizes.DESKTOP);
         CitizenViewWaits.sleepQuiet(400L);
-        // After a holiday the list's first open day can be collapsed, so its timeslot is not shown.
+        // A holiday's first list day loads its slots after the accordion opens.
         if (shadow.deepElementExists("#listViewAccordion")) {
             openListDateAtIndex(0);
-            CitizenViewWaits.sleepQuiet(300L);
+            new WebDriverWait(driver, Duration.ofSeconds(15))
+                    .until(d -> json.citizenJson(
+                            "(function(){var slots=cssAll('.timeslot,muc-button.timeslot');"
+                                    + "for(var s=0;s<slots.length;s++){if(shown(slots[s]))return {found:true};}"
+                                    + "return {found:false};})()")
+                            .path("found").asBoolean());
         }
         JsonNode chrome =
                 json.citizenJson(
