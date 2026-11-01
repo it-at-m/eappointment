@@ -99,7 +99,7 @@ class Request extends \BO\Zmsbackend\Query\Base
         return $this;
     }
 
-    public function addConditionArchiveId($archiveId): static
+    public function addConditionArchiveId(string|int $archiveId): static
     {
         $this->leftJoin(
             new \BO\Zmsbackend\Query\Alias("buergeranliegen", 'buergeranliegen'),

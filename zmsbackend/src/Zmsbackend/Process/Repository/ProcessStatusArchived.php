@@ -70,7 +70,7 @@ class ProcessStatusArchived extends \BO\Zmsbackend\Query\Base implements \BO\Zms
         ];
     }
 
-    public function addConditionArchiveId($archiveId): static
+    public function addConditionArchiveId(string|int $archiveId): static
     {
         $this->query->where('process.BuergerarchivID', '=', $archiveId);
         return $this;

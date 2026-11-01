@@ -264,7 +264,7 @@ class Request extends \BO\Zmsbackend\Base
         return $this->readCollection($query);
     }
 
-    public function readRequestByArchiveId($archiveId, int $resolveReferences = 0)
+    public function readRequestByArchiveId(string|int $archiveId, int $resolveReferences = 0)
     {
         $collection = new Collection();
         if ($archiveId) {
