@@ -2800,6 +2800,11 @@ public final class TimeSlotStep {
         RemoteWebDriver driver = DriverUtil.getDriver();
         driver.manage().window().setSize(ViewportSizes.DESKTOP);
         CitizenViewWaits.sleepQuiet(400L);
+        // After a holiday the list's first open day can be collapsed, so its timeslot is not shown.
+        if (shadow.deepElementExists("#listViewAccordion")) {
+            openListDateAtIndex(0);
+            CitizenViewWaits.sleepQuiet(300L);
+        }
         JsonNode chrome =
                 json.citizenJson(
                         "(function(){"
