@@ -76,7 +76,7 @@ class ProcessStatusArchived extends \BO\Zmsbackend\Query\Base implements \BO\Zms
         return $this;
     }
 
-    public function addConditionScopeId($scopeId): static
+    public function addConditionScopeId(string|int $scopeId): static
     {
         $this->query->where('process.StandortID', '=', $scopeId);
         return $this;

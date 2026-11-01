@@ -91,7 +91,7 @@ class Cluster extends \BO\Zmsbackend\Base
         return $clusterList;
     }
 
-    public function readByScopeId($scopeId, int $resolveReferences = 0)
+    public function readByScopeId(string|int $scopeId, int $resolveReferences = 0)
     {
         $query = new \BO\Zmsbackend\Cluster\Repository\Cluster(\BO\Zmsbackend\Query\Base::SELECT);
         $query

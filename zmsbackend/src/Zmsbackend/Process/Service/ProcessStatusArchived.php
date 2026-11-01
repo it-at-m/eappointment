@@ -24,7 +24,7 @@ class ProcessStatusArchived extends Process
         return $archive;
     }
 
-    public function readListByScopeId($scopeId, int $resolveReferences = 0)
+    public function readListByScopeId(string|int $scopeId, int $resolveReferences = 0)
     {
         $query = new \BO\Zmsbackend\Process\Repository\ProcessStatusArchived(\BO\Zmsbackend\Query\Base::SELECT);
         $query->addEntityMapping()
@@ -43,7 +43,7 @@ class ProcessStatusArchived extends Process
     }
 
     /** @psalm-api */
-    public function readListByScopeAndDate($scopeId, $dateTime, int $resolveReferences = 0)
+    public function readListByScopeAndDate(string|int $scopeId, $dateTime, int $resolveReferences = 0)
     {
         $query = new \BO\Zmsbackend\Process\Repository\ProcessStatusArchived(\BO\Zmsbackend\Query\Base::SELECT);
         $query->addEntityMapping()

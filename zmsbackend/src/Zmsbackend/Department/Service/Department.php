@@ -125,7 +125,7 @@ class Department extends \BO\Zmsbackend\Base
         return $departments;
     }
 
-    public function readByScopeId($scopeId, int $resolveReferences = 0)
+    public function readByScopeId(string|int $scopeId, int $resolveReferences = 0)
     {
         $query = new \BO\Zmsbackend\Department\Repository\Department(\BO\Zmsbackend\Query\Base::SELECT);
         $query->addEntityMapping()

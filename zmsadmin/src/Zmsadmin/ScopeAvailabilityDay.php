@@ -43,7 +43,7 @@ class ScopeAvailabilityDay extends BaseController
         );
     }
 
-    protected static function getScope($scopeId)
+    protected static function getScope(string|int $scopeId)
     {
         return \App::$http->readGetResult('/scope/' . $scopeId . '/', [
             'resolveReferences' => 3
@@ -142,7 +142,7 @@ class ScopeAvailabilityDay extends BaseController
         ];
     }
 
-    public static function readConflictList($scopeId, \DateTimeInterface $dateTime)
+    public static function readConflictList(string|int $scopeId, \DateTimeInterface $dateTime)
     {
         $processConflictList = \App::$http
             ->readGetResult('/scope/' . $scopeId . '/conflict/', [
@@ -158,7 +158,7 @@ class ScopeAvailabilityDay extends BaseController
             ->toProcessList() : null;
     }
 
-    public static function readAvailabilityList($scopeId, \DateTimeInterface $dateTime)
+    public static function readAvailabilityList(string|int $scopeId, \DateTimeInterface $dateTime)
     {
         try {
             $availabilityList = \App::$http

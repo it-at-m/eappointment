@@ -89,7 +89,7 @@ class WorkstationInfo
     }
 
 
-    public static function getWorkstationsByScope($scopeId)
+    public static function getWorkstationsByScope(string|int $scopeId)
     {
         return \App::$http
             ->readGetResult('/scope/' . $scopeId . '/workstation/', ['resolveReferences' => 1])

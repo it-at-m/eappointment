@@ -62,7 +62,7 @@ class DayOff extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\M
         return $this;
     }
 
-    public function addConditionScopeId($scopeId): static
+    public function addConditionScopeId(string|int $scopeId): static
     {
         $this->leftJoin(
             new \BO\Zmsbackend\Query\Alias('standort', 'scope_dayoff'),

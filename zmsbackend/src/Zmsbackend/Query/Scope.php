@@ -256,7 +256,7 @@ class Scope extends Base implements MappingInterface
         ], 'strlen');
     }
 
-    public function addConditionScopeId($scopeId): static
+    public function addConditionScopeId(string|int $scopeId): static
     {
         $this->query->where('scope.StandortID', '=', $scopeId);
         return $this;

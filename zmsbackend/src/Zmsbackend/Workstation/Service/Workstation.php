@@ -64,7 +64,7 @@ class Workstation extends \BO\Zmsbackend\Base
         return ($loggedInWorkstation['hash']) ? $loggedInWorkstation['hash'] : null;
     }
 
-    public function readLoggedInListByScope($scopeId, \DateTimeInterface $dateTime, int $resolveReferences = 0): Collection
+    public function readLoggedInListByScope(string|int $scopeId, \DateTimeInterface $dateTime, int $resolveReferences = 0): Collection
     {
         $workstationList = new \BO\Zmsentities\Collection\WorkstationList();
         $query = new \BO\Zmsbackend\Workstation\Repository\Workstation(\BO\Zmsbackend\Query\Base::SELECT);
@@ -98,7 +98,7 @@ class Workstation extends \BO\Zmsbackend\Base
         return $workstationList;
     }
 
-    public function readWorkstationByScopeAndName($scopeId, $workstationName, int $resolveReferences = 0)
+    public function readWorkstationByScopeAndName(string|int $scopeId, $workstationName, int $resolveReferences = 0)
     {
         $query = new \BO\Zmsbackend\Workstation\Repository\Workstation(\BO\Zmsbackend\Query\Base::SELECT);
         $query

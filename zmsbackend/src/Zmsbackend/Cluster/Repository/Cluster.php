@@ -63,7 +63,7 @@ class Cluster extends \BO\Zmsbackend\Query\Base
         return $this;
     }
 
-    public function addConditionScopeId($scopeId): static
+    public function addConditionScopeId(string|int $scopeId): static
     {
         $this->leftJoin(
             new \BO\Zmsbackend\Query\Alias('standort', 'scope'),

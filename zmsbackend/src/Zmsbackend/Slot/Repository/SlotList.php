@@ -204,7 +204,7 @@ class SlotList extends \BO\Zmsbackend\Query\Base
      * @return (mixed|string)[]
      *
      */
-    public static function getParametersMonth($scopeId, \DateTimeInterface $monthDateTime, \DateTimeInterface $now): array
+    public static function getParametersMonth(string|int $scopeId, \DateTimeInterface $monthDateTime, \DateTimeInterface $now): array
     {
         $now = DateTime::create($now);
         $monthDateTime = DateTime::create($monthDateTime);
@@ -228,7 +228,7 @@ class SlotList extends \BO\Zmsbackend\Query\Base
      * @return (mixed|string)[]
      *
      */
-    public static function getParametersDay($scopeId, \DateTimeInterface $dateTime, \DateTimeInterface $now): array
+    public static function getParametersDay(string|int $scopeId, \DateTimeInterface $dateTime, \DateTimeInterface $now): array
     {
         $now = DateTime::create($now);
         $dateTime = DateTime::create($dateTime);

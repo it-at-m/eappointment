@@ -798,7 +798,7 @@ class Process extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfaces\R
         return $this->readList($statement, $resolveReferences);
     }
 
-    public function readExpiredReservationsList(\DateTimeInterface $expirationDate, $scopeId, int $limit = 500, ?int $offset = null, int $resolveReferences = 0)
+    public function readExpiredReservationsList(\DateTimeInterface $expirationDate, string|int $scopeId, int $limit = 500, ?int $offset = null, int $resolveReferences = 0)
     {
         $selectQuery = new \BO\Zmsbackend\Process\Repository\Process(\BO\Zmsbackend\Query\Base::SELECT);
         $selectQuery
@@ -898,7 +898,7 @@ class Process extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfaces\R
         return false;
     }
 
-    public function readProcessWithSameDayAndDisplayNumber($scopeId, $displayNumber, $date)
+    public function readProcessWithSameDayAndDisplayNumber(string|int $scopeId, $displayNumber, $date)
     {
         $query = new \BO\Zmsbackend\Process\Repository\Process(\BO\Zmsbackend\Query\Base::SELECT);
         $query->addEntityMapping()

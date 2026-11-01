@@ -1087,7 +1087,7 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
         return $newDisplayNumber;
     }
 
-    public function checkIfDisplayNumberOnSameDateExists($scopeId, string $displayNumber, \DateTime|false $date): bool
+    public function checkIfDisplayNumberOnSameDateExists(string|int $scopeId, string $displayNumber, \DateTime|false $date): bool
     {
         $processWithDisplayNumber = (new \BO\Zmsbackend\Process\Service\Process())->readProcessWithSameDayAndDisplayNumber(
             $scopeId,

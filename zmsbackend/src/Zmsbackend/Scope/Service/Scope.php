@@ -358,7 +358,7 @@ class Scope extends \BO\Zmsbackend\Base
         return $scopeList;
     }
 
-    public function readIsOpened($scopeId, \DateTimeInterface $now): bool
+    public function readIsOpened(string|int $scopeId, \DateTimeInterface $now): bool
     {
         $isOpened = false;
         $availabilityList = (new \BO\Zmsbackend\Availability\Service\Availability())->readOpeningHoursListByDate($scopeId, $now, 2);
@@ -382,7 +382,7 @@ class Scope extends \BO\Zmsbackend\Base
         );
     }
 
-    public function readWaitingNumberUpdated($scopeId, \DateTimeInterface $dateTime, bool $respectContingent = true)
+    public function readWaitingNumberUpdated(string|int $scopeId, \DateTimeInterface $dateTime, bool $respectContingent = true)
     {
         if (! $this->readIsGivenNumberInContingent($scopeId) && $respectContingent) {
             throw new \BO\Zmsbackend\Scope\Exception\GivenNumberCountExceeded();
@@ -396,7 +396,7 @@ class Scope extends \BO\Zmsbackend\Base
         return $scope->getStatus('queue', 'lastGivenNumber');
     }
 
-    public function readDisplayNumberUpdated($scopeId)
+    public function readDisplayNumberUpdated(string|int $scopeId)
     {
         $this->perform(
             (new \BO\Zmsbackend\Query\Scope(\BO\Zmsbackend\Query\Base::SELECT))->getQueryLastDisplayNumber(),
@@ -407,7 +407,7 @@ class Scope extends \BO\Zmsbackend\Base
         return $scope->getStatus('queue', 'lastDisplayNumber');
     }
 
-    public function readIsGivenNumberInContingent($scopeId): bool
+    public function readIsGivenNumberInContingent(string|int $scopeId): bool
     {
         $isInContingent = $this->getReader()
             ->fetchValue((new \BO\Zmsbackend\Query\Scope(\BO\Zmsbackend\Query\Base::SELECT))
@@ -526,7 +526,7 @@ class Scope extends \BO\Zmsbackend\Base
         return $this->readEntity($lastInsertId);
     }
 
-    public function updateEntity($scopeId, \BO\Zmsentities\Scope $entity, int $resolveReferences = 0): Entity|null
+    public function updateEntity(string|int $scopeId, \BO\Zmsentities\Scope $entity, int $resolveReferences = 0): Entity|null
     {
         self::$cache = [];
 
@@ -573,7 +573,7 @@ class Scope extends \BO\Zmsbackend\Base
         return $entity;
     }
 
-    public function updateEmergency($scopeId, \BO\Zmsentities\Scope $entity): Entity|null
+    public function updateEmergency(string|int $scopeId, \BO\Zmsentities\Scope $entity): Entity|null
     {
         self::$cache = [];
         $departmentId = $this->readDepartmentIdByScopeId($scopeId);
@@ -589,7 +589,7 @@ class Scope extends \BO\Zmsbackend\Base
         return $this->readEntity($scopeId, 0, true);
     }
 
-    public function writeImageData($scopeId, \BO\Zmsentities\Mimepart $entity): \BO\Zmsentities\Mimepart
+    public function writeImageData(string|int $scopeId, \BO\Zmsentities\Mimepart $entity): \BO\Zmsentities\Mimepart
     {
         if ($entity->mime && $entity->content) {
             $this->deleteImage($scopeId);
@@ -610,7 +610,7 @@ class Scope extends \BO\Zmsbackend\Base
         return $entity;
     }
 
-    public function readImageData($scopeId): \BO\Zmsentities\Mimepart
+    public function readImageData(string|int $scopeId): \BO\Zmsentities\Mimepart
     {
         $imageName = 's_' . $scopeId . '_bild';
         $imageData = new \BO\Zmsentities\Mimepart();
@@ -625,7 +625,7 @@ class Scope extends \BO\Zmsbackend\Base
         return $imageData;
     }
 
-    public function deleteImage($scopeId)
+    public function deleteImage(string|int $scopeId)
     {
         $imageName = 's_' . $scopeId . '_bild';
         return $this->perform((new \BO\Zmsbackend\Query\Scope(\BO\Zmsbackend\Query\Base::DELETE))->getQueryDeleteImage(), array(
@@ -633,7 +633,7 @@ class Scope extends \BO\Zmsbackend\Base
         ));
     }
 
-    public function deleteEntity($scopeId): Entity|null
+    public function deleteEntity(string|int $scopeId): Entity|null
     {
         $processListCount = (new \BO\Zmsbackend\Process\Service\Process())->readProcessListCountByScope($scopeId);
         if (0 < $processListCount) {
@@ -671,7 +671,7 @@ class Scope extends \BO\Zmsbackend\Base
         return $this->getReader()->fetchValue($query->getQueryDepartmentIdByScopeId(), [$scopeId]);
     }
 
-    public function readClusterIdsByScopeId($scopeId): array
+    public function readClusterIdsByScopeId(string|int $scopeId): array
     {
         $query = new \BO\Zmsbackend\Query\Scope(\BO\Zmsbackend\Query\Base::SELECT);
         $result = $this->getReader()->fetchAll($query->getQueryClusterIdsByScopeId(), [$scopeId]);

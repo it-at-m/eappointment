@@ -44,7 +44,7 @@ class Organisation extends \BO\Zmsbackend\Base
         return $entity;
     }
 
-    public function readByScopeId($scopeId, int $resolveReferences = 0)
+    public function readByScopeId(string|int $scopeId, int $resolveReferences = 0)
     {
         $query = new \BO\Zmsbackend\Organisation\Repository\Organisation(\BO\Zmsbackend\Query\Base::SELECT);
         $query->addEntityMapping()
