@@ -11,7 +11,7 @@ class Session extends \BO\Zmsbackend\Base
      *
      * @return \BO\Zmsentities\Session
      */
-    public function readEntity($sessionName, $sessionId)
+    public function readEntity($sessionName, string|int $sessionId)
     {
         $query = new \BO\Zmsbackend\Session\Repository\Session(\BO\Zmsbackend\Query\Base::SELECT);
         $query
@@ -37,7 +37,7 @@ class Session extends \BO\Zmsbackend\Base
         return $entity;
     }
 
-    public function deleteEntity($sessionName, $sessionId): bool
+    public function deleteEntity($sessionName, string|int $sessionId): bool
     {
         $query = \BO\Zmsbackend\Session\Repository\Session::QUERY_DELETE;
         $result = $this->perform($query, array(

@@ -46,7 +46,7 @@ class Session extends \BO\Zmsbackend\Query\Base
         ];
     }
 
-    public function addConditionSessionId($sessionId): static
+    public function addConditionSessionId(string|int $sessionId): static
     {
         $this->query->where('session.sessionid', '=', $sessionId);
         return $this;
