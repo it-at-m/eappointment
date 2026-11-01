@@ -17,7 +17,7 @@ class DayOff extends \BO\Zmsbackend\Base
     /**
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function readByDepartmentId($departmentId = 0)
+    public function readByDepartmentId(int $departmentId = 0)
     {
         return $this->readCommon();
     }
@@ -25,7 +25,7 @@ class DayOff extends \BO\Zmsbackend\Base
     /**
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function readOnlyByDepartmentId($departmentId = 0, bool $disableCache = false)
+    public function readOnlyByDepartmentId(int $departmentId = 0, bool $disableCache = false)
     {
         return new Collection();
     }
@@ -64,7 +64,7 @@ class DayOff extends \BO\Zmsbackend\Base
    /**
  * @SuppressWarnings(PHPMD.UnusedFormalParameter)
  */
-    public function readByScopeId($scopeId = 0, bool $disableCache = false)
+    public function readByScopeId(int $scopeId = 0, bool $disableCache = false)
     {
         return $this->readCommon();
     }

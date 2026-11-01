@@ -768,7 +768,7 @@ class Process extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfaces\R
         $statement = $this->fetchStatement($selectQuery);
         return $this->readList($statement, $resolveReferences);
     }
-    public function readUnconfirmedProcessList(\DateTimeInterface $expirationDate, $scopeId = 0, int $limit = 500, ?int $offset = null, int $resolveReferences = 0)
+    public function readUnconfirmedProcessList(\DateTimeInterface $expirationDate, int $scopeId = 0, int $limit = 500, ?int $offset = null, int $resolveReferences = 0)
     {
 
         $selectQuery = new \BO\Zmsbackend\Process\Repository\Process(\BO\Zmsbackend\Query\Base::SELECT);

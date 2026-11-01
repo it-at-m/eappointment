@@ -1039,7 +1039,7 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
         return $this;
     }
 
-    public function addValuesNewProcess(ProcessEntity $process, $parentProcess = 0, int $childProcessCount = 0): void
+    public function addValuesNewProcess(ProcessEntity $process, int $parentProcess = 0, int $childProcessCount = 0): void
     {
         $values = [
             'BuergerID' => $process->id,
