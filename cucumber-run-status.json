@@ -1,10 +1,10 @@
 {
   "branch": "next",
   "branchSlug": "next",
-  "runId": "41316104449",
-  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/41316104449",
-  "runStartedAt": "2026-11-01T14:25:18Z",
-  "publishedAt": "2026-11-01T15:15:53.979Z",
+  "runId": "41321671048",
+  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/41321671048",
+  "runStartedAt": "2026-11-01T15:31:40Z",
+  "publishedAt": "2026-11-01T15:48:53.072Z",
   "features": {
     "feature-rest-zmsapi-zmskvr-1328": {
       "status": "passed",
@@ -2746,29 +2746,29 @@
         "chrome": {
           "status": "passed",
           "shard": "zmsticketprinter",
-          "runId": "41316104449",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/41316104449",
-          "runStartedAt": "2026-11-01T14:25:18Z"
+          "runId": "41321671048",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/41321671048",
+          "runStartedAt": "2026-11-01T15:31:40Z"
         },
         "edge": {
           "status": "passed",
           "shard": "zmsticketprinter",
-          "runId": "41316104449",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/41316104449",
-          "runStartedAt": "2026-11-01T14:25:18Z"
+          "runId": "41321671048",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/41321671048",
+          "runStartedAt": "2026-11-01T15:31:40Z"
         },
         "firefox": {
           "status": "passed",
           "shard": "zmsticketprinter",
-          "runId": "41316104449",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/41316104449",
-          "runStartedAt": "2026-11-01T14:25:18Z"
+          "runId": "41321671048",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/41321671048",
+          "runStartedAt": "2026-11-01T15:31:40Z"
         }
       },
       "rel": "ui/zmsticketprinter/booking/zmskvr-1652_zmskvr-167_waiting_number.feature",
-      "runId": "41316104449",
-      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/41316104449",
-      "runStartedAt": "2026-11-01T14:25:18Z"
+      "runId": "41321671048",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/41321671048",
+      "runStartedAt": "2026-11-01T15:31:40Z"
     },
     "feature-ui-zmsadmin-booking-zmskvr-1660-zmskvr-1487-walk-in-duration": {
       "status": "passed",
@@ -6755,29 +6755,29 @@
         "chrome": {
           "status": "passed",
           "shard": "zmsticketprinter",
-          "runId": "41316104449",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/41316104449",
-          "runStartedAt": "2026-11-01T14:25:18Z"
+          "runId": "41321671048",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/41321671048",
+          "runStartedAt": "2026-11-01T15:31:40Z"
         },
         "edge": {
           "status": "passed",
           "shard": "zmsticketprinter",
-          "runId": "41316104449",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/41316104449",
-          "runStartedAt": "2026-11-01T14:25:18Z"
+          "runId": "41321671048",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/41321671048",
+          "runStartedAt": "2026-11-01T15:31:40Z"
         },
         "firefox": {
           "status": "passed",
           "shard": "zmsticketprinter",
-          "runId": "41316104449",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/41316104449",
-          "runStartedAt": "2026-11-01T14:25:18Z"
+          "runId": "41321671048",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/41321671048",
+          "runStartedAt": "2026-11-01T15:31:40Z"
         }
       },
       "rel": "ui/zmsticketprinter/booking/zmskvr-42_zmskvr-289_day_closure_spontan.feature",
-      "runId": "41316104449",
-      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/41316104449",
-      "runStartedAt": "2026-11-01T14:25:18Z"
+      "runId": "41321671048",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/41321671048",
+      "runStartedAt": "2026-11-01T15:31:40Z"
     },
     "feature-ui-zmsadmin-emergency-zms-3212-zmsalt-3212-zms-3577-zmsalt-3577-no-emergency-on-tresen": {
       "status": "passed",
