@@ -220,6 +220,7 @@ public class CounterProcessingStationPage extends AdminPage {
      * reloaded. Match the name cell (not digits stripped from "Zmskvr1341…").
      */
     public void assertCustomerVisibleInQueueByName(String familyName) {
+        openQueueOnBookedDay();
         ScenarioLogManager.getLogger().info(
                 "Checking for customer \"{}\" by name in waiting list...", familyName);
         CONTEXT.waitForSpinners();
@@ -1089,7 +1090,7 @@ public class CounterProcessingStationPage extends AdminPage {
     }
 
     /** The queue lists the selected day. A holiday booking lives on the next open day. */
-    private void openQueueOnBookedDay() {
+    protected void openQueueOnBookedDay() {
         String iso = TestDataHelper.getTestData("booked_queue_date");
         if (iso == null || iso.isBlank()) {
             return;
