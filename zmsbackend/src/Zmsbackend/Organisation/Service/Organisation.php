@@ -143,7 +143,7 @@ class Organisation extends \BO\Zmsbackend\Base
         return $this->readEntity($lastInsertId);
     }
 
-    public function updateEntity($organisationId, \BO\Zmsentities\Organisation $entity)
+    public function updateEntity(string|int $organisationId, \BO\Zmsentities\Organisation $entity)
     {
         $query = new \BO\Zmsbackend\Organisation\Repository\Organisation(\BO\Zmsbackend\Query\Base::UPDATE);
         $query->addConditionOrganisationId($organisationId);
@@ -169,7 +169,7 @@ class Organisation extends \BO\Zmsbackend\Base
         }
     }
 
-    protected function updateOrganisationTicketprinters($ticketprinterList, $organisationId): void
+    protected function updateOrganisationTicketprinters($ticketprinterList, string|int $organisationId): void
     {
         foreach ($ticketprinterList as $item) {
             $query = new \BO\Zmsbackend\Ticketprinter\Repository\Ticketprinter(\BO\Zmsbackend\Query\Base::UPDATE);

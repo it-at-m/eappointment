@@ -40,7 +40,7 @@ class Organisation extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Q
         ];
     }
 
-    public function addConditionOrganisationId($organisationId): static
+    public function addConditionOrganisationId(string|int $organisationId): static
     {
         $this->query->where('organisation.OrganisationsID', '=', $organisationId);
         return $this;

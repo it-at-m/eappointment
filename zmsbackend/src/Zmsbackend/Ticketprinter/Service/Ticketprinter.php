@@ -193,7 +193,7 @@ class Ticketprinter extends \BO\Zmsbackend\Base
         return $scope;
     }
 
-    public function writeEntityWithHash($organisationId, string $ticketprinterName = '')
+    public function writeEntityWithHash(string|int $organisationId, string $ticketprinterName = '')
     {
         $query = new \BO\Zmsbackend\Ticketprinter\Repository\Ticketprinter(\BO\Zmsbackend\Query\Base::INSERT);
         $ticketprinter = (new Entity())->getHashWith($organisationId);
@@ -210,7 +210,7 @@ class Ticketprinter extends \BO\Zmsbackend\Base
         return $this->readEntity($lastInsertId);
     }
 
-    public function writeEntity(Entity $entity, $organisationId)
+    public function writeEntity(Entity $entity, string|int $organisationId)
     {
         $query = new \BO\Zmsbackend\Ticketprinter\Repository\Ticketprinter(\BO\Zmsbackend\Query\Base::INSERT);
         $values = $query->reverseEntityMapping($entity, $organisationId);
@@ -224,7 +224,7 @@ class Ticketprinter extends \BO\Zmsbackend\Base
         return $this->readEntity($lastInsertId);
     }
 
-    public function readByOrganisationId($organisationId)
+    public function readByOrganisationId(string|int $organisationId)
     {
         $query = new \BO\Zmsbackend\Ticketprinter\Repository\Ticketprinter(\BO\Zmsbackend\Query\Base::SELECT);
         $query

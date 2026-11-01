@@ -25,7 +25,7 @@ class TicketprinterAccess
     /**
      * @return void
      */
-    public static function testMatchingClusterAndScopes($entity, $organisationId)
+    public static function testMatchingClusterAndScopes($entity, string|int $organisationId)
     {
         if (isset($entity->buttons) && $entity->buttons) {
             $departmentList = (new \BO\Zmsbackend\Department\Service\Department())->readByOrganisationId($organisationId, 1);

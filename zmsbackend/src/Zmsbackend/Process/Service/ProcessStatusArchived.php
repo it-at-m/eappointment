@@ -179,7 +179,7 @@ class ProcessStatusArchived extends Process
         string|int $clusterId,
         string|int $providerId,
         string|int $departmentId,
-        $organisationId,
+        string|int $organisationId,
         $ownerId,
         $dateTime,
         ?int $processingTime

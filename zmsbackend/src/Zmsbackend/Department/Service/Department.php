@@ -136,7 +136,7 @@ class Department extends \BO\Zmsbackend\Base
         return (isset($department['id']) && $department['id']) ? $department->withOutClusterDuplicates() : null;
     }
 
-    public function readByOrganisationId($organisationId, int $resolveReferences = 0): Collection
+    public function readByOrganisationId(string|int $organisationId, int $resolveReferences = 0): Collection
     {
         $departmentList = new Collection();
         $query = new \BO\Zmsbackend\Department\Repository\Department(\BO\Zmsbackend\Query\Base::SELECT);

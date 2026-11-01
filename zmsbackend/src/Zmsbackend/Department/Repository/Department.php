@@ -94,7 +94,7 @@ class Department extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Que
         return $this;
     }
 
-    public function addConditionOrganisationId($organisationId): static
+    public function addConditionOrganisationId(string|int $organisationId): static
     {
         $this->query->where('department.OrganisationsID', '=', $organisationId);
         return $this;
