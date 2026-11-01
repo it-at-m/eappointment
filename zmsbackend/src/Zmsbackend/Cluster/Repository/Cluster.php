@@ -51,7 +51,7 @@ class Cluster extends \BO\Zmsbackend\Query\Base
         return $this;
     }
 
-    public function addConditionDepartmentId($departementId): static
+    public function addConditionDepartmentId(string|int $departementId): static
     {
         $this->leftJoin(
             new \BO\Zmsbackend\Query\Alias('standort', 'scope'),
