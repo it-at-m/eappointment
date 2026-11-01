@@ -220,7 +220,7 @@ public class CounterProcessingStationPage extends AdminPage {
      * reloaded. Match the name cell (not digits stripped from "Zmskvr1341…").
      */
     public void assertCustomerVisibleInQueueByName(String familyName) {
-        openQueueOnBookedDay();
+        skipWhenAppointmentIsNotToday();
         ScenarioLogManager.getLogger().info(
                 "Checking for customer \"{}\" by name in waiting list...", familyName);
         CONTEXT.waitForSpinners();
@@ -1089,7 +1089,35 @@ public class CounterProcessingStationPage extends AdminPage {
         return moveToNextDayWithSlots(daysAhead);
     }
 
-    /** The queue lists the selected day. A holiday booking lives on the next open day. */
+    /**
+     * A call uses today's queue. A future appointment returns ProcessNotCurrentDate,
+     * and {@code ?date=} does not make it callable.
+     */
+    protected void skipWhenAppointmentIsNotToday() {
+        LocalDate today = BerlinTime.today();
+        String iso = TestDataHelper.getTestData("booked_queue_date");
+        if (iso != null && !iso.isBlank()) {
+            LocalDate booked = LocalDate.parse(iso);
+            if (!booked.equals(today)) {
+                throw new SkipException("Admin can call an appointment only on today. This one is on " + booked + ".");
+            }
+        }
+        String epoch = TestDataHelper.getTestData("appointment_epoch");
+        if (epoch == null || epoch.isBlank()) {
+            return;
+        }
+        try {
+            long timestamp = Long.parseLong(epoch.trim());
+            long start = today.atStartOfDay(java.time.ZoneId.of("Europe/Berlin")).toEpochSecond();
+            if (timestamp < start || timestamp >= start + 86_400L) {
+                throw new SkipException("Admin can call an appointment only on today (" + today + ").");
+            }
+        } catch (NumberFormatException ignored) {
+            // Not an epoch.
+        }
+    }
+
+    /** The queue lists the selected day. Cleanup of a later booking opens that day. */
     protected void openQueueOnBookedDay() {
         String iso = TestDataHelper.getTestData("booked_queue_date");
         if (iso == null || iso.isBlank()) {

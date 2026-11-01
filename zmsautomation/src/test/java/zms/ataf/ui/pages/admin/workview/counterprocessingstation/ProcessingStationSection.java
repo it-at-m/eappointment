@@ -152,7 +152,7 @@ public class ProcessingStationSection extends CounterProcessingStationPage {
     }
 
     public void callCustomerWithSpecificNote(String note) {
-        openQueueOnBookedDay();
+        skipWhenAppointmentIsNotToday();
         ScenarioLogManager.getLogger().info("Trying to call customer with note \"" + note + "\"...");
         final String CUSTOMER_NR_USING_NOTE_XPATH = "//tr[td[contains(., '" + note + "')]]/td[@class='callnextclient']/a";
         Assert.assertTrue(isWebElementVisible(DEFAULT_EXPLICIT_WAIT_TIME, CUSTOMER_NR_USING_NOTE_XPATH, LocatorType.XPATH, true, CONTEXT),
@@ -161,7 +161,7 @@ public class ProcessingStationSection extends CounterProcessingStationPage {
     }
 
     public void callCustomerFromQueueWithNumber(String number) {
-        openQueueOnBookedDay();
+        skipWhenAppointmentIsNotToday();
         ScenarioLogManager.getLogger().info("Trying to call customer from queue with number \"" + number + "\"...");
         final String CUSTOMER_NR_USING_NUMBER_XPATH = "//table[@id='table-queued-appointments']/tbody/tr/td[3]/a[contains(text(), '" + number + "')]";
         Assert.assertTrue(isWebElementVisible(DEFAULT_EXPLICIT_WAIT_TIME, CUSTOMER_NR_USING_NUMBER_XPATH, LocatorType.XPATH, true, CONTEXT),
@@ -170,6 +170,7 @@ public class ProcessingStationSection extends CounterProcessingStationPage {
     }
 
     public void callCustomerFromQueueWithName(String name) {
+        skipWhenAppointmentIsNotToday();
         ScenarioLogManager.getLogger().info("Trying to call customer from queue with name \"" + name + "\"...");
         clickQueueCallLinkWhenReady(queueCallLinkByName(name));
     }
