@@ -53,12 +53,12 @@ class Availability extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfa
         return $entity;
     }
 
-    public function readLock($availabilityId)
+    public function readLock(string|int $availabilityId)
     {
         return $this->perform(\BO\Zmsbackend\Availability\Repository\Availability::QUERY_GET_LOCK, ['availabilityId' => $availabilityId]);
     }
 
-    public function readEntityDoubleTypes($availabilityId, int $resolveReferences = 0)
+    public function readEntityDoubleTypes(string|int $availabilityId, int $resolveReferences = 0)
     {
         $query = new \BO\Zmsbackend\Availability\Repository\Availability(\BO\Zmsbackend\Query\Base::SELECT);
         $query
