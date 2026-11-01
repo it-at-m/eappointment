@@ -122,7 +122,7 @@ class Process extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfaces\R
      *        If slotsRequired = 0, readFreeProcesses() uses the slotsRequired based on request-provider relation
      * @psalm-api
      */
-    public function updateEntityWithSlots(\BO\Zmsentities\Process $process, \DateTimeInterface $now, string $slotType = "intern", $slotsRequired = 0, int $resolveReferences = 0, $userAccount = null)
+    public function updateEntityWithSlots(\BO\Zmsentities\Process $process, \DateTimeInterface $now, ?string $slotType = "intern", $slotsRequired = 0, int $resolveReferences = 0, $userAccount = null)
     {
         if ('intern' != $slotType) {
             return $this->updateEntity($process, $now, $resolveReferences, null, $userAccount);
