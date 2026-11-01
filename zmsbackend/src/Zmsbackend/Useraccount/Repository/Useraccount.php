@@ -346,7 +346,7 @@ class Useraccount extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Qu
      *
      * @param false $isWorkstationSuperuser
      */
-    public function addConditionWorkstationAccess($workstationUserId, array $workstationDepartmentIds, bool $isWorkstationSuperuser = false): self
+    public function addConditionWorkstationAccess(string|int $workstationUserId, array $workstationDepartmentIds, bool $isWorkstationSuperuser = false): self
     {
         // Superusers can access all useraccounts, no filtering needed
         if ($isWorkstationSuperuser) {
