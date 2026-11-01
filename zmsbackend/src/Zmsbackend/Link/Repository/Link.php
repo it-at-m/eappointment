@@ -32,7 +32,7 @@ class Link extends \BO\Zmsbackend\Query\Base
         ];
     }
 
-    public function addConditionLinkId($linkId): static
+    public function addConditionLinkId(string|int $linkId): static
     {
         $this->query->where('link.linkid', '=', $linkId);
         return $this;
