@@ -315,7 +315,7 @@ class Scope extends Base implements MappingInterface
         return $this;
     }
 
-    public function addConditionClusterId($clusterId): static
+    public function addConditionClusterId(string|int $clusterId): static
     {
         $this->leftJoin(
             new \BO\Zmsbackend\Query\Alias('clusterzuordnung', 'cluster_scope'),

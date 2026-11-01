@@ -96,7 +96,7 @@ class WorkstationInfo
             ->getCollection();
     }
 
-    public static function getWorkstationsByCluster($clusterId)
+    public static function getWorkstationsByCluster(string|int $clusterId)
     {
         return \App::$http
             ->readGetResult('/cluster/' . $clusterId . '/workstation/', ['resolveReferences' => 1])

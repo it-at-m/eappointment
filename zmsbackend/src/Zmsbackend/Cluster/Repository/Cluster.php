@@ -45,7 +45,7 @@ class Cluster extends \BO\Zmsbackend\Query\Base
         ];
     }
 
-    public function addConditionClusterId($clusterId): static
+    public function addConditionClusterId(string|int $clusterId): static
     {
         $this->query->where('cluster.clusterID', '=', $clusterId);
         return $this;

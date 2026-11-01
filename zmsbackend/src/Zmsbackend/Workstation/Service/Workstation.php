@@ -86,7 +86,7 @@ class Workstation extends \BO\Zmsbackend\Base
         return $workstationList;
     }
 
-    public function readLoggedInListByCluster($clusterId, \DateTimeInterface $dateTime, int $resolveReferences = 0): Collection
+    public function readLoggedInListByCluster(string|int $clusterId, \DateTimeInterface $dateTime, int $resolveReferences = 0): Collection
     {
         $workstationList = new \BO\Zmsentities\Collection\WorkstationList();
         $cluster = (new \BO\Zmsbackend\Cluster\Service\Cluster())->readEntity($clusterId, $resolveReferences);

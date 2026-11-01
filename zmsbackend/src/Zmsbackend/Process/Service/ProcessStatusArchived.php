@@ -176,7 +176,7 @@ class ProcessStatusArchived extends Process
     public function writeArchivedProcessToStatistic(
         Entity $process,
         $requestId,
-        $clusterId,
+        string|int $clusterId,
         string|int $providerId,
         string|int $departmentId,
         $organisationId,

@@ -131,7 +131,7 @@ class Cluster extends \BO\Zmsbackend\Base
      *
      */
     public function readQueueList(
-        $clusterId,
+        string|int $clusterId,
         \DateTimeInterface $dateTime,
         int $resolveReferences = 0,
         array $withEntities = []
@@ -143,7 +143,7 @@ class Cluster extends \BO\Zmsbackend\Base
             ->withSortedWaitingTime();
     }
 
-    public function readOpenedScopeList($clusterId, \DateTimeInterface $dateTime): \BO\Zmsentities\Collection\ScopeList
+    public function readOpenedScopeList(string|int $clusterId, \DateTimeInterface $dateTime): \BO\Zmsentities\Collection\ScopeList
     {
         $scopeList = new \BO\Zmsentities\Collection\ScopeList();
         $cluster = $this->readEntity($clusterId, 1);
@@ -159,7 +159,7 @@ class Cluster extends \BO\Zmsbackend\Base
         return $scopeList;
     }
 
-    public function readEnabledScopeList($clusterId, \DateTimeInterface $dateTime): \BO\Zmsentities\Collection\ScopeList
+    public function readEnabledScopeList(string|int $clusterId, \DateTimeInterface $dateTime): \BO\Zmsentities\Collection\ScopeList
     {
         $scopeList = new \BO\Zmsentities\Collection\ScopeList();
         foreach ($this->readOpenedScopeList($clusterId, $dateTime) as $scope) {
@@ -170,7 +170,7 @@ class Cluster extends \BO\Zmsbackend\Base
         return $scopeList;
     }
 
-    public function readScopeWithShortestWaitingTime($clusterId, \DateTimeInterface $dateTime)
+    public function readScopeWithShortestWaitingTime(string|int $clusterId, \DateTimeInterface $dateTime)
     {
         $scopeList = $this->readOpenedScopeList($clusterId, $dateTime)->getArrayCopy();
         $nextScope = array_shift($scopeList);
@@ -196,7 +196,7 @@ class Cluster extends \BO\Zmsbackend\Base
         return $preferedScope;
     }
 
-    public function readWithScopeWorkstationCount($clusterId, $dateTime, int $resolveReferences = 0)
+    public function readWithScopeWorkstationCount(string|int $clusterId, $dateTime, int $resolveReferences = 0)
     {
         $scopeQuery = new \BO\Zmsbackend\Scope\Service\Scope();
         $scopeList = new \BO\Zmsentities\Collection\ScopeList();
@@ -213,7 +213,7 @@ class Cluster extends \BO\Zmsbackend\Base
         return $cluster;
     }
 
-    public function writeImageData($clusterId, \BO\Zmsentities\Mimepart $entity): \BO\Zmsentities\Mimepart
+    public function writeImageData(string|int $clusterId, \BO\Zmsentities\Mimepart $entity): \BO\Zmsentities\Mimepart
     {
         if ($entity->mime && $entity->content) {
             $this->deleteImage($clusterId);
@@ -234,7 +234,7 @@ class Cluster extends \BO\Zmsbackend\Base
         return $entity;
     }
 
-    public function readImageData($clusterId): \BO\Zmsentities\Mimepart
+    public function readImageData(string|int $clusterId): \BO\Zmsentities\Mimepart
     {
         $imageName = 'c_' . $clusterId . '_bild';
         $imageData = new \BO\Zmsentities\Mimepart();
@@ -249,7 +249,7 @@ class Cluster extends \BO\Zmsbackend\Base
         return $imageData;
     }
 
-    public function deleteImage($clusterId)
+    public function deleteImage(string|int $clusterId)
     {
         $imageName = 'c_' . $clusterId . '_bild';
         $result = $this->perform(
@@ -295,7 +295,7 @@ class Cluster extends \BO\Zmsbackend\Base
         return $this->readEntity($lastInsertId, 1, true);
     }
 
-    public function updateEntity($clusterId, \BO\Zmsentities\Cluster $entity)
+    public function updateEntity(string|int $clusterId, \BO\Zmsentities\Cluster $entity)
     {
         $query = new \BO\Zmsbackend\Cluster\Repository\Cluster(\BO\Zmsbackend\Query\Base::UPDATE);
         $query->addConditionClusterId($clusterId);

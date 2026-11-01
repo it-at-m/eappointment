@@ -112,7 +112,7 @@ class Scope extends \BO\Zmsbackend\Base
     }
 
     public function readByClusterId(
-        $clusterId,
+        string|int $clusterId,
         int $resolveReferences = 0,
         bool $disableCache = false
     ): Collection {

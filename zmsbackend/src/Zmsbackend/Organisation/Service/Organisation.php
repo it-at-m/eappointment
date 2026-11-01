@@ -64,7 +64,7 @@ class Organisation extends \BO\Zmsbackend\Base
         return $this->readResolvedReferences($organisation, $resolveReferences);
     }
 
-    public function readByClusterId($clusterId, int $resolveReferences = 0)
+    public function readByClusterId(string|int $clusterId, int $resolveReferences = 0)
     {
         $scope = (new \BO\Zmsbackend\Scope\Service\Scope())->readByClusterId($clusterId, $resolveReferences)->getFirst();
         if (! $scope) {
