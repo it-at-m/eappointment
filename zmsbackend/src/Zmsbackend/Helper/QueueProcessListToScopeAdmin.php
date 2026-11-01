@@ -13,7 +13,7 @@ class QueueProcessListToScopeAdmin
 
     protected $verbose = false;
 
-    public function __construct(bool $verbose = false, $scopeId = false)
+    public function __construct(bool $verbose = false, string|int|false $scopeId = false)
     {
         $this->dateTime = new \DateTimeImmutable();
         if ($verbose) {

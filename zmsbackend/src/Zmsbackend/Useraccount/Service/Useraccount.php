@@ -239,7 +239,7 @@ class Useraccount extends \BO\Zmsbackend\Base
         return str_replace(['{', '}', '(', ')', '/', '\\', '@', ':'], '_', $key);
     }
 
-    public function readIsUserExisting($loginName, $password = false): bool
+    public function readIsUserExisting($loginName, string|false $password = false): bool
     {
         $query = new \BO\Zmsbackend\Useraccount\Repository\Useraccount(\BO\Zmsbackend\Query\Base::SELECT);
         $query->addEntityMapping()
