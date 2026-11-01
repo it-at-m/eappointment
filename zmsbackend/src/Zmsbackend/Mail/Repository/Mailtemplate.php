@@ -58,7 +58,7 @@ class Mailtemplate extends \BO\Zmsbackend\Query\Base
         return $this;
     }
 
-    public function addConditionProviderId($providerId): static
+    public function addConditionProviderId(string|int $providerId): static
     {
         $this->query->where(self::TABLE . '.provider', '=', $providerId);
         return $this;

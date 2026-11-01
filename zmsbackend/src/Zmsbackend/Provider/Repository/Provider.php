@@ -51,7 +51,7 @@ class Provider extends \BO\Zmsbackend\Query\Base
         return $this;
     }
 
-    public function addConditionProviderId($providerId): static
+    public function addConditionProviderId(string|int $providerId): static
     {
         $this->query->where('provider.id', '=', $providerId);
         return $this;

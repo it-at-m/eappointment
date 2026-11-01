@@ -177,7 +177,7 @@ class ProcessStatusArchived extends Process
         Entity $process,
         $requestId,
         $clusterId,
-        $providerId,
+        string|int $providerId,
         string|int $departmentId,
         $organisationId,
         $ownerId,

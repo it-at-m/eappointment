@@ -303,7 +303,7 @@ class Scope extends Base implements MappingInterface
         );
     }
 
-    public function addConditionProviderId($providerId): static
+    public function addConditionProviderId(string|int $providerId): static
     {
         $this->query->where('scope.InfoDienstleisterID', '=', $providerId);
         return $this;

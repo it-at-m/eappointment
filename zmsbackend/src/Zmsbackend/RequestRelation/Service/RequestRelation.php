@@ -7,7 +7,7 @@ use BO\Zmsentities\Collection\RequestRelationList as Collection;
 
 class RequestRelation extends \BO\Zmsbackend\Base
 {
-    public function readEntity($requestId, $providerId, int $resolveReferences = 0): Entity
+    public function readEntity($requestId, string|int $providerId, int $resolveReferences = 0): Entity
     {
         $query = new \BO\Zmsbackend\RequestRelation\Repository\RequestRelation(\BO\Zmsbackend\Query\Base::SELECT);
         $query
@@ -47,7 +47,7 @@ class RequestRelation extends \BO\Zmsbackend\Base
         return $this->readList($statement);
     }
 
-    public function readListByProviderId($providerId, $source, int $resolveReferences = 0)
+    public function readListByProviderId(string|int $providerId, $source, int $resolveReferences = 0)
     {
         $query = new \BO\Zmsbackend\RequestRelation\Repository\RequestRelation(\BO\Zmsbackend\Query\Base::SELECT);
         $query

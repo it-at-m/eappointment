@@ -48,7 +48,7 @@ class RequestRelation extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbacken
         return $this;
     }
 
-    public function addConditionProviderId($providerId): static
+    public function addConditionProviderId(string|int $providerId): static
     {
         $this->query->where(self::TABLE . '.provider__id', '=', $providerId);
         return $this;

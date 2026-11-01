@@ -8,7 +8,7 @@ use BO\Zmsentities\Collection\ProviderList as Collection;
 
 class Provider extends \BO\Zmsbackend\Base
 {
-    public function readEntity($source, $providerId, int $resolveReferences = 0, bool $disableCache = false)
+    public function readEntity($source, string|int $providerId, int $resolveReferences = 0, bool $disableCache = false)
     {
         $cacheKey = "provider-$source-$providerId-$resolveReferences";
 
@@ -34,7 +34,7 @@ class Provider extends \BO\Zmsbackend\Base
     }
 
     /** @psalm-api */
-    public function readEntityById($providerId, int $resolveReferences = 0, bool $disableCache = false)
+    public function readEntityById(string|int $providerId, int $resolveReferences = 0, bool $disableCache = false)
     {
         $cacheKey = "provider-byid-$providerId-$resolveReferences";
 
@@ -198,7 +198,7 @@ class Provider extends \BO\Zmsbackend\Base
         return $provider;
     }
 
-    public function writeDeleteEntity($providerId, $source): bool
+    public function writeDeleteEntity(string|int $providerId, $source): bool
     {
         $provider = $this->readEntity($source, $providerId);
         $query = new \BO\Zmsbackend\Provider\Repository\Provider(\BO\Zmsbackend\Query\Base::DELETE);

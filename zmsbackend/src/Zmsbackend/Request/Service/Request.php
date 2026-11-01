@@ -298,7 +298,7 @@ class Request extends \BO\Zmsbackend\Base
         return $ids;
     }
 
-    public function readListByProvider($source, $providerId, int $resolveReferences = 0)
+    public function readListByProvider($source, string|int $providerId, int $resolveReferences = 0)
     {
         $this->testSource($source);
         $query = new \BO\Zmsbackend\Request\Repository\Request(\BO\Zmsbackend\Query\Base::SELECT);

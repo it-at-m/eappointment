@@ -38,7 +38,7 @@ class MailTemplates extends \BO\Zmsbackend\Base
         return $logList;
     }
 
-    public function readListByProvider($providerId): \BO\Zmsentities\Collection\MailtemplateList
+    public function readListByProvider(string|int $providerId): \BO\Zmsentities\Collection\MailtemplateList
     {
         $query = new \BO\Zmsbackend\Mail\Repository\Mailtemplate(\BO\Zmsbackend\Query\Base::SELECT);
         $query->addEntityMapping();
@@ -47,7 +47,7 @@ class MailTemplates extends \BO\Zmsbackend\Base
         return $logList;
     }
 
-    public function readCustomizedListForProvider($providerId)
+    public function readCustomizedListForProvider(string|int $providerId)
     {
         $generalTemplates = $this->readListWithoutProvider();
         $customTemplates = $this->readListByProvider($providerId);
@@ -100,7 +100,7 @@ class MailTemplates extends \BO\Zmsbackend\Base
     }
 
 
-    public function createCustomizationForProvider($providerId, $templateName, $templateContent)
+    public function createCustomizationForProvider(string|int $providerId, $templateName, $templateContent)
     {
         $query = new \BO\Zmsbackend\Mail\Repository\Mailtemplate(\BO\Zmsbackend\Query\Base::INSERT);
         $query->addValues(array(

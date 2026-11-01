@@ -172,7 +172,7 @@ class Scope extends \BO\Zmsbackend\Base
         return $scopeList;
     }
 
-    public function readByProviderId($providerId, int $resolveReferences = 0, bool $disableCache = false): Collection
+    public function readByProviderId(string|int $providerId, int $resolveReferences = 0, bool $disableCache = false): Collection
     {
         $cacheKey = "scopeReadByProviderId-$providerId-$resolveReferences";
 
