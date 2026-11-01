@@ -964,7 +964,7 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
     /**
      * Add Requests Join
      */
-    public function addConditionRequestId($requestId): static
+    public function addConditionRequestId(string|int $requestId): static
     {
         $this->leftJoin(
             new \BO\Zmsbackend\Query\Alias("buergeranliegen", 'buergeranliegen'),

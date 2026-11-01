@@ -42,7 +42,7 @@ class RequestRelation extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbacken
         ];
     }
 
-    public function addConditionRequestId($requestId): static
+    public function addConditionRequestId(string|int $requestId): static
     {
         $this->query->where(self::TABLE . '.request__id', '=', $requestId);
         return $this;

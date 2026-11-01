@@ -44,7 +44,7 @@ class Request extends \BO\Zmsbackend\Base
     }
 
     /** @psalm-api */
-    public function readEntityById($requestId, int $resolveReferences = 0, bool $disableCache = false)
+    public function readEntityById(string|int $requestId, int $resolveReferences = 0, bool $disableCache = false)
     {
         $cacheKey = "request-byid-$requestId-$resolveReferences";
 
@@ -153,7 +153,7 @@ class Request extends \BO\Zmsbackend\Base
         return $requestList;
     }
 
-    protected function readEntityWithoutRootParentResolution($source, $requestId): Entity
+    protected function readEntityWithoutRootParentResolution($source, string|int $requestId): Entity
     {
         $this->testSource($source);
         $query = new \BO\Zmsbackend\Request\Repository\Request(\BO\Zmsbackend\Query\Base::SELECT);
@@ -523,7 +523,7 @@ class Request extends \BO\Zmsbackend\Base
         return $this->readEntity($source, $request['id'], 0, true);
     }
 
-    public function writeDeleteEntity($requestId, $source): bool
+    public function writeDeleteEntity(string|int $requestId, $source): bool
     {
         $query = new \BO\Zmsbackend\Request\Repository\Request(\BO\Zmsbackend\Query\Base::DELETE);
         $query->addConditionRequestId($requestId);

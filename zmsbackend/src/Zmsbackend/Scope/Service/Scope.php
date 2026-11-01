@@ -222,7 +222,7 @@ class Scope extends \BO\Zmsbackend\Base
         return $scopeList;
     }
 
-    public function readByRequestId($requestId, $source, int $resolveReferences = 0): Collection
+    public function readByRequestId(string|int $requestId, $source, int $resolveReferences = 0): Collection
     {
         $scopeList = new Collection();
         $providerList = (new \BO\Zmsbackend\Provider\Service\Provider())->readListBySource($source, 0, true, $requestId);

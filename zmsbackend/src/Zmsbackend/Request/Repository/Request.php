@@ -44,7 +44,7 @@ class Request extends \BO\Zmsbackend\Query\Base
         return $mapping;
     }
 
-    public function addConditionRequestId($requestId): static
+    public function addConditionRequestId(string|int $requestId): static
     {
         $this->query->where('id', '=', $requestId);
         return $this;
