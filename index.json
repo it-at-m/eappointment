@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-11-02T16:51:54.779Z",
+  "publishedAt": "2026-11-02T17:01:30.914Z",
   "branches": [
     {
       "name": "next",
@@ -60,6 +60,12 @@
       "slug": "bugfix-zmskvr-167-ticketprinter-missing-scope-ids",
       "runId": "34524994393",
       "runStartedAt": "2026-09-10T20:12:39Z"
+    },
+    {
+      "name": "bugfix-zmskvr-1688-appointment-cancellation-mail-for-rescheduling-lists-correct-date",
+      "slug": "bugfix-zmskvr-1688-appointment-cancellation-mail-for-rescheduling-lists-correct-date",
+      "runId": "41480325506",
+      "runStartedAt": "2026-11-02T16:19:30Z"
     },
     {
       "name": "check-surfire-dependency",
