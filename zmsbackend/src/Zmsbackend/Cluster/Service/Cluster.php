@@ -311,7 +311,7 @@ class Cluster extends \BO\Zmsbackend\Base
         return $this->readEntity($clusterId, 1, true);
     }
 
-    protected function writeAssignedScopes(string|false $clusterId, $scopeList): void
+    protected function writeAssignedScopes(string|false $clusterId, \BO\Zmsentities\Collection\ScopeList $scopeList): void
     {
         $cluster = $this->readEntity($clusterId);
         $this->perform(

@@ -116,7 +116,7 @@ class AppointmentFormHelper
         }
     }
 
-    protected static function readProcessListByScopeAndDate(\BO\Mellon\Validator $validator, $scopeList, $slotType, int $slotsRequired)
+    protected static function readProcessListByScopeAndDate(\BO\Mellon\Validator $validator, \BO\Zmsentities\Collection\ScopeList $scopeList, $slotType, int $slotsRequired)
     {
         $selectedDate = $validator->getParameter('selecteddate')->isString()->getValue();
         $calendar = new Calendar($selectedDate);
@@ -125,7 +125,7 @@ class AppointmentFormHelper
 
     protected static function getFreeProcessListWithSelectedProcess(
         \BO\Mellon\Validator $validator,
-        $scopeList,
+        \BO\Zmsentities\Collection\ScopeList $scopeList,
         $freeProcessList,
         $selectedProcess
     ) {
