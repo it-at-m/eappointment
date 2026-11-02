@@ -80,7 +80,7 @@ class ArchivedDataIntoStatisticByCron
     protected function writeProcessInStatisticTable(
         \BO\Zmsentities\Process $process,
         \BO\Zmsentities\Scope $scope,
-        $cluster,
+        ?\BO\Zmsentities\Cluster $cluster,
         $department,
         \BO\Zmsentities\Organisation $organisation,
         $owner,
