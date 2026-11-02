@@ -75,7 +75,7 @@ class Session extends \BO\Zmsbackend\Query\Base
      *
      */
     #[\Override]
-    public function postProcess($data)
+    public function postProcess(array $data)
     {
         $data[$this->getPrefixed('content')] = json_decode($data[$this->getPrefixed('content')], 1);
         return $data;

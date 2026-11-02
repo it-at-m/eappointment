@@ -431,7 +431,7 @@ abstract class Base
      * postProcess data if necessary
      *
      */
-    public function postProcess($data)
+    public function postProcess(array $data)
     {
         return $data;
     }

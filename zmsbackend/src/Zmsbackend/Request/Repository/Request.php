@@ -136,7 +136,7 @@ class Request extends \BO\Zmsbackend\Query\Base
     }
 
     #[\Override]
-    public function postProcess($data)
+    public function postProcess(array $data)
     {
         if (isset($data[$this->getPrefixed('data')]) && $data[$this->getPrefixed('data')]) {
             $data[$this->getPrefixed('data')] = json_decode($data[$this->getPrefixed('data')], true);

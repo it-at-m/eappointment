@@ -66,7 +66,7 @@ class UrlParameterSigning extends BaseController
     /**
      * @return void
      */
-    private function testData($data)
+    private function testData(array $data)
     {
         if (!isset($data['section']) || !isset($data['parameters'])) {
             throw new BadRequest();

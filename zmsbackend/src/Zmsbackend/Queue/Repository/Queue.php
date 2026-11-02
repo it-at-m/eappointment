@@ -102,7 +102,7 @@ class Queue extends \BO\Zmsbackend\Process\Repository\Process implements \BO\Zms
 
 
     #[\Override]
-    public function postProcess($data)
+    public function postProcess(array $data)
     {
         if (false === strpos($data[$this->getPrefixed("callTime")], '00:00:00')) {
             $data[$this->getPrefixed("callTime")] = strtotime($data[$this->getPrefixed("callTime")]);
