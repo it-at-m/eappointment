@@ -81,7 +81,7 @@ class ProcessSave extends BaseController
         return ($process->isWithAppointment()) ? 'process_updated' : 'process_withoutappointment_updated';
     }
 
-    public static function getConflictList(string|int $scopeId, $appointment)
+    public static function getConflictList(string|int $scopeId, \BO\Zmsentities\Appointment $appointment)
     {
         $conflictList = ScopeAvailabilityDay::readConflictList($scopeId, $appointment->getStartTime());
         $conflictList = ($conflictList && $conflictList->count()) ?
