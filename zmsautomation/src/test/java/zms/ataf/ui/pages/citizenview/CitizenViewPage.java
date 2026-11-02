@@ -712,6 +712,12 @@ public class CitizenViewPage extends BasePage {
         combination.assertServiceDescriptionLink(label, serviceId);
     }
 
+    /** ZMSKVR-1435: public root parent id, not an internal variant id and not an empty path. */
+    public void assertServiceDescriptionLinkExcludesInternalIds(
+            String label, String serviceId, String forbiddenIds) {
+        combination.assertServiceDescriptionLinkExcludesInternalIds(label, serviceId, forbiddenIds);
+    }
+
     /** ZMSKVR-249: on a wide window the count and buttons sit left of the service name. */
     public void assertCountBesideNameOnDesktop(String label) {
         combination.assertCountBesideNameOnDesktop(label);
@@ -1123,6 +1129,10 @@ public class CitizenViewPage extends BasePage {
 
     public void assertListDateAccordions(int expectedCount) {
         timeSlot.assertListDateAccordions(expectedCount);
+    }
+
+    public void assertLoadedListDateAccordions() {
+        timeSlot.assertLoadedListDateAccordions();
     }
 
     public void assertOpenListGroupsByHour() {
@@ -1678,6 +1688,14 @@ public class CitizenViewPage extends BasePage {
 
     public void fillContactDetailsRandomWithoutOptionalRemarks() {
         contact.fillContactDetailsRandomWithoutOptionalRemarks();
+    }
+
+    public void assertRequiredFreeTextCountsNewlinesAndTab() {
+        contact.assertRequiredFreeTextCountsNewlinesAndTab();
+    }
+
+    public void assertFreeTextOverLimitStaysOnContactForm() {
+        contact.assertFreeTextOverLimitStaysOnContactForm();
     }
 
     public void assertContactFormVisible() {

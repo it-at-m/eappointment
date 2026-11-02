@@ -13,7 +13,7 @@ use BO\Mellon\Validator;
 
 class EntryFromOldRoute
 {
-    protected static function getScopes($request): string|null
+    protected static function getScopes(\Psr\Http\Message\RequestInterface $request): string|null
     {
         $scopes = [ ];
         $validator = $request->getAttribute('validator');
@@ -31,7 +31,7 @@ class EntryFromOldRoute
         return (0 < count($scopes)) ? implode(',', $scopes) : null;
     }
 
-    protected static function getClusters($request): string|null
+    protected static function getClusters(\Psr\Http\Message\RequestInterface $request): string|null
     {
         $clusters = [ ];
         $validator = $request->getAttribute('validator');

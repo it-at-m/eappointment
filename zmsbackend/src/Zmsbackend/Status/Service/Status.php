@@ -259,7 +259,32 @@ class Status extends \BO\Zmsbackend\Base
              ) AS global
              WHERE b.istFolgeterminvon IS NULL OR b.istFolgeterminvon = 0'
         );
+        $processStats['confirmedWithMultipleServices'] = $this->readConfirmedWithMultipleServices();
         return $processStats;
+    }
+
+    /**
+     * Confirmed appointments whose requests list more than one distinct service.
+     * Starts from buerger.status (indexed) and looks up buergeranliegen by BuergerID,
+     * so the cost follows current confirmed bookings rather than the full request history.
+     */
+    protected function readConfirmedWithMultipleServices(): int
+    {
+        $row = $this->getReader()->fetchOne(
+            'SELECT COUNT(*) AS confirmedWithMultipleServices
+             FROM (
+                 SELECT ba.BuergerID
+                 FROM buerger b
+                 INNER JOIN buergeranliegen ba ON ba.BuergerID = b.BuergerID
+                 WHERE b.status = "confirmed"
+                   AND (b.istFolgeterminvon IS NULL OR b.istFolgeterminvon = 0)
+                   AND ba.AnliegenID > 0
+                 GROUP BY ba.BuergerID
+                 HAVING COUNT(DISTINCT ba.AnliegenID) > 1
+             ) AS multi'
+        );
+
+        return (int) ($row['confirmedWithMultipleServices'] ?? 0);
     }
 
     /**

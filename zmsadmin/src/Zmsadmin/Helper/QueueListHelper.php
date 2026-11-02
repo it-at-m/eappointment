@@ -24,7 +24,7 @@ class QueueListHelper
 
     protected static $parkedStatus = ['parked'];
 
-    public function __construct(ClusterHelper $clusterHelper, $selectedDate)
+    public function __construct(ClusterHelper $clusterHelper, string $selectedDate)
     {
         $dateTime = (new \DateTimeImmutable($selectedDate))->modify(\App::$now->format('H:i:s'));
         static::$fullList = static::createFullList($clusterHelper, $dateTime);

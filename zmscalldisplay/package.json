@@ -44,18 +44,19 @@
     "immutable": "^5.1.9",
     "jquery": "^4.0.0",
     "js-cookie": "^3.0.8",
-    "minimatch": "^10.2.5",
     "parcel": "^2.16.4",
     "picomatch": "^4.0.4",
-    "postcss": "^8.5.30",
+    "postcss": "^8.5.32",
     "qrcode-generator": "2.0.4",
     "sass": "^1.105.2",
     "svgo": "^4.0.2"
   },
   "// overrides.brace-expansion": "Force 5.0.8 for CVE-2026-14257 (DoS via unbounded expansion length); no 1.x/2.x backport.",
   "// overrides.nanoid": "postcss pins nanoid@3.3.16; force ^3.3.17 (CVE-2026-67213).",
+  "// overrides.minimatch": "Force ^11.0.1 for CVE-2026-118764 (DoS via crafted glob pattern expansion). No 10.x backport.",
   "overrides": {
     "brace-expansion": "5.0.12",
-    "nanoid": "^6.0.2"
+    "nanoid": "^6.0.2",
+    "minimatch": "^11.0.3"
   }
 }

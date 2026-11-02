@@ -44,7 +44,7 @@ class DayOff extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\M
     /**
      * @psalm-api
      */
-    public function addConditionName($name): static
+    public function addConditionName(string $name): static
     {
         $this->query->where('dayOff`.`Feiertag', '=', $name);
         return $this;
@@ -56,13 +56,13 @@ class DayOff extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\M
         return $this;
     }
 
-    public function addConditionDayOffId($itemId): static
+    public function addConditionDayOffId(string|int $itemId): static
     {
         $this->query->where('dayOff.FeiertagID', '=', $itemId);
         return $this;
     }
 
-    public function addConditionScopeId($scopeId): static
+    public function addConditionScopeId(string|int $scopeId): static
     {
         $this->leftJoin(
             new \BO\Zmsbackend\Query\Alias('standort', 'scope_dayoff'),
@@ -74,7 +74,7 @@ class DayOff extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\M
         return $this;
     }
 
-    public function addConditionDepartmentId($departmentId): static
+    public function addConditionDepartmentId(string|int $departmentId): static
     {
         $this->query->where('dayOff.BehoerdenID', '=', $departmentId);
         return $this;
@@ -93,7 +93,7 @@ class DayOff extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\M
     }
 
     #[\Override]
-    public function postProcess($data)
+    public function postProcess(array $data)
     {
         $data[$this->getPrefixed("date")] = (new \DateTime($data[$this->getPrefixed("date")]))->getTimestamp();
         $data[$this->getPrefixed("lastChange")] =

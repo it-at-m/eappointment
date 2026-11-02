@@ -58,7 +58,7 @@ class Ticketprinter extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\
         return $this;
     }
 
-    public function addConditionDeleteInterval($expirationDate): static
+    public function addConditionDeleteInterval(\DateTimeInterface $expirationDate): static
     {
         $this->query->where('ticketprinter.timestamp', '<=', $expirationDate->getTimestamp());
         return $this;

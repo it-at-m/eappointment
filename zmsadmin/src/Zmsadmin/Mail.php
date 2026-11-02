@@ -69,7 +69,7 @@ class Mail extends BaseController
         );
     }
 
-    private function writeValidatedMail($process, \BO\Zmsentities\Department $department)
+    private function writeValidatedMail(\BO\Zmsentities\Process $process, \BO\Zmsentities\Department $department)
     {
         if (! $process->scope->hasEmailFrom()) {
             throw new \BO\Zmsadmin\Exception\MailFromMissing();

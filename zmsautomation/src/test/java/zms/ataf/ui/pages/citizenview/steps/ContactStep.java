@@ -17,6 +17,7 @@ import ataf.core.helpers.TestPropertiesHelper;
 import ataf.core.logging.ScenarioLogManager;
 import ataf.web.utils.DriverUtil;
 import zms.ataf.helpers.AccountCheckout;
+import zms.ataf.helpers.PlainTextLengthSample;
 import zms.ataf.helpers.RandomNameHelper;
 import zms.ataf.helpers.ViewportSizes;
 import zms.ataf.ui.pages.citizenview.CitizenViewPage;
@@ -302,6 +303,58 @@ public final class ContactStep {
         fillContactDetailsRandom();
         lastContactPhone = CONTACT_PHONE_E2E;
         lastContactCustomText = CONTACT_LOREM_REQUIRED;
+    }
+
+    /**
+     * ZMSKVR-1018 / ZMSKVR-1388: a required Freitext of exactly 250 characters, with a newline
+     * and a tab in the middle, must count as 250. Expanding the newline to {@code <br />} would
+     * pass the limit.
+     */
+    public void assertRequiredFreeTextCountsNewlinesAndTab() {
+        context.set();
+        shadow.waitUntilShadowContains("Kontaktdaten", Math.max(30, defaultWaitSeconds));
+        String sample = PlainTextLengthSample.customTextAtLimit();
+        Assert.assertTrue(shadow.deepSetById("remarks", sample), "Could not set #remarks to the 250-character sample");
+        CitizenViewWaits.sleepQuiet(200L);
+        String value = shadow.deepInputValue("remarks");
+        Assert.assertEquals(
+                value,
+                sample,
+                "Required Freitext must keep the newline and the tab. length="
+                        + (value == null ? "null" : value.length()));
+        Assert.assertEquals(
+                characterCountStatusForField("remarks"),
+                sample.length() + "/" + PlainTextLengthSample.CUSTOM_TEXT_MAX,
+                "Freitext counter must count the newline and the tab as one character each");
+        Assert.assertFalse(
+                shadow.shadowDomContainsText("darf 250 Zeichen nicht überschreiten"),
+                "A 250-character Freitext with a newline and a tab must not show the length error");
+    }
+
+    /**
+     * One character over the limit, still containing a newline and a tab. The form must stay
+     * on Kontakt. HTML maxlength is bypassed so the check is the normalized length, not the browser.
+     */
+    public void assertFreeTextOverLimitStaysOnContactForm() {
+        context.set();
+        shadow.waitUntilShadowContains("Kontaktdaten", Math.max(30, defaultWaitSeconds));
+        String over = PlainTextLengthSample.customTextOverLimit();
+        Assert.assertEquals(over.length(), PlainTextLengthSample.CUSTOM_TEXT_MAX + 1);
+        Assert.assertTrue(
+                deepSetByIdBypassingMaxlength("remarks", over),
+                "Could not set #remarks past maxlength");
+        CitizenViewWaits.sleepQuiet(200L);
+        page.clickWeiter(30);
+        CitizenViewWaits.sleepQuiet(500L);
+        Assert.assertTrue(
+                shadow.shadowDomContainsText("Kontaktdaten"),
+                "One character over the Freitext limit must keep the citizen on Kontakt");
+        Assert.assertTrue(
+                shadow.shadowDomContainsText("250 Zeichen nicht überschreiten"),
+                "Freitext length error should mention the 250-character limit");
+        Assert.assertFalse(
+                shadow.deepElementExists("#checkbox-electronic-communication"),
+                "Over-limit Freitext must not reach the booking overview");
     }
 
     /**

@@ -26,6 +26,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import ataf.core.helpers.TestDataHelper;
 import ataf.core.logging.ScenarioLogManager;
 import zms.ataf.helpers.AccountCheckout;
+import zms.ataf.helpers.PlainTextLengthSample;
 import config.TestConfig;
 import io.cucumber.java.After;
 import io.cucumber.java.Before;
@@ -2168,6 +2169,18 @@ public class CitizenApiSteps {
             String telephone,
             boolean expectSuccess,
             boolean asLoggedInCitizen) {
+        postAppointmentUpdate(
+                familyName, email, customTextfield, "", telephone, expectSuccess, asLoggedInCitizen);
+    }
+
+    private void postAppointmentUpdate(
+            String familyName,
+            String email,
+            String customTextfield,
+            String customTextfield2,
+            String telephone,
+            boolean expectSuccess,
+            boolean asLoggedInCitizen) {
         ThinnedProcess process = requireCurrentProcess();
         Integer pid = process.getProcessId();
         String auth = process.getAuthKey();
@@ -2178,7 +2191,7 @@ public class CitizenApiSteps {
         body.put("email", email);
         body.put("telephone", telephone != null ? telephone : "");
         body.put("customTextfield", customTextfield != null ? customTextfield : "");
-        body.put("customTextfield2", "");
+        body.put("customTextfield2", customTextfield2 != null ? customTextfield2 : "");
         if (rebookingSourceProcessId != null && rebookingSourceAuthKey != null) {
             body.put("sourceProcessId", rebookingSourceProcessId);
             body.put("sourceAuthKey", rebookingSourceAuthKey);
@@ -2338,6 +2351,43 @@ public class CitizenApiSteps {
             .isEqualTo(scenarioContactFamilyName());
     }
 
+    @When("I update the reserved Feuerwache appointment with the 250-character free text")
+    public void iUpdateTheReservedFeuerwacheAppointmentWithTheLimitSample() {
+        postFeuerwacheFreeText(PlainTextLengthSample.customTextAtLimit(), true);
+    }
+
+    @When("I update the reserved Feuerwache appointment with the free text sample written as break tags")
+    public void iUpdateTheReservedFeuerwacheAppointmentWithBreakTags() {
+        postFeuerwacheFreeText(PlainTextLengthSample.customTextAtLimitWithBreakTags(), true);
+    }
+
+    @When("I attempt to update the reserved Feuerwache appointment with 251 free-text characters")
+    public void iAttemptToUpdateTheReservedFeuerwacheAppointmentOverTheLimit() {
+        postFeuerwacheFreeText(PlainTextLengthSample.customTextOverLimit(), false);
+    }
+
+    @Then("the appointment customTextfield should be the 250-character newline and tab sample")
+    public void theAppointmentCustomTextfieldShouldBeTheLimitSample() {
+        String actual = contactValue(currentAppointmentProcess().getCustomTextfield());
+        Assertions.assertThat(actual)
+            .as("appointment customTextfield")
+            .isEqualTo(PlainTextLengthSample.customTextAtLimit());
+        Assertions.assertThat(actual).doesNotContain("<br");
+        Assertions.assertThat(actual.indexOf('\n')).isNotNegative();
+        Assertions.assertThat(actual.indexOf('\t')).isNotNegative();
+    }
+
+    private void postFeuerwacheFreeText(String customTextfield, boolean expectSuccess) {
+        postAppointmentUpdate(
+                "Muster Zmskvr1018Api",
+                "muster.zmskvr1018api@mailinator.com",
+                customTextfield,
+                PlainTextLengthSample.shortSecondFreeText(),
+                "+491234567890",
+                expectSuccess,
+                false);
+    }
+
     @Then("the appointment customTextfield should be {string}")
     public void theAppointmentCustomTextfieldShouldBe(String expected) {
         Assertions.assertThat(contactValue(currentAppointmentProcess().getCustomTextfield()))
@@ -2436,6 +2486,30 @@ public class CitizenApiSteps {
                 .contains(expected);
         ScenarioLogManager.getLogger()
                 .info("Citizen API: confirm icsContent contains {}", expected);
+    }
+
+    /** ZMSKVR-1435: ICS Leistung URL is the public root parent, not an internal variant id. */
+    @Then("the confirm endpoint icsContent should contain {string} and not {string}")
+    public void theConfirmEndpointIcsContentShouldContainAndNot(String expected, String absent) {
+        response.then().statusCode(200);
+        ThinnedProcess process =
+                lastReserveProcess != null ? lastReserveProcess : parseDataResponse(response, ThinnedProcess.class);
+        Assertions.assertThat(process).as("confirm process").isNotNull();
+        String unfolded = unfoldIcs(process.getIcsContent());
+        Assertions.assertThat(unfolded)
+                .as("confirm-appointment icsContent should contain '%s'", expected)
+                .contains(expected);
+        for (String part : absent.split(",")) {
+            String needle = part.trim();
+            if (needle.isEmpty()) {
+                continue;
+            }
+            Assertions.assertThat(unfolded)
+                    .as("confirm-appointment icsContent must not contain '%s'", needle)
+                    .doesNotContain(needle);
+        }
+        ScenarioLogManager.getLogger()
+                .info("Citizen API: confirm icsContent contains {} and not {}", expected, absent);
     }
 
     @Then("the confirm endpoint icsContent should match the Munich template with {string} displayNumber")
