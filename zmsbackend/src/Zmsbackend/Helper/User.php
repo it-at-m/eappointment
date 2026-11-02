@@ -181,7 +181,7 @@ class User
         return $workstation;
     }
 
-    public static function checkDepartments($departmentIds): DepartmentList
+    public static function checkDepartments(array $departmentIds): DepartmentList
     {
         $normalizedIds = self::normalizeDepartmentIds($departmentIds);
         $departments = new DepartmentList();

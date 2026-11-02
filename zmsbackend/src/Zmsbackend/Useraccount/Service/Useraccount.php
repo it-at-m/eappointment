@@ -589,7 +589,7 @@ class Useraccount extends \BO\Zmsbackend\Base
     /**
      * @SuppressWarnings(NPathComplexity)
      */
-    public function readCollectionByDepartmentIds($departmentIds, int $resolveReferences = 0, bool $disableCache = false, ?\BO\Zmsentities\Workstation $workstation = null)
+    public function readCollectionByDepartmentIds(array $departmentIds, int $resolveReferences = 0, bool $disableCache = false, ?\BO\Zmsentities\Workstation $workstation = null)
     {
         sort($departmentIds);
         $version = $this->getUseraccountCacheVersion();
