@@ -79,7 +79,7 @@ class ProcessFinished extends \BO\Zmsbackend\Api\BaseController
         }
     }
 
-    protected function writeSurveyMail($process): void
+    protected function writeSurveyMail(\BO\Zmsentities\Process $process): void
     {
         $process = clone $process;
         foreach ($process->getClients() as $client) {

@@ -52,7 +52,7 @@ class AppointmentFormButtons extends BaseController
         );
     }
 
-    protected function isNewAppointment($process, $selectedDate, string $selectedTime): bool
+    protected function isNewAppointment(?\BO\Zmsentities\Process $process, $selectedDate, string $selectedTime): bool
     {
         $selectedAppointment = new Appointment();
         $selectedAppointment->setTime($selectedDate . ' ' . $selectedTime);

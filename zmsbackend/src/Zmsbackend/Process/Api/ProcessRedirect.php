@@ -71,7 +71,7 @@ class ProcessRedirect extends \BO\Zmsbackend\Api\BaseController
     /**
      * @return void
      */
-    protected function testProcessAccess($workstation, $process)
+    protected function testProcessAccess($workstation, \BO\Zmsentities\Process $process)
     {
         $cluster = (new \BO\Zmsbackend\Cluster\Service\Cluster())->readByScopeId($workstation->scope['id'], 1);
         $workstation->validateProcessScopeAccess($workstation->getScopeList($cluster), $process);

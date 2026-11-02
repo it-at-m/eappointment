@@ -55,7 +55,7 @@ class ProcessChange extends BaseController
         );
     }
 
-    protected function getNewProcess($input, $process, $scope)
+    protected function getNewProcess($input, \BO\Zmsentities\Process $process, $scope)
     {
         $newProcess = clone $process;
         $selectedTime = str_replace('-', ':', $input['selectedtime']);
@@ -67,7 +67,7 @@ class ProcessChange extends BaseController
      * @return (bool|mixed)[]
      *
      */
-    protected static function getValidatedForm($validator, $process): array
+    protected static function getValidatedForm($validator, \BO\Zmsentities\Process $process): array
     {
         $processValidator = new ProcessValidator($process);
         $delegatedProcess = $processValidator->getDelegatedProcess();
