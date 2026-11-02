@@ -107,7 +107,7 @@ class AppointmentFormHelper
             null;
     }
 
-    public static function updateMail($formData, Process $process): void
+    public static function updateMail(array $formData, Process $process): void
     {
         if (isset($formData['sendMailConfirmation'])) {
             $mailConfirmation = $formData['sendMailConfirmation'];
