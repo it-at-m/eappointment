@@ -75,7 +75,7 @@ class WorkstationLogin extends \BO\Zmsbackend\Api\BaseController
     /**
      * @return void
      */
-    public static function testLoginHash($workstation)
+    public static function testLoginHash(\BO\Zmsentities\Workstation $workstation)
     {
         $useraccount = $workstation->getUseraccount();
         if (isset($useraccount->id)) {
