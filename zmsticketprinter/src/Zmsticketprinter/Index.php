@@ -98,7 +98,7 @@ class Index extends BaseController
         return json_decode($decoded, true);
     }
 
-    private function getCurrentLanguage(\BO\Mellon\Validator $validator, $languageConfig)
+    private function getCurrentLanguage(\BO\Mellon\Validator $validator, array $languageConfig)
     {
         $lang = $validator->getParameter("lang")->isString()->getValue();
 
@@ -118,7 +118,7 @@ class Index extends BaseController
      * @return ((mixed|null|string)[]|mixed|string)[]
      *
      */
-    private function getTranslations($languageConfig, $currentLang): array
+    private function getTranslations(array $languageConfig, $currentLang): array
     {
         $translations = ['printText' => ''];
 
@@ -149,7 +149,7 @@ class Index extends BaseController
         return $translations;
     }
 
-    private function getAvailableLanguages($languageConfig): array
+    private function getAvailableLanguages(array $languageConfig): array
     {
         return array_values(array_unique(
             array_column($languageConfig['languages'] ?? [], 'language')
