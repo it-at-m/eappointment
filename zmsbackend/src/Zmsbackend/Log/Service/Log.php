@@ -201,7 +201,7 @@ class Log extends \BO\Zmsbackend\Base
 
     public function readByProcessData(
         string $generalSearch,
-        $service,
+        string $service,
         string $provider,
         DateTime|null $date,
         $userAction,
