@@ -241,7 +241,7 @@ class Ticketprinter extends \BO\Zmsbackend\Base
         return $this->deleteItem($query);
     }
 
-    public function readExpiredTicketprinterList($expirationDate): Collection
+    public function readExpiredTicketprinterList(\DateTimeInterface $expirationDate): Collection
     {
         $selectQuery = new \BO\Zmsbackend\Ticketprinter\Repository\Ticketprinter(\BO\Zmsbackend\Query\Base::SELECT);
         $selectQuery
