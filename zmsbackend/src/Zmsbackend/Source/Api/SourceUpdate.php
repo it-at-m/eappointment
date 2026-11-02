@@ -29,7 +29,16 @@ class SourceUpdate extends \BO\Zmsbackend\Api\BaseController
         $input = Validator::input()->isJson()->assertValid()->getValue();
 
         $entity = new Entity($input);
-        $this->testEntity($entity, $input);
+        if (!is_array($input)) {
+            try {
+                $entity->testValid('de_DE', 1);
+            } catch (\Exception $exception) {
+                $exception->data['input'] = $input;
+                throw $exception;
+            }
+        } else {
+            $this->testEntity($entity, $input);
+        }
 
         $message = \BO\Zmsbackend\Api\Response\Message::create($request);
         $message->data = (new Query())->writeEntity($entity, $resolveReferences);

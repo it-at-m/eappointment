@@ -32,6 +32,10 @@ class ProcessRedirect extends \BO\Zmsbackend\Api\BaseController
         $input = Validator::input()->isJson()->assertValid()->getValue();
         $entity = new \BO\Zmsentities\Process($input);
         $newProcess = new \BO\Zmsentities\Process($input);
+        if (!is_array($input)) {
+            $entity->testValid();
+            throw new \BO\Zmsbackend\Process\Exception\ProcessInvalid();
+        }
         $process = $this->readValidProcess($workstation, $entity, $input, $workstation);
         $newProcess->requests = new RequestList();
         $this->testProcessAccess($workstation, $process);

@@ -37,6 +37,9 @@ class UrlParameterSigning extends BaseController
     ): \Psr\Http\Message\ResponseInterface {
         $validator = $request->getAttribute('validator');
         $data = $validator->getInput()->isJson()->assertValid()->getValue();
+        if (!is_array($data)) {
+            throw new BadRequest();
+        }
         $this->testData($data);
 
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 0])->getEntity();
