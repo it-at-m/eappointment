@@ -66,7 +66,7 @@ class ScopeAppointmentsByDay extends BaseController
         return $workstationRequest->getScope();
     }
 
-    public static function readProcessList(\BO\Zmsclient\WorkstationRequests $workstationRequest, $selectedDateTime)
+    public static function readProcessList(\BO\Zmsclient\WorkstationRequests $workstationRequest, \DateTimeInterface $selectedDateTime)
     {
         $processList = $workstationRequest->readProcessListByDate(
             $selectedDateTime,
