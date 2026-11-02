@@ -56,7 +56,7 @@ class Apiquota extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query
         return $this;
     }
 
-    public function addConditionApikey($apikey): static
+    public function addConditionApikey(string $apikey): static
     {
         $this->query->where('apiquota.key', '=', $apikey);
         return $this;
