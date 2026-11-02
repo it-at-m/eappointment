@@ -127,7 +127,7 @@ class AppointmentFormHelper
         \BO\Mellon\Validator $validator,
         \BO\Zmsentities\Collection\ScopeList $scopeList,
         ?\BO\Zmsentities\Collection\ProcessList $freeProcessList,
-        $selectedProcess
+        ?\BO\Zmsentities\Process $selectedProcess
     ) {
         $selectedDate = $validator->getParameter('selecteddate')->isString()->getValue();
         if (
