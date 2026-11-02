@@ -118,7 +118,7 @@ class Index extends BaseController
      * @return ((mixed|null|string)[]|mixed|string)[]
      *
      */
-    private function getTranslations(array $languageConfig, $currentLang): array
+    private function getTranslations(array $languageConfig, string $currentLang): array
     {
         $translations = ['printText' => ''];
 
