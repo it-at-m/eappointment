@@ -14,7 +14,7 @@ class ProcessStatus extends \BO\Zmsbackend\Process\Service\Process
         string $status,
         \DateTimeInterface $dateTime,
         int $resolveReferences,
-        $userAccount
+        \BO\Zmsentities\Useraccount $userAccount
     ): \BO\Zmsentities\Process {
         $query = new \BO\Zmsbackend\Process\Repository\Process(\BO\Zmsbackend\Query\Base::UPDATE);
         $query->addConditionProcessId($process['id']);
