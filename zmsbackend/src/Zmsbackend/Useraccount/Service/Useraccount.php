@@ -995,7 +995,7 @@ class Useraccount extends \BO\Zmsbackend\Base
         return $result;
     }
 
-    public function readListRole($roleName, int $resolveReferences = 0, ?\BO\Zmsentities\Workstation $workstation = null)
+    public function readListRole(?string $roleName, int $resolveReferences = 0, ?\BO\Zmsentities\Workstation $workstation = null)
     {
         $version = $this->getUseraccountCacheVersion();
         $workstationKey = '';
@@ -1060,7 +1060,7 @@ class Useraccount extends \BO\Zmsbackend\Base
      * @param bool $disableCache
      *
      */
-    public function readListByRoleAndDepartmentIds($roleName, array $departmentIds, int $resolveReferences = 0, bool $disableCache = false, ?\BO\Zmsentities\Workstation $workstation = null)
+    public function readListByRoleAndDepartmentIds(?string $roleName, array $departmentIds, int $resolveReferences = 0, bool $disableCache = false, ?\BO\Zmsentities\Workstation $workstation = null)
     {
         sort($departmentIds);
         $version = $this->getUseraccountCacheVersion();
