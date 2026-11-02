@@ -50,7 +50,7 @@ class TemplateFinder
         return $this;
     }
 
-    public function getButtonTemplateType($ticketprinter): string
+    public function getButtonTemplateType(\BO\Zmsentities\Ticketprinter $ticketprinter): string
     {
         if (1 == count($ticketprinter->buttons)) {
             $buttonDisplay = 'button_single';
@@ -62,7 +62,7 @@ class TemplateFinder
         return $buttonDisplay;
     }
 
-    protected function getTemplateBySettings($ticketprinter, \BO\Zmsentities\Organisation $organisation)
+    protected function getTemplateBySettings(\BO\Zmsentities\Ticketprinter $ticketprinter, \BO\Zmsentities\Organisation $organisation)
     {
         $template = null;
         //look for customized templates by single scope or single cluster
