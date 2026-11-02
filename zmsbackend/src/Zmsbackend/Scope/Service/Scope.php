@@ -415,7 +415,7 @@ class Scope extends \BO\Zmsbackend\Base
         return ($isInContingent) ? true : false;
     }
 
-    public function readQueueList(array $scopeIds, $dateTime, int $resolveReferences = 0, array $withEntities = []): \BO\Zmsentities\Collection\QueueList
+    public function readQueueList(array $scopeIds, \DateTimeInterface $dateTime, int $resolveReferences = 0, array $withEntities = []): \BO\Zmsentities\Collection\QueueList
     {
         if ($resolveReferences > 0) {
             $queueList = (new \BO\Zmsbackend\Process\Service\Process())

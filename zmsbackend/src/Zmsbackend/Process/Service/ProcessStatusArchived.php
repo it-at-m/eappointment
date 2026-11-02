@@ -33,7 +33,7 @@ class ProcessStatusArchived extends Process
         return $this->readResolvedList($query, $resolveReferences);
     }
 
-    public function readListByDate($dateTime, int $resolveReferences = 0)
+    public function readListByDate(\DateTimeInterface $dateTime, int $resolveReferences = 0)
     {
         $query = new \BO\Zmsbackend\Process\Repository\ProcessStatusArchived(\BO\Zmsbackend\Query\Base::SELECT);
         $query->addEntityMapping()
@@ -43,7 +43,7 @@ class ProcessStatusArchived extends Process
     }
 
     /** @psalm-api */
-    public function readListByScopeAndDate(string|int $scopeId, $dateTime, int $resolveReferences = 0)
+    public function readListByScopeAndDate(string|int $scopeId, \DateTimeInterface $dateTime, int $resolveReferences = 0)
     {
         $query = new \BO\Zmsbackend\Process\Repository\ProcessStatusArchived(\BO\Zmsbackend\Query\Base::SELECT);
         $query->addEntityMapping()
@@ -79,7 +79,7 @@ class ProcessStatusArchived extends Process
     }
 
     /** @psalm-api */
-    public function readListForStatistic($dateTime, \BO\Zmsentities\Scope $scope, int $limit = 500, int $resolveReferences = 0)
+    public function readListForStatistic(\DateTimeInterface $dateTime, \BO\Zmsentities\Scope $scope, int $limit = 500, int $resolveReferences = 0)
     {
         $query = new \BO\Zmsbackend\Process\Repository\ProcessStatusArchived(\BO\Zmsbackend\Query\Base::SELECT);
         $query->addEntityMapping()
@@ -181,7 +181,7 @@ class ProcessStatusArchived extends Process
         string|int $departmentId,
         string|int $organisationId,
         string|int $ownerId,
-        $dateTime,
+        \DateTimeInterface|false $dateTime,
         ?int $processingTime
     ) {
         return $this->perform(

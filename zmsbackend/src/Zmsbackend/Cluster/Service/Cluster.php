@@ -196,7 +196,7 @@ class Cluster extends \BO\Zmsbackend\Base
         return $preferedScope;
     }
 
-    public function readWithScopeWorkstationCount(string|int $clusterId, $dateTime, int $resolveReferences = 0)
+    public function readWithScopeWorkstationCount(string|int $clusterId, \DateTimeInterface $dateTime, int $resolveReferences = 0)
     {
         $scopeQuery = new \BO\Zmsbackend\Scope\Service\Scope();
         $scopeList = new \BO\Zmsentities\Collection\ScopeList();

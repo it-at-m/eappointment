@@ -283,7 +283,7 @@ class Scope extends Base implements MappingInterface
     /**
      * @psalm-api
      */
-    public function addSelectWorkstationCount($dateTime): void
+    public function addSelectWorkstationCount(\DateTimeInterface $dateTime): void
     {
         $this->query->select(
             ['status__queue__workstationCount' => self::expression('
