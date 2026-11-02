@@ -10,7 +10,7 @@ class RequestVariantList extends \BO\Zmsbackend\Api\BaseController
      * @return \Psr\Http\Message\ResponseInterface
      */
     #[\Override]
-    public function readResponse(\Psr\Http\Message\RequestInterface $request, $response, array $args)
+    public function readResponse(\Psr\Http\Message\RequestInterface $request, \Psr\Http\Message\ResponseInterface $response, array $args)
     {
         $list = (new \BO\Zmsbackend\RequestVariant\Service\RequestVariant())->readAll();
 
