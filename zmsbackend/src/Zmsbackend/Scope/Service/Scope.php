@@ -18,11 +18,17 @@ class Scope extends \BO\Zmsbackend\Base
     public static $cache = [ ];
 
     /**
+     * Readers append this value to every scope cache key. A save replaces the
+     * value, so a key left behind by a failed delete is never read again.
+     */
+    private const string CACHE_GENERATION_KEY = 'scope-cache-generation';
+
+    /**
      * @param false|int|string $scopeId
      */
     public function readEntity(string|int|false $scopeId, int $resolveReferences = 0, bool $disableCache = false): ?Entity
     {
-        $cacheKey = "scope-$scopeId-$resolveReferences";
+        $cacheKey = self::scopeCacheKey("scope-$scopeId-$resolveReferences");
 
         if (!$disableCache && \App::$cache && \App::$cache->has($cacheKey)) {
             $scope = \App::$cache->get($cacheKey);
@@ -59,7 +65,7 @@ class Scope extends \BO\Zmsbackend\Base
         $result  = [];
         $missing = [];
         foreach ($scopeIds as $scopeId) {
-            $cacheKey = "{$scopeId}-{$resolveReferences}";
+            $cacheKey = self::scopeCacheKey("{$scopeId}-{$resolveReferences}");
             if (!$disableCache && array_key_exists($cacheKey, self::$cache)) {
                 $result[$scopeId] = self::$cache[$cacheKey];
             } else {
@@ -81,7 +87,7 @@ class Scope extends \BO\Zmsbackend\Base
                 }
                 $entity = $this->readResolvedReferences($entity, $resolveReferences);
                 $result[$entity->id] = $entity;
-                self::$cache["{$entity->id}-{$resolveReferences}"] = $entity;
+                self::$cache[self::scopeCacheKey("{$entity->id}-{$resolveReferences}")] = $entity;
             }
         }
 
@@ -116,7 +122,7 @@ class Scope extends \BO\Zmsbackend\Base
         int $resolveReferences = 0,
         bool $disableCache = false
     ): Collection {
-        $cacheKey = "scopeReadByClusterId-$clusterId-$resolveReferences";
+        $cacheKey = self::scopeCacheKey("scopeReadByClusterId-$clusterId-$resolveReferences");
 
         if (!$disableCache && \App::$cache && \App::$cache->has($cacheKey)) {
             $result = \App::$cache->get($cacheKey);
@@ -174,7 +180,7 @@ class Scope extends \BO\Zmsbackend\Base
 
     public function readByProviderId(string|int $providerId, int $resolveReferences = 0, bool $disableCache = false): Collection
     {
-        $cacheKey = "scopeReadByProviderId-$providerId-$resolveReferences";
+        $cacheKey = self::scopeCacheKey("scopeReadByProviderId-$providerId-$resolveReferences");
 
         if (!$disableCache && \App::$cache && \App::$cache->has($cacheKey)) {
             $result = \App::$cache->get($cacheKey);
@@ -238,7 +244,7 @@ class Scope extends \BO\Zmsbackend\Base
 
     public function readByDepartmentId(int $departmentId, int $resolveReferences = 0, bool $disableCache = false): Collection
     {
-        $cacheKey = "scopeReadByDepartmentId-$departmentId-$resolveReferences";
+        $cacheKey = self::scopeCacheKey("scopeReadByDepartmentId-$departmentId-$resolveReferences");
 
         if (!$disableCache && \App::$cache && \App::$cache->has($cacheKey)) {
             $result = \App::$cache->get($cacheKey);
@@ -326,7 +332,7 @@ class Scope extends \BO\Zmsbackend\Base
 
     public function readList(int $resolveReferences = 0, bool $disableCache = false): Collection
     {
-        $cacheKey = "scopeReadList-$resolveReferences";
+        $cacheKey = self::scopeCacheKey("scopeReadList-$resolveReferences");
 
         if (!$disableCache && \App::$cache && \App::$cache->has($cacheKey)) {
             $result = \App::$cache->get($cacheKey);
@@ -671,87 +677,57 @@ class Scope extends \BO\Zmsbackend\Base
         return $this->getReader()->fetchValue($query->getQueryDepartmentIdByScopeId(), [$scopeId]);
     }
 
-    public function readClusterIdsByScopeId(string|int $scopeId): array
-    {
-        $query = new \BO\Zmsbackend\Query\Scope(\BO\Zmsbackend\Query\Base::SELECT);
-        $result = $this->getReader()->fetchAll($query->getQueryClusterIdsByScopeId(), [$scopeId]);
-        return array_column($result, 'clusterID');
-    }
-
     /**
      * @return void
      */
     public function removeCacheByContext(Entity $scope, int|string|null $departmentId = null)
     {
-        if (!\App::$cache) {
-            return;
-        }
-
-        $invalidatedKeys = [];
-
-        // Invalidate scope entity cache for all resolveReferences levels (0, 1, 2)
-        if (isset($scope->id)) {
-            for ($resolveReferences = 0; $resolveReferences <= 2; $resolveReferences++) {
-                $key = "scope-{$scope->id}-{$resolveReferences}";
-                if (\App::$cache->has($key)) {
-                    \App::$cache->delete($key);
-                    $invalidatedKeys[] = $key;
-                }
-            }
-        }
-
-        // Invalidate scope list cache for all resolveReferences levels (0, 1, 2)
-        for ($resolveReferences = 0; $resolveReferences <= 2; $resolveReferences++) {
-            $key = "scopeReadList-{$resolveReferences}";
-            if (\App::$cache->has($key)) {
-                \App::$cache->delete($key);
-                $invalidatedKeys[] = $key;
-            }
-        }
-
-        // Invalidate scopeReadByDepartmentId cache for all resolveReferences levels (0, 1, 2)
-        if ($departmentId) {
-            for ($resolveReferences = 0; $resolveReferences <= 2; $resolveReferences++) {
-                $key = "scopeReadByDepartmentId-{$departmentId}-{$resolveReferences}";
-                if (\App::$cache->has($key)) {
-                    \App::$cache->delete($key);
-                    $invalidatedKeys[] = $key;
-                }
-            }
-        }
-
-        // Invalidate scopeReadByClusterId cache for all clusters containing this scope
-        if (isset($scope->id)) {
-            $clusterIds = $this->readClusterIdsByScopeId($scope->id);
-            foreach ($clusterIds as $clusterId) {
-                for ($resolveReferences = 0; $resolveReferences <= 2; $resolveReferences++) {
-                    $key = "scopeReadByClusterId-{$clusterId}-{$resolveReferences}";
-                    if (\App::$cache->has($key)) {
-                        \App::$cache->delete($key);
-                        $invalidatedKeys[] = $key;
-                    }
-                }
-            }
-        }
-
-        // Invalidate scopeReadByProviderId cache for all resolveReferences levels (0, 1, 2)
-        if (isset($scope->provider) && isset($scope->provider['id']) && $scope->provider['id']) {
-            $providerId = $scope->provider['id'];
-            for ($resolveReferences = 0; $resolveReferences <= 2; $resolveReferences++) {
-                $key = "scopeReadByProviderId-{$providerId}-{$resolveReferences}";
-                if (\App::$cache->has($key)) {
-                    \App::$cache->delete($key);
-                    $invalidatedKeys[] = $key;
-                }
-            }
-        }
-
-        if (!empty($invalidatedKeys) && \App::$log) {
+        $generation = self::bumpScopeCacheGeneration();
+        if (\App::$log) {
             \App::$log->info('Scope cache invalidated', [
                 'scope_id' => isset($scope->id) ? $scope->id : 'unknown',
-                'invalidated_keys' => $invalidatedKeys
+                'department_id' => $departmentId,
+                'generation' => $generation,
             ]);
         }
+    }
+
+    /**
+     * Filesystem has() misses keys that are present, and a delete of a key it
+     * does see does not stop the next read from returning that entry. The
+     * generation is a value the next read loads, so the old key is abandoned.
+     */
+    public static function bumpScopeCacheGeneration(): int
+    {
+        self::$cache = [];
+        $generation = hrtime(true);
+        if (\App::$cache) {
+            \App::$cache->set(self::CACHE_GENERATION_KEY, $generation);
+        }
+
+        return $generation;
+    }
+
+    private static function scopeCacheKey(string $key): string
+    {
+        return $key . '-' . self::scopeCacheGeneration();
+    }
+
+    private static function scopeCacheGeneration(): int
+    {
+        if (!\App::$cache) {
+            return 0;
+        }
+
+        $generation = \App::$cache->get(self::CACHE_GENERATION_KEY);
+        if (is_int($generation)) {
+            return $generation;
+        }
+        if (is_string($generation) && ctype_digit($generation)) {
+            return (int) $generation;
+        }
+
+        return 0;
     }
 
     /**
