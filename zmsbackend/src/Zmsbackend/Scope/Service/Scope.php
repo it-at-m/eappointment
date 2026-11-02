@@ -222,7 +222,7 @@ class Scope extends \BO\Zmsbackend\Base
         return $scopeList;
     }
 
-    public function readByRequestId(string|int $requestId, $source, int $resolveReferences = 0): Collection
+    public function readByRequestId(string|int $requestId, string $source, int $resolveReferences = 0): Collection
     {
         $scopeList = new Collection();
         $providerList = (new \BO\Zmsbackend\Provider\Service\Provider())->readListBySource($source, 0, true, $requestId);
@@ -292,7 +292,7 @@ class Scope extends \BO\Zmsbackend\Base
         return $scopeList;
     }
     /** @psalm-api */
-    public function readListBySource($source, int $resolveReferences = 0)
+    public function readListBySource(string $source, int $resolveReferences = 0)
     {
         $this->testSource($source);
         $query = new \BO\Zmsbackend\Request\Repository\Request(\BO\Zmsbackend\Query\Base::SELECT);
@@ -306,7 +306,7 @@ class Scope extends \BO\Zmsbackend\Base
     /**
      * @return void
      */
-    protected function testSource($source)
+    protected function testSource(string $source)
     {
         if (! (new \BO\Zmsbackend\Source\Service\Source())->readEntity($source)) {
             throw new \BO\Zmsbackend\Source\Exception\UnknownDataSource();

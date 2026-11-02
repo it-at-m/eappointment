@@ -113,7 +113,7 @@ class Request extends \BO\Zmsbackend\Query\Base
         return $this;
     }
 
-    public function addConditionProvider(string|int $providerId, $source): static
+    public function addConditionProvider(string|int $providerId, string $source): static
     {
         $this->leftJoin(
             new \BO\Zmsbackend\Query\Alias("request_provider", 'xrequest'),
@@ -129,7 +129,7 @@ class Request extends \BO\Zmsbackend\Query\Base
         return $this;
     }
 
-    public function addConditionRequestSource($source): static
+    public function addConditionRequestSource(string $source): static
     {
         $this->query->where('request.source', '=', $source);
         return $this;

@@ -90,7 +90,7 @@ class Scope extends BaseController
         return $sourceList;
     }
 
-    protected function readCurrentSource($source)
+    protected function readCurrentSource(string $source)
     {
         $source = \App::$http->readGetResult('/source/' . $source . '/')->getEntity();
         return $source;

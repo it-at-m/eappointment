@@ -64,7 +64,7 @@ class Provider extends \BO\Zmsbackend\Query\Base
         return $this;
     }
 
-    public function addConditionProviderSource($source): static
+    public function addConditionProviderSource(string $source): static
     {
         $this->query->where('provider.source', '=', $source);
         return $this;
