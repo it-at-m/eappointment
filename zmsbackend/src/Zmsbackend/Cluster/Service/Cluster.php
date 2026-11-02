@@ -353,10 +353,14 @@ class Cluster extends \BO\Zmsbackend\Base
             }
         }
 
-        // Scope lists share one generation. A cluster change abandons every
-        // previously stored scope entry, including ones has() cannot see.
-        $generation = \BO\Zmsbackend\Scope\Service\Scope::bumpScopeCacheGeneration();
-        $invalidatedKeys[] = 'scope-cache-generation-' . $generation;
+        // Invalidate scopeReadByClusterId cache for all resolveReferences levels (0, 1, 2)
+        for ($resolveReferences = 0; $resolveReferences <= 2; $resolveReferences++) {
+            $key = "scopeReadByClusterId-{$cluster->id}-{$resolveReferences}";
+            if (\App::$cache->has($key)) {
+                \App::$cache->delete($key);
+                $invalidatedKeys[] = $key;
+            }
+        }
 
         if (!empty($invalidatedKeys) && \App::$log) {
             \App::$log->info('Cluster cache invalidated', [

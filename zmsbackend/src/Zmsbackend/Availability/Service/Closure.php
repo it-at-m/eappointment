@@ -105,9 +105,12 @@ class Closure extends \BO\Zmsbackend\Base
     }
 
     /**
-     * Clear the closure list and abandon every cached scope. Scope entries are
-     * kept under a generation, because deleting scope-{id}-{resolveReferences}
-     * leaves the next read on the previous value.
+     * Clear closure list cache and scope caches that embed closures
+     * (scope-{id}-{resolveReferences}, department/cluster lists, in-process static).
+     *
+     * Always delete scope-* keys (do not gate on CacheInterface::has()): some adapters
+     * return false for existing keys, which would leave stale scope.closure for the
+     * month overview after toggle.
      */
     protected function invalidateCaches(int $scopeId): void
     {
@@ -117,10 +120,17 @@ class Closure extends \BO\Zmsbackend\Base
 
         if (App::$cache) {
             App::$cache->delete('closuresByScope-' . $scopeId);
+            for ($resolveReferences = 0; $resolveReferences <= 3; $resolveReferences++) {
+                App::$cache->delete("scope-{$scopeId}-{$resolveReferences}");
+            }
         }
 
         $scope = new \BO\Zmsentities\Scope(['id' => $scopeId]);
         (new \BO\Zmsbackend\Scope\Service\Scope())->removeCacheByContext($scope);
+
+        for ($resolveReferences = 0; $resolveReferences <= 3; $resolveReferences++) {
+            unset(\BO\Zmsbackend\Scope\Service\Scope::$cache["{$scopeId}-{$resolveReferences}"]);
+        }
     }
 
     public function readEntity(string|false $id): Entity

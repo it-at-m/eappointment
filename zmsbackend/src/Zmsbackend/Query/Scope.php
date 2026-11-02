@@ -81,6 +81,11 @@ class Scope extends Base implements MappingInterface
         return 'SELECT BehoerdenID FROM standort WHERE StandortID = ?';
     }
 
+    public function getQueryClusterIdsByScopeId(): string
+    {
+        return 'SELECT clusterID FROM clusterzuordnung WHERE standortID = ?';
+    }
+
     public function getQueryReadImageData(): string
     {
         return '
