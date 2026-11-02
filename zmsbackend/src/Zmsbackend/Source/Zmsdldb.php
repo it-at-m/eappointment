@@ -96,6 +96,9 @@ class Zmsdldb extends \BO\Zmsbackend\Base
     {
         foreach ($providers as $provider) {
             $newSlotMinutes = (int) ($provider->data['slotTimeInMinutes'] ?? 0);
+            if ($newSlotMinutes <= 0) {
+                continue;
+            }
             $scopes = (new \BO\Zmsbackend\Scope\Service\Scope())->readByProviderId($provider->getId());
             foreach ($scopes as $scope) {
                 $availabilities = (new \BO\Zmsbackend\Availability\Service\Availability())->readList($scope->getId());

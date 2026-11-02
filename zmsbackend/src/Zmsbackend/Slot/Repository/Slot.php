@@ -275,7 +275,7 @@ class Slot extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\Map
     ';
 
     const string QUERY_SELECT_DELETABLE_SLOT_PROCESS = '
-        SELECT sp.processID AS processId
+        SELECT sp.slotID AS slotID, sp.processID AS processID
             FROM slot_process sp
               LEFT JOIN buerger b ON sp.processID = b.BuergerID
               LEFT JOIN slot s ON sp.slotID = s.slotID

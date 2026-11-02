@@ -700,10 +700,10 @@ class Slot extends \BO\Zmsbackend\Base
             $select .= \BO\Zmsbackend\Slot\Repository\Slot::QUERY_SELECT_DELETABLE_SLOT_PROCESS_BY_SCOPE;
             $params['scopeID'] = $scopeID;
         }
-        // A process with one stale slot loses all of its slot rows. The mapping insert writes the current ones back.
+        // Delete the stale link only. A slot that still belongs to the appointment stays mapped.
         $sql = 'DELETE sp_del FROM slot_process sp_del INNER JOIN (
-            SELECT processId FROM (' . $select . ') stale_ids
-        ) stale ON stale.processId = sp_del.processID';
+            SELECT slotID, processID FROM (' . $select . ') stale_ids
+        ) stale ON stale.processID = sp_del.processID AND stale.slotID = sp_del.slotID';
 
         return $this->fetchAffected($sql, $params);
     }
