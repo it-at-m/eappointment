@@ -112,7 +112,7 @@ class DldbHelpers
         return $hadError ? false : true;
     }
 
-    public function checkAndCreateBackup($newFiles): void
+    public function checkAndCreateBackup(array $newFiles): void
     {
         \App::$log->info('Checking if backup is required');
         $backupRequired = false;
