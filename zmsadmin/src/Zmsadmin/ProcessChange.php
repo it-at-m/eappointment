@@ -149,7 +149,7 @@ class ProcessChange extends BaseController
         return $form;
     }
 
-    protected static function writeChangedProcess(array $input, $oldProcess, \BO\Zmsentities\Process $newProcess)
+    protected static function writeChangedProcess(array $input, \BO\Zmsentities\Process $oldProcess, \BO\Zmsentities\Process $newProcess)
     {
         $oldAppointment = $oldProcess->getFirstAppointment();
         $newAppointment = $newProcess->getFirstAppointment();
@@ -175,7 +175,7 @@ class ProcessChange extends BaseController
         return $newProcess;
     }
 
-    protected static function writeDeletedMail($oldProcess): void
+    protected static function writeDeletedMail(\BO\Zmsentities\Process $oldProcess): void
     {
             $oldProcess->status = 'deleted';
             ProcessDelete::writeDeleteMailNotifications($oldProcess);
