@@ -61,6 +61,13 @@ class UserAuth
 
         // TODO: Remove the password fields when password authentication is removed in the future
         if ($basicAuth && static::testUseraccountExists($basicAuth['username'])) {
+            if (!is_string($basicAuth['password'])) {
+                $exception = new \BO\Zmsbackend\Useraccount\Exception\InvalidCredentials();
+                $exception->data['password']['messages'] = [
+                    'Der Nutzername und das Passwort passen nicht zusammen'
+                ];
+                throw $exception;
+            }
             $useraccount = $useraccountQuery->readEntity($basicAuth['username']);
             $originalPassword = $useraccount->password;
             $useraccount = $useraccount->withVerifiedHash($basicAuth['password']);
