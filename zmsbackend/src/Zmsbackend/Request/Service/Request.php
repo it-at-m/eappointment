@@ -504,7 +504,7 @@ class Request extends \BO\Zmsbackend\Base
         return $this->readListBySource($source->getSource());
     }
 
-    public function writeImportEntity(array $request, string $source = 'dldb')
+    public function writeImportEntity(array|\BO\Zmsdldb\Entity\Service $request, string $source = 'dldb')
     {
         (new \BO\Zmsentities\Request($request))->testValid();
 
