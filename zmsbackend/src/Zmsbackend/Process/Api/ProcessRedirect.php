@@ -32,6 +32,10 @@ class ProcessRedirect extends \BO\Zmsbackend\Api\BaseController
         $input = Validator::input()->isJson()->assertValid()->getValue();
         $entity = new \BO\Zmsentities\Process($input);
         $newProcess = new \BO\Zmsentities\Process($input);
+        if (!is_array($input)) {
+            $entity->testValid();
+            throw new \BO\Zmsbackend\Process\Exception\ProcessInvalid();
+        }
         $process = $this->readValidProcess($workstation, $entity, $input, $workstation);
         $newProcess->requests = new RequestList();
         $this->testProcessAccess($workstation, $process);
@@ -57,7 +61,7 @@ class ProcessRedirect extends \BO\Zmsbackend\Api\BaseController
     /**
      * @return void
      */
-    protected function testProcessData($entity)
+    protected function testProcessData(\BO\Zmsentities\Process $entity)
     {
         $entity->testValid();
         $authCheck = (new Query())->readAuthKeyByProcessId($entity->id);
@@ -71,7 +75,7 @@ class ProcessRedirect extends \BO\Zmsbackend\Api\BaseController
     /**
      * @return void
      */
-    protected function testProcessAccess($workstation, $process)
+    protected function testProcessAccess(\BO\Zmsentities\Workstation $workstation, \BO\Zmsentities\Process $process)
     {
         $cluster = (new \BO\Zmsbackend\Cluster\Service\Cluster())->readByScopeId($workstation->scope['id'], 1);
         $workstation->validateProcessScopeAccess($workstation->getScopeList($cluster), $process);
@@ -84,7 +88,7 @@ class ProcessRedirect extends \BO\Zmsbackend\Api\BaseController
         }
     }
 
-    protected function readValidProcess($workstation, \BO\Zmsentities\Process $entity, $input)
+    protected function readValidProcess(\BO\Zmsentities\Workstation $workstation, \BO\Zmsentities\Process $entity, array $input)
     {
         if ($entity->hasProcessCredentials()) {
             $this->testProcessData($entity);

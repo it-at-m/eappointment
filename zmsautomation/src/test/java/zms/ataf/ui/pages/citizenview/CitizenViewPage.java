@@ -1131,6 +1131,10 @@ public class CitizenViewPage extends BasePage {
         timeSlot.assertListDateAccordions(expectedCount);
     }
 
+    public void assertLoadedListDateAccordions() {
+        timeSlot.assertLoadedListDateAccordions();
+    }
+
     public void assertOpenListGroupsByHour() {
         timeSlot.assertOpenListGroupsByHour();
     }

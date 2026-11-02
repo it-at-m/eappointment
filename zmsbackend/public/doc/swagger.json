@@ -13321,6 +13321,10 @@
             "confirmedWithExternalUserId": {
               "type": "number",
               "description": "Number of confirmed processes with externalUserId set (OIDC-linked appointments)."
+            },
+            "confirmedWithMultipleServices": {
+              "type": "number",
+              "description": "Number of confirmed appointments with more than one distinct service (buergeranliegen.AnliegenID). Several copies of the same service do not count."
             }
           }
         },

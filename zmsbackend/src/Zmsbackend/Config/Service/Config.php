@@ -93,7 +93,7 @@ class Config extends \BO\Zmsbackend\Base
      *
      * @return Entity|null
      */
-    public function deleteProperty($property)
+    public function deleteProperty(string $property)
     {
         $query = new \BO\Zmsbackend\Config\Repository\Config(\BO\Zmsbackend\Query\Base::DELETE);
         $query->addConditionName($property);
@@ -115,7 +115,7 @@ class Config extends \BO\Zmsbackend\Base
         return new Entity($splittedHash);
     }
 
-    protected function getSpecifiedValue($value): int|string
+    protected function getSpecifiedValue(mixed $value): int|string
     {
         if (is_bool($value)) {
             return ($value) ? 1 : 0;

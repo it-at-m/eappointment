@@ -23,7 +23,7 @@ use BO\Zmsentities\Workstation;
  */
 class AppointmentFormHelper
 {
-    public static function readFreeProcessList(\Psr\Http\Message\RequestInterface $request, $workstation, int $resolveReferences = 1)
+    public static function readFreeProcessList(\Psr\Http\Message\RequestInterface $request, \BO\Zmsentities\Workstation $workstation, int $resolveReferences = 1)
     {
         $validator = $request->getAttribute('validator');
         $selectedProcessId = $validator->getParameter('selectedprocess')->isNumber()->getValue();
@@ -54,7 +54,7 @@ class AppointmentFormHelper
         return ($freeProcessList) ? $freeProcessList->toProcessListByTime()->sortByTimeKey() : null;
     }
 
-    public static function readRequestList(\Psr\Http\Message\RequestInterface $request, $workstation, $selectedScope = null)
+    public static function readRequestList(\Psr\Http\Message\RequestInterface $request, \BO\Zmsentities\Workstation $workstation, ?Scope $selectedScope = null)
     {
         $scope = ($selectedScope) ? $selectedScope : static::readSelectedScope($request, $workstation);
         $requestList = null;
@@ -68,7 +68,7 @@ class AppointmentFormHelper
         return ($requestList) ? $requestList->sortByName() : new RequestList();
     }
 
-    public static function readSelectedScope(\Psr\Http\Message\RequestInterface $request, $workstation, $selectedProcess = null, int $resolveReferences = 1)
+    public static function readSelectedScope(\Psr\Http\Message\RequestInterface $request, \BO\Zmsentities\Workstation $workstation, ?Process $selectedProcess = null, int $resolveReferences = 1)
     {
         $validator = $request->getAttribute('validator');
         $input = $request->getParsedBody();
@@ -107,16 +107,16 @@ class AppointmentFormHelper
             null;
     }
 
-    public static function updateMail($formData, Process $process): void
+    public static function updateMail(array $formData, Process $process): void
     {
         if (isset($formData['sendMailConfirmation'])) {
             $mailConfirmation = $formData['sendMailConfirmation'];
             $mailConfirmation = (isset($mailConfirmation['value'])) ? $mailConfirmation['value'] : $mailConfirmation;
-            self::writeMail($mailConfirmation, $process);
+            self::writeMail((bool) $mailConfirmation, $process);
         }
     }
 
-    protected static function readProcessListByScopeAndDate($validator, $scopeList, $slotType, int $slotsRequired)
+    protected static function readProcessListByScopeAndDate(\BO\Mellon\Validator $validator, \BO\Zmsentities\Collection\ScopeList $scopeList, string $slotType, int $slotsRequired)
     {
         $selectedDate = $validator->getParameter('selecteddate')->isString()->getValue();
         $calendar = new Calendar($selectedDate);
@@ -124,10 +124,10 @@ class AppointmentFormHelper
     }
 
     protected static function getFreeProcessListWithSelectedProcess(
-        $validator,
-        $scopeList,
-        $freeProcessList,
-        $selectedProcess
+        \BO\Mellon\Validator $validator,
+        \BO\Zmsentities\Collection\ScopeList $scopeList,
+        ?\BO\Zmsentities\Collection\ProcessList $freeProcessList,
+        ?\BO\Zmsentities\Process $selectedProcess
     ) {
         $selectedDate = $validator->getParameter('selecteddate')->isString()->getValue();
         if (
@@ -148,14 +148,14 @@ class AppointmentFormHelper
         return ($freeProcessList) ? $freeProcessList : null;
     }
 
-    protected static function setSlotType($validator)
+    protected static function setSlotType(\BO\Mellon\Validator $validator)
     {
         $slotType = $validator->getParameter('slotType')->isString()->getValue();
         $slotType = ($slotType) ? $slotType : 'intern';
         return $slotType;
     }
 
-    protected static function setSlotsRequired($validator, ?Scope $scope, $process)
+    protected static function setSlotsRequired(\BO\Mellon\Validator $validator, ?Scope $scope, ?\BO\Zmsentities\Process $process)
     {
         $slotsRequired = 0;
         if ($scope && $scope->getPreference('appointment', 'multipleSlotsEnabled')) {
@@ -168,7 +168,7 @@ class AppointmentFormHelper
         return $slotsRequired;
     }
 
-    protected static function writeMail($mailConfirmation, Process $process): void
+    protected static function writeMail(bool $mailConfirmation, Process $process): void
     {
         if (
             $mailConfirmation &&

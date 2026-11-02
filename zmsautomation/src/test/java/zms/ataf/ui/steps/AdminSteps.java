@@ -30,6 +30,7 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
+import org.testng.SkipException;
 
 import ataf.core.assertions.CustomAssertions;
 import ataf.core.helpers.TestDataHelper;
@@ -49,6 +50,7 @@ import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import zms.ataf.helpers.AccountCheckout;
 import zms.ataf.helpers.BerlinTime;
+import zms.ataf.helpers.FixtureHolidays;
 import zms.ataf.helpers.PlainTextLengthSample;
 import zms.ataf.helpers.RandomNameHelper;
 import zms.ataf.rest.steps.CitizenApiSteps;
@@ -672,6 +674,7 @@ public class AdminSteps {
     public void iOpenTheNextOpeningHoursDayThatCanStillBeSaved() {
         ensureUpcomingOpeningTimes();
         LocalDate day = upcomingOpeningOnLaterDay ? BerlinTime.today().plusDays(1) : BerlinTime.today();
+        day = FixtureHolidays.firstOpenOnOrAfter(day);
         AUTHORITIES_AND_LOCATIONS_PAGE.clickOpeningHoursCalendarDay(day);
     }
 
@@ -1521,6 +1524,11 @@ public class AdminSteps {
         AUTHORITIES_AND_LOCATIONS_PAGE.deleteOpeningHoursOfType(TestDataHelper.transformTestData(type));
     }
 
+    @When("I delete the opening hours of type {string} when that row is on the day.")
+    public void wenn_sie_die_oeffnungszeit_vom_typ_loeschen_falls_vorhanden(String type) {
+        AUTHORITIES_AND_LOCATIONS_PAGE.deleteOpeningHoursOfType(TestDataHelper.transformTestData(type), false);
+    }
+
     @When("the customers already waiting are finished as no-shows.")
     public void die_bereits_wartenden_kunden_als_nicht_erschienen_abgeschlossen_werden() {
         PROCESSING_STATION_SECTION.dismissCustomersAlreadyWaiting();
@@ -1632,6 +1640,11 @@ public class AdminSteps {
             appointment = Long.parseLong(TestDataHelper.getTestData("appointment_epoch"));
         } catch (NumberFormatException exception) {
             throw new AssertionError("Appointment time was not stored", exception);
+        }
+        long start = BerlinTime.today().atStartOfDay(java.time.ZoneId.of("Europe/Berlin")).toEpochSecond();
+        if (appointment < start || appointment >= start + 86_400L) {
+            throw new SkipException("The appointment is not today (" + BerlinTime.today()
+                    + "), so it is not in today's waiting count.");
         }
         long now = Instant.now().getEpochSecond();
         if (appointment - now > 45) {

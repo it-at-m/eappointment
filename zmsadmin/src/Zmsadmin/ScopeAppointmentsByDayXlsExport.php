@@ -110,7 +110,7 @@ class ScopeAppointmentsByDayXlsExport extends BaseController
             );
     }
 
-    protected function escapeSpreadsheetFormula($value)
+    protected function escapeSpreadsheetFormula(mixed $value)
     {
         if (!is_string($value) || $value === '') {
             return $value;

@@ -10,7 +10,7 @@ class Db
 {
     public static $baseDSN = '';
 
-    public static function startExecuteSqlFile(string $file, $databaseName = null, bool $verbose = true): void
+    public static function startExecuteSqlFile(string $file, ?string $databaseName = null, bool $verbose = true): void
     {
         $databaseConnection = self::startUsingDatabase($databaseName, $verbose);
         $startedAt = microtime(true);
@@ -58,7 +58,7 @@ class Db
     /**
      * @psalm-api
      */
-    public static function executeSql($query, $databaseName = null): void
+    public static function executeSql(string $query, ?string $databaseName = null): void
     {
         $databaseConnection = self::startUsingDatabase($databaseName, false);
         $databaseConnection->exec($query);
@@ -86,7 +86,7 @@ class Db
         return \BO\Zmsbackend\Connection\Select::getWriteConnection();
     }
 
-    public static function startTestDataImport($fixturesDirectory, $filename = 'mysql_zmsbo.sql'): void
+    public static function startTestDataImport(string $fixturesDirectory, string $filename = 'mysql_zmsbo.sql'): void
     {
         $defaultDatabaseName = \BO\Zmsbackend\Connection\Select::$dbname_zms;
 
@@ -103,7 +103,7 @@ class Db
         (new \BO\Zmsbackend\Config\Service\Config())->updateEntity($defaults);
     }
 
-    public static function startMigrations($migrationList, bool $commit = true, ?string $phase = null): int
+    public static function startMigrations(string|array $migrationList, bool $commit = true, ?string $phase = null): int
     {
         $migrationFiles = self::resolveMigrationFileList($migrationList);
         $migrationFiles = self::filterMigrationFilesByPhase($migrationFiles, $phase);
@@ -283,7 +283,7 @@ class Db
         );
     }
 
-    private static function resolveMigrationFileList($migrationList): array
+    private static function resolveMigrationFileList(string|array $migrationList): array
     {
         if (!is_array($migrationList)) {
             $migrationList = glob($migrationList . '/*.sql');

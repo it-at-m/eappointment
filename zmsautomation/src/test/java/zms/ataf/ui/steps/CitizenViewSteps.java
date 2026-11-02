@@ -719,6 +719,12 @@ public class CitizenViewSteps {
         page.assertListDateAccordions(count);
     }
 
+    @Then("the list view shows its date accordions with the first one open")
+    public void theListViewShowsItsDateAccordionsWithTheFirstOneOpen() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: list shows the loaded date accordions");
+        page.assertLoadedListDateAccordions();
+    }
+
     @Then("the open list accordion groups times by hour")
     public void theOpenListAccordionGroupsTimesByHour() {
         ScenarioLogManager.getLogger().info("zmscitizenview: open date groups times by hour");
