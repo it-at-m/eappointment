@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-11-02T00:10:05.249Z",
+  "publishedAt": "2026-11-02T01:25:46.835Z",
   "branches": [
     {
       "name": "next",
@@ -360,6 +360,12 @@
       "slug": "fix-psalm-false-and-null-params",
       "runId": "41343868992",
       "runStartedAt": "2026-11-01T19:51:40Z"
+    },
+    {
+      "name": "fix/psalm-hidden-param-types",
+      "slug": "fix-psalm-hidden-param-types",
+      "runId": "41367618487",
+      "runStartedAt": "2026-11-02T00:31:36Z"
     },
     {
       "name": "fix/psalm-id-params",
