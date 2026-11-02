@@ -209,7 +209,7 @@ class Mail extends \BO\Zmsbackend\Base
      *
      * @return true
      */
-    protected function writeMimeparts(string|false $queueId, array $multipart): bool
+    protected function writeMimeparts(string|false $queueId, \BO\Zmsentities\Collection\MimepartList $multipart): bool
     {
         $success = true;
         foreach ($multipart as $part) {
