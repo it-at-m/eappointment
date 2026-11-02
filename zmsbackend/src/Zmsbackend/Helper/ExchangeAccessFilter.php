@@ -79,7 +79,7 @@ class ExchangeAccessFilter
      *
      * @psalm-api
      */
-    protected static function getFilteredEntityByUseraccountSuperuser($unused, string $filteredKey): void
+    protected static function getFilteredEntityByUseraccountSuperuser(string|int $unused, string $filteredKey): void
     {
         if (! static::$workstation->getUseraccount()->isSuperUser()) {
             unset(static::$filteredEntity->data[$filteredKey]);
