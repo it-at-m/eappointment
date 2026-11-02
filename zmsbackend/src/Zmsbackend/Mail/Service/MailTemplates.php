@@ -225,7 +225,7 @@ class MailTemplates extends \BO\Zmsbackend\Base
     }
 
     /** @psalm-api */
-    public function readProperty($property, bool $forUpdate = false)
+    public function readProperty(string $property, bool $forUpdate = false)
     {
         $sql = \BO\Zmsbackend\Mail\Repository\Mailtemplate::QUERY_SELECT_PROPERTY;
         if ($forUpdate) {
@@ -235,7 +235,7 @@ class MailTemplates extends \BO\Zmsbackend\Base
     }
 
     /** @psalm-api */
-    public function replaceProperty($property, mixed $value)
+    public function replaceProperty(string $property, mixed $value)
     {
         return $this->perform(\BO\Zmsbackend\Mail\Repository\Mailtemplate::QUERY_REPLACE_PROPERTY, [
             'property' => $property,
@@ -250,7 +250,7 @@ class MailTemplates extends \BO\Zmsbackend\Base
      * @return bool
      * @psalm-api
      */
-    public function deleteProperty($property)
+    public function deleteProperty(string $property)
     {
         $query = new \BO\Zmsbackend\Mail\Repository\Mailtemplate(\BO\Zmsbackend\Query\Base::DELETE);
         $query->addConditionName($property);

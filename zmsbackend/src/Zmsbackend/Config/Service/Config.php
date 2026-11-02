@@ -93,7 +93,7 @@ class Config extends \BO\Zmsbackend\Base
      *
      * @return Entity|null
      */
-    public function deleteProperty($property)
+    public function deleteProperty(string $property)
     {
         $query = new \BO\Zmsbackend\Config\Repository\Config(\BO\Zmsbackend\Query\Base::DELETE);
         $query->addConditionName($property);
