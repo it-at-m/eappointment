@@ -25,7 +25,7 @@ class Calendar
 
     protected $dateTime;
 
-    public function __construct($selectedDate = null, $selectedWeek = null, ?int $selectedYear = null)
+    public function __construct(?string $selectedDate = null, ?string $selectedWeek = null, ?int $selectedYear = null)
     {
         if ($selectedWeek && $selectedYear) {
             $this->dateTime = $this->getDateTimeFromWeekAndYear($selectedWeek, $selectedYear);
@@ -166,7 +166,7 @@ class Calendar
         return $this->toDayListByHour($dayList);
     }
 
-    protected function getDateTimeFromWeekAndYear($week, int $year): DateTimeImmutable
+    protected function getDateTimeFromWeekAndYear(int $week, int $year): DateTimeImmutable
     {
         $dateTime = new DateTimeImmutable();
         return $dateTime->setISODate($year, $week);

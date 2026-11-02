@@ -53,12 +53,12 @@ class Availability extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfa
         return $entity;
     }
 
-    public function readLock($availabilityId)
+    public function readLock(string|int $availabilityId)
     {
         return $this->perform(\BO\Zmsbackend\Availability\Repository\Availability::QUERY_GET_LOCK, ['availabilityId' => $availabilityId]);
     }
 
-    public function readEntityDoubleTypes($availabilityId, int $resolveReferences = 0)
+    public function readEntityDoubleTypes(string|int $availabilityId, int $resolveReferences = 0)
     {
         $query = new \BO\Zmsbackend\Availability\Repository\Availability(\BO\Zmsbackend\Query\Base::SELECT);
         $query
@@ -72,7 +72,7 @@ class Availability extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfa
     }
 
     public function readList(
-        $scopeId,
+        string|int $scopeId,
         int $resolveReferences = 0,
         ?\DateTimeInterface $startDate = null,
         ?\DateTimeInterface $endDate = null
@@ -191,7 +191,7 @@ class Availability extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfa
         return $collection;
     }
 
-    public function readOpeningHoursListByDate($scopeId, \DateTimeInterface $now, int $resolveReferences = 0): Collection
+    public function readOpeningHoursListByDate(string|int $scopeId, \DateTimeInterface $now, int $resolveReferences = 0): Collection
     {
         $collection = new Collection();
         $query = new \BO\Zmsbackend\Availability\Repository\Availability(\BO\Zmsbackend\Query\Base::SELECT);

@@ -35,7 +35,7 @@ class ProviderHandler extends BaseController
      * @return (mixed|string)[][]
      *
      */
-    public static function readProviderList($source): array
+    public static function readProviderList(string $source): array
     {
         return [
             ['name' => 'assigned', 'items' => static::readProviderAssigned($source)],
@@ -43,7 +43,7 @@ class ProviderHandler extends BaseController
         ];
     }
 
-    protected static function readProviderAssigned($source)
+    protected static function readProviderAssigned(string $source)
     {
         $providerAssigned = \App::$http->readGetResult(
             '/provider/' . $source . '/',
@@ -56,7 +56,7 @@ class ProviderHandler extends BaseController
             new ProviderList();
     }
 
-    protected static function readProviderNotAssigned($source)
+    protected static function readProviderNotAssigned(string $source)
     {
         $providerNotAssigned = \App::$http->readGetResult(
             '/provider/' . $source . '/',

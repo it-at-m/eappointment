@@ -40,7 +40,7 @@ class Owner extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\Ma
         ];
     }
 
-    public function addConditionOrganisationId($organisationId): static
+    public function addConditionOrganisationId(string|int $organisationId): static
     {
         $this->leftJoin(
             new \BO\Zmsbackend\Query\Alias(\BO\Zmsbackend\Organisation\Repository\Organisation::TABLE, 'ownerorganisation'),

@@ -7,7 +7,7 @@ class MailTemplateProvider
     protected $templates = false;
     protected $process;
 
-    public function __construct($process)
+    public function __construct(\BO\Zmsentities\Process $process)
     {
         $this->process = $process;
     }
@@ -18,7 +18,7 @@ class MailTemplateProvider
     }
 
     /** @psalm-api */
-    public function getTemplate($templateName)
+    public function getTemplate(string $templateName)
     {
         if (!$this->templates) {
             $this->loadTemplates();

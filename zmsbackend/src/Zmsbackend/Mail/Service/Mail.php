@@ -209,7 +209,7 @@ class Mail extends \BO\Zmsbackend\Base
      *
      * @return true
      */
-    protected function writeMimeparts(string|false $queueId, $multipart): bool
+    protected function writeMimeparts(string|false $queueId, array|\BO\Zmsentities\Collection\MimepartList $multipart): bool
     {
         $success = true;
         foreach ($multipart as $part) {
@@ -233,7 +233,7 @@ class Mail extends \BO\Zmsbackend\Base
         return true;
     }
 
-    public function deleteEntity($itemId)
+    public function deleteEntity(string|int $itemId)
     {
         $query = \BO\Zmsbackend\Mail\Repository\MailQueue::QUERY_DELETE;
         $status = $this->perform($query, [$itemId]);
@@ -260,7 +260,7 @@ class Mail extends \BO\Zmsbackend\Base
         (new \BO\Zmsbackend\Config\Service\Config())->replaceProperty('status__mailReminderLastRun', $now->format('Y-m-d H:i:s'));
     }
 
-    protected function readMultiPartByQueueId($queueId)
+    protected function readMultiPartByQueueId(string|int $queueId)
     {
         $query = new \BO\Zmsbackend\Mail\Repository\Mimepart(\BO\Zmsbackend\Query\Base::SELECT);
         $query->addEntityMapping()

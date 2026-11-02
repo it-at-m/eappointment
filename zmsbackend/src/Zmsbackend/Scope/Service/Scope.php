@@ -112,7 +112,7 @@ class Scope extends \BO\Zmsbackend\Base
     }
 
     public function readByClusterId(
-        $clusterId,
+        string|int $clusterId,
         int $resolveReferences = 0,
         bool $disableCache = false
     ): Collection {
@@ -172,7 +172,7 @@ class Scope extends \BO\Zmsbackend\Base
         return $scopeList;
     }
 
-    public function readByProviderId($providerId, int $resolveReferences = 0, bool $disableCache = false): Collection
+    public function readByProviderId(string|int $providerId, int $resolveReferences = 0, bool $disableCache = false): Collection
     {
         $cacheKey = "scopeReadByProviderId-$providerId-$resolveReferences";
 
@@ -222,7 +222,7 @@ class Scope extends \BO\Zmsbackend\Base
         return $scopeList;
     }
 
-    public function readByRequestId($requestId, $source, int $resolveReferences = 0): Collection
+    public function readByRequestId(string|int $requestId, string $source, int $resolveReferences = 0): Collection
     {
         $scopeList = new Collection();
         $providerList = (new \BO\Zmsbackend\Provider\Service\Provider())->readListBySource($source, 0, true, $requestId);
@@ -292,7 +292,7 @@ class Scope extends \BO\Zmsbackend\Base
         return $scopeList;
     }
     /** @psalm-api */
-    public function readListBySource($source, int $resolveReferences = 0)
+    public function readListBySource(string $source, int $resolveReferences = 0)
     {
         $this->testSource($source);
         $query = new \BO\Zmsbackend\Request\Repository\Request(\BO\Zmsbackend\Query\Base::SELECT);
@@ -306,7 +306,7 @@ class Scope extends \BO\Zmsbackend\Base
     /**
      * @return void
      */
-    protected function testSource($source)
+    protected function testSource(string $source)
     {
         if (! (new \BO\Zmsbackend\Source\Service\Source())->readEntity($source)) {
             throw new \BO\Zmsbackend\Source\Exception\UnknownDataSource();
@@ -358,7 +358,7 @@ class Scope extends \BO\Zmsbackend\Base
         return $scopeList;
     }
 
-    public function readIsOpened($scopeId, \DateTimeInterface $now): bool
+    public function readIsOpened(string|int $scopeId, \DateTimeInterface $now): bool
     {
         $isOpened = false;
         $availabilityList = (new \BO\Zmsbackend\Availability\Service\Availability())->readOpeningHoursListByDate($scopeId, $now, 2);
@@ -382,7 +382,7 @@ class Scope extends \BO\Zmsbackend\Base
         );
     }
 
-    public function readWaitingNumberUpdated($scopeId, \DateTimeInterface $dateTime, bool $respectContingent = true)
+    public function readWaitingNumberUpdated(string|int $scopeId, \DateTimeInterface $dateTime, bool $respectContingent = true)
     {
         if (! $this->readIsGivenNumberInContingent($scopeId) && $respectContingent) {
             throw new \BO\Zmsbackend\Scope\Exception\GivenNumberCountExceeded();
@@ -396,7 +396,7 @@ class Scope extends \BO\Zmsbackend\Base
         return $scope->getStatus('queue', 'lastGivenNumber');
     }
 
-    public function readDisplayNumberUpdated($scopeId)
+    public function readDisplayNumberUpdated(string|int $scopeId)
     {
         $this->perform(
             (new \BO\Zmsbackend\Query\Scope(\BO\Zmsbackend\Query\Base::SELECT))->getQueryLastDisplayNumber(),
@@ -407,7 +407,7 @@ class Scope extends \BO\Zmsbackend\Base
         return $scope->getStatus('queue', 'lastDisplayNumber');
     }
 
-    public function readIsGivenNumberInContingent($scopeId): bool
+    public function readIsGivenNumberInContingent(string|int $scopeId): bool
     {
         $isInContingent = $this->getReader()
             ->fetchValue((new \BO\Zmsbackend\Query\Scope(\BO\Zmsbackend\Query\Base::SELECT))
@@ -415,7 +415,7 @@ class Scope extends \BO\Zmsbackend\Base
         return ($isInContingent) ? true : false;
     }
 
-    public function readQueueList(array $scopeIds, $dateTime, int $resolveReferences = 0, $withEntities = []): \BO\Zmsentities\Collection\QueueList
+    public function readQueueList(array $scopeIds, \DateTimeInterface $dateTime, int $resolveReferences = 0, array $withEntities = []): \BO\Zmsentities\Collection\QueueList
     {
         if ($resolveReferences > 0) {
             $queueList = (new \BO\Zmsbackend\Process\Service\Process())
@@ -470,7 +470,7 @@ class Scope extends \BO\Zmsbackend\Base
         return $queueList->withEstimatedWaitingTime($timeAverage, $workstationCount, $dateTime);
     }
 
-    public function readScopesQueueListWithWaitingTime(Collection $scopes, \DateTimeInterface $dateTime, int $resolveReferences = 0, $withEntities = [])
+    public function readScopesQueueListWithWaitingTime(Collection $scopes, \DateTimeInterface $dateTime, int $resolveReferences = 0, array $withEntities = [])
     {
         $timeSum = 0;
         $workstationCount = 0;
@@ -510,7 +510,7 @@ class Scope extends \BO\Zmsbackend\Base
         return $scopeList;
     }
 
-    public function writeEntity(\BO\Zmsentities\Scope $entity, $parentId): Entity|null
+    public function writeEntity(\BO\Zmsentities\Scope $entity, string|int $parentId): Entity|null
     {
         self::$cache = [];
         $query = new \BO\Zmsbackend\Query\Scope(\BO\Zmsbackend\Query\Base::INSERT);
@@ -526,7 +526,7 @@ class Scope extends \BO\Zmsbackend\Base
         return $this->readEntity($lastInsertId);
     }
 
-    public function updateEntity($scopeId, \BO\Zmsentities\Scope $entity, int $resolveReferences = 0): Entity|null
+    public function updateEntity(string|int $scopeId, \BO\Zmsentities\Scope $entity, int $resolveReferences = 0): Entity|null
     {
         self::$cache = [];
 
@@ -573,7 +573,7 @@ class Scope extends \BO\Zmsbackend\Base
         return $entity;
     }
 
-    public function updateEmergency($scopeId, \BO\Zmsentities\Scope $entity): Entity|null
+    public function updateEmergency(string|int $scopeId, \BO\Zmsentities\Scope $entity): Entity|null
     {
         self::$cache = [];
         $departmentId = $this->readDepartmentIdByScopeId($scopeId);
@@ -589,7 +589,7 @@ class Scope extends \BO\Zmsbackend\Base
         return $this->readEntity($scopeId, 0, true);
     }
 
-    public function writeImageData($scopeId, \BO\Zmsentities\Mimepart $entity): \BO\Zmsentities\Mimepart
+    public function writeImageData(string|int $scopeId, \BO\Zmsentities\Mimepart $entity): \BO\Zmsentities\Mimepart
     {
         if ($entity->mime && $entity->content) {
             $this->deleteImage($scopeId);
@@ -610,7 +610,7 @@ class Scope extends \BO\Zmsbackend\Base
         return $entity;
     }
 
-    public function readImageData($scopeId): \BO\Zmsentities\Mimepart
+    public function readImageData(string|int $scopeId): \BO\Zmsentities\Mimepart
     {
         $imageName = 's_' . $scopeId . '_bild';
         $imageData = new \BO\Zmsentities\Mimepart();
@@ -625,7 +625,7 @@ class Scope extends \BO\Zmsbackend\Base
         return $imageData;
     }
 
-    public function deleteImage($scopeId)
+    public function deleteImage(string|int $scopeId)
     {
         $imageName = 's_' . $scopeId . '_bild';
         return $this->perform((new \BO\Zmsbackend\Query\Scope(\BO\Zmsbackend\Query\Base::DELETE))->getQueryDeleteImage(), array(
@@ -633,7 +633,7 @@ class Scope extends \BO\Zmsbackend\Base
         ));
     }
 
-    public function deleteEntity($scopeId): Entity|null
+    public function deleteEntity(string|int $scopeId): Entity|null
     {
         $processListCount = (new \BO\Zmsbackend\Process\Service\Process())->readProcessListCountByScope($scopeId);
         if (0 < $processListCount) {
@@ -671,7 +671,7 @@ class Scope extends \BO\Zmsbackend\Base
         return $this->getReader()->fetchValue($query->getQueryDepartmentIdByScopeId(), [$scopeId]);
     }
 
-    public function readClusterIdsByScopeId($scopeId): array
+    public function readClusterIdsByScopeId(string|int $scopeId): array
     {
         $query = new \BO\Zmsbackend\Query\Scope(\BO\Zmsbackend\Query\Base::SELECT);
         $result = $this->getReader()->fetchAll($query->getQueryClusterIdsByScopeId(), [$scopeId]);
@@ -681,7 +681,7 @@ class Scope extends \BO\Zmsbackend\Base
     /**
      * @return void
      */
-    public function removeCacheByContext(Entity $scope, $departmentId = null)
+    public function removeCacheByContext(Entity $scope, int|string|null $departmentId = null)
     {
         if (!\App::$cache) {
             return;
@@ -757,7 +757,7 @@ class Scope extends \BO\Zmsbackend\Base
     /**
      * @psalm-api
      */
-    public function removeCache($scope): void
+    public function removeCache(\BO\Zmsentities\Scope $scope): void
     {
         $departmentId = isset($scope->id) ? $this->readDepartmentIdByScopeId($scope->id) : null;
         $this->removeCacheByContext($scope, $departmentId);

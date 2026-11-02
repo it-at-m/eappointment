@@ -8,7 +8,7 @@ class Apiclient extends \BO\Zmsbackend\Base
 {
     public static $cache = [];
 
-    public function readEntity($clientKey): Entity
+    public function readEntity(string $clientKey): Entity
     {
         $query = new \BO\Zmsbackend\Apikey\Repository\Apiclient(\BO\Zmsbackend\Query\Base::SELECT);
         $query

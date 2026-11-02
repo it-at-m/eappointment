@@ -260,6 +260,18 @@ public class CitizenViewSteps {
         page.assertServiceDescriptionLink(TestDataHelper.transformTestData(label), serviceId);
     }
 
+    @Then("the service {string} links to service {string} and not {string} on muenchen.de")
+    public void theServiceLinksToServiceAndNotInternalIds(String label, String serviceId, String forbiddenIds) {
+        ScenarioLogManager.getLogger()
+                .info(
+                        "zmscitizenview: {} links to service {} and not {}",
+                        label,
+                        serviceId,
+                        forbiddenIds);
+        page.assertServiceDescriptionLinkExcludesInternalIds(
+                TestDataHelper.transformTestData(label), serviceId, forbiddenIds);
+    }
+
     @Then("the count for {string} sits beside the name on desktop")
     public void theCountSitsBesideTheNameOnDesktop(String label) {
         ScenarioLogManager.getLogger()
@@ -705,6 +717,12 @@ public class CitizenViewSteps {
     public void theListViewShowsDateAccordionsWithTheFirstOneOpen(int count) {
         ScenarioLogManager.getLogger().info("zmscitizenview: list shows {} date accordions", count);
         page.assertListDateAccordions(count);
+    }
+
+    @Then("the list view shows its date accordions with the first one open")
+    public void theListViewShowsItsDateAccordionsWithTheFirstOneOpen() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: list shows the loaded date accordions");
+        page.assertLoadedListDateAccordions();
     }
 
     @Then("the open list accordion groups times by hour")
@@ -1647,6 +1665,20 @@ public class CitizenViewSteps {
         ScenarioLogManager.getLogger()
                 .info("zmscitizenview: assert only Pass calendar services offered on combination step");
         page.assertPassOnlyCombinationServicesVisible();
+    }
+
+    @When("I enter the 250-character required free text with newlines and a tab in the citizen view")
+    public void iEnterTheRequiredFreeTextAtTheLimit() {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: required Freitext at 250 with newline and tab");
+        page.assertRequiredFreeTextCountsNewlinesAndTab();
+    }
+
+    @Then("the required free text of 251 characters including a newline and a tab stays on the contact form")
+    public void theFreeTextOverLimitStaysOnTheContactForm() {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: Freitext of 251 with newline and tab is rejected");
+        page.assertFreeTextOverLimitStaysOnContactForm();
     }
 
     @When("I fill contact details without continuing in the citizen view")

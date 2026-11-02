@@ -174,19 +174,19 @@ class Useraccount extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Qu
         ];
     }
 
-    public function addConditionLoginName($loginName): static
+    public function addConditionLoginName(string $loginName): static
     {
         $this->query->where('useraccount.Name', '=', $loginName);
         return $this;
     }
 
-    public function addConditionUserId($userId): static
+    public function addConditionUserId(string|int $userId): static
     {
         $this->query->where('useraccount.NutzerID', '=', $userId);
         return $this;
     }
 
-    public function addConditionPassword($password): static
+    public function addConditionPassword(string $password): static
     {
         $this->query->where('useraccount.Passworthash', '=', $password);
         return $this;
@@ -222,7 +222,7 @@ class Useraccount extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Qu
         return $this;
     }
 
-    public function addConditionSearch($queryString, bool $orWhere = false): static
+    public function addConditionSearch(string $queryString, bool $orWhere = false): static
     {
         $condition = function (\BO\Zmsbackend\Query\Builder\ConditionBuilder $query) use ($queryString) {
             $queryString = trim($queryString);
@@ -262,7 +262,7 @@ class Useraccount extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Qu
     }
 
     #[\Override]
-    public function postProcess($data)
+    public function postProcess(array $data)
     {
         $data[$this->getPrefixed("lastLogin")] = ('0000-00-00' != $data[$this->getPrefixed("lastLogin")]) ?
             strtotime($data[$this->getPrefixed("lastLogin")]) :
@@ -301,7 +301,7 @@ class Useraccount extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Qu
         return $this;
     }
 
-    public function addConditionDepartmentIdsAndSearch(array $departmentIds, $queryString = null, bool $orWhere = false): self
+    public function addConditionDepartmentIdsAndSearch(array $departmentIds, ?string $queryString = null, bool $orWhere = false): self
     {
         $this->addConditionDepartmentIds($departmentIds);
 
@@ -346,7 +346,7 @@ class Useraccount extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Qu
      *
      * @param false $isWorkstationSuperuser
      */
-    public function addConditionWorkstationAccess($workstationUserId, array $workstationDepartmentIds, bool $isWorkstationSuperuser = false): self
+    public function addConditionWorkstationAccess(string|int $workstationUserId, array $workstationDepartmentIds, bool $isWorkstationSuperuser = false): self
     {
         // Superusers can access all useraccounts, no filtering needed
         if ($isWorkstationSuperuser) {
