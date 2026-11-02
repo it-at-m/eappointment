@@ -10,7 +10,7 @@ class XRequest extends \BO\Zmsbackend\Query\Base
      */
     const string TABLE = 'buergeranliegen';
 
-    public function addConditionProcessId($processId): static
+    public function addConditionProcessId(string|int $processId): static
     {
         $this->query->where('BuergerID', '=', $processId);
         return $this;

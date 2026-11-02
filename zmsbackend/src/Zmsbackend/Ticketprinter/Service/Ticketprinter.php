@@ -11,7 +11,7 @@ use BO\Zmsentities\Collection\TicketprinterList as Collection;
  */
 class Ticketprinter extends \BO\Zmsbackend\Base
 {
-    public function readEntity($itemId)
+    public function readEntity(string|int $itemId)
     {
         $query = new \BO\Zmsbackend\Ticketprinter\Repository\Ticketprinter(\BO\Zmsbackend\Query\Base::SELECT);
         $query
@@ -23,7 +23,7 @@ class Ticketprinter extends \BO\Zmsbackend\Base
         return $ticketprinter;
     }
 
-    protected function readList($statement)
+    protected function readList(\PDOStatement $statement)
     {
         $ticketprinterList = new Collection();
         while ($entityData = $statement->fetch(\PDO::FETCH_ASSOC)) {
@@ -33,7 +33,7 @@ class Ticketprinter extends \BO\Zmsbackend\Base
         return $ticketprinterList;
     }
 
-    public function readByHash($hash)
+    public function readByHash(string $hash)
     {
         $query = new \BO\Zmsbackend\Ticketprinter\Repository\Ticketprinter(\BO\Zmsbackend\Query\Base::SELECT);
         $query
@@ -193,7 +193,7 @@ class Ticketprinter extends \BO\Zmsbackend\Base
         return $scope;
     }
 
-    public function writeEntityWithHash($organisationId, $ticketprinterName = '')
+    public function writeEntityWithHash(string|int $organisationId, string $ticketprinterName = '')
     {
         $query = new \BO\Zmsbackend\Ticketprinter\Repository\Ticketprinter(\BO\Zmsbackend\Query\Base::INSERT);
         $ticketprinter = (new Entity())->getHashWith($organisationId);
@@ -210,7 +210,7 @@ class Ticketprinter extends \BO\Zmsbackend\Base
         return $this->readEntity($lastInsertId);
     }
 
-    public function writeEntity(Entity $entity, $organisationId)
+    public function writeEntity(Entity $entity, string|int $organisationId)
     {
         $query = new \BO\Zmsbackend\Ticketprinter\Repository\Ticketprinter(\BO\Zmsbackend\Query\Base::INSERT);
         $values = $query->reverseEntityMapping($entity, $organisationId);
@@ -224,7 +224,7 @@ class Ticketprinter extends \BO\Zmsbackend\Base
         return $this->readEntity($lastInsertId);
     }
 
-    public function readByOrganisationId($organisationId)
+    public function readByOrganisationId(string|int $organisationId)
     {
         $query = new \BO\Zmsbackend\Ticketprinter\Repository\Ticketprinter(\BO\Zmsbackend\Query\Base::SELECT);
         $query
@@ -234,14 +234,14 @@ class Ticketprinter extends \BO\Zmsbackend\Base
         return $this->readList($statement);
     }
 
-    public function deleteEntity($itemId)
+    public function deleteEntity(string|int $itemId)
     {
         $query =  new \BO\Zmsbackend\Ticketprinter\Repository\Ticketprinter(\BO\Zmsbackend\Query\Base::DELETE);
         $query->addConditionTicketprinterId($itemId);
         return $this->deleteItem($query);
     }
 
-    public function readExpiredTicketprinterList($expirationDate): Collection
+    public function readExpiredTicketprinterList(\DateTimeInterface $expirationDate): Collection
     {
         $selectQuery = new \BO\Zmsbackend\Ticketprinter\Repository\Ticketprinter(\BO\Zmsbackend\Query\Base::SELECT);
         $selectQuery

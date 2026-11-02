@@ -21,7 +21,7 @@ services:
       - default
 
   mail-viewer:
-    image: node:24.22.1@sha256:6449e19d8184d84062525b6a7524def03146c2cb04a7f08b076680d0e8e4240a
+    image: node:26.13.0@sha256:6d2c7d5d074bf72f81ddc252b4fbb5d625bc028eeda49cb4b8c2ff8eda1ee617
     container_name: zms-mail-viewer
     working_dir: /workspace/.devcontainer/mail-viewer
     volumes:
@@ -45,7 +45,7 @@ services:
     restart: unless-stopped
 
   citizenview:
-    image: node:24.22.1@sha256:6449e19d8184d84062525b6a7524def03146c2cb04a7f08b076680d0e8e4240a
+    image: node:26.13.0@sha256:6d2c7d5d074bf72f81ddc252b4fbb5d625bc028eeda49cb4b8c2ff8eda1ee617
     container_name: zms-citizenview
     working_dir: /workspace/zmscitizenview
     volumes:
@@ -148,7 +148,7 @@ services:
     restart: unless-stopped
 
   keycloak:
-    image: quay.io/keycloak/keycloak:26.8.1@sha256:a78d6b79572168cb25886b80a8b5b8d4ed4390743e3eecb810538683e209dd6b
+    image: quay.io/keycloak/keycloak:26.8.1@sha256:3f3c5f8e03c614774b4bd9173b88391fefa4153bfc010d8012d59ad825377332
     container_name: zms-keycloak
     hostname: keycloak
     command:

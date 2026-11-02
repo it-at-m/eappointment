@@ -15,7 +15,7 @@ use BO\Zmsentities\Collection\WorkstationList as Collection;
  */
 class Workstation extends \BO\Zmsbackend\Base
 {
-    public function readEntity($loginName, int $resolveReferences = 0)
+    public function readEntity(string $loginName, int $resolveReferences = 0)
     {
         $query = new \BO\Zmsbackend\Workstation\Repository\Workstation(\BO\Zmsbackend\Query\Base::SELECT);
         $query
@@ -57,14 +57,14 @@ class Workstation extends \BO\Zmsbackend\Base
         return $entity;
     }
 
-    public function readLoggedInHashByName($loginName)
+    public function readLoggedInHashByName(string $loginName)
     {
         $query = \BO\Zmsbackend\Workstation\Repository\Workstation::QUERY_LOGGEDIN_CHECK;
         $loggedInWorkstation = $this->getReader()->fetchOne($query, ['loginName' => $loginName]);
         return ($loggedInWorkstation['hash']) ? $loggedInWorkstation['hash'] : null;
     }
 
-    public function readLoggedInListByScope($scopeId, \DateTimeInterface $dateTime, int $resolveReferences = 0): Collection
+    public function readLoggedInListByScope(string|int $scopeId, \DateTimeInterface $dateTime, int $resolveReferences = 0): Collection
     {
         $workstationList = new \BO\Zmsentities\Collection\WorkstationList();
         $query = new \BO\Zmsbackend\Workstation\Repository\Workstation(\BO\Zmsbackend\Query\Base::SELECT);
@@ -86,7 +86,7 @@ class Workstation extends \BO\Zmsbackend\Base
         return $workstationList;
     }
 
-    public function readLoggedInListByCluster($clusterId, \DateTimeInterface $dateTime, int $resolveReferences = 0): Collection
+    public function readLoggedInListByCluster(string|int $clusterId, \DateTimeInterface $dateTime, int $resolveReferences = 0): Collection
     {
         $workstationList = new \BO\Zmsentities\Collection\WorkstationList();
         $cluster = (new \BO\Zmsbackend\Cluster\Service\Cluster())->readEntity($clusterId, $resolveReferences);
@@ -98,7 +98,7 @@ class Workstation extends \BO\Zmsbackend\Base
         return $workstationList;
     }
 
-    public function readWorkstationByScopeAndName($scopeId, $workstationName, int $resolveReferences = 0)
+    public function readWorkstationByScopeAndName(string|int $scopeId, string $workstationName, int $resolveReferences = 0)
     {
         $query = new \BO\Zmsbackend\Workstation\Repository\Workstation(\BO\Zmsbackend\Query\Base::SELECT);
         $query
@@ -114,7 +114,7 @@ class Workstation extends \BO\Zmsbackend\Base
         return $workstation;
     }
 
-    public function readCollectionByDepartmentId($departmentId, int $resolveReferences = 0): Collection
+    public function readCollectionByDepartmentId(string|int $departmentId, int $resolveReferences = 0): Collection
     {
         $collection = new Collection();
         $query = new \BO\Zmsbackend\Workstation\Repository\Workstation(\BO\Zmsbackend\Query\Base::SELECT);
@@ -133,7 +133,7 @@ class Workstation extends \BO\Zmsbackend\Base
         return $collection;
     }
 
-    public function writeEntityLoginByOidc($loginName, $authKey, \DateTimeInterface $dateTime, \DateTimeInterface $sessionExpiry, int $resolveReferences = 0)
+    public function writeEntityLoginByOidc(string $loginName, string $authKey, \DateTimeInterface $dateTime, \DateTimeInterface $sessionExpiry, int $resolveReferences = 0)
     {
         $workstation = new Entity();
         $query = \BO\Zmsbackend\Workstation\Repository\Workstation::QUERY_LOGIN_OIDC;
@@ -156,7 +156,7 @@ class Workstation extends \BO\Zmsbackend\Base
         return $workstation;
     }
 
-    public function writeEntityLoginByName($loginName, $password, \DateTimeInterface $dateTime, \DateTimeInterface $sessionExpiry, int $resolveReferences = 0)
+    public function writeEntityLoginByName(string $loginName, string $password, \DateTimeInterface $dateTime, \DateTimeInterface $sessionExpiry, int $resolveReferences = 0)
     {
         $useraccount = new \BO\Zmsbackend\Useraccount\Service\Useraccount();
         $workstation = new Entity();
@@ -186,7 +186,7 @@ class Workstation extends \BO\Zmsbackend\Base
         return $workstation;
     }
 
-    public function writeEntityLogoutByName($loginName, int $resolveReferences = 0)
+    public function writeEntityLogoutByName(string $loginName, int $resolveReferences = 0)
     {
         $query = \BO\Zmsbackend\Workstation\Repository\Workstation::QUERY_LOGOUT;
         $result = $this->perform($query, [$loginName]);

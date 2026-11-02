@@ -9,7 +9,7 @@ use DateTime;
 
 class Closure extends \BO\Zmsbackend\Base
 {
-    public function readByScopeId($scopeId = 0, bool $disableCache = false)
+    public function readByScopeId(int $scopeId = 0, bool $disableCache = false)
     {
         $cacheKey = "closuresByScope-$scopeId";
 
@@ -40,7 +40,7 @@ class Closure extends \BO\Zmsbackend\Base
         return $closureList;
     }
 
-    public function readByScopeIdAndDate($scopeId, DateTime $date): Entity
+    public function readByScopeIdAndDate(string|int $scopeId, DateTime $date): Entity
     {
         $query = new \BO\Zmsbackend\Availability\Repository\Closure(\BO\Zmsbackend\Query\Base::SELECT);
         $query->addEntityMapping()
@@ -74,7 +74,7 @@ class Closure extends \BO\Zmsbackend\Base
         return $result ;
     }
 
-    public function deleteEntity($closure): bool
+    public function deleteEntity(\BO\Zmsentities\Closure $closure): bool
     {
         $query = new \BO\Zmsbackend\Availability\Repository\Closure(\BO\Zmsbackend\Query\Base::DELETE);
         $query->addConditionId($closure->getId());
@@ -85,7 +85,7 @@ class Closure extends \BO\Zmsbackend\Base
         return $deleted;
     }
 
-    public function createOne($scopeId, DateTime $date)
+    public function createOne(string|int $scopeId, DateTime $date)
     {
         $query = new \BO\Zmsbackend\Availability\Repository\Closure(\BO\Zmsbackend\Query\Base::INSERT);
         $query->addValues(

@@ -95,7 +95,7 @@ abstract class Base
      */
     public function __construct(
         $queryType,
-        $prefix = '',
+        string $prefix = '',
         string|false $name = false,
         mixed $resolveLevel = null,
         array $withEntities = []
@@ -291,7 +291,7 @@ abstract class Base
     /**
      * @psalm-api
      */
-    public function setWithEntities($withEntities = []): void
+    public function setWithEntities(array $withEntities = []): void
     {
         $this->withEntities = $withEntities;
     }
@@ -385,7 +385,7 @@ abstract class Base
         return $this;
     }
 
-    protected function getPrefixed($prefix): string
+    protected function getPrefixed(string $prefix): string
     {
         return $this->prefix . $prefix;
     }
@@ -431,7 +431,7 @@ abstract class Base
      * postProcess data if necessary
      *
      */
-    public function postProcess($data)
+    public function postProcess(array $data)
     {
         return $data;
     }

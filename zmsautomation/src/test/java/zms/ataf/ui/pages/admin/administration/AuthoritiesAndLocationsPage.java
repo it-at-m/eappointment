@@ -261,6 +261,8 @@ public void saveLocationChanges() {
 
     public void clickOnDayEntry(String day) {
         ScenarioLogManager.getLogger().info("Trying to click on entry for day \"" + day + "\"");
+        // Stay on the requested day. Ticketprinter writes 00:05–23:55 for this tile and
+        // then checks the clock; a holiday redirect would leave the printer closed.
         clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, "//span[@class='day' and contains(text(),'" + day + "')]/..", LocatorType.XPATH, false, CONTEXT);
     }
 
@@ -447,10 +449,13 @@ public void saveLocationChanges() {
                     .until(ExpectedConditions.presenceOfElementLocated(
                             By.cssSelector("table.availability-monthtable_calendar")));
         }
-        String day = Integer.toString(date.getDayOfMonth());
+        int dayOfMonth = date.getDayOfMonth();
+        String plain = Integer.toString(dayOfMonth);
+        String padded = String.format(java.util.Locale.ROOT, "%02d", dayOfMonth);
         String xpath = "//table[contains(@class,'availability-monthtable_calendar')]"
                 + "//tbody//a[contains(@class,'month-item')]"
-                + "[.//span[@class='day' and normalize-space()='" + day + "']]";
+                + "[.//span[@class='day' and (normalize-space()='" + plain
+                + "' or normalize-space()='" + padded + "')]]";
         clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, xpath, LocatorType.XPATH, false, CONTEXT);
     }
 
