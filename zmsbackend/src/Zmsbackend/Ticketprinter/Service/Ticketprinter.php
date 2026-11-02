@@ -33,7 +33,7 @@ class Ticketprinter extends \BO\Zmsbackend\Base
         return $ticketprinterList;
     }
 
-    public function readByHash($hash)
+    public function readByHash(string $hash)
     {
         $query = new \BO\Zmsbackend\Ticketprinter\Repository\Ticketprinter(\BO\Zmsbackend\Query\Base::SELECT);
         $query
