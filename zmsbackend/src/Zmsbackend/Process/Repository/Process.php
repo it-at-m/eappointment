@@ -166,7 +166,7 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
         return $joinQuery;
     }
 
-    public function addConditionDate($date): static
+    public function addConditionDate(string $date): static
     {
         $this->query->where('process.Datum', '=', $date);
         return $this;
