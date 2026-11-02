@@ -11,7 +11,7 @@ use BO\Zmsbackend\Request\Service\Request;
  */
 class Matching
 {
-    public static function hasProviderRequest($session)
+    public static function hasProviderRequest(\BO\Zmsentities\Session $session)
     {
         $result = true;
         $requestIdCsv = $session->getRequests();
@@ -26,7 +26,7 @@ class Matching
         return $result;
     }
 
-    public static function isProviderExisting($session)
+    public static function isProviderExisting(\BO\Zmsentities\Session $session)
     {
         $result = true;
         if ($session->hasProvider()) {
@@ -37,7 +37,7 @@ class Matching
         return $result;
     }
 
-    public static function isRequestExisting($session): bool
+    public static function isRequestExisting(\BO\Zmsentities\Session $session): bool
     {
         $result = true;
         if ($session->hasRequests()) {
