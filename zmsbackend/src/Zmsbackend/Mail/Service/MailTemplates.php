@@ -55,7 +55,7 @@ class MailTemplates extends \BO\Zmsbackend\Base
     }
 
 
-    public function readTemplate($templateName): Mailtemplate
+    public function readTemplate(string $templateName): Mailtemplate
     {
         $query = new \BO\Zmsbackend\Mail\Repository\Mailtemplate(\BO\Zmsbackend\Query\Base::SELECT);
         $query->addEntityMapping()
@@ -79,7 +79,7 @@ class MailTemplates extends \BO\Zmsbackend\Base
     }
 
     /** @psalm-api */
-    public function updateTemplateContent($templateName, $templateContent)
+    public function updateTemplateContent(string $templateName, $templateContent)
     {
         $query = new \BO\Zmsbackend\Mail\Repository\Mailtemplate(\BO\Zmsbackend\Query\Base::UPDATE);
         $query->addConditionName($templateName);
@@ -100,7 +100,7 @@ class MailTemplates extends \BO\Zmsbackend\Base
     }
 
 
-    public function createCustomizationForProvider(string|int $providerId, $templateName, $templateContent)
+    public function createCustomizationForProvider(string|int $providerId, string $templateName, $templateContent)
     {
         $query = new \BO\Zmsbackend\Mail\Repository\Mailtemplate(\BO\Zmsbackend\Query\Base::INSERT);
         $query->addValues(array(
