@@ -26,7 +26,7 @@ class Zmsdldb extends \BO\Zmsbackend\Base
     /**
      * @psalm-api
      */
-    public static function setImportPath($path): void
+    public static function setImportPath(string $path): void
     {
         self::$importPath = $path;
     }
