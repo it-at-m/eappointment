@@ -112,7 +112,7 @@ class AppointmentFormHelper
         if (isset($formData['sendMailConfirmation'])) {
             $mailConfirmation = $formData['sendMailConfirmation'];
             $mailConfirmation = (isset($mailConfirmation['value'])) ? $mailConfirmation['value'] : $mailConfirmation;
-            self::writeMail($mailConfirmation, $process);
+            self::writeMail((bool) $mailConfirmation, $process);
         }
     }
 
