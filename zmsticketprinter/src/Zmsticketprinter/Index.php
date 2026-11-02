@@ -80,14 +80,14 @@ class Index extends BaseController
         );
     }
 
-    private function getDefaultTemplate($validator)
+    private function getDefaultTemplate(\BO\Mellon\Validator $validator)
     {
         return $validator->getParameter("template")
             ->isPath()
             ->setDefault('default');
     }
 
-    private function getLanguageConfig($validator)
+    private function getLanguageConfig(\BO\Mellon\Validator $validator)
     {
         $config = $validator->getParameter("config")
             ->isString()
@@ -98,7 +98,7 @@ class Index extends BaseController
         return json_decode($decoded, true);
     }
 
-    private function getCurrentLanguage($validator, $languageConfig)
+    private function getCurrentLanguage(\BO\Mellon\Validator $validator, $languageConfig)
     {
         $lang = $validator->getParameter("lang")->isString()->getValue();
 
@@ -176,7 +176,7 @@ class Index extends BaseController
         return false;
     }
 
-    protected function getQueryString($validator, \BO\Zmsentities\Ticketprinter $ticketprinter, $defaultTemplate): array
+    protected function getQueryString(\BO\Mellon\Validator $validator, \BO\Zmsentities\Ticketprinter $ticketprinter, $defaultTemplate): array
     {
         $query = ($defaultTemplate->getValue() === 'default') ? [] : ['template' => $defaultTemplate->getValue()];
         if (isset($ticketprinter['home'])) {

@@ -67,7 +67,7 @@ class ProcessChange extends BaseController
      * @return (bool|mixed)[]
      *
      */
-    protected static function getValidatedForm($validator, \BO\Zmsentities\Process $process): array
+    protected static function getValidatedForm(\BO\Mellon\Validator $validator, \BO\Zmsentities\Process $process): array
     {
         $processValidator = new ProcessValidator($process);
         $delegatedProcess = $processValidator->getDelegatedProcess();

@@ -58,7 +58,7 @@ class Workstation extends BaseController
         );
     }
 
-    protected function getSelectedDate($validator)
+    protected function getSelectedDate(\BO\Mellon\Validator $validator)
     {
         $selectedDate = $validator->getParameter('date')->isString()->getValue();
         $selectedDateTime = $selectedDate ?

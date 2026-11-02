@@ -75,7 +75,7 @@ class ProcessReserve extends BaseController
      * @return (bool|mixed)[]
      *
      */
-    public static function getValidatedForm($validator, Process $process): array
+    public static function getValidatedForm(\BO\Mellon\Validator $validator, Process $process): array
     {
         $processValidator = new ProcessValidator($process);
         $delegatedProcess = $processValidator->getDelegatedProcess();

@@ -116,7 +116,7 @@ class AppointmentFormHelper
         }
     }
 
-    protected static function readProcessListByScopeAndDate($validator, $scopeList, $slotType, int $slotsRequired)
+    protected static function readProcessListByScopeAndDate(\BO\Mellon\Validator $validator, $scopeList, $slotType, int $slotsRequired)
     {
         $selectedDate = $validator->getParameter('selecteddate')->isString()->getValue();
         $calendar = new Calendar($selectedDate);
@@ -124,7 +124,7 @@ class AppointmentFormHelper
     }
 
     protected static function getFreeProcessListWithSelectedProcess(
-        $validator,
+        \BO\Mellon\Validator $validator,
         $scopeList,
         $freeProcessList,
         $selectedProcess
@@ -148,14 +148,14 @@ class AppointmentFormHelper
         return ($freeProcessList) ? $freeProcessList : null;
     }
 
-    protected static function setSlotType($validator)
+    protected static function setSlotType(\BO\Mellon\Validator $validator)
     {
         $slotType = $validator->getParameter('slotType')->isString()->getValue();
         $slotType = ($slotType) ? $slotType : 'intern';
         return $slotType;
     }
 
-    protected static function setSlotsRequired($validator, ?Scope $scope, ?\BO\Zmsentities\Process $process)
+    protected static function setSlotsRequired(\BO\Mellon\Validator $validator, ?Scope $scope, ?\BO\Zmsentities\Process $process)
     {
         $slotsRequired = 0;
         if ($scope && $scope->getPreference('appointment', 'multipleSlotsEnabled')) {

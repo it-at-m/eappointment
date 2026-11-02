@@ -64,7 +64,7 @@ class Search extends BaseController
         );
     }
 
-    private function readSearchParameters($validator): array
+    private function readSearchParameters(\BO\Mellon\Validator $validator): array
     {
         $queryString = $validator->getParameter('query')
             ->isString('', false)
@@ -268,7 +268,7 @@ class Search extends BaseController
         return $list;
     }
 
-    private function readStringParameter($validator, string $name, string $default = ''): string
+    private function readStringParameter(\BO\Mellon\Validator $validator, string $name, string $default = ''): string
     {
         return $validator->getParameter($name)
             ->isString()
@@ -276,7 +276,7 @@ class Search extends BaseController
             ->getValue() ?? $default;
     }
 
-    private function readNumberParameter($validator, string $name, int $default): int
+    private function readNumberParameter(\BO\Mellon\Validator $validator, string $name, int $default): int
     {
         return (int) $validator->getParameter($name)
             ->isNumber()
