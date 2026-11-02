@@ -849,7 +849,7 @@ class Useraccount extends \BO\Zmsbackend\Base
         return $result;
     }
 
-    protected function setCachedResult(string $cacheKey, $result, array $departmentIds, string $logMessage, array $logContext = []): void
+    protected function setCachedResult(string $cacheKey, \BO\Zmsentities\Collection\UseraccountList $result, array $departmentIds, string $logMessage, array $logContext = []): void
     {
         if (App::$cache) {
             App::$cache->set($cacheKey, $result);
