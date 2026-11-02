@@ -92,7 +92,7 @@ class UseraccountEdit extends BaseController
         );
     }
 
-    protected function writeUpdatedEntity($input, $userAccountName)
+    protected function writeUpdatedEntity(array $input, $userAccountName)
     {
         $entity = (new Useraccount($input))->withCleanedUpFormData();
         // TODO: Remove the password fields when password authentication is removed in the future

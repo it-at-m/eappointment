@@ -92,28 +92,28 @@ class ProcessStatus extends \BO\Zmsbackend\Process\Service\Process
     }
 
     /** @psalm-api */
-    protected function setStatusPreconfirmed($process)
+    protected function setStatusPreconfirmed(\BO\Zmsentities\Process $process)
     {
         $process['status'] = $process::STATUS_PRECONFIRMED;
         return $process;
     }
 
     /** @psalm-api */
-    protected function setStatusConfirmed($process)
+    protected function setStatusConfirmed(\BO\Zmsentities\Process $process)
     {
         $process['status'] = $process::STATUS_CONFIRMED;
         return $process;
     }
 
     /** @psalm-api */
-    protected function setStatusCalled($process)
+    protected function setStatusCalled(\BO\Zmsentities\Process $process)
     {
         $process['status'] = $process::STATUS_CALLED;
         return $process;
     }
 
     /** @psalm-api */
-    protected function setStatusReserved($process)
+    protected function setStatusReserved(\BO\Zmsentities\Process $process)
     {
         $process['status'] = $process::STATUS_RESERVED;
         return $process;
@@ -125,7 +125,7 @@ class ProcessStatus extends \BO\Zmsbackend\Process\Service\Process
      * @return Bool
      * @psalm-api
      */
-    protected function isBlockedProcess($process)
+    protected function isBlockedProcess(array $process)
     {
         return ($process['Name'] == 'dereferenced');
     }
@@ -136,7 +136,7 @@ class ProcessStatus extends \BO\Zmsbackend\Process\Service\Process
      * @return Bool
      * @psalm-api
      */
-    protected function isQueuedProcess($process)
+    protected function isQueuedProcess(array $process)
     {
         return ($process['Name'] != 'dereferenced'
             && $process['vorlaeufigeBuchung'] == 0
@@ -153,7 +153,7 @@ class ProcessStatus extends \BO\Zmsbackend\Process\Service\Process
      * @return Bool
      * @psalm-api
      */
-    protected function isPreconfirmedProcess($process)
+    protected function isPreconfirmedProcess(array $process)
     {
         return ($process['Name'] != 'dereferenced'
             && $process['vorlaeufigeBuchung'] == 0
@@ -169,7 +169,7 @@ class ProcessStatus extends \BO\Zmsbackend\Process\Service\Process
      * @return Bool
      * @psalm-api
      */
-    protected function isConfirmedProcess($process)
+    protected function isConfirmedProcess(array $process)
     {
         return ($process['Name'] != 'dereferenced'
             && $process['vorlaeufigeBuchung'] == 0
@@ -185,7 +185,7 @@ class ProcessStatus extends \BO\Zmsbackend\Process\Service\Process
      * @return Bool
      * @psalm-api
      */
-    protected function isReservedProcess($process)
+    protected function isReservedProcess(array $process)
     {
         return ($process['Name'] != 'dereferenced'
             && $process['vorlaeufigeBuchung'] == 1
@@ -200,7 +200,7 @@ class ProcessStatus extends \BO\Zmsbackend\Process\Service\Process
      * @return Bool
      * @psalm-api
      */
-    protected function isCalledProcess($process)
+    protected function isCalledProcess(array $process)
     {
         return ($process['Name'] != 'dereferenced'
             && $process['vorlaeufigeBuchung'] == 0
@@ -217,7 +217,7 @@ class ProcessStatus extends \BO\Zmsbackend\Process\Service\Process
      * @return Bool
      * @psalm-api
      */
-    protected function isProcessingProcess($process)
+    protected function isProcessingProcess(array $process)
     {
         return ($process['Name'] != 'dereferenced'
             && $process['vorlaeufigeBuchung'] == 0
@@ -233,7 +233,7 @@ class ProcessStatus extends \BO\Zmsbackend\Process\Service\Process
      * @return Bool
      * @psalm-api
      */
-    protected function isPendingProcess($process)
+    protected function isPendingProcess(array $process)
     {
         return ($process['Name'] != 'dereferenced'
             && $process['vorlaeufigeBuchung'] == 0
@@ -250,7 +250,7 @@ class ProcessStatus extends \BO\Zmsbackend\Process\Service\Process
      * @return Bool
      * @psalm-api
      */
-    protected function isMissedProcess($process)
+    protected function isMissedProcess(array $process)
     {
         return ($process['Name'] != 'dereferenced'
             && $process['vorlaeufigeBuchung'] == 0
@@ -266,7 +266,7 @@ class ProcessStatus extends \BO\Zmsbackend\Process\Service\Process
      * @return Bool
      * @psalm-api
      */
-    protected function isParkedProcess($process)
+    protected function isParkedProcess(array $process)
     {
         return ($process['Name'] != 'dereferenced'
             && $process['vorlaeufigeBuchung'] == 0
@@ -282,7 +282,7 @@ class ProcessStatus extends \BO\Zmsbackend\Process\Service\Process
      * @return Bool
      * @psalm-api
      */
-    protected function isDeletedProcess($process)
+    protected function isDeletedProcess(array $process)
     {
         return ($process['Name'] == '(abgesagt)'
             && empty($process['istFolgeterminvon'])

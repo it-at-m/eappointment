@@ -32,7 +32,7 @@ class ExchangeAccessFilter
     /** @var array<string, true>|null */
     protected static $allowedDepartmentIds = null;
 
-    public function __construct($exchangeEntity, $workstation)
+    public function __construct($exchangeEntity, \BO\Zmsentities\Workstation $workstation)
     {
         static::$exchangeEntity = $exchangeEntity;
         static::$workstation = $workstation;

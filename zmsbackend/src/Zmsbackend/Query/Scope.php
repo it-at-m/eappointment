@@ -432,7 +432,7 @@ class Scope extends Base implements MappingInterface
     }
 
     #[\Override]
-    public function postProcess($data)
+    public function postProcess(array $data)
     {
         $data = $this->convertTimestamps($data);
         $data = $this->setDefaultValues($data);
@@ -440,7 +440,7 @@ class Scope extends Base implements MappingInterface
     }
 
 
-    private function convertTimestamps($data)
+    private function convertTimestamps(array $data)
     {
         $lastGivenNumberTimestampKey = $this->getPrefixed("status__queue__lastGivenNumberTimestamp");
         $lastGivenNumberTimestamp = $data[$lastGivenNumberTimestampKey] ?? null;
@@ -458,7 +458,7 @@ class Scope extends Base implements MappingInterface
         return $data;
     }
 
-    private function setDefaultValues($data)
+    private function setDefaultValues(array $data)
     {
         if ($this->shouldLoadEntity('scopemail')) {
             $this->setIfEmpty($data, 'preferences__client__emailFrom', [
@@ -504,7 +504,7 @@ class Scope extends Base implements MappingInterface
         return $data;
     }
 
-    private function setIfEmpty(&$data, string $checkKey, array $setKeys): void
+    private function setIfEmpty(array &$data, string $checkKey, array $setKeys): void
     {
         if (!$data[$this->getPrefixed($checkKey)]) {
             foreach ($setKeys as $key => $value) {

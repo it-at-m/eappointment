@@ -427,7 +427,7 @@ class SlotList extends \BO\Zmsbackend\Query\Base
     }
 
     #[\Override]
-    public function postProcess($data)
+    public function postProcess(array $data)
     {
         $data[$this->getPrefixed("appointment__date")] = strtotime($data[$this->getPrefixed("appointment__date")]);
         $data[$this->getPrefixed("availability__startDate")] =

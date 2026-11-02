@@ -205,7 +205,7 @@ class Useraccount extends \BO\Zmsbackend\Base
         })));
     }
 
-    protected function applyWorkstationAccessFilter(\BO\Zmsbackend\Useraccount\Repository\Useraccount $query, $workstation): bool
+    protected function applyWorkstationAccessFilter(\BO\Zmsbackend\Useraccount\Repository\Useraccount $query, ?\BO\Zmsentities\Workstation $workstation): bool
     {
         if (!$workstation || $workstation->getUseraccount()->isSuperUser()) {
             return true; // No filtering needed for superusers
@@ -824,7 +824,7 @@ class Useraccount extends \BO\Zmsbackend\Base
         return $this->perform($query, [$userId]);
     }
 
-    protected function buildSearchCacheKey(string $prefix, int $resolveReferences, $workstation, $queryString, array $departmentIds = []): string
+    protected function buildSearchCacheKey(string $prefix, int $resolveReferences, ?\BO\Zmsentities\Workstation $workstation, $queryString, array $departmentIds = []): string
     {
         $version = $this->getUseraccountCacheVersion();
         $workstationKey = '';
@@ -862,7 +862,7 @@ class Useraccount extends \BO\Zmsbackend\Base
         }
     }
 
-    protected function executeSearchQuery(array $parameter, int $resolveReferences, $workstation): Collection
+    protected function executeSearchQuery(array $parameter, int $resolveReferences, ?\BO\Zmsentities\Workstation $workstation): Collection
     {
         $query = new \BO\Zmsbackend\Useraccount\Repository\Useraccount(\BO\Zmsbackend\Query\Base::SELECT);
         $query
@@ -903,7 +903,7 @@ class Useraccount extends \BO\Zmsbackend\Base
         return $collection;
     }
 
-    protected function executeSearchByDepartmentIdsQuery(array $departmentIds, array $parameter, int $resolveReferences, $workstation): Collection
+    protected function executeSearchByDepartmentIdsQuery(array $departmentIds, array $parameter, int $resolveReferences, ?\BO\Zmsentities\Workstation $workstation): Collection
     {
         $query = new \BO\Zmsbackend\Useraccount\Repository\Useraccount(\BO\Zmsbackend\Query\Base::SELECT);
         $query->addResolvedReferences($resolveReferences)

@@ -64,7 +64,7 @@ class Search extends BaseController
         );
     }
 
-    private function readSearchParameters($validator): array
+    private function readSearchParameters(\BO\Mellon\Validator $validator): array
     {
         $queryString = $validator->getParameter('query')
             ->isString('', false)
@@ -103,7 +103,7 @@ class Search extends BaseController
         ];
     }
 
-    private function readProcessSearchResults($workstation, array $parameters, array $scopeIds): array
+    private function readProcessSearchResults(\BO\Zmsentities\Workstation $workstation, array $parameters, array $scopeIds): array
     {
         if (!$this->shouldRunProcessSearch($workstation, $parameters)) {
             return [new ProcessList(), 0];
@@ -124,7 +124,7 @@ class Search extends BaseController
         return [$processList, $processSearchTotal];
     }
 
-    private function shouldRunProcessSearch($workstation, array $parameters): bool
+    private function shouldRunProcessSearch(\BO\Zmsentities\Workstation $workstation, array $parameters): bool
     {
         if (!$parameters['isSearchRequested']) {
             return false;
@@ -146,7 +146,7 @@ class Search extends BaseController
             || $parameters['date'] !== null;
     }
 
-    private function shouldRunLogSearch($workstation, array $parameters): bool
+    private function shouldRunLogSearch(\BO\Zmsentities\Workstation $workstation, array $parameters): bool
     {
         if (!$workstation->getUseraccount()->hasPermissions(['logs'])) {
             return false;
@@ -169,7 +169,7 @@ class Search extends BaseController
             || $parameters['userAction'] !== 0;
     }
 
-    private function buildProcessSearchParameters($workstation, array $parameters, array $scopeIds): array
+    private function buildProcessSearchParameters(\BO\Zmsentities\Workstation $workstation, array $parameters, array $scopeIds): array
     {
         $queryString = trim((string) $parameters['queryString']);
         $searchParameters = [
@@ -196,7 +196,7 @@ class Search extends BaseController
         return $searchParameters;
     }
 
-    private function readLogSearchResults($workstation, array $parameters, array $scopeIds): ?LogList
+    private function readLogSearchResults(\BO\Zmsentities\Workstation $workstation, array $parameters, array $scopeIds): ?LogList
     {
         if (!$this->shouldRunLogSearch($workstation, $parameters)) {
             return null;
@@ -268,7 +268,7 @@ class Search extends BaseController
         return $list;
     }
 
-    private function readStringParameter($validator, string $name, string $default = ''): string
+    private function readStringParameter(\BO\Mellon\Validator $validator, string $name, string $default = ''): string
     {
         return $validator->getParameter($name)
             ->isString()
@@ -276,7 +276,7 @@ class Search extends BaseController
             ->getValue() ?? $default;
     }
 
-    private function readNumberParameter($validator, string $name, int $default): int
+    private function readNumberParameter(\BO\Mellon\Validator $validator, string $name, int $default): int
     {
         return (int) $validator->getParameter($name)
             ->isNumber()

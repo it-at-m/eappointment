@@ -187,7 +187,7 @@ class ProcessStatusArchived extends \BO\Zmsbackend\Query\Base implements \BO\Zms
     }
 
     #[\Override]
-    public function postProcess($data)
+    public function postProcess(array $data)
     {
         $date = $data[$this->getPrefixed("appointments__0__date")] ?? '';
         $data[$this->getPrefixed("appointments__0__date")] = strtotime($date === null ? '' : $date);

@@ -86,7 +86,7 @@ class Index extends BaseController
         );
     }
 
-    protected function testLogin($input)
+    protected function testLogin(array $input)
     {
         $userAccount = new Useraccount(array(
             'id' => $input['loginName'],

@@ -93,7 +93,7 @@ class DayOff extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\M
     }
 
     #[\Override]
-    public function postProcess($data)
+    public function postProcess(array $data)
     {
         $data[$this->getPrefixed("date")] = (new \DateTime($data[$this->getPrefixed("date")]))->getTimestamp();
         $data[$this->getPrefixed("lastChange")] =

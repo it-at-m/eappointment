@@ -21,7 +21,7 @@ class Calldisplay
     const array WAITING_STATUS = ['confirmed', 'queued', 'called', 'pending'];
 
 
-    public function __construct($request)
+    public function __construct(\Psr\Http\Message\RequestInterface $request)
     {
         $this->entity = static::createInstance($request);
     }
@@ -58,14 +58,14 @@ class Calldisplay
         return $scope;
     }
 
-    protected static function createInstance($request)
+    protected static function createInstance(\Psr\Http\Message\RequestInterface $request)
     {
         $calldisplay = new Entity();
 
         return $calldisplay->withResolvedCollections(static::getCollections($request));
     }
 
-    protected static function getCollections($request)
+    protected static function getCollections(\Psr\Http\Message\RequestInterface $request)
     {
         $validator = $request->getAttribute('validator');
 

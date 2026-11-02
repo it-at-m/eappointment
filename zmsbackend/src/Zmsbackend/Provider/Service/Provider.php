@@ -8,7 +8,7 @@ use BO\Zmsentities\Collection\ProviderList as Collection;
 
 class Provider extends \BO\Zmsbackend\Base
 {
-    public function readEntity($source, string|int $providerId, int $resolveReferences = 0, bool $disableCache = false)
+    public function readEntity(string $source, string|int $providerId, int $resolveReferences = 0, bool $disableCache = false)
     {
         $cacheKey = "provider-$source-$providerId-$resolveReferences";
 
@@ -98,7 +98,7 @@ class Provider extends \BO\Zmsbackend\Base
      * @param null|true $isAssigned
      *
      */
-    public function readListBySource($source, int $resolveReferences = 0, bool|null $isAssigned = null, ?string $requestIdCsv = null)
+    public function readListBySource(string $source, int $resolveReferences = 0, bool|null $isAssigned = null, ?string $requestIdCsv = null)
     {
         $this->testSource($source);
         $query = new \BO\Zmsbackend\Provider\Repository\Provider(\BO\Zmsbackend\Query\Base::SELECT);
@@ -198,7 +198,7 @@ class Provider extends \BO\Zmsbackend\Base
         return $provider;
     }
 
-    public function writeDeleteEntity(string|int $providerId, $source): bool
+    public function writeDeleteEntity(string|int $providerId, string $source): bool
     {
         $provider = $this->readEntity($source, $providerId);
         $query = new \BO\Zmsbackend\Provider\Repository\Provider(\BO\Zmsbackend\Query\Base::DELETE);
@@ -218,7 +218,7 @@ class Provider extends \BO\Zmsbackend\Base
     /**
      * @return void
      */
-    protected function testSource($source)
+    protected function testSource(string $source)
     {
         if (! (new \BO\Zmsbackend\Source\Service\Source())->readEntity($source)) {
             throw new \BO\Zmsbackend\Source\Exception\UnknownDataSource();

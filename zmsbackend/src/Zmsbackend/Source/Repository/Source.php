@@ -26,14 +26,14 @@ class Source extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\M
         ];
     }
 
-    public function addConditionSource($source): static
+    public function addConditionSource(string $source): static
     {
         $this->query->where('source.source', '=', $source);
         return $this;
     }
 
     #[\Override]
-    public function postProcess($data)
+    public function postProcess(array $data)
     {
         $data[$this->getPrefixed("lastChange")] =
             (new \DateTime($data[$this->getPrefixed("lastChange")] . \BO\Zmsbackend\Connection\Select::$connectionTimezone))

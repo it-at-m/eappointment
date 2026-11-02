@@ -14,7 +14,7 @@ use BO\Zmsentities\Request;
 
 class ProcessFinishedHelper extends Process
 {
-    public function __construct($processData, $input, $requestList, $source)
+    public function __construct($processData, array $input, $requestList, string $source)
     {
         parent::__construct($processData);
         $this->getFirstClient()->addData($input['process']['clients'][0]);
@@ -25,7 +25,7 @@ class ProcessFinishedHelper extends Process
     public function setRequestData(
         array $input,
         RequestList $requestList,
-        $source
+        string $source
     ): static {
         if (array_key_exists('ignoreRequests', $input) && $input['ignoreRequests']) {
             $this->requests = new RequestList();

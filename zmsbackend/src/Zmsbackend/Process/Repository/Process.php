@@ -1457,7 +1457,7 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
     }
 
     #[\Override]
-    public function postProcess($data)
+    public function postProcess(array $data)
     {
         $data[$this->getPrefixed("appointments__0__date")] =
             strtotime($data[$this->getPrefixed("appointments__0__date")]);

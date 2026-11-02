@@ -7,7 +7,7 @@ class MailTemplateProvider
     protected $templates = false;
     protected $process;
 
-    public function __construct($process)
+    public function __construct(\BO\Zmsentities\Process $process)
     {
         $this->process = $process;
     }

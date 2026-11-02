@@ -70,7 +70,7 @@ class Organisation extends BaseController
         );
     }
 
-    protected function writeUpdatedEntity($input, string|int $entityId)
+    protected function writeUpdatedEntity(array $input, string|int $entityId)
     {
         $entity = (new Entity($input))->withCleanedUpFormData();
         $entity->id = $entityId;

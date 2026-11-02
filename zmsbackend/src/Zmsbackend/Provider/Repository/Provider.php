@@ -64,7 +64,7 @@ class Provider extends \BO\Zmsbackend\Query\Base
         return $this;
     }
 
-    public function addConditionProviderSource($source): static
+    public function addConditionProviderSource(string $source): static
     {
         $this->query->where('provider.source', '=', $source);
         return $this;
@@ -90,7 +90,7 @@ class Provider extends \BO\Zmsbackend\Query\Base
     }
 
     #[\Override]
-    public function postProcess($data)
+    public function postProcess(array $data)
     {
         if (isset($data[$this->getPrefixed('data')]) && $data[$this->getPrefixed('data')]) {
             $data[$this->getPrefixed('data')] = json_decode($data[$this->getPrefixed('data')], true);

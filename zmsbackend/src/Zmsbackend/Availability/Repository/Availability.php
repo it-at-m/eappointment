@@ -326,7 +326,7 @@ class Availability extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Q
     }
 
     #[\Override]
-    public function postProcess($data)
+    public function postProcess(array $data)
     {
         $startDateKey = $this->getPrefixed("startDate");
         $endDateKey = $this->getPrefixed("endDate");

@@ -40,7 +40,7 @@ class AvailabilityConflicts extends BaseController
      * @return (array|mixed)[]
      *
      */
-    protected static function getAvailabilityData($input): array
+    protected static function getAvailabilityData(array $input): array
     {
         $availabilityList = (new AvailabilityList())->addData($input['availabilityList']);
         $conflictedList = [];

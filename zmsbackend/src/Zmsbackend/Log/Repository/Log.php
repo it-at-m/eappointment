@@ -61,7 +61,7 @@ class Log extends \BO\Zmsbackend\Query\Base
     }
 
     #[\Override]
-    public function postProcess($data)
+    public function postProcess(array $data)
     {
         $data[$this->getPrefixed('ts')] = strtotime($data[$this->getPrefixed('ts')]);
         return $data;
