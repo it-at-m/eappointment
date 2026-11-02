@@ -50,7 +50,7 @@ class ScopeAppointmentsByDay extends BaseController
         );
     }
 
-    public static function readSelectedDateTime($selectedDate)
+    public static function readSelectedDateTime(string $selectedDate)
     {
          return $selectedDate ? new \DateTimeImmutable($selectedDate) : \App::$now;
     }
