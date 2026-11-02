@@ -83,7 +83,7 @@ class ArchivedDataIntoStatisticByCron
         ?\BO\Zmsentities\Cluster $cluster,
         \BO\Zmsentities\Department $department,
         \BO\Zmsentities\Organisation $organisation,
-        $owner,
+        \BO\Zmsentities\Owner $owner,
         \DateTimeImmutable|false $dateTime,
         bool $commit = false
     ): void {
