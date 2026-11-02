@@ -186,7 +186,7 @@ class Useraccount extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Qu
         return $this;
     }
 
-    public function addConditionPassword($password): static
+    public function addConditionPassword(string $password): static
     {
         $this->query->where('useraccount.Passworthash', '=', $password);
         return $this;

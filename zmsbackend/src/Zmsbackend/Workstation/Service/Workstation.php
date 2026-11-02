@@ -156,7 +156,7 @@ class Workstation extends \BO\Zmsbackend\Base
         return $workstation;
     }
 
-    public function writeEntityLoginByName(string $loginName, $password, \DateTimeInterface $dateTime, \DateTimeInterface $sessionExpiry, int $resolveReferences = 0)
+    public function writeEntityLoginByName(string $loginName, string $password, \DateTimeInterface $dateTime, \DateTimeInterface $sessionExpiry, int $resolveReferences = 0)
     {
         $useraccount = new \BO\Zmsbackend\Useraccount\Service\Useraccount();
         $workstation = new Entity();
