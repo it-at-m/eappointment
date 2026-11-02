@@ -81,7 +81,7 @@ class ArchivedDataIntoStatisticByCron
         \BO\Zmsentities\Process $process,
         \BO\Zmsentities\Scope $scope,
         ?\BO\Zmsentities\Cluster $cluster,
-        $department,
+        \BO\Zmsentities\Department $department,
         \BO\Zmsentities\Organisation $organisation,
         $owner,
         \DateTimeImmutable|false $dateTime,
