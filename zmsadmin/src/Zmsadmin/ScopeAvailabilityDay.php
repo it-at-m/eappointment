@@ -54,7 +54,7 @@ class ScopeAvailabilityDay extends BaseController
      * @return (int|mixed)[][]
      *
      */
-    protected static function getSlotBuckets(\BO\Zmsentities\Collection\AvailabilityList $availabilityList, $processList): array
+    protected static function getSlotBuckets(\BO\Zmsentities\Collection\AvailabilityList $availabilityList, \BO\Zmsentities\Collection\ProcessList $processList): array
     {
         $availability = $availabilityList->getFirst();
 
