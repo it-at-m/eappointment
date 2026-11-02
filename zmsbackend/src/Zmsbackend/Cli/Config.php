@@ -71,7 +71,7 @@ class Config extends \BO\Zmsbackend\Base
         }
     }
 
-    protected function printType(\League\CLImate\CLImate $climate, string $type, $subconfig): void
+    protected function printType(\League\CLImate\CLImate $climate, string $type, mixed $subconfig): void
     {
         $climate->blue("[$type]");
         if (is_array($subconfig)) {
