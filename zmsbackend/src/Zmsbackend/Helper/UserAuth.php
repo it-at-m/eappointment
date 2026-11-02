@@ -12,7 +12,7 @@ class UserAuth
      *
      * @return array $useraccount
     */
-    public static function getVerifiedUseraccount($entity)
+    public static function getVerifiedUseraccount(\BO\Zmsentities\Useraccount $entity)
     {
         $useraccountQuery = new \BO\Zmsbackend\Useraccount\Service\Useraccount();
         $useraccount = $useraccountQuery->readEntity($entity->getId());

@@ -57,7 +57,7 @@ class ProcessRedirect extends \BO\Zmsbackend\Api\BaseController
     /**
      * @return void
      */
-    protected function testProcessData($entity)
+    protected function testProcessData(\BO\Zmsentities\Process $entity)
     {
         $entity->testValid();
         $authCheck = (new Query())->readAuthKeyByProcessId($entity->id);

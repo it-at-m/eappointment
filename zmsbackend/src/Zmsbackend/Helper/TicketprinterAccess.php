@@ -25,7 +25,7 @@ class TicketprinterAccess
     /**
      * @return void
      */
-    public static function testMatchingClusterAndScopes($entity, string|int $organisationId)
+    public static function testMatchingClusterAndScopes(\BO\Zmsentities\Ticketprinter $entity, string|int $organisationId)
     {
         if (isset($entity->buttons) && $entity->buttons) {
             $departmentList = (new \BO\Zmsbackend\Department\Service\Department())->readByOrganisationId($organisationId, 1);
@@ -44,7 +44,7 @@ class TicketprinterAccess
     /**
      * @return void
      */
-    public static function testTicketprinterNotFound($entity)
+    public static function testTicketprinterNotFound(\BO\Zmsentities\Ticketprinter $entity)
     {
         if (! $entity->hasId() || ! (new \BO\Zmsbackend\Ticketprinter\Service\Ticketprinter())->readByHash($entity->getId())->hasId()) {
             throw new \BO\Zmsbackend\Ticketprinter\Exception\TicketprinterNotFound();
@@ -56,7 +56,7 @@ class TicketprinterAccess
      *
      * @return void
      */
-    public static function testTicketprinterIsProtectedEnabled($entity, bool $isProtectionEnabled)
+    public static function testTicketprinterIsProtectedEnabled(\BO\Zmsentities\Ticketprinter $entity, bool $isProtectionEnabled)
     {
         if ($isProtectionEnabled && ! $entity->isEnabled()) {
             throw new \BO\Zmsbackend\Ticketprinter\Exception\TicketprinterNotEnabled();
@@ -66,7 +66,7 @@ class TicketprinterAccess
     /**
      * @return void
      */
-    public static function testTicketprinterValidHash($entity)
+    public static function testTicketprinterValidHash(\BO\Zmsentities\Ticketprinter $entity)
     {
         if (
             isset($entity->id) &&
