@@ -39,7 +39,7 @@ class TemplateFinder
         return $this->template;
     }
 
-    public function setCustomizedTemplate($calldisplay): static
+    public function setCustomizedTemplate(\BO\Zmsentities\Calldisplay $calldisplay): static
     {
         $template = null;
         if ($this->defaultTemplate == 'defaultplatz') {
@@ -49,7 +49,7 @@ class TemplateFinder
         return $this;
     }
 
-    protected function getTemplateBySettings($calldisplay)
+    protected function getTemplateBySettings(\BO\Zmsentities\Calldisplay $calldisplay)
     {
         $template = null;
         //look for customized templates by single scope or single cluster
