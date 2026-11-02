@@ -114,7 +114,7 @@ class ProcessSave extends BaseController
         return $process;
     }
 
-    private function shouldSendNotifications($requestData, Process $process): bool
+    private function shouldSendNotifications(array $requestData, Process $process): bool
     {
         $requestIds = $requestData['requests'] ?? [];
         $currentRequestIds = [];
