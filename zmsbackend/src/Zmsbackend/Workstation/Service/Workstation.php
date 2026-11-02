@@ -98,7 +98,7 @@ class Workstation extends \BO\Zmsbackend\Base
         return $workstationList;
     }
 
-    public function readWorkstationByScopeAndName(string|int $scopeId, $workstationName, int $resolveReferences = 0)
+    public function readWorkstationByScopeAndName(string|int $scopeId, string $workstationName, int $resolveReferences = 0)
     {
         $query = new \BO\Zmsbackend\Workstation\Repository\Workstation(\BO\Zmsbackend\Query\Base::SELECT);
         $query

@@ -170,7 +170,7 @@ class Workstation extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Qu
     /**
      * @psalm-api
      */
-    public function addConditionWorkstationName($workstationName): static
+    public function addConditionWorkstationName(string $workstationName): static
     {
         $this->query->where('workstation.Arbeitsplatznr', '=', $workstationName);
         return $this;
