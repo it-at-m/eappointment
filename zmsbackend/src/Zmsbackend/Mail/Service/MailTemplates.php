@@ -79,7 +79,7 @@ class MailTemplates extends \BO\Zmsbackend\Base
     }
 
     /** @psalm-api */
-    public function updateTemplateContent(string $templateName, $templateContent)
+    public function updateTemplateContent(string $templateName, string $templateContent)
     {
         $query = new \BO\Zmsbackend\Mail\Repository\Mailtemplate(\BO\Zmsbackend\Query\Base::UPDATE);
         $query->addConditionName($templateName);
@@ -89,7 +89,7 @@ class MailTemplates extends \BO\Zmsbackend\Base
         //return $this->readEntity($templateName, 1);
     }
 
-    public function updateTemplateContentById(string|int $templateId, $templateContent)
+    public function updateTemplateContentById(string|int $templateId, string $templateContent)
     {
         $query = new \BO\Zmsbackend\Mail\Repository\Mailtemplate(\BO\Zmsbackend\Query\Base::UPDATE);
         $query->addConditionId($templateId);
@@ -100,7 +100,7 @@ class MailTemplates extends \BO\Zmsbackend\Base
     }
 
 
-    public function createCustomizationForProvider(string|int $providerId, string $templateName, $templateContent)
+    public function createCustomizationForProvider(string|int $providerId, string $templateName, string $templateContent)
     {
         $query = new \BO\Zmsbackend\Mail\Repository\Mailtemplate(\BO\Zmsbackend\Query\Base::INSERT);
         $query->addValues(array(

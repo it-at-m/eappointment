@@ -70,7 +70,7 @@ class Mailtemplate extends \BO\Zmsbackend\Query\Base
         return $this;
     }
 
-    public function addTemplateContent($templateContent): static
+    public function addTemplateContent(string $templateContent): static
     {
         $this->query->values(array(
             'mailtemplate.value' => $templateContent
