@@ -170,7 +170,7 @@ class Provider extends \BO\Zmsbackend\Base
         return $this->readListBySource($source, 1);
     }
 
-    public function writeImportEntity($provider, string $source = 'dldb')
+    public function writeImportEntity(array|\BO\Zmsdldb\Entity\Location $provider, string $source = 'dldb')
     {
         if ($provider['address']['postal_code']) {
             $query = new \BO\Zmsbackend\Provider\Repository\Provider(\BO\Zmsbackend\Query\Base::REPLACE);
