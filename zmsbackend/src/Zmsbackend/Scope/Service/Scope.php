@@ -415,7 +415,7 @@ class Scope extends \BO\Zmsbackend\Base
         return ($isInContingent) ? true : false;
     }
 
-    public function readQueueList(array $scopeIds, $dateTime, int $resolveReferences = 0, array $withEntities = []): \BO\Zmsentities\Collection\QueueList
+    public function readQueueList(array $scopeIds, \DateTimeInterface $dateTime, int $resolveReferences = 0, array $withEntities = []): \BO\Zmsentities\Collection\QueueList
     {
         if ($resolveReferences > 0) {
             $queueList = (new \BO\Zmsbackend\Process\Service\Process())
@@ -757,7 +757,7 @@ class Scope extends \BO\Zmsbackend\Base
     /**
      * @psalm-api
      */
-    public function removeCache($scope): void
+    public function removeCache(\BO\Zmsentities\Scope $scope): void
     {
         $departmentId = isset($scope->id) ? $this->readDepartmentIdByScopeId($scope->id) : null;
         $this->removeCacheByContext($scope, $departmentId);

@@ -46,7 +46,7 @@ class Mailtemplate extends \BO\Zmsbackend\Query\Base
 
     protected $resolveLevel = 1;
 
-    public function addConditionName($itemName): static
+    public function addConditionName(string $itemName): static
     {
         $this->query->where(self::TABLE . '.name', '=', $itemName);
         return $this;
@@ -70,7 +70,7 @@ class Mailtemplate extends \BO\Zmsbackend\Query\Base
         return $this;
     }
 
-    public function addTemplateContent($templateContent): static
+    public function addTemplateContent(string $templateContent): static
     {
         $this->query->values(array(
             'mailtemplate.value' => $templateContent

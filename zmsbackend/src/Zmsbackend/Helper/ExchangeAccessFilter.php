@@ -32,7 +32,7 @@ class ExchangeAccessFilter
     /** @var array<string, true>|null */
     protected static $allowedDepartmentIds = null;
 
-    public function __construct($exchangeEntity, \BO\Zmsentities\Workstation $workstation)
+    public function __construct(\BO\Zmsentities\Exchange $exchangeEntity, \BO\Zmsentities\Workstation $workstation)
     {
         static::$exchangeEntity = $exchangeEntity;
         static::$workstation = $workstation;
@@ -67,7 +67,7 @@ class ExchangeAccessFilter
     /**
      * @psalm-api
      */
-    protected static function getFilteredEntityByUserPermissions($permission, $filteredKey): void
+    protected static function getFilteredEntityByUserPermissions(string $permission, string $filteredKey): void
     {
         if (! static::$workstation->getUseraccount()->hasPermissions([$permission])) {
             unset(static::$filteredEntity->data[$filteredKey]);
@@ -79,7 +79,7 @@ class ExchangeAccessFilter
      *
      * @psalm-api
      */
-    protected static function getFilteredEntityByUseraccountSuperuser($unused, $filteredKey): void
+    protected static function getFilteredEntityByUseraccountSuperuser(string|int $unused, string $filteredKey): void
     {
         if (! static::$workstation->getUseraccount()->isSuperUser()) {
             unset(static::$filteredEntity->data[$filteredKey]);
@@ -89,7 +89,7 @@ class ExchangeAccessFilter
     /**
      * @psalm-api
      */
-    protected static function getFilteredEntityByScope(string|int $entityId, $filteredKey): void
+    protected static function getFilteredEntityByScope(string|int $entityId, string $filteredKey): void
     {
         if (! static::$workstation->getUseraccount()->hasPermissions(['scope'])) {
             return;
@@ -103,7 +103,7 @@ class ExchangeAccessFilter
     /**
      * @psalm-api
      */
-    protected static function getFilteredEntityByDepartment(string|int $entityId, $filteredKey): void
+    protected static function getFilteredEntityByDepartment(string|int $entityId, string $filteredKey): void
     {
         if (! static::$workstation->getUseraccount()->hasPermissions(['department'])) {
             return;
@@ -117,7 +117,7 @@ class ExchangeAccessFilter
     /**
      * @psalm-api
      */
-    protected static function getFilteredEntityByOrganisation(string|int $entityId, $filteredKey): void
+    protected static function getFilteredEntityByOrganisation(string|int $entityId, string $filteredKey): void
     {
         if (! static::$workstation->getUseraccount()->hasPermissions(['organisation'])) {
             return;

@@ -327,7 +327,7 @@ class Process extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfaces\R
         ) : null;
     }
 
-    protected function readList($statement, int $resolveReferences): Collection
+    protected function readList(\PDOStatement $statement, int $resolveReferences): Collection
     {
         $query = new \BO\Zmsbackend\Process\Repository\Process(\BO\Zmsbackend\Query\Base::SELECT);
         $processList = new Collection();
@@ -339,7 +339,7 @@ class Process extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfaces\R
         return $processList;
     }
 
-    protected function readProcessesWithoutRequests($statement): Collection
+    protected function readProcessesWithoutRequests(\PDOStatement $statement): Collection
     {
         $query = new \BO\Zmsbackend\Process\Repository\Process(\BO\Zmsbackend\Query\Base::SELECT);
         $processList = new Collection();
@@ -595,7 +595,7 @@ class Process extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfaces\R
         return $process;
     }
 
-    public function shouldUpdateDisplayNumber(Entity $process, $status): bool
+    public function shouldUpdateDisplayNumber(Entity $process, string $status): bool
     {
         if ($status !== 'preconfirmed' && $status !== 'confirmed') {
             return false;
@@ -784,7 +784,7 @@ class Process extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfaces\R
         return $this->readList($statement, $resolveReferences);
     }
 
-    public function readExpiredProcessListByStatus(\DateTimeInterface $expirationDate, $status, int $limit = 500, ?int $offset = null, int $resolveReferences = 0)
+    public function readExpiredProcessListByStatus(\DateTimeInterface $expirationDate, string $status, int $limit = 500, ?int $offset = null, int $resolveReferences = 0)
     {
         $selectQuery = new \BO\Zmsbackend\Process\Repository\Process(\BO\Zmsbackend\Query\Base::SELECT);
         $selectQuery
@@ -898,7 +898,7 @@ class Process extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfaces\R
         return false;
     }
 
-    public function readProcessWithSameDayAndDisplayNumber(string|int $scopeId, $displayNumber, $date)
+    public function readProcessWithSameDayAndDisplayNumber(string|int $scopeId, string $displayNumber, string $date)
     {
         $query = new \BO\Zmsbackend\Process\Repository\Process(\BO\Zmsbackend\Query\Base::SELECT);
         $query->addEntityMapping()

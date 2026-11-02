@@ -44,7 +44,7 @@ class DayOff extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\M
     /**
      * @psalm-api
      */
-    public function addConditionName($name): static
+    public function addConditionName(string $name): static
     {
         $this->query->where('dayOff`.`Feiertag', '=', $name);
         return $this;

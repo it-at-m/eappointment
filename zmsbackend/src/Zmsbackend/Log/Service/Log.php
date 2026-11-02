@@ -200,11 +200,11 @@ class Log extends \BO\Zmsbackend\Base
     }
 
     public function readByProcessData(
-        $generalSearch,
-        $service,
-        $provider,
+        ?string $generalSearch,
+        ?string $service,
+        ?string $provider,
         DateTime|null $date,
-        $userAction,
+        int $userAction,
         int $page = 1,
         int $perPage = 100,
         ?array $scopeIds = null

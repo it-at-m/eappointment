@@ -29,7 +29,7 @@ class UserAuth
     /**
      * @return true
      */
-    public static function testPasswordMatching($useraccount, $password): bool
+    public static function testPasswordMatching(\BO\Zmsentities\Useraccount $useraccount, string $password): bool
     {
         // Do you have old, turbo-legacy, non-crypt hashes?
         // TODO: Remove the password fields when password authentication is removed in the future
@@ -61,6 +61,13 @@ class UserAuth
 
         // TODO: Remove the password fields when password authentication is removed in the future
         if ($basicAuth && static::testUseraccountExists($basicAuth['username'])) {
+            if (!is_string($basicAuth['password'])) {
+                $exception = new \BO\Zmsbackend\Useraccount\Exception\InvalidCredentials();
+                $exception->data['password']['messages'] = [
+                    'Der Nutzername und das Passwort passen nicht zusammen'
+                ];
+                throw $exception;
+            }
             $useraccount = $useraccountQuery->readEntity($basicAuth['username']);
             $originalPassword = $useraccount->password;
             $useraccount = $useraccount->withVerifiedHash($basicAuth['password']);
@@ -81,7 +88,7 @@ class UserAuth
      *
      * @return void
      */
-    public static function testUseraccountExists($loginName, string|false $password = false)
+    public static function testUseraccountExists(string $loginName, string|false $password = false)
     {
         $query = new \BO\Zmsbackend\Useraccount\Service\Useraccount();
         if (! $query->readIsUserExisting($loginName, $password)) {

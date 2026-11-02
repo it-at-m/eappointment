@@ -50,7 +50,7 @@ class ScopeAppointmentsByDay extends BaseController
         );
     }
 
-    public static function readSelectedDateTime($selectedDate)
+    public static function readSelectedDateTime(string $selectedDate)
     {
          return $selectedDate ? new \DateTimeImmutable($selectedDate) : \App::$now;
     }
@@ -66,7 +66,7 @@ class ScopeAppointmentsByDay extends BaseController
         return $workstationRequest->getScope();
     }
 
-    public static function readProcessList(\BO\Zmsclient\WorkstationRequests $workstationRequest, $selectedDateTime)
+    public static function readProcessList(\BO\Zmsclient\WorkstationRequests $workstationRequest, \DateTimeInterface $selectedDateTime)
     {
         $processList = $workstationRequest->readProcessListByDate(
             $selectedDateTime,

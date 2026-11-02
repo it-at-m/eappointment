@@ -122,7 +122,7 @@ class ProcessListSummaryMail extends \BO\Zmsbackend\Api\BaseController
     /**
      * @return void
      */
-    protected function testEventLogEntries($mailAddress)
+    protected function testEventLogEntries(string $mailAddress)
     {
         $logRepository = new EventLogRepository();
         $eventLogEntries = $logRepository->readByNameAndRef(

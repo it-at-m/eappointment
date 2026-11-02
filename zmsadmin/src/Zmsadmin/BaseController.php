@@ -38,7 +38,7 @@ abstract class BaseController extends \BO\Slim\Controller
      * @return array[]
      *
      */
-    public function getSchemaConstraintList($schema): array
+    public function getSchemaConstraintList(\BO\Zmsentities\Schema\Schema $schema): array
     {
         $list = [];
         $locale = \App::$language->getLocale();

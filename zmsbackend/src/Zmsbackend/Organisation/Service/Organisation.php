@@ -92,7 +92,7 @@ class Organisation extends \BO\Zmsbackend\Base
         return $organisationList;
     }
 
-    public function readByHash($hash)
+    public function readByHash(string $hash)
     {
         $organisationId = $this->getReader()
             ->fetchValue((new \BO\Zmsbackend\Ticketprinter\Repository\Ticketprinter(\BO\Zmsbackend\Query\Base::SELECT))
@@ -156,7 +156,7 @@ class Organisation extends \BO\Zmsbackend\Base
         return $this->readEntity($organisationId, 1, true);
     }
 
-    protected function writeOrganisationTicketprinters(string|false $organisationId, $ticketprinterList): void
+    protected function writeOrganisationTicketprinters(string|false $organisationId, iterable $ticketprinterList): void
     {
         $deleteQuery = new \BO\Zmsbackend\Ticketprinter\Repository\Ticketprinter(\BO\Zmsbackend\Query\Base::DELETE);
         $deleteQuery->addConditionOrganisationId($organisationId);
@@ -169,7 +169,7 @@ class Organisation extends \BO\Zmsbackend\Base
         }
     }
 
-    protected function updateOrganisationTicketprinters($ticketprinterList, string|int $organisationId): void
+    protected function updateOrganisationTicketprinters(iterable $ticketprinterList, string|int $organisationId): void
     {
         foreach ($ticketprinterList as $item) {
             $query = new \BO\Zmsbackend\Ticketprinter\Repository\Ticketprinter(\BO\Zmsbackend\Query\Base::UPDATE);

@@ -583,7 +583,7 @@ class MapperService
         return $requests;
     }
 
-    public static function contactToThinnedContact($contact): ThinnedContact
+    public static function contactToThinnedContact(array|object $contact): ThinnedContact
     {
         if (is_array($contact)) {
             return new ThinnedContact(

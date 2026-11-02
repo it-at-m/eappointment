@@ -103,7 +103,7 @@ class ProcessDelete extends \BO\Zmsbackend\Api\BaseController
     /**
      * @return void
      */
-    protected function testProcessData(\BO\Zmsentities\Process|null $process, $authKey)
+    protected function testProcessData(\BO\Zmsentities\Process|null $process, ?string $authKey)
     {
         if (!$process) {
             throw new \BO\Zmsbackend\Process\Exception\ProcessNotFound();

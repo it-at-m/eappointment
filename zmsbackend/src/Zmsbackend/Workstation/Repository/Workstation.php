@@ -161,7 +161,7 @@ class Workstation extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Qu
         return $joinQuery;
     }
 
-    public function addConditionLoginName($loginName): static
+    public function addConditionLoginName(string $loginName): static
     {
         $this->query->where('workstation.Name', '=', $loginName);
         return $this;
@@ -170,7 +170,7 @@ class Workstation extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Qu
     /**
      * @psalm-api
      */
-    public function addConditionWorkstationName($workstationName): static
+    public function addConditionWorkstationName(string $workstationName): static
     {
         $this->query->where('workstation.Arbeitsplatznr', '=', $workstationName);
         return $this;
@@ -200,7 +200,7 @@ class Workstation extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Qu
     /**
      * @psalm-api
      */
-    public function addConditionTime($now): static
+    public function addConditionTime(\DateTimeInterface $now): static
     {
         $this->query->where('workstation.Datum', '=', $now->format('Y-m-d'));
         return $this;

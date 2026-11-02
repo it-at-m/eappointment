@@ -46,7 +46,7 @@ class Apikey extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\M
         return $mapping;
     }
 
-    public function addConditionApikey($apikey): static
+    public function addConditionApikey(string $apikey): static
     {
         $this->query->where('apikey.key', '=', $apikey);
         return $this;

@@ -174,7 +174,7 @@ class Useraccount extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Qu
         ];
     }
 
-    public function addConditionLoginName($loginName): static
+    public function addConditionLoginName(string $loginName): static
     {
         $this->query->where('useraccount.Name', '=', $loginName);
         return $this;
@@ -186,7 +186,7 @@ class Useraccount extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Qu
         return $this;
     }
 
-    public function addConditionPassword($password): static
+    public function addConditionPassword(string $password): static
     {
         $this->query->where('useraccount.Passworthash', '=', $password);
         return $this;
@@ -222,7 +222,7 @@ class Useraccount extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Qu
         return $this;
     }
 
-    public function addConditionSearch($queryString, bool $orWhere = false): static
+    public function addConditionSearch(string $queryString, bool $orWhere = false): static
     {
         $condition = function (\BO\Zmsbackend\Query\Builder\ConditionBuilder $query) use ($queryString) {
             $queryString = trim($queryString);

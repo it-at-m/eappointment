@@ -18,7 +18,7 @@ class MailTemplateProvider
     }
 
     /** @psalm-api */
-    public function getTemplate($templateName)
+    public function getTemplate(string $templateName)
     {
         if (!$this->templates) {
             $this->loadTemplates();

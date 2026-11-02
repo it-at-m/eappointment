@@ -23,7 +23,7 @@ class Ticketprinter extends \BO\Zmsbackend\Base
         return $ticketprinter;
     }
 
-    protected function readList($statement)
+    protected function readList(\PDOStatement $statement)
     {
         $ticketprinterList = new Collection();
         while ($entityData = $statement->fetch(\PDO::FETCH_ASSOC)) {
@@ -33,7 +33,7 @@ class Ticketprinter extends \BO\Zmsbackend\Base
         return $ticketprinterList;
     }
 
-    public function readByHash($hash)
+    public function readByHash(string $hash)
     {
         $query = new \BO\Zmsbackend\Ticketprinter\Repository\Ticketprinter(\BO\Zmsbackend\Query\Base::SELECT);
         $query
@@ -241,7 +241,7 @@ class Ticketprinter extends \BO\Zmsbackend\Base
         return $this->deleteItem($query);
     }
 
-    public function readExpiredTicketprinterList($expirationDate): Collection
+    public function readExpiredTicketprinterList(\DateTimeInterface $expirationDate): Collection
     {
         $selectQuery = new \BO\Zmsbackend\Ticketprinter\Repository\Ticketprinter(\BO\Zmsbackend\Query\Base::SELECT);
         $selectQuery

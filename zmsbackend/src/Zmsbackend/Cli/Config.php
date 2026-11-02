@@ -54,7 +54,7 @@ class Config extends \BO\Zmsbackend\Base
     /**
      * @return void
      */
-    protected function testType(\BO\Zmsentities\Config $config, $type)
+    protected function testType(\BO\Zmsentities\Config $config, string $type)
     {
         if (!$config->hasType($type)) {
             throw new \Exception("Could not find type of '$type'");
@@ -64,14 +64,14 @@ class Config extends \BO\Zmsbackend\Base
     /**
      * @return void
      */
-    protected function testKey(\BO\Zmsentities\Config $config, $type, $key)
+    protected function testKey(\BO\Zmsentities\Config $config, string $type, string $key)
     {
         if (!$config->hasPreference($type, $key)) {
             throw new \Exception("Could not find preference of '$type.$key'");
         }
     }
 
-    protected function printType(\League\CLImate\CLImate $climate, $type, $subconfig): void
+    protected function printType(\League\CLImate\CLImate $climate, string $type, mixed $subconfig): void
     {
         $climate->blue("[$type]");
         if (is_array($subconfig)) {
@@ -82,7 +82,7 @@ class Config extends \BO\Zmsbackend\Base
         }
     }
 
-    protected function printValue(\League\CLImate\CLImate $climate, $key, $value): void
+    protected function printValue(\League\CLImate\CLImate $climate, string $key, mixed $value): void
     {
         $padding = $climate->padding(25)->char(' ');
         $padding->label("\"$key\"")->result("= \"" . (string)$value . '"');

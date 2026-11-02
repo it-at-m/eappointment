@@ -166,7 +166,7 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
         return $joinQuery;
     }
 
-    public function addConditionDate($date): static
+    public function addConditionDate(string $date): static
     {
         $this->query->where('process.Datum', '=', $date);
         return $this;
@@ -175,7 +175,7 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
     /**
      * @psalm-api
      */
-    public function addConditionDisplayNumber($displayNumber): static
+    public function addConditionDisplayNumber(string $displayNumber): static
     {
         $this->query->where('process.displayNumber', '=', $displayNumber);
         return $this;
@@ -597,7 +597,7 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
         return $this;
     }
 
-    public function addConditionAuthKey($authKey): static
+    public function addConditionAuthKey(string $authKey): static
     {
         $authKey = urldecode($authKey);
         $this->query->where('process.absagecode', '=', $authKey);
@@ -638,7 +638,7 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
         return $this;
     }
 
-    public function addConditionSearch($queryString, bool $orWhere = false): static
+    public function addConditionSearch(string $queryString, bool $orWhere = false): static
     {
         $queryString = trim((string) $queryString);
         $terms = $this->parseSearchTerms($queryString);
@@ -677,7 +677,7 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
     /**
      * Match an exact process id or a general search hit in one parenthesized OR group.
      */
-    public function addConditionProcessIdOrSearch($queryString): static
+    public function addConditionProcessIdOrSearch(string $queryString): static
     {
         $queryString = trim((string) $queryString);
         $processId = (int) $queryString;
@@ -891,7 +891,7 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
         return str_replace("'", "''", $value);
     }
 
-    public function addConditionName($name, bool $exactMatching = false): static
+    public function addConditionName(string $name, bool $exactMatching = false): static
     {
         if ($exactMatching) {
             $this->query->where(function (\BO\Zmsbackend\Query\Builder\ConditionBuilder $query) use ($name) {
@@ -922,7 +922,7 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
     /**
      * @psalm-api
      */
-    public function addConditionCustomTextfield($customText, bool $exactMatching = false): static
+    public function addConditionCustomTextfield(string $customText, bool $exactMatching = false): static
     {
         if ($exactMatching) {
             $this->query->where(function (\BO\Zmsbackend\Query\Builder\ConditionBuilder $query) use ($customText) {
@@ -939,7 +939,7 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
     /**
      * @psalm-api
      */
-    public function addConditionCustomTextfield2($customText2, bool $exactMatching = false): static
+    public function addConditionCustomTextfield2(string $customText2, bool $exactMatching = false): static
     {
         if ($exactMatching) {
             $this->query->where(function (\BO\Zmsbackend\Query\Builder\ConditionBuilder $query) use ($customText2) {
@@ -953,7 +953,7 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
         return $this;
     }
 
-    public function addConditionAmendment($amendment): static
+    public function addConditionAmendment(string $amendment): static
     {
         $this->query->where(function (\BO\Zmsbackend\Query\Builder\ConditionBuilder $query) use ($amendment) {
             $query->andWith('process.Anmerkung', 'LIKE', "%$amendment%");
@@ -1128,7 +1128,7 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
         $this->addValues($data);
     }
 
-    public function addValuesFollowingProcessData(ProcessEntity $process, $parentProcess): void
+    public function addValuesFollowingProcessData(ProcessEntity $process, int $parentProcess): void
     {
         $data = array();
         if (0 === $parentProcess) {

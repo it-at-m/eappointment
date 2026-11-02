@@ -40,7 +40,7 @@ class Preferences extends \BO\Zmsbackend\Base
         return new \DateTimeImmutable($timeString);
     }
 
-    public function replaceProperty(string $entityName, string|int $entityId, $groupName, $name, $value)
+    public function replaceProperty(string $entityName, string|int $entityId, string $groupName, string $name, mixed $value)
     {
         $this->getWriter();
         $currentValue = $this->readProperty($entityName, $entityId, $groupName, $name, true);
@@ -64,7 +64,7 @@ class Preferences extends \BO\Zmsbackend\Base
      * @param key-of<TArray> $name
      *
      */
-    public function deleteProperty(string $entityName, string|int $entityId, $groupName, $name)
+    public function deleteProperty(string $entityName, string|int $entityId, string $groupName, string $name)
     {
         return $this->perform(\BO\Zmsbackend\Preferences\Repository\Preferences::QUERY_DELETE_PROPERTY, [
             "entityName" => $entityName,

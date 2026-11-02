@@ -62,7 +62,7 @@ class ProcessReserve extends BaseController
         );
     }
 
-    protected function getProcess(array $input, $scope)
+    protected function getProcess(array $input, \BO\Zmsentities\Scope $scope)
     {
         $process = new Process();
         $selectedTime = str_replace('-', ':', $input['selectedtime']);

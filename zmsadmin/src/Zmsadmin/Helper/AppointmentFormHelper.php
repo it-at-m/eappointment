@@ -107,16 +107,16 @@ class AppointmentFormHelper
             null;
     }
 
-    public static function updateMail($formData, Process $process): void
+    public static function updateMail(array $formData, Process $process): void
     {
         if (isset($formData['sendMailConfirmation'])) {
             $mailConfirmation = $formData['sendMailConfirmation'];
             $mailConfirmation = (isset($mailConfirmation['value'])) ? $mailConfirmation['value'] : $mailConfirmation;
-            self::writeMail($mailConfirmation, $process);
+            self::writeMail((bool) $mailConfirmation, $process);
         }
     }
 
-    protected static function readProcessListByScopeAndDate(\BO\Mellon\Validator $validator, $scopeList, $slotType, int $slotsRequired)
+    protected static function readProcessListByScopeAndDate(\BO\Mellon\Validator $validator, \BO\Zmsentities\Collection\ScopeList $scopeList, string $slotType, int $slotsRequired)
     {
         $selectedDate = $validator->getParameter('selecteddate')->isString()->getValue();
         $calendar = new Calendar($selectedDate);
@@ -125,9 +125,9 @@ class AppointmentFormHelper
 
     protected static function getFreeProcessListWithSelectedProcess(
         \BO\Mellon\Validator $validator,
-        $scopeList,
-        $freeProcessList,
-        $selectedProcess
+        \BO\Zmsentities\Collection\ScopeList $scopeList,
+        ?\BO\Zmsentities\Collection\ProcessList $freeProcessList,
+        ?\BO\Zmsentities\Process $selectedProcess
     ) {
         $selectedDate = $validator->getParameter('selecteddate')->isString()->getValue();
         if (
@@ -168,7 +168,7 @@ class AppointmentFormHelper
         return $slotsRequired;
     }
 
-    protected static function writeMail($mailConfirmation, Process $process): void
+    protected static function writeMail(bool $mailConfirmation, Process $process): void
     {
         if (
             $mailConfirmation &&

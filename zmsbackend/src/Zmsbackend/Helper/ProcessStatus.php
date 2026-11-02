@@ -11,10 +11,10 @@ class ProcessStatus extends \BO\Zmsbackend\Process\Service\Process
 {
     public function writeUpdatedStatus(
         \BO\Zmsentities\Process $process,
-        $status,
+        string $status,
         \DateTimeInterface $dateTime,
         int $resolveReferences,
-        $userAccount
+        ?\BO\Zmsentities\Useraccount $userAccount
     ): \BO\Zmsentities\Process {
         $query = new \BO\Zmsbackend\Process\Repository\Process(\BO\Zmsbackend\Query\Base::UPDATE);
         $query->addConditionProcessId($process['id']);
@@ -54,7 +54,7 @@ class ProcessStatus extends \BO\Zmsbackend\Process\Service\Process
      *
      * @return string
      */
-    public function readProcessStatus(string|int $processId, $authKey)
+    public function readProcessStatus(string|int $processId, string $authKey)
     {
         $processData = $this->getReader()->fetchOne(
             'SELECT

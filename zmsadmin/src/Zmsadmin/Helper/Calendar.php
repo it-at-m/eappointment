@@ -166,7 +166,7 @@ class Calendar
         return $this->toDayListByHour($dayList);
     }
 
-    protected function getDateTimeFromWeekAndYear($week, int $year): DateTimeImmutable
+    protected function getDateTimeFromWeekAndYear(int $week, int $year): DateTimeImmutable
     {
         $dateTime = new DateTimeImmutable();
         return $dateTime->setISODate($year, $week);

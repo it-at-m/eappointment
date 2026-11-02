@@ -385,7 +385,7 @@ abstract class Base
         return $this;
     }
 
-    protected function getPrefixed($prefix): string
+    protected function getPrefixed(string $prefix): string
     {
         return $this->prefix . $prefix;
     }

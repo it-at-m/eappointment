@@ -196,7 +196,7 @@ class Cluster extends \BO\Zmsbackend\Base
         return $preferedScope;
     }
 
-    public function readWithScopeWorkstationCount(string|int $clusterId, $dateTime, int $resolveReferences = 0)
+    public function readWithScopeWorkstationCount(string|int $clusterId, \DateTimeInterface $dateTime, int $resolveReferences = 0)
     {
         $scopeQuery = new \BO\Zmsbackend\Scope\Service\Scope();
         $scopeList = new \BO\Zmsentities\Collection\ScopeList();
@@ -311,7 +311,7 @@ class Cluster extends \BO\Zmsbackend\Base
         return $this->readEntity($clusterId, 1, true);
     }
 
-    protected function writeAssignedScopes(string|false $clusterId, $scopeList): void
+    protected function writeAssignedScopes(string|false $clusterId, \BO\Zmsentities\Collection\ScopeList $scopeList): void
     {
         $cluster = $this->readEntity($clusterId);
         $this->perform(

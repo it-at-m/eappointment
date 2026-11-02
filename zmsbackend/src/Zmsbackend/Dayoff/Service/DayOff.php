@@ -116,7 +116,7 @@ class DayOff extends \BO\Zmsbackend\Base
      *
      * @return \BO\Zmsentities\Collection\DayoffList
      */
-    public function writeCommonDayoffsByYear($dayoffList, ?int $year = null, bool $drop = true)
+    public function writeCommonDayoffsByYear(iterable $dayoffList, ?int $year = null, bool $drop = true)
     {
         if ($drop && $year) {
             static::$commonList = null;

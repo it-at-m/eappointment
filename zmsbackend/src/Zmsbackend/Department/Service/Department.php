@@ -239,7 +239,7 @@ class Department extends \BO\Zmsbackend\Base
      *
      * @return void
      */
-    protected function writeDepartmentLinks(string|false $departmentId, $links)
+    protected function writeDepartmentLinks(string|false $departmentId, iterable $links)
     {
         if (!$departmentId) {
             throw new \BO\Zmsbackend\Department\Exception\InvalidId();
@@ -264,7 +264,7 @@ class Department extends \BO\Zmsbackend\Base
      */
     protected function updateDepartmentMail(
         string|false $departmentId,
-        $email,
+        string $email,
         bool|int|string|null $sendEmailReminderEnabled,
         int|string|null $sendEmailReminderMinutesBefore
     ) {

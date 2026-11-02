@@ -353,7 +353,7 @@ class Slot extends \BO\Zmsbackend\Base
         return $status;
     }
 
-    protected function writeAncestorIDs($slotID, array $ancestors): void
+    protected function writeAncestorIDs(string|int $slotID, array $ancestors): void
     {
         $this->perform(\BO\Zmsbackend\Slot\Repository\Slot::QUERY_DELETE_ANCESTOR, [
             'slotID' => $slotID,

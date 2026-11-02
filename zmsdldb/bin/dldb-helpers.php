@@ -29,7 +29,7 @@ class DldbHelpers
     protected $destinationPath;
     protected $backupPath;
 
-    public function __construct($destinationPath, ?Cli $cli = null)
+    public function __construct(string $destinationPath, ?Cli $cli = null)
     {
         $this->config = (new ConfigRepository())->readEntity();
         $this->cli = $cli ?: new Cli();
@@ -70,7 +70,7 @@ class DldbHelpers
         return "none";
     }
 
-    public function performRollback($rollbackDay)
+    public function performRollback(string|int|null $rollbackDay)
     {
         if ($rollbackDay === "none" || $rollbackDay === null || (int) $rollbackDay < 1) {
             return false;
@@ -112,7 +112,7 @@ class DldbHelpers
         return $hadError ? false : true;
     }
 
-    public function checkAndCreateBackup($newFiles): void
+    public function checkAndCreateBackup(array $newFiles): void
     {
         \App::$log->info('Checking if backup is required');
         $backupRequired = false;

@@ -155,7 +155,7 @@ class Index extends BaseController
         return $exceptionData;
     }
 
-    protected function getProviderList($config): array
+    protected function getProviderList(\BO\Zmsentities\Config $config): array
     {
         $allowedProviderList = explode(',', $config->getPreference('oidc', 'provider') ?? '');
         $oidcproviderlist = [];

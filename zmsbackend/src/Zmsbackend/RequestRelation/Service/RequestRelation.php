@@ -101,7 +101,7 @@ class RequestRelation extends \BO\Zmsbackend\Base
         return $this->readEntity($entity->getRequest()->getId(), $entity->getProvider()->getId());
     }
 
-    public function writeImportList($providerList, string $source = 'dldb')
+    public function writeImportList(iterable $providerList, string $source = 'dldb')
     {
         foreach ($providerList as $provider) {
             // Do not import locations without address
@@ -124,7 +124,7 @@ class RequestRelation extends \BO\Zmsbackend\Base
         return $this->readListBySource($source);
     }
 
-    protected function readList($statement): Collection
+    protected function readList(\PDOStatement $statement): Collection
     {
         $collection = new Collection();
         while ($requestRelationData = $statement->fetch(\PDO::FETCH_ASSOC)) {

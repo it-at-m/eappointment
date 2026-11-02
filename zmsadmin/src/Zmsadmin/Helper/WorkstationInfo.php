@@ -73,7 +73,7 @@ class WorkstationInfo
         return $infoData;
     }
 
-    public static function stringTimeToMinute($time): int
+    public static function stringTimeToMinute(?string $time): int
     {
         $timeArray = explode(':', $time === null ? '' : $time);
 

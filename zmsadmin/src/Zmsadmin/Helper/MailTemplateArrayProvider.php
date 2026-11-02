@@ -11,7 +11,7 @@ class MailTemplateArrayProvider
     }
 
     /** @psalm-api */
-    public function getTemplate($templateName)
+    public function getTemplate(string $templateName)
     {
         return $this->templates[$templateName];
     }

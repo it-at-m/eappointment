@@ -25,7 +25,7 @@ class FileUploader
 
     protected $request = null;
 
-    public function __construct(\Psr\Http\Message\RequestInterface $request, $imageName)
+    public function __construct(\Psr\Http\Message\RequestInterface $request, string $imageName)
     {
         $this->request = $request;
         $this->imageData = $this->createImage($imageName);
@@ -49,13 +49,13 @@ class FileUploader
         return $this;
     }
 
-    protected function getUploadedFile($imageName)
+    protected function getUploadedFile(string $imageName)
     {
         $files = $this->request->getUploadedFiles();
         return (isset($files[$imageName])) ? $files[$imageName] : false;
     }
 
-    protected function createImage($imageName): Mimepart|null
+    protected function createImage(string $imageName): Mimepart|null
     {
         $image = null;
         $this->uploadFile = $this->getUploadedFile($imageName);

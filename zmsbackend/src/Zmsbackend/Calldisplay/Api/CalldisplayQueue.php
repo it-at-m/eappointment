@@ -50,7 +50,7 @@ class CalldisplayQueue extends \BO\Zmsbackend\Api\BaseController
         return $response;
     }
 
-    protected function readCalculatedQueueListFromScope($scope, int $resolveReferences)
+    protected function readCalculatedQueueListFromScope(\BO\Zmsentities\Scope $scope, int $resolveReferences)
     {
         $query = new \BO\Zmsbackend\Scope\Service\Scope();
         $scope = (isset($this->scopeCache[$scope->id])) ?
@@ -71,7 +71,7 @@ class CalldisplayQueue extends \BO\Zmsbackend\Api\BaseController
         return $queueList;
     }
 
-    protected function readQueueListFromScopeAndStatus($scope, $status, int $resolveReferences): \BO\Zmsentities\Collection\QueueList
+    protected function readQueueListFromScopeAndStatus(\BO\Zmsentities\Scope $scope, string $status, int $resolveReferences): \BO\Zmsentities\Collection\QueueList
     {
         $query = new \BO\Zmsbackend\Process\Service\Process();
         return $query
@@ -81,7 +81,7 @@ class CalldisplayQueue extends \BO\Zmsbackend\Api\BaseController
     }
 
     // short queueList only with status called and processing
-    protected function readQueueListByStatus(\BO\Zmsentities\Calldisplay $calldisplay, $statusList, int $resolveReferences): \BO\Zmsentities\Collection\QueueList
+    protected function readQueueListByStatus(\BO\Zmsentities\Calldisplay $calldisplay, array $statusList, int $resolveReferences): \BO\Zmsentities\Collection\QueueList
     {
         $queueList = new \BO\Zmsentities\Collection\QueueList();
         foreach ($calldisplay->getFullScopeList() as $scope) {

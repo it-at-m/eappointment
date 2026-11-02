@@ -254,7 +254,7 @@ class Request extends \BO\Zmsbackend\Base
         return $requestsByProcessId;
     }
 
-    public function readRequestsByIds($ids, int $resolveReferences = 0)
+    public function readRequestsByIds(array $ids, int $resolveReferences = 0)
     {
         $query = new \BO\Zmsbackend\Request\Repository\Request(\BO\Zmsbackend\Query\Base::SELECT);
         $query->setResolveLevel($resolveReferences);
