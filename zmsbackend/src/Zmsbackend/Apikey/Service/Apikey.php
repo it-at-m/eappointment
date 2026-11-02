@@ -110,7 +110,7 @@ class Apikey extends \BO\Zmsbackend\Base
      *
      * @return Entity
      */
-    public function writeQuota($apiKey, $route, $period, $requests)
+    public function writeQuota($apiKey, $route, string $period, $requests)
     {
         $query = new \BO\Zmsbackend\Apikey\Repository\Apiquota(\BO\Zmsbackend\Query\Base::INSERT);
         $query->addValues([
