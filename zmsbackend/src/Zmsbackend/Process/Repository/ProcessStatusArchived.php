@@ -82,7 +82,7 @@ class ProcessStatusArchived extends \BO\Zmsbackend\Query\Base implements \BO\Zms
         return $this;
     }
 
-    public function addConditionScopeIds($scopeIds): static
+    public function addConditionScopeIds(array $scopeIds): static
     {
         $this->query->where(function (\BO\Zmsbackend\Query\Builder\ConditionBuilder $condition) use ($scopeIds) {
             foreach ($scopeIds as $scopeId) {
