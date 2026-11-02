@@ -21,7 +21,7 @@
     "dompurify": "^3.4.17",
     "jsdom": "^30.0.0",
     "vue": "^3.5.44",
-    "vue-i18n": "11.4.16",
+    "vue-i18n": "11.4.17",
     "webfontloader": "^1.0.0"
   },
   "devDependencies": {
@@ -60,14 +60,14 @@
     },
     "@tootallnate/once": "^3.0.1",
     "tmp": "^0.2.7",
-    "ws": "^8.22.0",
+    "ws": "^8.22.1",
     "undici": "^8.12.3",
     "morgan": "^1.12.1",
     "immutable": "^5.1.9",
     "brace-expansion": "5.0.12",
     "nanoid": "^6.0.2",
     "qs": "^6.17.1",
-    "minimatch": "^11.0.1",
-    "glob": "^14.0.2"
+    "minimatch": "^11.0.3",
+    "glob": "^14.0.3"
   }
 }

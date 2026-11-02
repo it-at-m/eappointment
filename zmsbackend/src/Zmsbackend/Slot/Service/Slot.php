@@ -658,7 +658,7 @@ class Slot extends \BO\Zmsbackend\Base
         return new \DateTimeImmutable($last['dateString'] . \BO\Zmsbackend\Connection\Select::$connectionTimezone);
     }
 
-    public function updateSlotProcessMapping($scopeID = null, ?\DateTimeInterface $now = null): int
+    public function updateSlotProcessMapping(int|string|null $scopeID = null, ?\DateTimeInterface $now = null): int
     {
         $fromDate = '1970-01-01';
         if ($now !== null) {
@@ -679,7 +679,7 @@ class Slot extends \BO\Zmsbackend\Base
         );
     }
 
-    public function deleteSlotProcessOnSlot($scopeID = null): void
+    public function deleteSlotProcessOnSlot(int|string|null $scopeID = null): void
     {
         if ($scopeID) {
             $this->perform(
@@ -692,7 +692,7 @@ class Slot extends \BO\Zmsbackend\Base
         }
     }
 
-    public function deleteSlotProcessOnProcess($scopeID = null): int
+    public function deleteSlotProcessOnProcess(int|string|null $scopeID = null): int
     {
         $select = \BO\Zmsbackend\Slot\Repository\Slot::QUERY_SELECT_DELETABLE_SLOT_PROCESS;
         $params = [];
@@ -708,7 +708,7 @@ class Slot extends \BO\Zmsbackend\Base
         return $this->fetchAffected($sql, $params);
     }
 
-    public function writeSlotProcessMappingFor($processId): static
+    public function writeSlotProcessMappingFor(string|int $processId): static
     {
         $this->perform(\BO\Zmsbackend\Slot\Repository\Slot::QUERY_INSERT_SLOT_PROCESS_ID, [
             'processId' => $processId,
@@ -716,7 +716,7 @@ class Slot extends \BO\Zmsbackend\Base
         return $this;
     }
 
-    public function deleteSlotProcessMappingFor($processId): static
+    public function deleteSlotProcessMappingFor(string|int $processId): static
     {
         $this->perform(\BO\Zmsbackend\Slot\Repository\Slot::QUERY_DELETE_SLOT_PROCESS_ID, [
             'processId' => $processId,

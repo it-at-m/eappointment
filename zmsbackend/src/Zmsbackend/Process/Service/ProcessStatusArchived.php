@@ -24,7 +24,7 @@ class ProcessStatusArchived extends Process
         return $archive;
     }
 
-    public function readListByScopeId($scopeId, int $resolveReferences = 0)
+    public function readListByScopeId(string|int $scopeId, int $resolveReferences = 0)
     {
         $query = new \BO\Zmsbackend\Process\Repository\ProcessStatusArchived(\BO\Zmsbackend\Query\Base::SELECT);
         $query->addEntityMapping()
@@ -33,7 +33,7 @@ class ProcessStatusArchived extends Process
         return $this->readResolvedList($query, $resolveReferences);
     }
 
-    public function readListByDate($dateTime, int $resolveReferences = 0)
+    public function readListByDate(\DateTimeInterface $dateTime, int $resolveReferences = 0)
     {
         $query = new \BO\Zmsbackend\Process\Repository\ProcessStatusArchived(\BO\Zmsbackend\Query\Base::SELECT);
         $query->addEntityMapping()
@@ -43,7 +43,7 @@ class ProcessStatusArchived extends Process
     }
 
     /** @psalm-api */
-    public function readListByScopeAndDate($scopeId, $dateTime, int $resolveReferences = 0)
+    public function readListByScopeAndDate(string|int $scopeId, \DateTimeInterface $dateTime, int $resolveReferences = 0)
     {
         $query = new \BO\Zmsbackend\Process\Repository\ProcessStatusArchived(\BO\Zmsbackend\Query\Base::SELECT);
         $query->addEntityMapping()
@@ -79,7 +79,7 @@ class ProcessStatusArchived extends Process
     }
 
     /** @psalm-api */
-    public function readListForStatistic($dateTime, \BO\Zmsentities\Scope $scope, int $limit = 500, int $resolveReferences = 0)
+    public function readListForStatistic(\DateTimeInterface $dateTime, \BO\Zmsentities\Scope $scope, int $limit = 500, int $resolveReferences = 0)
     {
         $query = new \BO\Zmsbackend\Process\Repository\ProcessStatusArchived(\BO\Zmsbackend\Query\Base::SELECT);
         $query->addEntityMapping()
@@ -175,13 +175,13 @@ class ProcessStatusArchived extends Process
      */
     public function writeArchivedProcessToStatistic(
         Entity $process,
-        $requestId,
-        $clusterId,
-        $providerId,
-        $departmentId,
-        $organisationId,
-        $ownerId,
-        $dateTime,
+        string|int $requestId,
+        string|int $clusterId,
+        string|int $providerId,
+        string|int $departmentId,
+        string|int $organisationId,
+        string|int $ownerId,
+        \DateTimeInterface|false $dateTime,
         ?int $processingTime
     ) {
         return $this->perform(
@@ -234,7 +234,7 @@ class ProcessStatusArchived extends Process
         return $this->readArchivedEntity($archiveId, $resolveReferences);
     }
 
-    protected function writeXRequestsArchived($processId, $archiveId): void
+    protected function writeXRequestsArchived(string|int $processId, string|int $archiveId): void
     {
         $query = new \BO\Zmsbackend\Request\Repository\XRequest(\BO\Zmsbackend\Query\Base::UPDATE);
         $query->addConditionProcessId($processId);

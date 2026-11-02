@@ -51,7 +51,7 @@ class ProcessFinished extends \BO\Zmsbackend\Api\BaseController
         return $response;
     }
 
-    protected function testProcessInWorkstation(\BO\Zmsentities\Process $process, $workstation): void
+    protected function testProcessInWorkstation(\BO\Zmsentities\Process $process, \BO\Zmsentities\Workstation $workstation): void
     {
         $department = (new \BO\Zmsbackend\Department\Service\Department())->readByScopeId($workstation->scope['id'], 1);
         $workstation->process = $process;
@@ -79,7 +79,7 @@ class ProcessFinished extends \BO\Zmsbackend\Api\BaseController
         }
     }
 
-    protected function writeSurveyMail($process): void
+    protected function writeSurveyMail(\BO\Zmsentities\Process $process): void
     {
         $process = clone $process;
         foreach ($process->getClients() as $client) {

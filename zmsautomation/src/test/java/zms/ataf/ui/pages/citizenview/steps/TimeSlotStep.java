@@ -2800,6 +2800,17 @@ public final class TimeSlotStep {
         RemoteWebDriver driver = DriverUtil.getDriver();
         driver.manage().window().setSize(ViewportSizes.DESKTOP);
         CitizenViewWaits.sleepQuiet(400L);
+        // The first list day loads its slots after the accordion opens. That fetch can take
+        // as long as the calendar slot wait, so a short pause reports the day as empty.
+        if (shadow.deepElementExists("#listViewAccordion")) {
+            openListDateAtIndex(0);
+            new WebDriverWait(driver, Duration.ofSeconds(90))
+                    .until(d -> json.citizenJson(
+                            "(function(){var slots=cssAll('.timeslot,muc-button.timeslot');"
+                                    + "for(var s=0;s<slots.length;s++){if(shown(slots[s]))return {found:true};}"
+                                    + "return {found:false};})()")
+                            .path("found").asBoolean());
+        }
         JsonNode chrome =
                 json.citizenJson(
                         "(function(){"

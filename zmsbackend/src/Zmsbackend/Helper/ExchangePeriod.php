@@ -22,7 +22,7 @@ class ExchangePeriod
 
     protected static $endDateTime = null;
 
-    public function __construct($period)
+    public function __construct(string $period)
     {
         $periodArr = preg_split('%(-)%', $period);
         static::$year = $periodArr[0];
@@ -60,7 +60,7 @@ class ExchangePeriod
         return static::$endDateTime;
     }
 
-    public function getPeriodIdentifier($groupby)
+    public function getPeriodIdentifier(?string $groupby)
     {
         return ($groupby) ? $groupby : static::$periodIdentifier;
     }

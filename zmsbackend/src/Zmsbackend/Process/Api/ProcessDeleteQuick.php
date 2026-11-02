@@ -57,7 +57,7 @@ class ProcessDeleteQuick extends ProcessDelete
     /**
      * @return void
      */
-    protected function testProcess($workstation, \BO\Zmsentities\Process|null $process)
+    protected function testProcess(\BO\Zmsentities\Workstation $workstation, \BO\Zmsentities\Process|null $process)
     {
         if (!$process->hasId()) {
             throw new \BO\Zmsbackend\Process\Exception\ProcessNotFound();
