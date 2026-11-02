@@ -25,7 +25,7 @@ class User
         'audit_viewer',
     ];
 
-    public function __construct($request, int $resolveReferences = 0)
+    public function __construct(\Psr\Http\Message\RequestInterface $request, int $resolveReferences = 0)
     {
         static::$request = $request;
         static::readWorkstation($resolveReferences);
