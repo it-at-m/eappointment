@@ -81,7 +81,7 @@ class CalldisplayQueue extends \BO\Zmsbackend\Api\BaseController
     }
 
     // short queueList only with status called and processing
-    protected function readQueueListByStatus(\BO\Zmsentities\Calldisplay $calldisplay, $statusList, int $resolveReferences): \BO\Zmsentities\Collection\QueueList
+    protected function readQueueListByStatus(\BO\Zmsentities\Calldisplay $calldisplay, array $statusList, int $resolveReferences): \BO\Zmsentities\Collection\QueueList
     {
         $queueList = new \BO\Zmsentities\Collection\QueueList();
         foreach ($calldisplay->getFullScopeList() as $scope) {
