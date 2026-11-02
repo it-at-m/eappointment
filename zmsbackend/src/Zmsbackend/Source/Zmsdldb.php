@@ -92,7 +92,7 @@ class Zmsdldb extends \BO\Zmsbackend\Base
         return $providers;
     }
 
-    protected function updateAvailability($providers): void
+    protected function updateAvailability(\BO\Zmsentities\Collection\ProviderList $providers): void
     {
         foreach ($providers as $provider) {
             $providerData = $provider->data;
