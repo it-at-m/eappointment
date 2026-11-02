@@ -324,7 +324,7 @@ class SlotList extends \BO\Zmsbackend\Query\Base
     public function addToCalendar(
         \BO\Zmsentities\Calendar $calendar,
         \DateTimeInterface $now,
-        $freeProcessesDate,
+        ?\DateTimeInterface $freeProcessesDate,
         string $slotType = 'public',
         int $slotsRequired = 1
     ): \BO\Zmsentities\Calendar {
@@ -345,7 +345,7 @@ class SlotList extends \BO\Zmsbackend\Query\Base
 
     protected function addFreeProcessesToCalendar(
         \BO\Zmsentities\Calendar $calendar,
-        $freeProcessesDate,
+        ?\DateTimeInterface $freeProcessesDate,
         string $date,
         string $slotType = 'public',
         int $slotsRequired = 1
