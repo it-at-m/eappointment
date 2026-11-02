@@ -186,21 +186,58 @@ class Slot extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\Map
     }
 
 
+    /**
+     * Book every step of this appointment immediately.
+     * A 5-minute opening uses hatFolgetermine as the extra-step count.
+     * Any other slot length still matches the single slot that contains the clock time.
+     */
     const string QUERY_INSERT_SLOT_PROCESS_ID = '
-        REPLACE INTO slot_process
-        SELECT 
+        INSERT INTO slot_process (slotID, processID, updateTimestamp)
+        SELECT
           s.slotID,
           b.BuergerID,
           NOW()
-        FROM slot s
-          INNER JOIN buerger b ON
-            s.year = YEAR(b.Datum)
-            AND s.month = MONTH(b.Datum)
-            AND s.day = DAY(b.Datum)
-            AND s.scopeID = b.StandortID
+        FROM buerger b
+          INNER JOIN slot s ON s.scopeID = b.StandortID
             AND s.status = "free"
-            AND b.Uhrzeit BETWEEN s.time
-              AND SEC_TO_TIME(TIME_TO_SEC(s.time) + (s.slotTimeInMinutes * 60) - 1)
+            AND (
+              (
+                s.slotTimeInMinutes = 5
+                AND s.year = YEAR(b.Datum)
+                AND s.month = MONTH(b.Datum)
+                AND s.day = DAY(b.Datum)
+                AND s.time < ADDTIME(
+                  b.Uhrzeit,
+                  SEC_TO_TIME((IFNULL(b.hatFolgetermine, 0) + 1) * s.slotTimeInMinutes * 60)
+                )
+                AND ADDTIME(s.time, SEC_TO_TIME(s.slotTimeInMinutes * 60)) > b.Uhrzeit
+              )
+              OR (
+                s.slotTimeInMinutes = 5
+                AND ADDTIME(
+                  b.Uhrzeit,
+                  SEC_TO_TIME((IFNULL(b.hatFolgetermine, 0) + 1) * s.slotTimeInMinutes * 60)
+                ) >= "24:00:00"
+                AND s.year = YEAR(DATE_ADD(b.Datum, INTERVAL 1 DAY))
+                AND s.month = MONTH(DATE_ADD(b.Datum, INTERVAL 1 DAY))
+                AND s.day = DAY(DATE_ADD(b.Datum, INTERVAL 1 DAY))
+                AND s.time < SUBTIME(
+                  ADDTIME(
+                    b.Uhrzeit,
+                    SEC_TO_TIME((IFNULL(b.hatFolgetermine, 0) + 1) * s.slotTimeInMinutes * 60)
+                  ),
+                  "24:00:00"
+                )
+              )
+              OR (
+                IFNULL(s.slotTimeInMinutes, 0) <> 5
+                AND s.year = YEAR(b.Datum)
+                AND s.month = MONTH(b.Datum)
+                AND s.day = DAY(b.Datum)
+                AND b.Uhrzeit BETWEEN s.time
+                  AND SEC_TO_TIME(TIME_TO_SEC(s.time) + (s.slotTimeInMinutes * 60) - 1)
+              )
+            )
         WHERE
           b.BuergerID = :processId
     ';

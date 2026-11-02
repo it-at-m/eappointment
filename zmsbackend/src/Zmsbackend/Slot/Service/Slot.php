@@ -710,6 +710,7 @@ class Slot extends \BO\Zmsbackend\Base
 
     public function writeSlotProcessMappingFor(string|int $processId): static
     {
+        $this->deleteSlotProcessMappingFor($processId);
         $this->perform(\BO\Zmsbackend\Slot\Repository\Slot::QUERY_INSERT_SLOT_PROCESS_ID, [
             'processId' => $processId,
         ]);
