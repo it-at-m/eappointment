@@ -137,7 +137,7 @@ class Useraccount extends \BO\Zmsbackend\Base
         return self::CACHE_INDEX_PREFIX . $departmentId;
     }
 
-    protected function extractDepartmentIdsFromEntity($useraccount): array
+    protected function extractDepartmentIdsFromEntity(\BO\Zmsentities\Useraccount $useraccount): array
     {
         $ids = [];
         foreach ($useraccount->getDepartmentList() as $department) {
@@ -170,7 +170,7 @@ class Useraccount extends \BO\Zmsbackend\Base
         return array_values(array_unique($ids));
     }
 
-    protected function collectDepartmentIdsForInvalidation($useraccount, array $previousDepartmentIds = []): array
+    protected function collectDepartmentIdsForInvalidation(\BO\Zmsentities\Useraccount $useraccount, array $previousDepartmentIds = []): array
     {
         $currentFromEntity = $this->extractDepartmentIdsFromEntity($useraccount);
         $currentFromDatabase = $this->readDepartmentIdsForLoginName($useraccount->id ?? null);
@@ -188,7 +188,7 @@ class Useraccount extends \BO\Zmsbackend\Base
         })));
     }
 
-    protected function collectUseraccountIdentifiers($useraccount): array
+    protected function collectUseraccountIdentifiers(\BO\Zmsentities\Useraccount $useraccount): array
     {
         $identifiers = [];
 
