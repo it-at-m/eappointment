@@ -257,9 +257,6 @@
                     {% set appointmentsPerMailValue = scope.preferences.client.appointmentsPerMail|default('') %}
                     {% set appointmentsPerMailUnlimited = appointmentsPerMailValue is empty %}
                     {% set appointmentsPerMailDisplay = appointmentsPerMailUnlimited ? 2 : appointmentsPerMailValue %}
-                    <p class="form-hint">
-                        Bei aktiver Begrenzung muss der Wert mindestens zwei betragen, damit Bürger*innen Termine verschieben können.
-                    </p>
                     <fieldset class="form-group{% if exception and exception.data['preferences/client/appointmentsPerMail'].messages is defined %} has-error is-invalid{% endif %}">
                         <legend class="label">Maximale Anzahl an Terminen pro E-Mail-Adresse:</legend>
                         <div class="controls">
@@ -282,7 +279,7 @@
                                             value="{{ appointmentsPerMailUnlimited ? '' : appointmentsPerMailDisplay|e }}"
                                             class="form-control form-input"
                                             readonly="readonly"
-                                            {% if exception and exception.data['preferences/client/appointmentsPerMail'].messages is defined %}aria-describedby="error_appointmentsPerMailInput"{% endif %}
+                                            aria-describedby="{% if exception and exception.data['preferences/client/appointmentsPerMail'].messages is defined %}error_appointmentsPerMailInput {% endif %}help_appointmentsPerMailInput"
                                             {% if appointmentsPerMailUnlimited %}disabled="disabled"{% endif %}
                                         >
                                         <button type="button" class="button increment" id="appointmentsPerMailIncrement" aria-label="Wert erhöhen"{% if appointmentsPerMailUnlimited or appointmentsPerMailDisplay >= 99 %} disabled{% endif %}>+</button>
@@ -298,6 +295,9 @@
                                     <label class="form-check-label" for="appointmentsPerMailUnlimited">Unbegrenzt</label>
                                 </div>
                             </div>
+                            <p class="formgroup__help" id="help_appointmentsPerMailInput">
+                                Bei aktiver Begrenzung muss der Wert mindestens zwei betragen, damit Bürger*innen Termine verschieben können.
+                            </p>
                             {% if exception and exception.data['preferences/client/appointmentsPerMail'].messages is defined %}
                                 {{ errormessage(exception.data['preferences/client/appointmentsPerMail'].messages, 'appointmentsPerMailInput') }}
                             {% endif %}
