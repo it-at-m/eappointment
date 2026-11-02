@@ -64,7 +64,7 @@ class Config extends \BO\Zmsbackend\Base
     /**
      * @return void
      */
-    protected function testKey(\BO\Zmsentities\Config $config, string $type, $key)
+    protected function testKey(\BO\Zmsentities\Config $config, string $type, string $key)
     {
         if (!$config->hasPreference($type, $key)) {
             throw new \Exception("Could not find preference of '$type.$key'");
@@ -82,7 +82,7 @@ class Config extends \BO\Zmsbackend\Base
         }
     }
 
-    protected function printValue(\League\CLImate\CLImate $climate, $key, mixed $value): void
+    protected function printValue(\League\CLImate\CLImate $climate, string $key, mixed $value): void
     {
         $padding = $climate->padding(25)->char(' ');
         $padding->label("\"$key\"")->result("= \"" . (string)$value . '"');
