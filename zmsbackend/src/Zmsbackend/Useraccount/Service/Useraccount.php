@@ -835,7 +835,7 @@ class Useraccount extends \BO\Zmsbackend\Base
         return "{$prefix}-v{$version}{$departmentKey}-$resolveReferences$workstationKey-query-" . md5($queryString);
     }
 
-    protected function getCachedResult($cacheKey, bool $disableCache, string $logMessage, array $logContext = [])
+    protected function getCachedResult(string $cacheKey, bool $disableCache, string $logMessage, array $logContext = [])
     {
         $result = null;
         if (!$disableCache && App::$cache && App::$cache->has($cacheKey)) {
@@ -849,7 +849,7 @@ class Useraccount extends \BO\Zmsbackend\Base
         return $result;
     }
 
-    protected function setCachedResult($cacheKey, $result, array $departmentIds, string $logMessage, array $logContext = []): void
+    protected function setCachedResult(string $cacheKey, $result, array $departmentIds, string $logMessage, array $logContext = []): void
     {
         if (App::$cache) {
             App::$cache->set($cacheKey, $result);
