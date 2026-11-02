@@ -276,7 +276,7 @@ class MailTemplates extends \BO\Zmsbackend\Base
         return trim($value);
     }
 
-    protected function mergeMailTemplatesWithCustomizations($generalTemplates, ?iterable $customTemplates): array
+    protected function mergeMailTemplatesWithCustomizations(?iterable $generalTemplates, ?iterable $customTemplates): array
     {
 
         $customTemplatesByName = [];
