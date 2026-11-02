@@ -1128,7 +1128,7 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
         $this->addValues($data);
     }
 
-    public function addValuesFollowingProcessData(ProcessEntity $process, $parentProcess): void
+    public function addValuesFollowingProcessData(ProcessEntity $process, int $parentProcess): void
     {
         $data = array();
         if (0 === $parentProcess) {
