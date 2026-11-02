@@ -67,7 +67,7 @@ class ExchangeAccessFilter
     /**
      * @psalm-api
      */
-    protected static function getFilteredEntityByUserPermissions($permission, string $filteredKey): void
+    protected static function getFilteredEntityByUserPermissions(string $permission, string $filteredKey): void
     {
         if (! static::$workstation->getUseraccount()->hasPermissions([$permission])) {
             unset(static::$filteredEntity->data[$filteredKey]);
