@@ -162,7 +162,7 @@ class Provider extends \BO\Zmsbackend\Base
         return $this->readListBySource($source->getSource());
     }
 
-    public function writeImportList($providerList, string $source = 'dldb')
+    public function writeImportList(iterable $providerList, string $source = 'dldb')
     {
         foreach ($providerList as $provider) {
             $this->writeImportEntity($provider, $source);
