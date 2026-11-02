@@ -62,7 +62,7 @@ class TemplateFinder
         return $buttonDisplay;
     }
 
-    protected function getTemplateBySettings($ticketprinter, $organisation)
+    protected function getTemplateBySettings($ticketprinter, \BO\Zmsentities\Organisation $organisation)
     {
         $template = null;
         //look for customized templates by single scope or single cluster

@@ -82,7 +82,7 @@ class ArchivedDataIntoStatisticByCron
         \BO\Zmsentities\Scope $scope,
         $cluster,
         $department,
-        $organisation,
+        \BO\Zmsentities\Organisation $organisation,
         $owner,
         \DateTimeImmutable|false $dateTime,
         bool $commit = false

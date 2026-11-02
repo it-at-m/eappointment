@@ -79,7 +79,7 @@ class UrlParameterSigning extends BaseController
     /**
      * @return void
      */
-    private function testScopeList($organisation, $collections)
+    private function testScopeList(\BO\Zmsentities\Organisation $organisation, $collections)
     {
         $scopeIds = [];
         foreach ($organisation->departments as $departmentData) {
@@ -101,7 +101,7 @@ class UrlParameterSigning extends BaseController
     /**
      * @return void
      */
-    private function testClusterList($organisation, $collections)
+    private function testClusterList(\BO\Zmsentities\Organisation $organisation, $collections)
     {
         $clusterIds = [];
         foreach ($organisation->departments as $departmentData) {
