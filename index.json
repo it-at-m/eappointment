@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-11-02T11:07:45.234Z",
+  "publishedAt": "2026-11-02T11:49:23.797Z",
   "branches": [
     {
       "name": "next",
@@ -1122,6 +1122,12 @@
       "slug": "test-zmskvr-97-confirmation-ics-download",
       "runId": "38186888720",
       "runStartedAt": "2026-10-12T00:08:42Z"
+    },
+    {
+      "name": "zmskvr-1627-five-minute-slots",
+      "slug": "zmskvr-1627-five-minute-slots",
+      "runId": "41432214795",
+      "runStartedAt": "2026-11-02T10:52:08Z"
     },
     {
       "name": "zmskvr-1631-fix-previous-step-button",
