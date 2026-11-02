@@ -23,7 +23,7 @@ class Ticketprinter extends \BO\Zmsbackend\Base
         return $ticketprinter;
     }
 
-    protected function readList($statement)
+    protected function readList(\PDOStatement $statement)
     {
         $ticketprinterList = new Collection();
         while ($entityData = $statement->fetch(\PDO::FETCH_ASSOC)) {

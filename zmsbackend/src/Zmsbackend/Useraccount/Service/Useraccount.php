@@ -381,7 +381,7 @@ class Useraccount extends \BO\Zmsbackend\Base
         return $result;
     }
 
-    protected function readListStatement($statement, int $resolveReferences): Collection
+    protected function readListStatement(\PDOStatement $statement, int $resolveReferences): Collection
     {
         $query = new \BO\Zmsbackend\Useraccount\Repository\Useraccount(\BO\Zmsbackend\Query\Base::SELECT);
         $collection = new Collection();

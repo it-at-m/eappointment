@@ -124,7 +124,7 @@ class RequestRelation extends \BO\Zmsbackend\Base
         return $this->readListBySource($source);
     }
 
-    protected function readList($statement): Collection
+    protected function readList(\PDOStatement $statement): Collection
     {
         $collection = new Collection();
         while ($requestRelationData = $statement->fetch(\PDO::FETCH_ASSOC)) {

@@ -327,7 +327,7 @@ class Process extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfaces\R
         ) : null;
     }
 
-    protected function readList($statement, int $resolveReferences): Collection
+    protected function readList(\PDOStatement $statement, int $resolveReferences): Collection
     {
         $query = new \BO\Zmsbackend\Process\Repository\Process(\BO\Zmsbackend\Query\Base::SELECT);
         $processList = new Collection();
@@ -339,7 +339,7 @@ class Process extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfaces\R
         return $processList;
     }
 
-    protected function readProcessesWithoutRequests($statement): Collection
+    protected function readProcessesWithoutRequests(\PDOStatement $statement): Collection
     {
         $query = new \BO\Zmsbackend\Process\Repository\Process(\BO\Zmsbackend\Query\Base::SELECT);
         $processList = new Collection();
