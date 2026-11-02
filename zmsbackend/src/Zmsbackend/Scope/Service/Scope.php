@@ -18,10 +18,10 @@ class Scope extends \BO\Zmsbackend\Base
     public static $cache = [ ];
 
     /**
-     * Readers append this value to every scope cache key. A save replaces the
-     * value, so a key left behind by a failed delete is never read again.
+     * Readers append this file's value to every scope cache key. A save
+     * replaces the file, so a Symfony entry left behind is never read again.
      */
-    private const string CACHE_GENERATION_KEY = 'scope-cache-generation';
+    private const string CACHE_GENERATION_FILE = 'scope-cache-generation';
 
     /**
      * @param false|int|string $scopeId
@@ -695,15 +695,20 @@ class Scope extends \BO\Zmsbackend\Base
     /**
      * Filesystem has() misses keys that are present, and a delete of a key it
      * does see does not stop the next read from returning that entry. The
-     * generation is a value the next read loads, so the old key is abandoned.
+     * generation is read from disk on the next request, so the old key is abandoned.
      */
     public static function bumpScopeCacheGeneration(): int
     {
         self::$cache = [];
         $generation = hrtime(true);
-        if (\App::$cache) {
-            \App::$cache->set(self::CACHE_GENERATION_KEY, $generation);
+        $path = self::cacheGenerationPath();
+        $temporary = $path . '.tmp';
+        if (file_put_contents($temporary, (string) $generation) === false || !rename($temporary, $path)) {
+            @unlink($temporary);
+
+            return $generation;
         }
+        clearstatcache(true, $path);
 
         return $generation;
     }
@@ -715,19 +720,28 @@ class Scope extends \BO\Zmsbackend\Base
 
     private static function scopeCacheGeneration(): int
     {
-        if (!\App::$cache) {
+        $path = self::cacheGenerationPath();
+        clearstatcache(true, $path);
+        $generation = @file_get_contents($path);
+        if (!is_string($generation)) {
+            return 0;
+        }
+        $generation = trim($generation);
+        if ($generation === '' || !ctype_digit($generation)) {
             return 0;
         }
 
-        $generation = \App::$cache->get(self::CACHE_GENERATION_KEY);
-        if (is_int($generation)) {
-            return $generation;
-        }
-        if (is_string($generation) && ctype_digit($generation)) {
-            return (int) $generation;
+        return (int) $generation;
+    }
+
+    private static function cacheGenerationPath(): string
+    {
+        $directory = \App::$CACHE_DIR;
+        if ($directory === '') {
+            $directory = sys_get_temp_dir();
         }
 
-        return 0;
+        return rtrim($directory, '/') . '/' . self::CACHE_GENERATION_FILE;
     }
 
     /**
