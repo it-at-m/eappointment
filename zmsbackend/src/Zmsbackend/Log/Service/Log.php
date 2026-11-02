@@ -204,7 +204,7 @@ class Log extends \BO\Zmsbackend\Base
         string $service,
         string $provider,
         DateTime|null $date,
-        $userAction,
+        string $userAction,
         int $page = 1,
         int $perPage = 100,
         ?array $scopeIds = null
