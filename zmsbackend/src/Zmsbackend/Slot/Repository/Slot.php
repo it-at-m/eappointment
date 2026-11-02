@@ -282,7 +282,7 @@ class Slot extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\Map
         return $data;
     }
 
-    public function addConditionSlotId($slotID): static
+    public function addConditionSlotId(string|int $slotID): static
     {
         $this->query->where('slot.slotID', '=', $slotID);
         return $this;
