@@ -8,7 +8,7 @@ class Apikey extends \BO\Zmsbackend\Base
 {
     public static $cache = [];
 
-    public function readEntity($apiKey): Entity
+    public function readEntity(string $apiKey): Entity
     {
         $query = new \BO\Zmsbackend\Apikey\Repository\Apikey(\BO\Zmsbackend\Query\Base::SELECT);
         $query
@@ -52,7 +52,7 @@ class Apikey extends \BO\Zmsbackend\Base
      *
      * @return Entity
      */
-    public function updateEntity($apiKey, Entity $entity)
+    public function updateEntity(string $apiKey, Entity $entity)
     {
         $this->updateQuota($apiKey, $entity);
         return $this->readEntity($apiKey, 1);
@@ -67,7 +67,7 @@ class Apikey extends \BO\Zmsbackend\Base
      *
      * @return Entity
      */
-    public function readQuota($apiKey, $route)
+    public function readQuota(string $apiKey, $route)
     {
         $query = new \BO\Zmsbackend\Apikey\Repository\Apiquota(\BO\Zmsbackend\Query\Base::SELECT);
         $query
@@ -89,7 +89,7 @@ class Apikey extends \BO\Zmsbackend\Base
      *
      * @return Entity
      */
-    public function readQuotaList($apiKey)
+    public function readQuotaList(string $apiKey)
     {
         $data = $this
         ->getReader()
@@ -110,7 +110,7 @@ class Apikey extends \BO\Zmsbackend\Base
      *
      * @return Entity
      */
-    public function writeQuota($apiKey, $route, string $period, $requests)
+    public function writeQuota(string $apiKey, $route, string $period, $requests)
     {
         $query = new \BO\Zmsbackend\Apikey\Repository\Apiquota(\BO\Zmsbackend\Query\Base::INSERT);
         $query->addValues([
@@ -132,7 +132,7 @@ class Apikey extends \BO\Zmsbackend\Base
      *
      * @return Entity
      */
-    public function updateQuota($apiKey, Entity $entity)
+    public function updateQuota(string $apiKey, Entity $entity)
     {
         if (isset($entity->quota)) {
             foreach ($entity->quota as $quota) {
@@ -162,7 +162,7 @@ class Apikey extends \BO\Zmsbackend\Base
      *
      * @return Entity
      */
-    public function deleteEntity($apiKey)
+    public function deleteEntity(string $apiKey)
     {
         $entity = $this->readEntity($apiKey);
         if ($entity) {
