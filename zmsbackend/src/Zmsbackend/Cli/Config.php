@@ -82,7 +82,7 @@ class Config extends \BO\Zmsbackend\Base
         }
     }
 
-    protected function printValue(\League\CLImate\CLImate $climate, $key, $value): void
+    protected function printValue(\League\CLImate\CLImate $climate, $key, mixed $value): void
     {
         $padding = $climate->padding(25)->char(' ');
         $padding->label("\"$key\"")->result("= \"" . (string)$value . '"');

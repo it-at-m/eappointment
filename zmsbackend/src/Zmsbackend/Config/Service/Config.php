@@ -115,7 +115,7 @@ class Config extends \BO\Zmsbackend\Base
         return new Entity($splittedHash);
     }
 
-    protected function getSpecifiedValue($value): int|string
+    protected function getSpecifiedValue(mixed $value): int|string
     {
         if (is_bool($value)) {
             return ($value) ? 1 : 0;

@@ -235,7 +235,7 @@ class MailTemplates extends \BO\Zmsbackend\Base
     }
 
     /** @psalm-api */
-    public function replaceProperty($property, $value)
+    public function replaceProperty($property, mixed $value)
     {
         return $this->perform(\BO\Zmsbackend\Mail\Repository\Mailtemplate::QUERY_REPLACE_PROPERTY, [
             'property' => $property,
@@ -268,7 +268,7 @@ class MailTemplates extends \BO\Zmsbackend\Base
         return new Mailtemplate($splittedHash);
     }
 
-    protected function getSpecifiedValue($value): int|string
+    protected function getSpecifiedValue(mixed $value): int|string
     {
         if (is_bool($value)) {
             return ($value) ? 1 : 0;

@@ -40,7 +40,7 @@ class Preferences extends \BO\Zmsbackend\Base
         return new \DateTimeImmutable($timeString);
     }
 
-    public function replaceProperty(string $entityName, string|int $entityId, $groupName, $name, $value)
+    public function replaceProperty(string $entityName, string|int $entityId, $groupName, $name, mixed $value)
     {
         $this->getWriter();
         $currentValue = $this->readProperty($entityName, $entityId, $groupName, $name, true);
