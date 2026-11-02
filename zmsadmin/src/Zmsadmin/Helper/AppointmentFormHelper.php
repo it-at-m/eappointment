@@ -126,7 +126,7 @@ class AppointmentFormHelper
     protected static function getFreeProcessListWithSelectedProcess(
         \BO\Mellon\Validator $validator,
         \BO\Zmsentities\Collection\ScopeList $scopeList,
-        $freeProcessList,
+        ?\BO\Zmsentities\Collection\ProcessList $freeProcessList,
         $selectedProcess
     ) {
         $selectedDate = $validator->getParameter('selecteddate')->isString()->getValue();
