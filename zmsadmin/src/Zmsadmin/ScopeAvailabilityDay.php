@@ -103,7 +103,7 @@ class ScopeAvailabilityDay extends BaseController
      * @return (\BO\Zmsentities\Process[]|int|mixed|string)[]
      *
      */
-    protected static function getAvailabilityData(int $scopeId, $dateString): array
+    protected static function getAvailabilityData(int $scopeId, string $dateString): array
     {
         $scope = static::getScope($scopeId);
         $dateTime = new DateTime($dateString);
