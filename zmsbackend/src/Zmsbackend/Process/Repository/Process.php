@@ -922,7 +922,7 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
     /**
      * @psalm-api
      */
-    public function addConditionCustomTextfield($customText, bool $exactMatching = false): static
+    public function addConditionCustomTextfield(string $customText, bool $exactMatching = false): static
     {
         if ($exactMatching) {
             $this->query->where(function (\BO\Zmsbackend\Query\Builder\ConditionBuilder $query) use ($customText) {
