@@ -18,10 +18,11 @@ Feature: CitizenView: quantity follows slotsPerAppointment
   # for 1-slot Führungen 10389330 would allow qty 2, but SADB maxQuantity=1 is
   # smaller → plus stays at 1 (min of maxQuantity and floor(minSpa/slots)).
   # Hauptkalender 10489: slotsPerAppointment unset → fallback MAX_SLOTS=48
-  # (240 minutes at slotTimeInMinutes=5). Qty 1 of the 11 services is 25 slots,
-  # so plus stays available. The counts below land on exactly 48 slots.
-  # eID stays at 2 of maxQuantity 3, which is what shows the cap rather than
-  # the service maximum. No appointment is booked.
+  # (240 minutes at slotTimeInMinutes=5). Qty 1 of the 11 services is 25 slots.
+  # Wohnsitzanmeldung stays at 1: its plus control also matches
+  # "Wohnsitzanmeldung – Familie", so raising it does not move this counter.
+  # Verlust Personalausweis stays at 3 of maxQuantity 5, and eID at 2 of 3.
+  # Together the counts are exactly 48 slots. No appointment is booked.
 
   Scenario: Ausfuhr quantity stops at 2 because spa is tighter than maxQuantity
     Given I open zmscitizenview with jump-in service "1064268" and location "10416"
@@ -81,20 +82,20 @@ Feature: CitizenView: quantity follows slotsPerAppointment
   Scenario: Fallback cap fills at 240 minutes, disables every plus, and Weiter stays available
     Given I open zmscitizenview with jump-in service "1063475" and location "10489"
     Then the service combination step should be visible
-    When I raise the service "Wohnsitzanmeldung" until the plus button is disabled
-    And I show all combinable services
+    When I show all combinable services
     And I add subservice "Adressaufkleber und Chipaktualisierung für Personalausweis, Reisepass und eAT" with quantity 5 on the service combination step
     And I add subservice "Beglaubigung von bis zu 20 Dokumenten" with quantity 1 on the service combination step
     And I add subservice "Beglaubigung von bis zu 5 Dokumenten" with quantity 1 on the service combination step
     And I add subservice "Beglaubigung von Unterschriften" with quantity 1 on the service combination step
     And I add subservice "Einschalten eID-Funktion oder Änderung der PIN" with quantity 2 on the service combination step
     And I add subservice "Haushaltsbescheinigung" with quantity 5 on the service combination step
-    And I add subservice "Verlust oder Diebstahl Personalausweis" with quantity 1 on the service combination step
+    And I add subservice "Verlust oder Diebstahl Personalausweis" with quantity 3 on the service combination step
     And I add subservice "Verlust oder Diebstahl Reisepass" with quantity 1 on the service combination step
     And I add subservice "Vorläufiger Reisepass" with quantity 1 on the service combination step
     And I add subservice "Widerruf der Verlust- oder Diebstahlanzeige von Personalausweis oder Reisepass" with quantity 5 on the service combination step
     Then the estimated duration on the service combination step should be 240 minutes
-    And the service counter for "Wohnsitzanmeldung" should still be 3
+    And the service counter for "Wohnsitzanmeldung" should still be 1
+    And the service counter for "Verlust oder Diebstahl Personalausweis" should still be 3
     And the service counter for "Einschalten eID-Funktion oder Änderung der PIN" should still be 2
     And the plus button for service "Wohnsitzanmeldung" is disabled
     And the plus button for service "Adressaufkleber und Chipaktualisierung für Personalausweis, Reisepass und eAT" is disabled
