@@ -52,7 +52,7 @@ class Log extends \BO\Zmsbackend\Query\Base
         ];
     }
 
-    public function addConditionProcessId($processId): static
+    public function addConditionProcessId(string|int $processId): static
     {
         $this->query->where('log.reference_id', '=', $processId);
         $this->query->where('log.type', '=', 'buerger');
@@ -61,7 +61,7 @@ class Log extends \BO\Zmsbackend\Query\Base
     }
 
     #[\Override]
-    public function postProcess($data)
+    public function postProcess(array $data)
     {
         $data[$this->getPrefixed('ts')] = strtotime($data[$this->getPrefixed('ts')]);
         return $data;

@@ -17,7 +17,7 @@ class WorkstationProcessNext extends BaseController
      * @SuppressWarnings(Param)
      * @return int|null
      */
-    public function timeToUnix($timeValue): ?int
+    public function timeToUnix(?string $timeValue): ?int
     {
         if ($timeValue === null) {
             return null;

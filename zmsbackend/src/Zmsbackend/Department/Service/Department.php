@@ -125,7 +125,7 @@ class Department extends \BO\Zmsbackend\Base
         return $departments;
     }
 
-    public function readByScopeId($scopeId, int $resolveReferences = 0)
+    public function readByScopeId(string|int $scopeId, int $resolveReferences = 0)
     {
         $query = new \BO\Zmsbackend\Department\Repository\Department(\BO\Zmsbackend\Query\Base::SELECT);
         $query->addEntityMapping()
@@ -136,7 +136,7 @@ class Department extends \BO\Zmsbackend\Base
         return (isset($department['id']) && $department['id']) ? $department->withOutClusterDuplicates() : null;
     }
 
-    public function readByOrganisationId($organisationId, int $resolveReferences = 0): Collection
+    public function readByOrganisationId(string|int $organisationId, int $resolveReferences = 0): Collection
     {
         $departmentList = new Collection();
         $query = new \BO\Zmsbackend\Department\Repository\Department(\BO\Zmsbackend\Query\Base::SELECT);
@@ -156,7 +156,7 @@ class Department extends \BO\Zmsbackend\Base
         return $departmentList;
     }
 
-    public function deleteEntity($departmentId)
+    public function deleteEntity(string|int $departmentId)
     {
         $entity = $this->readEntity($departmentId, 1);
         if ($entity) {
@@ -181,7 +181,7 @@ class Department extends \BO\Zmsbackend\Base
         return ($entity && $entityDelete && $emailDelete) ? $entity : null;
     }
 
-    public function writeEntity(\BO\Zmsentities\Department $entity, $parentId)
+    public function writeEntity(\BO\Zmsentities\Department $entity, string|int $parentId)
     {
         self::$departmentCache = [];
         $query = new \BO\Zmsbackend\Department\Repository\Department(\BO\Zmsbackend\Query\Base::INSERT);
@@ -210,7 +210,7 @@ class Department extends \BO\Zmsbackend\Base
         return $this->readEntity($lastInsertId);
     }
 
-    public function updateEntity($departmentId, \BO\Zmsentities\Department $entity)
+    public function updateEntity(string|int $departmentId, \BO\Zmsentities\Department $entity)
     {
         self::$departmentCache = [];
         $query = new \BO\Zmsbackend\Department\Repository\Department(\BO\Zmsbackend\Query\Base::UPDATE);
@@ -239,7 +239,7 @@ class Department extends \BO\Zmsbackend\Base
      *
      * @return void
      */
-    protected function writeDepartmentLinks(string|false $departmentId, $links)
+    protected function writeDepartmentLinks(string|false $departmentId, iterable $links)
     {
         if (!$departmentId) {
             throw new \BO\Zmsbackend\Department\Exception\InvalidId();
@@ -264,7 +264,7 @@ class Department extends \BO\Zmsbackend\Base
      */
     protected function updateDepartmentMail(
         string|false $departmentId,
-        $email,
+        string $email,
         bool|int|string|null $sendEmailReminderEnabled,
         int|string|null $sendEmailReminderMinutesBefore
     ) {
@@ -279,7 +279,7 @@ class Department extends \BO\Zmsbackend\Base
     }
 
     public function readQueueList(
-        $departmentId,
+        string|int $departmentId,
         \DateTimeInterface $dateTime,
         int $resolveReferences = 0
     ): \BO\Zmsentities\Collection\QueueList {

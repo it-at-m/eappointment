@@ -83,7 +83,7 @@ class ProcessQueue extends BaseController
      * @return (bool|mixed)[]
      *
      */
-    public static function getValidatedForm($validator, Process $process): array
+    public static function getValidatedForm(\BO\Mellon\Validator $validator, Process $process): array
     {
         $processValidator = new ProcessValidator($process);
         $delegatedProcess = $processValidator->getDelegatedProcess();
@@ -145,7 +145,7 @@ class ProcessQueue extends BaseController
         return $form;
     }
 
-    protected function readSelectedProcessWithWaitingnumber($selectedProcessId)
+    protected function readSelectedProcessWithWaitingnumber(string|int $selectedProcessId)
     {
         $result = null;
         if ($selectedProcessId) {
@@ -154,21 +154,21 @@ class ProcessQueue extends BaseController
         return $result;
     }
 
-    protected function getProcess($input, $scope)
+    protected function getProcess(array $input, \BO\Zmsentities\Scope $scope)
     {
         $process = new Process();
         $notice = (! $this->isOpened($scope)) ? 'Außerhalb der Öffnungszeiten gebucht! ' : '';
         return $process->withUpdatedData($input, \App::$now, $scope, $notice);
     }
 
-    protected function writeQueuedProcess($input, $process): Process
+    protected function writeQueuedProcess(array $input, \BO\Zmsentities\Process $process): Process
     {
         $process = \App::$http->readPostResult('/workstation/process/waitingnumber/', $process)->getEntity();
         AppointmentFormHelper::updateMail($input, $process);
         return $process;
     }
 
-    protected function isOpened($scope)
+    protected function isOpened(\BO\Zmsentities\Scope $scope)
     {
         if ($scope->getResolveLevel() < 1) {
             $scope =  \App::$http->readGetResult('/scope/' . $scope->getId() . '/', [

@@ -166,7 +166,7 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
         return $joinQuery;
     }
 
-    public function addConditionDate($date): static
+    public function addConditionDate(string $date): static
     {
         $this->query->where('process.Datum', '=', $date);
         return $this;
@@ -175,7 +175,7 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
     /**
      * @psalm-api
      */
-    public function addConditionDisplayNumber($displayNumber): static
+    public function addConditionDisplayNumber(string $displayNumber): static
     {
         $this->query->where('process.displayNumber', '=', $displayNumber);
         return $this;
@@ -503,7 +503,7 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
         return $this;
     }
 
-    public function addConditionProcessIdFollow($processId): static
+    public function addConditionProcessIdFollow(string|int $processId): static
     {
         $this->query->where(function (\BO\Zmsbackend\Query\Builder\ConditionBuilder $condition) use ($processId) {
             $condition
@@ -567,7 +567,7 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
         return $this;
     }
 
-    public function addConditionWorkstationId($workstationId): static
+    public function addConditionWorkstationId(string|int $workstationId): static
     {
         $this->query->where(function (\BO\Zmsbackend\Query\Builder\ConditionBuilder $query) use ($workstationId) {
             $query->andWith('process.NutzerID', '=', $workstationId);
@@ -597,7 +597,7 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
         return $this;
     }
 
-    public function addConditionAuthKey($authKey): static
+    public function addConditionAuthKey(string $authKey): static
     {
         $authKey = urldecode($authKey);
         $this->query->where('process.absagecode', '=', $authKey);
@@ -638,7 +638,7 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
         return $this;
     }
 
-    public function addConditionSearch($queryString, bool $orWhere = false): static
+    public function addConditionSearch(string $queryString, bool $orWhere = false): static
     {
         $queryString = trim((string) $queryString);
         $terms = $this->parseSearchTerms($queryString);
@@ -677,7 +677,7 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
     /**
      * Match an exact process id or a general search hit in one parenthesized OR group.
      */
-    public function addConditionProcessIdOrSearch($queryString): static
+    public function addConditionProcessIdOrSearch(string $queryString): static
     {
         $queryString = trim((string) $queryString);
         $processId = (int) $queryString;
@@ -891,7 +891,7 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
         return str_replace("'", "''", $value);
     }
 
-    public function addConditionName($name, bool $exactMatching = false): static
+    public function addConditionName(string $name, bool $exactMatching = false): static
     {
         if ($exactMatching) {
             $this->query->where(function (\BO\Zmsbackend\Query\Builder\ConditionBuilder $query) use ($name) {
@@ -922,7 +922,7 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
     /**
      * @psalm-api
      */
-    public function addConditionCustomTextfield($customText, bool $exactMatching = false): static
+    public function addConditionCustomTextfield(string $customText, bool $exactMatching = false): static
     {
         if ($exactMatching) {
             $this->query->where(function (\BO\Zmsbackend\Query\Builder\ConditionBuilder $query) use ($customText) {
@@ -939,7 +939,7 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
     /**
      * @psalm-api
      */
-    public function addConditionCustomTextfield2($customText2, bool $exactMatching = false): static
+    public function addConditionCustomTextfield2(string $customText2, bool $exactMatching = false): static
     {
         if ($exactMatching) {
             $this->query->where(function (\BO\Zmsbackend\Query\Builder\ConditionBuilder $query) use ($customText2) {
@@ -953,7 +953,7 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
         return $this;
     }
 
-    public function addConditionAmendment($amendment): static
+    public function addConditionAmendment(string $amendment): static
     {
         $this->query->where(function (\BO\Zmsbackend\Query\Builder\ConditionBuilder $query) use ($amendment) {
             $query->andWith('process.Anmerkung', 'LIKE', "%$amendment%");
@@ -964,7 +964,7 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
     /**
      * Add Requests Join
      */
-    public function addConditionRequestId($requestId): static
+    public function addConditionRequestId(string|int $requestId): static
     {
         $this->leftJoin(
             new \BO\Zmsbackend\Query\Alias("buergeranliegen", 'buergeranliegen'),
@@ -1039,7 +1039,7 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
         return $this;
     }
 
-    public function addValuesNewProcess(ProcessEntity $process, $parentProcess = 0, int $childProcessCount = 0): void
+    public function addValuesNewProcess(ProcessEntity $process, int $parentProcess = 0, int $childProcessCount = 0): void
     {
         $values = [
             'BuergerID' => $process->id,
@@ -1087,7 +1087,7 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
         return $newDisplayNumber;
     }
 
-    public function checkIfDisplayNumberOnSameDateExists($scopeId, string $displayNumber, \DateTime|false $date): bool
+    public function checkIfDisplayNumberOnSameDateExists(string|int $scopeId, string $displayNumber, \DateTime|false $date): bool
     {
         $processWithDisplayNumber = (new \BO\Zmsbackend\Process\Service\Process())->readProcessWithSameDayAndDisplayNumber(
             $scopeId,
@@ -1102,7 +1102,7 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
         ProcessEntity $process,
         \DateTimeInterface $dateTime,
         int $parentProcess = 0,
-        $previousStatus = null
+        ?string $previousStatus = null
     ): void {
         $this->addValuesIPAdress($process);
         if (0 === $parentProcess) {
@@ -1128,7 +1128,7 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
         $this->addValues($data);
     }
 
-    public function addValuesFollowingProcessData(ProcessEntity $process, $parentProcess): void
+    public function addValuesFollowingProcessData(ProcessEntity $process, int $parentProcess): void
     {
         $data = array();
         if (0 === $parentProcess) {
@@ -1160,7 +1160,7 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
         $this->addValues($data);
     }
 
-    public function addValuesStatusData(ProcessEntity $process, \DateTimeInterface $dateTime, $previousStatus = null): void
+    public function addValuesStatusData(ProcessEntity $process, \DateTimeInterface $dateTime, ?string $previousStatus = null): void
     {
         $data = array();
         $data['vorlaeufigeBuchung'] = ($process->status == 'reserved') ? 1 : 0;
@@ -1237,7 +1237,7 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
         $this->addValues($data);
     }
 
-    protected function addProcessingTimeData(ProcessEntity $process, \DateTimeInterface $dateTime, $previousStatus = null): void
+    protected function addProcessingTimeData(ProcessEntity $process, \DateTimeInterface $dateTime, ?string $previousStatus = null): void
     {
         $data = array();
         $timeoutTime = null;
@@ -1347,7 +1347,7 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
         $this->addValues($data);
     }
 
-    protected function addValuesWaitingTimeData(ProcessEntity $process, $previousStatus = null): void
+    protected function addValuesWaitingTimeData(ProcessEntity $process, ?string $previousStatus = null): void
     {
         $data = array();
         $hasWaitingTimeAlready = (
@@ -1457,7 +1457,7 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
     }
 
     #[\Override]
-    public function postProcess($data)
+    public function postProcess(array $data)
     {
         $data[$this->getPrefixed("appointments__0__date")] =
             strtotime($data[$this->getPrefixed("appointments__0__date")]);

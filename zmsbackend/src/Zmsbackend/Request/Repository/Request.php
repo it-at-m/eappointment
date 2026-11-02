@@ -44,7 +44,7 @@ class Request extends \BO\Zmsbackend\Query\Base
         return $mapping;
     }
 
-    public function addConditionRequestId($requestId): static
+    public function addConditionRequestId(string|int $requestId): static
     {
         $this->query->where('id', '=', $requestId);
         return $this;
@@ -57,7 +57,7 @@ class Request extends \BO\Zmsbackend\Query\Base
         return $this;
     }
 
-    public function addConditionProcessId($processId): static
+    public function addConditionProcessId(string|int $processId): static
     {
         $this->leftJoin(
             new \BO\Zmsbackend\Query\Alias("buergeranliegen", 'buergeranliegen'),
@@ -99,7 +99,7 @@ class Request extends \BO\Zmsbackend\Query\Base
         return $this;
     }
 
-    public function addConditionArchiveId($archiveId): static
+    public function addConditionArchiveId(string|int $archiveId): static
     {
         $this->leftJoin(
             new \BO\Zmsbackend\Query\Alias("buergeranliegen", 'buergeranliegen'),
@@ -113,7 +113,7 @@ class Request extends \BO\Zmsbackend\Query\Base
         return $this;
     }
 
-    public function addConditionProvider($providerId, $source): static
+    public function addConditionProvider(string|int $providerId, string $source): static
     {
         $this->leftJoin(
             new \BO\Zmsbackend\Query\Alias("request_provider", 'xrequest'),
@@ -129,14 +129,14 @@ class Request extends \BO\Zmsbackend\Query\Base
         return $this;
     }
 
-    public function addConditionRequestSource($source): static
+    public function addConditionRequestSource(string $source): static
     {
         $this->query->where('request.source', '=', $source);
         return $this;
     }
 
     #[\Override]
-    public function postProcess($data)
+    public function postProcess(array $data)
     {
         if (isset($data[$this->getPrefixed('data')]) && $data[$this->getPrefixed('data')]) {
             $data[$this->getPrefixed('data')] = json_decode($data[$this->getPrefixed('data')], true);
@@ -144,7 +144,7 @@ class Request extends \BO\Zmsbackend\Query\Base
         return $data;
     }
 
-    public function addConditionIds($ids): static
+    public function addConditionIds(array $ids): static
     {
         $this->query->where(function (\BO\Zmsbackend\Query\Builder\ConditionBuilder $query) use ($ids) {
             foreach ($ids as $id) {

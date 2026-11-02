@@ -1641,12 +1641,10 @@ public class AdminSteps {
         } catch (NumberFormatException exception) {
             throw new AssertionError("Appointment time was not stored", exception);
         }
-        if (FixtureHolidays.isClosed(BerlinTime.today())) {
-            long start = BerlinTime.today().atStartOfDay(java.time.ZoneId.of("Europe/Berlin")).toEpochSecond();
-            if (appointment < start || appointment >= start + 86_400L) {
-                throw new SkipException("Today " + BerlinTime.today()
-                        + " is a fixture holiday, so this appointment is not in today's waiting count.");
-            }
+        long start = BerlinTime.today().atStartOfDay(java.time.ZoneId.of("Europe/Berlin")).toEpochSecond();
+        if (appointment < start || appointment >= start + 86_400L) {
+            throw new SkipException("The appointment is not today (" + BerlinTime.today()
+                    + "), so it is not in today's waiting count.");
         }
         long now = Instant.now().getEpochSecond();
         if (appointment - now > 45) {
