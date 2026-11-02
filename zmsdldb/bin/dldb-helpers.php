@@ -70,7 +70,7 @@ class DldbHelpers
         return "none";
     }
 
-    public function performRollback($rollbackDay)
+    public function performRollback(string|int|null $rollbackDay)
     {
         if ($rollbackDay === "none" || $rollbackDay === null || (int) $rollbackDay < 1) {
             return false;
