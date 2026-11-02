@@ -22,7 +22,7 @@ class Source extends \BO\Zmsbackend\Base
      *
      * @return \BO\Zmsentities\Source
      */
-    public function readEntity($sourceName, int $resolveReferences = 0, bool $disableCache = false)
+    public function readEntity(string $sourceName, int $resolveReferences = 0, bool $disableCache = false)
     {
         $cacheKey = "source-$sourceName-$resolveReferences";
 
@@ -146,7 +146,7 @@ class Source extends \BO\Zmsbackend\Base
      *
      * @return \BO\Zmsentities\Source
      */
-    public function writeDeleteBySource($sourceName)
+    public function writeDeleteBySource(string $sourceName)
     {
         $entity = $this->readEntity($sourceName);
         $query = new \BO\Zmsbackend\Source\Repository\Source(\BO\Zmsbackend\Query\Base::DELETE);
@@ -161,7 +161,7 @@ class Source extends \BO\Zmsbackend\Base
     /**
      * delete provider and request relations of source
      */
-    public function writeDeleteRelations($sourceName): void
+    public function writeDeleteRelations(string $sourceName): void
     {
         (new \BO\Zmsbackend\Provider\Service\Provider())->writeDeleteListBySource($sourceName);
         (new \BO\Zmsbackend\Request\Service\Request())->writeDeleteListBySource($sourceName);
@@ -171,7 +171,7 @@ class Source extends \BO\Zmsbackend\Base
     /**
      * @return void
      */
-    public function removeCache($sourceName)
+    public function removeCache(string $sourceName)
     {
         if (!App::$cache) {
             return;

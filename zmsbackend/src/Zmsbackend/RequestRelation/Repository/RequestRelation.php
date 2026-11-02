@@ -60,7 +60,7 @@ class RequestRelation extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbacken
         return $this;
     }
 
-    public function addConditionSource($sourceName): static
+    public function addConditionSource(string $sourceName): static
     {
         $this->query->where(self::TABLE . '.source', '=', $sourceName);
         return $this;
