@@ -1,10 +1,10 @@
 {
   "branch": "zmskvr-1627-five-minute-slots",
   "branchSlug": "zmskvr-1627-five-minute-slots",
-  "runId": "41476727316",
-  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/41476727316",
-  "runStartedAt": "2026-11-02T15:57:40Z",
-  "publishedAt": "2026-11-02T16:51:54.779Z",
+  "runId": "41500770263",
+  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/41500770263",
+  "runStartedAt": "2026-11-02T18:27:36Z",
+  "publishedAt": "2026-11-02T18:38:00.761Z",
   "features": {
     "feature-ui-zmsadmin-booking-zmskvr-1328": {
       "status": "passed",
@@ -296,35 +296,21 @@
     },
     "feature-ui-zmsadmin-citizen-call-zms-2851-zmsalt-2851": {
       "status": "failed",
-      "shard": "zmsadmin",
+      "shard": "custom",
       "browser": "chrome",
+      "rel": "ui/zmsadmin/citizen-call/ZMS-2851_ZMSALT-2851.feature",
+      "runId": "41500770263",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/41500770263",
+      "runStartedAt": "2026-11-02T18:27:36Z",
       "browsers": {
         "chrome": {
           "status": "failed",
-          "shard": "zmsadmin",
-          "runId": "41476727316",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/41476727316",
-          "runStartedAt": "2026-11-02T15:57:40Z"
-        },
-        "edge": {
-          "status": "failed",
-          "shard": "zmsadmin",
-          "runId": "41476727316",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/41476727316",
-          "runStartedAt": "2026-11-02T15:57:40Z"
-        },
-        "firefox": {
-          "status": "failed",
-          "shard": "zmsadmin",
-          "runId": "41476727316",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/41476727316",
-          "runStartedAt": "2026-11-02T15:57:40Z"
+          "shard": "custom",
+          "runId": "41500770263",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/41500770263",
+          "runStartedAt": "2026-11-02T18:27:36Z"
         }
-      },
-      "rel": "ui/zmsadmin/citizen-call/ZMS-2851_ZMSALT-2851.feature",
-      "runId": "41476727316",
-      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/41476727316",
-      "runStartedAt": "2026-11-02T15:57:40Z"
+      }
     },
     "feature-ui-zmsadmin-citizen-call-zms-2853-zmsalt-2853": {
       "status": "passed",
@@ -712,35 +698,21 @@
     },
     "feature-ui-zmsadmin-configuration-zms-3171-zmsalt-3171": {
       "status": "failed",
-      "shard": "zmsadmin",
+      "shard": "custom",
       "browser": "chrome",
+      "rel": "ui/zmsadmin/configuration/ZMS-3171_ZMSALT-3171.feature",
+      "runId": "41500770263",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/41500770263",
+      "runStartedAt": "2026-11-02T18:27:36Z",
       "browsers": {
         "chrome": {
           "status": "failed",
-          "shard": "zmsadmin",
-          "runId": "41476727316",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/41476727316",
-          "runStartedAt": "2026-11-02T15:57:40Z"
-        },
-        "edge": {
-          "status": "failed",
-          "shard": "zmsadmin",
-          "runId": "41476727316",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/41476727316",
-          "runStartedAt": "2026-11-02T15:57:40Z"
-        },
-        "firefox": {
-          "status": "failed",
-          "shard": "zmsadmin",
-          "runId": "41476727316",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/41476727316",
-          "runStartedAt": "2026-11-02T15:57:40Z"
+          "shard": "custom",
+          "runId": "41500770263",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/41500770263",
+          "runStartedAt": "2026-11-02T18:27:36Z"
         }
-      },
-      "rel": "ui/zmsadmin/configuration/ZMS-3171_ZMSALT-3171.feature",
-      "runId": "41476727316",
-      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/41476727316",
-      "runStartedAt": "2026-11-02T15:57:40Z"
+      }
     },
     "feature-ui-zmsadmin-configuration-zmskvr-1348-zmskvr-1479-changelog-link": {
       "status": "passed",
@@ -776,35 +748,21 @@
     },
     "feature-ui-zmsadmin-configuration-zmskvr-1459-zmskvr-1392-integer-fields": {
       "status": "failed",
-      "shard": "zmsadmin",
+      "shard": "custom",
       "browser": "chrome",
+      "rel": "ui/zmsadmin/configuration/zmskvr-1459_zmskvr-1392_integer_fields.feature",
+      "runId": "41500770263",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/41500770263",
+      "runStartedAt": "2026-11-02T18:27:36Z",
       "browsers": {
         "chrome": {
           "status": "failed",
-          "shard": "zmsadmin",
-          "runId": "41476727316",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/41476727316",
-          "runStartedAt": "2026-11-02T15:57:40Z"
-        },
-        "edge": {
-          "status": "failed",
-          "shard": "zmsadmin",
-          "runId": "41476727316",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/41476727316",
-          "runStartedAt": "2026-11-02T15:57:40Z"
-        },
-        "firefox": {
-          "status": "failed",
-          "shard": "zmsadmin",
-          "runId": "41476727316",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/41476727316",
-          "runStartedAt": "2026-11-02T15:57:40Z"
+          "shard": "custom",
+          "runId": "41500770263",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/41500770263",
+          "runStartedAt": "2026-11-02T18:27:36Z"
         }
-      },
-      "rel": "ui/zmsadmin/configuration/zmskvr-1459_zmskvr-1392_integer_fields.feature",
-      "runId": "41476727316",
-      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/41476727316",
-      "runStartedAt": "2026-11-02T15:57:40Z"
+      }
     },
     "feature-ui-zmsadmin-configuration-zmskvr-812-zmskvr-830-availability-hint-field": {
       "status": "passed",
@@ -904,35 +862,21 @@
     },
     "feature-ui-zmsadmin-emergency-zms-3503-zmsalt-3503-zms-3542-zmsalt-3542-reset-emergency-via-location": {
       "status": "failed",
-      "shard": "zmsadmin",
+      "shard": "custom",
       "browser": "chrome",
+      "rel": "ui/zmsadmin/emergency/zms-3503_zmsalt-3503_zms-3542_zmsalt-3542_reset_emergency_via_location.feature",
+      "runId": "41500770263",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/41500770263",
+      "runStartedAt": "2026-11-02T18:27:36Z",
       "browsers": {
         "chrome": {
           "status": "failed",
-          "shard": "zmsadmin",
-          "runId": "41476727316",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/41476727316",
-          "runStartedAt": "2026-11-02T15:57:40Z"
-        },
-        "edge": {
-          "status": "failed",
-          "shard": "zmsadmin",
-          "runId": "41476727316",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/41476727316",
-          "runStartedAt": "2026-11-02T15:57:40Z"
-        },
-        "firefox": {
-          "status": "failed",
-          "shard": "zmsadmin",
-          "runId": "41476727316",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/41476727316",
-          "runStartedAt": "2026-11-02T15:57:40Z"
+          "shard": "custom",
+          "runId": "41500770263",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/41500770263",
+          "runStartedAt": "2026-11-02T18:27:36Z"
         }
-      },
-      "rel": "ui/zmsadmin/emergency/zms-3503_zmsalt-3503_zms-3542_zmsalt-3542_reset_emergency_via_location.feature",
-      "runId": "41476727316",
-      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/41476727316",
-      "runStartedAt": "2026-11-02T15:57:40Z"
+      }
     },
     "feature-ui-zmsadmin-opening-hours-zms-878-zmsalt-878": {
       "status": "passed",
@@ -2372,19 +2316,19 @@
     },
     "feature-rest-zmsapi-emergency-zms-3212-zmsalt-3212-zms-3503-zmsalt-3503-zms-3577-zmsalt-3577-zms-3542-zmsalt-3542-emergency-tresen-and-reset": {
       "status": "failed",
-      "shard": "zmsapi",
+      "shard": "custom",
       "browser": "chrome",
       "rel": "rest/zmsapi/emergency/zms-3212_zmsalt-3212_zms-3503_zmsalt-3503_zms-3577_zmsalt-3577_zms-3542_zmsalt-3542_emergency_tresen_and_reset.feature",
-      "runId": "41476727316",
-      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/41476727316",
-      "runStartedAt": "2026-11-02T15:57:40Z",
+      "runId": "41500770263",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/41500770263",
+      "runStartedAt": "2026-11-02T18:27:36Z",
       "browsers": {
         "chrome": {
           "status": "failed",
-          "shard": "zmsapi",
-          "runId": "41476727316",
-          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/41476727316",
-          "runStartedAt": "2026-11-02T15:57:40Z"
+          "shard": "custom",
+          "runId": "41500770263",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/41500770263",
+          "runStartedAt": "2026-11-02T18:27:36Z"
         }
       }
     },
