@@ -9,7 +9,7 @@ class Alias implements \BO\Zmsbackend\Query\Builder\ExpressionInterface
     protected $name;
     protected $alias;
 
-    public function __construct($name, $alias)
+    public function __construct(string $name, $alias)
     {
         $this->name = $this->quoteStructureParts($name, '`');
         $this->alias = $this->quoteStructureParts($alias, '`');

@@ -891,7 +891,7 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
         return str_replace("'", "''", $value);
     }
 
-    public function addConditionName($name, bool $exactMatching = false): static
+    public function addConditionName(string $name, bool $exactMatching = false): static
     {
         if ($exactMatching) {
             $this->query->where(function (\BO\Zmsbackend\Query\Builder\ConditionBuilder $query) use ($name) {
