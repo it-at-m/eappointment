@@ -62,7 +62,7 @@ class ProcessReserve extends BaseController
         );
     }
 
-    protected function getProcess($input, $scope)
+    protected function getProcess(array $input, $scope)
     {
         $process = new Process();
         $selectedTime = str_replace('-', ':', $input['selectedtime']);
@@ -154,7 +154,7 @@ class ProcessReserve extends BaseController
         return $form;
     }
 
-    public static function writeReservedProcess($input, \BO\Zmsentities\Process $process)
+    public static function writeReservedProcess(array $input, \BO\Zmsentities\Process $process)
     {
         $response = \App::$http
             ->readPostResult('/process/status/reserved/', $process, [
@@ -168,7 +168,7 @@ class ProcessReserve extends BaseController
         return $response->getEntity();
     }
 
-    public static function writeConfirmedProcess($input, \BO\Zmsentities\Process $process)
+    public static function writeConfirmedProcess(array $input, \BO\Zmsentities\Process $process)
     {
         $confirmedProcess = \App::$http->readPostResult('/process/status/confirmed/', $process)->getEntity();
         if ('confirmed' == $confirmedProcess->getStatus()) {

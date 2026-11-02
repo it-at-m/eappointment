@@ -84,7 +84,7 @@ class ProcessRedirect extends \BO\Zmsbackend\Api\BaseController
         }
     }
 
-    protected function readValidProcess($workstation, \BO\Zmsentities\Process $entity, $input)
+    protected function readValidProcess($workstation, \BO\Zmsentities\Process $entity, array $input)
     {
         if ($entity->hasProcessCredentials()) {
             $this->testProcessData($entity);

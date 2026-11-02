@@ -14,7 +14,7 @@ use BO\Zmsentities\Request;
 
 class ProcessFinishedHelper extends Process
 {
-    public function __construct($processData, $input, $requestList, string $source)
+    public function __construct($processData, array $input, $requestList, string $source)
     {
         parent::__construct($processData);
         $this->getFirstClient()->addData($input['process']['clients'][0]);

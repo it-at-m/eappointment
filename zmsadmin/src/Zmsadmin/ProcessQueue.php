@@ -154,14 +154,14 @@ class ProcessQueue extends BaseController
         return $result;
     }
 
-    protected function getProcess($input, $scope)
+    protected function getProcess(array $input, $scope)
     {
         $process = new Process();
         $notice = (! $this->isOpened($scope)) ? 'Außerhalb der Öffnungszeiten gebucht! ' : '';
         return $process->withUpdatedData($input, \App::$now, $scope, $notice);
     }
 
-    protected function writeQueuedProcess($input, \BO\Zmsentities\Process $process): Process
+    protected function writeQueuedProcess(array $input, \BO\Zmsentities\Process $process): Process
     {
         $process = \App::$http->readPostResult('/workstation/process/waitingnumber/', $process)->getEntity();
         AppointmentFormHelper::updateMail($input, $process);

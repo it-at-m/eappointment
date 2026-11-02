@@ -85,7 +85,7 @@ class UseraccountAdd extends BaseController
         );
     }
 
-    protected function writeNewEntity($input)
+    protected function writeNewEntity(array $input)
     {
         $entity = new Entity($input);
         if (isset($input['oidcProvider']) && '' != $input['oidcProvider']) {
