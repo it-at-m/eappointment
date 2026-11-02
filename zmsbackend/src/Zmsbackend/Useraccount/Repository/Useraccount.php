@@ -222,7 +222,7 @@ class Useraccount extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Qu
         return $this;
     }
 
-    public function addConditionSearch($queryString, bool $orWhere = false): static
+    public function addConditionSearch(string $queryString, bool $orWhere = false): static
     {
         $condition = function (\BO\Zmsbackend\Query\Builder\ConditionBuilder $query) use ($queryString) {
             $queryString = trim($queryString);

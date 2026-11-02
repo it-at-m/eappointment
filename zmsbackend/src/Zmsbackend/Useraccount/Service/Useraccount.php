@@ -824,7 +824,7 @@ class Useraccount extends \BO\Zmsbackend\Base
         return $this->perform($query, [$userId]);
     }
 
-    protected function buildSearchCacheKey(string $prefix, int $resolveReferences, ?\BO\Zmsentities\Workstation $workstation, $queryString, array $departmentIds = []): string
+    protected function buildSearchCacheKey(string $prefix, int $resolveReferences, ?\BO\Zmsentities\Workstation $workstation, string $queryString, array $departmentIds = []): string
     {
         $version = $this->getUseraccountCacheVersion();
         $workstationKey = '';

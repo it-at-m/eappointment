@@ -638,7 +638,7 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
         return $this;
     }
 
-    public function addConditionSearch($queryString, bool $orWhere = false): static
+    public function addConditionSearch(string $queryString, bool $orWhere = false): static
     {
         $queryString = trim((string) $queryString);
         $terms = $this->parseSearchTerms($queryString);
@@ -677,7 +677,7 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
     /**
      * Match an exact process id or a general search hit in one parenthesized OR group.
      */
-    public function addConditionProcessIdOrSearch($queryString): static
+    public function addConditionProcessIdOrSearch(string $queryString): static
     {
         $queryString = trim((string) $queryString);
         $processId = (int) $queryString;
