@@ -317,14 +317,10 @@ class Department extends \BO\Zmsbackend\Base
             }
         }
 
-        // Invalidate scopeReadByDepartmentId cache for all resolveReferences levels (0, 1, 2)
-        for ($resolveReferences = 0; $resolveReferences <= 2; $resolveReferences++) {
-            $key = "scopeReadByDepartmentId-{$department->id}-{$resolveReferences}";
-            if (\App::$cache->has($key)) {
-                \App::$cache->delete($key);
-                $invalidatedKeys[] = $key;
-            }
-        }
+        // Scope lists share one generation. A department change abandons every
+        // previously stored scope entry, including ones has() cannot see.
+        $generation = \BO\Zmsbackend\Scope\Service\Scope::bumpScopeCacheGeneration();
+        $invalidatedKeys[] = 'scope-cache-generation-' . $generation;
 
         if (!empty($invalidatedKeys) && \App::$log) {
             \App::$log->info('Department cache invalidated', [
