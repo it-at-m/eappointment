@@ -29,7 +29,7 @@ class Apiclient extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Quer
         return $mapping;
     }
 
-    public function addConditionApiclientKey($clientKey): static
+    public function addConditionApiclientKey(string $clientKey): static
     {
         $this->query->where('apiclient.clientKey', '=', $clientKey);
         return $this;
