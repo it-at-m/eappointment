@@ -74,7 +74,7 @@ class Closure extends \BO\Zmsbackend\Base
         return $result ;
     }
 
-    public function deleteEntity($closure): bool
+    public function deleteEntity(\BO\Zmsentities\Closure $closure): bool
     {
         $query = new \BO\Zmsbackend\Availability\Repository\Closure(\BO\Zmsbackend\Query\Base::DELETE);
         $query->addConditionId($closure->getId());
