@@ -21,13 +21,14 @@ Feature: ZMSKVR-1083 / ZMSKVR-1226 slotsPerAppointment — Citizen API
   #
   # Haushaltsbescheinigung 1080843 at Ausbildung 10313237:
   #   slots=1, relation maxQuantity=5, service maxQuantity=5
-  #   Office spa unset → fallback 25, so serviceCount 6 stays under spa and only
+  #   Office spa unset → fallback 48, so serviceCount 6 stays under spa and only
   #   tooManyServicesPerAppointment fires. Calendar uses the same request limits
   #   as reserve, so discover at the allowed count then reserve over the limit.
   #
-  # Hauptkalender 10489: spa unset → MAX_SLOTS_FALLBACK=25 (125 minutes at 5-min
-  # slotTime). Eleven services at qty 1 sum to 25 slots; raising Haushalts-
-  # bescheinigung to 2 reaches 26 slots / 130 minutes → tooManySlotsPerAppointment.
+  # Hauptkalender 10489: spa unset → MAX_SLOTS_FALLBACK=48 (240 minutes at 5-min
+  # slotTime). Eleven services at qty 1 sum to 25 slots and still book.
+  # Haushaltsbescheinigung relation maxQuantity is unset, so count 25 is
+  # 24 other slots + 25 = 49 slots / 245 minutes → tooManySlotsPerAppointment.
   # V56 opening hours for scope 70. Finish or cancel every reserved process.
 
   Background:
@@ -116,7 +117,7 @@ Feature: ZMSKVR-1083 / ZMSKVR-1226 slotsPerAppointment — Citizen API
     And office 10489 should use a slot time of 5 minutes and service 1063475 should take 3 slot
     And office 10489 and service 1080843 should take 1 slots
 
-  Scenario: Fallback spa 25 books the 125-minute combination and is cancelled
+  Scenario: Fallback cap books the 125-minute combination and is cancelled
     When I request available days for office 10489 and services "1063475,10242339,10225181,1063426,1063428,10225119,1080843,1076889,1078273,1080582,10225197" with service counts "1,1,1,1,1,1,1,1,1,1,1"
     And I request available appointments for the first available day
     And I reserve an appointment with the first available slot
@@ -124,10 +125,10 @@ Feature: ZMSKVR-1083 / ZMSKVR-1226 slotsPerAppointment — Citizen API
     And the appointment status should be "reserved"
     When I cancel the appointment
 
-  Scenario: Fallback spa rejects 26 slots for the 130-minute combination
-    # Discover under spa (25 slots / 125 minutes), then reserve with Haushaltsbescheinigung count 2.
+  Scenario: Fallback cap rejects 49 slots for the 245-minute combination
+    # Discover under the cap (25 slots / 125 minutes), then reserve with Haushaltsbescheinigung count 25.
     When I request available days for office 10489 and services "1063475,10242339,10225181,1063426,1063428,10225119,1080843,1076889,1078273,1080582,10225197" with service counts "1,1,1,1,1,1,1,1,1,1,1"
     And I request available appointments for the first available day
-    And I attempt to reserve an appointment with the first available slot and service counts "1,1,1,1,1,1,2,1,1,1,1"
+    And I attempt to reserve an appointment with the first available slot and service counts "1,1,1,1,1,1,25,1,1,1,1"
     Then the response status code should be 400
     And the response errors should include errorCode "tooManySlotsPerAppointment"
