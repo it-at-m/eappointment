@@ -156,7 +156,7 @@ class Index extends BaseController
         ));
     }
 
-    private function getDepartment($scope)
+    private function getDepartment(\BO\Zmsentities\Scope $scope)
     {
         return \App::$http->readGetResult('/scope/' . $scope->id . '/department/')->getEntity();
     }

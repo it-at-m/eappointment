@@ -55,7 +55,7 @@ class ProcessChange extends BaseController
         );
     }
 
-    protected function getNewProcess(array $input, \BO\Zmsentities\Process $process, $scope)
+    protected function getNewProcess(array $input, \BO\Zmsentities\Process $process, \BO\Zmsentities\Scope $scope)
     {
         $newProcess = clone $process;
         $selectedTime = str_replace('-', ':', $input['selectedtime']);

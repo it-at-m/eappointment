@@ -154,7 +154,7 @@ class ProcessQueue extends BaseController
         return $result;
     }
 
-    protected function getProcess(array $input, $scope)
+    protected function getProcess(array $input, \BO\Zmsentities\Scope $scope)
     {
         $process = new Process();
         $notice = (! $this->isOpened($scope)) ? 'Außerhalb der Öffnungszeiten gebucht! ' : '';
@@ -168,7 +168,7 @@ class ProcessQueue extends BaseController
         return $process;
     }
 
-    protected function isOpened($scope)
+    protected function isOpened(\BO\Zmsentities\Scope $scope)
     {
         if ($scope->getResolveLevel() < 1) {
             $scope =  \App::$http->readGetResult('/scope/' . $scope->getId() . '/', [

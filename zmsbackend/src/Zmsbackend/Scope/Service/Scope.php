@@ -757,7 +757,7 @@ class Scope extends \BO\Zmsbackend\Base
     /**
      * @psalm-api
      */
-    public function removeCache($scope): void
+    public function removeCache(\BO\Zmsentities\Scope $scope): void
     {
         $departmentId = isset($scope->id) ? $this->readDepartmentIdByScopeId($scope->id) : null;
         $this->removeCacheByContext($scope, $departmentId);
