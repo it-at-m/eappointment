@@ -35,7 +35,7 @@ class ClusterHelper
     }
 
     /** @psalm-api */
-    public static function getProcessList($selectedDate)
+    public static function getProcessList(string $selectedDate)
     {
         if (static::isClusterEnabled()) {
             $processList = \App::$http

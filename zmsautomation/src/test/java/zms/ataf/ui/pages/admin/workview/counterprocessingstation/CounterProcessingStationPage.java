@@ -29,6 +29,7 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
+import org.testng.SkipException;
 
 import ataf.core.helpers.TestDataHelper;
 import zms.ataf.helpers.PlainTextLengthSample;
@@ -38,6 +39,7 @@ import ataf.core.properties.DefaultValues;
 import ataf.web.model.LocatorType;
 import zms.ataf.helpers.AppointmentCountHelper;
 import zms.ataf.helpers.BerlinTime;
+import zms.ataf.helpers.FixtureHolidays;
 import zms.ataf.ui.pages.admin.AdminPage;
 import zms.ataf.ui.pages.admin.AdminPageContext;
 
@@ -218,6 +220,7 @@ public class CounterProcessingStationPage extends AdminPage {
      * reloaded. Match the name cell (not digits stripped from "Zmskvr1341…").
      */
     public void assertCustomerVisibleInQueueByName(String familyName) {
+        skipWhenAppointmentIsNotToday();
         ScenarioLogManager.getLogger().info(
                 "Checking for customer \"{}\" by name in waiting list...", familyName);
         CONTEXT.waitForSpinners();
@@ -767,6 +770,7 @@ public class CounterProcessingStationPage extends AdminPage {
             showSpontaneousCustomers(true);
             CONTEXT.waitForSpinners();
         }
+        openQueueOnBookedDay();
         ScenarioLogManager.getLogger().info("Deleting queued appointment for {}", familyName);
         // new_waiting_number is only the last walk-in in this scenario. Several rows must be
         // deleted by name. After a no-show the name cell also contains the call count and the
@@ -977,6 +981,7 @@ public class CounterProcessingStationPage extends AdminPage {
     public void selectTimeInNewAppointmentDropDownList(
             String time, Set<String> excludedTimes, boolean fallBackToWalkIn, boolean allowNextDay) {
         TestDataHelper.setTestData("appointment_booked_as_walk_in", "false");
+        TestDataHelper.setTestData("booked_queue_date", "");
         ScenarioLogManager.getLogger().info("Trying to select time \"" + time + "\" in new appointment drop down list...");
         Pattern timeSlotPattern = Pattern.compile("([0-9][0-9]:[0-9][0-9]) \\(noch ([0-9]) frei\\)");
         WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
@@ -1004,7 +1009,13 @@ public class CounterProcessingStationPage extends AdminPage {
                                 })
                                 .collect(Collectors.toList());
                         if (bookableTimeSlots.isEmpty()) {
-                            if (fallBackToWalkIn && selectWalkInOption(newAppointmentTimeDropDownListSelections, newAppointmentTimeDropDownList)) {
+                            LocalDate viewed = BerlinTime.today().plusDays(daysAhead[0]);
+                            // A holiday has no Terminkunde slots. A walk-in is not that appointment.
+                            if (!FixtureHolidays.isClosed(viewed)
+                                    && fallBackToWalkIn
+                                    && selectWalkInOption(
+                                            newAppointmentTimeDropDownListSelections,
+                                            newAppointmentTimeDropDownList)) {
                                 break;
                             }
                             return nextDayOrFail(daysAhead, allowNextDay);
@@ -1055,6 +1066,8 @@ public class CounterProcessingStationPage extends AdminPage {
                     return nextDayOrFail(daysAhead, allowNextDay);
                 }
             });
+        } catch (SkipException closedDay) {
+            throw closedDay;
         } catch (Exception e) {
             Assert.fail("Selecting time \"" + TestDataHelper.getTestData("new_appointment_time") + "\" in new appointment drop down list has failed,", e);
         }
@@ -1065,21 +1078,72 @@ public class CounterProcessingStationPage extends AdminPage {
      * The next day is opened for the whole day, so the form moves there and the time list is read again.
      */
     private boolean nextDayOrFail(int[] daysAhead, boolean allowNextDay) {
+        LocalDate viewed = BerlinTime.today().plusDays(daysAhead[0]);
         if (!allowNextDay) {
-            Assert.fail("No appointment slot is left today.");
+            throw new SkipException("No appointment slot is left on " + viewed
+                    + ", so this scenario cannot book a same-day appointment.");
         }
         return moveToNextDayWithSlots(daysAhead);
     }
 
+    /**
+     * A call uses today's queue. A future appointment returns ProcessNotCurrentDate,
+     * and {@code ?date=} does not make it callable.
+     */
+    protected void skipWhenAppointmentIsNotToday() {
+        LocalDate today = BerlinTime.today();
+        String iso = TestDataHelper.getTestData("booked_queue_date");
+        if (iso != null && !iso.isBlank()) {
+            LocalDate booked = LocalDate.parse(iso);
+            if (!booked.equals(today)) {
+                throw new SkipException("Admin can call an appointment only on today. This one is on " + booked + ".");
+            }
+        }
+        String epoch = TestDataHelper.getTestData("appointment_epoch");
+        if (epoch == null || epoch.isBlank()) {
+            return;
+        }
+        try {
+            long timestamp = Long.parseLong(epoch.trim());
+            long start = today.atStartOfDay(java.time.ZoneId.of("Europe/Berlin")).toEpochSecond();
+            if (timestamp < start || timestamp >= start + 86_400L) {
+                throw new SkipException("Admin can call an appointment only on today (" + today + ").");
+            }
+        } catch (NumberFormatException ignored) {
+            // Not an epoch.
+        }
+    }
+
+    /** The queue lists the selected day. Cleanup of a later booking opens that day. */
+    protected void openQueueOnBookedDay() {
+        String iso = TestDataHelper.getTestData("booked_queue_date");
+        if (iso == null || iso.isBlank()) {
+            return;
+        }
+        LocalDate booked = LocalDate.parse(iso);
+        if (!booked.isAfter(BerlinTime.today())) {
+            return;
+        }
+        String base = DRIVER.getCurrentUrl().replaceAll("[?#].*$", "");
+        ScenarioLogManager.getLogger().info("Opening the queue on booked day {}", iso);
+        DRIVER.navigate().to(base + "?date=" + iso);
+        CONTEXT.waitForSpinners();
+    }
+
     private boolean moveToNextDayWithSlots(int[] daysAhead) {
-        if (daysAhead[0] >= 7) {
+        LocalDate today = BerlinTime.today();
+        while (daysAhead[0] < 14) {
+            daysAhead[0]++;
+            LocalDate day = today.plusDays(daysAhead[0]);
+            if (FixtureHolidays.isClosed(day)) {
+                continue;
+            }
+            String date = day.format(DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.GERMAN));
+            TestDataHelper.setTestData("booked_queue_date", day.toString());
+            ScenarioLogManager.getLogger().info("No Terminkunde slot left; opening {}", date);
+            enterDateInNewAppointmentTextField(date);
             return false;
         }
-        daysAhead[0]++;
-        LocalDate day = BerlinTime.today().plusDays(daysAhead[0]);
-        String date = day.format(DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.GERMAN));
-        ScenarioLogManager.getLogger().info("No Terminkunde slot left; opening {}", date);
-        enterDateInNewAppointmentTextField(date);
         return false;
     }
 

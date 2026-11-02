@@ -44,7 +44,7 @@ class Request extends \BO\Zmsbackend\Base
     }
 
     /** @psalm-api */
-    public function readEntityById($requestId, int $resolveReferences = 0, bool $disableCache = false)
+    public function readEntityById(string|int $requestId, int $resolveReferences = 0, bool $disableCache = false)
     {
         $cacheKey = "request-byid-$requestId-$resolveReferences";
 
@@ -153,7 +153,7 @@ class Request extends \BO\Zmsbackend\Base
         return $requestList;
     }
 
-    protected function readEntityWithoutRootParentResolution($source, $requestId): Entity
+    protected function readEntityWithoutRootParentResolution(string $source, string|int $requestId): Entity
     {
         $this->testSource($source);
         $query = new \BO\Zmsbackend\Request\Repository\Request(\BO\Zmsbackend\Query\Base::SELECT);
@@ -203,7 +203,7 @@ class Request extends \BO\Zmsbackend\Base
         return $request->getSource() . ':' . $request->getId();
     }
 
-    public function readRequestByProcessId($processId, int $resolveReferences = 0)
+    public function readRequestByProcessId(string|int $processId, int $resolveReferences = 0)
     {
         $collection = new Collection();
         if ($processId) {
@@ -254,7 +254,7 @@ class Request extends \BO\Zmsbackend\Base
         return $requestsByProcessId;
     }
 
-    public function readRequestsByIds($ids, int $resolveReferences = 0)
+    public function readRequestsByIds(array $ids, int $resolveReferences = 0)
     {
         $query = new \BO\Zmsbackend\Request\Repository\Request(\BO\Zmsbackend\Query\Base::SELECT);
         $query->setResolveLevel($resolveReferences);
@@ -264,7 +264,7 @@ class Request extends \BO\Zmsbackend\Base
         return $this->readCollection($query);
     }
 
-    public function readRequestByArchiveId($archiveId, int $resolveReferences = 0)
+    public function readRequestByArchiveId(string|int $archiveId, int $resolveReferences = 0)
     {
         $collection = new Collection();
         if ($archiveId) {
@@ -298,7 +298,7 @@ class Request extends \BO\Zmsbackend\Base
         return $ids;
     }
 
-    public function readListByProvider($source, $providerId, int $resolveReferences = 0)
+    public function readListByProvider(string $source, string|int $providerId, int $resolveReferences = 0)
     {
         $this->testSource($source);
         $query = new \BO\Zmsbackend\Request\Repository\Request(\BO\Zmsbackend\Query\Base::SELECT);
@@ -428,7 +428,7 @@ class Request extends \BO\Zmsbackend\Base
         return $additionalDepartmentRequestList;
     }
 
-    public function readListBySource($source, int $resolveReferences = 0, bool $disableCache = false)
+    public function readListBySource(string $source, int $resolveReferences = 0, bool $disableCache = false)
     {
         $cacheKey = "requestReadListBySource-$source-$resolveReferences";
 
@@ -504,7 +504,7 @@ class Request extends \BO\Zmsbackend\Base
         return $this->readListBySource($source->getSource());
     }
 
-    public function writeImportEntity($request, $source = 'dldb')
+    public function writeImportEntity(array|\BO\Zmsdldb\Entity\Service $request, string $source = 'dldb')
     {
         (new \BO\Zmsentities\Request($request))->testValid();
 
@@ -523,7 +523,7 @@ class Request extends \BO\Zmsbackend\Base
         return $this->readEntity($source, $request['id'], 0, true);
     }
 
-    public function writeDeleteEntity($requestId, $source): bool
+    public function writeDeleteEntity(string|int $requestId, string $source): bool
     {
         $query = new \BO\Zmsbackend\Request\Repository\Request(\BO\Zmsbackend\Query\Base::DELETE);
         $query->addConditionRequestId($requestId);
@@ -542,7 +542,7 @@ class Request extends \BO\Zmsbackend\Base
     /**
      * @return void
      */
-    protected function testSource($source)
+    protected function testSource(string $source)
     {
         if (! (new \BO\Zmsbackend\Source\Service\Source())->readEntity($source)) {
             throw new \BO\Zmsbackend\Source\Exception\UnknownDataSource();

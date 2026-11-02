@@ -73,7 +73,7 @@ class WorkstationInfo
         return $infoData;
     }
 
-    public static function stringTimeToMinute($time): int
+    public static function stringTimeToMinute(?string $time): int
     {
         $timeArray = explode(':', $time === null ? '' : $time);
 
@@ -89,14 +89,14 @@ class WorkstationInfo
     }
 
 
-    public static function getWorkstationsByScope($scopeId)
+    public static function getWorkstationsByScope(string|int $scopeId)
     {
         return \App::$http
             ->readGetResult('/scope/' . $scopeId . '/workstation/', ['resolveReferences' => 1])
             ->getCollection();
     }
 
-    public static function getWorkstationsByCluster($clusterId)
+    public static function getWorkstationsByCluster(string|int $clusterId)
     {
         return \App::$http
             ->readGetResult('/cluster/' . $clusterId . '/workstation/', ['resolveReferences' => 1])

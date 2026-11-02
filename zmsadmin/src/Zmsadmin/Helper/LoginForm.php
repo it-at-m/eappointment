@@ -83,7 +83,7 @@ class LoginForm
         return $collection;
     }
 
-    public static function writeWorkstationUpdate($data, \BO\Zmsentities\Workstation $workstation): bool
+    public static function writeWorkstationUpdate(\BO\Mellon\Collection $data, \BO\Zmsentities\Workstation $workstation): bool
     {
         $formData = $data->getValues();
         $workstation->setValidatedName($formData);
