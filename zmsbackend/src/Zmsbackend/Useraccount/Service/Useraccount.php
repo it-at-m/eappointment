@@ -252,7 +252,7 @@ class Useraccount extends \BO\Zmsbackend\Base
         return ($useraccount->hasId()) ? true : false;
     }
 
-    public function readEntity($loginname, int $resolveReferences = 1, bool $disableCache = false)
+    public function readEntity(string $loginname, int $resolveReferences = 1, bool $disableCache = false)
     {
         $version = $this->getUseraccountCacheVersion();
         $cacheKey = $this->sanitizeCacheKey("useraccount-v{$version}-$loginname-$resolveReferences");
