@@ -175,7 +175,7 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
     /**
      * @psalm-api
      */
-    public function addConditionDisplayNumber($displayNumber): static
+    public function addConditionDisplayNumber(string $displayNumber): static
     {
         $this->query->where('process.displayNumber', '=', $displayNumber);
         return $this;

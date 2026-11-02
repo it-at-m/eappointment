@@ -898,7 +898,7 @@ class Process extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfaces\R
         return false;
     }
 
-    public function readProcessWithSameDayAndDisplayNumber(string|int $scopeId, $displayNumber, string $date)
+    public function readProcessWithSameDayAndDisplayNumber(string|int $scopeId, string $displayNumber, string $date)
     {
         $query = new \BO\Zmsbackend\Process\Repository\Process(\BO\Zmsbackend\Query\Base::SELECT);
         $query->addEntityMapping()
