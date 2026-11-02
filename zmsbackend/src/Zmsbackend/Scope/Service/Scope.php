@@ -722,7 +722,10 @@ class Scope extends \BO\Zmsbackend\Base
     {
         $path = self::cacheGenerationPath();
         clearstatcache(true, $path);
-        $generation = @file_get_contents($path);
+        if (!is_file($path)) {
+            return 0;
+        }
+        $generation = file_get_contents($path);
         if (!is_string($generation)) {
             return 0;
         }
