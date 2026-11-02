@@ -11,7 +11,7 @@ class ProcessStatus extends \BO\Zmsbackend\Process\Service\Process
 {
     public function writeUpdatedStatus(
         \BO\Zmsentities\Process $process,
-        $status,
+        string $status,
         \DateTimeInterface $dateTime,
         int $resolveReferences,
         $userAccount

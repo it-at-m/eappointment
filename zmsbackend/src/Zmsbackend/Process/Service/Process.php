@@ -595,7 +595,7 @@ class Process extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfaces\R
         return $process;
     }
 
-    public function shouldUpdateDisplayNumber(Entity $process, $status): bool
+    public function shouldUpdateDisplayNumber(Entity $process, string $status): bool
     {
         if ($status !== 'preconfirmed' && $status !== 'confirmed') {
             return false;
@@ -784,7 +784,7 @@ class Process extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfaces\R
         return $this->readList($statement, $resolveReferences);
     }
 
-    public function readExpiredProcessListByStatus(\DateTimeInterface $expirationDate, $status, int $limit = 500, ?int $offset = null, int $resolveReferences = 0)
+    public function readExpiredProcessListByStatus(\DateTimeInterface $expirationDate, string $status, int $limit = 500, ?int $offset = null, int $resolveReferences = 0)
     {
         $selectQuery = new \BO\Zmsbackend\Process\Repository\Process(\BO\Zmsbackend\Query\Base::SELECT);
         $selectQuery

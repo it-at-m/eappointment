@@ -71,7 +71,7 @@ class CalldisplayQueue extends \BO\Zmsbackend\Api\BaseController
         return $queueList;
     }
 
-    protected function readQueueListFromScopeAndStatus(\BO\Zmsentities\Scope $scope, $status, int $resolveReferences): \BO\Zmsentities\Collection\QueueList
+    protected function readQueueListFromScopeAndStatus(\BO\Zmsentities\Scope $scope, string $status, int $resolveReferences): \BO\Zmsentities\Collection\QueueList
     {
         $query = new \BO\Zmsbackend\Process\Service\Process();
         return $query
