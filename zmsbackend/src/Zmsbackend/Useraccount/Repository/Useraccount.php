@@ -174,7 +174,7 @@ class Useraccount extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Qu
         ];
     }
 
-    public function addConditionLoginName($loginName): static
+    public function addConditionLoginName(string $loginName): static
     {
         $this->query->where('useraccount.Name', '=', $loginName);
         return $this;

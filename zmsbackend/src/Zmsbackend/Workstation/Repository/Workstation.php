@@ -161,7 +161,7 @@ class Workstation extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Qu
         return $joinQuery;
     }
 
-    public function addConditionLoginName($loginName): static
+    public function addConditionLoginName(string $loginName): static
     {
         $this->query->where('workstation.Name', '=', $loginName);
         return $this;

@@ -81,7 +81,7 @@ class UserAuth
      *
      * @return void
      */
-    public static function testUseraccountExists($loginName, string|false $password = false)
+    public static function testUseraccountExists(string $loginName, string|false $password = false)
     {
         $query = new \BO\Zmsbackend\Useraccount\Service\Useraccount();
         if (! $query->readIsUserExisting($loginName, $password)) {

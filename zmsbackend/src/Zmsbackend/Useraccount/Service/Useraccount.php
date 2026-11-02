@@ -151,7 +151,7 @@ class Useraccount extends \BO\Zmsbackend\Base
         return array_values(array_unique(array_filter($ids)));
     }
 
-    protected function readDepartmentIdsForLoginName($loginName): array
+    protected function readDepartmentIdsForLoginName(string $loginName): array
     {
         if (!$loginName) {
             return [];
@@ -239,7 +239,7 @@ class Useraccount extends \BO\Zmsbackend\Base
         return str_replace(['{', '}', '(', ')', '/', '\\', '@', ':'], '_', $key);
     }
 
-    public function readIsUserExisting($loginName, string|false $password = false): bool
+    public function readIsUserExisting(string $loginName, string|false $password = false): bool
     {
         $query = new \BO\Zmsbackend\Useraccount\Repository\Useraccount(\BO\Zmsbackend\Query\Base::SELECT);
         $query->addEntityMapping()
@@ -734,7 +734,7 @@ class Useraccount extends \BO\Zmsbackend\Base
         }
     }
 
-    public function writeUpdatedEntity($loginName, Entity $entity, int $resolveReferences = 0)
+    public function writeUpdatedEntity(string $loginName, Entity $entity, int $resolveReferences = 0)
     {
         $previousDepartmentIds = $this->readDepartmentIdsForLoginName($loginName);
         $userId = null;
@@ -774,7 +774,7 @@ class Useraccount extends \BO\Zmsbackend\Base
         return $this->readEntity($entity->getId(), $resolveReferences, true);
     }
 
-    public function deleteEntity($loginName): bool
+    public function deleteEntity(string $loginName): bool
     {
         // Read entity before deletion to get cache info
         $entity = $this->readEntity($loginName, 0, true);
@@ -810,14 +810,14 @@ class Useraccount extends \BO\Zmsbackend\Base
         }
     }
 
-    protected function readEntityIdByLoginName($loginName)
+    protected function readEntityIdByLoginName(string $loginName)
     {
         $query = \BO\Zmsbackend\Useraccount\Repository\Useraccount::QUERY_READ_ID_BY_USERNAME;
         $result = $this->getReader()->fetchOne($query, [$loginName]);
         return $result['id'];
     }
 
-    protected function deleteAssignedDepartments($loginName)
+    protected function deleteAssignedDepartments(string $loginName)
     {
         $query = \BO\Zmsbackend\Useraccount\Repository\Useraccount::QUERY_DELETE_ASSIGNED_DEPARTMENTS;
         $userId = $this->readEntityIdByLoginName($loginName);
