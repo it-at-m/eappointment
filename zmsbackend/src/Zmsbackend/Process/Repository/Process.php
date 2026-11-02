@@ -597,7 +597,7 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
         return $this;
     }
 
-    public function addConditionAuthKey($authKey): static
+    public function addConditionAuthKey(string $authKey): static
     {
         $authKey = urldecode($authKey);
         $this->query->where('process.absagecode', '=', $authKey);

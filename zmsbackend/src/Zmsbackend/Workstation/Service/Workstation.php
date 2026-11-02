@@ -133,7 +133,7 @@ class Workstation extends \BO\Zmsbackend\Base
         return $collection;
     }
 
-    public function writeEntityLoginByOidc(string $loginName, $authKey, \DateTimeInterface $dateTime, \DateTimeInterface $sessionExpiry, int $resolveReferences = 0)
+    public function writeEntityLoginByOidc(string $loginName, string $authKey, \DateTimeInterface $dateTime, \DateTimeInterface $sessionExpiry, int $resolveReferences = 0)
     {
         $workstation = new Entity();
         $query = \BO\Zmsbackend\Workstation\Repository\Workstation::QUERY_LOGIN_OIDC;

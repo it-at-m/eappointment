@@ -37,7 +37,7 @@ class ProcessGet extends \BO\Zmsbackend\Api\BaseController
     /**
      * @return void
      */
-    protected function testProcessData(string|int $processId, $authKey)
+    protected function testProcessData(string|int $processId, string $authKey)
     {
         $authCheck = (new \BO\Zmsbackend\Process\Service\Process())->readAuthKeyByProcessId($processId);
         if (! $authCheck) {
