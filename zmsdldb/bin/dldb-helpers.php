@@ -29,7 +29,7 @@ class DldbHelpers
     protected $destinationPath;
     protected $backupPath;
 
-    public function __construct($destinationPath, ?Cli $cli = null)
+    public function __construct(string $destinationPath, ?Cli $cli = null)
     {
         $this->config = (new ConfigRepository())->readEntity();
         $this->cli = $cli ?: new Cli();
