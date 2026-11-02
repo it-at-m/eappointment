@@ -35,7 +35,7 @@ class Provider extends \BO\Zmsbackend\Query\Base
         return $mapping;
     }
 
-    public function addConditionIsAssigned($isAssigned): static
+    public function addConditionIsAssigned(?bool $isAssigned): static
     {
         $this->leftJoin(
             new \BO\Zmsbackend\Query\Alias(\BO\Zmsbackend\Query\Scope::TABLE, 'assignedscope'),
