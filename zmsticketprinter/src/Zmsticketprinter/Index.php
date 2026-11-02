@@ -176,7 +176,7 @@ class Index extends BaseController
         return false;
     }
 
-    protected function getQueryString(\BO\Mellon\Validator $validator, \BO\Zmsentities\Ticketprinter $ticketprinter, $defaultTemplate): array
+    protected function getQueryString(\BO\Mellon\Validator $validator, \BO\Zmsentities\Ticketprinter $ticketprinter, \BO\Mellon\Valid $defaultTemplate): array
     {
         $query = ($defaultTemplate->getValue() === 'default') ? [] : ['template' => $defaultTemplate->getValue()];
         if (isset($ticketprinter['home'])) {
