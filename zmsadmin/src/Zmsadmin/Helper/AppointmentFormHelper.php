@@ -168,7 +168,7 @@ class AppointmentFormHelper
         return $slotsRequired;
     }
 
-    protected static function writeMail($mailConfirmation, Process $process): void
+    protected static function writeMail(bool $mailConfirmation, Process $process): void
     {
         if (
             $mailConfirmation &&
