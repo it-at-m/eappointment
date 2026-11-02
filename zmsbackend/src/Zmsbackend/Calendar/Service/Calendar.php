@@ -122,7 +122,7 @@ class Calendar extends \BO\Zmsbackend\Base
         Entity $calendar,
         ?bool $resolveOnlyScopes,
         \DateTimeInterface $now,
-        $slotType,
+        string $slotType,
         int|float $slotsRequiredForce
     ): Entity {
         if (!$resolveOnlyScopes) {
