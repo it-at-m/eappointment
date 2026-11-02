@@ -28,6 +28,7 @@ class AppointmentFormButtons extends BaseController
         ])->getEntity();
         $validator = $request->getAttribute('validator');
         $selectedDate = $validator->getParameter('selecteddate')->isString()->getValue();
+        $selectedDate = $selectedDate ?: \App::$now->format('Y-m-d');
         $selectedTime = $validator->getParameter('selectedtime')->isString()->getValue();
         $selectedProcessId = $validator->getParameter('selectedprocess')->isNumber()->getValue();
         $selectedProcess = ($selectedProcessId) ?
@@ -46,7 +47,7 @@ class AppointmentFormButtons extends BaseController
                 'workstation' => $workstation,
                 'selectedProcess' => $selectedProcess,
                 'selectedTime' => $selectedTime = ($selectedTime) ? $selectedTime : '00-00',
-                'selectedDate' => ($selectedDate) ? $selectedDate : \App::$now->format('Y-m-d'),
+                'selectedDate' => $selectedDate,
                 'isNewAppointment' => $isNewAppointment
             )
         );
