@@ -6,10 +6,12 @@
 
 const RESULT_ROW_ATTRIBUTE = "data-exact-id-result";
 const HIDDEN_CHOICE_ATTRIBUTE = "data-exact-id-hidden";
+const EXACT_RESULT_ID = "exact-service-id-result";
 
 const SEARCH_FIELD_CLASS = "choices__input";
 const DROPDOWN_SELECTOR = ".choices__list--dropdown";
 const NAME_MATCH_SELECTOR = ".choices__item--choice";
+const ACTIVE_DESCENDANT = "aria-activedescendant";
 
 export type ServiceIdMatch = {
   id: string | number;
@@ -49,8 +51,34 @@ const formRootFrom = (event: Event): HTMLElement | null => {
 const isIdSearchNavigationKey = (key: string): boolean =>
   key === "Enter" || key === "ArrowDown" || key === "ArrowUp";
 
+/**
+ * Choices.js stores the highlighted option on the search field and on the
+ * combobox. A custom row is outside that state, so these helpers keep the
+ * two attributes in step with the row we insert and remove.
+ */
+const activeDescendantReceivers = (root: ParentNode): HTMLElement[] => {
+  const receivers: HTMLElement[] = [];
+  root
+    .querySelectorAll<HTMLElement>(`.${SEARCH_FIELD_CLASS}, [role="combobox"]`)
+    .forEach((element) => receivers.push(element));
+  return receivers;
+};
+
+const clearActiveDescendant = (root: ParentNode) => {
+  activeDescendantReceivers(root).forEach((element) => {
+    element.removeAttribute(ACTIVE_DESCENDANT);
+  });
+};
+
+const pointActiveDescendantAt = (root: ParentNode, id: string) => {
+  activeDescendantReceivers(root).forEach((element) => {
+    element.setAttribute(ACTIVE_DESCENDANT, id);
+  });
+};
+
 /** Put the dropdown back to the name matches Choices.js rendered. */
 const restoreNameSearch = (root: ParentNode) => {
+  clearActiveDescendant(root);
   root
     .querySelectorAll<HTMLElement>(`[${HIDDEN_CHOICE_ATTRIBUTE}]`)
     .forEach((choice) => {
@@ -81,6 +109,7 @@ const resultList = (dropdown: ParentNode): ParentNode =>
   dropdown.querySelector<HTMLElement>('[role="listbox"]') ?? dropdown;
 
 const showIdSearchResult = <T extends ServiceIdMatch>(
+  root: ParentNode,
   dropdown: ParentNode,
   match: T | undefined,
   noResultMessage: string,
@@ -95,11 +124,14 @@ const showIdSearchResult = <T extends ServiceIdMatch>(
     row.classList.add("choices__notice", "has-no-results");
     row.textContent = noResultMessage;
     list.appendChild(row);
+    clearActiveDescendant(root);
     return;
   }
 
+  row.id = EXACT_RESULT_ID;
   row.classList.add("choices__item--selectable", "is-highlighted");
   row.setAttribute("role", "option");
+  row.setAttribute("aria-selected", "true");
   row.textContent = match.name;
   row.addEventListener("mousedown", (mouseEvent) => {
     mouseEvent.preventDefault();
@@ -107,6 +139,7 @@ const showIdSearchResult = <T extends ServiceIdMatch>(
     onSelect(match);
   });
   list.appendChild(row);
+  pointActiveDescendantAt(root, row.id);
 };
 
 export const handleExactServiceIdInput = <T extends ServiceIdMatch>(
@@ -131,6 +164,7 @@ export const handleExactServiceIdInput = <T extends ServiceIdMatch>(
   openDropdown(root);
   hideNameMatches(dropdown);
   showIdSearchResult(
+    root,
     dropdown,
     findServiceWithExactId(options.services, input.value),
     options.noResultMessage,

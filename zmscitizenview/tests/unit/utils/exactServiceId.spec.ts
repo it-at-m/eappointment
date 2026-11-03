@@ -39,11 +39,11 @@ describe("exactServiceId", () => {
     const mountSearch = () => {
       const form = document.createElement("form");
       form.innerHTML = `
-        <div class="choices">
-          <input class="choices__input choices__input--cloned" />
+        <div class="choices" role="combobox" aria-activedescendant="hidden-name-match">
+          <input class="choices__input choices__input--cloned" aria-activedescendant="hidden-name-match" />
           <div class="choices__list choices__list--dropdown">
             <div role="listbox">
-              <div class="choices__item choices__item--choice">Reisepass</div>
+              <div id="hidden-name-match" class="choices__item choices__item--choice">Reisepass</div>
               <div class="choices__item choices__item--choice">Personalausweis</div>
             </div>
           </div>
@@ -78,6 +78,12 @@ describe("exactServiceId", () => {
         .filter((el) => el.style.display !== "none")
         .map((el) => el.textContent);
 
+    const activeDescendants = (form: HTMLElement) =>
+      [
+        form.querySelector(".choices__input"),
+        form.querySelector('[role="combobox"]'),
+      ].map((element) => element?.getAttribute("aria-activedescendant"));
+
     it("shows only the service whose id equals the query", () => {
       const { form, input, reachedChoices } = mountSearch();
       input.value = "1063423";
@@ -85,11 +91,14 @@ describe("exactServiceId", () => {
 
       expect(reachedChoices).not.toHaveBeenCalled();
       expect(visibleLabels(form)).toEqual(["Gewerbe-Anmeldung"]);
-      expect(
-        form
-          .querySelector("[data-exact-id-result]")
-          ?.parentElement?.getAttribute("role")
-      ).toBe("listbox");
+      const row = form.querySelector<HTMLElement>("[data-exact-id-result]");
+      expect(row?.parentElement?.getAttribute("role")).toBe("listbox");
+      expect(row?.id).toBe("exact-service-id-result");
+      expect(row?.getAttribute("aria-selected")).toBe("true");
+      expect(activeDescendants(form)).toEqual([
+        "exact-service-id-result",
+        "exact-service-id-result",
+      ]);
       form.remove();
     });
 
@@ -98,11 +107,19 @@ describe("exactServiceId", () => {
       input.value = "10634";
       input.dispatchEvent(new Event("input", { bubbles: true }));
       expect(visibleLabels(form)).toEqual(["Keine Leistung gefunden"]);
+      expect(
+        form
+          .querySelector("[data-exact-id-result]")
+          ?.hasAttribute("aria-selected")
+      ).toBe(false);
+      expect(activeDescendants(form)).toEqual([null, null]);
 
       input.value = "Reisepass";
       input.dispatchEvent(new Event("input", { bubbles: true }));
       expect(reachedChoices).toHaveBeenCalledOnce();
       expect(visibleLabels(form)).toEqual(["Reisepass", "Personalausweis"]);
+      expect(form.querySelector("[data-exact-id-result]")).toBeNull();
+      expect(activeDescendants(form)).toEqual([null, null]);
       form.remove();
     });
 
