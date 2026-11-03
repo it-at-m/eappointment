@@ -219,9 +219,6 @@ class AppointmentReserveService
             MapperService::thinnedProcessToProcess($reservedProcess)
         );
         if (is_array($updatedProcess)) {
-            ZmsApiFacadeService::cancelAppointment(
-                MapperService::thinnedProcessToProcess($reservedProcess)
-            );
             return $updatedProcess;
         }
 
