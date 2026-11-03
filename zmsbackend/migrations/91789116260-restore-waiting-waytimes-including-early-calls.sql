@@ -2,7 +2,7 @@
 -- Anzahl und Wartezeit bleiben unverändert.
 -- Fenster ab 2026-01-24, dem Tag nach der Wegezeit-Wiederherstellung 91785021213.
 -- Dieselbe Auswahl wie CalculateDailyWaitingStatisticByCron: Wartezeit > 0,
--- plus Termine mit gespeicherter Wegezeit.
+-- plus erschienene Termine mit gespeicherter Wegezeit.
 
 DELIMITER $$
 
@@ -54,7 +54,7 @@ proc: BEGIN
           AND StandortID > 0
           AND (
             (waiting_time IS NOT NULL AND waiting_time > 0)
-            OR (mitTermin = 1 AND way_time IS NOT NULL)
+            OR (mitTermin = 1 AND way_time IS NOT NULL AND COALESCE(nicht_erschienen, 0) = 0)
           )
         GROUP BY
           StandortID,

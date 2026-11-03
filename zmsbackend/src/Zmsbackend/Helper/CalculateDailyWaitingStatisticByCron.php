@@ -10,7 +10,8 @@ use DateTimeImmutable;
  * Liest archivierte Prozesse für ein Datum und speichert die Durchschnittswerte
  * in 'wartenrstatistik'. Anzahl und Wartezeit zählen nur Einträge mit Wartezeit > 0.
  * Wegezeit zählt dieselben Einträge und zusätzlich Terminkunden, die vor dem
- * Terminzeitpunkt aufgerufen wurden (Wartezeit 0) und eine Wegezeit haben.
+ * Terminzeitpunkt aufgerufen wurden (Wartezeit 0, erschienen) und eine Wegezeit haben.
+ * Nicht erschienene Termine mit Wartezeit 0 bleiben außen vor.
  * Bereits vorhandene Zeilen für (Standort, Datum) werden aktualisiert.
  */
 class CalculateDailyWaitingStatisticByCron extends \BO\Zmsbackend\Base
@@ -34,6 +35,7 @@ class CalculateDailyWaitingStatisticByCron extends \BO\Zmsbackend\Base
               Datum,
               `Timestamp`,
               mitTermin,
+              nicht_erschienen,
               waiting_time,
               way_time
             FROM buergerarchiv
@@ -223,7 +225,8 @@ class CalculateDailyWaitingStatisticByCron extends \BO\Zmsbackend\Base
     /**
      * Way time uses every row that already counts for waiting time, plus appointment
      * customers called before their slot. Those are stored with waiting time 0 and must
-     * stay out of the waiting average.
+     * stay out of the waiting average. A missed appointment with waiting time 0 is not
+     * such a call; its stored way time is 0 and must not lower the average.
      */
     private function countsForWayTime(array $row): bool
     {
@@ -232,6 +235,7 @@ class CalculateDailyWaitingStatisticByCron extends \BO\Zmsbackend\Base
         }
 
         return (int) ($row['mitTermin'] ?? 0) === 1
+            && (int) ($row['nicht_erschienen'] ?? 0) === 0
             && is_numeric($row['way_time'] ?? null);
     }
 }

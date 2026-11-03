@@ -16,6 +16,8 @@ class CalculateDailyWaitingStatisticByCronTest extends \BO\Zmsbackend\Tests\Serv
         $this->insertArchiveRow($repo, '09:15:00', 1, 10, 4, 0);
         $this->insertArchiveRow($repo, '09:45:00', 1, 20, 6, 1);
         $this->insertArchiveRow($repo, '09:50:00', 1, 0, 8, 0);
+        $this->insertArchiveRow($repo, '09:55:00', 1, 0, 0, 1);
+        $this->insertArchiveRow($repo, '09:58:00', 1, 0, 5, 1);
         $this->insertArchiveRow($repo, '10:30:00', 0, 12, 3, 0);
         $this->insertArchiveRow($repo, '10:40:00', 0, 0, 7, 0);
         $this->insertArchiveRow($repo, '11:00:00', 1, 0, 9, 0);
