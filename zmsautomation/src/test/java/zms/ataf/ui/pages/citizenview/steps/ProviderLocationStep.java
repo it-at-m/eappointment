@@ -51,6 +51,7 @@ public final class ProviderLocationStep {
     private final SlotBookingState slotState;
     private final int defaultWaitSeconds;
     private IntConsumer waitForSlots;
+    private IntConsumer waitForSlotsOrEmptyCallout;
     private IntSupplier slotBookingWaitTimeoutSeconds;
     private BooleanSupplier spinnerVisible;
 
@@ -73,6 +74,13 @@ public final class ProviderLocationStep {
         this.waitForSlots = waitForSlots;
         this.slotBookingWaitTimeoutSeconds = slotBookingWaitTimeoutSeconds;
         this.spinnerVisible = spinnerVisible;
+    }
+
+    /**
+     * Keep-only with a single office: settle on slots or blue empty callout without day paging.
+     */
+    public void setEmptyAwareSettle(IntConsumer waitForSlotsOrEmptyCallout) {
+        this.waitForSlotsOrEmptyCallout = waitForSlotsOrEmptyCallout;
     }
 
 
@@ -686,8 +694,16 @@ public final class ProviderLocationStep {
         if (allowed.size() == 1) {
             slotState.lastSlotBookingOfficeId = allowed.iterator().next();
             waitUntilProviderToggleSettled(30);
+            int settleSec = Math.min(45, slotBookingWaitTimeoutSeconds.getAsInt());
             try {
-                waitForSlots.accept(Math.min(60, slotBookingWaitTimeoutSeconds.getAsInt()));
+                // Empty offices (10579) must not page calendar days looking for slots — that
+                // races the blue callout assert. Bookable single-office keep-only still waits
+                // for timeslots here without the day-pager used by the generic Ort bridge.
+                if (waitForSlotsOrEmptyCallout != null) {
+                    waitForSlotsOrEmptyCallout.accept(settleSec);
+                } else {
+                    waitForSlots.accept(settleSec);
+                }
             } catch (Exception e) {
                 ScenarioLogManager.getLogger()
                         .warn("zmscitizenview: slot wait after provider normalization: {}", e.toString());

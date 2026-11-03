@@ -6,7 +6,7 @@ Local development uses **Podman** with **Dev Containers**. Start the stack with:
 devcontainer up --workspace-folder .
 ```
 
-This creates and starts the local container setup used for development and testing. It also auto-detects your host architecture (`amd64` vs `arm64`) and pulls the matching local PHP base image tag for `zms-web`.
+This creates and starts the local container setup used for development and testing. It also auto-detects your host architecture (`amd64` vs `arm64`) and pulls the matching local PHP base image for `zms-web` before Compose starts.
 
 To wipe Podman completely on the host and recreate the stack, see [Quick reset of the local environment](/setup-and-development/getting-started/quick-reset-local-environment).
 

@@ -5,6 +5,7 @@ import ataf.core.logging.ScenarioLogManager;
 import ataf.web.utils.DriverUtil;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import org.testng.Assert;
 import zms.ataf.ui.pages.calldisplay.CalldisplayPage;
 
 public class CalldisplaySteps {
@@ -60,5 +61,20 @@ public class CalldisplaySteps {
     public void theCallDisplayShouldNotListLocation(String scopeId) {
         scopeId = TestDataHelper.transformTestData(scopeId);
         page.assertDoesNotListLocation(scopeId);
+    }
+
+    @Then("the call display should list waiting numbers newest first for this scenario")
+    public void theCallDisplayShouldListWaitingNumbersNewestFirstForThisScenario() {
+        String older = TestDataHelper.getTestData("calldisplay_older_number");
+        String newer = TestDataHelper.getTestData("calldisplay_newer_number");
+        Assert.assertTrue(
+                older != null && !older.isBlank(),
+                "Prepare two called walk-ins before asserting call display UI order (older missing).");
+        Assert.assertTrue(
+                newer != null && !newer.isBlank(),
+                "Prepare two called walk-ins before asserting call display UI order (newer missing).");
+        ScenarioLogManager.getLogger().info(
+                "Call display UI: assert newer {} before older {}", newer, older);
+        page.assertWaitingNumbersNewestFirst(newer, older);
     }
 }

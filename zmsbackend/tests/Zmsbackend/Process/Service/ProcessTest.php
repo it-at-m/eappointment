@@ -72,6 +72,225 @@ class ProcessTest extends \BO\Zmsbackend\Tests\Service\Base
         $process = $query->writeEntityReserved($process, $now);
     }
 
+    public function testFreeProcessesCanBeRestrictedToAppointmentTime()
+    {
+        $query = new ProcessStatusFree();
+        $input = self::getTestProcessEntity();
+        $appointmentTime = $input->getFirstAppointment()->toDateTime();
+
+        $all = $query->readFreeProcesses($input->toCalendar(), static::$now);
+        $atTime = $query->readFreeProcesses(
+            $input->toCalendar(),
+            static::$now,
+            'public',
+            null,
+            false,
+            $appointmentTime
+        );
+
+        $matching = [];
+        foreach ($all as $process) {
+            if ($process->getFirstAppointment()->toDateTime()->format('H:i:s') === $appointmentTime->format('H:i:s')) {
+                $matching[] = $process->getFirstAppointment()->date;
+            }
+        }
+        $actual = [];
+        foreach ($atTime as $process) {
+            $actual[] = $process->getFirstAppointment()->date;
+        }
+
+        $this->assertNotEmpty($matching);
+        $this->assertEqualsCanonicalizing($matching, $actual);
+        $noFreeProcesses = $query->readFreeProcesses(
+            $input->toCalendar(),
+            static::$now,
+            'public',
+            null,
+            false,
+            $appointmentTime->setTime(23, 59, 59)
+        );
+        $this->assertCount(0, $noFreeProcesses);
+    }
+
+    public function testFreeProcessesForOneTimeLeaveOutAnotherRealTime()
+    {
+        $query = new ProcessStatusFree();
+        $input = self::getTestProcessEntity();
+        $byTime = $this->groupFreeProcessesByTime(
+            $query->readFreeProcesses($input->toCalendar(), static::$now)
+        );
+        $this->assertGreaterThanOrEqual(2, count($byTime));
+
+        $clocks = array_keys($byTime);
+        sort($clocks);
+        $asked = $byTime[$clocks[0]][0]->getFirstAppointment()->toDateTime();
+        $onlyAsked = $query->readFreeProcesses(
+            $input->toCalendar(),
+            static::$now,
+            'public',
+            null,
+            false,
+            $asked
+        );
+
+        $this->assertNotEmpty($onlyAsked);
+        foreach ($onlyAsked as $process) {
+            $this->assertSame(
+                $asked->format('H:i:s'),
+                $process->getFirstAppointment()->toDateTime()->format('H:i:s')
+            );
+        }
+    }
+
+    public function testTimeFilterKeepsEveryFreeSeat()
+    {
+        $query = new ProcessStatusFree();
+        $input = self::getTestProcessEntity();
+        $byTime = $this->groupFreeProcessesByTime(
+            $query->readFreeProcesses($input->toCalendar(), static::$now)
+        );
+
+        $clock = null;
+        foreach ($byTime as $time => $processes) {
+            if (count($processes) >= 2) {
+                $clock = $time;
+                break;
+            }
+        }
+        $this->assertNotNull($clock);
+
+        $asked = $byTime[$clock][0]->getFirstAppointment()->toDateTime();
+        $onlyAsked = $query->readFreeProcesses(
+            $input->toCalendar(),
+            static::$now,
+            'public',
+            null,
+            false,
+            $asked
+        );
+
+        $this->assertCount(count($byTime[$clock]), $onlyAsked);
+    }
+
+    public function testOneBookingRemovesOneSeatAndLeavesOtherTimes()
+    {
+        $query = new ProcessStatusFree();
+        $input = self::getTestProcessEntity();
+        $before = $this->groupFreeProcessesByTime(
+            $query->readFreeProcesses($input->toCalendar(), static::$now)
+        );
+        $askedClock = $input->getFirstAppointment()->toDateTime()->format('H:i:s');
+        $this->assertArrayHasKey($askedClock, $before);
+
+        $otherClock = null;
+        foreach (array_keys($before) as $clock) {
+            if ($clock !== $askedClock) {
+                $otherClock = $clock;
+                break;
+            }
+        }
+        $this->assertNotNull($otherClock);
+
+        $query->writeEntityReserved(self::getTestProcessEntity(), static::$now, 'public', 1);
+
+        $after = $this->groupFreeProcessesByTime(
+            $query->readFreeProcesses($input->toCalendar(), static::$now)
+        );
+        $this->assertCount(count($before[$askedClock]) - 1, $after[$askedClock] ?? []);
+        $this->assertCount(count($before[$otherClock]), $after[$otherClock] ?? []);
+    }
+
+    public function testOverbookedTimeDropsOutWithoutHidingOtherTimes()
+    {
+        $query = new ProcessStatusFree();
+        $input = self::getTestProcessEntity();
+        $when = $input->getFirstAppointment()->toDateTime();
+        $before = $this->groupFreeProcessesByTime(
+            $query->readFreeProcesses($input->toCalendar(), static::$now)
+        );
+        $askedClock = $when->format('H:i:s');
+        $this->assertGreaterThan(0, count($before[$askedClock] ?? []));
+
+        $otherClock = null;
+        foreach (array_keys($before) as $clock) {
+            if ($clock !== $askedClock) {
+                $otherClock = $clock;
+                break;
+            }
+        }
+        $this->assertNotNull($otherClock);
+
+        $query->writeEntityReserved(self::getTestProcessEntity(), static::$now, 'public', 1);
+        \BO\Zmsbackend\Connection\Select::getWriteConnection()->prepare(
+            'UPDATE slot SET `public` = 0
+            WHERE scopeID = :scopeID AND year = :year AND month = :month
+            AND day = :day AND time = :time'
+        )->execute([
+            'scopeID' => 151,
+            'year' => (int) $when->format('Y'),
+            'month' => (int) $when->format('n'),
+            'day' => (int) $when->format('j'),
+            'time' => $when->format('H:i:s'),
+        ]);
+
+        $after = $this->groupFreeProcessesByTime(
+            $query->readFreeProcesses($input->toCalendar(), static::$now)
+        );
+        $this->assertCount(0, $after[$askedClock] ?? []);
+        $this->assertCount(count($before[$otherClock]), $after[$otherClock] ?? []);
+    }
+
+    public function testTwoSlotAppointmentIsHiddenWhenTheNextSlotIsFull()
+    {
+        $query = new ProcessStatusFree();
+        $start = self::getTestProcessEntity();
+        $startTime = $start->getFirstAppointment()->toDateTime();
+        $startClock = $startTime->format('H:i:s');
+
+        $before = $this->groupFreeProcessesByTime(
+            $query->readFreeProcesses($start->toCalendar(), static::$now, 'public', 2)
+        );
+        $this->assertGreaterThan(0, count($before[$startClock] ?? []));
+
+        $single = $this->groupFreeProcessesByTime(
+            $query->readFreeProcesses($start->toCalendar(), static::$now, 'public', 1)
+        );
+        $clocks = array_keys($single);
+        sort($clocks);
+        $nextClock = null;
+        foreach ($clocks as $clock) {
+            if ($clock > $startClock) {
+                $nextClock = $clock;
+                break;
+            }
+        }
+        $this->assertNotNull($nextClock);
+
+        [$hour, $minute, $second] = array_map('intval', explode(':', $nextClock));
+        $nextDate = $startTime->setTime($hour, $minute, $second);
+        for ($i = 0; $i < count($single[$nextClock]); $i++) {
+            $next = self::getTestProcessEntity();
+            $next->getFirstAppointment()->date = $nextDate->getTimestamp();
+            $query->writeEntityReserved($next, static::$now, 'public', 1);
+        }
+
+        $after = $this->groupFreeProcessesByTime(
+            $query->readFreeProcesses($start->toCalendar(), static::$now, 'public', 2)
+        );
+        $this->assertCount(0, $after[$startClock] ?? []);
+    }
+
+    private function groupFreeProcessesByTime(iterable $processes): array
+    {
+        $byTime = [];
+        foreach ($processes as $process) {
+            $clock = $process->getFirstAppointment()->toDateTime()->format('H:i:s');
+            $byTime[$clock][] = $process;
+        }
+
+        return $byTime;
+    }
+
     public function testExceptionFollowingSlotsReserved()
     {
         $this->expectException('\BO\Zmsbackend\Process\Exception\ProcessReserveFailed');

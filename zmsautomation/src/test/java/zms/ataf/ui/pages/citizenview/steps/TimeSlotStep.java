@@ -199,8 +199,9 @@ public final class TimeSlotStep {
                 return;
             }
         }
+        // Riem order day (V61) is CURDATE()+7; booked-out may empty day+4. Allow enough day moves.
         int dayMoves = 0;
-        for (int attempt = 1; attempt <= 12; attempt++) {
+        for (int attempt = 1; attempt <= 16; attempt++) {
             if (deepTimeslotPresentForProvider(officeId)) {
                 return;
             }
@@ -209,6 +210,12 @@ public final class TimeSlotStep {
                             "zmscitizenview: no timeslot for office {} yet (attempt {}); try Später",
                             officeId,
                             attempt);
+            if (deepMucSpinnerVisible()) {
+                if (!finishInFlightCalendarLoad()) {
+                    return;
+                }
+                continue;
+            }
             if (clickCitizenViewLaterOnceIfAvailable()) {
                 CitizenViewWaits.sleepQuiet(1200L);
                 try {
@@ -221,7 +228,7 @@ public final class TimeSlotStep {
                 }
                 continue;
             }
-            if (dayMoves >= 5 || !openNextCalendarDayAndWaitForSlots()) {
+            if (dayMoves >= 10 || !openNextCalendarDayAndWaitForSlots()) {
                 return;
             }
             dayMoves++;
@@ -252,6 +259,16 @@ public final class TimeSlotStep {
      * (same German keys), H2 time heading, H3 callout title, fixed body text. Calendar toggle stays
      * hidden while the spinner is gone.
      */
+    /**
+     * True when the blue empty-state info callout is already in the DOM (spinner may still be
+     * clearing). Used by Ort keep-only to avoid paging calendar days looking for slots.
+     */
+    public boolean isNoAppointmentInfoCalloutPresent() {
+        context.set();
+        return shadow.deepInfoCalloutContains(NO_APPOINTMENT_CALLOUT)
+                && shadow.shadowDomContainsText(NO_APPOINTMENT_CALLOUT_TEXT);
+    }
+
     public void assertNoAppointmentInfoCalloutVisible() {
         context.set();
         long deadline = System.currentTimeMillis() + Math.max(30, defaultWaitSeconds) * 1000L;
@@ -773,8 +790,23 @@ public final class TimeSlotStep {
     public void assertListDateAccordions(int expectedCount) {
         context.set();
         JsonNode state = waitForListAccordionCount(expectedCount);
+        Assert.assertEquals(state.path("count").asInt(), expectedCount, "Date accordion count: " + state);
+        rememberListAccordions(state);
+    }
+
+    public void assertLoadedListDateAccordions() {
+        context.set();
+        JsonNode state = new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(defaultWaitSeconds))
+                .until(d -> {
+                    JsonNode node = listSnapshot();
+                    return node.path("count").asInt() > 0 ? node : null;
+                });
+        rememberListAccordions(state);
+    }
+
+    private void rememberListAccordions(JsonNode state) {
         slotState.listAccordionCount = state.path("count").asInt();
-        Assert.assertEquals(slotState.listAccordionCount, expectedCount, "Date accordion count: " + state);
+        Assert.assertTrue(slotState.listAccordionCount > 0, "Date accordion count: " + state);
         Assert.assertEquals(state.path("expanded").get(0).asText(), "true", "The first date stays open: " + state);
         for (int i = 1; i < state.path("expanded").size(); i++) {
             Assert.assertEquals(
@@ -787,6 +819,31 @@ public final class TimeSlotStep {
                     "Date heading should be a weekday and a date: " + label.asText());
         }
         slotState.openListHeading = state.path("labels").get(0).asText();
+    }
+
+    /** The next month can arrive across more than one render, so wait until the count stops growing. */
+    private JsonNode waitForListToGrow(int before) {
+        long deadline = System.currentTimeMillis() + defaultWaitSeconds * 1000L;
+        int last = before;
+        int stableReads = 0;
+        JsonNode settled = null;
+        while (System.currentTimeMillis() < deadline) {
+            JsonNode snap = listSnapshot();
+            int now = snap.path("count").asInt();
+            if (now > before && now == last) {
+                stableReads++;
+                if (stableReads >= 2) {
+                    settled = snap;
+                    break;
+                }
+            } else {
+                stableReads = now > before ? 1 : 0;
+            }
+            last = now;
+            CitizenViewWaits.sleepQuiet(300L);
+        }
+        Assert.assertNotNull(settled, "Mehr laden did not add dates past " + before);
+        return settled;
     }
 
     public void assertOpenListGroupsByHour() {
@@ -846,15 +903,68 @@ public final class TimeSlotStep {
         assertMorningLabels(state);
     }
 
-    /** Open hour: each office that has a slot is a map-pin heading, in the same order as the checkboxes. */
+    /**
+     * Open hour: each office that has a slot is a map-pin heading, in the same order as the checkboxes.
+     *
+     * <p>Parallel Personalausweis booking can empty Ruppertstraße in the first open hour. Page Später
+     * / next calendar days until that office has a map-pin heading again, then assert order.
+     */
     public void assertOpenHourListsOfficesWithMapPin() {
         context.set();
-        JsonNode titles = new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(defaultWaitSeconds))
-                .until(d -> {
-                    JsonNode node = locationTitles().path("titles");
-                    return node.size() > 1 ? node : null;
-                });
+        for (int attempt = 0; attempt < 16; attempt++) {
+            JsonNode titles = locationTitles().path("titles");
+            if (titles.size() > 1 && titlesContainOffice(titles, "Bürgerbüro Ruppertstraße")) {
+                providerLocation.assertOfficeOrder(titles, false, false);
+                ScenarioLogManager.getLogger()
+                        .info(
+                                "zmscitizenview: open hour lists offices with Ruppertstraße after {} adjust(s)",
+                                attempt);
+                return;
+            }
+            ScenarioLogManager.getLogger()
+                    .info(
+                            "zmscitizenview: open hour missing Ruppertstraße (titles={}); try Später / next day ({}/15)",
+                            titles,
+                            attempt + 1);
+            if (deepMucSpinnerVisible()) {
+                if (!finishInFlightCalendarLoad()) {
+                    break;
+                }
+                continue;
+            }
+            if (clickCitizenViewLaterOnceIfAvailable()) {
+                waitUntilAppointmentSlotsReadyQuiet(Math.min(30, slotBookingWaitTimeoutSeconds()));
+                continue;
+            }
+            if (!openNextCalendarDayAndWaitForSlots()) {
+                break;
+            }
+        }
+        JsonNode titles =
+                new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(defaultWaitSeconds))
+                        .until(
+                                d -> {
+                                    JsonNode node = locationTitles().path("titles");
+                                    return node.size() > 1 ? node : null;
+                                });
         providerLocation.assertOfficeOrder(titles, false, false);
+    }
+
+    private static boolean titlesContainOffice(JsonNode titles, String officeName) {
+        if (titles == null || !titles.isArray()) {
+            return false;
+        }
+        for (JsonNode title : titles) {
+            String text = title.path("text").asText("");
+            if (ProviderLocationStep.frequencyName(text) != null
+                    && officeName.equals(ProviderLocationStep.frequencyName(text))) {
+                return true;
+            }
+            if (text.contains(officeName)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -951,10 +1061,11 @@ public final class TimeSlotStep {
         JsonNode buttons = new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(defaultWaitSeconds))
                 .until(d -> {
                     JsonNode node = calendarGhostButtons();
-                    return node.path("earlier").path("present").asBoolean()
-                            && node.path("later").path("present").asBoolean()
-                            ? node
-                            : null;
+                    boolean earlierReady = node.path("earlier").path("present").asBoolean()
+                            && node.path("earlier").path("disabled").asBoolean();
+                    boolean laterReady = node.path("later").path("present").asBoolean()
+                            && !node.path("later").path("disabled").asBoolean();
+                    return earlierReady && laterReady ? node : null;
                 });
         assertGhostButton(buttons.path("earlier"), "Früher", "chevron-left", true);
         assertGhostButton(buttons.path("later"), "Später", "chevron-right", false);
@@ -1016,11 +1127,21 @@ public final class TimeSlotStep {
         Assert.assertFalse(
                 shadow.deepElementExists("#timeslot-grid-provider-" + slotState.hiddenOfficeId),
                 "Cleared office " + slotState.hiddenOfficeId + " should leave the available times");
-        JsonNode titles = new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(defaultWaitSeconds))
-                .until(d -> {
-                    JsonNode node = locationTitles().path("titles");
-                    return node.size() > 0 ? node : null;
-                });
+        // Unchecking an office refetches the multi-office day. Headings stay hidden while that
+        // request is in flight, and under shard load it outlasts the normal 60s wait.
+        if (!finishInFlightCalendarLoad()) {
+            Assert.fail(
+                    "Cleared office "
+                            + slotState.hiddenOfficeId
+                            + " left the calendar loading, so the remaining headings never returned");
+        }
+        JsonNode titles =
+                new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(slotBookingWaitTimeoutSeconds()))
+                        .until(
+                                d -> {
+                                    JsonNode node = locationTitles().path("titles");
+                                    return node.size() > 0 ? node : null;
+                                });
         for (JsonNode title : titles) {
             Assert.assertNotEquals(
                     title.path("id").asText(),
@@ -1087,13 +1208,18 @@ public final class TimeSlotStep {
 
     public void loadMoreListDates() {
         JsonNode before = waitForListAccordionCount(slotState.listAccordionCount);
+        int beforeCount = before.path("count").asInt();
         slotState.openListHeading = before.path("labels").get(0).asText();
         Assert.assertTrue(shadow.clickButtonContaining("Mehr laden"), "Could not click Mehr laden");
-        new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(defaultWaitSeconds))
-                .until(d -> listSnapshot().path("count").asInt() > slotState.listAccordionCount);
-        JsonNode after = listSnapshot();
+        JsonNode after = waitForListToGrow(beforeCount);
         int count = after.path("count").asInt();
-        Assert.assertTrue(count > slotState.listAccordionCount && count <= slotState.listAccordionCount + 3, "Mehr laden adds at most three dates: " + after);
+        // The list opens on five dates. A short month shows fewer, so the same click also
+        // fills that gap and can add more than three visible dates. Once five are showing,
+        // Mehr laden adds at most three.
+        int allowed = beforeCount + 3 + Math.max(0, 5 - beforeCount);
+        Assert.assertTrue(
+                count > beforeCount && count <= allowed,
+                "Mehr laden adds at most three dates once five are shown: " + after);
         Assert.assertEquals(after.path("labels").get(0).asText(), slotState.openListHeading, "Mehr laden keeps the open date");
         Assert.assertEquals(after.path("expanded").get(0).asText(), "true", "The open date stays open after Mehr laden");
         slotState.listAccordionCount = count;
@@ -1322,6 +1448,12 @@ public final class TimeSlotStep {
                             "zmscitizenview: still missing timeslots for providers {} (attempt {}); try Später",
                             remaining,
                             attempt);
+            if (deepMucSpinnerVisible()) {
+                if (!finishInFlightCalendarLoad()) {
+                    break;
+                }
+                continue;
+            }
             if (clickCitizenViewLaterOnceIfAvailable()) {
                 CitizenViewWaits.sleepQuiet(1200L);
                 try {
@@ -1417,6 +1549,31 @@ public final class TimeSlotStep {
 
     /** Last Muc spinner snapshot from {@link #waitUntilMucSpinnerSeen(String, int)}. */
     private JsonNode lastMucSpinnerSnapshot;
+
+    /**
+     * Day tiles inside {@code .muc-calendar-wrap}, including shadow roots. {@code freeDay} skips the
+     * selected tile, disabled tiles, and off-month tiles.
+     */
+    private static final String CALENDAR_DAY_TILES_JS =
+            "function calWalk(root, visit){"
+                    + "if(!root||!root.querySelectorAll)return false;"
+                    + "var nodes=root.querySelectorAll('*');"
+                    + "for(var i=0;i<nodes.length;i++){"
+                    + "if(visit(nodes[i]))return true;"
+                    + "if(nodes[i].shadowRoot&&calWalk(nodes[i].shadowRoot,visit))return true;}"
+                    + "return false;}"
+                    + "function calendarWrap(){var wrap=null;"
+                    + "calWalk(document,function(el){"
+                    + "if(el.matches&&el.matches('.muc-calendar-wrap')){wrap=el;return true;}return false;});"
+                    + "return wrap;}"
+                    + "function dayTiles(wrap){var days=[];"
+                    + "calWalk(wrap,function(el){"
+                    + "if(el.classList&&el.classList.contains('muc-calendar-item')&&el.getAttribute('role')==='button')days.push(el);"
+                    + "return false;});return days;}"
+                    + "function freeDay(tile){"
+                    + "if(!tile||tile.classList.contains('selected'))return false;"
+                    + "if(tile.getAttribute('aria-disabled')==='true'||tile.classList.contains('disabled-tile')||tile.classList.contains('off-month'))return false;"
+                    + "return /^\\d{1,2}$/.test((tile.textContent||'').replace(/\\s+/g,' ').trim());}";
 
     /**
      * Shared DOM helpers for Muc spinner snapshots. Used by the armed MutationObserver/rAF watcher
@@ -1637,53 +1794,106 @@ public final class TimeSlotStep {
     }
 
     /**
-     * Click the next free calendar day tile and catch the Muc spinner while slots reload. Only a day
-     * tile counts as clicked — month chevron alone does not start the appointment spinner.
+     * Click the next free calendar day tile and catch the Muc spinner while slots reload.
+     * On the last day of the month every later tile is off-month. The next-month chevron then jumps
+     * to the next bookable day when one exists; otherwise the first free day of the new month is
+     * clicked. The chevron click itself is not treated as success.
      */
     public void selectNextCalendarDayCatchingSpinner(String expectedText) {
         context.set();
         armMucSpinnerWatch(expectedText);
         try {
-            Object inline =
-                    ((JavascriptExecutor) DriverUtil.getDriver())
-                            .executeScript(
-                                    MUC_SPINNER_JS_HELPERS
-                                            + "function walk(root, visit){"
-                                            + "if(!root||!root.querySelectorAll)return false;"
-                                            + "var nodes=root.querySelectorAll('*');"
-                                            + "for(var i=0;i<nodes.length;i++){"
-                                            + "if(visit(nodes[i]))return true;"
-                                            + "if(nodes[i].shadowRoot&&walk(nodes[i].shadowRoot,visit))return true;}"
-                                            + "return false;}"
-                                            + "var wrap=null;"
-                                            + "walk(document,function(el){"
-                                            + "if(el.matches&&el.matches('.muc-calendar-wrap')){wrap=el;return true;}return false;});"
-                                            + "if(!wrap)return {clicked:false,snap:snap(true)};"
-                                            + "var days=[];"
-                                            + "walk(wrap,function(el){"
-                                            + "if(el.classList&&el.classList.contains('muc-calendar-item')&&el.getAttribute('role')==='button')days.push(el);"
-                                            + "return false;});"
-                                            + "var selectedDay=-1;"
-                                            + "for(var d=0;d<days.length;d++){if(days[d].classList.contains('selected'))selectedDay=d;}"
-                                            + "var clicked=false;"
-                                            + "if(selectedDay>=0){"
-                                            + "for(var n=selectedDay+1;n<days.length;n++){"
-                                            + "var tile=days[n];"
-                                            + "if(tile.getAttribute('aria-disabled')==='true'||tile.classList.contains('disabled-tile')||tile.classList.contains('off-month'))continue;"
-                                            + "var dayLabel=(tile.textContent||'').replace(/\\s+/g,' ').trim();"
-                                            + "if(!/^\\d{1,2}$/.test(dayLabel))continue;"
-                                            + "tile.click();clicked=true;break;}}"
-                                            + "if(!clicked)return {clicked:false,snap:snap(true)};"
-                                            + "return {clicked:true,snap:window.__zmsMucSpinnerCatch||snap(true)};");
+            Object inline = clickNextInMonthCalendarDay();
             rememberInlineSpinnerCatch(inline, expectedText);
-            Assert.assertTrue(
-                    inline instanceof java.util.Map<?, ?> map
-                            && Boolean.TRUE.equals(map.get("clicked")),
-                    "No next free calendar day to select for Muc spinner check");
+            boolean clicked = scriptClicked(inline);
+            if (!clicked) {
+                ScenarioLogManager.getLogger()
+                        .info("zmscitizenview: no later in-month day, opening the next month");
+                clickCalendarNextMonthChevron();
+                long deadline = System.currentTimeMillis() + 8_000L;
+                while (System.currentTimeMillis() < deadline && !clicked) {
+                    if (armedMucSpinnerMatches(expectedText)) {
+                        clicked = true;
+                        break;
+                    }
+                    Object rolled = clickFirstFreeUnselectedInMonthDay();
+                    rememberInlineSpinnerCatch(rolled, expectedText);
+                    clicked = scriptClicked(rolled);
+                    if (!clicked) {
+                        CitizenViewWaits.sleepQuiet(200L);
+                    }
+                }
+            }
+            Assert.assertTrue(clicked, "No next free calendar day to select for Muc spinner check");
             waitUntilMucSpinnerSeen(expectedText, 12);
         } finally {
             disarmMucSpinnerWatch();
         }
+    }
+
+    private static boolean scriptClicked(Object inline) {
+        return inline instanceof java.util.Map<?, ?> map && Boolean.TRUE.equals(map.get("clicked"));
+    }
+
+    private boolean armedMucSpinnerMatches(String expectedText) {
+        Object caught =
+                ((JavascriptExecutor) DriverUtil.getDriver())
+                        .executeScript("return window.__zmsMucSpinnerCatch||null;");
+        if (!(caught instanceof java.util.Map<?, ?> map) || !Boolean.TRUE.equals(map.get("visible"))) {
+            return false;
+        }
+        Object text = map.get("text");
+        return mucSpinnerTextMatches(text == null ? "" : String.valueOf(text), expectedText);
+    }
+
+    private Object clickNextInMonthCalendarDay() {
+        return ((JavascriptExecutor) DriverUtil.getDriver())
+                .executeScript(
+                        MUC_SPINNER_JS_HELPERS
+                                + CALENDAR_DAY_TILES_JS
+                                + "var wrap=calendarWrap();"
+                                + "if(!wrap)return {clicked:false,snap:snap(true)};"
+                                + "var days=dayTiles(wrap);"
+                                + "var selectedDay=-1;"
+                                + "for(var d=0;d<days.length;d++){if(days[d].classList.contains('selected'))selectedDay=d;}"
+                                + "var clicked=false;"
+                                + "if(selectedDay>=0){"
+                                + "for(var n=selectedDay+1;n<days.length;n++){"
+                                + "if(!freeDay(days[n]))continue;"
+                                + "days[n].click();clicked=true;break;}}"
+                                + "if(!clicked)return {clicked:false,snap:snap(true)};"
+                                + "return {clicked:true,snap:window.__zmsMucSpinnerCatch||snap(true)};");
+    }
+
+    private void clickCalendarNextMonthChevron() {
+        ((JavascriptExecutor) DriverUtil.getDriver())
+                .executeScript(
+                        CALENDAR_DAY_TILES_JS
+                                + "var wrap=calendarWrap();"
+                                + "if(!wrap)return false;"
+                                + "var clicked=false;"
+                                + "calWalk(wrap,function(el){"
+                                + "if(clicked||el.tagName!=='BUTTON'||el.disabled||el.getAttribute('aria-disabled')==='true')return false;"
+                                + "var useEl=el.querySelector('use');"
+                                + "var href=(useEl&&(useEl.getAttribute('href')||useEl.getAttribute('xlink:href')))||'';"
+                                + "if(href.indexOf('chevron-right')<0)return false;"
+                                + "el.click();clicked=true;return true;});"
+                                + "return clicked;");
+    }
+
+    private Object clickFirstFreeUnselectedInMonthDay() {
+        return ((JavascriptExecutor) DriverUtil.getDriver())
+                .executeScript(
+                        MUC_SPINNER_JS_HELPERS
+                                + CALENDAR_DAY_TILES_JS
+                                + "var wrap=calendarWrap();"
+                                + "if(!wrap)return {clicked:false,snap:snap(true)};"
+                                + "var days=dayTiles(wrap);"
+                                + "for(var n=0;n<days.length;n++){"
+                                + "if(!freeDay(days[n]))continue;"
+                                + "days[n].click();"
+                                + "return {clicked:true,snap:window.__zmsMucSpinnerCatch||snap(true)};}"
+                                + "return {clicked:false,snap:snap(true)};");
     }
 
     private void rememberInlineSpinnerCatch(Object inline, String expectedText) {
@@ -1837,6 +2047,11 @@ public final class TimeSlotStep {
             if (waitUntilAppointmentSlotsReadyQuiet(waitSec)) {
                 break;
             }
+            if (deepMucSpinnerVisible()) {
+                if (!finishInFlightCalendarLoad() || deepTimeslotClickablePresent()) {
+                    break;
+                }
+            }
             if (deepTimeslotClickablePresent() || !openNextCalendarDayAndWaitForSlots()) {
                 break;
             }
@@ -1844,6 +2059,70 @@ public final class TimeSlotStep {
                     .info("zmscitizenview: empty slot view; advanced calendar day ({}/7)", day + 1);
         }
         scrollTimeSlotGridIntoViewForScreenshots();
+    }
+
+    /**
+     * After keep-only on a single office: wait for timeslots or the settled blue empty-state
+     * callout. Does not page calendar days (that races empty-office asserts and can abort a
+     * bookable Wohnsitzanmeldung calendar that briefly flashes the callout).
+     *
+     * <p>Mass Ort toggles can leave Termin blank (no spinner, no slots, no callout) or on the red
+     * generic API error — re-toggle the kept office once to force available-calendar again.
+     */
+    public void waitUntilSlotsOrEmptyCallout(int maxSeconds) {
+        context.set();
+        if (settleSlotsOrEmptyCallout(maxSeconds)) {
+            return;
+        }
+        int officeId = slotState.lastSlotBookingOfficeId;
+        if (officeId > 0
+                && providerLocation.deepProviderCheckboxChecked(officeId)
+                && !deepMucSpinnerVisible()
+                && !deepTimeslotClickablePresent()
+                && !isNoAppointmentInfoCalloutPresent()) {
+            ScenarioLogManager.getLogger()
+                    .info(
+                            "zmscitizenview: blank/generic Termin after keep-only; re-toggle provider {} (genericError={})",
+                            officeId,
+                            genericApiErrorCalloutVisible());
+            shadow.deepClickRequired("#checkbox-provider-" + officeId);
+            providerLocation.waitUntilProviderToggleSettled(15);
+            shadow.deepClickRequired("#checkbox-provider-" + officeId);
+            providerLocation.waitUntilProviderToggleSettled(30);
+            if (settleSlotsOrEmptyCallout(Math.max(20, maxSeconds / 2))) {
+                return;
+            }
+        }
+        ScenarioLogManager.getLogger()
+                .info(
+                        "zmscitizenview: keep-only settle timed out (spinnerVisible={} timeslot={} callout={} genericError={})",
+                        deepMucSpinnerVisible(),
+                        deepTimeslotClickablePresent(),
+                        isNoAppointmentInfoCalloutPresent(),
+                        genericApiErrorCalloutVisible());
+    }
+
+    private boolean settleSlotsOrEmptyCallout(int maxSeconds) {
+        ScenarioLogManager.getLogger()
+                .info(
+                        "zmscitizenview: waiting up to {}s for slots or blue empty-state callout",
+                        maxSeconds);
+        long deadline = System.currentTimeMillis() + Math.max(1, maxSeconds) * 1000L;
+        while (System.currentTimeMillis() < deadline) {
+            if (deepTimeslotReadyNoSpinner()) {
+                ScenarioLogManager.getLogger()
+                        .info("zmscitizenview: slots ready after keep-only (no day paging)");
+                return true;
+            }
+            if (!deepMucSpinnerVisible() && isNoAppointmentInfoCalloutPresent()) {
+                ScenarioLogManager.getLogger()
+                        .info(
+                                "zmscitizenview: blue empty-state callout after keep-only (no day paging)");
+                return true;
+            }
+            CitizenViewWaits.sleepQuiet(300L);
+        }
+        return false;
     }
 
     /**
@@ -2204,13 +2483,18 @@ public final class TimeSlotStep {
         if ("FS".equals(code) || FuehrerscheinstelleScopeHints.isConcrete(code)) {
             if ("FS".equals(code)) {
                 return shadow.shadowDomContainsText(FuehrerscheinstelleScopeHints.HINT_A)
-                        || shadow.shadowDomContainsText(FuehrerscheinstelleScopeHints.HINT_B);
+                        || shadow.shadowDomContainsText(FuehrerscheinstelleScopeHints.HINT_B)
+                        || shadow.shadowDomContainsText(FuehrerscheinstelleScopeHints.HINT_C);
             }
-            String hint = FuehrerscheinstelleScopeHints.hintFor(code);
-            return shadow.shadowDomContainsText(hint)
-                    && !shadow.shadowDomContainsText(
-                            FuehrerscheinstelleScopeHints.hintFor(
-                                    FuehrerscheinstelleScopeHints.otherCode(code)));
+            if (!shadow.shadowDomContainsText(FuehrerscheinstelleScopeHints.hintFor(code))) {
+                return false;
+            }
+            for (String other : FuehrerscheinstelleScopeHints.otherCodes(code)) {
+                if (shadow.shadowDomContainsText(FuehrerscheinstelleScopeHints.hintFor(other))) {
+                    return false;
+                }
+            }
+            return true;
         }
         String hint = RuppertstrasseWartezoneHints.hintFor(code);
         boolean has = shadow.shadowDomContainsText(hint);
@@ -2241,18 +2525,37 @@ public final class TimeSlotStep {
         Assert.assertTrue(
                 calloutShowsHintFamily("FS"),
                 "Ausgewählter Termin must show a Führerscheinstelle Schalter hint.");
-        String resolved =
-                shadow.shadowDomContainsText(FuehrerscheinstelleScopeHints.HINT_A) ? "FS-A" : "FS-B";
+        String resolved = resolvePaintedFuehrerscheinstelleSchalter();
+        Assert.assertTrue(
+                FuehrerscheinstelleScopeHints.isConcrete(resolved),
+                "Ausgewählter Termin must show exactly one Führerscheinstelle Schalter hint.");
         Assert.assertTrue(
                 shadow.shadowDomContainsText(FuehrerscheinstelleScopeHints.hintFor(resolved)),
                 "Ausgewählter Termin must show " + FuehrerscheinstelleScopeHints.hintFor(resolved));
-        Assert.assertFalse(
-                shadow.shadowDomContainsText(
-                        FuehrerscheinstelleScopeHints.hintFor(
-                                FuehrerscheinstelleScopeHints.otherCode(resolved))),
-                "Ausgewählter Termin must not mix both Schalter hints.");
+        for (String other : FuehrerscheinstelleScopeHints.otherCodes(resolved)) {
+            Assert.assertFalse(
+                    shadow.shadowDomContainsText(FuehrerscheinstelleScopeHints.hintFor(other)),
+                    "Ausgewählter Termin must not mix Schalter hints (also saw " + other + ").");
+        }
         slotState.rememberedCalloutWartezoneCode = resolved;
         slotState.rememberedWartezoneCode = "FS";
+    }
+
+    private String resolvePaintedFuehrerscheinstelleSchalter() {
+        StringBuilder painted = new StringBuilder();
+        if (shadow.shadowDomContainsText(FuehrerscheinstelleScopeHints.HINT_A)
+                || shadow.shadowDomContainsText(FuehrerscheinstelleScopeHints.ZONE_A)) {
+            painted.append(FuehrerscheinstelleScopeHints.HINT_A).append(' ');
+        }
+        if (shadow.shadowDomContainsText(FuehrerscheinstelleScopeHints.HINT_B)
+                || shadow.shadowDomContainsText(FuehrerscheinstelleScopeHints.ZONE_B)) {
+            painted.append(FuehrerscheinstelleScopeHints.HINT_B).append(' ');
+        }
+        if (shadow.shadowDomContainsText(FuehrerscheinstelleScopeHints.HINT_C)
+                || shadow.shadowDomContainsText(FuehrerscheinstelleScopeHints.ZONE_C)) {
+            painted.append(FuehrerscheinstelleScopeHints.HINT_C).append(' ');
+        }
+        return FuehrerscheinstelleScopeHints.detectCode(painted.toString());
     }
 
     public void assertSelectedAppointmentCalloutShowsRenderedRuppertstrasseHint(String code) {
@@ -2498,6 +2801,17 @@ public final class TimeSlotStep {
         RemoteWebDriver driver = DriverUtil.getDriver();
         driver.manage().window().setSize(ViewportSizes.DESKTOP);
         CitizenViewWaits.sleepQuiet(400L);
+        // The first list day loads its slots after the accordion opens. That fetch can take
+        // as long as the calendar slot wait, so a short pause reports the day as empty.
+        if (shadow.deepElementExists("#listViewAccordion")) {
+            openListDateAtIndex(0);
+            new WebDriverWait(driver, Duration.ofSeconds(90))
+                    .until(d -> json.citizenJson(
+                            "(function(){var slots=cssAll('.timeslot,muc-button.timeslot');"
+                                    + "for(var s=0;s<slots.length;s++){if(shown(slots[s]))return {found:true};}"
+                                    + "return {found:false};})()")
+                            .path("found").asBoolean());
+        }
         JsonNode chrome =
                 json.citizenJson(
                         "(function(){"
@@ -2671,15 +2985,14 @@ public final class TimeSlotStep {
     }
 
     public JsonNode waitForToggleLabels(String activeLabel) {
-        // Color transition is 200ms, but under shard load Firefox/Chrome can keep the previous
-        // label paint while the list accordion mounts or the viewport settles after resize.
+        // The list accordion and a viewport resize can remount the toggle before the active class settles.
         return new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(slotBookingWaitTimeoutSeconds()))
                 .pollingEvery(Duration.ofMillis(250))
                 .until(d -> {
                     JsonNode node = json.citizenJson(
                             "(function(){var labels=cssAll('.m-toggle-switch__label');var out=[];"
-                                    + "for(var i=0;i<labels.length;i++){var st=getComputedStyle(labels[i]);"
-                                    + "out.push({text:textOf(labels[i]),color:st.color,disabled:labels[i].classList.contains('disabled')});}"
+                                    + "for(var i=0;i<labels.length;i++){"
+                                    + "out.push({text:textOf(labels[i]),active:labels[i].classList.contains('m-toggle-switch__label--active')});}"
                                     + "var heading=byId('viewToggleLabel');var toggle=cssAll('button.m-toggle-switch')[0];"
                                     + "var hr=heading?heading.getBoundingClientRect():null;var tr=toggle?toggle.getBoundingClientRect():null;"
                                     + "return {labels:out,heading:heading?textOf(heading):'',"
@@ -2693,14 +3006,7 @@ public final class TimeSlotStep {
                     }
                     for (JsonNode label : node.path("labels")) {
                         boolean shouldBeActive = activeLabel.equals(label.path("text").asText());
-                        String color = label.path("color").asText();
-                        if (label.path("disabled").asBoolean() == shouldBeActive) {
-                            return null;
-                        }
-                        if (shouldBeActive && !isToggleBlue(color)) {
-                            return null;
-                        }
-                        if (!shouldBeActive && !isToggleGrey(color)) {
+                        if (label.path("active").asBoolean() != shouldBeActive) {
                             return null;
                         }
                     }
@@ -2710,28 +3016,10 @@ public final class TimeSlotStep {
 
     public void assertToggleColor(JsonNode label, String text, boolean active) {
         Assert.assertEquals(label.path("text").asText(), text, "Toggle label: " + label);
-        Assert.assertEquals(label.path("disabled").asBoolean(), !active, text + " active state: " + label);
-        String color = label.path("color").asText();
-        Assert.assertTrue(
-                active ? isToggleBlue(color) : isToggleGrey(color),
-                text + " should be " + (active ? "#005A9F" : "#617586") + " but was " + color);
-    }
-
-    /** Accepts rgb()/rgba() with commas or modern space-separated components. */
-    private static boolean isToggleBlue(String color) {
-        return colorMatchesChannels(color, 0, 90, 159);
-    }
-
-    private static boolean isToggleGrey(String color) {
-        return colorMatchesChannels(color, 97, 117, 134);
-    }
-
-    private static boolean colorMatchesChannels(String color, int r, int g, int b) {
-        if (color == null || color.isBlank()) {
-            return false;
-        }
-        String compact = color.replace(" ", "");
-        return compact.contains(r + "," + g + "," + b) || color.contains(r + " " + g + " " + b);
+        Assert.assertEquals(
+                label.path("active").asBoolean(),
+                active,
+                text + " should " + (active ? "" : "not ") + "carry m-toggle-switch__label--active: " + label);
     }
 
     public JsonNode calendarSnapshot() {
@@ -2880,8 +3168,39 @@ public final class TimeSlotStep {
             return false;
         }
         CitizenViewWaits.sleepQuiet(1200L);
-        waitUntilAppointmentSlotsReadyQuiet(Math.min(45, slotBookingWaitTimeoutSeconds()));
+        // Shard load makes a multi-office day fetch take longer than 45s. Waiting
+        // only 45s and then opening another day drops the response that is about to arrive.
+        waitUntilAppointmentSlotsReadyQuiet(slotBookingWaitTimeoutSeconds());
+        if (deepMucSpinnerVisible()) {
+            ScenarioLogManager.getLogger()
+                    .info(
+                            "zmscitizenview: next calendar day still loading after {}s; not paging further",
+                            slotBookingWaitTimeoutSeconds());
+            return false;
+        }
         return true;
+    }
+
+    /**
+     * A visible MucSpinner is an in-flight available-calendar request, not an empty day.
+     *
+     * @return false when that request is still running after the full slot wait
+     */
+    private boolean finishInFlightCalendarLoad() {
+        if (!deepMucSpinnerVisible()) {
+            return true;
+        }
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: calendar still loading; waiting out the in-flight request");
+        waitUntilAppointmentSlotsReadyQuiet(slotBookingWaitTimeoutSeconds());
+        if (!deepMucSpinnerVisible()) {
+            return true;
+        }
+        ScenarioLogManager.getLogger()
+                .info(
+                        "zmscitizenview: calendar request still in flight after {}s; not opening another day",
+                        slotBookingWaitTimeoutSeconds());
+        return false;
     }
 
     /**
@@ -3115,6 +3434,12 @@ public final class TimeSlotStep {
                             "zmscitizenview: no timeslot for provider {} in current view (attempt {}); try Später",
                             officeId,
                             attempt);
+            if (deepMucSpinnerVisible()) {
+                if (!finishInFlightCalendarLoad()) {
+                    break;
+                }
+                continue;
+            }
             if (clickCitizenViewLaterOnceIfAvailable()) {
                 CitizenViewWaits.sleepQuiet(1200L);
                 waitUntilAppointmentSlotsReadyQuiet(Math.min(45, slotBookingWaitTimeoutSeconds()));

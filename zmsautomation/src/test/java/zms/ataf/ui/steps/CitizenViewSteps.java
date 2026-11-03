@@ -17,6 +17,7 @@ import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import zms.ataf.rest.steps.ZmsApiMailSteps;
 import zms.ataf.ui.pages.citizenview.CitizenViewPage;
+import zms.ataf.ui.pages.citizenview.support.FeuerwacheOrderDaySeats;
 
 /**
  * All zmscitizenview UI steps (English). Service Finder smoke + full booking flow; see
@@ -139,6 +140,16 @@ public class CitizenViewSteps {
         page.navigateWithJumpInService(s);
     }
 
+    /**
+     * ZMSKVR-151 / ZMSKVR-714: booked-out scenarios may have reserved every V61 day+7 seat.
+     * Re-open capacity before asserting Feuerwache 10 last under Verfügbare Termine.
+     */
+    @Given("Feuerwache order-day seats are restored in the ATAF database")
+    public void feuerwacheOrderDaySeatsAreRestoredInTheAtafDatabase() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: restoring Feuerwache V61 order-day seats");
+        FeuerwacheOrderDaySeats.restore();
+    }
+
     @When("I click Leistung wechseln in the citizen view")
     public void iClickLeistungWechselnInTheCitizenView() {
         ScenarioLogManager.getLogger().info("zmscitizenview: Leistung wechseln");
@@ -247,6 +258,18 @@ public class CitizenViewSteps {
         ScenarioLogManager.getLogger()
                 .info("zmscitizenview: {} links to service {}", label, serviceId);
         page.assertServiceDescriptionLink(TestDataHelper.transformTestData(label), serviceId);
+    }
+
+    @Then("the service {string} links to service {string} and not {string} on muenchen.de")
+    public void theServiceLinksToServiceAndNotInternalIds(String label, String serviceId, String forbiddenIds) {
+        ScenarioLogManager.getLogger()
+                .info(
+                        "zmscitizenview: {} links to service {} and not {}",
+                        label,
+                        serviceId,
+                        forbiddenIds);
+        page.assertServiceDescriptionLinkExcludesInternalIds(
+                TestDataHelper.transformTestData(label), serviceId, forbiddenIds);
     }
 
     @Then("the count for {string} sits beside the name on desktop")
@@ -694,6 +717,12 @@ public class CitizenViewSteps {
     public void theListViewShowsDateAccordionsWithTheFirstOneOpen(int count) {
         ScenarioLogManager.getLogger().info("zmscitizenview: list shows {} date accordions", count);
         page.assertListDateAccordions(count);
+    }
+
+    @Then("the list view shows its date accordions with the first one open")
+    public void theListViewShowsItsDateAccordionsWithTheFirstOneOpen() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: list shows the loaded date accordions");
+        page.assertLoadedListDateAccordions();
     }
 
     @Then("the open list accordion groups times by hour")
@@ -1585,6 +1614,20 @@ public class CitizenViewSteps {
         page.assertOverviewServiceVisible(serviceId, label);
     }
 
+    /** ZMSKVR-418: Übersicht / confirm / cancel list main + sub services with their booked counts. */
+    @Then("the appointment overview should show {int}x service {int} named {string} in the citizen view")
+    public void theAppointmentOverviewShouldShowCountServiceNamed(
+            int count, int serviceId, String serviceName) {
+        String label = TestDataHelper.transformTestData(serviceName);
+        ScenarioLogManager.getLogger()
+                .info(
+                        "zmscitizenview: assert overview shows {}x service {} named {}",
+                        count,
+                        serviceId,
+                        label);
+        page.assertOverviewServiceWithCount(serviceId, count, label);
+    }
+
     @Then("the booking summary should show {string} for provider {int} in the citizen view")
     public void theBookingSummaryShouldShowLocationForProvider(String locationLabel, int officeId) {
         String label = TestDataHelper.transformTestData(locationLabel);
@@ -1622,6 +1665,20 @@ public class CitizenViewSteps {
         ScenarioLogManager.getLogger()
                 .info("zmscitizenview: assert only Pass calendar services offered on combination step");
         page.assertPassOnlyCombinationServicesVisible();
+    }
+
+    @When("I enter the 250-character required free text with newlines and a tab in the citizen view")
+    public void iEnterTheRequiredFreeTextAtTheLimit() {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: required Freitext at 250 with newline and tab");
+        page.assertRequiredFreeTextCountsNewlinesAndTab();
+    }
+
+    @Then("the required free text of 251 characters including a newline and a tab stays on the contact form")
+    public void theFreeTextOverLimitStaysOnTheContactForm() {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: Freitext of 251 with newline and tab is rejected");
+        page.assertFreeTextOverLimitStaysOnContactForm();
     }
 
     @When("I fill contact details without continuing in the citizen view")
@@ -1838,6 +1895,31 @@ public class CitizenViewSteps {
             Thread.currentThread().interrupt();
             throw new RuntimeException("Wait for " + minutes + " minutes was interrupted", e);
         }
+    }
+
+    @When("I wait up to {int} seconds for the timeout warning banner in the citizen view")
+    public void iWaitUpToSecondsForTheTimeoutWarningBanner(int seconds) {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: wait up to {}s for timeout warning banner", seconds);
+        page.waitUntilTimeoutWarningBannerVisible(seconds);
+    }
+
+    @Then("the timeout warning banner should be visible in the citizen view")
+    public void theTimeoutWarningBannerShouldBeVisible() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: assert timeout warning banner visible");
+        page.assertTimeoutWarningBannerVisible();
+    }
+
+    @Then("the timeout warning banner should not be visible in the citizen view")
+    public void theTimeoutWarningBannerShouldNotBeVisible() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: assert timeout warning banner not visible");
+        page.assertTimeoutWarningBannerNotVisible();
+    }
+
+    @Then("the timeout warning countdown should tick down in the citizen view")
+    public void theTimeoutWarningCountdownShouldTickDown() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: assert timeout warning countdown ticks");
+        page.assertTimeoutWarningCountdownTicksDown();
     }
 
     @Then("service {string} should still be selected with quantity {int} in the citizen view")

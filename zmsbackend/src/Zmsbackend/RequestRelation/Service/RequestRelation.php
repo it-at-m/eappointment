@@ -7,7 +7,7 @@ use BO\Zmsentities\Collection\RequestRelationList as Collection;
 
 class RequestRelation extends \BO\Zmsbackend\Base
 {
-    public function readEntity($requestId, $providerId, int $resolveReferences = 0): Entity
+    public function readEntity(string|int $requestId, string|int $providerId, int $resolveReferences = 0): Entity
     {
         $query = new \BO\Zmsbackend\RequestRelation\Repository\RequestRelation(\BO\Zmsbackend\Query\Base::SELECT);
         $query
@@ -20,7 +20,7 @@ class RequestRelation extends \BO\Zmsbackend\Base
         return $this->fetchOne($query, new Entity());
     }
 
-    public function readListBySource($source, int $resolveReferences = 0)
+    public function readListBySource(string $source, int $resolveReferences = 0)
     {
         $query = new \BO\Zmsbackend\RequestRelation\Repository\RequestRelation(\BO\Zmsbackend\Query\Base::SELECT);
         $query
@@ -33,7 +33,7 @@ class RequestRelation extends \BO\Zmsbackend\Base
         return $this->readList($statement);
     }
 
-    public function readListByRequestId($requestId, $source, int $resolveReferences = 0)
+    public function readListByRequestId(string|int $requestId, string $source, int $resolveReferences = 0)
     {
         $query = new \BO\Zmsbackend\RequestRelation\Repository\RequestRelation(\BO\Zmsbackend\Query\Base::SELECT);
         $query
@@ -47,7 +47,7 @@ class RequestRelation extends \BO\Zmsbackend\Base
         return $this->readList($statement);
     }
 
-    public function readListByProviderId($providerId, $source, int $resolveReferences = 0)
+    public function readListByProviderId(string|int $providerId, string $source, int $resolveReferences = 0)
     {
         $query = new \BO\Zmsbackend\RequestRelation\Repository\RequestRelation(\BO\Zmsbackend\Query\Base::SELECT);
         $query
@@ -101,7 +101,7 @@ class RequestRelation extends \BO\Zmsbackend\Base
         return $this->readEntity($entity->getRequest()->getId(), $entity->getProvider()->getId());
     }
 
-    public function writeImportList($providerList, $source = 'dldb')
+    public function writeImportList(iterable $providerList, string $source = 'dldb')
     {
         foreach ($providerList as $provider) {
             // Do not import locations without address
@@ -124,7 +124,7 @@ class RequestRelation extends \BO\Zmsbackend\Base
         return $this->readListBySource($source);
     }
 
-    protected function readList($statement): Collection
+    protected function readList(\PDOStatement $statement): Collection
     {
         $collection = new Collection();
         while ($requestRelationData = $statement->fetch(\PDO::FETCH_ASSOC)) {

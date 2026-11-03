@@ -103,14 +103,14 @@ class Closure extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
         return $this;
     }
 
-    public function addConditionId($id): static
+    public function addConditionId(string|int $id): static
     {
         $this->query->where('closure.id', '=', $id);
         return $this;
     }
 
     #[\Override]
-    public function postProcess($data)
+    public function postProcess(array $data)
     {
         $data[$this->getPrefixed("lastChange")] =
             (new \DateTime($data[$this->getPrefixed("lastChange")] . \BO\Zmsbackend\Connection\Select::$connectionTimezone))

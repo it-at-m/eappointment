@@ -37,7 +37,7 @@ class Availability extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Q
      *
      */
     #[\Override]
-    public function getEntityMapping($type = null)
+    public function getEntityMapping(?string $type = null)
     {
         $mapping = [
             'id' => 'availability.OeffnungszeitID',
@@ -108,7 +108,7 @@ class Availability extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Q
         return $this;
     }
 
-    public function addConditionScopeId($scopeId): static
+    public function addConditionScopeId(string|int $scopeId): static
     {
         $this->query->where('availabilityscope.StandortID', '=', $scopeId);
         return $this;
@@ -326,7 +326,7 @@ class Availability extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Q
     }
 
     #[\Override]
-    public function postProcess($data)
+    public function postProcess(array $data)
     {
         $startDateKey = $this->getPrefixed("startDate");
         $endDateKey = $this->getPrefixed("endDate");

@@ -84,7 +84,7 @@ abstract class Base
         return static::$preparedCache[$sql];
     }
 
-    public function startExecute($statement, array $parameters)
+    public function startExecute(\PDOStatement $statement, array $parameters)
     {
         $statement = static::pdoExceptionHandler(function () use ($statement, $parameters) {
             $statement->execute($parameters);
@@ -93,7 +93,7 @@ abstract class Base
         return $statement;
     }
 
-    protected static function pdoExceptionHandler(\Closure $pdoFunction, $parameters = [])
+    protected static function pdoExceptionHandler(\Closure $pdoFunction, array $parameters = [])
     {
         try {
             $statement = $pdoFunction($parameters);

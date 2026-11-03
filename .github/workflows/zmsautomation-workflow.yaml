@@ -727,7 +727,9 @@ jobs:
               return 1
             fi
             echo "Injecting $m from GHCR image tag $tag into $WEB_CONT:/var/www/html/$m"
-            docker exec -u root "$WEB_CONT" bash -lc "mkdir -p /var/www/html/${m}"
+            # retry calls this function from until, which disables set -e inside the
+            # function. A broken tar has to return, or the attempt is counted as success.
+            docker exec -u root "$WEB_CONT" bash -lc "rm -rf /var/www/html/${m} && mkdir -p /var/www/html/${m}" || return 1
 
             if [[ " ${layout_modules[*]} " == *" ${m} "* ]]; then
               docker run --rm \
@@ -744,11 +746,13 @@ jobs:
                     fi
                   done
                   tar cf - -C /var/www/html .' \
-                | docker exec -i -u root "$WEB_CONT" tar -xf - -C "/var/www/html/${m}/"
+                | timeout 600 docker exec -i -u root "$WEB_CONT" tar -xf - -C "/var/www/html/${m}/" \
+                || return 1
             else
               docker run --rm --entrypoint tar "ghcr.io/${GITHUB_REPOSITORY}/${m}:${tag}" \
                 -cf - -C /var/www/html . \
-                | docker exec -i -u root "$WEB_CONT" tar -xf - -C "/var/www/html/${m}/"
+                | timeout 600 docker exec -i -u root "$WEB_CONT" tar -xf - -C "/var/www/html/${m}/" \
+                || return 1
             fi
 
             docker exec -u root "$WEB_CONT" bash -lc "chown -R www-data:www-data /var/www/html/${m} 2>/dev/null || true; chmod -R 755 /var/www/html/${m} 2>/dev/null || true"
@@ -1167,6 +1171,34 @@ jobs:
           retention-days: 7
           compression-level: 0
           overwrite: true
+
+  # A workflow_dispatch job check is ignored on the pull request. A commit
+  # status named zmsautomation is what the pull request and branch protection see.
+  # The job name must stay different: GitHub requires both when the names match.
+  record-zmsautomation-status:
+    name: Record zmsautomation status
+    needs: [generate-matrix, zms-automation]
+    if: always() && !cancelled()
+    runs-on: ubuntu-latest
+    permissions:
+      statuses: write
+    steps:
+      - name: Post zmsautomation on the commit
+        env:
+          GH_TOKEN: ${{ github.token }}
+          STATE: ${{ (needs.generate-matrix.result == 'success' && needs.zms-automation.result == 'success') && 'success' || 'failure' }}
+        run: |
+          set -euo pipefail
+          if [ "${STATE}" = "success" ]; then
+            description="Manual zmsautomation run passed"
+          else
+            description="Manual zmsautomation run failed"
+          fi
+          gh api --method POST "repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" \
+            -f state="${STATE}" \
+            -f context="zmsautomation" \
+            -f description="${description}" \
+            -f target_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
 
   publish-cucumber-status:
     name: Publish cucumber status JSON

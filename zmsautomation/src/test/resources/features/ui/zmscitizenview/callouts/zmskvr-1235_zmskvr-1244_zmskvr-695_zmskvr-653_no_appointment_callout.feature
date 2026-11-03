@@ -30,7 +30,7 @@ Feature: CitizenView: no appointment available info callout
   #   ZMSKVR-614 / ZMSKVR-696 / ZMSKVR-475
   #     → ui/.../callouts/zmskvr-88_zmskvr-472_zmskvr-1458_slot_taken_callout.feature
   #   ZMSKVR-1457 / ZMSKVR-1524 / ZMSKVR-770 / ZMSKVR-822
-  #     → ui/.../calendar/zmskvr-1524_…_calendar_day_fits_duration.feature
+  #     → ui/.../calendar/zmskvr-490_…_calendar_day_fits_duration.feature
   #     (Vorlauf / non-bookable days via available-calendar; earliest day also ZMSKVR-730 below)
   #
   # Historical / out of Bürgeransicht-2 ATAF scope
@@ -92,6 +92,7 @@ Feature: CitizenView: no appointment available info callout
     Then the selected calendar day should be 2 Berlin days from today in the citizen view
     And the no appointment available info callout should not be visible in the citizen view
 
+  @feuerwache-capacity-lock
   Scenario: Day booked out while on Termin refreshes to the blue info callout
     Given I open zmscitizenview with jump-in service "10389330" and location "10582"
     Then the service combination step should be visible
@@ -106,6 +107,7 @@ Feature: CitizenView: no appointment available info callout
     When I continue from the service combination step
     Then the no appointment available info callout should be visible in the citizen view
 
+  @feuerwache-capacity-lock
   Scenario: Jump-in to Riem after every seat was reserved shows the blue info callout
     When I reserve every available appointment for office 10575 and service 10389330
     Given I open zmscitizenview with jump-in service "10389330" and location "10575"

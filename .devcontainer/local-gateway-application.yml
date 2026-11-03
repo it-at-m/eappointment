@@ -33,6 +33,11 @@ spring:
                   - '*'
                 allowedHeaders:
                   - '*'
+          # Drop idle sockets before Apache's keepalive (Debian default 5s). GH-3818.
+          httpclient:
+            pool:
+              max-idle-time: 2s
+              eviction-interval: 2s
           routes:
             - id: "citizen-api"
               uri: "http://zms-web:80"
@@ -42,6 +47,13 @@ spring:
                 - PreserveHostHeader
                 - RewritePath=/buergeransicht/api/citizen/(?<segment>.*), /terminvereinbarung/api/citizen/${segment}
                 - RemoveResponseHeader=WWW-Authenticate
+                - name: Retry
+                  args:
+                    retries: 1
+                    methods:
+                      - GET
+                    exceptions:
+                      - reactor.netty.http.client.PrematureCloseException
             - id: "citizen-api-authenticated"
               uri: "http://zms-web:80"
               predicates:
@@ -50,6 +62,13 @@ spring:
                 - PreserveHostHeader
                 - RewritePath=/buergeransicht/authenticated/api/citizen/(?<segment>.*), /terminvereinbarung/api/citizen/${segment}
                 - RemoveResponseHeader=WWW-Authenticate
+                - name: Retry
+                  args:
+                    retries: 1
+                    methods:
+                      - GET
+                    exceptions:
+                      - reactor.netty.http.client.PrematureCloseException
             - id: "webcomponent"
               uri: "${WEBCOMPONENT_URI}"
               predicates:

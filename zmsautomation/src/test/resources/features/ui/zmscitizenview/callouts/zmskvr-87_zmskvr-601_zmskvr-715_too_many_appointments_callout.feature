@@ -2,16 +2,16 @@
 @web @zmscitizenview @callouts @citizen @ZMSKVR-87 @ZMSKVR-601 @ZMSKVR-715 @executeLocally @jumpin
 Feature: CitizenView: too many appointments per email callout on Übersicht
   As a citizen booking at Waffenbehörde (office 10521, scope 380)
-  I want a clear error when my email already has an active appointment
+  I want a clear error when my email already has two active appointments
   So that I cancel another booking before reserving a new one
 
-  # ZMSKVR-87 / ZMSKVR-601 / ZMSKVR-715.
-  # V60 sets appointmentsPerMail=1. Reserved processes do not count, so the UI can
-  # reach Übersicht with the same email while a sibling is only reserved. After that
-  # sibling is preconfirmed via API, Termin reservieren hits preconfirm and shows
-  # the red callout; the summary (and Termin reservieren) is hidden.
+  # ZMSKVR-87 / ZMSKVR-601 / ZMSKVR-715. ZMSKVR-1142 raised the minimum to 2.
+  # V60 sets appointmentsPerMail=2. Reserved processes do not count, so the UI can
+  # reach Übersicht while one sibling is still only reserved. After that sibling is
+  # preconfirmed via API, two appointments are active and Termin reservieren hits
+  # preconfirm and shows the red callout; the summary (and Termin reservieren) is hidden.
   # Sync after Kontakt must take the UI booking from localStorage even though the
-  # API “first” reserve is already in the booking context.
+  # API reserves are already in the booking context.
 
   Background:
     Given the Citizen API is available
@@ -26,7 +26,16 @@ Feature: CitizenView: too many appointments per email callout on Übersicht
     Then the appointment status should be "reserved"
     When I update the appointment with family name "MusterZmskvr715Ui" and customTextfield "ATAF Bemerkung"
     Then the appointment status should be "reserved"
+    When I preconfirm the appointment
+    Then the appointment status should be "preconfirmed"
     And I remember the current appointment as "first"
+    When I request available days for office 10521 and service 10429902
+    And I request available appointments for the first available day
+    And I reserve an appointment with the first available slot
+    Then the appointment status should be "reserved"
+    When I update the appointment with family name "MusterZmskvr715Ui" and customTextfield "ATAF Bemerkung"
+    Then the appointment status should be "reserved"
+    And I remember the current appointment as "second"
     Given I open zmscitizenview with jump-in service "10429902" and location "10521"
     Then the service combination step should be visible
     When I continue from the service combination step
@@ -41,10 +50,11 @@ Feature: CitizenView: too many appointments per email callout on Übersicht
     Then the booking summary should show "Waffenbehörde" for provider 10521 in the citizen view
     When I accept communication in the citizen view
     And I sync the booking process from citizen view localStorage
-    And I remember the current appointment as "second"
-    And I preconfirm the remembered "first" appointment
+    And I remember the current appointment as "third"
+    And I preconfirm the remembered "second" appointment
     And I try to preconfirm from the overview in the citizen view
     Then the too many appointments with same mail callout should be visible in the citizen view
     And the Termin reservieren button should not be visible in the citizen view
-    When I cancel the remembered "second" appointment
+    When I cancel the remembered "third" appointment
+    And I cancel the remembered "second" appointment
     And I cancel the remembered "first" appointment

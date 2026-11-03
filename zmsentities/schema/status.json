@@ -74,6 +74,10 @@
         "confirmedWithExternalUserId": {
           "type": "number",
           "description": "Number of confirmed processes with externalUserId set (OIDC-linked appointments)."
+        },
+        "confirmedWithMultipleServices": {
+          "type": "number",
+          "description": "Number of confirmed appointments with more than one distinct service (buergeranliegen.AnliegenID). Several copies of the same service do not count."
         }
       }
     },
@@ -153,6 +157,11 @@
           "description": "patch level, this value increments with bugfixes"
         }
       }
+    },
+    "phpVersion": {
+      "type": "string",
+      "description": "PHP version of the zmsbackend process that built this status response.",
+      "example": "8.4.27"
     }
   }
 }

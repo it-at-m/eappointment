@@ -10,11 +10,12 @@ Feature: Calendar and list views for available times
   # One feature, desktop and @mobile layout scenarios plus the busy and short day flows.
   # Personalausweis lists Passkalender 10502. That day is full, so the calendar and the list group times by hour.
   # Hauptkalender 10489 is not a checkbox until Wohnsitzanmeldung is added.
-  # The first five dates are accordions. Mehr laden adds at most three and leaves the open date open.
+  # The list shows the dates already loaded for this month. Mehr laden fetches the next month when fewer than five remain.
+  # That click adds at most three dates once five are already shown, and it leaves the open date open.
   # Opening another date closes the one that was open.
   # Führungszeugnis at Forstenrieder Allee Team 1 is two slots at 10:00, so the calendar and the list show Vormittag.
   # Früher and Später stay while more than one location is offered, including that morning.
-  # The active toggle label is #005A9F and the inactive label is #617586.
+  # MucToggle marks the current side with m-toggle-switch__label--active. The component ships no label colors.
   # The heading is Datum und Uhrzeit. On desktop the toggle sits beside it; on a phone it sits under it.
   # A selected time is the primary button: white text on #005A9F.
 
@@ -32,7 +33,7 @@ Feature: Calendar and list views for available times
     And the calendar groups times by hour
     When I switch to the list view in the citizen view
     Then the calendar and list toggle shows "Listenansicht" as active
-    And the list view shows 5 date accordions with the first one open
+    And the list view shows its date accordions with the first one open
     And the open list accordion groups times by hour
     And the list earlier button starts disabled and both pager buttons are on one line
     When I click Später in the open list date

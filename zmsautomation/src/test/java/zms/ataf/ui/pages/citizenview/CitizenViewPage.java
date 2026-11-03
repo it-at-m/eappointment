@@ -17,6 +17,7 @@ import ataf.web.utils.DriverUtil;
 import zms.ataf.rest.dto.zmscitizenapi.ThinnedProcess;
 import zms.ataf.ui.pages.citizenview.support.ShadowDom;
 import zms.ataf.ui.pages.citizenview.steps.CaptchaStep;
+import zms.ataf.ui.pages.citizenview.steps.TimeoutWarningStep;
 import zms.ataf.ui.pages.citizenview.steps.CombinationStep;
 import zms.ataf.ui.pages.citizenview.steps.ServiceFinderStep;
 import zms.ataf.ui.pages.citizenview.steps.ProviderLocationStep;
@@ -103,6 +104,8 @@ public class CitizenViewPage extends BasePage {
 
     private final CaptchaStep captcha;
 
+    private final TimeoutWarningStep timeoutWarning;
+
 
     public CitizenViewPage(RemoteWebDriver driver) {
         super(driver);
@@ -117,21 +120,34 @@ public class CitizenViewPage extends BasePage {
         providerLocation.setSlotWaitBridge(
                 seconds -> {
                     // Keep-only / Ort toggle often lands on an empty day-part; page quietly.
-                    if (!timeSlot.waitUntilAppointmentSlotsReadyQuiet(seconds)) {
+                    // After a full quiet wait, skip paging when the blue empty-state callout is
+                    // already settled (only empty Feuerwache 10579 etc.) — paging races that assert.
+                    if (timeSlot.waitUntilAppointmentSlotsReadyQuiet(seconds)) {
+                        return;
+                    }
+                    if (!timeSlot.deepMucSpinnerVisible()
+                            && timeSlot.isNoAppointmentInfoCalloutPresent()) {
                         ScenarioLogManager.getLogger()
                                 .info(
-                                        "zmscitizenview: Ort toggle had no timeslot yet; paging calendar days");
-                        timeSlot.waitUntilSlotsReadyForBooking();
+                                        "zmscitizenview: Ort toggle settled on blue empty-state callout; skip day paging");
+                        return;
                     }
+                    ScenarioLogManager.getLogger()
+                            .info(
+                                    "zmscitizenview: Ort toggle had no timeslot yet; paging calendar days");
+                    timeSlot.waitUntilSlotsReadyForBooking();
                 },
                 () -> timeSlot.slotBookingWaitTimeoutSeconds(),
                 () -> timeSlot.deepMucSpinnerVisible());
+        providerLocation.setEmptyAwareSettle(
+                seconds -> timeSlot.waitUntilSlotsOrEmptyCallout(seconds));
         bookingStepper = new BookingStepperStep(CONTEXT, shadow, DEFAULT_EXPLICIT_WAIT_TIME);
         jumpInError = new JumpInErrorStep(CONTEXT, shadow, DEFAULT_EXPLICIT_WAIT_TIME);
         contact = new ContactStep(CONTEXT, shadow, this, DEFAULT_EXPLICIT_WAIT_TIME);
         overview = new OverviewStep(CONTEXT, shadow, this, slotState, DEFAULT_EXPLICIT_WAIT_TIME);
         myAppointments = new MyAppointmentsStep(CONTEXT, shadow, slotState, this, contact, DEFAULT_EXPLICIT_WAIT_TIME);
         captcha = new CaptchaStep(CONTEXT, shadow, json, DEFAULT_EXPLICIT_WAIT_TIME);
+        timeoutWarning = new TimeoutWarningStep(CONTEXT, shadow);
     }
 
     public CitizenViewPageContext getContext() {
@@ -696,6 +712,12 @@ public class CitizenViewPage extends BasePage {
         combination.assertServiceDescriptionLink(label, serviceId);
     }
 
+    /** ZMSKVR-1435: public root parent id, not an internal variant id and not an empty path. */
+    public void assertServiceDescriptionLinkExcludesInternalIds(
+            String label, String serviceId, String forbiddenIds) {
+        combination.assertServiceDescriptionLinkExcludesInternalIds(label, serviceId, forbiddenIds);
+    }
+
     /** ZMSKVR-249: on a wide window the count and buttons sit left of the service name. */
     public void assertCountBesideNameOnDesktop(String label) {
         combination.assertCountBesideNameOnDesktop(label);
@@ -1107,6 +1129,10 @@ public class CitizenViewPage extends BasePage {
 
     public void assertListDateAccordions(int expectedCount) {
         timeSlot.assertListDateAccordions(expectedCount);
+    }
+
+    public void assertLoadedListDateAccordions() {
+        timeSlot.assertLoadedListDateAccordions();
     }
 
     public void assertOpenListGroupsByHour() {
@@ -1664,6 +1690,14 @@ public class CitizenViewPage extends BasePage {
         contact.fillContactDetailsRandomWithoutOptionalRemarks();
     }
 
+    public void assertRequiredFreeTextCountsNewlinesAndTab() {
+        contact.assertRequiredFreeTextCountsNewlinesAndTab();
+    }
+
+    public void assertFreeTextOverLimitStaysOnContactForm() {
+        contact.assertFreeTextOverLimitStaysOnContactForm();
+    }
+
     public void assertContactFormVisible() {
         contact.assertContactFormVisible();
     }
@@ -1791,6 +1825,10 @@ public class CitizenViewPage extends BasePage {
 
     public void assertOverviewServiceVisible(int serviceId, String serviceName) {
         overview.assertOverviewServiceVisible(serviceId, serviceName);
+    }
+
+    public void assertOverviewServiceWithCount(int serviceId, int count, String serviceName) {
+        overview.assertOverviewServiceWithCount(serviceId, count, serviceName);
     }
 
     public void waitForPreconfirmPageAfterUpdate() {
@@ -1982,6 +2020,22 @@ public class CitizenViewPage extends BasePage {
 
     public void waitUntilCaptchaCheckFinished(int widgetTimeoutSeconds, int solveTimeoutSeconds) {
         captcha.waitUntilCaptchaCheckFinished(widgetTimeoutSeconds, solveTimeoutSeconds);
+    }
+
+    public void waitUntilTimeoutWarningBannerVisible(int maxSeconds) {
+        timeoutWarning.waitUntilTimeoutWarningBannerVisible(maxSeconds);
+    }
+
+    public void assertTimeoutWarningBannerVisible() {
+        timeoutWarning.assertTimeoutWarningBannerVisible();
+    }
+
+    public void assertTimeoutWarningBannerNotVisible() {
+        timeoutWarning.assertTimeoutWarningBannerNotVisible();
+    }
+
+    public void assertTimeoutWarningCountdownTicksDown() {
+        timeoutWarning.assertTimeoutWarningCountdownTicksDown();
     }
 
     public void assertSelectedServiceQuantity(String serviceName, int quantity) {

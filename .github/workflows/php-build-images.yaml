@@ -25,6 +25,8 @@ jobs:
           extensions: mbstring, xml, ctype, iconv, intl, curl
           tools: composer
           coverage: none
+      - name: Show PHP version
+        run: php -v
       - name: Install python3
         run: sudo apt install -y python3 python3-click python3-git
       - name: Referencing local Modules and Libraries
@@ -44,7 +46,7 @@ jobs:
           fi
           curl -sSL -o $DIR/changelog_build.md https://raw.githubusercontent.com/it-at-m/eappointment/main/CHANGELOG.md
       - name: Login to GitHub Container Registry
-        uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4
+        uses: docker/login-action@81c6f93d4bc991e510b342a00b419b3bb4efc5c6 # v4
         with:
           registry: ghcr.io
           username: ${{ github.actor }}

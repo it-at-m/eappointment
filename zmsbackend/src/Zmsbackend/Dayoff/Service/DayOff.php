@@ -17,7 +17,7 @@ class DayOff extends \BO\Zmsbackend\Base
     /**
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function readByDepartmentId($departmentId = 0)
+    public function readByDepartmentId(int $departmentId = 0)
     {
         return $this->readCommon();
     }
@@ -25,7 +25,7 @@ class DayOff extends \BO\Zmsbackend\Base
     /**
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function readOnlyByDepartmentId($departmentId = 0, bool $disableCache = false)
+    public function readOnlyByDepartmentId(int $departmentId = 0, bool $disableCache = false)
     {
         return new Collection();
     }
@@ -64,7 +64,7 @@ class DayOff extends \BO\Zmsbackend\Base
    /**
  * @SuppressWarnings(PHPMD.UnusedFormalParameter)
  */
-    public function readByScopeId($scopeId = 0, bool $disableCache = false)
+    public function readByScopeId(int $scopeId = 0, bool $disableCache = false)
     {
         return $this->readCommon();
     }
@@ -116,7 +116,7 @@ class DayOff extends \BO\Zmsbackend\Base
      *
      * @return \BO\Zmsentities\Collection\DayoffList
      */
-    public function writeCommonDayoffsByYear($dayoffList, ?int $year = null, bool $drop = true)
+    public function writeCommonDayoffsByYear(iterable $dayoffList, ?int $year = null, bool $drop = true)
     {
         if ($drop && $year) {
             static::$commonList = null;
@@ -172,7 +172,7 @@ class DayOff extends \BO\Zmsbackend\Base
         $this->removeCache();
     }
 
-    public function deleteEntity($itemId): bool
+    public function deleteEntity(string|int $itemId): bool
     {
         $query = new \BO\Zmsbackend\Dayoff\Repository\DayOff(\BO\Zmsbackend\Query\Base::DELETE);
         $query->addConditionDayOffId($itemId);

@@ -7,6 +7,7 @@ import SourceView from './page/sourceEdit'
 import ScopeView from './page/scopeEdit'
 import ScopeRestrictedView from './page/scopeEdit/indexRestricted'
 import './block/confirm-popup.js'
+import './block/day-closure-toggle.js'
 import bindReact from './lib/bindReact.js'
 
 bindReact('.availabilityDayRoot', AvailabilityDayPage)

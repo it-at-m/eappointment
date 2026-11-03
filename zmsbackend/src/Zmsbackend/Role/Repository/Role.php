@@ -33,7 +33,7 @@ class Role extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\Map
     }
 
     #[\Override]
-    public function postProcess($data)
+    public function postProcess(array $data)
     {
         $permissionsKey = $this->getPrefixed('permissions');
         $rawPermissions = $data[$permissionsKey] ?? null;
