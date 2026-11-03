@@ -2246,11 +2246,21 @@ public final class TimeSlotStep {
                     .info(
                             "zmscitizenview: Weiter after slot callout → reserve appointment (then Kontakt form) timestamp={}",
                             timestamp);
-            page.clickWeiter();
+            clickWeiterForReserve();
             if (timestamp > 0) {
                 pendingReserveTimestamp = timestamp;
             }
-            switch (waitForReserveOutcome()) {
+            ReserveOutcome outcome = waitForReserveOutcome();
+            // Rebooking keeps Weiter disabled until reserve and the following update both finish.
+            // Clicking it again cannot succeed; wait for Kontakt or Übersicht instead.
+            if (outcome == ReserveOutcome.UNFINISHED && !shadow.visibleButtonContaining("Weiter")) {
+                ScenarioLogManager.getLogger()
+                        .info(
+                                "zmscitizenview: Weiter stays disabled after reserve timestamp={}; waiting for Kontakt or Übersicht",
+                                timestamp);
+                outcome = waitForReserveOutcome(90);
+            }
+            switch (outcome) {
                 case CONTACT, REBOOKING_OVERVIEW -> {
                     keepReservedSlot(timestamp);
                     finishReserveOnContactStep();
@@ -2275,6 +2285,11 @@ public final class TimeSlotStep {
                     CitizenViewWaits.sleepQuiet(65_000L);
                 }
                 case UNFINISHED -> {
+                    if (!shadow.visibleButtonContaining("Weiter")) {
+                        Assert.fail(
+                                "zmscitizenview: Weiter stayed disabled and reserve did not reach Kontakt or Übersicht for office "
+                                        + officeId);
+                    }
                     unfinishedReserves++;
                     ScenarioLogManager.getLogger()
                             .info(
@@ -3594,7 +3609,7 @@ public final class TimeSlotStep {
     }
 
     public boolean selectedAppointmentCalloutVisible() {
-        return shadow.shadowDomContainsText("Ausgewählter Termin") || shadow.shadowDomContainsText("Selected Appointment");
+        return shadow.visibleTextContains("Ausgewählter Termin") || shadow.visibleTextContains("Selected Appointment");
     }
 
     /**
@@ -3628,9 +3643,30 @@ public final class TimeSlotStep {
      * treating that alone as Übersicht made reserve Weiter pass while stuck on Ausgewählter Termin.
      */
     public boolean rebookingOverviewReached() {
-        return shadow.shadowDomContainsText("Verschieben abbrechen")
+        return shadow.visibleTextContains("Verschieben abbrechen")
                 && !shadow.deepElementExists("#firstname")
                 && !selectedAppointmentCalloutVisible();
+    }
+
+    /**
+     * Clicks Weiter when it is enabled. If the rebook reserve is already in flight, Weiter stays
+     * disabled until update-appointment finishes and this returns without a second click.
+     */
+    private void clickWeiterForReserve() {
+        long deadline = System.currentTimeMillis() + 20_000L;
+        while (System.currentTimeMillis() < deadline) {
+            if (rebookingOverviewReached() || contactStepReached() || shadow.visibleTextContains("Termin verschieben")) {
+                ScenarioLogManager.getLogger()
+                        .info("zmscitizenview: reserve already left the slot step; not clicking Weiter");
+                return;
+            }
+            if (shadow.clickButtonContaining("Weiter")) {
+                return;
+            }
+            CitizenViewWaits.sleepQuiet(300L);
+        }
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: Weiter stayed disabled; waiting for the in-flight reserve to finish");
     }
 
     public void finishReserveOnContactStep() {
@@ -3641,13 +3677,17 @@ public final class TimeSlotStep {
     }
 
     public ReserveOutcome waitForReserveOutcome() {
+        return waitForReserveOutcome(25);
+    }
+
+    public ReserveOutcome waitForReserveOutcome(int timeoutSeconds) {
         // Keep under captcha JWT TTL (CAPTCHA_TOKEN_TTL=300) when retries stack.
-        long deadline = System.currentTimeMillis() + 25_000L;
+        long deadline = System.currentTimeMillis() + timeoutSeconds * 1000L;
         while (System.currentTimeMillis() < deadline) {
             if (rebookingOverviewReached()) {
                 return ReserveOutcome.REBOOKING_OVERVIEW;
             }
-            if (contactStepReached() || shadow.shadowDomContainsText("Termin verschieben")) {
+            if (contactStepReached() || shadow.visibleTextContains("Termin verschieben")) {
                 return ReserveOutcome.CONTACT;
             }
             if (shadow.shadowDomContainsText("Zu viele Anfragen")
@@ -3669,7 +3709,7 @@ public final class TimeSlotStep {
         if (rebookingOverviewReached()) {
             return ReserveOutcome.REBOOKING_OVERVIEW;
         }
-        if (contactStepReached()) {
+        if (contactStepReached() || shadow.visibleTextContains("Termin verschieben")) {
             return ReserveOutcome.CONTACT;
         }
         if (shadow.shadowDomContainsText("Zu viele Anfragen")
