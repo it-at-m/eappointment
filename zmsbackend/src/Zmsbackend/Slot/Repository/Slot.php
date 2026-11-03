@@ -71,7 +71,6 @@ class Slot extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\Map
             b.Uhrzeit,
             b.istFolgeterminvon,
             b.hatFolgetermine,
-            b.apiClientID,
             ac.accesslevel
         FROM buerger b
             LEFT JOIN apiclient ac ON ac.apiClientID = b.apiClientID
