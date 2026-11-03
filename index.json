@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-11-03T11:55:53.359Z",
+  "publishedAt": "2026-11-03T12:28:53.269Z",
   "branches": [
     {
       "name": "next",
@@ -60,6 +60,12 @@
       "slug": "bugfix-zmskvr-1620-rebooking-update-source-scope",
       "runId": "37956815109",
       "runStartedAt": "2026-10-09T16:07:34Z"
+    },
+    {
+      "name": "bugfix-zmskvr-1626-early-call-way-time",
+      "slug": "bugfix-zmskvr-1626-early-call-way-time",
+      "runId": "41631343615",
+      "runStartedAt": "2026-11-03T11:54:52Z"
     },
     {
       "name": "bugfix-zmskvr-167-ticketprinter-missing-scope-ids",
