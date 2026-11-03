@@ -847,17 +847,21 @@ class Process extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfaces\R
             return true;
         }
 
-        $maxAppointmentsPerMail = $entity->scope->getAppointmentsPerMail();
+        // The citizen update payload only carries the scope id. appointmentsPerMail
+        // lives on the stored scope (standort.appointments_per_mail). A value of 1
+        // is also rejected by the scope schema, so it never arrives on the request.
+        $scope = $this->readScopeForMailLimit($entity);
+        $maxAppointmentsPerMail = $scope->getAppointmentsPerMail();
         $emailToCheck = $entity->getClients()->getFirst()->email;
         if ($maxAppointmentsPerMail < 1 || empty($emailToCheck)) {
             return true;
         }
 
-        if ($this->isMailWhitelisted($emailToCheck, $entity->scope)) {
+        if ($this->isMailWhitelisted($emailToCheck, $scope)) {
             return true;
         }
 
-        $processes = $this->readProcessListByMailAddress($entity->getClients()->getFirst()->email, $entity->scope->id);
+        $processes = $this->readProcessListByMailAddress($emailToCheck, (int) $scope->id);
         $activeAppointments = 0;
         foreach ($processes as $process) {
             // Skip the process under change so list order cannot short-circuit the limit
@@ -875,6 +879,24 @@ class Process extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfaces\R
         }
 
         return true;
+    }
+
+    private function readScopeForMailLimit(Entity $entity): ScopeEntity
+    {
+        $requestScope = $entity->scope instanceof ScopeEntity
+            ? $entity->scope
+            : new ScopeEntity($entity->scope ?? []);
+        $scopeId = (int) $entity->getScopeId();
+        if ($scopeId < 1) {
+            return $requestScope;
+        }
+
+        $storedScope = (new \BO\Zmsbackend\Scope\Service\Scope())->readEntity($scopeId, 0, true);
+        if ($storedScope instanceof ScopeEntity && $storedScope->hasId()) {
+            return $storedScope;
+        }
+
+        return $requestScope;
     }
 
     protected function isMailWhitelisted(string $email, ScopeEntity $scope): bool
