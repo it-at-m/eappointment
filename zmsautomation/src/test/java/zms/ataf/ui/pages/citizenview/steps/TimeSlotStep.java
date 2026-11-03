@@ -3704,6 +3704,9 @@ public final class TimeSlotStep {
                 || shadow.shadowDomContainsText("maximale Anzahl an Anfragen")) {
             return ReserveOutcome.RATE_LIMITED;
         }
+        if (shadow.shadowDomContainsText(CitizenViewPage.DE_TOO_MANY_APPOINTMENTS_HEADER)) {
+            return ReserveOutcome.MAIL_LIMIT;
+        }
         ScenarioLogManager.getLogger()
                 .info(
                         "zmscitizenview: reserve did not reach Kontaktdaten and did not report a taken slot");
