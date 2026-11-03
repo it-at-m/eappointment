@@ -1396,6 +1396,24 @@ public class CitizenApiSteps {
                 response.getStatusCode(),
                 reserveBody.length() > 1250 ? reserveBody.substring(0, 1250) + "..." : reserveBody
             ));
+            // Feuerwache publishes one timestamp. A parallel reserve can take the last
+            // seat for a moment; an expected-failure call must wait that out and still
+            // surface a real 406 instead of appointmentNotAvailable.
+            if (!expectSuccess && slotNoLongerAvailable(response) && sameSlotAttempts < 6) {
+                sameSlotAttempts++;
+                ScenarioLogManager.getLogger().info(String.format(
+                    "Citizen API slot timestamp=%d is not free yet; retrying the same slot (%d/6)",
+                    timestamp,
+                    sameSlotAttempts
+                ));
+                try {
+                    Thread.sleep(500L);
+                } catch (InterruptedException interrupted) {
+                    Thread.currentThread().interrupt();
+                    break;
+                }
+                continue;
+            }
             if (!expectSuccess || response.getStatusCode() == 200) {
                 break;
             }
