@@ -9,7 +9,6 @@ use BO\Zmscitizenapi\Models\ThinnedProcess;
 use BO\Zmscitizenapi\Services\Captcha\CaptchaRequirementTrait;
 use BO\Zmscitizenapi\Services\Captcha\TokenValidationService;
 use BO\Zmscitizenapi\Services\Core\AppointmentProcessLimitsValidationService;
-use BO\Slim\LoggerService;
 use BO\Zmscitizenapi\Services\Core\MapperService;
 use BO\Zmscitizenapi\Services\Core\ValidationService;
 use BO\Zmscitizenapi\Services\Core\ZmsApiFacadeService;
@@ -220,7 +219,9 @@ class AppointmentReserveService
             MapperService::thinnedProcessToProcess($reservedProcess)
         );
         if (is_array($updatedProcess)) {
-            $this->releaseRejectedReservation($reservedProcess);
+            ZmsApiFacadeService::cancelAppointment(
+                MapperService::thinnedProcessToProcess($reservedProcess)
+            );
             return $updatedProcess;
         }
 
@@ -228,24 +229,5 @@ class AppointmentReserveService
         $copiedProcess->scope = $reservedProcess->scope;
         $copiedProcess->officeId = $reservedProcess->officeId;
         return $copiedProcess;
-    }
-
-    /**
-     * Reserve already created the replacement. A failed contact copy must not
-     * leave that reservation holding a seat while the citizen stays on the
-     * original appointment.
-     */
-    private function releaseRejectedReservation(ThinnedProcess $reservedProcess): void
-    {
-        try {
-            ZmsApiFacadeService::cancelAppointment(
-                MapperService::thinnedProcessToProcess($reservedProcess)
-            );
-        } catch (\Throwable $exception) {
-            LoggerService::logError($exception, null, null, [
-                'processId' => $reservedProcess->processId,
-                'context' => 'release reservation after rejected rebooking contact copy'
-            ]);
-        }
     }
 }
