@@ -1396,9 +1396,6 @@ const isSameProcess = (
 const nextCancelReschedule = () => {
   clearContextErrors(errorStateMap.value);
 
-  // Drop the reserved replacement and return to the confirmed appointment.
-  // Keeping the reservation makes the next move send it as the source, so
-  // confirm rejects it, the original stays, and the result view is empty.
   const original = rebookedAppointment.value;
   const inProgress = appointment.value;
   if (original && !isSameProcess(original, inProgress)) {
