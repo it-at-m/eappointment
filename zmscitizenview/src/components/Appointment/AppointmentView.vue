@@ -383,8 +383,10 @@
               <div
                 v-if="
                   !confirmAppointmentSuccess &&
-                  hasConfirmAppointmentError &&
-                  (!appointmentAlreadyActivated || currentView >= 4)
+                  (hasConfirmAppointmentError || hasCancelAppointmentError) &&
+                  (!appointmentAlreadyActivated ||
+                    currentView >= 4 ||
+                    currentContext === 'cancel')
                 "
                 role="alert"
                 aria-live="assertive"
@@ -1393,24 +1395,64 @@ const isSameProcess = (
   !!right?.processId &&
   String(left.processId) === String(right.processId);
 
-const nextCancelReschedule = () => {
-  clearContextErrors(errorStateMap.value);
-
-  const original = rebookedAppointment.value;
-  const inProgress = appointment.value;
-  if (original && !isSameProcess(original, inProgress)) {
-    if (inProgress?.processId && inProgress.authKey) {
-      cancelAppointment(props.globalState, inProgress);
-    }
-    appointment.value = original;
-    selectedTimeslot.value = Number(original.timestamp) || 0;
-    reservationStartMs.value = null;
-  }
-
+const leaveReschedule = () => {
   isRebooking.value = false;
   rebookOrCancelDialog.value = true;
   trackAppointmentEvent({ object: "rebooking", action: "abandoned" });
   currentView.value = 3;
+};
+
+const nextCancelReschedule = async () => {
+  clearContextErrors(errorStateMap.value);
+
+  const original = rebookedAppointment.value;
+  const inProgress = appointment.value;
+  if (!original || isSameProcess(original, inProgress)) {
+    leaveReschedule();
+    return;
+  }
+
+  currentContext.value = "cancel";
+  if (!inProgress?.processId || !inProgress.authKey) {
+    handleApiError(
+      "appointmentCanNotBeCanceled",
+      errorStateMap.value,
+      currentErrorData.value
+    );
+    return;
+  }
+
+  if (isCancelingAppointment.value) {
+    return;
+  }
+  isCancelingAppointment.value = true;
+  try {
+    const data = await cancelAppointment(props.globalState, inProgress);
+    const failed =
+      !data ||
+      ((data as { errors?: unknown[] }).errors?.length ?? 0) > 0 ||
+      (data as AppointmentDTO).processId == undefined;
+    if (failed) {
+      handleErrorApiResponse(
+        data,
+        errorStates.errorStateMap,
+        currentErrorData.value
+      );
+      return;
+    }
+    appointment.value = original;
+    selectedTimeslot.value = Number(original.timestamp) || 0;
+    reservationStartMs.value = null;
+    leaveReschedule();
+  } catch {
+    handleApiError(
+      "genericFallback",
+      errorStateMap.value,
+      currentErrorData.value
+    );
+  } finally {
+    isCancelingAppointment.value = false;
+  }
 };
 
 /**

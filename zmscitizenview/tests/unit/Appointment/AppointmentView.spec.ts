@@ -1939,8 +1939,7 @@ describe("AppointmentView", () => {
       wrapper.vm.reservationStartMs = Date.now();
       wrapper.vm.currentView = 3;
 
-      wrapper.vm.nextCancelReschedule();
-      await nextTick();
+      await wrapper.vm.nextCancelReschedule();
 
       expect(mockCancel).toHaveBeenCalledWith(
         { baseUrl: "https://www.muenchen.de" },
@@ -2003,13 +2002,72 @@ describe("AppointmentView", () => {
 
       wrapper.vm.nextRescheduleAppointment();
       await nextTick();
-      wrapper.vm.nextCancelReschedule();
-      await nextTick();
+      await wrapper.vm.nextCancelReschedule();
 
       expect(mockCancel).not.toHaveBeenCalled();
       expect(wrapper.vm.appointment.processId).toBe("original");
       expect(wrapper.vm.isRebooking).toBe(false);
       expect(wrapper.vm.currentView).toBe(3);
+    });
+
+    it("keeps the reserved replacement when cancelling it fails", async () => {
+      const mockCancel = vi.mocked(ZMSAppointmentAPI.cancelAppointment);
+      mockCancel.mockReset();
+      mockCancel.mockResolvedValueOnce({
+        errors: [{ errorCode: "processDeleteFailed" }],
+      } as any);
+
+      const wrapper = createWrapperWithAppointmentHash();
+      wrapper.vm.isRebooking = true;
+      wrapper.vm.rebookedAppointment = {
+        processId: "original",
+        authKey: "original-key",
+        timestamp: nowUnixSeconds() + 7200,
+        status: "confirmed",
+      } as any;
+      wrapper.vm.appointment = {
+        processId: "reserved-1",
+        authKey: "reserved-key",
+        timestamp: nowUnixSeconds() + 10800,
+        status: "reserved",
+      } as any;
+      wrapper.vm.currentView = 3;
+
+      await wrapper.vm.nextCancelReschedule();
+
+      expect(wrapper.vm.appointment.processId).toBe("reserved-1");
+      expect(wrapper.vm.rebookedAppointment.processId).toBe("original");
+      expect(wrapper.vm.isRebooking).toBe(true);
+      expect(wrapper.vm.errorStates.apiErrorProcessDeleteFailed.value).toBe(
+        true
+      );
+      expect(wrapper.html()).toContain(de.apiErrorProcessDeleteFailedHeader);
+    });
+
+    it("keeps the reserved replacement when it cannot be cancelled", async () => {
+      const mockCancel = vi.mocked(ZMSAppointmentAPI.cancelAppointment);
+      mockCancel.mockReset();
+
+      const wrapper = createWrapperWithAppointmentHash();
+      wrapper.vm.isRebooking = true;
+      wrapper.vm.rebookedAppointment = {
+        processId: "original",
+        authKey: "original-key",
+        status: "confirmed",
+      } as any;
+      wrapper.vm.appointment = {
+        processId: "reserved-1",
+        status: "reserved",
+      } as any;
+
+      await wrapper.vm.nextCancelReschedule();
+
+      expect(mockCancel).not.toHaveBeenCalled();
+      expect(wrapper.vm.appointment.processId).toBe("reserved-1");
+      expect(wrapper.vm.isRebooking).toBe(true);
+      expect(
+        wrapper.vm.errorStates.apiErrorAppointmentCanNotBeCanceled.value
+      ).toBe(true);
     });
 
     it("should display activation expired error when API returns appointmentNotFound", async () => {
