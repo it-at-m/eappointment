@@ -162,12 +162,15 @@ class CalculateSlots
     {
         \BO\Zmsbackend\Connection\Select::setTransaction();
         \BO\Zmsbackend\Connection\Select::getWriteConnection();
-        $scopeService = new \BO\Zmsbackend\Scope\Service\Scope();
+        $scopes = [];
+        foreach ((new \BO\Zmsbackend\Scope\Service\Scope())->readList(1) as $scope) {
+            $scopes[(int) $scope->id] = $scope;
+        }
         $total = count($scopeIds);
         foreach ($scopeIds as $key => $scopeId) {
-            $scope = $scopeService->readEntity($scopeId, 1);
+            $scope = $scopes[(int) $scopeId] ?? null;
             if ($scope === null) {
-                $this->log("Skip missing scope $scopeId", $scopeId);
+                $this->log("Skip missing scope $scopeId", (int) $scopeId);
                 continue;
             }
             if ($this->writeCalculatedScope($scope, $now)) {
