@@ -1992,6 +1992,19 @@ public class CitizenApiSteps {
         postConfirmFromCurrentProcess(false, false, true);
     }
 
+    @Then("the current appointment should differ from the remembered {string} appointment")
+    public void theCurrentAppointmentShouldDifferFromTheRememberedAppointment(String label) {
+        RememberedAppointment remembered = requireRemembered(label);
+        ThinnedProcess current = requireCurrentProcess();
+        Assertions.assertThat(current.getProcessId())
+                .as("current process must be a different reservation than remembered \"%s\"", label)
+                .isNotNull()
+                .isNotEqualTo(remembered.processId);
+        Assertions.assertThat(current.getAuthKey())
+                .as("current process authKey")
+                .isNotBlank();
+    }
+
     @When("I remember the current appointment as {string}")
     public void iRememberTheCurrentAppointmentAs(String label) {
         ThinnedProcess process = requireCurrentProcess();

@@ -1211,6 +1211,16 @@ public class CitizenViewSteps {
         page.syncBookingProcessFromLocalStorage();
     }
 
+    /**
+     * ZMSKVR-1702: localStorage sync keeps an earlier process when the page only stored UI state.
+     * Read the appointment currently shown so a failed update still cancels its reservation.
+     */
+    @When("I capture the booking process shown in the citizen view")
+    public void iCaptureTheBookingProcessShownInTheCitizenView() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: capture the booking process shown on the page");
+        page.captureBookingProcessForCleanup();
+    }
+
     @When("I open the confirmation deep link in the browser")
     public void iOpenTheConfirmationDeepLinkInTheBrowser() {
         ScenarioLogManager.getLogger().info("zmscitizenview: open confirmation deep link in browser");

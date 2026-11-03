@@ -96,7 +96,8 @@ Feature: CitizenView: too many appointments per email callout on Übersicht
     When I submit contact details with family name "MusterZmskvr1702" in the citizen view
     Then the too many appointments with same mail callout should be visible in the citizen view
     And the contact form should be visible in the citizen view
-    When I sync the booking process from citizen view localStorage
+    When I capture the booking process shown in the citizen view
+    Then the current appointment should differ from the remembered "first" appointment
     And I remember the current appointment as "second"
     And I cancel the remembered "second" appointment
     And I cancel the remembered "first" appointment
