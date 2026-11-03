@@ -415,9 +415,13 @@ public final class MyAppointmentsStep {
     }
 
     private void waitForAppointmentDetailShellAfterNavigation() {
+        waitForAppointmentDetailShellAfterNavigation(defaultWaitSeconds);
+    }
+
+    private void waitForAppointmentDetailShellAfterNavigation(int seconds) {
         context.set();
         try {
-            new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(defaultWaitSeconds))
+            new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(seconds))
                     .until(
                             d ->
                                     shadow.deepVisibleCssExists("#timeTitleElement")
@@ -429,7 +433,7 @@ public final class MyAppointmentsStep {
             ScenarioLogManager.getLogger()
                     .warn(
                             "zmscitizenview: appointment-detail shell not found after {}s; assertion will retry",
-                            defaultWaitSeconds);
+                            seconds);
         }
     }
     public void captureBookingProcessForCleanup() {
@@ -1117,15 +1121,11 @@ public final class MyAppointmentsStep {
                 target = !apIdUrl.isEmpty() ? apIdUrl : href;
             }
             if (!target.isEmpty()) {
-                try {
-                    DriverUtil.getDriver().navigate().to(target);
-                } catch (TimeoutException e) {
-                    ScenarioLogManager.getLogger().warn("Meine Termine teaser navigation timed out", e);
-                }
+                openCitizenUrl(target);
             } else {
                 ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(clickCard, needle);
             }
-            waitForAppointmentDetailShellAfterNavigation();
+            waitForAppointmentDetailShellAfterNavigation(15);
             if (waitUntilTerminAbsagenOrLoginPrompt(20)) {
                 opened = true;
                 break;
@@ -1188,6 +1188,28 @@ public final class MyAppointmentsStep {
             CitizenViewWaits.sleepQuiet(250L);
         }
         return shadow.shadowDomContainsText("Termin absagen");
+    }
+
+    /**
+     * Edge can leave {@code navigate().to} running until the 5 minute page-load timeout, which
+     * uses up the teaser retry. Stop that load and let the caller try the next URL.
+     */
+    private void openCitizenUrl(String target) {
+        var driver = DriverUtil.getDriver();
+        Duration previous = driver.manage().timeouts().getPageLoadTimeout();
+        driver.manage().timeouts().pageLoadTimeout(Duration.ofSeconds(20));
+        try {
+            driver.navigate().to(target);
+        } catch (TimeoutException e) {
+            ScenarioLogManager.getLogger().warn("Meine Termine navigation stopped after 20s: {}", target);
+            try {
+                ((JavascriptExecutor) driver).executeScript("window.stop();");
+            } catch (RuntimeException ignored) {
+                // The browser may already have aborted the load.
+            }
+        } finally {
+            driver.manage().timeouts().pageLoadTimeout(previous);
+        }
     }
 
     private String absoluteCitizenUrl(String href) {
