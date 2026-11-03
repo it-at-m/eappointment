@@ -60,9 +60,10 @@ Feature: CitizenView: too many appointments per email callout on Übersicht
     And I cancel the remembered "first" appointment
 
   # ZMSKVR-1702. Feuerwache 8 Föhring only (office 10577, scope 274, service 10389330).
-  # appointmentsPerMail is 1. A preconfirmed appointment counts. The next booking fails
-  # on update-appointment and stays on Kontakt. Rebooking copies that email during
-  # reserve-appointment, so the same error stays on Termin.
+  # V5 stores appointmentsPerMail 1. Migration 91785021142 raises every 1 to 2 so a
+  # citizen can still reschedule. Two preconfirmed or confirmed appointments count.
+  # The next booking fails on update-appointment and stays on Kontakt. Rebooking
+  # copies that email during reserve-appointment, so the same error stays on Termin.
 
   @ZMSKVR-1702
   Scenario: Update shows the mail limit callout on Kontakt at Feuerwache 8
@@ -83,6 +84,12 @@ Feature: CitizenView: too many appointments per email callout on Übersicht
     Then the preconfirmation callout should be visible with activation time 60 minutes in the citizen view
     When I sync the booking process from citizen view localStorage
     And I remember the current appointment as "first"
+    When I request available days for office 10577 and service 10389330
+    And I request available appointments for the first available day
+    And I reserve an appointment with the first available slot
+    And I update the appointment with family name "MusterZmskvr1702", custom text "20", custom text 2 "Schule ATAF" and telephone "+491234567890"
+    And I preconfirm the appointment
+    And I remember the current appointment as "counted"
     Given I open zmscitizenview with jump-in service "10389330" and location "10577"
     Then the service combination step should be visible
     When I continue from the service combination step
@@ -98,8 +105,9 @@ Feature: CitizenView: too many appointments per email callout on Übersicht
     And the contact form should be visible in the citizen view
     When I capture the booking process shown in the citizen view
     Then the current appointment should differ from the remembered "first" appointment
-    And I remember the current appointment as "second"
-    And I cancel the remembered "second" appointment
+    And I remember the current appointment as "third"
+    And I cancel the remembered "third" appointment
+    And I cancel the remembered "counted" appointment
     And I cancel the remembered "first" appointment
 
   @ZMSKVR-1702
@@ -123,6 +131,12 @@ Feature: CitizenView: too many appointments per email callout on Übersicht
     And I fetch the preconfirmation mail for the current process
     And I open the confirmation deep link in the browser
     Then the confirmation success callout should be visible in the citizen view
+    When I request available days for office 10577 and service 10389330
+    And I request available appointments for the first available day
+    And I reserve an appointment with the first available slot
+    And I update the appointment with family name "MusterZmskvr1702Rebook", custom text "20", custom text 2 "Schule ATAF" and telephone "+491234567890"
+    And I preconfirm the appointment
+    And I remember the current appointment as "counted"
     When I reopen the confirmation deep link in the browser
     Then the already activated appointment banner should be visible in the citizen view
     When I reschedule the appointment in the citizen view
@@ -135,4 +149,5 @@ Feature: CitizenView: too many appointments per email callout on Übersicht
     And I click Weiter after the selected timeslot in the citizen view
     Then the too many appointments with same mail callout should be visible in the citizen view
     And the selected appointment callout should be visible in the citizen view
-    When I cancel the appointment
+    When I cancel the remembered "counted" appointment
+    And I cancel the appointment

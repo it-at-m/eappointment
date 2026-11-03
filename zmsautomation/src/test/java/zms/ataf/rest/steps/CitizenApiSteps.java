@@ -1891,6 +1891,23 @@ public class CitizenApiSteps {
         postAppointmentUpdate(familyName, email, customTextfield != null ? customTextfield : "", true, false);
     }
 
+    @When("I update the appointment with family name {string}, custom text {string}, custom text 2 {string} and telephone {string}")
+    public void iUpdateTheAppointmentWithFamilyNameCustomTextsAndTelephone(
+            String familyName,
+            String customText,
+            String customText2,
+            String telephone) {
+        String email = familyName.toLowerCase(Locale.ROOT).replaceAll("[^a-z0-9]", "") + "@mailinator.com";
+        postAppointmentUpdate(
+                familyName,
+                email,
+                customText != null ? customText : "",
+                customText2 != null ? customText2 : "",
+                telephone != null ? telephone : "",
+                true,
+                false);
+    }
+
     @When("I update the appointment with family name {string} and customTextfield {string} as the logged-in citizen")
     public void iUpdateTheAppointmentWithFamilyNameAndCustomTextfieldAsTheLoggedInCitizen(
             String familyName, String customTextfield) {

@@ -848,8 +848,7 @@ class Process extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfaces\R
         }
 
         // The citizen update payload only carries the scope id. appointmentsPerMail
-        // lives on the stored scope (standort.appointments_per_mail). A value of 1
-        // is also rejected by the scope schema, so it never arrives on the request.
+        // lives on the stored scope (standort.appointments_per_mail).
         $scope = $this->readScopeForMailLimit($entity);
         $maxAppointmentsPerMail = $scope->getAppointmentsPerMail();
         $emailToCheck = $entity->getClients()->getFirst()->email;
