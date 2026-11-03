@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-11-03T13:26:39.860Z",
+  "publishedAt": "2026-11-03T18:16:29.318Z",
   "branches": [
     {
       "name": "next",
@@ -78,6 +78,12 @@
       "slug": "bugfix-zmskvr-1688-appointment-cancellation-mail-for-rescheduling-lists-correct-date",
       "runId": "41480325506",
       "runStartedAt": "2026-11-02T16:19:30Z"
+    },
+    {
+      "name": "bugfix-zmskvr-1702-mail-limit-callout",
+      "slug": "bugfix-zmskvr-1702-mail-limit-callout",
+      "runId": "41685062685",
+      "runStartedAt": "2026-11-03T17:31:27Z"
     },
     {
       "name": "check-surfire-dependency",
