@@ -1,4 +1,4 @@
-import { mount } from "@vue/test-utils";
+import { flushPromises, mount } from "@vue/test-utils";
 import {
   afterAll,
   beforeAll,
@@ -706,6 +706,77 @@ describe("AppointmentView", () => {
       wrapper.vm.errorStates.apiErrorTooManyAppointmentsWithSameMail.value = true;
       await nextTick();
       expect(wrapper.find('[data-test="muc-callout"]').exists()).toBe(true);
+    });
+
+    it("shows the mail limit callout on the contact step after update-appointment", async () => {
+      vi.mocked(ZMSAppointmentAPI.updateAppointment).mockResolvedValueOnce({
+        errors: [
+          {
+            errorCode: "tooManyAppointmentsWithSameMail",
+            errorMessage: "too many",
+            statusCode: 406,
+            errorType: "error",
+          },
+        ],
+      } as any);
+
+      const wrapper = createWrapper();
+      wrapper.vm.currentView = 2;
+      wrapper.vm.appointment = { processId: "p1", authKey: "k1" } as any;
+      wrapper.vm.customerData.firstName = "Max";
+      wrapper.vm.customerData.lastName = "Mustermann";
+      wrapper.vm.customerData.mailAddress = "max@example.com";
+
+      await wrapper.vm.nextUpdateAppointment();
+      await nextTick();
+
+      expect(wrapper.vm.currentView).toBe(2);
+      expect(wrapper.text()).toContain(
+        de.apiErrorTooManyAppointmentsWithSameMailHeader
+      );
+      expect(wrapper.text()).toContain(
+        de.apiErrorTooManyAppointmentsWithSameMailText
+      );
+    });
+
+    it("shows the mail limit callout on the slot step when rebooking reserve fails", async () => {
+      const reserveSpy = vi
+        .spyOn(ZMSAppointmentAPI, "reserveAppointment")
+        .mockResolvedValueOnce({
+          errors: [
+            {
+              errorCode: "tooManyAppointmentsWithSameMail",
+              errorMessage: "too many",
+              statusCode: 406,
+              errorType: "error",
+            },
+          ],
+        } as any);
+
+      const wrapper = createWrapper();
+      wrapper.vm.isRebooking = true;
+      wrapper.vm.currentView = 1;
+      wrapper.vm.selectedTimeslot = 1_700_000_000;
+      wrapper.vm.rebookedAppointment = {
+        processId: "old",
+        authKey: "oldkey",
+        email: "max@example.com",
+      } as any;
+
+      try {
+        wrapper.vm.nextReserveAppointment();
+        await flushPromises();
+
+        expect(wrapper.vm.currentView).toBe(1);
+        expect(wrapper.text()).toContain(
+          de.apiErrorTooManyAppointmentsWithSameMailHeader
+        );
+        expect(wrapper.text()).toContain(
+          de.apiErrorTooManyAppointmentsWithSameMailText
+        );
+      } finally {
+        reserveSpy.mockRestore();
+      }
     });
 
     it("shows updateAppointmentError callout in summary", async () => {

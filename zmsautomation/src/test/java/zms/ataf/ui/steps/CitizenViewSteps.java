@@ -1018,6 +1018,28 @@ public class CitizenViewSteps {
     }
 
     /**
+     * ZMSKVR-1702: update-appointment can reject the mail limit and stay on Kontakt.
+     * Do not wait for Übersicht.
+     */
+    @When("I submit contact details with family name {string} in the citizen view")
+    public void iSubmitContactDetailsWithFamilyName(String familyName) {
+        ScenarioLogManager.getLogger()
+                .info(
+                        "zmscitizenview: submit contact with family name {} (stay on Kontakt if the mail limit is reached)",
+                        familyName);
+        page.fillContactDetailsWithFamilyName(familyName);
+        page.clickWeiter(30);
+    }
+
+    /** ZMSKVR-1702: one Weiter after the slot click. Rebooking reserve may stay on Termin. */
+    @When("I click Weiter after the selected timeslot in the citizen view")
+    public void iClickWeiterAfterTheSelectedTimeslot() {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: Weiter after the selected timeslot (no reserve retry)");
+        page.clickWeiter(30);
+    }
+
+    /**
      * ZMSKVR-833: first booking at a scope where custom text is optional — fill Kontakt but stay on
      * the form (no Weiter) so the missing Pflichtfeld is still empty for later rebooking.
      */

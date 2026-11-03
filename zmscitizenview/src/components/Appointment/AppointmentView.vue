@@ -115,6 +115,27 @@
           <div class="m-component__column">
             <div
               v-if="
+                errorStates.errorStateMap
+                  .apiErrorTooManyAppointmentsWithSameMail.value &&
+                (currentView === 1 || currentView === 2)
+              "
+              role="alert"
+              aria-live="assertive"
+              aria-atomic="true"
+            >
+              <muc-callout type="error">
+                <template #content>
+                  <p>
+                    {{ t("apiErrorTooManyAppointmentsWithSameMailText") }}
+                  </p>
+                </template>
+                <template #header>
+                  {{ t("apiErrorTooManyAppointmentsWithSameMailHeader") }}
+                </template>
+              </muc-callout>
+            </div>
+            <div
+              v-if="
                 currentView === 0 &&
                 !isExistingAppointmentDeepLink &&
                 !appointmentAlreadyActivated
