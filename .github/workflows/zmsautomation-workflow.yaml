@@ -732,8 +732,7 @@ jobs:
             docker exec -u root "$WEB_CONT" bash -lc "rm -rf /var/www/html/${m} && mkdir -p /var/www/html/${m}" || return 1
 
             if [[ " ${layout_modules[*]} " == *" ${m} "* ]]; then
-              # shellcheck disable=SC2016
-              timeout 600 docker run --rm \
+              docker run --rm \
                 -v "${GITHUB_WORKSPACE}/zmslayout:/var/www/zmslayout:ro" \
                 "ghcr.io/${GITHUB_REPOSITORY}/${m}:${tag}" \
                 bash -lc 'set -euo pipefail
@@ -750,7 +749,7 @@ jobs:
                 | timeout 600 docker exec -i -u root "$WEB_CONT" tar -xf - -C "/var/www/html/${m}/" \
                 || return 1
             else
-              timeout 600 docker run --rm --entrypoint tar "ghcr.io/${GITHUB_REPOSITORY}/${m}:${tag}" \
+              docker run --rm --entrypoint tar "ghcr.io/${GITHUB_REPOSITORY}/${m}:${tag}" \
                 -cf - -C /var/www/html . \
                 | timeout 600 docker exec -i -u root "$WEB_CONT" tar -xf - -C "/var/www/html/${m}/" \
                 || return 1
