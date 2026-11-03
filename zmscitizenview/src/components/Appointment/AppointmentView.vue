@@ -383,8 +383,8 @@
               <div
                 v-if="
                   !confirmAppointmentSuccess &&
-                  !appointmentAlreadyActivated &&
-                  hasConfirmAppointmentError
+                  hasConfirmAppointmentError &&
+                  (!appointmentAlreadyActivated || currentView >= 4)
                 "
                 role="alert"
                 aria-live="assertive"
@@ -1385,8 +1385,31 @@ const nextRescheduleAppointment = () => {
   currentView.value = 1;
 };
 
+const isSameProcess = (
+  left?: AppointmentDTO | null,
+  right?: AppointmentDTO | null
+): boolean =>
+  !!left?.processId &&
+  !!right?.processId &&
+  String(left.processId) === String(right.processId);
+
 const nextCancelReschedule = () => {
   clearContextErrors(errorStateMap.value);
+
+  // Drop the reserved replacement and return to the confirmed appointment.
+  // Keeping the reservation makes the next move send it as the source, so
+  // confirm rejects it, the original stays, and the result view is empty.
+  const original = rebookedAppointment.value;
+  const inProgress = appointment.value;
+  if (original && !isSameProcess(original, inProgress)) {
+    if (inProgress?.processId && inProgress.authKey) {
+      cancelAppointment(props.globalState, inProgress);
+    }
+    appointment.value = original;
+    selectedTimeslot.value = Number(original.timestamp) || 0;
+    reservationStartMs.value = null;
+  }
+
   isRebooking.value = false;
   rebookOrCancelDialog.value = true;
   trackAppointmentEvent({ object: "rebooking", action: "abandoned" });

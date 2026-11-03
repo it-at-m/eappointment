@@ -1912,6 +1912,106 @@ describe("AppointmentView", () => {
       expect(wrapper.vm.currentView).toBe(3);
     });
 
+    it("restores the confirmed appointment when reschedule is cancelled after a slot was reserved", async () => {
+      const mockCancel = vi.mocked(ZMSAppointmentAPI.cancelAppointment);
+      const mockConfirm = vi.mocked(ZMSAppointmentAPI.confirmAppointment);
+      mockCancel.mockReset();
+      mockConfirm.mockReset();
+      mockCancel.mockResolvedValue({ processId: "reserved-1" } as any);
+
+      const wrapper = createWrapperWithAppointmentHash();
+      const original = {
+        processId: "original",
+        authKey: "original-key",
+        timestamp: nowUnixSeconds() + 7200,
+        status: "confirmed",
+        familyName: "Max Mustermann",
+        email: "max@example.com",
+      };
+      wrapper.vm.isRebooking = true;
+      wrapper.vm.rebookedAppointment = { ...original } as any;
+      wrapper.vm.appointment = {
+        processId: "reserved-1",
+        authKey: "reserved-key",
+        timestamp: nowUnixSeconds() + 10800,
+        status: "reserved",
+      } as any;
+      wrapper.vm.reservationStartMs = Date.now();
+      wrapper.vm.currentView = 3;
+
+      wrapper.vm.nextCancelReschedule();
+      await nextTick();
+
+      expect(mockCancel).toHaveBeenCalledWith(
+        { baseUrl: "https://www.muenchen.de" },
+        expect.objectContaining({ processId: "reserved-1" })
+      );
+      expect(wrapper.vm.appointment.processId).toBe("original");
+      expect(wrapper.vm.isRebooking).toBe(false);
+      expect(wrapper.vm.rebookOrCancelDialog).toBe(true);
+      expect(wrapper.vm.currentView).toBe(3);
+      expect(wrapper.vm.reservationStartMs).toBeNull();
+
+      wrapper.vm.nextRescheduleAppointment();
+      expect(wrapper.vm.rebookedAppointment.processId).toBe("original");
+
+      wrapper.vm.appointment = {
+        processId: "reserved-2",
+        authKey: "reserved-2-key",
+        status: "reserved",
+      } as any;
+      mockConfirm.mockResolvedValueOnce({
+        processId: "reserved-2",
+        status: "confirmed",
+      } as any);
+      mockCancel.mockClear();
+
+      await wrapper.vm.nextBookAppointment();
+      await nextTick();
+
+      expect(mockConfirm).toHaveBeenCalledWith(
+        { baseUrl: "https://www.muenchen.de" },
+        expect.objectContaining({
+          id: "reserved-2",
+          authKey: "reserved-2-key",
+        }),
+        expect.objectContaining({
+          processId: "original",
+          authKey: "original-key",
+        })
+      );
+      expect(mockCancel).toHaveBeenCalledWith(
+        { baseUrl: "https://www.muenchen.de" },
+        expect.objectContaining({ processId: "original" })
+      );
+      expect(wrapper.vm.confirmAppointmentSuccess).toBe(true);
+      expect(wrapper.vm.currentView).toBe(5);
+      expect(wrapper.html()).toContain(de.appointmentSuccessfullyBookedHeader);
+    });
+
+    it("does not cancel the confirmed appointment when reschedule is aborted before a new slot", async () => {
+      const mockCancel = vi.mocked(ZMSAppointmentAPI.cancelAppointment);
+      mockCancel.mockReset();
+
+      const wrapper = createWrapperWithAppointmentHash();
+      wrapper.vm.appointment = {
+        processId: "original",
+        authKey: "original-key",
+        timestamp: nowUnixSeconds() + 7200,
+        status: "confirmed",
+      } as any;
+
+      wrapper.vm.nextRescheduleAppointment();
+      await nextTick();
+      wrapper.vm.nextCancelReschedule();
+      await nextTick();
+
+      expect(mockCancel).not.toHaveBeenCalled();
+      expect(wrapper.vm.appointment.processId).toBe("original");
+      expect(wrapper.vm.isRebooking).toBe(false);
+      expect(wrapper.vm.currentView).toBe(3);
+    });
+
     it("should display activation expired error when API returns appointmentNotFound", async () => {
       const mockErrorResponse = {
         errors: [
