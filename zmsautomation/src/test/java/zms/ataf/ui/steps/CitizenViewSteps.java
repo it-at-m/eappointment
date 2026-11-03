@@ -1031,12 +1031,12 @@ public class CitizenViewSteps {
         page.clickWeiter(30);
     }
 
-    /** ZMSKVR-1702: one Weiter after the slot click. Rebooking reserve may stay on Termin. */
+    /** ZMSKVR-1702: Weiter, then the usual next-slot / next-day walk when that seat is taken. */
     @When("I click Weiter after the selected timeslot in the citizen view")
     public void iClickWeiterAfterTheSelectedTimeslot() {
         ScenarioLogManager.getLogger()
-                .info("zmscitizenview: Weiter after the selected timeslot (no reserve retry)");
-        page.clickWeiter(30);
+                .info("zmscitizenview: Weiter after the selected timeslot, then the next free slot if it is taken");
+        page.assertCalloutAndReserveAfterSlotSelection(page.lastSlotBookingOfficeId());
     }
 
     /**

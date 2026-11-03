@@ -61,6 +61,8 @@ public final class TimeSlotStep {
         SLOT_TAKEN,
         /** Citizen API 429 / Zu viele Anfragen — wait out the window and retry same slot. */
         RATE_LIMITED,
+        /** Mail-limit callout on Termin. Leave it on screen for the scenario assertion. */
+        MAIL_LIMIT,
         UNFINISHED
     }
 
@@ -2251,6 +2253,9 @@ public final class TimeSlotStep {
                 pendingReserveTimestamp = timestamp;
             }
             switch (waitForReserveOutcome()) {
+                case MAIL_LIMIT -> {
+                    return;
+                }
                 case CONTACT, REBOOKING_OVERVIEW -> {
                     keepReservedSlot(timestamp);
                     finishReserveOnContactStep();
@@ -3658,6 +3663,9 @@ public final class TimeSlotStep {
                 Assert.fail(
                         "zmscitizenview: captcha session expired during reserve (Ihre Sitzung ist abgelaufen.)"
                                 + " — finish Leistung→Kontakt within CAPTCHA_TOKEN_TTL");
+            }
+            if (shadow.shadowDomContainsText(CitizenViewPage.DE_TOO_MANY_APPOINTMENTS_HEADER)) {
+                return ReserveOutcome.MAIL_LIMIT;
             }
             if (shadow.shadowDomContainsText("Ihr gewählter Termin ist nicht mehr verfügbar.")
                     || shadow.shadowDomContainsText("Ein unbekannter Fehler ist aufgetreten.")
