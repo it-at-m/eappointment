@@ -727,7 +727,9 @@ jobs:
               return 1
             fi
             echo "Injecting $m from GHCR image tag $tag into $WEB_CONT:/var/www/html/$m"
-            docker exec -u root "$WEB_CONT" bash -lc "mkdir -p /var/www/html/${m}"
+            # retry calls this function from until, which disables set -e inside the
+            # function. A broken tar has to return, or the attempt is counted as success.
+            docker exec -u root "$WEB_CONT" bash -lc "rm -rf /var/www/html/${m} && mkdir -p /var/www/html/${m}" || return 1
 
             if [[ " ${layout_modules[*]} " == *" ${m} "* ]]; then
               docker run --rm \
@@ -744,11 +746,13 @@ jobs:
                     fi
                   done
                   tar cf - -C /var/www/html .' \
-                | docker exec -i -u root "$WEB_CONT" tar -xf - -C "/var/www/html/${m}/"
+                | timeout 600 docker exec -i -u root "$WEB_CONT" tar -xf - -C "/var/www/html/${m}/" \
+                || return 1
             else
               docker run --rm --entrypoint tar "ghcr.io/${GITHUB_REPOSITORY}/${m}:${tag}" \
                 -cf - -C /var/www/html . \
-                | docker exec -i -u root "$WEB_CONT" tar -xf - -C "/var/www/html/${m}/"
+                | timeout 600 docker exec -i -u root "$WEB_CONT" tar -xf - -C "/var/www/html/${m}/" \
+                || return 1
             fi
 
             docker exec -u root "$WEB_CONT" bash -lc "chown -R www-data:www-data /var/www/html/${m} 2>/dev/null || true; chmod -R 755 /var/www/html/${m} 2>/dev/null || true"

@@ -772,32 +772,16 @@ public class CounterProcessingStationPage extends AdminPage {
         }
         openQueueOnBookedDay();
         ScenarioLogManager.getLogger().info("Deleting queued appointment for {}", familyName);
-        // new_waiting_number is only the last walk-in in this scenario. Several rows must be
-        // deleted by name. After a no-show the name cell also contains the call count and the
-        // lockout text, so that row is found by the waiting number instead.
-        String nameLink = "//table[@id='table-queued-appointments']//tr["
-                + "td[contains(@class,'callnextclient') and normalize-space(.)="
-                + xpathLiteral(familyName) + "]]"
-                + "//a[contains(@class,'process-delete')]";
-        String deleteLink = nameLink;
-        String waitingNumber = TestDataHelper.getTestData("new_waiting_number");
-        boolean walkIn = "true".equals(TestDataHelper.getTestData("appointment_booked_as_walk_in"));
-        try {
-            new WebDriverWait(DRIVER, Duration.ofSeconds(5))
-                    .until(ExpectedConditions.presenceOfElementLocated(By.xpath(nameLink)));
-        } catch (TimeoutException nameMissing) {
-            if (walkIn && waitingNumber != null && !waitingNumber.isBlank()) {
-                String shown = waitingNumber.trim();
-                String numOnly = shown.replaceAll("\\D+", "");
-                deleteLink = "//table[@id='table-queued-appointments']/tbody/tr["
-                        + ".//td[normalize-space()=" + xpathLiteral(shown)
-                        + " or normalize-space()=" + xpathLiteral(numOnly) + "]]"
-                        + "//a[contains(@class,'process-delete')]";
-                ScenarioLogManager.getLogger().info(
-                        "Name cell for {} is not an exact match; deleting waiting number {}",
-                        familyName, shown);
-            }
-        }
+        // The name cell is the family name, or that name plus a call count or the no-show
+        // sentence. new_waiting_number is only the last walk-in, so it must not select the row.
+        String name = xpathLiteral(familyName);
+        String deleteLink = "//table[@id='table-queued-appointments']//tr["
+                + "td[contains(@class,'callnextclient') and ("
+                + "normalize-space(.)=" + name
+                + " or starts-with(normalize-space(.), concat(" + name + ", ' ('))"
+                + " or starts-with(normalize-space(.), concat(" + name + ", '('))"
+                + " or starts-with(normalize-space(.), concat(" + name + ", ' war um'))"
+                + ")]]//a[contains(@class,'process-delete')]";
         clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, deleteLink, LocatorType.XPATH, false, CONTEXT);
         WebElement messageTitleElement = findElementByLocatorType("section.board.dialog h2.board__heading", LocatorType.CSSSELECTOR, false);
         Assert.assertTrue(
