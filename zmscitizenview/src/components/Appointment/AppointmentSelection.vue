@@ -223,7 +223,8 @@
         :disabled="
           selectedTimeslot === 0 ||
           !selectedDay ||
-          loadingStates.isReservingAppointment.value
+          loadingStates.isReservingAppointment.value ||
+          loadingStates.isUpdatingAppointment.value
         "
         :icon="'arrow-right'"
         @click="nextStep"

@@ -1129,30 +1129,35 @@ const setRebookData = () => {
     copyRebookedContactOntoAppointment();
     clearContextErrors(errorStateMap.value);
     currentContext.value = "update";
+    isUpdatingAppointment.value = true;
     return updateAppointment(
       props.globalState,
       appointment.value,
       rebookedAppointment.value
-    ).then((data) => {
-      if ((data as AppointmentDTO).processId != undefined) {
-        appointment.value = data as AppointmentDTO;
-        currentView.value = 3;
-      } else {
-        handleErrorApiResponse(
-          data,
-          errorStates.errorStateMap,
-          currentErrorData.value
-        );
-        currentView.value = 2;
-      }
-    });
+    )
+      .then((data) => {
+        if ((data as AppointmentDTO).processId != undefined) {
+          appointment.value = data as AppointmentDTO;
+          currentView.value = 3;
+        } else {
+          handleErrorApiResponse(
+            data,
+            errorStates.errorStateMap,
+            currentErrorData.value
+          );
+          currentView.value = 2;
+        }
+      })
+      .finally(() => {
+        isUpdatingAppointment.value = false;
+      });
   }
 };
 
 const nextReserveAppointment = (
   slotUi: AppointmentTrackSlotUi = "calendar"
 ) => {
-  if (isReservingAppointment.value) {
+  if (isReservingAppointment.value || isUpdatingAppointment.value) {
     return;
   }
 
@@ -1160,7 +1165,7 @@ const nextReserveAppointment = (
   clearAllErrors();
   rebookOrCancelDialog.value = false;
 
-  reserveAppointment(
+  return reserveAppointment(
     props.globalState,
     selectedTimeslot.value,
     Array.from(selectedServiceMap.value.keys()),
@@ -1184,10 +1189,9 @@ const nextReserveAppointment = (
           slot_ui: slotUi,
         });
         if (isRebooking.value) {
-          continueRebookingAfterReserve();
-        } else {
-          increaseCurrentView();
+          return continueRebookingAfterReserve();
         }
+        increaseCurrentView();
       } else {
         handleErrorApiResponse(
           data,

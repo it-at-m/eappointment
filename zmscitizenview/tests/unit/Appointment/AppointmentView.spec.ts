@@ -2784,6 +2784,63 @@ describe("AppointmentView", () => {
       expect(wrapper.vm.currentView).toBe(3);
     });
 
+    it("keeps the slot step busy until the rebooking update finishes", async () => {
+      let resolveUpdate: (value: unknown) => void = () => {};
+      const updatePromise = new Promise((resolve) => {
+        resolveUpdate = resolve;
+      });
+      mockUpdate.mockReset();
+      mockUpdate.mockReturnValueOnce(updatePromise as never);
+
+      const reserve = vi
+        .spyOn(ZMSAppointmentAPI, "reserveAppointment")
+        .mockResolvedValue({
+          processId: "new-1",
+          authKey: "newkey",
+          status: "reserved",
+        } as never);
+
+      try {
+        const wrapper = createWrapperWithAppointmentHash();
+        wrapper.vm.isRebooking = true;
+        wrapper.vm.rebookedAppointment = {
+          ...completeRebookedAppointment,
+        } as never;
+        wrapper.vm.selectedProvider = {
+          id: "789",
+          scope: {
+            telephoneActivated: true,
+            telephoneRequired: true,
+            customTextfieldActivated: true,
+            customTextfieldRequired: true,
+            customTextfield2Activated: true,
+            customTextfield2Required: true,
+          },
+        } as never;
+        wrapper.vm.selectedTimeslot = 1_700_000_000;
+        wrapper.vm.currentView = 1;
+
+        const pending = wrapper.vm.nextReserveAppointment();
+        await vi.waitFor(() => {
+          expect(mockUpdate).toHaveBeenCalledTimes(1);
+        });
+        expect(wrapper.vm.isReservingAppointment).toBe(true);
+        expect(wrapper.vm.isUpdatingAppointment).toBe(true);
+
+        wrapper.vm.nextReserveAppointment();
+        expect(reserve).toHaveBeenCalledTimes(1);
+
+        resolveUpdate({ processId: "new-1", authKey: "newkey" });
+        await pending;
+
+        expect(wrapper.vm.isReservingAppointment).toBe(false);
+        expect(wrapper.vm.isUpdatingAppointment).toBe(false);
+        expect(wrapper.vm.currentView).toBe(3);
+      } finally {
+        reserve.mockRestore();
+      }
+    });
+
     it("opens contact when the target scope requires a missing custom textfield", async () => {
       const wrapper = createWrapperWithAppointmentHash();
       wrapper.vm.isRebooking = true;
