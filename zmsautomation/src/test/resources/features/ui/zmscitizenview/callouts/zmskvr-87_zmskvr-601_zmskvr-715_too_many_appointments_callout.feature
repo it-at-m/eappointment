@@ -89,7 +89,7 @@ Feature: CitizenView: too many appointments per email callout on Übersicht
     And I reserve an appointment with the first available slot
     And I update the appointment with family name "MusterZmskvr1702", custom text "20", custom text 2 "Schule ATAF" and telephone "+491234567890"
     And I preconfirm the appointment
-    And I remember the current appointment as "counted"
+    And I remember the reserved appointment as "counted"
     Given I open zmscitizenview with jump-in service "10389330" and location "10577"
     Then the service combination step should be visible
     When I continue from the service combination step
@@ -131,12 +131,13 @@ Feature: CitizenView: too many appointments per email callout on Übersicht
     And I fetch the preconfirmation mail for the current process
     And I open the confirmation deep link in the browser
     Then the confirmation success callout should be visible in the citizen view
+    And I remember the current appointment as "source"
     When I request available days for office 10577 and service 10389330
     And I request available appointments for the first available day
     And I reserve an appointment with the first available slot
     And I update the appointment with family name "MusterZmskvr1702Rebook", custom text "20", custom text 2 "Schule ATAF" and telephone "+491234567890"
     And I preconfirm the appointment
-    And I remember the current appointment as "counted"
+    And I remember the reserved appointment as "counted"
     When I reopen the confirmation deep link in the browser
     Then the already activated appointment banner should be visible in the citizen view
     When I reschedule the appointment in the citizen view
@@ -150,4 +151,4 @@ Feature: CitizenView: too many appointments per email callout on Übersicht
     Then the too many appointments with same mail callout should be visible in the citizen view
     And the selected appointment callout should be visible in the citizen view
     When I cancel the remembered "counted" appointment
-    And I cancel the appointment
+    And I cancel the remembered "source" appointment

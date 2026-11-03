@@ -2041,7 +2041,20 @@ public class CitizenApiSteps {
 
     @When("I remember the current appointment as {string}")
     public void iRememberTheCurrentAppointmentAs(String label) {
-        ThinnedProcess process = requireCurrentProcess();
+        rememberAppointment(label, requireCurrentProcess());
+    }
+
+    @When("I remember the reserved appointment as {string}")
+    public void iRememberTheReservedAppointmentAs(String label) {
+        if (lastReserveProcess == null
+                || lastReserveProcess.getProcessId() == null
+                || lastReserveProcess.getAuthKey() == null) {
+            throw new IllegalStateException("Reserve an appointment first.");
+        }
+        rememberAppointment(label, lastReserveProcess);
+    }
+
+    private void rememberAppointment(String label, ThinnedProcess process) {
         RememberedAppointment previous = rememberedAppointments.get(label);
         Integer previousProcessId = previous == null ? null : previous.processId;
         rememberedAppointments.put(label, new RememberedAppointment(
