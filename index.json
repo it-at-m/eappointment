@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-11-03T12:28:53.269Z",
+  "publishedAt": "2026-11-03T12:42:21.914Z",
   "branches": [
     {
       "name": "next",
@@ -28,8 +28,8 @@
     {
       "name": "bugfix-zmskvr-1391-cancel-reschedule-then-rebook",
       "slug": "bugfix-zmskvr-1391-cancel-reschedule-then-rebook",
-      "runId": "41625547552",
-      "runStartedAt": "2026-11-03T11:12:01Z"
+      "runId": "41636149211",
+      "runStartedAt": "2026-11-03T12:29:33Z"
     },
     {
       "name": "bugfix-zmskvr-1411-opening-hours-weekend-range",
