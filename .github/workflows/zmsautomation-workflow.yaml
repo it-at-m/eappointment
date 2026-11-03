@@ -732,6 +732,7 @@ jobs:
             docker exec -u root "$WEB_CONT" bash -lc "rm -rf /var/www/html/${m} && mkdir -p /var/www/html/${m}" || return 1
 
             if [[ " ${layout_modules[*]} " == *" ${m} "* ]]; then
+              # shellcheck disable=SC2016
               timeout 600 docker run --rm \
                 -v "${GITHUB_WORKSPACE}/zmslayout:/var/www/zmslayout:ro" \
                 "ghcr.io/${GITHUB_REPOSITORY}/${m}:${tag}" \
