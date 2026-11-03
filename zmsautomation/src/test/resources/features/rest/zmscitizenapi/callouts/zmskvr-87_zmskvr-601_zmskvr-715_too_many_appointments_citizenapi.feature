@@ -77,3 +77,72 @@ Feature: Citizen API: too many appointments with the same email
     When I cancel the remembered "third" appointment
     And I cancel the remembered "second" appointment
     And I cancel the remembered "first" appointment
+
+  # ZMSKVR-1702. Feuerwache 8 Föhring (office 10577, scope 274, service 10389330).
+  # appointmentsPerMail stays at 2 so a citizen can reschedule. Both custom texts
+  # and the telephone are required. Two active appointments are allowed. The third
+  # update is rejected. Rebooking copies the source email during reserve-appointment,
+  # so that reserve is rejected once a second appointment is already active.
+
+  @ZMSKVR-1702
+  Scenario: Update is rejected at Feuerwache 8 when the email already has two active appointments
+    When I request available days for office 10577 and service 10389330
+    And I request available appointments for the first available day
+    And I reserve an appointment with the first available slot
+    Then the appointment status should be "reserved"
+    When I update the appointment with family name "MusterZmskvr1702Api", custom text "20", custom text 2 "Schule ATAF" and telephone "+491234567890"
+    Then the appointment status should be "reserved"
+    When I preconfirm the appointment
+    Then the appointment status should be "preconfirmed"
+    And I remember the current appointment as "first"
+    When I request available days for office 10577 and service 10389330
+    And I request available appointments for the first available day
+    And I reserve an appointment with the first available slot
+    Then the appointment status should be "reserved"
+    When I update the appointment with family name "MusterZmskvr1702Api", custom text "20", custom text 2 "Schule ATAF" and telephone "+491234567890"
+    Then the appointment status should be "reserved"
+    When I preconfirm the appointment
+    Then the appointment status should be "preconfirmed"
+    And I remember the current appointment as "second"
+    When I request available days for office 10577 and service 10389330
+    And I request available appointments for the first available day
+    And I reserve an appointment with the first available slot
+    Then the appointment status should be "reserved"
+    When I attempt to update the appointment with family name "MusterZmskvr1702Api", custom text "20", custom text 2 "Schule ATAF" and telephone "+491234567890"
+    Then the response status code should be 406
+    And the response errors should include errorCode "tooManyAppointmentsWithSameMail"
+    When I cancel the appointment
+    And I cancel the remembered "second" appointment
+    And I cancel the remembered "first" appointment
+
+  @ZMSKVR-1702
+  Scenario: Rebooking reserve is rejected at Feuerwache 8 when the email already has two active appointments
+    When I request available days for office 10577 and service 10389330
+    And I request available appointments for the first available day
+    And I reserve an appointment with the first available slot
+    Then the appointment status should be "reserved"
+    When I update the appointment with family name "MusterZmskvr1702ApiRebook", custom text "20", custom text 2 "Schule ATAF" and telephone "+491234567890"
+    Then the appointment status should be "reserved"
+    When I preconfirm the appointment
+    Then the appointment status should be "preconfirmed"
+    And I fetch the preconfirmation mail for the current process
+    Then the preconfirmation mail should provide confirm credentials
+    And I confirm the appointment
+    And the appointment status should be "confirmed"
+    And I remember the current appointment as "source"
+    When I request available days for office 10577 and service 10389330
+    And I request available appointments for the first available day
+    And I reserve an appointment with the first available slot
+    Then the appointment status should be "reserved"
+    When I update the appointment with family name "MusterZmskvr1702ApiRebook", custom text "20", custom text 2 "Schule ATAF" and telephone "+491234567890"
+    Then the appointment status should be "reserved"
+    When I preconfirm the appointment
+    Then the appointment status should be "preconfirmed"
+    And I remember the current appointment as "counted"
+    When I request available days for office 10577 and service 10389330
+    And I request available appointments for the first available day
+    And I attempt to reserve an appointment with the first available slot using the remembered "source" appointment as source
+    Then the response status code should be 406
+    And the response errors should include errorCode "tooManyAppointmentsWithSameMail"
+    When I cancel the remembered "counted" appointment
+    And I cancel the remembered "source" appointment

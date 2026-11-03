@@ -1959,6 +1959,23 @@ public class CitizenApiSteps {
         postAppointmentUpdate(familyName, email, customTextfield != null ? customTextfield : "", false, false);
     }
 
+    @When("I attempt to update the appointment with family name {string}, custom text {string}, custom text 2 {string} and telephone {string}")
+    public void iAttemptToUpdateTheAppointmentWithFamilyNameCustomTextsAndTelephone(
+            String familyName,
+            String customText,
+            String customText2,
+            String telephone) {
+        String email = familyName.toLowerCase(Locale.ROOT).replaceAll("[^a-z0-9]", "") + "@mailinator.com";
+        postAppointmentUpdate(
+                familyName,
+                email,
+                customText != null ? customText : "",
+                customText2 != null ? customText2 : "",
+                telephone != null ? telephone : "",
+                false,
+                false);
+    }
+
     @When("I update the appointment with contact details and customTextfield {string} as the logged-in citizen")
     public void iUpdateTheAppointmentWithContactDetailsAndCustomTextfieldAsTheLoggedInCitizen(String customTextfield) {
         postAppointmentUpdate(scenarioContactFamilyName(), scenarioContactEmail(), customTextfield != null ? customTextfield : "", true, true);
@@ -2067,12 +2084,22 @@ public class CitizenApiSteps {
 
     @When("I reserve an appointment with the first available slot using the remembered {string} appointment as source")
     public void iReserveUsingTheRememberedAppointmentAsSource(String label) {
+        useRememberedSource(label);
+        reserveFirstAvailableSlot(true, true);
+    }
+
+    @When("I attempt to reserve an appointment with the first available slot using the remembered {string} appointment as source")
+    public void iAttemptToReserveUsingTheRememberedAppointmentAsSource(String label) {
+        useRememberedSource(label);
+        reserveFirstAvailableSlot(true, false);
+    }
+
+    private void useRememberedSource(String label) {
         RememberedAppointment source = requireRemembered(label);
         ThinnedProcess stub = new ThinnedProcess();
         stub.setProcessId(source.processId);
         stub.setAuthKey(source.authKey);
         lastReserveProcess = stub;
-        reserveFirstAvailableSlot(true, true);
     }
 
     @When("I request my appointments as the logged-in citizen")
