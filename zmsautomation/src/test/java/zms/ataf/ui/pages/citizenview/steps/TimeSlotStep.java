@@ -2132,23 +2132,32 @@ public final class TimeSlotStep {
      * several calendar days at a shorter lead time.
      */
     private boolean recoverHighlightForOffice(int officeId) {
+        return recoverHighlightForOffice(officeId, "");
+    }
+
+    /**
+     * @param skippedTimestamps comma-separated epochs that must not be selected again. Clearing
+     *     this set re-clicks the seat that just returned appointmentNotAvailable.
+     */
+    private boolean recoverHighlightForOffice(int officeId, String skippedTimestamps) {
+        String skipped = skippedTimestamps == null ? "" : skippedTimestamps;
         clickSpäterIfAvailableAndReloadSlots();
-        if (highlightPreferredTimeslotForOfficeOrAbsent(officeId, "")) {
+        if (highlightPreferredTimeslotForOfficeOrAbsent(officeId, skipped)) {
             return true;
         }
         for (int day = 0; day < 7; day++) {
             if (!openNextCalendarDayAndWaitForSlots()) {
                 break;
             }
-            if (highlightPreferredTimeslotForOfficeOrAbsent(officeId, "", 20)) {
+            if (highlightPreferredTimeslotForOfficeOrAbsent(officeId, skipped, 20)) {
                 return true;
             }
             clickSpäterIfAvailableAndReloadSlots();
-            if (highlightPreferredTimeslotForOfficeOrAbsent(officeId, "", 20)) {
+            if (highlightPreferredTimeslotForOfficeOrAbsent(officeId, skipped, 20)) {
                 return true;
             }
         }
-        return highlightPreferredTimeslotForOfficeOrAbsent(officeId, "", 5);
+        return highlightPreferredTimeslotForOfficeOrAbsent(officeId, skipped, 5);
     }
 
     /**
@@ -2217,9 +2226,9 @@ public final class TimeSlotStep {
                         finishReserveOnContactStep();
                         return;
                     }
-                    // Parallel 10427 (captcha scope) / 10502 drains a day-part; page until a slot appears.
-                    skipped.clear();
-                    if (!recoverHighlightForOffice(officeId)) {
+                    // Page forward with the taken timestamps still excluded. Dropping the
+                    // skip list re-selects the same Feuerwache 09:30 button.
+                    if (!recoverHighlightForOffice(officeId, skippedTimestamps)) {
                         Assert.fail(
                                 "zmscitizenview: could not find/highlight timeslot for provider "
                                         + officeId
@@ -3335,9 +3344,15 @@ public final class TimeSlotStep {
                         + "if(el.classList&&el.classList.contains('muc-calendar-item')&&el.getAttribute('role')==='button')days.push(el);"
                         + "return false;"
                         + "});"
+                        + "function tileSelected(tile){"
+                        + "if(!tile)return false;"
+                        + "if(tile.getAttribute('aria-selected')==='true'||tile.getAttribute('aria-current')==='date')return true;"
+                        + "var cls=tile.className||'';"
+                        + "return cls.indexOf('selected')>=0;"
+                        + "}"
                         + "var selectedDay=-1;"
                         + "for(var d=0;d<days.length;d++){"
-                        + "if(days[d].classList.contains('selected'))selectedDay=d;"
+                        + "if(tileSelected(days[d]))selectedDay=d;"
                         + "}"
                         + "if(selectedDay>=0){"
                         + "for(var n=selectedDay+1;n<days.length;n++){"
@@ -3349,12 +3364,17 @@ public final class TimeSlotStep {
                         + "return true;"
                         + "}"
                         + "}"
+                        + "function isNextMonth(el){"
+                        + "var useEl=el.querySelector('use');"
+                        + "var href=(useEl&&(useEl.getAttribute('href')||useEl.getAttribute('xlink:href')))||'';"
+                        + "if(href.indexOf('chevron-right')>=0)return true;"
+                        + "var label=((el.getAttribute('aria-label')||'')+' '+(el.textContent||'')).replace(/\\s+/g,' ').trim();"
+                        + "return label.indexOf('Nächster Monat')>=0||label.indexOf('Next month')>=0||label==='Später';"
+                        + "}"
                         + "var clicked=false;"
                         + "walk(wrap,function(el){"
                         + "if(clicked||el.tagName!=='BUTTON'||!enabled(el))return false;"
-                        + "var useEl=el.querySelector('use');"
-                        + "var href=(useEl&&(useEl.getAttribute('href')||useEl.getAttribute('xlink:href')))||'';"
-                        + "if(href.indexOf('chevron-right')<0)return false;"
+                        + "if(!isNextMonth(el))return false;"
                         + "el.click();"
                         + "clicked=true;"
                         + "return true;"
