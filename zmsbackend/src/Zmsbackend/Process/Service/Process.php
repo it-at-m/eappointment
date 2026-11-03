@@ -129,19 +129,23 @@ class Process extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfaces\R
         }
         $process = clone $process;
         $appointment = $process->getAppointments()->getFirst();
-        $slotList = (new \BO\Zmsbackend\Slot\Service\Slot())->readByAppointment($appointment, $slotsRequired, true);
+        $slotService = new \BO\Zmsbackend\Slot\Service\Slot();
+        $reservation = $slotService->readReservationByAppointment($appointment, $slotsRequired, true);
+        $slotList = $reservation['slotList'];
+        $availabilityId = (int) $reservation['availability']->getId() ?: null;
         $processEntityList = $this->readEntityList($process->getId());
         foreach ($processEntityList as $entity) {
             if ($process->getId() != $entity->getId()) {
                 $this->writeDeletedEntity($entity->getId());
             }
         }
+        $slotService->writeSlotProcessMappingFor($process->getId(), $availabilityId);
 
         foreach ($slotList as $slot) {
             $newProcess = clone $process;
             $newProcess->getFirstAppointment()->setTime($slot->time);
             if (! $newProcess->getFirstAppointment()->isMatching($process->getFirstAppointment())) {
-                $this->writeNewProcess($newProcess, $now, $process->id, 0, true, $userAccount);
+                $this->writeNewProcess($newProcess, $now, $process->id, 0, true, $userAccount, $availabilityId);
             }
         }
 

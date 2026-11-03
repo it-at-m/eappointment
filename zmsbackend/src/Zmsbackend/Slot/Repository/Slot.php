@@ -70,8 +70,11 @@ class Slot extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\Map
             b.Datum,
             b.Uhrzeit,
             b.istFolgeterminvon,
-            b.hatFolgetermine
+            b.hatFolgetermine,
+            b.apiClientID,
+            ac.accesslevel
         FROM buerger b
+            LEFT JOIN apiclient ac ON ac.apiClientID = b.apiClientID
         WHERE b.BuergerID = :processId
     ';
 
@@ -136,7 +139,7 @@ class Slot extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\Map
             AND s.month = MONTH(b.Datum)
             AND s.day = DAY(b.Datum)
             AND s.scopeID = b.StandortID
-            AND s.status = "free"
+            AND s.status IN ("free", "full")
             AND b.Uhrzeit BETWEEN s.time AND SEC_TO_TIME(TIME_TO_SEC(s.time) + (s.slotTimeInMinutes * 60) - 1)
         WHERE
           b.BuergerID = :processId
