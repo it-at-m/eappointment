@@ -115,27 +115,6 @@
           <div class="m-component__column">
             <div
               v-if="
-                errorStates.errorStateMap
-                  .apiErrorTooManyAppointmentsWithSameMail.value &&
-                (currentView === 1 || currentView === 2)
-              "
-              role="alert"
-              aria-live="assertive"
-              aria-atomic="true"
-            >
-              <muc-callout type="error">
-                <template #content>
-                  <p>
-                    {{ t("apiErrorTooManyAppointmentsWithSameMailText") }}
-                  </p>
-                </template>
-                <template #header>
-                  {{ t("apiErrorTooManyAppointmentsWithSameMailHeader") }}
-                </template>
-              </muc-callout>
-            </div>
-            <div
-              v-if="
                 currentView === 0 &&
                 !isExistingAppointmentDeepLink &&
                 !appointmentAlreadyActivated
@@ -182,6 +161,11 @@
                   errorStates.errorStateMap.apiErrorCaptchaInvalid.value
                 "
                 :booking-error-key="bookingErrorKey"
+                :mail-limit-reached="
+                  currentView === 1 &&
+                  errorStates.errorStateMap
+                    .apiErrorTooManyAppointmentsWithSameMail.value
+                "
                 @back="decreaseCurrentView"
                 @cancel-reschedule="nextCancelReschedule"
                 @clearBookingError="clearBookingError"
@@ -198,6 +182,10 @@
                   isRebooking ? rebookedAppointment : undefined
                 "
                 :login-failed="loginFailed"
+                :mail-limit-reached="
+                  errorStates.errorStateMap
+                    .apiErrorTooManyAppointmentsWithSameMail.value
+                "
                 :t="t"
                 @back="decreaseCurrentView"
                 @next="nextUpdateAppointment"

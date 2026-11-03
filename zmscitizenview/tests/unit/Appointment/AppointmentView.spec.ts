@@ -201,7 +201,14 @@ describe("AppointmentView", () => {
           },
           AppointmentSelection: {
             name: "AppointmentSelection",
-            template: "<div data-test='AppointmentSelection'></div>",
+            template: `
+              <div data-test='AppointmentSelection'>
+                <div v-if="mailLimitReached" data-test="muc-callout">
+                  {{ t('apiErrorTooManyAppointmentsWithSameMailHeader') }}
+                  {{ t('apiErrorTooManyAppointmentsWithSameMailText') }}
+                </div>
+              </div>
+            `,
             props: [
               "globalState",
               "isRebooking",
@@ -212,12 +219,20 @@ describe("AppointmentView", () => {
               "t",
               "bookingError",
               "bookingErrorKey",
+              "mailLimitReached",
             ],
             emits: ["back", "next", "cancelReschedule", "clearBookingError"],
           },
           "customer-info": {
-            template: "<div data-test='customer-info'></div>",
-            props: ["t"],
+            template: `
+              <div data-test='customer-info'>
+                <div v-if="mailLimitReached" data-test="muc-callout">
+                  {{ t('apiErrorTooManyAppointmentsWithSameMailHeader') }}
+                  {{ t('apiErrorTooManyAppointmentsWithSameMailText') }}
+                </div>
+              </div>
+            `,
+            props: ["t", "mailLimitReached"],
             emits: ["back", "next"],
           },
           "appointment-summary": {
