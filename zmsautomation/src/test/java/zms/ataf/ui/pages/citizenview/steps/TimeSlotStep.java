@@ -1061,10 +1061,11 @@ public final class TimeSlotStep {
         JsonNode buttons = new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(defaultWaitSeconds))
                 .until(d -> {
                     JsonNode node = calendarGhostButtons();
-                    return node.path("earlier").path("present").asBoolean()
-                            && node.path("later").path("present").asBoolean()
-                            ? node
-                            : null;
+                    boolean earlierReady = node.path("earlier").path("present").asBoolean()
+                            && node.path("earlier").path("disabled").asBoolean();
+                    boolean laterReady = node.path("later").path("present").asBoolean()
+                            && !node.path("later").path("disabled").asBoolean();
+                    return earlierReady && laterReady ? node : null;
                 });
         assertGhostButton(buttons.path("earlier"), "Früher", "chevron-left", true);
         assertGhostButton(buttons.path("later"), "Später", "chevron-right", false);
