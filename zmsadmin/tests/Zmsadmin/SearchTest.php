@@ -370,7 +370,7 @@ class SearchTest extends Base
         $response = $this->render($this->arguments, ['query' => 'Niemand'], []);
         $body = (string) $response->getBody();
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertStringContainsString('Es werden 0 von 0 Treffern angezeigt.', $body);
+        $this->assertStringNotContainsString('Treffern angezeigt', $body);
         $this->assertStringContainsString('data-processList-count="0"', $body);
     }
 
