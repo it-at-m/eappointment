@@ -343,6 +343,37 @@ class SearchTest extends Base
         $this->assertEquals(200, $response->getStatusCode());
     }
 
+    public function testSearchWithoutResultsShowsZeroCount()
+    {
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture("GET_workstation_basic.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/process/search/',
+                    'parameters' => [
+                        'resolveReferences' => 1,
+                        'query' => 'Niemand',
+                        'page' => 1,
+                        'limit' => 100,
+                        'scopeIds' => '380,1,141',
+                    ],
+                    'response' => $this->readFixture("GET_processList_empty.json")
+                ],
+            ]
+        );
+        $response = $this->render($this->arguments, ['query' => 'Niemand'], []);
+        $body = (string) $response->getBody();
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertStringContainsString('Es werden 0 von 0 Treffern angezeigt.', $body);
+        $this->assertStringContainsString('data-processList-count="0"', $body);
+    }
+
     public function testRendersActiveAndHistoryAppointmentStatus()
     {
         $this->setApiCalls(

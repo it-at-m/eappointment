@@ -50,7 +50,7 @@
         {% if processSearchTotal is defined and (searchProcessQuery or service or provider or date) %}
             <p class="m-5" style="margin-top: 0;">
                 {% set shownCount = processList.count() %}
-                {% if processSearchTotal > shownCount or shownCount == 0 %}
+                {% if processSearchTotal >= shownCount %}
                     Es werden {{ shownCount }} von {{ processSearchTotal }} Treffern angezeigt.
                     Bitte verfeinern Sie Ihre Suche oder blättern Sie zur nächsten Seite.
                 {% elseif processSearchTotal > 0 %}
