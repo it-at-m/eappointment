@@ -1,5 +1,6 @@
 -- ZMSKVR-1626: Terminkunden mit Wartezeit 0 (Aufruf vor dem Termin) in die Wegezeit nehmen.
--- Anzahl und Wartezeit bleiben unverändert.
+-- Vorhandene Anzahl und Wartezeit bleiben unverändert.
+-- Fehlt die Statistikzeile, werden Anzahl und Wartezeit aus Einträgen mit Wartezeit > 0 gesetzt.
 -- Fenster ab 2026-01-24, dem Tag nach der Wegezeit-Wiederherstellung 91785021213.
 -- Dieselbe Auswahl wie CalculateDailyWaitingStatisticByCron: Wartezeit > 0,
 -- plus erschienene Termine mit gespeicherter Wegezeit.
@@ -47,7 +48,9 @@ proc: BEGIN
           Datum AS datum,
           HOUR(STR_TO_DATE(`Timestamp`, '%H:%i:%s')) AS bucket_hour,
           CASE WHEN mitTermin = 1 THEN 'termin' ELSE 'spontan' END AS type,
-          ROUND(AVG(COALESCE(way_time, 0)), 2) AS avg_way_minutes
+          ROUND(AVG(COALESCE(way_time, 0)), 2) AS avg_way_minutes,
+          SUM(CASE WHEN waiting_time > 0 THEN 1 ELSE 0 END) AS wait_count,
+          ROUND(AVG(CASE WHEN waiting_time > 0 THEN waiting_time END), 2) AS avg_wait_minutes
         FROM buergerarchiv
         WHERE Datum >= v_from
           AND Datum <= v_to
@@ -62,7 +65,9 @@ proc: BEGIN
           HOUR(STR_TO_DATE(`Timestamp`, '%H:%i:%s')),
           CASE WHEN mitTermin = 1 THEN 'termin' ELSE 'spontan' END;
 
-        INSERT INTO wartenrstatistik (standortid, datum)
+        DROP TEMPORARY TABLE IF EXISTS tmp_ba_new;
+
+        CREATE TEMPORARY TABLE tmp_ba_new ENGINE=Aria AS
         SELECT DISTINCT a.scope_id, a.datum
         FROM tmp_ba_agg a
         WHERE NOT EXISTS (
@@ -71,6 +76,10 @@ proc: BEGIN
           WHERE w.standortid = a.scope_id
             AND w.datum = a.datum
         );
+
+        INSERT INTO wartenrstatistik (standortid, datum)
+        SELECT scope_id, datum
+        FROM tmp_ba_new;
 
         SET v_hour = 0;
         WHILE v_hour <= 23 DO
@@ -96,9 +105,34 @@ proc: BEGIN
           EXECUTE zms_1626_way;
           DEALLOCATE PREPARE zms_1626_way;
 
+          SET @sql = CONCAT(
+            'UPDATE wartenrstatistik w ',
+            'JOIN tmp_ba_new n ON n.scope_id = w.standortid AND n.datum = w.datum ',
+            'JOIN tmp_ba_agg a ON a.scope_id = w.standortid AND a.datum = w.datum ',
+            'AND a.bucket_hour = ', v_hour, ' AND a.type = ''termin'' ',
+            'SET w.hour_', @hour_col, '_waiting_count_appointment = a.wait_count, ',
+            'w.hour_', @hour_col, '_waiting_time_appointment = COALESCE(a.avg_wait_minutes, 0)'
+          );
+          PREPARE zms_1626_way FROM @sql;
+          EXECUTE zms_1626_way;
+          DEALLOCATE PREPARE zms_1626_way;
+
+          SET @sql = CONCAT(
+            'UPDATE wartenrstatistik w ',
+            'JOIN tmp_ba_new n ON n.scope_id = w.standortid AND n.datum = w.datum ',
+            'JOIN tmp_ba_agg a ON a.scope_id = w.standortid AND a.datum = w.datum ',
+            'AND a.bucket_hour = ', v_hour, ' AND a.type = ''spontan'' ',
+            'SET w.hour_', @hour_col, '_waiting_count_spontaneous = a.wait_count, ',
+            'w.hour_', @hour_col, '_waiting_time_spontaneous = COALESCE(a.avg_wait_minutes, 0)'
+          );
+          PREPARE zms_1626_way FROM @sql;
+          EXECUTE zms_1626_way;
+          DEALLOCATE PREPARE zms_1626_way;
+
           SET v_hour = v_hour + 1;
         END WHILE;
 
+        DROP TEMPORARY TABLE IF EXISTS tmp_ba_new;
         DROP TEMPORARY TABLE IF EXISTS tmp_ba_agg;
         SET v_from = DATE_ADD(v_to, INTERVAL 1 DAY);
     END WHILE;
