@@ -222,12 +222,6 @@ class CalculateDailyWaitingStatisticByCron extends \BO\Zmsbackend\Base
         return is_numeric($row['waiting_time'] ?? null) && (float) $row['waiting_time'] > 0;
     }
 
-    /**
-     * Way time uses every row that already counts for waiting time, plus appointment
-     * customers called before their slot. Those are stored with waiting time 0 and must
-     * stay out of the waiting average. A missed appointment with waiting time 0 is not
-     * such a call; its stored way time is 0 and must not lower the average.
-     */
     private function countsForWayTime(array $row): bool
     {
         if ($this->hasPositiveWaitingTime($row)) {
