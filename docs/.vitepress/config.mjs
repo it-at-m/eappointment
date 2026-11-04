@@ -504,6 +504,7 @@ const sidebarLabels = {
     podmanDevContainers: "Podman and Dev Containers (6.x)",
     podmanDevContainersLegacy: "Podman and Dev Containers (5.8, legacy)",
     implementUserStory: "How do I implement a user story in ZMS?",
+    agentCivilization: "Agent civilization",
     keycloakLocal: "Local Keycloak Setup",
     codeFormatting: "Code Formatting",
     gitHooks: "Git Hooks (Husky)",
@@ -559,6 +560,7 @@ const sidebarLabels = {
     podmanDevContainers: "Podman und Dev Containers (6.x)",
     podmanDevContainersLegacy: "Podman und Dev Containers (5.8, Legacy)",
     implementUserStory: "Wie setze ich eine User Story in ZMS um?",
+    agentCivilization: "Agent-Zivilisation",
     keycloakLocal: "Lokale Keycloak-Einrichtung",
     codeFormatting: "Code-Formatierung",
     gitHooks: "Git-Hooks (Husky)",
@@ -709,6 +711,10 @@ const buildSidebar = (prefix, lang) => {
         {
           text: t.implementUserStory,
           link: `${prefix}/setup-and-development/getting-started/implement-a-user-story`,
+        },
+        {
+          text: t.agentCivilization,
+          link: `${prefix}/setup-and-development/agent-civilization`,
         },
       ],
     },

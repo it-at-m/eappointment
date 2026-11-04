@@ -22,6 +22,15 @@ zmsautomation/lib
 coverage/
 *.pptx
 
+# Personal agent rules (committed scaffold only; see .agents/local/README.md)
+.agents/local/**
+!.agents/local/README.md
+!.agents/local/.gitkeep
+!.agents/local/rules/
+.agents/local/rules/**
+!.agents/local/rules/.gitkeep
+
+
 # Python
 __pycache__/
 
