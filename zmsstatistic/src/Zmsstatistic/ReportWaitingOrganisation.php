@@ -23,6 +23,7 @@ class ReportWaitingOrganisation extends BaseController
         'waitingcalculated_termin',
         'waytime',
         'waytime_termin',
+        'waycount_termin',
         'waitingcount_total',
         'waitingtime_total',
         'waytime_total',

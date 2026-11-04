@@ -11,6 +11,7 @@ use DateTimeImmutable;
  * in 'wartenrstatistik'. Anzahl und Wartezeit zählen nur Einträge mit Wartezeit > 0.
  * Wegezeit zählt dieselben Einträge und zusätzlich Terminkunden, die vor dem
  * Terminzeitpunkt aufgerufen wurden (Wartezeit 0, erschienen) und eine Wegezeit haben.
+ * Deren Anzahl steht in hour_*_way_count_appointment, getrennt von der Wartenden-Anzahl.
  * Nicht erschienene Termine mit Wartezeit 0 bleiben außen vor.
  * Bereits vorhandene Zeilen für (Standort, Datum) werden aktualisiert.
  */
@@ -210,6 +211,12 @@ class CalculateDailyWaitingStatisticByCron extends \BO\Zmsbackend\Base
         $updateParams[$colWaitCount] = $count;
         $updateParams[$colWaitTime] = $avgWait;
         $updateParams[$colWayTime] = $avgWay;
+
+        if ($type === 'termin') {
+            $colWayCount = sprintf('hour_%02d_way_count_%s', $hour, $hourSuffix);
+            $updateCols[] = "`$colWayCount` = :$colWayCount";
+            $updateParams[$colWayCount] = $countWay;
+        }
     }
 
     private function hourSuffixForStatistic(string $type): string

@@ -44,10 +44,12 @@ class CalculateDailyWaitingStatisticByCronTest extends \BO\Zmsbackend\Tests\Serv
         $this->assertSame(2, (int) $row['hour_09_waiting_count_appointment']);
         $this->assertEqualsWithDelta(15.0, (float) $row['hour_09_waiting_time_appointment'], 0.01);
         $this->assertEqualsWithDelta(6.0, (float) $row['hour_09_way_time_appointment'], 0.01);
+        $this->assertSame(3, (int) $row['hour_09_way_count_appointment']);
         $this->assertSame(1, (int) $row['hour_10_waiting_count_spontaneous']);
         $this->assertEqualsWithDelta(12.0, (float) $row['hour_10_waiting_time_spontaneous'], 0.01);
         $this->assertEqualsWithDelta(3.0, (float) $row['hour_10_way_time_spontaneous'], 0.01);
         $this->assertSame(0, (int) $row['hour_11_waiting_count_appointment']);
+        $this->assertSame(1, (int) $row['hour_11_way_count_appointment']);
         $this->assertEqualsWithDelta(0.0, (float) $row['hour_11_waiting_time_appointment'], 0.01);
         $this->assertEqualsWithDelta(9.0, (float) $row['hour_11_way_time_appointment'], 0.01);
         $this->assertSame(0, (int) $row['hour_12_waiting_count_appointment']);

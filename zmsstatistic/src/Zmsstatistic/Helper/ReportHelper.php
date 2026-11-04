@@ -45,6 +45,11 @@ class ReportHelper
                 $countSpontan = (int) ($hourItems['waitingcount'] ?? 0);
                 $countTermin  = (int) ($hourItems['waitingcount_termin'] ?? 0);
                 $countTotal   = $countSpontan + $countTermin;
+                $countWayTermin = array_key_exists('waycount_termin', $hourItems)
+                    && $hourItems['waycount_termin'] !== null
+                    ? (int) $hourItems['waycount_termin']
+                    : $countTermin;
+                $countWayTotal = $countSpontan + $countWayTermin;
 
                 $waitSpontan = (float) ($hourItems['waitingtime'] ?? 0);
                 $waitTermin  = (float) ($hourItems['waitingtime_termin'] ?? 0);
@@ -58,8 +63,8 @@ class ReportHelper
                     ? (($waitSpontan * $countSpontan) + ($waitTermin * $countTermin)) / $countTotal
                     : 0;
 
-                $entity->data[$dateKey][$hour]['waytime_total'] = ($countTotal > 0)
-                    ? (($waySpontan * $countSpontan) + ($wayTermin * $countTermin)) / $countTotal
+                $entity->data[$dateKey][$hour]['waytime_total'] = ($countWayTotal > 0)
+                    ? (($waySpontan * $countSpontan) + ($wayTermin * $countWayTermin)) / $countWayTotal
                     : 0;
             }
         }
