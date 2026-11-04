@@ -52,20 +52,24 @@ class ProcessDeleteMail extends \BO\Zmsbackend\Api\BaseController
         $mailProcess = clone $process;
         $originalAppointment = $requestProcess->getAppointments()->getFirst();
 
+        $hasOriginalDate = $originalAppointment !== null &&
+            (int) $originalAppointment->date > 0;
+
+        $hasOriginalRequests = isset($input['requests']);
+
         if (
             'admin' === $initiator &&
-            $originalAppointment !== null &&
-            (int) $originalAppointment->date > 0
+            ($hasOriginalDate || $hasOriginalRequests)
         ) {
             (new \BO\Zmsbackend\Helper\User($request))
                 ->checkPermissions('appointment');
 
-            // Ursprüngliches Datum einschließlich Uhrzeit übernehmen.
-            $mailProcess->getFirstAppointment()->date =
-                $originalAppointment->date;
+            if ($hasOriginalDate) {
+                $mailProcess->getFirstAppointment()->date =
+                    $originalAppointment->date;
+            }
 
-            // Ursprüngliche Dienstleistungen einschließlich Anzahl übernehmen.
-            if (isset($input['requests'])) {
+            if ($hasOriginalRequests) {
                 $mailProcess->requests = clone $requestProcess->getRequests();
             }
         }
