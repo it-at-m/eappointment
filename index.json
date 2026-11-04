@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-11-04T08:13:17.463Z",
+  "publishedAt": "2026-11-04T17:05:13.176Z",
   "branches": [
     {
       "name": "next",
@@ -64,8 +64,8 @@
     {
       "name": "bugfix-zmskvr-1626-early-call-way-time",
       "slug": "bugfix-zmskvr-1626-early-call-way-time",
-      "runId": "41639283376",
-      "runStartedAt": "2026-11-03T12:51:48Z"
+      "runId": "41844856344",
+      "runStartedAt": "2026-11-04T16:30:27Z"
     },
     {
       "name": "bugfix-zmskvr-167-ticketprinter-missing-scope-ids",
