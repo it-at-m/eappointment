@@ -193,10 +193,10 @@ class Scope extends Base implements MappingInterface
             'preferences__client__emailFrom' => $this->shouldLoadEntity('scopemail')
                 ? 'scopemail.absenderadresse'
                 : '',
-            'preferences__client__emailRequired' => 'scope.emailPflichtfeld',
+            'preferences__client__emailRequired' => 'scope.email_required',
             'preferences__client__emailConfirmationActivated' => 'scope.email_confirmation_activated',
             'preferences__client__telephoneActivated' => 'scope.telefonaktiviert',
-            'preferences__client__telephoneRequired' => 'scope.telefonPflichtfeld',
+            'preferences__client__telephoneRequired' => 'scope.telephone_required',
             'preferences__client__appointmentsPerMail' => 'scope.appointments_per_mail',
             'preferences__client__slotsPerAppointment' => 'scope.slots_per_appointment',
             'preferences__client__whitelistedMails' => 'scope.whitelisted_mails',
@@ -355,10 +355,10 @@ class Scope extends Base implements MappingInterface
         $data['aktivierungsdauer'] = $entity->getPreference('appointment', 'activationDuration');
         $data['anmerkungPflichtfeld'] = $entity->getPreference('client', 'amendmentActivated', true);
         $data['anmerkungLabel'] = $entity->getPreference('client', 'amendmentLabel');
-        $data['emailPflichtfeld'] = $entity->getPreference('client', 'emailRequired', true);
+        $data['email_required'] = $entity->getPreference('client', 'emailRequired', true);
         $data['email_confirmation_activated'] = $entity->getPreference('client', 'emailConfirmationActivated', true);
         $data['telefonaktiviert'] = $entity->getPreference('client', 'telephoneActivated', true);
-        $data['telefonPflichtfeld'] = $entity->getPreference('client', 'telephoneRequired', true);
+        $data['telephone_required'] = $entity->getPreference('client', 'telephoneRequired', true);
         $data['custom_text_field_active'] = $entity->getPreference('client', 'customTextfieldActivated', true);
         $data['custom_text_field_required'] = $entity->getPreference('client', 'customTextfieldRequired', true);
         $data['custom_text_field_label'] = $entity->getPreference('client', 'customTextfieldLabel');
