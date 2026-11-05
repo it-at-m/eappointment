@@ -568,14 +568,14 @@ class ValidationServiceTest extends TestCase
         );
 
         // Test service count above maximum
-        $result = ValidationService::validateServiceArrays([1], [49]);
+        $result = ValidationService::validateServiceArrays([1], [97]);
         $this->assertContains(
             ErrorMessages::get('invalidServiceCount'),
             $result
         );
 
         // Test maximum allowed service count
-        $this->assertEmpty(ValidationService::validateServiceArrays([1], [48]));
+        $this->assertEmpty(ValidationService::validateServiceArrays([1], [96]));
     }
 
     public function testValidateAppointmentConfirm(): void

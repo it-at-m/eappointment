@@ -17,12 +17,14 @@ Feature: CitizenView: quantity follows slotsPerAppointment
   # Feuerwache (V58): Föhring 10577 spa=8, Milbertshofen 10579 spa=2 → min spa 2
   # for 1-slot Führungen 10389330 would allow qty 2, but SADB maxQuantity=1 is
   # smaller → plus stays at 1 (min of maxQuantity and floor(minSpa/slots)).
-  # Hauptkalender 10489: slotsPerAppointment unset → fallback MAX_SLOTS=48
-  # (240 minutes at slotTimeInMinutes=5). Qty 1 of the 11 services is 25 slots.
+  # Hauptkalender 10489: slotsPerAppointment unset → fallback MAX_SLOTS=96
+  # (480 minutes at slotTimeInMinutes=5). Qty 1 of the 11 services is 25 slots.
+  # The combination below is 48 slots / 240 minutes, under that cap.
   # Wohnsitzanmeldung stays at 1: its plus control also matches
   # "Wohnsitzanmeldung – Familie", so raising it does not move this counter.
-  # Verlust Personalausweis stays at 3 of maxQuantity 5, and eID at 2 of 3.
-  # Together the counts are exactly 48 slots. No appointment is booked.
+  # Services already at maxQuantity keep a disabled plus. eID (2 of 3),
+  # Verlust Personalausweis (3 of 5), Verlust Reisepass (1 of 5) and
+  # Vorläufiger Reisepass (1 of 2) still have room. No appointment is booked.
 
   Scenario: Ausfuhr quantity stops at 2 because spa is tighter than maxQuantity
     Given I open zmscitizenview with jump-in service "1064268" and location "10416"
@@ -79,7 +81,7 @@ Feature: CitizenView: quantity follows slotsPerAppointment
     Then the service counter for "Führungen auf den Feuerwachen" should still be 1
     And the plus button for service "Führungen auf den Feuerwachen" is disabled
 
-  Scenario: Fallback cap fills at 240 minutes, disables every plus, and Weiter stays available
+  Scenario: A 240-minute combination stays under the 96-slot fallback and Weiter stays available
     Given I open zmscitizenview with jump-in service "1063475" and location "10489"
     Then the service combination step should be visible
     When I show all combinable services
@@ -102,13 +104,12 @@ Feature: CitizenView: quantity follows slotsPerAppointment
     And the plus button for service "Beglaubigung von bis zu 20 Dokumenten" is disabled
     And the plus button for service "Beglaubigung von bis zu 5 Dokumenten" is disabled
     And the plus button for service "Beglaubigung von Unterschriften" is disabled
-    And the plus button for service "Einschalten eID-Funktion oder Änderung der PIN" is disabled
+    And the plus button for service "Einschalten eID-Funktion oder Änderung der PIN" is enabled
     And the plus button for service "Haushaltsbescheinigung" is disabled
-    And the plus button for service "Verlust oder Diebstahl Personalausweis" is disabled
-    And the plus button for service "Verlust oder Diebstahl Reisepass" is disabled
-    And the plus button for service "Vorläufiger Reisepass" is disabled
+    And the plus button for service "Verlust oder Diebstahl Personalausweis" is enabled
+    And the plus button for service "Verlust oder Diebstahl Reisepass" is enabled
+    And the plus button for service "Vorläufiger Reisepass" is enabled
     And the plus button for service "Widerruf der Verlust- oder Diebstahlanzeige von Personalausweis oder Reisepass" is disabled
-    And the plus buttons for all services on the service combination step are disabled
     When I continue from the service combination step
     Then the booking step "Termin" is "current" with the "calendar" icon
     And the booking step "Leistung" is "finished" with the "shopping-cart" icon

@@ -18,7 +18,7 @@ class Slot extends \BO\Zmsbackend\Base
     /**
      * maximum number of slots per appointment
      */
-    const int MAX_SLOTS = 48;
+    const int MAX_SLOTS = 96;
 
     const int MAX_DAYS_OF_SLOT_CALCULATION = 180;
 
@@ -350,7 +350,7 @@ class Slot extends \BO\Zmsbackend\Base
      * Write every open day in a few statements.
      * A day whose stored times already match keeps its ancestor rows.
      * Days that need a new chain are written together: level 1 is the slot itself,
-     * higher levels are the earlier slots that day, at most 48.
+     * higher levels are the earlier slots that day, at most 96.
      *
      * @param list<array{time: \DateTimeInterface, slotlist: Collection}> $days
      */
