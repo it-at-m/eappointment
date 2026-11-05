@@ -52,7 +52,7 @@
         }
     },
     "require-dev": {
-        "vimeo/psalm": "7.0.2",
+        "vimeo/psalm": "7.0.3",
         "phpunit/phpunit": "^13",
         "phpspec/prophecy-phpunit": "^2.4",
         "phpmd/phpmd": "@stable",
