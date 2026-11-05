@@ -20,8 +20,7 @@ Feature: CitizenView: quantity follows slotsPerAppointment
   # Hauptkalender 10489: slotsPerAppointment unset → fallback MAX_SLOTS=96
   # (480 minutes at slotTimeInMinutes=5). Qty 1 of the 11 services is 25 slots.
   # The combination below is 48 slots / 240 minutes, under that cap.
-  # Wohnsitzanmeldung stays at 1: its plus control also matches
-  # "Wohnsitzanmeldung – Familie", so raising it does not move this counter.
+  # Wohnsitzanmeldung stays at quantity 1, and its plus stays enabled.
   # Services already at maxQuantity keep a disabled plus. eID (2 of 3),
   # Verlust Personalausweis (3 of 5), Verlust Reisepass (1 of 5) and
   # Vorläufiger Reisepass (1 of 2) still have room. No appointment is booked.
@@ -99,7 +98,7 @@ Feature: CitizenView: quantity follows slotsPerAppointment
     And the service counter for "Wohnsitzanmeldung" should still be 1
     And the service counter for "Verlust oder Diebstahl Personalausweis" should still be 3
     And the service counter for "Einschalten eID-Funktion oder Änderung der PIN" should still be 2
-    And the plus button for service "Wohnsitzanmeldung" is disabled
+    And the plus button for service "Wohnsitzanmeldung" is enabled
     And the plus button for service "Adressaufkleber und Chipaktualisierung für Personalausweis, Reisepass und eAT" is disabled
     And the plus button for service "Beglaubigung von bis zu 20 Dokumenten" is disabled
     And the plus button for service "Beglaubigung von bis zu 5 Dokumenten" is disabled
