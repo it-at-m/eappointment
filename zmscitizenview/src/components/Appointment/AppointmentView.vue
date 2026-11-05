@@ -1409,6 +1409,14 @@ const leaveReschedule = () => {
 const nextCancelReschedule = async () => {
   clearContextErrors(errorStateMap.value);
 
+  if (
+    isCancelingAppointment.value ||
+    isReservingAppointment.value ||
+    isUpdatingAppointment.value
+  ) {
+    return;
+  }
+
   const original = rebookedAppointment.value;
   const inProgress = appointment.value;
   if (!original || isSameProcess(original, inProgress)) {
@@ -1426,9 +1434,6 @@ const nextCancelReschedule = async () => {
     return;
   }
 
-  if (isCancelingAppointment.value) {
-    return;
-  }
   isCancelingAppointment.value = true;
   try {
     const data = await cancelAppointment(props.globalState, inProgress);

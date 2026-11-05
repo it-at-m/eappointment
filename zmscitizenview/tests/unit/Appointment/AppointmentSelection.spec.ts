@@ -2830,6 +2830,29 @@ describe("AppointmentSelection", () => {
       expect(wrapper.emitted("back")).toBeUndefined();
     });
 
+    it("disables cancel reschedule while a reserve or update is in flight", async () => {
+      const wrapper = createWrapper({ props: { isRebooking: true } });
+      const cancelButton = () =>
+        wrapper
+          .findAllComponents({ name: "MucButton" })
+          .find((btn) => btn.text() === "cancelReschedule");
+
+      expect(cancelButton()?.props("disabled")).toBeFalsy();
+
+      wrapper.vm.loadingStates.isReservingAppointment.value = true;
+      await nextTick();
+      expect(cancelButton()?.props("disabled")).toBe(true);
+
+      wrapper.vm.loadingStates.isReservingAppointment.value = false;
+      wrapper.vm.loadingStates.isUpdatingAppointment.value = true;
+      await nextTick();
+      expect(cancelButton()?.props("disabled")).toBe(true);
+
+      wrapper.vm.loadingStates.isUpdatingAppointment.value = false;
+      await nextTick();
+      expect(cancelButton()?.props("disabled")).toBeFalsy();
+    });
+
     it("does not show any callout when bookingError is false", async () => {
       const wrapper = createWrapper({
         props: {

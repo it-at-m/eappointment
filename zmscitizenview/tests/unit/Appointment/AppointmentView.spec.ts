@@ -2010,6 +2010,47 @@ describe("AppointmentView", () => {
       expect(wrapper.vm.currentView).toBe(3);
     });
 
+    it("ignores cancel reschedule while a reserve or update is in flight", async () => {
+      const mockCancel = vi.mocked(ZMSAppointmentAPI.cancelAppointment);
+      mockCancel.mockReset();
+
+      const wrapper = createWrapperWithAppointmentHash();
+      wrapper.vm.isRebooking = true;
+      wrapper.vm.rebookedAppointment = {
+        processId: "original",
+        authKey: "original-key",
+        status: "confirmed",
+      } as any;
+      wrapper.vm.appointment = {
+        processId: "original",
+        authKey: "original-key",
+        status: "confirmed",
+      } as any;
+      wrapper.vm.currentView = 1;
+      wrapper.vm.isReservingAppointment = true;
+
+      await wrapper.vm.nextCancelReschedule();
+
+      expect(mockCancel).not.toHaveBeenCalled();
+      expect(wrapper.vm.isRebooking).toBe(true);
+      expect(wrapper.vm.currentView).toBe(1);
+
+      wrapper.vm.isReservingAppointment = false;
+      wrapper.vm.isUpdatingAppointment = true;
+      wrapper.vm.appointment = {
+        processId: "reserved-1",
+        authKey: "reserved-key",
+        status: "reserved",
+      } as any;
+
+      await wrapper.vm.nextCancelReschedule();
+
+      expect(mockCancel).not.toHaveBeenCalled();
+      expect(wrapper.vm.isRebooking).toBe(true);
+      expect(wrapper.vm.appointment.processId).toBe("reserved-1");
+      expect(wrapper.vm.currentView).toBe(1);
+    });
+
     it("keeps the reserved replacement when cancelling it fails", async () => {
       const mockCancel = vi.mocked(ZMSAppointmentAPI.cancelAppointment);
       mockCancel.mockReset();

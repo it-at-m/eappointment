@@ -235,6 +235,10 @@
       </muc-button>
       <muc-button
         v-if="isRebooking"
+        :disabled="
+          loadingStates.isReservingAppointment.value ||
+          loadingStates.isUpdatingAppointment.value
+        "
         icon="close"
         variant="secondary"
         @click="cancelReschedule"
