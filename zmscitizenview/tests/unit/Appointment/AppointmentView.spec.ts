@@ -2051,6 +2051,32 @@ describe("AppointmentView", () => {
       expect(wrapper.vm.currentView).toBe(1);
     });
 
+    it("does not cancel the replacement while confirmation is in flight", async () => {
+      const mockCancel = vi.mocked(ZMSAppointmentAPI.cancelAppointment);
+      mockCancel.mockReset();
+
+      const wrapper = createWrapperWithAppointmentHash();
+      wrapper.vm.isRebooking = true;
+      wrapper.vm.isBookingAppointment = true;
+      wrapper.vm.rebookedAppointment = {
+        processId: "original",
+        authKey: "original-key",
+        status: "confirmed",
+      } as any;
+      wrapper.vm.appointment = {
+        processId: "reserved-1",
+        authKey: "reserved-key",
+        status: "reserved",
+      } as any;
+      wrapper.vm.currentView = 3;
+
+      await wrapper.vm.nextCancelReschedule();
+
+      expect(mockCancel).not.toHaveBeenCalled();
+      expect(wrapper.vm.isRebooking).toBe(true);
+      expect(wrapper.vm.appointment.processId).toBe("reserved-1");
+    });
+
     it("keeps the reserved replacement when cancelling it fails", async () => {
       const mockCancel = vi.mocked(ZMSAppointmentAPI.cancelAppointment);
       mockCancel.mockReset();
@@ -2641,6 +2667,27 @@ describe("AppointmentView", () => {
       mockConfirm.mockReset();
       mockPreconfirm.mockReset();
       mockCancel.mockReset();
+    });
+
+    it("does not confirm a rebooking while cancellation is in flight", async () => {
+      const wrapper = createWrapperWithAppointmentHash();
+      wrapper.vm.isRebooking = true;
+      wrapper.vm.isCancelingAppointment = true;
+      wrapper.vm.rebookedAppointment = {
+        processId: "original",
+        authKey: "original-key",
+      } as any;
+      wrapper.vm.appointment = {
+        processId: "reserved-1",
+        authKey: "reserved-key",
+        status: "reserved",
+      } as any;
+
+      await wrapper.vm.nextBookAppointment();
+
+      expect(mockConfirm).not.toHaveBeenCalled();
+      expect(wrapper.vm.isBookingAppointment).toBe(false);
+      expect(wrapper.vm.appointment.processId).toBe("reserved-1");
     });
 
     it("calls confirmAppointment directly when logged in with processId+authKey", async () => {

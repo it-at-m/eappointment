@@ -1270,7 +1270,7 @@ const nextUpdateAppointment = () => {
 };
 
 const nextBookAppointment = () => {
-  if (isBookingAppointment.value) {
+  if (isBookingAppointment.value || isCancelingAppointment.value) {
     return;
   }
 
@@ -1412,7 +1412,8 @@ const nextCancelReschedule = async () => {
   if (
     isCancelingAppointment.value ||
     isReservingAppointment.value ||
-    isUpdatingAppointment.value
+    isUpdatingAppointment.value ||
+    isBookingAppointment.value
   ) {
     return;
   }
