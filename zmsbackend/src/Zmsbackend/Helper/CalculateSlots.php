@@ -7,7 +7,7 @@ namespace BO\Zmsbackend\Helper;
  */
 class CalculateSlots
 {
-    private const int MAX_WORKERS = 16;
+    private const int MAX_WORKERS = 1;
 
     private const string CALCULATION_LOCK = 'zms_calculate_slots';
 
