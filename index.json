@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-11-05T08:25:09.991Z",
+  "publishedAt": "2026-11-05T16:54:28.389Z",
   "branches": [
     {
       "name": "next",
@@ -1150,8 +1150,8 @@
     {
       "name": "zmskvr-1627-five-minute-slots",
       "slug": "zmskvr-1627-five-minute-slots",
-      "runId": "41607119143",
-      "runStartedAt": "2026-11-03T10:49:22Z"
+      "runId": "42061744330",
+      "runStartedAt": "2026-11-05T16:09:47Z"
     },
     {
       "name": "zmskvr-1631-fix-previous-step-button",
