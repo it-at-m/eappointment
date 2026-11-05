@@ -284,6 +284,47 @@ export const getFormValuesFromData = data => {
     }))
 }
 
+const greatestCommonDivisor = (left, right) => {
+    let a = Math.abs(parseInt(left, 10) || 0);
+    let b = Math.abs(parseInt(right, 10) || 0);
+    while (b) {
+        const remainder = a % b;
+        a = b;
+        b = remainder;
+    }
+    return a;
+}
+
+/**
+ * Clock step for opening hours. Stored slots stay on slotTimeInMinutes;
+ * the picker still offers times on the greatest common divisor of the
+ * location's service durations, the same step the calendar uses.
+ */
+export const openingHourTimeInterval = (scope, slotTimeInMinutes) => {
+    const slotMinutes = parseInt(
+        scope?.provider?.data?.slotTimeInMinutes ?? slotTimeInMinutes,
+        10
+    ) || 5;
+    const services = scope?.provider?.data?.services || [];
+    const durations = services.map((service) => {
+        const duration = parseInt(service?.duration, 10);
+        if (duration > 0) {
+            return duration;
+        }
+        const slots = parseInt(service?.appointment?.slots, 10);
+        return slots > 0 ? slots * slotMinutes : 0;
+    }).filter((minutes) => minutes > 0);
+
+    const interval = durations.reduce(
+        (current, minutes) => greatestCommonDivisor(current, minutes),
+        0
+    );
+    if (interval >= 5 && interval % 5 === 0) {
+        return interval;
+    }
+    return slotMinutes;
+}
+
 export const accordionTitle = (data) => {
     const startDate = moment(data.startDate, 'X').format('DD.MM.YYYY');
     const endDate = moment(data.endDate, 'X').format('DD.MM.YYYY');

@@ -60,6 +60,7 @@ class AvailabilityForm extends Component {
                     setErrorRef={this.props.setErrorRef}
                     errorList={this.props.errorList}
                     conflictList={this.props.conflictList}
+                    scope={this.props.scope}
                     {... { data, onChange }} />}
                 {<FormButtons 
                     data={data}
@@ -101,7 +102,8 @@ AvailabilityForm.propTypes = {
     setErrorRef: PropTypes.func,
     onDelete: PropTypes.func,
     onUpdateSingle: PropTypes.func,
-    isCreatingExclusion: PropTypes.bool
+    isCreatingExclusion: PropTypes.bool,
+    scope: PropTypes.object
 }
 
 export default AvailabilityForm
