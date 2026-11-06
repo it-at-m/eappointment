@@ -2,11 +2,9 @@
 -- Scope 46, provider 10412449 (KfZ Zulassungsstelle Briefbüro).
 -- The scope has this one service. It occupies one slot before and after the
 -- change, so booked appointments keep their start time and their slot count.
--- Opening hours at the scope are set to 20 minutes and their version is
--- raised so the next calculateSlots rebuilds the grid and links the existing
--- appointments to it.
--- Run this after the DLDB export already says 20 minutes. An hourly import
--- that still sees 15 minutes writes 15 back onto the opening hours.
+-- The hourly import leaves existing opening hours unchanged. This sets them
+-- to 20 minutes and raises their version so the next calculateSlots rebuilds
+-- the grid and links the existing appointments to it.
 
 START TRANSACTION;
 
