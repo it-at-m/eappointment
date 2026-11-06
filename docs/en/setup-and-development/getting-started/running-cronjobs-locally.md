@@ -10,6 +10,8 @@ podman exec -it zms-web bash -lc "zmsbackend/cron/cronjob.hourly --city=berlin"
 podman exec -it zms-web bash -lc "zmsbackend/cron/cronjob.hourly --city=munich"
 ```
 
+After the DLDB import, the hourly job rebuilds the shared cache. See [Shared cache warmup](../../../operations/shared-cache-warmup.md).
+
 Other cronjobs:
 
 ```bash

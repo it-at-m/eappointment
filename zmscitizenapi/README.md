@@ -605,9 +605,10 @@ Here's how it works:
      - Caches API responses
      - The DLDB source cache stores API responses for source data with a 1-hour TTL.
    - **Proactive warmup (ZMSKVR-1191)**:
-     - `POST /source-cache/warmup/` fetches fresh source data and overwrites the offices-and-services cache in place (old entries stay readable until the new values are written)
-     - `GET /offices-and-services/` remains cache-aside: cache hit is served as-is; a miss still rebuilds and writes the cache (fallback if warmup is stuck or cache is empty)
-     - Requires header `X-Source-Cache-Warmup-Token` matching env `SOURCE_CACHE_WARMUP_TOKEN` (disabled when unset)
+     - The hourly job rebuilds a standby copy and publishes it by writing `.active-namespace`. The copy that is already serving stays in place until then. See [Shared cache warmup](../docs/en/operations/shared-cache-warmup.md).
+     - `POST /source-cache/warmup/` refreshes the citizen keys on that standby copy after the backend publish
+     - `GET /offices-and-services/` remains cache-aside: a hit is served as stored; a miss still rebuilds and writes the cache
+     - Requires header `X-Source-Cache-Warmup-Token` matching env `SOURCE_CACHE_WARMUP_TOKEN`. When that variable is unset, the header is omitted and `POST /source-cache/warmup/` returns 404
      - Triggered after DLDB import (`cronjob.hourly` → `bin/warmupCitizenapiSourceCache` via `ZMS_CITIZENAPI_WARMUP_URL`)
 
 Each "cache" is really just a different usage pattern of the same PSR-16 interface, with its own key namespace and TTL, but all data is stored in the same filesystem backend.
