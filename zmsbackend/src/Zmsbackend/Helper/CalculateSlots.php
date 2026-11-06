@@ -7,11 +7,16 @@ namespace BO\Zmsbackend\Helper;
  */
 class CalculateSlots
 {
+    private const string CALCULATION_LOCK = 'zms_calculate_slots';
+
     protected $verbose = false;
 
     protected $startTime;
 
     protected $logList = [];
+
+    /** @var list<int> */
+    private array $calculatedScopeIds = [];
 
     public function __construct(bool $verbose = false)
     {
@@ -19,30 +24,59 @@ class CalculateSlots
         $this->startTime = microtime(true);
     }
 
-    public function log(string $message): static
-    {
+    public function log(
+        string $message,
+        ?int $scopeId = null,
+        ?int $availabilityId = null,
+        ?float $durationSeconds = null
+    ): static {
         $time = $this->getSpendTime();
         $memory = memory_get_usage() / (1024 * 1024);
         $text = sprintf("[CalculateSlots %07.3fs %07.1fmb] %s", "$time", $memory, $message);
-        $this->logList[] = $text;
-        if ($this->verbose) {
-            \App::$log->info($message, [
-                'component' => 'CalculateSlots',
-                'elapsed' => $time,
-                'memory_mb' => $memory,
-            ]);
+        $context = [
+            'component' => 'CalculateSlots',
+            'elapsed' => $time,
+            'memory_mb' => $memory,
+            'scope_id' => $scopeId,
+            'availability_id' => $availabilityId,
+        ];
+        if ($durationSeconds !== null) {
+            $context['duration_seconds'] = $durationSeconds;
         }
+        $emit = $this->verbose || $availabilityId !== null;
+        if ($emit) {
+            \App::$log->info($message, $context);
+        }
+        $this->logList[] = [
+            'text' => $text,
+            'scope_id' => $scopeId,
+            'availability_id' => $availabilityId,
+            'emitted' => $emit,
+        ];
         return $this;
     }
 
     public function dumpLogs(): void
     {
-        foreach ($this->logList as $text) {
-            if (!$this->verbose) {
-                \App::$log->info($text, ['component' => 'CalculateSlots']);
+        foreach ($this->logList as $entry) {
+            if ($entry['emitted']) {
+                continue;
             }
+            \App::$log->info($entry['text'], [
+                'component' => 'CalculateSlots',
+                'scope_id' => $entry['scope_id'],
+                'availability_id' => $entry['availability_id'],
+            ]);
         }
         $this->verbose = true;
+    }
+
+    /**
+     * @return list<int>
+     */
+    public function calculatedScopeIds(): array
+    {
+        return $this->calculatedScopeIds;
     }
 
     public function getSpendTime(): float
@@ -108,6 +142,19 @@ class CalculateSlots
             $this->log("Skip calculation, last start on $startTimestamp is not yet finished, waiting 15 minutes.");
             return false;
         }
+        if (!$this->acquireCalculationLock()) {
+            $this->log("Skip calculation, another run is still working.");
+            return false;
+        }
+        try {
+            return $this->writeCalculationsLocked($now, $daily);
+        } finally {
+            $this->releaseCalculationLock();
+        }
+    }
+
+    private function writeCalculationsLocked(\DateTimeInterface $now, bool $daily): bool
+    {
         (new \BO\Zmsbackend\Config\Service\Config())->replaceProperty('status__calculateSlotsLastStart', $now->format('Y-m-d H:i:s'));
         \BO\Zmsbackend\Connection\Select::writeCommit();
         $updateTimestamp = $this->readLastRun();
@@ -115,11 +162,21 @@ class CalculateSlots
         if ($daily) {
             $this->deleteOldSlots($now);
         }
+        \BO\Zmsbackend\Connection\Select::writeCommit();
         $scopeList = (new \BO\Zmsbackend\Scope\Service\Scope())->readList(1);
+        \BO\Zmsbackend\Connection\Select::writeCommit();
+        $scopeIds = [];
+        foreach ($scopeList as $scope) {
+            $scopeId = (int) $scope->id;
+            if ($scopeId > 0) {
+                $scopeIds[] = $scopeId;
+            }
+        }
+        $this->calculatedScopeIds = $scopeIds;
         $scopeLength = count($scopeList) - 1;
         foreach ($scopeList as $key => $scope) {
             if ($this->writeCalculatedScope($scope, $now)) {
-                $this->log("Calculated slots $key/$scopeLength for $scope");
+                $this->log("Calculated slots $key/$scopeLength for $scope", (int) $scope->id);
             }
         }
 
@@ -132,7 +189,7 @@ class CalculateSlots
 
         $slotQuery->deleteSlotProcessOnSlot();
 
-        if ($slotsProcessed = $slotQuery->updateSlotProcessMapping()) {
+        if ($slotsProcessed = $slotQuery->updateSlotProcessMapping(null, $now)) {
             $this->log("Updated Slot-Process-Mapping, mapped $slotsProcessed processes");
         }
 
@@ -149,30 +206,46 @@ class CalculateSlots
     {
         $slotQuery = new \BO\Zmsbackend\Slot\Service\Slot();
         $updatedList = $slotQuery->writeByScope($scope, $now);
-        foreach ($updatedList as $availability) {
-            $this->log("Updated $availability with reason " . json_encode($availability['processingNote']));
-        }
         if (count($updatedList)) {
             $this->writePostProcessingByScope($scope, $now);
             \BO\Zmsbackend\Connection\Select::writeCommitWithStartLock();
             $this->readLastRun();
+            \BO\Zmsbackend\Connection\Select::writeCommit();
             return true;
         }
         return false;
+    }
+
+    private function acquireCalculationLock(): bool
+    {
+        $locked = \BO\Zmsbackend\Connection\Select::getWriteConnection()->fetchValue(
+            'SELECT GET_LOCK(:name, 0)',
+            ['name' => self::CALCULATION_LOCK]
+        );
+
+        return (int) $locked === 1;
+    }
+
+    private function releaseCalculationLock(): void
+    {
+        \BO\Zmsbackend\Connection\Select::getWriteConnection()->fetchValue(
+            'SELECT RELEASE_LOCK(:name)',
+            ['name' => self::CALCULATION_LOCK]
+        );
     }
 
     public function writePostProcessingByScope(\BO\Zmsentities\Scope $scope, \DateTimeInterface $now): void
     {
         $slotQuery = new \BO\Zmsbackend\Slot\Service\Slot();
         if ($slotsProcessed = $slotQuery->deleteSlotProcessOnProcess($scope->id)) {
-            $this->log("Finished to free $slotsProcessed slots for changed/deleted processes");
+            $this->log("Finished to free $slotsProcessed slots for changed/deleted processes", (int) $scope->id);
         }
         $slotQuery->writeCanceledByTimeAndScope($now, $scope);
         $slotQuery->deleteSlotProcessOnSlot($scope->id);
         //$this->log("Finished to free slots for cancelled availabilities");
 
-        if ($slotsProcessed = $slotQuery->updateSlotProcessMapping($scope->id)) {
-            $this->log("Updated Slot-Process-Mapping, mapped $slotsProcessed processes");
+        if ($slotsProcessed = $slotQuery->updateSlotProcessMapping($scope->id, $now)) {
+            $this->log("Updated Slot-Process-Mapping, mapped $slotsProcessed processes", (int) $scope->id);
         }
     }
 

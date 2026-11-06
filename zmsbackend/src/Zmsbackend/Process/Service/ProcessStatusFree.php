@@ -463,16 +463,13 @@ class ProcessStatusFree extends Process
             throw new \BO\Zmsbackend\Process\Exception\ProcessReserveFailed();
         }
 
-        foreach ($slotList as $slot) {
-            if ($process->id > 99999) {
-                $newProcess = clone $process;
-                $newProcess->getFirstAppointment()->setTime($slot->time);
-                $this->writeNewProcess($newProcess, $now, $process->id, 0, true, $userAccount);
-            } elseif ($process->id === 0) {
-                $process = $this->writeNewProcess($process, $now, 0, count($slotList) - 1, true, $userAccount);
-            } else {
-                throw new \Exception("SQL UPDATE error on inserting new $process on $slot");
-            }
+        // One row stores the length. The save maps every 5-minute step of that length.
+        if ($process->id === 0) {
+            $process = $this->writeNewProcess($process, $now, 0, count($slotList) - 1, true, $userAccount);
+        } elseif ($process->id <= 99999) {
+            throw new \Exception("SQL UPDATE error on inserting new $process");
+        } else {
+            throw new \BO\Zmsbackend\Process\Exception\ProcessReserveFailed();
         }
         $this->writeRequestsToDb($process);
         return $this->readEntity($process->getId(), new \BO\Zmsbackend\Helper\NoAuth(), $resolveReferences);

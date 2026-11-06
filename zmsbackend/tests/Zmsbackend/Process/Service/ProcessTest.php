@@ -418,15 +418,14 @@ class ProcessTest extends \BO\Zmsbackend\Tests\Service\Base
         $oldStartTime = $process->getFirstAppointment()->getStartTime()->format("Y-m-d H:i:s");
         $newStartTime = $processNew->getFirstAppointment()->getStartTime()->format("Y-m-d H:i:s");
         $processNewEntityList = $queryProcess->readEntityList($processNew->getId());
-        $newEndTime = $processNewEntityList->getLast()->getFirstAppointment()->getStartTime()->format('Y-m-d H:i');
 
         $this->assertEntity("\\BO\\Zmsentities\\Process", $processNew);
         $this->assertEquals(25892, $processNew->getId());
         $this->assertEquals('confirmed', $processNew->getStatus());
         $this->assertEquals('2016-05-27 08:00:00', $oldStartTime);
         $this->assertEquals('2016-05-30 08:00:00', $newStartTime);
-        $this->assertEquals(4, $processNewEntityList->count());
-        $this->assertEquals('2016-05-30 08:30', $newEndTime);
+        $this->assertEquals(1, $processNewEntityList->count());
+        $this->assertEquals(4, $processNew->getFirstAppointment()->slotCount);
     }
 
     public function testWriteEntityWithNewAppointmentReserved()
@@ -457,15 +456,14 @@ class ProcessTest extends \BO\Zmsbackend\Tests\Service\Base
         $oldStartTime = $process->getFirstAppointment()->getStartTime()->format("Y-m-d H:i:s");
         $newStartTime = $processNew->getFirstAppointment()->getStartTime()->format("Y-m-d H:i:s");
         $processNewEntityList = $queryProcess->readEntityList($processNew->getId());
-        $newEndTime = $processNewEntityList->getLast()->getFirstAppointment()->getStartTime()->format('Y-m-d H:i');
 
         $this->assertEntity("\\BO\\Zmsentities\\Process", $processNew);
         $this->assertEquals(25892, $processNew->getId());
         $this->assertEquals('reserved', $processNew->getStatus());
         $this->assertEquals('2016-05-27 08:00:00', $oldStartTime);
         $this->assertEquals('2016-05-30 08:00:00', $newStartTime);
-        $this->assertEquals(4, $processNewEntityList->count());
-        $this->assertEquals('2016-05-30 08:30', $newEndTime);
+        $this->assertEquals(1, $processNewEntityList->count());
+        $this->assertEquals(4, $processNew->getFirstAppointment()->slotCount);
     }
 
     public function testWriteEntityWithNewAppointmentExcessiveSlots()
@@ -627,7 +625,7 @@ class ProcessTest extends \BO\Zmsbackend\Tests\Service\Base
         $process = $query->readEntity($process->id, $process->authKey);
         $this->assertEquals(3, $process->getFirstAppointment()->slotCount);
         $processEntityList = $query->readEntityList($process->getId());
-        $this->assertEquals(3, $processEntityList->count());
+        $this->assertEquals(1, $processEntityList->count());
     }
 
     public function testMultipleSlotsScopeDisabled()
@@ -665,7 +663,8 @@ class ProcessTest extends \BO\Zmsbackend\Tests\Service\Base
         $availability = $availabilityQuery->updateEntity($availability->id, $availability);
         $process = $query->writeEntityReserved($processTest, $now);
         $processEntityList = $query->readEntityList($process->getId());
-        $this->assertEquals(2, $processEntityList->count());
+        $this->assertEquals(1, $processEntityList->count());
+        $this->assertEquals(2, $process->getFirstAppointment()->slotCount);
     }
 
     public function testMultipleSlotsScopeEnabled()
@@ -705,7 +704,8 @@ class ProcessTest extends \BO\Zmsbackend\Tests\Service\Base
         $availability = $availabilityQuery->updateEntity($availability->id, $availability);
         $process = $query->writeEntityReserved($processTest, $now);
         $processEntityList = $query->readEntityList($process->getId());
-        $this->assertEquals(2, $processEntityList->count());
+        $this->assertEquals(1, $processEntityList->count());
+        $this->assertEquals(2, $process->getFirstAppointment()->slotCount);
     }
 
     public function testCancelProcess()

@@ -38,8 +38,12 @@ class AppointmentProcessLimitsValidationServiceTest extends TestCase
             AppointmentProcessLimitsValidationService::validateSlotLimit(3, '2')
         );
         $this->assertSame(
+            ['errors' => []],
+            AppointmentProcessLimitsValidationService::validateSlotLimit(96, null)
+        );
+        $this->assertSame(
             ['errors' => [ErrorMessages::get('tooManySlotsPerAppointment')]],
-            AppointmentProcessLimitsValidationService::validateSlotLimit(26, null)
+            AppointmentProcessLimitsValidationService::validateSlotLimit(97, null)
         );
         $this->assertSame(
             ['errors' => []],

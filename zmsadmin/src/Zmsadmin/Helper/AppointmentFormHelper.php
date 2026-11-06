@@ -234,4 +234,64 @@ class AppointmentFormHelper
         }
         return $provider->getSlotTimeInMinutes();
     }
+
+    /**
+     * How many stored slots one step of "Termindauer in Minuten" covers.
+     * The step is the greatest common divisor of the location's service
+     * lengths, counted in the stored slot size.
+     */
+    public static function appointmentIntervalSlots(mixed $requestList): int
+    {
+        $counts = [];
+        if ($requestList) {
+            foreach ($requestList as $request) {
+                $count = (int) ($request['timeSlotCount'] ?? 0);
+                if ($count > 0) {
+                    $counts[] = $count;
+                }
+            }
+        }
+
+        return self::greatestCommonDivisorOf($counts) ?: 1;
+    }
+
+    /**
+     * @return list<int>
+     */
+    public static function durationSlotCounts(mixed $requestList, int $steps = 20): array
+    {
+        $slotStep = self::appointmentIntervalSlots($requestList);
+        $counts = [];
+        for ($step = 1; $step <= $steps; $step++) {
+            $counts[] = $step * $slotStep;
+        }
+
+        return $counts;
+    }
+
+    /**
+     * @param list<int> $values
+     */
+    private static function greatestCommonDivisorOf(array $values): int
+    {
+        $current = 0;
+        foreach ($values as $value) {
+            $current = $current === 0 ? $value : self::greatestCommonDivisor($current, $value);
+        }
+
+        return $current;
+    }
+
+    private static function greatestCommonDivisor(int $left, int $right): int
+    {
+        $left = abs($left);
+        $right = abs($right);
+        while ($right !== 0) {
+            $remainder = $left % $right;
+            $left = $right;
+            $right = $remainder;
+        }
+
+        return $left;
+    }
 }

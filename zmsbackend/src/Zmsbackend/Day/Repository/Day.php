@@ -14,6 +14,7 @@ class Day extends \BO\Zmsbackend\Query\Base
             year SMALLINT,
             month TINYINT,
             slotsRequired TINYINT,
+            appointmentInterval SMALLINT NOT NULL DEFAULT 5,
             PRIMARY KEY (scopeID, year, month) 
         );
     ';
@@ -23,7 +24,25 @@ class Day extends \BO\Zmsbackend\Query\Base
             scopeID = :scopeID,
             year = :year,
             month = :month,
-            slotsRequired = :slotsRequired;
+            slotsRequired = :slotsRequired,
+            appointmentInterval = :appointmentInterval;
+    ';
+
+    /**
+     * On a 5-minute grid, keep a free start only when it lands on the location's
+     * appointment step, measured from the opening start. Any other stored slot
+     * length already is the step, so those starts stay.
+     */
+    const string QUERY_ON_APPOINTMENT_INTERVAL = '
+        AND (
+            IFNULL(s.`slotTimeInMinutes`, 0) <> 5
+            OR MOD(
+                TIME_TO_SEC(s.`time`) - TIME_TO_SEC(
+                    IF(a.`appointment_start_time`, a.`appointment_start_time`, a.`start_time`)
+                ),
+                GREATEST(c.`appointmentInterval`, 1) * 60
+            ) = 0
+        )
     ';
 
     const string QUERY_DROP_TEMPORARY_SCOPELIST = 'DROP TEMPORARY TABLE IF EXISTS calendarscope;';
@@ -69,6 +88,7 @@ class Day extends \BO\Zmsbackend\Query\Base
                 WHERE cc.StandortID = s.scopeID AND cc.year = s.year
                     AND cc.month = s.month AND cc.day = s.day
             )
+            ' . self::QUERY_ON_APPOINTMENT_INTERVAL . '
             GROUP BY s.slotID
             HAVING ancestorCount >= slotsRequired
         ) AS dayaggregate
@@ -157,6 +177,7 @@ class Day extends \BO\Zmsbackend\Query\Base
                         AND s.month = cc.month
                         AND s.day = cc.day
                 WHERE cc.id IS NULL
+                ' . self::QUERY_ON_APPOINTMENT_INTERVAL . '
             ) AS slotaggregate
             GROUP BY slotID, scopeID
             HAVING ancestorCount >= slotsRequired

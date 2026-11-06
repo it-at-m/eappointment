@@ -137,18 +137,11 @@ class Process extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfaces\R
             }
         }
 
-        foreach ($slotList as $slot) {
-            $newProcess = clone $process;
-            $newProcess->getFirstAppointment()->setTime($slot->time);
-            if (! $newProcess->getFirstAppointment()->isMatching($process->getFirstAppointment())) {
-                $this->writeNewProcess($newProcess, $now, $process->id, 0, true, $userAccount);
-            }
-        }
-
         $appointment->addSlotCount($slotList->count());
 
         $processEntity = $this->updateEntity($process, $now, $resolveReferences, null, $userAccount);
         $process = $this->readEntity($process->getId(), $process->authKey, $resolveReferences);
+        (new \BO\Zmsbackend\Slot\Service\Slot())->writeSlotProcessMappingFor($process->getId());
 
         \BO\Zmsbackend\Log\Service\Log::writeProcessLog("CREATE (\BO\Zmsbackend\Process\Service\Process::updateEntityWithSlots) $process ", \BO\Zmsbackend\Log\Service\Log::ACTION_EDITED, $process, $userAccount);
         return $processEntity;
