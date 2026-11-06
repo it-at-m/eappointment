@@ -7,8 +7,6 @@ namespace BO\Zmsbackend\Helper;
  */
 class CalculateSlots
 {
-    private const int MAX_WORKERS = 1;
-
     private const string CALCULATION_LOCK = 'zms_calculate_slots';
 
     protected $verbose = false;
@@ -155,30 +153,6 @@ class CalculateSlots
         }
     }
 
-    /**
-     * @param list<int> $scopeIds
-     */
-    public function writeScopeIds(\DateTimeInterface $now, array $scopeIds): void
-    {
-        \BO\Zmsbackend\Connection\Select::setTransaction();
-        \BO\Zmsbackend\Connection\Select::getWriteConnection();
-        $scopes = [];
-        foreach ((new \BO\Zmsbackend\Scope\Service\Scope())->readList(1) as $scope) {
-            $scopes[(int) $scope->id] = $scope;
-        }
-        $total = count($scopeIds);
-        foreach ($scopeIds as $key => $scopeId) {
-            $scope = $scopes[(int) $scopeId] ?? null;
-            if ($scope === null) {
-                $this->log("Skip missing scope $scopeId", (int) $scopeId);
-                continue;
-            }
-            if ($this->writeCalculatedScope($scope, $now)) {
-                $this->log("Calculated slots $key/" . ($total - 1) . " for $scope", (int) $scope->id);
-            }
-        }
-    }
-
     private function writeCalculationsLocked(\DateTimeInterface $now, bool $daily): bool
     {
         (new \BO\Zmsbackend\Config\Service\Config())->replaceProperty('status__calculateSlotsLastStart', $now->format('Y-m-d H:i:s'));
@@ -191,7 +165,20 @@ class CalculateSlots
         \BO\Zmsbackend\Connection\Select::writeCommit();
         $scopeList = (new \BO\Zmsbackend\Scope\Service\Scope())->readList(1);
         \BO\Zmsbackend\Connection\Select::writeCommit();
-        $this->writeScopesInParallel($scopeList, $now);
+        $scopeIds = [];
+        foreach ($scopeList as $scope) {
+            $scopeId = (int) $scope->id;
+            if ($scopeId > 0) {
+                $scopeIds[] = $scopeId;
+            }
+        }
+        $this->calculatedScopeIds = $scopeIds;
+        $scopeLength = count($scopeList) - 1;
+        foreach ($scopeList as $key => $scope) {
+            if ($this->writeCalculatedScope($scope, $now)) {
+                $this->log("Calculated slots $key/$scopeLength for $scope", (int) $scope->id);
+            }
+        }
 
         $this->writeCanceledSlots($now);
 
@@ -227,164 +214,6 @@ class CalculateSlots
             return true;
         }
         return false;
-    }
-
-    private function writeScopesInParallel(iterable $scopeList, \DateTimeInterface $now): void
-    {
-        $scopeIds = [];
-        foreach ($scopeList as $scope) {
-            $scopeId = (int) $scope->id;
-            if ($scopeId > 0) {
-                $scopeIds[] = $scopeId;
-            }
-        }
-        $this->calculatedScopeIds = $scopeIds;
-        $workerCount = min(self::MAX_WORKERS, count($scopeIds));
-        if ($workerCount <= 1) {
-            $this->writeScopeIds($now, $scopeIds);
-            return;
-        }
-
-        $chunks = array_fill(0, $workerCount, []);
-        foreach ($scopeIds as $index => $scopeId) {
-            $chunks[$index % $workerCount][] = $scopeId;
-        }
-        $this->log("Calculate " . count($scopeIds) . " scopes on $workerCount workers");
-        foreach ($this->runScopeWorkers($chunks, $now) as $chunk) {
-            $this->log("Retry scope chunk in this process: " . implode(',', $chunk));
-            $this->writeScopeIds($now, $chunk);
-        }
-    }
-
-    /**
-     * @param list<list<int>> $chunks
-     * @return list<list<int>>
-     */
-    private function runScopeWorkers(array $chunks, \DateTimeInterface $now): array
-    {
-        $running = [];
-        $failed = [];
-        foreach ($chunks as $index => $chunk) {
-            $worker = $this->openScopeWorker($chunk, $now);
-            if ($worker === null) {
-                $failed[] = $chunk;
-                continue;
-            }
-            $running[$index] = $worker;
-        }
-
-        while ($running !== []) {
-            $this->waitForScopeWorkers($running);
-            foreach ($running as $index => $worker) {
-                $this->forwardWorker($worker['stdout'], 'stdout');
-                $this->forwardWorker($worker['stderr'], 'stderr');
-                $status = proc_get_status($worker['process']);
-                if ($status['running']) {
-                    continue;
-                }
-                $this->forwardWorker($worker['stdout'], 'stdout');
-                $this->forwardWorker($worker['stderr'], 'stderr');
-                fclose($worker['stdout']);
-                fclose($worker['stderr']);
-                proc_close($worker['process']);
-                if ($status['exitcode'] !== 0) {
-                    $failed[] = $chunks[$index];
-                }
-                unset($running[$index]);
-            }
-        }
-
-        return $failed;
-    }
-
-    /**
-     * @param list<int> $scopeIds
-     * @return array{process: resource, stdout: resource, stderr: resource}|null
-     */
-    private function openScopeWorker(array $scopeIds, \DateTimeInterface $now): ?array
-    {
-        $command = [
-            $this->phpBinary(),
-            dirname(__DIR__, 3) . '/bin/calculateSlots',
-            '--commit',
-            '--scopes=' . implode(',', $scopeIds),
-            $now->format('c'),
-        ];
-        if ($this->verbose) {
-            $command[] = '--verbose';
-        }
-        $pipes = [];
-        $process = proc_open($command, [
-            0 => ['pipe', 'r'],
-            1 => ['pipe', 'w'],
-            2 => ['pipe', 'w'],
-        ], $pipes, dirname(__DIR__, 3));
-        if (!is_resource($process)) {
-            return null;
-        }
-        fclose($pipes[0]);
-        stream_set_blocking($pipes[1], false);
-        stream_set_blocking($pipes[2], false);
-
-        return [
-            'process' => $process,
-            'stdout' => $pipes[1],
-            'stderr' => $pipes[2],
-        ];
-    }
-
-    /**
-     * @param array<int, array{process: resource, stdout: resource, stderr: resource}> $running
-     */
-    private function waitForScopeWorkers(array $running): void
-    {
-        $read = [];
-        foreach ($running as $worker) {
-            if (is_resource($worker['stdout'])) {
-                $read[] = $worker['stdout'];
-            }
-            if (is_resource($worker['stderr'])) {
-                $read[] = $worker['stderr'];
-            }
-        }
-        if ($read === []) {
-            return;
-        }
-        $write = null;
-        $except = null;
-        @stream_select($read, $write, $except, 1);
-    }
-
-    /**
-     * @param resource $from
-     */
-    private function forwardWorker($from, string $which): void
-    {
-        if (!is_resource($from)) {
-            return;
-        }
-        $chunk = stream_get_contents($from);
-        if (!is_string($chunk) || $chunk === '') {
-            return;
-        }
-        if ($which === 'stderr' && defined('STDERR')) {
-            fwrite(STDERR, $chunk);
-            return;
-        }
-        if (defined('STDOUT')) {
-            fwrite(STDOUT, $chunk);
-        }
-    }
-
-    private function phpBinary(): string
-    {
-        $binary = PHP_BINARY;
-        $base = strtolower(basename($binary));
-        if ($binary !== '' && is_executable($binary) && !str_contains($base, 'fpm') && !str_contains($base, 'httpd')) {
-            return $binary;
-        }
-
-        return 'php';
     }
 
     private function acquireCalculationLock(): bool
