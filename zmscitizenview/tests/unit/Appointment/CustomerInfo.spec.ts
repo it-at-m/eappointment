@@ -93,6 +93,22 @@ describe("CustomerInfo", () => {
   // helper function: finds the back-button (first Button)
   const findBackButton = (wrapper: any) => wrapper.findAll(".muc-button")[0];
 
+  describe("Mail limit callout", () => {
+    it("renders the callout between the contact form and the buttons", () => {
+      const wrapper = createWrapper({ mailLimitReached: true });
+      const html = wrapper.html();
+      const formAt = html.indexOf("<form");
+      const calloutAt = html.indexOf(
+        "apiErrorTooManyAppointmentsWithSameMailHeader"
+      );
+      const buttonsAt = html.indexOf("m-button-group");
+
+      expect(formAt).toBeGreaterThan(-1);
+      expect(calloutAt).toBeGreaterThan(formAt);
+      expect(buttonsAt).toBeGreaterThan(calloutAt);
+    });
+  });
+
   describe("Form Validation", () => {
     it("should not emit next when form is invalid", async () => {
       const wrapper = createWrapper();
