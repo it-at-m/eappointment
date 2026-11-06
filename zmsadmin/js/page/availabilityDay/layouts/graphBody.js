@@ -49,11 +49,11 @@ const GraphBodyLayout = (props) => {
                     </div>
                 </div>
                 <div className="grid__item nine-tenths">
-                    <div className="availability-timetable_container" ref={refScroll} style={{ fontSize: "70px" }} >
+                    <div className="availability-timetable_container" ref={refScroll} style={{ fontSize: "70px", "--lane-extra": `${props.laneExtra}rem` }} >
                         <div className="inner">
                             {background()}
                             {renderConflictLayer(props.showConflicts, props.conflicts)}
-                            <div className="bars opening-level">{props.openings}</div>
+                            <div className={`bars opening-level${props.laneExtra > 0 ? ' opening-level--lanes' : ''}`}>{props.openings}</div>
                         </div>
                     </div>
                 </div>
@@ -67,7 +67,12 @@ GraphBodyLayout.propTypes = {
     numberOfAppointments: PropTypes.node,
     appointments: PropTypes.node,
     openings: PropTypes.node,
+    laneExtra: PropTypes.number,
     showConflicts: PropTypes.bool
+}
+
+GraphBodyLayout.defaultProps = {
+    laneExtra: 0
 }
 
 export default GraphBodyLayout

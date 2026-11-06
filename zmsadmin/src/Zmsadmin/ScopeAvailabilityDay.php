@@ -68,6 +68,12 @@ class ScopeAvailabilityDay extends BaseController
 
         foreach ($availabilityList->getSlotListByType('appointment') as $slot) {
             $time = $slot->time;
+            if (isset($buckets[$time])) {
+                // Overlapping availabilities add up their workstations
+                $buckets[$time]['public'] += $slot->public;
+                $buckets[$time]['intern'] += $slot->intern;
+                continue;
+            }
             $buckets[$time] = [
                 'time' => $time,
                 'timeString' => $slot->getTimeString(),

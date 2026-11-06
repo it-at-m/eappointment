@@ -3,16 +3,27 @@
 }
 
 
+// With several lanes the baseline would only run through the bars
+.availability-timetable .availability-timetable_container .inner .bars.opening-level.opening-level--lanes {
+    border-bottom: none;
+}
+
 .availability-timetable .availability-timetable_legend .legend__item.legend_opening {
     top: 4rem;
 }
 
+// --lane-extra is the room for additional lanes of overlapping openings (set in graphBody.js)
 .availability-timetable .availability-timetable_container {
-    height: 11rem;
+    height: calc(11rem + var(--lane-extra, 0rem));
 }
 
 .availability-timetable .availability-timetable_container .inner .background-level {
-    height: 6rem;
+    height: calc(6rem + var(--lane-extra, 0rem));
+}
+
+// 89% of 6rem before, now the hour labels move down together with the extra height
+.availability-timetable .availability-timetable_container .inner .background-level .time-level_item {
+    height: calc(100% - 0.66rem);
 }
 
 .print-mail {
