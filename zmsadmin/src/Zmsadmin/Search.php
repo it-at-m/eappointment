@@ -111,7 +111,7 @@ class Search extends BaseController
 
         $searchParameters = $this->buildProcessSearchParameters($workstation, $parameters, $scopeIds);
         $searchResult = \App::$http->readGetResult('/process/search/', $searchParameters);
-        $processList = $searchResult->getCollection();
+        $processList = $searchResult->getCollection() ?? new ProcessList();
         $searchMeta = $searchResult->getMeta();
         $processSearchTotal = isset($searchMeta->totalCount)
             ? (int) $searchMeta->totalCount
