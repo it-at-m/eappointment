@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "1f6021ea2fb71b0b9f08033f0203eab3",
+    "content-hash": "e04d75760742c52920c578f9fe2c95a6",
     "packages": [
         {
             "name": "dflydev/dot-access-data",
@@ -88,7 +88,7 @@
             "dist": {
                 "type": "path",
                 "url": "../mellon",
-                "reference": "4a588eed9d57d90d0a4ead7e63a83e9dd90d2782"
+                "reference": "eae71d72068e7c94b6f1f9a2953a58c744b2eba8"
             },
             "require": {
                 "ext-json": ">=0",
@@ -101,7 +101,7 @@
                 "phpunit/phpunit": "^13",
                 "roave/security-advisories": "dev-latest",
                 "squizlabs/php_codesniffer": "*",
-                "vimeo/psalm": "7.0.3"
+                "vimeo/psalm": "7.0.5"
             },
             "type": "library",
             "autoload": {
@@ -10198,16 +10198,16 @@
         },
         {
             "name": "vimeo/psalm",
-            "version": "7.0.3",
+            "version": "7.0.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/vimeo/psalm.git",
-                "reference": "8f2ac04d0ab5ed1d3cbe6e252b0f7232bc031aaf"
+                "reference": "e3586fb9542ad66e37122f7c7ddf6b9a9ea7eaec"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/vimeo/psalm/zipball/8f2ac04d0ab5ed1d3cbe6e252b0f7232bc031aaf",
-                "reference": "8f2ac04d0ab5ed1d3cbe6e252b0f7232bc031aaf",
+                "url": "https://api.github.com/repos/vimeo/psalm/zipball/e3586fb9542ad66e37122f7c7ddf6b9a9ea7eaec",
+                "reference": "e3586fb9542ad66e37122f7c7ddf6b9a9ea7eaec",
                 "shasum": ""
             },
             "require": {
@@ -10263,7 +10263,8 @@
             },
             "suggest": {
                 "ext-curl": "In order to send data to shepherd",
-                "ext-igbinary": "^2.0.5 is required, used to serialize caching data"
+                "ext-igbinary": "^2.0.5 is required, used to serialize caching data",
+                "ext-zstd": ">=0.15.0 is required, used to compress caching data"
             },
             "bin": [
                 "psalm",
@@ -10315,8 +10316,8 @@
                 "issues": "https://github.com/vimeo/psalm/issues",
                 "source": "https://github.com/vimeo/psalm"
             },
-            "time": "2026-11-04T23:28:30+00:00",
-            "published-time": "2026-11-05T00:42:32+00:00"
+            "time": "2026-11-06T22:09:24+00:00",
+            "published-time": "2026-11-07T00:41:31+00:00"
         },
         {
             "name": "webmozart/assert",
