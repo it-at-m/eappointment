@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "4b9a4d4e8f77b670c8892377152d6625",
+    "content-hash": "3e83fcd2e4258eec4cf4cf57908939af",
     "packages": [
         {
             "name": "roave/security-advisories",
@@ -6921,16 +6921,16 @@
         },
         {
             "name": "vimeo/psalm",
-            "version": "7.0.3",
+            "version": "7.0.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/vimeo/psalm.git",
-                "reference": "8f2ac04d0ab5ed1d3cbe6e252b0f7232bc031aaf"
+                "reference": "e3586fb9542ad66e37122f7c7ddf6b9a9ea7eaec"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/vimeo/psalm/zipball/8f2ac04d0ab5ed1d3cbe6e252b0f7232bc031aaf",
-                "reference": "8f2ac04d0ab5ed1d3cbe6e252b0f7232bc031aaf",
+                "url": "https://api.github.com/repos/vimeo/psalm/zipball/e3586fb9542ad66e37122f7c7ddf6b9a9ea7eaec",
+                "reference": "e3586fb9542ad66e37122f7c7ddf6b9a9ea7eaec",
                 "shasum": ""
             },
             "require": {
@@ -6986,7 +6986,8 @@
             },
             "suggest": {
                 "ext-curl": "In order to send data to shepherd",
-                "ext-igbinary": "^2.0.5 is required, used to serialize caching data"
+                "ext-igbinary": "^2.0.5 is required, used to serialize caching data",
+                "ext-zstd": ">=0.15.0 is required, used to compress caching data"
             },
             "bin": [
                 "psalm",
@@ -7038,8 +7039,8 @@
                 "issues": "https://github.com/vimeo/psalm/issues",
                 "source": "https://github.com/vimeo/psalm"
             },
-            "time": "2026-11-04T23:28:30+00:00",
-            "published-time": "2026-11-05T00:42:32+00:00"
+            "time": "2026-11-06T22:09:24+00:00",
+            "published-time": "2026-11-07T00:41:31+00:00"
         },
         {
             "name": "webmozart/assert",
