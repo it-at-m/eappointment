@@ -143,30 +143,6 @@ class Availability extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfa
         return $collection;
     }
 
-    /* not in use
-    public function readAvailabilityListByDate($scopeId, \DateTimeInterface $now, $resolveReferences = 0)
-    {
-        $collection = new Collection();
-        $query = new \BO\Zmsbackend\Availability\Repository\Availability(\BO\Zmsbackend\Query\Base::SELECT);
-        $query
-            ->addEntityMapping()
-            ->addResolvedReferences($resolveReferences)
-            ->addConditionScopeId($scopeId)
-            ->addConditionAppointmentHours()
-            ->addConditionDate($now);
-        $result = $this->fetchList($query, new Entity());
-        if (count($result)) {
-            foreach ($result as $entity) {
-                if ($entity instanceof Entity) {
-                    $entity = $this->readResolvedReferences($entity, $resolveReferences);
-                    $collection->addEntity($entity);
-                }
-            }
-        }
-        return $collection;
-    }
-    */
-
     /*
     ** Terminkunden and Spontankunden rows whose end date is on or before $datetime
     */
