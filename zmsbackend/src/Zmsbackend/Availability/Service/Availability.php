@@ -168,7 +168,7 @@ class Availability extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfa
     */
 
     /*
-    ** Returns a list of availabilities with end date older than 4 weeks
+    ** Terminkunden and Spontankunden rows whose end date is on or before $datetime
     */
     public function readAvailabilityListBefore(\DateTimeImmutable $datetime, int $resolveReferences = 0): Collection
     {
@@ -177,7 +177,6 @@ class Availability extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfa
         $query
             ->addEntityMapping()
             ->addResolvedReferences($resolveReferences)
-            ->addConditionAppointmentHours()
             ->addConditionOnlyOld($datetime);
         $result = $this->fetchList($query, new Entity());
         if (count($result)) {

@@ -5,7 +5,7 @@ require_once(__DIR__."/script_bootstrap.php");
 $usage = <<<EOS
 
 Usage: {$argv[0]} [days|date] [--verbose] --commit
-        ATTENTION! Delete Availability Data older than 4 weeks (by default). USE WITH CAUTION!
+        ATTENTION! Delete availability data older than 30 days (by default). USE WITH CAUTION!
         days            number of days in the past to keep availability data
         date            delete all availabilities before and including this date
         --commit        no dry run, delete processes
@@ -22,7 +22,7 @@ $dayCount = preg_grep('#^\d+$#', $argv);
 $dayCount = array_shift($dayCount);
 $dates = preg_grep('#^\d\d\d\d-\d\d?-\d\d?#', $argv);
 if (!$dayCount) {
-    $dayCount = 28;
+    $dayCount = 30;
 }
 
 if ($commit || $verbose) {
