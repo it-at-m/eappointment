@@ -1,15 +1,15 @@
--- ZMSKVR-87 / ZMSKVR-601 / ZMSKVR-715: appointmentsPerMail = 1 fixture scope.
+-- ZMSKVR-87 / ZMSKVR-601 / ZMSKVR-715: appointmentsPerMail = 2 fixture scope.
 --
 -- Dedicated Standort 380 for Waffenbehörde provider 10521 (public service
 -- Waffen- bzw. Munitionsabgabe 10429902). No other ATAF feature books 10521.
--- Limit 1 active (preconfirmed/confirmed) appointment per email so the second
--- booking hits tooManyAppointmentsWithSameMail on update or preconfirm.
+-- The minimum limit is 2, so two active appointments are allowed and the third
+-- hits tooManyAppointmentsWithSameMail on update or preconfirm.
 --
 -- Hours follow Berlin now: stay on today while three hours remain, otherwise
 -- open the next day. CURDATE()/CURTIME() use zms-db TZ=Europe/Berlin.
 
 INSERT INTO `standort` (`StandortID`, `BehoerdenID`, `InfoDienstleisterID`, `Hinweis`, `Bezeichnung`, `Adresse`, `Stadtplanlink`, `Bearbeitungszeit`, `Kennung`, `Termine_ab`, `Termine_bis`, `smswarteschlange`, `smswmsbestaetigung`, `smsbenachrichtigungsfrist`, `smsbenachrichtigungstext`, `smsbestaetigungstext`, `wartenrsperre`, `wartenrhinweis`, `notruffunktion`, `notrufausgeloest`, `notrufinitiierung`, `notrufantwort`, `emailPflichtfeld`, `anmerkungPflichtfeld`, `anmerkungLabel`, `telefonPflichtfeld`, `standortinfozeile`, `standortkuerzel`, `aufrufanzeigetext`, `reservierungsdauer`, `anzahlwiederaufruf`, `startwartenr`, `endwartenr`, `letztewartenr`, `wartenrdatum`, `mehrfachtermine`, `schreibschutz`, `ohnestatistik`, `smskioskangebotsfrist`, `emailstandortadmin`, `wartenummernkontingent`, `vergebenewartenummern`, `kundenbefragung`, `kundenbef_label`, `kundenbef_emailtext`, `telefonaktiviert`, `virtuellesachbearbeiterzahl`, `datumvirtuellesachbearbeiterzahl`, `smsnachtrag`, `loeschdauer`, `updateTimestamp`, `source`, `custom_text_field_label`, `custom_text_field_active`, `custom_text_field_required`, `admin_mail_on_appointment`, `admin_mail_on_deleted`, `admin_mail_on_updated`, `admin_mail_on_mail_sent`, `appointments_per_mail`, `whitelisted_mails`, `slots_per_appointment`, `info_for_appointment`, `aktivierungsdauer`, `captcha_activated_required`, `email_confirmation_activated`, `custom_text_field2_label`, `custom_text_field2_active`, `custom_text_field2_required`, `info_for_all_appointments`, `last_display_number`, `max_display_number`, `display_number_prefix`) VALUES
-(380, 91, 10521, '', 'Waffenbehörde Mail-Limit', 'Ruppertstraße 19', '', '00:12:00', 0, 0, 60, 0, 0, 10, '', '', 0, '', 1, 0, NULL, NULL, 1, 0, '', 0, 'Waffenbehörde Mail-Limit', 'Mail-Limit', 'Herzlich Willkommen', 15, 0, 1, 999, 1, '2025-11-17', 1, 1, 1, 0, '', 999, 1, 0, '', '', 0, -1, '2025-11-17', 0, 15, NOW(), 'dldb', '', 0, 0, 0, 0, 0, 0, 1, '', 0, '', 30, 0, 1, '', 0, 0, '', 0, 9999, '');
+(380, 91, 10521, '', 'Waffenbehörde Mail-Limit', 'Ruppertstraße 19', '', '00:12:00', 0, 0, 60, 0, 0, 10, '', '', 0, '', 1, 0, NULL, NULL, 1, 0, '', 0, 'Waffenbehörde Mail-Limit', 'Mail-Limit', 'Herzlich Willkommen', 15, 0, 1, 999, 1, '2025-11-17', 1, 1, 1, 0, '', 999, 1, 0, '', '', 0, -1, '2025-11-17', 0, 15, NOW(), 'dldb', '', 0, 0, 0, 0, 0, 0, 2, '', 0, '', 30, 0, 1, '', 0, 0, '', 0, 9999, '');
 
 INSERT INTO `preferences` (`entity`, `id`, `groupName`, `name`, `value`, `updateTimestamp`) VALUES
 ('scope', 380, 'appointment', 'activationDuration', '30', NOW()),
@@ -18,7 +18,7 @@ INSERT INTO `preferences` (`entity`, `id`, `groupName`, `name`, `value`, `update
 ('scope', 380, 'appointment', 'multipleSlotsEnabled', '1', NOW()),
 ('scope', 380, 'appointment', 'reservationDuration', '15', NOW()),
 ('scope', 380, 'appointment', 'startInDaysDefault', '0', NOW()),
-('scope', 380, 'client', 'appointmentsPerMail', '1', NOW()),
+('scope', 380, 'client', 'appointmentsPerMail', '2', NOW()),
 ('scope', 380, 'client', 'captchaActivatedRequired', '0', NOW()),
 ('scope', 380, 'client', 'emailConfirmationActivated', '1', NOW()),
 ('scope', 380, 'client', 'emailFrom', 'noreply-terminvereinbarung@muenchen.de', NOW()),
