@@ -375,9 +375,9 @@ class ProcessDeleteMailTest extends \BO\Zmsbackend\Tests\Api\Base
         $storedScopeId = (int) $storedProcess->getScopeId();
         $this->assertNotSame($originalScopeId, $storedScopeId);
 
-        $this->setWorkstation(scopeId: $originalScopeId)
-            ->getUseraccount()
-            ->setPermissions('appointment');
+        $workstation = $this->setWorkstation(scopeId: $originalScopeId);
+        $workstation['queue'] = ['clusterEnabled' => 0];
+        $workstation->getUseraccount()->setPermissions('appointment');
 
         $payload = json_decode(
             $this->readFixture('GetProcess_10029.json'),
