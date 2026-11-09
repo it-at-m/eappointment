@@ -174,8 +174,9 @@ class Ticketprinter extends \BO\Zmsbackend\Base
     {
         $contact = new \BO\Zmsentities\Contact();
 
-        if (1 == $entity->getScopeList()->count()) {
-            $department = (new \BO\Zmsbackend\Department\Service\Department())->readByScopeId($entity->getScopeList()->getFirst()->id);
+        $scope = $entity->getScopeList()->getFirst();
+        if (1 == $entity->getScopeList()->count() && $scope instanceof \BO\Zmsentities\Scope) {
+            $department = (new \BO\Zmsbackend\Department\Service\Department())->readByScopeId($scope->id);
             $contact->name = $department->name;
         }
 

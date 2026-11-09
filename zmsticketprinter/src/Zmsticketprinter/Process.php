@@ -40,7 +40,7 @@ class Process extends BaseController
         $process = \App::$http->readGetResult(
             '/scope/' . $scopeId . '/waitingnumber/' . $ticketprinterHelper->getEntity()->hash . '/',
             $requestId ? ['requestId' => $requestId] : null
-        )->getEntity();
+        )->requireEntity();
 
         $scope = new Scope($process->scope);
         $department = \App::$http->readGetResult('/scope/' . $scope->getId() . '/department/')->getEntity();

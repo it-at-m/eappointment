@@ -88,7 +88,7 @@ class Ticketprinter
 
     protected function getByHash(string $hash, Entity $entity): Entity
     {
-        $entityWithHash = \App::$http->readGetResult('/ticketprinter/' . $hash . '/')->getEntity();
+        $entityWithHash = \App::$http->readGetResult('/ticketprinter/' . $hash . '/')->requireEntity();
         $entity->hash = $entityWithHash->hash;
         $entity->enabled = $entityWithHash->enabled;
         return $entity;
@@ -102,7 +102,7 @@ class Ticketprinter
         $entityWithHash = \App::$http->readGetResult(
             '/organisation/' . $this->organisation->getId() . '/hash/',
             ['name' => (isset($this->requestParams['name'])) ? $this->requestParams['name'] : '']
-        )->getEntity();
+        )->requireEntity();
         TicketprinterClient::setHash($entityWithHash->hash, $request);
         $entity->hash = $entityWithHash->hash;
         $entity->enabled = $entityWithHash->enabled;

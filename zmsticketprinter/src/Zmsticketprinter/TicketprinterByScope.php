@@ -12,6 +12,7 @@ namespace BO\Zmsticketprinter;
 use BO\Slim\Render;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
+use BO\Zmsentities\Scope;
 use BO\Zmsticketprinter\Helper\QueueListHelper;
 use BO\Zmsticketprinter\Helper\TemplateFinder;
 
@@ -37,6 +38,9 @@ class TicketprinterByScope extends BaseController
         $ticketprinterHelper = (new Helper\Ticketprinter($args, $request));
         $ticketprinter = $ticketprinterHelper->getEntity();
         $scope = $ticketprinter->getScopeList()->getFirst();
+        if (!$scope instanceof Scope) {
+            throw new Exception\ScopeNotFound();
+        }
         $department = \App::$http->readGetResult('/scope/' . $scope->id . '/department/')->getEntity();
         $organisation = $ticketprinterHelper->getOrganisation();
 
