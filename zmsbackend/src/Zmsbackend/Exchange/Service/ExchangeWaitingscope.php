@@ -266,5 +266,4 @@ class ExchangeWaitingscope extends \BO\Zmsbackend\Base implements \BO\Zmsbackend
 
         return $this;
     }
-
 }

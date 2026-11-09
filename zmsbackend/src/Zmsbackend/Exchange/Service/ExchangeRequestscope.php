@@ -97,5 +97,4 @@ class ExchangeRequestscope extends \BO\Zmsbackend\Base
         }
         return $entity;
     }
-
 }

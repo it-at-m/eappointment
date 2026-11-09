@@ -65,5 +65,4 @@ class ExchangeSlotscope extends \BO\Zmsbackend\Base
         $entity->addDataSet(["_"]);
         return $entity;
     }
-
 }

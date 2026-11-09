@@ -166,5 +166,4 @@ class ExchangeCapacityscope extends \BO\Zmsbackend\Base
 
         return $entity;
     }
-
 }
