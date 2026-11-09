@@ -535,6 +535,7 @@ class SearchTest extends Base
             'middle page' => [6, [1, 5, 6, 7, 12]],
             'gap of one page shows the page' => [4, [1, 2, 3, 4, 5, 12]],
             'last page' => [12, [1, 11, 12]],
+            'very large page number' => [100000000, [1, 99999999, 100000000]],
         ];
     }
 

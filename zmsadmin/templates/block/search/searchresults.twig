@@ -203,8 +203,13 @@
                                 <span class="disabled"><i class="fas fa-chevron-left" aria-hidden="true"></i></span>
                             {% endif %}
                         </li>
-                        {# First, last, current page and its neighbours; "..." only when it hides more than one page. #}
-                        {% for p in 1..totalPages %}
+                        {# First, last, current page and its neighbours; "..." only when it hides more than one page.
+                           Only these candidates are checked, so a huge page number does not build a huge range. #}
+                        {% set pageCandidates = [1, 2, currentPage - 1, currentPage, currentPage + 1, totalPages - 1, totalPages]
+                            |filter(p => p >= 1 and p <= totalPages)
+                            |sort
+                            |reduce((pages, p) => p in pages ? pages : pages|merge([p]), []) %}
+                        {% for p in pageCandidates %}
                             {% if p == 1 or p == totalPages or (p - currentPage)|abs <= 1
                                 or (p == 2 and currentPage == 4) or (p == totalPages - 1 and currentPage == totalPages - 3) %}
                                 <li>
