@@ -21,7 +21,9 @@ class ExchangeCapacityscope extends \BO\Zmsbackend\Base
         $firstScopeId = $subjectIdList[0];
         $scope = (new \BO\Zmsbackend\Scope\Service\Scope())->readEntity($firstScopeId);
         $entity = new Exchange();
-        $entity['title'] = "Terminkapazität " . $scope->contact->name . " " . $scope->shortName;
+        $entity['title'] = "Terminkapazität "
+            . (($scope && $scope->contact) ? $scope->contact->name : 'Unknown')
+            . " " . ($scope ? $scope->shortName : 'Unknown');
 
         $unfiltered = $datestart === null || $dateend === null;
         if ($unfiltered) {

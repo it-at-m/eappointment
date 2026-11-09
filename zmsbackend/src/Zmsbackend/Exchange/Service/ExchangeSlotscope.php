@@ -11,7 +11,9 @@ class ExchangeSlotscope extends \BO\Zmsbackend\Base
     ): Exchange {
         $scope = (new \BO\Zmsbackend\Scope\Service\Scope())->readEntity($subjectid);
         $entity = new Exchange();
-        $entity['title'] = "Slotbelegung " . $scope->contact->name . " " . $scope->shortName;
+        $entity['title'] = "Slotbelegung "
+            . (($scope && $scope->contact) ? $scope->contact->name : 'Unknown')
+            . " " . ($scope ? $scope->shortName : 'Unknown');
         //$entity->setPeriod($datestart, $dateend, $period);
         $entity->addDictionaryEntry('subjectid', 'string', 'ID of a scope', 'scope.id');
         $entity->addDictionaryEntry('date', 'string', 'Date of day');
