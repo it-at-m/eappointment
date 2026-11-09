@@ -11,6 +11,9 @@ use BO\Slim\Render;
 use BO\Mellon\Validator;
 use BO\Zmsbackend\Mail\Service\Mail;
 use BO\Zmsbackend\Config\Service\Config;
+use BO\Zmsbackend\Cluster\Service\Cluster as ClusterService;
+use BO\Zmsbackend\Scope\Exception\ScopeNotFound;
+use BO\Zmsbackend\Scope\Service\Scope as ScopeService;
 use BO\Zmsbackend\Process\Service\Process as ProcessRepository;
 use BO\Zmsbackend\Department\Service\Department as DepartmentRepository;
 use BO\Zmsentities\Process;
@@ -31,26 +34,81 @@ class ProcessDeleteMail extends \BO\Zmsbackend\Api\BaseController
         array $args
     ) {
         $input = Validator::input()->isJson()->assertValid()->getValue();
-        $process = new Process($input);
+        $requestProcess = new Process($input);
         $initiator = Validator::param('initiator')->isString()->getValue();
 
-        $process->testValid();
-        $this->testProcessAccess($process);
-        $process = (new ProcessRepository())->readEntity($process->id, $process->authKey);
+        $requestProcess->testValid();
+        $this->testProcessAccess($requestProcess);
+
+        $process = (new ProcessRepository())->readEntity(
+            $requestProcess->id,
+            $requestProcess->authKey
+        );
+
         if (!$process instanceof Process) {
             throw new \BO\Zmsbackend\Process\Exception\ProcessNotFound();
         }
+
         $this->testEmailRequired($process);
+
+        // Ursprüngliche Buchungsdaten ausschließlich für die Absagemail.
+        $mailProcess = clone $process;
+        $originalAppointment = $requestProcess->getAppointments()->getFirst();
+
+        $hasOriginalDate = $originalAppointment !== null &&
+            (int) $originalAppointment->date > 0;
+
+        $hasOriginalRequests = isset($input['requests']);
+
+        $originalScopeId = (int) $requestProcess->getScopeId();
+        $hasDifferentOriginalScope = $originalScopeId > 0 &&
+            $originalScopeId !== (int) $process->getScopeId();
+
+        if (
+            'admin' === $initiator &&
+            ($hasOriginalDate || $hasOriginalRequests || $hasDifferentOriginalScope)
+        ) {
+            $workstation = (new \BO\Zmsbackend\Helper\User($request))
+                ->checkPermissions('appointment');
+
+            if ($hasOriginalDate) {
+                $mailProcess->getFirstAppointment()->date =
+                    $originalAppointment->date;
+            }
+
+            if ($hasOriginalRequests) {
+                $mailProcess->requests = clone $requestProcess->getRequests();
+            }
+
+            if ($hasDifferentOriginalScope) {
+                $originalScope = (new ScopeService())->readEntity($originalScopeId, 1);
+                if ($originalScope === null) {
+                    throw new ScopeNotFound();
+                }
+
+                $cluster = (new ClusterService())->readByScopeId(
+                    $workstation->getScope()->getId(),
+                    1
+                );
+                $workstation->validateProcessScopeAccess(
+                    $workstation->getScopeList($cluster),
+                    $requestProcess
+                );
+
+                $mailProcess->scope = clone $originalScope;
+            }
+        }
 
         \BO\Zmsbackend\Connection\Select::getWriteConnection();
 
-        $mail = $this->writeMail($process, $initiator);
+        $mail = $this->writeMail($mailProcess, $initiator);
 
         $message = \BO\Zmsbackend\Api\Response\Message::create($request);
         $message->data = $mail;
 
         $response = Render::withLastModified($response, time(), '0');
         $response = Render::withJson($response, $message, 200);
+
         return $response;
     }
 
