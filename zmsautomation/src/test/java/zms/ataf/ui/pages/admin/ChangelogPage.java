@@ -1,15 +1,19 @@
 package zms.ataf.ui.pages.admin;
 
 import java.time.Duration;
+import java.util.List;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.ElementClickInterceptedException;
 import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 
+import ataf.core.logging.ScenarioLogManager;
 import ataf.web.pages.BasePage;
 
 /**
@@ -31,6 +35,8 @@ public class ChangelogPage extends BasePage {
                     + "//div[contains(@class,'eight-twelfths')]");
     private static final By RELEASE_NOTES_EDIT = By.cssSelector(
             "a.edit[data-key='changelog'][data-property='urlReleaseNotes']");
+    private static final By RELEASE_NOTES_SAVE = By.xpath(
+            "//div[contains(@class,'lightbox__content')]//button[normalize-space()='Speichern']");
 
     public ChangelogPage(RemoteWebDriver driver) {
         super(driver);
@@ -69,9 +75,9 @@ public class ChangelogPage extends BasePage {
     }
 
     public void setReleaseNotesLink(String url) {
-        WebElement edit = waitForPage().until(ExpectedConditions.presenceOfElementLocated(RELEASE_NOTES_EDIT));
-        ((JavascriptExecutor) DRIVER).executeScript("arguments[0].scrollIntoView({block:'center'});", edit);
-        waitForPage().until(ExpectedConditions.elementToBeClickable(edit)).click();
+        clickPastNotruf(RELEASE_NOTES_EDIT);
+        // The alarm can arrive while the editor opens. Typing into a covered field fails the same way.
+        dismissNotrufOverlayIfCovering();
         WebElement textarea = waitForPage().until(ExpectedConditions.visibilityOfElementLocated(
                 By.cssSelector("div.lightbox__content textarea[name='value']")));
         textarea.clear();
@@ -79,17 +85,76 @@ public class ChangelogPage extends BasePage {
         if (!url.equals(textarea.getAttribute("value"))) {
             ((JavascriptExecutor) DRIVER).executeScript("arguments[0].value = arguments[1];", textarea, url);
         }
-        waitForPage().until(ExpectedConditions.elementToBeClickable(
-                By.xpath("//div[contains(@class,'lightbox__content')]//button[normalize-space()='Speichern']")))
-                .click();
+        clickPastNotruf(RELEASE_NOTES_SAVE);
         waitForPage().until(ExpectedConditions.urlContains("success=config_saved"));
         assertReleaseNotesLink(url);
     }
 
     public void openChangelog() {
-        WebElement link = waitForPage().until(ExpectedConditions.elementToBeClickable(HISTORY_LINK));
-        link.click();
+        clickPastNotruf(HISTORY_LINK);
         waitForPage().until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("p.changelog-intro")));
+    }
+
+    /**
+     * A parallel scenario can raise Notruf on this Standort. The overlay is fixed over the
+     * whole page, so the click lands on the message instead of the release notes control.
+     * Saving reloads the page and the alarm comes back, which is why the footer link uses this too.
+     */
+    private void clickPastNotruf(By locator) {
+        dismissNotrufOverlayIfCovering();
+        WebElement element = scrollIntoView(locator);
+        try {
+            waitForPage().until(ExpectedConditions.elementToBeClickable(element)).click();
+        } catch (ElementClickInterceptedException | StaleElementReferenceException intercepted) {
+            dismissNotrufOverlayIfCovering();
+            element = scrollIntoView(locator);
+            try {
+                element.click();
+            } catch (ElementClickInterceptedException | StaleElementReferenceException stillCovered) {
+                ScenarioLogManager.getLogger().warn("Notruf still covers the control, clicking through it.");
+                element = scrollIntoView(locator);
+                ((JavascriptExecutor) DRIVER).executeScript("arguments[0].click();", element);
+            }
+        }
+    }
+
+    private WebElement scrollIntoView(By locator) {
+        WebElement element = waitForPage().until(ExpectedConditions.presenceOfElementLocated(locator));
+        ((JavascriptExecutor) DRIVER).executeScript("arguments[0].scrollIntoView({block:'center'});", element);
+        return element;
+    }
+
+    private void dismissNotrufOverlayIfCovering() {
+        WebElement hide = displayedHideButton();
+        if (hide == null) {
+            return;
+        }
+        ScenarioLogManager.getLogger().info("Notruf overlay is covering the page, minimizing it");
+        try {
+            hide.click();
+        } catch (ElementClickInterceptedException | StaleElementReferenceException intercepted) {
+            hide = displayedHideButton();
+            if (hide == null) {
+                return;
+            }
+            ((JavascriptExecutor) DRIVER).executeScript("arguments[0].click();", hide);
+        }
+        new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".emergency[data-minimized]")));
+    }
+
+    private WebElement displayedHideButton() {
+        List<WebElement> hideButtons = DRIVER.findElements(By.cssSelector("button.emergency__button-hide"));
+        for (WebElement candidate : hideButtons) {
+            try {
+                if (candidate.isDisplayed()) {
+                    return candidate;
+                }
+            } catch (StaleElementReferenceException ignored) {
+                // The emergency poll rewrote the bar between finding it and reading it.
+            }
+        }
+        return null;
     }
 
     public void assertIntroductionLinksTo(String url) {
