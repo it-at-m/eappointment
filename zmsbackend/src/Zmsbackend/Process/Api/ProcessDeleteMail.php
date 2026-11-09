@@ -11,6 +11,9 @@ use BO\Slim\Render;
 use BO\Mellon\Validator;
 use BO\Zmsbackend\Mail\Service\Mail;
 use BO\Zmsbackend\Config\Service\Config;
+use BO\Zmsbackend\Cluster\Service\Cluster as ClusterService;
+use BO\Zmsbackend\Scope\Exception\ScopeNotFound;
+use BO\Zmsbackend\Scope\Service\Scope as ScopeService;
 use BO\Zmsbackend\Process\Service\Process as ProcessRepository;
 use BO\Zmsbackend\Department\Service\Department as DepartmentRepository;
 use BO\Zmsentities\Process;
@@ -57,11 +60,15 @@ class ProcessDeleteMail extends \BO\Zmsbackend\Api\BaseController
 
         $hasOriginalRequests = isset($input['requests']);
 
+        $originalScopeId = (int) $requestProcess->getScopeId();
+        $hasDifferentOriginalScope = $originalScopeId > 0 &&
+            $originalScopeId !== (int) $process->getScopeId();
+
         if (
             'admin' === $initiator &&
-            ($hasOriginalDate || $hasOriginalRequests)
+            ($hasOriginalDate || $hasOriginalRequests || $hasDifferentOriginalScope)
         ) {
-            (new \BO\Zmsbackend\Helper\User($request))
+            $workstation = (new \BO\Zmsbackend\Helper\User($request))
                 ->checkPermissions('appointment');
 
             if ($hasOriginalDate) {
@@ -71,6 +78,24 @@ class ProcessDeleteMail extends \BO\Zmsbackend\Api\BaseController
 
             if ($hasOriginalRequests) {
                 $mailProcess->requests = clone $requestProcess->getRequests();
+            }
+
+            if ($hasDifferentOriginalScope) {
+                $originalScope = (new ScopeService())->readEntity($originalScopeId, 1);
+                if ($originalScope === null) {
+                    throw new ScopeNotFound();
+                }
+
+                $cluster = (new ClusterService())->readByScopeId(
+                    $workstation->getScope()->getId(),
+                    1
+                );
+                $workstation->validateProcessScopeAccess(
+                    $workstation->getScopeList($cluster),
+                    $requestProcess
+                );
+
+                $mailProcess->scope = clone $originalScope;
             }
         }
 

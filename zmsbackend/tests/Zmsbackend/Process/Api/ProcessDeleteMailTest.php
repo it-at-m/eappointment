@@ -4,6 +4,7 @@ namespace BO\Zmsbackend\Tests\Process\Api;
 
 use BO\Zmsbackend\Mail\Service\MailTemplates;
 use BO\Zmsbackend\Process\Service\Process as ProcessService;
+use BO\Zmsbackend\Scope\Service\Scope as ScopeService;
 use BO\Zmsentities\Exception\UserAccountMissingRights;
 use BO\Zmsentities\Mail;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -331,6 +332,8 @@ class ProcessDeleteMailTest extends \BO\Zmsbackend\Tests\Api\Base
         ?string $initiator
     ): Mail {
         $template = 'DATE={{ date }};'
+            . 'SCOPE_ID={{ process.scope.id }};'
+            . 'SCOPE={{ process.scope.contact.name }};'
             . '{% for group in requestGroups %}'
             . 'SERVICE={{ group.request.name }};COUNT={{ group.count }};'
             . '{% endfor %}';
@@ -359,5 +362,46 @@ class ProcessDeleteMailTest extends \BO\Zmsbackend\Tests\Api\Base
         );
 
         return new Mail($result['data']);
+    }
+
+    public function testAdminUsesOriginalScopeWithoutDateOrServices(): void
+    {
+        $originalScopeId = 141;
+        $originalScope = (new ScopeService())->readEntity($originalScopeId, 1);
+        $this->assertNotNull($originalScope);
+
+        $processService = new ProcessService();
+        $storedProcess = $processService->readEntity(self::PROCESS_ID, self::AUTHKEY);
+        $storedScopeId = (int) $storedProcess->getScopeId();
+        $this->assertNotSame($originalScopeId, $storedScopeId);
+
+        $this->setWorkstation(scopeId: $originalScopeId)
+            ->getUseraccount()
+            ->setPermissions('appointment');
+
+        $payload = json_decode(
+            $this->readFixture('GetProcess_10029.json'),
+            true,
+            512,
+            JSON_THROW_ON_ERROR
+        );
+
+        unset($payload['appointments'], $payload['requests']);
+        $payload['scope']['id'] = $originalScopeId;
+        $payload['scope']['contact']['name'] = 'Scope name from request';
+
+        $mail = $this->renderCancellationMail($payload, 'admin');
+        $html = $mail->getHtmlPart();
+        $this->assertIsString($html);
+
+        $this->assertStringContainsString('SCOPE_ID=141;', $html);
+        $this->assertStringContainsString(
+            'SCOPE=' . $originalScope->contact->name . ';',
+            $html
+        );
+        $this->assertStringNotContainsString('Scope name from request', $html);
+
+        $processAfterMail = $processService->readEntity(self::PROCESS_ID, self::AUTHKEY);
+        $this->assertSame($storedScopeId, (int) $processAfterMail->getScopeId());
     }
 }
