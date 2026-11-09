@@ -32,6 +32,12 @@ import zms.ataf.helpers.AccountCheckout;
 public class AdminPage extends BasePage {
 
     private static final String HEADER_CHANGE_SELECTION_LOCATOR = ".page-header__scope a[title=\"Auswahl ändern\"]";
+    /**
+     * The Standort form on workstation select. The queue and counter pages also
+     * contain a select named scope (cluster switch, appointment form). That one
+     * does not list every Standort the clerk can move to.
+     */
+    private static final By STANDORT_FORM_SCOPE = By.cssSelector("[data-scope-select-form] select[name=scope]");
     private static final String NAV_SELECT_LOCATION_LOCATOR = "//nav//a[normalize-space()='Standort auswählen']";
 
     protected final AdminPageContext CONTEXT;
@@ -160,7 +166,7 @@ public class AdminPage extends BasePage {
         ensureScopeSelectionForm();
         String scopeValue = Integer.toString(scopeId);
         WebElement selectEl = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
-                .until(ExpectedConditions.presenceOfElementLocated(By.name("scope")));
+                .until(ExpectedConditions.presenceOfElementLocated(STANDORT_FORM_SCOPE));
         Select select = new Select(selectEl);
         String visible = null;
         for (WebElement option : select.getOptions()) {
@@ -216,7 +222,7 @@ public class AdminPage extends BasePage {
         ScenarioLogManager.getLogger().info("Trying to click on 'Auswahl ändern' Button");
         // workstationSelect replaces the header, so "Auswahl ändern" is gone once navigation
         // finishes. A 60s wait for that link times out on Firefox while the Standort form is already open.
-        By scope = By.name("scope");
+        By scope = STANDORT_FORM_SCOPE;
         By header = By.cssSelector(HEADER_CHANGE_SELECTION_LOCATOR);
         By nav = By.xpath(NAV_SELECT_LOCATION_LOCATOR);
         WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
@@ -257,13 +263,13 @@ public class AdminPage extends BasePage {
 
     /** Opens the Standort form when SSO restored an existing workstation session. */
     private void ensureScopeSelectionForm() {
-        if (!DRIVER.findElements(By.name("scope")).isEmpty()) {
+        if (!DRIVER.findElements(STANDORT_FORM_SCOPE).isEmpty()) {
             return;
         }
         ScenarioLogManager.getLogger().info("Scope form missing after login; opening Standort selection.");
         clickInHeaderOnChangeSelectionButton();
         new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
-                .until(ExpectedConditions.presenceOfElementLocated(By.name("scope")));
+                .until(ExpectedConditions.presenceOfElementLocated(STANDORT_FORM_SCOPE));
     }
 
     public void clickInNavigationOnOverallCalendar() {
