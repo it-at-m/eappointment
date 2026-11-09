@@ -50,6 +50,14 @@ class CaptchaVerifyControllerTest extends ControllerTestCase
         return base64_encode($this->readFixture('POST_captcha_verify_payload.json'));
     }
 
+    private function captchaServiceWithClient(Client $client): CaptchaService
+    {
+        $captcha = new CaptchaService();
+        (new \ReflectionProperty(CaptchaService::class, 'httpClient'))->setValue($captcha, $client);
+
+        return $captcha;
+    }
+
     #[\Override]
     public function testRendering()
     {
@@ -79,19 +87,7 @@ class CaptchaVerifyControllerTest extends ControllerTestCase
         $handlerStack = HandlerStack::create($mockHandler);
         $mockClient = new Client(['handler' => $handlerStack]);
 
-        $captcha = new class($mockClient) extends CaptchaService {
-            public function __construct($client)
-            {
-                parent::__construct();
-                $this->httpClient = $client;
-            }
-
-            #[\Override]
-            public function verifySolution(?string $payload): array
-            {
-                return parent::verifySolution($payload);
-            }
-        };
+        $captcha = $this->captchaServiceWithClient($mockClient);
 
         $result = $captcha->verifySolution($this->encodedCaptchaPayload());
 
@@ -112,19 +108,7 @@ class CaptchaVerifyControllerTest extends ControllerTestCase
         $mockResponse = new Response(200, [], json_encode($expectedResponse['data']));
         $mockClient = new Client(['handler' => HandlerStack::create(new MockHandler([$mockResponse]))]);
 
-        $captcha = new class($mockClient) extends CaptchaService {
-            public function __construct($client)
-            {
-                parent::__construct();
-                $this->httpClient = $client;
-            }
-
-            #[\Override]
-            public function verifySolution(?string $payload): array
-            {
-                return parent::verifySolution($payload);
-            }
-        };
+        $captcha = $this->captchaServiceWithClient($mockClient);
 
         $result = $captcha->verifySolution($this->encodedCaptchaPayload());
 
@@ -142,19 +126,7 @@ class CaptchaVerifyControllerTest extends ControllerTestCase
         $mockResponse = new Response(200, [], json_encode($expectedResponse['data']));
         $mockClient = new Client(['handler' => HandlerStack::create(new MockHandler([$mockResponse]))]);
 
-        $captcha = new class($mockClient) extends CaptchaService {
-            public function __construct($client)
-            {
-                parent::__construct();
-                $this->httpClient = $client;
-            }
-
-            #[\Override]
-            public function verifySolution(?string $payload): array
-            {
-                return parent::verifySolution($payload);
-            }
-        };
+        $captcha = $this->captchaServiceWithClient($mockClient);
 
         $result = $captcha->verifySolution($this->encodedCaptchaPayload());
 
@@ -170,19 +142,7 @@ class CaptchaVerifyControllerTest extends ControllerTestCase
         ];
 
         $mockClient = new Client();
-        $captcha = new class($mockClient) extends CaptchaService {
-            public function __construct($client)
-            {
-                parent::__construct();
-                $this->httpClient = $client;
-            }
-
-            #[\Override]
-            public function verifySolution(?string $payload): array
-            {
-                return parent::verifySolution($payload);
-            }
-        };
+        $captcha = $this->captchaServiceWithClient($mockClient);
 
         $payload = '!!not_base64!!';
         $result = $captcha->verifySolution($payload);
@@ -198,19 +158,7 @@ class CaptchaVerifyControllerTest extends ControllerTestCase
         $handlerStack = HandlerStack::create($mockHandler);
         $mockClient = new Client(['handler' => $handlerStack]);
 
-        $captcha = new class($mockClient) extends CaptchaService {
-            public function __construct($client)
-            {
-                parent::__construct();
-                $this->httpClient = $client;
-            }
-
-            #[\Override]
-            public function verifySolution(?string $payload): array
-            {
-                return parent::verifySolution($payload);
-            }
-        };
+        $captcha = $this->captchaServiceWithClient($mockClient);
 
         $result = $captcha->verifySolution($this->encodedCaptchaPayload());
 
@@ -232,19 +180,7 @@ class CaptchaVerifyControllerTest extends ControllerTestCase
         $handlerStack = HandlerStack::create($mockHandler);
         $mockClient = new Client(['handler' => $handlerStack]);
 
-        $captcha = new class($mockClient) extends CaptchaService {
-            public function __construct($client)
-            {
-                parent::__construct();
-                $this->httpClient = $client;
-            }
-
-            #[\Override]
-            public function verifySolution(?string $payload): array
-            {
-                return parent::verifySolution($payload);
-            }
-        };
+        $captcha = $this->captchaServiceWithClient($mockClient);
 
         $payload = null;
         $result = $captcha->verifySolution($payload);
@@ -264,19 +200,7 @@ class CaptchaVerifyControllerTest extends ControllerTestCase
         ]);
         $mockClient = new Client(['handler' => HandlerStack::create($mockHandler)]);
 
-        $captcha = new class($mockClient) extends CaptchaService {
-            public function __construct($client)
-            {
-                parent::__construct();
-                $this->httpClient = $client;
-            }
-
-            #[\Override]
-            public function verifySolution(?string $payload): array
-            {
-                return parent::verifySolution($payload);
-            }
-        };
+        $captcha = $this->captchaServiceWithClient($mockClient);
 
         $result = $captcha->verifySolution($this->encodedCaptchaPayload());
 
