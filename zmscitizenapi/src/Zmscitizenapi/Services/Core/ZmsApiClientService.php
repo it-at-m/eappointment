@@ -141,6 +141,9 @@ class ZmsApiClientService
                 foreach ($list as $rel) {
                     $r = $rel->request ?? null;
                     $p = $rel->provider ?? null;
+                    if ($r === null || $p === null) {
+                        continue;
+                    }
 
                     $key = (($r->source ?? '') . '_' . $r->id) . '|' . (($p->source ?? '') . '_' . $p->id);
                     if (!isset($seen[$key])) {
