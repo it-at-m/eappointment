@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-11-09T14:08:40.476Z",
+  "publishedAt": "2026-11-09T15:28:02.424Z",
   "branches": [
     {
       "name": "next",
@@ -282,6 +282,12 @@
       "slug": "fix-ataf-next-flakes-38362753920",
       "runId": "38373115283",
       "runStartedAt": "2026-10-13T08:59:31Z"
+    },
+    {
+      "name": "fix-delete-expired-opening-hours",
+      "slug": "fix-delete-expired-opening-hours",
+      "runId": "42637660826",
+      "runStartedAt": "2026-11-09T14:44:42Z"
     },
     {
       "name": "fix-zms-pin-chromium-for-selenium",
