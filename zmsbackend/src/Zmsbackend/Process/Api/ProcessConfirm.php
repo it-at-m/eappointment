@@ -38,6 +38,9 @@ class ProcessConfirm extends \BO\Zmsbackend\Api\BaseController
 
         $userAccount = (new \BO\Zmsbackend\Helper\User($request))->readWorkstation()->getUseraccount();
         $process = (new \BO\Zmsbackend\Process\Service\Process())->readEntity($entity->id, $entity->authKey, 2);
+        if (!$process instanceof \BO\Zmsentities\Process) {
+            throw new \BO\Zmsbackend\Process\Exception\ProcessNotFound();
+        }
 
         if ('preconfirmed' != $process->status && 'reserved' != $process->status) {
             throw new \BO\Zmsbackend\Process\Exception\ProcessNotPreconfirmedAnymore();

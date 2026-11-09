@@ -33,6 +33,9 @@ class ProcessQueued extends \BO\Zmsbackend\Api\BaseController
         $entity->testValid();
         $this->testProcessData($entity);
         $process = (new Query())->readEntity($entity['id'], $entity['authKey'], 1);
+        if (!$process instanceof \BO\Zmsentities\Process) {
+            throw new \BO\Zmsbackend\Process\Exception\ProcessNotFound();
+        }
         $previousStatus = $process->status;
         if (isset($entity->queue['waitingTime'])) {
             $process->queue['waitingTime'] = $entity->queue['waitingTime'];

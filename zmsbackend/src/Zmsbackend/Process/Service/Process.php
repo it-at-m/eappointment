@@ -179,6 +179,9 @@ class Process extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfaces\R
         $requestRelationList = (new \BO\Zmsbackend\RequestRelation\Service\RequestRelation())
             ->readListByProviderId($scope->getProviderId(), $scope->getSource());
         $appointment = $process->getAppointments()->getFirst();
+        if (!$appointment instanceof \BO\Zmsentities\Appointment) {
+            return $process;
+        }
         $appointment->slotCount = 0;
         foreach ($process->requests as $request) {
             foreach ($requestRelationList as $requestRelation) {
@@ -843,12 +846,13 @@ class Process extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfaces\R
 
     public function isAppointmentAllowedWithSameMail(Entity $entity): bool
     {
-        if (empty($entity->getClients()) || empty($entity->getClients()->getFirst())) {
+        $client = $entity->getClients()->getFirst();
+        if (!$client instanceof \BO\Zmsentities\Client) {
             return true;
         }
 
         $maxAppointmentsPerMail = $entity->scope->getAppointmentsPerMail();
-        $emailToCheck = $entity->getClients()->getFirst()->email;
+        $emailToCheck = $client->email;
         if ($maxAppointmentsPerMail < 1 || empty($emailToCheck)) {
             return true;
         }
@@ -857,7 +861,7 @@ class Process extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfaces\R
             return true;
         }
 
-        $processes = $this->readProcessListByMailAddress($entity->getClients()->getFirst()->email, $entity->scope->id);
+        $processes = $this->readProcessListByMailAddress($emailToCheck, $entity->scope->id);
         $activeAppointments = 0;
         foreach ($processes as $process) {
             // Skip the process under change so list order cannot short-circuit the limit

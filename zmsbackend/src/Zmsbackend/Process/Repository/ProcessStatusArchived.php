@@ -207,11 +207,13 @@ class ProcessStatusArchived extends \BO\Zmsbackend\Query\Base implements \BO\Zms
 
     private function getArchivedServices(\BO\Zmsentities\Process $process)
     {
-        if ($process->getRequests()->count() === 0) {
+        $requests = $process->getRequests();
+        $firstRequest = $requests->getFirst();
+        if ($requests->count() === 0 || !$firstRequest instanceof \BO\Zmsentities\Request) {
             return '';
         }
 
-        $services = $process->getRequests()->getFirst()->name;
+        $services = $firstRequest->name;
 
         if ($process->getRequests()->count() > 1) {
             $services .= ' +' . ($process->getRequests()->count() - 1);

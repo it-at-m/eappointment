@@ -29,6 +29,9 @@ class WorkstationProcessParked extends \BO\Zmsbackend\Api\BaseController
             throw new \BO\Zmsbackend\Process\Exception\ProcessNotFound();
         }
         $process = (new Query())->readEntity($workstation->process['id'], $workstation->process['authKey'], 1);
+        if (!$process instanceof \BO\Zmsentities\Process) {
+            throw new \BO\Zmsbackend\Process\Exception\ProcessNotFound();
+        }
         $previousStatus = $process->status;
         $workstation->process->setParkedBy($workstation->name);
         $process->parkedBy = $workstation->name;
