@@ -6,6 +6,8 @@ use BO\Zmsentities\Exchange;
 
 class ExchangeWaitingscope extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfaces\ExchangeSubject
 {
+    use ScopeStatisticTitle;
+
     /**
      * @return Exchange
      */
@@ -265,11 +267,4 @@ class ExchangeWaitingscope extends \BO\Zmsbackend\Base implements \BO\Zmsbackend
         return $this;
     }
 
-    private function scopeStatisticTitle(string $label, mixed $scope): string
-    {
-        $contactName = ($scope && $scope->contact) ? $scope->contact->name : 'Unknown';
-        $shortName = $scope ? $scope->shortName : 'Unknown';
-
-        return $label . ' ' . $contactName . ' ' . $shortName;
-    }
 }

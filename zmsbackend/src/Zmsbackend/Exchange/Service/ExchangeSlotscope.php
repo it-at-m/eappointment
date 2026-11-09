@@ -6,6 +6,8 @@ use BO\Zmsentities\Exchange;
 
 class ExchangeSlotscope extends \BO\Zmsbackend\Base
 {
+    use ScopeStatisticTitle;
+
     public function readEntity(
         string|int $subjectid
     ): Exchange {
@@ -64,11 +66,4 @@ class ExchangeSlotscope extends \BO\Zmsbackend\Base
         return $entity;
     }
 
-    private function scopeStatisticTitle(string $label, mixed $scope): string
-    {
-        $contactName = ($scope && $scope->contact) ? $scope->contact->name : 'Unknown';
-        $shortName = $scope ? $scope->shortName : 'Unknown';
-
-        return $label . ' ' . $contactName . ' ' . $shortName;
-    }
 }

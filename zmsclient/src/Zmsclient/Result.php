@@ -176,7 +176,7 @@ class Result
     {
         $entity = $this->getEntity();
         if (!$entity instanceof Entity) {
-            throw new Exception('Response contained no entity');
+            throw new Exception('Response contained no entity', $this->response, $this->request);
         }
         return $entity;
     }

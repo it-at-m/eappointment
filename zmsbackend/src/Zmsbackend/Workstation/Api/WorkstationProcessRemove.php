@@ -49,7 +49,7 @@ class WorkstationProcessRemove extends \BO\Zmsbackend\Api\BaseController
         $isRequeueAndSkipToNext = $action === 'requeue_and_skip_to_next';
 
         $process = (new Query())->readEntity($workstation->process['id'], $workstation->process['authKey'], 1);
-        if (!$process instanceof \BO\Zmsentities\Process) {
+        if (!$process instanceof \BO\Zmsentities\Process || !$process->hasId()) {
             throw new \BO\Zmsbackend\Process\Exception\ProcessNotFound();
         }
         $previousStatus = $process->status;

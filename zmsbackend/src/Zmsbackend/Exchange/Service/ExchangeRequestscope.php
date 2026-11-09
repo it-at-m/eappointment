@@ -6,6 +6,8 @@ use BO\Zmsentities\Exchange;
 
 class ExchangeRequestscope extends \BO\Zmsbackend\Base
 {
+    use ScopeStatisticTitle;
+
     protected $groupBy = array(
         'month' => '%Y-%m',
         'day' => '%Y-%m-%d',
@@ -96,11 +98,4 @@ class ExchangeRequestscope extends \BO\Zmsbackend\Base
         return $entity;
     }
 
-    private function scopeStatisticTitle(string $label, mixed $scope): string
-    {
-        $contactName = ($scope && $scope->contact) ? $scope->contact->name : 'Unknown';
-        $shortName = $scope ? $scope->shortName : 'Unknown';
-
-        return $label . ' ' . $contactName . ' ' . $shortName;
-    }
 }
