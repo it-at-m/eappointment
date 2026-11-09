@@ -18,9 +18,7 @@ class ExchangeWaitingscope extends \BO\Zmsbackend\Base implements \BO\Zmsbackend
     ) {
         $scope = (new \BO\Zmsbackend\Scope\Service\Scope())->readEntity($subjectid);
         $entity = new Exchange();
-        $entity['title'] = "Wartestatistik "
-            . (($scope && $scope->contact) ? $scope->contact->name : 'Unknown')
-            . " " . ($scope ? $scope->shortName : 'Unknown');
+        $entity['title'] = $this->scopeStatisticTitle('Wartestatistik', $scope);
         $entity->setPeriod($datestart, $dateend, $period);
         $entity->addDictionaryEntry('subjectid', 'string', 'ID of a scope', 'scope.id');
         $entity->addDictionaryEntry('date', 'string', 'date of report entry');
@@ -95,9 +93,7 @@ class ExchangeWaitingscope extends \BO\Zmsbackend\Base implements \BO\Zmsbackend
     {
         $scope = (new \BO\Zmsbackend\Scope\Service\Scope())->readEntity($subjectid);
         $entity = new Exchange();
-        $entity['title'] = "Wartestatistik "
-            . (($scope && $scope->contact) ? $scope->contact->name : 'Unknown')
-            . " " . ($scope ? $scope->shortName : 'Unknown');
+        $entity['title'] = $this->scopeStatisticTitle('Wartestatistik', $scope);
         $entity->setPeriod(new \DateTimeImmutable(), new \DateTimeImmutable(), $period);
         $entity->addDictionaryEntry('period');
 
@@ -267,5 +263,13 @@ class ExchangeWaitingscope extends \BO\Zmsbackend\Base implements \BO\Zmsbackend
         );
 
         return $this;
+    }
+
+    private function scopeStatisticTitle(string $label, mixed $scope): string
+    {
+        $contactName = ($scope && $scope->contact) ? $scope->contact->name : 'Unknown';
+        $shortName = $scope ? $scope->shortName : 'Unknown';
+
+        return $label . ' ' . $contactName . ' ' . $shortName;
     }
 }

@@ -21,9 +21,7 @@ class ExchangeCapacityscope extends \BO\Zmsbackend\Base
         $firstScopeId = $subjectIdList[0];
         $scope = (new \BO\Zmsbackend\Scope\Service\Scope())->readEntity($firstScopeId);
         $entity = new Exchange();
-        $entity['title'] = "Terminkapazität "
-            . (($scope && $scope->contact) ? $scope->contact->name : 'Unknown')
-            . " " . ($scope ? $scope->shortName : 'Unknown');
+        $entity['title'] = $this->scopeStatisticTitle('Terminkapazität', $scope);
 
         $unfiltered = $datestart === null || $dateend === null;
         if ($unfiltered) {
@@ -165,5 +163,13 @@ class ExchangeCapacityscope extends \BO\Zmsbackend\Base
         $entity->addDataSet(["_"]);
 
         return $entity;
+    }
+
+    private function scopeStatisticTitle(string $label, mixed $scope): string
+    {
+        $contactName = ($scope && $scope->contact) ? $scope->contact->name : 'Unknown';
+        $shortName = $scope ? $scope->shortName : 'Unknown';
+
+        return $label . ' ' . $contactName . ' ' . $shortName;
     }
 }

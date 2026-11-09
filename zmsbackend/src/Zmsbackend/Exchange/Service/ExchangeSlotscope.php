@@ -11,9 +11,7 @@ class ExchangeSlotscope extends \BO\Zmsbackend\Base
     ): Exchange {
         $scope = (new \BO\Zmsbackend\Scope\Service\Scope())->readEntity($subjectid);
         $entity = new Exchange();
-        $entity['title'] = "Slotbelegung "
-            . (($scope && $scope->contact) ? $scope->contact->name : 'Unknown')
-            . " " . ($scope ? $scope->shortName : 'Unknown');
+        $entity['title'] = $this->scopeStatisticTitle('Slotbelegung', $scope);
         //$entity->setPeriod($datestart, $dateend, $period);
         $entity->addDictionaryEntry('subjectid', 'string', 'ID of a scope', 'scope.id');
         $entity->addDictionaryEntry('date', 'string', 'Date of day');
@@ -64,5 +62,13 @@ class ExchangeSlotscope extends \BO\Zmsbackend\Base
         $entity->addDictionaryEntry('id', 'string', 'Gesamter Zeitraum', 'useraccount.permissions.superuser');
         $entity->addDataSet(["_"]);
         return $entity;
+    }
+
+    private function scopeStatisticTitle(string $label, mixed $scope): string
+    {
+        $contactName = ($scope && $scope->contact) ? $scope->contact->name : 'Unknown';
+        $shortName = $scope ? $scope->shortName : 'Unknown';
+
+        return $label . ' ' . $contactName . ' ' . $shortName;
     }
 }
