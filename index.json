@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-11-09T15:45:00.606Z",
+  "publishedAt": "2026-11-09T22:48:04.272Z",
   "branches": [
     {
       "name": "next",
@@ -288,6 +288,12 @@
       "slug": "fix-delete-expired-opening-hours",
       "runId": "42637660826",
       "runStartedAt": "2026-11-09T14:44:42Z"
+    },
+    {
+      "name": "fix-possibly-null-property-fetch",
+      "slug": "fix-possibly-null-property-fetch",
+      "runId": "42708357226",
+      "runStartedAt": "2026-11-09T22:03:53Z"
     },
     {
       "name": "fix-zms-pin-chromium-for-selenium",
