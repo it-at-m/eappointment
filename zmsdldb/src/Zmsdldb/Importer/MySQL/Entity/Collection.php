@@ -26,7 +26,7 @@ class Collection implements \Countable, \ArrayAccess
     }
 
     #[\Override]
-    final public function offsetSet($offset, $value): Collection
+    final public function offsetSet($offset, $value): void
     {
         if (!$value instanceof Base) {
             throw new \InvalidArgumentException(
@@ -38,14 +38,12 @@ class Collection implements \Countable, \ArrayAccess
         } else {
             $this->entities[$offset] = $value;
         }
-        return $this;
     }
 
     #[\Override]
-    final public function offsetUnset($offset): Collection
+    final public function offsetUnset($offset): void
     {
         unset($this->entities[$offset]);
-        return $this;
     }
 
     #[\Override]
