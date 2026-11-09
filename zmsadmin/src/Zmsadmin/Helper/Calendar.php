@@ -120,6 +120,9 @@ class Calendar
                 ->readGetResult('/cluster/' . $cluster->id . '/process/' . $this->dateTime->format('Y-m-d') . '/', ['showWeek' => 1])
                 ->getCollection();
         } else {
+            if (!$scope instanceof \BO\Zmsentities\Scope) {
+                throw new \InvalidArgumentException('No scope available for the calendar week');
+            }
             $bookedProcessList = \App::$http
                 ->readGetResult('/scope/' . $scope->id . '/process/' . $this->dateTime->format('Y-m-d') . '/', ['showWeek' => 1])
                 ->getCollection();

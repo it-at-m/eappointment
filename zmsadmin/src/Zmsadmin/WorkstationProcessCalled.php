@@ -22,7 +22,7 @@ class WorkstationProcessCalled extends BaseController
         array $args
     ): \Psr\Http\Message\ResponseInterface {
         $validator = $request->getAttribute('validator');
-        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
+        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->requireEntity();
         $processId = Validator::value($args['id'])->isNumber()->getValue();
         if (! $workstation->process->hasId() && ! $workstation->process->queue->callTime) {
             $process = \App::$http->readGetResult('/process/' . $args['id'] . '/')->getEntity();

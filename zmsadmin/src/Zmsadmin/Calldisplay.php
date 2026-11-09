@@ -32,7 +32,7 @@ class Calldisplay extends BaseController
         $entity = \App::$http->readGetResult(
             '/scope/' . $entityId . '/organisation/',
             ['resolveReferences' => 3]
-        )->getEntity();
+        )->requireEntity();
 
         $departments = new DepartmentList();
 

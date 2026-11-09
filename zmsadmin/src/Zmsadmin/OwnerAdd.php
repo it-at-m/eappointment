@@ -31,7 +31,7 @@ class OwnerAdd extends BaseController
         if (is_array($input) && array_key_exists('save', $input)) {
             $entity = (new Entity($input))->withCleanedUpFormData();
             $entity = \App::$http->readPostResult('/owner/add/', $entity)
-                ->getEntity();
+                ->requireEntity();
             return \BO\Slim\Render::redirect(
                 'owner',
                 array(

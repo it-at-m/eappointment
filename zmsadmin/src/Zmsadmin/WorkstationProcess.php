@@ -25,7 +25,7 @@ class WorkstationProcess extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ): \Psr\Http\Message\ResponseInterface {
-        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
+        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->requireEntity();
         $validator = $request->getAttribute('validator');
         $lockClientActions = (bool) $validator->getParameter('lockClientActions')->isNumber()->getValue();
         $template = ($workstation->process->hasId() && 'processing' == $workstation->process->status) ? 'info' : 'next';

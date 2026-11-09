@@ -24,13 +24,13 @@ class MailTemplateCreateCustomization extends BaseController
         $validator = $request->getAttribute('validator');
         $input = $validator->getInput()->isJson()->getValue();
 
-        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
+        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->requireEntity();
         $providerId = $workstation->scope['provider']['id'];
 
         if (isset($args['id']) && !empty($args['id'])) {
             $scope = \App::$http
                 ->readGetResult('/scope/' . $args['id'] . '/', ['resolveReferences' => 1])
-                ->getEntity();
+                ->requireEntity();
 
             $providerId = $scope->provider->id;
         }

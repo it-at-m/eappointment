@@ -41,7 +41,7 @@ class Scope extends BaseController
                 'accessRights' => 'restrictedscope',
                 'gql' => Helper\GraphDefaults::getScope()
             ])
-            ->getEntity();
+            ->requireEntity();
 
         $sourceList = $this->readSourceList();
         $providerList = Helper\ProviderHandler::readProviderList($entity->getSource());

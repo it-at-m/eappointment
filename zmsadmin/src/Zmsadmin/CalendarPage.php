@@ -22,7 +22,7 @@ class CalendarPage extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ): \Psr\Http\Message\ResponseInterface {
-        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
+        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->requireEntity();
 
         $validator = $request->getAttribute('validator');
         $selectedDate = $validator->getParameter('selecteddate')->isString()->getValue();

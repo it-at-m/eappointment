@@ -29,7 +29,7 @@ class DepartmentAddCluster extends BaseController
         }
         $departmentId = Validator::value($args['departmentId'])->isNumber()->getValue();
         $department = \App::$http
-            ->readGetResult('/department/' . $departmentId . '/', ['resolveReferences' => 2])->getEntity();
+            ->readGetResult('/department/' . $departmentId . '/', ['resolveReferences' => 2])->requireEntity();
         $organisation = \App::$http->readGetResult('/department/' . $departmentId . '/organisation/')->getEntity();
         $input = $request->getParsedBody();
 
@@ -38,7 +38,7 @@ class DepartmentAddCluster extends BaseController
             $entity->scopes = (new ScopeList($entity->scopes))->withUniqueScopes();
             $entity = \App::$http
                 ->readPostResult('/department/' . $department->id . '/cluster/', $entity)
-                ->getEntity();
+                ->requireEntity();
             (new Helper\FileUploader($request, 'uploadCallDisplayImage'))->writeUploadToCluster($entity->id);
             return \BO\Slim\Render::redirect(
                 'cluster',

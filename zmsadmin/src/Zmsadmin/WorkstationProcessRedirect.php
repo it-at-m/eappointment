@@ -23,7 +23,7 @@ class WorkstationProcessRedirect extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ): \Psr\Http\Message\ResponseInterface {
-        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
+        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->requireEntity();
         $department = \App::$http
             ->readGetResult(
                 '/scope/' . $workstation->scope['id'] . '/department/',

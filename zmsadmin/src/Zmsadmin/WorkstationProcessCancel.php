@@ -23,7 +23,7 @@ class WorkstationProcessCancel extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ): \Psr\Http\Message\ResponseInterface {
-        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
+        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->requireEntity();
         $validator = $request->getAttribute('validator');
         $noRedirect = $validator->getParameter('noredirect')->isNumber()->getValue();
         $action = strtolower((string) $validator->getParameter('action')->isString()->setDefault('')->getValue());

@@ -32,7 +32,7 @@ class DepartmentAddScope extends Scope
         }
         $departmentId = Validator::value($args['id'])->isNumber()->getValue();
         $department = \App::$http
-            ->readGetResult('/department/' . $departmentId . '/', ['resolveReferences' => 0])->getEntity();
+            ->readGetResult('/department/' . $departmentId . '/', ['resolveReferences' => 0])->requireEntity();
         $organisation = \App::$http->readGetResult('/department/' . $departmentId . '/organisation/')->getEntity();
         $providerList = Helper\ProviderHandler::readProviderList($workstation->getScope()->getSource());
         $sourceList = $this->readSourceList();

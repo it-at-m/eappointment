@@ -28,7 +28,7 @@ class DepartmentDelete extends BaseController
     ): \Psr\Http\Message\ResponseInterface {
         $entityId = Validator::value($args['id'])->isNumber()->getValue();
 
-        $entity = \App::$http->readGetResult('/department/' . $entityId . '/')->getEntity();
+        $entity = \App::$http->readGetResult('/department/' . $entityId . '/')->requireEntity();
         $departmentName = $entity->name;
 
 

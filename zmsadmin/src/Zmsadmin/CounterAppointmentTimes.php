@@ -24,7 +24,7 @@ class CounterAppointmentTimes extends BaseController
         $validator = $request->getAttribute('validator');
         $selectedDate = $validator->getParameter('selecteddate')->isString()->getValue();
         $dateTime = new DateTime($selectedDate);
-        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 0])->getEntity();
+        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 0])->requireEntity();
 
         try {
             $availabilityList = \App::$http

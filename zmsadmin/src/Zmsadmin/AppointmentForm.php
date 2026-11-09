@@ -25,7 +25,7 @@ class AppointmentForm extends BaseController
         $workstation = \App::$http->readGetResult('/workstation/', [
             'resolveReferences' => 2,
             'gql' => Helper\GraphDefaults::getWorkstationWithProvider(),
-        ])->getEntity();
+        ])->requireEntity();
         $selectedProcess = Helper\AppointmentFormHelper::readSelectedProcess($request);
         if ($selectedProcess && ! $workstation->hasSuperUseraccount()) {
             $workstation

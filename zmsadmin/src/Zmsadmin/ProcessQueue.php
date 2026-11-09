@@ -39,7 +39,7 @@ class ProcessQueue extends BaseController
         ResponseInterface $response,
         array $args
     ) {
-        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 3])->getEntity();
+        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 3])->requireEntity();
 
         $validator = $request->getAttribute('validator');
         $selectedProcessId = $validator->getParameter('selectedprocess')->isNumber()->getValue();

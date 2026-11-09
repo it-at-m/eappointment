@@ -23,7 +23,7 @@ class Logout extends BaseController
         array $args
     ): \Psr\Http\Message\ResponseInterface {
         try {
-            $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 0])->getEntity();
+            $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 0])->requireEntity();
             \App::$http->readDeleteResult('/workstation/login/' . $workstation->useraccount['id'] . '/')->getEntity();
         } catch (\BO\Zmsclient\Exception $exception) {
             if ("BO\Zmsentities\Exception\UseraccountMissingLogin" !== $exception->template) {

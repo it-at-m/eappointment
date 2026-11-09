@@ -94,7 +94,7 @@ class Index extends BaseController
             'departments' => array('id' => 0) // required in schema validation
         ));
         try {
-            $workstation = \App::$http->readPostResult('/workstation/login/', $userAccount)->getEntity();
+            $workstation = \App::$http->readPostResult('/workstation/login/', $userAccount)->requireEntity();
 
             $sessionHash = hash('sha256', $workstation->authkey);
             \App::$log->info('Login successful', [

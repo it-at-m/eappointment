@@ -26,7 +26,7 @@ class MailTemplates extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ): \Psr\Http\Message\ResponseInterface {
-        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->getEntity();
+        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 1])->requireEntity();
         if (!$workstation->getUseraccount()->hasPermissions(['mailtemplates'])) {
             throw new UserAccountMissingRights();
         }
@@ -38,7 +38,7 @@ class MailTemplates extends BaseController
         if (isset($args['scopeId']) && !empty($args['scopeId'])) {
             $scope = \App::$http
                 ->readGetResult('/scope/' . $args['scopeId'] . '/', ['resolveReferences' => 1])
-                ->getEntity();
+                ->requireEntity();
 
             $scopeName = $scope->contact->name;
             $scopeId = $scope->id;

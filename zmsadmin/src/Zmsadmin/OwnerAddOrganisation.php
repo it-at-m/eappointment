@@ -31,7 +31,7 @@ class OwnerAddOrganisation extends BaseController
         if (is_array($input) && array_key_exists('save', $input)) {
             $entity = (new Entity($input))->withCleanedUpFormData();
             $entity = \App::$http->readPostResult('/owner/' . $parentId . '/organisation/', $entity)
-                ->getEntity();
+                ->requireEntity();
             return \BO\Slim\Render::redirect(
                 'organisation',
                 array(

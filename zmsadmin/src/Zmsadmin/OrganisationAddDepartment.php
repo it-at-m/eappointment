@@ -33,7 +33,7 @@ class OrganisationAddDepartment extends BaseController
             $input = $this->withCleanupLinks($input);
             $entity = (new Entity($input))->withCleanedUpFormData();
             $department = \App::$http->readPostResult('/organisation/' . $organisationId . '/department/', $entity)
-                ->getEntity();
+                ->requireEntity();
             return \BO\Slim\Render::redirect(
                 'department',
                 array(

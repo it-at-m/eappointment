@@ -26,7 +26,7 @@ class TicketprinterStatusByScope extends BaseController
         $workstation = \App::$http->readGetResult('/workstation/', [
             'resolveReferences' => 1,
             'gql' => Helper\GraphDefaults::getWorkstation()
-        ])->getEntity();
+        ])->requireEntity();
         $success = $request->getAttribute('validator')->getParameter('success')->isString()->getValue();
         if (!$workstation->getUseraccount()->hasPermissions(['ticketprinter', 'scope'])) {
             throw new UserAccountMissingRights();
@@ -34,7 +34,7 @@ class TicketprinterStatusByScope extends BaseController
         $scopeId = Validator::value($args['id'])->isNumber()->getValue();
         $scope = \App::$http->readGetResult('/scope/' . $scopeId . '/', [
             'gql' => Helper\GraphDefaults::getScope()
-        ])->getEntity();
+        ])->requireEntity();
 
         $input = $request->getParsedBody();
         if (is_array($input) && array_key_exists('save', $input)) {
@@ -46,7 +46,7 @@ class TicketprinterStatusByScope extends BaseController
                 }
             }
             $scope->preferences['ticketprinter']['deactivatedText'] = $input['hinweis'];
-            $scope = \App::$http->readPostResult('/scope/' . $scope->id . '/', $scope)->getEntity();
+            $scope = \App::$http->readPostResult('/scope/' . $scope->id . '/', $scope)->requireEntity();
 
             return Render::redirect('ticketprinterStatusByScope', ['id' => $scopeId], [
                 'success' => 'ticketprinter_deactivated_' . $scope->status['ticketprinter']['deactivated']
