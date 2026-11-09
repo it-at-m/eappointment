@@ -283,23 +283,21 @@ abstract class Base implements \Countable, \ArrayAccess, \JsonSerializable
     }
 
     #[\Override]
-    final public function offsetSet($offset, $value): Base
+    final public function offsetSet($offset, $value): void
     {
         if (!is_string($offset)) {
             throw new \InvalidArgumentException(__METHOD__ . ' offset must be a string');
         }
         $this->__set($offset, $value);
-        return $this;
     }
 
     #[\Override]
-    final public function offsetUnset($offset): Base
+    final public function offsetUnset($offset): void
     {
         if (!is_string($offset)) {
             throw new \InvalidArgumentException(__METHOD__ . ' offset must be a string');
         }
         $this->__unset($offset);
-        return $this;
     }
 
     #[\Override]
