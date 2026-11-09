@@ -625,7 +625,7 @@ const maxValueOfService = computed(() => {
 /** Counter min is 1 when a booking is possible; 0 when slotsPerAppointment blocks qty 1. */
 const minValueOfService = computed(() => (maxValueOfService.value > 0 ? 1 : 0));
 
-/** MucCounter treats max=0 as unlimited; disable both buttons when nothing fits. */
+/** Disable both buttons when the service does not fit even once (max and count are 0). */
 const isServiceCounterDisabled = computed(
   () => maxValueOfService.value === 0 && (countOfService.value ?? 0) === 0
 );
