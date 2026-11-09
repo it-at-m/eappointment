@@ -168,6 +168,20 @@ class Result
     }
 
     /**
+     * Same as getEntity(), but a missing entity is an error instead of null.
+     *
+     * @throws Exception
+     */
+    public function requireEntity(): Entity
+    {
+        $entity = $this->getEntity();
+        if (!$entity instanceof Entity) {
+            throw new Exception('Response contained no entity');
+        }
+        return $entity;
+    }
+
+    /**
      * Description
      */
     public function getCollection(): mixed
