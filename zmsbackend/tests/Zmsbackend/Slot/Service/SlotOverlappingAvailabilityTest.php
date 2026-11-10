@@ -399,12 +399,15 @@ class SlotOverlappingAvailabilityTest extends \BO\Zmsbackend\Tests\Service\Base
         $this->assertSame(1, (int) $row['joined']);
     }
 
-    public function testSlotTypeForMappingUsesApiClientAccessLevel()
+    public function testSlotTypeForMappingUsesOwnApiClientOnly()
     {
-        $this->assertSame('public', Slot::getSlotTypeForMapping(['accesslevel' => 'public']));
-        $this->assertSame('callcenter', Slot::getSlotTypeForMapping(['accesslevel' => 'callcenter']));
-        $this->assertSame('intern', Slot::getSlotTypeForMapping(['accesslevel' => 'intern']));
-        $this->assertSame('intern', Slot::getSlotTypeForMapping(['accesslevel' => null]));
+        $this->assertSame('public', Slot::getSlotTypeForMapping(['apiClientID' => 3, 'accesslevel' => 'public']));
+        $this->assertSame('callcenter', Slot::getSlotTypeForMapping(['apiClientID' => 3, 'accesslevel' => 'callcenter']));
+        $this->assertSame('intern', Slot::getSlotTypeForMapping(['apiClientID' => 3, 'accesslevel' => 'intern']));
+        $this->assertSame('intern', Slot::getSlotTypeForMapping(['apiClientID' => 3, 'accesslevel' => '']));
+        // Admin bookings and bookings without a client key share the default client
+        $this->assertSame('intern', Slot::getSlotTypeForMapping(['apiClientID' => 1, 'accesslevel' => 'public']));
+        $this->assertSame('intern', Slot::getSlotTypeForMapping(['apiClientID' => null, 'accesslevel' => null]));
         $this->assertSame('intern', Slot::getSlotTypeForMapping([]));
     }
 
@@ -428,12 +431,12 @@ class SlotOverlappingAvailabilityTest extends \BO\Zmsbackend\Tests\Service\Base
         $this->assertSame([$processId => static::LONG_AVAILABILITY_ID], $this->readMappedAvailabilityIds($process));
     }
 
-    public function testRepairKeepsDefaultClientOffInternOnlyAvailability()
+    public function testRepairKeepsDefaultClientOnInternCapacity()
     {
-        $this->writeShortAvailability(false, 0);
+        $shortAvailability = $this->writeShortAvailability(false, 0);
         $processId = $this->writeReservedProcess(static::TIMESTAMP_0830)->getId();
         $slotService = new Slot();
-        // Citizen bookings without client key get the default client 1 (public) by column default
+        // Admin bookings get the default client 1 (accesslevel public) by column default
         $slotService->perform(
             'UPDATE buerger SET apiClientID = 1 WHERE BuergerID = :processId',
             ['processId' => $processId]
@@ -443,7 +446,10 @@ class SlotOverlappingAvailabilityTest extends \BO\Zmsbackend\Tests\Service\Base
         $slotService->updateSlotProcessMapping(static::SCOPE_ID);
 
         $process = new \BO\Zmsentities\Process(['id' => $processId]);
-        $this->assertSame([$processId => static::LONG_AVAILABILITY_ID], $this->readMappedAvailabilityIds($process));
+        $this->assertSame(
+            [$processId => (int) $shortAvailability->getId()],
+            $this->readMappedAvailabilityIds($process)
+        );
     }
 
     public function testRepairWithoutApiClientUsesInternCapacity()

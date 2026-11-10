@@ -15,6 +15,8 @@ use BO\Zmsentities\Scope as ScopeEntity;
  */
 class Slot extends \BO\Zmsbackend\Base
 {
+    const int DEFAULT_API_CLIENT_ID = 1;
+
     /**
      * maximum number of slots per appointment
      */
@@ -821,15 +823,16 @@ class Slot extends \BO\Zmsbackend\Base
     }
 
     /**
-     * Capacity type of an existing booking: the access level of its api client, intern without a client.
-     * Admin bookings get the default client (public) by column default, so they count as public here.
+     * Capacity type of an existing booking. The default client is public by column default and is shared by
+     * admin bookings and bookings without their own client key, so its access level does not describe them.
      *
      * @param array<string, mixed> $process row of QUERY_SELECT_PROCESS_FOR_SLOT_MAPPING
      */
     public static function getSlotTypeForMapping(array $process): string
     {
+        $isOwnApiClient = (int) ($process['apiClientID'] ?? 0) > static::DEFAULT_API_CLIENT_ID;
         $accessLevel = (string) ($process['accesslevel'] ?? '');
-        return ($accessLevel !== '') ? $accessLevel : 'intern';
+        return ($isOwnApiClient && $accessLevel !== '') ? $accessLevel : 'intern';
     }
 
     protected function writeSlotProcessMappingForAvailability(string|int $processId, int $availabilityId): void
