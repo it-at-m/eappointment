@@ -23,25 +23,6 @@ class Slot extends \BO\Zmsbackend\Base
     const int MAX_DAYS_OF_SLOT_CALCULATION = 180;
 
     /**
-     * Columns written for one slot row, apart from slotID.
-     * @var list<string>
-     */
-    private const array SLOT_WRITE_COLUMNS = [
-        'scopeID',
-        'availabilityID',
-        'version',
-        'year',
-        'month',
-        'day',
-        'time',
-        'public',
-        'intern',
-        'status',
-        'slotTimeInMinutes',
-        'createTimestamp',
-    ];
-
-    /**
      * @return \BO\Zmsentities\Collection\SlotList
      *
      */
@@ -393,9 +374,9 @@ class Slot extends \BO\Zmsbackend\Base
                 $clock = $this->slotClock((string) $values['time']);
                 $clocks[] = $clock;
                 if (isset($stored[$clock])) {
-                    $updates[] = $this->packSlotRow($values, $stored[$clock]);
+                    $updates[] = \BO\Zmsbackend\Slot\Repository\Slot::packSlotRow($values, $stored[$clock]);
                 } else {
-                    $inserts[] = $this->packSlotRow($values);
+                    $inserts[] = \BO\Zmsbackend\Slot\Repository\Slot::packSlotRow($values);
                     $added[$dateKey] = true;
                 }
             }
@@ -486,22 +467,6 @@ class Slot extends \BO\Zmsbackend\Base
         return true;
     }
 
-    /**
-     * @return list<int|string>
-     */
-    private function packSlotRow(array $values, ?int $slotId = null): array
-    {
-        $packed = [];
-        foreach (self::SLOT_WRITE_COLUMNS as $column) {
-            $packed[] = $values[$column];
-        }
-        if ($slotId !== null) {
-            array_unshift($packed, $slotId);
-        }
-
-        return $packed;
-    }
-
     private function slotClock(string $time): string
     {
         $parts = explode(':', $time);
@@ -517,31 +482,20 @@ class Slot extends \BO\Zmsbackend\Base
         if ($rows === []) {
             return;
         }
-        $columns = array_merge(['slotID'], self::SLOT_WRITE_COLUMNS);
-        $assignments = [];
-        foreach (self::SLOT_WRITE_COLUMNS as $column) {
-            $assignments[] = sprintf('`%s` = VALUES(`%s`)', $column, $column);
-        }
-        $this->writeChunks(
-            'INSERT INTO `slot` (' . $this->quotedColumns($columns) . ') VALUES ',
-            ' ON DUPLICATE KEY UPDATE ' . implode(', ', $assignments),
-            $rows
-        );
+        $statement = \BO\Zmsbackend\Slot\Repository\Slot::upsertSlotRowsSql();
+        $this->writeChunks($statement['prefix'], $statement['suffix'], $rows);
     }
 
     /**
-     * @param list<list<int|string>> $rows SLOT_WRITE_COLUMNS, without slotID
+     * @param list<list<int|string>> $rows slot columns, without slotID
      */
     private function writeNewSlotRows(array $rows): void
     {
         if ($rows === []) {
             return;
         }
-        $this->writeChunks(
-            'INSERT INTO `slot` (' . $this->quotedColumns(self::SLOT_WRITE_COLUMNS) . ') VALUES ',
-            '',
-            $rows
-        );
+        $statement = \BO\Zmsbackend\Slot\Repository\Slot::insertSlotRowsSql();
+        $this->writeChunks($statement['prefix'], $statement['suffix'], $rows);
     }
 
     /**
@@ -554,15 +508,9 @@ class Slot extends \BO\Zmsbackend\Base
         if ($days === []) {
             return;
         }
-        $this->perform(
-            'CREATE TEMPORARY TABLE IF NOT EXISTS `zms_calc_slot_order` (
-                `dayKey` CHAR(10) NOT NULL,
-                `seq` SMALLINT UNSIGNED NOT NULL,
-                `slotID` INT UNSIGNED NOT NULL,
-                PRIMARY KEY (`dayKey`, `seq`)
-            ) ENGINE=MEMORY'
-        );
-        $this->perform('DELETE FROM `zms_calc_slot_order`');
+        $repository = \BO\Zmsbackend\Slot\Repository\Slot::class;
+        $this->perform($repository::QUERY_CREATE_CALC_SLOT_ORDER);
+        $this->perform($repository::QUERY_DELETE_CALC_SLOT_ORDER);
         $order = [];
         foreach ($days as $day) {
             $seq = 1;
@@ -571,34 +519,11 @@ class Slot extends \BO\Zmsbackend\Base
                 $seq++;
             }
         }
-        $this->writeChunks(
-            'INSERT INTO `zms_calc_slot_order` (`dayKey`, `seq`, `slotID`) VALUES ',
-            '',
-            $order
-        );
-        $this->perform(
-            'DELETE `h` FROM `slot_hiera` `h`
-            INNER JOIN `zms_calc_slot_order` `t` ON `t`.`slotID` = `h`.`slotID`'
-        );
+        $this->writeChunks($repository::QUERY_INSERT_CALC_SLOT_ORDER, '', $order);
+        $this->perform($repository::QUERY_DELETE_HIERA_FOR_CALC_ORDER);
         $within = self::MAX_SLOTS - 1;
-        $this->perform(
-            'INSERT INTO `slot_hiera` (`slotID`, `ancestorID`, `ancestorLevel`)
-            SELECT `s`.`slotID`, `a`.`slotID`, `s`.`seq` - `a`.`seq` + 1
-            FROM `zms_calc_slot_order` `s`
-            INNER JOIN `zms_calc_slot_order` `a`
-              ON `a`.`dayKey` = `s`.`dayKey`
-             AND `a`.`seq` <= `s`.`seq`
-             AND `a`.`seq` + ' . $within . ' >= `s`.`seq`'
-        );
-        $this->perform('DELETE FROM `zms_calc_slot_order`');
-    }
-
-    /**
-     * @param list<string> $columns
-     */
-    private function quotedColumns(array $columns): string
-    {
-        return implode(',', array_map(static fn (string $column): string => '`' . $column . '`', $columns));
+        $this->perform($repository::insertAncestorChainsSql($within));
+        $this->perform($repository::QUERY_DELETE_CALC_SLOT_ORDER);
     }
 
     /**
@@ -606,16 +531,8 @@ class Slot extends \BO\Zmsbackend\Base
      */
     private function writeChunks(string $sql, string $suffix, array $rows): void
     {
-        foreach (array_chunk($rows, 1000) as $chunk) {
-            $width = count($chunk[0]);
-            $tuple = '(' . implode(',', array_fill(0, $width, '?')) . ')';
-            $params = [];
-            foreach ($chunk as $row) {
-                foreach ($row as $value) {
-                    $params[] = $value;
-                }
-            }
-            $this->perform($sql . implode(',', array_fill(0, count($chunk), $tuple)) . $suffix, $params);
+        foreach (\BO\Zmsbackend\Slot\Repository\Slot::chunkedStatements($sql, $suffix, $rows) as $statement) {
+            $this->perform($statement['sql'], $statement['parameters']);
         }
     }
 

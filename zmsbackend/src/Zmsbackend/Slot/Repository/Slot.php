@@ -380,6 +380,46 @@ class Slot extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\Map
 ';
 
     /**
+     * Columns written for one slot row, apart from slotID.
+     *
+     * @var list<string>
+     */
+    const array SLOT_WRITE_COLUMNS = [
+        'scopeID',
+        'availabilityID',
+        'version',
+        'year',
+        'month',
+        'day',
+        'time',
+        'public',
+        'intern',
+        'status',
+        'slotTimeInMinutes',
+        'createTimestamp',
+    ];
+
+    const string QUERY_CREATE_CALC_SLOT_ORDER = '
+        CREATE TEMPORARY TABLE IF NOT EXISTS `zms_calc_slot_order` (
+            `dayKey` CHAR(10) NOT NULL,
+            `seq` SMALLINT UNSIGNED NOT NULL,
+            `slotID` INT UNSIGNED NOT NULL,
+            PRIMARY KEY (`dayKey`, `seq`)
+        ) ENGINE=MEMORY
+    ';
+
+    const string QUERY_DELETE_CALC_SLOT_ORDER = 'DELETE FROM `zms_calc_slot_order`';
+
+    const string QUERY_INSERT_CALC_SLOT_ORDER = '
+        INSERT INTO `zms_calc_slot_order` (`dayKey`, `seq`, `slotID`) VALUES
+    ';
+
+    const string QUERY_DELETE_HIERA_FOR_CALC_ORDER = '
+        DELETE `h` FROM `slot_hiera` `h`
+        INNER JOIN `zms_calc_slot_order` `t` ON `t`.`slotID` = `h`.`slotID`
+    ';
+
+    /**
      * Lock multiple appointment slots in one statement.
      * Placeholders for time IN (...) are injected by Slot::lockSlotsForAppointment.
      * ORDER BY slotID prefers a deterministic primary-key lock order.
@@ -479,5 +519,99 @@ class Slot extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\Map
     {
         $this->query->where('slot.slotID', '=', $slotID);
         return $this;
+    }
+
+    /**
+     * Ancestor level 1 is the slot itself. Higher levels are the earlier slots that day.
+     */
+    public static function insertAncestorChainsSql(int $maximumEarlierSlots): string
+    {
+        return '
+            INSERT INTO `slot_hiera` (`slotID`, `ancestorID`, `ancestorLevel`)
+            SELECT `s`.`slotID`, `a`.`slotID`, `s`.`seq` - `a`.`seq` + 1
+            FROM `zms_calc_slot_order` `s`
+            INNER JOIN `zms_calc_slot_order` `a`
+              ON `a`.`dayKey` = `s`.`dayKey`
+             AND `a`.`seq` <= `s`.`seq`
+             AND `a`.`seq` + ' . $maximumEarlierSlots . ' >= `s`.`seq`
+        ';
+    }
+
+    /**
+     * @return array{prefix: string, suffix: string}
+     */
+    public static function upsertSlotRowsSql(): array
+    {
+        $columns = array_merge(['slotID'], self::SLOT_WRITE_COLUMNS);
+        $assignments = [];
+        foreach (self::SLOT_WRITE_COLUMNS as $column) {
+            $assignments[] = sprintf('`%s` = VALUES(`%s`)', $column, $column);
+        }
+
+        return [
+            'prefix' => 'INSERT INTO `slot` (' . self::quotedColumns($columns) . ') VALUES ',
+            'suffix' => ' ON DUPLICATE KEY UPDATE ' . implode(', ', $assignments),
+        ];
+    }
+
+    /**
+     * @return array{prefix: string, suffix: string}
+     */
+    public static function insertSlotRowsSql(): array
+    {
+        return [
+            'prefix' => 'INSERT INTO `slot` (' . self::quotedColumns(self::SLOT_WRITE_COLUMNS) . ') VALUES ',
+            'suffix' => '',
+        ];
+    }
+
+    /**
+     * @param array<string, int|string> $values
+     * @return list<int|string>
+     */
+    public static function packSlotRow(array $values, ?int $slotId = null): array
+    {
+        $packed = [];
+        foreach (self::SLOT_WRITE_COLUMNS as $column) {
+            $packed[] = $values[$column];
+        }
+        if ($slotId !== null) {
+            array_unshift($packed, $slotId);
+        }
+
+        return $packed;
+    }
+
+    /**
+     * @param list<string> $columns
+     */
+    public static function quotedColumns(array $columns): string
+    {
+        return implode(',', array_map(static fn (string $column): string => '`' . $column . '`', $columns));
+    }
+
+    /**
+     * @param list<list<int|string>> $rows
+     * @return list<array{sql: string, parameters: list<int|string>}>
+     */
+    public static function chunkedStatements(string $prefix, string $suffix, array $rows): array
+    {
+        $statements = [];
+        foreach (array_chunk($rows, 1000) as $chunk) {
+            $width = count($chunk[0]);
+            $tuple = '(' . implode(',', array_fill(0, $width, '?')) . ')';
+            $parameters = [];
+            foreach ($chunk as $row) {
+                foreach ($row as $value) {
+                    $parameters[] = $value;
+                }
+            }
+            $statements[] = [
+                'sql' => $prefix . implode(',', array_fill(0, count($chunk), $tuple)) . $suffix,
+                'parameters' => $parameters,
+            ];
+        }
+
+        return $statements;
     }
 }
