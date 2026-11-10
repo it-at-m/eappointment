@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-11-10T12:45:53.321Z",
+  "publishedAt": "2026-11-10T14:27:21.301Z",
   "branches": [
     {
       "name": "next",
@@ -358,8 +358,8 @@
     {
       "name": "fix-zmskvr-1697-innenrevision",
       "slug": "fix-zmskvr-1697-innenrevision",
-      "runId": "42806552581",
-      "runStartedAt": "2026-11-10T11:19:40Z"
+      "runId": "42827036319",
+      "runStartedAt": "2026-11-10T13:42:52Z"
     },
     {
       "name": "fix-zmskvr-1713-hotfix-waitingstatistic-count",
