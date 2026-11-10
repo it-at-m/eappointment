@@ -40,7 +40,7 @@ class Search extends BaseController
             $parameters,
             $scopeIds
         );
-        $logList = $this->readLogSearchResults($workstation, $parameters, $scopeIds);
+        [$logList, $logSearchTotal] = $this->readLogSearchResults($workstation, $parameters, $scopeIds);
 
         return Render::withHtml(
             $response,
@@ -59,6 +59,7 @@ class Search extends BaseController
                 'logList' => $logList ?? [],
                 'searchProcessQuery' => $parameters['queryString'],
                 'processSearchTotal' => $processSearchTotal,
+                'logSearchTotal' => $logSearchTotal,
                 'menuActive' => 'search'
             )
         );
@@ -196,10 +197,10 @@ class Search extends BaseController
         return $searchParameters;
     }
 
-    private function readLogSearchResults(\BO\Zmsentities\Workstation $workstation, array $parameters, array $scopeIds): ?LogList
+    private function readLogSearchResults(\BO\Zmsentities\Workstation $workstation, array $parameters, array $scopeIds): array
     {
         if (!$this->shouldRunLogSearch($workstation, $parameters)) {
-            return null;
+            return [null, 0];
         }
 
         $logParameters = [
@@ -215,15 +216,20 @@ class Search extends BaseController
             $logParameters['scopeIds'] = implode(',', $scopeIds);
         }
 
-        $logList = \App::$http
-            ->readGetResult("/log/process/", $logParameters)
-            ->getCollection();
+        $logResult = \App::$http->readGetResult("/log/process/", $logParameters);
+        $logList = $logResult->getCollection();
+        $logMeta = $logResult->getMeta();
 
-        return $this->filterLogListForUserRights(
+        $filteredLogList = $this->filterLogListForUserRights(
             $logList,
             $scopeIds,
             $workstation->getUseraccount()->isSuperUser()
         );
+        $logSearchTotal = isset($logMeta->totalCount)
+            ? (int) $logMeta->totalCount
+            : $filteredLogList->count();
+
+        return [$filteredLogList, $logSearchTotal];
     }
 
     private function filterProcessListForUserRights(?ProcessList $processList, array $scopeIds): ProcessList

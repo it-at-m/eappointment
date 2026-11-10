@@ -72,6 +72,26 @@ class LogTest extends \BO\Zmsbackend\Tests\Service\Base
         }
     }
 
+    public function testCountMatchesSearchResultsAcrossPages()
+    {
+        $serviceName = self::logSearchLabel('CountService');
+        foreach ([987801, 987802, 987803] as $referenceId) {
+            Query::writeLogEntry(
+                'TEST count',
+                $referenceId,
+                Query::PROCESS,
+                172,
+                'testuser',
+                ['services' => $serviceName]
+            );
+        }
+        $query = new Query();
+
+        $this->assertSame(3, $query->countByProcessData(null, $serviceName, null, null, 0));
+        $this->assertCount(2, $query->readByProcessData(null, $serviceName, null, null, 0, 1, 2));
+        $this->assertCount(1, $query->readByProcessData(null, $serviceName, null, null, 0, 2, 2));
+    }
+
     public function testSearchByIndexedCitizenName()
     {
         $referenceId = 987654;

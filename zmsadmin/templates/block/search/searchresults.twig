@@ -188,10 +188,9 @@
                 'hideNavigation': hideNavigation ? 1 : null
             }) %}
 
-            {# Logs have no total count, so a full log page means there is at least one more page. #}
-            {% set hasMoreLogs = logList is defined and logList|length >= currentPerPage %}
             {% set processPages = processSearchTotal is defined ? (processSearchTotal / currentPerPage)|round(0, 'ceil') : 1 %}
-            {% set totalPages = max(processPages, currentPage + (hasMoreLogs ? 1 : 0)) %}
+            {% set logPages = logSearchTotal is defined ? (logSearchTotal / currentPerPage)|round(0, 'ceil') : 1 %}
+            {% set totalPages = max(processPages, logPages) %}
 
             {% if totalPages > 1 %}
                 <div class="pagination">
