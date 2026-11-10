@@ -176,7 +176,14 @@ class Result
     {
         $entity = $this->getEntity();
         if (!$entity instanceof Entity) {
-            throw new Exception('Response contained no entity', $this->response, $this->request);
+            $status = $this->response?->getStatusCode();
+            throw new Exception(
+                'Response contained no entity',
+                $this->response,
+                $this->request,
+                null,
+                (null !== $status && $status >= 400) ? null : 500
+            );
         }
         return $entity;
     }

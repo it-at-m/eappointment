@@ -47,18 +47,22 @@ class Exception extends \Exception
      * @param \Psr\Http\Message\ResponseInterface $response
      * @param \Psr\Http\Message\RequestInterface $request (optional) reference for better error messages
      * @param \Exception $previous
+     * @param int|null $code HTTP status for this exception. Null keeps the response status.
      */
     public function __construct(
         $message = '',
         ?\Psr\Http\Message\ResponseInterface $response = null,
         ?\Psr\Http\Message\RequestInterface $request = null,
-        ?\Exception $previous = null
+        ?\Exception $previous = null,
+        ?int $code = null
     ) {
         $this->response = $response;
         $this->request = $request;
-        $code = $this->code;
-        if (null !== $response) {
-            $code = $response->getStatusCode();
+        if (null === $code) {
+            $code = $this->code;
+            if (null !== $response) {
+                $code = $response->getStatusCode();
+            }
         }
         if (null !== $request) {
             $info = $this->getRequestInfoString();
