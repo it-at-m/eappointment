@@ -603,4 +603,34 @@ class SearchTest extends Base
         $response = $this->render($this->arguments, ['query' => 'status-test'], []);
         $this->assertStringNotContainsString('class="pagination"', (string) $response->getBody());
     }
+
+    public function testClampsResultsPerPageToOne()
+    {
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture("GET_workstation_basic.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/process/search/',
+                    'parameters' => [
+                        'resolveReferences' => 1,
+                        'query' => 'status-test',
+                        'page' => 1,
+                        'limit' => 1,
+                        'scopeIds' => '380,1,141',
+                    ],
+                    'response' => $this->readFixture("GET_searchresult_active_history.json")
+                ],
+            ]
+        );
+
+        $response = $this->render($this->arguments, ['query' => 'status-test', 'perPage' => 0], []);
+
+        $this->assertEquals(200, $response->getStatusCode());
+    }
 }

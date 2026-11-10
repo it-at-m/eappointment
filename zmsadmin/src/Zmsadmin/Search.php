@@ -82,7 +82,7 @@ class Search extends BaseController
         $page = $this->readNumberParameter($validator, 'page', 1);
         $userAction = $this->readNumberParameter($validator, 'user', 0);
         $requestedResultsPerPage = $this->readNumberParameter($validator, 'perPage', self::DEFAULT_RESULTS_PER_PAGE);
-        $resultsPerPage = min($requestedResultsPerPage, self::MAX_RESULTS_PER_PAGE);
+        $resultsPerPage = max(1, min($requestedResultsPerPage, self::MAX_RESULTS_PER_PAGE));
         $hideNavigation = $this->readNumberParameter($validator, 'hideNavigation', 0);
 
         return [
