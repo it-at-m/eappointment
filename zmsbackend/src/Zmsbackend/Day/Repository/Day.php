@@ -29,6 +29,25 @@ class Day extends \BO\Zmsbackend\Query\Base
     ';
 
     /**
+     * Slot count and stored slot length for each request at the given locations.
+     * Placeholders for StandortID IN (...) are injected by Day::readAppointmentIntervalByScope.
+     */
+    const string QUERY_SELECT_SCOPE_REQUEST_DURATIONS = '
+        SELECT sc.`StandortID` AS scopeId,
+               rp.`slots` AS slots,
+               CAST(JSON_UNQUOTE(JSON_EXTRACT(p.`data`, \'$.slotTimeInMinutes\')) AS UNSIGNED) AS minutes
+        FROM `standort` sc
+        INNER JOIN `provider` p
+            ON p.`id` = sc.`InfoDienstleisterID`
+            AND p.`source` = sc.`source`
+        INNER JOIN `request_provider` rp
+            ON rp.`provider__id` = p.`id`
+            AND rp.`source` = p.`source`
+            AND rp.`slots` > 0
+        WHERE sc.`StandortID` IN (%s)
+    ';
+
+    /**
      * On a 5-minute grid, keep a free start only when it lands on the location's
      * appointment step, measured from the opening start. Any other stored slot
      * length already is the step, so those starts stay.

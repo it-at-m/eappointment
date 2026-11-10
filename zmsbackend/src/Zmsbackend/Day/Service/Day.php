@@ -51,19 +51,13 @@ class Day extends \BO\Zmsbackend\Base
             return $intervals;
         }
 
+        $placeholders = implode(',', array_fill(0, count($scopeIds), '?'));
         $rows = $this->fetchAll(
-            'SELECT sc.`StandortID` AS scopeId,
-                    rp.`slots` AS slots,
-                    CAST(JSON_UNQUOTE(JSON_EXTRACT(p.`data`, \'$.slotTimeInMinutes\')) AS UNSIGNED) AS minutes
-             FROM `standort` sc
-             INNER JOIN `provider` p
-                 ON p.`id` = sc.`InfoDienstleisterID`
-                 AND p.`source` = sc.`source`
-             INNER JOIN `request_provider` rp
-                 ON rp.`provider__id` = p.`id`
-                 AND rp.`source` = p.`source`
-                 AND rp.`slots` > 0
-             WHERE sc.`StandortID` IN (' . implode(',', $scopeIds) . ')'
+            sprintf(
+                \BO\Zmsbackend\Day\Repository\Day::QUERY_SELECT_SCOPE_REQUEST_DURATIONS,
+                $placeholders
+            ),
+            $scopeIds
         );
         $durations = [];
         foreach ($rows as $row) {
