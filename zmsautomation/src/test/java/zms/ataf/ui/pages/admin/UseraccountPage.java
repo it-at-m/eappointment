@@ -289,6 +289,18 @@ public class UseraccountPage extends BasePage {
         for (WebElement field : passwords) {
             // Gecko getAttribute('value') stays at the HTML default (""); read the live property.
             String value = passwordFieldValue(field);
+            if (!value.equals(password)) {
+                // Firefox sometimes drops the first assignment when the form is still settling.
+                try {
+                    field.click();
+                    field.clear();
+                    field.sendKeys(password);
+                    value = passwordFieldValue(field);
+                } catch (RuntimeException retryFailed) {
+                    ScenarioLogManager.getLogger()
+                            .warn("Retrying the password field failed ({}).", retryFailed.toString());
+                }
+            }
             Assert.assertTrue(
                     value.equals(password),
                     "Password field did not keep the typed value (got length " + value.length() + ").");

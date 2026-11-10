@@ -190,7 +190,7 @@ class Log extends \BO\Zmsbackend\Base
         return Entity::formatDisplayFields($log);
     }
 
-    public function readByProcessId($processId): LogList
+    public function readByProcessId(string|int $processId): LogList
     {
         $query = new \BO\Zmsbackend\Log\Repository\Log(\BO\Zmsbackend\Query\Base::SELECT);
         $query->addEntityMapping();
@@ -200,11 +200,11 @@ class Log extends \BO\Zmsbackend\Base
     }
 
     public function readByProcessData(
-        $generalSearch,
-        $service,
-        $provider,
+        ?string $generalSearch,
+        ?string $service,
+        ?string $provider,
         DateTime|null $date,
-        $userAction,
+        int $userAction,
         int $page = 1,
         int $perPage = 100,
         ?array $scopeIds = null
@@ -357,7 +357,7 @@ class Log extends \BO\Zmsbackend\Base
     /**
      * @psalm-api
      */
-    public function delete($processId): LogList
+    public function delete(string|int $processId): LogList
     {
         $query = new \BO\Zmsbackend\Log\Repository\Log(\BO\Zmsbackend\Query\Base::SELECT);
         $query->addEntityMapping();

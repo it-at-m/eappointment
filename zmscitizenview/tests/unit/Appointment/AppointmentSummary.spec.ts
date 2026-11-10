@@ -424,6 +424,30 @@ describe("AppointmentSummary", () => {
       await cancel!.trigger("click");
       expect(wrapper.emitted("cancelReschedule")).toBeTruthy();
     });
+
+    it("disables rebooking actions while booking or cancellation is in flight", async () => {
+      const wrapper = createWrapper({ isRebooking: true });
+      await wrapper
+        .find('input[name="checkbox-electronic-communication"]')
+        .trigger("click");
+      await nextTick();
+
+      const confirm = () => findButtonByIcon(wrapper, "check");
+      const cancel = () => findButtonByIcon(wrapper, "close");
+      expect(confirm()!.attributes("disabled")).toBeUndefined();
+      expect(cancel()!.attributes("disabled")).toBeUndefined();
+
+      wrapper.vm.loadingStates.isBookingAppointment.value = true;
+      await nextTick();
+      expect(confirm()!.attributes("disabled")).toBeDefined();
+      expect(cancel()!.attributes("disabled")).toBeDefined();
+
+      wrapper.vm.loadingStates.isBookingAppointment.value = false;
+      wrapper.vm.loadingStates.isCancelingAppointment.value = true;
+      await nextTick();
+      expect(confirm()!.attributes("disabled")).toBeDefined();
+      expect(cancel()!.attributes("disabled")).toBeDefined();
+    });
   });
 
   describe("Test submission loading state", () => {

@@ -9,6 +9,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.TimeoutException;
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.ExpectedCondition;
@@ -31,6 +32,9 @@ public class AdminPage extends BasePage {
 
     private static final String HEADER_CHANGE_SELECTION_LOCATOR = ".page-header__scope a[title=\"Auswahl ändern\"]";
     private static final String NAV_SELECT_LOCATION_LOCATOR = "//nav//a[normalize-space()='Standort auswählen']";
+    /** Workstation select form. The queue cluster switch is also name="scope" and must not match. */
+    private static final By WORKSTATION_SELECT_FORM = By.cssSelector("[data-scope-select-form]");
+    private static final String WORKSTATION_SCOPE_SELECT = "[data-scope-select-form] select[name='scope']";
 
     protected final AdminPageContext CONTEXT;
 
@@ -135,7 +139,7 @@ public class AdminPage extends BasePage {
         for (int attempt = 1; attempt <= 3; attempt++) {
             try {
                 selectDropDownListValueByVisibleText(
-                        DEFAULT_EXPLICIT_WAIT_TIME, "scope", LocatorType.NAME, location);
+                        DEFAULT_EXPLICIT_WAIT_TIME, WORKSTATION_SCOPE_SELECT, LocatorType.CSSSELECTOR, location);
                 TestDataHelper.setTestData("location", location);
                 return;
             } catch (StaleElementReferenceException stale) {
@@ -158,7 +162,7 @@ public class AdminPage extends BasePage {
         ensureScopeSelectionForm();
         String scopeValue = Integer.toString(scopeId);
         WebElement selectEl = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
-                .until(ExpectedConditions.presenceOfElementLocated(By.name("scope")));
+                .until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(WORKSTATION_SCOPE_SELECT)));
         Select select = new Select(selectEl);
         String visible = null;
         for (WebElement option : select.getOptions()) {
@@ -212,23 +216,76 @@ public class AdminPage extends BasePage {
     public void clickInHeaderOnChangeSelectionButton() {
         CONTEXT.set();
         ScenarioLogManager.getLogger().info("Trying to click on 'Auswahl ändern' Button");
-        if (isWebElementVisible(3, HEADER_CHANGE_SELECTION_LOCATOR, LocatorType.CSSSELECTOR, true)) {
-            clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, HEADER_CHANGE_SELECTION_LOCATOR, LocatorType.CSSSELECTOR, true, CONTEXT);
-            return;
+        // The queue renders its own select[name=scope] (cluster switch, often disabled).
+        // Treating that as the Standort form skips "Auswahl ändern" and then waits on a
+        // control that never lists the target location.
+        By header = By.cssSelector(HEADER_CHANGE_SELECTION_LOCATOR);
+        By nav = By.xpath(NAV_SELECT_LOCATION_LOCATOR);
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        wait.pollingEvery(Duration.ofMillis(250));
+        wait.ignoring(StaleElementReferenceException.class);
+        wait.withMessage("Waited " + DEFAULT_EXPLICIT_WAIT_TIME
+                + " seconds for the Standort form or 'Auswahl ändern'.");
+        boolean[] opened = {false};
+        wait.until((ExpectedCondition<Boolean>) driver -> openScopeSelection(driver, header, nav, opened));
+    }
+
+    private boolean workstationSelectFormOpen(WebDriver driver) {
+        return !driver.findElements(WORKSTATION_SELECT_FORM).isEmpty();
+    }
+
+    private boolean openScopeSelection(WebDriver driver, By header, By nav, boolean[] opened) {
+        if (workstationSelectFormOpen(driver)) {
+            if (!opened[0]) {
+                ScenarioLogManager.getLogger().info("Standort form already open; skipping 'Auswahl ändern'.");
+            }
+            return true;
         }
-        ScenarioLogManager.getLogger().info("Header 'Auswahl ändern' not visible, using nav link 'Standort auswählen'");
-        clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, NAV_SELECT_LOCATION_LOCATOR, LocatorType.XPATH, true, CONTEXT);
+        // One navigation. Polling used to click again every 250ms, and Firefox was still
+        // loading the select page, so each click cancelled the previous one.
+        if (opened[0]) {
+            return false;
+        }
+        if (openFirstDisplayed(driver, header)) {
+            opened[0] = true;
+            return workstationSelectFormOpen(driver);
+        }
+        if (openFirstDisplayed(driver, nav)) {
+            opened[0] = true;
+            ScenarioLogManager.getLogger().info("Header 'Auswahl ändern' not visible, using nav link 'Standort auswählen'");
+            return workstationSelectFormOpen(driver);
+        }
+        return false;
+    }
+
+    private boolean openFirstDisplayed(WebDriver driver, By locator) {
+        for (WebElement element : driver.findElements(locator)) {
+            try {
+                if (!element.isDisplayed()) {
+                    continue;
+                }
+                String href = element.getAttribute("href");
+                if (href == null || href.isBlank()) {
+                    continue;
+                }
+                driver.navigate().to(href);
+                return true;
+            } catch (StaleElementReferenceException ex) {
+                return false;
+            }
+        }
+        return false;
     }
 
     /** Opens the Standort form when SSO restored an existing workstation session. */
     private void ensureScopeSelectionForm() {
-        if (!DRIVER.findElements(By.name("scope")).isEmpty()) {
+        if (workstationSelectFormOpen(DRIVER)) {
             return;
         }
         ScenarioLogManager.getLogger().info("Scope form missing after login; opening Standort selection.");
         clickInHeaderOnChangeSelectionButton();
         new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
-                .until(ExpectedConditions.presenceOfElementLocated(By.name("scope")));
+                .until(ExpectedConditions.presenceOfElementLocated(WORKSTATION_SELECT_FORM));
     }
 
     public void clickInNavigationOnOverallCalendar() {

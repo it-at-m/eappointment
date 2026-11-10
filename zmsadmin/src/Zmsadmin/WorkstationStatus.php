@@ -32,7 +32,7 @@ class WorkstationStatus extends BaseController
         return Render::withJson($response, ['workstation' => $workstation]);
     }
 
-    protected function withFixedLastLogin($workstation)
+    protected function withFixedLastLogin(\BO\Zmsentities\Workstation $workstation)
     {
         $dateTime = (new \DateTime())->setTimestamp($workstation->getUseraccount()->lastLogin);
         $hour = \App::$now->format('H');

@@ -3,7 +3,6 @@
 
 // ini_set('xdebug.auto_trace', true);
 // ini_set('xdebug.trace_output_dir', './');
-ini_set('session.serialize_handler', 'php_serialize');
 
 // define the application path as single global constant
 define("APP_PATH", realpath(__DIR__));

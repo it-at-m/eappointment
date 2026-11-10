@@ -204,7 +204,7 @@ class SlotList extends \BO\Zmsbackend\Query\Base
      * @return (mixed|string)[]
      *
      */
-    public static function getParametersMonth($scopeId, \DateTimeInterface $monthDateTime, \DateTimeInterface $now): array
+    public static function getParametersMonth(string|int $scopeId, \DateTimeInterface $monthDateTime, \DateTimeInterface $now): array
     {
         $now = DateTime::create($now);
         $monthDateTime = DateTime::create($monthDateTime);
@@ -228,7 +228,7 @@ class SlotList extends \BO\Zmsbackend\Query\Base
      * @return (mixed|string)[]
      *
      */
-    public static function getParametersDay($scopeId, \DateTimeInterface $dateTime, \DateTimeInterface $now): array
+    public static function getParametersDay(string|int $scopeId, \DateTimeInterface $dateTime, \DateTimeInterface $now): array
     {
         $now = DateTime::create($now);
         $dateTime = DateTime::create($dateTime);
@@ -324,8 +324,8 @@ class SlotList extends \BO\Zmsbackend\Query\Base
     public function addToCalendar(
         \BO\Zmsentities\Calendar $calendar,
         \DateTimeInterface $now,
-        $freeProcessesDate,
-        $slotType = 'public',
+        ?\DateTimeInterface $freeProcessesDate,
+        string $slotType = 'public',
         int $slotsRequired = 1
     ): \BO\Zmsentities\Calendar {
         $nowDate = $now->format('Y-m-d');
@@ -345,9 +345,9 @@ class SlotList extends \BO\Zmsbackend\Query\Base
 
     protected function addFreeProcessesToCalendar(
         \BO\Zmsentities\Calendar $calendar,
-        $freeProcessesDate,
-        $date,
-        $slotType = 'public',
+        ?\DateTimeInterface $freeProcessesDate,
+        string $date,
+        string $slotType = 'public',
         int $slotsRequired = 1
     ): void {
         if (null !== $freeProcessesDate && $date == $freeProcessesDate->format('Y-m-d')) {
@@ -366,7 +366,7 @@ class SlotList extends \BO\Zmsbackend\Query\Base
     public function getFreeProcesses(
         \BO\Zmsentities\Calendar $calendar,
         ?\DateTimeImmutable $freeProcessesDate = null,
-        $slotType = 'public',
+        string $slotType = 'public',
         int $slotsRequired = 1
     ) {
         $selectedDate = $freeProcessesDate->format('Y-m-d');
@@ -427,7 +427,7 @@ class SlotList extends \BO\Zmsbackend\Query\Base
     }
 
     #[\Override]
-    public function postProcess($data)
+    public function postProcess(array $data)
     {
         $data[$this->getPrefixed("appointment__date")] = strtotime($data[$this->getPrefixed("appointment__date")]);
         $data[$this->getPrefixed("availability__startDate")] =

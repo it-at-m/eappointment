@@ -78,12 +78,12 @@ class ArchivedDataIntoStatisticByCron
     }
 
     protected function writeProcessInStatisticTable(
-        $process,
-        $scope,
-        $cluster,
-        $department,
-        $organisation,
-        $owner,
+        \BO\Zmsentities\Process $process,
+        \BO\Zmsentities\Scope $scope,
+        ?\BO\Zmsentities\Cluster $cluster,
+        \BO\Zmsentities\Department $department,
+        \BO\Zmsentities\Organisation $organisation,
+        \BO\Zmsentities\Owner $owner,
         \DateTimeImmutable|false $dateTime,
         bool $commit = false
     ): void {
