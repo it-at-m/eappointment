@@ -33,6 +33,9 @@ public class AdminPage extends BasePage {
 
     private static final String HEADER_CHANGE_SELECTION_LOCATOR = ".page-header__scope a[title=\"Auswahl ändern\"]";
     private static final String NAV_SELECT_LOCATION_LOCATOR = "//nav//a[normalize-space()='Standort auswählen']";
+    /** Workstation select form. The queue cluster switch is also name="scope" and must not match. */
+    private static final By WORKSTATION_SELECT_FORM = By.cssSelector("[data-scope-select-form]");
+    private static final String WORKSTATION_SCOPE_SELECT = "[data-scope-select-form] select[name='scope']";
 
     protected final AdminPageContext CONTEXT;
 
@@ -137,7 +140,7 @@ public class AdminPage extends BasePage {
         for (int attempt = 1; attempt <= 3; attempt++) {
             try {
                 selectDropDownListValueByVisibleText(
-                        DEFAULT_EXPLICIT_WAIT_TIME, "scope", LocatorType.NAME, location);
+                        DEFAULT_EXPLICIT_WAIT_TIME, WORKSTATION_SCOPE_SELECT, LocatorType.CSSSELECTOR, location);
                 TestDataHelper.setTestData("location", location);
                 return;
             } catch (StaleElementReferenceException stale) {
@@ -160,7 +163,7 @@ public class AdminPage extends BasePage {
         ensureScopeSelectionForm();
         String scopeValue = Integer.toString(scopeId);
         WebElement selectEl = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
-                .until(ExpectedConditions.presenceOfElementLocated(By.name("scope")));
+                .until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(WORKSTATION_SCOPE_SELECT)));
         Select select = new Select(selectEl);
         String visible = null;
         for (WebElement option : select.getOptions()) {
@@ -214,9 +217,9 @@ public class AdminPage extends BasePage {
     public void clickInHeaderOnChangeSelectionButton() {
         CONTEXT.set();
         ScenarioLogManager.getLogger().info("Trying to click on 'Auswahl ändern' Button");
-        // workstationSelect replaces the header, so "Auswahl ändern" is gone once navigation
-        // finishes. A 60s wait for that link times out on Firefox while the Standort form is already open.
-        By scope = By.name("scope");
+        // The queue renders its own select[name=scope] (cluster switch, often disabled).
+        // Treating that as the Standort form skips "Auswahl ändern" and then waits on a
+        // control that never lists the target location.
         By header = By.cssSelector(HEADER_CHANGE_SELECTION_LOCATOR);
         By nav = By.xpath(NAV_SELECT_LOCATION_LOCATOR);
         WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
@@ -224,20 +227,24 @@ public class AdminPage extends BasePage {
         wait.ignoring(StaleElementReferenceException.class);
         wait.withMessage("Waited " + DEFAULT_EXPLICIT_WAIT_TIME
                 + " seconds for the Standort form or 'Auswahl ändern'.");
-        wait.until((ExpectedCondition<Boolean>) driver -> openScopeSelection(driver, scope, header, nav));
+        wait.until((ExpectedCondition<Boolean>) driver -> openScopeSelection(driver, header, nav));
     }
 
-    private boolean openScopeSelection(WebDriver driver, By scope, By header, By nav) {
-        if (!driver.findElements(scope).isEmpty()) {
+    private boolean workstationSelectFormOpen(WebDriver driver) {
+        return !driver.findElements(WORKSTATION_SELECT_FORM).isEmpty();
+    }
+
+    private boolean openScopeSelection(WebDriver driver, By header, By nav) {
+        if (workstationSelectFormOpen(driver)) {
             ScenarioLogManager.getLogger().info("Standort form already open; skipping 'Auswahl ändern'.");
             return true;
         }
         if (clickFirstDisplayed(driver, header)) {
-            return true;
+            return workstationSelectFormOpen(driver);
         }
         if (clickFirstDisplayed(driver, nav)) {
             ScenarioLogManager.getLogger().info("Header 'Auswahl ändern' not visible, using nav link 'Standort auswählen'");
-            return true;
+            return workstationSelectFormOpen(driver);
         }
         return false;
     }
@@ -257,13 +264,13 @@ public class AdminPage extends BasePage {
 
     /** Opens the Standort form when SSO restored an existing workstation session. */
     private void ensureScopeSelectionForm() {
-        if (!DRIVER.findElements(By.name("scope")).isEmpty()) {
+        if (workstationSelectFormOpen(DRIVER)) {
             return;
         }
         ScenarioLogManager.getLogger().info("Scope form missing after login; opening Standort selection.");
         clickInHeaderOnChangeSelectionButton();
         new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
-                .until(ExpectedConditions.presenceOfElementLocated(By.name("scope")));
+                .until(ExpectedConditions.presenceOfElementLocated(WORKSTATION_SELECT_FORM));
     }
 
     public void clickInNavigationOnOverallCalendar() {
