@@ -402,21 +402,21 @@ class Slot extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\Map
     const string QUERY_CREATE_CALC_SLOT_ORDER = '
         CREATE TEMPORARY TABLE IF NOT EXISTS `zms_calc_slot_order` (
             `dayKey` CHAR(10) NOT NULL,
-            `seq` SMALLINT UNSIGNED NOT NULL,
+            `sequence` SMALLINT UNSIGNED NOT NULL,
             `slotID` INT UNSIGNED NOT NULL,
-            PRIMARY KEY (`dayKey`, `seq`)
+            PRIMARY KEY (`dayKey`, `sequence`)
         ) ENGINE=MEMORY
     ';
 
     const string QUERY_DELETE_CALC_SLOT_ORDER = 'DELETE FROM `zms_calc_slot_order`';
 
     const string QUERY_INSERT_CALC_SLOT_ORDER = '
-        INSERT INTO `zms_calc_slot_order` (`dayKey`, `seq`, `slotID`) VALUES
+        INSERT INTO `zms_calc_slot_order` (`dayKey`, `sequence`, `slotID`) VALUES
     ';
 
     const string QUERY_DELETE_HIERA_FOR_CALC_ORDER = '
-        DELETE `h` FROM `slot_hiera` `h`
-        INNER JOIN `zms_calc_slot_order` `t` ON `t`.`slotID` = `h`.`slotID`
+        DELETE `hiera` FROM `slot_hiera` `hiera`
+        INNER JOIN `zms_calc_slot_order` `orderedSlot` ON `orderedSlot`.`slotID` = `hiera`.`slotID`
     ';
 
     /**
@@ -528,12 +528,12 @@ class Slot extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\Map
     {
         return '
             INSERT INTO `slot_hiera` (`slotID`, `ancestorID`, `ancestorLevel`)
-            SELECT `s`.`slotID`, `a`.`slotID`, `s`.`seq` - `a`.`seq` + 1
-            FROM `zms_calc_slot_order` `s`
-            INNER JOIN `zms_calc_slot_order` `a`
-              ON `a`.`dayKey` = `s`.`dayKey`
-             AND `a`.`seq` <= `s`.`seq`
-             AND `a`.`seq` + ' . $maximumEarlierSlots . ' >= `s`.`seq`
+            SELECT `slotRow`.`slotID`, `ancestorRow`.`slotID`, `slotRow`.`sequence` - `ancestorRow`.`sequence` + 1
+            FROM `zms_calc_slot_order` `slotRow`
+            INNER JOIN `zms_calc_slot_order` `ancestorRow`
+              ON `ancestorRow`.`dayKey` = `slotRow`.`dayKey`
+             AND `ancestorRow`.`sequence` <= `slotRow`.`sequence`
+             AND `ancestorRow`.`sequence` + ' . $maximumEarlierSlots . ' >= `slotRow`.`sequence`
         ';
     }
 
@@ -571,15 +571,15 @@ class Slot extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\Map
      */
     public static function packSlotRow(array $values, ?int $slotId = null): array
     {
-        $packed = [];
+        $packedRow = [];
         foreach (self::SLOT_WRITE_COLUMNS as $column) {
-            $packed[] = $values[$column];
+            $packedRow[] = $values[$column];
         }
         if ($slotId !== null) {
-            array_unshift($packed, $slotId);
+            array_unshift($packedRow, $slotId);
         }
 
-        return $packed;
+        return $packedRow;
     }
 
     /**
@@ -598,8 +598,8 @@ class Slot extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\Map
     {
         $statements = [];
         foreach (array_chunk($rows, 1000) as $chunk) {
-            $width = count($chunk[0]);
-            $tuple = '(' . implode(',', array_fill(0, $width, '?')) . ')';
+            $columnCount = count($chunk[0]);
+            $rowPlaceholder = '(' . implode(',', array_fill(0, $columnCount, '?')) . ')';
             $parameters = [];
             foreach ($chunk as $row) {
                 foreach ($row as $value) {
@@ -607,7 +607,7 @@ class Slot extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\Map
                 }
             }
             $statements[] = [
-                'sql' => $prefix . implode(',', array_fill(0, count($chunk), $tuple)) . $suffix,
+                'sql' => $prefix . implode(',', array_fill(0, count($chunk), $rowPlaceholder)) . $suffix,
                 'parameters' => $parameters,
             ];
         }

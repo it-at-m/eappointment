@@ -396,24 +396,24 @@ class Slot extends \BO\Zmsbackend\Base
             }
         }
 
-        $rebuild = [];
+        $ancestorChains = [];
         foreach ($prepared as $day) {
             $dateKey = $day['time']->format('Y-m-d');
             if ($unchanged[$dateKey]) {
                 continue;
             }
             $stored = $storedByDay[$dateKey] ?? [];
-            $orderedIds = [];
+            $orderedSlotIds = [];
             foreach ($day['rows'] as $values) {
                 $clock = $this->slotClock((string) $values['time']);
                 if (!isset($stored[$clock])) {
                     throw new \RuntimeException('Slot calculation did not store every slot for ' . $dateKey);
                 }
-                $orderedIds[] = $stored[$clock];
+                $orderedSlotIds[] = $stored[$clock];
             }
-            $rebuild[] = ['key' => $dateKey, 'ids' => $orderedIds];
+            $ancestorChains[] = ['date' => $dateKey, 'slotIds' => $orderedSlotIds];
         }
-        $this->writeAncestorChains($rebuild);
+        $this->writeAncestorChains($ancestorChains);
 
         return true;
     }
@@ -501,7 +501,7 @@ class Slot extends \BO\Zmsbackend\Base
     /**
      * One chain for every day that changed. The pairs match the old per-slot loop.
      *
-     * @param list<array{key: string, ids: list<int>}> $days
+     * @param list<array{date: string, slotIds: list<int>}> $days
      */
     private function writeAncestorChains(array $days): void
     {
@@ -511,18 +511,18 @@ class Slot extends \BO\Zmsbackend\Base
         $repository = \BO\Zmsbackend\Slot\Repository\Slot::class;
         $this->perform($repository::QUERY_CREATE_CALC_SLOT_ORDER);
         $this->perform($repository::QUERY_DELETE_CALC_SLOT_ORDER);
-        $order = [];
+        $slotOrderRows = [];
         foreach ($days as $day) {
-            $seq = 1;
-            foreach ($day['ids'] as $slotId) {
-                $order[] = [$day['key'], $seq, $slotId];
-                $seq++;
+            $sequence = 1;
+            foreach ($day['slotIds'] as $slotId) {
+                $slotOrderRows[] = [$day['date'], $sequence, $slotId];
+                $sequence++;
             }
         }
-        $this->writeChunks($repository::QUERY_INSERT_CALC_SLOT_ORDER, '', $order);
+        $this->writeChunks($repository::QUERY_INSERT_CALC_SLOT_ORDER, '', $slotOrderRows);
         $this->perform($repository::QUERY_DELETE_HIERA_FOR_CALC_ORDER);
-        $within = self::MAX_SLOTS - 1;
-        $this->perform($repository::insertAncestorChainsSql($within));
+        $maximumEarlierSlots = self::MAX_SLOTS - 1;
+        $this->perform($repository::insertAncestorChainsSql($maximumEarlierSlots));
         $this->perform($repository::QUERY_DELETE_CALC_SLOT_ORDER);
     }
 
