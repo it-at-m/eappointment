@@ -208,6 +208,21 @@
         </template>
       </muc-callout>
     </div>
+    <div
+      v-if="mailLimitReached"
+      role="alert"
+      aria-live="assertive"
+      aria-atomic="true"
+    >
+      <muc-callout type="error">
+        <template #content>
+          <p>{{ t("apiErrorTooManyAppointmentsWithSameMailText") }}</p>
+        </template>
+        <template #header>
+          {{ t("apiErrorTooManyAppointmentsWithSameMailHeader") }}
+        </template>
+      </muc-callout>
+    </div>
     <div class="m-button-group">
       <muc-button
         v-if="!isRebooking"
@@ -314,6 +329,7 @@ const props = defineProps<{
   captchaToken: string | null;
   bookingError: boolean;
   bookingErrorKey: string;
+  mailLimitReached?: boolean;
   errorType?: CalloutType;
   t: (key: string) => string;
 }>();

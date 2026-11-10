@@ -161,6 +161,11 @@
                   errorStates.errorStateMap.apiErrorCaptchaInvalid.value
                 "
                 :booking-error-key="bookingErrorKey"
+                :mail-limit-reached="
+                  currentView === 1 &&
+                  errorStates.errorStateMap
+                    .apiErrorTooManyAppointmentsWithSameMail.value
+                "
                 @back="decreaseCurrentView"
                 @cancel-reschedule="nextCancelReschedule"
                 @clearBookingError="clearBookingError"
@@ -177,6 +182,10 @@
                   isRebooking ? rebookedAppointment : undefined
                 "
                 :login-failed="loginFailed"
+                :mail-limit-reached="
+                  errorStates.errorStateMap
+                    .apiErrorTooManyAppointmentsWithSameMail.value
+                "
                 :t="t"
                 @back="decreaseCurrentView"
                 @next="nextUpdateAppointment"

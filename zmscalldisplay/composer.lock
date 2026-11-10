@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "337b4941cb7521653614ba4791f4c45b",
+    "content-hash": "ba6a8ec2ba8949de8bf7b7386f5b4ef1",
     "packages": [
         {
             "name": "aronduby/dump",
@@ -201,7 +201,7 @@
             "dist": {
                 "type": "path",
                 "url": "../mellon",
-                "reference": "6d7d9d67d930e5aa86a9013cf450ac8b16633e3f"
+                "reference": "87a10be3c953fd6dffbf3a367b1bb3c8b5b6acaf"
             },
             "require": {
                 "ext-json": ">=0",
@@ -214,7 +214,7 @@
                 "phpunit/phpunit": "^13",
                 "roave/security-advisories": "dev-latest",
                 "squizlabs/php_codesniffer": "*",
-                "vimeo/psalm": "7.0.2"
+                "vimeo/psalm": "7.2.0"
             },
             "type": "library",
             "autoload": {
@@ -251,7 +251,7 @@
             "dist": {
                 "type": "path",
                 "url": "../zmsclient",
-                "reference": "bd1b40518bfee5c8efb8b64c0028696b3053aed2"
+                "reference": "e97b2973fddfa15c27fb6871300f026bd57f06a7"
             },
             "require": {
                 "aronduby/dump": "^0.9",
@@ -276,7 +276,7 @@
                 "phpunit/phpunit": "^13",
                 "roave/security-advisories": "dev-latest",
                 "squizlabs/php_codesniffer": "*",
-                "vimeo/psalm": "7.0.2"
+                "vimeo/psalm": "7.2.0"
             },
             "type": "library",
             "autoload": {
@@ -311,7 +311,7 @@
             "dist": {
                 "type": "path",
                 "url": "../zmsentities",
-                "reference": "c5484d9acfe33b5ea845e5336ec25feec608f849"
+                "reference": "87a10be3c953fd6dffbf3a367b1bb3c8b5b6acaf"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -334,7 +334,7 @@
                 "phpunit/phpunit": "^13",
                 "roave/security-advisories": "dev-latest",
                 "squizlabs/php_codesniffer": "*",
-                "vimeo/psalm": "7.0.2"
+                "vimeo/psalm": "7.2.0"
             },
             "type": "library",
             "autoload": {
@@ -369,7 +369,7 @@
             "dist": {
                 "type": "path",
                 "url": "../zmsslim",
-                "reference": "f3aa95190d6cb9eb51eecf0c6582bc02b3ee4ac6"
+                "reference": "87a10be3c953fd6dffbf3a367b1bb3c8b5b6acaf"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -400,7 +400,7 @@
                 "phpunit/phpunit": "^13",
                 "roave/security-advisories": "dev-latest",
                 "squizlabs/php_codesniffer": "*",
-                "vimeo/psalm": "7.0.2"
+                "vimeo/psalm": "7.2.0"
             },
             "type": "library",
             "autoload": {
@@ -8956,62 +8956,6 @@
             "published-time": "2026-10-20T12:29:51+00:00"
         },
         {
-            "name": "psalm/plugin-sabre-event",
-            "version": "0.2.1",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/psalm/psalm-plugin-sabre-event.git",
-                "reference": "49eaea05b492526ab4d5f9baeb085f2a7129366a"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/psalm/psalm-plugin-sabre-event/zipball/49eaea05b492526ab4d5f9baeb085f2a7129366a",
-                "reference": "49eaea05b492526ab4d5f9baeb085f2a7129366a",
-                "shasum": ""
-            },
-            "require": {
-                "psalm/psalm-plugin-api": "^0.4",
-                "vimeo/psalm": "^7|dev-master"
-            },
-            "conflict": {
-                "sabre/event": "<5.0"
-            },
-            "require-dev": {
-                "sabre/event": "^5",
-                "squizlabs/php_codesniffer": "^3.3"
-            },
-            "type": "psalm-plugin",
-            "extra": {
-                "psalm": {
-                    "pluginClass": "Psalm\\SabreEventPlugin\\Plugin"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Psalm\\SabreEventPlugin\\": [
-                        "."
-                    ]
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Matt Brown",
-                    "email": "github@muglug.com"
-                }
-            ],
-            "description": "Psalm plugin for sabre/event",
-            "support": {
-                "issues": "https://github.com/psalm/psalm-plugin-sabre-event/issues",
-                "source": "https://github.com/psalm/psalm-plugin-sabre-event/tree/0.2.1"
-            },
-            "time": "2026-10-28T12:24:48+00:00",
-            "published-time": "2026-10-28T12:27:30+00:00"
-        },
-        {
             "name": "psalm/plugin-symfony",
             "version": "v5.10.0",
             "source": {
@@ -10523,16 +10467,16 @@
         },
         {
             "name": "symfony/config",
-            "version": "v7.4.10",
+            "version": "v7.4.23",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/config.git",
-                "reference": "d91b6c7cd2a8c9a9c2b8d26c8f5ed48edf99ef57"
+                "reference": "8ef666abf731e85e59cf478929dda6c7cb2fa9c4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/config/zipball/d91b6c7cd2a8c9a9c2b8d26c8f5ed48edf99ef57",
-                "reference": "d91b6c7cd2a8c9a9c2b8d26c8f5ed48edf99ef57",
+                "url": "https://api.github.com/repos/symfony/config/zipball/8ef666abf731e85e59cf478929dda6c7cb2fa9c4",
+                "reference": "8ef666abf731e85e59cf478929dda6c7cb2fa9c4",
                 "shasum": ""
             },
             "require": {
@@ -10578,7 +10522,7 @@
             "description": "Helps you find, load, combine, autofill and validate configuration values of any kind",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/config/tree/v7.4.10"
+                "source": "https://github.com/symfony/config/tree/v7.4.23"
             },
             "funding": [
                 {
@@ -10598,7 +10542,8 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-05-03T14:20:49+00:00"
+            "time": "2026-11-04T08:27:22+00:00",
+            "published-time": "2026-11-04T11:27:33+00:00"
         },
         {
             "name": "symfony/console",
@@ -10785,16 +10730,16 @@
         },
         {
             "name": "symfony/filesystem",
-            "version": "v7.4.11",
+            "version": "v7.4.23",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/filesystem.git",
-                "reference": "d721ea61b4a5fba8c5b6e7c1feda19efea144b50"
+                "reference": "53d609da66578dad5a39fe290e8f924ec8f05e93"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/filesystem/zipball/d721ea61b4a5fba8c5b6e7c1feda19efea144b50",
-                "reference": "d721ea61b4a5fba8c5b6e7c1feda19efea144b50",
+                "url": "https://api.github.com/repos/symfony/filesystem/zipball/53d609da66578dad5a39fe290e8f924ec8f05e93",
+                "reference": "53d609da66578dad5a39fe290e8f924ec8f05e93",
                 "shasum": ""
             },
             "require": {
@@ -10831,7 +10776,7 @@
             "description": "Provides basic utilities for the filesystem",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/filesystem/tree/v7.4.11"
+                "source": "https://github.com/symfony/filesystem/tree/v7.4.23"
             },
             "funding": [
                 {
@@ -10851,8 +10796,8 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-05-11T16:38:44+00:00",
-            "published-time": "2026-05-13T18:05:21+00:00"
+            "time": "2026-11-04T08:27:22+00:00",
+            "published-time": "2026-11-04T11:28:00+00:00"
         },
         {
             "name": "symfony/polyfill-intl-grapheme",
@@ -11198,16 +11143,16 @@
         },
         {
             "name": "vimeo/psalm",
-            "version": "7.0.2",
+            "version": "7.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/vimeo/psalm.git",
-                "reference": "5cd5e2ffff7497643dd51da31ae85bb5bc593090"
+                "reference": "7c1fcd8a86b7912663bffd385da323dd8dcce1c5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/vimeo/psalm/zipball/5cd5e2ffff7497643dd51da31ae85bb5bc593090",
-                "reference": "5cd5e2ffff7497643dd51da31ae85bb5bc593090",
+                "url": "https://api.github.com/repos/vimeo/psalm/zipball/7c1fcd8a86b7912663bffd385da323dd8dcce1c5",
+                "reference": "7c1fcd8a86b7912663bffd385da323dd8dcce1c5",
                 "shasum": ""
             },
             "require": {
@@ -11233,8 +11178,7 @@
                 "php-64bit": "~8.2.27 || ~8.3.16 || ~8.4.3 || ~8.5.0 || ~8.6.0",
                 "psalm/plugin-laravel": "^4.17.4",
                 "psalm/plugin-mockery": "^1.3.2",
-                "psalm/plugin-phpunit": "^0.21",
-                "psalm/plugin-sabre-event": "^0.2.1",
+                "psalm/plugin-phpunit": "^0.21 || ^0.22 || ^1.0",
                 "psalm/plugin-symfony": "^5.9.1",
                 "psalm/psalm-plugin-api": "0.4.1",
                 "sebastian/diff": "^4.0 || ^5.0 || ^6.0 || ^7.0 || ^8.0 || ^9.0",
@@ -11263,7 +11207,8 @@
             },
             "suggest": {
                 "ext-curl": "In order to send data to shepherd",
-                "ext-igbinary": "^2.0.5 is required, used to serialize caching data"
+                "ext-igbinary": "^2.0.5 is required, used to serialize caching data",
+                "ext-zstd": ">=0.15.0 is required, used to compress caching data"
             },
             "bin": [
                 "psalm",
@@ -11315,8 +11260,8 @@
                 "issues": "https://github.com/vimeo/psalm/issues",
                 "source": "https://github.com/vimeo/psalm"
             },
-            "time": "2026-11-03T22:56:00+00:00",
-            "published-time": "2026-11-04T00:41:51+00:00"
+            "time": "2026-11-09T09:56:40+00:00",
+            "published-time": "2026-11-09T10:27:07+00:00"
         },
         {
             "name": "webmozart/assert",

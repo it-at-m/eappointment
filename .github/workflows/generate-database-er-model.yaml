@@ -15,7 +15,7 @@ jobs:
   generate:
     runs-on: ubuntu-latest
     container:
-      image: "ghcr.io/it-at-m/eappointment/zmsbase:8.4-dev@sha256:2f4879da68218931d1d356cf230c5056c6791979cecdb4317f4c28299211e885"
+      image: "ghcr.io/it-at-m/eappointment/zmsbase:8.4-dev@sha256:fd3257b885e7273b5b9d33fad9f5094e3f8d7b3ce82b2868c9a2e7b507eea0f2"
     services:
       mariadb:
         image: mariadb:10.11@sha256:d769e37960821dfdcf096954f6e7ac89f747e116c1bba98e48edd265dfc7deae

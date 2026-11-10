@@ -43,6 +43,14 @@ class CaptchaChallengeControllerTest extends ControllerTestCase
         parent::tearDown();
     }
 
+    private function captchaServiceWithClient(Client $client): CaptchaService
+    {
+        $captcha = new CaptchaService();
+        (new \ReflectionProperty(CaptchaService::class, 'httpClient'))->setValue($captcha, $client);
+
+        return $captcha;
+    }
+
     public function testCreateChallengeSuccess()
     {
         $expectedChallenge = json_decode($this->readFixture('GET_captcha_challenge.json'), true);
@@ -53,19 +61,7 @@ class CaptchaChallengeControllerTest extends ControllerTestCase
         $handlerStack = HandlerStack::create($mockHandler);
         $mockClient = new Client(['handler' => $handlerStack]);
 
-        $captcha = new class($mockClient) extends CaptchaService {
-            public function __construct($client)
-            {
-                parent::__construct();
-                $this->httpClient = $client;
-            }
-
-            #[\Override]
-            public function createChallenge(): array
-            {
-                return parent::createChallenge();
-            }
-        };
+        $captcha = $this->captchaServiceWithClient($mockClient);
 
         $result = $captcha->createChallenge();
 
@@ -79,19 +75,7 @@ class CaptchaChallengeControllerTest extends ControllerTestCase
         $handlerStack = HandlerStack::create($mockHandler);
         $mockClient = new Client(['handler' => $handlerStack]);
 
-        $captcha = new class($mockClient) extends CaptchaService {
-            public function __construct($client)
-            {
-                parent::__construct();
-                $this->httpClient = $client;
-            }
-
-            #[\Override]
-            public function createChallenge(): array
-            {
-                return parent::createChallenge();
-            }
-        };
+        $captcha = $this->captchaServiceWithClient($mockClient);
 
         $result = $captcha->createChallenge();
 
@@ -107,19 +91,7 @@ class CaptchaChallengeControllerTest extends ControllerTestCase
         $handlerStack = HandlerStack::create($mockHandler);
         $mockClient = new Client(['handler' => $handlerStack]);
 
-        $captcha = new class($mockClient) extends CaptchaService {
-            public function __construct($client)
-            {
-                parent::__construct();
-                $this->httpClient = $client;
-            }
-
-            #[\Override]
-            public function createChallenge(): array
-            {
-                return parent::createChallenge();
-            }
-        };
+        $captcha = $this->captchaServiceWithClient($mockClient);
 
         $result = $captcha->createChallenge();
 
@@ -138,19 +110,7 @@ class CaptchaChallengeControllerTest extends ControllerTestCase
         ]);
         $mockClient = new Client(['handler' => HandlerStack::create($mockHandler)]);
 
-        $captcha = new class($mockClient) extends CaptchaService {
-            public function __construct($client)
-            {
-                parent::__construct();
-                $this->httpClient = $client;
-            }
-
-            #[\Override]
-            public function createChallenge(): array
-            {
-                return parent::createChallenge();
-            }
-        };
+        $captcha = $this->captchaServiceWithClient($mockClient);
 
         $result = $captcha->createChallenge();
 

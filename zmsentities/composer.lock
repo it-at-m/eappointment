@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a458ee7aa523bd14bddb640a6ead00eb",
+    "content-hash": "ce564c9e4714e976c1feeecc11c55ee1",
     "packages": [
         {
             "name": "eappointment/mellon",
@@ -12,7 +12,7 @@
             "dist": {
                 "type": "path",
                 "url": "../mellon",
-                "reference": "6d7d9d67d930e5aa86a9013cf450ac8b16633e3f"
+                "reference": "87a10be3c953fd6dffbf3a367b1bb3c8b5b6acaf"
             },
             "require": {
                 "ext-json": ">=0",
@@ -25,7 +25,7 @@
                 "phpunit/phpunit": "^13",
                 "roave/security-advisories": "dev-latest",
                 "squizlabs/php_codesniffer": "*",
-                "vimeo/psalm": "7.0.2"
+                "vimeo/psalm": "7.2.0"
             },
             "type": "library",
             "autoload": {
@@ -58,16 +58,16 @@
         },
         {
             "name": "giggsey/libphonenumber-for-php",
-            "version": "9.0.42",
+            "version": "9.0.43",
             "source": {
                 "type": "git",
                 "url": "https://github.com/giggsey/libphonenumber-for-php.git",
-                "reference": "bd4266d1d6f4585055cc241cdbcd4aced0e24b18"
+                "reference": "75a801c3dbf9a675e4bc83e0da2c2142fcc5344d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/giggsey/libphonenumber-for-php/zipball/bd4266d1d6f4585055cc241cdbcd4aced0e24b18",
-                "reference": "bd4266d1d6f4585055cc241cdbcd4aced0e24b18",
+                "url": "https://api.github.com/repos/giggsey/libphonenumber-for-php/zipball/75a801c3dbf9a675e4bc83e0da2c2142fcc5344d",
+                "reference": "75a801c3dbf9a675e4bc83e0da2c2142fcc5344d",
                 "shasum": ""
             },
             "require": {
@@ -130,8 +130,8 @@
                 "issues": "https://github.com/giggsey/libphonenumber-for-php/issues",
                 "source": "https://github.com/giggsey/libphonenumber-for-php"
             },
-            "time": "2026-10-28T12:32:21+00:00",
-            "published-time": "2026-10-28T13:28:58+00:00"
+            "time": "2026-11-06T10:00:34+00:00",
+            "published-time": "2026-11-06T10:37:31+00:00"
         },
         {
             "name": "giggsey/locale",
@@ -284,16 +284,16 @@
         },
         {
             "name": "opis/json-schema",
-            "version": "2.6.0",
+            "version": "2.6.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/opis/json-schema.git",
-                "reference": "8458763e0dd0b6baa310e04f1829fc73da4e8c8a"
+                "reference": "7d8685a78db131eb6a1571cc7b4db8f4b59e8628"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/opis/json-schema/zipball/8458763e0dd0b6baa310e04f1829fc73da4e8c8a",
-                "reference": "8458763e0dd0b6baa310e04f1829fc73da4e8c8a",
+                "url": "https://api.github.com/repos/opis/json-schema/zipball/7d8685a78db131eb6a1571cc7b4db8f4b59e8628",
+                "reference": "7d8685a78db131eb6a1571cc7b4db8f4b59e8628",
                 "shasum": ""
             },
             "require": {
@@ -343,9 +343,10 @@
             ],
             "support": {
                 "issues": "https://github.com/opis/json-schema/issues",
-                "source": "https://github.com/opis/json-schema/tree/2.6.0"
+                "source": "https://github.com/opis/json-schema/tree/2.6.1"
             },
-            "time": "2025-10-17T12:46:48+00:00"
+            "time": "2026-11-06T04:25:16+00:00",
+            "published-time": "2026-11-06T04:35:54+00:00"
         },
         {
             "name": "opis/string",
@@ -407,7 +408,8 @@
                 "issues": "https://github.com/opis/string/issues",
                 "source": "https://github.com/opis/string/tree/2.1.0"
             },
-            "time": "2025-10-17T12:38:41+00:00"
+            "time": "2025-10-17T12:38:41+00:00",
+            "published-time": "2025-10-17T12:40:48+00:00"
         },
         {
             "name": "opis/uri",
@@ -470,7 +472,8 @@
                 "issues": "https://github.com/opis/uri/issues",
                 "source": "https://github.com/opis/uri/tree/1.1.0"
             },
-            "time": "2021-05-22T15:57:08+00:00"
+            "time": "2021-05-22T15:57:08+00:00",
+            "published-time": "2021-05-22T16:01:15+00:00"
         },
         {
             "name": "roave/security-advisories",
@@ -5346,62 +5349,6 @@
             "published-time": "2026-10-20T12:29:51+00:00"
         },
         {
-            "name": "psalm/plugin-sabre-event",
-            "version": "0.2.1",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/psalm/psalm-plugin-sabre-event.git",
-                "reference": "49eaea05b492526ab4d5f9baeb085f2a7129366a"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/psalm/psalm-plugin-sabre-event/zipball/49eaea05b492526ab4d5f9baeb085f2a7129366a",
-                "reference": "49eaea05b492526ab4d5f9baeb085f2a7129366a",
-                "shasum": ""
-            },
-            "require": {
-                "psalm/psalm-plugin-api": "^0.4",
-                "vimeo/psalm": "^7|dev-master"
-            },
-            "conflict": {
-                "sabre/event": "<5.0"
-            },
-            "require-dev": {
-                "sabre/event": "^5",
-                "squizlabs/php_codesniffer": "^3.3"
-            },
-            "type": "psalm-plugin",
-            "extra": {
-                "psalm": {
-                    "pluginClass": "Psalm\\SabreEventPlugin\\Plugin"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Psalm\\SabreEventPlugin\\": [
-                        "."
-                    ]
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Matt Brown",
-                    "email": "github@muglug.com"
-                }
-            ],
-            "description": "Psalm plugin for sabre/event",
-            "support": {
-                "issues": "https://github.com/psalm/psalm-plugin-sabre-event/issues",
-                "source": "https://github.com/psalm/psalm-plugin-sabre-event/tree/0.2.1"
-            },
-            "time": "2026-10-28T12:24:48+00:00",
-            "published-time": "2026-10-28T12:27:30+00:00"
-        },
-        {
             "name": "psalm/plugin-symfony",
             "version": "v5.10.0",
             "source": {
@@ -7353,16 +7300,16 @@
         },
         {
             "name": "symfony/config",
-            "version": "v8.1.5",
+            "version": "v8.1.11",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/config.git",
-                "reference": "ec711a6c14ae287d9618fbd2c9de4e223a1a4b02"
+                "reference": "8a6f757bf803464bc8451e1fafc3699588e29c48"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/config/zipball/ec711a6c14ae287d9618fbd2c9de4e223a1a4b02",
-                "reference": "ec711a6c14ae287d9618fbd2c9de4e223a1a4b02",
+                "url": "https://api.github.com/repos/symfony/config/zipball/8a6f757bf803464bc8451e1fafc3699588e29c48",
+                "reference": "8a6f757bf803464bc8451e1fafc3699588e29c48",
                 "shasum": ""
             },
             "require": {
@@ -7407,7 +7354,7 @@
             "description": "Helps you find, load, combine, autofill and validate configuration values of any kind",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/config/tree/v8.1.5"
+                "source": "https://github.com/symfony/config/tree/v8.1.11"
             },
             "funding": [
                 {
@@ -7427,7 +7374,8 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-08-20T09:59:12+00:00"
+            "time": "2026-11-04T08:39:20+00:00",
+            "published-time": "2026-11-04T11:31:48+00:00"
         },
         {
             "name": "symfony/console",
@@ -7613,16 +7561,16 @@
         },
         {
             "name": "symfony/filesystem",
-            "version": "v8.1.6",
+            "version": "v8.1.11",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/filesystem.git",
-                "reference": "7599ebb855fede59413ddb7f15198d67bfcae7ba"
+                "reference": "58f57b6a33e3495f7f41e01258f1ae5ef76cccd2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/filesystem/zipball/7599ebb855fede59413ddb7f15198d67bfcae7ba",
-                "reference": "7599ebb855fede59413ddb7f15198d67bfcae7ba",
+                "url": "https://api.github.com/repos/symfony/filesystem/zipball/58f57b6a33e3495f7f41e01258f1ae5ef76cccd2",
+                "reference": "58f57b6a33e3495f7f41e01258f1ae5ef76cccd2",
                 "shasum": ""
             },
             "require": {
@@ -7660,7 +7608,7 @@
             "description": "Provides basic utilities for the filesystem",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/filesystem/tree/v8.1.6"
+                "source": "https://github.com/symfony/filesystem/tree/v8.1.11"
             },
             "funding": [
                 {
@@ -7680,8 +7628,8 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-08-23T10:06:25+00:00",
-            "published-time": "2026-08-30T21:43:22+00:00"
+            "time": "2026-11-04T08:39:20+00:00",
+            "published-time": "2026-11-04T11:32:01+00:00"
         },
         {
             "name": "symfony/polyfill-deepclone",
@@ -8365,16 +8313,16 @@
         },
         {
             "name": "symfony/yaml",
-            "version": "v8.1.8",
+            "version": "v8.1.11",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/yaml.git",
-                "reference": "030e96eed0303223bfca3af9109e9e64830b6ec3"
+                "reference": "e8266f55160f674f290a5f567cb55e11e21f921b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/yaml/zipball/030e96eed0303223bfca3af9109e9e64830b6ec3",
-                "reference": "030e96eed0303223bfca3af9109e9e64830b6ec3",
+                "url": "https://api.github.com/repos/symfony/yaml/zipball/e8266f55160f674f290a5f567cb55e11e21f921b",
+                "reference": "e8266f55160f674f290a5f567cb55e11e21f921b",
                 "shasum": ""
             },
             "require": {
@@ -8417,7 +8365,7 @@
             "description": "Loads and dumps YAML files",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/yaml/tree/v8.1.8"
+                "source": "https://github.com/symfony/yaml/tree/v8.1.11"
             },
             "funding": [
                 {
@@ -8437,20 +8385,21 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-09-26T06:33:49+00:00"
+            "time": "2026-11-04T08:39:20+00:00",
+            "published-time": "2026-11-04T11:31:03+00:00"
         },
         {
             "name": "vimeo/psalm",
-            "version": "7.0.2",
+            "version": "7.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/vimeo/psalm.git",
-                "reference": "5cd5e2ffff7497643dd51da31ae85bb5bc593090"
+                "reference": "7c1fcd8a86b7912663bffd385da323dd8dcce1c5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/vimeo/psalm/zipball/5cd5e2ffff7497643dd51da31ae85bb5bc593090",
-                "reference": "5cd5e2ffff7497643dd51da31ae85bb5bc593090",
+                "url": "https://api.github.com/repos/vimeo/psalm/zipball/7c1fcd8a86b7912663bffd385da323dd8dcce1c5",
+                "reference": "7c1fcd8a86b7912663bffd385da323dd8dcce1c5",
                 "shasum": ""
             },
             "require": {
@@ -8476,8 +8425,7 @@
                 "php-64bit": "~8.2.27 || ~8.3.16 || ~8.4.3 || ~8.5.0 || ~8.6.0",
                 "psalm/plugin-laravel": "^4.17.4",
                 "psalm/plugin-mockery": "^1.3.2",
-                "psalm/plugin-phpunit": "^0.21",
-                "psalm/plugin-sabre-event": "^0.2.1",
+                "psalm/plugin-phpunit": "^0.21 || ^0.22 || ^1.0",
                 "psalm/plugin-symfony": "^5.9.1",
                 "psalm/psalm-plugin-api": "0.4.1",
                 "sebastian/diff": "^4.0 || ^5.0 || ^6.0 || ^7.0 || ^8.0 || ^9.0",
@@ -8506,7 +8454,8 @@
             },
             "suggest": {
                 "ext-curl": "In order to send data to shepherd",
-                "ext-igbinary": "^2.0.5 is required, used to serialize caching data"
+                "ext-igbinary": "^2.0.5 is required, used to serialize caching data",
+                "ext-zstd": ">=0.15.0 is required, used to compress caching data"
             },
             "bin": [
                 "psalm",
@@ -8558,8 +8507,8 @@
                 "issues": "https://github.com/vimeo/psalm/issues",
                 "source": "https://github.com/vimeo/psalm"
             },
-            "time": "2026-11-03T22:56:00+00:00",
-            "published-time": "2026-11-04T00:41:51+00:00"
+            "time": "2026-11-09T09:56:40+00:00",
+            "published-time": "2026-11-09T10:27:07+00:00"
         },
         {
             "name": "webmozart/assert",
