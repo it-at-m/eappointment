@@ -101,6 +101,18 @@ const expectModalClosed = (wrapper: ReturnType<typeof createWrapper>) => {
 };
 
 describe("AppointmentSelection", () => {
+  it("renders the mail limit callout between the calendar and the buttons", () => {
+    const wrapper = createWrapper({ props: { mailLimitReached: true } });
+    const html = wrapper.html();
+    const calloutAt = html.indexOf(
+      "apiErrorTooManyAppointmentsWithSameMailHeader"
+    );
+    const buttonsAt = html.lastIndexOf("m-button-group");
+
+    expect(calloutAt).toBeGreaterThan(-1);
+    expect(buttonsAt).toBeGreaterThan(calloutAt);
+  });
+
   beforeEach(() => {
     vi.clearAllMocks();
 
