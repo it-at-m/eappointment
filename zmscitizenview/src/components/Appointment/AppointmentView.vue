@@ -161,6 +161,11 @@
                   errorStates.errorStateMap.apiErrorCaptchaInvalid.value
                 "
                 :booking-error-key="bookingErrorKey"
+                :mail-limit-reached="
+                  currentView === 1 &&
+                  errorStates.errorStateMap
+                    .apiErrorTooManyAppointmentsWithSameMail.value
+                "
                 @back="decreaseCurrentView"
                 @cancel-reschedule="nextCancelReschedule"
                 @clearBookingError="clearBookingError"
@@ -177,6 +182,10 @@
                   isRebooking ? rebookedAppointment : undefined
                 "
                 :login-failed="loginFailed"
+                :mail-limit-reached="
+                  errorStates.errorStateMap
+                    .apiErrorTooManyAppointmentsWithSameMail.value
+                "
                 :t="t"
                 @back="decreaseCurrentView"
                 @next="nextUpdateAppointment"
@@ -383,8 +392,10 @@
               <div
                 v-if="
                   !confirmAppointmentSuccess &&
-                  !appointmentAlreadyActivated &&
-                  hasConfirmAppointmentError
+                  (hasConfirmAppointmentError || hasCancelAppointmentError) &&
+                  (!appointmentAlreadyActivated ||
+                    currentView >= 4 ||
+                    currentContext === 'cancel')
                 "
                 role="alert"
                 aria-live="assertive"
@@ -1127,30 +1138,35 @@ const setRebookData = () => {
     copyRebookedContactOntoAppointment();
     clearContextErrors(errorStateMap.value);
     currentContext.value = "update";
+    isUpdatingAppointment.value = true;
     return updateAppointment(
       props.globalState,
       appointment.value,
       rebookedAppointment.value
-    ).then((data) => {
-      if ((data as AppointmentDTO).processId != undefined) {
-        appointment.value = data as AppointmentDTO;
-        currentView.value = 3;
-      } else {
-        handleErrorApiResponse(
-          data,
-          errorStates.errorStateMap,
-          currentErrorData.value
-        );
-        currentView.value = 2;
-      }
-    });
+    )
+      .then((data) => {
+        if ((data as AppointmentDTO).processId != undefined) {
+          appointment.value = data as AppointmentDTO;
+          currentView.value = 3;
+        } else {
+          handleErrorApiResponse(
+            data,
+            errorStates.errorStateMap,
+            currentErrorData.value
+          );
+          currentView.value = 2;
+        }
+      })
+      .finally(() => {
+        isUpdatingAppointment.value = false;
+      });
   }
 };
 
 const nextReserveAppointment = (
   slotUi: AppointmentTrackSlotUi = "calendar"
 ) => {
-  if (isReservingAppointment.value) {
+  if (isReservingAppointment.value || isUpdatingAppointment.value) {
     return;
   }
 
@@ -1158,7 +1174,7 @@ const nextReserveAppointment = (
   clearAllErrors();
   rebookOrCancelDialog.value = false;
 
-  reserveAppointment(
+  return reserveAppointment(
     props.globalState,
     selectedTimeslot.value,
     Array.from(selectedServiceMap.value.keys()),
@@ -1182,10 +1198,9 @@ const nextReserveAppointment = (
           slot_ui: slotUi,
         });
         if (isRebooking.value) {
-          continueRebookingAfterReserve();
-        } else {
-          increaseCurrentView();
+          return continueRebookingAfterReserve();
         }
+        increaseCurrentView();
       } else {
         handleErrorApiResponse(
           data,
@@ -1264,7 +1279,7 @@ const nextUpdateAppointment = () => {
 };
 
 const nextBookAppointment = () => {
-  if (isBookingAppointment.value) {
+  if (isBookingAppointment.value || isCancelingAppointment.value) {
     return;
   }
 
@@ -1385,12 +1400,78 @@ const nextRescheduleAppointment = () => {
   currentView.value = 1;
 };
 
-const nextCancelReschedule = () => {
-  clearContextErrors(errorStateMap.value);
+const isSameProcess = (
+  left?: AppointmentDTO | null,
+  right?: AppointmentDTO | null
+): boolean =>
+  !!left?.processId &&
+  !!right?.processId &&
+  String(left.processId) === String(right.processId);
+
+const leaveReschedule = () => {
   isRebooking.value = false;
   rebookOrCancelDialog.value = true;
   trackAppointmentEvent({ object: "rebooking", action: "abandoned" });
   currentView.value = 3;
+};
+
+const nextCancelReschedule = async () => {
+  clearContextErrors(errorStateMap.value);
+
+  if (
+    isCancelingAppointment.value ||
+    isReservingAppointment.value ||
+    isUpdatingAppointment.value ||
+    isBookingAppointment.value
+  ) {
+    return;
+  }
+
+  const original = rebookedAppointment.value;
+  const inProgress = appointment.value;
+  if (!original || isSameProcess(original, inProgress)) {
+    leaveReschedule();
+    return;
+  }
+
+  currentContext.value = "cancel";
+  if (!inProgress?.processId || !inProgress.authKey) {
+    handleApiError(
+      "appointmentCanNotBeCanceled",
+      errorStateMap.value,
+      currentErrorData.value
+    );
+    return;
+  }
+
+  isCancelingAppointment.value = true;
+  try {
+    const data = await cancelAppointment(props.globalState, inProgress);
+    const failed =
+      !data ||
+      ((data as { errors?: unknown[] }).errors?.length ?? 0) > 0 ||
+      (data as AppointmentDTO).processId == undefined;
+    if (failed) {
+      handleErrorApiResponse(
+        data,
+        errorStates.errorStateMap,
+        currentErrorData.value
+      );
+      return;
+    }
+    appointment.value = original;
+    selectedTimeslot.value = Number(original.timestamp) || 0;
+    reservationStartMs.value = null;
+    leaveReschedule();
+  } catch {
+    handleApiError(
+      "genericFallback",
+      errorStateMap.value,
+      currentErrorData.value
+    );
+  } finally {
+    isCancelingAppointment.value = false;
+  }
 };
 
 /**

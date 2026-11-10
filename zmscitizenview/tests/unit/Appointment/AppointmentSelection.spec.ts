@@ -93,7 +93,26 @@ const createWrapper = (overrides: WrapperOverrides = {}) => {
   });
 };
 
+// jsdom 31 does not apply the closed <dialog> user-agent style (display: none)
+// until the node is connected, so isVisible() reports a detached modal as shown.
+const expectModalClosed = (wrapper: ReturnType<typeof createWrapper>) => {
+  const dialog = wrapper.get("dialog").element as HTMLDialogElement;
+  expect(dialog.open).toBe(false);
+};
+
 describe("AppointmentSelection", () => {
+  it("renders the mail limit callout between the calendar and the buttons", () => {
+    const wrapper = createWrapper({ props: { mailLimitReached: true } });
+    const html = wrapper.html();
+    const calloutAt = html.indexOf(
+      "apiErrorTooManyAppointmentsWithSameMailHeader"
+    );
+    const buttonsAt = html.lastIndexOf("m-button-group");
+
+    expect(calloutAt).toBeGreaterThan(-1);
+    expect(buttonsAt).toBeGreaterThan(calloutAt);
+  });
+
   beforeEach(() => {
     vi.clearAllMocks();
 
@@ -2830,6 +2849,29 @@ describe("AppointmentSelection", () => {
       expect(wrapper.emitted("back")).toBeUndefined();
     });
 
+    it("disables cancel reschedule while a reserve or update is in flight", async () => {
+      const wrapper = createWrapper({ props: { isRebooking: true } });
+      const cancelButton = () =>
+        wrapper
+          .findAllComponents({ name: "MucButton" })
+          .find((btn) => btn.text() === "cancelReschedule");
+
+      expect(cancelButton()?.props("disabled")).toBeFalsy();
+
+      wrapper.vm.loadingStates.isReservingAppointment.value = true;
+      await nextTick();
+      expect(cancelButton()?.props("disabled")).toBe(true);
+
+      wrapper.vm.loadingStates.isReservingAppointment.value = false;
+      wrapper.vm.loadingStates.isUpdatingAppointment.value = true;
+      await nextTick();
+      expect(cancelButton()?.props("disabled")).toBe(true);
+
+      wrapper.vm.loadingStates.isUpdatingAppointment.value = false;
+      await nextTick();
+      expect(cancelButton()?.props("disabled")).toBeFalsy();
+    });
+
     it("does not show any callout when bookingError is false", async () => {
       const wrapper = createWrapper({
         props: {
@@ -2993,7 +3035,7 @@ describe("AppointmentSelection", () => {
         expect(callout.html()).not.toContain("newAppointmentsInfoLink");
         expect(callout.find(".m-button.m-button--ghost").exists()).toBe(false);
         // No modal should open from warning callout
-        expect(wrapper.find(".modal-body").isVisible()).toBe(false);
+        expectModalClosed(wrapper);
       });
 
       it("should fallback to translation key when infoForAllAppointments is null", async () => {
@@ -3178,7 +3220,7 @@ describe("AppointmentSelection", () => {
         const trigger = callout.find(".m-button.m-button--ghost");
         // Warning callout no longer has a trigger; modal cannot be opened here
         expect(trigger.exists()).toBe(false);
-        expect(wrapper.find(".modal-body").isVisible()).toBe(false);
+        expectModalClosed(wrapper);
       });
 
       it("should maintain existing functionality when infoForAllAppointments is not set", async () => {

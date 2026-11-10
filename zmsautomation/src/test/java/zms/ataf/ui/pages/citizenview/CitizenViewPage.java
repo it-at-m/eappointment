@@ -1341,6 +1341,10 @@ public class CitizenViewPage extends BasePage {
         timeSlot.selectPreferredTimeslotBelowCalendar(officeId);
     }
 
+    public int lastSlotBookingOfficeId() {
+        return slotState.lastSlotBookingOfficeId;
+    }
+
     /**
      * Step 4: assert {@code Ausgewählter Termin} callout for the office, then <strong>Weiter</strong> to reserve (API).
      */
