@@ -6,9 +6,11 @@ import java.time.Duration;
 import java.util.List;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.ElementNotInteractableException;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.TimeoutException;
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.ExpectedCondition;
@@ -212,12 +214,45 @@ public class AdminPage extends BasePage {
     public void clickInHeaderOnChangeSelectionButton() {
         CONTEXT.set();
         ScenarioLogManager.getLogger().info("Trying to click on 'Auswahl ändern' Button");
-        if (isWebElementVisible(3, HEADER_CHANGE_SELECTION_LOCATOR, LocatorType.CSSSELECTOR, true)) {
-            clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, HEADER_CHANGE_SELECTION_LOCATOR, LocatorType.CSSSELECTOR, true, CONTEXT);
-            return;
+        // workstationSelect replaces the header, so "Auswahl ändern" is gone once navigation
+        // finishes. A 60s wait for that link times out on Firefox while the Standort form is already open.
+        By scope = By.name("scope");
+        By header = By.cssSelector(HEADER_CHANGE_SELECTION_LOCATOR);
+        By nav = By.xpath(NAV_SELECT_LOCATION_LOCATOR);
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        wait.pollingEvery(Duration.ofMillis(250));
+        wait.ignoring(StaleElementReferenceException.class);
+        wait.withMessage("Waited " + DEFAULT_EXPLICIT_WAIT_TIME
+                + " seconds for the Standort form or 'Auswahl ändern'.");
+        wait.until((ExpectedCondition<Boolean>) driver -> openScopeSelection(driver, scope, header, nav));
+    }
+
+    private boolean openScopeSelection(WebDriver driver, By scope, By header, By nav) {
+        if (!driver.findElements(scope).isEmpty()) {
+            ScenarioLogManager.getLogger().info("Standort form already open; skipping 'Auswahl ändern'.");
+            return true;
         }
-        ScenarioLogManager.getLogger().info("Header 'Auswahl ändern' not visible, using nav link 'Standort auswählen'");
-        clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, NAV_SELECT_LOCATION_LOCATOR, LocatorType.XPATH, true, CONTEXT);
+        if (clickFirstDisplayed(driver, header)) {
+            return true;
+        }
+        if (clickFirstDisplayed(driver, nav)) {
+            ScenarioLogManager.getLogger().info("Header 'Auswahl ändern' not visible, using nav link 'Standort auswählen'");
+            return true;
+        }
+        return false;
+    }
+
+    private boolean clickFirstDisplayed(WebDriver driver, By locator) {
+        List<WebElement> elements = driver.findElements(locator);
+        if (elements.isEmpty() || !elements.get(0).isDisplayed()) {
+            return false;
+        }
+        try {
+            ((JavascriptExecutor) driver).executeScript("arguments[0].click();", elements.get(0));
+            return true;
+        } catch (StaleElementReferenceException | ElementNotInteractableException ex) {
+            return false;
+        }
     }
 
     /** Opens the Standort form when SSO restored an existing workstation session. */

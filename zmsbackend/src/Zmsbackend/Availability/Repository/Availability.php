@@ -154,7 +154,7 @@ class Availability extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Q
     }
 
     /**
-     * Used to identify availabilities whose End Date was more than 4 weeks ago
+     * Availabilities whose end date is on or before the given date.
      *
      * @psalm-api
      */
