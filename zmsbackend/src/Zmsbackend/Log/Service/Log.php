@@ -210,7 +210,7 @@ class Log extends \BO\Zmsbackend\Base
         ?array $scopeIds = null
     ) {
         return $this->getBySearchParams(
-            $this->buildProcessDataFieldValues($service, $provider),
+            array_filter(['scope_name' => $provider, 'services' => $service]),
             $generalSearch,
             $userAction,
             $date,
@@ -229,26 +229,12 @@ class Log extends \BO\Zmsbackend\Base
         ?array $scopeIds = null
     ): int {
         return $this->countBySearchParams(
-            $this->buildProcessDataFieldValues($service, $provider),
+            array_filter(['scope_name' => $provider, 'services' => $service]),
             $generalSearch,
             $userAction,
             $date,
             $scopeIds
         );
-    }
-
-    private function buildProcessDataFieldValues(?string $service, ?string $provider): array
-    {
-        $fieldValues = [];
-        if ($provider) {
-            $fieldValues['scope_name'] = $provider;
-        }
-
-        if ($service) {
-            $fieldValues['services'] = $service;
-        }
-
-        return $fieldValues;
     }
 
     public function countBySearchParams(

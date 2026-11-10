@@ -190,7 +190,8 @@
 
             {% set processPages = processSearchTotal is defined ? (processSearchTotal / currentPerPage)|round(0, 'ceil') : 1 %}
             {% set logPages = logSearchTotal is defined ? (logSearchTotal / currentPerPage)|round(0, 'ceil') : 1 %}
-            {% set totalPages = max(processPages, logPages) %}
+            {# The current page is always part of the range, so an out-of-range page number still shows as current. #}
+            {% set totalPages = max(processPages, logPages, currentPage) %}
 
             {% if totalPages > 1 %}
                 <div class="pagination">
