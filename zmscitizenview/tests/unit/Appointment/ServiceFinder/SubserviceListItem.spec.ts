@@ -65,23 +65,6 @@ describe("SubserviceListItem", () => {
       });
       expect(wrapper.vm.maxValue).toBe(mockSubService.maxQuantity);
     });
-
-    it("computes disabled correctly when maxValue > 0", () => {
-      const wrapper = createWrapper();
-      expect(wrapper.vm.disabled).toBe(false);
-    });
-
-    it("computes disabled correctly when maxValue = 0 and count = 0", () => {
-      // currentSlots: 10, minSlotsPerAppointment: 10
-      // availableSlots = 10 - 10 = 0
-      // maxCountBySlots = floor(0 / 3) = 0
-      // maxValue = 0, count = 0 -> disabled = true
-      const wrapper = createWrapper({
-        currentSlots: 10,
-        minSlotsPerAppointment: 10,
-      });
-      expect(wrapper.vm.disabled).toBe(true);
-    });
   });
 
   describe("Business Logic", () => {
@@ -115,30 +98,16 @@ describe("SubserviceListItem", () => {
       expect(wrapper.vm.maxValue).toBe(2);
     });
 
-    it("disabled is true when maxValue is 0 and count is 0", () => {
-      const wrapper = createWrapper({
-        currentSlots: 10,
-        minSlotsPerAppointment: 10,
-      });
-      wrapper.vm.count = 0;
-      expect(wrapper.vm.disabled).toBe(true);
-    });
-
-    it("disabled is false when maxValue > 0", () => {
-      const wrapper = createWrapper({
-        currentSlots: 0,
-        minSlotsPerAppointment: 10,
-      });
-      expect(wrapper.vm.disabled).toBe(false);
-    });
-
     it("uses maximum slot value from providers (not minimum)", () => {
       // With providers having slots [5, 2, 8], getMaxSlotOfProvider returns 8
       // availableSlots = 10 - 0 = 10
       // maxCountBySlots = floor(10 / 8) = 1
       // maxValue = min(5, 1) = 1
       const wrapper = createWrapper({
-        subService: { ...mockSubService, providers: [{ slots: 5 }, { slots: 2 }, { slots: 8 }] },
+        subService: {
+          ...mockSubService,
+          providers: [{ slots: 5 }, { slots: 2 }, { slots: 8 }],
+        },
         currentSlots: 0,
         minSlotsPerAppointment: 10,
       });
@@ -160,36 +129,40 @@ describe("SubserviceListItem", () => {
       // currentSlots: 8, minSlotsPerAppointment: 10, slots: 3
       // availableSlots = 10 - 8 = 2
       // maxCountBySlots = floor(2 / 3) = 0
-      // maxValue = 0, count = 0 -> disabled = true
+      // maxValue = 0, so MucCounter disables the plus button
       const wrapper = createWrapper({
         currentSlots: 8,
         minSlotsPerAppointment: 10,
-        subService: { 
-          ...mockSubService, 
-          providers: [{ slots: 3 }]
+        subService: {
+          ...mockSubService,
+          providers: [{ slots: 3 }],
         },
       });
-      
+
       expect(wrapper.vm.maxValue).toBe(0);
-      expect(wrapper.vm.disabled).toBe(true);
+      expect(wrapper.findAll("button")[1].attributes("aria-disabled")).toBe(
+        "true"
+      );
     });
 
     it("enables subservice when adding it would not exceed minSlotsPerAppointment", () => {
       // currentSlots: 7, minSlotsPerAppointment: 10, slots: 3
       // availableSlots = 10 - 7 = 3
       // maxCountBySlots = floor(3 / 3) = 1
-      // maxValue = min(5, 1) = 1, count = 0 -> disabled = false
+      // maxValue = min(5, 1) = 1, so the plus button stays available
       const wrapper = createWrapper({
         currentSlots: 7,
         minSlotsPerAppointment: 10,
-        subService: { 
-          ...mockSubService, 
-          providers: [{ slots: 3 }]
+        subService: {
+          ...mockSubService,
+          providers: [{ slots: 3 }],
         },
       });
-      
+
       expect(wrapper.vm.maxValue).toBe(1);
-      expect(wrapper.vm.disabled).toBe(false);
+      expect(wrapper.findAll("button")[1].attributes("aria-disabled")).toBe(
+        "false"
+      );
     });
   });
 });
