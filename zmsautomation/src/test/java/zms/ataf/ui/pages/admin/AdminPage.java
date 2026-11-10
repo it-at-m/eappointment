@@ -6,7 +6,6 @@ import java.time.Duration;
 import java.util.List;
 
 import org.openqa.selenium.By;
-import org.openqa.selenium.ElementNotInteractableException;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.TimeoutException;
@@ -227,39 +226,55 @@ public class AdminPage extends BasePage {
         wait.ignoring(StaleElementReferenceException.class);
         wait.withMessage("Waited " + DEFAULT_EXPLICIT_WAIT_TIME
                 + " seconds for the Standort form or 'Auswahl ändern'.");
-        wait.until((ExpectedCondition<Boolean>) driver -> openScopeSelection(driver, header, nav));
+        boolean[] opened = {false};
+        wait.until((ExpectedCondition<Boolean>) driver -> openScopeSelection(driver, header, nav, opened));
     }
 
     private boolean workstationSelectFormOpen(WebDriver driver) {
         return !driver.findElements(WORKSTATION_SELECT_FORM).isEmpty();
     }
 
-    private boolean openScopeSelection(WebDriver driver, By header, By nav) {
+    private boolean openScopeSelection(WebDriver driver, By header, By nav, boolean[] opened) {
         if (workstationSelectFormOpen(driver)) {
-            ScenarioLogManager.getLogger().info("Standort form already open; skipping 'Auswahl ändern'.");
+            if (!opened[0]) {
+                ScenarioLogManager.getLogger().info("Standort form already open; skipping 'Auswahl ändern'.");
+            }
             return true;
         }
-        if (clickFirstDisplayed(driver, header)) {
+        // One navigation. Polling used to click again every 250ms, and Firefox was still
+        // loading the select page, so each click cancelled the previous one.
+        if (opened[0]) {
+            return false;
+        }
+        if (openFirstDisplayed(driver, header)) {
+            opened[0] = true;
             return workstationSelectFormOpen(driver);
         }
-        if (clickFirstDisplayed(driver, nav)) {
+        if (openFirstDisplayed(driver, nav)) {
+            opened[0] = true;
             ScenarioLogManager.getLogger().info("Header 'Auswahl ändern' not visible, using nav link 'Standort auswählen'");
             return workstationSelectFormOpen(driver);
         }
         return false;
     }
 
-    private boolean clickFirstDisplayed(WebDriver driver, By locator) {
-        List<WebElement> elements = driver.findElements(locator);
-        if (elements.isEmpty() || !elements.get(0).isDisplayed()) {
-            return false;
+    private boolean openFirstDisplayed(WebDriver driver, By locator) {
+        for (WebElement element : driver.findElements(locator)) {
+            try {
+                if (!element.isDisplayed()) {
+                    continue;
+                }
+                String href = element.getAttribute("href");
+                if (href == null || href.isBlank()) {
+                    continue;
+                }
+                driver.navigate().to(href);
+                return true;
+            } catch (StaleElementReferenceException ex) {
+                return false;
+            }
         }
-        try {
-            ((JavascriptExecutor) driver).executeScript("arguments[0].click();", elements.get(0));
-            return true;
-        } catch (StaleElementReferenceException | ElementNotInteractableException ex) {
-            return false;
-        }
+        return false;
     }
 
     /** Opens the Standort form when SSO restored an existing workstation session. */
