@@ -143,7 +143,7 @@ SELECT
     `needed`.`status`,
     `needed`.`parent_id`,
     0,
-    LOWER(HEX(RANDOM_BYTES(32))),
+    LOWER(SHA2(CONCAT(UUID(), RAND(), UUID()), 256)),
     `needed`.`provisional`,
     `needed`.`confirmed`,
     `needed`.`ip_timestamp`,
