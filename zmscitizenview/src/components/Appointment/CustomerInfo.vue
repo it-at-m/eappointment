@@ -208,6 +208,21 @@
     </fieldset>
   </form>
   <div
+    v-if="mailLimitReached && !isReservationExpired"
+    role="alert"
+    aria-live="assertive"
+    aria-atomic="true"
+  >
+    <muc-callout type="error">
+      <template #content>
+        <p>{{ t("apiErrorTooManyAppointmentsWithSameMailText") }}</p>
+      </template>
+      <template #header>
+        {{ t("apiErrorTooManyAppointmentsWithSameMailHeader") }}
+      </template>
+    </muc-callout>
+  </div>
+  <div
     v-if="!isReservationExpired"
     class="m-button-group"
   >
@@ -283,6 +298,7 @@ const props = defineProps<{
   isRebooking?: boolean;
   sourceAppointment?: AppointmentDTO | null;
   loginFailed?: boolean;
+  mailLimitReached?: boolean;
   t: (key: string, params?: Record<string, unknown>) => string;
 }>();
 
