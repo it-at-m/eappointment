@@ -35,7 +35,7 @@ class Provider extends \BO\Zmsbackend\Query\Base
         return $mapping;
     }
 
-    public function addConditionIsAssigned($isAssigned): static
+    public function addConditionIsAssigned(?bool $isAssigned): static
     {
         $this->leftJoin(
             new \BO\Zmsbackend\Query\Alias(\BO\Zmsbackend\Query\Scope::TABLE, 'assignedscope'),
@@ -51,7 +51,7 @@ class Provider extends \BO\Zmsbackend\Query\Base
         return $this;
     }
 
-    public function addConditionProviderId($providerId): static
+    public function addConditionProviderId(string|int $providerId): static
     {
         $this->query->where('provider.id', '=', $providerId);
         return $this;
@@ -64,7 +64,7 @@ class Provider extends \BO\Zmsbackend\Query\Base
         return $this;
     }
 
-    public function addConditionProviderSource($source): static
+    public function addConditionProviderSource(string $source): static
     {
         $this->query->where('provider.source', '=', $source);
         return $this;
@@ -73,7 +73,7 @@ class Provider extends \BO\Zmsbackend\Query\Base
     /**
      * @todo find calls and implement "sourceName"-parameter to remove default value
      */
-    public function addConditionRequestCsv($requestIdCsv, $sourceName = 'dldb'): void
+    public function addConditionRequestCsv(string $requestIdCsv, string $sourceName = 'dldb'): void
     {
         $requestIdList = explode(',', $requestIdCsv);
         $this->leftJoin(
@@ -90,7 +90,7 @@ class Provider extends \BO\Zmsbackend\Query\Base
     }
 
     #[\Override]
-    public function postProcess($data)
+    public function postProcess(array $data)
     {
         if (isset($data[$this->getPrefixed('data')]) && $data[$this->getPrefixed('data')]) {
             $data[$this->getPrefixed('data')] = json_decode($data[$this->getPrefixed('data')], true);

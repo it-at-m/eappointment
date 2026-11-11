@@ -19,7 +19,7 @@ Feature: New opening hours do not prefill Uhrzeit; Ausnahme keeps the original t
     And I click the button "Auswahl bestätigen" in the administration.
     And I click the entry "Behörden und Standorte" in the Administration menu.
     And I click the opening-hours entry of "Bürgerbüro Pasing (KVR-II/235 Team 1) Serviceschalter" under authorities and locations.
-    And I click day "<heute_tag>" under opening hours.
+    And I open the next opening-hours day that can still be saved.
     Then the opening hours page for the location should be visible.
     When I click the button "neue Öffnungszeit" in the administration.
     And I open the opening-hours accordion "Neue Öffnungszeit".

@@ -8,7 +8,7 @@ use BO\Zmsentities\Collection\ProviderList as Collection;
 
 class Provider extends \BO\Zmsbackend\Base
 {
-    public function readEntity($source, $providerId, int $resolveReferences = 0, bool $disableCache = false)
+    public function readEntity(string $source, string|int $providerId, int $resolveReferences = 0, bool $disableCache = false)
     {
         $cacheKey = "provider-$source-$providerId-$resolveReferences";
 
@@ -34,7 +34,7 @@ class Provider extends \BO\Zmsbackend\Base
     }
 
     /** @psalm-api */
-    public function readEntityById($providerId, int $resolveReferences = 0, bool $disableCache = false)
+    public function readEntityById(string|int $providerId, int $resolveReferences = 0, bool $disableCache = false)
     {
         $cacheKey = "provider-byid-$providerId-$resolveReferences";
 
@@ -98,7 +98,7 @@ class Provider extends \BO\Zmsbackend\Base
      * @param null|true $isAssigned
      *
      */
-    public function readListBySource($source, int $resolveReferences = 0, bool|null $isAssigned = null, $requestIdCsv = null)
+    public function readListBySource(string $source, int $resolveReferences = 0, bool|null $isAssigned = null, ?string $requestIdCsv = null)
     {
         $this->testSource($source);
         $query = new \BO\Zmsbackend\Provider\Repository\Provider(\BO\Zmsbackend\Query\Base::SELECT);
@@ -162,7 +162,7 @@ class Provider extends \BO\Zmsbackend\Base
         return $this->readListBySource($source->getSource());
     }
 
-    public function writeImportList($providerList, $source = 'dldb')
+    public function writeImportList(iterable $providerList, string $source = 'dldb')
     {
         foreach ($providerList as $provider) {
             $this->writeImportEntity($provider, $source);
@@ -170,7 +170,7 @@ class Provider extends \BO\Zmsbackend\Base
         return $this->readListBySource($source, 1);
     }
 
-    public function writeImportEntity($provider, $source = 'dldb')
+    public function writeImportEntity(array|\BO\Zmsdldb\Entity\Location $provider, string $source = 'dldb')
     {
         if ($provider['address']['postal_code']) {
             $query = new \BO\Zmsbackend\Provider\Repository\Provider(\BO\Zmsbackend\Query\Base::REPLACE);
@@ -198,7 +198,7 @@ class Provider extends \BO\Zmsbackend\Base
         return $provider;
     }
 
-    public function writeDeleteEntity($providerId, $source): bool
+    public function writeDeleteEntity(string|int $providerId, string $source): bool
     {
         $provider = $this->readEntity($source, $providerId);
         $query = new \BO\Zmsbackend\Provider\Repository\Provider(\BO\Zmsbackend\Query\Base::DELETE);
@@ -218,7 +218,7 @@ class Provider extends \BO\Zmsbackend\Base
     /**
      * @return void
      */
-    protected function testSource($source)
+    protected function testSource(string $source)
     {
         if (! (new \BO\Zmsbackend\Source\Service\Source())->readEntity($source)) {
             throw new \BO\Zmsbackend\Source\Exception\UnknownDataSource();

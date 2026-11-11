@@ -260,6 +260,18 @@ public class CitizenViewSteps {
         page.assertServiceDescriptionLink(TestDataHelper.transformTestData(label), serviceId);
     }
 
+    @Then("the service {string} links to service {string} and not {string} on muenchen.de")
+    public void theServiceLinksToServiceAndNotInternalIds(String label, String serviceId, String forbiddenIds) {
+        ScenarioLogManager.getLogger()
+                .info(
+                        "zmscitizenview: {} links to service {} and not {}",
+                        label,
+                        serviceId,
+                        forbiddenIds);
+        page.assertServiceDescriptionLinkExcludesInternalIds(
+                TestDataHelper.transformTestData(label), serviceId, forbiddenIds);
+    }
+
     @Then("the count for {string} sits beside the name on desktop")
     public void theCountSitsBesideTheNameOnDesktop(String label) {
         ScenarioLogManager.getLogger()
@@ -707,6 +719,12 @@ public class CitizenViewSteps {
         page.assertListDateAccordions(count);
     }
 
+    @Then("the list view shows its date accordions with the first one open")
+    public void theListViewShowsItsDateAccordionsWithTheFirstOneOpen() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: list shows the loaded date accordions");
+        page.assertLoadedListDateAccordions();
+    }
+
     @Then("the open list accordion groups times by hour")
     public void theOpenListAccordionGroupsTimesByHour() {
         ScenarioLogManager.getLogger().info("zmscitizenview: open date groups times by hour");
@@ -1000,6 +1018,28 @@ public class CitizenViewSteps {
     }
 
     /**
+     * ZMSKVR-1702: update-appointment can reject the mail limit and stay on Kontakt.
+     * Do not wait for Übersicht.
+     */
+    @When("I submit contact details with family name {string} in the citizen view")
+    public void iSubmitContactDetailsWithFamilyName(String familyName) {
+        ScenarioLogManager.getLogger()
+                .info(
+                        "zmscitizenview: submit contact with family name {} (stay on Kontakt if the mail limit is reached)",
+                        familyName);
+        page.fillContactDetailsWithFamilyName(familyName);
+        page.clickWeiter(30);
+    }
+
+    /** ZMSKVR-1702: Weiter, then the usual next-slot / next-day walk when that seat is taken. */
+    @When("I click Weiter after the selected timeslot in the citizen view")
+    public void iClickWeiterAfterTheSelectedTimeslot() {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: Weiter after the selected timeslot, then the next free slot if it is taken");
+        page.assertCalloutAndReserveAfterSlotSelection(page.lastSlotBookingOfficeId());
+    }
+
+    /**
      * ZMSKVR-833: first booking at a scope where custom text is optional — fill Kontakt but stay on
      * the form (no Weiter) so the missing Pflichtfeld is still empty for later rebooking.
      */
@@ -1169,6 +1209,16 @@ public class CitizenViewSteps {
     public void iSyncTheBookingProcessFromCitizenViewLocalStorage() throws Exception {
         ScenarioLogManager.getLogger().info("zmscitizenview: sync booking process from localStorage");
         page.syncBookingProcessFromLocalStorage();
+    }
+
+    /**
+     * ZMSKVR-1702: localStorage sync keeps an earlier process when the page only stored UI state.
+     * Read the appointment currently shown so a failed update still cancels its reservation.
+     */
+    @When("I capture the booking process shown in the citizen view")
+    public void iCaptureTheBookingProcessShownInTheCitizenView() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: capture the booking process shown on the page");
+        page.captureBookingProcessForCleanup();
     }
 
     @When("I open the confirmation deep link in the browser")
@@ -1647,6 +1697,20 @@ public class CitizenViewSteps {
         ScenarioLogManager.getLogger()
                 .info("zmscitizenview: assert only Pass calendar services offered on combination step");
         page.assertPassOnlyCombinationServicesVisible();
+    }
+
+    @When("I enter the 250-character required free text with newlines and a tab in the citizen view")
+    public void iEnterTheRequiredFreeTextAtTheLimit() {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: required Freitext at 250 with newline and tab");
+        page.assertRequiredFreeTextCountsNewlinesAndTab();
+    }
+
+    @Then("the required free text of 251 characters including a newline and a tab stays on the contact form")
+    public void theFreeTextOverLimitStaysOnTheContactForm() {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: Freitext of 251 with newline and tab is rejected");
+        page.assertFreeTextOverLimitStaysOnContactForm();
     }
 
     @When("I fill contact details without continuing in the citizen view")

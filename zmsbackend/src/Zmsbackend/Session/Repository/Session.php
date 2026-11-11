@@ -46,7 +46,7 @@ class Session extends \BO\Zmsbackend\Query\Base
         ];
     }
 
-    public function addConditionSessionId($sessionId): static
+    public function addConditionSessionId(string|int $sessionId): static
     {
         $this->query->where('session.sessionid', '=', $sessionId);
         return $this;
@@ -75,7 +75,7 @@ class Session extends \BO\Zmsbackend\Query\Base
      *
      */
     #[\Override]
-    public function postProcess($data)
+    public function postProcess(array $data)
     {
         $data[$this->getPrefixed('content')] = json_decode($data[$this->getPrefixed('content')], 1);
         return $data;

@@ -26,7 +26,7 @@ class Zmsdldb extends \BO\Zmsbackend\Base
     /**
      * @psalm-api
      */
-    public static function setImportPath($path): void
+    public static function setImportPath(string $path): void
     {
         self::$importPath = $path;
     }
@@ -92,7 +92,7 @@ class Zmsdldb extends \BO\Zmsbackend\Base
         return $providers;
     }
 
-    protected function updateAvailability($providers): void
+    protected function updateAvailability(\BO\Zmsentities\Collection\ProviderList $providers): void
     {
         foreach ($providers as $provider) {
             $providerData = $provider->data;

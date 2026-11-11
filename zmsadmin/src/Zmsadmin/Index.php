@@ -86,7 +86,7 @@ class Index extends BaseController
         );
     }
 
-    protected function testLogin($input)
+    protected function testLogin(array $input)
     {
         $userAccount = new Useraccount(array(
             'id' => $input['loginName'],
@@ -155,7 +155,7 @@ class Index extends BaseController
         return $exceptionData;
     }
 
-    protected function getProviderList($config): array
+    protected function getProviderList(\BO\Zmsentities\Config $config): array
     {
         $allowedProviderList = explode(',', $config->getPreference('oidc', 'provider') ?? '');
         $oidcproviderlist = [];

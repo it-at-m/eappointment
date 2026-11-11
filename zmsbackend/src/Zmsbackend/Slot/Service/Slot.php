@@ -353,7 +353,7 @@ class Slot extends \BO\Zmsbackend\Base
         return $status;
     }
 
-    protected function writeAncestorIDs($slotID, array $ancestors): void
+    protected function writeAncestorIDs(string|int $slotID, array $ancestors): void
     {
         $this->perform(\BO\Zmsbackend\Slot\Repository\Slot::QUERY_DELETE_ANCESTOR, [
             'slotID' => $slotID,
@@ -410,7 +410,7 @@ class Slot extends \BO\Zmsbackend\Base
         return new \DateTimeImmutable($last['dateString'] . \BO\Zmsbackend\Connection\Select::$connectionTimezone);
     }
 
-    public function updateSlotProcessMapping($scopeID = null): int
+    public function updateSlotProcessMapping(int|string|null $scopeID = null): int
     {
         if ($scopeID) {
             $processIdList = $this->fetchAll(
@@ -428,7 +428,7 @@ class Slot extends \BO\Zmsbackend\Base
         return count($processIdList);
     }
 
-    public function deleteSlotProcessOnSlot($scopeID = null): void
+    public function deleteSlotProcessOnSlot(int|string|null $scopeID = null): void
     {
         if ($scopeID) {
             $this->perform(
@@ -441,7 +441,7 @@ class Slot extends \BO\Zmsbackend\Base
         }
     }
 
-    public function deleteSlotProcessOnProcess($scopeID = null): int
+    public function deleteSlotProcessOnProcess(int|string|null $scopeID = null): int
     {
         if ($scopeID) {
             $processIdList = $this->fetchAll(
@@ -459,7 +459,7 @@ class Slot extends \BO\Zmsbackend\Base
         return count($processIdList);
     }
 
-    public function writeSlotProcessMappingFor($processId): static
+    public function writeSlotProcessMappingFor(string|int $processId): static
     {
         $this->perform(\BO\Zmsbackend\Slot\Repository\Slot::QUERY_INSERT_SLOT_PROCESS_ID, [
             'processId' => $processId,
@@ -467,7 +467,7 @@ class Slot extends \BO\Zmsbackend\Base
         return $this;
     }
 
-    public function deleteSlotProcessMappingFor($processId): static
+    public function deleteSlotProcessMappingFor(string|int $processId): static
     {
         $this->perform(\BO\Zmsbackend\Slot\Repository\Slot::QUERY_DELETE_SLOT_PROCESS_ID, [
             'processId' => $processId,
