@@ -25,3 +25,5 @@ podman exec -it zms-web bash -lc "cd zmsbackend && ./cron/cronjob.hourly --city=
 podman exec -it zms-web bash -lc "cd zmsbackend && ./cron/cronjob.minutly"
 podman exec -it zms-web bash -lc "./cli modules clear-local-cache"
 ```
+
+Der stündliche Cron baut den gemeinsamen API-Cache in eine Bereitschaftskopie und schaltet Leser erst um, wenn diese Kopie fertig ist. Siehe [Gemeinsamer Cache-Aufbau](../operations/shared-cache-warmup.md).

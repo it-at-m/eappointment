@@ -51,6 +51,14 @@ class SourceCacheWarmupControllerTest extends ControllerTestCase
                     'resolveReferences' => 2,
                 ],
                 'response' => $this->readFixture("GET_SourceGet_dldb.json")
+            ],
+            [
+                'function' => 'readGetResult',
+                'url' => '/merged-mailtemplates/9999998/'
+            ],
+            [
+                'function' => 'readGetResult',
+                'url' => '/merged-mailtemplates/9999999/'
             ]
         ]);
         $response = $this->render([], [
@@ -103,6 +111,14 @@ class SourceCacheWarmupControllerTest extends ControllerTestCase
                     'resolveReferences' => 2,
                 ],
                 'response' => $this->readFixture("GET_SourceGet_dldb.json")
+            ],
+            [
+                'function' => 'readGetResult',
+                'url' => '/merged-mailtemplates/9999998/'
+            ],
+            [
+                'function' => 'readGetResult',
+                'url' => '/merged-mailtemplates/9999999/'
             ]
         ]);
 
@@ -116,7 +132,12 @@ class SourceCacheWarmupControllerTest extends ControllerTestCase
         $body = json_decode((string) $response->getBody(), true);
         $this->assertTrue($body['warmed']);
         $this->assertContains('processed_offices_and_services', $body['refreshedKeys']);
+        $this->assertContains('processed_offices_and_services_unpublished', $body['refreshedKeys']);
         $this->assertContains('processed_scopes', $body['refreshedKeys']);
+        $this->assertContains('processed_offices', $body['refreshedKeys']);
+        $this->assertContains('processed_services', $body['refreshedKeys']);
+        $this->assertContains('processed_services_by_office_9999998', $body['refreshedKeys']);
+        $this->assertContains('processed_services_by_office_9999998_unpublished', $body['refreshedKeys']);
         $this->assertContains('source_unittest', $body['refreshedKeys']);
         $this->assertArrayNotHasKey('deletedKeys', $body);
         $this->assertNotEquals(['stale' => true], \App::$cache->get('processed_offices_and_services'));
@@ -124,7 +145,7 @@ class SourceCacheWarmupControllerTest extends ControllerTestCase
         $this->assertNotEquals(['stale' => true], \App::$cache->get('source_unittest'));
     }
 
-    public function testWarmupDoesNotDropPerOfficeKeys()
+    public function testWarmupRebuildsPerOfficeKeys()
     {
         $sourceJson = json_decode($this->readFixture("GET_SourceGet_dldb.json"), true);
         $source = new \BO\Zmsentities\Source($sourceJson['data']);
@@ -140,6 +161,14 @@ class SourceCacheWarmupControllerTest extends ControllerTestCase
                     'resolveReferences' => 2,
                 ],
                 'response' => $this->readFixture("GET_SourceGet_dldb.json")
+            ],
+            [
+                'function' => 'readGetResult',
+                'url' => '/merged-mailtemplates/9999998/'
+            ],
+            [
+                'function' => 'readGetResult',
+                'url' => '/merged-mailtemplates/9999999/'
             ]
         ]);
 
@@ -152,8 +181,11 @@ class SourceCacheWarmupControllerTest extends ControllerTestCase
         $this->assertEquals(200, $response->getStatusCode());
         $body = json_decode((string) $response->getBody(), true);
         $this->assertTrue($body['warmed']);
-        $this->assertNotContains('processed_services_by_office_9999998', $body['refreshedKeys']);
-        $this->assertSame(['stale' => true], \App::$cache->get('processed_services_by_office_9999998'));
-        $this->assertSame(['stale' => true], \App::$cache->get('processed_services_by_office_9999998_unpublished'));
+        $this->assertContains('processed_services_by_office_9999998', $body['refreshedKeys']);
+        $this->assertContains('processed_services_by_office_9999998_unpublished', $body['refreshedKeys']);
+        $this->assertNotEquals(['stale' => true], \App::$cache->get('processed_services_by_office_9999998'));
+        $this->assertNotEquals(['stale' => true], \App::$cache->get('processed_services_by_office_9999998_unpublished'));
+        $this->assertNotNull(\App::$cache->get('processed_services_by_office_9999998'));
+        $this->assertNotNull(\App::$cache->get('processed_services_by_office_9999998_unpublished'));
     }
 }

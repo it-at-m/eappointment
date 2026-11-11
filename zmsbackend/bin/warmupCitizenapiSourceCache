@@ -9,41 +9,64 @@ if (!isset($argv[1]) || $argv[1] !== '--commit') {
     exit(0);
 }
 
+$sharedCacheFailed = false;
+if (\App::$cache instanceof \Psr\SimpleCache\CacheInterface) {
+    $live = \App::$cache;
+    try {
+        [$staging, $standbyNamespace] = \BO\Slim\Helper\CacheBootstrap::openStaging(
+            \App::$CACHE_DIR,
+            \App::$SOURCE_CACHE_TTL
+        );
+        \App::$cache = $staging;
+        (new \BO\Zmsbackend\Helper\WarmSharedCache())->write($standbyNamespace);
+        // Readers stay on the previous cache until this switch. The copy keeps
+        // every entry the rebuild does not replace.
+        \BO\Slim\Helper\CacheBootstrap::publishNamespace(\App::$CACHE_DIR, $standbyNamespace);
+        \App::$log->info('Published the rebuilt API cache');
+    } catch (\Throwable $exception) {
+        \BO\Slim\Helper\CacheBootstrap::abortStaging();
+        \App::$cache = $live;
+        \App::$log->error('Failed to rebuild the shared API cache', [
+            'error' => $exception->getMessage(),
+        ]);
+        $sharedCacheFailed = true;
+    }
+}
+
 $url = getenv('ZMS_CITIZENAPI_WARMUP_URL') ?: '';
 if ($url === '') {
     \App::$log->info('Skipping citizenapi source cache warmup (ZMS_CITIZENAPI_WARMUP_URL unset)');
-    exit(0);
+} else {
+    $token = getenv('SOURCE_CACHE_WARMUP_TOKEN') ?: '';
+    \App::$log->info('Warming citizenapi source cache', ['url' => $url]);
+
+    $headers = ['Accept: application/json'];
+    if ($token !== '') {
+        $headers[] = 'X-Source-Cache-Warmup-Token: ' . $token;
+    }
+
+    $handle = curl_init($url);
+    curl_setopt_array($handle, [
+        CURLOPT_POST => true,
+        CURLOPT_HTTPHEADER => $headers,
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_TIMEOUT => 180,
+        CURLOPT_FAILONERROR => true,
+    ]);
+    $body = curl_exec($handle);
+    $error = curl_error($handle);
+    $status = (int) curl_getinfo($handle, CURLINFO_RESPONSE_CODE);
+    curl_close($handle);
+
+    if ($body !== false && $status >= 200 && $status < 300) {
+        \App::$log->info('Citizenapi source cache warmup succeeded');
+    } else {
+        \App::$log->warning('Citizenapi source cache warmup failed', [
+            'url' => $url,
+            'status' => $status,
+            'error' => $error,
+        ]);
+    }
 }
 
-$token = getenv('SOURCE_CACHE_WARMUP_TOKEN') ?: '';
-\App::$log->info('Warming citizenapi source cache', ['url' => $url]);
-
-$headers = ['Accept: application/json'];
-if ($token !== '') {
-    $headers[] = 'X-Source-Cache-Warmup-Token: ' . $token;
-}
-
-$handle = curl_init($url);
-curl_setopt_array($handle, [
-    CURLOPT_POST => true,
-    CURLOPT_HTTPHEADER => $headers,
-    CURLOPT_RETURNTRANSFER => true,
-    CURLOPT_TIMEOUT => 180,
-    CURLOPT_FAILONERROR => true,
-]);
-$body = curl_exec($handle);
-$error = curl_error($handle);
-$status = (int) curl_getinfo($handle, CURLINFO_RESPONSE_CODE);
-curl_close($handle);
-
-if ($body !== false && $status >= 200 && $status < 300) {
-    \App::$log->info('Citizenapi source cache warmup succeeded');
-    exit(0);
-}
-
-\App::$log->warning('Citizenapi source cache warmup failed', [
-    'url' => $url,
-    'status' => $status,
-    'error' => $error,
-]);
-exit(0);
+exit($sharedCacheFailed ? 1 : 0);
