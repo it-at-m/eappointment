@@ -111,5 +111,5 @@ ARG NODE_MAJOR
 RUN docker-node-install node_${NODE_MAJOR}.x
 
 # Add current Python libraries
-RUN apt update && apt install -y python3 python3-click python3-git && \
+RUN apt update && apt install -y python3 python3-click python3-colorama python3-git && \
     apt clean && rm -rf /var/lib/apt/lists/*

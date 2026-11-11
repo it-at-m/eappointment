@@ -61,6 +61,8 @@ public final class TimeSlotStep {
         SLOT_TAKEN,
         /** Citizen API 429 / Zu viele Anfragen — wait out the window and retry same slot. */
         RATE_LIMITED,
+        /** Mail-limit callout on Termin. Leave it on screen for the scenario assertion. */
+        MAIL_LIMIT,
         UNFINISHED
     }
 
@@ -1061,10 +1063,11 @@ public final class TimeSlotStep {
         JsonNode buttons = new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(defaultWaitSeconds))
                 .until(d -> {
                     JsonNode node = calendarGhostButtons();
-                    return node.path("earlier").path("present").asBoolean()
-                            && node.path("later").path("present").asBoolean()
-                            ? node
-                            : null;
+                    boolean earlierReady = node.path("earlier").path("present").asBoolean()
+                            && node.path("earlier").path("disabled").asBoolean();
+                    boolean laterReady = node.path("later").path("present").asBoolean()
+                            && !node.path("later").path("disabled").asBoolean();
+                    return earlierReady && laterReady ? node : null;
                 });
         assertGhostButton(buttons.path("earlier"), "Früher", "chevron-left", true);
         assertGhostButton(buttons.path("later"), "Später", "chevron-right", false);
@@ -2129,23 +2132,32 @@ public final class TimeSlotStep {
      * several calendar days at a shorter lead time.
      */
     private boolean recoverHighlightForOffice(int officeId) {
+        return recoverHighlightForOffice(officeId, "");
+    }
+
+    /**
+     * @param skippedTimestamps comma-separated epochs that must not be selected again. Clearing
+     *     this set re-clicks the seat that just returned appointmentNotAvailable.
+     */
+    private boolean recoverHighlightForOffice(int officeId, String skippedTimestamps) {
+        String skipped = skippedTimestamps == null ? "" : skippedTimestamps;
         clickSpäterIfAvailableAndReloadSlots();
-        if (highlightPreferredTimeslotForOfficeOrAbsent(officeId, "")) {
+        if (highlightPreferredTimeslotForOfficeOrAbsent(officeId, skipped)) {
             return true;
         }
         for (int day = 0; day < 7; day++) {
             if (!openNextCalendarDayAndWaitForSlots()) {
                 break;
             }
-            if (highlightPreferredTimeslotForOfficeOrAbsent(officeId, "", 20)) {
+            if (highlightPreferredTimeslotForOfficeOrAbsent(officeId, skipped, 20)) {
                 return true;
             }
             clickSpäterIfAvailableAndReloadSlots();
-            if (highlightPreferredTimeslotForOfficeOrAbsent(officeId, "", 20)) {
+            if (highlightPreferredTimeslotForOfficeOrAbsent(officeId, skipped, 20)) {
                 return true;
             }
         }
-        return highlightPreferredTimeslotForOfficeOrAbsent(officeId, "", 5);
+        return highlightPreferredTimeslotForOfficeOrAbsent(officeId, skipped, 5);
     }
 
     /**
@@ -2214,9 +2226,9 @@ public final class TimeSlotStep {
                         finishReserveOnContactStep();
                         return;
                     }
-                    // Parallel 10427 (captcha scope) / 10502 drains a day-part; page until a slot appears.
-                    skipped.clear();
-                    if (!recoverHighlightForOffice(officeId)) {
+                    // Page forward with the taken timestamps still excluded. Dropping the
+                    // skip list re-selects the same Feuerwache 09:30 button.
+                    if (!recoverHighlightForOffice(officeId, skippedTimestamps)) {
                         Assert.fail(
                                 "zmscitizenview: could not find/highlight timeslot for provider "
                                         + officeId
@@ -2245,11 +2257,24 @@ public final class TimeSlotStep {
                     .info(
                             "zmscitizenview: Weiter after slot callout → reserve appointment (then Kontakt form) timestamp={}",
                             timestamp);
-            page.clickWeiter();
+            clickWeiterForReserve();
             if (timestamp > 0) {
                 pendingReserveTimestamp = timestamp;
             }
-            switch (waitForReserveOutcome()) {
+            ReserveOutcome outcome = waitForReserveOutcome();
+            // Rebooking keeps Weiter disabled until reserve and the following update both finish.
+            // Clicking it again cannot succeed; wait for Kontakt or Übersicht instead.
+            if (outcome == ReserveOutcome.UNFINISHED && !shadow.visibleButtonContaining("Weiter")) {
+                ScenarioLogManager.getLogger()
+                        .info(
+                                "zmscitizenview: Weiter stays disabled after reserve timestamp={}; waiting for Kontakt or Übersicht",
+                                timestamp);
+                outcome = waitForReserveOutcome(90);
+            }
+            switch (outcome) {
+                case MAIL_LIMIT -> {
+                    return;
+                }
                 case CONTACT, REBOOKING_OVERVIEW -> {
                     keepReservedSlot(timestamp);
                     finishReserveOnContactStep();
@@ -2274,6 +2299,11 @@ public final class TimeSlotStep {
                     CitizenViewWaits.sleepQuiet(65_000L);
                 }
                 case UNFINISHED -> {
+                    if (!shadow.visibleButtonContaining("Weiter")) {
+                        Assert.fail(
+                                "zmscitizenview: Weiter stayed disabled and reserve did not reach Kontakt or Übersicht for office "
+                                        + officeId);
+                    }
                     unfinishedReserves++;
                     ScenarioLogManager.getLogger()
                             .info(
@@ -3329,9 +3359,15 @@ public final class TimeSlotStep {
                         + "if(el.classList&&el.classList.contains('muc-calendar-item')&&el.getAttribute('role')==='button')days.push(el);"
                         + "return false;"
                         + "});"
+                        + "function tileSelected(tile){"
+                        + "if(!tile)return false;"
+                        + "if(tile.getAttribute('aria-selected')==='true'||tile.getAttribute('aria-current')==='date')return true;"
+                        + "var cls=tile.className||'';"
+                        + "return cls.indexOf('selected')>=0;"
+                        + "}"
                         + "var selectedDay=-1;"
                         + "for(var d=0;d<days.length;d++){"
-                        + "if(days[d].classList.contains('selected'))selectedDay=d;"
+                        + "if(tileSelected(days[d]))selectedDay=d;"
                         + "}"
                         + "if(selectedDay>=0){"
                         + "for(var n=selectedDay+1;n<days.length;n++){"
@@ -3343,12 +3379,17 @@ public final class TimeSlotStep {
                         + "return true;"
                         + "}"
                         + "}"
+                        + "function isNextMonth(el){"
+                        + "var useEl=el.querySelector('use');"
+                        + "var href=(useEl&&(useEl.getAttribute('href')||useEl.getAttribute('xlink:href')))||'';"
+                        + "if(href.indexOf('chevron-right')>=0)return true;"
+                        + "var label=((el.getAttribute('aria-label')||'')+' '+(el.textContent||'')).replace(/\\s+/g,' ').trim();"
+                        + "return label.indexOf('Nächster Monat')>=0||label.indexOf('Next month')>=0||label==='Später';"
+                        + "}"
                         + "var clicked=false;"
                         + "walk(wrap,function(el){"
                         + "if(clicked||el.tagName!=='BUTTON'||!enabled(el))return false;"
-                        + "var useEl=el.querySelector('use');"
-                        + "var href=(useEl&&(useEl.getAttribute('href')||useEl.getAttribute('xlink:href')))||'';"
-                        + "if(href.indexOf('chevron-right')<0)return false;"
+                        + "if(!isNextMonth(el))return false;"
                         + "el.click();"
                         + "clicked=true;"
                         + "return true;"
@@ -3593,7 +3634,7 @@ public final class TimeSlotStep {
     }
 
     public boolean selectedAppointmentCalloutVisible() {
-        return shadow.shadowDomContainsText("Ausgewählter Termin") || shadow.shadowDomContainsText("Selected Appointment");
+        return shadow.visibleTextContains("Ausgewählter Termin") || shadow.visibleTextContains("Selected Appointment");
     }
 
     /**
@@ -3627,9 +3668,30 @@ public final class TimeSlotStep {
      * treating that alone as Übersicht made reserve Weiter pass while stuck on Ausgewählter Termin.
      */
     public boolean rebookingOverviewReached() {
-        return shadow.shadowDomContainsText("Verschieben abbrechen")
+        return shadow.visibleTextContains("Verschieben abbrechen")
                 && !shadow.deepElementExists("#firstname")
                 && !selectedAppointmentCalloutVisible();
+    }
+
+    /**
+     * Clicks Weiter when it is enabled. If the rebook reserve is already in flight, Weiter stays
+     * disabled until update-appointment finishes and this returns without a second click.
+     */
+    private void clickWeiterForReserve() {
+        long deadline = System.currentTimeMillis() + 20_000L;
+        while (System.currentTimeMillis() < deadline) {
+            if (rebookingOverviewReached() || contactStepReached() || shadow.visibleTextContains("Termin verschieben")) {
+                ScenarioLogManager.getLogger()
+                        .info("zmscitizenview: reserve already left the slot step; not clicking Weiter");
+                return;
+            }
+            if (shadow.clickButtonContaining("Weiter")) {
+                return;
+            }
+            CitizenViewWaits.sleepQuiet(300L);
+        }
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: Weiter stayed disabled; waiting for the in-flight reserve to finish");
     }
 
     public void finishReserveOnContactStep() {
@@ -3640,45 +3702,106 @@ public final class TimeSlotStep {
     }
 
     public ReserveOutcome waitForReserveOutcome() {
-        // Keep under captcha JWT TTL (CAPTCHA_TOKEN_TTL=300) when retries stack.
-        long deadline = System.currentTimeMillis() + 25_000L;
-        while (System.currentTimeMillis() < deadline) {
-            if (rebookingOverviewReached()) {
-                return ReserveOutcome.REBOOKING_OVERVIEW;
+        // A missed click settles in 25s. A rebook reserve stays on a disabled Weiter until
+        // reserve-appointment copies the email and returns 406, which took ~30s on a full shard.
+        // Clicking again at 25s clears that callout the moment it paints.
+        long start = System.currentTimeMillis();
+        long idleDeadline = start + 25_000L;
+        long hardDeadline = start + 75_000L;
+        while (System.currentTimeMillis() < hardDeadline) {
+            ReserveOutcome outcome = currentReserveOutcome();
+            if (outcome != null) {
+                return outcome;
             }
-            if (contactStepReached() || shadow.shadowDomContainsText("Termin verschieben")) {
-                return ReserveOutcome.CONTACT;
-            }
-            if (shadow.shadowDomContainsText("Zu viele Anfragen")
-                    || shadow.shadowDomContainsText("maximale Anzahl an Anfragen")) {
-                return ReserveOutcome.RATE_LIMITED;
-            }
-            if (shadow.shadowDomContainsText("Ihre Sitzung ist abgelaufen.")) {
-                Assert.fail(
-                        "zmscitizenview: captcha session expired during reserve (Ihre Sitzung ist abgelaufen.)"
-                                + " — finish Leistung→Kontakt within CAPTCHA_TOKEN_TTL");
-            }
-            if (shadow.shadowDomContainsText("Ihr gewählter Termin ist nicht mehr verfügbar.")
-                    || shadow.shadowDomContainsText("Ein unbekannter Fehler ist aufgetreten.")
-                    || shadow.shadowDomContainsText(CitizenViewPage.DE_APPOINTMENT_NOT_AVAILABLE_HEADER)) {
-                return ReserveOutcome.SLOT_TAKEN;
+            long now = System.currentTimeMillis();
+            if (reserveWeiterDisabled()) {
+                idleDeadline = Math.min(hardDeadline, now + 25_000L);
+            } else if (now >= idleDeadline) {
+                break;
             }
             CitizenViewWaits.sleepQuiet(400L);
         }
+        return unfinishedReserveOutcome();
+    }
+
+    /**
+     * Longer poll for a reschedule whose update keeps Weiter disabled after the first wait.
+     * Keep under captcha JWT TTL (CAPTCHA_TOKEN_TTL=300) when retries stack.
+     */
+    public ReserveOutcome waitForReserveOutcome(int timeoutSeconds) {
+        long deadline = System.currentTimeMillis() + timeoutSeconds * 1000L;
+        while (System.currentTimeMillis() < deadline) {
+            ReserveOutcome outcome = currentReserveOutcome();
+            if (outcome != null) {
+                return outcome;
+            }
+            CitizenViewWaits.sleepQuiet(400L);
+        }
+        return unfinishedReserveOutcome();
+    }
+
+    private ReserveOutcome unfinishedReserveOutcome() {
+        ReserveOutcome outcome = currentReserveOutcome();
+        if (outcome != null) {
+            return outcome;
+        }
+        ScenarioLogManager.getLogger()
+                .info(
+                        "zmscitizenview: reserve did not reach Kontaktdaten and did not report a taken slot");
+        return ReserveOutcome.UNFINISHED;
+    }
+
+    /**
+     * @return the painted reserve result, or null while Weiter is still in flight or the page has not settled
+     */
+    private ReserveOutcome currentReserveOutcome() {
         if (rebookingOverviewReached()) {
             return ReserveOutcome.REBOOKING_OVERVIEW;
         }
-        if (contactStepReached()) {
+        if (contactStepReached() || shadow.visibleTextContains("Termin verschieben")) {
             return ReserveOutcome.CONTACT;
         }
         if (shadow.shadowDomContainsText("Zu viele Anfragen")
                 || shadow.shadowDomContainsText("maximale Anzahl an Anfragen")) {
             return ReserveOutcome.RATE_LIMITED;
         }
-        ScenarioLogManager.getLogger()
-                .info(
-                        "zmscitizenview: reserve did not reach Kontaktdaten and did not report a taken slot");
-        return ReserveOutcome.UNFINISHED;
+        if (shadow.shadowDomContainsText("Ihre Sitzung ist abgelaufen.")) {
+            Assert.fail(
+                    "zmscitizenview: captcha session expired during reserve (Ihre Sitzung ist abgelaufen.)"
+                            + " — finish Leistung→Kontakt within CAPTCHA_TOKEN_TTL");
+        }
+        if (shadow.shadowDomContainsText(CitizenViewPage.DE_TOO_MANY_APPOINTMENTS_HEADER)) {
+            return ReserveOutcome.MAIL_LIMIT;
+        }
+        if (shadow.shadowDomContainsText("Ihr gewählter Termin ist nicht mehr verfügbar.")
+                || shadow.shadowDomContainsText("Ein unbekannter Fehler ist aufgetreten.")
+                || shadow.shadowDomContainsText(CitizenViewPage.DE_APPOINTMENT_NOT_AVAILABLE_HEADER)) {
+            return ReserveOutcome.SLOT_TAKEN;
+        }
+        return null;
+    }
+
+    /** True while the Termin Weiter button is disabled because reserve-appointment is in flight. */
+    private boolean reserveWeiterDisabled() {
+        Object disabled =
+                ((JavascriptExecutor) DriverUtil.getDriver())
+                        .executeScript(
+                                "function norm(s){return (s||'').replace(/\\s+/g,' ').trim();}"
+                                        + "function isOff(el){if(!el)return false;"
+                                        + "if(el.disabled||(el.hasAttribute&&el.hasAttribute('disabled')))return true;"
+                                        + "if(el.getAttribute&&el.getAttribute('aria-disabled')==='true')return true;"
+                                        + "var inner=el.shadowRoot&&el.shadowRoot.querySelector('button');"
+                                        + "return !!(inner&&(inner.disabled||inner.hasAttribute('disabled')"
+                                        + "||inner.getAttribute('aria-disabled')==='true'));}"
+                                        + "function walk(n){if(!n)return null;"
+                                        + "var tag=(n.tagName||'').toUpperCase();"
+                                        + "if((tag==='BUTTON'||tag==='MUC-BUTTON')&&norm(n.textContent).indexOf('Weiter')>=0"
+                                        + "&&norm(n.textContent).indexOf('Zurück')<0)return isOff(n);"
+                                        + "if(n.shadowRoot){var s=walk(n.shadowRoot);if(s!==null)return s;}"
+                                        + "var c=n.children;if(c)for(var i=0;i<c.length;i++){var r=walk(c[i]);if(r!==null)return r;}"
+                                        + "return null;}"
+                                        + "return walk(document.body)===true;");
+        return Boolean.TRUE.equals(disabled);
     }
 
     /**

@@ -61,7 +61,6 @@
         :link="serviceInfoLink"
         :max="maxValueOfService"
         :min="minValueOfService"
-        :disabled="isServiceCounterDisabled"
       />
       <div
         v-if="variantServices.length > 1"
@@ -637,11 +636,6 @@ const maxValueOfService = computed(() => {
 
 /** Counter min is 1 when a booking is possible; 0 when slotsPerAppointment blocks qty 1. */
 const minValueOfService = computed(() => (maxValueOfService.value > 0 ? 1 : 0));
-
-/** MucCounter treats max=0 as unlimited; disable both buttons when nothing fits. */
-const isServiceCounterDisabled = computed(
-  () => maxValueOfService.value === 0 && (countOfService.value ?? 0) === 0
-);
 
 const setOftenSearchedService = (serviceId: string) => {
   const foundService = services.value.find(
