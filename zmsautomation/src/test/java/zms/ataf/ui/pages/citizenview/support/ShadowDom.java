@@ -68,6 +68,50 @@ public final class ShadowDom {
         return Boolean.TRUE.equals(o);
     }
 
+    /**
+     * Same text walk as {@link #shadowDomContainsText(String)}, but only through elements that are
+     * actually shown. AppointmentSelection stays mounted under {@code v-show} on Kontakt and Übersicht,
+     * so a hidden "Ausgewählter Termin" must not count as the Termin step.
+     */
+    public boolean visibleTextContains(String substring) {
+        context.set();
+        String script =
+                "var sub=String(arguments[0]||'').replace(/\\s+/g,' ').trim();"
+                        + "if(!sub)return true;"
+                        + "function shown(el){var n=el;while(n&&n.nodeType===1){"
+                        + "var st=window.getComputedStyle(n);"
+                        + "if(st.display==='none'||st.visibility==='hidden'||st.opacity==='0')return false;"
+                        + "if(n.parentElement){n=n.parentElement;continue;}"
+                        + "var root=n.getRootNode&&n.getRootNode();n=root&&root.host?root.host:null;}"
+                        + "return true;}"
+                        + "var seen=new Set();"
+                        + "var stack=[document.documentElement];"
+                        + "var buf='';"
+                        + "while(stack.length){"
+                        + " var n=stack.pop();"
+                        + " if(!n||seen.has(n))continue;"
+                        + " seen.add(n);"
+                        + " if(n.nodeType===3){"
+                        + "  var p=n.parentElement||n.parentNode;"
+                        + "  if(p&&p.nodeType===1&&shown(p))buf+=' '+(n.nodeValue||'');"
+                        + "  continue;"
+                        + " }"
+                        + " if(n.shadowRoot)stack.push(n.shadowRoot);"
+                        + " if(n.assignedNodes){"
+                        + "  try{var a=n.assignedNodes({flatten:true});"
+                        + "  for(var j=0;j<a.length;j++)stack.push(a[j]);}catch(e){}"
+                        + " }"
+                        + " var c=n.childNodes;if(c)for(var i=0;i<c.length;i++)stack.push(c[i]);"
+                        + " if(buf.length>65536){"
+                        + "  if(buf.replace(/\\s+/g,' ').indexOf(sub)>=0)return true;"
+                        + "  buf=buf.slice(-sub.length-64);"
+                        + " }"
+                        + "}"
+                        + "return buf.replace(/\\s+/g,' ').indexOf(sub)>=0;";
+        Object o = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script, substring);
+        return Boolean.TRUE.equals(o);
+    }
+
     /** True when an {@code h1}–{@code h6} in the shadow tree has this exact text. Level 2 is an {@code h2}. */
 
     /** True when an {@code h1}–{@code h6} in the shadow tree has this exact text. Level 2 is an {@code h2}. */

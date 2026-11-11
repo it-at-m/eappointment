@@ -101,6 +101,18 @@ const expectModalClosed = (wrapper: ReturnType<typeof createWrapper>) => {
 };
 
 describe("AppointmentSelection", () => {
+  it("renders the mail limit callout between the calendar and the buttons", () => {
+    const wrapper = createWrapper({ props: { mailLimitReached: true } });
+    const html = wrapper.html();
+    const calloutAt = html.indexOf(
+      "apiErrorTooManyAppointmentsWithSameMailHeader"
+    );
+    const buttonsAt = html.lastIndexOf("m-button-group");
+
+    expect(calloutAt).toBeGreaterThan(-1);
+    expect(buttonsAt).toBeGreaterThan(calloutAt);
+  });
+
   beforeEach(() => {
     vi.clearAllMocks();
 
@@ -2835,6 +2847,29 @@ describe("AppointmentSelection", () => {
 
       expect(wrapper.emitted("cancelReschedule")).toHaveLength(1);
       expect(wrapper.emitted("back")).toBeUndefined();
+    });
+
+    it("disables cancel reschedule while a reserve or update is in flight", async () => {
+      const wrapper = createWrapper({ props: { isRebooking: true } });
+      const cancelButton = () =>
+        wrapper
+          .findAllComponents({ name: "MucButton" })
+          .find((btn) => btn.text() === "cancelReschedule");
+
+      expect(cancelButton()?.props("disabled")).toBeFalsy();
+
+      wrapper.vm.loadingStates.isReservingAppointment.value = true;
+      await nextTick();
+      expect(cancelButton()?.props("disabled")).toBe(true);
+
+      wrapper.vm.loadingStates.isReservingAppointment.value = false;
+      wrapper.vm.loadingStates.isUpdatingAppointment.value = true;
+      await nextTick();
+      expect(cancelButton()?.props("disabled")).toBe(true);
+
+      wrapper.vm.loadingStates.isUpdatingAppointment.value = false;
+      await nextTick();
+      expect(cancelButton()?.props("disabled")).toBeFalsy();
     });
 
     it("does not show any callout when bookingError is false", async () => {
