@@ -238,7 +238,8 @@
         :disabled="
           selectedTimeslot === 0 ||
           !selectedDay ||
-          loadingStates.isReservingAppointment.value
+          loadingStates.isReservingAppointment.value ||
+          loadingStates.isUpdatingAppointment.value
         "
         :icon="'arrow-right'"
         @click="nextStep"
@@ -249,6 +250,10 @@
       </muc-button>
       <muc-button
         v-if="isRebooking"
+        :disabled="
+          loadingStates.isReservingAppointment.value ||
+          loadingStates.isUpdatingAppointment.value
+        "
         icon="close"
         variant="secondary"
         @click="cancelReschedule"
