@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
@@ -34,18 +35,34 @@ public class CustomerSearchPage extends AdminPage {
 
     private void clickOrJs(By locator) {
         WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
-        WebElement button = wait.until(ExpectedConditions.presenceOfElementLocated(locator));
-        ((JavascriptExecutor) DRIVER).executeScript("arguments[0].scrollIntoView({block:'center'});", button);
-        try {
-            new WebDriverWait(DRIVER, Duration.ofSeconds(5))
-                    .ignoring(StaleElementReferenceException.class)
-                    .until(ExpectedConditions.elementToBeClickable(button))
-                    .click();
-        } catch (Exception e) {
-            ScenarioLogManager.getLogger().warn("Normal click failed, trying JS click for {}", locator);
-            button = wait.until(ExpectedConditions.presenceOfElementLocated(locator));
-            ((JavascriptExecutor) DRIVER).executeScript("arguments[0].click();", button);
+        StaleElementReferenceException staleElement = null;
+        for (int attempt = 1; attempt <= 3; attempt++) {
+            try {
+                WebElement button = wait.until(ExpectedConditions.presenceOfElementLocated(locator));
+                ((JavascriptExecutor) DRIVER)
+                        .executeScript("arguments[0].scrollIntoView({block:'center'});", button);
+                try {
+                    new WebDriverWait(DRIVER, Duration.ofSeconds(5))
+                            .until(ExpectedConditions.elementToBeClickable(button))
+                            .click();
+                } catch (StaleElementReferenceException stale) {
+                    throw stale;
+                } catch (Exception e) {
+                    ScenarioLogManager.getLogger().warn("Normal click failed, trying JS click for {}", locator);
+                    button = wait.until(ExpectedConditions.presenceOfElementLocated(locator));
+                    ((JavascriptExecutor) DRIVER)
+                            .executeScript(
+                                    "arguments[0].scrollIntoView({block:'center'}); arguments[0].click();",
+                                    button);
+                }
+                return;
+            } catch (StaleElementReferenceException stale) {
+                staleElement = stale;
+                ScenarioLogManager.getLogger()
+                        .warn("Stale element on click attempt {} for {}", attempt, locator);
+            }
         }
+        throw staleElement;
     }
 
     public void search(String query) {
@@ -305,5 +322,37 @@ public class CustomerSearchPage extends AdminPage {
                     }
                     return query.equals(fields.get(0).getAttribute("value"));
                 });
+    }
+
+    /** Log rows sit under the Log-Ergebnisse heading, after the appointment result rows. */
+    public void assertLogEntriesFor(String familyName) {
+        CONTEXT.set();
+        List<WebElement> rows = logRowsFor(familyName);
+        Assert.assertFalse(rows.isEmpty(),
+                "No log entries for \"" + familyName + "\" under Log-Ergebnisse.");
+    }
+
+    public void assertLogShowsBookedSlots(String familyName, int slots) {
+        CONTEXT.set();
+        Pattern slotsLine = Pattern.compile("(?s).*\\bSlots:\\s*" + slots + "\\b.*");
+        StringBuilder seen = new StringBuilder();
+        for (WebElement row : logRowsFor(familyName)) {
+            String text = row.getText().replace('\u00a0', ' ');
+            if (slotsLine.matcher(text).matches()) {
+                return;
+            }
+            seen.append(text).append('\n');
+        }
+        Assert.fail("No log entry for \"" + familyName + "\" shows Slots: " + slots + ". Rows:\n" + seen);
+    }
+
+    private List<WebElement> logRowsFor(String familyName) {
+        By heading = By.xpath("//th[normalize-space()='Log-Ergebnisse:']");
+        new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .withMessage("Log-Ergebnisse did not appear for \"" + familyName + "\".")
+                .until(ExpectedConditions.visibilityOfElementLocated(heading));
+        String rowXpath = "//th[normalize-space()='Log-Ergebnisse:']/ancestor::tr"
+                + "/following-sibling::tr[.//td[contains(.,'" + familyName + "')]]";
+        return DRIVER.findElements(By.xpath(rowXpath));
     }
 }

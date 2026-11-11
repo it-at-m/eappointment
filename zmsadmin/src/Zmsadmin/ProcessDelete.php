@@ -51,7 +51,7 @@ class ProcessDelete extends BaseController
         );
     }
 
-    public static function writeDeleteMailNotifications($process): void
+    public static function writeDeleteMailNotifications(\BO\Zmsentities\Process $process): void
     {
         #email only for clients with appointment if email address is given
         if (

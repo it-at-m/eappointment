@@ -256,7 +256,7 @@ class Scope extends Base implements MappingInterface
         ], 'strlen');
     }
 
-    public function addConditionScopeId($scopeId): static
+    public function addConditionScopeId(string|int $scopeId): static
     {
         $this->query->where('scope.StandortID', '=', $scopeId);
         return $this;
@@ -283,7 +283,7 @@ class Scope extends Base implements MappingInterface
     /**
      * @psalm-api
      */
-    public function addSelectWorkstationCount($dateTime): void
+    public function addSelectWorkstationCount(\DateTimeInterface $dateTime): void
     {
         $this->query->select(
             ['status__queue__workstationCount' => self::expression('
@@ -303,19 +303,19 @@ class Scope extends Base implements MappingInterface
         );
     }
 
-    public function addConditionProviderId($providerId): static
+    public function addConditionProviderId(string|int $providerId): static
     {
         $this->query->where('scope.InfoDienstleisterID', '=', $providerId);
         return $this;
     }
 
-    public function addConditionDepartmentId($departmentId): static
+    public function addConditionDepartmentId(string|int $departmentId): static
     {
         $this->query->where('scope.BehoerdenID', '=', $departmentId);
         return $this;
     }
 
-    public function addConditionClusterId($clusterId): static
+    public function addConditionClusterId(string|int $clusterId): static
     {
         $this->leftJoin(
             new \BO\Zmsbackend\Query\Alias('clusterzuordnung', 'cluster_scope'),
@@ -331,7 +331,7 @@ class Scope extends Base implements MappingInterface
      * @return (int|mixed|string)[]
      *
      */
-    public function reverseEntityMapping(\BO\Zmsentities\Scope $entity, $parentId = null): array
+    public function reverseEntityMapping(\BO\Zmsentities\Scope $entity, int|string|null $parentId = null): array
     {
         $data = array();
         if ($parentId) {
@@ -432,7 +432,7 @@ class Scope extends Base implements MappingInterface
     }
 
     #[\Override]
-    public function postProcess($data)
+    public function postProcess(array $data)
     {
         $data = $this->convertTimestamps($data);
         $data = $this->setDefaultValues($data);
@@ -440,7 +440,7 @@ class Scope extends Base implements MappingInterface
     }
 
 
-    private function convertTimestamps($data)
+    private function convertTimestamps(array $data)
     {
         $lastGivenNumberTimestampKey = $this->getPrefixed("status__queue__lastGivenNumberTimestamp");
         $lastGivenNumberTimestamp = $data[$lastGivenNumberTimestampKey] ?? null;
@@ -458,7 +458,7 @@ class Scope extends Base implements MappingInterface
         return $data;
     }
 
-    private function setDefaultValues($data)
+    private function setDefaultValues(array $data)
     {
         if ($this->shouldLoadEntity('scopemail')) {
             $this->setIfEmpty($data, 'preferences__client__emailFrom', [
@@ -504,7 +504,7 @@ class Scope extends Base implements MappingInterface
         return $data;
     }
 
-    private function setIfEmpty(&$data, string $checkKey, array $setKeys): void
+    private function setIfEmpty(array &$data, string $checkKey, array $setKeys): void
     {
         if (!$data[$this->getPrefixed($checkKey)]) {
             foreach ($setKeys as $key => $value) {

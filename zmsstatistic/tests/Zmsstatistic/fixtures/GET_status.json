@@ -19,6 +19,7 @@
     "processes": {
       "confirmed": "86861",
       "confirmedWithExternalUserId": "42",
+      "confirmedWithMultipleServices": "7",
       "called": "4",
       "parked": "2",
       "deleted": "3",
@@ -41,6 +42,7 @@
       "minor": "15",
       "patch": "03"
     },
+    "phpVersion": "1.2.3-zmsbackend",
     "useraccounts": {
       "activeSessions": 7
     }

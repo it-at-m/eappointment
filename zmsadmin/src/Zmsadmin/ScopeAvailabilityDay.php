@@ -43,7 +43,7 @@ class ScopeAvailabilityDay extends BaseController
         );
     }
 
-    protected static function getScope($scopeId)
+    protected static function getScope(string|int $scopeId)
     {
         return \App::$http->readGetResult('/scope/' . $scopeId . '/', [
             'resolveReferences' => 3
@@ -54,7 +54,7 @@ class ScopeAvailabilityDay extends BaseController
      * @return (int|mixed)[][]
      *
      */
-    protected static function getSlotBuckets($availabilityList, $processList): array
+    protected static function getSlotBuckets(\BO\Zmsentities\Collection\AvailabilityList $availabilityList, \BO\Zmsentities\Collection\ProcessList $processList): array
     {
         $availability = $availabilityList->getFirst();
 
@@ -103,7 +103,7 @@ class ScopeAvailabilityDay extends BaseController
      * @return (\BO\Zmsentities\Process[]|int|mixed|string)[]
      *
      */
-    protected static function getAvailabilityData(int $scopeId, $dateString): array
+    protected static function getAvailabilityData(int $scopeId, string $dateString): array
     {
         $scope = static::getScope($scopeId);
         $dateTime = new DateTime($dateString);
@@ -142,7 +142,7 @@ class ScopeAvailabilityDay extends BaseController
         ];
     }
 
-    public static function readConflictList($scopeId, \DateTimeInterface $dateTime)
+    public static function readConflictList(string|int $scopeId, \DateTimeInterface $dateTime)
     {
         $processConflictList = \App::$http
             ->readGetResult('/scope/' . $scopeId . '/conflict/', [
@@ -158,7 +158,7 @@ class ScopeAvailabilityDay extends BaseController
             ->toProcessList() : null;
     }
 
-    public static function readAvailabilityList($scopeId, \DateTimeInterface $dateTime)
+    public static function readAvailabilityList(string|int $scopeId, \DateTimeInterface $dateTime)
     {
         try {
             $availabilityList = \App::$http

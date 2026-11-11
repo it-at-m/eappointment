@@ -25,7 +25,7 @@ class User
         'audit_viewer',
     ];
 
-    public function __construct($request, int $resolveReferences = 0)
+    public function __construct(\Psr\Http\Message\RequestInterface $request, int $resolveReferences = 0)
     {
         static::$request = $request;
         static::readWorkstation($resolveReferences);
@@ -181,7 +181,7 @@ class User
         return $workstation;
     }
 
-    public static function checkDepartments($departmentIds): DepartmentList
+    public static function checkDepartments(array $departmentIds): DepartmentList
     {
         $normalizedIds = self::normalizeDepartmentIds($departmentIds);
         $departments = new DepartmentList();
@@ -247,7 +247,7 @@ class User
      * @return \BO\Zmsentities\Department
      *
      */
-    public static function checkDepartment($departmentId)
+    public static function checkDepartment(string|int $departmentId)
     {
         $workstation = static::readWorkstation(2);
         $userAccount = $workstation->getUseraccount();
@@ -295,7 +295,7 @@ class User
         }
     }
 
-    protected static function testReadDepartmentByOrganisation($departmentId, $userAccount)
+    protected static function testReadDepartmentByOrganisation(string|int $departmentId, \BO\Zmsentities\Useraccount $userAccount)
     {
         $organisation = (new \BO\Zmsbackend\Organisation\Service\Organisation())->readByDepartmentId($departmentId, 1);
         $organisation->departments = $organisation->getDepartmentList()->withAccess($userAccount);

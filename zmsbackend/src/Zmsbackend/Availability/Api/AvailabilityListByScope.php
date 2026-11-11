@@ -67,7 +67,7 @@ class AvailabilityListByScope extends \BO\Zmsbackend\Api\BaseController
     /**
      * @return void
      */
-    protected function validateAvailabilityList($availabilityList)
+    protected function validateAvailabilityList(\BO\Zmsentities\Collection\AvailabilityList $availabilityList)
     {
         if (! $availabilityList->count()) {
             throw new \BO\Zmsbackend\Availability\Exception\AvailabilityNotFound();

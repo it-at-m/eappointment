@@ -37,6 +37,9 @@ class UrlParameterSigning extends BaseController
     ): \Psr\Http\Message\ResponseInterface {
         $validator = $request->getAttribute('validator');
         $data = $validator->getInput()->isJson()->assertValid()->getValue();
+        if (!is_array($data)) {
+            throw new BadRequest();
+        }
         $this->testData($data);
 
         $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 0])->getEntity();
@@ -66,7 +69,7 @@ class UrlParameterSigning extends BaseController
     /**
      * @return void
      */
-    private function testData($data)
+    private function testData(array $data)
     {
         if (!isset($data['section']) || !isset($data['parameters'])) {
             throw new BadRequest();
@@ -76,7 +79,7 @@ class UrlParameterSigning extends BaseController
     /**
      * @return void
      */
-    private function testScopeList($organisation, $collections)
+    private function testScopeList(\BO\Zmsentities\Organisation $organisation, array $collections)
     {
         $scopeIds = [];
         foreach ($organisation->departments as $departmentData) {
@@ -98,7 +101,7 @@ class UrlParameterSigning extends BaseController
     /**
      * @return void
      */
-    private function testClusterList($organisation, $collections)
+    private function testClusterList(\BO\Zmsentities\Organisation $organisation, array $collections)
     {
         $clusterIds = [];
         foreach ($organisation->departments as $departmentData) {

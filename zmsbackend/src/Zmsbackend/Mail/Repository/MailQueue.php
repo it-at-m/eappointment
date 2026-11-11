@@ -43,13 +43,13 @@ class MailQueue extends \BO\Zmsbackend\Query\Base
         ];
     }
 
-    public function addConditionItemId($itemId): static
+    public function addConditionItemId(string|int $itemId): static
     {
         $this->query->where('mailQueue.id', '=', $itemId);
         return $this;
     }
 
-    public function addOrderBy(string $parameter, $order = 'ASC'): static
+    public function addOrderBy(string $parameter, string $order = 'ASC'): static
     {
         $this->query->orderBy('mailQueue.' . $parameter, $order);
         return $this;

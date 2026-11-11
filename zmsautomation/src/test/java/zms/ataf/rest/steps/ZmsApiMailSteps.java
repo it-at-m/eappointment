@@ -2,12 +2,14 @@ package zms.ataf.rest.steps;
 
 import static io.restassured.RestAssured.*;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.assertj.core.api.Assertions;
+import org.testng.SkipException;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -215,6 +217,45 @@ public class ZmsApiMailSteps {
                         "zmsapi: confirmation mail for process {} contains {}",
                         booking.getProcessId(),
                         expected);
+    }
+
+    /**
+     * ZMSKVR-1435: the service link in the mail is the public root parent id.
+     * {@code absent} is a comma-separated list of strings that must not appear, such as the
+     * internal variant URL.
+     */
+    @Then("the confirmation mail should contain {string} and not {string}")
+    public void theConfirmationMailShouldContainAndNot(String expected, String absent) {
+        ThinnedProcess booking = CitizenApiSteps.getBookingProcess();
+        Assertions.assertThat(booking)
+                .as("booking process for confirmation mail body assert")
+                .isNotNull();
+        Assertions.assertThat(booking.getProcessId())
+                .as("processId for confirmation mail body assert")
+                .isNotNull();
+        String html = htmlForProcessContaining(String.valueOf(booking.getProcessId()), expected);
+        Assertions.assertThat(html)
+                .as("confirmation mail for process %s should contain '%s'", booking.getProcessId(), expected)
+                .contains(expected);
+        for (String part : absent.split(",")) {
+            String needle = part.trim();
+            if (needle.isEmpty()) {
+                continue;
+            }
+            Assertions.assertThat(html)
+                    .as(
+                            "confirmation mail for process %s must not contain '%s'. html=%s",
+                            booking.getProcessId(),
+                            needle,
+                            abbreviate(html))
+                    .doesNotContain(needle);
+        }
+        ScenarioLogManager.getLogger()
+                .info(
+                        "zmsapi: confirmation mail for process {} contains {} and not {}",
+                        booking.getProcessId(),
+                        expected,
+                        absent);
     }
 
     /**
@@ -433,6 +474,16 @@ public class ZmsApiMailSteps {
 
     @Then("the reminder mail shows the estimated duration on the line after the time")
     public void theReminderMailShowsTheEstimatedDurationOnTheLineAfterTheTime() {
+        // queueMailReminder 120 only queues a reminder that is already due. After the last
+        // slot the next opening is outside that window, on a holiday and on an open evening.
+        String epoch = TestDataHelper.getTestData("appointment_epoch");
+        if (epoch != null && epoch.trim().matches("\\d+")) {
+            long appointment = Long.parseLong(epoch.trim());
+            if (appointment - Instant.now().getEpochSecond() > 120L * 60L) {
+                throw new SkipException(
+                        "The appointment is outside the 120-minute reminder window, so no reminder is due.");
+            }
+        }
         assertEstimatedDurationAfterTime("in Kürze folgenden Termin");
     }
 

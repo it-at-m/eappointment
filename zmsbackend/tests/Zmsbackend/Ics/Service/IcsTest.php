@@ -18,9 +18,13 @@ class IcsTest extends \BO\Zmsbackend\Tests\Service\Base
         $ics = \BO\Zmsentities\Helper\Messaging::getMailIcs($process, $config, 'appointment', null, $testTimestamp);
 
         $this->assertEntity("\\BO\\Zmsentities\\Ics", $ics);
-        $this->assertStringContainsString('169530', $ics->getContent());
-        $this->assertStringContainsString('eyJpZCI6MTY5NTMwLCJhdXRoS2V5IjoiYjNiMCJ9', $ics->getContent());
-        $this->assertStringContainsString('UID:20160408-169530', $ics->getContent());
+        $calendar = preg_replace("/\r\n[ \t]/", '', $ics->getContent());
+        $this->assertStringContainsString('169530', $calendar);
+        $this->assertStringContainsString(
+            'https://stadt.muenchen.de/buergerservice/terminvereinbarung.html#/appointment/eyJpZCI6MTY5NTMwLCJhdXRoS2V5IjoiYjNiMCJ9',
+            $calendar
+        );
+        $this->assertStringContainsString('UID:20160408-169530', $calendar);
     }
 
     public function testDeleteIcs()

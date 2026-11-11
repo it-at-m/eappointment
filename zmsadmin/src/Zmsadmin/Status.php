@@ -45,6 +45,7 @@ class Status extends BaseController
         }
 
         $result = \App::$http->readGetResult('/status/');
+        $isSuperuser = $workstation->getUseraccount()->isSuperUser();
         return \BO\Slim\Render::withHtml(
             $response,
             'page/status.twig',
@@ -52,7 +53,8 @@ class Status extends BaseController
                 'title' => 'Status der Terminvereinbarung',
                 'status' => $result->getEntity(),
                 'workstation' => $workstation,
-                'isSuperuser' => $workstation->getUseraccount()->isSuperUser(),
+                'isSuperuser' => $isSuperuser,
+                'phpVersion' => $isSuperuser ? PHP_VERSION : null,
             )
         );
     }

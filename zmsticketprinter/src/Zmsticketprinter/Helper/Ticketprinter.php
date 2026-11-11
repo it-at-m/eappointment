@@ -26,7 +26,7 @@ class Ticketprinter
 
     protected $requestParams = [];
 
-    public function __construct($args, RequestInterface $request)
+    public function __construct(array $args, RequestInterface $request)
     {
         $this->setRequestParameters($request);
         $this->scopeId = $this->setScopeId($args, $request);

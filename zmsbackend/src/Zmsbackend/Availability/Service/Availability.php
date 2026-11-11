@@ -53,12 +53,12 @@ class Availability extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfa
         return $entity;
     }
 
-    public function readLock($availabilityId)
+    public function readLock(string|int $availabilityId)
     {
         return $this->perform(\BO\Zmsbackend\Availability\Repository\Availability::QUERY_GET_LOCK, ['availabilityId' => $availabilityId]);
     }
 
-    public function readEntityDoubleTypes($availabilityId, int $resolveReferences = 0)
+    public function readEntityDoubleTypes(string|int $availabilityId, int $resolveReferences = 0)
     {
         $query = new \BO\Zmsbackend\Availability\Repository\Availability(\BO\Zmsbackend\Query\Base::SELECT);
         $query
@@ -72,7 +72,7 @@ class Availability extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfa
     }
 
     public function readList(
-        $scopeId,
+        string|int $scopeId,
         int $resolveReferences = 0,
         ?\DateTimeInterface $startDate = null,
         ?\DateTimeInterface $endDate = null
@@ -143,32 +143,8 @@ class Availability extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfa
         return $collection;
     }
 
-    /* not in use
-    public function readAvailabilityListByDate($scopeId, \DateTimeInterface $now, $resolveReferences = 0)
-    {
-        $collection = new Collection();
-        $query = new \BO\Zmsbackend\Availability\Repository\Availability(\BO\Zmsbackend\Query\Base::SELECT);
-        $query
-            ->addEntityMapping()
-            ->addResolvedReferences($resolveReferences)
-            ->addConditionScopeId($scopeId)
-            ->addConditionAppointmentHours()
-            ->addConditionDate($now);
-        $result = $this->fetchList($query, new Entity());
-        if (count($result)) {
-            foreach ($result as $entity) {
-                if ($entity instanceof Entity) {
-                    $entity = $this->readResolvedReferences($entity, $resolveReferences);
-                    $collection->addEntity($entity);
-                }
-            }
-        }
-        return $collection;
-    }
-    */
-
     /*
-    ** Returns a list of availabilities with end date older than 4 weeks
+    ** Terminkunden and Spontankunden rows whose end date is on or before $datetime
     */
     public function readAvailabilityListBefore(\DateTimeImmutable $datetime, int $resolveReferences = 0): Collection
     {
@@ -177,7 +153,6 @@ class Availability extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfa
         $query
             ->addEntityMapping()
             ->addResolvedReferences($resolveReferences)
-            ->addConditionAppointmentHours()
             ->addConditionOnlyOld($datetime);
         $result = $this->fetchList($query, new Entity());
         if (count($result)) {
@@ -191,7 +166,7 @@ class Availability extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfa
         return $collection;
     }
 
-    public function readOpeningHoursListByDate($scopeId, \DateTimeInterface $now, int $resolveReferences = 0): Collection
+    public function readOpeningHoursListByDate(string|int $scopeId, \DateTimeInterface $now, int $resolveReferences = 0): Collection
     {
         $collection = new Collection();
         $query = new \BO\Zmsbackend\Availability\Repository\Availability(\BO\Zmsbackend\Query\Base::SELECT);

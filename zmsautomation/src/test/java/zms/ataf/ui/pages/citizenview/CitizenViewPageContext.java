@@ -1,10 +1,12 @@
 package zms.ataf.ui.pages.citizenview;
 
+import java.time.Duration;
 import java.util.Objects;
 
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.remote.RemoteWebDriver;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 import ataf.core.context.TestExecutionContext;
 import ataf.core.data.Environment;
@@ -22,6 +24,8 @@ public class CitizenViewPageContext extends Context {
 
     public static final String NAME = "zmscitizenview";
     public static final String TITLE = "Terminvereinbarung Bürgeransicht Webcomponent";
+    /** Firefox can report the previous document title for a moment after a same-tab jump-in. */
+    private static final int TITLE_SETTLE_SECONDS = 15;
 
     private WindowType windowType;
     public String lastCitizenViewUrl;
@@ -133,6 +137,10 @@ public class CitizenViewPageContext extends Context {
         } catch (TimeoutException e) {
             ScenarioLogManager.getLogger().warn("Jump-in navigation timed out, continuing.", e);
         }
+        // Snapshot the title only after the new document's <title> is in place. A stale
+        // title leaves this tab registered under the previous page, and the next
+        // assertion then waits for a second window that never opens.
+        waitForCitizenViewTitle();
         WindowControls.updateWindowList(DriverUtil.getDriver(), windowType);
         FrameControls.setCurrentFrame(FrameControls.DEFAULT_CONTENT);
         ScenarioLogManager.getLogger().info("Jump-in loaded: {}", jumpInUrl);
@@ -240,12 +248,76 @@ public class CitizenViewPageContext extends Context {
 
     @Override
     public void set() {
+        if (onCitizenViewDocument()) {
+            // switchToOpenedWindow only considers unknown handles. This tab is already
+            // registered, so a stale title burns 3× the explicit wait and still fails.
+            waitForCitizenViewTitle();
+            if (windowType != null) {
+                WindowControls.updateWindowList(DRIVER, windowType);
+            }
+            return;
+        }
         if (!WindowControls.getActiveWindow().getWindowTitle().equals(TITLE)) {
             if (WindowControls.isWindowWithTitleInList(TITLE)) {
                 WindowControls.switchToWindow(DRIVER, TITLE);
             } else {
                 WindowControls.switchToOpenedWindow(DRIVER, DEFAULT_EXPLICIT_WAIT_TIME, windowType, TITLE);
             }
+        }
+    }
+
+    private void waitForCitizenViewTitle() {
+        try {
+            new WebDriverWait(DRIVER, Duration.ofSeconds(TITLE_SETTLE_SECONDS))
+                    .until(d -> TITLE.equals(d.getTitle()));
+        } catch (TimeoutException e) {
+            ScenarioLogManager.getLogger().warn(
+                    "zmscitizenview: document title is \"{}\" (expected \"{}\")",
+                    currentDocumentTitle(), TITLE);
+        } catch (RuntimeException e) {
+            ScenarioLogManager.getLogger().debug(
+                    "zmscitizenview: document title not readable: {}", e.toString());
+        }
+    }
+
+    private boolean onCitizenViewDocument() {
+        try {
+            String url = DRIVER.getCurrentUrl();
+            if (url == null || url.startsWith("about:") || url.startsWith("data:")) {
+                return false;
+            }
+            String base = citizenViewBase();
+            if (base != null && url.startsWith(base)) {
+                return true;
+            }
+            return url.contains("buergeransicht");
+        } catch (RuntimeException e) {
+            return false;
+        }
+    }
+
+    private String citizenViewBase() {
+        String base = lastCitizenViewUrl;
+        if (base == null || base.isBlank()) {
+            return null;
+        }
+        int hash = base.indexOf('#');
+        if (hash >= 0) {
+            base = base.substring(0, hash);
+        }
+        int query = base.indexOf('?');
+        if (query >= 0) {
+            base = base.substring(0, query);
+        }
+        return base;
+    }
+
+    private String currentDocumentTitle() {
+        try {
+            String title = DRIVER.getTitle();
+            return title == null ? "" : title;
+        } catch (RuntimeException e) {
+            return "";
         }
     }
 }

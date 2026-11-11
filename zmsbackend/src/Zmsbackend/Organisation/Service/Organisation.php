@@ -44,7 +44,7 @@ class Organisation extends \BO\Zmsbackend\Base
         return $entity;
     }
 
-    public function readByScopeId($scopeId, int $resolveReferences = 0)
+    public function readByScopeId(string|int $scopeId, int $resolveReferences = 0)
     {
         $query = new \BO\Zmsbackend\Organisation\Repository\Organisation(\BO\Zmsbackend\Query\Base::SELECT);
         $query->addEntityMapping()
@@ -54,7 +54,7 @@ class Organisation extends \BO\Zmsbackend\Base
         return $this->readResolvedReferences($organisation, $resolveReferences);
     }
 
-    public function readByDepartmentId($departmentId, int $resolveReferences = 0)
+    public function readByDepartmentId(string|int $departmentId, int $resolveReferences = 0)
     {
         $query = new \BO\Zmsbackend\Organisation\Repository\Organisation(\BO\Zmsbackend\Query\Base::SELECT);
         $query->addEntityMapping()
@@ -64,7 +64,7 @@ class Organisation extends \BO\Zmsbackend\Base
         return $this->readResolvedReferences($organisation, $resolveReferences);
     }
 
-    public function readByClusterId($clusterId, int $resolveReferences = 0)
+    public function readByClusterId(string|int $clusterId, int $resolveReferences = 0)
     {
         $scope = (new \BO\Zmsbackend\Scope\Service\Scope())->readByClusterId($clusterId, $resolveReferences)->getFirst();
         if (! $scope) {
@@ -73,7 +73,7 @@ class Organisation extends \BO\Zmsbackend\Base
         return $this->readByScopeId($scope->id, $resolveReferences);
     }
 
-    public function readByOwnerId($ownerId, int $resolveReferences = 0): Collection
+    public function readByOwnerId(string|int $ownerId, int $resolveReferences = 0): Collection
     {
         $organisationList = new Collection();
         $query = new \BO\Zmsbackend\Organisation\Repository\Organisation(\BO\Zmsbackend\Query\Base::SELECT);
@@ -92,7 +92,7 @@ class Organisation extends \BO\Zmsbackend\Base
         return $organisationList;
     }
 
-    public function readByHash($hash)
+    public function readByHash(string $hash)
     {
         $organisationId = $this->getReader()
             ->fetchValue((new \BO\Zmsbackend\Ticketprinter\Repository\Ticketprinter(\BO\Zmsbackend\Query\Base::SELECT))
@@ -118,7 +118,7 @@ class Organisation extends \BO\Zmsbackend\Base
         return $organisationList;
     }
 
-    public function deleteEntity($itemId)
+    public function deleteEntity(string|int $itemId)
     {
         $entity = $this->readEntity($itemId, 1);
         if (0 < $entity->toProperty()->departments->get()->count()) {
@@ -129,7 +129,7 @@ class Organisation extends \BO\Zmsbackend\Base
         return ($this->deleteItem($query)) ? $entity : null;
     }
 
-    public function writeEntity(\BO\Zmsentities\Organisation $entity, $parentId)
+    public function writeEntity(\BO\Zmsentities\Organisation $entity, string|int $parentId)
     {
         $query = new \BO\Zmsbackend\Organisation\Repository\Organisation(\BO\Zmsbackend\Query\Base::INSERT);
         $values = $query->reverseEntityMapping($entity, $parentId);
@@ -143,7 +143,7 @@ class Organisation extends \BO\Zmsbackend\Base
         return $this->readEntity($lastInsertId);
     }
 
-    public function updateEntity($organisationId, \BO\Zmsentities\Organisation $entity)
+    public function updateEntity(string|int $organisationId, \BO\Zmsentities\Organisation $entity)
     {
         $query = new \BO\Zmsbackend\Organisation\Repository\Organisation(\BO\Zmsbackend\Query\Base::UPDATE);
         $query->addConditionOrganisationId($organisationId);
@@ -156,7 +156,7 @@ class Organisation extends \BO\Zmsbackend\Base
         return $this->readEntity($organisationId, 1, true);
     }
 
-    protected function writeOrganisationTicketprinters(string|false $organisationId, $ticketprinterList): void
+    protected function writeOrganisationTicketprinters(string|false $organisationId, iterable $ticketprinterList): void
     {
         $deleteQuery = new \BO\Zmsbackend\Ticketprinter\Repository\Ticketprinter(\BO\Zmsbackend\Query\Base::DELETE);
         $deleteQuery->addConditionOrganisationId($organisationId);
@@ -169,7 +169,7 @@ class Organisation extends \BO\Zmsbackend\Base
         }
     }
 
-    protected function updateOrganisationTicketprinters($ticketprinterList, $organisationId): void
+    protected function updateOrganisationTicketprinters(iterable $ticketprinterList, string|int $organisationId): void
     {
         foreach ($ticketprinterList as $item) {
             $query = new \BO\Zmsbackend\Ticketprinter\Repository\Ticketprinter(\BO\Zmsbackend\Query\Base::UPDATE);

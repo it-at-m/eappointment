@@ -14,7 +14,9 @@ class StatusGetTest extends \BO\Zmsbackend\Tests\Api\Base
                 'X-Token' => 'secure-token',
             ],
         ], []);
-        $this->assertStringContainsString('status.json', (string)$response->getBody());
+        $body = (string)$response->getBody();
+        $this->assertStringContainsString('status.json', $body);
+        $this->assertStringContainsString('"phpVersion":"' . PHP_VERSION . '"', $body);
         $this->assertTrue(200 == $response->getStatusCode());
     }
 

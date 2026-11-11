@@ -90,13 +90,13 @@ class Scope extends BaseController
         return $sourceList;
     }
 
-    protected function readCurrentSource($source)
+    protected function readCurrentSource(string $source)
     {
         $source = \App::$http->readGetResult('/source/' . $source . '/')->getEntity();
         return $source;
     }
 
-    protected function writeUpdatedEntity(array $input, $entityId = null, ?Entity $existingScope = null, $workstation = null)
+    protected function writeUpdatedEntity(array $input, int|string|null $entityId = null, ?Entity $existingScope = null, ?\BO\Zmsentities\Workstation $workstation = null)
     {
         $entity = (new Entity($input))->withCleanedUpFormData();
         if ($workstation && !$workstation->getUseraccount()->hasPermissions(['scope'])) {
@@ -116,7 +116,7 @@ class Scope extends BaseController
         });
     }
 
-    protected function writeUploadedImage(\Psr\Http\Message\RequestInterface $request, $entityId, array $input): void
+    protected function writeUploadedImage(\Psr\Http\Message\RequestInterface $request, string|int $entityId, array $input): void
     {
         if (isset($input['removeImage']) && $input['removeImage']) {
             \App::$http->readDeleteResult('/scope/' . $entityId . '/imagedata/calldisplay/');

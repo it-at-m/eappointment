@@ -73,6 +73,33 @@
         currentView < 4
       "
     >
+      <!-- ZMSKVR-501: last 60s of captcha (Termin) or reservation (Kontakt/Übersicht) -->
+      <div
+        v-if="showTimeoutWarning && !isAppointmentInPast"
+        ref="timeoutBannerSlot"
+        class="timeout-warning-banner-slot"
+        :style="
+          timeoutBannerPinned
+            ? { minHeight: timeoutBannerSlotHeight }
+            : undefined
+        "
+      >
+        <muc-banner
+          variant="header"
+          type="warning"
+          class="timeout-warning-banner"
+          :class="{ 'timeout-warning-banner--pinned': timeoutBannerPinned }"
+          data-test="timeout-warning-banner"
+          :style="timeoutBannerPinStyle"
+          role="status"
+          aria-live="polite"
+        >
+          {{ t("timeoutWarningLabel") }}
+          <strong>{{
+            t("timeoutWarningSeconds", { seconds: remainingTimeoutSeconds })
+          }}</strong>
+        </muc-banner>
+      </div>
       <muc-stepper
         v-if="!isAppointmentInPast"
         ref="stepperRef"
@@ -134,6 +161,11 @@
                   errorStates.errorStateMap.apiErrorCaptchaInvalid.value
                 "
                 :booking-error-key="bookingErrorKey"
+                :mail-limit-reached="
+                  currentView === 1 &&
+                  errorStates.errorStateMap
+                    .apiErrorTooManyAppointmentsWithSameMail.value
+                "
                 @back="decreaseCurrentView"
                 @cancel-reschedule="nextCancelReschedule"
                 @clearBookingError="clearBookingError"
@@ -150,6 +182,10 @@
                   isRebooking ? rebookedAppointment : undefined
                 "
                 :login-failed="loginFailed"
+                :mail-limit-reached="
+                  errorStates.errorStateMap
+                    .apiErrorTooManyAppointmentsWithSameMail.value
+                "
                 :t="t"
                 @back="decreaseCurrentView"
                 @next="nextUpdateAppointment"
@@ -356,8 +392,10 @@
               <div
                 v-if="
                   !confirmAppointmentSuccess &&
-                  !appointmentAlreadyActivated &&
-                  hasConfirmAppointmentError
+                  (hasConfirmAppointmentError || hasCancelAppointmentError) &&
+                  (!appointmentAlreadyActivated ||
+                    currentView >= 4 ||
+                    currentContext === 'cancel')
                 "
                 role="alert"
                 aria-live="assertive"
@@ -425,6 +463,7 @@ import type { ApiErrorTranslation, ErrorStateMap } from "@/utils/errorHandler";
 import type { AppointmentTrackSlotUi } from "@/utils/trackAppointmentEvent";
 
 import {
+  MucBanner,
   MucButton,
   MucCallout,
   MucStepper,
@@ -433,6 +472,7 @@ import {
   ComponentPublicInstance,
   computed,
   nextTick,
+  onBeforeUnmount,
   onMounted,
   provide,
   ref,
@@ -490,6 +530,7 @@ import {
 } from "@/utils/appointmentLoginStorage";
 import { getTokenData } from "@/utils/auth";
 import { toCalloutType } from "@/utils/callout";
+import { captchaTokenExpiryMs } from "@/utils/captchaTokenExpiry";
 import {
   APPOINTMENT_ACTION_TYPE,
   QUERY_PARAM_APPOINTMENT_DISPLAY_NUMBER,
@@ -509,6 +550,7 @@ import {
   hasPreconfirmContextError,
   hasUpdateContextError,
 } from "@/utils/errorHandler";
+import { hostFixedHeaderInsetPx } from "@/utils/hostFixedHeaderInset";
 import {
   applyAppointmentContactToCustomerData,
   hasMissingRequiredContact,
@@ -524,6 +566,7 @@ import {
   trackAppointmentEvent,
   trackAppointmentScreenFromView,
 } from "@/utils/trackAppointmentEvent";
+import { useTimeoutWarning } from "@/utils/useTimeoutWarning";
 
 const props = defineProps<{
   globalState: GlobalState;
@@ -534,7 +577,7 @@ const props = defineProps<{
   confirmAppointmentHash?: string;
   appointmentDetailUrl?: string;
   showLoginOption: boolean;
-  t: (key: string) => string;
+  t: (key: string, values?: Record<string, unknown>) => string;
 }>();
 
 const STEPPER_ITEMS: StepperItem[] = [
@@ -691,6 +734,100 @@ const preselectedLocationId = ref<string | undefined>(props.locationId);
 
 const reservationStartMs = ref<number | null>(null);
 
+const captchaDeadlineMs = computed<number | null>(() =>
+  captchaTokenExpiryMs(captchaToken.value)
+);
+
+const reservationDeadlineMs = computed<number | null>(() => {
+  if (reservationStartMs.value == null) return null;
+  const raw: unknown = (appointment.value as any)?.scope?.reservationDuration;
+  const minutes = typeof raw === "number" ? raw : Number(raw);
+  if (!Number.isFinite(minutes)) return null;
+  return reservationStartMs.value + minutes * 60_000;
+});
+
+const { showTimeoutWarning, remainingSeconds: remainingTimeoutSeconds } =
+  useTimeoutWarning({
+    currentView,
+    captchaDeadlineMs,
+    reservationDeadlineMs,
+  });
+
+const timeoutBannerSlot = ref<HTMLElement | null>(null);
+const timeoutBannerPinned = ref(false);
+const timeoutBannerSlotHeight = ref("0px");
+const timeoutBannerPinStyle = ref<Record<string, string>>({});
+let timeoutBannerFrame = 0;
+
+function syncTimeoutBannerTop() {
+  const slot = timeoutBannerSlot.value;
+  if (!slot) return;
+
+  const inset = hostFixedHeaderInsetPx();
+  const slotRect = slot.getBoundingClientRect();
+  const banner = slot.querySelector<HTMLElement>(
+    "[data-test='timeout-warning-banner']"
+  );
+  const bannerHeight =
+    banner?.getBoundingClientRect().height ?? slotRect.height;
+  const root = slot.getRootNode();
+  const boundary = root instanceof ShadowRoot ? root.host : slot;
+  const boundaryBottom = boundary.getBoundingClientRect().bottom;
+  const pin = slotRect.top < inset && boundaryBottom > inset + bannerHeight;
+
+  if (!pin) {
+    timeoutBannerPinned.value = false;
+    timeoutBannerPinStyle.value = {};
+    return;
+  }
+
+  timeoutBannerSlotHeight.value = `${Math.round(bannerHeight)}px`;
+  timeoutBannerPinned.value = true;
+  timeoutBannerPinStyle.value = {
+    top: `${inset}px`,
+    left: `${Math.round(slotRect.left)}px`,
+    width: `${Math.round(slotRect.width)}px`,
+  };
+}
+
+function onTimeoutBannerViewportChange() {
+  if (timeoutBannerFrame) return;
+  timeoutBannerFrame = window.requestAnimationFrame(() => {
+    timeoutBannerFrame = 0;
+    syncTimeoutBannerTop();
+  });
+}
+
+function bindTimeoutBannerInset() {
+  syncTimeoutBannerTop();
+  window.addEventListener("scroll", onTimeoutBannerViewportChange, {
+    passive: true,
+  });
+  window.addEventListener("resize", onTimeoutBannerViewportChange);
+}
+
+function unbindTimeoutBannerInset() {
+  window.removeEventListener("scroll", onTimeoutBannerViewportChange);
+  window.removeEventListener("resize", onTimeoutBannerViewportChange);
+  if (timeoutBannerFrame) {
+    window.cancelAnimationFrame(timeoutBannerFrame);
+    timeoutBannerFrame = 0;
+  }
+  timeoutBannerPinned.value = false;
+  timeoutBannerPinStyle.value = {};
+}
+
+watch(
+  () => showTimeoutWarning.value && !isAppointmentInPast.value,
+  (visible) => {
+    if (visible) bindTimeoutBannerInset();
+    else unbindTimeoutBannerInset();
+  },
+  { flush: "post" }
+);
+
+onBeforeUnmount(unbindTimeoutBannerInset);
+
 const activationMinutes = computed<number | undefined>(() => {
   const fromAppt = (appointment.value as any)?.scope?.activationDuration;
   const fromProv = (selectedProvider.value as any)?.scope?.activationDuration;
@@ -701,7 +838,7 @@ const activationMinutes = computed<number | undefined>(() => {
 
 const confirmText = computed<string>(() => {
   const minutes = String(activationMinutes.value ?? 30);
-  return (props.t as any)("confirmAppointmentText", {
+  return props.t("confirmAppointmentText", {
     activationMinutes: minutes,
   });
 });
@@ -1001,30 +1138,35 @@ const setRebookData = () => {
     copyRebookedContactOntoAppointment();
     clearContextErrors(errorStateMap.value);
     currentContext.value = "update";
+    isUpdatingAppointment.value = true;
     return updateAppointment(
       props.globalState,
       appointment.value,
       rebookedAppointment.value
-    ).then((data) => {
-      if ((data as AppointmentDTO).processId != undefined) {
-        appointment.value = data as AppointmentDTO;
-        currentView.value = 3;
-      } else {
-        handleErrorApiResponse(
-          data,
-          errorStates.errorStateMap,
-          currentErrorData.value
-        );
-        currentView.value = 2;
-      }
-    });
+    )
+      .then((data) => {
+        if ((data as AppointmentDTO).processId != undefined) {
+          appointment.value = data as AppointmentDTO;
+          currentView.value = 3;
+        } else {
+          handleErrorApiResponse(
+            data,
+            errorStates.errorStateMap,
+            currentErrorData.value
+          );
+          currentView.value = 2;
+        }
+      })
+      .finally(() => {
+        isUpdatingAppointment.value = false;
+      });
   }
 };
 
 const nextReserveAppointment = (
   slotUi: AppointmentTrackSlotUi = "calendar"
 ) => {
-  if (isReservingAppointment.value) {
+  if (isReservingAppointment.value || isUpdatingAppointment.value) {
     return;
   }
 
@@ -1032,7 +1174,7 @@ const nextReserveAppointment = (
   clearAllErrors();
   rebookOrCancelDialog.value = false;
 
-  reserveAppointment(
+  return reserveAppointment(
     props.globalState,
     selectedTimeslot.value,
     Array.from(selectedServiceMap.value.keys()),
@@ -1056,10 +1198,9 @@ const nextReserveAppointment = (
           slot_ui: slotUi,
         });
         if (isRebooking.value) {
-          continueRebookingAfterReserve();
-        } else {
-          increaseCurrentView();
+          return continueRebookingAfterReserve();
         }
+        increaseCurrentView();
       } else {
         handleErrorApiResponse(
           data,
@@ -1138,7 +1279,7 @@ const nextUpdateAppointment = () => {
 };
 
 const nextBookAppointment = () => {
-  if (isBookingAppointment.value) {
+  if (isBookingAppointment.value || isCancelingAppointment.value) {
     return;
   }
 
@@ -1259,12 +1400,78 @@ const nextRescheduleAppointment = () => {
   currentView.value = 1;
 };
 
-const nextCancelReschedule = () => {
-  clearContextErrors(errorStateMap.value);
+const isSameProcess = (
+  left?: AppointmentDTO | null,
+  right?: AppointmentDTO | null
+): boolean =>
+  !!left?.processId &&
+  !!right?.processId &&
+  String(left.processId) === String(right.processId);
+
+const leaveReschedule = () => {
   isRebooking.value = false;
   rebookOrCancelDialog.value = true;
   trackAppointmentEvent({ object: "rebooking", action: "abandoned" });
   currentView.value = 3;
+};
+
+const nextCancelReschedule = async () => {
+  clearContextErrors(errorStateMap.value);
+
+  if (
+    isCancelingAppointment.value ||
+    isReservingAppointment.value ||
+    isUpdatingAppointment.value ||
+    isBookingAppointment.value
+  ) {
+    return;
+  }
+
+  const original = rebookedAppointment.value;
+  const inProgress = appointment.value;
+  if (!original || isSameProcess(original, inProgress)) {
+    leaveReschedule();
+    return;
+  }
+
+  currentContext.value = "cancel";
+  if (!inProgress?.processId || !inProgress.authKey) {
+    handleApiError(
+      "appointmentCanNotBeCanceled",
+      errorStateMap.value,
+      currentErrorData.value
+    );
+    return;
+  }
+
+  isCancelingAppointment.value = true;
+  try {
+    const data = await cancelAppointment(props.globalState, inProgress);
+    const failed =
+      !data ||
+      ((data as { errors?: unknown[] }).errors?.length ?? 0) > 0 ||
+      (data as AppointmentDTO).processId == undefined;
+    if (failed) {
+      handleErrorApiResponse(
+        data,
+        errorStates.errorStateMap,
+        currentErrorData.value
+      );
+      return;
+    }
+    appointment.value = original;
+    selectedTimeslot.value = Number(original.timestamp) || 0;
+    reservationStartMs.value = null;
+    leaveReschedule();
+  } catch {
+    handleApiError(
+      "genericFallback",
+      errorStateMap.value,
+      currentErrorData.value
+    );
+  } finally {
+    isCancelingAppointment.value = false;
+  }
 };
 
 /**
@@ -1977,6 +2184,21 @@ onMounted(() => {
 </script>
 <style lang="scss" scoped>
 @use "@/styles/breakpoints.scss" as *;
+
+.timeout-warning-banner-slot {
+  margin-top: -1.5rem;
+
+  @media (min-width: 1200px) {
+    margin-top: -2rem;
+  }
+}
+
+/* Sticky cannot stick on muenchen.de: .site { overflow: hidden } is the scrollport. */
+.timeout-warning-banner--pinned {
+  position: fixed;
+  z-index: 90;
+  margin-top: 0;
+}
 
 .m-button-group {
   display: flex;

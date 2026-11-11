@@ -68,7 +68,7 @@ class Department extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Que
         );
     }
 
-    public function addConditionScopeId($scopeId): static
+    public function addConditionScopeId(string|int $scopeId): static
     {
         $this->leftJoin(
             new \BO\Zmsbackend\Query\Alias('standort', 'scope_department'),
@@ -80,7 +80,7 @@ class Department extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Que
         return $this;
     }
 
-    public function addConditionDepartmentId($departmentId): static
+    public function addConditionDepartmentId(string|int $departmentId): static
     {
         $this->query->where('department.BehoerdenID', '=', $departmentId);
         return $this;
@@ -94,7 +94,7 @@ class Department extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Que
         return $this;
     }
 
-    public function addConditionOrganisationId($organisationId): static
+    public function addConditionOrganisationId(string|int $organisationId): static
     {
         $this->query->where('department.OrganisationsID', '=', $organisationId);
         return $this;
@@ -104,7 +104,7 @@ class Department extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Que
      * @return (mixed|string)[]
      *
      */
-    public function reverseEntityMapping(\BO\Zmsentities\Department $entity, $parentId = null): array
+    public function reverseEntityMapping(\BO\Zmsentities\Department $entity, int|string|null $parentId = null): array
     {
         $data = array();
         if (null !== $parentId) {
