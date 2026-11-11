@@ -1396,7 +1396,7 @@ public class CitizenApiSteps {
                 response.getStatusCode(),
                 reserveBody.length() > 1250 ? reserveBody.substring(0, 1250) + "..." : reserveBody
             ));
-            if (!expectSuccess || response.getStatusCode() == 200) {
+            if (response.getStatusCode() == 200) {
                 break;
             }
             if (reserveBody.contains("unknownError") && sameSlotAttempts < 2) {
@@ -1437,6 +1437,9 @@ public class CitizenApiSteps {
                         continue;
                     }
                 }
+            }
+            if (!expectSuccess) {
+                break;
             }
             response = reserveResponse;
             CommonApiSteps.setResponse(reserveResponse);
@@ -1891,6 +1894,23 @@ public class CitizenApiSteps {
         postAppointmentUpdate(familyName, email, customTextfield != null ? customTextfield : "", true, false);
     }
 
+    @When("I update the appointment with family name {string}, custom text {string}, custom text 2 {string} and telephone {string}")
+    public void iUpdateTheAppointmentWithFamilyNameCustomTextsAndTelephone(
+            String familyName,
+            String customText,
+            String customText2,
+            String telephone) {
+        String email = familyName.toLowerCase(Locale.ROOT).replaceAll("[^a-z0-9]", "") + "@mailinator.com";
+        postAppointmentUpdate(
+                familyName,
+                email,
+                customText != null ? customText : "",
+                customText2 != null ? customText2 : "",
+                telephone != null ? telephone : "",
+                true,
+                false);
+    }
+
     @When("I update the appointment with family name {string} and customTextfield {string} as the logged-in citizen")
     public void iUpdateTheAppointmentWithFamilyNameAndCustomTextfieldAsTheLoggedInCitizen(
             String familyName, String customTextfield) {
@@ -1940,6 +1960,23 @@ public class CitizenApiSteps {
             String familyName, String customTextfield) {
         String email = familyName.toLowerCase(Locale.ROOT).replaceAll("[^a-z0-9]", "") + "@mailinator.com";
         postAppointmentUpdate(familyName, email, customTextfield != null ? customTextfield : "", false, false);
+    }
+
+    @When("I attempt to update the appointment with family name {string}, custom text {string}, custom text 2 {string} and telephone {string}")
+    public void iAttemptToUpdateTheAppointmentWithFamilyNameCustomTextsAndTelephone(
+            String familyName,
+            String customText,
+            String customText2,
+            String telephone) {
+        String email = familyName.toLowerCase(Locale.ROOT).replaceAll("[^a-z0-9]", "") + "@mailinator.com";
+        postAppointmentUpdate(
+                familyName,
+                email,
+                customText != null ? customText : "",
+                customText2 != null ? customText2 : "",
+                telephone != null ? telephone : "",
+                false,
+                false);
     }
 
     @When("I update the appointment with contact details and customTextfield {string} as the logged-in citizen")
@@ -1992,9 +2029,35 @@ public class CitizenApiSteps {
         postConfirmFromCurrentProcess(false, false, true);
     }
 
+    @Then("the current appointment should differ from the remembered {string} appointment")
+    public void theCurrentAppointmentShouldDifferFromTheRememberedAppointment(String label) {
+        RememberedAppointment remembered = requireRemembered(label);
+        ThinnedProcess current = requireCurrentProcess();
+        Assertions.assertThat(current.getProcessId())
+                .as("current process must be a different reservation than remembered \"%s\"", label)
+                .isNotNull()
+                .isNotEqualTo(remembered.processId);
+        Assertions.assertThat(current.getAuthKey())
+                .as("current process authKey")
+                .isNotBlank();
+    }
+
     @When("I remember the current appointment as {string}")
     public void iRememberTheCurrentAppointmentAs(String label) {
-        ThinnedProcess process = requireCurrentProcess();
+        rememberAppointment(label, requireCurrentProcess());
+    }
+
+    @When("I remember the reserved appointment as {string}")
+    public void iRememberTheReservedAppointmentAs(String label) {
+        if (lastReserveProcess == null
+                || lastReserveProcess.getProcessId() == null
+                || lastReserveProcess.getAuthKey() == null) {
+            throw new IllegalStateException("Reserve an appointment first.");
+        }
+        rememberAppointment(label, lastReserveProcess);
+    }
+
+    private void rememberAppointment(String label, ThinnedProcess process) {
         RememberedAppointment previous = rememberedAppointments.get(label);
         Integer previousProcessId = previous == null ? null : previous.processId;
         rememberedAppointments.put(label, new RememberedAppointment(
@@ -2037,12 +2100,22 @@ public class CitizenApiSteps {
 
     @When("I reserve an appointment with the first available slot using the remembered {string} appointment as source")
     public void iReserveUsingTheRememberedAppointmentAsSource(String label) {
+        useRememberedSource(label);
+        reserveFirstAvailableSlot(true, true);
+    }
+
+    @When("I attempt to reserve an appointment with the first available slot using the remembered {string} appointment as source")
+    public void iAttemptToReserveUsingTheRememberedAppointmentAsSource(String label) {
+        useRememberedSource(label);
+        reserveFirstAvailableSlot(true, false);
+    }
+
+    private void useRememberedSource(String label) {
         RememberedAppointment source = requireRemembered(label);
         ThinnedProcess stub = new ThinnedProcess();
         stub.setProcessId(source.processId);
         stub.setAuthKey(source.authKey);
         lastReserveProcess = stub;
-        reserveFirstAvailableSlot(true, true);
     }
 
     @When("I request my appointments as the logged-in citizen")

@@ -7,7 +7,6 @@
         :label="subService.name"
         :link="getServiceBaseURL() + subService.id"
         :max="maxValue"
-        :disabled="disabled"
       />
     </div>
   </li>
@@ -58,10 +57,6 @@ const maxValue = computed(() => {
     props.minSlotsPerAppointment,
     slotsUsedByOthers
   );
-});
-
-const disabled = computed(() => {
-  return maxValue.value === 0 && count.value === 0;
 });
 </script>
 

@@ -1018,6 +1018,28 @@ public class CitizenViewSteps {
     }
 
     /**
+     * ZMSKVR-1702: update-appointment can reject the mail limit and stay on Kontakt.
+     * Do not wait for Übersicht.
+     */
+    @When("I submit contact details with family name {string} in the citizen view")
+    public void iSubmitContactDetailsWithFamilyName(String familyName) {
+        ScenarioLogManager.getLogger()
+                .info(
+                        "zmscitizenview: submit contact with family name {} (stay on Kontakt if the mail limit is reached)",
+                        familyName);
+        page.fillContactDetailsWithFamilyName(familyName);
+        page.clickWeiter(30);
+    }
+
+    /** ZMSKVR-1702: Weiter, then the usual next-slot / next-day walk when that seat is taken. */
+    @When("I click Weiter after the selected timeslot in the citizen view")
+    public void iClickWeiterAfterTheSelectedTimeslot() {
+        ScenarioLogManager.getLogger()
+                .info("zmscitizenview: Weiter after the selected timeslot, then the next free slot if it is taken");
+        page.assertCalloutAndReserveAfterSlotSelection(page.lastSlotBookingOfficeId());
+    }
+
+    /**
      * ZMSKVR-833: first booking at a scope where custom text is optional — fill Kontakt but stay on
      * the form (no Weiter) so the missing Pflichtfeld is still empty for later rebooking.
      */
@@ -1187,6 +1209,16 @@ public class CitizenViewSteps {
     public void iSyncTheBookingProcessFromCitizenViewLocalStorage() throws Exception {
         ScenarioLogManager.getLogger().info("zmscitizenview: sync booking process from localStorage");
         page.syncBookingProcessFromLocalStorage();
+    }
+
+    /**
+     * ZMSKVR-1702: localStorage sync keeps an earlier process when the page only stored UI state.
+     * Read the appointment currently shown so a failed update still cancels its reservation.
+     */
+    @When("I capture the booking process shown in the citizen view")
+    public void iCaptureTheBookingProcessShownInTheCitizenView() {
+        ScenarioLogManager.getLogger().info("zmscitizenview: capture the booking process shown on the page");
+        page.captureBookingProcessForCleanup();
     }
 
     @When("I open the confirmation deep link in the browser")

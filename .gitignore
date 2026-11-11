@@ -19,6 +19,7 @@ zmsautomation/lib
 
 # =============== Local =================
 /local/
+.cursor/
 coverage/
 *.pptx
 

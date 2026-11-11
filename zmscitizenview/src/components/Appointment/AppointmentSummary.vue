@@ -322,7 +322,11 @@
     class="m-button-group"
   >
     <muc-button
-      :disabled="!validForm || loadingStates.isBookingAppointment.value"
+      :disabled="
+        !validForm ||
+        loadingStates.isBookingAppointment.value ||
+        loadingStates.isCancelingAppointment.value
+      "
       :icon="'check'"
       @click="bookAppointment"
     >
@@ -331,6 +335,10 @@
       </template>
     </muc-button>
     <muc-button
+      :disabled="
+        loadingStates.isBookingAppointment.value ||
+        loadingStates.isCancelingAppointment.value
+      "
       icon="close"
       variant="secondary"
       @click="cancelReschedule"
