@@ -8,6 +8,7 @@ import Board from '../layouts/board'
 import GraphBodyLayout from '../layouts/graphBody'
 import calendarNavigation from '../widgets/calendarNavigation'
 import * as constants from './index.js'
+import { getLaneExtra } from '../widgets/timeBars/opening'
 
 const GraphView = (props) => {
     const { onSelect, timestamp } = props;
@@ -20,6 +21,7 @@ const GraphView = (props) => {
         appointments={constants.renderAppointments(props.availabilityList, props.maxWorkstationCount, onSelect)}
         numberOfAppointments={constants.renderNumberOfAppointments(props.availabilityList, props.maxWorkstationCount)}
         openings={constants.renderOpenings(props.availabilityList, onSelect)}
+        laneExtra={getLaneExtra(constants.getLaneCount(props.availabilityList))}
     />
     return (
         <>

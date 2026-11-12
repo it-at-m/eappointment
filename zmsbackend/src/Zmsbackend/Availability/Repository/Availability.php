@@ -52,13 +52,9 @@ class Availability extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Q
             ),
             'description' => 'availability.comment',
             'startDate' => 'availability.start_date',
-            'startTime' => self::expression(
-                'IF(`availability`.`appointment_start_time`,`availability`.`appointment_start_time`,`availability`.`start_time`)'
-            ),
+            'startTime' => self::expression(static::getStartTimeExpression('`availability`')),
             'endDate' => 'availability.end_date',
-            'endTime' => self::expression(
-                'IF(`availability`.`appointment_start_time`, `availability`.`appointment_end_time`, `availability`.`end_time`)'
-            ),
+            'endTime' => self::expression(static::getEndTimeExpression('`availability`')),
             'lastChange' => 'availability.updated_at',
             'version' => 'availability.version',
             'multipleSlotsAllowed' => 'availability.multiple_slots_allowed',
@@ -283,8 +279,60 @@ class Availability extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Q
 
     public static function getJoinExpression(string $process, string $availability): \BO\Zmsbackend\Query\Builder\Expression
     {
-        // UNIX_TIMESTAMP is relative here, no dependency to TIMEZONE
+        $matchesProcess = static::getProcessMatchCondition($process, $availability);
+        $fallbackMatchesProcess = static::getProcessMatchCondition($process, 'fallback_availability');
         return self::expression("
+            $matchesProcess
+
+            -- overlapping availabilities: use the availability the process is mapped to,
+            -- unmapped processes use the shortest matching availability, then the lower id.
+            -- SQL counterpart of AvailabilityList::getSortedByDuration(), keep both in sync
+            AND $availability.OeffnungszeitID = IFNULL(
+                (
+                    SELECT mapped_slot.availabilityID
+                    FROM slot_process mapped_process
+                        INNER JOIN slot mapped_slot ON mapped_slot.slotID = mapped_process.slotID
+                    WHERE mapped_process.processID = $process.BuergerID
+                    LIMIT 1
+                ),
+                (
+                    SELECT fallback_availability.OeffnungszeitID
+                    FROM " . self::getTablename() . " fallback_availability
+                    WHERE $fallbackMatchesProcess
+                    ORDER BY
+                        TIMEDIFF(
+                            " . static::getEndTimeExpression('fallback_availability') . ",
+                            " . static::getStartTimeExpression('fallback_availability') . "
+                        ),
+                        fallback_availability.OeffnungszeitID
+                    LIMIT 1
+                )
+            )
+            ");
+    }
+
+    /**
+     * Start time as the entity sees it (startTime), appointment times win over opening times
+     */
+    protected static function getStartTimeExpression(string $availability): string
+    {
+        return "IF($availability.`appointment_start_time`, $availability.`appointment_start_time`, "
+            . "$availability.`start_time`)";
+    }
+
+    /**
+     * End time as the entity sees it (endTime), appointment times win over opening times
+     */
+    protected static function getEndTimeExpression(string $availability): string
+    {
+        return "IF($availability.`appointment_start_time`, $availability.`appointment_end_time`, "
+            . "$availability.`end_time`)";
+    }
+
+    protected static function getProcessMatchCondition(string $process, string $availability): string
+    {
+        // UNIX_TIMESTAMP is relative here, no dependency to TIMEZONE
+        return "
             $availability.scope_id = $process.StandortID
             AND $availability.OeffnungszeitID IS NOT NULL
 
@@ -322,7 +370,7 @@ class Availability extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Q
             AND $process.Uhrzeit < $availability.appointment_end_time
             AND $process.Datum >= $availability.start_date
             AND $process.Datum <= $availability.end_date
-            ");
+            ";
     }
 
     #[\Override]

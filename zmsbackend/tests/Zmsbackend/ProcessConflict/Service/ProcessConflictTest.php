@@ -114,8 +114,7 @@ class ProcessConflictTest extends \BO\Zmsbackend\Tests\Service\Base
         $availabilityCopy->endTime = $availabilityCopy->getEndDateTime()->modify('+2 hour')->format('H:i');
         (new \BO\Zmsbackend\Availability\Service\Availability())->writeEntity($availabilityCopy);
         $conflictList = (new \BO\Zmsbackend\Process\Service\Process())->readConflictListByScopeAndTime($scope, $startDate, null, $now, 0);
-        $this->assertEquals(2, $conflictList->count());
-        $this->assertEquals('Zwei Öffnungszeiten überschneiden sich.', $conflictList->getFirst()->getAmendment());
-        $this->assertEquals('conflict', $conflictList->getFirst()->getStatus());
+        // Overlapping availabilities are allowed, their workstations add up
+        $this->assertEquals(0, $conflictList->count());
     }
 }
