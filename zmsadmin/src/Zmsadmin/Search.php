@@ -40,7 +40,7 @@ class Search extends BaseController
             $parameters,
             $scopeIds
         );
-        $logList = $this->readLogSearchResults($workstation, $parameters, $scopeIds);
+        [$logList, $logSearchTotal] = $this->readLogSearchResults($workstation, $parameters, $scopeIds);
 
         return Render::withHtml(
             $response,
@@ -59,6 +59,7 @@ class Search extends BaseController
                 'logList' => $logList ?? [],
                 'searchProcessQuery' => $parameters['queryString'],
                 'processSearchTotal' => $processSearchTotal,
+                'logSearchTotal' => $logSearchTotal,
                 'menuActive' => 'search'
             )
         );
@@ -81,7 +82,7 @@ class Search extends BaseController
         $page = $this->readNumberParameter($validator, 'page', 1);
         $userAction = $this->readNumberParameter($validator, 'user', 0);
         $requestedResultsPerPage = $this->readNumberParameter($validator, 'perPage', self::DEFAULT_RESULTS_PER_PAGE);
-        $resultsPerPage = min($requestedResultsPerPage, self::MAX_RESULTS_PER_PAGE);
+        $resultsPerPage = max(1, min($requestedResultsPerPage, self::MAX_RESULTS_PER_PAGE));
         $hideNavigation = $this->readNumberParameter($validator, 'hideNavigation', 0);
 
         return [
@@ -111,7 +112,7 @@ class Search extends BaseController
 
         $searchParameters = $this->buildProcessSearchParameters($workstation, $parameters, $scopeIds);
         $searchResult = \App::$http->readGetResult('/process/search/', $searchParameters);
-        $processList = $searchResult->getCollection();
+        $processList = $searchResult->getCollection() ?? new ProcessList();
         $searchMeta = $searchResult->getMeta();
         $processSearchTotal = isset($searchMeta->totalCount)
             ? (int) $searchMeta->totalCount
@@ -196,10 +197,10 @@ class Search extends BaseController
         return $searchParameters;
     }
 
-    private function readLogSearchResults(\BO\Zmsentities\Workstation $workstation, array $parameters, array $scopeIds): ?LogList
+    private function readLogSearchResults(\BO\Zmsentities\Workstation $workstation, array $parameters, array $scopeIds): array
     {
         if (!$this->shouldRunLogSearch($workstation, $parameters)) {
-            return null;
+            return [null, 0];
         }
 
         $logParameters = [
@@ -215,15 +216,20 @@ class Search extends BaseController
             $logParameters['scopeIds'] = implode(',', $scopeIds);
         }
 
-        $logList = \App::$http
-            ->readGetResult("/log/process/", $logParameters)
-            ->getCollection();
+        $logResult = \App::$http->readGetResult("/log/process/", $logParameters);
+        $logList = $logResult->getCollection();
+        $logMeta = $logResult->getMeta();
 
-        return $this->filterLogListForUserRights(
+        $filteredLogList = $this->filterLogListForUserRights(
             $logList,
             $scopeIds,
             $workstation->getUseraccount()->isSuperUser()
         );
+        $logSearchTotal = isset($logMeta->totalCount)
+            ? (int) $logMeta->totalCount
+            : $filteredLogList->count();
+
+        return [$filteredLogList, $logSearchTotal];
     }
 
     private function filterProcessListForUserRights(?ProcessList $processList, array $scopeIds): ProcessList

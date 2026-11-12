@@ -45,19 +45,34 @@ class ProcessLog extends \BO\Zmsbackend\Api\BaseController
             $resolvedScopeIds = array_values(array_filter(array_map('intval', explode(',', $scopeIds))));
         }
 
-        $logList = (new Query())->readByProcessData(
-            urldecode((string) $searchQuery),
+        $query = new Query();
+        $dateTime = $date ? new DateTime($date) : null;
+        $generalSearch = urldecode((string) $searchQuery);
+
+        $logList = $query->readByProcessData(
+            $generalSearch,
             $service,
             $provider,
-            $date ? new DateTime($date) : null,
+            $dateTime,
             $userAction,
             $page,
             $resultsPerPage,
             $resolvedScopeIds
         );
+        $totalCount = $query->countByProcessData(
+            $generalSearch,
+            $service,
+            $provider,
+            $dateTime,
+            $userAction,
+            $resolvedScopeIds
+        );
 
         $message = \BO\Zmsbackend\Api\Response\Message::create($request);
         $message->data = $logList;
+        $message->meta->totalCount = $totalCount;
+        $message->meta->page = $page;
+        $message->meta->limit = $resultsPerPage;
 
         $response = Render::withLastModified($response, time(), '0');
         $response = Render::withJson($response, $message, 200);

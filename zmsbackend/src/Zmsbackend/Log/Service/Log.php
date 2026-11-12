@@ -209,23 +209,67 @@ class Log extends \BO\Zmsbackend\Base
         int $perPage = 100,
         ?array $scopeIds = null
     ) {
-        $fieldValues = [];
-        if ($provider) {
-            $fieldValues['scope_name'] = $provider;
-        }
-
-        if ($service) {
-            $fieldValues['services'] = $service;
-        }
-
         return $this->getBySearchParams(
-            $fieldValues,
+            array_filter(['scope_name' => $provider, 'services' => $service]),
             $generalSearch,
             $userAction,
             $date,
             $perPage,
             ($page - 1) * $perPage,
             $scopeIds
+        );
+    }
+
+    public function countByProcessData(
+        ?string $generalSearch,
+        ?string $service,
+        ?string $provider,
+        DateTime|null $date,
+        int $userAction,
+        ?array $scopeIds = null
+    ): int {
+        return $this->countBySearchParams(
+            array_filter(['scope_name' => $provider, 'services' => $service]),
+            $generalSearch,
+            $userAction,
+            $date,
+            $scopeIds
+        );
+    }
+
+    public function countBySearchParams(
+        array $fieldValues,
+        ?string $generalSearch,
+        int $userAction,
+        ?DateTime $date,
+        ?array $scopeIds = null
+    ): int {
+        $params = [];
+        $conditions = $this->buildSearchConditions($fieldValues, $generalSearch, $userAction, $date, $scopeIds, $params);
+
+        return (int) $this->fetchValue(
+            'SELECT COUNT(*) FROM log WHERE ' . implode(' AND ', $conditions),
+            $params
+        );
+    }
+
+    private function buildSearchConditions(
+        array $fieldValues,
+        ?string $generalSearch,
+        int $userAction,
+        ?DateTime $date,
+        ?array $scopeIds,
+        array &$params
+    ): array {
+        $params = ['logType' => self::PROCESS];
+
+        return array_merge(
+            ['type = :logType'],
+            $this->buildFieldValueConditions($fieldValues, $params),
+            $this->buildGeneralSearchConditionList($generalSearch, $params),
+            $this->buildScopeIdConditions($scopeIds, $params),
+            $this->buildDateConditions($date, $params),
+            $this->buildUserActionConditions($userAction)
         );
     }
 
@@ -238,20 +282,10 @@ class Log extends \BO\Zmsbackend\Base
         int $offset,
         ?array $scopeIds = null
     ): LogList {
-        $params = ['logType' => self::PROCESS];
-        $conditions = array_merge(
-            ['type = :logType'],
-            $this->buildFieldValueConditions($fieldValues, $params),
-            $this->buildGeneralSearchConditionList($generalSearch, $params),
-            $this->buildScopeIdConditions($scopeIds, $params),
-            $this->buildDateConditions($date, $params),
-            $this->buildUserActionConditions($userAction)
-        );
+        $params = [];
+        $conditions = $this->buildSearchConditions($fieldValues, $generalSearch, $userAction, $date, $scopeIds, $params);
 
-        $sql = 'SELECT * FROM log';
-        if (!empty($conditions)) {
-            $sql .= ' WHERE ' . implode(' AND ', $conditions);
-        }
+        $sql = 'SELECT * FROM log WHERE ' . implode(' AND ', $conditions);
 
         $sql .= ' ORDER BY ts DESC LIMIT ' . $perPage . ' OFFSET ' . $offset;
 

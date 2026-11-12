@@ -176,3 +176,18 @@
 .statistic-additional-department-requests.is-expanded .statistic-additional-department-requests__panel {
     display: block;
 }
+
+.searchresults .pagination li {
+    > * {
+        border-radius: 3px;
+    }
+
+    .active {
+        background-color: $color-blue-button;
+        border-color: $color-blue-button;
+    }
+
+    .disabled {
+        color: #999;
+    }
+}

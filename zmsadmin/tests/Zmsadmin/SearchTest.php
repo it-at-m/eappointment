@@ -2,6 +2,8 @@
 
 namespace BO\Zmsadmin\Tests;
 
+use PHPUnit\Framework\Attributes\DataProvider;
+
 class SearchTest extends Base
 {
     protected $arguments = [];
@@ -343,6 +345,37 @@ class SearchTest extends Base
         $this->assertEquals(200, $response->getStatusCode());
     }
 
+    public function testSearchWithoutResultsShowsZeroCount()
+    {
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture("GET_workstation_basic.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/process/search/',
+                    'parameters' => [
+                        'resolveReferences' => 1,
+                        'query' => 'Niemand',
+                        'page' => 1,
+                        'limit' => 100,
+                        'scopeIds' => '380,1,141',
+                    ],
+                    'response' => $this->readFixture("GET_processList_empty.json")
+                ],
+            ]
+        );
+        $response = $this->render($this->arguments, ['query' => 'Niemand'], []);
+        $body = (string) $response->getBody();
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertStringNotContainsString('Treffern angezeigt', $body);
+        $this->assertStringContainsString('data-processList-count="0"', $body);
+    }
+
     public function testRendersActiveAndHistoryAppointmentStatus()
     {
         $this->setApiCalls(
@@ -492,5 +525,112 @@ class SearchTest extends Base
             'id="search-user-yes"',
             $body
         );
+    }
+
+    public static function paginationProvider(): array
+    {
+        return [
+            'first page' => [1, [1, 2, 12]],
+            'second page' => [2, [1, 2, 3, 12]],
+            'middle page' => [6, [1, 5, 6, 7, 12]],
+            'gap of one page shows the page' => [4, [1, 2, 3, 4, 5, 12]],
+            'last page' => [12, [1, 11, 12]],
+            'very large page number' => [100000000, [1, 99999999, 100000000]],
+        ];
+    }
+
+    #[DataProvider('paginationProvider')]
+    public function testRendersPagination(int $page, array $expectedPages)
+    {
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture("GET_workstation_basic.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/process/search/',
+                    'parameters' => [
+                        'resolveReferences' => 1,
+                        'query' => 'Muster',
+                        'page' => $page,
+                        'limit' => 10,
+                        'scopeIds' => '380,1,141',
+                    ],
+                    'response' => $this->readFixture("GET_searchresult_paged.json")
+                ],
+            ]
+        );
+        $response = $this->render($this->arguments, ['query' => 'Muster', 'page' => $page, 'perPage' => 10], []);
+        $body = (string) $response->getBody();
+
+        $pagination = substr($body, strpos($body, '<div class="pagination">'));
+        preg_match_all('/<(?:a|span)[^>]*>(\d+)</', $pagination, $matches);
+        $this->assertEquals($expectedPages, array_map('intval', $matches[1]));
+        $this->assertStringContainsString('aria-current="page">' . $page . '<', $pagination);
+        $this->assertStringContainsString('&hellip;', $pagination);
+        $this->assertEquals($page > 1, str_contains($body, 'aria-label="Vorherige Seite"'));
+        $this->assertEquals($page < 12, str_contains($body, 'aria-label="Nächste Seite"'));
+    }
+
+    public function testHidesPaginationForSinglePage()
+    {
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture("GET_workstation_basic.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/process/search/',
+                    'parameters' => [
+                        'resolveReferences' => 1,
+                        'query' => 'status-test',
+                        'page' => 1,
+                        'limit' => 100,
+                        'scopeIds' => '380,1,141',
+                    ],
+                    'response' => $this->readFixture("GET_searchresult_active_history.json")
+                ],
+            ]
+        );
+        $response = $this->render($this->arguments, ['query' => 'status-test'], []);
+        $this->assertStringNotContainsString('class="pagination"', (string) $response->getBody());
+    }
+
+    public function testClampsResultsPerPageToOne()
+    {
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => ['resolveReferences' => 2],
+                    'response' => $this->readFixture("GET_workstation_basic.json")
+                ],
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/process/search/',
+                    'parameters' => [
+                        'resolveReferences' => 1,
+                        'query' => 'status-test',
+                        'page' => 1,
+                        'limit' => 1,
+                        'scopeIds' => '380,1,141',
+                    ],
+                    'response' => $this->readFixture("GET_searchresult_active_history.json")
+                ],
+            ]
+        );
+
+        $response = $this->render($this->arguments, ['query' => 'status-test', 'perPage' => 0], []);
+
+        $this->assertEquals(200, $response->getStatusCode());
     }
 }
