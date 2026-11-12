@@ -90,3 +90,88 @@
     }
   }
 }
+
+.scope-combobox {
+  position: relative;
+  width: 100%;
+}
+
+.scope-combobox__native {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  border: 0 !important;
+}
+
+.scope-combobox__toggle {
+  text-align: left;
+  cursor: pointer;
+  background-image: linear-gradient(45deg, transparent 50%, #444 50%), linear-gradient(135deg, #444 50%, transparent 50%);
+  background-position: calc(100% - 16px) 50%, calc(100% - 11px) 50%;
+  background-size: 5px 5px, 5px 5px;
+  background-repeat: no-repeat;
+  padding-right: 1.75rem;
+}
+
+.scope-combobox__panel {
+  position: absolute;
+  z-index: 40;
+  left: 0;
+  right: 0;
+  margin-top: 2px;
+  background: #fff;
+  border: 1px solid #c5c5c5;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+}
+
+.scope-combobox__search {
+  display: block;
+  width: calc(100% - 16px);
+  margin: 8px;
+}
+
+.scope-combobox__list {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  max-height: 18rem;
+  margin: 0;
+  padding: 0 0 8px;
+  overflow: auto;
+}
+
+.scope-combobox__group,
+.scope-combobox__empty {
+  grid-column: 1 / -1;
+  padding: 6px 12px 2px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.scope-combobox__empty {
+  font-weight: 400;
+  color: #555;
+}
+
+.scope-combobox__option {
+  display: grid;
+  grid-template-columns: subgrid;
+  grid-column: 1 / -1;
+  column-gap: 1.25rem;
+  width: 100%;
+  margin: 0;
+  padding: 6px 12px;
+  border: 0;
+  background: transparent;
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
+}
+
+.scope-combobox__option:hover,
+.scope-combobox__option[aria-selected="true"] {
+  background: #e7f1fa;
+}

@@ -1,5 +1,6 @@
 {% from 'element/helper/form.twig' import formgroup, providername %}
 
+{% set permissions = workstation.useraccount.permissions|default({}) %}
 {% set scopeOptions = [] %}
 {% set pickerScopeIds = [] %}
 {% for department in workstation.useraccount.departments %}
@@ -22,7 +23,7 @@
 {% endfor %}
 
 <div data-report-filter{% if allowFutureDates|default(false) %} data-allow-future-dates="1"{% endif %}{% if scopeDateBounds is defined and scopeDateBounds %} data-scope-date-bounds="{{ scopeDateBounds|json_encode|e('html_attr') }}"{% endif %}{% if defaultScopeId is defined and defaultScopeId %} data-default-scope-id="{{ defaultScopeId }}"{% endif %}{% if pickerScopeIds %} data-picker-scope-ids="{{ pickerScopeIds|json_encode|e('html_attr') }}"{% endif %}>
-    <fieldset class="scope-picker">
+    <fieldset class="scope-picker"{% if permissions.superuser %} data-scope-menu{% endif %}>
         <div class="header">
             <label for="scope-select">Standortauswahl</label>
             <button type="button"
@@ -38,9 +39,12 @@
             {
               "label": false,
               "errors": advancedData.scope.messages,
-              "description": allowFutureDates|default(false)
+              "description": permissions.superuser
+                ? "Öffnen Sie die Liste und suchen Sie nach Name oder Id. Ein Klick wählt einen Standort aus oder ab."
+                  ~ (allowFutureDates|default(false) ? " Der wählbare Datumsbereich passt sich den ausgewählten Standorten an." : "")
+                : (allowFutureDates|default(false)
                 ? "Halten Sie <strong>Strg</strong> gedrückt für Mehrfachauswahl. Der wählbare Datumsbereich passt sich den ausgewählten Standorten an."
-                : "Halten Sie <strong>Strg</strong> gedrückt für Mehrfachauswahl."
+                : "Halten Sie <strong>Strg</strong> gedrückt für Mehrfachauswahl.")
             },
             [{
               "type": "select",

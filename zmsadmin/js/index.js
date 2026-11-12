@@ -37,6 +37,7 @@ import focusFirstErrorElement from './element/form/focusFirstErrorElement'
 import maxChars from './element/form/maxChars'
 import validateClusterScopes from './element/form/validateClusterScopes'
 import scopeMultiselect from './element/form/scopeMultiselect'
+import { mountScopeMenu } from './element/form/scopeMenu'
 import appointmentsPerMailLimit from './element/form/appointmentsPerMailLimit'
 import DialogHandler from './lib/dialogHandler'
 
@@ -124,6 +125,12 @@ $('.roles-list').each(function () {
 
 $('[data-scope-multiselect]').each(function () {
     scopeMultiselect(this);
+})
+
+$('select[data-scope-menu]').each(function () {
+    if (!this.multiple) {
+        mountScopeMenu(this, { multiple: false })
+    }
 })
 
 $('form').each(function () {
