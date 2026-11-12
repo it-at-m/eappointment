@@ -146,17 +146,31 @@
         toggle.textContent = selectedLabel();
     };
 
+    var matchingEntries = function (query) {
+        var matched = entries.filter(function (entry) {
+            if (!query) {
+                return true;
+            }
+            return entry.value.toLowerCase().indexOf(query) !== -1
+                || entry.name.toLowerCase().indexOf(query) !== -1;
+        });
+        // A number search matches 43 and also 4314. The exact id belongs first.
+        if (query && /^[0-9]+$/.test(query)) {
+            matched.sort(function (a, b) {
+                var aExact = a.value === query ? 0 : 1;
+                var bExact = b.value === query ? 0 : 1;
+                return aExact - bExact;
+            });
+        }
+        return matched;
+    };
+
     var render = function () {
         var query = search.value.trim().toLowerCase();
         list.textContent = '';
         var lastGroup = null;
         var visible = 0;
-        entries.forEach(function (entry) {
-            var id = entry.value.toLowerCase();
-            var name = entry.name.toLowerCase();
-            if (query && id.indexOf(query) === -1 && name.indexOf(query) === -1) {
-                return;
-            }
+        matchingEntries(query).forEach(function (entry) {
             if (entry.group !== lastGroup) {
                 var heading = document.createElement('div');
                 heading.className = 'scope-combobox__group';
@@ -224,14 +238,9 @@
     search.addEventListener('keydown', function (event) {
         if (event.key === 'Enter') {
             event.preventDefault();
-            var match = entries.filter(function (entry) {
-                var query = search.value.trim().toLowerCase();
-                if (!query) {
-                    return false;
-                }
-                return entry.value.toLowerCase().indexOf(query) !== -1 || entry.name.toLowerCase().indexOf(query) !== -1;
-            });
-            if (match.length === 1) {
+            var query = search.value.trim().toLowerCase();
+            var match = query ? matchingEntries(query) : [];
+            if (match.length === 1 || (match.length > 1 && match[0].value === query)) {
                 choose(match[0].value);
             }
         }
