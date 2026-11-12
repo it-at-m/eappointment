@@ -2,6 +2,11 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import * as Inputs from '../../lib/inputs'
 
+export const isSuperuser = (permissions) => {
+    const value = permissions ? permissions.superuser : false
+    return value === true || value === 1 || value === '1'
+}
+
 class SourceReadView extends Component {
     render() {
         const hasProvider = () => {
@@ -31,6 +36,22 @@ class SourceReadView extends Component {
                             value={(hasProvider()) ? this.props.scopestate.provider.id : ''}
                         />
                     </>
+                )}
+                {isSuperuser(permissions) && (
+                    <div>
+                        <Inputs.FormGroup className="superuser-only-field">
+                            <Inputs.Label
+                                value="Office Id"
+                                attributes={{ "htmlFor": "scopeOfficeId" }}
+                            />
+                            <Inputs.Controls>
+                                <Inputs.Text
+                                    attributes={{ "id": "scopeOfficeId", "readOnly": true }}
+                                    value={hasProvider() ? this.props.scopestate.provider.id : this.props.labels.notDeclared}
+                                />
+                            </Inputs.Controls>
+                        </Inputs.FormGroup>
+                    </div>
                 )}
                 <div>
                     <Inputs.FormGroup>
