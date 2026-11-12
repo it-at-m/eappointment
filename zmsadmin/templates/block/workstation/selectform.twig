@@ -122,6 +122,9 @@
                     {% endif %}
                 </div>
             </form>
+            {% if permissions.superuser %}
+                {% include "block/workstation/scopeSearch.twig" %}
+            {% endif %}
         </div>
 
     {% endblock %}

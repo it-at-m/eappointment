@@ -141,6 +141,26 @@ class ProcessStatusFree extends Process
         ?\DateTimeInterface $appointmentTime = null
     ): Collection {
         list($calendar, $dayquery, $days) = $this->prepareCalendarAndDays($calendar, $now, $slotsRequired);
+        $processList = $this->readPreparedFreeProcesses(
+            $calendar,
+            $days,
+            $slotType,
+            $slotsRequired,
+            $groupData,
+            $appointmentTime
+        );
+        unset($dayquery);
+        return $processList;
+    }
+
+    private function readPreparedFreeProcesses(
+        \BO\Zmsentities\Calendar $calendar,
+        array $days,
+        string $slotType,
+        int|null $slotsRequired,
+        bool $groupData,
+        ?\DateTimeInterface $appointmentTime
+    ): Collection {
         $processData = $this->getProcessDataHandle(
             $days,
             $slotType,
@@ -169,7 +189,6 @@ class ProcessStatusFree extends Process
             $processList->addEntity($process);
         }
         $processData->closeCursor();
-        unset($dayquery);
         return $processList;
     }
 
@@ -444,28 +463,52 @@ class ProcessStatusFree extends Process
         $process = clone $process;
         $process->status = 'reserved';
         $appointment = $process->getAppointments()->getFirst();
-        // The availability chosen under the slot locks is the one the reservation is mapped to
-        $reservation = (new \BO\Zmsbackend\Slot\Service\Slot())->readReservationByAppointment(
-            $appointment,
-            $slotsRequired,
-            (null !== $userAccount),
-            true,
-            $slotType
-        );
-        $slotList = $reservation['slotList'];
-        $availabilityId = (int) $reservation['availability']->getId() ?: null;
-        $freeProcessList = $this->readFreeProcesses(
+        $appointmentTime = $appointment->toDateTime();
+        // Calendar lookup and the first free-slot check stay outside the slot lock.
+        $this->getWriter();
+        [$calendar, $dayquery, $days] = $this->prepareCalendarAndDays(
             $process->toCalendar(),
             $now,
+            $slotsRequired
+        );
+        $freeProcessList = $this->readPreparedFreeProcesses(
+            $calendar,
+            $days,
             $slotType,
             $slotsRequired,
             false,
-            $appointment->toDateTime()
+            $appointmentTime
         );
+        if (!$freeProcessList->getAppointmentList()->hasAppointment($appointment)) {
+            throw new \BO\Zmsbackend\Process\Exception\ProcessReserveFailed();
+        }
 
+        try {
+            // The availability chosen under the slot locks is the one the reservation is mapped to.
+            $reservation = (new \BO\Zmsbackend\Slot\Service\Slot())->readReservationByAppointment(
+                $appointment,
+                $slotsRequired,
+                (null !== $userAccount),
+                true,
+                $slotType
+            );
+        } catch (\BO\Zmsbackend\Exception\Pdo\LockTimeout) {
+            throw new \BO\Zmsbackend\Process\Exception\ProcessReserveFailed();
+        }
+        $slotList = $reservation['slotList'];
+        $availabilityId = (int) $reservation['availability']->getId() ?: null;
+        $freeProcessList = $this->readPreparedFreeProcesses(
+            $calendar,
+            $days,
+            $slotType,
+            $slotsRequired,
+            false,
+            $appointmentTime
+        );
         if (!$freeProcessList->getAppointmentList()->hasAppointment($appointment) || ! $slotList) {
             throw new \BO\Zmsbackend\Process\Exception\ProcessReserveFailed();
         }
+        unset($dayquery);
 
         foreach ($slotList as $slot) {
             if ($process->id > 99999) {
