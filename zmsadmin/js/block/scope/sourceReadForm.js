@@ -37,22 +37,6 @@ class SourceReadView extends Component {
                         />
                     </>
                 )}
-                {isSuperuser(permissions) && (
-                    <div>
-                        <Inputs.FormGroup className="superuser-only-field">
-                            <Inputs.Label
-                                value="Office Id"
-                                attributes={{ "htmlFor": "scopeOfficeId" }}
-                            />
-                            <Inputs.Controls>
-                                <Inputs.Text
-                                    attributes={{ "id": "scopeOfficeId", "readOnly": true }}
-                                    value={hasProvider() ? this.props.scopestate.provider.id : this.props.labels.notDeclared}
-                                />
-                            </Inputs.Controls>
-                        </Inputs.FormGroup>
-                    </div>
-                )}
                 <div>
                     <Inputs.FormGroup>
                         <Inputs.Label
