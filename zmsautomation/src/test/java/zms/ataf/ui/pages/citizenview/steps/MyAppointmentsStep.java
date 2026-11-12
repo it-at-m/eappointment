@@ -833,7 +833,13 @@ public final class MyAppointmentsStep {
                         .warn(
                                 "zmscitizenview: Meine Termine has no Neuer Termin (attempt {}/5)",
                                 attempt);
-                reloadMyAppointments();
+                // A reload while Mein Bereich is waiting for authorization-event drops the
+                // session and leaves a blank overview. Replay the event instead.
+                if (shadow.shadowDomContainsText(loadError)) {
+                    reloadMyAppointments();
+                } else {
+                    requestMyAppointmentsAuthReplay();
+                }
             }
         }
         Assert.assertTrue(
@@ -902,8 +908,19 @@ public final class MyAppointmentsStep {
         } catch (Exception e) {
             ScenarioLogManager.getLogger().warn("zmscitizenview: Meine Termine re-login failed", e);
         }
-        if (!browserIsOnMyAppointments() || !myAppointmentsFinishedLoading()) {
+        if (!browserIsOnMyAppointments()) {
             reloadMyAppointments();
+            return;
+        }
+        long settle = System.currentTimeMillis() + 20_000L;
+        while (System.currentTimeMillis() < settle && !myAppointmentsFinishedLoading()) {
+            requestMyAppointmentsAuthReplay();
+            try {
+                Thread.sleep(250L);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                return;
+            }
         }
     }
     private String myAppointmentsOverviewUrl() {
@@ -1249,7 +1266,20 @@ public final class MyAppointmentsStep {
     private String waitForTeaserText(String serviceName) {
         long deadline = System.currentTimeMillis() + Math.max(30, defaultWaitSeconds) * 1000L;
         String last = "";
+        int relogins = 0;
         while (System.currentTimeMillis() < deadline) {
+            if (myAppointmentsShowsLoggedOut() && relogins < 2) {
+                relogins++;
+                ScenarioLogManager.getLogger()
+                        .warn(
+                                "zmscitizenview: Meine Termine logged out while waiting for \"{}\"; logging in again",
+                                serviceName);
+                reloginForMyAppointments();
+                continue;
+            }
+            if (myAppointmentsAwaitingAuthOrSkeleton()) {
+                requestMyAppointmentsAuthReplay();
+            }
             last = teaserText(serviceName);
             if (last.contains(serviceName) && last.contains("Terminnummer")) {
                 return last;
@@ -1261,7 +1291,13 @@ public final class MyAppointmentsStep {
                 break;
             }
         }
-        Assert.fail("Meine Termine teaser for \"" + serviceName + "\" did not appear. Last text: " + last);
+        Assert.fail(
+                "Meine Termine teaser for \""
+                        + serviceName
+                        + "\" did not appear. url="
+                        + DriverUtil.getDriver().getCurrentUrl()
+                        + " last text: "
+                        + last);
         return last;
     }
     private String teaserText(String serviceName) {
