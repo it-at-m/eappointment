@@ -1,0 +1,257 @@
+<style>
+    .scope-combobox { position: relative; }
+    .scope-combobox__native {
+        position: absolute !important;
+        width: 1px !important;
+        height: 1px !important;
+        padding: 0 !important;
+        margin: -1px !important;
+        overflow: hidden !important;
+        clip: rect(0, 0, 0, 0) !important;
+        border: 0 !important;
+    }
+    .scope-combobox__toggle {
+        text-align: left;
+        cursor: pointer;
+        background-image: linear-gradient(45deg, transparent 50%, #444 50%), linear-gradient(135deg, #444 50%, transparent 50%);
+        background-position: calc(100% - 16px) 50%, calc(100% - 11px) 50%;
+        background-size: 5px 5px, 5px 5px;
+        background-repeat: no-repeat;
+        padding-right: 1.75rem;
+    }
+    .scope-combobox__panel {
+        position: absolute;
+        z-index: 40;
+        left: 0;
+        right: 0;
+        margin-top: 2px;
+        background: #fff;
+        border: 1px solid #c5c5c5;
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+    }
+    .scope-combobox__search {
+        display: block;
+        width: calc(100% - 16px);
+        margin: 8px;
+    }
+    .scope-combobox__list {
+        display: grid;
+        grid-template-columns: max-content minmax(0, 1fr);
+        max-height: 18rem;
+        margin: 0;
+        padding: 0 0 8px;
+        overflow: auto;
+    }
+    .scope-combobox__group,
+    .scope-combobox__empty {
+        grid-column: 1 / -1;
+        padding: 6px 12px 2px;
+        font-size: 12px;
+        font-weight: 700;
+    }
+    .scope-combobox__empty { font-weight: 400; color: #555; }
+    .scope-combobox__option {
+        display: grid;
+        grid-template-columns: subgrid;
+        grid-column: 1 / -1;
+        column-gap: 1.25rem;
+        width: 100%;
+        margin: 0;
+        padding: 6px 12px;
+        border: 0;
+        background: transparent;
+        text-align: left;
+        cursor: pointer;
+    }
+    .scope-combobox__option:hover,
+    .scope-combobox__option[aria-selected="true"] { background: #e7f1fa; }
+</style>
+<script>
+(function () {
+    var select = document.querySelector('select[name="scope"]');
+    if (!select || select.closest('.scope-combobox')) {
+        return;
+    }
+
+    var placeholder = '-- bitte auswählen --';
+    var entries = [];
+    Array.prototype.forEach.call(select.children, function (node) {
+        if (node.tagName !== 'OPTGROUP') {
+            if (!node.value) {
+                placeholder = (node.textContent || placeholder).trim();
+            }
+            return;
+        }
+        Array.prototype.forEach.call(node.children, function (option) {
+            if (!option.value) {
+                return;
+            }
+            entries.push({
+                value: String(option.value),
+                name: (option.textContent || '').trim(),
+                group: node.getAttribute('label') || ''
+            });
+        });
+    });
+
+    var root = document.createElement('div');
+    root.className = 'scope-combobox';
+    select.parentNode.insertBefore(root, select);
+    root.appendChild(select);
+    select.classList.add('scope-combobox__native');
+    select.tabIndex = -1;
+
+    var toggle = document.createElement('button');
+    toggle.type = 'button';
+    toggle.className = 'form-control scope-combobox__toggle';
+    toggle.setAttribute('aria-haspopup', 'listbox');
+    toggle.setAttribute('aria-expanded', 'false');
+    var group = select.closest('.form-group');
+    var label = group ? group.querySelector('label') : null;
+    if (label) {
+        if (!label.id) {
+            label.id = 'scope-combobox-label';
+        }
+        toggle.setAttribute('aria-labelledby', label.id);
+    }
+
+    var panel = document.createElement('div');
+    panel.className = 'scope-combobox__panel';
+    panel.hidden = true;
+
+    var search = document.createElement('input');
+    search.type = 'search';
+    search.className = 'form-control scope-combobox__search';
+    search.placeholder = 'Name oder Id';
+    search.autocomplete = 'off';
+    search.setAttribute('aria-label', 'Standort suchen');
+
+    var list = document.createElement('div');
+    list.className = 'scope-combobox__list';
+    list.setAttribute('role', 'listbox');
+
+    panel.appendChild(search);
+    panel.appendChild(list);
+    root.appendChild(toggle);
+    root.appendChild(panel);
+
+    var selectedLabel = function () {
+        var current = entries.filter(function (entry) {
+            return entry.value === String(select.value || '');
+        })[0];
+        return current ? '(Id: ' + current.value + ') ' + current.name : placeholder;
+    };
+
+    var paintToggle = function () {
+        toggle.textContent = selectedLabel();
+    };
+
+    var render = function () {
+        var query = search.value.trim().toLowerCase();
+        list.textContent = '';
+        var lastGroup = null;
+        var visible = 0;
+        entries.forEach(function (entry) {
+            var id = entry.value.toLowerCase();
+            var name = entry.name.toLowerCase();
+            if (query && id.indexOf(query) === -1 && name.indexOf(query) === -1) {
+                return;
+            }
+            if (entry.group !== lastGroup) {
+                var heading = document.createElement('div');
+                heading.className = 'scope-combobox__group';
+                heading.textContent = entry.group;
+                list.appendChild(heading);
+                lastGroup = entry.group;
+            }
+            var option = document.createElement('button');
+            option.type = 'button';
+            option.className = 'scope-combobox__option';
+            option.setAttribute('role', 'option');
+            option.setAttribute('aria-selected', entry.value === String(select.value || '') ? 'true' : 'false');
+            var idCell = document.createElement('span');
+            idCell.textContent = '(Id: ' + entry.value + ')';
+            var nameCell = document.createElement('span');
+            nameCell.textContent = entry.name;
+            option.appendChild(idCell);
+            option.appendChild(nameCell);
+            option.addEventListener('click', function () {
+                choose(entry.value);
+            });
+            list.appendChild(option);
+            visible += 1;
+        });
+        if (!visible) {
+            var empty = document.createElement('div');
+            empty.className = 'scope-combobox__empty';
+            empty.textContent = 'Kein Standort gefunden';
+            list.appendChild(empty);
+        }
+    };
+
+    var open = function () {
+        panel.hidden = false;
+        toggle.setAttribute('aria-expanded', 'true');
+        render();
+        search.focus();
+    };
+
+    var close = function () {
+        panel.hidden = true;
+        toggle.setAttribute('aria-expanded', 'false');
+        search.value = '';
+    };
+
+    var choose = function (value) {
+        var changed = String(select.value || '') !== String(value);
+        select.value = value;
+        paintToggle();
+        close();
+        if (changed) {
+            select.dispatchEvent(new Event('change', { bubbles: true }));
+        }
+        toggle.focus();
+    };
+
+    toggle.addEventListener('click', function () {
+        if (panel.hidden) {
+            open();
+        } else {
+            close();
+        }
+    });
+    search.addEventListener('input', render);
+    search.addEventListener('keydown', function (event) {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            var match = entries.filter(function (entry) {
+                var query = search.value.trim().toLowerCase();
+                if (!query) {
+                    return false;
+                }
+                return entry.value.toLowerCase().indexOf(query) !== -1 || entry.name.toLowerCase().indexOf(query) !== -1;
+            });
+            if (match.length === 1) {
+                choose(match[0].value);
+            }
+        }
+        if (event.key === 'Escape') {
+            event.preventDefault();
+            close();
+            toggle.focus();
+        }
+    });
+    document.addEventListener('click', function (event) {
+        if (!root.contains(event.target)) {
+            close();
+        }
+    });
+    document.addEventListener('keydown', function (event) {
+        if (event.key === 'Escape' && !panel.hidden) {
+            close();
+        }
+    });
+
+    paintToggle();
+})();
+</script>
