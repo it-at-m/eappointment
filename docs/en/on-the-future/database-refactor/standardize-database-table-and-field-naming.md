@@ -348,7 +348,7 @@ This approach ensures:
 | `emailPflichtfeld`                 | `email_required`               | Standardize naming  |
 | `anmerkungPflichtfeld`             | `comment_required`             | Standardize naming  |
 | `anmerkungLabel`                   | `comment_label`                | Standardize naming  |
-| `telefonPflichtfeld`               | `phone_required`               | Standardize naming  |
+| `telefonPflichtfeld`               | `telephone_required`           | Standardize naming  |
 | `standortinfozeile`                | `location_info_line`           | Standardize naming  |
 | `standortkuerzel`                  | `short_name`                   | Standardize naming  |
 | `aufrufanzeigetext`                | `display_text`                 | Standardize naming  |
@@ -1188,7 +1188,7 @@ Scope Query Class
 | 'preferences**client**emailRequired'                        | 'preferencesClientEmailRequired'                        | scope.email_required               |
 | 'preferences**client**emailConfirmationActivated'           | 'preferencesClientEmailConfirmationActivated'           | scope.email_confirmation_activated |
 | 'preferences**client**telephoneActivated'                   | 'preferencesClientTelephoneActivated'                   | scope.phone_enabled                |
-| 'preferences**client**telephoneRequired'                    | 'preferencesClientTelephoneRequired'                    | scope.phone_required               |
+| 'preferences**client**telephoneRequired'                    | 'preferencesClientTelephoneRequired'                    | scope.telephone_required           |
 | 'preferences**client**appointmentsPerMail'                  | 'preferencesClientAppointmentsPerMail'                  | scope.appointments_per_mail        |
 | 'preferences**client**slotsPerAppointment'                  | 'preferencesClientSlotsPerAppointment'                  | scope.slots_per_appointment        |
 | 'preferences**client**whitelistedMails'                     | 'preferencesClientWhitelistedMails'                     | scope.whitelisted_mails            |

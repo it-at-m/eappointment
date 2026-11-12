@@ -63,10 +63,10 @@ Tag Images
 
 ### Lücke in der aktuellen Pipeline
 
-Migrate läuft heute in der **laufenden** `zmsapi`-Instanz:
+Migrate läuft heute in der **laufenden** `zmsbackend`-Instanz:
 
 ```bash
-bin/migrate --update   # im laufenden zmsapi-Container
+bin/migrate --update   # im laufenden zmsbackend-Container
 ```
 
 Zum Expand-Zeitpunkt ist das noch das **alte Image** — ohne die neuen Migrationsdateien.
@@ -74,8 +74,8 @@ Zum Expand-Zeitpunkt ist das noch das **alte Image** — ohne die neuen Migratio
 **Erforderliche Änderung:** **Migrate Expand** muss vom **neuen Image** **vor** Provision laufen, z. B. als einmaliger Migrations-Job:
 
 ```bash
-bin/migrate --update --phase=pre
-# im Container des neuen zmsapi-Images, vor Helm-Upgrade
+bin/migrate --update --phase=expand
+# im Container des neuen zmsbackend-Images, vor Helm-Upgrade
 ```
 
 Contract analog nach Provision oder im aktualisierten Deployment.
@@ -104,8 +104,8 @@ Ein Ordner: `zmsbackend/migrations/`. Unterscheidung per **Dateinamen-Präfix** 
 **`bin/migrate` (Vorschlag)**
 
 ```bash
-bin/migrate --update --phase=pre   # *-expand-* und unprefixed (nur additiv)
-bin/migrate --update --phase=post  # nur *-contract-*
+bin/migrate --update --phase=expand   # *-expand-* und unprefixed (nur additiv)
+bin/migrate --update --phase=contract  # nur *-contract-*
 ```
 
 Unprefixed-Dateien: CI-Lint **nur additiv** (kein `DROP`, `RENAME`, …). Breaking Changes: `-expand-` / `-contract-`-Paar.
