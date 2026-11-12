@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "bf0de8c957ade16f17b7997d06f8a972",
+    "content-hash": "ac3ea9f7aa163a2c5a49c71b1b7e6152",
     "packages": [
         {
             "name": "dflydev/dot-access-data",
@@ -88,7 +88,7 @@
             "dist": {
                 "type": "path",
                 "url": "../mellon",
-                "reference": "87a10be3c953fd6dffbf3a367b1bb3c8b5b6acaf"
+                "reference": "b8e56fa49f401cf0c31748b15af38e86dc757fd8"
             },
             "require": {
                 "ext-json": ">=0",
@@ -101,7 +101,7 @@
                 "phpunit/phpunit": "^13",
                 "roave/security-advisories": "dev-latest",
                 "squizlabs/php_codesniffer": "*",
-                "vimeo/psalm": "7.2.0"
+                "vimeo/psalm": "7.3.1"
             },
             "type": "library",
             "autoload": {
@@ -7651,16 +7651,16 @@
         },
         {
             "name": "psalm/psalm-plugin-api",
-            "version": "0.4.1",
+            "version": "0.4.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/psalm/psalm-plugin-api.git",
-                "reference": "e52bdf2825750f2e1bc93f1a516d7e5eb87afad7"
+                "reference": "151e64d8cf62c7972f0f58cd87f68f548b78477e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/psalm/psalm-plugin-api/zipball/e52bdf2825750f2e1bc93f1a516d7e5eb87afad7",
-                "reference": "e52bdf2825750f2e1bc93f1a516d7e5eb87afad7",
+                "url": "https://api.github.com/repos/psalm/psalm-plugin-api/zipball/151e64d8cf62c7972f0f58cd87f68f548b78477e",
+                "reference": "151e64d8cf62c7972f0f58cd87f68f548b78477e",
                 "shasum": ""
             },
             "conflict": {
@@ -7680,10 +7680,10 @@
             "description": "Stable, semantically versioned API for Psalm plugins",
             "support": {
                 "issues": "https://github.com/psalm/psalm-plugin-api/issues",
-                "source": "https://github.com/psalm/psalm-plugin-api/tree/0.4.1"
+                "source": "https://github.com/psalm/psalm-plugin-api/tree/0.4.2"
             },
-            "time": "2026-10-20T09:28:00+00:00",
-            "published-time": "2026-10-20T11:00:49+00:00"
+            "time": "2026-11-10T21:10:59+00:00",
+            "published-time": "2026-11-10T21:11:04+00:00"
         },
         {
             "name": "react/child-process",
@@ -10144,16 +10144,16 @@
         },
         {
             "name": "vimeo/psalm",
-            "version": "7.2.0",
+            "version": "7.3.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/vimeo/psalm.git",
-                "reference": "7c1fcd8a86b7912663bffd385da323dd8dcce1c5"
+                "reference": "81bda61675df22fc4e5e1ceab1c33f4c61a4830b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/vimeo/psalm/zipball/7c1fcd8a86b7912663bffd385da323dd8dcce1c5",
-                "reference": "7c1fcd8a86b7912663bffd385da323dd8dcce1c5",
+                "url": "https://api.github.com/repos/vimeo/psalm/zipball/81bda61675df22fc4e5e1ceab1c33f4c61a4830b",
+                "reference": "81bda61675df22fc4e5e1ceab1c33f4c61a4830b",
                 "shasum": ""
             },
             "require": {
@@ -10181,7 +10181,7 @@
                 "psalm/plugin-mockery": "^1.3.2",
                 "psalm/plugin-phpunit": "^0.21 || ^0.22 || ^1.0",
                 "psalm/plugin-symfony": "^5.9.1",
-                "psalm/psalm-plugin-api": "0.4.1",
+                "psalm/psalm-plugin-api": "0.4.2",
                 "sebastian/diff": "^4.0 || ^5.0 || ^6.0 || ^7.0 || ^8.0 || ^9.0",
                 "spatie/array-to-xml": "^2.17.0 || ^3.0",
                 "symfony/console": "^6.0 || ^7.0 || ^8.0",
@@ -10261,8 +10261,8 @@
                 "issues": "https://github.com/vimeo/psalm/issues",
                 "source": "https://github.com/vimeo/psalm"
             },
-            "time": "2026-11-09T09:56:40+00:00",
-            "published-time": "2026-11-09T10:27:07+00:00"
+            "time": "2026-11-12T00:44:09+00:00",
+            "published-time": "2026-11-12T01:27:10+00:00"
         },
         {
             "name": "webmozart/assert",
