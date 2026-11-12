@@ -76,6 +76,9 @@ if [[ $ZMS_CRONROOT =~ ^1|on|true|yes$ ]]; then
             exit 1
         fi
     fi
-    $BIN/updateDldbData --commit
+    if ! $BIN/updateDldbData --commit; then
+        cron_log error "DLDB import failed"
+        exit 2
+    fi
     $BIN/warmupCitizenapiSourceCache --commit
 fi
