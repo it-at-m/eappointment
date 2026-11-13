@@ -128,11 +128,13 @@ class IndexTest extends Base
             ]
         );
 
+        \App::$templatedefaults['urlAppointments'] = 'https://service.berlin.de/terminvereinbarung/';
         $response = $this->render($this->arguments, $this->parameters, [], 'POST');
+        unset(\App::$templatedefaults['urlAppointments']);
         $this->assertEquals(403, $response->getStatusCode());
         $this->assertStringContainsString('Tresen/Sachbearbeiter', (string) $response->getBody());
         $this->assertStringContainsString('Bürgeransicht', (string) $response->getBody());
-        $this->assertStringContainsString('/buergeransicht/', (string) $response->getBody());
+        $this->assertStringContainsString('https://service.berlin.de/terminvereinbarung/', (string) $response->getBody());
         $this->assertStringContainsString('Weiterführende Links', (string) $response->getBody());
         $this->assertNull(\BO\Zmsclient\Auth::getKey());
     }

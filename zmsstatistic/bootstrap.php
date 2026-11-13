@@ -27,6 +27,7 @@ require(APP_PATH . '/config.php');
 
 \App::$http = new \BO\Zmsclient\Http(\App::HTTP_BASE_URL);
 \BO\Zmsclient\Psr7\Client::$curlopt = \App::$http_curl_config;
+\App::$slim->add(new \BO\Zmsclient\AppointmentUrlMiddleware());
 
 $container = \App::$slim->getContainer();
 if ($container === null) {
