@@ -9,11 +9,17 @@
  * Built HTML kc-* (VITE_KC_*) is the image default (ssodev / A61 / dbs-fragments).
  * runtime-config.json may set kcUrl, kcRealm, and kcClientId for environments
  * whose gateway trusts a different realm (ssotest on zms-demo and zms-load).
+ *
+ * The Tools button is separate host chrome, top right, on non-production only.
  */
+
+import { shouldShowBuildInfo } from "@/utils/buildInfo";
+import { renderHostTools } from "./host-tools";
 
 type RuntimeConfig = {
   showCitizenLogin?: unknown;
   SHOW_CITIZEN_LOGIN?: unknown;
+  ZMS_ENV?: unknown;
   kcUrl?: unknown;
   kcRealm?: unknown;
   kcClientId?: unknown;
@@ -110,8 +116,21 @@ function applyCdnAppointmentLink(): void {
   el.setAttribute("appointment-link", "appointment-overview.html");
 }
 
+function renderToolsWhenInternal(runtime: RuntimeConfig | undefined): void {
+  if (
+    !shouldShowBuildInfo(
+      import.meta.env.VITE_NODE_ENV,
+      runtimeString(runtime?.ZMS_ENV)
+    )
+  ) {
+    return;
+  }
+  renderHostTools();
+}
+
 async function bootstrapLogin(): Promise<void> {
   const runtime = await readRuntimeConfig();
+  renderToolsWhenInternal(runtime);
 
   if (!shouldShowCitizenLogin(runtime)) {
     removeLoginHostChrome();
