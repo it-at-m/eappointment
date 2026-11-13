@@ -15,14 +15,17 @@ use Psr\Http\Server\RequestHandlerInterface;
 class IpFilterMiddleware implements MiddlewareInterface
 {
     private const string ERROR_BLACKLISTED = 'ipBlacklisted';
+    private const string ERROR_NOT_WHITELISTED = 'ipNotWhitelisted';
     private const int IPV4_BITS = 32;
     private const int IPV6_BITS = 128;
     private string $blacklist;
+    private string $whitelist;
     private LoggerService $logger;
     public function __construct(LoggerService $logger)
     {
         $this->logger = $logger;
         $this->blacklist = \App::getIpBlacklist();
+        $this->whitelist = \App::getIpWhitelist();
     }
 
     #[\Override]
@@ -39,22 +42,14 @@ class IpFilterMiddleware implements MiddlewareInterface
                 return $handler->handle($request);
             }
 
+            $whitelist = $this->parseIpList($this->whitelist ?: null);
+            if ($whitelist !== [] && !$this->isIpInList($ip, $whitelist)) {
+                return $this->deny(self::ERROR_NOT_WHITELISTED, 'Access denied - IP not whitelisted', $ip, $uri);
+            }
+
             $blacklist = $this->parseIpList($this->blacklist ?: null);
             if ($this->isIpInList($ip, $blacklist)) {
-                $this->logger->logInfo('Access denied - IP blacklisted', [
-                    'ip' => $ip,
-                    'uri' => $uri
-                ]);
-                $error = ErrorMessages::get(self::ERROR_BLACKLISTED);
-                $response = \App::$slim->getResponseFactory()->createResponse();
-                $response = $response->withStatus($error['statusCode'])
-                                ->withHeader('Content-Type', 'application/json');
-            // Write JSON response
-                            $responseBody = json_encode([
-                                'errors' => [$error]
-                            ]);
-                $response->getBody()->write($responseBody);
-                return $response;
+                return $this->deny(self::ERROR_BLACKLISTED, 'Access denied - IP blacklisted', $ip, $uri);
             }
 
             return $handler->handle($request);
@@ -62,6 +57,27 @@ class IpFilterMiddleware implements MiddlewareInterface
             $this->logger->logError($e, $request);
             throw $e;
         }
+    }
+
+    private function deny(
+        string $errorKey,
+        string $logMessage,
+        string $ip,
+        string $uri
+    ): ResponseInterface {
+        $this->logger->logInfo($logMessage, [
+            'ip' => $ip,
+            'uri' => $uri
+        ]);
+        $error = ErrorMessages::get($errorKey);
+        $response = \App::$slim->getResponseFactory()->createResponse();
+        $response = $response->withStatus($error['statusCode'])
+            ->withHeader('Content-Type', 'application/json');
+        $responseBody = json_encode([
+            'errors' => [$error]
+        ]);
+        $response->getBody()->write($responseBody);
+        return $response;
     }
 
     private function parseIpList(?string $ipList): array

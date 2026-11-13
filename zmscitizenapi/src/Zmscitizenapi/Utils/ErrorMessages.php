@@ -446,6 +446,12 @@ class ErrorMessages
             'errorMessage' => 'Access denied - IP address is blacklisted.',
             'errorType' => 'error'
         ],
+        'ipNotWhitelisted' => [
+            'errorCode' => 'IP_NOT_WHITELISTED',
+            'statusCode' => self::HTTP_FORBIDDEN,
+            'errorMessage' => 'Access denied - IP address is not whitelisted.',
+            'errorType' => 'error'
+        ],
         'rateLimitExceeded' => [
             'errorCode' => 'rateLimitExceeded',
             'statusCode' => self::HTTP_TOO_MANY_REQUESTS,

@@ -175,6 +175,17 @@ class ApplicationTest extends TestCase
         $this->assertEquals('', Application::getIpBlacklist());
     }
 
+    public function testGetIpWhitelist(): void
+    {
+        putenv('IP_WHITELIST=192.168.1.0/24,2001:db8::/32');
+        Application::initialize();
+        $this->assertEquals('192.168.1.0/24,2001:db8::/32', Application::getIpWhitelist());
+
+        putenv('IP_WHITELIST=');
+        Application::initialize();
+        $this->assertEquals('', Application::getIpWhitelist());
+    }
+
     public function testInitializePlaceholderEmail(): void
     {
         putenv('ZMS_CITIZENAPI_PLACEHOLDER_EMAIL=noreply@placeholder.invalid');
@@ -227,6 +238,7 @@ class ApplicationTest extends TestCase
         putenv('MAX_STRING_LENGTH');
         putenv('MAX_RECURSION_DEPTH');
         putenv('IP_BLACKLIST');
+        putenv('IP_WHITELIST');
         putenv('ZMS_CITIZENAPI_PLACEHOLDER_EMAIL');
     }
 

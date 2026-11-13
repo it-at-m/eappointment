@@ -92,6 +92,7 @@ sequenceDiagram
 | MAX_RECURSION_DEPTH | Maximum recursion depth | 10 |
 | **Security Configuration** |
 | IP_BLACKLIST | Blacklisted IPs/CIDR ranges (comma-separated) | "" |
+| IP_WHITELIST | Allowed IPs/CIDR ranges (comma-separated). Empty allows every address. A blacklisted address is still denied. | "" |
 
 
 ## Appointment State Machine:

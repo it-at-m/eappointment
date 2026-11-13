@@ -21,6 +21,7 @@ class IpFilterMiddlewareTest extends MiddlewareTestCase
             \App::$cache->clear();
         }
         putenv('IP_BLACKLIST');
+        putenv('IP_WHITELIST');
         \App::reinitializeMiddlewareConfig();
         $_SERVER = [];
     }
@@ -29,6 +30,7 @@ class IpFilterMiddlewareTest extends MiddlewareTestCase
     protected function tearDown(): void
     {
         putenv('IP_BLACKLIST');
+        putenv('IP_WHITELIST');
         \App::reinitializeMiddlewareConfig();
         $_SERVER = [];
         parent::tearDown();
@@ -198,6 +200,100 @@ class IpFilterMiddlewareTest extends MiddlewareTestCase
         // Should process request in under 100ms even with large blacklist
         $this->assertLessThan(0.1, $endTime - $startTime);
         $this->assertSame($response, $result);
+    }
+
+    public function testAllowsWhitelistedIPv4Range(): void
+    {
+        putenv('IP_WHITELIST=10.0.0.0/8,192.168.1.1');
+        \App::reinitializeMiddlewareConfig();
+        $_SERVER['REMOTE_ADDR'] = '10.1.2.3';
+        $middleware = new IpFilterMiddleware($this->logger);
+
+        $request = $this->createRequest(['REMOTE_ADDR' => '10.1.2.3']);
+        $response = new Response();
+        $handler = $this->createHandler($response);
+
+        $result = $middleware->process($request, $handler);
+        $this->assertSame($response, $result);
+    }
+
+    public function testBlocksIpOutsideWhitelist(): void
+    {
+        putenv('IP_WHITELIST=192.168.1.0/24');
+        \App::reinitializeMiddlewareConfig();
+        $_SERVER['REMOTE_ADDR'] = '10.0.0.1';
+        $middleware = new IpFilterMiddleware($this->logger);
+
+        $request = $this->createRequest(['REMOTE_ADDR' => '10.0.0.1']);
+        $response = new Response();
+        $handler = $this->createHandler($response);
+
+        $this->logger->expectLogInfo('Access denied - IP not whitelisted', [
+            'ip' => '10.0.0.1',
+            'uri' => 'http://localhost/test'
+        ]);
+
+        $result = $middleware->process($request, $handler);
+        $responseData = json_decode((string)$result->getBody(), true);
+
+        $this->assertEquals(ErrorMessages::get('ipNotWhitelisted')['statusCode'], $result->getStatusCode());
+        $this->assertEquals(
+            ['errors' => [ErrorMessages::get('ipNotWhitelisted')]],
+            $responseData
+        );
+    }
+
+    public function testBlocksIpOutsideIPv6Whitelist(): void
+    {
+        putenv('IP_WHITELIST=2001:db8::/32');
+        \App::reinitializeMiddlewareConfig();
+        $_SERVER['REMOTE_ADDR'] = '2001:db9::1';
+        $middleware = new IpFilterMiddleware($this->logger);
+
+        $request = $this->createRequest(['REMOTE_ADDR' => '2001:db9::1']);
+        $response = new Response();
+        $handler = $this->createHandler($response);
+
+        $this->logger->expectLogInfo('Access denied - IP not whitelisted', [
+            'ip' => '2001:db9::1',
+            'uri' => 'http://localhost/test'
+        ]);
+
+        $result = $middleware->process($request, $handler);
+        $responseData = json_decode((string)$result->getBody(), true);
+
+        $this->assertEquals(ErrorMessages::get('ipNotWhitelisted')['statusCode'], $result->getStatusCode());
+        $this->assertEquals(
+            ['errors' => [ErrorMessages::get('ipNotWhitelisted')]],
+            $responseData
+        );
+    }
+
+    public function testBlacklistDeniesWhitelistedIp(): void
+    {
+        putenv('IP_WHITELIST=192.168.1.0/24');
+        putenv('IP_BLACKLIST=192.168.1.1');
+        \App::reinitializeMiddlewareConfig();
+        $_SERVER['REMOTE_ADDR'] = '192.168.1.1';
+        $middleware = new IpFilterMiddleware($this->logger);
+
+        $request = $this->createRequest(['REMOTE_ADDR' => '192.168.1.1']);
+        $response = new Response();
+        $handler = $this->createHandler($response);
+
+        $this->logger->expectLogInfo('Access denied - IP blacklisted', [
+            'ip' => '192.168.1.1',
+            'uri' => 'http://localhost/test'
+        ]);
+
+        $result = $middleware->process($request, $handler);
+        $responseData = json_decode((string)$result->getBody(), true);
+
+        $this->assertEquals(ErrorMessages::get('ipBlacklisted')['statusCode'], $result->getStatusCode());
+        $this->assertEquals(
+            ['errors' => [ErrorMessages::get('ipBlacklisted')]],
+            $responseData
+        );
     }
 
 }
