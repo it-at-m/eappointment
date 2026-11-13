@@ -298,6 +298,7 @@
   "jumpinClearSelection": "Clear selection",
   "jumpinCopy": "Copy",
   "jumpinCopied": "Copied",
+  "jumpinCopyFailed": "Copying is not available. The jump-in link is selected so it can be copied manually.",
   "jumpinOpen": "Open",
   "jumpinLinkLabel": "Jump-in link",
   "jumpinServiceIdMissing": "Service id is missing.",

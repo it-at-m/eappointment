@@ -320,6 +320,7 @@
   "jumpinClearSelection": "Auswahl löschen",
   "jumpinCopy": "Kopieren",
   "jumpinCopied": "Kopiert",
+  "jumpinCopyFailed": "Kopieren ist nicht möglich. Der Sprunglink ist markiert und kann manuell kopiert werden.",
   "jumpinOpen": "Öffnen",
   "jumpinLinkLabel": "Sprunglink",
   "jumpinServiceIdMissing": "Leistungs-ID fehlt.",

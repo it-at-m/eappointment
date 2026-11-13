@@ -174,6 +174,13 @@
             >
               {{ t(error) }}
             </p>
+            <p
+              v-if="copyError"
+              class="jumpin-error"
+              role="alert"
+            >
+              {{ t(copyError) }}
+            </p>
             <div
               v-if="link"
               class="jumpin-result"
@@ -185,6 +192,7 @@
                 {{ t("jumpinLinkLabel") }}
               </p>
               <a
+                ref="linkEl"
                 class="jumpin-href"
                 :href="link"
                 target="_blank"
@@ -242,7 +250,9 @@ const selectedService = ref<JumpinChoice | null>(null);
 const selectedOffice = ref<JumpinChoice | null>(null);
 const exclusiveLocation = ref(false);
 const copied = ref(false);
+const copyError = ref("");
 const formEl = ref<HTMLFormElement | null>(null);
+const linkEl = ref<HTMLAnchorElement | null>(null);
 
 function showFullSelectedLabel(): void {
   formEl.value
@@ -361,11 +371,38 @@ onMounted(async () => {
   loading.value = false;
 });
 
+function selectDisplayedLink(): void {
+  const el = linkEl.value;
+  const selection = window.getSelection();
+  if (!el || !selection) {
+    return;
+  }
+  const range = document.createRange();
+  range.selectNodeContents(el);
+  selection.removeAllRanges();
+  selection.addRange(range);
+}
+
 async function copy(): Promise<void> {
   if (!link.value) {
     return;
   }
-  await navigator.clipboard.writeText(link.value);
+  const writeText = navigator.clipboard?.writeText;
+  if (typeof writeText !== "function") {
+    copied.value = false;
+    copyError.value = "jumpinCopyFailed";
+    selectDisplayedLink();
+    return;
+  }
+  try {
+    await writeText.call(navigator.clipboard, link.value);
+  } catch {
+    copied.value = false;
+    copyError.value = "jumpinCopyFailed";
+    selectDisplayedLink();
+    return;
+  }
+  copyError.value = "";
   copied.value = true;
   window.setTimeout(() => {
     copied.value = false;
