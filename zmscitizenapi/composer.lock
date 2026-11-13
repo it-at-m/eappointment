@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "2d703149cb5777beb493e9d306d479c1",
+    "content-hash": "1620a2dc86bd4c015138f4589eb93e5f",
     "packages": [
         {
             "name": "aronduby/dump",
@@ -201,7 +201,7 @@
             "dist": {
                 "type": "path",
                 "url": "../mellon",
-                "reference": "b8e56fa49f401cf0c31748b15af38e86dc757fd8"
+                "reference": "3cbd3456416557f7fc909a479407fa899be21dbf"
             },
             "require": {
                 "ext-json": ">=0",
@@ -214,7 +214,7 @@
                 "phpunit/phpunit": "^13",
                 "roave/security-advisories": "dev-latest",
                 "squizlabs/php_codesniffer": "*",
-                "vimeo/psalm": "7.3.1"
+                "vimeo/psalm": "7.4.0"
             },
             "type": "library",
             "autoload": {
@@ -251,7 +251,7 @@
             "dist": {
                 "type": "path",
                 "url": "../zmsclient",
-                "reference": "1e131f21fbb3bf76b3f4770afd29fb0f604c3964"
+                "reference": "3e63a9faf44f74840c344f43f6d07d8f944c565d"
             },
             "require": {
                 "aronduby/dump": "^0.9",
@@ -276,7 +276,7 @@
                 "phpunit/phpunit": "^13",
                 "roave/security-advisories": "dev-latest",
                 "squizlabs/php_codesniffer": "*",
-                "vimeo/psalm": "7.3.1"
+                "vimeo/psalm": "7.4.0"
             },
             "type": "library",
             "autoload": {
@@ -311,7 +311,7 @@
             "dist": {
                 "type": "path",
                 "url": "../zmsentities",
-                "reference": "f4ac79192ad0cef7477fb7dc89df5b7fc3e23871"
+                "reference": "4f0223e09e7b77f439ae5787abb0b81690d04e07"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -334,7 +334,7 @@
                 "phpunit/phpunit": "^13",
                 "roave/security-advisories": "dev-latest",
                 "squizlabs/php_codesniffer": "*",
-                "vimeo/psalm": "7.3.1"
+                "vimeo/psalm": "7.4.0"
             },
             "type": "library",
             "autoload": {
@@ -369,7 +369,7 @@
             "dist": {
                 "type": "path",
                 "url": "../zmsslim",
-                "reference": "ef788e72f61cf6594c5c1c5c7ee146c5f73bd9a6"
+                "reference": "0c36c1eb2e92529428ee1bf0f16a4e4aa1036d5e"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -400,7 +400,7 @@
                 "phpunit/phpunit": "^13",
                 "roave/security-advisories": "dev-latest",
                 "squizlabs/php_codesniffer": "*",
-                "vimeo/psalm": "7.3.1"
+                "vimeo/psalm": "7.4.0"
             },
             "type": "library",
             "autoload": {
@@ -11605,16 +11605,16 @@
         },
         {
             "name": "vimeo/psalm",
-            "version": "7.3.1",
+            "version": "7.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/vimeo/psalm.git",
-                "reference": "81bda61675df22fc4e5e1ceab1c33f4c61a4830b"
+                "reference": "ca6d68437df9a573212d442d00556d81b6337ecd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/vimeo/psalm/zipball/81bda61675df22fc4e5e1ceab1c33f4c61a4830b",
-                "reference": "81bda61675df22fc4e5e1ceab1c33f4c61a4830b",
+                "url": "https://api.github.com/repos/vimeo/psalm/zipball/ca6d68437df9a573212d442d00556d81b6337ecd",
+                "reference": "ca6d68437df9a573212d442d00556d81b6337ecd",
                 "shasum": ""
             },
             "require": {
@@ -11722,8 +11722,8 @@
                 "issues": "https://github.com/vimeo/psalm/issues",
                 "source": "https://github.com/vimeo/psalm"
             },
-            "time": "2026-11-12T00:44:09+00:00",
-            "published-time": "2026-11-12T01:27:10+00:00"
+            "time": "2026-11-13T11:08:59+00:00",
+            "published-time": "2026-11-13T11:09:32+00:00"
         },
         {
             "name": "webmozart/assert",
