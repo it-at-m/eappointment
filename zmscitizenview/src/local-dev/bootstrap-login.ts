@@ -116,6 +116,18 @@ function applyCdnAppointmentLink(): void {
   el.setAttribute("appointment-link", "appointment-overview.html");
 }
 
+/** Same pin as the local Anmelden button and the Tools bar. */
+function pinCdnLoginHost(): void {
+  const el = document.querySelector("dbs-login");
+  if (!el) {
+    return;
+  }
+  el.setAttribute(
+    "style",
+    "position:fixed;top:0;left:0;z-index:10000;display:block;width:max-content;max-width:100%;margin:0;background:transparent"
+  );
+}
+
 function renderToolsWhenInternal(runtime: RuntimeConfig | undefined): void {
   if (
     !shouldShowBuildInfo(
@@ -150,6 +162,7 @@ async function bootstrapLogin(): Promise<void> {
 
   // CDN dbs-login (BayernID). Uses kc-* from built HTML / VITE_KC_*.
   applyCdnAppointmentLink();
+  pinCdnLoginHost();
   const loaderUrl = import.meta.env.VITE_DBS_LOGIN_LOADER_URL;
   if (!loaderUrl) {
     console.warn(
