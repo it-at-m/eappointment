@@ -21,7 +21,7 @@
     "dompurify": "^3.4.17",
     "jsdom": "^31.0.0",
     "vue": "^3.5.44",
-    "vue-i18n": "11.4.18",
+    "vue-i18n": "11.4.19",
     "webfontloader": "^1.0.0"
   },
   "devDependencies": {
