@@ -218,24 +218,33 @@ import {
   MucSelect,
   MucSpinner,
 } from "@muenchen/muc-patternlab-vue";
-import { computed, nextTick, onMounted, ref, watch } from "vue";
+import { computed, nextTick, onMounted, onUnmounted, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 
 import { fetchServicesAndProviders } from "@/api/ZMSAppointmentAPI";
 import { OFTEN_SEARCHED_SERVICES } from "@/utils/Constants";
 import { jumpinChoices } from "@/utils/jumpinCatalog";
-import { installJumpinExactIdSearch } from "@/utils/jumpinChoiceSearch";
+import {
+  installJumpinExactIdSearch,
+  uninstallJumpinExactIdSearch,
+} from "@/utils/jumpinChoiceSearch";
 import {
   buildJumpinHref,
   citizenviewRootHref,
   jumpinLinkError,
 } from "@/utils/jumpinLink";
 
-installJumpinExactIdSearch();
-
 const props = defineProps<{
   available: boolean;
 }>();
+
+if (props.available) {
+  installJumpinExactIdSearch();
+}
+
+onUnmounted(() => {
+  uninstallJumpinExactIdSearch();
+});
 
 const { t } = useI18n();
 

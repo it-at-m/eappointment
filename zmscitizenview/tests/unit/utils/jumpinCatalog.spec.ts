@@ -9,6 +9,7 @@ import {
 import {
   installJumpinExactIdSearch,
   patchChoicesSearcher,
+  uninstallJumpinExactIdSearch,
 } from "@/utils/jumpinChoiceSearch";
 
 const reisepass = { id: "10", name: "Reisepass" };
@@ -152,6 +153,38 @@ describe("jumpinChoices", () => {
       "2",
       "12",
     ]);
+  });
+
+  it("restores method binding when the search hook is removed", async () => {
+    uninstallJumpinExactIdSearch();
+    const nativeBind = Function.prototype.bind;
+    installJumpinExactIdSearch();
+    uninstallJumpinExactIdSearch();
+    expect(Function.prototype.bind).toBe(nativeBind);
+
+    const instance = {
+      config: {
+        searchResultLimit: 4,
+        classNames: { inputCloned: ["choices__input--cloned"] },
+      },
+      _searcher: {
+        search(_query: string) {
+          return [
+            { item: { label: "(Id: 12) Zwölf" }, rank: 1 },
+            { item: { label: "(Id: 2) Zwei" }, rank: 2 },
+          ];
+        },
+      },
+    };
+    function ready(this: typeof instance) {
+      return this;
+    }
+    ready.bind(instance);
+    await Promise.resolve();
+
+    expect(instance._searcher.search("2").map((hit) => hit.item.label)).toEqual(
+      ["(Id: 12) Zwölf", "(Id: 2) Zwei"]
+    );
   });
 
   it("drops a service an office has disabled, unless mixing is allowed", () => {

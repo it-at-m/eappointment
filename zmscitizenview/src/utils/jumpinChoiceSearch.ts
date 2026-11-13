@@ -14,6 +14,7 @@ type ChoiceSearcher = {
 const scheduled = new WeakSet<object>();
 const patchedSearchers = new WeakSet<object>();
 let installed = false;
+let originalBind: typeof Function.prototype.bind | null = null;
 
 function isChoicesInstance(
   value: unknown
@@ -62,17 +63,28 @@ export function installJumpinExactIdSearch(): void {
     return;
   }
   installed = true;
-  const originalBind = Function.prototype.bind;
+  originalBind = Function.prototype.bind;
+  const bind = originalBind;
   Function.prototype.bind = function (
     this: (...args: unknown[]) => unknown,
     thisArg: unknown,
     ...boundArgs: unknown[]
   ) {
-    const bound = originalBind.apply(this, [thisArg, ...boundArgs]);
+    const bound = bind.apply(this, [thisArg, ...boundArgs]);
     if (isChoicesInstance(thisArg) && !scheduled.has(thisArg)) {
       scheduled.add(thisArg);
       queueMicrotask(() => patchChoicesSearcher(thisArg));
     }
     return bound;
   } as typeof Function.prototype.bind;
+}
+
+/** Puts method binding back the way the page had it. */
+export function uninstallJumpinExactIdSearch(): void {
+  if (!installed || !originalBind) {
+    return;
+  }
+  Function.prototype.bind = originalBind;
+  originalBind = null;
+  installed = false;
 }
