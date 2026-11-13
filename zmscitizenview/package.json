@@ -63,7 +63,7 @@
     "ws": "^8.23.0",
     "undici": "^8.12.4",
     "morgan": "^1.12.1",
-    "immutable": "^5.1.10",
+    "immutable": "^5.2.1",
     "brace-expansion": "5.0.13",
     "nanoid": "^6.0.2",
     "qs": "^6.17.1",
