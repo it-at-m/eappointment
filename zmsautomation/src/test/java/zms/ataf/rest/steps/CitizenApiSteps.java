@@ -290,7 +290,7 @@ public class CitizenApiSteps {
             .isNotNull();
         String spa = office.getSlotsPerAppointment();
         Assertions.assertThat(spa == null || spa.isBlank())
-            .as("office %d slotsPerAppointment should be unset (fallback 25), was %s", officeId, spa)
+            .as("office %d slotsPerAppointment should be unset (fallback 48), was %s", officeId, spa)
             .isTrue();
     }
 

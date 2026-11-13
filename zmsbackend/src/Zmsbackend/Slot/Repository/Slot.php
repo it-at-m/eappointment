@@ -112,13 +112,51 @@ class Slot extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\Map
           b.istFolgeterminvon
         FROM slot s
           INNER JOIN buerger b ON
-            s.year = YEAR(b.Datum)
-            AND s.month = MONTH(b.Datum)
-            AND s.day = DAY(b.Datum)
-            AND s.scopeID = b.StandortID
-            AND b.Uhrzeit BETWEEN s.time AND SEC_TO_TIME(TIME_TO_SEC(s.time) + (s.slotTimeInMinutes * 60) - 1)
+            s.scopeID = b.StandortID
             AND s.status = "free"
-          LEFT JOIN slot_process sp ON b.BuergerID = sp.processID
+            AND (
+              (
+                s.slotTimeInMinutes = 5
+                AND (b.istFolgeterminvon IS NULL OR b.istFolgeterminvon = 0)
+                AND (
+                  (
+                    s.year = YEAR(b.Datum)
+                    AND s.month = MONTH(b.Datum)
+                    AND s.day = DAY(b.Datum)
+                    AND s.time < ADDTIME(
+                        b.Uhrzeit,
+                        SEC_TO_TIME((IFNULL(b.hatFolgetermine, 0) + 1) * s.slotTimeInMinutes * 60)
+                    )
+                    AND ADDTIME(s.time, SEC_TO_TIME(s.slotTimeInMinutes * 60)) > b.Uhrzeit
+                  )
+                  OR (
+                    ADDTIME(
+                        b.Uhrzeit,
+                        SEC_TO_TIME((IFNULL(b.hatFolgetermine, 0) + 1) * s.slotTimeInMinutes * 60)
+                    ) >= "24:00:00"
+                    AND STR_TO_DATE(CONCAT(s.year, "-", s.month, "-", s.day), "%Y-%m-%d")
+                        = DATE_ADD(b.Datum, INTERVAL 1 DAY)
+                    AND s.time < SUBTIME(
+                        ADDTIME(
+                            b.Uhrzeit,
+                            SEC_TO_TIME((IFNULL(b.hatFolgetermine, 0) + 1) * s.slotTimeInMinutes * 60)
+                        ),
+                        "24:00:00"
+                    )
+                  )
+                )
+              )
+              OR (
+                IFNULL(s.slotTimeInMinutes, 0) <> 5
+                AND s.year = YEAR(b.Datum)
+                AND s.month = MONTH(b.Datum)
+                AND s.day = DAY(b.Datum)
+                AND b.Uhrzeit BETWEEN s.time
+                  AND SEC_TO_TIME(TIME_TO_SEC(s.time) + (s.slotTimeInMinutes * 60) - 1)
+              )
+            )
+          LEFT JOIN slot_process sp ON sp.processID = b.BuergerID
+            AND (IFNULL(s.slotTimeInMinutes, 0) <> 5 OR sp.slotID = s.slotID)
         WHERE
           sp.processID IS NULL
     ';
@@ -126,21 +164,121 @@ class Slot extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\Map
           AND s.scopeID = :scopeID
     ';
 
+    /**
+     * One insert for the pairs that are not mapped yet.
+     * The date argument drops appointments that can no longer meet a free slot.
+     * The outer select keeps slot_process out of the insert target.
+     */
+    public static function insertMissingProcessSql(bool $scoped): string
+    {
+        $scope = $scoped ? ' AND b.StandortID = ?' : '';
+        $from = $scoped
+            ? 'FROM buerger b FORCE INDEX (speed_test)'
+            : 'FROM buerger b FORCE INDEX (Datum)';
+        $sameDay = '
+            SELECT s.slotID, b.BuergerID AS processID, NOW() AS updateTimestamp
+            ' . $from . '
+            INNER JOIN slot s
+              ON s.scopeID = b.StandortID
+             AND s.status = "free"
+             AND s.slotTimeInMinutes = 5
+             AND s.year = YEAR(b.Datum)
+             AND s.month = MONTH(b.Datum)
+             AND s.day = DAY(b.Datum)
+             AND s.time < ADDTIME(b.Uhrzeit, SEC_TO_TIME((IFNULL(b.hatFolgetermine, 0) + 1) * s.slotTimeInMinutes * 60))
+             AND ADDTIME(s.time, SEC_TO_TIME(s.slotTimeInMinutes * 60)) > b.Uhrzeit
+            WHERE b.Datum >= ?' . $scope . '
+              AND IFNULL(b.istFolgeterminvon, 0) = 0
+              AND NOT EXISTS (
+                SELECT 1 FROM slot_process sp
+                WHERE sp.processID = b.BuergerID AND sp.slotID = s.slotID
+              )';
+        $nextDay = '
+            SELECT s.slotID, b.BuergerID AS processID, NOW() AS updateTimestamp
+            ' . $from . '
+            INNER JOIN slot s
+              ON s.scopeID = b.StandortID
+             AND s.status = "free"
+             AND s.slotTimeInMinutes = 5
+             AND IFNULL(b.istFolgeterminvon, 0) = 0
+             AND ADDTIME(b.Uhrzeit, SEC_TO_TIME((IFNULL(b.hatFolgetermine, 0) + 1) * s.slotTimeInMinutes * 60)) >= "24:00:00"
+             AND s.year = YEAR(DATE_ADD(b.Datum, INTERVAL 1 DAY))
+             AND s.month = MONTH(DATE_ADD(b.Datum, INTERVAL 1 DAY))
+             AND s.day = DAY(DATE_ADD(b.Datum, INTERVAL 1 DAY))
+             AND s.time < SUBTIME(
+                ADDTIME(b.Uhrzeit, SEC_TO_TIME((IFNULL(b.hatFolgetermine, 0) + 1) * s.slotTimeInMinutes * 60)),
+                "24:00:00"
+             )
+            WHERE b.Datum >= ?' . $scope . '
+              AND NOT EXISTS (
+                SELECT 1 FROM slot_process sp
+                WHERE sp.processID = b.BuergerID AND sp.slotID = s.slotID
+              )';
+        $other = '
+            SELECT s.slotID, b.BuergerID AS processID, NOW() AS updateTimestamp
+            ' . $from . '
+            INNER JOIN slot s
+              ON s.scopeID = b.StandortID
+             AND s.status = "free"
+             AND IFNULL(s.slotTimeInMinutes, 0) <> 5
+             AND s.year = YEAR(b.Datum)
+             AND s.month = MONTH(b.Datum)
+             AND s.day = DAY(b.Datum)
+             AND b.Uhrzeit BETWEEN s.time
+               AND SEC_TO_TIME(TIME_TO_SEC(s.time) + (s.slotTimeInMinutes * 60) - 1)
+            WHERE b.Datum >= ?' . $scope . '
+              AND NOT EXISTS (
+                SELECT 1 FROM slot_process sp
+                WHERE sp.processID = b.BuergerID
+              )';
 
+        return 'INSERT IGNORE INTO slot_process (slotID, processID, updateTimestamp)
+            SELECT missing.slotID, missing.processID, missing.updateTimestamp
+            FROM (' . $sameDay . ' UNION ALL ' . $nextDay . ' UNION ALL ' . $other . ') missing';
+    }
+
+
+    /**
+     * Book every step of this appointment immediately, on the given availability only.
+     * hatFolgetermine is the extra-step count, so one process row covers the whole visit.
+     */
     const string QUERY_INSERT_SLOT_PROCESS_ID = '
-        REPLACE INTO slot_process
+        INSERT INTO slot_process (slotID, processID, updateTimestamp)
         SELECT
           s.slotID,
           b.BuergerID,
           NOW()
-        FROM slot s
-          INNER JOIN buerger b ON
-            s.year = YEAR(b.Datum)
-            AND s.month = MONTH(b.Datum)
-            AND s.day = DAY(b.Datum)
-            AND s.scopeID = b.StandortID
+        FROM buerger b
+          INNER JOIN slot s ON s.scopeID = b.StandortID
             AND s.status IN ("free", "full")
-            AND b.Uhrzeit BETWEEN s.time AND SEC_TO_TIME(TIME_TO_SEC(s.time) + (s.slotTimeInMinutes * 60) - 1)
+            AND (
+              (
+                s.year = YEAR(b.Datum)
+                AND s.month = MONTH(b.Datum)
+                AND s.day = DAY(b.Datum)
+                AND s.time < ADDTIME(
+                  b.Uhrzeit,
+                  SEC_TO_TIME((IFNULL(b.hatFolgetermine, 0) + 1) * s.slotTimeInMinutes * 60)
+                )
+                AND ADDTIME(s.time, SEC_TO_TIME(s.slotTimeInMinutes * 60)) > b.Uhrzeit
+              )
+              OR (
+                ADDTIME(
+                  b.Uhrzeit,
+                  SEC_TO_TIME((IFNULL(b.hatFolgetermine, 0) + 1) * s.slotTimeInMinutes * 60)
+                ) >= "24:00:00"
+                AND s.year = YEAR(DATE_ADD(b.Datum, INTERVAL 1 DAY))
+                AND s.month = MONTH(DATE_ADD(b.Datum, INTERVAL 1 DAY))
+                AND s.day = DAY(DATE_ADD(b.Datum, INTERVAL 1 DAY))
+                AND s.time < SUBTIME(
+                  ADDTIME(
+                    b.Uhrzeit,
+                    SEC_TO_TIME((IFNULL(b.hatFolgetermine, 0) + 1) * s.slotTimeInMinutes * 60)
+                  ),
+                  "24:00:00"
+                )
+              )
+            )
         WHERE
           b.BuergerID = :processId
           AND s.availabilityID = :availabilityId
@@ -179,19 +317,63 @@ class Slot extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\Map
     ';
 
     const string QUERY_SELECT_DELETABLE_SLOT_PROCESS = '
-        SELECT sp.processID AS processId
+        SELECT sp.slotID AS slotID, sp.processID AS processID
             FROM slot_process sp
               LEFT JOIN buerger b ON sp.processID = b.BuergerID
               LEFT JOIN slot s ON sp.slotID = s.slotID
             WHERE (
                 b.BuergerID IS NULL
                 OR (
+                  s.slotTimeInMinutes = 5
+                  AND b.istFolgeterminvon IS NOT NULL
+                  AND b.istFolgeterminvon <> 0
+                )
+                OR (
                   b.updateTimestamp > sp.updateTimestamp
                   AND (
-                    b.Uhrzeit NOT BETWEEN s.time AND SEC_TO_TIME(TIME_TO_SEC(s.time) + (s.slotTimeInMinutes * 60) - 1)
-                    OR s.month != MONTH(b.Datum)
-                    OR s.day != DAY(b.Datum)
-                    OR s.scopeID != b.StandortID
+                    s.scopeID != b.StandortID
+                    OR (
+                      NOT (
+                        s.year = YEAR(b.Datum)
+                        AND s.month = MONTH(b.Datum)
+                        AND s.day = DAY(b.Datum)
+                      )
+                      AND NOT (
+                        s.slotTimeInMinutes = 5
+                        AND (b.istFolgeterminvon IS NULL OR b.istFolgeterminvon = 0)
+                        AND ADDTIME(
+                            b.Uhrzeit,
+                            SEC_TO_TIME((IFNULL(b.hatFolgetermine, 0) + 1) * s.slotTimeInMinutes * 60)
+                        ) >= "24:00:00"
+                        AND STR_TO_DATE(CONCAT(s.year, "-", s.month, "-", s.day), "%Y-%m-%d")
+                            = DATE_ADD(b.Datum, INTERVAL 1 DAY)
+                        AND s.time < SUBTIME(
+                            ADDTIME(
+                                b.Uhrzeit,
+                                SEC_TO_TIME((IFNULL(b.hatFolgetermine, 0) + 1) * s.slotTimeInMinutes * 60)
+                            ),
+                            "24:00:00"
+                        )
+                      )
+                    )
+                    OR (
+                      s.slotTimeInMinutes = 5
+                      AND s.year = YEAR(b.Datum)
+                      AND s.month = MONTH(b.Datum)
+                      AND s.day = DAY(b.Datum)
+                      AND (
+                        s.time >= ADDTIME(
+                            b.Uhrzeit,
+                            SEC_TO_TIME((IFNULL(b.hatFolgetermine, 0) + 1) * s.slotTimeInMinutes * 60)
+                        )
+                        OR ADDTIME(s.time, SEC_TO_TIME(s.slotTimeInMinutes * 60)) <= b.Uhrzeit
+                      )
+                    )
+                    OR (
+                      IFNULL(s.slotTimeInMinutes, 0) <> 5
+                      AND b.Uhrzeit NOT BETWEEN s.time
+                        AND SEC_TO_TIME(TIME_TO_SEC(s.time) + (s.slotTimeInMinutes * 60) - 1)
+                    )
                   )
                 )
               ) 
@@ -231,6 +413,54 @@ class Slot extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\Map
     LIMIT 1
 ';
 
+    const string QUERY_SELECT_SLOTS_IN_RANGE = '
+    SELECT slotID, time, year, month, day FROM slot WHERE
+      scopeID = :scopeID
+      AND availabilityID = :availabilityID
+      AND year >= :yearFrom
+      AND year <= :yearTo
+';
+
+    /**
+     * Columns written for one slot row, apart from slotID.
+     *
+     * @var list<string>
+     */
+    const array SLOT_WRITE_COLUMNS = [
+        'scopeID',
+        'availabilityID',
+        'version',
+        'year',
+        'month',
+        'day',
+        'time',
+        'public',
+        'intern',
+        'status',
+        'slotTimeInMinutes',
+        'createTimestamp',
+    ];
+
+    const string QUERY_CREATE_CALC_SLOT_ORDER = '
+        CREATE TEMPORARY TABLE IF NOT EXISTS `zms_calc_slot_order` (
+            `dayKey` CHAR(10) NOT NULL,
+            `sequence` SMALLINT UNSIGNED NOT NULL,
+            `slotID` INT UNSIGNED NOT NULL,
+            PRIMARY KEY (`dayKey`, `sequence`)
+        ) ENGINE=MEMORY
+    ';
+
+    const string QUERY_DELETE_CALC_SLOT_ORDER = 'DELETE FROM `zms_calc_slot_order`';
+
+    const string QUERY_INSERT_CALC_SLOT_ORDER = '
+        INSERT INTO `zms_calc_slot_order` (`dayKey`, `sequence`, `slotID`) VALUES
+    ';
+
+    const string QUERY_DELETE_HIERA_FOR_CALC_ORDER = '
+        DELETE `hiera` FROM `slot_hiera` `hiera`
+        INNER JOIN `zms_calc_slot_order` `orderedSlot` ON `orderedSlot`.`slotID` = `hiera`.`slotID`
+    ';
+
     /**
      * Lock multiple appointment slots in one statement.
      * Placeholders for time IN (...) are injected by Slot::lockSlotsForAppointment.
@@ -261,14 +491,6 @@ class Slot extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\Map
       AND time IN (%s)
     ORDER BY slotID ASC
     FOR UPDATE
-';
-
-    const string QUERY_INSERT_ANCESTOR = '
-    INSERT INTO slot_hiera SET slotID = :slotID, ancestorID = :ancestorID, ancestorLevel = :ancestorLevel
-';
-
-    const string QUERY_DELETE_ANCESTOR = '
-    DELETE FROM slot_hiera WHERE slotID = :slotID
 ';
 
     const string QUERY_CANCEL_AVAILABILITY = '
@@ -354,5 +576,99 @@ class Slot extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\Map
     {
         $this->query->where('slot.slotID', '=', $slotID);
         return $this;
+    }
+
+    /**
+     * Ancestor level 1 is the slot itself. Higher levels are the earlier slots that day.
+     */
+    public static function insertAncestorChainsSql(int $maximumEarlierSlots): string
+    {
+        return '
+            INSERT INTO `slot_hiera` (`slotID`, `ancestorID`, `ancestorLevel`)
+            SELECT `slotRow`.`slotID`, `ancestorRow`.`slotID`, `slotRow`.`sequence` - `ancestorRow`.`sequence` + 1
+            FROM `zms_calc_slot_order` `slotRow`
+            INNER JOIN `zms_calc_slot_order` `ancestorRow`
+              ON `ancestorRow`.`dayKey` = `slotRow`.`dayKey`
+             AND `ancestorRow`.`sequence` <= `slotRow`.`sequence`
+             AND `ancestorRow`.`sequence` + ' . $maximumEarlierSlots . ' >= `slotRow`.`sequence`
+        ';
+    }
+
+    /**
+     * @return array{prefix: string, suffix: string}
+     */
+    public static function upsertSlotRowsSql(): array
+    {
+        $columns = array_merge(['slotID'], self::SLOT_WRITE_COLUMNS);
+        $assignments = [];
+        foreach (self::SLOT_WRITE_COLUMNS as $column) {
+            $assignments[] = sprintf('`%s` = VALUES(`%s`)', $column, $column);
+        }
+
+        return [
+            'prefix' => 'INSERT INTO `slot` (' . self::quotedColumns($columns) . ') VALUES ',
+            'suffix' => ' ON DUPLICATE KEY UPDATE ' . implode(', ', $assignments),
+        ];
+    }
+
+    /**
+     * @return array{prefix: string, suffix: string}
+     */
+    public static function insertSlotRowsSql(): array
+    {
+        return [
+            'prefix' => 'INSERT INTO `slot` (' . self::quotedColumns(self::SLOT_WRITE_COLUMNS) . ') VALUES ',
+            'suffix' => '',
+        ];
+    }
+
+    /**
+     * @param array<string, int|string> $values
+     * @return list<int|string>
+     */
+    public static function packSlotRow(array $values, ?int $slotId = null): array
+    {
+        $packedRow = [];
+        foreach (self::SLOT_WRITE_COLUMNS as $column) {
+            $packedRow[] = $values[$column];
+        }
+        if ($slotId !== null) {
+            array_unshift($packedRow, $slotId);
+        }
+
+        return $packedRow;
+    }
+
+    /**
+     * @param list<string> $columns
+     */
+    public static function quotedColumns(array $columns): string
+    {
+        return implode(',', array_map(static fn (string $column): string => '`' . $column . '`', $columns));
+    }
+
+    /**
+     * @param list<list<int|string>> $rows
+     * @return list<array{sql: string, parameters: list<int|string>}>
+     */
+    public static function chunkedStatements(string $prefix, string $suffix, array $rows): array
+    {
+        $statements = [];
+        foreach (array_chunk($rows, 1000) as $chunk) {
+            $columnCount = count($chunk[0]);
+            $rowPlaceholder = '(' . implode(',', array_fill(0, $columnCount, '?')) . ')';
+            $parameters = [];
+            foreach ($chunk as $row) {
+                foreach ($row as $value) {
+                    $parameters[] = $value;
+                }
+            }
+            $statements[] = [
+                'sql' => $prefix . implode(',', array_fill(0, count($chunk), $rowPlaceholder)) . $suffix,
+                'parameters' => $parameters,
+            ];
+        }
+
+        return $statements;
     }
 }

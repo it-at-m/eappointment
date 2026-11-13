@@ -510,24 +510,21 @@ class ProcessStatusFree extends Process
         }
         unset($dayquery);
 
-        foreach ($slotList as $slot) {
-            if ($process->id > 99999) {
-                $newProcess = clone $process;
-                $newProcess->getFirstAppointment()->setTime($slot->time);
-                $this->writeNewProcess($newProcess, $now, $process->id, 0, true, $userAccount, $availabilityId);
-            } elseif ($process->id === 0) {
-                $process = $this->writeNewProcess(
-                    $process,
-                    $now,
-                    0,
-                    count($slotList) - 1,
-                    true,
-                    $userAccount,
-                    $availabilityId
-                );
-            } else {
-                throw new \Exception("SQL UPDATE error on inserting new $process on $slot");
-            }
+        // One row stores the length. The save maps every step of that length on the chosen availability.
+        if ($process->id === 0) {
+            $process = $this->writeNewProcess(
+                $process,
+                $now,
+                0,
+                count($slotList) - 1,
+                true,
+                $userAccount,
+                $availabilityId
+            );
+        } elseif ($process->id <= 99999) {
+            throw new \Exception("SQL UPDATE error on inserting new $process");
+        } else {
+            throw new \BO\Zmsbackend\Process\Exception\ProcessReserveFailed();
         }
         $this->writeRequestsToDb($process);
         return $this->readEntity($process->getId(), new \BO\Zmsbackend\Helper\NoAuth(), $resolveReferences);

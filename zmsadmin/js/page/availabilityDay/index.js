@@ -961,6 +961,7 @@ class AvailabilityPage extends Component {
 
         return <AccordionLayout
             availabilityList={this.state.availabilitylist}
+            scope={this.props.scope}
             data={this.state.selectedAvailability}
             today={this.state.today}
             timestamp={this.props.timestamp}
