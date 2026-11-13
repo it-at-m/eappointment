@@ -6,6 +6,7 @@ namespace BO\Zmscitizenapi\Middleware;
 
 use BO\Zmscitizenapi\Utils\ClientIpHelper;
 use BO\Zmscitizenapi\Utils\ErrorMessages;
+use BO\Zmscitizenapi\Utils\IpList;
 use BO\Slim\LoggerService;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -24,10 +25,12 @@ class RateLimitingMiddleware implements MiddlewareInterface
     private int $lockTimeout;
     private CacheInterface $cache;
     private LoggerService $logger;
+    private string $whitelist;
     public function __construct(CacheInterface $cache, LoggerService $logger)
     {
         $this->cache = $cache;
         $this->logger = $logger;
+        $this->whitelist = \App::getIpWhitelist();
         $config = \App::getRateLimit();
         $this->maxRequests = $config['maxRequests'];
         $this->cacheExpiry = $config['cacheExpiry'];
@@ -42,6 +45,10 @@ class RateLimitingMiddleware implements MiddlewareInterface
     {
         try {
             $ip = ClientIpHelper::getClientIp();
+            if (IpList::contains($ip, $this->whitelist)) {
+                return $handler->handle($request);
+            }
+
             $key = 'rate_limit_' . md5($ip);
             $lockKey = $key . '_lock';
 // Try to acquire rate limit with retries and exponential backoff
