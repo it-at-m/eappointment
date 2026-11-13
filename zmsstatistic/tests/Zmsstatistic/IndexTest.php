@@ -131,6 +131,8 @@ class IndexTest extends Base
         $response = $this->render($this->arguments, $this->parameters, [], 'POST');
         $this->assertEquals(403, $response->getStatusCode());
         $this->assertStringContainsString('Tresen/Sachbearbeiter', (string) $response->getBody());
+        $this->assertStringContainsString('Bürgeransicht', (string) $response->getBody());
+        $this->assertStringContainsString('/buergeransicht/', (string) $response->getBody());
         $this->assertStringContainsString('Weiterführende Links', (string) $response->getBody());
         $this->assertNull(\BO\Zmsclient\Auth::getKey());
     }
