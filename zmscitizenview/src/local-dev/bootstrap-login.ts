@@ -97,6 +97,19 @@ function applyRuntimeKeycloak(runtime: RuntimeConfig | undefined): void {
   }
 }
 
+/**
+ * CDN Mein Bereich shows "Termine" only when this is set.
+ * The loader reads attributes when it upgrades <dbs-login>, so this must run first.
+ * A relative URL resolves on / and under /buergeransicht/.
+ */
+function applyCdnAppointmentLink(): void {
+  const el = document.querySelector("dbs-login");
+  if (!el || el.hasAttribute("appointment-link")) {
+    return;
+  }
+  el.setAttribute("appointment-link", "appointment-overview.html");
+}
+
 async function bootstrapLogin(): Promise<void> {
   const runtime = await readRuntimeConfig();
 
@@ -117,6 +130,7 @@ async function bootstrapLogin(): Promise<void> {
   }
 
   // CDN dbs-login (BayernID). Uses kc-* from built HTML / VITE_KC_*.
+  applyCdnAppointmentLink();
   const loaderUrl = import.meta.env.VITE_DBS_LOGIN_LOADER_URL;
   if (!loaderUrl) {
     console.warn(
