@@ -23,7 +23,10 @@ class AppointmentUrlMiddleware implements MiddlewareInterface
         try {
             $token = defined('App::CONFIG_SECURE_TOKEN') ? \App::CONFIG_SECURE_TOKEN : null;
             $entity = \App::$http->readGetResult('/config/', [], $token)->getEntity();
-        } catch (\Throwable) {
+        } catch (\Throwable $exception) {
+            \App::$log->error('Failed to read the appointment URL', [
+                'error' => $exception->getMessage(),
+            ]);
             return '';
         }
 
