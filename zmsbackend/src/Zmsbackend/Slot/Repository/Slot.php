@@ -239,9 +239,8 @@ class Slot extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\Map
 
 
     /**
-     * Book every step of this appointment immediately.
-     * A 5-minute opening uses hatFolgetermine as the extra-step count.
-     * Any other slot length still matches the single slot that contains the clock time.
+     * Book every step of this appointment immediately, on the given availability only.
+     * hatFolgetermine is the extra-step count, so one process row covers the whole visit.
      */
     const string QUERY_INSERT_SLOT_PROCESS_ID = '
         INSERT INTO slot_process (slotID, processID, updateTimestamp)
@@ -254,8 +253,7 @@ class Slot extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\Map
             AND s.status IN ("free", "full")
             AND (
               (
-                s.slotTimeInMinutes = 5
-                AND s.year = YEAR(b.Datum)
+                s.year = YEAR(b.Datum)
                 AND s.month = MONTH(b.Datum)
                 AND s.day = DAY(b.Datum)
                 AND s.time < ADDTIME(
@@ -265,8 +263,7 @@ class Slot extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\Map
                 AND ADDTIME(s.time, SEC_TO_TIME(s.slotTimeInMinutes * 60)) > b.Uhrzeit
               )
               OR (
-                s.slotTimeInMinutes = 5
-                AND ADDTIME(
+                ADDTIME(
                   b.Uhrzeit,
                   SEC_TO_TIME((IFNULL(b.hatFolgetermine, 0) + 1) * s.slotTimeInMinutes * 60)
                 ) >= "24:00:00"
@@ -280,14 +277,6 @@ class Slot extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\Map
                   ),
                   "24:00:00"
                 )
-              )
-              OR (
-                IFNULL(s.slotTimeInMinutes, 0) <> 5
-                AND s.year = YEAR(b.Datum)
-                AND s.month = MONTH(b.Datum)
-                AND s.day = DAY(b.Datum)
-                AND b.Uhrzeit BETWEEN s.time
-                  AND SEC_TO_TIME(TIME_TO_SEC(s.time) + (s.slotTimeInMinutes * 60) - 1)
               )
             )
         WHERE

@@ -139,26 +139,12 @@ class Process extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfaces\R
                 $this->writeDeletedEntity($entity->getId());
             }
         }
-        $slotMinutes = (int) $reservation['availability']->getSlotTimeInMinutes();
-        if ($slotMinutes === 5) {
-            // One row stores the length. Map its steps after that length is saved.
-            $appointment->addSlotCount($slotList->count());
-            $processEntity = $this->updateEntity($process, $now, $resolveReferences, null, $userAccount);
-            $process = $this->readEntity($process->getId(), $process->authKey, $resolveReferences);
-            $slotService->writeSlotProcessMappingFor($process->getId(), $availabilityId);
-        } else {
-            $slotService->writeSlotProcessMappingFor($process->getId(), $availabilityId);
-            foreach ($slotList as $slot) {
-                $newProcess = clone $process;
-                $newProcess->getFirstAppointment()->setTime($slot->time);
-                if (! $newProcess->getFirstAppointment()->isMatching($process->getFirstAppointment())) {
-                    $this->writeNewProcess($newProcess, $now, $process->id, 0, true, $userAccount, $availabilityId);
-                }
-            }
-            $appointment->addSlotCount($slotList->count());
-            $processEntity = $this->updateEntity($process, $now, $resolveReferences, null, $userAccount);
-            $process = $this->readEntity($process->getId(), $process->authKey, $resolveReferences);
-        }
+        // One row stores the length. Map its steps after that length is saved, on the availability
+        // chosen under the slot lock.
+        $appointment->addSlotCount($slotList->count());
+        $processEntity = $this->updateEntity($process, $now, $resolveReferences, null, $userAccount);
+        $process = $this->readEntity($process->getId(), $process->authKey, $resolveReferences);
+        $slotService->writeSlotProcessMappingFor($process->getId(), $availabilityId);
 
         \BO\Zmsbackend\Log\Service\Log::writeProcessLog("CREATE (\BO\Zmsbackend\Process\Service\Process::updateEntityWithSlots) $process ", \BO\Zmsbackend\Log\Service\Log::ACTION_EDITED, $process, $userAccount);
         return $processEntity;
