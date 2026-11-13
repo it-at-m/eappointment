@@ -141,6 +141,26 @@ class ProcessStatusFree extends Process
         ?\DateTimeInterface $appointmentTime = null
     ): Collection {
         list($calendar, $dayquery, $days) = $this->prepareCalendarAndDays($calendar, $now, $slotsRequired);
+        $processList = $this->readPreparedFreeProcesses(
+            $calendar,
+            $days,
+            $slotType,
+            $slotsRequired,
+            $groupData,
+            $appointmentTime
+        );
+        unset($dayquery);
+        return $processList;
+    }
+
+    private function readPreparedFreeProcesses(
+        \BO\Zmsentities\Calendar $calendar,
+        array $days,
+        string $slotType,
+        int|null $slotsRequired,
+        bool $groupData,
+        ?\DateTimeInterface $appointmentTime
+    ): Collection {
         $processData = $this->getProcessDataHandle(
             $days,
             $slotType,
@@ -169,7 +189,6 @@ class ProcessStatusFree extends Process
             $processList->addEntity($process);
         }
         $processData->closeCursor();
-        unset($dayquery);
         return $processList;
     }
 
@@ -444,32 +463,91 @@ class ProcessStatusFree extends Process
         $process = clone $process;
         $process->status = 'reserved';
         $appointment = $process->getAppointments()->getFirst();
-        $slotList = (new \BO\Zmsbackend\Slot\Service\Slot())->readByAppointment(
-            $appointment,
-            $slotsRequired,
-            (null !== $userAccount),
-            true
-        );
-        $freeProcessList = $this->readFreeProcesses(
+        $appointmentTime = $appointment->toDateTime();
+        // Calendar lookup and the first free-slot check stay outside the slot lock.
+        $this->getWriter();
+        [$calendar, $dayquery, $days] = $this->prepareCalendarAndDays(
             $process->toCalendar(),
             $now,
+            $slotsRequired
+        );
+        $freeProcessList = $this->readPreparedFreeProcesses(
+            $calendar,
+            $days,
             $slotType,
             $slotsRequired,
             false,
-            $appointment->toDateTime()
+            $appointmentTime
         );
-
-        if (!$freeProcessList->getAppointmentList()->hasAppointment($appointment) || ! $slotList) {
+        if (!$freeProcessList->getAppointmentList()->hasAppointment($appointment)) {
             throw new \BO\Zmsbackend\Process\Exception\ProcessReserveFailed();
         }
 
-        // One row stores the length. The save maps every 5-minute step of that length.
-        if ($process->id === 0) {
-            $process = $this->writeNewProcess($process, $now, 0, count($slotList) - 1, true, $userAccount);
-        } elseif ($process->id <= 99999) {
-            throw new \Exception("SQL UPDATE error on inserting new $process");
-        } else {
+        try {
+            // The availability chosen under the slot locks is the one the reservation is mapped to.
+            $reservation = (new \BO\Zmsbackend\Slot\Service\Slot())->readReservationByAppointment(
+                $appointment,
+                $slotsRequired,
+                (null !== $userAccount),
+                true,
+                $slotType
+            );
+        } catch (\BO\Zmsbackend\Exception\Pdo\LockTimeout) {
             throw new \BO\Zmsbackend\Process\Exception\ProcessReserveFailed();
+        }
+        $slotList = $reservation['slotList'];
+        $availabilityId = (int) $reservation['availability']->getId() ?: null;
+        $freeProcessList = $this->readPreparedFreeProcesses(
+            $calendar,
+            $days,
+            $slotType,
+            $slotsRequired,
+            false,
+            $appointmentTime
+        );
+        if (!$freeProcessList->getAppointmentList()->hasAppointment($appointment) || ! $slotList) {
+            throw new \BO\Zmsbackend\Process\Exception\ProcessReserveFailed();
+        }
+        unset($dayquery);
+
+        $slotMinutes = (int) $reservation['availability']->getSlotTimeInMinutes();
+        if ($slotMinutes === 5) {
+            // One row stores the length. The save maps every 5-minute step of that length.
+            if ($process->id === 0) {
+                $process = $this->writeNewProcess(
+                    $process,
+                    $now,
+                    0,
+                    count($slotList) - 1,
+                    true,
+                    $userAccount,
+                    $availabilityId
+                );
+            } elseif ($process->id <= 99999) {
+                throw new \Exception("SQL UPDATE error on inserting new $process");
+            } else {
+                throw new \BO\Zmsbackend\Process\Exception\ProcessReserveFailed();
+            }
+        } else {
+            foreach ($slotList as $slot) {
+                if ($process->id > 99999) {
+                    $newProcess = clone $process;
+                    $newProcess->getFirstAppointment()->setTime($slot->time);
+                    $this->writeNewProcess($newProcess, $now, $process->id, 0, true, $userAccount, $availabilityId);
+                } elseif ($process->id === 0) {
+                    $process = $this->writeNewProcess(
+                        $process,
+                        $now,
+                        0,
+                        count($slotList) - 1,
+                        true,
+                        $userAccount,
+                        $availabilityId
+                    );
+                } else {
+                    throw new \Exception("SQL UPDATE error on inserting new $process on $slot");
+                }
+            }
         }
         $this->writeRequestsToDb($process);
         return $this->readEntity($process->getId(), new \BO\Zmsbackend\Helper\NoAuth(), $resolveReferences);

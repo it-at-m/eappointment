@@ -3,7 +3,7 @@
 <!-- owner overview -->
 {% for owner in ownerList %}
 <div class="owner-list owner-overview">
-    <h2 class="owner-title">{{ owner.name }}
+    <h2 class="owner-title">{% if permissions.superuser %}(Id: {{ owner.id }}) {% endif %}{{ owner.name }}
         {% if permissions.jurisdiction %}
             <a class="float-right" href="{{ urlGet('owner', {'id':owner.id}, {}) }}" title="Bearbeiten"><i class="fas fa-edit" aria-hidden="true"></i> <span class="aural">Bearbeiten</span></a>
         {% endif %}
@@ -12,7 +12,7 @@
         {% for organisation in owner.organisations %}
             <li>
                 <h3 class="organisation-title owner-overview_organisation-list_title">
-                {{ organisation.name }}
+                {% if permissions.superuser %}(Id: {{ organisation.id }}) {% endif %}{{ organisation.name }}
                 {% if permissions.organisation %}
                     <a class="float-right" href="{{ urlGet('organisation', {'id': organisation.id}, {}) }}" title="Bearbeiten"><i class="fas fa-edit" aria-hidden="true"></i> <span class="aural">Bearbeiten</span></a>
                 {% endif %}
@@ -30,7 +30,7 @@
                         {% for key, cluster in department.clusters %}
                             <li>
                                 {% set clusterText %}
-                                <strong>Cluster - {{cluster.name}}</strong>
+                                <strong>{% if permissions.superuser %}(Id: {{ cluster.id }}) {% endif %}Cluster - {{cluster.name}}</strong>
                                 {% endset %}
                                 {% if permissions.cluster %}
                                     <a  class="cluster-title" href="{{ urlGet('cluster', {'clusterId':cluster.id, 'departmentId': department.id}, {}) }}">{{clusterText}}</a>
@@ -41,9 +41,9 @@
                                 {% for clusterScope in cluster.scopes %}
                                     <li>
                                         {% if permissions.scope or permissions.restrictedscope %}
-                                            <a class="scope-title" href="{{ urlGet('scope', {'id':clusterScope.id}, {}) }}"><i class="fas fa-level-up-alt fa-rotate-90 fa-xs" aria-hidden="true"></i> {{ providername(clusterScope) }}</a>
+                                            <a class="scope-title" href="{{ urlGet('scope', {'id':clusterScope.id}, {}) }}"><i class="fas fa-level-up-alt fa-rotate-90 fa-xs" aria-hidden="true"></i> {% if permissions.superuser %}(Id: {{ clusterScope.id }}) {% endif %}{{ providername(clusterScope) }}</a>
                                         {% else %}
-                                            <span class="scope-title">└ {{ providername(clusterScope) }}</span>
+                                            <span class="scope-title">└ {% if permissions.superuser %}(Id: {{ clusterScope.id }}) {% endif %}{{ providername(clusterScope) }}</span>
                                         {% endif %}
                                         {% if permissions.availability %}
                                             <a  class="float-right button-edit-availabilty" href="{{ urlGet('scopeAvailabilityMonth', {'id':clusterScope.id}, {}) }}" title="Öffnungszeiten">Öffnungszeiten</a>
@@ -61,9 +61,9 @@
                             {% for scope in department.scopes %}
                                 <li>
                                     {% if permissions.scope or permissions.restrictedscope %}
-                                        <a class="scope-title"  href="{{ urlGet('scope', {'id':scope.id}, {}) }}">{{ providername(scope) }}</a>
+                                        <a class="scope-title"  href="{{ urlGet('scope', {'id':scope.id}, {}) }}">{% if permissions.superuser %}(Id: {{ scope.id }}) {% endif %}{{ providername(scope) }}</a>
                                     {% else %}
-                                        <span class="scope-title"><i class="fas fa-level-up-alt fa-rotate-90 fa-xs" aria-hidden="true"></i> {{ providername(scope) }}</span>
+                                        <span class="scope-title"><i class="fas fa-level-up-alt fa-rotate-90 fa-xs" aria-hidden="true"></i> {% if permissions.superuser %}(Id: {{ scope.id }}) {% endif %}{{ providername(scope) }}</span>
                                     {% endif %}
                                     {% if permissions.availability %}
                                         <a class="float-right button-edit-availabilty" href="{{ urlGet('scopeAvailabilityMonth', {'id':scope.id}, {}) }}" title="Öffnungszeiten">Öffnungszeiten</a>

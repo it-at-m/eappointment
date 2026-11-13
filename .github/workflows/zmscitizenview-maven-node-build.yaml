@@ -6,7 +6,7 @@ on:
     # should-run: new branch always; later only zmscitizenview/ (or catch-up).
   # Rebuild without a commit. In Actions, choose the branch under "Use workflow from",
   # the same way as the zmsautomation workflow.
-  # next and feature branches install the npm "beta" dist-tag; main and tags keep the pin.
+  # next and feature branches install the newer of the npm beta and latest dist-tags; main and tags keep the pin.
   workflow_dispatch:
 
 concurrency:
@@ -43,7 +43,7 @@ jobs:
           GH_REPO: ${{ github.repository }}
           WORKFLOW_FILE: zmscitizenview-maven-node-build.yaml
           MODE: include
-          PATH_PREFIXES: zmscitizenview/ .github/workflows/zmscitizenview-maven-node-build.yaml
+          PATH_PREFIXES: zmscitizenview/ .github/workflows/zmscitizenview-maven-node-build.yaml .github/scripts/zmscitizenview-select-patternlab.sh
         run: bash .github/scripts/decide-push-ci-run.sh
 
   build:
@@ -59,7 +59,7 @@ jobs:
           - app-path: zmscitizenview
     steps:
       - uses: it-at-m/lhm_actions/action-templates/actions/action-checkout@03f09fa81a60371c01caf1a9deada89ceebbd5e5 # v1.6.3
-      # package.json keeps the stable pin for main/tags; other refs build against npm "beta".
+      # package.json keeps the stable pin for main/tags; other refs build against the newer of npm beta and latest.
       - name: Set up Node.js (patternlab channel)
         if: ${{ !(github.ref == 'refs/heads/main' || github.ref_type == 'tag') }}
         uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7

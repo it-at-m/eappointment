@@ -468,9 +468,15 @@ run_hourly_with_retries() {
     fi
 
     info "Running hourly cronjob (attempt ${attempt}/${max_attempts})..."
-    if "${cmd[@]}"; then
+    "${cmd[@]}"
+    status=$?
+    if (( status == 0 )); then
       info "Hourly cronjob succeeded on attempt ${attempt}/${max_attempts}."
       return 0
+    fi
+    if (( status == 2 )); then
+      warn "Hourly DLDB import failed; skipping retries."
+      return 1
     fi
 
     if (( attempt < max_attempts )); then

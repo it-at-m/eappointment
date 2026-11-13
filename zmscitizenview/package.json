@@ -14,7 +14,7 @@
     "test": "vitest run",
     "serve-loader-test": "npm run build && ws -o -r \"/ -> /resources/loader-test\" -r \"/dist -> ../../dist\""
   },
-  "// @muenchen/muc-patternlab-vue": "Pinned release for main/tags. CI switches to npm dist-tag beta on other branches (.github/scripts/zmscitizenview-select-patternlab.sh).",
+  "// @muenchen/muc-patternlab-vue": "Pinned release for main/tags. CI on other branches installs the newer of the npm beta and latest dist-tags (.github/scripts/zmscitizenview-select-patternlab.sh).",
   "dependencies": {
     "@muenchen/muc-patternlab-vue": "^12.1.1",
     "altcha": "^3.2.2",
@@ -67,7 +67,7 @@
     "brace-expansion": "5.0.12",
     "nanoid": "^6.0.2",
     "qs": "^6.17.1",
-    "minimatch": "^11.0.5",
+    "minimatch": "^11.0.7",
     "glob": "^14.0.4"
   }
 }

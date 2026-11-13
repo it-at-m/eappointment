@@ -2208,6 +2208,30 @@ public final class TimeSlotStep {
      */
     public void assertCalloutAndReserveAfterSlotSelection(int officeId) {
         context.set();
+        // The captcha banner means the slot is already chosen and the JWT has under a minute
+        // left. Re-checking the callout here spends that minute and the reserve then dies
+        // with "Ihre Sitzung ist abgelaufen."
+        if (shadow.deepElementExists("[data-test='timeout-warning-banner']")) {
+            long timestamp = readStoredSlotTimestamp();
+            ScenarioLogManager.getLogger()
+                    .info(
+                            "zmscitizenview: timeout warning is showing; reserving timestamp={} before the captcha TTL ends",
+                            timestamp);
+            clickWeiterForReserve();
+            ReserveOutcome outcome = waitForReserveOutcome();
+            if (outcome == ReserveOutcome.UNFINISHED) {
+                outcome = waitForReserveOutcome(45);
+            }
+            if (outcome == ReserveOutcome.CONTACT || outcome == ReserveOutcome.REBOOKING_OVERVIEW) {
+                keepReservedSlot(timestamp);
+                finishReserveOnContactStep();
+                return;
+            }
+            Assert.fail(
+                    "zmscitizenview: Weiter during the timeout warning did not reach Kontakt (outcome="
+                            + outcome
+                            + ")");
+        }
         Set<Long> skipped = new HashSet<>();
         Long pendingReserveTimestamp = null;
         int unfinishedReserves = 0;

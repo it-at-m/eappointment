@@ -516,8 +516,39 @@ jobs:
             exit 1
           fi
 
+          # 39146 is inside the ephemeral range. An outbound socket can hold it, and
+          # compose up then fails with "address already in use" on zms-captchaservice.
+          current_reserved="$(sysctl -n net.ipv4.ip_local_reserved_ports 2>/dev/null || true)"
+          if [[ "$current_reserved" != *39146* ]]; then
+            if [[ -n "$current_reserved" ]]; then
+              current_reserved="${current_reserved},39146"
+            else
+              current_reserved="39146"
+            fi
+            if sudo sysctl -w net.ipv4.ip_local_reserved_ports="$current_reserved"; then
+              echo "Reserved host port 39146 from ephemeral allocation."
+            else
+              echo "Could not reserve host port 39146; compose up will retry."
+            fi
+          fi
+
           compose down -v --remove-orphans || true
-          compose up -d "${services[@]}"
+          started=0
+          for attempt in 1 2 3; do
+            if compose up -d "${services[@]}"; then
+              started=1
+              break
+            fi
+            echo "compose up failed (attempt ${attempt}/3)."
+            compose down -v --remove-orphans || true
+            docker ps -aq --filter name=zms-captchaservice | xargs -r docker rm -f || true
+            sleep $((attempt * 5))
+          done
+          if [[ "$started" -ne 1 ]]; then
+            echo "compose up failed after 3 attempts."
+            ss -ltnp || true
+            exit 1
+          fi
 
           captcha_ready=""
           for _ in {1..60}; do

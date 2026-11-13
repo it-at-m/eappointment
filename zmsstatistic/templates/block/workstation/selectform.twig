@@ -1,3 +1,4 @@
+{% set permissions = workstation.useraccount.permissions|default({}) %}
 {% embed "block/scaffholding/board.twig" with {'class': 'loginform'} %}
         {% from 'element/helper/form.twig' import formgroup, formbutton, inputfield, providername %}
 
@@ -43,6 +44,9 @@
                         {{ formbutton({ "type":"login", "label":"Auswahl bestätigen", "value": "weiter", "accesskey":"a" }) }}
                     </div>
                 </form>
+                {% if permissions.superuser %}
+                    {% include "block/workstation/scopeSearch.twig" %}
+                {% endif %}
             </div>
         {% endblock %}
 {% endembed %}

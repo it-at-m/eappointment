@@ -129,19 +129,36 @@ class Process extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfaces\R
         }
         $process = clone $process;
         $appointment = $process->getAppointments()->getFirst();
-        $slotList = (new \BO\Zmsbackend\Slot\Service\Slot())->readByAppointment($appointment, $slotsRequired, true);
+        $slotService = new \BO\Zmsbackend\Slot\Service\Slot();
+        $reservation = $slotService->readReservationByAppointment($appointment, $slotsRequired, true);
+        $slotList = $reservation['slotList'];
+        $availabilityId = (int) $reservation['availability']->getId() ?: null;
         $processEntityList = $this->readEntityList($process->getId());
         foreach ($processEntityList as $entity) {
             if ($process->getId() != $entity->getId()) {
                 $this->writeDeletedEntity($entity->getId());
             }
         }
-
-        $appointment->addSlotCount($slotList->count());
-
-        $processEntity = $this->updateEntity($process, $now, $resolveReferences, null, $userAccount);
-        $process = $this->readEntity($process->getId(), $process->authKey, $resolveReferences);
-        (new \BO\Zmsbackend\Slot\Service\Slot())->writeSlotProcessMappingFor($process->getId());
+        $slotMinutes = (int) $reservation['availability']->getSlotTimeInMinutes();
+        if ($slotMinutes === 5) {
+            // One row stores the length. Map its steps after that length is saved.
+            $appointment->addSlotCount($slotList->count());
+            $processEntity = $this->updateEntity($process, $now, $resolveReferences, null, $userAccount);
+            $process = $this->readEntity($process->getId(), $process->authKey, $resolveReferences);
+            $slotService->writeSlotProcessMappingFor($process->getId(), $availabilityId);
+        } else {
+            $slotService->writeSlotProcessMappingFor($process->getId(), $availabilityId);
+            foreach ($slotList as $slot) {
+                $newProcess = clone $process;
+                $newProcess->getFirstAppointment()->setTime($slot->time);
+                if (! $newProcess->getFirstAppointment()->isMatching($process->getFirstAppointment())) {
+                    $this->writeNewProcess($newProcess, $now, $process->id, 0, true, $userAccount, $availabilityId);
+                }
+            }
+            $appointment->addSlotCount($slotList->count());
+            $processEntity = $this->updateEntity($process, $now, $resolveReferences, null, $userAccount);
+            $process = $this->readEntity($process->getId(), $process->authKey, $resolveReferences);
+        }
 
         \BO\Zmsbackend\Log\Service\Log::writeProcessLog("CREATE (\BO\Zmsbackend\Process\Service\Process::updateEntityWithSlots) $process ", \BO\Zmsbackend\Log\Service\Log::ACTION_EDITED, $process, $userAccount);
         return $processEntity;
@@ -207,10 +224,12 @@ class Process extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfaces\R
 // update new process with old credentials, also assigned requests and following slots
         $this->updateFollowingProcesses($processTempNewId, $processNew);
         $this->updateReassignedRequests($processTempNewId, $processNew->getId());
-//delete slot mapping for temp process id
-        (new \BO\Zmsbackend\Slot\Service\Slot())->deleteSlotProcessMappingFor($processTempNewId);
+//keep the availability chosen by the reservation, then delete slot mapping for temp process id
+        $slotService = new \BO\Zmsbackend\Slot\Service\Slot();
+        $reservedAvailabilityId = $slotService->readMappedAvailabilityId($processTempNewId);
+        $slotService->deleteSlotProcessMappingFor($processTempNewId);
 //write new slot mapping for changed process with old credentials because new appointment data
-        (new \BO\Zmsbackend\Slot\Service\Slot())->writeSlotProcessMappingFor($processNew->getId());
+        $slotService->writeSlotProcessMappingFor($processNew->getId(), $reservedAvailabilityId);
         \BO\Zmsbackend\Log\Service\Log::writeProcessLog("UPDATE (\BO\Zmsbackend\Process\Service\Process::writeEntityWithNewAppointment) $process ", \BO\Zmsbackend\Log\Service\Log::ACTION_EDITED, $process);
         $status = ($keepReserved) ? Entity::STATUS_RESERVED : ENTITY::STATUS_CONFIRMED;
         return $this->updateProcessStatus($processNew, $status, $now, $resolveReferences);
@@ -254,7 +273,7 @@ class Process extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfaces\R
      * write a new process to DB
      *
      */
-    protected function writeNewProcess(\BO\Zmsentities\Process $process, \DateTimeInterface $dateTime, int $parentProcess = 0, int $childProcessCount = 0, bool $retry = true, \BO\Zmsentities\Useraccount|null $userAccount = null)
+    protected function writeNewProcess(\BO\Zmsentities\Process $process, \DateTimeInterface $dateTime, int $parentProcess = 0, int $childProcessCount = 0, bool $retry = true, \BO\Zmsentities\Useraccount|null $userAccount = null, ?int $availabilityId = null)
     {
         $query = new \BO\Zmsbackend\Process\Repository\Process(\BO\Zmsbackend\Query\Base::INSERT);
         $process->id = $this->readNewProcessId();
@@ -280,11 +299,11 @@ class Process extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfaces\R
         // First try might fail if two processes are created with the same number at the same time
                 sleep(1);
         // Let the other process complete his transaction
-                return $this->writeNewProcess($process, $dateTime, $parentProcess, $childProcessCount, false, $userAccount);
+                return $this->writeNewProcess($process, $dateTime, $parentProcess, $childProcessCount, false, $userAccount, $availabilityId);
             }
             throw new \BO\Zmsbackend\Process\Exception\ProcessCreateFailed($exception->getMessage());
         }
-        (new \BO\Zmsbackend\Slot\Service\Slot())->writeSlotProcessMappingFor($process->id);
+        (new \BO\Zmsbackend\Slot\Service\Slot())->writeSlotProcessMappingFor($process->id, $availabilityId);
         $checksum = ($userAccount) ? sha1($process->id . '-' . $userAccount->getId()) : '';
 
         \BO\Zmsbackend\Log\Service\Log::writeProcessLog("CREATE (\BO\Zmsbackend\Process\Service\Process::writeNewProcess) $process $checksum ", \BO\Zmsbackend\Log\Service\Log::ACTION_NEW, $process, $userAccount);
@@ -324,8 +343,14 @@ class Process extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfaces\R
     {
         $query = new \BO\Zmsbackend\Process\Repository\Process(\BO\Zmsbackend\Query\Base::SELECT);
         $processList = new Collection();
+        $processIds = [];
         while ($processData = $statement->fetch(\PDO::FETCH_ASSOC)) {
             $entity = new Entity($query->postProcessJoins($processData));
+            // The availability join may match a process once per overlapping availability
+            if ($entity->getId() && isset($processIds[$entity->getId()])) {
+                continue;
+            }
+            $processIds[$entity->getId()] = true;
             $entity = $this->readResolvedReferences($entity, $resolveReferences);
             $processList->addEntity($entity);
         }

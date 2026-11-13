@@ -1188,8 +1188,9 @@ public void saveLocationChanges() {
                 .info("Asserting Quelle der Standortdaten / Standortdaten selects are editable");
         WebElement source =
                 findElementByLocatorType("//select[@id='scopeProviderSource']", LocatorType.XPATH, true);
+        // Standortdaten is a button with this id. The native select is gone.
         WebElement provider =
-                findElementByLocatorType("//select[@id='scopeProviderId']", LocatorType.XPATH, true);
+                findElementByLocatorType("//*[@id='scopeProviderId']", LocatorType.XPATH, true);
         Assert.assertTrue(source.isDisplayed(), "Expected Quelle der Standortdaten select.");
         Assert.assertTrue(provider.isDisplayed(), "Expected Standortdaten provider select.");
         Assert.assertTrue(source.isEnabled(), "Quelle der Standortdaten must be enabled.");

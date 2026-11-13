@@ -2,7 +2,8 @@
 # Select @muenchen/muc-patternlab-vue channel for zmscitizenview CI installs.
 #
 # - main branch and git tags  → keep the release pin from package.json / lockfile
-# - every other ref (next, feature branches, …) → npm dist-tag "beta"
+# - every other ref (next, feature branches, …) → the newer semver of npm
+#   dist-tags "beta" and "latest" (a stale beta must not downgrade a release)
 # - pull requests targeting main → keep the release pin (matches what will merge)
 #
 # Usage: .github/scripts/zmscitizenview-select-patternlab.sh [app-path]
@@ -29,8 +30,63 @@ if [[ "${use_release}" == "true" ]]; then
   exit 0
 fi
 
-echo "muc-patternlab-vue: switching to npm dist-tag beta (ref=${REF})"
-npm install @muenchen/muc-patternlab-vue@beta \
+beta_version="$(npm view @muenchen/muc-patternlab-vue@beta version)"
+latest_version="$(npm view @muenchen/muc-patternlab-vue@latest version)"
+chosen_version="$(
+  BETA_VERSION="${beta_version}" LATEST_VERSION="${latest_version}" node -e '
+function parse(version) {
+  const match = /^v?(\d+)\.(\d+)\.(\d+)(?:-([0-9A-Za-z.-]+))?(?:\+.*)?$/.exec(String(version).trim());
+  if (!match) {
+    throw new Error("muc-patternlab-vue: not a semver version: " + version);
+  }
+  return {
+    major: Number(match[1]),
+    minor: Number(match[2]),
+    patch: Number(match[3]),
+    pre: match[4] ? match[4].split(".") : null,
+  };
+}
+function cmpIdent(left, right) {
+  const leftNum = /^[0-9]+$/.test(left);
+  const rightNum = /^[0-9]+$/.test(right);
+  if (leftNum && rightNum) {
+    const delta = Number(left) - Number(right);
+    return delta < 0 ? -1 : delta > 0 ? 1 : 0;
+  }
+  if (leftNum) return -1;
+  if (rightNum) return 1;
+  if (left === right) return 0;
+  return left < right ? -1 : 1;
+}
+function cmpPre(left, right) {
+  if (left === null && right === null) return 0;
+  if (left === null) return 1;
+  if (right === null) return -1;
+  const length = Math.max(left.length, right.length);
+  for (let i = 0; i < length; i += 1) {
+    if (i >= left.length) return -1;
+    if (i >= right.length) return 1;
+    const delta = cmpIdent(left[i], right[i]);
+    if (delta !== 0) return delta;
+  }
+  return 0;
+}
+function cmp(left, right) {
+  const a = parse(left);
+  const b = parse(right);
+  if (a.major !== b.major) return a.major < b.major ? -1 : 1;
+  if (a.minor !== b.minor) return a.minor < b.minor ? -1 : 1;
+  if (a.patch !== b.patch) return a.patch < b.patch ? -1 : 1;
+  return cmpPre(a.pre, b.pre);
+}
+const beta = process.env.BETA_VERSION;
+const latest = process.env.LATEST_VERSION;
+process.stdout.write(cmp(beta, latest) > 0 ? beta.trim() : latest.trim());
+'
+)"
+
+echo "muc-patternlab-vue: beta=${beta_version} latest=${latest_version} chosen=${chosen_version} (ref=${REF})"
+npm install "@muenchen/muc-patternlab-vue@${chosen_version}" \
   --package-lock-only \
   --ignore-scripts \
   --no-fund \

@@ -139,7 +139,7 @@ class SlotList extends Base
         $containsAppointment = false;
         foreach ($this as $slot) {
             if ($takeFollowingSlot > 0) {
-                if (0 == $slot['intern']) {
+                if ($slot['intern'] <= 0) {
                     return false;
                 }
                 $slot->removeAppointment();

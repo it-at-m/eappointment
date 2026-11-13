@@ -833,7 +833,13 @@ public final class MyAppointmentsStep {
                         .warn(
                                 "zmscitizenview: Meine Termine has no Neuer Termin (attempt {}/5)",
                                 attempt);
-                reloadMyAppointments();
+                // A reload while Mein Bereich is waiting for authorization-event drops the
+                // session and leaves a blank overview. Replay the event instead.
+                if (shadow.shadowDomContainsText(loadError)) {
+                    reloadMyAppointments();
+                } else {
+                    requestMyAppointmentsAuthReplay();
+                }
             }
         }
         Assert.assertTrue(
@@ -902,8 +908,19 @@ public final class MyAppointmentsStep {
         } catch (Exception e) {
             ScenarioLogManager.getLogger().warn("zmscitizenview: Meine Termine re-login failed", e);
         }
-        if (!browserIsOnMyAppointments() || !myAppointmentsFinishedLoading()) {
+        if (!browserIsOnMyAppointments()) {
             reloadMyAppointments();
+            return;
+        }
+        long settle = System.currentTimeMillis() + 20_000L;
+        while (System.currentTimeMillis() < settle && !myAppointmentsFinishedLoading()) {
+            requestMyAppointmentsAuthReplay();
+            try {
+                Thread.sleep(250L);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                return;
+            }
         }
     }
     private String myAppointmentsOverviewUrl() {
@@ -1081,11 +1098,13 @@ public final class MyAppointmentsStep {
                         + "var hit=card;"
                         + "if(card.shadowRoot){var a=card.shadowRoot.querySelector('a[href]');if(a)hit=a;}"
                         + "hit.scrollIntoView({block:'center'});hit.click();return true;";
-        // Edge can drop the Bürger-Login session while hopping overview → detail; a full 60s
-        // waitWithThreeWindows then burns the outer budget before Anmelden is noticed on reload.
+        // Edge and Chrome can drop the Bürger-Login session while hopping overview → detail.
+        // The first navigation's page-load and shell waits do not look at this deadline, so a
+        // re-login used to start after the budget was already gone and the assert fired.
         long deadline = System.currentTimeMillis() + Math.max(120, defaultWaitSeconds) * 1000L;
         boolean opened = false;
         int attempt = 0;
+        int[] deadlineExtensions = {0};
         while (System.currentTimeMillis() < deadline) {
             attempt++;
             if (shadow.shadowDomContainsText("Termin absagen")) {
@@ -1097,6 +1116,7 @@ public final class MyAppointmentsStep {
                         .warn(
                                 "zmscitizenview: logged out before opening teaser {}; logging in again",
                                 serviceName);
+                deadline = extendTeaserOpenDeadline(deadline, deadlineExtensions);
                 ensureMeineTermineLoggedIn();
                 continue;
             }
@@ -1135,6 +1155,7 @@ public final class MyAppointmentsStep {
                         .warn(
                                 "zmscitizenview: detail for {} showed Anmelden; logging in and retrying",
                                 serviceName);
+                deadline = extendTeaserOpenDeadline(deadline, deadlineExtensions);
                 ensureMeineTermineLoggedIn();
                 continue;
             }
@@ -1143,6 +1164,7 @@ public final class MyAppointmentsStep {
                             "zmscitizenview: teaser {} did not open detail (attempt {}); trying again",
                             serviceName,
                             attempt);
+            deadline = extendTeaserOpenDeadline(deadline, deadlineExtensions);
             if (!browserIsOnMyAppointments()) {
                 reloadMyAppointments();
                 waitUntilNeueTerminVisible();
@@ -1151,6 +1173,23 @@ public final class MyAppointmentsStep {
         Assert.assertTrue(
                 opened || shadow.shadowDomContainsText("Termin absagen"),
                 "Appointment detail did not show Termin absagen after opening \"" + serviceName + "\".");
+    }
+
+    /**
+     * Gives the next teaser open a fresh 120s when the previous attempt spent the outer budget
+     * inside navigation waits. At most two extensions, so a page that never shows Termin absagen
+     * still fails.
+     */
+    private long extendTeaserOpenDeadline(long deadline, int[] extensionsUsed) {
+        if (extensionsUsed[0] >= 2) {
+            return deadline;
+        }
+        extensionsUsed[0]++;
+        ScenarioLogManager.getLogger()
+                .warn(
+                        "zmscitizenview: teaser open gets another 120s (extension {})",
+                        extensionsUsed[0]);
+        return System.currentTimeMillis() + 120_000L;
     }
 
     /** True when the Bürger-Login prompt is showing (overview or detail) without a session. */
@@ -1249,7 +1288,20 @@ public final class MyAppointmentsStep {
     private String waitForTeaserText(String serviceName) {
         long deadline = System.currentTimeMillis() + Math.max(30, defaultWaitSeconds) * 1000L;
         String last = "";
+        int relogins = 0;
         while (System.currentTimeMillis() < deadline) {
+            if (myAppointmentsShowsLoggedOut() && relogins < 2) {
+                relogins++;
+                ScenarioLogManager.getLogger()
+                        .warn(
+                                "zmscitizenview: Meine Termine logged out while waiting for \"{}\"; logging in again",
+                                serviceName);
+                reloginForMyAppointments();
+                continue;
+            }
+            if (myAppointmentsAwaitingAuthOrSkeleton()) {
+                requestMyAppointmentsAuthReplay();
+            }
             last = teaserText(serviceName);
             if (last.contains(serviceName) && last.contains("Terminnummer")) {
                 return last;
@@ -1261,7 +1313,13 @@ public final class MyAppointmentsStep {
                 break;
             }
         }
-        Assert.fail("Meine Termine teaser for \"" + serviceName + "\" did not appear. Last text: " + last);
+        Assert.fail(
+                "Meine Termine teaser for \""
+                        + serviceName
+                        + "\" did not appear. url="
+                        + DriverUtil.getDriver().getCurrentUrl()
+                        + " last text: "
+                        + last);
         return last;
     }
     private String teaserText(String serviceName) {

@@ -25,7 +25,7 @@ jobs:
           cache: 'npm'
           cache-dependency-path: zmscitizenview/package-lock.json
 
-      # package.json keeps the stable pin for main/tags; other refs test against npm "beta".
+      # package.json keeps the stable pin for main/tags; other refs test against the newer of npm beta and latest.
       - name: Select muc-patternlab-vue channel
         run: bash .github/scripts/zmscitizenview-select-patternlab.sh zmscitizenview
 
