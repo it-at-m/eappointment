@@ -1098,11 +1098,13 @@ public final class MyAppointmentsStep {
                         + "var hit=card;"
                         + "if(card.shadowRoot){var a=card.shadowRoot.querySelector('a[href]');if(a)hit=a;}"
                         + "hit.scrollIntoView({block:'center'});hit.click();return true;";
-        // Edge can drop the Bürger-Login session while hopping overview → detail; a full 60s
-        // waitWithThreeWindows then burns the outer budget before Anmelden is noticed on reload.
+        // Edge and Chrome can drop the Bürger-Login session while hopping overview → detail.
+        // The first navigation's page-load and shell waits do not look at this deadline, so a
+        // re-login used to start after the budget was already gone and the assert fired.
         long deadline = System.currentTimeMillis() + Math.max(120, defaultWaitSeconds) * 1000L;
         boolean opened = false;
         int attempt = 0;
+        int[] deadlineExtensions = {0};
         while (System.currentTimeMillis() < deadline) {
             attempt++;
             if (shadow.shadowDomContainsText("Termin absagen")) {
@@ -1114,6 +1116,7 @@ public final class MyAppointmentsStep {
                         .warn(
                                 "zmscitizenview: logged out before opening teaser {}; logging in again",
                                 serviceName);
+                deadline = extendTeaserOpenDeadline(deadline, deadlineExtensions);
                 ensureMeineTermineLoggedIn();
                 continue;
             }
@@ -1152,6 +1155,7 @@ public final class MyAppointmentsStep {
                         .warn(
                                 "zmscitizenview: detail for {} showed Anmelden; logging in and retrying",
                                 serviceName);
+                deadline = extendTeaserOpenDeadline(deadline, deadlineExtensions);
                 ensureMeineTermineLoggedIn();
                 continue;
             }
@@ -1160,6 +1164,7 @@ public final class MyAppointmentsStep {
                             "zmscitizenview: teaser {} did not open detail (attempt {}); trying again",
                             serviceName,
                             attempt);
+            deadline = extendTeaserOpenDeadline(deadline, deadlineExtensions);
             if (!browserIsOnMyAppointments()) {
                 reloadMyAppointments();
                 waitUntilNeueTerminVisible();
@@ -1168,6 +1173,23 @@ public final class MyAppointmentsStep {
         Assert.assertTrue(
                 opened || shadow.shadowDomContainsText("Termin absagen"),
                 "Appointment detail did not show Termin absagen after opening \"" + serviceName + "\".");
+    }
+
+    /**
+     * Gives the next teaser open a fresh 120s when the previous attempt spent the outer budget
+     * inside navigation waits. At most two extensions, so a page that never shows Termin absagen
+     * still fails.
+     */
+    private long extendTeaserOpenDeadline(long deadline, int[] extensionsUsed) {
+        if (extensionsUsed[0] >= 2) {
+            return deadline;
+        }
+        extensionsUsed[0]++;
+        ScenarioLogManager.getLogger()
+                .warn(
+                        "zmscitizenview: teaser open gets another 120s (extension {})",
+                        extensionsUsed[0]);
+        return System.currentTimeMillis() + 120_000L;
     }
 
     /** True when the Bürger-Login prompt is showing (overview or detail) without a session. */
