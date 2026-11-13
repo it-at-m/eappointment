@@ -6,6 +6,7 @@ namespace BO\Zmscitizenapi\Middleware;
 
 use BO\Zmscitizenapi\Utils\ClientIpHelper;
 use BO\Zmscitizenapi\Utils\ErrorMessages;
+use BO\Zmscitizenapi\Utils\IpList;
 use BO\Slim\LoggerService;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -15,8 +16,6 @@ use Psr\Http\Server\RequestHandlerInterface;
 class IpFilterMiddleware implements MiddlewareInterface
 {
     private const string ERROR_BLACKLISTED = 'ipBlacklisted';
-    private const int IPV4_BITS = 32;
-    private const int IPV6_BITS = 128;
     private string $blacklist;
     private LoggerService $logger;
     public function __construct(LoggerService $logger)
@@ -39,22 +38,8 @@ class IpFilterMiddleware implements MiddlewareInterface
                 return $handler->handle($request);
             }
 
-            $blacklist = $this->parseIpList($this->blacklist ?: null);
-            if ($this->isIpInList($ip, $blacklist)) {
-                $this->logger->logInfo('Access denied - IP blacklisted', [
-                    'ip' => $ip,
-                    'uri' => $uri
-                ]);
-                $error = ErrorMessages::get(self::ERROR_BLACKLISTED);
-                $response = \App::$slim->getResponseFactory()->createResponse();
-                $response = $response->withStatus($error['statusCode'])
-                                ->withHeader('Content-Type', 'application/json');
-            // Write JSON response
-                            $responseBody = json_encode([
-                                'errors' => [$error]
-                            ]);
-                $response->getBody()->write($responseBody);
-                return $response;
+            if (IpList::contains($ip, $this->blacklist)) {
+                return $this->deny(self::ERROR_BLACKLISTED, 'Access denied - IP blacklisted', $ip, $uri);
             }
 
             return $handler->handle($request);
@@ -64,80 +49,24 @@ class IpFilterMiddleware implements MiddlewareInterface
         }
     }
 
-    private function parseIpList(?string $ipList): array
-    {
-        if (empty($ipList)) {
-            return [];
-        }
-
-        $list = array_map('trim', explode(',', $ipList));
-        return array_filter($list, function ($entry) {
-
-            if (strpos($entry, '/') !== false) {
-                list($ip, $bits) = explode('/', $entry);
-                return filter_var($ip, FILTER_VALIDATE_IP) &&
-                       is_numeric($bits) &&
-                       (int)$bits >= 0 &&
-                       (int)$bits <= (strpos($ip, ':') !== false ? self::IPV6_BITS : self::IPV4_BITS);
-            }
-            return filter_var($entry, FILTER_VALIDATE_IP);
-        });
-    }
-
-    private function isIpInList(string $ip, array $list): bool
-    {
-        if (empty($list)) {
-            return false;
-        }
-
-        foreach ($list as $range) {
-            if ($this->isIpInRange($ip, $range)) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    private function isIpInRange(string $ip, string $range): bool
-    {
-        $flags = FILTER_FLAG_IPV4 | FILTER_FLAG_IPV6;
-        if (!filter_var($ip, FILTER_VALIDATE_IP, $flags)) {
-            return false;
-        }
-
-        if (strpos($range, '/') !== false) {
-            list($subnet, $bits) = explode('/', $range);
-            if (!filter_var($subnet, FILTER_VALIDATE_IP, $flags)) {
-                return false;
-            }
-
-            $ipBin = @inet_pton($ip);
-            $subnetBin = @inet_pton($subnet);
-
-            if (
-                $ipBin === false || $subnetBin === false ||
-                strlen($ipBin) !== strlen($subnetBin)
-            ) {
-                return false;
-            }
-
-            $bits = (int)$bits;
-            $maxBits = strlen($ipBin) === 4 ? self::IPV4_BITS : self::IPV6_BITS;
-            if ($bits < 0 || $bits > $maxBits) {
-                return false;
-            }
-
-            $bytes = strlen($ipBin);
-            $mask = str_repeat("\xFF", (int)($bits / 8));
-            if ($bits % 8) {
-                $mask .= chr(0xFF << (8 - ($bits % 8)));
-            }
-
-            $mask = str_pad($mask, $bytes, "\x00");
-            return ($ipBin & $mask) === ($subnetBin & $mask);
-        }
-
-        return $ip === $range;
+    private function deny(
+        string $errorKey,
+        string $logMessage,
+        string $ip,
+        string $uri
+    ): ResponseInterface {
+        $this->logger->logInfo($logMessage, [
+            'ip' => $ip,
+            'uri' => $uri
+        ]);
+        $error = ErrorMessages::get($errorKey);
+        $response = \App::$slim->getResponseFactory()->createResponse();
+        $response = $response->withStatus($error['statusCode'])
+            ->withHeader('Content-Type', 'application/json');
+        $responseBody = json_encode([
+            'errors' => [$error]
+        ]);
+        $response->getBody()->write($responseBody);
+        return $response;
     }
 }
