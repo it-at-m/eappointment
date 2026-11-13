@@ -9,11 +9,17 @@
  * Built HTML kc-* (VITE_KC_*) is the image default (ssodev / A61 / dbs-fragments).
  * runtime-config.json may set kcUrl, kcRealm, and kcClientId for environments
  * whose gateway trusts a different realm (ssotest on zms-demo and zms-load).
+ *
+ * The Tools button is separate host chrome, top right, on non-production only.
  */
+
+import { shouldShowBuildInfo } from "@/utils/buildInfo";
+import { renderHostTools } from "./host-tools";
 
 type RuntimeConfig = {
   showCitizenLogin?: unknown;
   SHOW_CITIZEN_LOGIN?: unknown;
+  ZMS_ENV?: unknown;
   kcUrl?: unknown;
   kcRealm?: unknown;
   kcClientId?: unknown;
@@ -97,8 +103,46 @@ function applyRuntimeKeycloak(runtime: RuntimeConfig | undefined): void {
   }
 }
 
+/**
+ * CDN Mein Bereich shows "Termine" only when this is set.
+ * The loader reads attributes when it upgrades <dbs-login>, so this must run first.
+ * A relative URL resolves on / and under /buergeransicht/.
+ */
+function applyCdnAppointmentLink(): void {
+  const el = document.querySelector("dbs-login");
+  if (!el || el.hasAttribute("appointment-link")) {
+    return;
+  }
+  el.setAttribute("appointment-link", "appointment-overview.html");
+}
+
+/** Same pin as the local Anmelden button and the Tools bar. */
+function pinCdnLoginHost(): void {
+  const el = document.querySelector("dbs-login");
+  if (!el) {
+    return;
+  }
+  el.setAttribute(
+    "style",
+    "position:fixed;top:0;left:0;z-index:10000;display:block;width:max-content;max-width:100%;margin:0;background:transparent"
+  );
+}
+
+function renderToolsWhenInternal(runtime: RuntimeConfig | undefined): void {
+  if (
+    !shouldShowBuildInfo(
+      import.meta.env.VITE_NODE_ENV,
+      runtimeString(runtime?.ZMS_ENV)
+    )
+  ) {
+    return;
+  }
+  renderHostTools();
+}
+
 async function bootstrapLogin(): Promise<void> {
   const runtime = await readRuntimeConfig();
+  renderToolsWhenInternal(runtime);
 
   if (!shouldShowCitizenLogin(runtime)) {
     removeLoginHostChrome();
@@ -117,6 +161,8 @@ async function bootstrapLogin(): Promise<void> {
   }
 
   // CDN dbs-login (BayernID). Uses kc-* from built HTML / VITE_KC_*.
+  applyCdnAppointmentLink();
+  pinCdnLoginHost();
   const loaderUrl = import.meta.env.VITE_DBS_LOGIN_LOADER_URL;
   if (!loaderUrl) {
     console.warn(

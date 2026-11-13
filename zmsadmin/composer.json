@@ -29,7 +29,7 @@
         }
     },
     "require-dev": {
-        "vimeo/psalm": "7.3.1",
+        "vimeo/psalm": "7.4.0",
         "phpmd/phpmd": "@stable",
         "squizlabs/php_codesniffer": "*",
         "phpunit/phpunit": "^13",
