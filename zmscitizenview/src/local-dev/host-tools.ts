@@ -187,8 +187,13 @@ export function renderHostTools(): void {
   document.addEventListener(
     "keydown",
     (event) => {
-      if (event.key === "Escape") {
-        setOpen(false);
+      if (event.key !== "Escape" || menu.hidden) {
+        return;
+      }
+      const menuHasFocus = menu.contains(document.activeElement);
+      setOpen(false);
+      if (menuHasFocus) {
+        button.focus();
       }
     },
     { signal: controller.signal }

@@ -48,6 +48,35 @@ describe("renderHostTools", () => {
     expect(focusStyle).toContain("box-shadow:none");
   });
 
+  it("returns focus to Tools when Escape closes a focused menu", () => {
+    renderHostTools();
+    const button = document.querySelector(
+      "#zms-host-tools button"
+    ) as HTMLButtonElement;
+    button.click();
+    const item = document.querySelector(
+      "#zms-host-tools-menu a"
+    ) as HTMLAnchorElement;
+    item.focus();
+
+    document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" }));
+
+    expect(document.getElementById("zms-host-tools-menu")?.hidden).toBe(true);
+    expect(document.activeElement).toBe(button);
+  });
+
+  it("leaves focus outside the menu when Escape is pressed there", () => {
+    renderHostTools();
+    const home = document.querySelector(
+      "[aria-label='Startseite']"
+    ) as HTMLButtonElement;
+    home.focus();
+
+    document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" }));
+
+    expect(document.activeElement).toBe(home);
+  });
+
   it("renders the menu once", () => {
     renderHostTools();
     renderHostTools();
