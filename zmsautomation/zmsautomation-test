@@ -508,9 +508,12 @@ is_maven_bootstrap_failure() {
   grep -a -F -q \
     -e 'PluginResolutionException' \
     -e 'ArtifactResolutionException' \
+    -e 'DependencyResolutionException' \
     -e 'NoPluginFoundForPrefixException' \
     -e 'could not be resolved' \
+    -e 'Could not resolve dependencies' \
     -e 'Could not find artifact' \
+    -e 'Could not transfer artifact' \
     -e 'was not found in https://repo.maven.apache.org' \
     -e 'resolution is not reattempted until the update interval' \
     -e 'The POM for org.apache.maven.plugins:' \
@@ -603,7 +606,7 @@ purge_and_seed_failed_maven_plugins() {
       fi
       seed_maven_central_gav "${g}:${a}:${v}" || true
     fi
-  done < <(grep -a -E 'Could not find artifact|was not found in https://repo.maven.apache.org|The POM for org\.apache\.maven\.plugins:' "$log_file" || true)
+  done < <(grep -a -E 'Could not find artifact|Could not transfer artifact|was not found in https://repo.maven.apache.org|The POM for org\.apache\.maven\.plugins:' "$log_file" || true)
 }
 
 # 1. Database Backup
@@ -655,6 +658,8 @@ run_flyway_migrate_with_retries() {
   mkdir -p "$PROJECT_ROOT/zmsautomation/target"
   info "Flyway migrate locations=$locations_dir table=$table_name baselineVersion=$baseline_version"
   while (( flyway_try <= 4 )); do
+    # pipefail + set -e would leave this function before the retry check.
+    set +e
     (
       cd "$PROJECT_ROOT/zmsautomation"
       mvn -B -q \
@@ -669,16 +674,21 @@ run_flyway_migrate_with_retries() {
         flyway:migrate
     ) 2>&1 | tee "$flyway_log"
     flyway_exit=${PIPESTATUS[0]}
+    set -e
     if [[ $flyway_exit -eq 0 ]]; then
       return 0
     fi
-    if (( flyway_try < 4 )) && is_maven_bootstrap_failure "$flyway_log"; then
-      warn "Flyway Maven plugin resolve failed (try ${flyway_try}/4); curl-seeding and retrying"
-      purge_and_seed_failed_maven_plugins "$flyway_log"
-      seed_core_maven_plugins || true
-      sleep $((flyway_try * 15))
-      flyway_try=$((flyway_try + 1))
-      continue
+    if is_maven_bootstrap_failure "$flyway_log"; then
+      if (( flyway_try < 4 )); then
+        warn "Flyway Maven plugin resolve failed (try ${flyway_try}/4); curl-seeding and retrying"
+        purge_and_seed_failed_maven_plugins "$flyway_log"
+        seed_core_maven_plugins || true
+        sleep $((flyway_try * 15))
+        flyway_try=$((flyway_try + 1))
+        continue
+      fi
+      warn "Flyway Maven resolve failed for table=$table_name after ${flyway_try} tries."
+      return 1
     fi
     if [[ "$strict" == "1" ]]; then
       warn "Flyway migrate failed for table=$table_name (strict)."
@@ -1063,6 +1073,8 @@ invoke_maven_suite() {
   while (( attempt <= loop_max )); do
     attempt_log="$PROJECT_ROOT/zmsautomation/target/maven-test-${suite_name}-attempt-${attempt}.log"
     info "Starting ${suite_name} Maven test attempt ${attempt}/${loop_max}"
+    # pipefail + set -e would leave this function before the retry check.
+    set +e
     mvn -B -DtrimStackTrace=false \
       ${force_update[@]+"${force_update[@]}"} \
       "${PLATFORM_ARGS[@]}" \
@@ -1079,6 +1091,7 @@ invoke_maven_suite() {
       -Dsso.password="$SSO_PASSWORD" \
       test "$@" 2>&1 | tee "$attempt_log"
     suite_exit=${PIPESTATUS[0]}
+    set -e
 
     if [[ $suite_exit -eq 0 ]]; then
       return 0

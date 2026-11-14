@@ -1286,9 +1286,11 @@ public final class MyAppointmentsStep {
         }
     }
     private String waitForTeaserText(String serviceName) {
-        long deadline = System.currentTimeMillis() + Math.max(30, defaultWaitSeconds) * 1000L;
+        long deadline = System.currentTimeMillis() + Math.max(90, defaultWaitSeconds) * 1000L;
         String last = "";
         int relogins = 0;
+        int reloads = 0;
+        long nextReloadAt = System.currentTimeMillis() + 12_000L;
         while (System.currentTimeMillis() < deadline) {
             if (myAppointmentsShowsLoggedOut() && relogins < 2) {
                 relogins++;
@@ -1297,6 +1299,7 @@ public final class MyAppointmentsStep {
                                 "zmscitizenview: Meine Termine logged out while waiting for \"{}\"; logging in again",
                                 serviceName);
                 reloginForMyAppointments();
+                nextReloadAt = System.currentTimeMillis() + 12_000L;
                 continue;
             }
             if (myAppointmentsAwaitingAuthOrSkeleton()) {
@@ -1305,6 +1308,22 @@ public final class MyAppointmentsStep {
             last = teaserText(serviceName);
             if (last.contains(serviceName) && last.contains("Terminnummer")) {
                 return last;
+            }
+            // After a rebook, Firefox can show Neuer Termin on a Keycloak return URL
+            // while the appointment list stays empty. Auth replay does not refetch it.
+            if (reloads < 3
+                    && System.currentTimeMillis() >= nextReloadAt
+                    && myAppointmentsFinishedLoading()
+                    && !myAppointmentsShowsLoggedOut()) {
+                reloads++;
+                ScenarioLogManager.getLogger()
+                        .warn(
+                                "zmscitizenview: Meine Termine has no teaser for \"{}\" (reload {}/3)",
+                                serviceName,
+                                reloads);
+                reloadMyAppointments();
+                nextReloadAt = System.currentTimeMillis() + 15_000L;
+                continue;
             }
             try {
                 Thread.sleep(400L);
