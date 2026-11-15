@@ -500,7 +500,25 @@ cleanup_qemu_geckodriver_cores
 # URL in ~300ms, then reports "Could not find artifact" even though the jar exists.
 # Retries with -U alone are not enough when wagon keeps getting a bad response — seed
 # the local .m2 path with curl (HTTP status checked) and prefer IPv4.
+# Central itself returns 429 for a whole shard; Flyway then sits on "Flyway migrate"
+# while mvn -q keeps asking repo.maven.apache.org. Every Maven call uses the mirror.
 export MAVEN_OPTS="${MAVEN_OPTS:-} -Djava.net.preferIPv4Stack=true"
+MAVEN_SETTINGS="${TMPDIR:-/tmp}/ataf-maven-settings.xml"
+write_maven_central_mirror() {
+  cat > "$MAVEN_SETTINGS" <<'EOF'
+<settings>
+  <mirrors>
+    <mirror>
+      <id>google-maven-central</id>
+      <name>Google Maven Central mirror</name>
+      <url>https://maven-central.storage-download.googleapis.com/maven2</url>
+      <mirrorOf>*</mirrorOf>
+    </mirror>
+  </mirrors>
+</settings>
+EOF
+}
+write_maven_central_mirror
 
 is_maven_bootstrap_failure() {
   local log_file="$1"
@@ -547,8 +565,8 @@ download_maven_artifact() {
   local dest="$2"
   local base code="000"
   for base in \
-    "https://repo.maven.apache.org/maven2" \
-    "https://maven-central.storage-download.googleapis.com/maven2"
+    "https://maven-central.storage-download.googleapis.com/maven2" \
+    "https://repo.maven.apache.org/maven2"
   do
     if code="$(curl_maven_central_once "${base}/${path}" "$dest")"; then
       return 0
@@ -710,7 +728,7 @@ run_flyway_migrate_with_retries() {
     set +e
     (
       cd "$PROJECT_ROOT/zmsautomation"
-      mvn -B -q \
+      mvn -B -q -s "$MAVEN_SETTINGS" \
         -Dflyway.url="jdbc:mysql://$DB_HOST:$DB_PORT/$DB_NAME" \
         -Dflyway.user="$DB_USER" \
         -Dflyway.password="$DB_PASSWORD" \
@@ -1123,7 +1141,7 @@ invoke_maven_suite() {
     info "Starting ${suite_name} Maven test attempt ${attempt}/${loop_max}"
     # pipefail + set -e would leave this function before the retry check.
     set +e
-    mvn -B -DtrimStackTrace=false \
+    mvn -B -s "$MAVEN_SETTINGS" -DtrimStackTrace=false \
       ${force_update[@]+"${force_update[@]}"} \
       "${PLATFORM_ARGS[@]}" \
       -DBASE_URI="$BASE_URI" \
