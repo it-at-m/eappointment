@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-11-15T16:49:55.011Z",
+  "publishedAt": "2026-11-15T17:05:59.323Z",
   "branches": [
     {
       "name": "next",
@@ -286,8 +286,8 @@
     {
       "name": "fix-ataf-scheduled-flakes",
       "slug": "fix-ataf-scheduled-flakes",
-      "runId": "43735434767",
-      "runStartedAt": "2026-11-15T16:25:57Z"
+      "runId": "43736750857",
+      "runStartedAt": "2026-11-15T16:40:03Z"
     },
     {
       "name": "fix-delete-expired-opening-hours",
