@@ -874,6 +874,27 @@ public final class MyAppointmentsStep {
         // Empty overview still shows Kommende Termine (0) once the skeleton is gone.
         return shadow.shadowDomContainsText("Kommende Termine (0)") && !shadow.deepElementExists(".skeleton-loader");
     }
+
+    /**
+     * Reload only after the appointment list has finished without the teaser.
+     * A blank overview counts too. The shell button alone does not.
+     */
+    private boolean myAppointmentsReadyToReloadForMissingTeaser() {
+        if (shadow.deepElementExists(".skeleton-loader")) {
+            return false;
+        }
+        if (shadow.shadowDomContainsText("Ihre Termine können zur Zeit nicht geladen werden.")) {
+            return true;
+        }
+        if (shadow.shadowDomContainsText("Kommende Termine (0)")) {
+            return true;
+        }
+        return browserIsOnMyAppointments()
+                && !shadow.shadowDomContainsText("Neuer Termin")
+                && !shadow.shadowDomContainsText("Kommende Termine")
+                && !shadow.shadowDomContainsText("Anmelden")
+                && !shadow.shadowDomContainsText("Mein Bereich");
+    }
     private boolean myAppointmentsShowsLoggedOut() {
         return browserIsOnMyAppointments()
                 && shadow.shadowDomContainsText("Anmelden")
@@ -1286,11 +1307,11 @@ public final class MyAppointmentsStep {
         }
     }
     private String waitForTeaserText(String serviceName) {
-        long deadline = System.currentTimeMillis() + Math.max(90, defaultWaitSeconds) * 1000L;
+        long deadline = System.currentTimeMillis() + Math.max(120, defaultWaitSeconds) * 1000L;
         String last = "";
         int relogins = 0;
         int reloads = 0;
-        long nextReloadAt = System.currentTimeMillis() + 12_000L;
+        long nextReloadAt = System.currentTimeMillis() + 20_000L;
         while (System.currentTimeMillis() < deadline) {
             if (myAppointmentsShowsLoggedOut() && relogins < 2) {
                 relogins++;
@@ -1299,7 +1320,7 @@ public final class MyAppointmentsStep {
                                 "zmscitizenview: Meine Termine logged out while waiting for \"{}\"; logging in again",
                                 serviceName);
                 reloginForMyAppointments();
-                nextReloadAt = System.currentTimeMillis() + 12_000L;
+                nextReloadAt = System.currentTimeMillis() + 20_000L;
                 continue;
             }
             if (myAppointmentsAwaitingAuthOrSkeleton()) {
@@ -1309,20 +1330,20 @@ public final class MyAppointmentsStep {
             if (last.contains(serviceName) && last.contains("Terminnummer")) {
                 return last;
             }
-            // After a rebook, Firefox can show Neuer Termin on a Keycloak return URL
-            // while the appointment list stays empty. Auth replay does not refetch it.
-            if (reloads < 3
+            // Neuer Termin is the page shell and shows up before the appointment list.
+            // Reloading then aborts the fetch, so the teasers stay empty.
+            if (reloads < 2
                     && System.currentTimeMillis() >= nextReloadAt
-                    && myAppointmentsFinishedLoading()
+                    && myAppointmentsReadyToReloadForMissingTeaser()
                     && !myAppointmentsShowsLoggedOut()) {
                 reloads++;
                 ScenarioLogManager.getLogger()
                         .warn(
-                                "zmscitizenview: Meine Termine has no teaser for \"{}\" (reload {}/3)",
+                                "zmscitizenview: Meine Termine list settled without a teaser for \"{}\" (reload {}/2)",
                                 serviceName,
                                 reloads);
                 reloadMyAppointments();
-                nextReloadAt = System.currentTimeMillis() + 15_000L;
+                nextReloadAt = System.currentTimeMillis() + 20_000L;
                 continue;
             }
             try {
