@@ -521,6 +521,25 @@ is_maven_bootstrap_failure() {
     "$log_file"
 }
 
+# One GET. Prints the HTTP status. Does not retry: a 429 must be followed by a long pause,
+# and curl --retry-delay 2 keeps the rate limit open.
+curl_maven_central_once() {
+  local url="$1"
+  local dest="$2"
+  local code="000"
+  rm -f "${dest}.part"
+  if code="$(curl -sS -L --connect-timeout 15 --max-time 120 -o "${dest}.part" -w '%{http_code}' "$url")"; then
+    :
+  fi
+  if [[ "$code" == "200" && -s "${dest}.part" ]]; then
+    mv -f "${dest}.part" "$dest"
+    return 0
+  fi
+  rm -f "${dest}.part"
+  printf '%s' "$code"
+  return 1
+}
+
 # curl a GAV into ~/.m2 so Maven does not have to fetch it through wagon.
 # groupId:artifactId:version  (packaging defaults to jar)
 seed_maven_central_gav() {
@@ -543,15 +562,27 @@ seed_maven_central_gav() {
   fi
   info "Seeding Maven Central artifact ${gav} into ${dest}"
   local try=1
-  while (( try <= 4 )); do
-    rm -f "${dest}/${artifact}-${version}.pom.part" "${dest}/${artifact}-${version}.jar.part" \
-      "${dest}/"*.lastUpdated 2>/dev/null || true
-    if curl -fsSL --retry 3 --retry-delay 2 --connect-timeout 15 --max-time 120 \
-        -o "${dest}/${artifact}-${version}.pom.part" "$pom_url" \
-      && curl -fsSL --retry 3 --retry-delay 2 --connect-timeout 15 --max-time 120 \
-        -o "${dest}/${artifact}-${version}.jar.part" "$jar_url"; then
-      mv -f "${dest}/${artifact}-${version}.pom.part" "${dest}/${artifact}-${version}.pom"
-      mv -f "${dest}/${artifact}-${version}.jar.part" "${dest}/${artifact}-${version}.jar"
+  local wait_s=30
+  local pom_code jar_code
+  while (( try <= 6 )); do
+    rm -f "${dest}/"*.lastUpdated 2>/dev/null || true
+    pom_code="present"
+    jar_code="skipped"
+    if [[ ! -f "${dest}/${artifact}-${version}.pom" ]]; then
+      if ! pom_code="$(curl_maven_central_once "$pom_url" "${dest}/${artifact}-${version}.pom")"; then
+        pom_code="${pom_code:-000}"
+      else
+        pom_code="200"
+      fi
+    fi
+    if [[ -f "${dest}/${artifact}-${version}.pom" && ! -f "${dest}/${artifact}-${version}.jar" ]]; then
+      if ! jar_code="$(curl_maven_central_once "$jar_url" "${dest}/${artifact}-${version}.jar")"; then
+        jar_code="${jar_code:-000}"
+      else
+        jar_code="200"
+      fi
+    fi
+    if [[ -f "${dest}/${artifact}-${version}.pom" && -f "${dest}/${artifact}-${version}.jar" ]]; then
       # Tell Maven these files came from central so it does not leave .lastUpdated holes.
       printf '%s\n' \
         "${group}:${artifact}:pom:${version}>central=" \
@@ -559,8 +590,11 @@ seed_maven_central_gav() {
         > "${dest}/_remote.repositories"
       return 0
     fi
-    warn "curl seed of ${gav} failed (try ${try}/4)"
-    sleep $((try * 5))
+    warn "curl seed of ${gav} failed (try ${try}/6, pom=${pom_code}, jar=${jar_code}); waiting ${wait_s}s"
+    sleep "$wait_s"
+    if (( wait_s < 180 )); then
+      wait_s=$((wait_s * 2))
+    fi
     try=$((try + 1))
   done
   return 1
