@@ -1717,30 +1717,33 @@ public class CounterProcessingStationPage extends AdminPage {
             return;
         }
 
-        // The queue refresh replaces this header between find and click. A held
-        // reference goes stale on Firefox, so each attempt finds it again.
-        for (int attempt = 0; attempt < 3; attempt++) {
-            try {
-                WebElement header = wait.until(ExpectedConditions.visibilityOfElementLocated(headerToggle));
-                scrollToCenterByVisibleElement(header);
-                DRIVER.findElement(headerToggle).click();
-            } catch (StaleElementReferenceException | ElementClickInterceptedException e) {
-                continue;
-            }
-            try {
-                Thread.sleep(200);
-            } catch (InterruptedException ie) {
-                Thread.currentThread().interrupt();
-            }
-            CONTEXT.waitForSpinners();
-            try {
-                wait.until(ExpectedConditions.visibilityOfElementLocated(finishedTable));
-                return;
-            } catch (TimeoutException e) {
-                // The click landed while the queue was still replacing the section.
-            }
+        // The queue refresh replaces this header between find and click. The click
+        // toggles, so it runs only while the section is collapsed. Stale and
+        // intercepted clicks stay inside this wait and retry until it times out.
+        final By finishedSection = By.id("finished-appointments-content");
+        try {
+            wait.until(driver -> {
+                List<WebElement> tables = driver.findElements(finishedTable);
+                if (!tables.isEmpty() && tables.get(0).isDisplayed()) {
+                    return true;
+                }
+                List<WebElement> sections = driver.findElements(finishedSection);
+                boolean collapsed = sections.isEmpty()
+                        || String.valueOf(sections.get(0).getAttribute("class")).contains("hidden");
+                if (!collapsed) {
+                    return false;
+                }
+                List<WebElement> headers = driver.findElements(headerToggle);
+                if (headers.isEmpty() || !headers.get(0).isDisplayed()) {
+                    return false;
+                }
+                scrollToCenterByVisibleElement(headers.get(0));
+                driver.findElement(headerToggle).click();
+                return false;
+            });
+        } catch (TimeoutException e) {
+            Assert.fail("Finished appointments table did not become visible after toggling.");
         }
-        Assert.fail("Finished appointments table did not become visible after toggling.");
     }
 
     private boolean isElementVisible(By locator, int timeoutSeconds) {
