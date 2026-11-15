@@ -1709,39 +1709,38 @@ public class CounterProcessingStationPage extends AdminPage {
     
         WebDriverWait wait = new WebDriverWait(DRIVER, java.time.Duration.ofSeconds(20));
     
-        // Ensure the header control is visible and on screen
-        org.openqa.selenium.WebElement header =
-                wait.until(org.openqa.selenium.support.ui.ExpectedConditions.visibilityOfElementLocated(headerToggle));
-        scrollToCenterByVisibleElement(header);
-    
+        wait.ignoring(StaleElementReferenceException.class, ElementClickInterceptedException.class);
+        wait.until(ExpectedConditions.visibilityOfElementLocated(headerToggle));
+
         // If table is already visible, nothing to do
         if (isElementVisible(finishedTable, 2)) {
             return;
         }
-    
-        // Toggle open and wait; retry once if needed (accounts for animation/rerenders)
-        for (int attempt = 0; attempt < 2; attempt++) {
-            header.click();
+
+        // The queue refresh replaces this header between find and click. A held
+        // reference goes stale on Firefox, so each attempt finds it again.
+        for (int attempt = 0; attempt < 3; attempt++) {
             try {
-                // brief settle for animation
+                WebElement header = wait.until(ExpectedConditions.visibilityOfElementLocated(headerToggle));
+                scrollToCenterByVisibleElement(header);
+                DRIVER.findElement(headerToggle).click();
+            } catch (StaleElementReferenceException | ElementClickInterceptedException e) {
+                continue;
+            }
+            try {
                 Thread.sleep(200);
             } catch (InterruptedException ie) {
                 Thread.currentThread().interrupt();
             }
             CONTEXT.waitForSpinners();
             try {
-                wait.until(org.openqa.selenium.support.ui.ExpectedConditions
-                        .visibilityOfElementLocated(finishedTable));
-                return; // opened successfully
-            } catch (org.openqa.selenium.TimeoutException e) {
-                if (attempt == 0) {
-                    // re-fetch header and try once more
-                    header = DRIVER.findElement(headerToggle);
-                } else {
-                    org.testng.Assert.fail("Finished appointments table did not become visible after toggling.");
-                }
+                wait.until(ExpectedConditions.visibilityOfElementLocated(finishedTable));
+                return;
+            } catch (TimeoutException e) {
+                // The click landed while the queue was still replacing the section.
             }
         }
+        Assert.fail("Finished appointments table did not become visible after toggling.");
     }
 
     private boolean isElementVisible(By locator, int timeoutSeconds) {
