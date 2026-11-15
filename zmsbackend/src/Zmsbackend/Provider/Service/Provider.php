@@ -172,7 +172,12 @@ class Provider extends \BO\Zmsbackend\Base
 
     public function writeImportEntity(array|\BO\Zmsdldb\Entity\Location $provider, string $source = 'dldb')
     {
-        if ($provider['address']['postal_code']) {
+        $geo = is_array($provider['geo'] ?? null) ? $provider['geo'] : null;
+        // One location with no coordinates used to abort the whole import.
+        if (
+            $provider['address']['postal_code'] && $geo && isset($geo['lat'], $geo['lon'])
+            && $geo['lat'] !== '' && $geo['lon'] !== ''
+        ) {
             $query = new \BO\Zmsbackend\Provider\Repository\Provider(\BO\Zmsbackend\Query\Base::REPLACE);
             $query->addValues([
                 'source' => $source,
@@ -181,8 +186,8 @@ class Provider extends \BO\Zmsbackend\Base
                 'display_name' => $provider['displayName'] ?? $provider['name'],
                 'contact__city' => $provider['address']['city'],
                 'contact__country' => $provider['address']['city'],
-                'contact__lat' => $provider['geo']['lat'],
-                'contact__lon' => $provider['geo']['lon'],
+                'contact__lat' => $geo['lat'],
+                'contact__lon' => $geo['lon'],
                 'contact__postalCode' => (string) $provider['address']['postal_code'],
                 'contact__region' => $provider['address']['city'],
                 'contact__street' => $provider['address']['street'],
