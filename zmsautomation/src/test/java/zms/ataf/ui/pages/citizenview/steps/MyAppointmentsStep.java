@@ -875,31 +875,6 @@ public final class MyAppointmentsStep {
         return shadow.shadowDomContainsText("Kommende Termine (0)") && !shadow.deepElementExists(".skeleton-loader");
     }
 
-    /**
-     * Reload once the overview has settled without a card. The services request
-     * clears the skeleton before Meine Termine returns, so Neuer Termin can show
-     * while no card has a Terminnummer yet. A leftover skeleton must not hide that.
-     */
-    private boolean myAppointmentsReadyToReloadForMissingTeaser() {
-        if (shadow.shadowDomContainsText("Ihre Termine können zur Zeit nicht geladen werden.")) {
-            return true;
-        }
-        if (shadow.shadowDomContainsText("Kommende Termine (0)")) {
-            return true;
-        }
-        if (shadow.shadowDomContainsText("Neuer Termin")
-                && !shadow.shadowDomContainsText("Terminnummer")) {
-            return true;
-        }
-        if (shadow.deepElementExists(".skeleton-loader")) {
-            return false;
-        }
-        return browserIsOnMyAppointments()
-                && !shadow.shadowDomContainsText("Neuer Termin")
-                && !shadow.shadowDomContainsText("Kommende Termine")
-                && !shadow.shadowDomContainsText("Anmelden")
-                && !shadow.shadowDomContainsText("Mein Bereich");
-    }
     private boolean myAppointmentsShowsLoggedOut() {
         return browserIsOnMyAppointments()
                 && shadow.shadowDomContainsText("Anmelden")
@@ -1023,41 +998,32 @@ public final class MyAppointmentsStep {
                 "Meine Termine changed the appointment for \"" + serviceName + "\".");
     }
     private String appointmentNumberOnMyAppointments(String serviceName) {
-        String script =
-                "var name=arguments[0];"
-                        + "function textOf(n){var s='';if(!n)return s;if(n.nodeType===3)return n.nodeValue||'';"
-                        + "if(n.shadowRoot)s+=textOf(n.shadowRoot);var c=n.childNodes;if(c)for(var i=0;i<c.length;i++)s+=textOf(c[i]);return s;}"
-                        + "function walk(n,fn){if(!n)return null;if(n.nodeType===1){var hit=fn(n);if(hit)return hit;}"
-                        + "if(n.shadowRoot){var inner=walk(n.shadowRoot,fn);if(inner)return inner;}"
-                        + "var c=n.children;if(c)for(var i=0;i<c.length;i++){var next=walk(c[i],fn);if(next)return next;}return null;}"
-                        + "return walk(document.body,function(el){"
-                        + "if(!el.classList||!el.classList.contains('card'))return null;"
-                        + "var text=textOf(el).replace(/\\s+/g,' ').trim();"
-                        + "if(text.indexOf('1x '+name)<0)return null;"
-                        + "var match=text.match(/Terminnummer:\\s*(\\S+)/);"
-                        + "return match?match[1]:'';});";
-        Object raw = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script, serviceName);
-        return raw == null ? "" : raw.toString();
+        String needle = "1x " + serviceName;
+        java.util.regex.Matcher match =
+                java.util.regex.Pattern.compile("Terminnummer:\\s*(\\S+)").matcher("");
+        for (String text : appointmentCardTexts(true)) {
+            if (!text.contains(needle)) {
+                continue;
+            }
+            match.reset(text);
+            if (match.find()) {
+                return match.group(1);
+            }
+        }
+        return "";
     }
     private static String myAppointmentsNumberKey(String serviceName) {
         return "my_appointments_number_" + serviceName;
     }
     private int countTeasers(String serviceName) {
-        String script =
-                "var name=arguments[0];"
-                        + "function textOf(n){var s='';if(!n)return s;if(n.nodeType===3)return n.nodeValue||'';"
-                        + "if(n.shadowRoot)s+=textOf(n.shadowRoot);var c=n.childNodes;if(c)for(var i=0;i<c.length;i++)s+=textOf(c[i]);return s;}"
-                        + "function walk(n,fn){if(!n)return;if(n.nodeType===1)fn(n);if(n.shadowRoot)walk(n.shadowRoot,fn);"
-                        + "var c=n.children;if(c)for(var i=0;i<c.length;i++)walk(c[i],fn);}"
-                        + "var n=0;walk(document.body,function(el){"
-                        + "if(!el.classList||!el.classList.contains('card'))return;"
-                        + "if(textOf(el).replace(/\\s+/g,' ').indexOf('1x '+name)>=0)n++;});"
-                        + "return n;";
-        Object raw = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script, serviceName);
-        if (raw instanceof Number number) {
-            return number.intValue();
+        String needle = "1x " + serviceName;
+        int count = 0;
+        for (String text : appointmentCardTexts(true)) {
+            if (text.contains(needle)) {
+                count++;
+            }
         }
-        return 0;
+        return count;
     }
     public void assertMyAppointmentsTeaser(String serviceName, String typeLabel, String locationText) {
         context.set();
@@ -1343,11 +1309,16 @@ public final class MyAppointmentsStep {
                 return last;
             }
             // Neuer Termin is the page shell and shows up before the appointment list.
-            // Reloading then aborts the fetch, so the teasers stay empty.
+            // Reloading in that first window aborts the fetch. After it has settled, another
+            // card's Terminnummer must not block a reload: the rebooked service can still be missing.
             if (reloads < 3
                     && System.currentTimeMillis() >= nextReloadAt
-                    && myAppointmentsReadyToReloadForMissingTeaser()
-                    && !myAppointmentsShowsLoggedOut()) {
+                    && !last.contains(serviceName)
+                    && !myAppointmentsShowsLoggedOut()
+                    && (shadow.shadowDomContainsText("Neuer Termin")
+                            || shadow.shadowDomContainsText("Kommende Termine")
+                            || shadow.shadowDomContainsText(
+                                    "Ihre Termine können zur Zeit nicht geladen werden."))) {
                 reloads++;
                 ScenarioLogManager.getLogger()
                         .warn(
@@ -1374,23 +1345,59 @@ public final class MyAppointmentsStep {
                         + last);
         return last;
     }
-    private String teaserText(String serviceName) {
+    /**
+     * Card text via an explicit stack. The recursive walk hits Firefox
+     * {@code InternalError: too much recursion} and comes back empty.
+     *
+     * @param cardClassOnly {@code .card} elements, which is what the list count uses. Teaser reads
+     *     also include {@code muc-card}, whose title lives in the shadow root and whose Terminnummer
+     *     is slotted light DOM.
+     */
+    private java.util.List<String> appointmentCardTexts(boolean cardClassOnly) {
         String script =
-                "var name=arguments[0];"
-                        + "function textOf(n){var s='';if(!n)return s;if(n.nodeType===3)return n.nodeValue||'';"
-                        + "if(n.shadowRoot)s+=textOf(n.shadowRoot);var c=n.childNodes;if(c)for(var i=0;i<c.length;i++)s+=textOf(c[i]);return s;}"
-                        + "function walk(n,fn){if(!n)return false;if(fn(n))return true;if(n.shadowRoot&&walk(n.shadowRoot,fn))return true;"
-                        + "var c=n.children;if(c)for(var i=0;i<c.length;i++)if(walk(c[i],fn))return true;return false;}"
-                        + "var best='';"
-                        + "walk(document.body,function(n){"
-                        + "if(n.nodeType!==1)return false;"
-                        + "var t=textOf(n);"
-                        + "if(t.indexOf(name)<0||t.indexOf('Terminnummer')<0)return false;"
-                        + "if(!best||t.length<best.length)best=t;"
-                        + "return false;});"
-                        + "return best;";
-        Object raw = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script, serviceName);
-        return raw instanceof String ? (String) raw : "";
+                "var cardOnly=arguments[0];"
+                        + "var seen=new Set();var stack=[document.body];var texts=[];"
+                        + "function textOf(root){var seen2=new Set();var st=[root];var buf='';"
+                        + "while(st.length){var n=st.pop();if(!n||seen2.has(n))continue;seen2.add(n);"
+                        + "if(n.nodeType===3){buf+=' '+(n.nodeValue||'');continue;}"
+                        + "if(n.shadowRoot)st.push(n.shadowRoot);"
+                        + "if(n.assignedNodes){try{var a=n.assignedNodes({flatten:true});"
+                        + "for(var j=0;j<a.length;j++)st.push(a[j]);}catch(e){}}"
+                        + "var c=n.childNodes;if(c)for(var i=0;i<c.length;i++)st.push(c[i]);}"
+                        + "return buf.replace(/\\s+/g,' ').trim();}"
+                        + "while(stack.length){var n=stack.pop();if(!n||seen.has(n))continue;seen.add(n);"
+                        + "if(n.nodeType===1){var tag=(n.tagName||'').toUpperCase();"
+                        + "var isCard=n.classList&&n.classList.contains('card');"
+                        + "if(isCard||(!cardOnly&&tag==='MUC-CARD'))texts.push(textOf(n));}"
+                        + "if(n.shadowRoot)stack.push(n.shadowRoot);"
+                        + "if(n.assignedNodes){try{var a=n.assignedNodes({flatten:true});"
+                        + "for(var j=0;j<a.length;j++)stack.push(a[j]);}catch(e){}}"
+                        + "var c=n.childNodes;if(c)for(var i=0;i<c.length;i++)stack.push(c[i]);}"
+                        + "return texts;";
+        Object raw = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script, cardClassOnly);
+        if (!(raw instanceof java.util.List<?> rows)) {
+            return java.util.List.of();
+        }
+        java.util.List<String> texts = new java.util.ArrayList<>();
+        for (Object row : rows) {
+            if (row != null) {
+                texts.add(row.toString());
+            }
+        }
+        return texts;
+    }
+
+    private String teaserText(String serviceName) {
+        String best = "";
+        for (String text : appointmentCardTexts(false)) {
+            if (!text.contains(serviceName) || !text.contains("Terminnummer")) {
+                continue;
+            }
+            if (best.isEmpty() || text.length() < best.length()) {
+                best = text;
+            }
+        }
+        return best;
     }
     public void assertIcsDownloadOfferedOnDetailIntro() {
         context.set();
