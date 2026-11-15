@@ -1,0 +1,106 @@
+{
+  "branch": "fix-ataf-scheduled-flakes",
+  "branchSlug": "fix-ataf-scheduled-flakes",
+  "runId": "43735434767",
+  "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/43735434767",
+  "runStartedAt": "2026-11-15T16:25:57Z",
+  "publishedAt": "2026-11-15T16:49:55.011Z",
+  "features": {
+    "feature-ui-zmsadmin-queue-zmskvr-1565-zmskvr-1385-switch-queue-customer": {
+      "status": "passed",
+      "shard": "custom",
+      "browser": "chrome",
+      "browsers": {
+        "chrome": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "43735434767",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/43735434767",
+          "runStartedAt": "2026-11-15T16:25:57Z"
+        },
+        "edge": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "43735434767",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/43735434767",
+          "runStartedAt": "2026-11-15T16:25:57Z"
+        },
+        "firefox": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "43735434767",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/43735434767",
+          "runStartedAt": "2026-11-15T16:25:57Z"
+        }
+      },
+      "rel": "ui/zmsadmin/queue/zmskvr-1565_zmskvr-1385_switch_queue_customer.feature",
+      "runId": "43735434767",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/43735434767",
+      "runStartedAt": "2026-11-15T16:25:57Z"
+    },
+    "feature-ui-zmsadmin-queue-zmskvr-1633-zmskvr-1397-resume-waiting-time": {
+      "status": "passed",
+      "shard": "custom",
+      "browser": "chrome",
+      "browsers": {
+        "chrome": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "43735434767",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/43735434767",
+          "runStartedAt": "2026-11-15T16:25:57Z"
+        },
+        "edge": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "43735434767",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/43735434767",
+          "runStartedAt": "2026-11-15T16:25:57Z"
+        },
+        "firefox": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "43735434767",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/43735434767",
+          "runStartedAt": "2026-11-15T16:25:57Z"
+        }
+      },
+      "rel": "ui/zmsadmin/queue/zmskvr-1633_zmskvr-1397_resume_waiting_time.feature",
+      "runId": "43735434767",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/43735434767",
+      "runStartedAt": "2026-11-15T16:25:57Z"
+    },
+    "feature-ui-zmscitizenview-citizen-login-zmskvr-1576-zmskvr-1204-my-appointments-list": {
+      "status": "passed",
+      "shard": "custom",
+      "browser": "chrome",
+      "browsers": {
+        "chrome": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "43735434767",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/43735434767",
+          "runStartedAt": "2026-11-15T16:25:57Z"
+        },
+        "edge": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "43735434767",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/43735434767",
+          "runStartedAt": "2026-11-15T16:25:57Z"
+        },
+        "firefox": {
+          "status": "passed",
+          "shard": "custom",
+          "runId": "43735434767",
+          "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/43735434767",
+          "runStartedAt": "2026-11-15T16:25:57Z"
+        }
+      },
+      "rel": "ui/zmscitizenview/citizen-login/zmskvr-1576_zmskvr-1204_my_appointments_list.feature",
+      "runId": "43735434767",
+      "runUrl": "https://github.com/it-at-m/eappointment/actions/runs/43735434767",
+      "runStartedAt": "2026-11-15T16:25:57Z"
+    }
+  }
+}
