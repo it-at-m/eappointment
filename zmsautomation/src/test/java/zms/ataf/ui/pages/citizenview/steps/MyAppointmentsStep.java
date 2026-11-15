@@ -876,18 +876,23 @@ public final class MyAppointmentsStep {
     }
 
     /**
-     * Reload only after the appointment list has finished without the teaser.
-     * A blank overview counts too. The shell button alone does not.
+     * Reload once the overview has settled without a card. The services request
+     * clears the skeleton before Meine Termine returns, so Neuer Termin can show
+     * while no card has a Terminnummer yet. A leftover skeleton must not hide that.
      */
     private boolean myAppointmentsReadyToReloadForMissingTeaser() {
-        if (shadow.deepElementExists(".skeleton-loader")) {
-            return false;
-        }
         if (shadow.shadowDomContainsText("Ihre Termine können zur Zeit nicht geladen werden.")) {
             return true;
         }
         if (shadow.shadowDomContainsText("Kommende Termine (0)")) {
             return true;
+        }
+        if (shadow.shadowDomContainsText("Neuer Termin")
+                && !shadow.shadowDomContainsText("Terminnummer")) {
+            return true;
+        }
+        if (shadow.deepElementExists(".skeleton-loader")) {
+            return false;
         }
         return browserIsOnMyAppointments()
                 && !shadow.shadowDomContainsText("Neuer Termin")
@@ -942,6 +947,13 @@ public final class MyAppointmentsStep {
                 Thread.currentThread().interrupt();
                 return;
             }
+        }
+        // Keycloak returns to appointment-overview.html without the cache-bust, and that
+        // page can keep the Neuer Termin shell without fetching the appointment cards.
+        if (!shadow.shadowDomContainsText("Terminnummer")) {
+            ScenarioLogManager.getLogger()
+                    .warn("zmscitizenview: re-login returned Meine Termine without a card; opening it again");
+            reloadMyAppointments();
         }
     }
     private String myAppointmentsOverviewUrl() {
@@ -1332,14 +1344,14 @@ public final class MyAppointmentsStep {
             }
             // Neuer Termin is the page shell and shows up before the appointment list.
             // Reloading then aborts the fetch, so the teasers stay empty.
-            if (reloads < 2
+            if (reloads < 3
                     && System.currentTimeMillis() >= nextReloadAt
                     && myAppointmentsReadyToReloadForMissingTeaser()
                     && !myAppointmentsShowsLoggedOut()) {
                 reloads++;
                 ScenarioLogManager.getLogger()
                         .warn(
-                                "zmscitizenview: Meine Termine list settled without a teaser for \"{}\" (reload {}/2)",
+                                "zmscitizenview: Meine Termine list settled without a teaser for \"{}\" (reload {}/3)",
                                 serviceName,
                                 reloads);
                 reloadMyAppointments();
