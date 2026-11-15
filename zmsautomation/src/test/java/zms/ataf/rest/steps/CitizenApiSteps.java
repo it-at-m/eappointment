@@ -2194,13 +2194,16 @@ public class CitizenApiSteps {
                 "Citizen API /cancel-appointment/ for remembered \"%s\" processId=%d",
                 label,
                 remembered.processId));
-        response = given()
-            .baseUri(baseUri != null ? baseUri : TestConfig.getCitizenApiBaseUri())
-            .contentType("application/json")
-            .body(Map.of("processId", remembered.processId, "authKey", remembered.authKey))
-        .when()
-            .post("/cancel-appointment/");
-        CommonApiSteps.setResponse(response);
+        response = postCancelAppointment(remembered.processId, remembered.authKey);
+        String cancelBody = response.asString();
+        // A slot only a few minutes ahead is in the past once the detail page was slow to paint.
+        if (response.getStatusCode() == 406 && cancelBody.contains("appointmentCanNotBeCanceled")) {
+            ScenarioLogManager.getLogger().info(
+                    "Citizen API cancel appointmentCanNotBeCanceled; bumping processId={} forward and retrying",
+                    remembered.processId);
+            bumpReservedAppointmentIntoFuture(remembered.processId);
+            response = postCancelAppointment(remembered.processId, remembered.authKey);
+        }
         response.then().statusCode(200);
         Integer currentProcessId = lastReserveProcess == null ? null : lastReserveProcess.getProcessId();
         if (currentProcessId != null && currentProcessId.intValue() == remembered.processId) {
@@ -2939,7 +2942,8 @@ public class CitizenApiSteps {
     }
 
     /**
-     * Push a still-reserved row past both suite clock and wall clock so citizen cancel accepts it.
+     * Push the appointment past both suite clock and wall clock so citizen cancel accepts it.
+     * Confirmed bookings are the same buerger row; limiting this to reserved rows leaves them in the past.
      */
     private void bumpReservedAppointmentIntoFuture(int processId) {
         java.time.LocalDateTime suite;
@@ -2957,8 +2961,6 @@ public class CitizenApiSteps {
                 UPDATE buerger
                    SET Datum = ?, Uhrzeit = ?
                  WHERE BuergerID = ?
-                   AND bestaetigt = 0
-                   AND vorlaeufigeBuchung = 1
                 """;
         try (Connection connection = openZmsConnection();
                 PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -2968,7 +2970,7 @@ public class CitizenApiSteps {
             statement.setInt(3, processId);
             int updated = statement.executeUpdate();
             ScenarioLogManager.getLogger().info(
-                    "Bumped reserved process {} to {} for cancel retry (rows={})",
+                    "Bumped process {} to {} for cancel retry (rows={})",
                     processId, appointment, updated);
         } catch (SQLException e) {
             ScenarioLogManager.getLogger().warn(
