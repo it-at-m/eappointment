@@ -14,6 +14,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import ataf.core.logging.ScenarioLogManager;
 import ataf.web.utils.DriverUtil;
 import zms.ataf.helpers.ViewportSizes;
+import zms.ataf.rest.dto.zmscitizenapi.ThinnedProcess;
+import zms.ataf.rest.steps.CitizenApiSteps;
 import zms.ataf.ui.pages.citizenview.CitizenViewPage;
 import zms.ataf.ui.pages.citizenview.CitizenViewPageContext;
 import zms.ataf.ui.pages.citizenview.support.CitizenViewJson;
@@ -3776,6 +3778,20 @@ public final class TimeSlotStep {
     }
 
     /**
+     * True when reserve-appointment already stored this slot's process. The expiry callout can
+     * paint in the same second, before Kontaktdaten is in the DOM.
+     */
+    private boolean reserveForCurrentSlotLanded() {
+        page.trySetBookingProcessFromPage();
+        ThinnedProcess booked = CitizenApiSteps.getBookingProcess();
+        if (booked == null || booked.getTimestamp() == null) {
+            return false;
+        }
+        long slot = readStoredSlotTimestamp();
+        return slot > 0 && booked.getTimestamp().longValue() == slot;
+    }
+
+    /**
      * @return the painted reserve result, or null while Weiter is still in flight or the page has not settled
      */
     private ReserveOutcome currentReserveOutcome() {
@@ -3790,6 +3806,11 @@ public final class TimeSlotStep {
             return ReserveOutcome.RATE_LIMITED;
         }
         if (shadow.shadowDomContainsText("Ihre Sitzung ist abgelaufen.")) {
+            // The reserve response and the captcha-expiry callout can land together.
+            // The appointment is already stored for this slot; Kontakt paints just after.
+            if (reserveForCurrentSlotLanded()) {
+                return null;
+            }
             Assert.fail(
                     "zmscitizenview: captcha session expired during reserve (Ihre Sitzung ist abgelaufen.)"
                             + " — finish Leistung→Kontakt within CAPTCHA_TOKEN_TTL");

@@ -521,8 +521,8 @@ is_maven_bootstrap_failure() {
     "$log_file"
 }
 
-# One GET. Prints the HTTP status. Does not retry: a 429 must be followed by a long pause,
-# and curl --retry-delay 2 keeps the rate limit open.
+# One GET. Prints the HTTP status. No curl --retry: a 429 from Central must switch host,
+# not sit for minutes and hit the same limit again.
 curl_maven_central_once() {
   local url="$1"
   local dest="$2"
@@ -540,20 +540,38 @@ curl_maven_central_once() {
   return 1
 }
 
+# Central first. On 429, the Google mirror in the same attempt. Waiting on Central
+# does not clear a shared runner limit and leaves the shard job sitting for an hour.
+download_maven_artifact() {
+  local path="$1"
+  local dest="$2"
+  local base code="000"
+  for base in \
+    "https://repo.maven.apache.org/maven2" \
+    "https://maven-central.storage-download.googleapis.com/maven2"
+  do
+    if code="$(curl_maven_central_once "${base}/${path}" "$dest")"; then
+      return 0
+    fi
+    code="${code:-000}"
+  done
+  printf '%s' "$code"
+  return 1
+}
+
 # curl a GAV into ~/.m2 so Maven does not have to fetch it through wagon.
 # groupId:artifactId:version  (packaging defaults to jar)
 seed_maven_central_gav() {
   local gav="$1"
   local group artifact version
   local m2="${M2_REPO:-${HOME}/.m2/repository}"
-  local base="https://repo.maven.apache.org/maven2"
-  local gpath dest pom_url jar_url
+  local gpath dest pom_path jar_path
   IFS=':' read -r group artifact version <<< "$gav"
   [[ -n "$group" && -n "$artifact" && -n "$version" ]] || return 1
   gpath="${group//.//}"
   dest="${m2}/${gpath}/${artifact}/${version}"
-  pom_url="${base}/${gpath}/${artifact}/${version}/${artifact}-${version}.pom"
-  jar_url="${base}/${gpath}/${artifact}/${version}/${artifact}-${version}.jar"
+  pom_path="${gpath}/${artifact}/${version}/${artifact}-${version}.pom"
+  jar_path="${gpath}/${artifact}/${version}/${artifact}-${version}.jar"
   mkdir -p "$dest"
   if [[ -f "${dest}/${artifact}-${version}.jar" && -f "${dest}/${artifact}-${version}.pom" ]]; then
     # Drop poisoned .lastUpdated markers left by a prior failed resolve.
@@ -562,21 +580,20 @@ seed_maven_central_gav() {
   fi
   info "Seeding Maven Central artifact ${gav} into ${dest}"
   local try=1
-  local wait_s=30
   local pom_code jar_code
-  while (( try <= 6 )); do
+  while (( try <= 3 )); do
     rm -f "${dest}/"*.lastUpdated 2>/dev/null || true
     pom_code="present"
     jar_code="skipped"
     if [[ ! -f "${dest}/${artifact}-${version}.pom" ]]; then
-      if ! pom_code="$(curl_maven_central_once "$pom_url" "${dest}/${artifact}-${version}.pom")"; then
+      if ! pom_code="$(download_maven_artifact "$pom_path" "${dest}/${artifact}-${version}.pom")"; then
         pom_code="${pom_code:-000}"
       else
         pom_code="200"
       fi
     fi
     if [[ -f "${dest}/${artifact}-${version}.pom" && ! -f "${dest}/${artifact}-${version}.jar" ]]; then
-      if ! jar_code="$(curl_maven_central_once "$jar_url" "${dest}/${artifact}-${version}.jar")"; then
+      if ! jar_code="$(download_maven_artifact "$jar_path" "${dest}/${artifact}-${version}.jar")"; then
         jar_code="${jar_code:-000}"
       else
         jar_code="200"
@@ -590,11 +607,8 @@ seed_maven_central_gav() {
         > "${dest}/_remote.repositories"
       return 0
     fi
-    warn "curl seed of ${gav} failed (try ${try}/6, pom=${pom_code}, jar=${jar_code}); waiting ${wait_s}s"
-    sleep "$wait_s"
-    if (( wait_s < 180 )); then
-      wait_s=$((wait_s * 2))
-    fi
+    warn "curl seed of ${gav} failed (try ${try}/3, pom=${pom_code}, jar=${jar_code})"
+    sleep 10
     try=$((try + 1))
   done
   return 1
