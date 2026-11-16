@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-11-16T10:55:56.080Z",
+  "publishedAt": "2026-11-16T11:21:38.772Z",
   "branches": [
     {
       "name": "next",
@@ -300,6 +300,12 @@
       "slug": "fix-possibly-null-property-fetch",
       "runId": "42724195879",
       "runStartedAt": "2026-11-09T23:54:35Z"
+    },
+    {
+      "name": "fix-schema-command-file-handling",
+      "slug": "fix-schema-command-file-handling",
+      "runId": "43848407392",
+      "runStartedAt": "2026-11-16T10:23:33Z"
     },
     {
       "name": "fix-zms-pin-chromium-for-selenium",
