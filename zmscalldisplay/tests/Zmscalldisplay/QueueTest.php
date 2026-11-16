@@ -53,4 +53,29 @@ class QueueTest extends Base
         $this->assertStringContainsString('Ausgabe', (string) $response->getBody());
         $this->assertStringContainsString('31316', (string) $response->getBody());
     }
+
+    public function testSkipsRefreshWhenQueueRequestFails()
+    {
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readPostResult',
+                    'url' => '/calldisplay/queue/',
+                    'parameters' => [
+                        'statusList' => ['called']
+                    ],
+                    'exception' => new \BO\Zmsclient\Exception\ApiFailed(
+                        'API-Call failed, JSON parsing with error: malformed JSON'
+                    )
+                ]
+            ]
+        );
+        $response = $this->render([], [
+            'collections' => [
+                'scopelist' => '141'
+            ]
+        ], []);
+        $this->assertSame(200, $response->getStatusCode());
+        $this->assertSame('', (string) $response->getBody());
+    }
 }
