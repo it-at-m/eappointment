@@ -1406,7 +1406,7 @@ const nextCancelReschedule = () => {
 /**
  * Adjusts the active step in the stepper to the current view
  */
-watch(currentView, (newCurrentView) => {
+watch(currentView, async (newCurrentView) => {
   activeStep.value = newCurrentView.toString();
   goToTop();
 
