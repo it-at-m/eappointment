@@ -31,11 +31,24 @@ class Queue extends BaseController
 
         $calldisplay = new Helper\Calldisplay($request);
 
-        $queueList = \App::$http
-            ->readPostResult('/calldisplay/queue/', $calldisplay->getEntity(false), [
-                'statusList' => $calldisplay::getRequestedQueueStatus($request)
-            ])
-            ->getCollection();
+        try {
+            $queueList = \App::$http
+                ->readPostResult('/calldisplay/queue/', $calldisplay->getEntity(false), [
+                    'statusList' => $calldisplay::getRequestedQueueStatus($request)
+                ])
+                ->getCollection();
+        } catch (\BO\Zmsclient\Exception $exception) {
+            $message = $exception->getMessage();
+            $snippetAt = strpos($message, ' - Snippet:');
+            if ($snippetAt !== false) {
+                $message = substr($message, 0, $snippetAt);
+            }
+            \App::$log->error('Calldisplay queue refresh skipped', [
+                'status' => $exception->getCode(),
+                'error' => $message,
+            ]);
+            return $response;
+        }
 
         $queueList = ($queueList) ?
             $queueList->withStatus($calldisplay::getRequestedQueueStatus($request))->sortByCallTime('descending') :
