@@ -34,6 +34,9 @@ class Workstation extends BaseController
                 )
             );
         }
+        if (! $workstation->getScope()->hasId()) {
+            return \BO\Slim\Render::redirect('workstationSelect', [], []);
+        }
         $workstation->getUseraccount()->testPermissions(['appointment']);
         $validator = $request->getAttribute('validator');
         $selectedTime = $validator->getParameter('time')->isString()->getValue();
