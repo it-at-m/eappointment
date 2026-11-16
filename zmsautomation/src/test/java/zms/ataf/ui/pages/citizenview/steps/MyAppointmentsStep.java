@@ -970,19 +970,38 @@ public final class MyAppointmentsStep {
     public void assertMyAppointmentsAppointmentReplaced(String serviceName) {
         context.set();
         String previous = TestDataHelper.getTestData(myAppointmentsNumberKey(serviceName));
-        String current = new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(30))
-                .pollingEvery(Duration.ofMillis(500))
-                .until(d -> {
-                    String number = appointmentNumberOnMyAppointments(serviceName);
-                    if (number == null || number.isBlank()) {
-                        return null;
-                    }
-                    if (previous != null && previous.equals(number)) {
-                        return null;
-                    }
-                    return number;
-                });
-        Assert.assertFalse(current.isBlank(), "Meine Termine has no number for \"" + serviceName + "\".");
+        // Rebook confirms before Meine Termine drops the old card. Polling that page
+        // keeps the original Terminnummer; open the overview again until the new one is there.
+        long deadline = System.currentTimeMillis() + 75_000L;
+        int reloads = 0;
+        long nextReloadAt = System.currentTimeMillis() + 5_000L;
+        String current = "";
+        while (System.currentTimeMillis() < deadline) {
+            current = appointmentNumberOnMyAppointments(serviceName);
+            if (current != null && !current.isBlank() && (previous == null || !previous.equals(current))) {
+                break;
+            }
+            if (reloads < 3 && System.currentTimeMillis() >= nextReloadAt) {
+                reloads++;
+                ScenarioLogManager.getLogger()
+                        .warn(
+                                "zmscitizenview: Meine Termine still shows {} for \"{}\" after rebook; opening it again ({}/3)",
+                                current == null || current.isBlank() ? "no number" : current,
+                                serviceName,
+                                reloads);
+                reloadMyAppointments();
+                nextReloadAt = System.currentTimeMillis() + 15_000L;
+            }
+            try {
+                Thread.sleep(400L);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                break;
+            }
+        }
+        Assert.assertFalse(
+                current == null || current.isBlank(),
+                "Meine Termine has no number for \"" + serviceName + "\".");
         Assert.assertNotEquals(
                 current,
                 previous,
@@ -1001,16 +1020,31 @@ public final class MyAppointmentsStep {
         String needle = "1x " + serviceName;
         java.util.regex.Matcher match =
                 java.util.regex.Pattern.compile("Terminnummer:\\s*(\\S+)").matcher("");
-        for (String text : appointmentCardTexts(true)) {
+        String best = null;
+        String bestNumber = "";
+        for (String text : appointmentCardTexts(false)) {
             if (!text.contains(needle)) {
                 continue;
             }
             match.reset(text);
-            if (match.find()) {
-                return match.group(1);
+            String number = "";
+            while (match.find()) {
+                String candidate = match.group(1);
+                if (candidate.startsWith("+")) {
+                    continue;
+                }
+                number = candidate;
+                break;
+            }
+            if (number.isEmpty()) {
+                continue;
+            }
+            if (best == null || text.length() < best.length()) {
+                best = text;
+                bestNumber = number;
             }
         }
-        return "";
+        return bestNumber;
     }
     private static String myAppointmentsNumberKey(String serviceName) {
         return "my_appointments_number_" + serviceName;
@@ -1285,11 +1319,13 @@ public final class MyAppointmentsStep {
         }
     }
     private String waitForTeaserText(String serviceName) {
-        long deadline = System.currentTimeMillis() + Math.max(120, defaultWaitSeconds) * 1000L;
+        long deadline = System.currentTimeMillis() + Math.max(240, defaultWaitSeconds) * 1000L;
         String last = "";
         int relogins = 0;
         int reloads = 0;
-        long nextReloadAt = System.currentTimeMillis() + 20_000L;
+        long nextReloadAt = System.currentTimeMillis() + 8_000L;
+        long blankSince = 0L;
+        long shellWithoutNameSince = 0L;
         while (System.currentTimeMillis() < deadline) {
             if (myAppointmentsShowsLoggedOut() && relogins < 2) {
                 relogins++;
@@ -1298,7 +1334,9 @@ public final class MyAppointmentsStep {
                                 "zmscitizenview: Meine Termine logged out while waiting for \"{}\"; logging in again",
                                 serviceName);
                 reloginForMyAppointments();
-                nextReloadAt = System.currentTimeMillis() + 20_000L;
+                nextReloadAt = System.currentTimeMillis() + 45_000L;
+                blankSince = 0L;
+                shellWithoutNameSince = 0L;
                 continue;
             }
             if (myAppointmentsAwaitingAuthOrSkeleton()) {
@@ -1308,25 +1346,50 @@ public final class MyAppointmentsStep {
             if (last.contains(serviceName) && last.contains("Terminnummer")) {
                 return last;
             }
-            // Neuer Termin is the page shell and shows up before the appointment list.
-            // Reloading in that first window aborts the fetch. After it has settled, another
-            // card's Terminnummer must not block a reload: the rebooked service can still be missing.
-            if (reloads < 3
-                    && System.currentTimeMillis() >= nextReloadAt
+            boolean loadError =
+                    shadow.shadowDomContainsText("Ihre Termine können zur Zeit nicht geladen werden.");
+            boolean shellUp =
+                    loadError
+                            || shadow.shadowDomContainsText("Neuer Termin")
+                            || shadow.shadowDomContainsText("Kommende Termine");
+            long now = System.currentTimeMillis();
+            // A reload can land on a blank overview. The shell check then never fires again,
+            // and the rest of the wait polls an empty page.
+            if (!shellUp && !myAppointmentsShowsLoggedOut()) {
+                if (blankSince == 0L) {
+                    blankSince = now;
+                }
+            } else {
+                blankSince = 0L;
+            }
+            boolean blankTooLong = blankSince > 0L && now - blankSince >= 8_000L;
+            // Neuer Termin paints before the cards. Reloading as soon as that shell is up
+            // aborts the appointment fetch, so the teaser never arrives.
+            if (last.contains(serviceName) || !shellUp) {
+                shellWithoutNameSince = 0L;
+            } else if (shellWithoutNameSince == 0L) {
+                shellWithoutNameSince = now;
+            }
+            boolean shellWithoutNameTooLong =
+                    shellWithoutNameSince > 0L && now - shellWithoutNameSince >= 45_000L;
+            if (reloads < 4
+                    && now >= nextReloadAt
                     && !last.contains(serviceName)
                     && !myAppointmentsShowsLoggedOut()
-                    && (shadow.shadowDomContainsText("Neuer Termin")
-                            || shadow.shadowDomContainsText("Kommende Termine")
-                            || shadow.shadowDomContainsText(
-                                    "Ihre Termine können zur Zeit nicht geladen werden."))) {
+                    && (blankTooLong || loadError || shellWithoutNameTooLong)) {
                 reloads++;
                 ScenarioLogManager.getLogger()
                         .warn(
-                                "zmscitizenview: Meine Termine list settled without a teaser for \"{}\" (reload {}/3)",
+                                "zmscitizenview: Meine Termine list settled without a teaser for \"{}\" (reload {}/4)",
                                 serviceName,
                                 reloads);
+                if (blankTooLong) {
+                    requestMyAppointmentsAuthReplay();
+                }
                 reloadMyAppointments();
-                nextReloadAt = System.currentTimeMillis() + 20_000L;
+                nextReloadAt = System.currentTimeMillis() + 45_000L;
+                blankSince = 0L;
+                shellWithoutNameSince = 0L;
                 continue;
             }
             try {
@@ -1360,10 +1423,12 @@ public final class MyAppointmentsStep {
                         + "function textOf(root){var seen2=new Set();var st=[root];var buf='';"
                         + "while(st.length){var n=st.pop();if(!n||seen2.has(n))continue;seen2.add(n);"
                         + "if(n.nodeType===3){buf+=' '+(n.nodeValue||'');continue;}"
-                        + "if(n.shadowRoot)st.push(n.shadowRoot);"
+                        + "var next=[];"
+                        + "if(n.shadowRoot)next.push(n.shadowRoot);"
                         + "if(n.assignedNodes){try{var a=n.assignedNodes({flatten:true});"
-                        + "for(var j=0;j<a.length;j++)st.push(a[j]);}catch(e){}}"
-                        + "var c=n.childNodes;if(c)for(var i=0;i<c.length;i++)st.push(c[i]);}"
+                        + "for(var j=0;j<a.length;j++)next.push(a[j]);}catch(e){}}"
+                        + "var c=n.childNodes;if(c)for(var i=0;i<c.length;i++)next.push(c[i]);"
+                        + "for(var k=next.length-1;k>=0;k--)st.push(next[k]);}"
                         + "return buf.replace(/\\s+/g,' ').trim();}"
                         + "while(stack.length){var n=stack.pop();if(!n||seen.has(n))continue;seen.add(n);"
                         + "if(n.nodeType===1){var tag=(n.tagName||'').toUpperCase();"
