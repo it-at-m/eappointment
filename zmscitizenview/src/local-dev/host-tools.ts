@@ -1,7 +1,9 @@
 /**
  * Internal host-page tools. Top-right, opposite the login button.
- * Shown on local dev and deployed non-prod hosts. Magnolia embeds never
- * load this module. Production hides it via shouldShowBuildInfo.
+ * bootstrap-login renders this only on internal ZMS hosts
+ * (zms.muenchen.de and zms-<env>.muenchen.de, plus localhost).
+ * Magnolia (stadt.muenchen.de) never loads this module. The public
+ * prod route www48.muenchen.de loads the shell but not these buttons.
  */
 import { citizenviewPageHref, citizenviewRootHref } from "@/utils/jumpinLink";
 

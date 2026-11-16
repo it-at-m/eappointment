@@ -72,4 +72,25 @@ class WorkstationTest extends Base
         $this->assertRedirect($response, '/');
         $this->assertEquals(302, $response->getStatusCode());
     }
+
+    public function testRedirectsToScopeSelectionWithoutScope()
+    {
+        $fixture = json_decode($this->readFixture("GET_Workstation_Resolved2.json"), true);
+        $fixture['data']['scope']['id'] = 0;
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/workstation/',
+                    'parameters' => [
+                        'resolveReferences' => 2,
+                        'gql' => \BO\Zmsadmin\Helper\GraphDefaults::getWorkstation()
+                    ],
+                    'response' => json_encode($fixture)
+                ],
+            ]
+        );
+        $response = $this->render($this->arguments, $this->parameters, []);
+        $this->assertRedirect($response, '/workstation/select/');
+    }
 }

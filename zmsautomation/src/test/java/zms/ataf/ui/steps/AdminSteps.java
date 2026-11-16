@@ -899,7 +899,7 @@ public class AdminSteps {
         selectCounterAppointmentTimeOrWalkIn();
         wenn_sie_im_zeitmanagementsystem_unter_terminvereinbarung_neu_den_namen_string_eingeben(name);
         wenn_sie_im_zeitmanagementsystem_unter_terminvereinbarung_neu_die_email_adresse_string_eingeben("<mailinator>");
-        bookNamedAppointmentOrWalkIn(TestDataHelper.getTestData("customer_name"), TestDataHelper.getTestData("customer_email"));
+        bookNamedAppointmentOrWalkIn();
     }
 
     @When("I delete the just booked appointment of {string} from the queue.")
@@ -1391,17 +1391,16 @@ public class AdminSteps {
                 TestDataHelper.transformTestData(statusLabel));
     }
 
-    private void bookNamedAppointmentOrWalkIn(String name, String email) {
-        if (!"true".equals(TestDataHelper.getTestData("appointment_booked_as_walk_in"))
-                && COUNTER_PROCESSING_STATION_PAGE.hasBookAppointmentButton()) {
+    /**
+     * A selected appointment slot stays an appointment. Edge rebuilds the form after the time is
+     * chosen and the Termin buchen button is gone for a moment. Booking a walk-in then writes no
+     * slot-count log, so the customer search never shows Log-Ergebnisse.
+     */
+    private void bookNamedAppointmentOrWalkIn() {
+        if (!"true".equals(TestDataHelper.getTestData("appointment_booked_as_walk_in"))) {
             COUNTER_PROCESSING_STATION_PAGE.clickOnBookAppointmentButton(true);
             COUNTER_PROCESSING_STATION_PAGE.clickOnCloseButton();
             return;
-        }
-        if (!"true".equals(TestDataHelper.getTestData("appointment_booked_as_walk_in"))) {
-            COUNTER_PROCESSING_STATION_PAGE.selectWalkInCustomer();
-            COUNTER_PROCESSING_STATION_PAGE.enterNameInNewAppointmentTextField(name);
-            COUNTER_PROCESSING_STATION_PAGE.enterEmailInNewAppointmentTextField(email);
         }
         String waitingNumber = COUNTER_PROCESSING_STATION_PAGE.clickOnAddSpontaneousCustomer();
         TestDataHelper.setTestData("new_appointment_number", waitingNumber);
@@ -1873,13 +1872,9 @@ public class AdminSteps {
     }
 
     private void confirmCounterAppointmentBooking() {
-        if (!"true".equals(TestDataHelper.getTestData("appointment_booked_as_walk_in"))
-                && COUNTER_PROCESSING_STATION_PAGE.hasBookAppointmentButton()) {
+        if (!"true".equals(TestDataHelper.getTestData("appointment_booked_as_walk_in"))) {
             COUNTER_PROCESSING_STATION_PAGE.clickOnBookAppointmentButton(true);
             return;
-        }
-        if (!"true".equals(TestDataHelper.getTestData("appointment_booked_as_walk_in"))) {
-            COUNTER_PROCESSING_STATION_PAGE.selectWalkInCustomer();
         }
         String waitingNumber = COUNTER_PROCESSING_STATION_PAGE.clickOnAddSpontaneousCustomer();
         TestDataHelper.setTestData("new_appointment_number", waitingNumber);
