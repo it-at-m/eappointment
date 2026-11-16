@@ -63,6 +63,62 @@ export function jumpinLinkError(
 }
 
 /**
+ * Public Magnolia pages for an internal ZMS host.
+ * The builder stays on zms*.muenchen.de; these are the links it hands out.
+ * zms-test and zms-load have no public page.
+ */
+const EXTERNAL_JUMPIN_PAGES: Record<string, readonly string[]> = {
+  "zms-dev.muenchen.de": [
+    "https://stadt-i.muenchen.de/buergerservice/terminvereinbarung.html",
+    "https://lhm-i.muenchen.swm.de/buergerservice/terminvereinbarung.html",
+  ],
+  "zms-demo.muenchen.de": [
+    "https://stadt-k.muenchen.de/buergerservice/terminvereinbarung.html",
+    "https://lhm-k.muenchen.swm.de/buergerservice/terminvereinbarung.html",
+  ],
+  "zms.muenchen.de": [
+    "https://stadt.muenchen.de/buergerservice/terminvereinbarung.html",
+  ],
+};
+
+export function externalJumpinPages(hostname: string): readonly string[] {
+  const host = hostname.trim().toLowerCase().replace(/\.$/, "");
+  return EXTERNAL_JUMPIN_PAGES[host] ?? [];
+}
+
+export type JumpinBuiltLink = {
+  id: string;
+  label: string;
+  href: string;
+};
+
+/**
+ * Internal booking link, then the public pages for this environment.
+ * `internalLabel` is the visible name of the internal link.
+ */
+export function buildJumpinLinks(
+  internalPageHref: string,
+  hostname: string,
+  input: JumpinLinkInput,
+  internalLabel: string
+): JumpinBuiltLink[] {
+  const pages: { id: string; label: string; page: string }[] = [
+    { id: "internal", label: internalLabel, page: internalPageHref },
+  ];
+  for (const page of externalJumpinPages(hostname)) {
+    const label = new URL(page).hostname;
+    pages.push({ id: label, label, page });
+  }
+  return pages.flatMap((entry) => {
+    const href = buildJumpinHref(entry.page, input);
+    if (!href) {
+      return [];
+    }
+    return [{ id: entry.id, label: entry.label, href }];
+  });
+}
+
+/**
  * Booking-page jump-in: `#/services/{id}` and optional `/locations/{id}`,
  * plus `exclusiveLocation=1` when the link should pin that Standort.
  */
