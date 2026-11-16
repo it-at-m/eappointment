@@ -16,11 +16,17 @@ COMMANDS:");
     $padding->label('status')->result('Show status informations');
     $padding->label('config')->result('Show and change api configuration');
 } else {
-    $command = $argv[1];
-    $class = '\\BO\\Zmsbackend\\Cli\\' . ucfirst($command);
-    if (class_exists($class)) {
+    $commandName = $argv[1];
+    $commands = [
+        'config' => \BO\Zmsbackend\Cli\Config::class,
+        'db' => \BO\Zmsbackend\Cli\Db::class,
+        'info' => \BO\Zmsbackend\Cli\Info::class,
+        'status' => \BO\Zmsbackend\Cli\Status::class,
+    ];
+    $commandClass = $commands[strtolower((string) $commandName)] ?? null;
+    if ($commandClass !== null) {
         try {
-            $command = new $class();
+            $command = new $commandClass();
             $command->cli($argv, $climate);
         } catch (\Exception $exception) {
             $climate->to('error')->red("Exception: " . $exception->getMessage());
@@ -28,6 +34,6 @@ COMMANDS:");
             exit($exception->getCode());
         }
     } else {
-        $climate->to('error')->red("Could not find command $command ($class)");
+        $climate->to('error')->red("Could not find command $commandName");
     }
 }
