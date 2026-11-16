@@ -321,6 +321,8 @@
             </div>
 
             <div
+              ref="activationRequestRef"
+              tabindex="-1"
               role="status"
               aria-live="polite"
               aria-atomic="true"
@@ -599,6 +601,8 @@ const STEPPER_ITEMS: StepperItem[] = [
 ];
 
 const activeStep = ref<string>("0");
+
+const activationRequestRef = ref<HTMLElement | null>(null);
 
 const currentView = ref<number>(0);
 
@@ -1405,7 +1409,14 @@ const nextCancelReschedule = () => {
 watch(currentView, (newCurrentView) => {
   activeStep.value = newCurrentView.toString();
   goToTop();
-  focusActiveStepperItem();
+
+  if (newCurrentView === 4 && !cancelAppointmentSuccess.value) {
+    await nextTick();
+    activationRequestRef.value?.focus();
+  } else {
+    focusActiveStepperItem();
+  }
+
   trackAppointmentScreenFromView(newCurrentView);
 });
 
