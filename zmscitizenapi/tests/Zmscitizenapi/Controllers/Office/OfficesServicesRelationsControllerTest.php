@@ -99,6 +99,9 @@ class OfficesServicesRelationsControllerTest extends ControllerTestCase
                     "parentId" => null,
                     "allowDisabledServicesMix" => null,
                     "sharedBookingOfficeIds" => null,
+                    "scopes" => [
+                        ["id" => 1, "shortName" => "Scope 1"],
+                    ],
                 ],
                 [
                     "id" => 9999999,
@@ -160,6 +163,9 @@ class OfficesServicesRelationsControllerTest extends ControllerTestCase
                     "parentId" => null,
                     "allowDisabledServicesMix" => null,
                     "sharedBookingOfficeIds" => null,
+                    "scopes" => [
+                        ["id" => 2, "shortName" => "Scope 2"],
+                    ],
                 ]
             ],
             "services" => [
@@ -282,6 +288,9 @@ class OfficesServicesRelationsControllerTest extends ControllerTestCase
                     "parentId" => null,
                     "allowDisabledServicesMix" => null,
                     "sharedBookingOfficeIds" => null,
+                    "scopes" => [
+                        ["id" => 1, "shortName" => "Scope 1"],
+                    ],
                 ],
                 [
                     "id" => 9999999,
@@ -343,6 +352,9 @@ class OfficesServicesRelationsControllerTest extends ControllerTestCase
                     "parentId" => null,
                     "allowDisabledServicesMix" => null,
                     "sharedBookingOfficeIds" => null,
+                    "scopes" => [
+                        ["id" => 2, "shortName" => "Scope 2"],
+                    ],
                 ]
             ],
             "services" => [

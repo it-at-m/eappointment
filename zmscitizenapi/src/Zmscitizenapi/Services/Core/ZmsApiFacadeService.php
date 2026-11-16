@@ -95,9 +95,15 @@ class ZmsApiFacadeService
         $scopeList = ZmsApiClientService::getScopes();
         $offices = [];
         $scopeMap = [];
+        $scopesByProvider = [];
         foreach ($scopeList as $scope) {
             if ($scope->getProvider()) {
-                $scopeMap[$scope->getProvider()->source . '_' . $scope->getProvider()->id] = $scope;
+                $key = $scope->getProvider()->source . '_' . $scope->getProvider()->id;
+                $scopesByProvider[$key][] = $scope;
+                // The booking scope stays the first one. Later scopes are listed separately.
+                if (!isset($scopeMap[$key])) {
+                    $scopeMap[$key] = $scope;
+                }
             }
         }
 
@@ -142,7 +148,8 @@ class ZmsApiFacadeService
                     hint: ($matchingScope && trim((string) $matchingScope->getScopeHint()) !== '')  ? (string) $matchingScope->getScopeHint() : null,
                     rebookingDisabled: $matchingScope->isRebookingDisabled()
                 ) : null,
-                slotsPerAppointment: $matchingScope ? ((string) $matchingScope->getSlotsPerAppointment() === '' ? null : (string) $matchingScope->getSlotsPerAppointment()) : null
+                slotsPerAppointment: $matchingScope ? ((string) $matchingScope->getSlotsPerAppointment() === '' ? null : (string) $matchingScope->getSlotsPerAppointment()) : null,
+                scopes: MapperService::slimScopeList($scopesByProvider[$provider->source . '_' . $provider->id] ?? [])
             );
         }
 
@@ -171,7 +178,9 @@ class ZmsApiFacadeService
             $scopeProvider = $scope->getProvider();
             if ($scopeProvider && $scopeProvider->id && $scopeProvider->source) {
                 $key = $scopeProvider->source . '_' . $scopeProvider->id;
-                $scopeMap[$key] = $scope;
+                if (!isset($scopeMap[$key])) {
+                    $scopeMap[$key] = $scope;
+                }
             }
         }
 

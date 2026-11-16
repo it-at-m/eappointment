@@ -220,7 +220,7 @@ class AppointmentProcessLimitsValidationService
     }
 
     /**
-     * @return array<int, int> officeId => minimum slotsPerAppointment across scopes
+     * @return array<int, int> officeId => slotsPerAppointment of the first scope
      */
     private static function indexSlotsPerAppointmentByOffice(): array
     {
@@ -251,9 +251,10 @@ class AppointmentProcessLimitsValidationService
             if ($parsed < 1) {
                 continue;
             }
-            $byOffice[$officeId] = isset($byOffice[$officeId])
-                ? min($byOffice[$officeId], $parsed)
-                : $parsed;
+            if (isset($byOffice[$officeId])) {
+                continue;
+            }
+            $byOffice[$officeId] = $parsed;
         }
 
         return $byOffice;

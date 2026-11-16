@@ -27,6 +27,8 @@ use BO\Zmsentities\Queue;
 use BO\Zmsentities\Request;
 use BO\Zmsentities\Scope;
 use BO\Zmsentities\Collection\ProviderList;
+use BO\Zmsentities\Collection\ScopeList;
+use BO\Zmsentities\Exception\ScopeMissingProvider;
 use BO\Zmsentities\Collection\RequestList;
 use BO\Zmsentities\Collection\RequestRelationList;
 
@@ -50,6 +52,60 @@ class MapperService
             return null;
         }
         return array_map('intval', $provider->data['sharedBookingOfficeIds']);
+    }
+
+    /**
+     * Id and short name for every scope on an office.
+     *
+     * @param iterable<mixed> $scopes
+     * @return list<array{id: int|string, shortName: string|null}>
+     */
+    public static function slimScopeList(iterable $scopes): array
+    {
+        $result = [];
+        foreach ($scopes as $scope) {
+            if (!is_object($scope)) {
+                continue;
+            }
+            $id = $scope->id ?? null;
+            if ($id === null || $id === '') {
+                continue;
+            }
+            $shortName = $scope->shortName ?? null;
+            if (($shortName === null || $shortName === '') && method_exists($scope, 'getShortName')) {
+                $shortName = $scope->getShortName();
+            }
+            $result[] = [
+                'id' => is_numeric($id) ? (int) $id : $id,
+                'shortName' => ($shortName === null || $shortName === '') ? null : (string) $shortName,
+            ];
+        }
+        return $result;
+    }
+
+    /**
+     * @return array<string, list<object>>
+     */
+    private static function scopesByProviderKey(): array
+    {
+        $grouped = [];
+        $scopeList = ZmsApiClientService::getScopes();
+        if (!$scopeList instanceof ScopeList) {
+            return $grouped;
+        }
+        foreach ($scopeList as $scope) {
+            try {
+                $provider = $scope->getProvider();
+            } catch (ScopeMissingProvider) {
+                continue;
+            }
+            if (!$provider || !isset($provider->id) || $provider->id === '') {
+                continue;
+            }
+            $key = (($provider->source ?? '') . '_' . $provider->id);
+            $grouped[$key][] = $scope;
+        }
+        return $grouped;
     }
 
     public static function mapScopeForProvider(
@@ -132,6 +188,7 @@ class MapperService
         if (!$scopes instanceof ThinnedScopeList) {
             return new OfficeList();
         }
+        $scopesByProvider = self::scopesByProviderKey();
 
         foreach ($providerList as $provider) {
             // ✅ Source normalisieren: leerer String -> Fallback auf App::$source_name
@@ -193,7 +250,8 @@ class MapperService
                 slotsPerAppointment: isset($providerScope) && !isset($providerScope['errors']) && isset($providerScope->slotsPerAppointment) ? ($providerScope->slotsPerAppointment === '' ? null : $providerScope->slotsPerAppointment) : null,
                 parentId: isset($provider->parent_id) ? (int) $provider->parent_id : null,
                 allowDisabledServicesMix: self::resolveAllowDisabledServicesMix($provider),
-                sharedBookingOfficeIds: self::resolveSharedBookingOfficeIds($provider)
+                sharedBookingOfficeIds: self::resolveSharedBookingOfficeIds($provider),
+                scopes: self::slimScopeList($scopesByProvider[($provider->source ?? '') . '_' . $provider->id] ?? [])
             );
         }
 

@@ -296,6 +296,39 @@ class ZmsApiClientServiceTest extends TestCase
         $this->assertSame(10, (int) $result->getIterator()->current()->id);
     }
 
+    public function testGetScopesKeepsEveryScopeOfOneOffice(): void
+    {
+        $provider = new Provider(['id' => 100, 'source' => 'unittest', 'name' => 'Office']);
+        $first = new Scope([
+            'id' => 160,
+            'source' => 'unittest',
+            'provider' => $provider,
+            'shortName' => 'Schalter A',
+        ]);
+        $second = new Scope([
+            'id' => 181,
+            'source' => 'unittest',
+            'provider' => $provider,
+            'shortName' => 'Schalter B',
+        ]);
+
+        $this->source->providers->addEntity($provider);
+        $this->source->scopes->addEntity($first);
+        $this->source->scopes->addEntity($second);
+
+        $this->cacheMock->method('get')
+            ->with('source_unittest')
+            ->willReturn($this->source);
+
+        $result = ZmsApiClientService::getScopes();
+        $ids = [];
+        foreach ($result as $scope) {
+            $ids[] = (int) $scope->id;
+        }
+
+        $this->assertSame([160, 181], $ids);
+    }
+
     public function testGetServicesCacheHit(): void
     {
         $this->cacheMock->method('get')

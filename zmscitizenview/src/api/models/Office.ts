@@ -83,6 +83,10 @@ export interface Office {
    */
   scope?: Scope;
   /**
+   * Every scope at this office. `scope` stays the one used for booking.
+   */
+  scopes?: { id?: number | string; shortName?: string | null }[];
+  /**
    *
    * @type {string}
    * @memberof Office

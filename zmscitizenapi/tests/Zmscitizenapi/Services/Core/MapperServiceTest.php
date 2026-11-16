@@ -72,6 +72,33 @@ class MapperServiceTest extends TestCase
         $this->assertSame($scope, $result);
     }
 
+    public function testSlimScopeListKeepsEveryScopeOfTheOffice(): void
+    {
+        $provider = new Provider(['id' => 100, 'source' => 'unittest', 'name' => 'Office']);
+        $scopes = [
+            new Scope([
+                'id' => 160,
+                'source' => 'unittest',
+                'provider' => $provider,
+                'shortName' => 'Schalter A',
+            ]),
+            new Scope([
+                'id' => 181,
+                'source' => 'unittest',
+                'provider' => $provider,
+                'shortName' => 'Schalter B',
+            ]),
+        ];
+
+        $this->assertSame(
+            [
+                ['id' => 160, 'shortName' => 'Schalter A'],
+                ['id' => 181, 'shortName' => 'Schalter B'],
+            ],
+            MapperService::slimScopeList($scopes)
+        );
+    }
+
     public function testMapCombinable()
     {
         // Test with valid combinations

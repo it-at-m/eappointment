@@ -177,13 +177,15 @@ class ZmsApiClientService
                     } catch (ScopeMissingProvider) {
                         continue;
                     }
-                    $key = (($prov->source ?? '') . '_' . $prov->id);
-                    if (isset($providerMap[$key])) {
-                        $scope->provider = $providerMap[$key];
+                    $providerKey = (($prov->source ?? '') . '_' . $prov->id);
+                    if (isset($providerMap[$providerKey])) {
+                        $scope->provider = $providerMap[$providerKey];
                     }
-                    if (!isset($seen[$key])) {
+                    // One office can have several scopes. Dedupe the scope, not the office.
+                    $scopeKey = (($scope->getSource() ?: ($prov->source ?? '')) . '_' . $scope->id);
+                    if (!isset($seen[$scopeKey])) {
                         $combined->addEntity($scope);
-                        $seen[$key] = true;
+                        $seen[$scopeKey] = true;
                     }
                 }
             });

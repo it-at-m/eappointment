@@ -156,6 +156,30 @@
                 "null"
             ],
             "description": "Number of slots that can be booked per appointment at this office"
+        },
+        "scopes": {
+            "type": "array",
+            "description": "Every scope at this office. scope remains the single one used for booking.",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": [
+                            "integer",
+                            "string"
+                        ]
+                    },
+                    "shortName": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    }
+                },
+                "required": [
+                    "id"
+                ]
+            }
         }
     },
     "required": [
