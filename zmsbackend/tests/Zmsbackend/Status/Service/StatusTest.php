@@ -18,4 +18,41 @@ class StatusTest extends \BO\Zmsbackend\Tests\Service\Base
         $this->assertArrayHasKey('confirmedWithMultipleServices', $status['processes']);
         //var_dump(\BO\Zmsbackend\Connection\Select::getReadConnection()->getProfiler()->getProfiles());
     }
+
+    public function testSkipsSlotScansWhileCalculationIsRunning()
+    {
+        $now = new \DateTimeImmutable('2016-04-01 11:55:00');
+        $config = new \BO\Zmsbackend\Config\Service\Config();
+        $config->replaceProperty('status__calculateSlotsLastStart', $now->format('Y-m-d H:i:s'));
+        $config->replaceProperty(
+            'status__calculateSlotsLastRun',
+            $now->modify('-1 hour')->format('Y-m-d H:i:s')
+        );
+
+        $status = (new Query())->readEntity($now);
+
+        $this->assertArrayHasKey('called', $status['processes']);
+        $this->assertArrayNotHasKey('outdated', $status['processes']);
+        $this->assertArrayNotHasKey('outdatedOldest', $status['processes']);
+        $this->assertArrayNotHasKey('freeSlots', $status['processes']);
+    }
+
+    public function testReadsSlotScansWhenCalculationStartIsOlderThanFifteenMinutes()
+    {
+        $now = new \DateTimeImmutable('2016-04-01 11:55:00');
+        $config = new \BO\Zmsbackend\Config\Service\Config();
+        $config->replaceProperty(
+            'status__calculateSlotsLastStart',
+            $now->modify('-20 minutes')->format('Y-m-d H:i:s')
+        );
+        $config->replaceProperty(
+            'status__calculateSlotsLastRun',
+            $now->modify('-1 hour')->format('Y-m-d H:i:s')
+        );
+
+        $status = (new Query())->readEntity($now);
+
+        $this->assertArrayHasKey('outdated', $status['processes']);
+        $this->assertArrayHasKey('freeSlots', $status['processes']);
+    }
 }
