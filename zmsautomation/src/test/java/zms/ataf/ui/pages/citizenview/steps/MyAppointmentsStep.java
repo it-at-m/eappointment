@@ -1027,12 +1027,21 @@ public final class MyAppointmentsStep {
                 continue;
             }
             match.reset(text);
-            if (!match.find()) {
+            String number = "";
+            while (match.find()) {
+                String candidate = match.group(1);
+                if (candidate.startsWith("+")) {
+                    continue;
+                }
+                number = candidate;
+                break;
+            }
+            if (number.isEmpty()) {
                 continue;
             }
             if (best == null || text.length() < best.length()) {
                 best = text;
-                bestNumber = match.group(1);
+                bestNumber = number;
             }
         }
         return bestNumber;
@@ -1385,10 +1394,12 @@ public final class MyAppointmentsStep {
                         + "function textOf(root){var seen2=new Set();var st=[root];var buf='';"
                         + "while(st.length){var n=st.pop();if(!n||seen2.has(n))continue;seen2.add(n);"
                         + "if(n.nodeType===3){buf+=' '+(n.nodeValue||'');continue;}"
-                        + "if(n.shadowRoot)st.push(n.shadowRoot);"
+                        + "var next=[];"
+                        + "if(n.shadowRoot)next.push(n.shadowRoot);"
                         + "if(n.assignedNodes){try{var a=n.assignedNodes({flatten:true});"
-                        + "for(var j=0;j<a.length;j++)st.push(a[j]);}catch(e){}}"
-                        + "var c=n.childNodes;if(c)for(var i=0;i<c.length;i++)st.push(c[i]);}"
+                        + "for(var j=0;j<a.length;j++)next.push(a[j]);}catch(e){}}"
+                        + "var c=n.childNodes;if(c)for(var i=0;i<c.length;i++)next.push(c[i]);"
+                        + "for(var k=next.length-1;k>=0;k--)st.push(next[k]);}"
                         + "return buf.replace(/\\s+/g,' ').trim();}"
                         + "while(stack.length){var n=stack.pop();if(!n||seen.has(n))continue;seen.add(n);"
                         + "if(n.nodeType===1){var tag=(n.tagName||'').toUpperCase();"
