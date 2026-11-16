@@ -10,10 +10,12 @@
  * runtime-config.json may set kcUrl, kcRealm, and kcClientId for environments
  * whose gateway trusts a different realm (ssotest on zms-demo and zms-load).
  *
- * The Tools button is separate host chrome, top right, on non-production only.
+ * Tools and Home are separate host chrome, top right, on the internal ZMS
+ * host only (zms.muenchen.de, zms-<env>.muenchen.de, localhost). The public
+ * pages on www48.muenchen.de and stadt.muenchen.de do not get them.
  */
 
-import { shouldShowBuildInfo } from "@/utils/buildInfo";
+import { isInternalZmsHost } from "@/utils/internalHost";
 import { renderHostTools } from "./host-tools";
 
 type RuntimeConfig = {
@@ -128,21 +130,16 @@ function pinCdnLoginHost(): void {
   );
 }
 
-function renderToolsWhenInternal(runtime: RuntimeConfig | undefined): void {
-  if (
-    !shouldShowBuildInfo(
-      import.meta.env.VITE_NODE_ENV,
-      runtimeString(runtime?.ZMS_ENV)
-    )
-  ) {
+function renderToolsWhenInternal(): void {
+  if (!isInternalZmsHost(window.location.hostname)) {
     return;
   }
   renderHostTools();
 }
 
 async function bootstrapLogin(): Promise<void> {
+  renderToolsWhenInternal();
   const runtime = await readRuntimeConfig();
-  renderToolsWhenInternal(runtime);
 
   if (!shouldShowCitizenLogin(runtime)) {
     removeLoginHostChrome();

@@ -290,7 +290,7 @@
   "jumpinIntro": "Builds a jump-in link to the appointment booking of this environment.",
   "jumpinLoading": "Loading services and locations.",
   "jumpinLoadError": "The list of services and locations could not be loaded.",
-  "jumpinUnavailable": "This tool is only available in test environments.",
+  "jumpinUnavailable": "This tool is only available internally.",
   "jumpinNameOrId": "Name or id",
   "jumpinLocation": "Location",
   "jumpinNoLocationFound": "No location found",
