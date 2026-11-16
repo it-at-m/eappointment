@@ -2,8 +2,10 @@ import { describe, expect, it } from "vitest";
 
 import {
   buildJumpinHref,
+  buildJumpinLinks,
   citizenviewPageHref,
   citizenviewRootHref,
+  externalJumpinPages,
   jumpinLinkError,
 } from "@/utils/jumpinLink";
 
@@ -66,6 +68,83 @@ describe("buildJumpinHref", () => {
     ).toBeNull();
     expect(jumpinLinkError({ serviceId: "12", locationId: "nord" })).toBe(
       "jumpinLocationIdNumeric"
+    );
+  });
+});
+
+describe("externalJumpinPages", () => {
+  it("maps each internal environment to its public pages", () => {
+    expect(externalJumpinPages("zms-dev.muenchen.de")).toEqual([
+      "https://stadt-i.muenchen.de/buergerservice/terminvereinbarung.html",
+      "https://lhm-i.muenchen.swm.de/buergerservice/terminvereinbarung.html",
+    ]);
+    expect(externalJumpinPages("zms-demo.muenchen.de")).toEqual([
+      "https://stadt-k.muenchen.de/buergerservice/terminvereinbarung.html",
+      "https://lhm-k.muenchen.swm.de/buergerservice/terminvereinbarung.html",
+    ]);
+    expect(externalJumpinPages("zms.muenchen.de")).toEqual([
+      "https://stadt.muenchen.de/buergerservice/terminvereinbarung.html",
+    ]);
+  });
+
+  it("returns nothing for hosts without a public page", () => {
+    expect(externalJumpinPages("zms-test.muenchen.de")).toEqual([]);
+    expect(externalJumpinPages("zms-load.muenchen.de")).toEqual([]);
+    expect(externalJumpinPages("localhost")).toEqual([]);
+    expect(externalJumpinPages("stadt.muenchen.de")).toEqual([]);
+    expect(externalJumpinPages("www48.muenchen.de")).toEqual([]);
+  });
+});
+
+describe("buildJumpinLinks", () => {
+  const input = { serviceId: "1080582", locationId: "54261" };
+  const internal = "https://zms-dev.muenchen.de/buergeransicht/";
+
+  it("keeps the internal link and adds the public pages for that environment", () => {
+    expect(
+      buildJumpinLinks(internal, "zms-dev.muenchen.de", input, "Intern")
+    ).toEqual([
+      {
+        id: "internal",
+        label: "Intern",
+        href: "https://zms-dev.muenchen.de/buergeransicht/#/services/1080582/locations/54261",
+      },
+      {
+        id: "stadt-i.muenchen.de",
+        label: "stadt-i.muenchen.de",
+        href: "https://stadt-i.muenchen.de/buergerservice/terminvereinbarung.html#/services/1080582/locations/54261",
+      },
+      {
+        id: "lhm-i.muenchen.swm.de",
+        label: "lhm-i.muenchen.swm.de",
+        href: "https://lhm-i.muenchen.swm.de/buergerservice/terminvereinbarung.html#/services/1080582/locations/54261",
+      },
+    ]);
+  });
+
+  it("uses the prod public page on zms.muenchen.de", () => {
+    expect(
+      buildJumpinLinks(
+        "https://zms.muenchen.de/buergeransicht/",
+        "zms.muenchen.de",
+        input,
+        "Intern"
+      ).map((link) => link.href)
+    ).toEqual([
+      "https://zms.muenchen.de/buergeransicht/#/services/1080582/locations/54261",
+      "https://stadt.muenchen.de/buergerservice/terminvereinbarung.html#/services/1080582/locations/54261",
+    ]);
+  });
+
+  it("pins the Standort on the public page too", () => {
+    const [external] = buildJumpinLinks(
+      "https://zms-demo.muenchen.de/buergeransicht/",
+      "zms-demo.muenchen.de",
+      { ...input, exclusiveLocation: true },
+      "Intern"
+    ).filter((link) => link.id === "stadt-k.muenchen.de");
+    expect(external?.href).toBe(
+      "https://stadt-k.muenchen.de/buergerservice/terminvereinbarung.html?exclusiveLocation=1#/services/1080582/locations/54261"
     );
   });
 });
