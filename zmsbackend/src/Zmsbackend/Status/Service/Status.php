@@ -145,13 +145,34 @@ class Status extends \BO\Zmsbackend\Base
      */
     protected function readOutdatedSlots()
     {
-        $stats = $this->getReader()->fetchOne(
-            'SELECT COUNT(*) cnt, MIN(a.updated_at) oldest
+        $sql = 'SELECT COUNT(*) cnt, MIN(a.updated_at) oldest
              FROM slot s
              LEFT JOIN oeffnungszeit a ON s.availabilityID = a.OeffnungszeitID
-             WHERE s.updateTimestamp < a.updated_at AND s.status = "free"'
-        );
-        return $stats;
+             WHERE s.updateTimestamp < a.updated_at AND s.status = "free"';
+        $attempt = 0;
+        while (true) {
+            try {
+                return $this->getReader()->fetchOne($sql);
+            } catch (\PDOException $exception) {
+                $attempt++;
+                $conflict = stripos($exception->getMessage(), 'Deadlock found') !== false;
+                if (!$conflict || $attempt >= 3) {
+                    throw $exception;
+                }
+                $connection = $this->getReader();
+                if ($connection->inTransaction()) {
+                    try {
+                        $connection->rollBack();
+                    } catch (\PDOException) {
+                        throw $exception;
+                    }
+                    if (!$connection->inTransaction()) {
+                        $connection->beginTransaction();
+                    }
+                }
+                usleep(50000 * $attempt);
+            }
+        }
     }
 
     /**
