@@ -59,7 +59,7 @@ class Ticketprinter
             $basePath = $request instanceof \BO\Slim\Request ? $request->getBasePath() : '';
             setcookie(
                 self::HOME_URL_COOKIE_NAME,
-                $url,
+                self::singleLine($url),
                 time() + (60 * 60 * 24 * 365 * 10),
                 $basePath,
                 '',
@@ -80,5 +80,17 @@ class Ticketprinter
             return $_COOKIE[self::HOME_URL_COOKIE_NAME];
         }
         return false;
+    }
+
+    /**
+     * @psalm-taint-escape cookie
+     */
+    private static function singleLine(string $value): string
+    {
+        if (strpbrk($value, "\r\n\0") !== false) {
+            return '';
+        }
+
+        return $value;
     }
 }
