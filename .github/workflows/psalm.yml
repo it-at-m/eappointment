@@ -83,6 +83,7 @@ jobs:
         run: |
           set +e
           vendor/bin/psalm \
+            --taint-analysis \
             --no-progress \
             --report=../results-${{ matrix.project }}.sarif
           psalm_exit=$?
@@ -201,6 +202,7 @@ jobs:
           set +e
           zmsbackend/vendor/bin/psalm \
             -c psalm.monorepo.xml \
+            --taint-analysis \
             --no-progress \
             --no-cache \
             --report=results-monorepo.sarif
