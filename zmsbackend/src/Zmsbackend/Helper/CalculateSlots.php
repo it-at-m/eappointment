@@ -155,7 +155,11 @@ class CalculateSlots
 
     private function writeCalculationsLocked(\DateTimeInterface $now, bool $daily): bool
     {
-        (new \BO\Zmsbackend\Config\Service\Config())->replaceProperty('status__calculateSlotsLastStart', $now->format('Y-m-d H:i:s'));
+        $config = new \BO\Zmsbackend\Config\Service\Config();
+        $config->replaceProperty('status__calculateSlotsLastStart', $now->format('Y-m-d H:i:s'));
+        if ($daily) {
+            $config->replaceProperty('status__calculateSlotsWithDeleteStart', $now->format('Y-m-d H:i:s'));
+        }
         \BO\Zmsbackend\Connection\Select::writeCommit();
         $updateTimestamp = $this->readLastRun();
         $this->log("Last Run on time=" . $updateTimestamp);
