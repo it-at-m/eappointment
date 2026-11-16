@@ -18,8 +18,10 @@ if (! $argv[1] || ! $argv[2]) {
     exit;
 }
 
-$requestJson = json_decode(file_get_contents($argv[1]), true);
-$providerJson = json_decode(file_get_contents($argv[2]), true);
+$requestFile = localExportFile($argv[1]);
+$providerFile = localExportFile($argv[2]);
+$requestJson = json_decode(file_get_contents($requestFile), true);
+$providerJson = json_decode(file_get_contents($providerFile), true);
 
 $requestIdList = array();
 foreach ($requestJson['data'] as $key => $item) {
@@ -52,4 +54,20 @@ foreach ($providerJson['data'] as $providerKey => $providerItem) {
 }
     \App::$log->info('Deleted services in total', ['count' => $all]);
 
-file_put_contents($argv[2], json_encode($providerJson, JSON_PRETTY_PRINT));
+file_put_contents($providerFile, json_encode($providerJson, JSON_PRETTY_PRINT));
+
+/**
+ * @psalm-taint-escape file
+ * @psalm-taint-escape ssrf
+ */
+function localExportFile(string $path): string
+{
+    $hasStreamWrapper = preg_match('#^[a-z][a-z0-9+.-]*://#i', $path) === 1;
+    $real = (!$hasStreamWrapper && !str_contains($path, "\0")) ? realpath($path) : false;
+    if ($real === false || !is_file($real)) {
+        \App::$log->error('Export file is not a local file');
+        exit(1);
+    }
+
+    return $real;
+}
