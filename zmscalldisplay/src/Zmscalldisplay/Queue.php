@@ -31,11 +31,19 @@ class Queue extends BaseController
 
         $calldisplay = new Helper\Calldisplay($request);
 
-        $queueList = \App::$http
-            ->readPostResult('/calldisplay/queue/', $calldisplay->getEntity(false), [
-                'statusList' => $calldisplay::getRequestedQueueStatus($request)
-            ])
-            ->getCollection();
+        $queueList = null;
+        try {
+            $queueList = \App::$http
+                ->readPostResult('/calldisplay/queue/', $calldisplay->getEntity(false), [
+                    'statusList' => $calldisplay::getRequestedQueueStatus($request)
+                ])
+                ->getCollection();
+        } catch (\BO\Zmsclient\Exception\ApiFailed $exception) {
+            $status = $exception->response ? $exception->response->getStatusCode() : 0;
+            if ($status < 502 || $status > 504) {
+                throw $exception;
+            }
+        }
 
         $queueList = ($queueList) ?
             $queueList->withStatus($calldisplay::getRequestedQueueStatus($request))->sortByCallTime('descending') :
