@@ -111,7 +111,7 @@ class CalculateSlots
         $config = new \BO\Zmsbackend\Config\Service\Config();
         $config->replaceProperty('status__calculateSlotsLastStart', $now->format('Y-m-d H:i:s'));
         if ($daily) {
-            $config->replaceProperty('status__calculateSlotsDeleteStart', $now->format('Y-m-d H:i:s'));
+            $config->replaceProperty('status__calculateSlotsWithDeleteStart', $now->format('Y-m-d H:i:s'));
         }
         \BO\Zmsbackend\Connection\Select::writeCommit();
         $updateTimestamp = $this->readLastRun();

@@ -54,7 +54,7 @@ class Status extends \BO\Zmsbackend\Base
     protected function isSlotDeleteRunning(\DateTimeImmutable $now): bool
     {
         $config = new \BO\Zmsbackend\Config\Service\Config();
-        $started = $config->readProperty('status__calculateSlotsDeleteStart');
+        $started = $config->readProperty('status__calculateSlotsWithDeleteStart');
         $finished = $config->readProperty('status__calculateSlotsLastRun');
         $startedAt = is_string($started) ? strtotime($started) : false;
         if ($startedAt === false) {

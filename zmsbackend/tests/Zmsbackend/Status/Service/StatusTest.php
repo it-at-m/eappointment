@@ -23,7 +23,7 @@ class StatusTest extends \BO\Zmsbackend\Tests\Service\Base
     {
         $now = new \DateTimeImmutable('2016-04-01 11:55:00');
         $config = new \BO\Zmsbackend\Config\Service\Config();
-        $config->replaceProperty('status__calculateSlotsDeleteStart', $now->format('Y-m-d H:i:s'));
+        $config->replaceProperty('status__calculateSlotsWithDeleteStart', $now->format('Y-m-d H:i:s'));
         $config->replaceProperty(
             'status__calculateSlotsLastRun',
             $now->modify('-1 hour')->format('Y-m-d H:i:s')
@@ -42,7 +42,7 @@ class StatusTest extends \BO\Zmsbackend\Tests\Service\Base
         $now = new \DateTimeImmutable('2016-04-01 11:55:00');
         $config = new \BO\Zmsbackend\Config\Service\Config();
         $config->replaceProperty(
-            'status__calculateSlotsDeleteStart',
+            'status__calculateSlotsWithDeleteStart',
             $now->modify('-20 minutes')->format('Y-m-d H:i:s')
         );
         $config->replaceProperty(
@@ -62,7 +62,7 @@ class StatusTest extends \BO\Zmsbackend\Tests\Service\Base
         $config = new \BO\Zmsbackend\Config\Service\Config();
         $config->replaceProperty('status__calculateSlotsLastStart', $now->format('Y-m-d H:i:s'));
         $config->replaceProperty(
-            'status__calculateSlotsDeleteStart',
+            'status__calculateSlotsWithDeleteStart',
             $now->modify('-1 day')->format('Y-m-d H:i:s')
         );
         $config->replaceProperty(
