@@ -135,7 +135,7 @@
                 @update:model-value="exclusiveLocation = $event"
               />
               <div
-                v-if="link || selectedService || selectedOffice"
+                v-if="links.length || selectedService || selectedOffice"
                 class="jumpin-actions"
               >
                 <muc-button
@@ -146,25 +146,6 @@
                 >
                   {{ t("jumpinClearSelection") }}
                 </muc-button>
-                <div
-                  v-if="link"
-                  class="jumpin-actions-main"
-                >
-                  <muc-button
-                    type="button"
-                    variant="secondary"
-                    @click="copy"
-                  >
-                    {{ copied ? t("jumpinCopied") : t("jumpinCopy") }}
-                  </muc-button>
-                  <a
-                    class="m-button m-button--primary"
-                    :href="link"
-                    target="_blank"
-                    rel="noopener"
-                    >{{ t("jumpinOpen") }}</a
-                  >
-                </div>
               </div>
             </div>
             <p
@@ -182,8 +163,8 @@
               {{ t(copyError) }}
             </p>
             <div
-              v-if="link"
-              class="jumpin-result"
+              v-if="links.length"
+              class="jumpin-results"
             >
               <p
                 id="jumpin-link-label"
@@ -191,15 +172,45 @@
               >
                 {{ t("jumpinLinkLabel") }}
               </p>
-              <a
-                ref="linkEl"
-                class="jumpin-href"
-                :href="link"
-                target="_blank"
-                rel="noopener"
-                aria-labelledby="jumpin-link-label"
-                >{{ link }}</a
+              <div
+                v-for="item in links"
+                :key="item.id"
+                class="jumpin-result"
               >
+                <p
+                  :id="`jumpin-link-${item.id}`"
+                  class="jumpin-result-label"
+                >
+                  {{ item.label }}
+                </p>
+                <a
+                  :ref="(el) => setLinkEl(item.id, el)"
+                  class="jumpin-href"
+                  :href="item.href"
+                  target="_blank"
+                  rel="noopener"
+                  :aria-labelledby="`jumpin-link-${item.id}`"
+                  >{{ item.href }}</a
+                >
+                <div class="jumpin-result-actions">
+                  <muc-button
+                    type="button"
+                    variant="secondary"
+                    @click="copy(item)"
+                  >
+                    {{
+                      copiedId === item.id ? t("jumpinCopied") : t("jumpinCopy")
+                    }}
+                  </muc-button>
+                  <a
+                    class="m-button m-button--primary"
+                    :href="item.href"
+                    target="_blank"
+                    rel="noopener"
+                    >{{ t("jumpinOpen") }}</a
+                  >
+                </div>
+              </div>
             </div>
           </form>
         </div>
@@ -210,6 +221,7 @@
 
 <script lang="ts" setup>
 import type { JumpinCatalog, JumpinChoice } from "@/utils/jumpinCatalog";
+import type { JumpinBuiltLink } from "@/utils/jumpinLink";
 
 import {
   MucButton,
@@ -229,7 +241,7 @@ import {
   uninstallJumpinExactIdSearch,
 } from "@/utils/jumpinChoiceSearch";
 import {
-  buildJumpinHref,
+  buildJumpinLinks,
   citizenviewRootHref,
   jumpinLinkError,
 } from "@/utils/jumpinLink";
@@ -258,10 +270,10 @@ const loadError = ref("");
 const selectedService = ref<JumpinChoice | null>(null);
 const selectedOffice = ref<JumpinChoice | null>(null);
 const exclusiveLocation = ref(false);
-const copied = ref(false);
+const copiedId = ref("");
 const copyError = ref("");
 const formEl = ref<HTMLFormElement | null>(null);
-const linkEl = ref<HTMLAnchorElement | null>(null);
+const linkEls = new Map<string, HTMLAnchorElement>();
 
 function showFullSelectedLabel(): void {
   formEl.value
@@ -337,9 +349,22 @@ const input = computed(() => ({
 
 const error = computed(() => jumpinLinkError(input.value));
 
-const link = computed(() =>
-  buildJumpinHref(citizenviewRootHref(window.location), input.value)
+const links = computed(() =>
+  buildJumpinLinks(
+    citizenviewRootHref(window.location),
+    window.location.hostname,
+    input.value,
+    t("jumpinInternalLink")
+  )
 );
+
+function setLinkEl(id: string, el: unknown): void {
+  if (el instanceof HTMLAnchorElement) {
+    linkEls.set(id, el);
+    return;
+  }
+  linkEls.delete(id);
+}
 
 function asChoice(value: unknown): JumpinChoice | null {
   if (!value || typeof value !== "object" || Array.isArray(value)) {
@@ -380,8 +405,8 @@ onMounted(async () => {
   loading.value = false;
 });
 
-function selectDisplayedLink(): void {
-  const el = linkEl.value;
+function selectDisplayedLink(id: string): void {
+  const el = linkEls.get(id);
   const selection = window.getSelection();
   if (!el || !selection) {
     return;
@@ -392,29 +417,28 @@ function selectDisplayedLink(): void {
   selection.addRange(range);
 }
 
-async function copy(): Promise<void> {
-  if (!link.value) {
-    return;
-  }
+async function copy(item: JumpinBuiltLink): Promise<void> {
   const writeText = navigator.clipboard?.writeText;
   if (typeof writeText !== "function") {
-    copied.value = false;
+    copiedId.value = "";
     copyError.value = "jumpinCopyFailed";
-    selectDisplayedLink();
+    selectDisplayedLink(item.id);
     return;
   }
   try {
-    await writeText.call(navigator.clipboard, link.value);
+    await writeText.call(navigator.clipboard, item.href);
   } catch {
-    copied.value = false;
+    copiedId.value = "";
     copyError.value = "jumpinCopyFailed";
-    selectDisplayedLink();
+    selectDisplayedLink(item.id);
     return;
   }
   copyError.value = "";
-  copied.value = true;
+  copiedId.value = item.id;
   window.setTimeout(() => {
-    copied.value = false;
+    if (copiedId.value === item.id) {
+      copiedId.value = "";
+    }
   }, 2000);
 }
 </script>
@@ -552,7 +576,7 @@ async function copy(): Promise<void> {
 }
 
 .jumpin-actions,
-.jumpin-actions-main {
+.jumpin-result-actions {
   display: flex;
   align-items: center;
   gap: 0.75rem;
@@ -560,21 +584,31 @@ async function copy(): Promise<void> {
 
 .jumpin-actions {
   flex-wrap: wrap;
-  justify-content: space-between;
   width: 100%;
 }
 
-.jumpin-actions-main {
-  margin-left: auto;
-}
-
 .jumpin-actions :deep(.m-button),
+.jumpin-result-actions :deep(.m-button),
+.jumpin-result-actions .m-button,
 .jumpin-href {
   margin-bottom: 0;
 }
 
-.jumpin-result {
+.jumpin-results {
   margin-top: 1.5rem;
+}
+
+.jumpin-result + .jumpin-result {
+  margin-top: 1.25rem;
+}
+
+.jumpin-result-label {
+  margin-bottom: 0.25rem;
+  font-weight: 700;
+}
+
+.jumpin-result-actions {
+  margin-top: 0.75rem;
 }
 
 .jumpin-href {

@@ -5,10 +5,7 @@
     @load="stylesLoaded = true"
     @error="stylesLoaded = true"
   />
-  <main
-    v-if="ready"
-    :class="{ 'styles-loading': !stylesLoaded }"
-  >
+  <main :class="{ 'styles-loading': !stylesLoaded }">
     <div v-html="sanitizeHtml(mucIconsSprite)"></div>
     <jumpin-link-builder-view :available="available" />
     <div class="jumpin-build-info">
@@ -23,43 +20,11 @@ import { onMounted, ref } from "vue";
 
 import BuildInfoBadge from "@/components/Common/BuildInfoBadge.vue";
 import JumpinLinkBuilderView from "@/components/JumpinLinkBuilder/JumpinLinkBuilderView.vue";
-import {
-  isProductionBuild,
-  runtimeConfigUrl,
-  shouldShowBuildInfo,
-} from "@/utils/buildInfo";
+import { isInternalZmsHost } from "@/utils/internalHost";
 import { sanitizeHtml } from "@/utils/sanitizeHtml";
 
 const stylesLoaded = ref(false);
-const ready = ref(false);
-const available = ref(false);
-
-async function readZmsEnv(): Promise<string | undefined> {
-  try {
-    const response = await fetch(runtimeConfigUrl(import.meta.url), {
-      cache: "no-store",
-      signal: AbortSignal.timeout(2000),
-    });
-    if (!response.ok) {
-      return undefined;
-    }
-    const data = (await response.json()) as { ZMS_ENV?: unknown };
-    return typeof data.ZMS_ENV === "string" && data.ZMS_ENV.trim()
-      ? data.ZMS_ENV.trim()
-      : undefined;
-  } catch {
-    return undefined;
-  }
-}
-
-onMounted(async () => {
-  const viteNodeEnv = import.meta.env.VITE_NODE_ENV;
-  const zmsEnv = isProductionBuild(viteNodeEnv)
-    ? await readZmsEnv()
-    : undefined;
-  available.value = shouldShowBuildInfo(viteNodeEnv, zmsEnv);
-  ready.value = true;
-});
+const available = ref(isInternalZmsHost(window.location.hostname));
 
 onMounted(() => {
   window.setTimeout(() => {
