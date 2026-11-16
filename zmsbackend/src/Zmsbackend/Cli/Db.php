@@ -158,8 +158,8 @@ class Db
 
     private static function openSqlFileHandle(string $file): array
     {
-        $file = self::localReadablePath($file);
         $isGzipCompressed = substr($file, -3) === '.gz';
+        $file = self::localReadablePath($file);
 
         if ($isGzipCompressed) {
             return [
@@ -287,12 +287,17 @@ class Db
     private static function resolveMigrationFileList(string|array $migrationList): array
     {
         if (!is_array($migrationList)) {
-            $migrationList = glob(self::localDirectory($migrationList) . '/*.sql');
+            $migrationList = glob(self::literalGlob(self::localDirectory($migrationList)) . '/*.sql');
         }
 
         sort($migrationList);
 
         return $migrationList;
+    }
+
+    private static function literalGlob(string $path): string
+    {
+        return preg_replace('/([*?\[\]\\\\])/', '\\\\$1', $path) ?? $path;
     }
 
     /**
