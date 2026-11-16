@@ -25,8 +25,8 @@ jobs:
     env:
       TZ: Europe/Berlin
     steps:
-      - uses: it-at-m/lhm_actions/action-templates/actions/action-checkout@03f09fa81a60371c01caf1a9deada89ceebbd5e5 # v1.6.3
-      - uses: it-at-m/lhm_actions/action-templates/actions/action-maven-build@03f09fa81a60371c01caf1a9deada89ceebbd5e5 # v1.6.3
+      - uses: it-at-m/lhm_actions/action-templates/actions/action-checkout@87a254fa39e1555ffbbc8317af71b4d5ca7d4a3b # v1.6.4
+      - uses: it-at-m/lhm_actions/action-templates/actions/action-maven-build@87a254fa39e1555ffbbc8317af71b4d5ca7d4a3b # v1.6.4
         with:
           app-path: zmsautomation
           java-version: "21"
