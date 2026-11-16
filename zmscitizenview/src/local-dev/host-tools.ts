@@ -11,6 +11,7 @@ type ToolLink = { label: string; file: string };
 
 const HOST_TOOLS: ToolLink[] = [
   { label: "Jump-in Link Builder", file: "jumpin-link-builder.html" },
+  { label: "Scope und Standort", file: "scope-office-lookup.html" },
 ];
 
 const MENU_ITEM_STYLE = [

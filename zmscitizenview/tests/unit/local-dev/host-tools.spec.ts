@@ -21,9 +21,15 @@ describe("renderHostTools", () => {
       "m-button__icon--before"
     );
 
-    const item = document.querySelector("#zms-host-tools-menu a");
-    expect(item?.textContent).toBe("Jump-in Link Builder");
-    expect(item?.getAttribute("href")).toMatch(/jumpin-link-builder\.html$/);
+    const items = document.querySelectorAll("#zms-host-tools-menu a");
+    expect(items[0]?.textContent).toBe("Jump-in Link Builder");
+    expect(items[0]?.getAttribute("href")).toMatch(
+      /jumpin-link-builder\.html$/
+    );
+    expect(items[1]?.textContent).toBe("Scope und Standort");
+    expect(items[1]?.getAttribute("href")).toMatch(
+      /scope-office-lookup\.html$/
+    );
 
     host?.querySelector("button")?.click();
     expect(document.getElementById("zms-host-tools-menu")?.hidden).toBe(false);

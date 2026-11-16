@@ -305,6 +305,15 @@
   "jumpinServiceIdMissing": "Service id is missing.",
   "jumpinServiceIdNumeric": "Service id must be a number.",
   "jumpinLocationIdNumeric": "Location id must be a number.",
+  "scopeOfficeTitle": "Scope and location",
+  "scopeOfficeIntro": "Matches scope ids and location ids. A location can have several scopes.",
+  "scopeOfficeLoading": "Loading locations and scopes.",
+  "scopeOfficeLoadError": "The list of locations and scopes could not be loaded.",
+  "scopeOfficeScope": "Scope",
+  "scopeOfficeNoScopeFound": "No scope found",
+  "scopeOfficeNoScope": "This location has no scope.",
+  "scopeOfficeScopeId": "Scope id",
+  "scopeOfficeOfficeId": "Location id",
   "variants": {
     "1": {
       "name": "On-site appointment",

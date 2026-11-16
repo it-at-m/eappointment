@@ -76,6 +76,7 @@
           >
             <div class="jumpin-field">
               <muc-select
+                :key="`service-${selectGeneration}`"
                 id="jumpin-service"
                 :model-value="selectedService"
                 :items="serviceChoices"
@@ -113,6 +114,7 @@
             </div>
             <div class="jumpin-field">
               <muc-select
+                :key="`office-${selectGeneration}`"
                 id="jumpin-office"
                 :model-value="selectedOffice"
                 :items="officeChoices"
@@ -270,6 +272,7 @@ const loadError = ref("");
 const selectedService = ref<JumpinChoice | null>(null);
 const selectedOffice = ref<JumpinChoice | null>(null);
 const exclusiveLocation = ref(false);
+const selectGeneration = ref(0);
 const copiedId = ref("");
 const copyError = ref("");
 const formEl = ref<HTMLFormElement | null>(null);
@@ -384,6 +387,8 @@ function asChoice(value: unknown): JumpinChoice | null {
 function clearSelection(): void {
   selectedService.value = null;
   selectedOffice.value = null;
+  exclusiveLocation.value = false;
+  selectGeneration.value += 1;
 }
 
 onMounted(async () => {

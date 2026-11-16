@@ -327,6 +327,15 @@
   "jumpinServiceIdMissing": "Leistungs-ID fehlt.",
   "jumpinServiceIdNumeric": "Leistungs-ID muss eine Zahl sein.",
   "jumpinLocationIdNumeric": "Standort-ID muss eine Zahl sein.",
+  "scopeOfficeTitle": "Scope und Standort",
+  "scopeOfficeIntro": "Ordnet Scope-IDs und Standort-IDs einander zu. Ein Standort kann mehrere Scopes haben.",
+  "scopeOfficeLoading": "Standorte und Scopes werden geladen.",
+  "scopeOfficeLoadError": "Die Liste der Standorte und Scopes konnte nicht geladen werden.",
+  "scopeOfficeScope": "Scope",
+  "scopeOfficeNoScopeFound": "Kein Scope gefunden",
+  "scopeOfficeNoScope": "Diesem Standort ist kein Scope zugeordnet.",
+  "scopeOfficeScopeId": "Scope-ID",
+  "scopeOfficeOfficeId": "Standort-ID",
   "variants": {
     "1": {
       "name": "Vor-Ort-Termin",
