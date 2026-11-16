@@ -25,6 +25,14 @@ class WorkstationInfo
             'waitingClientsBeforeNext' => 0,
             'waitingClientsEffective' => 0
         );
+        if (!$workstation->getScope()->hasId()) {
+            $infoData['workstationGhostCount'] = 0;
+            $infoData['workstationList'] = new \BO\Zmsentities\Collection\WorkstationList();
+            $infoData['averageWaitingTimeWithAppointment'] = 0;
+            $infoData['averageWaitingTimeWithoutAppointment'] = 0;
+            $infoData['countCurrentlyProcessing'] = 0;
+            return $infoData;
+        }
         $scope = \App::$http->readGetResult('/scope/' . $workstation->scope['id'] . '/workstationcount/')->getEntity();
 
         $clusterHelper = (new ClusterHelper($workstation));
