@@ -970,19 +970,38 @@ public final class MyAppointmentsStep {
     public void assertMyAppointmentsAppointmentReplaced(String serviceName) {
         context.set();
         String previous = TestDataHelper.getTestData(myAppointmentsNumberKey(serviceName));
-        String current = new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(30))
-                .pollingEvery(Duration.ofMillis(500))
-                .until(d -> {
-                    String number = appointmentNumberOnMyAppointments(serviceName);
-                    if (number == null || number.isBlank()) {
-                        return null;
-                    }
-                    if (previous != null && previous.equals(number)) {
-                        return null;
-                    }
-                    return number;
-                });
-        Assert.assertFalse(current.isBlank(), "Meine Termine has no number for \"" + serviceName + "\".");
+        // Rebook confirms before Meine Termine drops the old card. Polling that page
+        // keeps the original Terminnummer; open the overview again until the new one is there.
+        long deadline = System.currentTimeMillis() + 75_000L;
+        int reloads = 0;
+        long nextReloadAt = System.currentTimeMillis() + 5_000L;
+        String current = "";
+        while (System.currentTimeMillis() < deadline) {
+            current = appointmentNumberOnMyAppointments(serviceName);
+            if (current != null && !current.isBlank() && (previous == null || !previous.equals(current))) {
+                break;
+            }
+            if (reloads < 3 && System.currentTimeMillis() >= nextReloadAt) {
+                reloads++;
+                ScenarioLogManager.getLogger()
+                        .warn(
+                                "zmscitizenview: Meine Termine still shows {} for \"{}\" after rebook; opening it again ({}/3)",
+                                current == null || current.isBlank() ? "no number" : current,
+                                serviceName,
+                                reloads);
+                reloadMyAppointments();
+                nextReloadAt = System.currentTimeMillis() + 15_000L;
+            }
+            try {
+                Thread.sleep(400L);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                break;
+            }
+        }
+        Assert.assertFalse(
+                current == null || current.isBlank(),
+                "Meine Termine has no number for \"" + serviceName + "\".");
         Assert.assertNotEquals(
                 current,
                 previous,
@@ -1001,16 +1020,22 @@ public final class MyAppointmentsStep {
         String needle = "1x " + serviceName;
         java.util.regex.Matcher match =
                 java.util.regex.Pattern.compile("Terminnummer:\\s*(\\S+)").matcher("");
-        for (String text : appointmentCardTexts(true)) {
+        String best = null;
+        String bestNumber = "";
+        for (String text : appointmentCardTexts(false)) {
             if (!text.contains(needle)) {
                 continue;
             }
             match.reset(text);
-            if (match.find()) {
-                return match.group(1);
+            if (!match.find()) {
+                continue;
+            }
+            if (best == null || text.length() < best.length()) {
+                best = text;
+                bestNumber = match.group(1);
             }
         }
-        return "";
+        return bestNumber;
     }
     private static String myAppointmentsNumberKey(String serviceName) {
         return "my_appointments_number_" + serviceName;
