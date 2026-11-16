@@ -1319,12 +1319,13 @@ public final class MyAppointmentsStep {
         }
     }
     private String waitForTeaserText(String serviceName) {
-        long deadline = System.currentTimeMillis() + Math.max(180, defaultWaitSeconds) * 1000L;
+        long deadline = System.currentTimeMillis() + Math.max(240, defaultWaitSeconds) * 1000L;
         String last = "";
         int relogins = 0;
         int reloads = 0;
-        long nextReloadAt = System.currentTimeMillis() + 15_000L;
+        long nextReloadAt = System.currentTimeMillis() + 8_000L;
         long blankSince = 0L;
+        long shellWithoutNameSince = 0L;
         while (System.currentTimeMillis() < deadline) {
             if (myAppointmentsShowsLoggedOut() && relogins < 2) {
                 relogins++;
@@ -1333,8 +1334,9 @@ public final class MyAppointmentsStep {
                                 "zmscitizenview: Meine Termine logged out while waiting for \"{}\"; logging in again",
                                 serviceName);
                 reloginForMyAppointments();
-                nextReloadAt = System.currentTimeMillis() + 15_000L;
+                nextReloadAt = System.currentTimeMillis() + 45_000L;
                 blankSince = 0L;
+                shellWithoutNameSince = 0L;
                 continue;
             }
             if (myAppointmentsAwaitingAuthOrSkeleton()) {
@@ -1344,11 +1346,12 @@ public final class MyAppointmentsStep {
             if (last.contains(serviceName) && last.contains("Terminnummer")) {
                 return last;
             }
+            boolean loadError =
+                    shadow.shadowDomContainsText("Ihre Termine können zur Zeit nicht geladen werden.");
             boolean shellUp =
-                    shadow.shadowDomContainsText("Neuer Termin")
-                            || shadow.shadowDomContainsText("Kommende Termine")
-                            || shadow.shadowDomContainsText(
-                                    "Ihre Termine können zur Zeit nicht geladen werden.");
+                    loadError
+                            || shadow.shadowDomContainsText("Neuer Termin")
+                            || shadow.shadowDomContainsText("Kommende Termine");
             long now = System.currentTimeMillis();
             // A reload can land on a blank overview. The shell check then never fires again,
             // and the rest of the wait polls an empty page.
@@ -1360,26 +1363,33 @@ public final class MyAppointmentsStep {
                 blankSince = 0L;
             }
             boolean blankTooLong = blankSince > 0L && now - blankSince >= 8_000L;
-            // Neuer Termin is the page shell and shows up before the appointment list.
-            // Reloading in that first window aborts the fetch. After it has settled, another
-            // card's Terminnummer must not block a reload: the rebooked service can still be missing.
-            if (reloads < 6
+            // Neuer Termin paints before the cards. Reloading as soon as that shell is up
+            // aborts the appointment fetch, so the teaser never arrives.
+            if (last.contains(serviceName) || !shellUp) {
+                shellWithoutNameSince = 0L;
+            } else if (shellWithoutNameSince == 0L) {
+                shellWithoutNameSince = now;
+            }
+            boolean shellWithoutNameTooLong =
+                    shellWithoutNameSince > 0L && now - shellWithoutNameSince >= 45_000L;
+            if (reloads < 4
                     && now >= nextReloadAt
                     && !last.contains(serviceName)
                     && !myAppointmentsShowsLoggedOut()
-                    && (shellUp || blankTooLong)) {
+                    && (blankTooLong || loadError || shellWithoutNameTooLong)) {
                 reloads++;
                 ScenarioLogManager.getLogger()
                         .warn(
-                                "zmscitizenview: Meine Termine list settled without a teaser for \"{}\" (reload {}/6)",
+                                "zmscitizenview: Meine Termine list settled without a teaser for \"{}\" (reload {}/4)",
                                 serviceName,
                                 reloads);
                 if (blankTooLong) {
                     requestMyAppointmentsAuthReplay();
                 }
                 reloadMyAppointments();
-                nextReloadAt = System.currentTimeMillis() + 15_000L;
+                nextReloadAt = System.currentTimeMillis() + 45_000L;
                 blankSince = 0L;
+                shellWithoutNameSince = 0L;
                 continue;
             }
             try {
