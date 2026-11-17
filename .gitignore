@@ -25,7 +25,6 @@ coverage/
 
 # Python
 __pycache__/
-/tools/
 
 # ATAF failed-screenshot gallery promoted to workspace root in CI (artifact zip root)
 /ATAF-FAILED-SCREENSHOTS.html
