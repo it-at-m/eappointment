@@ -7,7 +7,10 @@
 
 namespace BO\Zmsadmin;
 
+use BO\Zmsclient\AppointmentUrlMiddleware;
+use BO\Zmsclient\Auth;
 use BO\Zmsclient\ModuleAccess;
+use BO\Zmsentities\Config;
 use BO\Zmsentities\Useraccount;
 use BO\Zmsentities\Workstation;
 use BO\Zmsadmin\Helper\LoginForm;
@@ -26,12 +29,10 @@ class Index extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ): \Psr\Http\Message\ResponseInterface {
-        try {
-            $workstation = \App::$http->readGetResult('/workstation/')->getEntity();
-        } catch (\Exception $workstationexception) {
-            $workstation = null;
-        }
-        $config = \App::$http->readGetResult('/config/', [], \App::CONFIG_SECURE_TOKEN)->getEntity();
+        // Password login authorizes the workstation returned by /workstation/login/.
+        // On GET, ask the API only when a session cookie is present; an empty cookie would be rejected.
+        $workstation = $request->getMethod() === 'POST' ? null : $this->readExistingWorkstation();
+        $config = $this->readConfig($request);
         $input = $request->getParsedBody();
         $oidclogin = $request->getAttribute('validator')->getParameter('oidclogin')->isString()->getValue();
         if ($request->getMethod() === 'POST') {
@@ -84,6 +85,28 @@ class Index extends BaseController
                 'showloginform' => (! $oidclogin)
             )
         );
+    }
+
+    private function readExistingWorkstation(): ?Workstation
+    {
+        if (!Auth::hasKey()) {
+            return null;
+        }
+        try {
+            $workstation = \App::$http->readGetResult('/workstation/')->getEntity();
+        } catch (\Exception) {
+            return null;
+        }
+        return $workstation instanceof Workstation ? $workstation : null;
+    }
+
+    private function readConfig(\Psr\Http\Message\RequestInterface $request): mixed
+    {
+        $config = $request->getAttribute(AppointmentUrlMiddleware::CONFIG_ATTRIBUTE);
+        if ($config instanceof Config) {
+            return $config;
+        }
+        return \App::$http->readGetResult('/config/', [], \App::CONFIG_SECURE_TOKEN)->getEntity();
     }
 
     protected function testLogin(array $input)

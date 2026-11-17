@@ -8,7 +8,10 @@
 namespace BO\Zmsstatistic;
 
 use BO\Slim\Render;
+use BO\Zmsclient\AppointmentUrlMiddleware;
+use BO\Zmsclient\Auth;
 use BO\Zmsclient\ModuleAccess;
+use BO\Zmsentities\Config;
 use BO\Zmsentities\Useraccount;
 use BO\Zmsentities\Workstation;
 use Psr\Http\Message\RequestInterface;
@@ -28,13 +31,10 @@ class Index extends BaseController
         ResponseInterface $response,
         array $args
     ): ResponseInterface {
-        try {
-            $workstation = \App::http()->readGetResult('/workstation/')->getEntity();
-        } catch (\Exception $workstationexception) {
-            $workstation = null;
-        }
-
-        $config = \App::http()->readGetResult('/config/', [], \App::CONFIG_SECURE_TOKEN)->getEntity();
+        // Password login authorizes the workstation returned by /workstation/login/.
+        // On GET, ask the API only when a session cookie is present; an empty cookie would be rejected.
+        $workstation = $request->getMethod() === 'POST' ? null : $this->readExistingWorkstation();
+        $config = $this->readConfig($request);
         /** @var \Psr\Http\Message\ServerRequestInterface $request */
         $input = $request->getParsedBody();
         $oidclogin = $request->getAttribute('validator')->getParameter('oidclogin')->isString()->getValue();
@@ -78,6 +78,28 @@ class Index extends BaseController
                 )
             );
         }
+    }
+
+    private function readExistingWorkstation(): ?Workstation
+    {
+        if (!Auth::hasKey()) {
+            return null;
+        }
+        try {
+            $workstation = \App::http()->readGetResult('/workstation/')->getEntity();
+        } catch (\Exception) {
+            return null;
+        }
+        return $workstation instanceof Workstation ? $workstation : null;
+    }
+
+    private function readConfig(RequestInterface $request): mixed
+    {
+        $config = $request->getAttribute(AppointmentUrlMiddleware::CONFIG_ATTRIBUTE);
+        if ($config instanceof Config) {
+            return $config;
+        }
+        return \App::http()->readGetResult('/config/', [], \App::CONFIG_SECURE_TOKEN)->getEntity();
     }
 
     /**

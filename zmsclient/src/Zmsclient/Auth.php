@@ -47,6 +47,15 @@ class Auth
     }
 
     /**
+     * A session cookie is present. The API still has to accept it.
+     */
+    public static function hasKey(): bool
+    {
+        $authKey = self::getKey();
+        return is_string($authKey) && $authKey !== '';
+    }
+
+    /**
      * @SuppressWarnings(Superglobals)
      */
     public static function removeKey(): void

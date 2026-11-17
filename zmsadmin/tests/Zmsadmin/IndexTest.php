@@ -15,15 +15,29 @@ class IndexTest extends Base
     protected $classname = "Index";
 
     #[\Override]
+    public function setUp(): void
+    {
+        parent::setUp();
+        unset($_COOKIE[\BO\Zmsclient\Auth::getCookieName()]);
+    }
+
+    #[\Override]
+    public function tearDown(): void
+    {
+        unset($_COOKIE[\BO\Zmsclient\Auth::getCookieName()]);
+        parent::tearDown();
+    }
+
+    private function withSession(): void
+    {
+        $_COOKIE[\BO\Zmsclient\Auth::getCookieName()] = 'test-session';
+    }
+
+    #[\Override]
     public function testRendering()
     {
         $this->setApiCalls(
             [
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/workstation/',
-                    'response' => $this->readFixture("GET_Workstation_UserAccountMissingLogin.json")
-                ],
                 [
                     'function' => 'readGetResult',
                     'url' => '/config/',
@@ -42,11 +56,6 @@ class IndexTest extends Base
     {
         $this->setApiCalls(
             [
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/workstation/',
-                    'response' => $this->readFixture("GET_Workstation_UserAccountMissingLogin.json")
-                ],
                 [
                     'function' => 'readPostResult',
                     'url' => '/workstation/login/',
@@ -84,6 +93,7 @@ class IndexTest extends Base
                 ]
             ]
         );
+        $this->withSession();
         $response = $this->render($this->arguments, [], []);
         $this->assertStringContainsString('Willkommen zurück', (string)$response->getBody());
     }
@@ -95,11 +105,6 @@ class IndexTest extends Base
         $exception->template = '';
         $this->setApiCalls(
             [
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/workstation/',
-                    'exception' => $exception
-                ],
                 [
                     'function' => 'readPostResult',
                     'url' => '/workstation/login/',
@@ -125,11 +130,6 @@ class IndexTest extends Base
         $exception->data['authkey'] = 'unit';
         $this->setApiCalls(
             [
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/workstation/',
-                    'exception' => $exception
-                ],
                 [
                     'function' => 'readPostResult',
                     'url' => '/workstation/login/',
@@ -157,11 +157,6 @@ class IndexTest extends Base
 
         $this->setApiCalls(
             [
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/workstation/',
-                    'response' => $this->readFixture("GET_Workstation_UserAccountMissingLogin.json")
-                ],
                 [
                     'function' => 'readPostResult',
                     'url' => '/workstation/login/',
@@ -192,11 +187,6 @@ class IndexTest extends Base
     {
         $this->setApiCalls(
             [
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/workstation/',
-                    'response' => $this->readFixture("GET_Workstation_UserAccountMissingLogin.json")
-                ],
                 [
                     'function' => 'readPostResult',
                     'url' => '/workstation/login/',
@@ -238,11 +228,6 @@ class IndexTest extends Base
         $this->setApiCalls(
             [
                 [
-                    'function' => 'readGetResult',
-                    'url' => '/workstation/',
-                    'response' => $this->readFixture("GET_Workstation_UserAccountMissingLogin.json")
-                ],
-                [
                     'function' => 'readPostResult',
                     'url' => '/workstation/login/',
                     'exception' => $exception
@@ -268,11 +253,6 @@ class IndexTest extends Base
     {
         $this->setApiCalls(
             [
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/workstation/',
-                    'response' => $this->readFixture("GET_Workstation_UserAccountMissingLogin.json")
-                ],
                 [
                     'function' => 'readPostResult',
                     'url' => '/workstation/login/',
@@ -300,11 +280,6 @@ class IndexTest extends Base
     {
         $this->setApiCalls(
             [
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/workstation/',
-                    'response' => $this->readFixture("GET_Workstation_UserAccountMissingLogin.json")
-                ],
                 [
                     'function' => 'readPostResult',
                     'url' => '/workstation/login/',
@@ -347,6 +322,7 @@ class IndexTest extends Base
             ]
         );
 
+        $this->withSession();
         $response = $this->render($this->arguments, [], []);
 
         $this->assertEquals(302, $response->getStatusCode());
@@ -374,6 +350,7 @@ class IndexTest extends Base
             ]
         );
 
+        $this->withSession();
         $response = $this->render($this->arguments, [], []);
 
         $this->assertEquals(302, $response->getStatusCode());
@@ -397,10 +374,17 @@ class IndexTest extends Base
         );
         unset(\App::$templatedefaults['urlAppointments']);
 
+        $captured = new \stdClass();
+        $captured->request = null;
         $middleware = new \BO\Zmsclient\AppointmentUrlMiddleware();
-        $middleware->process($this->getRequest(), new class implements \Psr\Http\Server\RequestHandlerInterface {
+        $middleware->process($this->getRequest(), new class($captured) implements \Psr\Http\Server\RequestHandlerInterface {
+            public function __construct(private \stdClass $captured)
+            {
+            }
+
             public function handle(\Psr\Http\Message\ServerRequestInterface $request): \Psr\Http\Message\ResponseInterface
             {
+                $this->captured->request = $request;
                 return new \Slim\Psr7\Response();
             }
         });
@@ -408,6 +392,10 @@ class IndexTest extends Base
         $this->assertSame(
             'https://service.berlin.de/terminvereinbarung/',
             \App::$templatedefaults['urlAppointments']
+        );
+        $this->assertInstanceOf(
+            \BO\Zmsentities\Config::class,
+            $captured->request->getAttribute(\BO\Zmsclient\AppointmentUrlMiddleware::CONFIG_ATTRIBUTE)
         );
         unset(\App::$templatedefaults['urlAppointments']);
     }
@@ -427,15 +415,23 @@ class IndexTest extends Base
         );
         \App::$templatedefaults['urlAppointments'] = 'https://service.berlin.de/terminvereinbarung/';
 
+        $captured = new \stdClass();
+        $captured->request = null;
         $middleware = new \BO\Zmsclient\AppointmentUrlMiddleware();
-        $middleware->process($this->getRequest(), new class implements \Psr\Http\Server\RequestHandlerInterface {
+        $middleware->process($this->getRequest(), new class($captured) implements \Psr\Http\Server\RequestHandlerInterface {
+            public function __construct(private \stdClass $captured)
+            {
+            }
+
             public function handle(\Psr\Http\Message\ServerRequestInterface $request): \Psr\Http\Message\ResponseInterface
             {
+                $this->captured->request = $request;
                 return new \Slim\Psr7\Response();
             }
         });
 
         $this->assertSame('', \App::$templatedefaults['urlAppointments']);
+        $this->assertNull($captured->request->getAttribute(\BO\Zmsclient\AppointmentUrlMiddleware::CONFIG_ATTRIBUTE));
         unset(\App::$templatedefaults['urlAppointments']);
     }
 }

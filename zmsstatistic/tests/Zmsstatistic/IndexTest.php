@@ -15,15 +15,24 @@ class IndexTest extends Base
     protected $classname = "Index";
 
     #[\Override]
+    public function setUp(): void
+    {
+        parent::setUp();
+        unset($_COOKIE[\BO\Zmsclient\Auth::getCookieName()]);
+    }
+
+    #[\Override]
+    public function tearDown(): void
+    {
+        unset($_COOKIE[\BO\Zmsclient\Auth::getCookieName()]);
+        parent::tearDown();
+    }
+
+    #[\Override]
     public function testRendering()
     {
         $this->setApiCalls(
             [
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/workstation/',
-                    'response' => $this->readFixture("GET_Workstation_UserAccountMissingLogin.json")
-                ],
                 [
                     'function' => 'readGetResult',
                     'url' => '/config/',
@@ -44,11 +53,6 @@ class IndexTest extends Base
     {
         $this->setApiCalls(
             [
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/workstation/',
-                    'response' => $this->readFixture("GET_Workstation_UserAccountMissingLogin.json")
-                ],
                 [
                     'function' => 'readPostResult',
                     'url' => '/workstation/login/',
@@ -78,11 +82,6 @@ class IndexTest extends Base
         $this->setApiCalls(
             [
                 [
-                    'function' => 'readGetResult',
-                    'url' => '/workstation/',
-                    'exception' => $exception
-                ],
-                [
                     'function' => 'readPostResult',
                     'url' => '/workstation/login/',
                     'exception' => $exception
@@ -103,11 +102,6 @@ class IndexTest extends Base
     {
         $this->setApiCalls(
             [
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/workstation/',
-                    'response' => $this->readFixture("GET_Workstation_UserAccountMissingLogin.json")
-                ],
                 [
                     'function' => 'readPostResult',
                     'url' => '/workstation/login/',
@@ -150,11 +144,6 @@ class IndexTest extends Base
         $this->setApiCalls(
             [
                 [
-                    'function' => 'readGetResult',
-                    'url' => '/workstation/',
-                    'response' => $this->readFixture("GET_Workstation_UserAccountMissingLogin.json")
-                ],
-                [
                     'function' => 'readPostResult',
                     'url' => '/workstation/login/',
                     'exception' => $exception
@@ -183,11 +172,6 @@ class IndexTest extends Base
         $exception->data = json_decode($this->readFixture("GET_Workstation_Resolved2.json"), 1)['data'];
         $this->setApiCalls(
             [
-                [
-                    'function' => 'readGetResult',
-                    'url' => '/workstation/',
-                    'response' => $this->readFixture("GET_Workstation_Resolved2.json")
-                ],
                 [
                     'function' => 'readPostResult',
                     'url' => '/workstation/login/',

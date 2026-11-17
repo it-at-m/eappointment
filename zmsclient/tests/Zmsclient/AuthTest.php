@@ -45,6 +45,17 @@ class AuthTest extends TestCase
         }
     }
 
+    public function testHasKeyRequiresANonEmptyCookie(): void
+    {
+        $this->assertFalse(Auth::hasKey());
+
+        $_COOKIE[Auth::getCookieName()] = '';
+        $this->assertFalse(Auth::hasKey());
+
+        $_COOKIE[Auth::getCookieName()] = 'test-auth-key-123';
+        $this->assertTrue(Auth::hasKey());
+    }
+
     public function testSetKeyBasic()
     {
         $authKey = 'test-auth-key-123';
