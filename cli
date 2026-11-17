@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Thin entrypoint: core CLI (DB/modules), local appointment tools, and ATAF tests."""
+"""Thin entrypoint: core CLI (DB/modules), local appointment tools, local cron, and ATAF tests."""
 
 import os
 import sys
@@ -9,6 +9,7 @@ from colorama import init as colorama_init
 
 from cli_appointments import AppointmentsCli
 from cli_base import EappointmentCli
+from cli_cron import CronCli
 from cli_test import TestCli
 
 colorama_init()
@@ -16,7 +17,7 @@ colorama_init()
 
 @click.group()
 def cli():
-  """zmslocaldev helper: modules, database, appointments, clean, tests."""
+  """zmslocaldev helper: modules, database, appointments, cron, clean, tests."""
   pass
 
 
@@ -24,6 +25,7 @@ def main():
   repo_dir = os.path.dirname(os.path.abspath(sys.argv[0]))
   EappointmentCli(repo_dir).register(cli)
   AppointmentsCli(repo_dir).register_appointments(cli)
+  CronCli(repo_dir).register_cron(cli)
   TestCli(repo_dir).register_tests(cli)
   cli()
 

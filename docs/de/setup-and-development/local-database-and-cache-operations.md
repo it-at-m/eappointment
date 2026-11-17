@@ -26,6 +26,12 @@ podman exec -it zms-web bash -lc "cd zmsbackend && ./cron/cronjob.minutly"
 podman exec -it zms-web bash -lc "./cli modules clear-local-cache"
 ```
 
+Den Minuten-Cron laufen lassen, einmal sofort und danach zu jeder 5. Minute:
+
+```bash
+podman exec -it zms-web bash -lc "./cli cron minutly"
+```
+
 ## Termine lokal anlegen
 
 Zwei Befehle sprechen die lokale zmsapi als `_system_queuefill` an (Passwort `vorschau`). `./cli db full-setup` legt diesen Nutzer in der Testdaten-Migration an. In `zms-web` ist die Basis-URL `ZMS_API_URL`, falls gesetzt, sonst `http://127.0.0.1/terminvereinbarung/api/2`. Auf dem Host ist es `http://127.0.0.1:8090/terminvereinbarung/api/2`. Mit `--base-url` überschreiben. Kundennamen beginnen mit `LOADTEST-local`. Berichte liegen unter `cache/` und gehören nicht ins Repository.
