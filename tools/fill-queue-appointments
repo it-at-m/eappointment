@@ -453,14 +453,18 @@ class ZmsApiClient:
         process["requests"] = list(service_requests)
         process["clients"] = [mock_customer(family_name)]
 
-        status_code, payload = self._request(
-            "POST",
-            "/process/status/reserved/",
-            body=process,
-            query={"slotType": "intern", "clientkey": "", "slotsRequired": 0},
-        )
-        if status_code == 404 and "Maybe someone was faster" in str(payload):
-            return None
+        try:
+            status_code, payload = self._request(
+                "POST",
+                "/process/status/reserved/",
+                body=process,
+                query={"slotType": "intern", "clientkey": "", "slotsRequired": 0},
+            )
+        except ZmsApiError as error:
+            # _request raises on HTTP 404, so a lost race never returns a status code.
+            if error.status_code == 404:
+                return None
+            raise
         reserved = self._require_http_ok(
             status_code, payload, f"reserve scope={scope_id} -> {status_code}"
         )
@@ -870,6 +874,13 @@ def process_family_name(process: dict[str, Any]) -> str:
     return ""
 
 
+def process_appointment_day(process: dict[str, Any]) -> date | None:
+    epoch = appointment_start_epoch(process)
+    if epoch <= 0:
+        return None
+    return datetime.fromtimestamp(epoch, BERLIN_TIMEZONE).date()
+
+
 def process_matches_wipe_filter(
     process: dict[str, Any], *, wipe_all: bool, name_prefix: str
 ) -> bool:
@@ -930,7 +941,8 @@ class QueueWiper:
             try:
                 for process in self.api.list_processes_by_status(self.scope_id, status):
                     pid = int(process.get("id") or 0)
-                    if pid > 0:
+                    # The status list is not limited to --day.
+                    if pid > 0 and process_appointment_day(process) == self.day:
                         by_id[pid] = process
             except ZmsApiError as error:
                 # Some statuses may be empty / unsupported — keep going.
@@ -1100,9 +1112,14 @@ class ScopeQueueFiller:
         )
         if not free_slots:
             return False, None
-        for attempt, candidate in enumerate(free_slots):
-            if attempt >= MAX_SLOT_RESERVE_ATTEMPTS:
+        tried = 0
+        for candidate in free_slots:
+            # Walk-ins can run long enough that the planned cutoff minute is already past.
+            if appointment_start_epoch(candidate) < int(BerlinTime.now().timestamp()):
+                continue
+            if tried >= MAX_SLOT_RESERVE_ATTEMPTS:
                 break
+            tried += 1
             process_id = self.api.reserve_and_confirm_appointment(
                 self.scope_id,
                 service_requests,
@@ -1121,18 +1138,12 @@ class ScopeQueueFiller:
         created_so_far: int,
     ) -> None:
         if self.fill_to_capacity:
-            # Probe capacity with a single random service (cheap upper bound).
-            probe = self.service_picker.pick()
-            probe_slots = self.api.list_free_appointment_slots(
-                self.scope_id, probe, self.day, self.earliest_epoch
-            )
-            appointment_count = min(
-                len(probe_slots), self.scope_budget - created_so_far
-            )
+            # One service can have no seats while another still does.
+            appointment_count = max(0, self.scope_budget - created_so_far)
             result.requested_appointments = appointment_count
             print_log(
-                f"scope {self.scope_id}: fill_capacity probe "
-                f"{len(probe_slots)} slots for {service_names(probe)!r}"
+                f"scope {self.scope_id}: fill_capacity up to {appointment_count} "
+                "appointments, trying each offered service"
             )
 
         booked_count = 0
@@ -1190,6 +1201,8 @@ class QueueFillJob:
         FillPlanner.refuse_if_production(self.args.base_url, self.args.environment)
 
         day = BerlinTime.parse_day(self.args.day)
+        # Rejects a past day before any wipe. The fill uses the same cutoff.
+        earliest_epoch = BerlinTime.earliest_bookable_epoch(day)
         wipe_mode = self.args.wipe_queue  # none | before | only
         fill_after_wipe = wipe_mode != "only"
 
@@ -1228,6 +1241,24 @@ class QueueFillJob:
             },
         }
 
+        fill_to_capacity = self.args.mode == "fill_capacity"
+        walk_in_count = 0
+        appointment_count = 0
+        walk_ins_per_scope: list[int] = []
+        appointments_per_scope: list[int] = []
+        if fill_after_wipe:
+            walk_in_count, appointment_count = FillPlanner.counts_from_cli(self.args)
+            FillPlanner.assert_within_hard_limits(
+                self.args.target, walk_in_count, appointment_count
+            )
+            walk_ins_per_scope, appointments_per_scope = FillPlanner.budgets_per_scope(
+                self.args.target,
+                scope_ids,
+                walk_in_count,
+                appointment_count,
+                fill_to_capacity,
+            )
+
         if wipe_mode in {"before", "only"}:
             if self.args.wipe_all and not self.args.dry_run:
                 print_log(
@@ -1250,20 +1281,7 @@ class QueueFillJob:
                 report["totals"]["wipe_errors"] += len(wipe_result.errors)
 
         if fill_after_wipe:
-            earliest_epoch = BerlinTime.earliest_bookable_epoch(day)
             report["earliest_epoch"] = earliest_epoch
-            walk_in_count, appointment_count = FillPlanner.counts_from_cli(self.args)
-            FillPlanner.assert_within_hard_limits(
-                self.args.target, walk_in_count, appointment_count
-            )
-            fill_to_capacity = self.args.mode == "fill_capacity"
-            walk_ins_per_scope, appointments_per_scope = FillPlanner.budgets_per_scope(
-                self.args.target,
-                scope_ids,
-                walk_in_count,
-                appointment_count,
-                fill_to_capacity,
-            )
 
             processes_created_in_cluster = 0
             for index, scope_id in enumerate(scope_ids):

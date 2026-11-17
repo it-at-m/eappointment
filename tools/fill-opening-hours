@@ -446,7 +446,9 @@ class ZmsApiClient:
                     response_body=raw[:2000],
                 ) from error
             except (urllib.error.URLError, TimeoutError, OSError) as error:
-                if attempt < TRANSIENT_ATTEMPTS:
+                # A lost POST response may already be committed. Retrying it
+                # looks like a conflict and hides the first process id.
+                if method != "POST" and attempt < TRANSIENT_ATTEMPTS:
                     self._log_backoff(method, path, str(error))
                     continue
                 raise ZmsApiError(f"{method} {path} failed: {error}") from error
@@ -743,6 +745,7 @@ class OpeningHoursJob:
         self._service_counts: dict[int, int] = {}
         self._days_total = 0
         self._days_done = 0
+        self._bookings_claimed = 0
 
     def run(self) -> int:
         self._validate()
@@ -932,6 +935,25 @@ class OpeningHoursJob:
             requested = MAX_WORKERS
         return min(requested, job_count)
 
+    def _claim_booking(self) -> bool:
+        """Hold one seat against --max-bookings before the reserve call."""
+        limit = self.args.max_bookings
+        if not limit or limit <= 0:
+            return True
+        with self._lock:
+            inflight = self.report["totals"]["booked"] + self._bookings_claimed
+            if inflight >= limit:
+                return False
+            self._bookings_claimed += 1
+            return True
+
+    def _release_booking_claim(self) -> None:
+        limit = self.args.max_bookings
+        if not limit or limit <= 0:
+            return
+        with self._lock:
+            self._bookings_claimed = max(0, self._bookings_claimed - 1)
+
     def _budget_reached(self) -> bool:
         limit = self.args.max_bookings
         if not limit or limit <= 0:
@@ -972,6 +994,8 @@ class OpeningHoursJob:
         except ZmsApiError as error:
             print_log(f"scope {scope_id} ({label}): no requests ({error})")
             entry["errors"].append(f"requests: {error}")
+            with self._lock:
+                self.report["totals"]["errors"] += 1
             self._finish_scope(entry, skipped=True)
             return None
 
@@ -1109,29 +1133,14 @@ class OpeningHoursJob:
             for slot in slots:
                 if self._budget_reached() or consecutive_errors >= MAX_CONSECUTIVE_ERRORS:
                     break
+                if not self._claim_booking():
+                    break
                 group = self._group_for_slot(service_request, seed, by_id, neighbors)
                 label = service_label(group)
                 try:
-                    outcome = api.reserve_and_confirm(
-                        group, slot, self._next_family_name(scope_id), slot_type
-                    )
-                except ZmsApiError as error:
-                    consecutive_errors += 1
-                    self._note_error(entry, f"{day} {slot_type} {label}: {error}")
-                    print_log(
-                        f"ERROR scope {scope_id} book {day} {slot_type} "
-                        f"{label}: {error}"
-                    )
-                    time.sleep(self.args.pause)
-                    continue
-                if outcome != "booked" and len(group) > 1:
-                    # Combined slot count did not fit. Book the single seat.
                     try:
                         outcome = api.reserve_and_confirm(
-                            [service_request],
-                            slot,
-                            self._next_family_name(scope_id),
-                            slot_type,
+                            group, slot, self._next_family_name(scope_id), slot_type
                         )
                     except ZmsApiError as error:
                         consecutive_errors += 1
@@ -1142,22 +1151,42 @@ class OpeningHoursJob:
                         )
                         time.sleep(self.args.pause)
                         continue
-                    group = [service_request]
-                    label = service_label(group)
-                if outcome == "booked":
-                    progress += 1
-                    consecutive_errors = 0
-                    booked_total = self._bump("booked", entry, "booked")
-                    mix = self._record_service_count(len(group))
-                    if not PROGRESS.tty and (booked_total <= 3 or booked_total % 50 == 0):
-                        print_log(
-                            f"scope {scope_id} booked {slot_type} {label} "
-                            f"total={booked_total} mix[{mix}]"
-                        )
-                else:
-                    stale += 1
-                    self._bump("stale", entry, "stale")
-                time.sleep(self.args.pause)
+                    if outcome != "booked" and len(group) > 1:
+                        # Combined slot count did not fit. Book the single seat.
+                        try:
+                            outcome = api.reserve_and_confirm(
+                                [service_request],
+                                slot,
+                                self._next_family_name(scope_id),
+                                slot_type,
+                            )
+                        except ZmsApiError as error:
+                            consecutive_errors += 1
+                            self._note_error(entry, f"{day} {slot_type} {label}: {error}")
+                            print_log(
+                                f"ERROR scope {scope_id} book {day} {slot_type} "
+                                f"{label}: {error}"
+                            )
+                            time.sleep(self.args.pause)
+                            continue
+                        group = [service_request]
+                        label = service_label(group)
+                    if outcome == "booked":
+                        progress += 1
+                        consecutive_errors = 0
+                        booked_total = self._bump("booked", entry, "booked")
+                        mix = self._record_service_count(len(group))
+                        if not PROGRESS.tty and (booked_total <= 3 or booked_total % 50 == 0):
+                            print_log(
+                                f"scope {scope_id} booked {slot_type} {label} "
+                                f"total={booked_total} mix[{mix}]"
+                            )
+                    else:
+                        stale += 1
+                        self._bump("stale", entry, "stale")
+                    time.sleep(self.args.pause)
+                finally:
+                    self._release_booking_claim()
 
         if self.args.dry_run:
             return busiest, 0, consecutive_errors, busiest > 0
