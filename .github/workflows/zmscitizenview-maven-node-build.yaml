@@ -6,7 +6,7 @@ on:
     # should-run: new branch always; later only zmscitizenview/ (or catch-up).
   # Rebuild without a commit. In Actions, choose the branch under "Use workflow from",
   # the same way as the zmsautomation workflow.
-  # next and feature branches install the npm "beta" dist-tag; main and tags keep the pin.
+  # next and feature branches install the newer of the npm beta and latest dist-tags; main and tags keep the pin.
   workflow_dispatch:
 
 concurrency:
@@ -43,7 +43,7 @@ jobs:
           GH_REPO: ${{ github.repository }}
           WORKFLOW_FILE: zmscitizenview-maven-node-build.yaml
           MODE: include
-          PATH_PREFIXES: zmscitizenview/ .github/workflows/zmscitizenview-maven-node-build.yaml
+          PATH_PREFIXES: zmscitizenview/ .github/workflows/zmscitizenview-maven-node-build.yaml .github/scripts/zmscitizenview-select-patternlab.sh
         run: bash .github/scripts/decide-push-ci-run.sh
 
   build:
@@ -58,8 +58,8 @@ jobs:
         include:
           - app-path: zmscitizenview
     steps:
-      - uses: it-at-m/lhm_actions/action-templates/actions/action-checkout@03f09fa81a60371c01caf1a9deada89ceebbd5e5 # v1.6.3
-      # package.json keeps the stable pin for main/tags; other refs build against npm "beta".
+      - uses: it-at-m/lhm_actions/action-templates/actions/action-checkout@87a254fa39e1555ffbbc8317af71b4d5ca7d4a3b # v1.6.4
+      # package.json keeps the stable pin for main/tags; other refs build against the newer of npm beta and latest.
       - name: Set up Node.js (patternlab channel)
         if: ${{ !(github.ref == 'refs/heads/main' || github.ref_type == 'tag') }}
         uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
@@ -70,15 +70,15 @@ jobs:
         run: bash .github/scripts/zmscitizenview-select-patternlab.sh "${{ matrix.app-path }}"
       - if: ${{hashFiles(format('./{0}/package.json', matrix.app-path))!=null}}
         id: node
-        uses: it-at-m/lhm_actions/action-templates/actions/action-npm-build@03f09fa81a60371c01caf1a9deada89ceebbd5e5 # v1.6.3
+        uses: it-at-m/lhm_actions/action-templates/actions/action-npm-build@87a254fa39e1555ffbbc8317af71b4d5ca7d4a3b # v1.6.4
         with:
           app-path: "${{ matrix.app-path }}"
       - if: ${{hashFiles(format('./{0}/pom.xml', matrix.app-path))!=null}}
         id: maven
-        uses: it-at-m/lhm_actions/action-templates/actions/action-maven-build@03f09fa81a60371c01caf1a9deada89ceebbd5e5 # v1.6.3
+        uses: it-at-m/lhm_actions/action-templates/actions/action-maven-build@87a254fa39e1555ffbbc8317af71b4d5ca7d4a3b # v1.6.4
         with:
           app-path: "${{ matrix.app-path }}"
-      - uses: it-at-m/lhm_actions/action-templates/actions/action-build-image@03f09fa81a60371c01caf1a9deada89ceebbd5e5 # v1.6.3
+      - uses: it-at-m/lhm_actions/action-templates/actions/action-build-image@87a254fa39e1555ffbbc8317af71b4d5ca7d4a3b # v1.6.4
         with:
           path: "${{  matrix.app-path }}"
           image-name: "${{  matrix.app-path }}"

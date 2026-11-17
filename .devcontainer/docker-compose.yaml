@@ -21,7 +21,7 @@ services:
       - default
 
   mail-viewer:
-    image: node:26.13.0@sha256:438603bbb5cda404b9416f0b5c8026f61501ab911760d861ec28c36b5d675725
+    image: node:26.13.1@sha256:e18c3ccdf7d71619990b0e85639f506e2028a95410999cab24cc373cbd10e0ac
     container_name: zms-mail-viewer
     working_dir: /workspace/.devcontainer/mail-viewer
     volumes:
@@ -45,7 +45,7 @@ services:
     restart: unless-stopped
 
   citizenview:
-    image: node:26.13.0@sha256:438603bbb5cda404b9416f0b5c8026f61501ab911760d861ec28c36b5d675725
+    image: node:26.13.1@sha256:e18c3ccdf7d71619990b0e85639f506e2028a95410999cab24cc373cbd10e0ac
     container_name: zms-citizenview
     working_dir: /workspace/zmscitizenview
     volumes:
@@ -67,7 +67,7 @@ services:
     restart: unless-stopped
 
   db:
-    image: mariadb:10.11.19@sha256:d769e37960821dfdcf096954f6e7ac89f747e116c1bba98e48edd265dfc7deae
+    image: mariadb:10.11.19@sha256:7d829180b5b2a9ba74f6242876ab401a0d7dd338a807e522ef92bc9698760f20
     container_name: zms-db
     restart: unless-stopped
     environment:
@@ -83,7 +83,7 @@ services:
       - "3306:3306"
 
   phpmyadmin:
-    image: phpmyadmin:5.2.3@sha256:f54a37b908b26caa7032c4eb0c7f3495fdd90208a06eed9c4b2c8e691dd1662c
+    image: phpmyadmin:5.2.3@sha256:e4b3eb5305cd42d21512bb55def2bab52625d56df927ad4ee1864a9354c84d40
     container_name: zms-phpmyadmin
     restart: unless-stopped
     ports:
@@ -148,7 +148,7 @@ services:
     restart: unless-stopped
 
   keycloak:
-    image: quay.io/keycloak/keycloak:26.8.2@sha256:723b1d6e254c0fc96d5cffec860c7e0744d6a3277822b865bb538cf891575e41
+    image: quay.io/keycloak/keycloak:26.8.2@sha256:c68e286cacd87b942ac1939a0a1481461109d6acd3a57dc496969a319a76bbf0
     container_name: zms-keycloak
     hostname: keycloak
     command:

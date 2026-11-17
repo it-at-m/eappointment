@@ -1,4 +1,34 @@
-## Release Muc-50 Updated (23.10.2026)
+## Release Muc-51 (13.11.2026)
+
+<h2>        Bug
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1391'>ZMSKVR-1391</a>] -         Fehler bei wiederholtem Verschieben nach  Button &quot;Termin verschieben abbrechen&quot; auf der Verschiebe-/Absageseite
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1688'>ZMSKVR-1688</a>] -         Terminabsage-Mail bei interner Terminverschiebung gibt neuen statt alten Termin an.
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1702'>ZMSKVR-1702</a>] -         Fehlende Callout-Meldung bei Erreichen des Terminlimits pro E-Mail-Adresse
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1713'>ZMSKVR-1713</a>] -         Standortübergreifende Wartestatistik: Anzahl der Wartenden stimmt nicht überein
+</li>
+</ul>
+                                                                                                                                                                                                                                            
+<h2>        Story
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1142'>ZMSKVR-1142</a>] -         Standortkonfiguration: &quot;Maximale Anzahl an Terminen pro E-Mail-Adresse&quot; validieren
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1706'>ZMSKVR-1706</a>] -         Erklärtext zu &quot;Umbuchung deaktiviert&quot; in der Standortkonfiguration
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-273'>ZMSKVR-273</a>] -         zmsticketprinter Access Control
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-908'>ZMSKVR-908</a>] -         Pfennigparade #8: Fehlerhafte Verwendung von aria-haspopup
+</li>
+</ul>
+
+
+
+## Release Muc-50 (23.10.2026)
 
 <h2>        Bug
 </h2>

@@ -127,6 +127,56 @@ class OverviewCalendarTest extends \BO\Zmsbackend\Tests\Service\Base
         $this->assertSame('cancelled', $row2['status']);
     }
 
+    public function testUpdateByProcessKeepsScopeWhenUnknown(): void
+    {
+        $calendar = new \BO\Zmsbackend\OverviewCalendar\Service\OverviewCalendar();
+
+        $pid = 900021;
+        $calendar->insert(
+            self::SCOPE1,
+            $pid,
+            'confirmed',
+            new DateTimeImmutable('2025-05-14 08:00:00'),
+            new DateTimeImmutable('2025-05-14 08:15:00')
+        );
+
+        $calendar->updateByProcess(
+            $pid,
+            0,
+            new DateTimeImmutable('2025-05-14 09:00:00'),
+            new DateTimeImmutable('2025-05-14 09:20:00')
+        );
+
+        $row = $this->fetchByPid($pid);
+        $this->assertSame(self::SCOPE1, (int) $row['scope_id']);
+        $this->assertSame('2025-05-14 09:00:00', $row['starts_at']);
+        $this->assertSame('2025-05-14 09:20:00', $row['ends_at']);
+
+        $calendar->updateByProcess(
+            $pid,
+            99999999,
+            new DateTimeImmutable('2025-05-14 10:00:00'),
+            new DateTimeImmutable('2025-05-14 10:30:00')
+        );
+
+        $row = $this->fetchByPid($pid);
+        $this->assertSame(self::SCOPE1, (int) $row['scope_id']);
+        $this->assertSame('2025-05-14 10:00:00', $row['starts_at']);
+        $this->assertSame('2025-05-14 10:30:00', $row['ends_at']);
+
+        $calendar->updateByProcess(
+            $pid,
+            self::SCOPE2,
+            new DateTimeImmutable('2025-05-14 11:00:00'),
+            new DateTimeImmutable('2025-05-14 11:15:00')
+        );
+
+        $row = $this->fetchByPid($pid);
+        $this->assertSame(self::SCOPE2, (int) $row['scope_id']);
+        $this->assertSame('2025-05-14 11:00:00', $row['starts_at']);
+        $this->assertSame('2025-05-14 11:15:00', $row['ends_at']);
+    }
+
     public function testReadMaxUpdatedAndGlobal(): void
     {
         $calendar = new \BO\Zmsbackend\OverviewCalendar\Service\OverviewCalendar();

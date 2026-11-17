@@ -10,6 +10,8 @@
 namespace BO\Zmscalldisplay;
 
 use BO\Slim\Render;
+use BO\Zmsclient\Exception as ZmsclientException;
+use BO\Zmsclient\Psr7\RequestException;
 use BO\Zmsentities\Collection\QueueList;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -31,45 +33,49 @@ class Queue extends BaseController
 
         $calldisplay = new Helper\Calldisplay($request);
 
-        $queueList = \App::$http
-            ->readPostResult('/calldisplay/queue/', $calldisplay->getEntity(false), [
-                'statusList' => $calldisplay::getRequestedQueueStatus($request)
-            ])
-            ->getCollection();
+        try {
+            $queueList = \App::$http
+                ->readPostResult('/calldisplay/queue/', $calldisplay->getEntity(false), [
+                    'statusList' => $calldisplay::getRequestedQueueStatus($request)
+                ])
+                ->getCollection();
 
-        $queueList = ($queueList) ?
-            $queueList->withStatus($calldisplay::getRequestedQueueStatus($request))->sortByCallTime('descending') :
-            new QueueList();
+            $queueList = ($queueList) ?
+                $queueList->withStatus($calldisplay::getRequestedQueueStatus($request))->sortByCallTime('descending') :
+                new QueueList();
 
-        if ($displayNumber === 1) {
-            $queueList = $queueList->chunk(10)[0];
-        } elseif ($displayNumber === 2) {
-            $queueList = $queueList->chunk(10)[1] ?? new QueueList();
+            if ($displayNumber === 1) {
+                $queueList = $queueList->chunk(10)[0];
+            } elseif ($displayNumber === 2) {
+                $queueList = $queueList->chunk(10)[1] ?? new QueueList();
+            }
+
+            $callDisplayText = null;
+            $callDisplayInfo = $calldisplay->getEntity(true);
+
+            if ($callDisplayInfo->getClusterList()->count() > 0 && $callDisplayInfo->getClusterList()->getFirst()->callDisplayText) {
+                $callDisplayText = $callDisplayInfo->getClusterList()->getFirst()->callDisplayText;
+            } elseif (
+                $callDisplayInfo->getScopeList()->count() > 0
+                && $callDisplayInfo->getScopeList()->getFirst()->preferences['queue']['callDisplayText']
+            ) {
+                $callDisplayText = $callDisplayInfo->getScopeList()->getFirst()->preferences['queue']['callDisplayText'];
+            }
+
+            return Render::withHtml(
+                $response,
+                'block/queue/queueTable.twig',
+                array(
+                    'text' => 'asdsadsa',
+                    'tableSettings' => $validator->getParameter('tableLayout')->isArray()->getValue(),
+                    'calldisplay' => $calldisplay->getEntity(false),
+                    'scope' => $calldisplay->getSingleScope(),
+                    'queueList' => $queueList,
+                    'callDisplayText' => $callDisplayText
+                )
+            );
+        } catch (ZmsclientException | RequestException $exception) {
+            return $this->skipRefresh($response, $exception, 'Calldisplay queue refresh skipped');
         }
-
-        $callDisplayText = null;
-        $callDisplayInfo = $calldisplay->getEntity(true);
-
-        if ($callDisplayInfo->getClusterList()->count() > 0 && $callDisplayInfo->getClusterList()->getFirst()->callDisplayText) {
-            $callDisplayText = $callDisplayInfo->getClusterList()->getFirst()->callDisplayText;
-        } elseif (
-            $callDisplayInfo->getScopeList()->count() > 0
-            && $callDisplayInfo->getScopeList()->getFirst()->preferences['queue']['callDisplayText']
-        ) {
-            $callDisplayText = $callDisplayInfo->getScopeList()->getFirst()->preferences['queue']['callDisplayText'];
-        }
-
-        return Render::withHtml(
-            $response,
-            'block/queue/queueTable.twig',
-            array(
-                'text' => 'asdsadsa',
-                'tableSettings' => $validator->getParameter('tableLayout')->isArray()->getValue(),
-                'calldisplay' => $calldisplay->getEntity(false),
-                'scope' => $calldisplay->getSingleScope(),
-                'queueList' => $queueList,
-                'callDisplayText' => $callDisplayText
-            )
-        );
     }
 }

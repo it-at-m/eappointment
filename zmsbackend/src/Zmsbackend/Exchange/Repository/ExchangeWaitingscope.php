@@ -154,30 +154,126 @@ class ExchangeWaitingscope extends \BO\Zmsbackend\Query\Base
         AVG(hour_21_estimated_waiting_time_appointment) as hour_21_estimated_waiting_time_appointment,
         AVG(hour_22_estimated_waiting_time_appointment) as hour_22_estimated_waiting_time_appointment,
         AVG(hour_23_estimated_waiting_time_appointment) as hour_23_estimated_waiting_time_appointment,
-        AVG(hour_00_way_time_appointment) as hour_00_way_time_appointment,
-        AVG(hour_01_way_time_appointment) as hour_01_way_time_appointment,
-        AVG(hour_02_way_time_appointment) as hour_02_way_time_appointment,
-        AVG(hour_03_way_time_appointment) as hour_03_way_time_appointment,
-        AVG(hour_04_way_time_appointment) as hour_04_way_time_appointment,
-        AVG(hour_05_way_time_appointment) as hour_05_way_time_appointment,
-        AVG(hour_06_way_time_appointment) as hour_06_way_time_appointment,
-        AVG(hour_07_way_time_appointment) as hour_07_way_time_appointment,
-        AVG(hour_08_way_time_appointment) as hour_08_way_time_appointment,
-        AVG(hour_09_way_time_appointment) as hour_09_way_time_appointment,
-        AVG(hour_10_way_time_appointment) as hour_10_way_time_appointment,
-        AVG(hour_11_way_time_appointment) as hour_11_way_time_appointment,
-        AVG(hour_12_way_time_appointment) as hour_12_way_time_appointment,
-        AVG(hour_13_way_time_appointment) as hour_13_way_time_appointment,
-        AVG(hour_14_way_time_appointment) as hour_14_way_time_appointment,
-        AVG(hour_15_way_time_appointment) as hour_15_way_time_appointment,
-        AVG(hour_16_way_time_appointment) as hour_16_way_time_appointment,
-        AVG(hour_17_way_time_appointment) as hour_17_way_time_appointment,
-        AVG(hour_18_way_time_appointment) as hour_18_way_time_appointment,
-        AVG(hour_19_way_time_appointment) as hour_19_way_time_appointment,
-        AVG(hour_20_way_time_appointment) as hour_20_way_time_appointment,
-        AVG(hour_21_way_time_appointment) as hour_21_way_time_appointment,
-        AVG(hour_22_way_time_appointment) as hour_22_way_time_appointment,
-        AVG(hour_23_way_time_appointment) as hour_23_way_time_appointment,
+        SUM(hour_00_way_time_appointment * COALESCE(hour_00_way_count_appointment, hour_00_waiting_count_appointment))
+            / NULLIF(SUM(COALESCE(hour_00_way_count_appointment, hour_00_waiting_count_appointment)), 0)
+            as hour_00_way_time_appointment,
+        SUM(hour_01_way_time_appointment * COALESCE(hour_01_way_count_appointment, hour_01_waiting_count_appointment))
+            / NULLIF(SUM(COALESCE(hour_01_way_count_appointment, hour_01_waiting_count_appointment)), 0)
+            as hour_01_way_time_appointment,
+        SUM(hour_02_way_time_appointment * COALESCE(hour_02_way_count_appointment, hour_02_waiting_count_appointment))
+            / NULLIF(SUM(COALESCE(hour_02_way_count_appointment, hour_02_waiting_count_appointment)), 0)
+            as hour_02_way_time_appointment,
+        SUM(hour_03_way_time_appointment * COALESCE(hour_03_way_count_appointment, hour_03_waiting_count_appointment))
+            / NULLIF(SUM(COALESCE(hour_03_way_count_appointment, hour_03_waiting_count_appointment)), 0)
+            as hour_03_way_time_appointment,
+        SUM(hour_04_way_time_appointment * COALESCE(hour_04_way_count_appointment, hour_04_waiting_count_appointment))
+            / NULLIF(SUM(COALESCE(hour_04_way_count_appointment, hour_04_waiting_count_appointment)), 0)
+            as hour_04_way_time_appointment,
+        SUM(hour_05_way_time_appointment * COALESCE(hour_05_way_count_appointment, hour_05_waiting_count_appointment))
+            / NULLIF(SUM(COALESCE(hour_05_way_count_appointment, hour_05_waiting_count_appointment)), 0)
+            as hour_05_way_time_appointment,
+        SUM(hour_06_way_time_appointment * COALESCE(hour_06_way_count_appointment, hour_06_waiting_count_appointment))
+            / NULLIF(SUM(COALESCE(hour_06_way_count_appointment, hour_06_waiting_count_appointment)), 0)
+            as hour_06_way_time_appointment,
+        SUM(hour_07_way_time_appointment * COALESCE(hour_07_way_count_appointment, hour_07_waiting_count_appointment))
+            / NULLIF(SUM(COALESCE(hour_07_way_count_appointment, hour_07_waiting_count_appointment)), 0)
+            as hour_07_way_time_appointment,
+        SUM(hour_08_way_time_appointment * COALESCE(hour_08_way_count_appointment, hour_08_waiting_count_appointment))
+            / NULLIF(SUM(COALESCE(hour_08_way_count_appointment, hour_08_waiting_count_appointment)), 0)
+            as hour_08_way_time_appointment,
+        SUM(hour_09_way_time_appointment * COALESCE(hour_09_way_count_appointment, hour_09_waiting_count_appointment))
+            / NULLIF(SUM(COALESCE(hour_09_way_count_appointment, hour_09_waiting_count_appointment)), 0)
+            as hour_09_way_time_appointment,
+        SUM(hour_10_way_time_appointment * COALESCE(hour_10_way_count_appointment, hour_10_waiting_count_appointment))
+            / NULLIF(SUM(COALESCE(hour_10_way_count_appointment, hour_10_waiting_count_appointment)), 0)
+            as hour_10_way_time_appointment,
+        SUM(hour_11_way_time_appointment * COALESCE(hour_11_way_count_appointment, hour_11_waiting_count_appointment))
+            / NULLIF(SUM(COALESCE(hour_11_way_count_appointment, hour_11_waiting_count_appointment)), 0)
+            as hour_11_way_time_appointment,
+        SUM(hour_12_way_time_appointment * COALESCE(hour_12_way_count_appointment, hour_12_waiting_count_appointment))
+            / NULLIF(SUM(COALESCE(hour_12_way_count_appointment, hour_12_waiting_count_appointment)), 0)
+            as hour_12_way_time_appointment,
+        SUM(hour_13_way_time_appointment * COALESCE(hour_13_way_count_appointment, hour_13_waiting_count_appointment))
+            / NULLIF(SUM(COALESCE(hour_13_way_count_appointment, hour_13_waiting_count_appointment)), 0)
+            as hour_13_way_time_appointment,
+        SUM(hour_14_way_time_appointment * COALESCE(hour_14_way_count_appointment, hour_14_waiting_count_appointment))
+            / NULLIF(SUM(COALESCE(hour_14_way_count_appointment, hour_14_waiting_count_appointment)), 0)
+            as hour_14_way_time_appointment,
+        SUM(hour_15_way_time_appointment * COALESCE(hour_15_way_count_appointment, hour_15_waiting_count_appointment))
+            / NULLIF(SUM(COALESCE(hour_15_way_count_appointment, hour_15_waiting_count_appointment)), 0)
+            as hour_15_way_time_appointment,
+        SUM(hour_16_way_time_appointment * COALESCE(hour_16_way_count_appointment, hour_16_waiting_count_appointment))
+            / NULLIF(SUM(COALESCE(hour_16_way_count_appointment, hour_16_waiting_count_appointment)), 0)
+            as hour_16_way_time_appointment,
+        SUM(hour_17_way_time_appointment * COALESCE(hour_17_way_count_appointment, hour_17_waiting_count_appointment))
+            / NULLIF(SUM(COALESCE(hour_17_way_count_appointment, hour_17_waiting_count_appointment)), 0)
+            as hour_17_way_time_appointment,
+        SUM(hour_18_way_time_appointment * COALESCE(hour_18_way_count_appointment, hour_18_waiting_count_appointment))
+            / NULLIF(SUM(COALESCE(hour_18_way_count_appointment, hour_18_waiting_count_appointment)), 0)
+            as hour_18_way_time_appointment,
+        SUM(hour_19_way_time_appointment * COALESCE(hour_19_way_count_appointment, hour_19_waiting_count_appointment))
+            / NULLIF(SUM(COALESCE(hour_19_way_count_appointment, hour_19_waiting_count_appointment)), 0)
+            as hour_19_way_time_appointment,
+        SUM(hour_20_way_time_appointment * COALESCE(hour_20_way_count_appointment, hour_20_waiting_count_appointment))
+            / NULLIF(SUM(COALESCE(hour_20_way_count_appointment, hour_20_waiting_count_appointment)), 0)
+            as hour_20_way_time_appointment,
+        SUM(hour_21_way_time_appointment * COALESCE(hour_21_way_count_appointment, hour_21_waiting_count_appointment))
+            / NULLIF(SUM(COALESCE(hour_21_way_count_appointment, hour_21_waiting_count_appointment)), 0)
+            as hour_21_way_time_appointment,
+        SUM(hour_22_way_time_appointment * COALESCE(hour_22_way_count_appointment, hour_22_waiting_count_appointment))
+            / NULLIF(SUM(COALESCE(hour_22_way_count_appointment, hour_22_waiting_count_appointment)), 0)
+            as hour_22_way_time_appointment,
+        SUM(hour_23_way_time_appointment * COALESCE(hour_23_way_count_appointment, hour_23_waiting_count_appointment))
+            / NULLIF(SUM(COALESCE(hour_23_way_count_appointment, hour_23_waiting_count_appointment)), 0)
+            as hour_23_way_time_appointment,
+        SUM(COALESCE(hour_00_way_count_appointment, hour_00_waiting_count_appointment))
+            as hour_00_way_count_appointment,
+        SUM(COALESCE(hour_01_way_count_appointment, hour_01_waiting_count_appointment))
+            as hour_01_way_count_appointment,
+        SUM(COALESCE(hour_02_way_count_appointment, hour_02_waiting_count_appointment))
+            as hour_02_way_count_appointment,
+        SUM(COALESCE(hour_03_way_count_appointment, hour_03_waiting_count_appointment))
+            as hour_03_way_count_appointment,
+        SUM(COALESCE(hour_04_way_count_appointment, hour_04_waiting_count_appointment))
+            as hour_04_way_count_appointment,
+        SUM(COALESCE(hour_05_way_count_appointment, hour_05_waiting_count_appointment))
+            as hour_05_way_count_appointment,
+        SUM(COALESCE(hour_06_way_count_appointment, hour_06_waiting_count_appointment))
+            as hour_06_way_count_appointment,
+        SUM(COALESCE(hour_07_way_count_appointment, hour_07_waiting_count_appointment))
+            as hour_07_way_count_appointment,
+        SUM(COALESCE(hour_08_way_count_appointment, hour_08_waiting_count_appointment))
+            as hour_08_way_count_appointment,
+        SUM(COALESCE(hour_09_way_count_appointment, hour_09_waiting_count_appointment))
+            as hour_09_way_count_appointment,
+        SUM(COALESCE(hour_10_way_count_appointment, hour_10_waiting_count_appointment))
+            as hour_10_way_count_appointment,
+        SUM(COALESCE(hour_11_way_count_appointment, hour_11_waiting_count_appointment))
+            as hour_11_way_count_appointment,
+        SUM(COALESCE(hour_12_way_count_appointment, hour_12_waiting_count_appointment))
+            as hour_12_way_count_appointment,
+        SUM(COALESCE(hour_13_way_count_appointment, hour_13_waiting_count_appointment))
+            as hour_13_way_count_appointment,
+        SUM(COALESCE(hour_14_way_count_appointment, hour_14_waiting_count_appointment))
+            as hour_14_way_count_appointment,
+        SUM(COALESCE(hour_15_way_count_appointment, hour_15_waiting_count_appointment))
+            as hour_15_way_count_appointment,
+        SUM(COALESCE(hour_16_way_count_appointment, hour_16_waiting_count_appointment))
+            as hour_16_way_count_appointment,
+        SUM(COALESCE(hour_17_way_count_appointment, hour_17_waiting_count_appointment))
+            as hour_17_way_count_appointment,
+        SUM(COALESCE(hour_18_way_count_appointment, hour_18_waiting_count_appointment))
+            as hour_18_way_count_appointment,
+        SUM(COALESCE(hour_19_way_count_appointment, hour_19_waiting_count_appointment))
+            as hour_19_way_count_appointment,
+        SUM(COALESCE(hour_20_way_count_appointment, hour_20_waiting_count_appointment))
+            as hour_20_way_count_appointment,
+        SUM(COALESCE(hour_21_way_count_appointment, hour_21_waiting_count_appointment))
+            as hour_21_way_count_appointment,
+        SUM(COALESCE(hour_22_way_count_appointment, hour_22_waiting_count_appointment))
+            as hour_22_way_count_appointment,
+        SUM(COALESCE(hour_23_way_count_appointment, hour_23_waiting_count_appointment))
+            as hour_23_way_count_appointment,
         SUM(hour_00_waiting_count_appointment) as hour_00_waiting_count_appointment,
         SUM(hour_01_waiting_count_appointment) as hour_01_waiting_count_appointment,
         SUM(hour_02_waiting_count_appointment) as hour_02_waiting_count_appointment,

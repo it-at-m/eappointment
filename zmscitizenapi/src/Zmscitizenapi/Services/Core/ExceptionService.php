@@ -84,6 +84,10 @@ class ExceptionService
                     $error = self::getError('processAlreadyExists');
 
                     break;
+                case 'BO\\Zmsbackend\\Process\\Exception\\ProcessReserveFailed':
+                    $error = self::getError('appointmentNotAvailable');
+
+                    break;
                 case 'BO\\Zmsbackend\\Process\\Exception\\EmailRequired':
                     $error = self::getError('emailIsRequired');
 

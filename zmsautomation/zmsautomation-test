@@ -468,9 +468,15 @@ run_hourly_with_retries() {
     fi
 
     info "Running hourly cronjob (attempt ${attempt}/${max_attempts})..."
-    if "${cmd[@]}"; then
+    "${cmd[@]}"
+    status=$?
+    if (( status == 0 )); then
       info "Hourly cronjob succeeded on attempt ${attempt}/${max_attempts}."
       return 0
+    fi
+    if (( status == 2 )); then
+      warn "Hourly DLDB import failed; skipping retries."
+      return 1
     fi
 
     if (( attempt < max_attempts )); then
@@ -494,7 +500,25 @@ cleanup_qemu_geckodriver_cores
 # URL in ~300ms, then reports "Could not find artifact" even though the jar exists.
 # Retries with -U alone are not enough when wagon keeps getting a bad response — seed
 # the local .m2 path with curl (HTTP status checked) and prefer IPv4.
+# Central itself returns 429 for a whole shard; Flyway then sits on "Flyway migrate"
+# while mvn -q keeps asking repo.maven.apache.org. Every Maven call uses the mirror.
 export MAVEN_OPTS="${MAVEN_OPTS:-} -Djava.net.preferIPv4Stack=true"
+MAVEN_SETTINGS="${TMPDIR:-/tmp}/ataf-maven-settings.xml"
+write_maven_central_mirror() {
+  cat > "$MAVEN_SETTINGS" <<'EOF'
+<settings>
+  <mirrors>
+    <mirror>
+      <id>google-maven-central</id>
+      <name>Google Maven Central mirror</name>
+      <url>https://maven-central.storage-download.googleapis.com/maven2</url>
+      <mirrorOf>*</mirrorOf>
+    </mirror>
+  </mirrors>
+</settings>
+EOF
+}
+write_maven_central_mirror
 
 is_maven_bootstrap_failure() {
   local log_file="$1"
@@ -502,14 +526,55 @@ is_maven_bootstrap_failure() {
   grep -a -F -q \
     -e 'PluginResolutionException' \
     -e 'ArtifactResolutionException' \
+    -e 'DependencyResolutionException' \
     -e 'NoPluginFoundForPrefixException' \
     -e 'could not be resolved' \
+    -e 'Could not resolve dependencies' \
     -e 'Could not find artifact' \
+    -e 'Could not transfer artifact' \
     -e 'was not found in https://repo.maven.apache.org' \
     -e 'resolution is not reattempted until the update interval' \
     -e 'The POM for org.apache.maven.plugins:' \
     -e 'No plugin found for prefix' \
     "$log_file"
+}
+
+# One GET. Prints the HTTP status. No curl --retry: a 429 from Central must switch host,
+# not sit for minutes and hit the same limit again.
+curl_maven_central_once() {
+  local url="$1"
+  local dest="$2"
+  local code="000"
+  rm -f "${dest}.part"
+  if code="$(curl -sS -L --connect-timeout 15 --max-time 120 -o "${dest}.part" -w '%{http_code}' "$url")"; then
+    :
+  fi
+  if [[ "$code" == "200" && -s "${dest}.part" ]]; then
+    mv -f "${dest}.part" "$dest"
+    return 0
+  fi
+  rm -f "${dest}.part"
+  printf '%s' "$code"
+  return 1
+}
+
+# Central first. On 429, the Google mirror in the same attempt. Waiting on Central
+# does not clear a shared runner limit and leaves the shard job sitting for an hour.
+download_maven_artifact() {
+  local path="$1"
+  local dest="$2"
+  local base code="000"
+  for base in \
+    "https://maven-central.storage-download.googleapis.com/maven2" \
+    "https://repo.maven.apache.org/maven2"
+  do
+    if code="$(curl_maven_central_once "${base}/${path}" "$dest")"; then
+      return 0
+    fi
+    code="${code:-000}"
+  done
+  printf '%s' "$code"
+  return 1
 }
 
 # curl a GAV into ~/.m2 so Maven does not have to fetch it through wagon.
@@ -518,14 +583,13 @@ seed_maven_central_gav() {
   local gav="$1"
   local group artifact version
   local m2="${M2_REPO:-${HOME}/.m2/repository}"
-  local base="https://repo.maven.apache.org/maven2"
-  local gpath dest pom_url jar_url
+  local gpath dest pom_path jar_path
   IFS=':' read -r group artifact version <<< "$gav"
   [[ -n "$group" && -n "$artifact" && -n "$version" ]] || return 1
   gpath="${group//.//}"
   dest="${m2}/${gpath}/${artifact}/${version}"
-  pom_url="${base}/${gpath}/${artifact}/${version}/${artifact}-${version}.pom"
-  jar_url="${base}/${gpath}/${artifact}/${version}/${artifact}-${version}.jar"
+  pom_path="${gpath}/${artifact}/${version}/${artifact}-${version}.pom"
+  jar_path="${gpath}/${artifact}/${version}/${artifact}-${version}.jar"
   mkdir -p "$dest"
   if [[ -f "${dest}/${artifact}-${version}.jar" && -f "${dest}/${artifact}-${version}.pom" ]]; then
     # Drop poisoned .lastUpdated markers left by a prior failed resolve.
@@ -534,15 +598,26 @@ seed_maven_central_gav() {
   fi
   info "Seeding Maven Central artifact ${gav} into ${dest}"
   local try=1
-  while (( try <= 4 )); do
-    rm -f "${dest}/${artifact}-${version}.pom.part" "${dest}/${artifact}-${version}.jar.part" \
-      "${dest}/"*.lastUpdated 2>/dev/null || true
-    if curl -fsSL --retry 3 --retry-delay 2 --connect-timeout 15 --max-time 120 \
-        -o "${dest}/${artifact}-${version}.pom.part" "$pom_url" \
-      && curl -fsSL --retry 3 --retry-delay 2 --connect-timeout 15 --max-time 120 \
-        -o "${dest}/${artifact}-${version}.jar.part" "$jar_url"; then
-      mv -f "${dest}/${artifact}-${version}.pom.part" "${dest}/${artifact}-${version}.pom"
-      mv -f "${dest}/${artifact}-${version}.jar.part" "${dest}/${artifact}-${version}.jar"
+  local pom_code jar_code
+  while (( try <= 3 )); do
+    rm -f "${dest}/"*.lastUpdated 2>/dev/null || true
+    pom_code="present"
+    jar_code="skipped"
+    if [[ ! -f "${dest}/${artifact}-${version}.pom" ]]; then
+      if ! pom_code="$(download_maven_artifact "$pom_path" "${dest}/${artifact}-${version}.pom")"; then
+        pom_code="${pom_code:-000}"
+      else
+        pom_code="200"
+      fi
+    fi
+    if [[ -f "${dest}/${artifact}-${version}.pom" && ! -f "${dest}/${artifact}-${version}.jar" ]]; then
+      if ! jar_code="$(download_maven_artifact "$jar_path" "${dest}/${artifact}-${version}.jar")"; then
+        jar_code="${jar_code:-000}"
+      else
+        jar_code="200"
+      fi
+    fi
+    if [[ -f "${dest}/${artifact}-${version}.pom" && -f "${dest}/${artifact}-${version}.jar" ]]; then
       # Tell Maven these files came from central so it does not leave .lastUpdated holes.
       printf '%s\n' \
         "${group}:${artifact}:pom:${version}>central=" \
@@ -550,8 +625,8 @@ seed_maven_central_gav() {
         > "${dest}/_remote.repositories"
       return 0
     fi
-    warn "curl seed of ${gav} failed (try ${try}/4)"
-    sleep $((try * 5))
+    warn "curl seed of ${gav} failed (try ${try}/3, pom=${pom_code}, jar=${jar_code})"
+    sleep 10
     try=$((try + 1))
   done
   return 1
@@ -597,7 +672,7 @@ purge_and_seed_failed_maven_plugins() {
       fi
       seed_maven_central_gav "${g}:${a}:${v}" || true
     fi
-  done < <(grep -a -E 'Could not find artifact|was not found in https://repo.maven.apache.org|The POM for org\.apache\.maven\.plugins:' "$log_file" || true)
+  done < <(grep -a -E 'Could not find artifact|Could not transfer artifact|was not found in https://repo.maven.apache.org|The POM for org\.apache\.maven\.plugins:' "$log_file" || true)
 }
 
 # 1. Database Backup
@@ -649,9 +724,11 @@ run_flyway_migrate_with_retries() {
   mkdir -p "$PROJECT_ROOT/zmsautomation/target"
   info "Flyway migrate locations=$locations_dir table=$table_name baselineVersion=$baseline_version"
   while (( flyway_try <= 4 )); do
+    # pipefail + set -e would leave this function before the retry check.
+    set +e
     (
       cd "$PROJECT_ROOT/zmsautomation"
-      mvn -B -q \
+      mvn -B -q -s "$MAVEN_SETTINGS" \
         -Dflyway.url="jdbc:mysql://$DB_HOST:$DB_PORT/$DB_NAME" \
         -Dflyway.user="$DB_USER" \
         -Dflyway.password="$DB_PASSWORD" \
@@ -663,16 +740,21 @@ run_flyway_migrate_with_retries() {
         flyway:migrate
     ) 2>&1 | tee "$flyway_log"
     flyway_exit=${PIPESTATUS[0]}
+    set -e
     if [[ $flyway_exit -eq 0 ]]; then
       return 0
     fi
-    if (( flyway_try < 4 )) && is_maven_bootstrap_failure "$flyway_log"; then
-      warn "Flyway Maven plugin resolve failed (try ${flyway_try}/4); curl-seeding and retrying"
-      purge_and_seed_failed_maven_plugins "$flyway_log"
-      seed_core_maven_plugins || true
-      sleep $((flyway_try * 15))
-      flyway_try=$((flyway_try + 1))
-      continue
+    if is_maven_bootstrap_failure "$flyway_log"; then
+      if (( flyway_try < 4 )); then
+        warn "Flyway Maven plugin resolve failed (try ${flyway_try}/4); curl-seeding and retrying"
+        purge_and_seed_failed_maven_plugins "$flyway_log"
+        seed_core_maven_plugins || true
+        sleep $((flyway_try * 15))
+        flyway_try=$((flyway_try + 1))
+        continue
+      fi
+      warn "Flyway Maven resolve failed for table=$table_name after ${flyway_try} tries."
+      return 1
     fi
     if [[ "$strict" == "1" ]]; then
       warn "Flyway migrate failed for table=$table_name (strict)."
@@ -1057,7 +1139,9 @@ invoke_maven_suite() {
   while (( attempt <= loop_max )); do
     attempt_log="$PROJECT_ROOT/zmsautomation/target/maven-test-${suite_name}-attempt-${attempt}.log"
     info "Starting ${suite_name} Maven test attempt ${attempt}/${loop_max}"
-    mvn -B -DtrimStackTrace=false \
+    # pipefail + set -e would leave this function before the retry check.
+    set +e
+    mvn -B -s "$MAVEN_SETTINGS" -DtrimStackTrace=false \
       ${force_update[@]+"${force_update[@]}"} \
       "${PLATFORM_ARGS[@]}" \
       -DBASE_URI="$BASE_URI" \
@@ -1073,6 +1157,7 @@ invoke_maven_suite() {
       -Dsso.password="$SSO_PASSWORD" \
       test "$@" 2>&1 | tee "$attempt_log"
     suite_exit=${PIPESTATUS[0]}
+    set -e
 
     if [[ $suite_exit -eq 0 ]]; then
       return 0

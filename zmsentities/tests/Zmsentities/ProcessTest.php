@@ -612,6 +612,99 @@ class ProcessTest extends EntityCommonTests
         );
     }
 
+    protected static function getOverlappingTestAvailabilityList()
+    {
+        $availabilityData = [
+            'weekday' => ['tuesday' => '4'],
+            'repeat' => ['afterWeeks' => '1'],
+            'workstationCount' => ['public' => '1', 'intern' => '1'],
+            'slotTimeInMinutes' => '15',
+            'startDate' => strtotime('2016-04-19'),
+            'endDate' => strtotime('2016-04-19'),
+        ];
+        return new AvailabilityList([
+            new Availability(array_merge($availabilityData, [
+                'id' => '1',
+                'startTime' => '12:00:00',
+                'endTime' => '16:00:00',
+            ])),
+            // additional workstation inside availability 1
+            new Availability(array_merge($availabilityData, [
+                'id' => '2',
+                'startTime' => '12:00:00',
+                'endTime' => '12:30:00',
+            ])),
+        ]);
+    }
+
+    protected static function getTestProcessAt($processId, $time, $slotCount = 1)
+    {
+        return new Process([
+            'id' => $processId,
+            'appointments' => [
+                new Appointment([
+                    'date' => strtotime('2016-04-19 ' . $time),
+                    'slotCount' => $slotCount,
+                ])
+            ],
+            'status' => 'confirmed',
+        ]);
+    }
+
+    public function testWithOutAvailabilityAddsOverlappingWorkstations()
+    {
+        $processList = new ProcessList([
+            static::getTestProcessAt('1', '12:15'),
+            static::getTestProcessAt('2', '12:15'),
+            static::getTestProcessAt('3', '12:15'),
+        ]);
+        $conflictList = $processList->withOutAvailability(static::getOverlappingTestAvailabilityList());
+        // 1 + 1 workstations, only the third booking is overbooked
+        $this->assertEquals(1, $conflictList->count());
+        $this->assertEquals('3', $conflictList->getFirst()->getId());
+    }
+
+    public function testCalculatedSlotCountCountsEveryBookingOnce()
+    {
+        $processList = new ProcessList([
+            static::getTestProcessAt('1', '12:15'),
+            static::getTestProcessAt('2', '12:15'),
+            // overbooked, counts for the shorter availability it is opened in
+            static::getTestProcessAt('3', '12:15'),
+            // 12:15 + 2 slots ends at 12:45, outside of availability 2
+            static::getTestProcessAt('4', '12:15', 2),
+            static::getTestProcessAt('5', '14:00'),
+        ]);
+        $slotCounts = static::getOverlappingTestAvailabilityList()->getCalculatedSlotCount($processList);
+        $this->assertEquals([1 => 4, 2 => 2], $slotCounts);
+    }
+
+    public function testCalculatedSlotCountUsesBookedAvailability()
+    {
+        // Booked on the long availability although the short one still has a free workstation
+        $booked = static::getTestProcessAt('1', '12:15');
+        $booked->getFirstAppointment()->availability = ['id' => '1'];
+        $processList = new ProcessList([$booked]);
+        $slotCounts = static::getOverlappingTestAvailabilityList()->getCalculatedSlotCount($processList);
+        $this->assertEquals([1 => 1, 2 => 0], $slotCounts);
+    }
+
+    public function testWithOutAvailabilityKeepsFollowingSlotsInOneAvailability()
+    {
+        $processList = new ProcessList([
+            // 12:15 + 2 slots ends at 12:45, outside of availability 2
+            static::getTestProcessAt('1', '12:15', 2),
+            static::getTestProcessAt('2', '12:15'),
+        ]);
+        $conflictList = $processList->withOutAvailability(static::getOverlappingTestAvailabilityList());
+        $this->assertEquals(0, $conflictList->count());
+
+        $processList->addEntity(static::getTestProcessAt('3', '12:30'));
+        $conflictList = $processList->withOutAvailability(static::getOverlappingTestAvailabilityList());
+        $this->assertEquals(1, $conflictList->count());
+        $this->assertEquals('3', $conflictList->getFirst()->getId());
+    }
+
     public function testWithReference()
     {
         $entity = $this->getExample();

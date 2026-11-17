@@ -86,7 +86,7 @@ class ProcessLockTest extends \BO\Zmsbackend\Tests\Service\Base
 
     public function testConcurrentOnSameSlot()
     {
-        $this->expectException('\BO\Zmsbackend\Exception\Pdo\LockTimeout');
+        $this->expectException('\BO\Zmsbackend\Process\Exception\ProcessReserveFailed');
         $now = static::$now;
         $statement = $this->pdo
             ->prepare(

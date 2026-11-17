@@ -49,14 +49,20 @@ public class ProcessingStationSection extends CounterProcessingStationPage {
         final String called = "//button[contains(@class,'client-called_button-success')]";
         for (int i = 0; i < 8; i++) {
             callNextCustomer();
-            if (isWebElementVisible(5, emptyMessage, LocatorType.XPATH, false, CONTEXT)) {
+            boolean queueEmpty = isWebElementVisible(5, emptyMessage, LocatorType.XPATH, false, CONTEXT);
+            boolean precallVisible = isWebElementVisible(2, precall, LocatorType.XPATH, false, CONTEXT);
+            boolean calledVisible = isWebElementVisible(2, called, LocatorType.XPATH, false, CONTEXT);
+            // The empty-queue heading also shows after the last customer was called.
+            // Leaving that called panel open makes the next queue click a confirm dialog
+            // instead of the ProcessNotCallable page.
+            if (queueEmpty && !precallVisible && !calledVisible && !processingPanelOpen()) {
                 ScenarioLogManager.getLogger().info("No further customers were waiting.");
                 return;
             }
-            if (isWebElementVisible(5, precall, LocatorType.XPATH, false, CONTEXT)) {
+            if (precallVisible) {
                 clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, precall, LocatorType.XPATH, false, CONTEXT);
             }
-            if (!isWebElementVisible(15, called, LocatorType.XPATH, false, CONTEXT)) {
+            if (!calledVisible && !isWebElementVisible(15, called, LocatorType.XPATH, false, CONTEXT)) {
                 ScenarioLogManager.getLogger().info("Next call did not open a customer; leaving the queue as it is.");
                 return;
             }
@@ -68,6 +74,11 @@ public class ProcessingStationSection extends CounterProcessingStationPage {
                 stillWaiting,
                 0,
                 "Customers were still waiting after dismissing eight of them.");
+    }
+
+    private boolean processingPanelOpen() {
+        return DRIVER.findElements(By.cssSelector(".client-info[data-process-id]")).stream()
+                .anyMatch(WebElement::isDisplayed);
     }
 
     public void callNextCustomer() {
@@ -177,33 +188,23 @@ public class ProcessingStationSection extends CounterProcessingStationPage {
 
     /** After the no-show lockout ends, the bold lockout text is replaced by the call link. */
     public void waitUntilCustomerCallLinkVisible(String name) {
-        long[] lastReload = {0L};
-        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
-        wait.ignoring(StaleElementReferenceException.class, ElementClickInterceptedException.class);
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(90));
+        wait.ignoring(StaleElementReferenceException.class);
         wait.withMessage("Call link for \"" + name + "\" did not return after ending the no-show lockout.");
-        wait.until(driver -> {
-            if (driver.findElements(queueCallLinkByName(name)).stream().anyMatch(WebElement::isDisplayed)) {
-                return true;
-            }
-            long now = System.currentTimeMillis();
-            if (now - lastReload[0] < 2000L) {
-                return false;
-            }
-            lastReload[0] = now;
-            for (WebElement reload : driver.findElements(By.cssSelector(".queue-table a.reload"))) {
-                try {
-                    if (!reload.isDisplayed()) {
-                        continue;
-                    }
-                    scrollToCenterByVisibleElement(reload);
-                    reload.click();
-                    break;
-                } catch (StaleElementReferenceException | ElementClickInterceptedException ignored) {
-                    // Queue reload is still painting.
+        wait.until(driver -> queueCallLinkDisplayed(name));
+    }
+
+    private boolean queueCallLinkDisplayed(String name) {
+        for (WebElement link : DRIVER.findElements(queueCallLinkByName(name))) {
+            try {
+                if (link.isDisplayed()) {
+                    return true;
                 }
+            } catch (StaleElementReferenceException ignored) {
+                // The reload replaced the row.
             }
-            return false;
-        });
+        }
+        return false;
     }
 
     private static By queueCallLinkByName(String name) {
@@ -684,11 +685,25 @@ public class ProcessingStationSection extends CounterProcessingStationPage {
                 links.get(0).click();
                 return true;
             });
-            return;
         } catch (TimeoutException | ElementClickInterceptedException ignored) {
             // Fall through to direct navigation when the queue row never becomes clickable.
+            openWorkstationUrlWithProcessParam("calledprocess", processId);
+            return;
         }
-        openWorkstationUrlWithProcessParam("calledprocess", processId);
+        // Edge can report the click and then stay on the queue. The error page is the
+        // calledprocess request itself.
+        WebDriverWait leftQueue = new WebDriverWait(DRIVER, Duration.ofSeconds(8));
+        leftQueue.ignoring(StaleElementReferenceException.class);
+        try {
+            leftQueue.until(driver ->
+                    !driver.findElements(By.cssSelector(".exceptionData-headline")).isEmpty()
+                            || driver.getCurrentUrl().contains("calledprocess=" + processId));
+        } catch (TimeoutException ignored) {
+            ScenarioLogManager.getLogger().warn(
+                    "Queue call click for process {} did not open the process; opening calledprocess",
+                    processId);
+            openWorkstationUrlWithProcessParam("calledprocess", processId);
+        }
     }
 
     /** ZMSKVR-405 / ZMSKVR-375: open workstation with ?calledprocess= or ?selectedprocess=. */

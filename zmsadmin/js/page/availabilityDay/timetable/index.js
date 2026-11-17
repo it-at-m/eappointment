@@ -4,6 +4,7 @@ import ConflictTimeBar from '../widgets/timeBars/conflict'
 import AppointmentTimeBar from '../widgets/timeBars/appointment'
 import NumberOfAppointmentsTimeBar from '../widgets/timeBars/numberOfAppointments'
 import OpeningTimebar from '../widgets/timeBars/opening'
+import { timeToFloat } from '../../../lib/utils'
 
 export const headerMiddle = () => {
     return (
@@ -32,8 +33,35 @@ export const renderAppointments = (items, maxWorkstationCount, onSelect) => {ret
     .map((data, key) => <AppointmentTimeBar key={key} {...{ key, data, maxWorkstationCount, onSelect }} />)}
 
 
-export const renderOpenings = (items, onSelect) => {return items
-    .filter(item => item.type === "openinghours")
-    .map((data, key) => <OpeningTimebar key={key} {...{ key, data, onSelect }} />)}
+// Overlapping availabilities get their own lane, so no bar hides another one
+export const getLanes = (items) => {
+    const laneEnds = []
+    const lanes = new Map()
+    const sorted = [...items].sort((a, b) =>
+        timeToFloat(a.startTime) - timeToFloat(b.startTime) || timeToFloat(a.endTime) - timeToFloat(b.endTime))
+    sorted.forEach(item => {
+        const start = timeToFloat(item.startTime)
+        let lane = laneEnds.findIndex(end => end <= start)
+        if (lane === -1) {
+            lane = laneEnds.length
+        }
+        laneEnds[lane] = timeToFloat(item.endTime)
+        lanes.set(item, lane)
+    })
+    return lanes
+}
+
+const getOpenings = items => items.filter(item => item.type === "openinghours")
+
+export const getLaneCount = items => {
+    const lanes = getLanes(getOpenings(items))
+    return lanes.size ? Math.max(...lanes.values()) + 1 : 1
+}
+
+export const renderOpenings = (items, onSelect) => {
+    const openings = getOpenings(items)
+    const lanes = getLanes(openings)
+    return openings.map((data, key) => <OpeningTimebar key={key} {...{ data, onSelect, lane: lanes.get(data) }} />)
+}
 
 export const renderFooter = () => {}
