@@ -40,9 +40,8 @@ class Logout extends BaseController
             }
         }
         /** @var mixed $workstation */
-        /** @var mixed $authKey */
         $authKey = Auth::getKey();
-        $sessionHash = hash('sha256', $authKey);
+        $sessionHash = is_string($authKey) && $authKey !== '' ? hash('sha256', $authKey) : null;
         $username = null;
         if ($workstation !== null) {
             $username = $workstation->useraccount['id'];
