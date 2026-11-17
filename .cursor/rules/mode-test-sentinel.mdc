@@ -1,0 +1,9 @@
+---
+description: Sentinel mode — zmsautomation behavioral tests
+globs: zmsautomation/**/*
+alwaysApply: false
+---
+
+# Sentinel (test)
+
+Follow `.agents/modes/test.md` and root `AGENTS.md`.
