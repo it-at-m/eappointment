@@ -188,40 +188,10 @@ public class ProcessingStationSection extends CounterProcessingStationPage {
 
     /** After the no-show lockout ends, the bold lockout text is replaced by the call link. */
     public void waitUntilCustomerCallLinkVisible(String name) {
-        // The step already reloaded once. Clicking again before that response lands
-        // aborts it, and Firefox then keeps the lockout text instead of the call link.
-        long[] lastReload = {System.currentTimeMillis()};
-        By loader = By.cssSelector("div.loader");
-        By reloadLink = By.cssSelector(".queue-table a.reload");
         WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(90));
-        wait.ignoring(StaleElementReferenceException.class, ElementClickInterceptedException.class);
+        wait.ignoring(StaleElementReferenceException.class);
         wait.withMessage("Call link for \"" + name + "\" did not return after ending the no-show lockout.");
-        wait.until(driver -> {
-            if (queueCallLinkDisplayed(name)) {
-                return true;
-            }
-            if (driver.findElements(loader).stream().anyMatch(WebElement::isDisplayed)) {
-                return false;
-            }
-            long now = System.currentTimeMillis();
-            if (now - lastReload[0] < 5000L) {
-                return false;
-            }
-            lastReload[0] = now;
-            for (WebElement reload : driver.findElements(reloadLink)) {
-                try {
-                    if (!reload.isDisplayed()) {
-                        continue;
-                    }
-                    scrollToCenterByVisibleElement(reload);
-                    driver.findElement(reloadLink).click();
-                    break;
-                } catch (StaleElementReferenceException | ElementClickInterceptedException ignored) {
-                    // Queue reload is still painting.
-                }
-            }
-            return false;
-        });
+        wait.until(driver -> queueCallLinkDisplayed(name));
     }
 
     private boolean queueCallLinkDisplayed(String name) {

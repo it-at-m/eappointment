@@ -2118,16 +2118,16 @@ public class AdminSteps {
     }
 
     /**
-     * A no-show hides the call link for five wall-clock minutes. The suite clock does not
-     * move that far, so the lockout is stored as already over and the queue is reloaded.
+     * A no-show hides the call link for five minutes. The lockout is stored as already
+     * over, then the workstation is loaded again so an older queue reload cannot paint
+     * the lockout back.
      */
     @When("the no-show lockout for {string} has passed.")
     public void theNoShowLockoutHasPassed(String familyName) {
         String name = TestDataHelper.transformTestData(familyName);
         COUNTER_PROCESSING_STATION_PAGE.waitUntilCustomerIsBackInQueue(name);
         endNoShowLockout(name);
-        COUNTER_PROCESSING_STATION_PAGE.reloadQueueLists();
-        // Name text is already visible during lockout; wait for the call <a> after timeoutTime is moved back.
+        COUNTER_PROCESSING_STATION_PAGE.reloadWorkstationPage();
         PROCESSING_STATION_SECTION.waitUntilCustomerCallLinkVisible(name);
     }
 
@@ -2831,7 +2831,7 @@ public class AdminSteps {
 
     private static void endNoShowLockout(String familyName) {
         String displayNumber = bookedAppointmentNumber();
-        String sql = "UPDATE buerger SET timeoutTime = DATE_SUB(NOW(), INTERVAL 6 MINUTE) WHERE BuergerID = ?";
+        String sql = "UPDATE buerger SET timeoutTime = '2000-01-01 00:00:00' WHERE BuergerID = ?";
         try (Connection connection = openZmsConnection()) {
             int processId = processIdForBookedAppointment(connection, displayNumber, familyName);
             try (PreparedStatement statement = connection.prepareStatement(sql)) {

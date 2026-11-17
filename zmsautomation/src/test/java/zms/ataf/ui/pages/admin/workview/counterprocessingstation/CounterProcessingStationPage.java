@@ -535,6 +535,17 @@ public class CounterProcessingStationPage extends AdminPage {
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.id(APPOINTMENT_QUEUE_TABLE_LOCATOR_ID)));
     }
 
+    /**
+     * Load the workstation again. An ajax queue reload that started before the lockout
+     * was ended can still replace the table, so this step does not use that reload.
+     */
+    public void reloadWorkstationPage() {
+        DRIVER.navigate().refresh();
+        CONTEXT.waitForSpinners();
+        new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(ExpectedConditions.visibilityOfElementLocated(By.id(APPOINTMENT_QUEUE_TABLE_LOCATOR_ID)));
+    }
+
     /** The queue replaces this link while a row comes back, and a loader can cover it, so the click is retried. */
     public void reloadQueueLists() {
         By reloadLink = By.cssSelector(".queue-table a.reload");
