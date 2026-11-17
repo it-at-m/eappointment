@@ -43,7 +43,10 @@ class View extends BaseView {
                 audioCheck.initSoundCheck();
                 this.getDestinationToNumber();
             })
-            .fail(function () {
+            .fail(function (jqXHR, textStatus) {
+                if (textStatus === 'timeout') {
+                    return;
+                }
                 $('.fatal').show();
             });
         this.setInterval();
