@@ -28,7 +28,12 @@ class SlotTest extends \BO\Zmsbackend\Tests\Service\Base
         $availability = $this->readTestAvailability();
         $now = (new \BO\Zmsbackend\Slot\Service\Slot())->readLastChangedTimeByAvailability($availability);
         $lastChange = $now->modify("-1 second");
-        $status = (new \BO\Zmsbackend\Slot\Service\Slot())->isAvailabilityOutdated($availability, $now, $lastChange);
+        $status = (new \BO\Zmsbackend\Slot\Service\Slot())->isAvailabilityOutdated(
+            $availability,
+            $now,
+            $lastChange,
+            (int) $availability->version
+        );
         $this->assertFalse($status, "Availability should not rebuild slots without change");
     }
 
@@ -59,7 +64,12 @@ class SlotTest extends \BO\Zmsbackend\Tests\Service\Base
         $availability = $this->readTestAvailability();
         $now = (new \BO\Zmsbackend\Slot\Service\Slot())->readLastChangedTimeByAvailability($availability);
         $lastChange = $now->modify("-1 second");
-        $status = (new \BO\Zmsbackend\Slot\Service\Slot())->isAvailabilityOutdated($availability, $now, $lastChange);
+        $status = (new \BO\Zmsbackend\Slot\Service\Slot())->isAvailabilityOutdated(
+            $availability,
+            $now,
+            $lastChange,
+            (int) $availability->version
+        );
         $this->assertFalse($status, "Availability should not rebuild slots without change");
     }
 
@@ -93,7 +103,12 @@ class SlotTest extends \BO\Zmsbackend\Tests\Service\Base
         (new \BO\Zmsbackend\Dayoff\Service\DayOff())->writeCommonDayoffsByYear([$dayoff], 2016);
         $availability = $this->readTestAvailability();
         $lastChange = $now->modify("-1 second");
-        $status = (new \BO\Zmsbackend\Slot\Service\Slot())->isAvailabilityOutdated($availability, $now, $lastChange);
+        $status = (new \BO\Zmsbackend\Slot\Service\Slot())->isAvailabilityOutdated(
+            $availability,
+            $now,
+            $lastChange,
+            (int) $availability->version
+        );
         $this->assertFalse(
             $status,
             "Availability should not rebuild slots on changed dayoff without affecting booking time"
@@ -106,7 +121,12 @@ class SlotTest extends \BO\Zmsbackend\Tests\Service\Base
         $now = (new \BO\Zmsbackend\Slot\Service\Slot())->readLastChangedTimeByAvailability($availability);
         $lastChange = $now;
         $now = $now->modify('+1 hour -1 second');
-        $status = (new \BO\Zmsbackend\Slot\Service\Slot())->isAvailabilityOutdated($availability, $now, $lastChange);
+        $status = (new \BO\Zmsbackend\Slot\Service\Slot())->isAvailabilityOutdated(
+            $availability,
+            $now,
+            $lastChange,
+            (int) $availability->version
+        );
         $this->assertFalse($status, "Should not rebuild slots without a change");
         $availability->lastChange = $now->getTimestamp();
         $status = (new \BO\Zmsbackend\Slot\Service\Slot())->isAvailabilityOutdated($availability, $now, $lastChange);
@@ -150,12 +170,22 @@ class SlotTest extends \BO\Zmsbackend\Tests\Service\Base
         $availability5 = clone $availability;
         $availability5->startDate = $now->modify('+9 day')->getTimestamp();
         $availability5->endDate = $now->modify('+9 day')->getTimestamp();
-        $status = (new \BO\Zmsbackend\Slot\Service\Slot())->isAvailabilityOutdated($availability1, $now, $lastChange);
+        $status = (new \BO\Zmsbackend\Slot\Service\Slot())->isAvailabilityOutdated(
+            $availability1,
+            $now,
+            $lastChange,
+            (int) $availability1->version
+        );
         $this->assertFalse($status, "Should not rebuild in case 1");
         $status = (new \BO\Zmsbackend\Slot\Service\Slot())->isAvailabilityOutdated($availability2, $now, $lastChange);
         $status = (new \BO\Zmsbackend\Slot\Service\Slot())->isAvailabilityOutdated($availability3, $now, $lastChange);
         $status = (new \BO\Zmsbackend\Slot\Service\Slot())->isAvailabilityOutdated($availability4, $now, $lastChange);
-        $status = (new \BO\Zmsbackend\Slot\Service\Slot())->isAvailabilityOutdated($availability5, $now, $lastChange);
+        $status = (new \BO\Zmsbackend\Slot\Service\Slot())->isAvailabilityOutdated(
+            $availability5,
+            $now,
+            $lastChange,
+            (int) $availability5->version
+        );
         $this->assertFalse($status, "Should not rebuild in case 5");
     }
 
@@ -246,7 +276,13 @@ class SlotTest extends \BO\Zmsbackend\Tests\Service\Base
     protected function assertOutdated($lastChange, $now, $shouldRebuild, $availability, $message)
     {
         $availability = clone $availability;
-        $status = (new \BO\Zmsbackend\Slot\Service\Slot())->isAvailabilityOutdated($availability, $now, $lastChange);
+        $storedVersion = $shouldRebuild ? 1 : (int) $availability->version;
+        $status = (new \BO\Zmsbackend\Slot\Service\Slot())->isAvailabilityOutdated(
+            $availability,
+            $now,
+            $lastChange,
+            $storedVersion
+        );
         if (($status && !$shouldRebuild) || (!$status && $shouldRebuild)) {
             $this->debugOutdated($availability, $now, $lastChange);
         }
@@ -267,7 +303,12 @@ class SlotTest extends \BO\Zmsbackend\Tests\Service\Base
         $this->assertFalse(!$status, "Availability should rebuild slots if time allows new slots");
         $lastChange = $now;
         $now = $now->modify('+10 minutes');
-        $status = (new \BO\Zmsbackend\Slot\Service\Slot())->isAvailabilityOutdated($availability, $now, $lastChange);
+        $status = (new \BO\Zmsbackend\Slot\Service\Slot())->isAvailabilityOutdated(
+            $availability,
+            $now,
+            $lastChange,
+            (int) $availability->version
+        );
         //$this->debugOutdated($availability, $now, $lastChange);
         $this->assertFalse($status, "Availability should not rebuild slots twice");
     }
@@ -470,7 +511,12 @@ class SlotTest extends \BO\Zmsbackend\Tests\Service\Base
         $availability->bookable['endInDays'] = 0;
         $lastChange = $now->modify("-1 second");
         
-        $status = (new \BO\Zmsbackend\Slot\Service\Slot())->isAvailabilityOutdated($availability, $now, $lastChange);
+        $status = (new \BO\Zmsbackend\Slot\Service\Slot())->isAvailabilityOutdated(
+            $availability,
+            $now,
+            $lastChange,
+            (int) $availability->version
+        );
         $this->assertFalse($status, "Availability should not rebuild slots when holiday is not on same day as Offen_ab=0 Offen_bis=0");
     }
 
@@ -485,10 +531,10 @@ class SlotTest extends \BO\Zmsbackend\Tests\Service\Base
         
         // Create slots starting at 07:50:00 (before the cancellation time)
         (new \BO\Zmsbackend\Slot\Service\Slot())->perform(
-            "INSERT INTO slot (scopeID, year, month, day, time, availabilityID, public, intern, status, slotTimeInMinutes, createTimestamp, updateTimestamp) 
+            "INSERT INTO slot (scopeID, year, month, day, time, availabilityID, public, intern, status, slotTimeInMinutes, version, createTimestamp, updateTimestamp) 
             VALUES 
-            (141, 2016, 4, 6, '07:50:00', 68985, 3, 3, 'free', 10, 1566573750, '2019-08-23 15:22:30'),
-            (141, 2016, 4, 6, '07:55:00', 68985, 3, 3, 'free', 10, 1566573750, '2019-08-23 15:22:30')"
+            (141, 2016, 4, 6, '07:50:00', 68985, 3, 3, 'free', 5, " . (int) $availability->version . ", 1566573750, '2019-08-23 15:22:30'),
+            (141, 2016, 4, 6, '07:55:00', 68985, 3, 3, 'free', 5, " . (int) $availability->version . ", 1566573750, '2019-08-23 15:22:30')"
         );
         
         // First verify we have slots

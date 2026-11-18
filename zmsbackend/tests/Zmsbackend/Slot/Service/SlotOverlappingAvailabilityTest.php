@@ -8,7 +8,7 @@ class SlotOverlappingAvailabilityTest extends \BO\Zmsbackend\Tests\Service\Base
 {
     const int SCOPE_ID = 141;
 
-    // scope 141, monday 08:00 - 15:50, 10 minute slots, 2 workstations
+    // scope 141, monday 08:00 - 15:50, 5 minute slots, 2 workstations
     const int LONG_AVAILABILITY_ID = 94666;
 
     const int TIMESTAMP_0800 = 1464588000; // 2016-05-30 08:00:00 +02:00
@@ -183,8 +183,8 @@ class SlotOverlappingAvailabilityTest extends \BO\Zmsbackend\Tests\Service\Base
     public function testFollowingSlotsLeavingShorterAvailabilityStayInOneAvailability()
     {
         $this->writeShortAvailability(true);
-        // 08:50 + 2 slots ends at 09:10, the short availability ends at 09:00
-        $process = $this->writeReservedProcess(static::TIMESTAMP_0850, 2);
+        // 08:50 plus four 5-minute slots ends at 09:10. The short availability ends at 09:00.
+        $process = $this->writeReservedProcess(static::TIMESTAMP_0850, 4);
 
         $this->assertSame(
             [$process->getId() => static::LONG_AVAILABILITY_ID],
