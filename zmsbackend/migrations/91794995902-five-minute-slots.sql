@@ -6,6 +6,7 @@
 
 DROP TEMPORARY TABLE IF EXISTS `tmp_scope_minutes`;
 DROP TEMPORARY TABLE IF EXISTS `tmp_parents`;
+DROP TEMPORARY TABLE IF EXISTS `tmp_lock`;
 DROP PROCEDURE IF EXISTS `zms_five_minute_require_process_ids`;
 
 CREATE TEMPORARY TABLE `tmp_scope_minutes` (
@@ -60,7 +61,79 @@ WHERE `src`.`minutes` > 0
   AND MOD(`src`.`minutes`, 5) = 0
   AND ((IFNULL(`src`.`hatFolgetermine`, 0) + 1) * `src`.`minutes`) DIV 5 >= 1;
 
+-- 100000000 is the highest innodb_lock_wait_timeout MariaDB 10.11 accepts.
+-- 31536000 is the maximum lock_wait_timeout. A lock this session needs is
+-- waited out until the holder commits. The inserts below take those locks
+-- before any row is changed. The rows are discarded; the locks stay until COMMIT.
+SET SESSION innodb_lock_wait_timeout = 100000000;
+SET SESSION lock_wait_timeout = 31536000;
+SET SESSION TRANSACTION ISOLATION LEVEL READ COMMITTED;
+
+CREATE TEMPORARY TABLE `tmp_lock` (`id` INT UNSIGNED NOT NULL);
+
 START TRANSACTION;
+
+INSERT INTO `tmp_lock` (`id`)
+SELECT 1
+FROM `buerger` `b`
+INNER JOIN `tmp_parents` `t` ON `t`.`parent_id` = `b`.`BuergerID`
+ORDER BY `b`.`BuergerID`
+FOR UPDATE;
+
+INSERT INTO `tmp_lock` (`id`)
+SELECT 1
+FROM `provider` `p`
+WHERE JSON_VALID(`p`.`data`)
+  AND CAST(JSON_UNQUOTE(JSON_EXTRACT(`p`.`data`, '$.slotTimeInMinutes')) AS UNSIGNED) > 5
+  AND MOD(CAST(JSON_UNQUOTE(JSON_EXTRACT(`p`.`data`, '$.slotTimeInMinutes')) AS UNSIGNED), 5) = 0
+ORDER BY `p`.`source`, `p`.`id`
+FOR UPDATE;
+
+INSERT INTO `tmp_lock` (`id`)
+SELECT 1
+FROM `standort` `s`
+INNER JOIN `provider` `p` ON `p`.`id` = `s`.`InfoDienstleisterID` AND `p`.`source` = `s`.`source`
+WHERE JSON_VALID(`p`.`data`)
+  AND CAST(JSON_UNQUOTE(JSON_EXTRACT(`p`.`data`, '$.slotTimeInMinutes')) AS UNSIGNED) > 5
+  AND MOD(CAST(JSON_UNQUOTE(JSON_EXTRACT(`p`.`data`, '$.slotTimeInMinutes')) AS UNSIGNED), 5) = 0
+ORDER BY `s`.`StandortID`
+FOR UPDATE;
+
+INSERT INTO `tmp_lock` (`id`)
+SELECT 1
+FROM `preferences` `pref`
+INNER JOIN `standort` `s` ON `s`.`StandortID` = `pref`.`id`
+INNER JOIN `provider` `p` ON `p`.`id` = `s`.`InfoDienstleisterID` AND `p`.`source` = `s`.`source`
+WHERE `pref`.`entity` = 'scope'
+  AND `pref`.`groupName` = 'client'
+  AND `pref`.`name` = 'slotsPerAppointment'
+  AND `pref`.`value` REGEXP '^[0-9]+$'
+  AND CAST(`pref`.`value` AS UNSIGNED) > 0
+  AND JSON_VALID(`p`.`data`)
+  AND CAST(JSON_UNQUOTE(JSON_EXTRACT(`p`.`data`, '$.slotTimeInMinutes')) AS UNSIGNED) > 5
+  AND MOD(CAST(JSON_UNQUOTE(JSON_EXTRACT(`p`.`data`, '$.slotTimeInMinutes')) AS UNSIGNED), 5) = 0
+ORDER BY `pref`.`entity`, `pref`.`id`, `pref`.`groupName`, `pref`.`name`
+FOR UPDATE;
+
+INSERT INTO `tmp_lock` (`id`)
+SELECT 1
+FROM `request_provider` `rp`
+INNER JOIN `provider` `p` ON `p`.`id` = `rp`.`provider__id` AND `p`.`source` = `rp`.`source`
+WHERE JSON_VALID(`p`.`data`)
+  AND CAST(JSON_UNQUOTE(JSON_EXTRACT(`p`.`data`, '$.slotTimeInMinutes')) AS UNSIGNED) > 5
+  AND MOD(CAST(JSON_UNQUOTE(JSON_EXTRACT(`p`.`data`, '$.slotTimeInMinutes')) AS UNSIGNED), 5) = 0
+  AND `rp`.`slots` > 0
+ORDER BY `rp`.`source`, `rp`.`request__id`, `rp`.`provider__id`
+FOR UPDATE;
+
+INSERT INTO `tmp_lock` (`id`)
+SELECT 1
+FROM `oeffnungszeit` `opening`
+WHERE TIME_TO_SEC(`opening`.`time_slot`) > 0
+  AND `opening`.`time_slot` <> '00:05:00'
+  AND MOD(TIME_TO_SEC(`opening`.`time_slot`), 300) = 0
+ORDER BY `opening`.`OeffnungszeitID`
+FOR UPDATE;
 
 UPDATE `buerger` `b`
 INNER JOIN `tmp_parents` `t` ON `t`.`parent_id` = `b`.`BuergerID`
