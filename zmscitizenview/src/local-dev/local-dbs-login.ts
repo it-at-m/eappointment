@@ -127,8 +127,10 @@ function isTokenUsable(accessToken: string): boolean {
     if (!Number.isFinite(exp)) {
       return false;
     }
-    // 30s skew so we do not restore a token about to expire
-    return exp * 1000 > Date.now() + 30_000;
+    // Keep the session until the token is actually expired. Dropping it 30s
+    // early made the next page paint Anmelden while the previous page still
+    // showed Mein Bereich.
+    return exp * 1000 > Date.now();
   } catch {
     return false;
   }
@@ -188,9 +190,18 @@ function emitAuthEvent(accessToken: string, idToken?: string): void {
 
 /** Vue registers `authorization-event` in onMounted, often after this module has already exchanged the code. */
 let publishTimer: number | undefined;
+let loginConfig: LoginConfig | undefined;
+
+function paintLoginButton(): void {
+  if (!loginConfig) {
+    return;
+  }
+  renderHostChrome(loginConfig);
+}
 
 function publishSession(accessToken: string, idToken?: string): void {
   saveSession(accessToken, idToken);
+  paintLoginButton();
   if (publishTimer !== undefined) {
     window.clearInterval(publishTimer);
   }
@@ -213,6 +224,7 @@ function replayStoredSession(): void {
     return;
   }
   emitAuthEvent(session.accessToken, session.idToken);
+  paintLoginButton();
 }
 
 async function startLogin(config: LoginConfig): Promise<void> {
@@ -556,6 +568,7 @@ function ensureCustomElement(): void {
 export async function initLocalDbsLogin(): Promise<void> {
   ensureCustomElement();
   const config = readConfig();
+  loginConfig = config;
 
   let handledCallback = false;
   try {
