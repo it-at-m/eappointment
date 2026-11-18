@@ -10,8 +10,8 @@ return array (
     'status' => 'full',
     'freeAppointments' => 
     array (
-      'public' => 0,
-      'intern' => -2,
+      'public' => 1,
+      'intern' => -1,
       'type' => 'sum',
     ),
     'allAppointments' => 
