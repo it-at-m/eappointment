@@ -11,7 +11,7 @@ return array (
     'freeAppointments' => 
     array (
       'public' => 0,
-      'intern' => 476,
+      'intern' => 530,
       'type' => 'sum',
     ),
     'allAppointments' => 

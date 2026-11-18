@@ -28,6 +28,7 @@ class SlotTest extends \BO\Zmsbackend\Tests\Service\Base
         $availability = $this->readTestAvailability();
         $now = (new \BO\Zmsbackend\Slot\Service\Slot())->readLastChangedTimeByAvailability($availability);
         $lastChange = $now->modify("-1 second");
+        $availability->lastChange = $lastChange->getTimestamp() - 5;
         $status = (new \BO\Zmsbackend\Slot\Service\Slot())->isAvailabilityOutdated(
             $availability,
             $now,
@@ -64,6 +65,7 @@ class SlotTest extends \BO\Zmsbackend\Tests\Service\Base
         $availability = $this->readTestAvailability();
         $now = (new \BO\Zmsbackend\Slot\Service\Slot())->readLastChangedTimeByAvailability($availability);
         $lastChange = $now->modify("-1 second");
+        $availability->lastChange = $lastChange->getTimestamp() - 5;
         $status = (new \BO\Zmsbackend\Slot\Service\Slot())->isAvailabilityOutdated(
             $availability,
             $now,
@@ -103,6 +105,7 @@ class SlotTest extends \BO\Zmsbackend\Tests\Service\Base
         (new \BO\Zmsbackend\Dayoff\Service\DayOff())->writeCommonDayoffsByYear([$dayoff], 2016);
         $availability = $this->readTestAvailability();
         $lastChange = $now->modify("-1 second");
+        $availability->lastChange = $lastChange->getTimestamp() - 5;
         $status = (new \BO\Zmsbackend\Slot\Service\Slot())->isAvailabilityOutdated(
             $availability,
             $now,
@@ -510,6 +513,7 @@ class SlotTest extends \BO\Zmsbackend\Tests\Service\Base
         $availability->bookable['startInDays'] = 0;
         $availability->bookable['endInDays'] = 0;
         $lastChange = $now->modify("-1 second");
+        $availability->lastChange = $lastChange->getTimestamp() - 5;
         
         $status = (new \BO\Zmsbackend\Slot\Service\Slot())->isAvailabilityOutdated(
             $availability,
