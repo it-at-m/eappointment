@@ -69,7 +69,11 @@ SET SESSION innodb_lock_wait_timeout = 100000000;
 SET SESSION lock_wait_timeout = 31536000;
 SET SESSION TRANSACTION ISOLATION LEVEL READ COMMITTED;
 
-CREATE TEMPORARY TABLE `tmp_lock` (`id` INT UNSIGNED NOT NULL);
+-- The inserted value is always 1. row_id exists because the cluster rejects a table without a primary key.
+CREATE TEMPORARY TABLE `tmp_lock` (
+    `row_id` INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `id` INT UNSIGNED NOT NULL
+);
 
 START TRANSACTION;
 
