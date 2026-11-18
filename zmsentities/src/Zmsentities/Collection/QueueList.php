@@ -101,7 +101,7 @@ class QueueList extends Base implements \BO\Zmsentities\Helper\NoSanitize
                 && $nextWithAppointment
                 && $nextNoAppointment->arrivalTime < $nextWithAppointment->arrivalTime
                 && (
-                    (int) $nextNoAppointment->priority === 2
+                    $nextNoAppointment->status !== self::STATUS_FAKE[0]
                     || $nextWithAppointment->arrivalTime <= $dateTime->getTimestamp()
                 )
             ) {
