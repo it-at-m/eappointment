@@ -88,20 +88,26 @@ class QueueList extends Base implements \BO\Zmsentities\Helper\NoSanitize
         $workstationSkip = ceil($workstationCount * 1.0);
         $pessimisticTime += $timeSlot;
         $waitingTimePes = (int)floor(($pessimisticTime - $dateTime->getTimestamp()) / 60);
+        $lastEstimate = 0;
         while ($nextWithAppointment || $nextNoAppointment) {
             if ($nextNoAppointment && (int) $nextNoAppointment->priority === 1) {
                 $nextNoAppointment->waitingTimeEstimate = $waitingTimePes;
                 $nextNoAppointment->waitingTimeOptimistic = $waitingTimeOpt;
+                $lastEstimate = $this->keepEstimateInOrder($nextNoAppointment, $lastEstimate);
                 $queueWithWaitingTime->addEntity($nextNoAppointment);
                 $nextNoAppointment = array_shift($listNoAppointment);
             } elseif (
                 $nextNoAppointment
                 && $nextWithAppointment
-                && (int) $nextNoAppointment->priority === 2
                 && $nextNoAppointment->arrivalTime < $nextWithAppointment->arrivalTime
+                && (
+                    (int) $nextNoAppointment->priority === 2
+                    || $nextWithAppointment->arrivalTime <= $dateTime->getTimestamp()
+                )
             ) {
                 $nextNoAppointment->waitingTimeEstimate = $waitingTimePes;
                 $nextNoAppointment->waitingTimeOptimistic = $waitingTimeOpt;
+                $lastEstimate = $this->keepEstimateInOrder($nextNoAppointment, $lastEstimate);
                 $queueWithWaitingTime->addEntity($nextNoAppointment);
                 $nextNoAppointment = array_shift($listNoAppointment);
             } elseif ($nextWithAppointment && $currentTime >= $nextWithAppointment->arrivalTime) {
@@ -112,11 +118,13 @@ class QueueList extends Base implements \BO\Zmsentities\Helper\NoSanitize
                     $nextWithAppointment->waitingTimeOptimistic = $waitingTimeOpt;
                     $nextWithAppointment->waitingTimeEstimate = $waitingTimePes;
                 }
+                $lastEstimate = $this->keepEstimateInOrder($nextWithAppointment, $lastEstimate);
                 $queueWithWaitingTime->addEntity($nextWithAppointment);
                 $nextWithAppointment = array_shift($listWithAppointment);
             } elseif ($nextNoAppointment) {
                 $nextNoAppointment->waitingTimeEstimate = $waitingTimePes;
                 $nextNoAppointment->waitingTimeOptimistic = $waitingTimeOpt;
+                $lastEstimate = $this->keepEstimateInOrder($nextNoAppointment, $lastEstimate);
                 $queueWithWaitingTime->addEntity($nextNoAppointment);
                 $nextNoAppointment = array_shift($listNoAppointment);
             }
@@ -129,6 +137,15 @@ class QueueList extends Base implements \BO\Zmsentities\Helper\NoSanitize
         }
         $queueWithWaitingTime->addList($queueAppend);
         return $queueWithWaitingTime;
+    }
+
+    private function keepEstimateInOrder(\BO\Zmsentities\Queue $queue, int|float $lastEstimate): int|float
+    {
+        if (in_array($queue->status, self::STATUS_FAKE, true)) {
+            return $lastEstimate;
+        }
+        $queue->waitingTimeEstimate = max($queue->waitingTimeEstimate, $lastEstimate);
+        return $queue->waitingTimeEstimate;
     }
 
     private function getSortPriority(\BO\Zmsentities\Queue $queue): int
