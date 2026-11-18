@@ -17,6 +17,7 @@ class BAllTest extends \BO\Zmsbackend\Tests\Service\Base
 
     public function testSingle()
     {
+        $mismatches = [];
         foreach ($this->fullProviderIdList as $providerId) {
             $input = $this->getTestEntity();
             $input->addProvider('dldb', $providerId);
@@ -25,7 +26,6 @@ class BAllTest extends \BO\Zmsbackend\Tests\Service\Base
            
             $this->writeTestExport($entity, 'provider' . $providerId . '_daylist.php');
             $dayList  = include($this->getFixturePath('provider' . $providerId . '_daylist.php'));
-            $mismatches = [];
             foreach ($entity->days as $day) {
                 $key = $day->getDayHash();
                 if (!array_key_exists($key, $dayList)) {
@@ -42,8 +42,8 @@ class BAllTest extends \BO\Zmsbackend\Tests\Service\Base
                     $mismatches[] = "Day $key provider=$providerId public expected {$testSlots->public} actual {$daySlots->public}";
                 }
             }
-            $this->assertSame([], $mismatches, implode("\n", $mismatches));
         }
+        $this->assertSame([], $mismatches, implode("\n", $mismatches));
     }
 
     /**
