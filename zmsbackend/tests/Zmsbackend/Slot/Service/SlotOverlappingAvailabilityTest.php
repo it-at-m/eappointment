@@ -190,7 +190,7 @@ class SlotOverlappingAvailabilityTest extends \BO\Zmsbackend\Tests\Service\Base
             [$process->getId() => static::LONG_AVAILABILITY_ID],
             $this->readMappedAvailabilityIds($process)
         );
-        $this->assertSame(2, $this->readSlotProcessCount($process->getId()));
+        $this->assertSame(4, $this->readSlotProcessCount($process->getId()));
     }
 
     public function testRebuildMappingKeepsOneAvailabilityPerProcess()

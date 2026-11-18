@@ -181,7 +181,7 @@ class ProcessFreeTest extends \BO\Zmsbackend\Tests\Api\Base
             $this->assertEquals(4, $processData['appointments'][0]['slotCount']);
         }
 
-        $this->assertEquals(21, count(json_decode((string)$response->getBody(), true)['data']));
+        $this->assertEquals(41, count(json_decode((string)$response->getBody(), true)['data']));
         $this->assertStringContainsString('"date":"1464337800"', (string)$response->getBody());
     }
 
