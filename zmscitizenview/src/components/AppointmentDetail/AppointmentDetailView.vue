@@ -238,8 +238,7 @@
               >
                 <template v-if="isVideoVariant">
                   <p>
-                    <strong>{{ variant?.name }}</strong
-                    ><br />
+                    <strong>{{ variant?.name }}</strong><br />
                     {{ t("appointmentDetailVideoLocationText") }}
                   </p>
 
@@ -250,8 +249,7 @@
                       target="_blank"
                       rel="noopener noreferrer"
                     >
-                      {{ t("appointmentDetailVideoInfoLink") }}</a
-                    >.
+                      {{ t("appointmentDetailVideoInfoLink") }}</a>.
                   </p>
 
                   <p>
@@ -261,8 +259,7 @@
 
                 <template v-else-if="isTelephoneVariant">
                   <p>
-                    <strong>{{ variant?.name }}</strong
-                    ><br />
+                    <strong>{{ variant?.name }}</strong><br />
                     {{ t("appointmentDetailTelephoneLocationText") }}<br />
                     <br />
 
@@ -286,8 +283,7 @@
                 <template v-else-if="selectedProvider">
                   <p>
                     {{ selectedProvider.organization }}<br />
-                    <strong>{{ selectedProvider.name }}</strong
-                    ><br />
+                    <strong>{{ selectedProvider.name }}</strong><br />
                   </p>
 
                   <p>
