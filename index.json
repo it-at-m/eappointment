@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-11-18T09:10:42.005Z",
+  "publishedAt": "2026-11-18T14:03:32.483Z",
   "branches": [
     {
       "name": "next",
@@ -360,6 +360,12 @@
       "slug": "fix-zmskvr-1654-rename-wohnsitzanmeldung",
       "runId": "34974252590",
       "runStartedAt": "2026-09-15T13:19:24Z"
+    },
+    {
+      "name": "fix-zmskvr-1686-sort-chronologically",
+      "slug": "fix-zmskvr-1686-sort-chronologically",
+      "runId": "44313932613",
+      "runStartedAt": "2026-11-18T13:27:41Z"
     },
     {
       "name": "fix-zmskvr-1696-mail-template-spacing",
