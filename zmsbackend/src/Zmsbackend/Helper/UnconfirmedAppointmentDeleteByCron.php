@@ -29,7 +29,7 @@ class UnconfirmedAppointmentDeleteByCron
     {
         $this->now = $now;
         $this->verbose = $verbose;
-        $this->scopeList = (new \BO\Zmsbackend\Scope\Service\Scope())->readList();
+        $this->scopeList = (new \BO\Zmsbackend\Scope\Service\Scope())->readDurationList();
     }
 
     protected function log(string $message, string $level = 'info'): void

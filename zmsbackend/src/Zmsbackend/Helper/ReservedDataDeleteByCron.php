@@ -67,7 +67,7 @@ class ReservedDataDeleteByCron
     {
         $this->log("INFO: Deleting expired reservations older than scopes reservation duration");
 
-        $scopeList = $this->scopeRepository->readList();
+        $scopeList = $this->scopeRepository->readDurationList();
         $this->countByScopeId = array_fill_keys($scopeList->getIds(), 0);
         $this->deleteExpiredReservations($scopeList);
         $filteredCount = array_filter($this->getCount());
