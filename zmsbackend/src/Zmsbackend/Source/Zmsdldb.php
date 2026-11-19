@@ -95,18 +95,20 @@ class Zmsdldb extends \BO\Zmsbackend\Base
     protected function updateAvailability(\BO\Zmsentities\Collection\ProviderList $providers): void
     {
         foreach ($providers as $provider) {
-            $providerData = $provider->data;
-
+            $newSlotMinutes = (int) ($provider->data['slotTimeInMinutes'] ?? 0);
+            if ($newSlotMinutes <= 0) {
+                continue;
+            }
             $scopes = (new \BO\Zmsbackend\Scope\Service\Scope())->readByProviderId($provider->getId());
             foreach ($scopes as $scope) {
                 $availabilities = (new \BO\Zmsbackend\Availability\Service\Availability())->readList($scope->getId());
 
                 foreach ($availabilities as $availability) {
-                    if ((int) $availability->slotTimeInMinutes === (int) $providerData['slotTimeInMinutes']) {
+                    if ((int) $availability->slotTimeInMinutes === $newSlotMinutes) {
                         continue;
                     }
 
-                    $availability->slotTimeInMinutes = $providerData['slotTimeInMinutes'];
+                    $availability->slotTimeInMinutes = $newSlotMinutes;
                     $availability->version = $availability->version + 1;
                     $updated = (new \BO\Zmsbackend\Availability\Service\Availability())
                         ->updateEntity($availability->getId(), $availability, 2);

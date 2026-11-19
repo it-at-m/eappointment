@@ -8,7 +8,7 @@ class SlotOverlappingAvailabilityTest extends \BO\Zmsbackend\Tests\Service\Base
 {
     const int SCOPE_ID = 141;
 
-    // scope 141, monday 08:00 - 15:50, 10 minute slots, 2 workstations
+    // scope 141, monday 08:00 - 15:50, 5 minute slots, 2 workstations
     const int LONG_AVAILABILITY_ID = 94666;
 
     const int TIMESTAMP_0800 = 1464588000; // 2016-05-30 08:00:00 +02:00
@@ -173,26 +173,24 @@ class SlotOverlappingAvailabilityTest extends \BO\Zmsbackend\Tests\Service\Base
         $shortAvailability = $this->writeShortAvailability(true);
         $process = $this->writeReservedProcess(static::TIMESTAMP_0830, 2);
 
-        $mapped = $this->readMappedAvailabilityIds($process);
-        $this->assertCount(2, $mapped);
-        $this->assertSame([(int) $shortAvailability->getId()], array_values(array_unique($mapped)));
-        foreach (array_keys($mapped) as $processId) {
-            $this->assertSame(1, $this->readSlotProcessCount($processId));
-        }
+        $this->assertSame(
+            [$process->getId() => (int) $shortAvailability->getId()],
+            $this->readMappedAvailabilityIds($process)
+        );
+        $this->assertSame(2, $this->readSlotProcessCount($process->getId()));
     }
 
     public function testFollowingSlotsLeavingShorterAvailabilityStayInOneAvailability()
     {
         $this->writeShortAvailability(true);
-        // 08:50 + 2 slots ends at 09:10, the short availability ends at 09:00
-        $process = $this->writeReservedProcess(static::TIMESTAMP_0850, 2);
+        // 08:50 plus four 5-minute slots ends at 09:10. The short availability ends at 09:00.
+        $process = $this->writeReservedProcess(static::TIMESTAMP_0850, 4);
 
-        $mapped = $this->readMappedAvailabilityIds($process);
-        $this->assertCount(2, $mapped);
-        $this->assertSame([static::LONG_AVAILABILITY_ID], array_values(array_unique($mapped)));
-        foreach (array_keys($mapped) as $processId) {
-            $this->assertSame(1, $this->readSlotProcessCount($processId));
-        }
+        $this->assertSame(
+            [$process->getId() => static::LONG_AVAILABILITY_ID],
+            $this->readMappedAvailabilityIds($process)
+        );
+        $this->assertSame(4, $this->readSlotProcessCount($process->getId()));
     }
 
     public function testRebuildMappingKeepsOneAvailabilityPerProcess()
@@ -210,9 +208,10 @@ class SlotOverlappingAvailabilityTest extends \BO\Zmsbackend\Tests\Service\Base
         foreach ($processList as $process) {
             $mapped = $this->readMappedAvailabilityIds($process);
             $this->assertCount(1, array_unique($mapped), "Process $process is mapped to more than one availability");
-        }
-        foreach ($processIds as $processId) {
-            $this->assertSame(1, $this->readSlotProcessCount($processId));
+            $this->assertSame(
+                (int) $process->getFirstAppointment()->slotCount,
+                $this->readSlotProcessCount($process->getId())
+            );
         }
         $this->assertSame([], (new Slot())->fetchAll('
             SELECT s.slotID
@@ -524,12 +523,11 @@ class SlotOverlappingAvailabilityTest extends \BO\Zmsbackend\Tests\Service\Base
         (new \BO\Zmsbackend\Process\Service\Process())
             ->updateEntityWithSlots($process, static::$now, 'intern', 2);
 
-        $mapped = $this->readMappedAvailabilityIds($process);
-        $this->assertCount(2, $mapped);
         $this->assertSame(
-            [(int) $shortAvailability->getId(), (int) $shortAvailability->getId()],
-            array_values($mapped)
+            [$process->getId() => (int) $shortAvailability->getId()],
+            $this->readMappedAvailabilityIds($process)
         );
+        $this->assertSame(2, $this->readSlotProcessCount($process->getId()));
     }
 
     public function testWithoutOverlapMappingIsUnchanged()

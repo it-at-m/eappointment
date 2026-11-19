@@ -148,6 +148,7 @@ class Accordion extends Component
                         >
                             <AvailabilityForm
                                 data={availability}
+                                scope={this.props.scope}
                                 selectedAvailability={this.props.data}
                                 availabilityList={sortedAvailabilityList}
                                 today={this.props.today}
@@ -234,7 +235,8 @@ Accordion.propTypes = {
     setErrorRef: PropTypes.func,
     stateChanged: PropTypes.bool,
     errorElement: PropTypes.element,
-    isCreatingExclusion: PropTypes.bool
+    isCreatingExclusion: PropTypes.bool,
+    scope: PropTypes.object
 }
 
 export default Accordion

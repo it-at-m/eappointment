@@ -93,8 +93,7 @@
 
             <template v-if="!variantId">
               <p class="no-bottom-margin smaller-front-size">
-                <strong>{{ t("address") }}</strong
-                ><br />
+                <strong>{{ t("address") }}</strong><br />
               </p>
               <p>
                 {{ selectedProvider.address.street }}
@@ -110,8 +109,7 @@
 
             <template v-else-if="isVariantWithAddress(variantId)">
               <p class="no-bottom-margin smaller-front-size">
-                <strong>{{ t("address") }}</strong
-                ><br />
+                <strong>{{ t("address") }}</strong><br />
               </p>
               <p>
                 {{ selectedProvider.address.street }}
@@ -124,8 +122,7 @@
                 ></span>
               </p>
               <p class="no-bottom-margin smaller-front-size">
-                <strong>{{ variant?.name }}</strong
-                ><br />
+                <strong>{{ variant?.name }}</strong><br />
               </p>
               <p v-if="variant?.hint">
                 {{ variant.hint }}
@@ -134,8 +131,7 @@
 
             <template v-else>
               <p class="no-bottom-margin smaller-front-size">
-                <strong>{{ variant?.name }}</strong
-                ><br />
+                <strong>{{ variant?.name }}</strong><br />
               </p>
               <p v-if="variant?.hint">
                 {{ variant.hint }}
@@ -194,8 +190,9 @@
               "
               tabindex="0"
             >
-              <strong>{{ appointment.scope.customTextfieldLabel }}</strong
-              ><br />
+              <strong>{{
+                appointment.scope.customTextfieldLabel
+              }}</strong><br />
               <p class="m-plain-text-multiline">
                 {{ appointment.customTextfield }}
               </p>
@@ -207,8 +204,9 @@
               "
               tabindex="0"
             >
-              <strong>{{ appointment.scope.customTextfield2Label }}</strong
-              ><br />
+              <strong>{{
+                appointment.scope.customTextfield2Label
+              }}</strong><br />
               <p class="m-plain-text-multiline">
                 {{ appointment.customTextfield2 }}
               </p>

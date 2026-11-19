@@ -182,7 +182,7 @@ const FormContent = (props) => {
                 <fieldset>
                     <div className="panel--heavy">
                         <legend className="label">Öffnungszeit</legend>
-                        <AvailabilityDatePicker attributes={{
+                        <AvailabilityDatePicker scope={props.scope} attributes={{
                             "id": "AvDatesStart",
                             "availabilitylist": availabilityList,
                             "availability": getDataValuesFromForm(data),
@@ -190,7 +190,7 @@ const FormContent = (props) => {
                             "kind": data.kind,
                             "disabled": inputDisabled
                         }} name="startDate" {...{ onChange }} />
-                        <AvailabilityDatePicker attributes={{
+                        <AvailabilityDatePicker scope={props.scope} attributes={{
                             "id": "AvDatesEnd",
                             "availabilitylist": availabilityList,
                             "availability": getDataValuesFromForm(data),
@@ -287,6 +287,7 @@ FormContent.propTypes = {
     errors: PropTypes.object,
     onChange: PropTypes.func,
     setErrorRef: PropTypes.func,
+    scope: PropTypes.object,
 }
 
 export default FormContent 
