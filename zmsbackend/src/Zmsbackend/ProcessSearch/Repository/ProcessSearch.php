@@ -583,6 +583,17 @@ class ProcessSearch extends \BO\Zmsbackend\Process\Repository\Process
         return $this;
     }
 
+    public function addConditionDisplayedScopeIds(array $scopeIds): self
+    {
+        if ($scopeIds === []) {
+            $this->query->where(self::expression('1'), '=', 0);
+            return $this;
+        }
+
+        $this->query->where($this->getEntityMapping()['scope__id'], 'IN', $scopeIds);
+        return $this;
+    }
+
     public function addCombinedActiveProjection(): self
     {
         $this->leftJoin(
