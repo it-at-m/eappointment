@@ -1,3 +1,13 @@
+## Release Muc-51 Updated (19.11.2026)
+
+<h2>        Security
+</h2>
+<ul>
+<li>19.11.2026 - CVE-2026-115560, CVE-2026-126714 and CVE-2026-129496: remote code execution in PHP. Module images built from this tag run PHP 8.4.28.
+</li>
+</ul>
+
+
 ## Release Muc-51 (13.11.2026)
 
 <h2>        Bug
