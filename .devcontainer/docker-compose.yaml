@@ -136,7 +136,7 @@ services:
     restart: unless-stopped
 
   refarch-gateway:
-    image: ghcr.io/it-at-m/refarch/refarch-gateway:1.10.0@sha256:d74e6a31e2fe255989008fbf9a8d5e024bc01f418acf8c1852558e6925db9764
+    image: ghcr.io/it-at-m/refarch/refarch-gateway:1.10.1@sha256:06dea14c7dddfe3b06fbd35cd0c453bcce86e6bd5abc9b8431339575d9acd7b1
     container_name: zms-refarch-gateway
     ports:
       - "8084:8080"
