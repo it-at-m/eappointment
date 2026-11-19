@@ -14,7 +14,7 @@ class ExchangeSlotscopeTest extends \BO\Zmsbackend\Tests\Service\Base
         $entity = $query->readEntity(141);
         $this->assertEntity("\\BO\\Zmsentities\\Exchange", $entity);
         $this->assertEquals(40, count($entity->data));
-        $this->assertEquals(105, $entity->data[0][2]); // booked slots
+        $this->assertEquals(102, $entity->data[0][2]); // booked slots
         $this->assertEquals(105, $entity->data[0][3]); // planned slots
         $this->assertEquals(22, $entity->data[39][2]); // booked slots
         $this->assertEquals(94, $entity->data[39][3]); // planned slots

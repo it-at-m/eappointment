@@ -17,6 +17,7 @@ class BAllTest extends \BO\Zmsbackend\Tests\Service\Base
 
     public function testSingle()
     {
+        $mismatches = [];
         foreach ($this->fullProviderIdList as $providerId) {
             $input = $this->getTestEntity();
             $input->addProvider('dldb', $providerId);
@@ -27,15 +28,22 @@ class BAllTest extends \BO\Zmsbackend\Tests\Service\Base
             $dayList  = include($this->getFixturePath('provider' . $providerId . '_daylist.php'));
             foreach ($entity->days as $day) {
                 $key = $day->getDayHash();
-                $this->assertArrayHasKey($key, $dayList, "Day $key missing for provider=$providerId");
+                if (!array_key_exists($key, $dayList)) {
+                    $mismatches[] = "Day $key missing for provider=$providerId";
+                    continue;
+                }
                 $testDay = new \BO\Zmsentities\Day($dayList[$key]);
-                $message = "Day $key has different value on provider=$providerId for ";
                 $testSlots = $testDay->freeAppointments;
                 $daySlots = $day->freeAppointments;
-                $this->assertEquals($testSlots->intern, $daySlots->intern, $message . "intern");
-                $this->assertEquals($testSlots->public, $daySlots->public, $message . "public");
+                if ((string) $testSlots->intern !== (string) $daySlots->intern) {
+                    $mismatches[] = "Day $key provider=$providerId intern expected {$testSlots->intern} actual {$daySlots->intern}";
+                }
+                if ((string) $testSlots->public !== (string) $daySlots->public) {
+                    $mismatches[] = "Day $key provider=$providerId public expected {$testSlots->public} actual {$daySlots->public}";
+                }
             }
         }
+        $this->assertSame([], $mismatches, implode("\n", $mismatches));
     }
 
     /**
@@ -54,21 +62,33 @@ class BAllTest extends \BO\Zmsbackend\Tests\Service\Base
         //$this->dumpProfiler();
         $this->writeTestExport($entity, 'BATest_daylist.php');
         $dayList  = include($this->getFixturePath('BATest_daylist.php'));
+        $mismatches = [];
         foreach ($entity->days as $day) {
             $key = str_pad($day->day, 2, '0', STR_PAD_LEFT)
                 . "-"
                 . str_pad($day->month, 2, '0', STR_PAD_LEFT)
                 . "-$day->year";
-            $this->assertArrayHasKey($key, $dayList, "Day $key missing from BATest_daylist fixture");
+            if (!array_key_exists($key, $dayList)) {
+                $mismatches[] = "Day $key missing from BATest_daylist fixture";
+                continue;
+            }
             $testDay = new \BO\Zmsentities\Day($dayList[$key]);
-            $message = "Day $key has different value for ";
             $testSlots = $testDay->freeAppointments;
             $daySlots = $day->freeAppointments;
-            $this->assertEquals($testSlots->intern, $daySlots->intern, $message . "intern");
-            $this->assertEquals($testSlots->public, $daySlots->public, $message . "public");
-            $this->assertEquals($testSlots->type, $daySlots->type, $message . "type");
-            $this->assertEquals($testDay->status, $day->status, $message . "status");
+            if ((string) $testSlots->intern !== (string) $daySlots->intern) {
+                $mismatches[] = "Day $key intern expected {$testSlots->intern} actual {$daySlots->intern}";
+            }
+            if ((string) $testSlots->public !== (string) $daySlots->public) {
+                $mismatches[] = "Day $key public expected {$testSlots->public} actual {$daySlots->public}";
+            }
+            if ((string) $testSlots->type !== (string) $daySlots->type) {
+                $mismatches[] = "Day $key type expected {$testSlots->type} actual {$daySlots->type}";
+            }
+            if ((string) $testDay->status !== (string) $day->status) {
+                $mismatches[] = "Day $key status expected {$testDay->status} actual {$day->status}";
+            }
         }
+        $this->assertSame([], $mismatches, implode("\n", $mismatches));
     }
 
     /**

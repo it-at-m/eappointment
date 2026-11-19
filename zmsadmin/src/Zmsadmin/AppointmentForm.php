@@ -97,6 +97,7 @@ class AppointmentForm extends BaseController
                 'requestList' => $requestList,
                 'requestsByCount' => $requestsByCount,
                 'slotTimeInMinutes' => $slotTimeInMinutes,
+                'durationSlotCounts' => Helper\AppointmentFormHelper::durationSlotCounts($requestList),
             )
         );
     }
