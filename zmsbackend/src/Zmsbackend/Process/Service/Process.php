@@ -143,7 +143,10 @@ class Process extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfaces\R
         // chosen under the slot lock.
         $appointment->addSlotCount($slotList->count());
         $processEntity = $this->updateEntity($process, $now, $resolveReferences, null, $userAccount);
-        $process = $this->readEntity($process->getId(), $process->authKey, $resolveReferences);
+        $savedProcess = $this->readEntity($process->getId(), $process->authKey, $resolveReferences);
+        if ($savedProcess instanceof Entity) {
+            $process = $savedProcess;
+        }
         $slotService->writeSlotProcessMappingFor($process->getId(), $availabilityId);
 
         \BO\Zmsbackend\Log\Service\Log::writeProcessLog("CREATE (\BO\Zmsbackend\Process\Service\Process::updateEntityWithSlots) $process ", \BO\Zmsbackend\Log\Service\Log::ACTION_EDITED, $process, $userAccount);

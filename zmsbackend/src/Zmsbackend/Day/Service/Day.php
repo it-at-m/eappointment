@@ -82,7 +82,6 @@ class Day extends \BO\Zmsbackend\Base
     {
         $interval = 0;
         foreach ($durationMinutes as $duration) {
-            $duration = (int) $duration;
             if ($duration < 1) {
                 continue;
             }

@@ -542,7 +542,7 @@ class Slot extends \BO\Zmsbackend\Base
                 return ($cancelledSlots > 0) ? true : false;
             }
 
-            $scope = $availability->scope ?? null;
+            $scope = $availability->scope;
             \App::$log->info('availability: ', [
                 'generate_new' => $generateNew,
                 'scope_id' => is_object($scope) && isset($scope->id) ? (int) $scope->id : null,
@@ -592,7 +592,7 @@ class Slot extends \BO\Zmsbackend\Base
                 'scope_id' => (int) $scope->id,
                 'availability_id' => (int) $availability->id,
                 'duration_seconds' => round(microtime(true) - $availabilityStarted, 2),
-                'changed' => (bool) $changed,
+                'changed' => $changed,
                 'reason' => $availability['processingNote'] ?? [],
             ]);
             if ($changed) {
@@ -701,8 +701,9 @@ class Slot extends \BO\Zmsbackend\Base
         \DateTimeInterface $from,
         \DateTimeInterface $to
     ): array {
+        $scope = $availability->scope;
         $rows = $this->fetchAll(\BO\Zmsbackend\Slot\Repository\Slot::QUERY_SELECT_SLOTS_IN_RANGE, [
-            'scopeID' => $availability->scope->id,
+            'scopeID' => $scope instanceof ScopeEntity ? (int) $scope->id : (int) ($scope['id'] ?? 0),
             'availabilityID' => $availability->id,
             'yearFrom' => $from->format('Y'),
             'yearTo' => $to->format('Y'),

@@ -5,7 +5,7 @@ namespace BO\Zmsadmin\Tests\Helper;
 use BO\Zmsadmin\Helper\AppointmentFormHelper;
 use PHPUnit\Framework\TestCase;
 
-class AppointmentFormHelperTest extends TestCase
+final class AppointmentFormHelperTest extends TestCase
 {
     public function testAppointmentIntervalIsTheGreatestCommonDivisorOfServiceSlots(): void
     {
