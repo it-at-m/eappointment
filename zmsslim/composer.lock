@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "edea2c4570773c061baa13253a0a4186",
+    "content-hash": "9500a01bf0977c491cd5eea42dafafce",
     "packages": [
         {
             "name": "dflydev/dot-access-data",
@@ -88,7 +88,7 @@
             "dist": {
                 "type": "path",
                 "url": "../mellon",
-                "reference": "7b9c7b94bc2967668e1446375e477aa6bb53b067"
+                "reference": "c4108cd4c472a28d9e1990a91fbe32d757957542"
             },
             "require": {
                 "ext-json": ">=0",
@@ -101,7 +101,7 @@
                 "phpunit/phpunit": "^13",
                 "roave/security-advisories": "dev-latest",
                 "squizlabs/php_codesniffer": "*",
-                "vimeo/psalm": "7.9.0"
+                "vimeo/psalm": "7.11.0"
             },
             "type": "library",
             "autoload": {
@@ -10148,16 +10148,16 @@
         },
         {
             "name": "vimeo/psalm",
-            "version": "7.9.0",
+            "version": "7.11.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/vimeo/psalm.git",
-                "reference": "6b439ac5947fccc105ec83faf60568d15e24d2a9"
+                "reference": "9e0d0f88bc0a4233357a9aeb4b32da060644e196"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/vimeo/psalm/zipball/6b439ac5947fccc105ec83faf60568d15e24d2a9",
-                "reference": "6b439ac5947fccc105ec83faf60568d15e24d2a9",
+                "url": "https://api.github.com/repos/vimeo/psalm/zipball/9e0d0f88bc0a4233357a9aeb4b32da060644e196",
+                "reference": "9e0d0f88bc0a4233357a9aeb4b32da060644e196",
                 "shasum": ""
             },
             "require": {
@@ -10190,7 +10190,8 @@
                 "spatie/array-to-xml": "^2.17.0 || ^3.0",
                 "symfony/console": "^6.0 || ^7.0 || ^8.0",
                 "symfony/filesystem": "~6.3.12 || ~6.4.3 || ^7.0.3 || ^8.0",
-                "symfony/polyfill-php84": "^1.31.0"
+                "symfony/polyfill-php84": "^1.31.0",
+                "weirdan/doctrine-psalm-plugin": "^2.12.0"
             },
             "provide": {
                 "psalm/psalm": "self.version"
@@ -10265,8 +10266,8 @@
                 "issues": "https://github.com/vimeo/psalm/issues",
                 "source": "https://github.com/vimeo/psalm"
             },
-            "time": "2026-11-16T23:00:17+00:00",
-            "published-time": "2026-11-17T00:44:45+00:00"
+            "time": "2026-11-18T22:06:23+00:00",
+            "published-time": "2026-11-19T00:44:54+00:00"
         },
         {
             "name": "webmozart/assert",
@@ -10334,6 +10335,88 @@
             },
             "time": "2026-05-20T13:07:01+00:00",
             "published-time": "2026-05-20T13:07:38+00:00"
+        },
+        {
+            "name": "weirdan/doctrine-psalm-plugin",
+            "version": "v2.12.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/psalm/psalm-plugin-doctrine.git",
+                "reference": "b6491aa083eeab33ee8e221319bc835b6d3ffdae"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/psalm/psalm-plugin-doctrine/zipball/b6491aa083eeab33ee8e221319bc835b6d3ffdae",
+                "reference": "b6491aa083eeab33ee8e221319bc835b6d3ffdae",
+                "shasum": ""
+            },
+            "require": {
+                "composer-runtime-api": "^2",
+                "php": "^8.2",
+                "psalm/psalm-plugin-api": "^0.4",
+                "vimeo/psalm": "^7.0.0-rc28|dev-master"
+            },
+            "conflict": {
+                "doctrine/collections": "<1.8",
+                "doctrine/orm": "<2.6",
+                "doctrine/persistence": "<2.0"
+            },
+            "require-dev": {
+                "codeception/codeception": "^5.0",
+                "doctrine/coding-standard": "^9.0",
+                "doctrine/collections": "^1.8 || ^2.0",
+                "doctrine/dbal": "^2.13 || ^3.0 || ^4.0",
+                "doctrine/doctrine-bundle": "^1.11 || ^2.0 || ^3.0",
+                "doctrine/orm": "^2.6 || ^3.0",
+                "doctrine/persistence": "^2.0 || ^3.0 || ^4.0",
+                "phly/keep-a-changelog": "^2.1",
+                "phpunit/phpunit": "^10.5 || ^11.5 || ^12.0 || ^13.0",
+                "squizlabs/php_codesniffer": "^3.3",
+                "weirdan/codeception-psalm-module": "^0.14.1"
+            },
+            "type": "psalm-plugin",
+            "extra": {
+                "psalm": {
+                    "pluginClass": "Weirdan\\DoctrinePsalmPlugin\\Plugin"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Weirdan\\DoctrinePsalmPlugin\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Bruce Weirdan",
+                    "email": "weirdan@gmail.com"
+                }
+            ],
+            "description": "Stubs to let Psalm understand Doctrine better",
+            "keywords": [
+                "code",
+                "dbal",
+                "doctrine",
+                "doctrine2",
+                "extension",
+                "inspection",
+                "orm",
+                "php",
+                "plugin",
+                "psalm",
+                "psalm-plugin",
+                "static analysis",
+                "static-analysis"
+            ],
+            "support": {
+                "issues": "https://github.com/psalm/psalm-plugin-doctrine/issues",
+                "source": "https://github.com/psalm/psalm-plugin-doctrine/tree/v2.12.2"
+            },
+            "time": "2026-11-18T15:54:13+00:00",
+            "published-time": "2026-11-18T15:54:25+00:00"
         }
     ],
     "aliases": [],
