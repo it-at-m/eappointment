@@ -35,6 +35,10 @@ class Counter extends BaseController
             );
         }
 
+        if (!$workstation->getScope()->hasId()) {
+            return \BO\Slim\Render::redirect('workstationSelect', [], []);
+        }
+
         $workstation->getUseraccount()->testPermissions(['counter']);
 
         return \BO\Slim\Render::withHtml(

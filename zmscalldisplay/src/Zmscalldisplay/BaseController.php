@@ -28,6 +28,27 @@ abstract class BaseController extends \BO\Slim\Controller
         return $this->readResponse($request, $noCacheResponse, $args);
     }
 
+    /**
+     * A missed poll keeps the previous frame. The browser treats an empty 200 as "nothing new".
+     */
+    protected function skipRefresh(
+        ResponseInterface $response,
+        \Exception $exception,
+        string $logMessage
+    ): ResponseInterface {
+        $message = $exception->getMessage();
+        $snippetAt = strpos($message, ' - Snippet:');
+        if ($snippetAt !== false) {
+            $message = substr($message, 0, $snippetAt);
+        }
+        \App::$log->error($logMessage, [
+            'status' => $exception->getCode(),
+            'error' => $message,
+        ]);
+
+        return $response;
+    }
+
     protected function buildQuery(string $target, RequestInterface $request): string
     {
         $queryArr  = [];

@@ -899,7 +899,7 @@ public class AdminSteps {
         selectCounterAppointmentTimeOrWalkIn();
         wenn_sie_im_zeitmanagementsystem_unter_terminvereinbarung_neu_den_namen_string_eingeben(name);
         wenn_sie_im_zeitmanagementsystem_unter_terminvereinbarung_neu_die_email_adresse_string_eingeben("<mailinator>");
-        bookNamedAppointmentOrWalkIn(TestDataHelper.getTestData("customer_name"), TestDataHelper.getTestData("customer_email"));
+        bookNamedAppointmentOrWalkIn();
     }
 
     @When("I delete the just booked appointment of {string} from the queue.")
@@ -1391,17 +1391,16 @@ public class AdminSteps {
                 TestDataHelper.transformTestData(statusLabel));
     }
 
-    private void bookNamedAppointmentOrWalkIn(String name, String email) {
-        if (!"true".equals(TestDataHelper.getTestData("appointment_booked_as_walk_in"))
-                && COUNTER_PROCESSING_STATION_PAGE.hasBookAppointmentButton()) {
+    /**
+     * A selected appointment slot stays an appointment. Edge rebuilds the form after the time is
+     * chosen and the Termin buchen button is gone for a moment. Booking a walk-in then writes no
+     * slot-count log, so the customer search never shows Log-Ergebnisse.
+     */
+    private void bookNamedAppointmentOrWalkIn() {
+        if (!"true".equals(TestDataHelper.getTestData("appointment_booked_as_walk_in"))) {
             COUNTER_PROCESSING_STATION_PAGE.clickOnBookAppointmentButton(true);
             COUNTER_PROCESSING_STATION_PAGE.clickOnCloseButton();
             return;
-        }
-        if (!"true".equals(TestDataHelper.getTestData("appointment_booked_as_walk_in"))) {
-            COUNTER_PROCESSING_STATION_PAGE.selectWalkInCustomer();
-            COUNTER_PROCESSING_STATION_PAGE.enterNameInNewAppointmentTextField(name);
-            COUNTER_PROCESSING_STATION_PAGE.enterEmailInNewAppointmentTextField(email);
         }
         String waitingNumber = COUNTER_PROCESSING_STATION_PAGE.clickOnAddSpontaneousCustomer();
         TestDataHelper.setTestData("new_appointment_number", waitingNumber);
@@ -1873,13 +1872,9 @@ public class AdminSteps {
     }
 
     private void confirmCounterAppointmentBooking() {
-        if (!"true".equals(TestDataHelper.getTestData("appointment_booked_as_walk_in"))
-                && COUNTER_PROCESSING_STATION_PAGE.hasBookAppointmentButton()) {
+        if (!"true".equals(TestDataHelper.getTestData("appointment_booked_as_walk_in"))) {
             COUNTER_PROCESSING_STATION_PAGE.clickOnBookAppointmentButton(true);
             return;
-        }
-        if (!"true".equals(TestDataHelper.getTestData("appointment_booked_as_walk_in"))) {
-            COUNTER_PROCESSING_STATION_PAGE.selectWalkInCustomer();
         }
         String waitingNumber = COUNTER_PROCESSING_STATION_PAGE.clickOnAddSpontaneousCustomer();
         TestDataHelper.setTestData("new_appointment_number", waitingNumber);
@@ -2123,16 +2118,16 @@ public class AdminSteps {
     }
 
     /**
-     * A no-show hides the call link for five wall-clock minutes. The suite clock does not
-     * move that far, so the lockout is stored as already over and the queue is reloaded.
+     * A no-show hides the call link for five minutes. The lockout is stored as already
+     * over, then the workstation is loaded again so an older queue reload cannot paint
+     * the lockout back.
      */
     @When("the no-show lockout for {string} has passed.")
     public void theNoShowLockoutHasPassed(String familyName) {
         String name = TestDataHelper.transformTestData(familyName);
         COUNTER_PROCESSING_STATION_PAGE.waitUntilCustomerIsBackInQueue(name);
         endNoShowLockout(name);
-        COUNTER_PROCESSING_STATION_PAGE.reloadQueueLists();
-        // Name text is already visible during lockout; wait for the call <a> after timeoutTime is moved back.
+        COUNTER_PROCESSING_STATION_PAGE.reloadWorkstationPage();
         PROCESSING_STATION_SECTION.waitUntilCustomerCallLinkVisible(name);
     }
 
@@ -2836,7 +2831,7 @@ public class AdminSteps {
 
     private static void endNoShowLockout(String familyName) {
         String displayNumber = bookedAppointmentNumber();
-        String sql = "UPDATE buerger SET timeoutTime = DATE_SUB(NOW(), INTERVAL 6 MINUTE) WHERE BuergerID = ?";
+        String sql = "UPDATE buerger SET timeoutTime = '2000-01-01 00:00:00' WHERE BuergerID = ?";
         try (Connection connection = openZmsConnection()) {
             int processId = processIdForBookedAppointment(connection, displayNumber, familyName);
             try (PreparedStatement statement = connection.prepareStatement(sql)) {

@@ -10,7 +10,7 @@
   ],
 
   "timezone": "Europe/Berlin",
-  "schedule": ["* 0-4 * * *"],
+  "schedule": ["* 22-23,0-5 * * *"],
 
   "constraints": {
     "php": "8.5.*"

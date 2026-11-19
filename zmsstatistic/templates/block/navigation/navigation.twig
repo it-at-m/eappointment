@@ -58,6 +58,11 @@
                     <li class="nav__link">
                         <a class="extern" title="{% trans %}Zum Sachbearbeiter / Tresenplatz{% endtrans %}" href="{{ includeUrl }}/../admin/" target="_blank">Tresen/Sachbearbeiter</a>
                     </li>
+                    {% if urlAppointments %}
+                    <li class="nav__link">
+                        <a class="extern" title="{% trans %}Zur Bürgeransicht{% endtrans %}" href="{{ urlAppointments }}" target="_blank">Bürgeransicht</a>
+                    </li>
+                    {% endif %}
                 </ul>
             </li>
         {% endif %}
@@ -82,6 +87,11 @@
                 <li class="nav__link">
                     <a class="extern" title="{% trans %}Zum Sachbearbeiter / Tresenplatz{% endtrans %}" href="{{ includeUrl }}/../admin/" target="_blank">Tresen/Sachbearbeiter</a>
                 </li>
+                {% if urlAppointments %}
+                <li class="nav__link">
+                    <a class="extern" title="{% trans %}Zur Bürgeransicht{% endtrans %}" href="{{ urlAppointments }}" target="_blank">Bürgeransicht</a>
+                </li>
+                {% endif %}
             </ul>
         </li>
     {% endif %}

@@ -196,11 +196,13 @@ export default defineConfig({
         "appointment-detail-html": "./appointment-detail.html",
         "appointment-overview-html": "./appointment-overview.html",
         "appointment-slider-html": "./appointment-slider.html",
+        "jumpin-link-builder-html": "./jumpin-link-builder.html",
         "webcomponents-html": "./webcomponents.html",
         "zms-appointment": "./src/zms-appointment-webcomponent.ts",
         "zms-appointment-detail": "./src/zms-appointment-detail-webcomponent.ts",
         "zms-appointment-overview": "./src/zms-appointment-overview-webcomponent.ts",
         "zms-appointment-slider": "./src/zms-appointment-slider-webcomponent.ts",
+        "zms-jumpin-link-builder": "./src/zms-jumpin-link-builder-webcomponent.ts",
       },
       output: {
         entryFileNames: "src/entry-[name]-[hash].js",

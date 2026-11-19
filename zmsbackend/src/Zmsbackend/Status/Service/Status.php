@@ -28,7 +28,7 @@ class Status extends \BO\Zmsbackend\Base
             array_key_exists('log_bin', $configVariables) ? $configVariables['log_bin'] : 'OFF';
         $entity['processes'] = $includeProcessStats ? $this->readProcessStats($now) : [];
 
-        if ($includeProcessStats) {
+        if ($includeProcessStats && ! $this->isSlotDeleteRunning($now)) {
             $entity['processes'] = $this->readProcessStats($now);
             $outdated = $this->readOutdatedSlots();
             $entity['processes']['outdated'] = $outdated['cnt'];
@@ -44,6 +44,24 @@ class Status extends \BO\Zmsbackend\Base
         $entity['useraccounts']['departments'] = $this->getActiveSessionsByBehoerdenWithScopes();
 
         return $entity;
+    }
+
+    /**
+     * Set only by calculateSlots --delete. Newer than the last finished run, and less than 15 minutes old.
+     *
+     * @return bool
+     */
+    protected function isSlotDeleteRunning(\DateTimeImmutable $now): bool
+    {
+        $config = new \BO\Zmsbackend\Config\Service\Config();
+        $started = $config->readProperty('status__calculateSlotsWithDeleteStart');
+        $finished = $config->readProperty('status__calculateSlotsLastRun');
+        $startedAt = is_string($started) ? strtotime($started) : false;
+        if ($startedAt === false) {
+            return false;
+        }
+
+        return $started > $finished && ($startedAt + (15 * 60)) > $now->getTimestamp();
     }
 
     /**

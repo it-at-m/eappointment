@@ -10,6 +10,8 @@
 namespace BO\Zmscalldisplay;
 
 use BO\Slim\Render;
+use BO\Zmsclient\Exception as ZmsclientException;
+use BO\Zmsclient\Psr7\RequestException;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use BO\Zmsentities\Collection\QueueList;
@@ -26,9 +28,13 @@ class Info extends BaseController
         ResponseInterface $response
     ) {
         $calldisplay = new Helper\Calldisplay($request);
-        $queueListFull = \App::$http
-            ->readPostResult('/calldisplay/queue/', $calldisplay->getEntity(false))
-            ->getCollection();
+        try {
+            $queueListFull = \App::$http
+                ->readPostResult('/calldisplay/queue/', $calldisplay->getEntity(false))
+                ->getCollection();
+        } catch (ZmsclientException | RequestException $exception) {
+            return $this->skipRefresh($response, $exception, 'Calldisplay waitinginfo refresh skipped');
+        }
 
         $filteredQueue = $queueListFull
             ->withoutStatus(QueueList::STATUS_FAKE)

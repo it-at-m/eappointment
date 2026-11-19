@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <link href="https://assets.muenchen.de/mde/1.1.27/assets/favicon/favicon.svg" rel="icon" type="image/svg+xml">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>Jump-in Link Builder</title>
+
+    <link
+            rel="stylesheet"
+            href="https://assets.muenchen.de/mde/1.1.27/css/fonts.css"
+    />
+    <link
+            rel="stylesheet"
+            href="https://assets.muenchen.de/mde/1.1.27/css/style.css"
+    />
+
+    <!-- Host chrome: login and the internal Tools button. Magnolia embeds do not include this shell. -->
+    <script type="module" src="/src/local-dev/bootstrap-login.ts"></script>
+    <script src="src/zms-jumpin-link-builder-webcomponent.ts" type="module"></script>
+</head>
+<body>
+<noscript>
+    <strong>Damit das Werkzeug funktioniert, muss Javascript aktiviert werden.</strong>
+</noscript>
+
+<dbs-login
+        kc-url="%VITE_KC_URL%"
+        kc-realm="%VITE_KC_REALM%"
+        kc-client-id="%VITE_KC_CLIENT_ID%"
+></dbs-login>
+
+<zms-jumpin-link-builder></zms-jumpin-link-builder>
+</body>
+</html>
