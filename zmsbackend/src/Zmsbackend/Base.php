@@ -86,11 +86,36 @@ abstract class Base
 
     public function startExecute(\PDOStatement $statement, array $parameters)
     {
+        $this->logCronExecute($statement);
         $statement = static::pdoExceptionHandler(function () use ($statement, $parameters) {
             $statement->execute($parameters);
             return $statement;
         });
         return $statement;
+    }
+
+    /**
+     * The hard memory limit ends the process inside execute(), so the statement
+     * has to be on stdout before that call.
+     */
+    private function logCronExecute(\PDOStatement $statement): void
+    {
+        if (!\BO\Slim\Bootstrap::isCronLogging() || !isset(\App::$log) || !\App::$log instanceof \Monolog\Logger) {
+            return;
+        }
+        \App::$log->info('SQL execute', [
+            'memory_bytes' => memory_get_usage(true),
+            'sql' => $statement->queryString,
+        ]);
+        foreach (\App::$log->getHandlers() as $handler) {
+            if (!$handler instanceof \Monolog\Handler\StreamHandler) {
+                continue;
+            }
+            $stream = $handler->getStream();
+            if (is_resource($stream)) {
+                fflush($stream);
+            }
+        }
     }
 
     protected static function pdoExceptionHandler(\Closure $pdoFunction, array $parameters = [])
