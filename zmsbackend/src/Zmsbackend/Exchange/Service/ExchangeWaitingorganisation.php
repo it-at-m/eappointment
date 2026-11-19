@@ -31,6 +31,7 @@ class ExchangeWaitingorganisation extends \BO\Zmsbackend\Base implements \BO\Zms
         $entity->addDictionaryEntry('waitingtime_termin', 'number', 'real waitingtime with termin');
         $entity->addDictionaryEntry('waytime_termin', 'number', 'real waytime with appointment');
         $entity->addDictionaryEntry('waitingcalculated_termin', 'number', 'calculated waitingtime with termin');
+        $entity->addDictionaryEntry('waycount_termin', 'number', 'clients included in appointment way time');
         $subjectIdList = explode(',', $subjectid);
 
         foreach ($subjectIdList as $subjectid) {
@@ -60,6 +61,7 @@ class ExchangeWaitingorganisation extends \BO\Zmsbackend\Base implements \BO\Zms
                         $entry[sprintf('hour_%02d_waiting_time_appointment', $hour)],
                         $entry[sprintf('hour_%02d_way_time_appointment', $hour)],
                         $entry[sprintf('hour_%02d_estimated_waiting_time_appointment', $hour)],
+                        $entry[sprintf('hour_%02d_way_count_appointment', $hour)],
                     ]);
                 }
                 $entry = array_shift($raw);

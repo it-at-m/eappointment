@@ -484,15 +484,19 @@ class ProcessStatusFree extends Process
         }
 
         try {
-            $slotList = (new \BO\Zmsbackend\Slot\Service\Slot())->readByAppointment(
+            // The availability chosen under the slot locks is the one the reservation is mapped to.
+            $reservation = (new \BO\Zmsbackend\Slot\Service\Slot())->readReservationByAppointment(
                 $appointment,
                 $slotsRequired,
                 (null !== $userAccount),
-                true
+                true,
+                $slotType
             );
         } catch (\BO\Zmsbackend\Exception\Pdo\LockTimeout) {
             throw new \BO\Zmsbackend\Process\Exception\ProcessReserveFailed();
         }
+        $slotList = $reservation['slotList'];
+        $availabilityId = (int) $reservation['availability']->getId() ?: null;
         $freeProcessList = $this->readPreparedFreeProcesses(
             $calendar,
             $days,
@@ -510,9 +514,17 @@ class ProcessStatusFree extends Process
             if ($process->id > 99999) {
                 $newProcess = clone $process;
                 $newProcess->getFirstAppointment()->setTime($slot->time);
-                $this->writeNewProcess($newProcess, $now, $process->id, 0, true, $userAccount);
+                $this->writeNewProcess($newProcess, $now, $process->id, 0, true, $userAccount, $availabilityId);
             } elseif ($process->id === 0) {
-                $process = $this->writeNewProcess($process, $now, 0, count($slotList) - 1, true, $userAccount);
+                $process = $this->writeNewProcess(
+                    $process,
+                    $now,
+                    0,
+                    count($slotList) - 1,
+                    true,
+                    $userAccount,
+                    $availabilityId
+                );
             } else {
                 throw new \Exception("SQL UPDATE error on inserting new $process on $slot");
             }

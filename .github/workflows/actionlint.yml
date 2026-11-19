@@ -10,4 +10,4 @@ jobs:
     name: Run actionlint
     runs-on: ubuntu-latest
     steps:
-      - uses: it-at-m/lhm_actions/action-templates/actions/action-actionlint@03f09fa81a60371c01caf1a9deada89ceebbd5e5 # v1.6.3
+      - uses: it-at-m/lhm_actions/action-templates/actions/action-actionlint@9bde6576151908ace5f517ca623fea3b98600cb7 # v1.6.5

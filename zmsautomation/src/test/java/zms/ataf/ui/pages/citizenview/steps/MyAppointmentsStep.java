@@ -874,6 +874,7 @@ public final class MyAppointmentsStep {
         // Empty overview still shows Kommende Termine (0) once the skeleton is gone.
         return shadow.shadowDomContainsText("Kommende Termine (0)") && !shadow.deepElementExists(".skeleton-loader");
     }
+
     private boolean myAppointmentsShowsLoggedOut() {
         return browserIsOnMyAppointments()
                 && shadow.shadowDomContainsText("Anmelden")
@@ -922,6 +923,13 @@ public final class MyAppointmentsStep {
                 return;
             }
         }
+        // Keycloak returns to appointment-overview.html without the cache-bust, and that
+        // page can keep the Neuer Termin shell without fetching the appointment cards.
+        if (!shadow.shadowDomContainsText("Terminnummer")) {
+            ScenarioLogManager.getLogger()
+                    .warn("zmscitizenview: re-login returned Meine Termine without a card; opening it again");
+            reloadMyAppointments();
+        }
     }
     private String myAppointmentsOverviewUrl() {
         String current = DriverUtil.getDriver().getCurrentUrl();
@@ -962,19 +970,38 @@ public final class MyAppointmentsStep {
     public void assertMyAppointmentsAppointmentReplaced(String serviceName) {
         context.set();
         String previous = TestDataHelper.getTestData(myAppointmentsNumberKey(serviceName));
-        String current = new WebDriverWait(DriverUtil.getDriver(), Duration.ofSeconds(30))
-                .pollingEvery(Duration.ofMillis(500))
-                .until(d -> {
-                    String number = appointmentNumberOnMyAppointments(serviceName);
-                    if (number == null || number.isBlank()) {
-                        return null;
-                    }
-                    if (previous != null && previous.equals(number)) {
-                        return null;
-                    }
-                    return number;
-                });
-        Assert.assertFalse(current.isBlank(), "Meine Termine has no number for \"" + serviceName + "\".");
+        // Rebook confirms before Meine Termine drops the old card. Polling that page
+        // keeps the original Terminnummer; open the overview again until the new one is there.
+        long deadline = System.currentTimeMillis() + 75_000L;
+        int reloads = 0;
+        long nextReloadAt = System.currentTimeMillis() + 5_000L;
+        String current = "";
+        while (System.currentTimeMillis() < deadline) {
+            current = appointmentNumberOnMyAppointments(serviceName);
+            if (current != null && !current.isBlank() && (previous == null || !previous.equals(current))) {
+                break;
+            }
+            if (reloads < 3 && System.currentTimeMillis() >= nextReloadAt) {
+                reloads++;
+                ScenarioLogManager.getLogger()
+                        .warn(
+                                "zmscitizenview: Meine Termine still shows {} for \"{}\" after rebook; opening it again ({}/3)",
+                                current == null || current.isBlank() ? "no number" : current,
+                                serviceName,
+                                reloads);
+                reloadMyAppointments();
+                nextReloadAt = System.currentTimeMillis() + 15_000L;
+            }
+            try {
+                Thread.sleep(400L);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                break;
+            }
+        }
+        Assert.assertFalse(
+                current == null || current.isBlank(),
+                "Meine Termine has no number for \"" + serviceName + "\".");
         Assert.assertNotEquals(
                 current,
                 previous,
@@ -990,41 +1017,47 @@ public final class MyAppointmentsStep {
                 "Meine Termine changed the appointment for \"" + serviceName + "\".");
     }
     private String appointmentNumberOnMyAppointments(String serviceName) {
-        String script =
-                "var name=arguments[0];"
-                        + "function textOf(n){var s='';if(!n)return s;if(n.nodeType===3)return n.nodeValue||'';"
-                        + "if(n.shadowRoot)s+=textOf(n.shadowRoot);var c=n.childNodes;if(c)for(var i=0;i<c.length;i++)s+=textOf(c[i]);return s;}"
-                        + "function walk(n,fn){if(!n)return null;if(n.nodeType===1){var hit=fn(n);if(hit)return hit;}"
-                        + "if(n.shadowRoot){var inner=walk(n.shadowRoot,fn);if(inner)return inner;}"
-                        + "var c=n.children;if(c)for(var i=0;i<c.length;i++){var next=walk(c[i],fn);if(next)return next;}return null;}"
-                        + "return walk(document.body,function(el){"
-                        + "if(!el.classList||!el.classList.contains('card'))return null;"
-                        + "var text=textOf(el).replace(/\\s+/g,' ').trim();"
-                        + "if(text.indexOf('1x '+name)<0)return null;"
-                        + "var match=text.match(/Terminnummer:\\s*(\\S+)/);"
-                        + "return match?match[1]:'';});";
-        Object raw = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script, serviceName);
-        return raw == null ? "" : raw.toString();
+        String needle = "1x " + serviceName;
+        java.util.regex.Matcher match =
+                java.util.regex.Pattern.compile("Terminnummer:\\s*(\\S+)").matcher("");
+        String best = null;
+        String bestNumber = "";
+        for (String text : appointmentCardTexts(false)) {
+            if (!text.contains(needle)) {
+                continue;
+            }
+            match.reset(text);
+            String number = "";
+            while (match.find()) {
+                String candidate = match.group(1);
+                if (candidate.startsWith("+")) {
+                    continue;
+                }
+                number = candidate;
+                break;
+            }
+            if (number.isEmpty()) {
+                continue;
+            }
+            if (best == null || text.length() < best.length()) {
+                best = text;
+                bestNumber = number;
+            }
+        }
+        return bestNumber;
     }
     private static String myAppointmentsNumberKey(String serviceName) {
         return "my_appointments_number_" + serviceName;
     }
     private int countTeasers(String serviceName) {
-        String script =
-                "var name=arguments[0];"
-                        + "function textOf(n){var s='';if(!n)return s;if(n.nodeType===3)return n.nodeValue||'';"
-                        + "if(n.shadowRoot)s+=textOf(n.shadowRoot);var c=n.childNodes;if(c)for(var i=0;i<c.length;i++)s+=textOf(c[i]);return s;}"
-                        + "function walk(n,fn){if(!n)return;if(n.nodeType===1)fn(n);if(n.shadowRoot)walk(n.shadowRoot,fn);"
-                        + "var c=n.children;if(c)for(var i=0;i<c.length;i++)walk(c[i],fn);}"
-                        + "var n=0;walk(document.body,function(el){"
-                        + "if(!el.classList||!el.classList.contains('card'))return;"
-                        + "if(textOf(el).replace(/\\s+/g,' ').indexOf('1x '+name)>=0)n++;});"
-                        + "return n;";
-        Object raw = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script, serviceName);
-        if (raw instanceof Number number) {
-            return number.intValue();
+        String needle = "1x " + serviceName;
+        int count = 0;
+        for (String text : appointmentCardTexts(true)) {
+            if (text.contains(needle)) {
+                count++;
+            }
         }
-        return 0;
+        return count;
     }
     public void assertMyAppointmentsTeaser(String serviceName, String typeLabel, String locationText) {
         context.set();
@@ -1098,11 +1131,13 @@ public final class MyAppointmentsStep {
                         + "var hit=card;"
                         + "if(card.shadowRoot){var a=card.shadowRoot.querySelector('a[href]');if(a)hit=a;}"
                         + "hit.scrollIntoView({block:'center'});hit.click();return true;";
-        // Edge can drop the Bürger-Login session while hopping overview → detail; a full 60s
-        // waitWithThreeWindows then burns the outer budget before Anmelden is noticed on reload.
+        // Edge and Chrome can drop the Bürger-Login session while hopping overview → detail.
+        // The first navigation's page-load and shell waits do not look at this deadline, so a
+        // re-login used to start after the budget was already gone and the assert fired.
         long deadline = System.currentTimeMillis() + Math.max(120, defaultWaitSeconds) * 1000L;
         boolean opened = false;
         int attempt = 0;
+        int[] deadlineExtensions = {0};
         while (System.currentTimeMillis() < deadline) {
             attempt++;
             if (shadow.shadowDomContainsText("Termin absagen")) {
@@ -1114,6 +1149,7 @@ public final class MyAppointmentsStep {
                         .warn(
                                 "zmscitizenview: logged out before opening teaser {}; logging in again",
                                 serviceName);
+                deadline = extendTeaserOpenDeadline(deadline, deadlineExtensions);
                 ensureMeineTermineLoggedIn();
                 continue;
             }
@@ -1152,6 +1188,7 @@ public final class MyAppointmentsStep {
                         .warn(
                                 "zmscitizenview: detail for {} showed Anmelden; logging in and retrying",
                                 serviceName);
+                deadline = extendTeaserOpenDeadline(deadline, deadlineExtensions);
                 ensureMeineTermineLoggedIn();
                 continue;
             }
@@ -1160,6 +1197,7 @@ public final class MyAppointmentsStep {
                             "zmscitizenview: teaser {} did not open detail (attempt {}); trying again",
                             serviceName,
                             attempt);
+            deadline = extendTeaserOpenDeadline(deadline, deadlineExtensions);
             if (!browserIsOnMyAppointments()) {
                 reloadMyAppointments();
                 waitUntilNeueTerminVisible();
@@ -1168,6 +1206,23 @@ public final class MyAppointmentsStep {
         Assert.assertTrue(
                 opened || shadow.shadowDomContainsText("Termin absagen"),
                 "Appointment detail did not show Termin absagen after opening \"" + serviceName + "\".");
+    }
+
+    /**
+     * Gives the next teaser open a fresh 120s when the previous attempt spent the outer budget
+     * inside navigation waits. At most two extensions, so a page that never shows Termin absagen
+     * still fails.
+     */
+    private long extendTeaserOpenDeadline(long deadline, int[] extensionsUsed) {
+        if (extensionsUsed[0] >= 2) {
+            return deadline;
+        }
+        extensionsUsed[0]++;
+        ScenarioLogManager.getLogger()
+                .warn(
+                        "zmscitizenview: teaser open gets another 120s (extension {})",
+                        extensionsUsed[0]);
+        return System.currentTimeMillis() + 120_000L;
     }
 
     /** True when the Bürger-Login prompt is showing (overview or detail) without a session. */
@@ -1264,9 +1319,13 @@ public final class MyAppointmentsStep {
         }
     }
     private String waitForTeaserText(String serviceName) {
-        long deadline = System.currentTimeMillis() + Math.max(30, defaultWaitSeconds) * 1000L;
+        long deadline = System.currentTimeMillis() + Math.max(240, defaultWaitSeconds) * 1000L;
         String last = "";
         int relogins = 0;
+        int reloads = 0;
+        long nextReloadAt = System.currentTimeMillis() + 8_000L;
+        long blankSince = 0L;
+        long shellWithoutNameSince = 0L;
         while (System.currentTimeMillis() < deadline) {
             if (myAppointmentsShowsLoggedOut() && relogins < 2) {
                 relogins++;
@@ -1275,6 +1334,9 @@ public final class MyAppointmentsStep {
                                 "zmscitizenview: Meine Termine logged out while waiting for \"{}\"; logging in again",
                                 serviceName);
                 reloginForMyAppointments();
+                nextReloadAt = System.currentTimeMillis() + 45_000L;
+                blankSince = 0L;
+                shellWithoutNameSince = 0L;
                 continue;
             }
             if (myAppointmentsAwaitingAuthOrSkeleton()) {
@@ -1283,6 +1345,52 @@ public final class MyAppointmentsStep {
             last = teaserText(serviceName);
             if (last.contains(serviceName) && last.contains("Terminnummer")) {
                 return last;
+            }
+            boolean loadError =
+                    shadow.shadowDomContainsText("Ihre Termine können zur Zeit nicht geladen werden.");
+            boolean shellUp =
+                    loadError
+                            || shadow.shadowDomContainsText("Neuer Termin")
+                            || shadow.shadowDomContainsText("Kommende Termine");
+            long now = System.currentTimeMillis();
+            // A reload can land on a blank overview. The shell check then never fires again,
+            // and the rest of the wait polls an empty page.
+            if (!shellUp && !myAppointmentsShowsLoggedOut()) {
+                if (blankSince == 0L) {
+                    blankSince = now;
+                }
+            } else {
+                blankSince = 0L;
+            }
+            boolean blankTooLong = blankSince > 0L && now - blankSince >= 8_000L;
+            // Neuer Termin paints before the cards. Reloading as soon as that shell is up
+            // aborts the appointment fetch, so the teaser never arrives.
+            if (last.contains(serviceName) || !shellUp) {
+                shellWithoutNameSince = 0L;
+            } else if (shellWithoutNameSince == 0L) {
+                shellWithoutNameSince = now;
+            }
+            boolean shellWithoutNameTooLong =
+                    shellWithoutNameSince > 0L && now - shellWithoutNameSince >= 45_000L;
+            if (reloads < 4
+                    && now >= nextReloadAt
+                    && !last.contains(serviceName)
+                    && !myAppointmentsShowsLoggedOut()
+                    && (blankTooLong || loadError || shellWithoutNameTooLong)) {
+                reloads++;
+                ScenarioLogManager.getLogger()
+                        .warn(
+                                "zmscitizenview: Meine Termine list settled without a teaser for \"{}\" (reload {}/4)",
+                                serviceName,
+                                reloads);
+                if (blankTooLong) {
+                    requestMyAppointmentsAuthReplay();
+                }
+                reloadMyAppointments();
+                nextReloadAt = System.currentTimeMillis() + 45_000L;
+                blankSince = 0L;
+                shellWithoutNameSince = 0L;
+                continue;
             }
             try {
                 Thread.sleep(400L);
@@ -1300,23 +1408,61 @@ public final class MyAppointmentsStep {
                         + last);
         return last;
     }
-    private String teaserText(String serviceName) {
+    /**
+     * Card text via an explicit stack. The recursive walk hits Firefox
+     * {@code InternalError: too much recursion} and comes back empty.
+     *
+     * @param cardClassOnly {@code .card} elements, which is what the list count uses. Teaser reads
+     *     also include {@code muc-card}, whose title lives in the shadow root and whose Terminnummer
+     *     is slotted light DOM.
+     */
+    private java.util.List<String> appointmentCardTexts(boolean cardClassOnly) {
         String script =
-                "var name=arguments[0];"
-                        + "function textOf(n){var s='';if(!n)return s;if(n.nodeType===3)return n.nodeValue||'';"
-                        + "if(n.shadowRoot)s+=textOf(n.shadowRoot);var c=n.childNodes;if(c)for(var i=0;i<c.length;i++)s+=textOf(c[i]);return s;}"
-                        + "function walk(n,fn){if(!n)return false;if(fn(n))return true;if(n.shadowRoot&&walk(n.shadowRoot,fn))return true;"
-                        + "var c=n.children;if(c)for(var i=0;i<c.length;i++)if(walk(c[i],fn))return true;return false;}"
-                        + "var best='';"
-                        + "walk(document.body,function(n){"
-                        + "if(n.nodeType!==1)return false;"
-                        + "var t=textOf(n);"
-                        + "if(t.indexOf(name)<0||t.indexOf('Terminnummer')<0)return false;"
-                        + "if(!best||t.length<best.length)best=t;"
-                        + "return false;});"
-                        + "return best;";
-        Object raw = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script, serviceName);
-        return raw instanceof String ? (String) raw : "";
+                "var cardOnly=arguments[0];"
+                        + "var seen=new Set();var stack=[document.body];var texts=[];"
+                        + "function textOf(root){var seen2=new Set();var st=[root];var buf='';"
+                        + "while(st.length){var n=st.pop();if(!n||seen2.has(n))continue;seen2.add(n);"
+                        + "if(n.nodeType===3){buf+=' '+(n.nodeValue||'');continue;}"
+                        + "var next=[];"
+                        + "if(n.shadowRoot)next.push(n.shadowRoot);"
+                        + "if(n.assignedNodes){try{var a=n.assignedNodes({flatten:true});"
+                        + "for(var j=0;j<a.length;j++)next.push(a[j]);}catch(e){}}"
+                        + "var c=n.childNodes;if(c)for(var i=0;i<c.length;i++)next.push(c[i]);"
+                        + "for(var k=next.length-1;k>=0;k--)st.push(next[k]);}"
+                        + "return buf.replace(/\\s+/g,' ').trim();}"
+                        + "while(stack.length){var n=stack.pop();if(!n||seen.has(n))continue;seen.add(n);"
+                        + "if(n.nodeType===1){var tag=(n.tagName||'').toUpperCase();"
+                        + "var isCard=n.classList&&n.classList.contains('card');"
+                        + "if(isCard||(!cardOnly&&tag==='MUC-CARD'))texts.push(textOf(n));}"
+                        + "if(n.shadowRoot)stack.push(n.shadowRoot);"
+                        + "if(n.assignedNodes){try{var a=n.assignedNodes({flatten:true});"
+                        + "for(var j=0;j<a.length;j++)stack.push(a[j]);}catch(e){}}"
+                        + "var c=n.childNodes;if(c)for(var i=0;i<c.length;i++)stack.push(c[i]);}"
+                        + "return texts;";
+        Object raw = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script, cardClassOnly);
+        if (!(raw instanceof java.util.List<?> rows)) {
+            return java.util.List.of();
+        }
+        java.util.List<String> texts = new java.util.ArrayList<>();
+        for (Object row : rows) {
+            if (row != null) {
+                texts.add(row.toString());
+            }
+        }
+        return texts;
+    }
+
+    private String teaserText(String serviceName) {
+        String best = "";
+        for (String text : appointmentCardTexts(false)) {
+            if (!text.contains(serviceName) || !text.contains("Terminnummer")) {
+                continue;
+            }
+            if (best.isEmpty() || text.length() < best.length()) {
+                best = text;
+            }
+        }
+        return best;
     }
     public void assertIcsDownloadOfferedOnDetailIntro() {
         context.set();

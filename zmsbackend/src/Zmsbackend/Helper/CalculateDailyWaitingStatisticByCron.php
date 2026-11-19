@@ -7,8 +7,12 @@ use DateTimeImmutable;
 /**
  * Berechnung der Wartezeiten pro Standort und Stunde.
  *
- * Liest archivierte Prozesse für ein Datum, filtert Einträge ohne Wartezeit,
- * und speichert die Durchschnittswerte in 'wartenrstatistik'.
+ * Liest archivierte Prozesse für ein Datum und speichert die Durchschnittswerte
+ * in 'wartenrstatistik'. Anzahl und Wartezeit zählen nur Einträge mit Wartezeit > 0.
+ * Wegezeit zählt dieselben Einträge und zusätzlich Terminkunden, die vor dem
+ * Terminzeitpunkt aufgerufen wurden (Wartezeit 0, erschienen) und eine Wegezeit haben.
+ * Deren Anzahl steht in hour_*_way_count_appointment, getrennt von der Wartenden-Anzahl.
+ * Nicht erschienene Termine mit Wartezeit 0 bleiben außen vor.
  * Bereits vorhandene Zeilen für (Standort, Datum) werden aktualisiert.
  */
 class CalculateDailyWaitingStatisticByCron extends \BO\Zmsbackend\Base
@@ -32,6 +36,7 @@ class CalculateDailyWaitingStatisticByCron extends \BO\Zmsbackend\Base
               Datum,
               `Timestamp`,
               mitTermin,
+              nicht_erschienen,
               waiting_time,
               way_time
             FROM buergerarchiv
@@ -48,8 +53,9 @@ class CalculateDailyWaitingStatisticByCron extends \BO\Zmsbackend\Base
         $statsByScopeDate = [];
 
         foreach ($archiveRows as $row) {
-            // Same skip as the former buerger path: no waiting_time => skip count, wait, and way
-            if (empty($row['waiting_time'])) {
+            $includeInWaiting = $this->hasPositiveWaitingTime($row);
+            $includeInWay = $this->countsForWayTime($row);
+            if (!$includeInWaiting && !$includeInWay) {
                 continue;
             }
 
@@ -63,15 +69,18 @@ class CalculateDailyWaitingStatisticByCron extends \BO\Zmsbackend\Base
                 continue;
             }
 
-            $waitMins = (float) $row['waiting_time'];
-            $wayMins = is_numeric($row['way_time']) ? (float) $row['way_time'] : 0.0;
-
             $dateStr = $row['Datum'];
             $this->initializeStatsIfNeeded($statsByScopeDate, $scopeId, $dateStr);
 
-            $statsByScopeDate[$scopeId][$dateStr][$hour][$type]['count'] += 1;
-            $statsByScopeDate[$scopeId][$dateStr][$hour][$type]['sumWait'] += $waitMins;
-            $statsByScopeDate[$scopeId][$dateStr][$hour][$type]['sumWay'] += $wayMins;
+            if ($includeInWaiting) {
+                $statsByScopeDate[$scopeId][$dateStr][$hour][$type]['count'] += 1;
+                $statsByScopeDate[$scopeId][$dateStr][$hour][$type]['sumWait'] += (float) $row['waiting_time'];
+            }
+            if ($includeInWay) {
+                $wayMins = is_numeric($row['way_time'] ?? null) ? (float) $row['way_time'] : 0.0;
+                $statsByScopeDate[$scopeId][$dateStr][$hour][$type]['countWay'] += 1;
+                $statsByScopeDate[$scopeId][$dateStr][$hour][$type]['sumWay'] += $wayMins;
+            }
         }
 
         return $statsByScopeDate;
@@ -96,8 +105,8 @@ class CalculateDailyWaitingStatisticByCron extends \BO\Zmsbackend\Base
             $statsByScopeDate[$scopeId][$dateStr] = [];
             foreach (range(0, 23) as $h) {
                 $statsByScopeDate[$scopeId][$dateStr][$h] = [
-                    'spontan' => ['count' => 0, 'sumWait' => 0.0, 'sumWay' => 0.0],
-                    'termin'  => ['count' => 0, 'sumWait' => 0.0, 'sumWay' => 0.0],
+                    'spontan' => ['count' => 0, 'sumWait' => 0.0, 'countWay' => 0, 'sumWay' => 0.0],
+                    'termin'  => ['count' => 0, 'sumWait' => 0.0, 'countWay' => 0, 'sumWay' => 0.0],
                 ];
             }
         }
@@ -187,11 +196,12 @@ class CalculateDailyWaitingStatisticByCron extends \BO\Zmsbackend\Base
         $colWayTime = sprintf('hour_%02d_way_time_%s', $hour, $hourSuffix);
 
         $count = $hoursData[$hour][$type]['count'];
+        $countWay = $hoursData[$hour][$type]['countWay'];
         $avgWait = ($count > 0)
             ? round($hoursData[$hour][$type]['sumWait'] / $count, 2)
             : 0.0;
-        $avgWay = ($count > 0)
-            ? round($hoursData[$hour][$type]['sumWay'] / $count, 2)
+        $avgWay = ($countWay > 0)
+            ? round($hoursData[$hour][$type]['sumWay'] / $countWay, 2)
             : 0.0;
 
         $updateCols[] = "`$colWaitCount` = :$colWaitCount";
@@ -201,10 +211,32 @@ class CalculateDailyWaitingStatisticByCron extends \BO\Zmsbackend\Base
         $updateParams[$colWaitCount] = $count;
         $updateParams[$colWaitTime] = $avgWait;
         $updateParams[$colWayTime] = $avgWay;
+
+        if ($type === 'termin') {
+            $colWayCount = sprintf('hour_%02d_way_count_%s', $hour, $hourSuffix);
+            $updateCols[] = "`$colWayCount` = :$colWayCount";
+            $updateParams[$colWayCount] = $countWay;
+        }
     }
 
     private function hourSuffixForStatistic(string $type): string
     {
         return $type === 'termin' ? 'appointment' : 'spontaneous';
+    }
+
+    private function hasPositiveWaitingTime(array $row): bool
+    {
+        return is_numeric($row['waiting_time'] ?? null) && (float) $row['waiting_time'] > 0;
+    }
+
+    private function countsForWayTime(array $row): bool
+    {
+        if ($this->hasPositiveWaitingTime($row)) {
+            return true;
+        }
+
+        return (int) ($row['mitTermin'] ?? 0) === 1
+            && (int) ($row['nicht_erschienen'] ?? 0) === 0
+            && is_numeric($row['way_time'] ?? null);
     }
 }
