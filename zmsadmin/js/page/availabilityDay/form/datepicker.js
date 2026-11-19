@@ -4,7 +4,7 @@ import moment from 'moment'
 import setHours from "date-fns/setHours"
 import setMinutes from "date-fns/setMinutes";
 import DatePicker, { registerLocale } from 'react-datepicker'
-import { weekDayList } from '../helpers'
+import { weekDayList, openingHourTimeInterval } from '../helpers'
 import * as Inputs from '../../../lib/inputs'
 const { Label, Description } = Inputs
 import de from 'date-fns/locale/de';
@@ -317,7 +317,10 @@ class AvailabilityDatePicker extends Component
                                 showTimeSelectOnly
                                 dateFormat="HH:mm"
                                 timeFormat="HH:mm"
-                                timeIntervals={this.state.availability.slotTimeInMinutes || 10}
+                                timeIntervals={openingHourTimeInterval(
+                                    this.props.scope || this.state.availability.scope,
+                                    this.state.availability.slotTimeInMinutes
+                                )}
                                 timeCaption="Uhrzeit"
                                 minTime={this.state.minTime}
                                 maxTime={this.state.maxTime}
@@ -346,7 +349,8 @@ class AvailabilityDatePicker extends Component
 
 AvailabilityDatePicker.propTypes = {
     onChange: PropTypes.func,
-    attributes: PropTypes.object
+    attributes: PropTypes.object,
+    scope: PropTypes.object
 }
 
 export default AvailabilityDatePicker

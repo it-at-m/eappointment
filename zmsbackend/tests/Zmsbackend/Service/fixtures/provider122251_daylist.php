@@ -10,8 +10,8 @@ return array (
     'status' => 'full',
     'freeAppointments' => 
     array (
-      'public' => 0,
-      'intern' => -24,
+      'public' => 1,
+      'intern' => -14,
       'type' => 'sum',
     ),
     'allAppointments' => 
@@ -238,8 +238,8 @@ return array (
     'status' => 'full',
     'freeAppointments' => 
     array (
-      'public' => 0,
-      'intern' => -1,
+      'public' => 2,
+      'intern' => 1,
       'type' => 'sum',
     ),
     'allAppointments' => 
@@ -390,8 +390,8 @@ return array (
     'status' => 'full',
     'freeAppointments' => 
     array (
-      'public' => 0,
-      'intern' => 0,
+      'public' => 1,
+      'intern' => 1,
       'type' => 'sum',
     ),
     'allAppointments' => 
