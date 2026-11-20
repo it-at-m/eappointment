@@ -176,15 +176,19 @@ class CalculateSlots
 
         $this->writeCanceledSlots($now);
 
-        $slotQuery = new \BO\Zmsbackend\Slot\Service\Slot();
-        if ($slotsProcessed = $slotQuery->deleteSlotProcessOnProcess()) {
-            $this->log("Finished to free $slotsProcessed slots for changed/deleted processes");
-        }
+        // The unscoped repair joins every free slot to every appointment. A changed
+        // scope is remapped above. This sweep runs with the daily --delete pass.
+        if ($daily) {
+            $slotQuery = new \BO\Zmsbackend\Slot\Service\Slot();
+            if ($slotsProcessed = $slotQuery->deleteSlotProcessOnProcess()) {
+                $this->log("Finished to free $slotsProcessed slots for changed/deleted processes");
+            }
 
-        $slotQuery->deleteSlotProcessOnSlot();
+            $slotQuery->deleteSlotProcessOnSlot();
 
-        if ($slotsProcessed = $slotQuery->updateSlotProcessMapping(null, $now)) {
-            $this->log("Updated Slot-Process-Mapping, mapped $slotsProcessed processes");
+            if ($slotsProcessed = $slotQuery->updateSlotProcessMapping(null, $now)) {
+                $this->log("Updated Slot-Process-Mapping, mapped $slotsProcessed processes");
+            }
         }
 
         (new \BO\Zmsbackend\Config\Service\Config())->replaceProperty('status__calculateSlotsLastRun', $now->format('Y-m-d H:i:s'));
