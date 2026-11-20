@@ -1,3 +1,25 @@
+## Release Muc-52 (20.11.2026)
+
+<h2>        Bug
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1626'>ZMSKVR-1626</a>] -         Wegezeit&gt; Kundenaufrufe vor Terminzeitpunkt erscheinen nicht in der Wartestatistik
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1697'>ZMSKVR-1697</a>] -         Innenrevision KVR – Suchergebnisse der letzten 90 Tage und Pagination fehlerhaft
+</li>
+</ul>
+                                                                                                                                                                                                                                    
+<h2>        Story
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1627'>ZMSKVR-1627</a>] -         Änderung der Dienstleistungsdauer ohne Auswirkungen auf bestehende Termine
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1696'>ZMSKVR-1696</a>] -         Anpassungen globale E-Mail-Templates (Leerraum verkleinern nach Logo-Entfernung; Kundenhinweis in neue Zeile)
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-834'>ZMSKVR-834</a>] -         Überlappende Terminserien &quot;Nase&quot; 👃
+</li>
+</ul>
+
 ## Release Muc-51 Updated (19.11.2026)
 
 <h2>        Security
