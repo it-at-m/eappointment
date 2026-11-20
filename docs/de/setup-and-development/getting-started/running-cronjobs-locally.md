@@ -10,6 +10,8 @@ podman exec -it zms-web bash -lc "zmsbackend/cron/cronjob.hourly --city=berlin"
 podman exec -it zms-web bash -lc "zmsbackend/cron/cronjob.hourly --city=munich"
 ```
 
+Nach dem DLDB-Import baut der Stundenjob den gemeinsamen Cache neu. Siehe [Gemeinsamer Cache-Aufbau](../../../operations/shared-cache-warmup.md).
+
 Weitere Cronjobs:
 
 ```bash

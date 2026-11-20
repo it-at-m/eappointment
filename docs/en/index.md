@@ -23,6 +23,7 @@ This handbook is the main entry point on [GitHub Pages](https://it-at-m.github.i
 - [DLDB Interface Documentation](./operations/dldb-interface-documentation.md)
 - [Ruppertstraße booking variants (ZMSKVR-1046)](./operations/ruppertstrasse-booking-variants.md) — multi-scope RR, shared booking, Pass exclusive/mixed
 - [Monolog logging](./operations/monolog-logging.md) — `App::$log`, `DEBUGLEVEL`
+- [Shared cache warmup](./operations/shared-cache-warmup.md) — standby copy, hourly publish
 - [Monitoring and status](./operations/monitoring-and-status.md) — Grafana, `GET /status/`
 
 ## Repository Scope
