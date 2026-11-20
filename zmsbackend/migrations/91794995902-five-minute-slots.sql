@@ -3,6 +3,7 @@
 -- keeps its process number. hatFolgetermine on that row is the number of extra
 -- 5-minute steps. Follow-up rows are not created. The slot grid is not rebuilt
 -- here. calculateSlots does that, one location at a time, after this migration.
+-- ZMSKVR-1627
 
 DROP TEMPORARY TABLE IF EXISTS `tmp_scope_minutes`;
 DROP TEMPORARY TABLE IF EXISTS `tmp_parents`;
