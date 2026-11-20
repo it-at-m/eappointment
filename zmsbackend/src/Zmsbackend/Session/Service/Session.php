@@ -49,22 +49,15 @@ class Session extends \BO\Zmsbackend\Base
 
     public function deleteByTimeInterval(?string $sessionName, int $deleteInSeconds): void
     {
-        $selectQuery = new \BO\Zmsbackend\Session\Repository\Session(\BO\Zmsbackend\Query\Base::SELECT);
-        $selectQuery
-            ->addEntityMapping()
-            ->addConditionSessionDeleteInterval($deleteInSeconds);
         if ($sessionName !== null && $sessionName !== '') {
-            $selectQuery->addConditionSessionName($sessionName);
+            $this->perform(\BO\Zmsbackend\Session\Repository\Session::QUERY_DELETE_BY_AGE_AND_NAME, [
+                $deleteInSeconds,
+                $sessionName,
+            ]);
+            return;
         }
-        $statement = $this->fetchStatement($selectQuery);
-        while ($sessionData = $statement->fetch(\PDO::FETCH_ASSOC)) {
-            $sessionData = (new \BO\Zmsbackend\Session\Repository\Session(\BO\Zmsbackend\Query\Base::SELECT))->postProcessJoins($sessionData);
-            $entity = new Entity($sessionData);
-            $deleteQuery = new \BO\Zmsbackend\Session\Repository\Session(\BO\Zmsbackend\Query\Base::DELETE);
-            $deleteQuery
-                ->addConditionSessionName($entity['name'])
-                ->addConditionSessionId($entity['id']);
-            $this->deleteItem($deleteQuery);
-        }
+        $this->perform(\BO\Zmsbackend\Session\Repository\Session::QUERY_DELETE_BY_AGE, [
+            $deleteInSeconds,
+        ]);
     }
 }

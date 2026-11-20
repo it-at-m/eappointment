@@ -1510,6 +1510,19 @@ class Process extends \BO\Zmsbackend\Query\Base implements \BO\Zmsbackend\Query\
         return $this;
     }
 
+    public function addDeleteListColumns(): static
+    {
+        $this->query->select([
+            'id' => 'process.BuergerID',
+            'status' => 'process.status',
+            'createTimestamp' => 'process.IPTimeStamp',
+            'appointments__0__date' => self::expression(
+                'CONCAT(`process`.`Datum`, " ", `process`.`Uhrzeit`)'
+            ),
+        ]);
+        return $this;
+    }
+
     /**
      * @return void
      */

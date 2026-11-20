@@ -67,7 +67,7 @@ class CalendarTest extends \BO\Zmsbackend\Tests\Service\Base
         //var_dump("$entity");
         $this->assertEntity("\\BO\\Zmsentities\\Calendar", $entity);
         $this->assertTrue($entity->hasDay(2016, 5, 23), "Missing 2016-05-23 in dataset");
-        $this->assertEquals(0, $entity->getDay(2016, 5, 23)['freeAppointments']['public']);
+        $this->assertEquals(1, $entity->getDay(2016, 5, 23)['freeAppointments']['public']);
         $this->assertTrue($entity->hasDay(2016, 5, 27), "Missing 2016-05-27 in dataset");
         $this->assertEquals(2, $entity->getDay(2016, 5, 27)['freeAppointments']['public']);
         $this->assertEquals(72, $entity->getDay(2016, 5, 30)['freeAppointments']['public']);

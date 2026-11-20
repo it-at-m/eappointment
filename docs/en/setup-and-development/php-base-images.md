@@ -8,26 +8,24 @@ Infrastructure foundation: the [`zmsbase`](https://github.com/it-at-m/eappointme
 
 ## Image variants and usage
 
-Based on [`.github/workflows/zmsbase-build-images.yaml`](https://github.com/it-at-m/eappointment/blob/main/.github/workflows/zmsbase-build-images.yaml), the project publishes four groups of images:
+Based on [`.github/workflows/zmsbase-build-images.yaml`](https://github.com/it-at-m/eappointment/blob/main/.github/workflows/zmsbase-build-images.yaml), the project publishes two groups of images:
 
 - `8.4-base` and `8.4-dev` from `zmsbase/php84/Dockerfile`
-- `8.3-base` and `8.3-dev` from `zmsbase/php83/Dockerfile`
-- `8.3-local-amd64` and `8.3-local-arm64` from `zmsbase/php83-local/Dockerfile`
 - `8.4-local-amd64` and `8.4-local-arm64` from `zmsbase/php84-local/Dockerfile`
 
 The role split is:
 
-- Local images (`8.3-local-*`, `8.4-local-*`) are intended for local development and `zmsautomation`. Devcontainer defaults to `8.4-local-*` via `ZMS_PHP_BASE_TAG`.
-- Non-local images (`8.3-*`, `8.4-*` without `-local`) are intended for production/runtime-aligned environments. Module images and CI use `8.4-base` and `8.4-dev`. `8.3-*` stays published.
+- Local images (`8.4-local-*`) are intended for local development and `zmsautomation`. Devcontainer defaults to `8.4-local-*` via `ZMS_PHP_BASE_TAG`.
+- Non-local images (`8.4-base`, `8.4-dev`) are intended for production/runtime-aligned environments. Module images and CI use `8.4-base` and `8.4-dev`.
 
 This dual-architecture local setup supports development on macOS Apple Silicon and other non-amd64 environments while still providing linux/amd64 compatibility.
 
 ## Local architecture support
 
-The `php_v8_3_local` and `php_v8_4_local` jobs build single-architecture tags in a matrix:
+The `php_v8_4_local` job builds single-architecture tags in a matrix:
 
-- `linux/amd64` on `ubuntu-latest` -> `8.3-local-amd64` / `8.4-local-amd64`
-- `linux/arm64` on `ubuntu-24.04-arm` -> `8.3-local-arm64` / `8.4-local-arm64`
+- `linux/amd64` on `ubuntu-latest` -> `8.4-local-amd64`
+- `linux/arm64` on `ubuntu-24.04-arm` -> `8.4-local-arm64`
 
 Devcontainer sets `ZMS_PHP_BASE_TAG` and pulls that image via [`.devcontainer/scripts/sync-php-base-tag.sh`](https://github.com/it-at-m/eappointment/blob/main/.devcontainer/scripts/sync-php-base-tag.sh) before Compose starts.
 

@@ -24,6 +24,6 @@ jobs:
       actions: read
     steps:
       - name: Run Trivy Security check on Repository
-        uses: it-at-m/lhm_actions/action-templates/actions/action-trivy@87a254fa39e1555ffbbc8317af71b4d5ca7d4a3b # v1.6.4
+        uses: it-at-m/lhm_actions/action-templates/actions/action-trivy@9bde6576151908ace5f517ca623fea3b98600cb7 # v1.6.5
         env:
           TRIVY_SKIP_VERSION_CHECK: "true"

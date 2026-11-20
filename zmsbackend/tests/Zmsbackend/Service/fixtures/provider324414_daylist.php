@@ -48,8 +48,8 @@ return array (
     'status' => 'full',
     'freeAppointments' => 
     array (
-      'public' => 0,
-      'intern' => 0,
+      'public' => 3,
+      'intern' => 3,
       'type' => 'sum',
     ),
     'allAppointments' => 

@@ -7,11 +7,11 @@ return array (
     'year' => '2016',
     'month' => '04',
     'day' => '01',
-    'status' => 'full',
+    'status' => 'bookable',
     'freeAppointments' => 
     array (
-      'public' => 0,
-      'intern' => 476,
+      'public' => 7,
+      'intern' => 530,
       'type' => 'sum',
     ),
     'allAppointments' => 
@@ -26,11 +26,11 @@ return array (
     'year' => '2016',
     'month' => '04',
     'day' => '02',
-    'status' => 'full',
+    'status' => 'bookable',
     'freeAppointments' => 
     array (
-      'public' => 0,
-      'intern' => -14,
+      'public' => 12,
+      'intern' => 9,
       'type' => 'sum',
     ),
     'allAppointments' => 
@@ -45,11 +45,11 @@ return array (
     'year' => '2016',
     'month' => '04',
     'day' => '04',
-    'status' => 'full',
+    'status' => 'bookable',
     'freeAppointments' => 
     array (
-      'public' => 0,
-      'intern' => 583,
+      'public' => 1,
+      'intern' => 624,
       'type' => 'sum',
     ),
     'allAppointments' => 
@@ -64,11 +64,11 @@ return array (
     'year' => '2016',
     'month' => '04',
     'day' => '05',
-    'status' => 'full',
+    'status' => 'bookable',
     'freeAppointments' => 
     array (
-      'public' => 0,
-      'intern' => 559,
+      'public' => 4,
+      'intern' => 613,
       'type' => 'sum',
     ),
     'allAppointments' => 
@@ -83,11 +83,11 @@ return array (
     'year' => '2016',
     'month' => '04',
     'day' => '06',
-    'status' => 'full',
+    'status' => 'bookable',
     'freeAppointments' => 
     array (
-      'public' => 0,
-      'intern' => 505,
+      'public' => 1,
+      'intern' => 543,
       'type' => 'sum',
     ),
     'allAppointments' => 
@@ -106,7 +106,7 @@ return array (
     'freeAppointments' => 
     array (
       'public' => 0,
-      'intern' => 588,
+      'intern' => 640,
       'type' => 'sum',
     ),
     'allAppointments' => 
@@ -124,11 +124,11 @@ return array (
     'year' => '2016',
     'month' => '04',
     'day' => '08',
-    'status' => 'full',
+    'status' => 'bookable',
     'freeAppointments' => 
     array (
-      'public' => 0,
-      'intern' => 435,
+      'public' => 2,
+      'intern' => 470,
       'type' => 'sum',
     ),
     'allAppointments' => 
@@ -143,11 +143,11 @@ return array (
     'year' => '2016',
     'month' => '04',
     'day' => '09',
-    'status' => 'full',
+    'status' => 'bookable',
     'freeAppointments' => 
     array (
-      'public' => 0,
-      'intern' => -2,
+      'public' => 10,
+      'intern' => 10,
       'type' => 'sum',
     ),
     'allAppointments' => 
@@ -162,11 +162,11 @@ return array (
     'year' => '2016',
     'month' => '04',
     'day' => '11',
-    'status' => 'full',
+    'status' => 'bookable',
     'freeAppointments' => 
     array (
-      'public' => 0,
-      'intern' => 638,
+      'public' => 4,
+      'intern' => 690,
       'type' => 'sum',
     ),
     'allAppointments' => 
@@ -181,11 +181,11 @@ return array (
     'year' => '2016',
     'month' => '04',
     'day' => '12',
-    'status' => 'full',
+    'status' => 'bookable',
     'freeAppointments' => 
     array (
-      'public' => 0,
-      'intern' => 672,
+      'public' => 7,
+      'intern' => 733,
       'type' => 'sum',
     ),
     'allAppointments' => 
@@ -200,11 +200,11 @@ return array (
     'year' => '2016',
     'month' => '04',
     'day' => '13',
-    'status' => 'full',
+    'status' => 'bookable',
     'freeAppointments' => 
     array (
-      'public' => 0,
-      'intern' => 620,
+      'public' => 3,
+      'intern' => 643,
       'type' => 'sum',
     ),
     'allAppointments' => 
@@ -223,7 +223,7 @@ return array (
     'freeAppointments' => 
     array (
       'public' => 0,
-      'intern' => 727,
+      'intern' => 762,
       'type' => 'sum',
     ),
     'allAppointments' => 
@@ -241,11 +241,11 @@ return array (
     'year' => '2016',
     'month' => '04',
     'day' => '15',
-    'status' => 'full',
+    'status' => 'bookable',
     'freeAppointments' => 
     array (
-      'public' => 0,
-      'intern' => 514,
+      'public' => 12,
+      'intern' => 555,
       'type' => 'sum',
     ),
     'allAppointments' => 
@@ -260,11 +260,11 @@ return array (
     'year' => '2016',
     'month' => '04',
     'day' => '16',
-    'status' => 'full',
+    'status' => 'bookable',
     'freeAppointments' => 
     array (
-      'public' => 0,
-      'intern' => 0,
+      'public' => 24,
+      'intern' => 24,
       'type' => 'sum',
     ),
     'allAppointments' => 
@@ -279,11 +279,11 @@ return array (
     'year' => '2016',
     'month' => '04',
     'day' => '18',
-    'status' => 'full',
+    'status' => 'bookable',
     'freeAppointments' => 
     array (
-      'public' => 0,
-      'intern' => 762,
+      'public' => 9,
+      'intern' => 820,
       'type' => 'sum',
     ),
     'allAppointments' => 
@@ -301,8 +301,8 @@ return array (
     'status' => 'bookable',
     'freeAppointments' => 
     array (
-      'public' => 1,
-      'intern' => 720,
+      'public' => 8,
+      'intern' => 777,
       'type' => 'sum',
     ),
     'allAppointments' => 
@@ -317,11 +317,11 @@ return array (
     'year' => '2016',
     'month' => '04',
     'day' => '20',
-    'status' => 'full',
+    'status' => 'bookable',
     'freeAppointments' => 
     array (
-      'public' => 0,
-      'intern' => 659,
+      'public' => 2,
+      'intern' => 690,
       'type' => 'sum',
     ),
     'allAppointments' => 
@@ -340,7 +340,7 @@ return array (
     'freeAppointments' => 
     array (
       'public' => 0,
-      'intern' => 741,
+      'intern' => 786,
       'type' => 'sum',
     ),
     'allAppointments' => 
@@ -355,11 +355,11 @@ return array (
     'year' => '2016',
     'month' => '04',
     'day' => '22',
-    'status' => 'full',
+    'status' => 'bookable',
     'freeAppointments' => 
     array (
-      'public' => 0,
-      'intern' => 569,
+      'public' => 7,
+      'intern' => 610,
       'type' => 'sum',
     ),
     'allAppointments' => 
@@ -374,11 +374,11 @@ return array (
     'year' => '2016',
     'month' => '04',
     'day' => '23',
-    'status' => 'full',
+    'status' => 'bookable',
     'freeAppointments' => 
     array (
-      'public' => 0,
-      'intern' => 0,
+      'public' => 10,
+      'intern' => 16,
       'type' => 'sum',
     ),
     'allAppointments' => 
@@ -393,11 +393,11 @@ return array (
     'year' => '2016',
     'month' => '04',
     'day' => '25',
-    'status' => 'full',
+    'status' => 'bookable',
     'freeAppointments' => 
     array (
-      'public' => 0,
-      'intern' => 798,
+      'public' => 5,
+      'intern' => 836,
       'type' => 'sum',
     ),
     'allAppointments' => 
@@ -412,11 +412,11 @@ return array (
     'year' => '2016',
     'month' => '04',
     'day' => '26',
-    'status' => 'full',
+    'status' => 'bookable',
     'freeAppointments' => 
     array (
-      'public' => 0,
-      'intern' => 813,
+      'public' => 11,
+      'intern' => 865,
       'type' => 'sum',
     ),
     'allAppointments' => 
@@ -431,11 +431,11 @@ return array (
     'year' => '2016',
     'month' => '04',
     'day' => '27',
-    'status' => 'full',
+    'status' => 'bookable',
     'freeAppointments' => 
     array (
-      'public' => 0,
-      'intern' => 728,
+      'public' => 1,
+      'intern' => 753,
       'type' => 'sum',
     ),
     'allAppointments' => 
@@ -450,11 +450,11 @@ return array (
     'year' => '2016',
     'month' => '04',
     'day' => '28',
-    'status' => 'full',
+    'status' => 'bookable',
     'freeAppointments' => 
     array (
-      'public' => 0,
-      'intern' => 841,
+      'public' => 5,
+      'intern' => 883,
       'type' => 'sum',
     ),
     'allAppointments' => 
@@ -469,11 +469,11 @@ return array (
     'year' => '2016',
     'month' => '04',
     'day' => '29',
-    'status' => 'full',
+    'status' => 'bookable',
     'freeAppointments' => 
     array (
-      'public' => 0,
-      'intern' => 629,
+      'public' => 9,
+      'intern' => 660,
       'type' => 'sum',
     ),
     'allAppointments' => 
@@ -488,11 +488,11 @@ return array (
     'year' => '2016',
     'month' => '04',
     'day' => '30',
-    'status' => 'full',
+    'status' => 'bookable',
     'freeAppointments' => 
     array (
-      'public' => 0,
-      'intern' => 0,
+      'public' => 13,
+      'intern' => 13,
       'type' => 'sum',
     ),
     'allAppointments' => 
@@ -507,11 +507,11 @@ return array (
     'year' => '2016',
     'month' => '05',
     'day' => '02',
-    'status' => 'full',
+    'status' => 'bookable',
     'freeAppointments' => 
     array (
-      'public' => 0,
-      'intern' => 912,
+      'public' => 13,
+      'intern' => 958,
       'type' => 'sum',
     ),
     'allAppointments' => 
@@ -526,11 +526,11 @@ return array (
     'year' => '2016',
     'month' => '05',
     'day' => '03',
-    'status' => 'full',
+    'status' => 'bookable',
     'freeAppointments' => 
     array (
-      'public' => 0,
-      'intern' => 973,
+      'public' => 20,
+      'intern' => 1041,
       'type' => 'sum',
     ),
     'allAppointments' => 
@@ -545,11 +545,11 @@ return array (
     'year' => '2016',
     'month' => '05',
     'day' => '04',
-    'status' => 'full',
+    'status' => 'bookable',
     'freeAppointments' => 
     array (
-      'public' => 0,
-      'intern' => 803,
+      'public' => 6,
+      'intern' => 833,
       'type' => 'sum',
     ),
     'allAppointments' => 
@@ -564,11 +564,11 @@ return array (
     'year' => '2016',
     'month' => '05',
     'day' => '06',
-    'status' => 'full',
+    'status' => 'bookable',
     'freeAppointments' => 
     array (
-      'public' => 0,
-      'intern' => 691,
+      'public' => 12,
+      'intern' => 728,
       'type' => 'sum',
     ),
     'allAppointments' => 
@@ -583,11 +583,11 @@ return array (
     'year' => '2016',
     'month' => '05',
     'day' => '09',
-    'status' => 'full',
+    'status' => 'bookable',
     'freeAppointments' => 
     array (
-      'public' => 0,
-      'intern' => 1000,
+      'public' => 15,
+      'intern' => 1039,
       'type' => 'sum',
     ),
     'allAppointments' => 
@@ -602,11 +602,11 @@ return array (
     'year' => '2016',
     'month' => '05',
     'day' => '10',
-    'status' => 'full',
+    'status' => 'bookable',
     'freeAppointments' => 
     array (
-      'public' => 0,
-      'intern' => 960,
+      'public' => 19,
+      'intern' => 1004,
       'type' => 'sum',
     ),
     'allAppointments' => 
@@ -621,11 +621,11 @@ return array (
     'year' => '2016',
     'month' => '05',
     'day' => '11',
-    'status' => 'full',
+    'status' => 'bookable',
     'freeAppointments' => 
     array (
-      'public' => 0,
-      'intern' => 857,
+      'public' => 1,
+      'intern' => 886,
       'type' => 'sum',
     ),
     'allAppointments' => 
@@ -640,11 +640,11 @@ return array (
     'year' => '2016',
     'month' => '05',
     'day' => '12',
-    'status' => 'full',
+    'status' => 'bookable',
     'freeAppointments' => 
     array (
-      'public' => 0,
-      'intern' => 939,
+      'public' => 2,
+      'intern' => 989,
       'type' => 'sum',
     ),
     'allAppointments' => 
@@ -662,11 +662,11 @@ return array (
     'year' => '2016',
     'month' => '05',
     'day' => '13',
-    'status' => 'full',
+    'status' => 'bookable',
     'freeAppointments' => 
     array (
-      'public' => 0,
-      'intern' => 691,
+      'public' => 16,
+      'intern' => 776,
       'type' => 'sum',
     ),
     'allAppointments' => 
@@ -681,11 +681,11 @@ return array (
     'year' => '2016',
     'month' => '05',
     'day' => '17',
-    'status' => 'full',
+    'status' => 'bookable',
     'freeAppointments' => 
     array (
-      'public' => 0,
-      'intern' => 977,
+      'public' => 8,
+      'intern' => 1026,
       'type' => 'sum',
     ),
     'allAppointments' => 
@@ -700,11 +700,11 @@ return array (
     'year' => '2016',
     'month' => '05',
     'day' => '18',
-    'status' => 'full',
+    'status' => 'bookable',
     'freeAppointments' => 
     array (
-      'public' => 0,
-      'intern' => 874,
+      'public' => 2,
+      'intern' => 906,
       'type' => 'sum',
     ),
     'allAppointments' => 
@@ -719,11 +719,11 @@ return array (
     'year' => '2016',
     'month' => '05',
     'day' => '19',
-    'status' => 'full',
+    'status' => 'bookable',
     'freeAppointments' => 
     array (
-      'public' => 0,
-      'intern' => 1044,
+      'public' => 5,
+      'intern' => 1086,
       'type' => 'sum',
     ),
     'allAppointments' => 
@@ -741,11 +741,11 @@ return array (
     'year' => '2016',
     'month' => '05',
     'day' => '20',
-    'status' => 'full',
+    'status' => 'bookable',
     'freeAppointments' => 
     array (
-      'public' => 0,
-      'intern' => 838,
+      'public' => 8,
+      'intern' => 899,
       'type' => 'sum',
     ),
     'allAppointments' => 
@@ -760,11 +760,11 @@ return array (
     'year' => '2016',
     'month' => '05',
     'day' => '21',
-    'status' => 'full',
+    'status' => 'bookable',
     'freeAppointments' => 
     array (
-      'public' => 0,
-      'intern' => -3,
+      'public' => 8,
+      'intern' => 6,
       'type' => 'sum',
     ),
     'allAppointments' => 
@@ -779,11 +779,11 @@ return array (
     'year' => '2016',
     'month' => '05',
     'day' => '23',
-    'status' => 'full',
+    'status' => 'bookable',
     'freeAppointments' => 
     array (
-      'public' => 0,
-      'intern' => 1357,
+      'public' => 11,
+      'intern' => 1381,
       'type' => 'sum',
     ),
     'allAppointments' => 
@@ -801,8 +801,8 @@ return array (
     'status' => 'bookable',
     'freeAppointments' => 
     array (
-      'public' => 394,
-      'intern' => 1770,
+      'public' => 399,
+      'intern' => 1789,
       'type' => 'sum',
     ),
     'allAppointments' => 
@@ -820,8 +820,8 @@ return array (
     'status' => 'bookable',
     'freeAppointments' => 
     array (
-      'public' => 319,
-      'intern' => 1514,
+      'public' => 321,
+      'intern' => 1518,
       'type' => 'sum',
     ),
     'allAppointments' => 
@@ -839,8 +839,8 @@ return array (
     'status' => 'bookable',
     'freeAppointments' => 
     array (
-      'public' => 398,
-      'intern' => 1906,
+      'public' => 404,
+      'intern' => 1920,
       'type' => 'sum',
     ),
     'allAppointments' => 
@@ -861,8 +861,8 @@ return array (
     'status' => 'bookable',
     'freeAppointments' => 
     array (
-      'public' => 233,
-      'intern' => 341,
+      'public' => 272,
+      'intern' => 423,
       'type' => 'sum',
     ),
     'allAppointments' => 
@@ -880,8 +880,8 @@ return array (
     'status' => 'bookable',
     'freeAppointments' => 
     array (
-      'public' => 4,
-      'intern' => 26,
+      'public' => 30,
+      'intern' => 52,
       'type' => 'sum',
     ),
     'allAppointments' => 
@@ -899,8 +899,8 @@ return array (
     'status' => 'bookable',
     'freeAppointments' => 
     array (
-      'public' => 1378,
-      'intern' => 1697,
+      'public' => 1382,
+      'intern' => 1701,
       'type' => 'sum',
     ),
     'allAppointments' => 
