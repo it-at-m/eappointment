@@ -243,6 +243,12 @@ jobs:
             .
           echo "IMAGE_TAG=${TAG}" >> "$GITHUB_ENV"
 
+      - name: Validate PHP setup
+        run: |
+          docker run --rm -i "${{ env.IMAGE }}:${{ env.IMAGE_TAG }}" php -v
+          docker run --rm -i "${{ env.IMAGE }}:${{ env.IMAGE_TAG }}" php -m > modules.txt
+          grep -qx mbstring modules.txt
+
       - name: Push single-arch image to GHCR
         uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4
         with:
@@ -250,9 +256,3 @@ jobs:
           retry_wait_seconds: 30
           timeout_minutes: 10
           command: docker push "${{ env.IMAGE }}:${{ env.IMAGE_TAG }}"
-
-      - name: Validate PHP setup
-        run: |
-          docker run --rm -i "${{ env.IMAGE }}:${{ env.IMAGE_TAG }}" php -v
-          docker run --rm -i "${{ env.IMAGE }}:${{ env.IMAGE_TAG }}" php -m > modules.txt
-          grep -qx mbstring modules.txt

@@ -75,7 +75,7 @@ RUN docker-php-ext-configure calendar \
         --enable-intl \
     && set -e \
     && for ext in bcmath bz2 calendar gd gettext intl mbstring opcache pdo_mysql soap zip; do \
-        docker-php-ext-install -j"$(nproc)" "$ext"; \
+        docker-php-ext-install -j"$(nproc)" "$ext" || exit 1; \
     done \
     && rm -rf /usr/src/
 

@@ -7,7 +7,7 @@ ARG PHP_VERSION=8.6-apache-trixie
 FROM composer:2@sha256:4d71c3c2109c61d5415544264b59ad4087e4c5b7244481723664138fd36d5040 AS composer-image
 
 # Node/npm/npx (official multi-arch image; NodeSource apt can miss npm on some Debian/arch combos)
-FROM node:22-trixie@sha256:8433642fe11d391a7ff1f702352ac1b0ea3e378d3fb2c22de2b292036d79cd2c AS node-tools
+FROM node:22-trixie@sha256:c103d7b5aa3bf627c8b98db941d52556f04e0b5d9352b3d7b6391245d26620f8 AS node-tools
 
 # PIE replaces pecl, which the official PHP 8.6 images no longer ship.
 FROM ghcr.io/php/pie:bin@sha256:3fca03c16df842d02b654dc382db3756058d9c128064f57cace14f8728779ce9 AS pie
@@ -81,7 +81,7 @@ RUN apt-get update \
  && docker-php-ext-configure gd --with-freetype --with-jpeg \
  && set -e \
  && for ext in intl gd mbstring pdo pdo_mysql zip calendar; do \
-      docker-php-ext-install -j"$(nproc)" "$ext"; \
+      docker-php-ext-install -j"$(nproc)" "$ext" || exit 1; \
     done \
  && ln -sf /usr/bin/firefox-esr /usr/bin/firefox \
  && apt-get clean \
@@ -122,8 +122,8 @@ RUN set -euo pipefail; \
    && unzip -o /tmp/msedgedriver.zip -d /tmp \
    && mv /tmp/msedgedriver /usr/local/bin/msedgedriver \
    && chmod +x /usr/local/bin/msedgedriver \
-   && rm -f /tmp/msedgedriver.zip ; \
-      apt-get clean \
+   && rm -f /tmp/msedgedriver.zip \
+   && apt-get clean \
    && rm -rf /var/lib/apt/lists/* ; \
     elif [ "$ARCH" = "arm64" ]; then \
       mkdir -p /etc/apt/keyrings \

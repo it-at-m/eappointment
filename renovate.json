@@ -41,11 +41,18 @@
       "postUpdateOptions": ["composerWithAll"]
     },
     {
-      "description": "Stay on the PHP 8.4 and 8.6 base image tags. Refresh the digest only.",
+      "description": "Stay on the PHP 8.4 base image tags. Refresh the digest only.",
       "matchDatasources": ["docker"],
       "matchPackageNames": ["php"],
-      "matchFileNames": ["zmsbase/**"],
-      "allowedVersions": "/^8\\.(4|6)-(fpm|apache)-trixie$/"
+      "matchFileNames": ["zmsbase/php84/**"],
+      "allowedVersions": "/^8\\.4-(fpm|apache)-trixie$/"
+    },
+    {
+      "description": "Stay on the PHP 8.6 base image tags. Refresh the digest only.",
+      "matchDatasources": ["docker"],
+      "matchPackageNames": ["php"],
+      "matchFileNames": ["zmsbase/php86/**"],
+      "allowedVersions": "/^8\\.6-(fpm|apache)-trixie$/"
     },
     {
       "description": "Stay on the Node 22 Trixie tag in the PHP base image. Refresh the digest only.",
