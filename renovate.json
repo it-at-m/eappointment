@@ -2,8 +2,6 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": ["config:recommended"],
 
-  "ignorePaths": ["zmsbase/**"],
-
   "baseBranchPatterns": [
     "next",
     "/^release\\/.*/"
@@ -41,6 +39,27 @@
       "description": "Composer lockfile updates must be allowed to move locked transitive packages, such as sebastian/diff when PHPUnit is bumped.",
       "matchManagers": ["composer"],
       "postUpdateOptions": ["composerWithAll"]
+    },
+    {
+      "description": "Stay on the PHP 8.4 base image tags. Refresh the digest only.",
+      "matchDatasources": ["docker"],
+      "matchPackageNames": ["php"],
+      "matchFileNames": ["zmsbase/**"],
+      "allowedVersions": "/^8\\.4-(fpm|apache)-trixie$/"
+    },
+    {
+      "description": "Stay on the Node 22 Trixie tag in the PHP base image. Refresh the digest only.",
+      "matchDatasources": ["docker"],
+      "matchPackageNames": ["node"],
+      "matchFileNames": ["zmsbase/**"],
+      "allowedVersions": "/^22-trixie$/"
+    },
+    {
+      "description": "Stay on the Composer 2 tag in the PHP base image. Refresh the digest only.",
+      "matchDatasources": ["docker"],
+      "matchPackageNames": ["composer"],
+      "matchFileNames": ["zmsbase/**"],
+      "allowedVersions": "/^2$/"
     }
   ]
 }
