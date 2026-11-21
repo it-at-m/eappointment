@@ -185,6 +185,8 @@ updates:
     directories:
       - "/zmsbase/php84"
       - "/zmsbase/php84-local"
+      - "/zmsbase/php86"
+      - "/zmsbase/php86-local"
     schedule:
       interval: "daily"
       time: "04:00"

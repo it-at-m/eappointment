@@ -6,6 +6,16 @@ on:
     # GitHub Actions cron uses UTC. 03:00 UTC Monday ≈ 05:00 Europe/Berlin (CEST) / 04:00 (CET).
     - cron: "0 3 * * 1"
   workflow_dispatch:
+    inputs:
+      php_version:
+        description: PHP line to build. Schedule always builds every line.
+        required: true
+        default: all
+        type: choice
+        options:
+          - all
+          - "8.4"
+          - "8.6"
 
 permissions:
   contents: read
@@ -17,6 +27,7 @@ defaults:
 
 jobs:
   php_v8_4:
+    if: github.event_name == 'schedule' || github.event.inputs.php_version == 'all' || github.event.inputs.php_version == '8.4'
     runs-on: ubuntu-latest
     env:
       IMAGE: ghcr.io/it-at-m/eappointment/zmsbase
@@ -79,6 +90,7 @@ jobs:
           command: docker push "${{ env.IMAGE }}:${{ env.VERSION }}-dev"
 
   php_v8_4_local:
+    if: github.event_name == 'schedule' || github.event.inputs.php_version == 'all' || github.event.inputs.php_version == '8.4'
     strategy:
       fail-fast: false
       matrix:
@@ -126,3 +138,121 @@ jobs:
       - name: Validate PHP setup
         run: |
           docker run --rm -i "${{ env.IMAGE }}:${{ env.IMAGE_TAG }}" php -v
+
+  php_v8_6:
+    if: github.event_name == 'schedule' || github.event.inputs.php_version == 'all' || github.event.inputs.php_version == '8.6'
+    runs-on: ubuntu-latest
+    env:
+      IMAGE: ghcr.io/it-at-m/eappointment/zmsbase
+      VERSION: "8.6"
+      DOCKERFILE: php86/Dockerfile
+      XDEBUG_VERSION: "3.6.0alpha1"
+      COMPOSER_VERSION: "2"
+      GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Log in to GitHub Container Registry
+        run: echo "${{ env.GHCR_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+      - name: Pull existing image for cache (if any)
+        run: |
+          docker pull "${{ env.IMAGE }}:${{ env.VERSION }}-dev" || echo "No preexisting image found"
+
+      - name: Build base image
+        run: |
+          docker build --pull \
+            --build-arg XDEBUG_VERSION=${{ env.XDEBUG_VERSION }} \
+            --build-arg COMPOSER_VERSION=${{ env.COMPOSER_VERSION }} \
+            --target base \
+            -f "${{ env.DOCKERFILE }}" \
+            -t "${{ env.IMAGE }}:${{ env.VERSION }}-base" \
+            .
+
+      - name: Build dev image without cache
+        run: |
+          docker build --pull --no-cache \
+            --build-arg XDEBUG_VERSION=${{ env.XDEBUG_VERSION }} \
+            --build-arg COMPOSER_VERSION=${{ env.COMPOSER_VERSION }} \
+            --target dev \
+            -f "${{ env.DOCKERFILE }}" \
+            -t "${{ env.IMAGE }}:${{ env.VERSION }}-dev" \
+            .
+
+      - name: Validate PHP setup
+        run: |
+          docker run --rm -i "${{ env.IMAGE }}:${{ env.VERSION }}-dev" php-fpm -t
+          docker run --rm -i "${{ env.IMAGE }}:${{ env.VERSION }}-dev" php -m > modules.txt
+          grep -qx mbstring modules.txt
+
+      - name: Push base image to GHCR
+        uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4
+        with:
+          max_attempts: 5
+          retry_wait_seconds: 30
+          timeout_minutes: 10
+          command: docker push "${{ env.IMAGE }}:${{ env.VERSION }}-base"
+
+      - name: Push dev image to GHCR
+        uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4
+        with:
+          max_attempts: 5
+          retry_wait_seconds: 30
+          timeout_minutes: 10
+          command: docker push "${{ env.IMAGE }}:${{ env.VERSION }}-dev"
+
+  php_v8_6_local:
+    if: github.event_name == 'schedule' || github.event.inputs.php_version == 'all' || github.event.inputs.php_version == '8.6'
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: ubuntu-latest
+            platform: linux/amd64
+            tag_suffix: amd64
+          - runner: ubuntu-24.04-arm
+            platform: linux/arm64
+            tag_suffix: arm64
+    runs-on: ${{ matrix.runner }}
+    env:
+      IMAGE: ghcr.io/it-at-m/eappointment/zmsbase
+      VERSION_BASE: "8.6-local"
+      DOCKERFILE: php86-local/Dockerfile
+      GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Log in to GitHub Container Registry
+        run: echo "${{ env.GHCR_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+      - name: Build single-arch image
+        run: |
+          TAG="${{ env.VERSION_BASE }}-${{ matrix.tag_suffix }}"
+          docker build --pull --no-cache \
+            --platform "${{ matrix.platform }}" \
+            -f "${{ env.DOCKERFILE }}" \
+            -t "${{ env.IMAGE }}:${TAG}" \
+            .
+          echo "IMAGE_TAG=${TAG}" >> "$GITHUB_ENV"
+
+      - name: Push single-arch image to GHCR
+        uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4
+        with:
+          max_attempts: 5
+          retry_wait_seconds: 30
+          timeout_minutes: 10
+          command: docker push "${{ env.IMAGE }}:${{ env.IMAGE_TAG }}"
+
+      - name: Validate PHP setup
+        run: |
+          docker run --rm -i "${{ env.IMAGE }}:${{ env.IMAGE_TAG }}" php -v
+          docker run --rm -i "${{ env.IMAGE }}:${{ env.IMAGE_TAG }}" php -m > modules.txt
+          grep -qx mbstring modules.txt
