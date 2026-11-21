@@ -1,6 +1,7 @@
 import BaseView from "../../lib/baseview"
 import moment from 'moment'
 import { parseJsonText } from "../../lib/utils"
+import { mountScopeMenu } from "./scopeMenu"
 
 class View extends BaseView {
 
@@ -100,6 +101,10 @@ class View extends BaseView {
         }
         
         this.updateSelectAllButton();
+        const scopeMenuSelect = scopeSelect.get(0);
+        if (scopeMenuSelect && this.$main.find('[data-scope-menu]').length) {
+            mountScopeMenu(scopeMenuSelect, { multiple: true });
+        }
     }
 
     initializeDateFields() {
@@ -379,17 +384,16 @@ class View extends BaseView {
     }
 
     toggleSelectAll() {
-        const scopeSelect = this.$main.find('#scope-select');
-        const allOptions = scopeSelect.find('option');
-        const selectedOptions = scopeSelect.find('option:selected');
-        
-        if (selectedOptions.length === allOptions.length) {
-            allOptions.prop('selected', false);
-        } else {
-            allOptions.prop('selected', true);
+        const select = this.$main.find('#scope-select').get(0);
+        if (!select || !select.options.length) {
+            return;
         }
-        
-        this.updateSelectAllButton();
+        const options = Array.from(select.options);
+        const allSelected = options.every((option) => option.selected);
+        options.forEach((option) => {
+            option.selected = !allSelected;
+        });
+        select.dispatchEvent(new Event('change', { bubbles: true }));
     }
 
     updateSelectAllButton() {
@@ -398,7 +402,7 @@ class View extends BaseView {
         const selectedOptions = scopeSelect.find('option:selected');
         const button = this.$main.find('#select-all-scopes');
         
-        if (selectedOptions.length === allOptions.length) {
+        if (allOptions.length > 0 && selectedOptions.length === allOptions.length) {
             button.attr('title', 'Alle abwählen');
             button.find('i').removeClass('fa-check-double').addClass('fa-times');
         } else {

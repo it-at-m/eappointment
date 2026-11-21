@@ -5,8 +5,10 @@
     'scopeSelectToggleId': 'select-all-scopes',
     'scopeSelectHelpId': 'help_scope-select',
     'scopeSelectDescription':
-        'Halten Sie <strong>Strg</strong> gedrückt '
-        ~ 'für Mehrfachauswahl.',
+        workstation.useraccount.permissions.superuser|default(false)
+            ? 'Öffnen Sie die Liste und suchen Sie nach Name oder Id. Ein Klick wählt einen Standort aus oder ab.'
+            : 'Halten Sie <strong>Strg</strong> gedrückt '
+                ~ 'für Mehrfachauswahl.',
     'scopeSelectOptions': scopeOptions,
     'scopeSelectSelectedValues':
         selectedScopeIds|default([]),
@@ -16,5 +18,7 @@
     'scopeSelectSize': 8,
     'scopeSelectAccessKey': 's',
     'scopeSelectClass':
-        'overall-calendar-location-selector'
+        'overall-calendar-location-selector',
+    'scopeSelectSearchable':
+        workstation.useraccount.permissions.superuser|default(false)
 } only %}
