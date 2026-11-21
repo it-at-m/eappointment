@@ -72,27 +72,12 @@ RUN docker-php-ext-configure calendar \
         --enable-intl \
     && docker-php-ext-configure mbstring \
         --disable-mbregex \
-    && docker-php-ext-install -j"$(nproc)" \
-        bcmath \
-        bz2 \
-        calendar \
-        #exif \
-        gd \
-        #gmp \
-        gettext \
-        intl \
-        mbstring \
-        #mysqli \
-        opcache \
-        #pcntl \
-        pdo_mysql \
-        #pdo_pgsql \
-        #pspell \
-        soap \
-        #sockets \
-        #tidy \
-        #xsl \
-        zip \
+    # Install one extension at a time. PHP 8.6 images are ZTS, and
+    # docker-php-ext-install -j across several extensions races at
+    # install-modules (cp: cannot stat 'modules/*').
+    && for ext in bcmath bz2 calendar gd gettext intl mbstring opcache pdo_mysql soap zip; do \
+        docker-php-ext-install -j"$(nproc)" "$ext"; \
+    done \
     && rm -rf /usr/src/
 
 FROM base AS dev

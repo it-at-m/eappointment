@@ -46,12 +46,10 @@ RUN ln -snf "/usr/share/zoneinfo/${TZ}" /etc/localtime \
 # --------------------------------------------------
 # System dependencies + PHP extensions
 # --------------------------------------------------
-# ATAF 0.3.4 ships Selenium 4.46, which speaks Chrome DevTools protocol 148-150.
-# Debian security ships a newer Chromium (153). That mismatch makes ChromeDriver
-# time out with "Timed out receiving message from renderer" on the first navigation.
-# Hold this pin until ATAF moves to a Selenium release that speaks a newer protocol.
-# Same version as .github/workflows/zmsautomation-workflow.yaml.
-ARG CHROMIUM_VERSION=150.0.7871.181-1~deb13u1
+# 8.4-local pins Chromium 150 so it matches Selenium 4.46. That package is no
+# longer in Trixie. 8.6-local is not the automation image, so pin the Chromium
+# Trixie publishes now.
+ARG CHROMIUM_VERSION=156.0.8078.79-1~deb13u1
 RUN apt-get update \
  && apt-get install -y --no-install-recommends --allow-downgrades \
       ca-certificates \
@@ -82,14 +80,9 @@ RUN apt-get update \
  && apt-mark hold chromium chromium-driver chromium-common \
  && docker-php-ext-configure gd --with-freetype --with-jpeg \
  && docker-php-ext-configure mbstring --disable-mbregex \
- && docker-php-ext-install -j"$(nproc)" \
-      intl \
-      gd \
-      mbstring \
-      pdo \
-      pdo_mysql \
-      zip \
-      calendar \
+ && for ext in intl gd mbstring pdo pdo_mysql zip calendar; do \
+      docker-php-ext-install -j"$(nproc)" "$ext"; \
+    done \
  && ln -sf /usr/bin/firefox-esr /usr/bin/firefox \
  && apt-get clean \
  && rm -rf /var/lib/apt/lists/*
