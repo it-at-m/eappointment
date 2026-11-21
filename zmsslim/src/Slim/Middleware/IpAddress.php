@@ -7,10 +7,11 @@
 
 namespace BO\Slim\Middleware;
 
-use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Server\RequestHandlerInterface;
 use BO\Slim\Factory\ResponseFactory;
+use BO\Slim\Helper\ClientIp;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Server\RequestHandlerInterface;
 
 class IpAddress
 {
@@ -29,7 +30,7 @@ class IpAddress
      *
      * If not empty, then one of these IP addresses must be in $_SERVER['REMOTE_ADDR']
      * in order for the proxy headers to be looked at.
-     * If TRUE then trust every proxy
+     * If TRUE, trust only a platform proxy: loopback, a private address, or TRUSTED_PROXIES.
      *
      * @var array|true
      */
@@ -48,18 +49,14 @@ class IpAddress
      * @var array
      */
     protected array $headersToInspect = [
-        'X-Remote-Ip',
         'X-Forwarded-For',
-        'X-Forwarded',
-        'X-Cluster-Client-Ip',
-        'Client-Ip',
     ];
 
     /**
      * Constructor
      *
      * @param bool $checkProxyHeaders Whether to use proxy headers to determine client IP
-     * @param mixed $trustedProxies   List of IP addresses of trusted proxies or TRUE if all proxies should be trusted
+     * @param mixed $trustedProxies   List of proxy addresses, or TRUE for loopback, private, and TRUSTED_PROXIES
      * @param string|null $attributeName   Name of attribute added to ServerRequest object
      * @param array $headersToInspect List of headers to inspect
      */
@@ -117,17 +114,11 @@ class IpAddress
             $ipAddress = $serverParams['REMOTE_ADDR'];
         }
 
-        if ($this->isCheckProxyHeaders($ipAddress)) {
-            foreach ($this->headersToInspect as $header) {
-                if ($request->hasHeader($header)) {
-                    $headerIp = current(explode(',', $request->getHeaderLine($header)));
-                    $ipString = trim($headerIp);
-                    if ($this->isValidIpAddress($ipString)) {
-                        $ipAddress = $ipString;
-                        break;
-                    }
-                }
-            }
+        if ($ipAddress !== null && $this->isCheckProxyHeaders($ipAddress) && $this->inspectsForwardedFor()) {
+            $forwarded = $request->hasHeader('X-Forwarded-For')
+                ? $request->getHeaderLine('X-Forwarded-For')
+                : null;
+            $ipAddress = ClientIp::appendedByTrustedProxy($ipAddress, $forwarded);
         }
 
         return $ipAddress;
@@ -135,16 +126,20 @@ class IpAddress
 
     protected function isCheckProxyHeaders(?string $ipAddress): bool
     {
-        $checkProxyHeaders = $this->checkProxyHeaders;
-        if ($checkProxyHeaders && ($this->trustedProxies === true || $this->trustedProxies !== [])) {
-            if (
-                $this->trustedProxies !== true
-                && !in_array($ipAddress, $this->trustedProxies, true)
-            ) {
-                $checkProxyHeaders = false;
-            }
+        if (!$this->checkProxyHeaders || $ipAddress === null) {
+            return false;
         }
-        return $checkProxyHeaders;
+
+        if ($this->trustedProxies === true || $this->trustedProxies === []) {
+            return ClientIp::isTrustedProxy($ipAddress);
+        }
+
+        return in_array($ipAddress, $this->trustedProxies, true);
+    }
+
+    private function inspectsForwardedFor(): bool
+    {
+        return in_array('X-Forwarded-For', $this->headersToInspect, true);
     }
 
     /**
