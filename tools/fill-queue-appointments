@@ -1,0 +1,1543 @@
+#!/usr/bin/env python3
+"""
+Fill ZMS queues with mock walk-ins and timed appointments (via zmsapi).
+
+Hard limits: 700 processes per scope, 2800 per cluster.
+Timed appointments: only slots at/after now (Europe/Berlin); never past slots.
+
+Env / CLI — see --help. Local only.
+"""
+
+from __future__ import annotations
+
+import argparse
+import json
+import os
+import random
+import ssl
+import sys
+import time
+import urllib.error
+import urllib.parse
+import urllib.request
+from dataclasses import dataclass, field
+from datetime import date, datetime, timedelta, timezone
+from typing import Any
+
+try:
+    from zoneinfo import ZoneInfo
+
+    BERLIN_TIMEZONE = ZoneInfo("Europe/Berlin")
+except Exception:  # pragma: no cover - minimal images without tzdata
+    BERLIN_TIMEZONE = timezone(timedelta(hours=1))
+
+
+# ---------------------------------------------------------------------------
+# Limits
+# ---------------------------------------------------------------------------
+
+MAX_PROCESSES_PER_SCOPE = 700
+MAX_PROCESSES_PER_CLUSTER = 2800
+PAUSE_BETWEEN_REQUESTS_SECONDS = 0.15
+MAX_SLOT_RESERVE_ATTEMPTS = 8
+HTTP_TIMEOUT_SECONDS = 120
+LOADTEST_CUSTOMER_EMAIL = "test@muenchen.de"
+
+# ~1/4 of processes try a combinable multi-service bundle; rest are random singles.
+DEFAULT_COMBINABLE_SHARE = 0.25
+# Among combinable attempts: most 2×, some 3×, few 4×, rare 5× (if graph allows).
+BUNDLE_SIZE_WEIGHTS = (
+    (2, 55),
+    (3, 28),
+    (4, 12),
+    (5, 5),
+)
+# If DLDB combinable graph has no same-scope edges, still build multi-service
+# bundles from any requests offered at the scope (admin/intern path allows this).
+DEFAULT_SAME_SCOPE_BUNDLE_FALLBACK = True
+
+LOCAL_API_HOSTS = frozenset({"127.0.0.1", "localhost", "web"})
+
+
+# ---------------------------------------------------------------------------
+# Errors & logging
+# ---------------------------------------------------------------------------
+
+
+class ZmsApiError(RuntimeError):
+    """HTTP or logical failure talking to zmsapi."""
+
+    def __init__(self, message: str, status_code: int = 0, response_body: str = ""):
+        super().__init__(message)
+        self.status_code = status_code
+        self.response_body = response_body
+
+
+def print_log(message: str) -> None:
+    print(message, flush=True)
+
+
+class Environment:
+    """Read FILL_* / CI env vars for the CLI defaults."""
+
+    @staticmethod
+    def flag(name: str) -> bool:
+        return os.environ.get(name, "").lower() in {"1", "true", "yes"}
+
+    @staticmethod
+    def int(name: str, default: int) -> int:
+        return int(os.environ.get(name, str(default)) or default)
+
+    @staticmethod
+    def float(name: str, default: float) -> float:
+        return float(os.environ.get(name, str(default)) or default)
+
+
+# ---------------------------------------------------------------------------
+# Europe/Berlin time (ZMS / ATAF appointment clock)
+# ---------------------------------------------------------------------------
+
+
+class BerlinTime:
+    """
+    Wall-clock helpers in Europe/Berlin — same timezone ZMS uses for openings
+    and slots (cf. ATAF BerlinTime). Not a general calendar library.
+    """
+
+    @staticmethod
+    def now() -> datetime:
+        return datetime.now(BERLIN_TIMEZONE)
+
+    @classmethod
+    def parse_day(cls, value: str) -> date:
+        if not value or value.lower() == "today":
+            return cls.now().date()
+        return date.fromisoformat(value)
+
+    @staticmethod
+    def start_of_day(day: date) -> datetime:
+        return datetime(day.year, day.month, day.day, tzinfo=BERLIN_TIMEZONE)
+
+    @classmethod
+    def earliest_bookable_epoch(cls, day: date) -> int:
+        """First bookable unix time on that day (never before “now” on today)."""
+        now = cls.now()
+        if day < now.date():
+            raise SystemExit(f"Refusing day {day}: it is in the past")
+        if day > now.date():
+            return int(cls.start_of_day(day).timestamp())
+
+        # Same-day: round to current minute (ATAF-style), never book past slots.
+        epoch = int(now.timestamp())
+        current_minute = epoch - (epoch % 60)
+        if epoch % 60 <= 40:
+            return current_minute
+        return current_minute + 60
+
+    @classmethod
+    def end_of_day_epoch(cls, day: date) -> int:
+        return int((cls.start_of_day(day) + timedelta(days=1)).timestamp())
+
+def appointment_start_epoch(process: dict[str, Any]) -> int:
+    """Unix epoch of the first appointment on a free/reserved process."""
+    appointments = process.get("appointments") or [{}]
+    try:
+        return int((appointments[0] or {}).get("date") or 0)
+    except (TypeError, ValueError, IndexError):
+        return 0
+
+
+def mock_customer(family_name: str) -> dict[str, Any]:
+    return {
+        "familyName": family_name,
+        "email": LOADTEST_CUSTOMER_EMAIL,
+        "surveyAccepted": 1,
+    }
+
+
+# ---------------------------------------------------------------------------
+# zmsapi HTTP client
+# ---------------------------------------------------------------------------
+
+
+class ZmsApiClient:
+    """Thin client for the workstation / process endpoints we need to fill queues."""
+
+    def __init__(self, base_url: str, verify_tls: bool = True):
+        self.base_url = base_url.rstrip("/") + "/"
+        self.auth_key: str | None = None
+        self.workstation_scope_id: int | None = None
+        self._ssl_context = ssl.create_default_context()
+        if not verify_tls:
+            self._ssl_context.check_hostname = False
+            self._ssl_context.verify_mode = ssl.CERT_NONE
+
+    def _extract_data(self, payload: Any) -> Any:
+        if isinstance(payload, dict):
+            return payload.get("data")
+        return None
+
+    def _request(
+        self,
+        method: str,
+        path: str,
+        body: Any = None,
+        query: dict[str, Any] | None = None,
+        use_auth: bool = True,
+    ) -> tuple[int, Any]:
+        url = urllib.parse.urljoin(self.base_url, path.lstrip("/"))
+        if query:
+            separator = "&" if "?" in url else "?"
+            filtered = {key: value for key, value in query.items() if value is not None}
+            url += separator + urllib.parse.urlencode(filtered)
+
+        raw_body = None
+        headers = {"Accept": "application/json"}
+        if body is not None:
+            raw_body = json.dumps(body).encode("utf-8")
+            headers["Content-Type"] = "application/json"
+        if use_auth:
+            if not self.auth_key:
+                raise ZmsApiError("Not logged in")
+            headers["X-AuthKey"] = self.auth_key
+
+        request = urllib.request.Request(
+            url, data=raw_body, headers=headers, method=method
+        )
+        try:
+            with urllib.request.urlopen(
+                request, context=self._ssl_context, timeout=HTTP_TIMEOUT_SECONDS
+            ) as response:
+                raw = response.read().decode("utf-8", errors="replace")
+                status_code = response.getcode()
+        except urllib.error.HTTPError as error:
+            raw = error.read().decode("utf-8", errors="replace")
+            raise ZmsApiError(
+                f"{method} {path} -> HTTP {error.code}",
+                status_code=error.code,
+                response_body=raw[:2000],
+            ) from error
+        except urllib.error.URLError as error:
+            raise ZmsApiError(f"{method} {path} failed: {error}") from error
+
+        try:
+            parsed = json.loads(raw) if raw else None
+        except json.JSONDecodeError:
+            parsed = raw
+        return status_code, parsed
+
+    def _require_http_ok(self, status_code: int, payload: Any, message: str) -> Any:
+        if status_code != 200:
+            raise ZmsApiError(
+                message, status_code=status_code, response_body=str(payload)[:1000]
+            )
+        return self._extract_data(payload)
+
+    # -- auth / workstation -------------------------------------------------
+
+    def login_with_password(self, username: str, password: str) -> None:
+        """
+        Local password login (same as admin UI form).
+        Use the exact login name.
+        """
+        login_name = username.strip()
+        status_code, payload = self._request(
+            "POST",
+            "/workstation/login/",
+            body={
+                "id": login_name,
+                "password": password,
+                "departments": [{"id": 0}],
+            },
+            use_auth=False,
+        )
+        if status_code < 200 or status_code >= 300:
+            raise ZmsApiError(
+                f"login as {login_name!r} failed HTTP {status_code} "
+                f"(plaintext password; id must match the UI login name exactly)",
+                status_code=status_code,
+                response_body=str(payload)[:1000],
+            )
+        workstation = self._extract_data(payload) or {}
+        auth_key = workstation.get("authkey") or workstation.get("authKey")
+        if not auth_key:
+            raise ZmsApiError(
+                "login ok but no authkey in response",
+                response_body=str(payload)[:1000],
+            )
+        self.auth_key = auth_key
+        print_log(f"Logged in as {login_name}")
+
+    def assign_workstation_to_scope(
+        self, scope_id: int, counter_name: str = "fill"
+    ) -> None:
+        status_code, payload = self._request(
+            "GET", "/workstation/", query={"resolveReferences": 2}
+        )
+        workstation = self._require_http_ok(
+            status_code, payload, f"GET /workstation/ -> {status_code}"
+        ) or {}
+
+        workstation["name"] = counter_name
+        scope = workstation.get("scope")
+        if not isinstance(scope, dict):
+            scope = {}
+        scope["id"] = scope_id
+        workstation["scope"] = scope
+
+        useraccount = workstation.get("useraccount")
+        if isinstance(useraccount, dict):
+            useraccount.pop("departments", None)
+
+        status_code, payload = self._request("POST", "/workstation/", body=workstation)
+        self._require_http_ok(
+            status_code,
+            payload,
+            f"POST /workstation/ scope={scope_id} -> {status_code}",
+        )
+        self.workstation_scope_id = scope_id
+
+    # -- lookups ------------------------------------------------------------
+
+    def list_scope_ids_in_cluster(self, cluster_id: int) -> list[int]:
+        status_code, payload = self._request(
+            "GET", f"/cluster/{cluster_id}/", query={"resolveReferences": 1}
+        )
+        cluster = self._require_http_ok(
+            status_code, payload, f"GET /cluster/{cluster_id}/ -> {status_code}"
+        ) or {}
+        scopes = cluster.get("scopes") or []
+        scope_ids = [
+            int(scope["id"])
+            for scope in scopes
+            if isinstance(scope, dict) and scope.get("id")
+        ]
+        if not scope_ids:
+            raise ZmsApiError(
+                f"cluster {cluster_id} has no scopes",
+                response_body=str(payload)[:1000],
+            )
+        return scope_ids
+
+    def list_scope_requests(self, scope_id: int) -> list[dict[str, Any]]:
+        status_code, payload = self._request(
+            "GET",
+            f"/scope/{scope_id}/request/",
+            query={"resolveReferences": 1},
+        )
+        requests = self._require_http_ok(
+            status_code, payload, f"GET /scope/{scope_id}/request/ -> {status_code}"
+        )
+        if not isinstance(requests, list) or not requests:
+            raise ZmsApiError(f"scope {scope_id} has no requests")
+        return [request for request in requests if isinstance(request, dict)]
+
+    def find_service_request(
+        self, scope_id: int, service_name: str | None
+    ) -> dict[str, Any]:
+        requests = self.list_scope_requests(scope_id)
+        if not service_name:
+            return requests[0]
+
+        needle = service_name.lower()
+        exact_match = next(
+            (
+                request
+                for request in requests
+                if str(request.get("name", "")).lower() == needle
+            ),
+            None,
+        )
+        if exact_match:
+            return exact_match
+
+        partial_matches = sorted(
+            (
+                request
+                for request in requests
+                if needle in str(request.get("name", "")).lower()
+            ),
+            key=lambda request: len(str(request.get("name", ""))),
+        )
+        if partial_matches:
+            print_log(
+                f"scope {scope_id}: matched request "
+                f"'{partial_matches[0].get('name')}' for '{service_name}'"
+            )
+            return partial_matches[0]
+
+        print_log(
+            f"scope {scope_id}: '{service_name}' not found; "
+            f"using '{requests[0].get('name')}'"
+        )
+        return requests[0]
+
+    def list_free_appointment_slots(
+        self,
+        scope_id: int,
+        service_requests: list[dict[str, Any]],
+        day: date,
+        earliest_epoch: int,
+    ) -> list[dict[str, Any]]:
+        calendar = {
+            "firstDay": {"year": day.year, "month": day.month, "day": day.day},
+            "lastDay": {"year": day.year, "month": day.month, "day": day.day},
+            "scopes": [{"id": scope_id}],
+            "requests": list(service_requests),
+        }
+        status_code, payload = self._request(
+            "POST",
+            "/process/status/free/",
+            body=calendar,
+            query={"slotType": "intern", "slotsRequired": 0},
+        )
+        free_list = self._require_http_ok(
+            status_code,
+            payload,
+            f"POST /process/status/free/ scope={scope_id} -> {status_code}",
+        )
+        if not isinstance(free_list, list):
+            return []
+
+        day_end = BerlinTime.end_of_day_epoch(day)
+        slots = [
+            process
+            for process in free_list
+            if isinstance(process, dict)
+            and earliest_epoch <= appointment_start_epoch(process) <= day_end
+        ]
+        slots.sort(key=appointment_start_epoch)
+        return slots
+
+    # -- create processes ---------------------------------------------------
+
+    def create_walk_in_customer(
+        self,
+        scope_id: int,
+        service_requests: list[dict[str, Any]],
+        family_name: str,
+        amendment: str,
+        dry_run: bool,
+    ) -> int | None:
+        if dry_run:
+            return None
+        process = {
+            "status": "queued",
+            "amendment": amendment,
+            "scope": {"id": scope_id},
+            "appointments": [{"scope": {"id": scope_id}, "date": 0}],
+            "requests": list(service_requests),
+            "clients": [mock_customer(family_name)],
+        }
+        status_code, payload = self._request(
+            "POST", "/workstation/process/waitingnumber/", body=process
+        )
+        created = self._require_http_ok(
+            status_code, payload, f"walk-in scope={scope_id} -> {status_code}"
+        ) or {}
+        return int(created.get("id") or 0) or None
+
+    def reserve_and_confirm_appointment(
+        self,
+        scope_id: int,
+        service_requests: list[dict[str, Any]],
+        free_slot_process: dict[str, Any],
+        family_name: str,
+        dry_run: bool,
+    ) -> int | None:
+        """Reserve + confirm one free slot. Returns process id, or None if raced."""
+        if dry_run:
+            return None
+
+        process = dict(free_slot_process)
+        process["requests"] = list(service_requests)
+        process["clients"] = [mock_customer(family_name)]
+
+        try:
+            status_code, payload = self._request(
+                "POST",
+                "/process/status/reserved/",
+                body=process,
+                query={"slotType": "intern", "clientkey": "", "slotsRequired": 0},
+            )
+        except ZmsApiError as error:
+            # _request raises on HTTP 404, so a lost race never returns a status code.
+            if error.status_code == 404:
+                return None
+            raise
+        reserved = self._require_http_ok(
+            status_code, payload, f"reserve scope={scope_id} -> {status_code}"
+        )
+        if not reserved:
+            return None
+
+        status_code, payload = self._request(
+            "POST", "/process/status/confirmed/", body=reserved
+        )
+        confirmed = self._require_http_ok(
+            status_code, payload, f"confirm scope={scope_id} -> {status_code}"
+        ) or {}
+        return int(confirmed.get("id") or 0) or None
+
+    # -- list / delete (queue wipe) -----------------------------------------
+
+    def list_processes_for_day(self, scope_id: int, day: date) -> list[dict[str, Any]]:
+        day_path = day.isoformat()
+        status_code, payload = self._request(
+            "GET", f"/scope/{scope_id}/process/{day_path}/"
+        )
+        data = self._require_http_ok(
+            status_code,
+            payload,
+            f"GET /scope/{scope_id}/process/{day_path}/ -> {status_code}",
+        )
+        if not isinstance(data, list):
+            return []
+        return [process for process in data if isinstance(process, dict)]
+
+    def list_processes_by_status(
+        self, scope_id: int, status: str
+    ) -> list[dict[str, Any]]:
+        status_code, payload = self._request(
+            "GET", f"/scope/{scope_id}/process/status/{status}/"
+        )
+        data = self._require_http_ok(
+            status_code,
+            payload,
+            f"GET /scope/{scope_id}/process/status/{status}/ -> {status_code}",
+        )
+        if not isinstance(data, list):
+            return []
+        return [process for process in data if isinstance(process, dict)]
+
+    def delete_process(self, process_id: int, dry_run: bool) -> bool:
+        """Admin quick-delete (DELETE /process/{id}/). Skips called/processing."""
+        if dry_run:
+            return True
+        if process_id <= 0:
+            return True
+        try:
+            status_code, payload = self._request(
+                "DELETE",
+                f"/process/{process_id}/",
+                query={"initiator": "fill-queue-wipe"},
+            )
+        except ZmsApiError as error:
+            # Already gone is fine; other failures (called/processing) bubble up.
+            if error.status_code == 404:
+                return True
+            raise
+        if status_code == 200:
+            return True
+        raise ZmsApiError(
+            f"DELETE /process/{process_id}/ -> {status_code}",
+            status_code=status_code,
+            response_body=str(payload)[:1000],
+        )
+
+
+# ---------------------------------------------------------------------------
+# Service mix (random singles + combinable bundles)
+# ---------------------------------------------------------------------------
+
+
+def request_id(request: dict[str, Any]) -> str:
+    value = request.get("id")
+    return "" if value is None else str(value)
+
+
+def request_data_object(request: dict[str, Any]) -> dict[str, Any]:
+    """Normalize request.data (object or JSON string from API)."""
+    data = request.get("data")
+    if isinstance(data, dict):
+        return data
+    if isinstance(data, str) and data.strip():
+        try:
+            parsed = json.loads(data)
+        except json.JSONDecodeError:
+            return {}
+        if isinstance(parsed, dict):
+            return parsed
+    return {}
+
+
+def request_combinable_ids(request: dict[str, Any]) -> set[str]:
+    """DLDB `data.combinable` service ids (may include self)."""
+    data = request_data_object(request)
+    raw = data.get("combinable") or []
+    ids: set[str] = set()
+    if not isinstance(raw, list):
+        return ids
+    for entry in raw:
+        if isinstance(entry, dict):
+            entry = entry.get("id")
+        if entry is not None and str(entry) != "":
+            ids.add(str(entry))
+    return ids
+
+
+def service_names(service_requests: list[dict[str, Any]]) -> str:
+    return " + ".join(
+        str(request.get("name") or request_id(request)) for request in service_requests
+    )
+
+
+class ServiceMixPicker:
+    """
+    Pick services for each process:
+    - ~75% random single service from the scope
+    - ~25% multi-service (2× mostly, then 3× / 4× / rare 5×)
+      Prefer DLDB data.combinable partners that are also on this scope.
+      If that graph is empty, optionally fall back to any same-scope mix
+      (admin walk-in / intern booking still accepts multiple requests).
+    Fixed --service-name disables mixing (always that one request).
+    """
+
+    def __init__(
+        self,
+        scope_requests: list[dict[str, Any]],
+        *,
+        fixed_request: dict[str, Any] | None = None,
+        mix_services: bool = True,
+        combinable_share: float = DEFAULT_COMBINABLE_SHARE,
+        same_scope_bundle_fallback: bool = DEFAULT_SAME_SCOPE_BUNDLE_FALLBACK,
+        rng: random.Random | None = None,
+    ):
+        self.scope_requests = list(scope_requests)
+        self.fixed_request = fixed_request
+        self.mix_services = mix_services and fixed_request is None
+        self.combinable_share = max(0.0, min(1.0, combinable_share))
+        self.same_scope_bundle_fallback = same_scope_bundle_fallback
+        self.rng = rng or random.Random()
+        self.by_id = {
+            request_id(request): request
+            for request in self.scope_requests
+            if request_id(request)
+        }
+        self.neighbors = self._build_combinable_graph()
+        self.dldb_edge_count = sum(len(peers) for peers in self.neighbors.values()) // 2
+        self.use_same_scope_fallback = (
+            self.same_scope_bundle_fallback
+            and self.dldb_edge_count == 0
+            and len(self.scope_requests) >= 2
+        )
+        with_combinable_field = sum(
+            1 for request in self.scope_requests if request_combinable_ids(request)
+        )
+        print_log(
+            f"service mix: {len(self.scope_requests)} requests, "
+            f"{with_combinable_field} with data.combinable, "
+            f"{self.dldb_edge_count} same-scope DLDB edges, "
+            f"fallback_same_scope={self.use_same_scope_fallback}, "
+            f"mix={self.mix_services}, combinable_share={self.combinable_share}"
+        )
+        if self.mix_services and self.dldb_edge_count == 0:
+            if self.use_same_scope_fallback:
+                print_log(
+                    "No DLDB combinable partners share this scope; "
+                    "using random same-scope multi-service bundles instead"
+                )
+            else:
+                print_log(
+                    "No DLDB combinable partners share this scope; "
+                    "multi-service bundles disabled "
+                    "(enable same-scope fallback or pick another scope)"
+                )
+
+    def _build_combinable_graph(self) -> dict[str, set[str]]:
+        graph: dict[str, set[str]] = {rid: set() for rid in self.by_id}
+        for rid, request in self.by_id.items():
+            for other in request_combinable_ids(request):
+                if other != rid and other in self.by_id:
+                    graph[rid].add(other)
+                    graph[other].add(rid)
+        return graph
+
+    def pick(self) -> list[dict[str, Any]]:
+        if self.fixed_request is not None:
+            return [self.fixed_request]
+        if not self.scope_requests:
+            raise ZmsApiError("no scope requests to pick from")
+        if not self.mix_services or len(self.scope_requests) == 1:
+            return [self.rng.choice(self.scope_requests)]
+
+        if self.rng.random() < self.combinable_share:
+            bundle = self._pick_multi_service_bundle()
+            if len(bundle) >= 2:
+                return bundle
+        return [self.rng.choice(self.scope_requests)]
+
+    def _pick_bundle_size(self) -> int:
+        sizes = [size for size, _weight in BUNDLE_SIZE_WEIGHTS]
+        weights = [weight for _size, weight in BUNDLE_SIZE_WEIGHTS]
+        return self.rng.choices(sizes, weights=weights, k=1)[0]
+
+    def _pick_multi_service_bundle(self) -> list[dict[str, Any]]:
+        if self.dldb_edge_count > 0:
+            bundle = self._pick_dldb_combinable_bundle()
+            if len(bundle) >= 2:
+                return bundle
+        if self.use_same_scope_fallback:
+            return self._pick_same_scope_bundle()
+        return []
+
+    def _pick_dldb_combinable_bundle(self) -> list[dict[str, Any]]:
+        """Grow a clique-ish bundle via DLDB neighbor intersection."""
+        target_size = self._pick_bundle_size()
+        seeds = [rid for rid, peers in self.neighbors.items() if peers]
+        if not seeds:
+            return []
+
+        for size in range(target_size, 1, -1):
+            for _ in range(12):
+                seed = self.rng.choice(seeds)
+                bundle_ids = [seed]
+                candidates = set(self.neighbors[seed])
+                while len(bundle_ids) < size and candidates:
+                    nxt = self.rng.choice(sorted(candidates))
+                    bundle_ids.append(nxt)
+                    candidates &= self.neighbors[nxt]
+                    candidates -= set(bundle_ids)
+                if len(bundle_ids) >= size:
+                    return [self.by_id[rid] for rid in bundle_ids]
+                if len(bundle_ids) >= 2 and size == 2:
+                    return [self.by_id[rid] for rid in bundle_ids]
+        return []
+
+    def _pick_same_scope_bundle(self) -> list[dict[str, Any]]:
+        """Any distinct requests offered at this scope (no DLDB combinable edge)."""
+        target_size = min(self._pick_bundle_size(), len(self.scope_requests))
+        if target_size < 2:
+            return []
+        return self.rng.sample(self.scope_requests, target_size)
+
+
+# ---------------------------------------------------------------------------
+# Planning (how many walk-ins / appointments per scope)
+# ---------------------------------------------------------------------------
+
+
+@dataclass
+class FillRequest:
+    """What the operator asked for (after mode/count parsing)."""
+
+    target_kind: str  # "scope" | "cluster"
+    target_id: int
+    mode: str
+    walk_in_count: int
+    appointment_count: int
+    fill_to_capacity: bool
+    service_name: str | None
+    day: date
+    earliest_epoch: int
+    customer_name_prefix: str
+    dry_run: bool
+
+
+class FillPlanner:
+    """Turn counts + caps into per-scope budgets."""
+
+    @staticmethod
+    def refuse_if_production(base_url: str, environment: str) -> None:
+        env = (environment or "").strip().lower()
+        if env in {"prod", "production"}:
+            raise SystemExit("Refusing to run when ENVIRONMENT is prod")
+        host = urllib.parse.urlparse(base_url).hostname or ""
+        if host not in LOCAL_API_HOSTS:
+            raise SystemExit("Refusing a non-local API URL")
+
+    @staticmethod
+    def assert_within_hard_limits(
+        target_kind: str, walk_in_count: int, appointment_count: int
+    ) -> None:
+        total = walk_in_count + appointment_count
+        limit = (
+            MAX_PROCESSES_PER_SCOPE
+            if target_kind == "scope"
+            else MAX_PROCESSES_PER_CLUSTER
+        )
+        if total > limit:
+            raise SystemExit(
+                f"Requested {total} exceeds {target_kind} hard limit {limit}"
+            )
+
+    @staticmethod
+    def spread_evenly(total_count: int, scope_count: int) -> list[int]:
+        if scope_count <= 0:
+            return []
+        base, remainder = divmod(total_count, scope_count)
+        return [base + (1 if index < remainder else 0) for index in range(scope_count)]
+
+    @classmethod
+    def counts_from_cli(cls, args: argparse.Namespace) -> tuple[int, int]:
+        """Return (walk_in_count, appointment_count) from mode/count flags."""
+        if args.mode == "fill_capacity":
+            cap = (
+                MAX_PROCESSES_PER_SCOPE
+                if args.target == "scope"
+                else MAX_PROCESSES_PER_CLUSTER
+            )
+            return 0, cap
+
+        if args.mode == "spontaneous":
+            count = (
+                args.spontaneous_count if args.spontaneous_count >= 0 else args.count
+            )
+            if count <= 0:
+                raise SystemExit("Set --count or --spontaneous-count > 0")
+            return count, 0
+
+        if args.mode == "appointments":
+            count = (
+                args.appointment_count if args.appointment_count >= 0 else args.count
+            )
+            if count <= 0:
+                raise SystemExit("Set --count or --appointment-count > 0")
+            return 0, count
+
+        # mixed
+        if args.spontaneous_count >= 0 or args.appointment_count >= 0:
+            walk_ins = max(0, args.spontaneous_count)
+            appointments = max(0, args.appointment_count)
+            if walk_ins + appointments <= 0:
+                raise SystemExit("mixed needs spontaneous and/or appointment counts")
+            return walk_ins, appointments
+
+        if args.count <= 0:
+            raise SystemExit(
+                "mixed needs --count or explicit spontaneous/appointment counts"
+            )
+        walk_ins = int(round(args.count * args.spontaneous_ratio))
+        walk_ins = min(max(walk_ins, 0), args.count)
+        return walk_ins, args.count - walk_ins
+
+    @classmethod
+    def budgets_per_scope(
+        cls,
+        target_kind: str,
+        scope_ids: list[int],
+        walk_in_count: int,
+        appointment_count: int,
+        fill_to_capacity: bool,
+    ) -> tuple[list[int], list[int]]:
+        scope_count = len(scope_ids)
+
+        if fill_to_capacity:
+            if target_kind == "scope":
+                return [0], [MAX_PROCESSES_PER_SCOPE]
+            share = min(
+                MAX_PROCESSES_PER_SCOPE,
+                MAX_PROCESSES_PER_CLUSTER // max(scope_count, 1),
+            )
+            appointments_per_scope = [share] * scope_count
+            leftover = MAX_PROCESSES_PER_CLUSTER - share * scope_count
+            for index in range(leftover):
+                slot = index % scope_count
+                appointments_per_scope[slot] = min(
+                    MAX_PROCESSES_PER_SCOPE, appointments_per_scope[slot] + 1
+                )
+            return [0] * scope_count, appointments_per_scope
+
+        walk_ins_per_scope = cls.spread_evenly(walk_in_count, scope_count)
+        appointments_per_scope = cls.spread_evenly(appointment_count, scope_count)
+        for index, scope_id in enumerate(scope_ids):
+            planned = walk_ins_per_scope[index] + appointments_per_scope[index]
+            if planned > MAX_PROCESSES_PER_SCOPE:
+                raise SystemExit(
+                    f"Plan for scope {scope_id} is {planned} > {MAX_PROCESSES_PER_SCOPE}"
+                )
+        return walk_ins_per_scope, appointments_per_scope
+
+    @staticmethod
+    def fit_into_budget(
+        walk_in_count: int, appointment_count: int, scope_budget: int
+    ) -> tuple[int, int]:
+        if walk_in_count + appointment_count <= scope_budget:
+            return walk_in_count, appointment_count
+        # Prefer keeping walk-ins; shrink timed appointments first.
+        appointment_count = max(0, scope_budget - walk_in_count)
+        walk_in_count = min(walk_in_count, scope_budget)
+        return walk_in_count, appointment_count
+
+
+# ---------------------------------------------------------------------------
+# Wipe queue
+# ---------------------------------------------------------------------------
+
+SKIP_WIPE_STATUSES = frozenset({"called", "processing", "blocked", "deleted"})
+
+
+def process_family_name(process: dict[str, Any]) -> str:
+    clients = process.get("clients") or []
+    if clients and isinstance(clients[0], dict):
+        return str(clients[0].get("familyName") or "")
+    return ""
+
+
+def process_appointment_day(process: dict[str, Any]) -> date | None:
+    epoch = appointment_start_epoch(process)
+    if epoch <= 0:
+        return None
+    return datetime.fromtimestamp(epoch, BERLIN_TIMEZONE).date()
+
+
+def process_matches_wipe_filter(
+    process: dict[str, Any], *, wipe_all: bool, name_prefix: str
+) -> bool:
+    if wipe_all:
+        return True
+    family = process_family_name(process)
+    return bool(name_prefix) and family.startswith(name_prefix)
+
+
+@dataclass
+class ScopeWipeResult:
+    scope_id: int
+    listed: int = 0
+    deleted: int = 0
+    skipped: int = 0
+    errors: list[str] = field(default_factory=list)
+
+    def as_report_dict(self) -> dict[str, Any]:
+        return {
+            "scope_id": self.scope_id,
+            "listed": self.listed,
+            "deleted": self.deleted,
+            "skipped": self.skipped,
+            "errors": self.errors,
+        }
+
+
+class QueueWiper:
+    """Delete today's queue / appointment processes for a scope via admin API."""
+
+    def __init__(
+        self,
+        api: ZmsApiClient,
+        scope_id: int,
+        day: date,
+        *,
+        wipe_all: bool,
+        name_prefix: str,
+        dry_run: bool,
+    ):
+        self.api = api
+        self.scope_id = scope_id
+        self.day = day
+        self.wipe_all = wipe_all
+        self.name_prefix = name_prefix
+        self.dry_run = dry_run
+
+    def wipe(self) -> ScopeWipeResult:
+        result = ScopeWipeResult(scope_id=self.scope_id)
+        self.api.assign_workstation_to_scope(self.scope_id, counter_name="wipe")
+
+        by_id: dict[int, dict[str, Any]] = {}
+        for process in self.api.list_processes_for_day(self.scope_id, self.day):
+            pid = int(process.get("id") or 0)
+            if pid > 0:
+                by_id[pid] = process
+        for status in ("queued", "confirmed", "reserved"):
+            try:
+                for process in self.api.list_processes_by_status(self.scope_id, status):
+                    pid = int(process.get("id") or 0)
+                    # The status list is not limited to --day.
+                    if pid > 0 and process_appointment_day(process) == self.day:
+                        by_id[pid] = process
+            except ZmsApiError as error:
+                # Some statuses may be empty / unsupported — keep going.
+                print_log(
+                    f"scope {self.scope_id}: skip status={status} list: {error}"
+                )
+
+        result.listed = len(by_id)
+        filter_label = "all" if self.wipe_all else f"prefix={self.name_prefix!r}"
+        print_log(
+            f"scope {self.scope_id}: wipe candidates listed={result.listed} "
+            f"filter={filter_label} dry_run={self.dry_run}"
+        )
+
+        for process_id, process in sorted(by_id.items()):
+            status = str(process.get("status") or "")
+            if status in SKIP_WIPE_STATUSES:
+                result.skipped += 1
+                continue
+            if not process_matches_wipe_filter(
+                process, wipe_all=self.wipe_all, name_prefix=self.name_prefix
+            ):
+                result.skipped += 1
+                continue
+            family = process_family_name(process)
+            try:
+                self.api.delete_process(process_id, dry_run=self.dry_run)
+            except ZmsApiError as error:
+                # called/processing etc.
+                result.errors.append(f"{process_id}: {error}")
+                result.skipped += 1
+                print_log(f"scope {self.scope_id}: skip delete {process_id}: {error}")
+                continue
+            result.deleted += 1
+            if result.deleted <= 5 or result.deleted % 50 == 0:
+                print_log(
+                    f"scope {self.scope_id}: deleted process {process_id} "
+                    f"status={status} name={family!r}"
+                )
+            time.sleep(PAUSE_BETWEEN_REQUESTS_SECONDS)
+
+        print_log(
+            f"scope {self.scope_id}: wipe done deleted={result.deleted} "
+            f"skipped={result.skipped} errors={len(result.errors)}"
+        )
+        return result
+
+
+# ---------------------------------------------------------------------------
+# Fill one scope
+# ---------------------------------------------------------------------------
+
+
+@dataclass
+class ScopeFillResult:
+    scope_id: int
+    requested_walk_ins: int
+    requested_appointments: int
+    created_walk_ins: int = 0
+    created_appointments: int = 0
+    skipped: int = 0
+    errors: list[str] = field(default_factory=list)
+    process_ids: list[int] = field(default_factory=list)
+
+    def as_report_dict(self) -> dict[str, Any]:
+        # Keep JSON keys stable for existing consumers.
+        return {
+            "scope_id": self.scope_id,
+            "requested_spontaneous": self.requested_walk_ins,
+            "requested_appointments": self.requested_appointments,
+            "created_spontaneous": self.created_walk_ins,
+            "created_appointments": self.created_appointments,
+            "skipped": self.skipped,
+            "errors": self.errors,
+            "process_ids": self.process_ids,
+        }
+
+    @property
+    def created_total(self) -> int:
+        return self.created_walk_ins + self.created_appointments
+
+
+class ScopeQueueFiller:
+    """Create walk-ins and/or timed appointments for a single scope."""
+
+    def __init__(
+        self,
+        api: ZmsApiClient,
+        scope_id: int,
+        service_picker: ServiceMixPicker,
+        day: date,
+        earliest_epoch: int,
+        customer_name_prefix: str,
+        dry_run: bool,
+        scope_budget: int,
+        fill_to_capacity: bool,
+    ):
+        self.api = api
+        self.scope_id = scope_id
+        self.service_picker = service_picker
+        self.day = day
+        self.earliest_epoch = earliest_epoch
+        self.customer_name_prefix = customer_name_prefix
+        self.dry_run = dry_run
+        self.scope_budget = scope_budget
+        self.fill_to_capacity = fill_to_capacity
+
+    def fill(
+        self, walk_in_count: int, appointment_count: int
+    ) -> ScopeFillResult:
+        result = ScopeFillResult(
+            scope_id=self.scope_id,
+            requested_walk_ins=walk_in_count,
+            requested_appointments=appointment_count,
+        )
+        self.api.assign_workstation_to_scope(self.scope_id)
+        created_so_far = self._create_walk_ins(result, walk_in_count)
+        self._create_appointments(result, appointment_count, created_so_far)
+        return result
+
+    def _create_walk_ins(self, result: ScopeFillResult, count: int) -> int:
+        created_so_far = 0
+        for index in range(count):
+            if created_so_far >= self.scope_budget:
+                result.skipped += count - index
+                break
+            family_name = (
+                f"{self.customer_name_prefix}-S-{self.scope_id}-{index + 1:04d}"
+            )
+            service_requests = self.service_picker.pick()
+            try:
+                process_id = self.api.create_walk_in_customer(
+                    self.scope_id,
+                    service_requests,
+                    family_name,
+                    amendment=self.customer_name_prefix,
+                    dry_run=self.dry_run,
+                )
+            except ZmsApiError as error:
+                result.errors.append(
+                    f"walk-in: {error} {error.response_body[:200]}"
+                )
+                print_log(f"ERROR scope {self.scope_id} walk-in: {error}")
+                break
+            result.created_walk_ins += 1
+            created_so_far += 1
+            if process_id:
+                result.process_ids.append(process_id)
+            if index < 3 or len(service_requests) > 1:
+                print_log(
+                    f"scope {self.scope_id} walk-in: {service_names(service_requests)}"
+                )
+            time.sleep(PAUSE_BETWEEN_REQUESTS_SECONDS)
+        return created_so_far
+
+    def _try_book_bundle(
+        self,
+        service_requests: list[dict[str, Any]],
+        family_name: str,
+    ) -> tuple[bool, int | None]:
+        """Fetch free slots for this service mix and try to book one."""
+        free_slots = self.api.list_free_appointment_slots(
+            self.scope_id,
+            service_requests,
+            self.day,
+            self.earliest_epoch,
+        )
+        if not free_slots:
+            return False, None
+        tried = 0
+        for candidate in free_slots:
+            # Walk-ins can run long enough that the planned cutoff minute is already past.
+            if appointment_start_epoch(candidate) < int(BerlinTime.now().timestamp()):
+                continue
+            if tried >= MAX_SLOT_RESERVE_ATTEMPTS:
+                break
+            tried += 1
+            process_id = self.api.reserve_and_confirm_appointment(
+                self.scope_id,
+                service_requests,
+                candidate,
+                family_name,
+                dry_run=self.dry_run,
+            )
+            if self.dry_run or process_id:
+                return True, process_id
+        return False, None
+
+    def _create_appointments(
+        self,
+        result: ScopeFillResult,
+        appointment_count: int,
+        created_so_far: int,
+    ) -> None:
+        if self.fill_to_capacity:
+            # One service can have no seats while another still does.
+            appointment_count = max(0, self.scope_budget - created_so_far)
+            result.requested_appointments = appointment_count
+            print_log(
+                f"scope {self.scope_id}: fill_capacity up to {appointment_count} "
+                "appointments, trying each offered service"
+            )
+
+        booked_count = 0
+        empty_streak = 0
+        while booked_count < appointment_count and created_so_far < self.scope_budget:
+            service_requests = self.service_picker.pick()
+            family_name = (
+                f"{self.customer_name_prefix}-A-{self.scope_id}-{booked_count + 1:04d}"
+            )
+            try:
+                booked, process_id = self._try_book_bundle(
+                    service_requests, family_name
+                )
+            except ZmsApiError as error:
+                result.errors.append(f"book: {error} {error.response_body[:200]}")
+                print_log(f"ERROR scope {self.scope_id} book: {error}")
+                booked = False
+                process_id = None
+
+            if not booked:
+                empty_streak += 1
+                # Retries with other mixes; stop after several empty tries.
+                if empty_streak >= 5:
+                    result.skipped += appointment_count - booked_count
+                    break
+                continue
+
+            empty_streak = 0
+            result.created_appointments += 1
+            created_so_far += 1
+            booked_count += 1
+            if process_id:
+                result.process_ids.append(process_id)
+            if booked_count <= 3 or len(service_requests) > 1:
+                print_log(
+                    f"scope {self.scope_id} appointment: "
+                    f"{service_names(service_requests)}"
+                )
+            time.sleep(PAUSE_BETWEEN_REQUESTS_SECONDS)
+
+
+# ---------------------------------------------------------------------------
+# Job runner
+# ---------------------------------------------------------------------------
+
+
+class QueueFillJob:
+    """Orchestrate login → plan → fill scopes → write report."""
+
+    def __init__(self, args: argparse.Namespace):
+        self.args = args
+
+    def run(self) -> int:
+        self._validate_arguments()
+        FillPlanner.refuse_if_production(self.args.base_url, self.args.environment)
+
+        day = BerlinTime.parse_day(self.args.day)
+        # Rejects a past day before any wipe. The fill uses the same cutoff.
+        earliest_epoch = BerlinTime.earliest_bookable_epoch(day)
+        wipe_mode = self.args.wipe_queue  # none | before | only
+        fill_after_wipe = wipe_mode != "only"
+
+        api = ZmsApiClient(self.args.base_url, verify_tls=not self.args.insecure)
+        api.login_with_password(self.args.username, self.args.password)
+
+        if self.args.target == "scope":
+            scope_ids = [self.args.target_id]
+        else:
+            scope_ids = api.list_scope_ids_in_cluster(self.args.target_id)
+            print_log(f"cluster {self.args.target_id} scopes: {scope_ids}")
+
+        report: dict[str, Any] = {
+            "base_url": self.args.base_url,
+            "environment": self.args.environment,
+            "target": self.args.target,
+            "target_id": self.args.target_id,
+            "mode": self.args.mode,
+            "wipe_queue": wipe_mode,
+            "wipe_all": self.args.wipe_all,
+            "wipe_name_prefix": self.args.wipe_name_prefix,
+            "day": str(day),
+            "dry_run": self.args.dry_run,
+            "name_prefix": self.args.name_prefix,
+            "scope_ids": scope_ids,
+            "wipes": [],
+            "scopes": [],
+            "totals": {
+                "wiped": 0,
+                "wipe_skipped": 0,
+                "wipe_errors": 0,
+                "created_spontaneous": 0,
+                "created_appointments": 0,
+                "skipped": 0,
+                "errors": 0,
+            },
+        }
+
+        fill_to_capacity = self.args.mode == "fill_capacity"
+        walk_in_count = 0
+        appointment_count = 0
+        walk_ins_per_scope: list[int] = []
+        appointments_per_scope: list[int] = []
+        if fill_after_wipe:
+            walk_in_count, appointment_count = FillPlanner.counts_from_cli(self.args)
+            FillPlanner.assert_within_hard_limits(
+                self.args.target, walk_in_count, appointment_count
+            )
+            walk_ins_per_scope, appointments_per_scope = FillPlanner.budgets_per_scope(
+                self.args.target,
+                scope_ids,
+                walk_in_count,
+                appointment_count,
+                fill_to_capacity,
+            )
+
+        if wipe_mode in {"before", "only"}:
+            if self.args.wipe_all and not self.args.dry_run:
+                print_log(
+                    "WARNING: wipe_all=true deletes all deletable processes "
+                    "for the day on target scope(s) (not only LOADTEST-*)"
+                )
+            for scope_id in scope_ids:
+                wiper = QueueWiper(
+                    api,
+                    scope_id,
+                    day,
+                    wipe_all=self.args.wipe_all,
+                    name_prefix=self.args.wipe_name_prefix,
+                    dry_run=self.args.dry_run,
+                )
+                wipe_result = wiper.wipe()
+                report["wipes"].append(wipe_result.as_report_dict())
+                report["totals"]["wiped"] += wipe_result.deleted
+                report["totals"]["wipe_skipped"] += wipe_result.skipped
+                report["totals"]["wipe_errors"] += len(wipe_result.errors)
+
+        if fill_after_wipe:
+            report["earliest_epoch"] = earliest_epoch
+
+            processes_created_in_cluster = 0
+            for index, scope_id in enumerate(scope_ids):
+                remaining_cluster_budget = (
+                    MAX_PROCESSES_PER_CLUSTER - processes_created_in_cluster
+                )
+                if self.args.target == "cluster" and remaining_cluster_budget <= 0:
+                    break
+
+                scope_budget = MAX_PROCESSES_PER_SCOPE
+                if self.args.target == "cluster":
+                    scope_budget = min(
+                        MAX_PROCESSES_PER_SCOPE, remaining_cluster_budget
+                    )
+
+                planned_walk_ins, planned_appointments = FillPlanner.fit_into_budget(
+                    walk_ins_per_scope[index],
+                    appointments_per_scope[index],
+                    scope_budget,
+                )
+                scope_requests = api.list_scope_requests(scope_id)
+                fixed_request = None
+                if self.args.service_name:
+                    fixed_request = api.find_service_request(
+                        scope_id, self.args.service_name
+                    )
+                seed = self.args.random_seed
+                rng = (
+                    random.Random(seed + scope_id)
+                    if seed is not None
+                    else random.Random()
+                )
+                service_picker = ServiceMixPicker(
+                    scope_requests,
+                    fixed_request=fixed_request,
+                    mix_services=self.args.mix_services,
+                    combinable_share=self.args.combinable_share,
+                    same_scope_bundle_fallback=self.args.same_scope_bundle_fallback,
+                    rng=rng,
+                )
+                print_log(
+                    f"=== scope {scope_id}: walk_ins={planned_walk_ins} "
+                    f"appointments={planned_appointments} "
+                    f"mix_services={self.args.mix_services} "
+                    f"dry_run={self.args.dry_run}"
+                )
+
+                filler = ScopeQueueFiller(
+                    api=api,
+                    scope_id=scope_id,
+                    service_picker=service_picker,
+                    day=day,
+                    earliest_epoch=earliest_epoch,
+                    customer_name_prefix=self.args.name_prefix,
+                    dry_run=self.args.dry_run,
+                    scope_budget=scope_budget,
+                    fill_to_capacity=fill_to_capacity,
+                )
+                scope_result = filler.fill(planned_walk_ins, planned_appointments)
+                report["scopes"].append(scope_result.as_report_dict())
+
+                processes_created_in_cluster += scope_result.created_total
+                totals = report["totals"]
+                totals["created_spontaneous"] += scope_result.created_walk_ins
+                totals["created_appointments"] += scope_result.created_appointments
+                totals["skipped"] += scope_result.skipped
+                totals["errors"] += len(scope_result.errors)
+
+        with open(self.args.report, "w", encoding="utf-8") as report_file:
+            json.dump(report, report_file, indent=2, ensure_ascii=False)
+            report_file.write("\n")
+        print_log(f"Wrote report {self.args.report}")
+        print_log(json.dumps(report["totals"], indent=2))
+
+        totals = report["totals"]
+        created_any = (
+            totals["created_spontaneous"] + totals["created_appointments"]
+        )
+        wiped_any = totals["wiped"] > 0
+        if totals["errors"] and created_any == 0 and not wiped_any:
+            return 1
+        if wipe_mode == "only" and totals["wipe_errors"] and not wiped_any:
+            return 1
+        return 0
+
+    def _validate_arguments(self) -> None:
+        args = self.args
+        if not args.base_url:
+            raise SystemExit("FILL_API_BASE_URL / --base-url is required")
+        if not args.username:
+            raise SystemExit("FILL_QUEUE_USERNAME / --username is required")
+        if not args.password:
+            raise SystemExit("FILL_QUEUE_PASSWORD / --password is required")
+        if args.target_id <= 0:
+            raise SystemExit("FILL_TARGET_ID / --target-id must be a positive id")
+        if args.wipe_queue not in {"none", "before", "only"}:
+            raise SystemExit("--wipe-queue must be none, before, or only")
+        if args.wipe_all and args.wipe_queue == "none":
+            raise SystemExit("--wipe-all requires --wipe-queue before|only")
+        if args.wipe_queue != "none" and not args.wipe_all and not args.wipe_name_prefix:
+            raise SystemExit(
+                "--wipe-name-prefix is required when wiping without --wipe-all"
+            )
+
+
+# ---------------------------------------------------------------------------
+# CLI
+# ---------------------------------------------------------------------------
+
+
+def build_argument_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--base-url", default=os.environ.get("FILL_API_BASE_URL", ""))
+    parser.add_argument("--environment", default=os.environ.get("ENVIRONMENT", ""))
+    parser.add_argument(
+        "--username",
+        default=os.environ.get("FILL_QUEUE_USERNAME", "_system_queuefill"),
+        help="Exact ZMS login name. The local CLI passes _system_queuefill.",
+    )
+    parser.add_argument(
+        "--password",
+        default=os.environ.get("FILL_QUEUE_PASSWORD", ""),
+        help="Password from FILL_QUEUE_PASSWORD. The local CLI passes the local test password.",
+    )
+    parser.add_argument(
+        "--target",
+        choices=("scope", "cluster"),
+        default=os.environ.get("FILL_TARGET", "scope"),
+    )
+    parser.add_argument(
+        "--target-id", type=int, default=Environment.int("FILL_TARGET_ID", 0)
+    )
+    parser.add_argument(
+        "--mode",
+        choices=("spontaneous", "appointments", "mixed", "fill_capacity"),
+        default=os.environ.get("FILL_MODE", "spontaneous"),
+    )
+    parser.add_argument(
+        "--count",
+        type=int,
+        default=Environment.int("FILL_COUNT", 0),
+        help=(
+            "Total to create (spontaneous/appointments/mixed). "
+            "Ignored for fill_capacity."
+        ),
+    )
+    parser.add_argument(
+        "--spontaneous-count",
+        type=int,
+        default=Environment.int("FILL_SPONTANEOUS_COUNT", -1),
+    )
+    parser.add_argument(
+        "--appointment-count",
+        type=int,
+        default=Environment.int("FILL_APPOINTMENT_COUNT", -1),
+    )
+    parser.add_argument(
+        "--spontaneous-ratio",
+        type=float,
+        default=Environment.float("FILL_SPONTANEOUS_RATIO", 0.5),
+        help="For mixed when only --count is set (default 0.5).",
+    )
+    parser.add_argument(
+        "--service-name",
+        default=os.environ.get("FILL_SERVICE_NAME", "") or None,
+        help="Pin every process to this service (disables mix/combinables).",
+    )
+    _mix_env = os.environ.get("FILL_MIX_SERVICES", "true").lower()
+    parser.add_argument(
+        "--mix-services",
+        action=argparse.BooleanOptionalAction,
+        default=_mix_env not in {"0", "false", "no"},
+        help=(
+            "Randomize services per process; ~1/4 combinable multi-service "
+            "(default on). Use --no-mix-services to disable."
+        ),
+    )
+    parser.add_argument(
+        "--combinable-share",
+        type=float,
+        default=Environment.float(
+            "FILL_COMBINABLE_SHARE", DEFAULT_COMBINABLE_SHARE
+        ),
+        help="Fraction of processes that attempt a combinable bundle (default 0.25).",
+    )
+    _fallback_env = os.environ.get("FILL_SAME_SCOPE_BUNDLE_FALLBACK", "true").lower()
+    parser.add_argument(
+        "--same-scope-bundle-fallback",
+        action=argparse.BooleanOptionalAction,
+        default=_fallback_env not in {"0", "false", "no"},
+        help=(
+            "If DLDB combinable has no same-scope partners, still create "
+            "multi-service bundles from any requests on the scope (default on)."
+        ),
+    )
+    _seed_env = os.environ.get("FILL_RANDOM_SEED", "").strip()
+    parser.add_argument(
+        "--random-seed",
+        type=int,
+        default=int(_seed_env) if _seed_env else None,
+        help="Optional RNG seed for reproducible mixes.",
+    )
+    parser.add_argument("--day", default=os.environ.get("FILL_DAY", "today"))
+    parser.add_argument(
+        "--name-prefix",
+        default=os.environ.get("FILL_NAME_PREFIX", "LOADTEST-local"),
+    )
+    parser.add_argument(
+        "--wipe-queue",
+        choices=("none", "before", "only"),
+        default=os.environ.get("FILL_WIPE_QUEUE", "none"),
+        help=(
+            "Delete queue processes: none (default), before fill, or only wipe. "
+            "Uses DELETE /process/{id}/ (skips called/processing)."
+        ),
+    )
+    _wipe_all_env = os.environ.get("FILL_WIPE_ALL", "false").lower()
+    parser.add_argument(
+        "--wipe-all",
+        action=argparse.BooleanOptionalAction,
+        default=_wipe_all_env in {"1", "true", "yes"},
+        help=(
+            "With --wipe-queue: delete every deletable process for the day "
+            "(default off = only names starting with --wipe-name-prefix)."
+        ),
+    )
+    parser.add_argument(
+        "--wipe-name-prefix",
+        default=os.environ.get("FILL_WIPE_NAME_PREFIX", "LOADTEST-"),
+        help="When not --wipe-all, only delete clients whose familyName starts with this.",
+    )
+    parser.add_argument(
+        "--dry-run", action="store_true", default=Environment.flag("FILL_DRY_RUN")
+    )
+    parser.add_argument(
+        "--insecure",
+        action="store_true",
+        default=Environment.flag("FILL_INSECURE_TLS"),
+    )
+    parser.add_argument(
+        "--report",
+        default=os.environ.get("FILL_REPORT_PATH", "fill-queue-report.json"),
+    )
+    return parser
+
+
+def main() -> int:
+    arguments = build_argument_parser().parse_args()
+    return QueueFillJob(arguments).run()
+
+
+if __name__ == "__main__":
+    try:
+        sys.exit(main())
+    except ZmsApiError as error:
+        print_log(f"FATAL: {error}")
+        if error.response_body:
+            print_log(error.response_body[:1000])
+        sys.exit(1)
