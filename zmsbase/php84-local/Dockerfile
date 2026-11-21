@@ -7,7 +7,7 @@ ARG PHP_VERSION=8.4-apache-trixie
 FROM composer:2@sha256:4d71c3c2109c61d5415544264b59ad4087e4c5b7244481723664138fd36d5040 AS composer-image
 
 # Node/npm/npx (official multi-arch image; NodeSource apt can miss npm on some Debian/arch combos)
-FROM node:22-trixie@sha256:8433642fe11d391a7ff1f702352ac1b0ea3e378d3fb2c22de2b292036d79cd2c AS node-tools
+FROM node:22-trixie@sha256:c103d7b5aa3bf627c8b98db941d52556f04e0b5d9352b3d7b6391245d26620f8 AS node-tools
 
 # Main dev image
 FROM php:8.4-apache-trixie@sha256:8c0cb011245a26b2459356564fec7796d243ce2bc5ffdb217740daf22b1984f0
