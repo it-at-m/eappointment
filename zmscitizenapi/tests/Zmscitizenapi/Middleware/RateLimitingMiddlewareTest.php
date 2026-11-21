@@ -25,6 +25,9 @@ class RateLimitingMiddlewareTest extends MiddlewareTestCase
         if (\App::$cache) {
             \App::$cache->clear();
         }
+        putenv('IP_WHITELIST');
+        \App::reinitializeMiddlewareConfig();
+        $_SERVER = [];
         $this->cache = $this->createMock(CacheInterface::class);
         $this->middleware = new RateLimitingMiddleware($this->cache, $this->logger);
     }
@@ -32,6 +35,9 @@ class RateLimitingMiddlewareTest extends MiddlewareTestCase
     #[\Override]
     protected function tearDown(): void
     {
+        putenv('IP_WHITELIST');
+        \App::reinitializeMiddlewareConfig();
+        $_SERVER = [];
         if (\App::$cache) {
             \App::$cache->clear();
         }
@@ -250,5 +256,61 @@ class RateLimitingMiddlewareTest extends MiddlewareTestCase
     
         $result = $this->middleware->process($request, $handler);
         $this->assertSame($response->getStatusCode(), $result->getStatusCode());
+    }
+
+    public function testWhitelistedRangeSkipsRateLimit(): void
+    {
+        $_SERVER['REMOTE_ADDR'] = '10.1.2.3';
+        putenv('IP_WHITELIST=10.0.0.0/8,2001:db8::1');
+        \App::reinitializeMiddlewareConfig();
+        $middleware = new RateLimitingMiddleware($this->cache, $this->logger);
+
+        $this->cache->expects($this->never())->method('has');
+        $this->cache->expects($this->never())->method('get');
+        $this->cache->expects($this->never())->method('set');
+
+        $request = $this->createRequest();
+        $response = new Response();
+        $handler = $this->createHandler($response);
+        $result = $middleware->process($request, $handler);
+
+        $this->assertSame($response, $result);
+        $this->assertSame('', $result->getHeaderLine('X-RateLimit-Limit'));
+    }
+
+    public function testAddressOutsideWhitelistIsStillRateLimited(): void
+    {
+        $_SERVER['REMOTE_ADDR'] = '192.168.1.1';
+        putenv('IP_WHITELIST=10.0.0.0/8');
+        \App::reinitializeMiddlewareConfig();
+        $middleware = new RateLimitingMiddleware($this->cache, $this->logger);
+
+        $this->cache->expects($this->once())
+            ->method('has')
+            ->willReturn(false);
+        $this->cache->method('set')
+            ->willReturn(true);
+        $this->cache->expects($this->any())
+            ->method('get')
+            ->willReturn([
+                'count' => 600,
+                'timestamp' => time(),
+            ]);
+        $this->cache->expects($this->any())
+            ->method('delete')
+            ->willReturn(true);
+
+        $this->logger->expectLogInfo(sprintf(
+            'Rate limit exceeded for IP %s. URI: %s',
+            '192.168.1.1',
+            'http://localhost/test'
+        ));
+
+        $request = $this->createRequest();
+        $response = new Response();
+        $handler = $this->createHandler($response);
+        $result = $middleware->process($request, $handler);
+
+        $this->assertEquals(ErrorMessages::get('rateLimitExceeded')['statusCode'], $result->getStatusCode());
     }
 }

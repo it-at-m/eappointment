@@ -59,6 +59,7 @@ class Application extends \BO\Slim\Application
     public static int $MAX_RECURSION_DEPTH;
     // IP Filter config
     public static string $IP_BLACKLIST;
+    public static string $IP_WHITELIST;
 
     public static string $ACCESS_UNPUBLISHED_ON_DOMAIN;
 
@@ -163,6 +164,7 @@ class Application extends \BO\Slim\Application
         self::$MAX_RECURSION_DEPTH = self::getenvInt('MAX_RECURSION_DEPTH', 10);
         // IP Filter
         self::$IP_BLACKLIST = self::getenvString('IP_BLACKLIST', '');
+        self::$IP_WHITELIST = self::getenvString('IP_WHITELIST', '');
 
         self::$ACCESS_UNPUBLISHED_ON_DOMAIN = self::getenvString('ACCESS_UNPUBLISHED_ON_DOMAIN', '');
     }
@@ -225,6 +227,11 @@ class Application extends \BO\Slim\Application
     public static function getIpBlacklist(): string
     {
         return self::$IP_BLACKLIST ?: '';
+    }
+
+    public static function getIpWhitelist(): string
+    {
+        return self::$IP_WHITELIST ?: '';
     }
 
     /** @psalm-api */
