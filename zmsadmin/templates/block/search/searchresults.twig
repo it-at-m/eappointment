@@ -1,9 +1,7 @@
 {% embed "block/scaffholding/board.twig" with {'class': 'board--spaceless searchresults'} %}
 
     {% block board_body %}
-        <script>
-            document.getElementById("search-result-title").focus();
-        </script>
+        {% from 'element/helper/form.twig' import providername %}
 
         <form method="get" action="">
             <div class="grid m-5">
@@ -13,23 +11,48 @@
                 </div>
 
                 <div class="grid__item six-twelfths" style="margin-bottom: 12px;">
-                    <label for="search-service" class="form-label">Dienstleistung</label><br>
-                    <input type="text" id="search-service" name="service" value="{{ service }}" style="width: 100%;height: 30px;">
+                    <label for="search-service" class="form-label search-filter-title">Dienstleistung</label>
+                    <input type="text" id="search-service" name="service" value="{{ service }}" class="form-control search-filter-control">
                 </div>
 
-                <div class="grid__item six-twelfths" style="margin-bottom: 12px;">
-                    <label for="search-provider" class="form-label">Standort</label><br>
-                    <input type="text" id="search-provider" name="provider" value="{{ provider }}" style="width: 100%;height: 30px;">
-                </div>
+                {% if workstation.useraccount.hasPermissions(['customersearch'])
+                    or workstation.useraccount.hasPermissions(['logs']) %}
+                    <div class="grid__item six-twelfths" style="margin-bottom: 12px;">
+                        {% set emptyScopeLabel = 'Standortübergreifend' %}
+                        <span id="search-scope-label" class="form-label search-filter-title">Standort</span>
+                        <details id="search-scope" class="search-scope-picker">
+                            <summary class="form-control search-filter-control"
+                                     aria-labelledby="search-scope-label search-scope-value">
+                                <span id="search-scope-value" data-empty-label="{{ emptyScopeLabel }}">
+                                    {{ selectedScopeIds is empty
+                                        ? emptyScopeLabel
+                                        : selectedScopeIds|length ~ ' ausgewählt' }}
+                                </span>
+                                <i class="fas fa-chevron-down" aria-hidden="true"></i>
+                            </summary>
+                            <div class="search-scope-options" role="group" aria-labelledby="search-scope-label">
+                                {% for scope in scopeList %}
+                                    {% set checkboxId = 'search-scope-option-' ~ scope.id %}
+                                    <label class="search-scope-option" for="{{ checkboxId }}">
+                                        <input type="checkbox" id="{{ checkboxId }}"
+                                               name="selectedScopeIds[]" value="{{ scope.id }}"
+                                               {% if scope.id in selectedScopeIds %}checked{% endif %}>
+                                        <span>{{ providername(scope) }}</span>
+                                    </label>
+                                {% endfor %}
+                            </div>
+                        </details>
+                    </div>
+                {% endif %}
 
                 <div class="grid__item six-twelfths" style="margin-bottom: 12px;">
-                    <label for="search-date" class="form-label">Datum</label>
+                    <label for="search-date" class="form-label search-filter-title">Datum</label>
                     <input type="date" id="search-date" name="date" value="{{ date }}" class="form-control">
                 </div>
 
                 {% if workstation.useraccount.permissions.logs|default(false) %}
                     <div class="grid__item six-twelfths" style="margin-bottom: 12px;">
-                        <label class="form-label">Sachbearbeiter</label><br>
+                        <span class="form-label search-filter-title">Sachbearbeiter</span>
 
                         <input type="radio" id="search-user-yes" name="user" value="1" {% if userAction == 1 %}checked="checked"{% endif %}> <label for="search-user-yes">Ja</label>
                         <input type="radio" id="search-user-no" name="user" value="2" {% if userAction == 2 %}checked="checked"{% endif %}> <label for="search-user-no">Nein</label>
@@ -47,7 +70,7 @@
             </div>
         </form>
 
-        {% if processSearchTotal is defined and (searchProcessQuery or service or provider or date) %}
+        {% if processSearchTotal is defined and (searchProcessQuery or service or selectedScopeIds is not empty or date) %}
             <p class="m-5" style="margin-top: 0;">
                 {% set shownCount = processList.count() %}
                 {% if processSearchTotal > shownCount %}
@@ -160,7 +183,9 @@
             <form method="get" action="">
                 <input type="hidden" name="query" value="{{ searchProcessQuery }}">
                 <input type="hidden" name="service" value="{{ service }}">
-                <input type="hidden" name="provider" value="{{ provider }}">
+                {% for selectedScopeId in selectedScopeIds %}
+                    <input type="hidden" name="selectedScopeIds[]" value="{{ selectedScopeId }}">
+                {% endfor %}
                 <input type="hidden" name="user" value="{{ userAction }}">
                 <input type="hidden" name="date" value="{{ date }}">
                 {% if hideNavigation %}
@@ -182,7 +207,7 @@
                 'query': searchProcessQuery,
                 'perPage': currentPerPage,
                 'service': service,
-                'provider': provider,
+                'selectedScopeIds': selectedScopeIds,
                 'user': userAction,
                 'date': date,
                 'hideNavigation': hideNavigation ? 1 : null

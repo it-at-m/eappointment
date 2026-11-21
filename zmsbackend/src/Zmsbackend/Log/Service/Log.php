@@ -332,8 +332,12 @@ class Log extends \BO\Zmsbackend\Base
 
     private function buildScopeIdConditions(?array $scopeIds, array &$params): array
     {
-        if (empty($scopeIds)) {
+        if ($scopeIds === null) {
             return [];
+        }
+
+        if ($scopeIds === []) {
+            return ['1 = 0'];
         }
 
         $scopePlaceholders = [];

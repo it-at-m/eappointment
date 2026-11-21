@@ -155,6 +155,7 @@ class ProcessSearch extends \BO\Zmsbackend\Base
                 [
                     'upcomingOnly',
                     'scopeIds',
+                    'selectedScopeIds',
                     'page',
                     'limit',
                     'offset',
@@ -294,12 +295,21 @@ class ProcessSearch extends \BO\Zmsbackend\Base
         ?int $limit = null,
         int $offset = 0
     ): array {
+        $scopeIds = $this->readScopeIdsParameter($parameter);
+        $selectedScopeIds = $parameter['selectedScopeIds'] ?? null;
+        if ($selectedScopeIds !== null && $scopeIds !== null) {
+            $selectedScopeIds = array_values(array_intersect($selectedScopeIds, $scopeIds));
+        }
+
         $searchRepository = $this->buildSearchQuery($parameter);
+        if ($selectedScopeIds !== null) {
+            $searchRepository->addConditionDisplayedScopeIds($selectedScopeIds);
+        }
         $searchRepository->addCombinedActiveProjection();
 
         $historyParameters = [];
         $historySql = $searchRepository->getHistorySelectSql(
-            $this->readScopeIdsParameter($parameter),
+            $selectedScopeIds ?? $scopeIds,
             $appointmentFrom,
             $this->extractSearchQuery($parameter),
             $historyParameters,

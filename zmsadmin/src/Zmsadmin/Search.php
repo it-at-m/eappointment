@@ -11,6 +11,7 @@ use BO\Slim\Render;
 use BO\Zmsentities\Collection\LogList;
 use BO\Zmsentities\Log as LogEntity;
 use BO\Zmsentities\Collection\ProcessList;
+use BO\Zmsentities\Exception\UserAccountAccessRightsFailed;
 
 class Search extends BaseController
 {
@@ -28,12 +29,17 @@ class Search extends BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ): \Psr\Http\Message\ResponseInterface {
-        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 2])->getEntity();
+        $workstation = \App::$http->readGetResult('/workstation/', ['resolveReferences' => 3])->getEntity();
         $parameters = $this->readSearchParameters($request->getAttribute('validator'));
         if ($workstation->getUseraccount()->hasRole('audit_viewer')) {
             $parameters['hideNavigation'] = 1;
         }
-        $scopeIds = $workstation->getUseraccount()->getDepartmentList()->getUniqueScopeList()->getIds();
+        $scopeList = $workstation->getUseraccount()->getDepartmentList()->getUniqueScopeList();
+        $scopeIds = $scopeList->getIds();
+
+        if (array_diff($parameters['selectedScopeIds'], $scopeIds) !== []) {
+            throw new UserAccountAccessRightsFailed();
+        }
 
         [$processList, $processSearchTotal] = $this->readProcessSearchResults(
             $workstation,
@@ -49,7 +55,8 @@ class Search extends BaseController
                 'title' => 'Suche',
                 'hideNavigation' => (bool) $parameters['hideNavigation'],
                 'service' => $parameters['service'],
-                'provider' => $parameters['provider'],
+                'selectedScopeIds' => $parameters['selectedScopeIds'],
+                'scopeList' => $scopeList->sortByContactName(),
                 'userAction' => $parameters['userAction'],
                 'date' => $parameters['date'],
                 'page' => $parameters['page'],
@@ -77,7 +84,7 @@ class Search extends BaseController
         }
 
         $service = $this->readStringParameter($validator, 'service');
-        $provider = $this->readStringParameter($validator, 'provider');
+        $selectedScopeIds = $this->readSelectedScopeIds($validator);
         $date = $validator->getParameter('date')->isString()->setDefault(null)->getValue();
         $page = $this->readNumberParameter($validator, 'page', 1);
         $userAction = $this->readNumberParameter($validator, 'user', 0);
@@ -89,7 +96,7 @@ class Search extends BaseController
             'queryString' => $queryString,
             'page' => $page,
             'service' => $service ? trim($service) : null,
-            'provider' => $provider ? trim($provider) : null,
+            'selectedScopeIds' => $selectedScopeIds,
             'date' => $date !== null && trim($date) !== '' ? trim($date) : null,
             'userAction' => $userAction,
             'perPage' => $resultsPerPage,
@@ -97,7 +104,7 @@ class Search extends BaseController
             'isSearchRequested' => (
                 trim($queryString) !== ''
                 || trim($service) !== ''
-                || trim($provider) !== ''
+                || $selectedScopeIds !== []
                 || ($date !== null && trim($date) !== '')
                 || $userAction !== 0
             ),
@@ -143,7 +150,7 @@ class Search extends BaseController
     private function hasStructuredSearchFilters(array $parameters): bool
     {
         return $parameters['service'] !== null
-            || $parameters['provider'] !== null
+            || $parameters['selectedScopeIds'] !== []
             || $parameters['date'] !== null;
     }
 
@@ -165,7 +172,7 @@ class Search extends BaseController
     {
         return trim((string) $parameters['queryString']) !== ''
             || $parameters['service'] !== null
-            || $parameters['provider'] !== null
+            || $parameters['selectedScopeIds'] !== []
             || $parameters['date'] !== null
             || $parameters['userAction'] !== 0;
     }
@@ -184,8 +191,8 @@ class Search extends BaseController
         if ($parameters['service'] !== null) {
             $searchParameters['service'] = $parameters['service'];
         }
-        if ($parameters['provider'] !== null) {
-            $searchParameters['provider'] = $parameters['provider'];
+        if ($parameters['selectedScopeIds'] !== []) {
+            $searchParameters['selectedScopeIds'] = $parameters['selectedScopeIds'];
         }
         if ($parameters['date'] !== null) {
             $searchParameters['date'] = $parameters['date'];
@@ -208,11 +215,12 @@ class Search extends BaseController
             'page' => $parameters['page'],
             'perPage' => $parameters['perPage'],
             'service' => $parameters['service'],
-            'provider' => $parameters['provider'],
             'userAction' => $parameters['userAction'],
             'date' => $parameters['date'],
         ];
-        if (!$workstation->getUseraccount()->isSuperUser()) {
+        if ($parameters['selectedScopeIds'] !== []) {
+            $logParameters['scopeIds'] = implode(',', $parameters['selectedScopeIds']);
+        } elseif (!$workstation->getUseraccount()->isSuperUser()) {
             $logParameters['scopeIds'] = implode(',', $scopeIds);
         }
 
@@ -272,6 +280,25 @@ class Search extends BaseController
         }
 
         return $list;
+    }
+
+    private function readSelectedScopeIds(\BO\Mellon\Validator $validator): array
+    {
+        $selection = $validator->getParameter('selectedScopeIds')->getUnvalidated() ?? [];
+        if (!is_array($selection) || !array_is_list($selection)) {
+            throw new \BO\Zmsadmin\Exception\BadRequest('Ungültige Kalender-Auswahl.');
+        }
+
+        $scopeIds = [];
+        foreach ($selection as $value) {
+            $scopeId = filter_var($value, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
+            if ($scopeId === false) {
+                throw new \BO\Zmsadmin\Exception\BadRequest('Ungültige Kalender-ID.');
+            }
+            $scopeIds[] = $scopeId;
+        }
+
+        return array_values(array_unique($scopeIds));
     }
 
     private function readStringParameter(\BO\Mellon\Validator $validator, string $name, string $default = ''): string

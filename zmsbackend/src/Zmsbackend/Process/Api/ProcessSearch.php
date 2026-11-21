@@ -51,14 +51,18 @@ class ProcessSearch extends \BO\Zmsbackend\Api\BaseController
             }
         }
 
-        $useraccount = $workstation->getUseraccount();
+        $selectedScopeIds = $this->readSelectedScopeIds($parameters['selectedScopeIds'] ?? []);
+        unset($parameters['selectedScopeIds']);
 
+        $useraccount = $workstation->getUseraccount();
         if (!$useraccount->isSuperUser()) {
-            $scopeIds = $workstation->getUseraccount()
-                ->getDepartmentList()
-                ->getUniqueScopeList()
-                ->getIds();
-            $parameters['scopeIds'] = implode(',', $scopeIds);
+            $allowedScopeIds = $useraccount->getDepartmentList()->getUniqueScopeList()->getIds();
+            unset($parameters['scopeIds']);
+            $parameters['selectedScopeIds'] = $selectedScopeIds === []
+                ? $allowedScopeIds
+                : array_values(array_intersect($selectedScopeIds, $allowedScopeIds));
+        } elseif ($selectedScopeIds !== []) {
+            $parameters['selectedScopeIds'] = $selectedScopeIds;
         }
 
         $parameters['denyHistory'] = !(
@@ -85,5 +89,23 @@ class ProcessSearch extends \BO\Zmsbackend\Api\BaseController
         $response = Render::withLastModified($response, time(), '0');
         $response = Render::withJson($response, $message, 200);
         return $response;
+    }
+
+    private function readSelectedScopeIds(mixed $selection): array
+    {
+        if (!is_array($selection) || !array_is_list($selection)) {
+            throw new \BO\Zmsbackend\Exception\BadRequest('Ungültige Kalender-Auswahl.');
+        }
+
+        $scopeIds = [];
+        foreach ($selection as $value) {
+            $scopeId = filter_var($value, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
+            if ($scopeId === false) {
+                throw new \BO\Zmsbackend\Exception\BadRequest('Ungültige Kalender-ID.');
+            }
+            $scopeIds[] = $scopeId;
+        }
+
+        return array_values(array_unique($scopeIds));
     }
 }

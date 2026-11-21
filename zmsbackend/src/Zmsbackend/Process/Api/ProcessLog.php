@@ -25,7 +25,7 @@ class ProcessLog extends \BO\Zmsbackend\Api\BaseController
         \Psr\Http\Message\ResponseInterface $response,
         array $args
     ) {
-        (new \BO\Zmsbackend\Helper\User($request))->checkPermissions('logs');
+        $workstation = (new \BO\Zmsbackend\Helper\User($request, 2))->checkPermissions('logs');
         $searchQuery = Validator::param('searchQuery')->isString()->setDefault(null)->getValue();
         $service = Validator::param('service')->isString()->setDefault(null)->getValue();
         $provider = Validator::param('provider')->isString()->setDefault(null)->getValue();
@@ -43,6 +43,14 @@ class ProcessLog extends \BO\Zmsbackend\Api\BaseController
         $resolvedScopeIds = null;
         if ($scopeIds !== null && $scopeIds !== '') {
             $resolvedScopeIds = array_values(array_filter(array_map('intval', explode(',', $scopeIds))));
+        }
+
+        $useraccount = $workstation->getUseraccount();
+        if (!$useraccount->isSuperUser()) {
+            $allowedScopeIds = $useraccount->getDepartmentList()->getUniqueScopeList()->getIds();
+            $resolvedScopeIds = $resolvedScopeIds === null
+                ? $allowedScopeIds
+                : array_values(array_intersect($allowedScopeIds, $resolvedScopeIds));
         }
 
         $query = new Query();
