@@ -37,6 +37,7 @@ RUN docker-apt-clean-install \
         #libgif-dev \
         #libgmp-dev \
         libicu-dev \
+        libonig-dev \
         libjpeg-dev \
         libpng-dev \
         #libpq-dev \
@@ -61,8 +62,10 @@ RUN docker-apt-clean-install \
 ENV TZ=Europe/Berlin
 
 # configure and install PHP extensions
-# Official 8.6 images omit mbstring. mb_ereg is unused here, and PHP 8.6
-# deprecates it, so build mbstring without the oniguruma regex backend.
+# Official 8.6 images omit mbstring. libonig-dev lets the installer build it
+# with its default oniguruma backend. Install one extension at a time: these
+# images are ZTS, and one parallel docker-php-ext-install races at
+# install-modules (cp: cannot stat 'modules/*').
 RUN docker-php-ext-configure calendar \
     && docker-php-ext-configure gd \
         --with-freetype \
@@ -70,11 +73,7 @@ RUN docker-php-ext-configure calendar \
         --with-webp \
     && docker-php-ext-configure intl \
         --enable-intl \
-    && docker-php-ext-configure mbstring \
-        --disable-mbregex \
-    # Install one extension at a time. PHP 8.6 images are ZTS, and
-    # docker-php-ext-install -j across several extensions races at
-    # install-modules (cp: cannot stat 'modules/*').
+    && set -e \
     && for ext in bcmath bz2 calendar gd gettext intl mbstring opcache pdo_mysql soap zip; do \
         docker-php-ext-install -j"$(nproc)" "$ext"; \
     done \

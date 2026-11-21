@@ -79,7 +79,7 @@ RUN apt-get update \
       "chromium-common=${CHROMIUM_VERSION}" \
  && apt-mark hold chromium chromium-driver chromium-common \
  && docker-php-ext-configure gd --with-freetype --with-jpeg \
- && docker-php-ext-configure mbstring --disable-mbregex \
+ && set -e \
  && for ext in intl gd mbstring pdo pdo_mysql zip calendar; do \
       docker-php-ext-install -j"$(nproc)" "$ext"; \
     done \
