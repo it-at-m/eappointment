@@ -44,14 +44,14 @@
       "description": "Stay on the PHP 8.4 base image tags. Refresh the digest only.",
       "matchDatasources": ["docker"],
       "matchPackageNames": ["php"],
-      "matchFileNames": ["zmsbase/php84/**"],
+      "matchFileNames": ["zmsbase/php84/**", "zmsbase/php84-local/**"],
       "allowedVersions": "/^8\\.4-(fpm|apache)-trixie$/"
     },
     {
       "description": "Stay on the PHP 8.6 base image tags. Refresh the digest only.",
       "matchDatasources": ["docker"],
       "matchPackageNames": ["php"],
-      "matchFileNames": ["zmsbase/php86/**"],
+      "matchFileNames": ["zmsbase/php86/**", "zmsbase/php86-local/**"],
       "allowedVersions": "/^8\\.6-(fpm|apache)-trixie$/"
     },
     {
