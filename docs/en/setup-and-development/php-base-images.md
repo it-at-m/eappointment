@@ -8,24 +8,26 @@ Infrastructure foundation: the [`zmsbase`](https://github.com/it-at-m/eappointme
 
 ## Image variants and usage
 
-Based on [`.github/workflows/zmsbase-build-images.yaml`](https://github.com/it-at-m/eappointment/blob/main/.github/workflows/zmsbase-build-images.yaml), the project publishes two groups of images:
+Based on [`.github/workflows/zmsbase-build-images.yaml`](https://github.com/it-at-m/eappointment/blob/main/.github/workflows/zmsbase-build-images.yaml), the project publishes these images:
 
 - `8.4-base` and `8.4-dev` from `zmsbase/php84/Dockerfile`
 - `8.4-local-amd64` and `8.4-local-arm64` from `zmsbase/php84-local/Dockerfile`
+- `8.6-base` and `8.6-dev` from `zmsbase/php86/Dockerfile` (PHP 8.6.0, released 19 November 2026)
+- `8.6-local-amd64` and `8.6-local-arm64` from `zmsbase/php86-local/Dockerfile`
 
 The role split is:
 
-- Local images (`8.4-local-*`) are intended for local development and `zmsautomation`. Devcontainer defaults to `8.4-local-*` via `ZMS_PHP_BASE_TAG`.
-- Non-local images (`8.4-base`, `8.4-dev`) are intended for production/runtime-aligned environments. Module images and CI use `8.4-base` and `8.4-dev`.
+- Local images (`8.4-local-*`) are intended for local development and `zmsautomation`. Devcontainer defaults to `8.4-local-*` via `ZMS_PHP_BASE_TAG`. `8.6-local-*` is available for trying PHP 8.6.
+- Non-local images (`8.4-base`, `8.4-dev`) are intended for production/runtime-aligned environments. Module images and CI use `8.4-base` and `8.4-dev`. `8.6-base` and `8.6-dev` are built alongside them and are not wired into module images yet.
 
 This dual-architecture local setup supports development on macOS Apple Silicon and other non-amd64 environments while still providing linux/amd64 compatibility.
 
 ## Local architecture support
 
-The `php_v8_4_local` job builds single-architecture tags in a matrix:
+The `php_v8_4_local` and `php_v8_6_local` jobs build single-architecture tags in a matrix:
 
-- `linux/amd64` on `ubuntu-latest` -> `8.4-local-amd64`
-- `linux/arm64` on `ubuntu-24.04-arm` -> `8.4-local-arm64`
+- `linux/amd64` on `ubuntu-latest` -> `8.4-local-amd64` and `8.6-local-amd64`
+- `linux/arm64` on `ubuntu-24.04-arm` -> `8.4-local-arm64` and `8.6-local-arm64`
 
 Devcontainer sets `ZMS_PHP_BASE_TAG` and pulls that image via [`.devcontainer/scripts/sync-php-base-tag.sh`](https://github.com/it-at-m/eappointment/blob/main/.devcontainer/scripts/sync-php-base-tag.sh) before Compose starts.
 
@@ -36,7 +38,7 @@ Workflow: [🐳 Build ZMS base images](https://github.com/it-at-m/eappointment/b
 It runs on:
 
 - weekly schedule on `main` (Mondays `0 3 * * 1` UTC ≈ 05:00 Europe/Berlin in summer; GitHub runs scheduled workflows on the default branch only)
-- manual `workflow_dispatch` on any branch (use after changing `zmsbase/` on a feature branch before CI needs new images)
+- manual `workflow_dispatch` on any branch (use after changing `zmsbase/` on a feature branch before CI needs new images). The `php_version` input builds `all`, `8.4`, or `8.6`; the weekly schedule always builds every line.
 
 Each image job logs in to GHCR, builds image targets, validates PHP startup (`php-fpm -t` or `php -v`), and pushes resulting tags to:
 
