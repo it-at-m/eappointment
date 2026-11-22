@@ -1425,7 +1425,7 @@ public final class MyAppointmentsStep {
                         + "if(n.nodeType===3){buf+=' '+(n.nodeValue||'');continue;}"
                         + "var next=[];"
                         + "if(n.shadowRoot)next.push(n.shadowRoot);"
-                        + "if(n.assignedNodes){try{var a=n.assignedNodes({flatten:true});"
+                        + "if(n.assignedNodes){try{var a=n.assignedNodes();"
                         + "for(var j=0;j<a.length;j++)next.push(a[j]);}catch(e){}}"
                         + "var c=n.childNodes;if(c)for(var i=0;i<c.length;i++)next.push(c[i]);"
                         + "for(var k=next.length-1;k>=0;k--)st.push(next[k]);}"
@@ -1435,11 +1435,18 @@ public final class MyAppointmentsStep {
                         + "var isCard=n.classList&&n.classList.contains('card');"
                         + "if(isCard||(!cardOnly&&tag==='MUC-CARD'))texts.push(textOf(n));}"
                         + "if(n.shadowRoot)stack.push(n.shadowRoot);"
-                        + "if(n.assignedNodes){try{var a=n.assignedNodes({flatten:true});"
+                        + "if(n.assignedNodes){try{var a=n.assignedNodes();"
                         + "for(var j=0;j<a.length;j++)stack.push(a[j]);}catch(e){}}"
                         + "var c=n.childNodes;if(c)for(var i=0;i<c.length;i++)stack.push(c[i]);}"
                         + "return texts;";
-        Object raw = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script, cardClassOnly);
+        Object raw;
+        try {
+            raw = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script, cardClassOnly);
+        } catch (JavascriptException e) {
+            ScenarioLogManager.getLogger()
+                    .warn("zmscitizenview: appointment card text probe failed, treating as empty", e);
+            return java.util.List.of();
+        }
         if (!(raw instanceof java.util.List<?> rows)) {
             return java.util.List.of();
         }
@@ -1741,8 +1748,8 @@ public final class MyAppointmentsStep {
         String script =
                 "function textOf(n){var s='';if(!n)return s;if(n.nodeType===3)return n.nodeValue||'';"
                         + "if(n.shadowRoot)s+=' '+textOf(n.shadowRoot);"
-                        + "if(n.assignedNodes){var a=n.assignedNodes({flatten:true});"
-                        + "for(var j=0;j<a.length;j++)s+=' '+textOf(a[j]);}"
+                        + "if(n.assignedNodes){try{var a=n.assignedNodes();"
+                        + "for(var j=0;j<a.length;j++)s+=' '+textOf(a[j]);}catch(e){}}"
                         + "var c=n.childNodes;if(c)for(var i=0;i<c.length;i++)s+=' '+textOf(c[i]);"
                         + "return s;}"
                         + "function walk(n,fn){if(!n)return null;var r=fn(n);if(r)return r;"
