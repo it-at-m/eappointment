@@ -1221,20 +1221,20 @@
         },
         {
             "name": "league/climate",
-            "version": "3.12.0",
+            "version": "3.12.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/thephpleague/climate.git",
-                "reference": "653297fb93b4702f3c02ca9dd662f123208f765c"
+                "reference": "f54b411e2a9670ce4d6264ccf771f8af2e0e40ae"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/thephpleague/climate/zipball/653297fb93b4702f3c02ca9dd662f123208f765c",
-                "reference": "653297fb93b4702f3c02ca9dd662f123208f765c",
+                "url": "https://api.github.com/repos/thephpleague/climate/zipball/f54b411e2a9670ce4d6264ccf771f8af2e0e40ae",
+                "reference": "f54b411e2a9670ce4d6264ccf771f8af2e0e40ae",
                 "shasum": ""
             },
             "require": {
-                "php": "^7.3 || ^8.0",
+                "php": "^8.1",
                 "psr/log": "^1.0 || ^2.0 || ^3.0",
                 "seld/cli-prompt": "^1.0"
             },
@@ -1281,9 +1281,10 @@
             ],
             "support": {
                 "issues": "https://github.com/thephpleague/climate/issues",
-                "source": "https://github.com/thephpleague/climate/tree/3.12.0"
+                "source": "https://github.com/thephpleague/climate/tree/3.12.1"
             },
-            "time": "2026-08-27T08:24:22+00:00"
+            "time": "2026-11-22T18:58:23+00:00",
+            "published-time": "2026-11-22T18:59:16+00:00"
         },
         {
             "name": "league/commonmark",
@@ -4243,7 +4244,8 @@
                 "issues": "https://github.com/Seldaek/cli-prompt/issues",
                 "source": "https://github.com/Seldaek/cli-prompt/tree/1.0.4"
             },
-            "time": "2020-12-15T21:32:01+00:00"
+            "time": "2020-12-15T21:32:01+00:00",
+            "published-time": "2020-12-15T21:34:21+00:00"
         },
         {
             "name": "slim/http-cache",
