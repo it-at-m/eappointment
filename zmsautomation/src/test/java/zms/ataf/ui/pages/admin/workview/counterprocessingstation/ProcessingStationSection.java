@@ -7,8 +7,10 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.ElementClickInterceptedException;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.TimeoutException;
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.ExpectedCondition;
@@ -188,20 +190,76 @@ public class ProcessingStationSection extends CounterProcessingStationPage {
 
     /** After the no-show lockout ends, the bold lockout text is replaced by the call link. */
     public void waitUntilCustomerCallLinkVisible(String name) {
+        long[] lastReload = {System.currentTimeMillis()};
+        int[] reloads = {0};
         WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(90));
         wait.ignoring(StaleElementReferenceException.class);
         wait.withMessage("Call link for \"" + name + "\" did not return after ending the no-show lockout.");
-        wait.until(driver -> queueCallLinkDisplayed(name));
+        wait.until(driver -> {
+            if (queueCallLinkDisplayed(name)) {
+                return true;
+            }
+            long now = System.currentTimeMillis();
+            boolean due = reloads[0] < 3 && now - lastReload[0] >= 12_000L;
+            // A short loader is the queue partial still arriving. A loader that never
+            // finishes, or the no-show sentence with no link, is the Edge page that kept
+            // the pre-update document. The ajax .reload link aborts that request on
+            // Firefox, so this is a full navigation (ZMSKVR-1633).
+            if (queueLoaderVisible(driver) && !due) {
+                return false;
+            }
+            if (due && (queueLoaderVisible(driver) || noShowSentenceShown(driver, name))) {
+                reloads[0]++;
+                lastReload[0] = now;
+                ScenarioLogManager.getLogger()
+                        .warn(
+                                "Call link for \"{}\" still missing after the no-show lockout; loading the workstation again ({}/3)",
+                                name,
+                                reloads[0]);
+                reloadWorkstationPage();
+            }
+            return queueCallLinkDisplayed(name);
+        });
     }
 
     private boolean queueCallLinkDisplayed(String name) {
         for (WebElement link : DRIVER.findElements(queueCallLinkByName(name))) {
             try {
+                ((JavascriptExecutor) DRIVER)
+                        .executeScript(
+                                "arguments[0].scrollIntoView({block:'center',inline:'nearest'});", link);
                 if (link.isDisplayed()) {
                     return true;
                 }
             } catch (StaleElementReferenceException ignored) {
                 // The reload replaced the row.
+            }
+        }
+        return false;
+    }
+
+    private static boolean queueLoaderVisible(WebDriver driver) {
+        for (WebElement loader : driver.findElements(By.cssSelector("div.loader"))) {
+            try {
+                if (loader.isDisplayed()) {
+                    return true;
+                }
+            } catch (StaleElementReferenceException ignored) {
+                // The queue partial replaced the loader.
+            }
+        }
+        return false;
+    }
+
+    private static boolean noShowSentenceShown(WebDriver driver, String name) {
+        for (WebElement table : driver.findElements(By.id("table-queued-appointments"))) {
+            try {
+                String text = table.getText();
+                if (text.contains(name) && text.contains("nicht anwesend")) {
+                    return true;
+                }
+            } catch (StaleElementReferenceException ignored) {
+                // The queue partial replaced the table.
             }
         }
         return false;
