@@ -913,9 +913,14 @@ public final class MyAppointmentsStep {
             reloadMyAppointments();
             return;
         }
-        long settle = System.currentTimeMillis() + 20_000L;
-        while (System.currentTimeMillis() < settle && !myAppointmentsFinishedLoading()) {
+        // The shell (Neuer Termin) appears before the cards. Reloading then drops the session
+        // that Keycloak just established and the next overview stays empty (ZMSKVR-1576).
+        long settle = System.currentTimeMillis() + 30_000L;
+        while (System.currentTimeMillis() < settle && !shadow.shadowDomContainsText("Terminnummer")) {
             requestMyAppointmentsAuthReplay();
+            if (shadow.shadowDomContainsText("Ihre Termine können zur Zeit nicht geladen werden.")) {
+                break;
+            }
             try {
                 Thread.sleep(250L);
             } catch (InterruptedException e) {
@@ -923,11 +928,9 @@ public final class MyAppointmentsStep {
                 return;
             }
         }
-        // Keycloak returns to appointment-overview.html without the cache-bust, and that
-        // page can keep the Neuer Termin shell without fetching the appointment cards.
-        if (!shadow.shadowDomContainsText("Terminnummer")) {
+        if (shadow.shadowDomContainsText("Ihre Termine können zur Zeit nicht geladen werden.")) {
             ScenarioLogManager.getLogger()
-                    .warn("zmscitizenview: re-login returned Meine Termine without a card; opening it again");
+                    .warn("zmscitizenview: re-login returned the appointment load error; opening Meine Termine again");
             reloadMyAppointments();
         }
     }
@@ -1352,6 +1355,11 @@ public final class MyAppointmentsStep {
                     loadError
                             || shadow.shadowDomContainsText("Neuer Termin")
                             || shadow.shadowDomContainsText("Kommende Termine");
+            // Neuer Termin paints from local storage before the appointment request. Replaying
+            // the auth event is what starts that request; a reload at this point drops the session.
+            if (shellUp && !last.contains(serviceName)) {
+                requestMyAppointmentsAuthReplay();
+            }
             long now = System.currentTimeMillis();
             // A reload can land on a blank overview. The shell check then never fires again,
             // and the rest of the wait polls an empty page.
