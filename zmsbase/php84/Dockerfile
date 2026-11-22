@@ -6,7 +6,7 @@ ARG PHP_VERSION="8.4-fpm-trixie"
 FROM composer:2@sha256:4d71c3c2109c61d5415544264b59ad4087e4c5b7244481723664138fd36d5040 AS composer-image
 
 # php version to actually build
-FROM php:8.4-fpm-trixie@sha256:a2b6a0ba2563b7695f32add1e9e0561b64cc112b908951c5e87f711a7253ce8e AS base
+FROM php:8.4-fpm-trixie@sha256:495ab94788034640ddd6fb313476e75570261622c42704e5ae02047b8d934ea0 AS base
 
 # bash as default shell should exit on non-zero exit-codes in piped commands
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
