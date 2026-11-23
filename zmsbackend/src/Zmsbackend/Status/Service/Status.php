@@ -66,8 +66,10 @@ class Status extends \BO\Zmsbackend\Base
     }
 
     /**
-     * Slots from today onward whose bookings exceed all Arbeitsplätze on the opening.
-     * slot.intern is that full count. slot.public is the smaller internet share and is not used here.
+     * Slots from today onward whose bookings exceed the opening's current Arbeitsplätze.
+     * Overlapping openings at the same time add up, as on the availability day view.
+     * slot.intern is not used: it can still show the old number after the opening changed.
+     * slot.public, the smaller internet share, is not used either.
      * Grouped like active sessions. A consistent read on the reader: no FOR UPDATE, so it does not take row locks.
      * Skipped while calculateSlots --delete is running, same as the other slot scans.
      *
@@ -82,17 +84,27 @@ class Status extends \BO\Zmsbackend\Base
                     st.Bezeichnung AS scopeName,
                     COUNT(*) AS overbookedSlots
              FROM (
-                 SELECT s.slotID, s.scopeID
-                 FROM slot s
-                 INNER JOIN slot_process sp ON sp.slotID = s.slotID
-                 WHERE s.status IN ("free", "full")
-                   AND (
-                     s.year > :yearA
-                     OR (s.year = :yearB AND s.month > :monthA)
-                     OR (s.year = :yearC AND s.month = :monthB AND s.day >= :day)
-                   )
-                 GROUP BY s.slotID, s.scopeID, s.intern
-                 HAVING COUNT(sp.processID) > s.intern
+                 SELECT perAvailability.scopeID
+                 FROM (
+                     SELECT s.scopeID, s.year, s.month, s.day, s.time,
+                            s.availabilityID,
+                            o.appointment_workstation_count AS capacity,
+                            COUNT(DISTINCT sp.processID) AS occupied
+                     FROM slot s
+                     INNER JOIN oeffnungszeit o ON o.OeffnungszeitID = s.availabilityID
+                     LEFT JOIN slot_process sp ON sp.slotID = s.slotID
+                     WHERE s.status IN ("free", "full")
+                       AND (
+                         s.year > :yearA
+                         OR (s.year = :yearB AND s.month > :monthA)
+                         OR (s.year = :yearC AND s.month = :monthB AND s.day >= :day)
+                       )
+                     GROUP BY s.scopeID, s.year, s.month, s.day, s.time,
+                              s.availabilityID, o.appointment_workstation_count
+                 ) perAvailability
+                 GROUP BY perAvailability.scopeID, perAvailability.year, perAvailability.month,
+                          perAvailability.day, perAvailability.time
+                 HAVING SUM(perAvailability.occupied) > SUM(perAvailability.capacity)
              ) overbooked
              INNER JOIN standort st ON st.StandortID = overbooked.scopeID
              INNER JOIN behoerde beh ON beh.BehoerdenID = st.BehoerdenID
