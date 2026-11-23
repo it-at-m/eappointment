@@ -44,12 +44,16 @@ RUN ln -snf "/usr/share/zoneinfo/${TZ}" /etc/localtime \
 # System dependencies + PHP extensions
 # --------------------------------------------------
 # ATAF 0.3.4 ships Selenium 4.46, which speaks Chrome DevTools protocol 148-150.
-# Debian security ships a newer Chromium (153). That mismatch makes ChromeDriver
-# time out with "Timed out receiving message from renderer" on the first navigation.
-# Hold this pin until ATAF moves to a Selenium release that speaks a newer protocol.
-# Same version as .github/workflows/zmsautomation-workflow.yaml.
+# Debian security no longer publishes Chromium 150. A newer Chromium makes
+# ChromeDriver time out with "Timed out receiving message from renderer" on the
+# first navigation. Install this build from the snapshot that still has it on
+# amd64 and arm64. Hold the pin until ATAF moves to a newer Selenium.
+# Same version and snapshot as .github/workflows/zmsautomation-workflow.yaml.
 ARG CHROMIUM_VERSION=150.0.7871.181-1~deb13u1
-RUN apt-get update \
+ARG CHROMIUM_SNAPSHOT=20260724T213825Z
+RUN echo "deb [check-valid-until=no signed-by=/usr/share/keyrings/debian-archive-keyring.gpg] https://snapshot.debian.org/archive/debian-security/${CHROMIUM_SNAPSHOT} trixie-security main" \
+      > /etc/apt/sources.list.d/chromium-snapshot.list \
+ && apt-get update \
  && apt-get install -y --no-install-recommends --allow-downgrades \
       ca-certificates \
       curl \
@@ -77,6 +81,7 @@ RUN apt-get update \
       "chromium-driver=${CHROMIUM_VERSION}" \
       "chromium-common=${CHROMIUM_VERSION}" \
  && apt-mark hold chromium chromium-driver chromium-common \
+ && rm -f /etc/apt/sources.list.d/chromium-snapshot.list \
  && docker-php-ext-configure gd --with-freetype --with-jpeg \
  && docker-php-ext-install -j"$(nproc)" \
       intl \
