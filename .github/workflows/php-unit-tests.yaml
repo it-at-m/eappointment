@@ -166,9 +166,9 @@ jobs:
           cd zmsbackend
           bin/importTestData --commit
           mkdir -p coverage
-          php -dzend_extension=xdebug.so -dxdebug.mode=coverage -dmemory_limit=2G -dopcache.enable=1 -dopcache.memory_consumption=128 \
+          pecl install pcov
+          php -dextension=pcov.so -dpcov.enabled=1 -dpcov.directory="$(pwd)/src" -dmemory_limit=2G -dopcache.enable=1 -dopcache.memory_consumption=128 \
             ./vendor/bin/phpunit -c phpunit.xml \
-            --coverage-html coverage/html \
             --coverage-clover coverage/clover.xml \
             --log-junit coverage/junit.xml \
             --display-deprecations --display-warnings
