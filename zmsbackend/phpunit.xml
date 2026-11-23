@@ -7,7 +7,6 @@
   </testsuites>
   <coverage>
     <report>
-      <html outputDirectory="./coverage/html"/>
       <clover outputFile="./coverage/clover.xml"/>
     </report>
   </coverage>

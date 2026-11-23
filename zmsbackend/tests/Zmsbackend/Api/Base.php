@@ -21,7 +21,6 @@ abstract class Base extends \BO\Slim\PhpUnit\Base
         $ns = $ref->getNamespaceName();
         $this->namespace = str_replace('BO\\Zmsbackend\\Tests\\', 'BO\\Zmsbackend\\', $ns) . '\\';
         \BO\Zmsbackend\Connection\Select::setTransaction();
-        \BO\Zmsbackend\Connection\Select::setProfiling();
     }
 
     #[\Override]
