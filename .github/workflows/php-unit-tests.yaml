@@ -164,7 +164,7 @@ jobs:
           zmsbackend/bin/configure
           export ZMS_DLDB_PATH="$GITHUB_WORKSPACE/zmsbackend/data"
           cd zmsbackend
-          bin/importTestData --commit
+          bin/importTestData --commit --withoutcalculation
           mkdir -p coverage
           pecl install pcov
           php -dextension=pcov.so -dpcov.enabled=1 -dpcov.directory="$(pwd)/src" -dmemory_limit=2G -dopcache.enable=1 -dopcache.memory_consumption=128 \
