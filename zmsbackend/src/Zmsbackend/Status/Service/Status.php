@@ -35,6 +35,7 @@ class Status extends \BO\Zmsbackend\Base
             $entity['processes']['outdatedOldest'] = $outdated['oldest'];
             $freeSlots = $this->readFreeSlots();
             $entity['processes']['freeSlots'] = $freeSlots['cnt'];
+            $entity['overbooking'] = $this->readOverbookedSlotsByDepartment($now);
         }
 
         $entity['mail'] = $this->readMailStats();
@@ -62,6 +63,75 @@ class Status extends \BO\Zmsbackend\Base
         }
 
         return $started > $finished && ($startedAt + (15 * 60)) > $now->getTimestamp();
+    }
+
+    /**
+     * Slots from today onward whose bookings exceed all Arbeitsplätze on the opening.
+     * slot.intern is that full count. slot.public is the smaller internet share and is not used here.
+     * Grouped like active sessions. A consistent read on the reader: no FOR UPDATE, so it does not take row locks.
+     * Skipped while calculateSlots --delete is running, same as the other slot scans.
+     *
+     * @return array{total: int, departments: array<int|string, array{name: string, overbookedSlots: int, scopes: array<int|string, array{name: string, overbookedSlots: int}>}>}
+     */
+    protected function readOverbookedSlotsByDepartment(\DateTimeImmutable $now): array
+    {
+        $rows = $this->getReader()->fetchAll(
+            'SELECT beh.BehoerdenID AS departmentId,
+                    beh.Name AS departmentName,
+                    st.StandortID AS scopeId,
+                    st.Bezeichnung AS scopeName,
+                    COUNT(*) AS overbookedSlots
+             FROM (
+                 SELECT s.slotID, s.scopeID
+                 FROM slot s
+                 INNER JOIN slot_process sp ON sp.slotID = s.slotID
+                 WHERE s.status IN ("free", "full")
+                   AND (
+                     s.year > :yearA
+                     OR (s.year = :yearB AND s.month > :monthA)
+                     OR (s.year = :yearC AND s.month = :monthB AND s.day >= :day)
+                   )
+                 GROUP BY s.slotID, s.scopeID, s.intern
+                 HAVING COUNT(sp.processID) > s.intern
+             ) overbooked
+             INNER JOIN standort st ON st.StandortID = overbooked.scopeID
+             INNER JOIN behoerde beh ON beh.BehoerdenID = st.BehoerdenID
+             GROUP BY beh.BehoerdenID, beh.Name, st.StandortID, st.Bezeichnung',
+            [
+                'yearA' => (int) $now->format('Y'),
+                'yearB' => (int) $now->format('Y'),
+                'yearC' => (int) $now->format('Y'),
+                'monthA' => (int) $now->format('n'),
+                'monthB' => (int) $now->format('n'),
+                'day' => (int) $now->format('j'),
+            ]
+        );
+
+        $departments = [];
+        $total = 0;
+        foreach ($rows as $row) {
+            $departmentId = $row['departmentId'];
+            $scopeId = $row['scopeId'];
+            $overbookedSlots = (int) $row['overbookedSlots'];
+            if (!isset($departments[$departmentId])) {
+                $departments[$departmentId] = [
+                    'name' => $row['departmentName'],
+                    'overbookedSlots' => 0,
+                    'scopes' => [],
+                ];
+            }
+            $departments[$departmentId]['scopes'][$scopeId] = [
+                'name' => $row['scopeName'],
+                'overbookedSlots' => $overbookedSlots,
+            ];
+            $departments[$departmentId]['overbookedSlots'] += $overbookedSlots;
+            $total += $overbookedSlots;
+        }
+
+        return [
+            'total' => $total,
+            'departments' => $departments,
+        ];
     }
 
     /**
