@@ -66,8 +66,8 @@ ENV TZ=Europe/Berlin
 # with its default oniguruma backend. Install one extension at a time: these
 # images are ZTS, and one parallel docker-php-ext-install races at
 # install-modules (cp: cannot stat 'modules/*').
-# opcache's JIT still loses that race inside `make -j install`, so build it
-# with one job.
+# Opcache is already compiled into the official 8.6 binary. Installing it again
+# builds no modules/*.so, so make install fails.
 RUN docker-php-ext-configure calendar \
     && docker-php-ext-configure gd \
         --with-freetype \
@@ -79,7 +79,6 @@ RUN docker-php-ext-configure calendar \
     && for ext in bcmath bz2 calendar gd gettext intl mbstring pdo_mysql soap zip; do \
         docker-php-ext-install -j"$(nproc)" "$ext" || exit 1; \
     done \
-    && docker-php-ext-install -j1 opcache \
     && rm -rf /usr/src/
 
 FROM base AS dev
