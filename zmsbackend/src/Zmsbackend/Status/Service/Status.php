@@ -67,135 +67,30 @@ class Status extends \BO\Zmsbackend\Base
 
     /**
      * Slots from today through the next 180 days where appointments exceed the opening's
-     * current Arbeitsplätze. The time grid and the repeat rules are the opening's, as on
-     * the availability day view, so a cancelled slot row still counts. Overlapping openings
-     * at the same time add up. Grouped like active sessions.
-     * A consistent read on the reader: no FOR UPDATE, so it does not take row locks.
+     * current Arbeitsplätze. The database only reads that date range plus the openings.
+     * The time grid is compared here, as on the availability day view, so a cancelled
+     * slot row still counts. Overlapping openings at the same time add up.
+     * Grouped like active sessions. A consistent read: no FOR UPDATE, so it does not take row locks.
      * Skipped while calculateSlots --delete is running, same as the other slot scans.
      *
      * @return array{total: int, departments: array<int|string, array{name: string, overbookedSlots: int, scopes: array<int|string, array{name: string, overbookedSlots: int}>}>}
      */
     protected function readOverbookedSlotsByDepartment(\DateTimeImmutable $now): array
     {
-        $rows = $this->getReader()->fetchAll(
-            'SELECT beh.BehoerdenID AS departmentId,
-                    beh.Name AS departmentName,
-                    st.StandortID AS scopeId,
-                    st.Bezeichnung AS scopeName,
-                    COUNT(*) AS overbookedSlots
-             FROM (
-                 SELECT occ.scope_id
-                 FROM (
-                     SELECT covered.scope_id, covered.d, covered.t,
-                            COUNT(DISTINCT covered.BuergerID) AS occupied
-                     FROM (
-                         SELECT b.StandortID AS scope_id, b.Datum AS d, b.BuergerID,
-                                ADDTIME(b.Uhrzeit, SEC_TO_TIME(steps.n * sized.slot_seconds)) AS t
-                         FROM buerger b
-                         JOIN (
-                             SELECT b2.BuergerID, MIN(TIME_TO_SEC(o.time_slot)) AS slot_seconds
-                             FROM buerger b2
-                             JOIN standort st2 ON st2.StandortID = b2.StandortID
-                             JOIN oeffnungszeit o ON o.scope_id = b2.StandortID
-                              AND b2.Datum BETWEEN o.start_date AND o.end_date
-                              AND b2.Uhrzeit >= o.appointment_start_time
-                              AND b2.Uhrzeit < o.appointment_end_time
-                              AND o.time_slot > "00:00:00"
-                              AND (o.weekday & (1 << (DAYOFWEEK(b2.Datum) - 1))) <> 0
-                              AND (
-                                   (o.every_x_weeks > 0 AND (
-                                       o.every_x_weeks = 1
-                                       OR MOD(DATEDIFF(
-                                           DATE_SUB(b2.Datum, INTERVAL WEEKDAY(b2.Datum) DAY),
-                                           DATE_SUB(o.start_date, INTERVAL WEEKDAY(o.start_date) DAY)
-                                       ), o.every_x_weeks * 7) = 0
-                                   ))
-                                   OR (o.every_other_week > 0 AND (
-                                       (o.every_other_week < 5 AND CEIL(DAY(b2.Datum) / 7) = o.every_other_week)
-                                       OR (o.every_other_week >= 5 AND DAY(b2.Datum) > DAY(LAST_DAY(b2.Datum)) - 7)
-                                   ))
-                                   OR (o.every_x_weeks = 0 AND o.every_other_week = 0)
-                              )
-                              AND NOT (
-                                   DATEDIFF(o.end_date, o.start_date) > 1
-                                   AND EXISTS (
-                                       SELECT 1 FROM feiertage f
-                                       WHERE f.Datum = b2.Datum
-                                         AND (f.BehoerdenID = st2.BehoerdenID OR f.BehoerdenID = 0)
-                                   )
-                              )
-                             WHERE b2.Datum >= :fromDay
-                               AND b2.Datum < :untilDay
-                               AND b2.status <> "fake"
-                               AND (b2.istFolgeterminvon IS NULL OR b2.istFolgeterminvon = 0)
-                             GROUP BY b2.BuergerID
-                         ) sized ON sized.BuergerID = b.BuergerID
-                         JOIN (
-                             SELECT ones.n + tens.n * 10 + hundreds.n * 100 AS n
-                             FROM (
-                                 SELECT 0 n UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3
-                                 UNION ALL SELECT 4 UNION ALL SELECT 5 UNION ALL SELECT 6
-                                 UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9
-                             ) ones
-                             JOIN (
-                                 SELECT 0 n UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3
-                                 UNION ALL SELECT 4 UNION ALL SELECT 5 UNION ALL SELECT 6
-                                 UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9
-                             ) tens
-                             JOIN (SELECT 0 n UNION ALL SELECT 1 UNION ALL SELECT 2) hundreds
-                         ) steps ON steps.n < IFNULL(b.hatFolgetermine, 0) + 1
-                         WHERE b.status <> "fake"
-                           AND (b.istFolgeterminvon IS NULL OR b.istFolgeterminvon = 0)
-                     ) covered
-                     GROUP BY covered.scope_id, covered.d, covered.t
-                 ) occ
-                 JOIN oeffnungszeit op ON op.scope_id = occ.scope_id
-                    AND occ.d BETWEEN op.start_date AND op.end_date
-                    AND occ.t >= op.appointment_start_time
-                    AND occ.t < op.appointment_end_time
-                    AND op.appointment_start_time > "00:00:00"
-                    AND (op.weekday & (1 << (DAYOFWEEK(occ.d) - 1))) <> 0
-                    AND (
-                         (op.every_x_weeks > 0 AND (
-                             op.every_x_weeks = 1
-                             OR MOD(DATEDIFF(
-                                 DATE_SUB(occ.d, INTERVAL WEEKDAY(occ.d) DAY),
-                                 DATE_SUB(op.start_date, INTERVAL WEEKDAY(op.start_date) DAY)
-                             ), op.every_x_weeks * 7) = 0
-                         ))
-                         OR (op.every_other_week > 0 AND (
-                             (op.every_other_week < 5 AND CEIL(DAY(occ.d) / 7) = op.every_other_week)
-                             OR (op.every_other_week >= 5 AND DAY(occ.d) > DAY(LAST_DAY(occ.d)) - 7)
-                         ))
-                         OR (op.every_x_weeks = 0 AND op.every_other_week = 0)
-                    )
-                 JOIN standort scope_row ON scope_row.StandortID = occ.scope_id
-                 WHERE NOT (
-                     DATEDIFF(op.end_date, op.start_date) > 1
-                     AND EXISTS (
-                         SELECT 1 FROM feiertage f
-                         WHERE f.Datum = occ.d
-                           AND (f.BehoerdenID = scope_row.BehoerdenID OR f.BehoerdenID = 0)
-                     )
-                 )
-                 GROUP BY occ.scope_id, occ.d, occ.t, occ.occupied
-                 HAVING occ.occupied > SUM(op.appointment_workstation_count)
-             ) overbooked
-             INNER JOIN standort st ON st.StandortID = overbooked.scope_id
-             INNER JOIN behoerde beh ON beh.BehoerdenID = st.BehoerdenID
-             GROUP BY beh.BehoerdenID, beh.Name, st.StandortID, st.Bezeichnung',
-            [
-                'fromDay' => $now->format('Y-m-d'),
-                'untilDay' => $now->modify('+180 days')->format('Y-m-d'),
-            ]
+        $fromDay = $now->format('Y-m-d');
+        $untilDay = $now->modify('+180 days')->format('Y-m-d');
+        $counts = $this->countOverbookedSlots(
+            $this->readOverbookingAppointments($fromDay, $untilDay),
+            $this->readOverbookingOpenings($fromDay, $untilDay),
+            $this->readOverbookingHolidays($fromDay, $untilDay)
         );
 
         $departments = [];
         $total = 0;
-        foreach ($rows as $row) {
+        foreach ($counts as $row) {
             $departmentId = $row['departmentId'];
             $scopeId = $row['scopeId'];
-            $overbookedSlots = (int) $row['overbookedSlots'];
+            $overbookedSlots = $row['overbookedSlots'];
             if (!isset($departments[$departmentId])) {
                 $departments[$departmentId] = [
                     'name' => $row['departmentName'],
@@ -215,6 +110,317 @@ class Status extends \BO\Zmsbackend\Base
             'total' => $total,
             'departments' => $departments,
         ];
+    }
+
+    /**
+     * @return array<int, array{id: int|string, scopeId: int|string, date: string, startSeconds: int, slots: int}>
+     */
+    protected function readOverbookingAppointments(string $fromDay, string $untilDay): array
+    {
+        return $this->getReader()->fetchAll(
+            'SELECT b.BuergerID AS id,
+                    b.StandortID AS scopeId,
+                    b.Datum AS date,
+                    TIME_TO_SEC(b.Uhrzeit) AS startSeconds,
+                    IFNULL(b.hatFolgetermine, 0) + 1 AS slots
+             FROM buerger b
+             WHERE b.Datum >= :fromDay
+               AND b.Datum < :untilDay
+               AND b.status <> "fake"
+               AND (b.istFolgeterminvon IS NULL OR b.istFolgeterminvon = 0)',
+            [
+                'fromDay' => $fromDay,
+                'untilDay' => $untilDay,
+            ]
+        );
+    }
+
+    /**
+     * @return array<int|string, array<int, array<string, mixed>>>
+     */
+    protected function readOverbookingOpenings(string $fromDay, string $untilDay): array
+    {
+        $rows = $this->getReader()->fetchAll(
+            'SELECT o.scope_id AS scopeId,
+                    st.Bezeichnung AS scopeName,
+                    st.BehoerdenID AS departmentId,
+                    beh.Name AS departmentName,
+                    o.start_date AS startDate,
+                    o.end_date AS endDate,
+                    TIME_TO_SEC(o.appointment_start_time) AS startSeconds,
+                    TIME_TO_SEC(o.appointment_end_time) AS endSeconds,
+                    TIME_TO_SEC(o.time_slot) AS slotSeconds,
+                    o.weekday AS weekday,
+                    o.every_x_weeks AS everyWeeks,
+                    o.every_other_week AS weekOfMonth,
+                    o.appointment_workstation_count AS capacity
+             FROM oeffnungszeit o
+             INNER JOIN standort st ON st.StandortID = o.scope_id
+             INNER JOIN behoerde beh ON beh.BehoerdenID = st.BehoerdenID
+             WHERE o.appointment_start_time > "00:00:00"
+               AND o.time_slot > "00:00:00"
+               AND o.end_date >= :fromDay
+               AND o.start_date < :untilDay',
+            [
+                'fromDay' => $fromDay,
+                'untilDay' => $untilDay,
+            ]
+        );
+        $openings = [];
+        foreach ($rows as $row) {
+            $start = new \DateTimeImmutable($row['startDate']);
+            $row['spanDays'] = (int) $start->diff(new \DateTimeImmutable($row['endDate']))->days;
+            $row['startMondayTs'] = $start->modify('monday this week')->getTimestamp();
+            $openings[$row['scopeId']][] = $row;
+        }
+
+        return $openings;
+    }
+
+    /**
+     * @return array<string, true>
+     */
+    protected function readOverbookingHolidays(string $fromDay, string $untilDay): array
+    {
+        $rows = $this->getReader()->fetchAll(
+            'SELECT Datum AS date, BehoerdenID AS departmentId
+             FROM feiertage
+             WHERE Datum >= :fromDay AND Datum < :untilDay',
+            [
+                'fromDay' => $fromDay,
+                'untilDay' => $untilDay,
+            ]
+        );
+        $holidays = [];
+        foreach ($rows as $row) {
+            $holidays[$row['date'] . '|' . $row['departmentId']] = true;
+        }
+
+        return $holidays;
+    }
+
+    /**
+     * @param array<int, array<string, mixed>> $appointments
+     * @param array<int|string, array<int, array<string, mixed>>> $openingsByScope
+     * @param array<string, true> $holidays
+     * @return array<int, array{departmentId: int|string, departmentName: string, scopeId: int|string, scopeName: string, overbookedSlots: int}>
+     */
+    protected function countOverbookedSlots(array $appointments, array $openingsByScope, array $holidays): array
+    {
+        $occupied = [];
+        $capacity = [];
+        $scopeInfo = [];
+        $days = [];
+        foreach ($appointments as $appointment) {
+            $this->markAppointmentSlots($appointment, $openingsByScope, $holidays, $days, $occupied, $capacity, $scopeInfo);
+        }
+
+        return $this->overbookedSlotRows($occupied, $capacity, $scopeInfo);
+    }
+
+    /**
+     * @param array<string, mixed> $appointment
+     * @param array<int|string, array<int, array<string, mixed>>> $openingsByScope
+     * @param array<string, true> $holidays
+     * @param array<string, array{bit: int, mondayTs: int, day: int, lastDay: int, date: string}> $days
+     * @param array<string, int> $occupied
+     * @param array<string, int> $capacity
+     * @param array<int|string, array<string, mixed>> $scopeInfo
+     */
+    protected function markAppointmentSlots(
+        array $appointment,
+        array $openingsByScope,
+        array $holidays,
+        array &$days,
+        array &$occupied,
+        array &$capacity,
+        array &$scopeInfo
+    ): void {
+        $placed = $this->openingsAtAppointment($appointment, $openingsByScope, $holidays, $days);
+        if ($placed === null) {
+            return;
+        }
+        $start = (int) $appointment['startSeconds'];
+        $steps = min(300, (int) $appointment['slots']);
+        for ($step = 0; $step < $steps; $step++) {
+            $time = $start + $step * $placed['slotSeconds'];
+            if ($time >= 86400) {
+                break;
+            }
+            $match = $this->capacityAtTime($placed['openings'], $time);
+            if ($match === null) {
+                continue;
+            }
+            $key = $appointment['scopeId'] . '|' . $appointment['date'] . '|' . $time;
+            $occupied[$key] = ($occupied[$key] ?? 0) + 1;
+            $capacity[$key] = $match['capacity'];
+            $scopeInfo[$appointment['scopeId']] = $match['opening'];
+        }
+    }
+
+    /**
+     * @param array<string, mixed> $appointment
+     * @param array<int|string, array<int, array<string, mixed>>> $openingsByScope
+     * @param array<string, true> $holidays
+     * @param array<string, array{bit: int, mondayTs: int, day: int, lastDay: int, date: string}> $days
+     * @return array{slotSeconds: int, openings: array<int, array<string, mixed>>}|null
+     */
+    protected function openingsAtAppointment(
+        array $appointment,
+        array $openingsByScope,
+        array $holidays,
+        array &$days
+    ): ?array {
+        $day = $this->overbookingDay((string) $appointment['date'], $days);
+        $active = [];
+        $slotSeconds = null;
+        foreach ($openingsByScope[$appointment['scopeId']] ?? [] as $opening) {
+            if (!$this->openingContainsStart($opening, $day, $holidays, (int) $appointment['startSeconds'])) {
+                continue;
+            }
+            $active[] = $opening;
+            $seconds = (int) $opening['slotSeconds'];
+            if ($slotSeconds === null || $seconds < $slotSeconds) {
+                $slotSeconds = $seconds;
+            }
+        }
+        if ($slotSeconds === null || $slotSeconds <= 0) {
+            return null;
+        }
+
+        return ['slotSeconds' => $slotSeconds, 'openings' => $active];
+    }
+
+    /**
+     * @param array<string, mixed> $opening
+     * @param array{bit: int, mondayTs: int, day: int, lastDay: int, date: string} $day
+     * @param array<string, true> $holidays
+     */
+    protected function openingContainsStart(array $opening, array $day, array $holidays, int $start): bool
+    {
+        if (!$this->openingCoversDate($opening, $day, $holidays)) {
+            return false;
+        }
+
+        return $start >= (int) $opening['startSeconds'] && $start < (int) $opening['endSeconds'];
+    }
+
+    /**
+     * @param array<int, array<string, mixed>> $openings
+     * @return array{capacity: int, opening: array<string, mixed>}|null
+     */
+    protected function capacityAtTime(array $openings, int $time): ?array
+    {
+        $sum = 0;
+        $matched = null;
+        foreach ($openings as $opening) {
+            if ($time < (int) $opening['startSeconds'] || $time >= (int) $opening['endSeconds']) {
+                continue;
+            }
+            $sum += (int) $opening['capacity'];
+            $matched = $opening;
+        }
+        if ($matched === null) {
+            return null;
+        }
+
+        return ['capacity' => $sum, 'opening' => $matched];
+    }
+
+    /**
+     * @param array<string, int> $occupied
+     * @param array<string, int> $capacity
+     * @param array<int|string, array<string, mixed>> $scopeInfo
+     * @return array<int, array{departmentId: int|string, departmentName: string, scopeId: int|string, scopeName: string, overbookedSlots: int}>
+     */
+    protected function overbookedSlotRows(array $occupied, array $capacity, array $scopeInfo): array
+    {
+        $counts = [];
+        foreach ($occupied as $key => $count) {
+            if ($count <= $capacity[$key]) {
+                continue;
+            }
+            $scopeId = explode('|', (string) $key, 2)[0];
+            $counts[$scopeId] = ($counts[$scopeId] ?? 0) + 1;
+        }
+        $rows = [];
+        foreach ($counts as $scopeId => $overbookedSlots) {
+            $info = $scopeInfo[$scopeId];
+            $rows[] = [
+                'departmentId' => $info['departmentId'],
+                'departmentName' => $info['departmentName'],
+                'scopeId' => $scopeId,
+                'scopeName' => $info['scopeName'],
+                'overbookedSlots' => $overbookedSlots,
+            ];
+        }
+
+        return $rows;
+    }
+
+    /**
+     * @param array<string, array{bit: int, mondayTs: int, day: int, lastDay: int, date: string}> $days
+     * @return array{bit: int, mondayTs: int, day: int, lastDay: int, date: string}
+     */
+    protected function overbookingDay(string $date, array &$days): array
+    {
+        if (!isset($days[$date])) {
+            $day = new \DateTimeImmutable($date);
+            $days[$date] = [
+                'date' => $date,
+                'bit' => 1 << (int) $day->format('w'),
+                'mondayTs' => $day->modify('monday this week')->getTimestamp(),
+                'day' => (int) $day->format('j'),
+                'lastDay' => (int) $day->format('t'),
+            ];
+        }
+
+        return $days[$date];
+    }
+
+    /**
+     * @param array<string, mixed> $opening
+     * @param array{bit: int, mondayTs: int, day: int, lastDay: int, date: string} $day
+     * @param array<string, true> $holidays
+     */
+    protected function openingCoversDate(array $opening, array $day, array $holidays): bool
+    {
+        if ($day['date'] < $opening['startDate'] || $day['date'] > $opening['endDate']) {
+            return false;
+        }
+        if (((int) $opening['weekday'] & $day['bit']) === 0) {
+            return false;
+        }
+        if (
+            (int) $opening['spanDays'] > 1
+            && (isset($holidays[$day['date'] . '|0']) || isset($holidays[$day['date'] . '|' . $opening['departmentId']]))
+        ) {
+            return false;
+        }
+
+        return $this->openingRepeatsOn($opening, $day);
+    }
+
+    /**
+     * @param array<string, mixed> $opening
+     * @param array{bit: int, mondayTs: int, day: int, lastDay: int, date: string} $day
+     */
+    protected function openingRepeatsOn(array $opening, array $day): bool
+    {
+        $everyWeeks = (int) $opening['everyWeeks'];
+        $weekOfMonth = (int) $opening['weekOfMonth'];
+        $mondayDistance = (int) round(($day['mondayTs'] - (int) $opening['startMondayTs']) / 86400);
+        if ($everyWeeks > 0 && ($everyWeeks === 1 || $mondayDistance % ($everyWeeks * 7) === 0)) {
+            return true;
+        }
+        if ($weekOfMonth > 0 && $weekOfMonth < 5 && (int) ceil($day['day'] / 7) === $weekOfMonth) {
+            return true;
+        }
+        if ($weekOfMonth >= 5 && $day['day'] > $day['lastDay'] - 7) {
+            return true;
+        }
+
+        return $everyWeeks === 0 && $weekOfMonth === 0;
     }
 
     /**
