@@ -211,32 +211,55 @@ class Status extends \BO\Zmsbackend\Base
         $capacity = [];
         $scopeInfo = [];
         $days = [];
+        $openingsOnDate = [];
         foreach ($appointments as $appointment) {
-            $this->markAppointmentSlots($appointment, $openingsByScope, $holidays, $days, $occupied, $capacity, $scopeInfo);
+            $key = $appointment['scopeId'] . '|' . $appointment['date'];
+            if (!isset($openingsOnDate[$key])) {
+                $openingsOnDate[$key] = $this->openingsCoveringDate(
+                    $openingsByScope[$appointment['scopeId']] ?? [],
+                    $this->overbookingDay((string) $appointment['date'], $days),
+                    $holidays
+                );
+            }
+            $this->markAppointmentSlots($appointment, $openingsOnDate[$key], $occupied, $capacity, $scopeInfo);
         }
 
         return $this->overbookedSlotRows($occupied, $capacity, $scopeInfo);
     }
 
     /**
-     * @param array<string, mixed> $appointment
-     * @param array<int|string, array<int, array<string, mixed>>> $openingsByScope
+     * @param array<int, array<string, mixed>> $openings
+     * @param array{bit: int, mondayTs: int, day: int, lastDay: int, date: string} $day
      * @param array<string, true> $holidays
-     * @param array<string, array{bit: int, mondayTs: int, day: int, lastDay: int, date: string}> $days
+     * @return array<int, array<string, mixed>>
+     */
+    protected function openingsCoveringDate(array $openings, array $day, array $holidays): array
+    {
+        $covering = [];
+        foreach ($openings as $opening) {
+            if ($this->openingCoversDate($opening, $day, $holidays)) {
+                $covering[] = $opening;
+            }
+        }
+
+        return $covering;
+    }
+
+    /**
+     * @param array<string, mixed> $appointment
+     * @param array<int, array<string, mixed>> $openings
      * @param array<string, int> $occupied
      * @param array<string, int> $capacity
      * @param array<int|string, array<string, mixed>> $scopeInfo
      */
     protected function markAppointmentSlots(
         array $appointment,
-        array $openingsByScope,
-        array $holidays,
-        array &$days,
+        array $openings,
         array &$occupied,
         array &$capacity,
         array &$scopeInfo
     ): void {
-        $placed = $this->openingsAtAppointment($appointment, $openingsByScope, $holidays, $days);
+        $placed = $this->openingsAtStart($openings, (int) $appointment['startSeconds']);
         if ($placed === null) {
             return;
         }
@@ -259,23 +282,15 @@ class Status extends \BO\Zmsbackend\Base
     }
 
     /**
-     * @param array<string, mixed> $appointment
-     * @param array<int|string, array<int, array<string, mixed>>> $openingsByScope
-     * @param array<string, true> $holidays
-     * @param array<string, array{bit: int, mondayTs: int, day: int, lastDay: int, date: string}> $days
+     * @param array<int, array<string, mixed>> $openings
      * @return array{slotSeconds: int, openings: array<int, array<string, mixed>>}|null
      */
-    protected function openingsAtAppointment(
-        array $appointment,
-        array $openingsByScope,
-        array $holidays,
-        array &$days
-    ): ?array {
-        $day = $this->overbookingDay((string) $appointment['date'], $days);
+    protected function openingsAtStart(array $openings, int $start): ?array
+    {
         $active = [];
         $slotSeconds = null;
-        foreach ($openingsByScope[$appointment['scopeId']] ?? [] as $opening) {
-            if (!$this->openingContainsStart($opening, $day, $holidays, (int) $appointment['startSeconds'])) {
+        foreach ($openings as $opening) {
+            if ($start < (int) $opening['startSeconds'] || $start >= (int) $opening['endSeconds']) {
                 continue;
             }
             $active[] = $opening;
@@ -289,20 +304,6 @@ class Status extends \BO\Zmsbackend\Base
         }
 
         return ['slotSeconds' => $slotSeconds, 'openings' => $active];
-    }
-
-    /**
-     * @param array<string, mixed> $opening
-     * @param array{bit: int, mondayTs: int, day: int, lastDay: int, date: string} $day
-     * @param array<string, true> $holidays
-     */
-    protected function openingContainsStart(array $opening, array $day, array $holidays, int $start): bool
-    {
-        if (!$this->openingCoversDate($opening, $day, $holidays)) {
-            return false;
-        }
-
-        return $start >= (int) $opening['startSeconds'] && $start < (int) $opening['endSeconds'];
     }
 
     /**
