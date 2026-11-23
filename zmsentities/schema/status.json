@@ -95,6 +95,20 @@
         }
       }
     },
+    "overbooking": {
+      "type": "object",
+      "description": "Slots from today onward where bookings exceed intern capacity. Absent while the daily slot rebuild is running and on the healthcheck.",
+      "properties": {
+        "total": {
+          "type": "number",
+          "description": "Number of overbooked slots across all departments."
+        },
+        "departments": {
+          "type": "object",
+          "description": "Overbooked slot counts by department id. Departments with none are omitted. Each department lists its scopes the same way."
+        }
+      }
+    },
     "mail": {
       "type": "object",
       "properties": {
