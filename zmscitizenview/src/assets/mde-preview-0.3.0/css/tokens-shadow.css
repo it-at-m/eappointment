@@ -1,0 +1,990 @@
+/**
+ * Auto-generated responsive variables (mobile-first).
+ * Base: mobile values. Desktop overrides at min-width: 992px.
+ * Do not edit directly — regenerate with: npm run build
+ */
+
+:host {
+  --mde-color-blue: #005a9f;
+  --mde-color-blue-light: #337bb2;
+  --mde-color-blue-xlight: #5993c0;
+  --mde-color-blue-dark: #004376;
+  --mde-color-blue-xdark: #002d4f;
+  --mde-color-cyan: #1b98d5;
+  --mde-color-yellow: #ffe400;
+  --mde-color-white: #ffffff;
+  --mde-color-black: #000000;
+  --mde-color-grey: #3a5368;
+  --mde-color-grey-light: #617586;
+  --mde-color-grey-xlight: #9ca8b3;
+  --mde-color-beau-blue: #bdd4ea;
+  --mde-color-beau-blue-light: #e5eef5;
+  --mde-color-beau-blue-xlight: #f2f6fa;
+  --mde-color-emergency: #b03a3e;
+  --mde-color-background-backdrop: rgba(58, 83, 104, 0.7);
+  --mde-color-overlay: rgba(0, 0, 0, 0.3);
+  --mde-color-palette-neutral-0: #ffffff;
+  --mde-color-palette-neutral-50: #f6f7f8;
+  --mde-color-palette-neutral-100: #e1e5e9;
+  --mde-color-palette-neutral-200: #dce0e4;
+  --mde-color-palette-neutral-300: #b7c0c9;
+  --mde-color-palette-neutral-400: #9ba4ad;
+  --mde-color-palette-neutral-500: #6e7885;
+  --mde-color-palette-neutral-600: #59636f;
+  --mde-color-palette-neutral-700: #3a4550;
+  --mde-color-palette-neutral-800: #1f2a35;
+  --mde-color-palette-neutral-900: #0f1720;
+  --mde-color-palette-blue-50: #e5eef5;
+  --mde-color-palette-blue-100: #c2d9ea;
+  --mde-color-palette-blue-200: #8fc4e4;
+  --mde-color-palette-blue-300: #1b98d5;
+  --mde-color-palette-blue-400: #0b77bc;
+  --mde-color-palette-blue-500: #005a9f;
+  --mde-color-palette-blue-600: #00437a;
+  --mde-color-palette-blue-700: #002855;
+  --mde-color-palette-blue-800: #001a38;
+  --mde-color-palette-green-50: #f1f6f3;
+  --mde-color-palette-green-300: #95b9a2;
+  --mde-color-palette-green-600: #3a7f53;
+  --mde-color-palette-orange-50: #fff9f4;
+  --mde-color-palette-orange-200: #fdd1ac;
+  --mde-color-palette-orange-400: #fcaa67;
+  --mde-color-palette-red-50: #f8f2f2;
+  --mde-color-palette-red-200: #c79a9b;
+  --mde-color-palette-red-500: #b3261e;
+  --mde-color-palette-red-700: #8c1d18;
+  --mde-color-palette-gold-300: #fdf0a0;
+  --mde-color-palette-gold-500: #fae23a;
+  --mde-color-palette-gold-700: #8a6d00;
+  --mde-typography-font-family-base: 'Roboto Flex', system-ui, sans-serif;
+  --mde-typography-font-family-heading: 'Roboto Flex', system-ui, sans-serif;
+  --mde-typography-font-family-decorative: 'Roboto Flex', system-ui, sans-serif;
+  --mde-typography-font-weight-light: 400;
+  --mde-typography-font-weight-normal: 400;
+  --mde-typography-font-weight-bold: 600;
+  --mde-typography-font-weight-medium: 500;
+  --mde-typography-size-xs: 0.75rem;
+  --mde-typography-size-sm: 0.875rem;
+  --mde-typography-size-base: 1rem;
+  --mde-typography-size-md: 1.125rem;
+  --mde-typography-size-lg: 1.25rem;
+  --mde-typography-size-xl: 1.5rem;
+  --mde-typography-size-xl2: 1.75rem;
+  --mde-typography-size-xl3: 1.875rem;
+  --mde-typography-size-2xl: 2rem;
+  --mde-typography-size-2xl2: 2.375rem;
+  --mde-typography-size-3xl: 2.5rem;
+  --mde-typography-size-heading-1: 2rem;
+  --mde-typography-size-heading-2: 1.75rem;
+  --mde-typography-size-heading-3: 1.25rem;
+  --mde-typography-size-heading-4: 1.25rem;
+  --mde-typography-size-paragraph: 1.125rem;
+  --mde-typography-size-paragraph-sm: 1rem;
+  --mde-typography-size-paragraph-xs: 0.875rem;
+  --mde-typography-line-height-tight: 1.25;
+  --mde-typography-line-height-base: 1.5;
+  --mde-typography-line-height-relaxed: 1.75;
+  --mde-typography-style-heading-1-font-size-mobile: 2rem;
+  --mde-typography-style-heading-1-font-size-desktop: 2.5rem;
+  --mde-typography-style-heading-1-line-height-mobile: 1.2;
+  --mde-typography-style-heading-1-line-height-desktop: 1.2;
+  --mde-typography-style-heading-1-letter-spacing-mobile: -0.32px;
+  --mde-typography-style-heading-1-letter-spacing-desktop: -0.4px;
+  --mde-typography-style-heading-2-font-size-mobile: 1.75rem;
+  --mde-typography-style-heading-2-font-size-desktop: 2rem;
+  --mde-typography-style-heading-2-line-height-mobile: 1.2;
+  --mde-typography-style-heading-2-line-height-desktop: 1.2;
+  --mde-typography-style-heading-2-letter-spacing-mobile: -0.21px;
+  --mde-typography-style-heading-2-letter-spacing-desktop: -0.32px;
+  --mde-typography-style-heading-3-font-size-mobile: 1.25rem;
+  --mde-typography-style-heading-3-font-size-desktop: 1.5rem;
+  --mde-typography-style-heading-3-line-height-mobile: 1.3;
+  --mde-typography-style-heading-3-line-height-desktop: 1.3;
+  --mde-typography-style-heading-3-letter-spacing-mobile: -0.05px;
+  --mde-typography-style-heading-3-letter-spacing-desktop: -0.12px;
+  --mde-typography-style-heading-4-font-size-mobile: 1.125rem;
+  --mde-typography-style-heading-4-font-size-desktop: 1.25rem;
+  --mde-typography-style-heading-4-line-height-mobile: 1.3;
+  --mde-typography-style-heading-4-line-height-desktop: 1.3;
+  --mde-typography-style-heading-4-letter-spacing-mobile: -0.1px;
+  --mde-typography-style-heading-4-letter-spacing-desktop: -0.1px;
+  --mde-typography-style-heading-5-font-size-mobile: 1rem;
+  --mde-typography-style-heading-5-font-size-desktop: 1rem;
+  --mde-typography-style-heading-5-line-height-mobile: 1.55;
+  --mde-typography-style-heading-5-line-height-desktop: 1.55;
+  --mde-typography-style-heading-5-letter-spacing-mobile: 0;
+  --mde-typography-style-heading-5-letter-spacing-desktop: 0;
+  --mde-typography-style-paragraph-font-size-mobile: 1.125rem;
+  --mde-typography-style-paragraph-font-size-desktop: 1.125rem;
+  --mde-typography-style-paragraph-line-height-mobile: 1.55;
+  --mde-typography-style-paragraph-line-height-desktop: 1.55;
+  --mde-typography-style-paragraph-letter-spacing-mobile: 0;
+  --mde-typography-style-paragraph-letter-spacing-desktop: 0;
+  --mde-typography-style-paragraph-strong-font-size-mobile: 1.125rem;
+  --mde-typography-style-paragraph-strong-font-size-desktop: 1.125rem;
+  --mde-typography-style-paragraph-strong-line-height-mobile: 1.55;
+  --mde-typography-style-paragraph-strong-line-height-desktop: 1.55;
+  --mde-typography-style-paragraph-strong-letter-spacing-mobile: 0;
+  --mde-typography-style-paragraph-strong-letter-spacing-desktop: 0;
+  --mde-typography-style-paragraph-small-font-size-mobile: 1rem;
+  --mde-typography-style-paragraph-small-font-size-desktop: 1rem;
+  --mde-typography-style-paragraph-small-line-height-mobile: 1.55;
+  --mde-typography-style-paragraph-small-line-height-desktop: 1.55;
+  --mde-typography-style-paragraph-small-letter-spacing-mobile: 0;
+  --mde-typography-style-paragraph-small-letter-spacing-desktop: 0;
+  --mde-typography-style-paragraph-small-strong-font-size-mobile: 1rem;
+  --mde-typography-style-paragraph-small-strong-font-size-desktop: 1rem;
+  --mde-typography-style-paragraph-small-strong-line-height-mobile: 1.55;
+  --mde-typography-style-paragraph-small-strong-line-height-desktop: 1.55;
+  --mde-typography-style-paragraph-small-strong-letter-spacing-mobile: 0;
+  --mde-typography-style-paragraph-small-strong-letter-spacing-desktop: 0;
+  --mde-typography-style-paragraph-extra-small-font-size-mobile: 0.875rem;
+  --mde-typography-style-paragraph-extra-small-font-size-desktop: 0.875rem;
+  --mde-typography-style-paragraph-extra-small-line-height-mobile: 1.4;
+  --mde-typography-style-paragraph-extra-small-line-height-desktop: 1.4;
+  --mde-typography-style-paragraph-extra-small-letter-spacing-mobile: 0;
+  --mde-typography-style-paragraph-extra-small-letter-spacing-desktop: 0;
+  --mde-typography-style-paragraph-callout-font-size-mobile: 1.125rem;
+  --mde-typography-style-paragraph-callout-font-size-desktop: 1.25rem;
+  --mde-typography-style-paragraph-callout-line-height-mobile: 1.6;
+  --mde-typography-style-paragraph-callout-line-height-desktop: 1.6;
+  --mde-typography-style-paragraph-callout-letter-spacing-mobile: 0;
+  --mde-typography-style-paragraph-callout-letter-spacing-desktop: 0;
+  --mde-typography-style-paragraph-bb-listing-font-size-mobile: 0.875rem;
+  --mde-typography-style-paragraph-bb-listing-font-size-desktop: 0.875rem;
+  --mde-typography-style-paragraph-bb-listing-line-height-mobile: 1.4;
+  --mde-typography-style-paragraph-bb-listing-line-height-desktop: 1.4;
+  --mde-typography-style-paragraph-bb-listing-letter-spacing-mobile: 0;
+  --mde-typography-style-paragraph-bb-listing-letter-spacing-desktop: 0;
+  --mde-typography-style-paragraph-bb-listing-extra-small-font-size-mobile: 0.75rem;
+  --mde-typography-style-paragraph-bb-listing-extra-small-font-size-desktop: 0.75rem;
+  --mde-typography-style-paragraph-bb-listing-extra-small-line-height-mobile: 1.4;
+  --mde-typography-style-paragraph-bb-listing-extra-small-line-height-desktop: 1.4;
+  --mde-typography-style-paragraph-bb-listing-extra-small-letter-spacing-mobile: 0;
+  --mde-typography-style-paragraph-bb-listing-extra-small-letter-spacing-desktop: 0;
+  --mde-typography-style-paragraph-bb-listing-strong-font-size-mobile: 0.875rem;
+  --mde-typography-style-paragraph-bb-listing-strong-font-size-desktop: 0.875rem;
+  --mde-typography-style-paragraph-bb-listing-strong-line-height-mobile: 1.5;
+  --mde-typography-style-paragraph-bb-listing-strong-line-height-desktop: 1.5;
+  --mde-typography-style-paragraph-bb-listing-strong-letter-spacing-mobile: 0;
+  --mde-typography-style-paragraph-bb-listing-strong-letter-spacing-desktop: 0;
+  --mde-typography-style-blockquote-font-size-mobile: 1.5rem;
+  --mde-typography-style-blockquote-font-size-desktop: 1.75rem;
+  --mde-typography-style-blockquote-line-height-mobile: 1.3;
+  --mde-typography-style-blockquote-line-height-desktop: 1.3;
+  --mde-typography-style-blockquote-letter-spacing-mobile: -0.12px;
+  --mde-typography-style-blockquote-letter-spacing-desktop: -0.21px;
+  --mde-typography-style-newsletter-box-title-font-size-mobile: 1.5rem;
+  --mde-typography-style-newsletter-box-title-font-size-desktop: 1.75rem;
+  --mde-typography-style-newsletter-box-title-line-height-mobile: 1.3;
+  --mde-typography-style-newsletter-box-title-line-height-desktop: 1.3;
+  --mde-typography-style-newsletter-box-title-letter-spacing-mobile: -0.12px;
+  --mde-typography-style-newsletter-box-title-letter-spacing-desktop: -0.21px;
+  --mde-typography-style-copyright-font-size-mobile: 0.875rem;
+  --mde-typography-style-copyright-font-size-desktop: 0.875rem;
+  --mde-typography-style-copyright-line-height-mobile: 1.4;
+  --mde-typography-style-copyright-line-height-desktop: 1.4;
+  --mde-typography-style-copyright-letter-spacing-mobile: 0;
+  --mde-typography-style-copyright-letter-spacing-desktop: 0;
+  --mde-typography-style-tagline-font-size-mobile: 0.875rem;
+  --mde-typography-style-tagline-font-size-desktop: 0.875rem;
+  --mde-typography-style-tagline-line-height-mobile: 1.5;
+  --mde-typography-style-tagline-line-height-desktop: 1.5;
+  --mde-typography-style-tagline-letter-spacing-mobile: 0;
+  --mde-typography-style-tagline-letter-spacing-desktop: 0;
+  --mde-typography-style-kicker-font-size-mobile: 0.875rem;
+  --mde-typography-style-kicker-font-size-desktop: 1rem;
+  --mde-typography-style-kicker-line-height-mobile: 1.25;
+  --mde-typography-style-kicker-line-height-desktop: 1.25;
+  --mde-typography-style-kicker-letter-spacing-mobile: 0;
+  --mde-typography-style-kicker-letter-spacing-desktop: 0;
+  --mde-border-width-default: 1px;
+  --mde-border-radius-default: 0;
+  --mde-border-radius-md: 0.5rem;
+  --mde-border-radius-pill: 9999px;
+  --mde-border-radius-sm: 0.125rem; /** Containers and tiles */
+  --mde-component-a11y-actions-gap: 1rem; /** Between an action and the separating line, from md */
+  --mde-component-a11y-actions-row-gap: 0.5rem; /** Between wrapped rows, from md */
+  --mde-component-a11y-actions-icon-size: 1.5rem;
+  --mde-component-a11y-actions-toolbar-gap: 0.125rem; /** Below md the actions form one flush row, icon above label: between icon and label */
+  --mde-component-a11y-actions-toolbar-padding-block: 0.25rem; /** Below md: above and below each action */
+  --mde-component-a11y-actions-toolbar-icon-size: 1.25rem; /** Below md: icon above the label */
+  --mde-component-a11y-actions-separator-height: 1.5rem; /** Line height, centred on the actions */
+  --mde-component-a11y-actions-player-width-md: 27.5rem; /** Sign-language mini player from md (440px); below md it spans the viewport minus player-offset on each side */
+  --mde-component-a11y-actions-player-width-xl: 35rem; /** From xl (560px) */
+  --mde-component-a11y-actions-player-offset: 1rem; /** Distance from the viewport edges below md */
+  --mde-component-a11y-actions-player-offset-md: 2rem; /** Distance from the bottom right corner from md */
+  --mde-component-a11y-actions-player-header-padding: 0.5rem; /** Around title and close button */
+  --mde-component-ad-card-padding: 0.5rem;
+  --mde-component-ad-card-padding-xl: 0.5rem;
+  --mde-component-ad-card-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
+  --mde-component-ad-card-label-font-size: 0.875rem;
+  --mde-component-ad-card-label-line-height: 1.4;
+  --mde-component-ad-card-label-padding-block: 0.25rem;
+  --mde-component-ad-card-label-padding-inline-start: 0.5rem;
+  --mde-component-ad-card-label-padding-inline-end: 0.5rem;
+  --mde-component-ad-flag-font-size: 0.875rem;
+  --mde-component-ad-flag-line-height: 1.4;
+  --mde-component-ad-flag-border-width: 0;
+  --mde-component-ad-flag-padding-block: 0.25rem;
+  --mde-component-ad-flag-padding-inline: 0.5rem;
+  --mde-component-ad-container-padding: 0.5rem;
+  --mde-component-ad-container-padding-xl: 0.5rem;
+  --mde-component-ad-container-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
+  --mde-component-ad-container-label-font-size: 0.875rem;
+  --mde-component-ad-container-label-font-size-xl: 0.875rem;
+  --mde-component-ad-container-label-line-height: 1.4;
+  --mde-component-ad-container-label-padding-block: 0.25rem;
+  --mde-component-ad-container-label-padding-inline: 0.5rem;
+  --mde-component-ad-container-label-border-radius: 0;
+  --mde-component-ad-horizontal-image-width: 6.75rem;
+  --mde-component-ad-horizontal-image-width-xl: 11rem;
+  --mde-component-ad-horizontal-image-gap: 1rem;
+  --mde-component-ad-horizontal-image-gap-xl: 2rem;
+  --mde-component-ad-horizontal-image-radius: 0;
+  --mde-component-ad-horizontal-image-radius-xl: 0;
+  --mde-component-ad-horizontal-heading-margin-top-xl: 0;
+  --mde-component-autocomplete-list-offset: 0; /** Gap between field and list (Classic 12px; Facelift 0: the list attaches to the field) */
+  --mde-component-autocomplete-list-padding-block: 0.5rem;
+  --mde-component-autocomplete-list-padding-inline: 0.5rem;
+  --mde-component-autocomplete-list-radius: 1rem; /** Bottom corners of the list (its top meets the field) */
+  --mde-component-autocomplete-row-padding-block: 0.75rem;
+  --mde-component-autocomplete-row-padding-inline: 0.75rem;
+  --mde-component-autocomplete-icon-size: 1.25rem; /** Row icon: magnifier for search terms, arrow for direct links (0: none) */
+  --mde-component-autocomplete-icon-gap: 0.75rem;
+  --mde-component-breadcrumb-border-color: transparent;
+  --mde-component-dropdown-menu-shadow: 0 8px 16px 0 rgba(58, 83, 104, 0.24);
+  --mde-component-dropdown-menu-padding-block: 0.5rem; /** Space above and below the item list */
+  --mde-component-dropdown-item-padding-block: 0.625rem;
+  --mde-component-dropdown-item-padding-inline: 1rem;
+  --mde-component-infobox-border-width: 0;
+  --mde-component-infobox-icon-size: 1.75rem;
+  --mde-component-infobox-icon-inner-size: 1.5rem;
+  --mde-component-infobox-icon-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
+  --mde-component-infobox-title-indent: 2.25rem; /** Icon 28 + gap 8 */
+  --mde-component-infobox-untitled-offset: 2.75rem; /** Icon 28 + gap 16 */
+  --mde-component-infobox-margin-top: 0;
+  --mde-component-linklist-element-padding-inline: 1rem;
+  --mde-component-linklist-element-padding-inline-xl: 1rem;
+  --mde-component-linklist-element-gap: 1rem; /** Between icon and text */
+  --mde-component-linklist-element-icon-offset: 0; /** Extra space before an icon after the text */
+  --mde-component-linklist-element-icon-order: -1;
+  --mde-component-nav-drawer-width: 24.5625rem;
+  --mde-component-nav-drawer-panel-padding-inline: 0; /** Side padding of the panel around the list */
+  --mde-component-nav-drawer-bar-border-width: 0; /** Line below the close-button bar */
+  --mde-component-nav-drawer-item-font-size: 1.25rem;
+  --mde-component-nav-drawer-item-padding-block: 1rem;
+  --mde-component-nav-drawer-item-padding-start: 1.5rem;
+  --mde-component-nav-drawer-item-padding-end: 1.75rem;
+  --mde-component-nav-drawer-separator-width: 1px; /** Line between the entries */
+  --mde-component-nav-drawer-separator-inset: 1rem;
+  --mde-component-nav-drawer-panel-gap: 0; /** Space between the close-button bar and the list */
+  --mde-component-nav-drawer-close-size: 2.75rem;
+  --mde-component-nav-drawer-close-icon-size: 1.25rem; /** Cross in the close button (Figma: 12px glyph in a 20px icon) */
+  --mde-component-nav-drawer-list-inset: 0; /** Space above the first entry inside the list */
+  --mde-component-nav-drawer-item-line-height: 1.25;
+  --mde-component-nav-drawer-bar-padding-block: 0.625rem; /** Space above the close button */
+  --mde-component-nav-drawer-back-padding-bottom: 1.3125rem; /** Space below the back row of level 2 */
+  --mde-component-nav-drawer-back-icon-size: 1rem; /** Back arrow of level 2 (Figma: small glyph, keeps the row at 57px) */
+  --mde-component-nav-drawer-bar-padding-bottom: 0.6875rem; /** Space below the close button (Figma: 10/11px around the 44px circle, 65px bar) */
+  --mde-component-nav-drawer-icon-size: 1.25rem; /** Drill-down arrow of the entries (Figma: 13px glyph) */
+  --mde-component-newsletter-registration-band-overlap: 4.5rem; /** How far the band reaches up behind the card, below lg (Figma Mobil: 72px) */
+  --mde-component-newsletter-registration-band-overlap-lg: 4.25rem; /** From lg (Figma Desktop: 68px, half the card) */
+  --mde-component-newsletter-registration-padding-bottom: 3rem; /** Band below the card, below lg (Figma Mobil: 48px) */
+  --mde-component-newsletter-registration-padding-bottom-lg: 4rem; /** From lg (Figma Desktop: 64px) */
+  --mde-component-newsletter-registration-card-padding: 1.5rem; /** Below lg (Figma Mobil: 24px) */
+  --mde-component-newsletter-registration-card-padding-lg: 2rem; /** From lg (Figma Desktop: 32px) */
+  --mde-component-newsletter-registration-card-gap: 1rem; /** Between pictogram, text and button, below lg (stacked) */
+  --mde-component-newsletter-registration-card-gap-lg: 2rem; /** From lg (in one row) */
+  --mde-component-newsletter-registration-pictogram-width: 3.5rem; /** Flying letter, below lg (Figma Mobil: 56px) */
+  --mde-component-newsletter-registration-pictogram-width-lg: 4.5rem; /** From lg (Figma Desktop: 72px) */
+  --mde-component-newsletter-registration-text-gap: 0.25rem; /** Between title and description */
+  --mde-component-service-area-padding-block: 2rem; /** Figma Mobile: 32px */
+  --mde-component-service-area-padding-block-lg: 4rem; /** Figma Desktop: 64px */
+  --mde-component-service-area-gap: 1.5rem; /** Between heading group and cards below lg */
+  --mde-component-service-area-gap-lg: 2rem;
+  --mde-component-service-area-heading-gap: 1rem; /** Between heading and button below lg (stacked) */
+  --mde-component-service-area-card-width: 17.5rem; /** Fixed card width (280px): 4 fit into 1216px, fewer on smaller screens, the rest scrolls */
+  --mde-component-service-area-card-gap: 2rem;
+  --mde-component-service-area-card-min-height-lg: 18rem; /** Figma Desktop: 288px */
+  --mde-component-service-area-card-padding: 1.5rem;
+  --mde-component-service-area-pictogram-height: 3.5rem; /** Room for the pictogram (Figma: 48–56px) */
+  --mde-component-service-area-pictogram-gap: 1rem;
+  --mde-component-service-area-text-gap: 0.5rem; /** Between title and text */
+  --mde-component-service-area-indicator-gap: 2rem; /** Between cards and scroll indicator */
+  --mde-component-service-area-indicator-height: 0.25rem;
+  --mde-component-service-area-nav-size: 3rem; /** Previous / next button incl. border (48px) */
+  --mde-component-service-area-nav-border-width: 4px;
+  --mde-component-service-area-nav-icon-size: 1.5rem;
+  --mde-component-service-search-padding: 1.5rem; /** Inside the panel below lg */
+  --mde-component-service-search-padding-lg: 2rem; /** Figma: 32px */
+  --mde-component-service-search-gap: 1.25rem; /** Between header row, field and chips (Figma: 20px) */
+  --mde-component-service-search-content-max-width-lg: 48rem; /** Content width from lg; the illustration fills the rest (Figma: 767px) */
+  --mde-component-service-search-illustration-color: rgba(255, 255, 255, 0.14); /** Münchner Kindl (Figma: white at 14%) */
+  --mde-component-service-search-illustration-width: 17.125rem; /** Figma: 274px */
+  --mde-component-service-search-illustration-height: 18.75rem; /** Figma: 300px */
+  --mde-component-service-search-illustration-inset: 2rem; /** From the right edge */
+  --mde-component-service-search-illustration-offset: 2.5rem; /** Below the vertical centre (Figma: 40px) */
+  --mde-component-service-search-link-icon-size: 1.5rem;
+  --mde-component-service-search-field-height: 3.5rem; /** Figma: 56px */
+  --mde-component-service-search-field-padding-start: 1.5rem;
+  --mde-component-service-search-field-padding-end: 3.5rem; /** Room for the search button */
+  --mde-component-service-search-submit-size: 2.5rem;
+  --mde-component-service-search-submit-inset: 0.5rem; /** Search button from the field’s right edge */
+  --mde-component-service-search-submit-icon-size: 1.25rem;
+  --mde-component-service-search-popular-gap: 0.75rem; /** Between „Häufig gesucht“ and the chips */
+  --mde-component-service-search-chip-gap: 0.5rem;
+  --mde-component-service-search-chip-padding-block: 0.5rem;
+  --mde-component-service-search-chip-padding-inline: 1rem;
+  --mde-component-site-footer-divider-color: rgba(255, 255, 255, 0.3); /** Lines around the legal links and below the accordion */
+  --mde-component-site-footer-padding-block: 2.5rem; /** Space above and below the content below lg (Figma Mobile: 40px) */
+  --mde-component-site-footer-padding-top-xl: 3rem; /** Figma Desktop: 48px */
+  --mde-component-site-footer-padding-bottom-xl: 2rem; /** Figma Desktop: 32px */
+  --mde-component-site-footer-top-padding-block: 3rem; /** Top area (slot top) above and below its content, below lg */
+  --mde-component-site-footer-top-padding-block-lg: 4rem; /** Figma Desktop: 64px */
+  --mde-component-site-footer-section-gap: 2.5rem; /** Between brand, links, legal links and copyright below lg (40px) */
+  --mde-component-site-footer-section-gap-xl: 2rem; /** Between the link row, legal links and copyright from xl (32px) */
+  --mde-component-site-footer-brand-gap: 2rem; /** Between logo and social links */
+  --mde-component-site-footer-logo-width: 18.625rem; /** Figma: 298px */
+  --mde-component-site-footer-social-size: 2.5rem; /** Round social link (40px) */
+  --mde-component-site-footer-social-icon-size: 1.5rem;
+  --mde-component-site-footer-social-gap: 0.75rem;
+  --mde-component-site-footer-columns-gap: 2rem; /** Between the link columns from xl */
+  --mde-component-site-footer-columns-width-xl: 50rem; /** Width of the three link columns from xl (Figma: 800px) */
+  --mde-component-site-footer-row-padding-bottom-xl: 3rem; /** Below the logo / columns row from xl (Figma: the row is 210px tall) */
+  --mde-component-site-footer-heading-gap: 0.75rem; /** Between column heading and its links from xl */
+  --mde-component-site-footer-link-gap: 0.5rem; /** Between the links of a column from xl */
+  --mde-component-site-footer-heading-font-size-mobile: 1.5rem;
+  --mde-component-site-footer-heading-line-height-mobile: 1.25;
+  --mde-component-site-footer-heading-letter-spacing-mobile: 0;
+  --mde-component-site-footer-accordion-header-padding-block: 0.5rem;
+  --mde-component-site-footer-accordion-item-padding-bottom: 1rem;
+  --mde-component-site-footer-accordion-link-gap: 1rem; /** Between the links of an open section below lg */
+  --mde-component-site-footer-accordion-body-padding-top: 0.5rem;
+  --mde-component-site-footer-accordion-body-padding-bottom: 1.5rem;
+  --mde-component-site-footer-accordion-icon-size: 1.5rem;
+  --mde-component-site-footer-legal-gap: 1rem; /** Between the legal links (they wrap) */
+  --mde-component-site-header-meta-border-color: rgba(220, 224, 228, 0.15);
+  --mde-component-site-header-accent-width: 4px;
+  --mde-component-site-header-accent-width-lg: 6px;
+  --mde-component-site-header-meta-height: 2.75rem; /** Meta bar height including its bottom line (Figma Header Mobile: 44px) */
+  --mde-component-site-header-meta-height-lg: 3rem; /** Meta bar height from lg (Figma Header 1512px: 48px) */
+  --mde-component-site-header-meta-font-size: 0.625rem; /** Meta bar labels („DE“, „Barrierefreiheit“) below lg */
+  --mde-component-site-header-meta-font-size-lg: 0.875rem; /** Meta bar labels from lg */
+  --mde-component-site-header-meta-gap: 1.25rem; /** Space between the meta menus below lg */
+  --mde-component-site-header-meta-gap-lg: 1.5rem; /** Space between the meta menus from lg */
+  --mde-component-site-header-meta-menu-width: 18.4375rem; /** Minimum width of the language / accessibility dropdown panel (Figma: 295px) */
+  --mde-component-site-header-main-padding-block: 0.875rem; /** Space above and below the main bar content below lg (72px bar with 44px circles) */
+  --mde-component-site-header-main-padding-block-lg: 1rem; /** Space above and below the main bar content from lg */
+  --mde-component-site-header-action-icon-size-lg: 1.75rem; /** Icons of the search trigger and slotted actions from lg (Figma: 28px) */
+  --mde-component-site-header-menu-icon-size-lg: 2rem; /** Burger icon in the menu pill from lg (Figma: 32px) */
+  --mde-component-site-header-nav-gap: 0.5rem; /** Space between the navigation pills */
+  --mde-component-site-header-pill-height: 2.5rem; /** Navigation pill height */
+  --mde-component-site-header-pill-padding-inline: 0.875rem; /** Navigation pill: space from the edge to the label, including the border */
+  --mde-component-site-header-pill-font-size: 0.875rem; /** Navigation pill label (Label – Klein) */
+  --mde-component-site-header-pill-font-weight: 550;
+  --mde-component-social-media-channel-title-gap: 1.5rem; /** Space between heading and cards */
+  --mde-component-social-media-channel-gap: 1rem; /** Space between the cards below lg */
+  --mde-component-social-media-channel-gap-lg: 2rem; /** Space between the cards from lg (Figma: 32px) */
+  --mde-component-social-media-channel-card-min-height: 6.25rem; /** Figma: 100px */
+  --mde-component-social-media-channel-card-padding-inline: 1.25rem;
+  --mde-component-social-media-channel-card-gap: 1rem; /** Space between logo and text */
+  --mde-component-social-media-channel-logo-size: 2.5rem; /** Brand logo (Figma: 40px) */
+  --mde-component-stage-padding-block-lg: 2rem; /** Above and below the stage from lg (Figma: 32px) */
+  --mde-component-stage-heading-padding-block: 1.5rem; /** Heading area below lg */
+  --mde-component-stage-gap-lg: 2rem; /** Between heading area and slides from lg */
+  --mde-component-stage-gap-actions-lg: 1.5rem; /** Between heading area and slides from lg when the heading has accessibility actions (Figma: 24px) */
+  --mde-component-stage-heading-gap: 1rem; /** Between heading and help links */
+  --mde-component-stage-image-aspect-ratio: 1.5; /** Image width / height below lg (3:2) */
+  --mde-component-stage-image-aspect-ratio-lg: 2; /** Image width / height from lg (Figma: 1216 x 608) */
+  --mde-component-stage-box-background: rgba(255, 255, 255, 0.9); /** Text box on the image from lg: 90% white, so the text stays legible on busy photos (Figma: 70%). */
+  --mde-component-stage-box-padding-lg: 2.25rem; /** Figma: 36px */
+  --mde-component-stage-box-inset-lg: 3.5rem; /** Distance of the text box from the image’s left and bottom edge */
+  --mde-component-stage-box-width-lg: 32.25rem; /** Figma: 517px */
+  --mde-component-stage-panel-padding-block: 1.5rem;
+  --mde-component-stage-panel-padding-inline: 1rem;
+  --mde-component-stage-title-gap: 0.25rem; /** Between tagline and title */
+  --mde-component-stage-text-gap: 0.5rem; /** Between title and text below lg */
+  --mde-component-stage-text-gap-lg: 0.75rem;
+  --mde-component-stage-tagline-font-size-mobile: 0.875rem;
+  --mde-component-stage-tagline-font-size-desktop: 1rem;
+  --mde-component-stage-tagline-line-height-mobile: 1.25;
+  --mde-component-stage-tagline-line-height-desktop: 1.25;
+  --mde-component-stage-tagline-letter-spacing-mobile: 0;
+  --mde-component-stage-tagline-letter-spacing-desktop: 0;
+  --mde-component-stage-controls-gap-lg: 1rem; /** Between image and control row from lg */
+  --mde-component-stage-controls-padding-block: 0.75rem; /** Control row below lg */
+  --mde-component-stage-controls-item-gap: 0.75rem; /** Between pause button and indicators */
+  --mde-component-stage-indicator-track-color: rgba(0, 90, 159, 0.25); /** Unfilled part of the active indicator */
+  --mde-component-stage-indicator-size: 0.5rem; /** Dot diameter and track height */
+  --mde-component-stage-indicator-active-width: 2rem; /** Track of the active indicator (progress) */
+  --mde-component-stage-indicator-target: 1.5rem; /** Click target per indicator (WCAG 2.5.8: 24px; Figma: 20px wide) */
+  --mde-component-stage-pause-size: 2rem;
+  --mde-component-stage-pause-border-width: 2px;
+  --mde-component-stage-pause-icon-size: 1.25rem; /** Pause / play icon box: the sprite glyph fills about 58% of it, so 20px gives Figma’s ~11px bars */
+  --mde-component-stage-nav-size: 3rem; /** Previous / next button incl. its border (Figma: 48px) */
+  --mde-component-stage-nav-border-width: 4px;
+  --mde-component-stage-nav-icon-size: 1.5rem;
+  --mde-component-teaser-border-width: 0;
+  --mde-component-teaser-image-hover-scale: 1.04;
+  --mde-component-teaser-list-padding-top: 1.5rem; /** Space above the list (heading) */
+  --mde-component-teaser-list-padding-top-xl: 2.5rem;
+  --mde-component-teaser-list-item-gap: 2rem; /** Space below each list item; -sm applies from sm up. */
+  --mde-component-teaser-list-item-gap-sm: 2rem;
+  --mde-component-teaser-list-headline-gap: 1rem; /** Space below the list heading; -xl applies from xl up. */
+  --mde-component-teaser-list-headline-gap-xl: 2rem;
+  --mde-component-teaser-vertical-body-padding-top: 1rem;
+  --mde-component-teaser-vertical-body-padding-top-xl: 1rem;
+  --mde-component-teaser-vertical-body-padding-bottom: 1rem;
+  --mde-component-teaser-vertical-body-padding-bottom-md: 1rem;
+  --mde-component-teaser-vertical-body-padding-bottom-xl: 1rem;
+  --mde-component-teaser-horizontal-border-width: 0;
+  --mde-component-teaser-horizontal-padding-bottom: 0; /** Space below the teaser; -xl applies from xl up. */
+  --mde-component-teaser-horizontal-padding-bottom-xl: 0;
+  --mde-component-teaser-contained-article-overlay-padding-inline-xl: 1.25rem;
+  --mde-component-teaser-contained-article-overlay-padding-bottom-xl: 1.5rem;
+  --mde-component-teaser-contained-text-accent-width: 0; /** Line along the bottom edge (classic); 0 hides it */
+  --mde-component-teaser-contained-text-body-padding-top: 1rem;
+  --mde-component-teaser-contained-text-body-padding-inline: 1rem;
+  --mde-component-teaser-contained-text-body-padding-bottom: 1rem;
+  --mde-component-teaser-contained-text-body-padding-top-xl: 1.5rem;
+  --mde-component-teaser-contained-text-body-padding-inline-xl: 1.5rem;
+  --mde-component-teaser-contained-text-body-padding-bottom-xl: 1.5rem;
+  --mde-component-teaser-contained-text-headline-gap: 0.5rem; /** Space below the headline */
+  --mde-component-teaser-contained-text-hover-border-width: 2px; /** Ring on hover, drawn inside the card */
+  --mde-dimensions-max-text-width: 64ch;
+  --mde-shadow-sm: 0 0.125rem 0.25rem 0 rgba(0, 0, 0, 0.075);
+  --mde-shadow-base: 0 0.5rem 1rem 0 rgba(0, 0, 0, 0.15);
+  --mde-shadow-md: 0 0.5rem 1rem 0 rgba(58, 83, 104, 0.24);
+  --mde-shadow-lg: 0 1rem 3rem 0 rgba(0, 0, 0, 0.175);
+  --mde-shadow-inset: 0 1px 2px 0 rgba(0, 0, 0, 0.075); /** Use as inset: inset var(--mde-shadow-inset) */
+  --mde-focus-ring-width: 2px;
+  --mde-focus-ring-offset: 2px;
+  --mde-grid-breakpoint-sm: 576px;
+  --mde-grid-breakpoint-md: 768px;
+  --mde-grid-breakpoint-lg: 992px;
+  --mde-grid-breakpoint-xl: 1200px;
+  --mde-grid-breakpoint-xxl: 1400px;
+  --mde-grid-gutter-sm: 0.75rem;
+  --mde-grid-gutter-md: 1.5rem;
+  --mde-grid-gutter-xl: 2rem;
+  --mde-grid-container-sm: 540px;
+  --mde-grid-container-md: 704px;
+  --mde-grid-container-lg: 960px;
+  --mde-grid-container-xl: 1140px;
+  --mde-grid-container-xxl: 1264px;
+  --mde-grid-columns: 6;
+  --mde-grid-frame-width: 375px;
+  --mde-grid-column-width: 34px;
+  --mde-grid-margin: 25.5px;
+  --mde-layout-container-max: 1216px;
+  --mde-layout-section-gap: 3rem;
+  --mde-layout-row-gap: 2rem;
+  --mde-layout-heading-gap: 1rem;
+  --mde-layout-card-gap: 1rem;
+  --mde-motion-duration-fast: 150ms;
+  --mde-motion-duration-base: 200ms;
+  --mde-motion-duration-slow: 350ms;
+  --mde-motion-easing-default: cubic-bezier(0.42, 0, 0.58, 1);
+  --mde-spacing-0: 0;
+  --mde-spacing-100: 0.5rem;
+  --mde-spacing-150: 0.75rem;
+  --mde-spacing-200: 1rem;
+  --mde-spacing-250: 1.25rem;
+  --mde-spacing-300: 1.5rem;
+  --mde-spacing-400: 2rem;
+  --mde-spacing-500: 2.5rem;
+  --mde-spacing-600: 3rem;
+  --mde-spacing-700: 3.5rem;
+  --mde-spacing-800: 4rem;
+  --mde-spacing-1200: 6rem;
+  --mde-spacing-1600: 8rem;
+  --mde-spacing-025: 0.125rem;
+  --mde-spacing-050: 0.25rem;
+  --mde-spacing-075: 0.375rem;
+  --mde-z-index-dropdown: 90;
+  --mde-z-index-fixed: 95;
+  --mde-z-index-header: 100;
+  --mde-z-index-offcanvas: 145;
+  --mde-z-index-modal: 160;
+  --mde-z-index-tooltip: 180;
+  --mde-color-success: var(--mde-color-palette-green-600); /** Figma feedback/success */
+  --mde-color-success-light: var(--mde-color-palette-green-300);
+  --mde-color-success-xlight: var(--mde-color-palette-green-50); /** Figma feedback/success-subtle */
+  --mde-color-error: var(--mde-color-palette-red-500); /** Figma feedback-error */
+  --mde-color-error-light: var(--mde-color-palette-red-200);
+  --mde-color-error-xlight: var(--mde-color-palette-red-50); /** Figma feedback/error-subtle */
+  --mde-color-error-dark: var(--mde-color-palette-red-700); /** Figma feedback-error-strong */
+  --mde-color-warning: var(--mde-color-palette-orange-400); /** Figma feedback/warning (surfaces and lines only) */
+  --mde-color-warning-light: var(--mde-color-palette-orange-200);
+  --mde-color-warning-xlight: var(--mde-color-palette-orange-50); /** Figma feedback/warning-subtle */
+  --mde-color-body: var(--mde-color-palette-neutral-800);
+  --mde-color-heading: var(--mde-color-palette-neutral-800);
+  --mde-color-link-default: var(--mde-color-palette-blue-500);
+  --mde-color-link-hover: var(--mde-color-palette-blue-600);
+  --mde-color-action-default: var(--mde-color-palette-blue-500);
+  --mde-color-action-hover: var(--mde-color-palette-blue-600);
+  --mde-color-action-text: var(--mde-color-palette-neutral-0);
+  --mde-color-action-selected: var(--mde-color-palette-blue-600);
+  --mde-color-border: var(--mde-color-palette-neutral-200);
+  --mde-color-focus-outline: var(--mde-color-palette-blue-500);
+  --mde-color-background-body: var(--mde-color-palette-neutral-0);
+  --mde-color-background-subtle: var(--mde-color-palette-neutral-50);
+  --mde-color-background-sunken: var(--mde-color-palette-neutral-100);
+  --mde-color-background-ad: var(--mde-color-palette-neutral-100);
+  --mde-color-background-inverse: var(--mde-color-palette-neutral-900);
+  --mde-color-background-brand-strong: var(--mde-color-palette-blue-700);
+  --mde-color-accent-default: var(--mde-color-palette-blue-500);
+  --mde-color-accent-hover: var(--mde-color-palette-blue-600);
+  --mde-color-accent-brand: var(--mde-color-palette-blue-300);
+  --mde-color-accent-brand-subtle: var(--mde-color-palette-blue-50);
+  --mde-color-accent-highlight: var(--mde-color-palette-gold-500);
+  --mde-color-accent-highlight-soft: var(--mde-color-palette-gold-300);
+  --mde-color-control: var(--mde-color-palette-blue-500);
+  --mde-color-text-muted: var(--mde-color-palette-neutral-600);
+  --mde-color-disabled-background: var(--mde-color-palette-neutral-100); /** Figma surface-sunken */
+  --mde-color-disabled-text: var(--mde-color-palette-neutral-400); /** Figma text-disabled */
+  --mde-color-text-strong: var(--mde-color-palette-neutral-900);
+  --mde-color-text-inverse: var(--mde-color-palette-neutral-0);
+  --mde-color-text-on-accent-muted: var(--mde-color-palette-blue-50);
+  --mde-color-border-strong: var(--mde-color-palette-neutral-300);
+  --mde-color-border-ad: var(--mde-color-palette-neutral-200);
+  --mde-color-border-muted: var(--mde-color-palette-neutral-50);
+  --mde-color-focus-outline-inverse: var(--mde-color-white); /** Focus ring on dark areas (blue bars, footer, blue panels); color.focus-outline on light ones. */
+  --mde-color-state-info: var(--mde-color-beau-blue-xlight);
+  --mde-color-state-bg-subtle-info: var(--mde-color-palette-blue-50); /** Figma feedback/info-subtle */
+  --mde-color-state-border-subtle-info: var(--mde-color-beau-blue);
+  --mde-typography-size-navigation: var(--mde-typography-size-md);
+  --mde-typography-style-heading-1-font-family: var(--mde-typography-font-family-decorative);
+  --mde-typography-style-heading-1-font-weight: var(--mde-typography-font-weight-bold);
+  --mde-typography-style-heading-2-font-family: var(--mde-typography-font-family-decorative);
+  --mde-typography-style-heading-2-font-weight: var(--mde-typography-font-weight-bold);
+  --mde-typography-style-heading-3-font-family: var(--mde-typography-font-family-heading);
+  --mde-typography-style-heading-3-font-weight: var(--mde-typography-font-weight-bold);
+  --mde-typography-style-heading-4-font-family: var(--mde-typography-font-family-heading);
+  --mde-typography-style-heading-4-font-weight: var(--mde-typography-font-weight-bold);
+  --mde-typography-style-heading-5-font-family: var(--mde-typography-font-family-heading);
+  --mde-typography-style-heading-5-font-weight: var(--mde-typography-font-weight-bold);
+  --mde-typography-style-paragraph-font-family: var(--mde-typography-font-family-base);
+  --mde-typography-style-paragraph-font-weight: var(--mde-typography-font-weight-normal);
+  --mde-typography-style-paragraph-strong-font-family: var(--mde-typography-font-family-base);
+  --mde-typography-style-paragraph-strong-font-weight: var(--mde-typography-font-weight-medium);
+  --mde-typography-style-paragraph-small-font-family: var(--mde-typography-font-family-base);
+  --mde-typography-style-paragraph-small-font-weight: var(--mde-typography-font-weight-normal);
+  --mde-typography-style-paragraph-small-strong-font-family: var(--mde-typography-font-family-base);
+  --mde-typography-style-paragraph-small-strong-font-weight: var(--mde-typography-font-weight-bold);
+  --mde-typography-style-paragraph-extra-small-font-family: var(--mde-typography-font-family-base);
+  --mde-typography-style-paragraph-extra-small-font-weight: var(--mde-typography-font-weight-normal);
+  --mde-typography-style-paragraph-callout-font-family: var(--mde-typography-font-family-base);
+  --mde-typography-style-paragraph-callout-font-weight: var(--mde-typography-font-weight-normal);
+  --mde-typography-style-paragraph-bb-listing-font-family: var(--mde-typography-font-family-base);
+  --mde-typography-style-paragraph-bb-listing-font-weight: var(--mde-typography-font-weight-normal);
+  --mde-typography-style-paragraph-bb-listing-extra-small-font-family: var(--mde-typography-font-family-base);
+  --mde-typography-style-paragraph-bb-listing-extra-small-font-weight: var(--mde-typography-font-weight-normal);
+  --mde-typography-style-paragraph-bb-listing-strong-font-family: var(--mde-typography-font-family-base);
+  --mde-typography-style-paragraph-bb-listing-strong-font-weight: var(--mde-typography-font-weight-medium);
+  --mde-typography-style-blockquote-font-family: var(--mde-typography-font-family-heading);
+  --mde-typography-style-blockquote-font-weight: var(--mde-typography-font-weight-normal);
+  --mde-typography-style-newsletter-box-title-font-family: var(--mde-typography-font-family-heading);
+  --mde-typography-style-newsletter-box-title-font-weight: var(--mde-typography-font-weight-bold);
+  --mde-typography-style-copyright-font-family: var(--mde-typography-font-family-heading);
+  --mde-typography-style-copyright-font-weight: var(--mde-typography-font-weight-normal);
+  --mde-typography-style-tagline-font-family: var(--mde-typography-font-family-base);
+  --mde-typography-style-tagline-font-weight: var(--mde-typography-font-weight-medium);
+  --mde-typography-style-kicker-font-family: var(--mde-typography-font-family-base);
+  --mde-typography-style-kicker-font-weight: var(--mde-typography-font-weight-bold);
+  --mde-component-a11y-actions-player-shadow: var(--mde-shadow-md);
+  --mde-component-a11y-actions-player-radius: var(--mde-border-radius-sm);
+  --mde-component-ad-card-border-width: var(--mde-border-width-default);
+  --mde-component-ad-card-border-radius: var(--mde-border-radius-sm);
+  --mde-component-ad-card-tagline-font-size-mobile: var(--mde-typography-style-tagline-font-size-mobile);
+  --mde-component-ad-card-tagline-font-size-desktop: var(--mde-typography-style-tagline-font-size-desktop);
+  --mde-component-ad-card-tagline-line-height-mobile: var(--mde-typography-style-tagline-line-height-mobile);
+  --mde-component-ad-card-tagline-line-height-desktop: var(--mde-typography-style-tagline-line-height-desktop);
+  --mde-component-ad-card-tagline-letter-spacing-mobile: var(--mde-typography-style-tagline-letter-spacing-mobile);
+  --mde-component-ad-card-tagline-letter-spacing-desktop: var(--mde-typography-style-tagline-letter-spacing-desktop);
+  --mde-component-ad-card-title-font-size-mobile: var(--mde-typography-style-heading-3-font-size-mobile);
+  --mde-component-ad-card-title-font-size-desktop: var(--mde-typography-style-heading-3-font-size-desktop);
+  --mde-component-ad-card-title-line-height-mobile: var(--mde-typography-style-heading-3-line-height-mobile);
+  --mde-component-ad-card-title-line-height-desktop: var(--mde-typography-style-heading-3-line-height-desktop);
+  --mde-component-ad-card-title-letter-spacing-mobile: var(--mde-typography-style-heading-3-letter-spacing-mobile);
+  --mde-component-ad-card-title-letter-spacing-desktop: var(--mde-typography-style-heading-3-letter-spacing-desktop);
+  --mde-component-ad-card-label-font-family: var(--mde-typography-font-family-base);
+  --mde-component-ad-card-label-font-weight: var(--mde-typography-font-weight-bold);
+  --mde-component-ad-flag-font-weight: var(--mde-typography-font-weight-bold);
+  --mde-component-ad-flag-border-color: var(--mde-color-grey-xlight);
+  --mde-component-ad-container-border-width: var(--mde-border-width-default);
+  --mde-component-ad-container-border-radius: var(--mde-border-radius-sm);
+  --mde-component-ad-container-label-font-weight: var(--mde-typography-font-weight-bold);
+  --mde-component-ad-horizontal-heading-font-size-mobile: var(--mde-typography-style-heading-4-font-size-mobile);
+  --mde-component-ad-horizontal-heading-font-size-desktop: var(--mde-typography-style-heading-4-font-size-desktop);
+  --mde-component-ad-horizontal-heading-line-height-mobile: var(--mde-typography-style-heading-4-line-height-mobile);
+  --mde-component-ad-horizontal-heading-line-height-desktop: var(--mde-typography-style-heading-4-line-height-desktop);
+  --mde-component-ad-horizontal-heading-letter-spacing-mobile: var(--mde-typography-style-heading-4-letter-spacing-mobile);
+  --mde-component-ad-horizontal-heading-letter-spacing-desktop: var(--mde-typography-style-heading-4-letter-spacing-desktop);
+  --mde-component-autocomplete-list-shadow: var(--mde-shadow-md);
+  --mde-component-autocomplete-row-radius: var(--mde-border-radius-md);
+  --mde-component-autocomplete-completion-font-weight: var(--mde-typography-font-weight-bold);
+  --mde-component-bb-banner-ring-color: var(--mde-color-white);
+  --mde-component-button-border-radius: var(--mde-border-radius-pill);
+  --mde-component-button-border-width: var(--mde-border-width-default);
+  --mde-component-button-sm-padding-x: var(--mde-spacing-100);
+  --mde-component-button-sm-padding-y: var(--mde-spacing-100);
+  --mde-component-button-sm-font-size: var(--mde-typography-size-sm);
+  --mde-component-button-secondary-hover-background: var(--mde-color-white);
+  --mde-component-button-padding-x: var(--mde-spacing-100);
+  --mde-component-button-padding-y: var(--mde-spacing-050);
+  --mde-component-card-border-radius: var(--mde-border-radius-sm);
+  --mde-component-choices-item-background: var(--mde-color-blue);
+  --mde-component-divider-color: var(--mde-color-grey-xlight);
+  --mde-component-divider-width: var(--mde-border-width-default);
+  --mde-component-dropdown-menu-radius: var(--mde-border-radius-sm);
+  --mde-component-field-border-color: var(--mde-color-palette-neutral-500); /** Figma border-control (Form fields, checkbox, radio) */
+  --mde-component-footer-bottom-background: var(--mde-color-palette-blue-500);
+  --mde-component-footer-bottom-color: var(--mde-color-palette-neutral-0);
+  --mde-component-footer-bottom-border-color: var(--mde-color-palette-blue-400);
+  --mde-component-footer-social-icon-background: var(--mde-color-blue-light);
+  --mde-component-footer-social-icon-hover-background: var(--mde-color-white);
+  --mde-component-footer-social-icon-hover-color: var(--mde-color-blue-light);
+  --mde-component-footer-focus-color: var(--mde-color-white);
+  --mde-component-header-top-background: var(--mde-color-palette-blue-500);
+  --mde-component-header-top-border-color: var(--mde-color-palette-blue-500);
+  --mde-component-header-bottom-background: var(--mde-color-palette-blue-500);
+  --mde-component-header-languageswitcher-color: var(--mde-color-beau-blue);
+  --mde-component-header-mobile-trigger-color: var(--mde-color-white);
+  --mde-component-infobox-padding-top: var(--mde-spacing-400);
+  --mde-component-infobox-radius: var(--mde-border-radius-sm);
+  --mde-component-infobox-icon-top: var(--mde-spacing-400); /** Icon next to the title, top aligned with the padding */
+  --mde-component-infobox-icon-radius: var(--mde-border-radius-pill);
+  --mde-component-infobox-icon-color: var(--mde-color-white);
+  --mde-component-infobox-title-font-size-mobile: var(--mde-typography-style-heading-3-font-size-mobile);
+  --mde-component-infobox-title-font-size-desktop: var(--mde-typography-style-heading-3-font-size-desktop);
+  --mde-component-infobox-title-line-height-mobile: var(--mde-typography-style-heading-3-line-height-mobile);
+  --mde-component-infobox-title-line-height-desktop: var(--mde-typography-style-heading-3-line-height-desktop);
+  --mde-component-infobox-title-letter-spacing-mobile: var(--mde-typography-style-heading-3-letter-spacing-mobile);
+  --mde-component-infobox-title-letter-spacing-desktop: var(--mde-typography-style-heading-3-letter-spacing-desktop);
+  --mde-component-infobox-padding-right: var(--mde-spacing-400);
+  --mde-component-infobox-padding-bottom: var(--mde-spacing-400);
+  --mde-component-infobox-padding-left: var(--mde-spacing-400);
+  --mde-component-input-label-font-size: var(--mde-typography-size-base);
+  --mde-component-input-border-width: var(--mde-border-width-default);
+  --mde-component-input-border-radius: var(--mde-border-radius-sm);
+  --mde-component-linklist-element-border-width: var(--mde-border-width-default);
+  --mde-component-linklist-element-border-bottom-width: var(--mde-border-width-default);
+  --mde-component-linklist-element-radius: var(--mde-border-radius-sm);
+  --mde-component-mainmenu-link-color: var(--mde-color-white);
+  --mde-component-mainmenu-link-hover-color: var(--mde-color-white);
+  --mde-component-mainmenu-accent: var(--mde-color-yellow);
+  --mde-component-mainmenu-focus-color: var(--mde-color-beau-blue-xlight);
+  --mde-component-nav-drawer-item-font-weight: var(--mde-typography-font-weight-medium);
+  --mde-component-nav-drawer-item-emphasis-font-weight: var(--mde-typography-font-weight-medium);
+  --mde-component-newsletter-registration-card-radius: var(--mde-border-radius-sm);
+  --mde-component-newsletter-registration-title-font-size-mobile: var(--mde-typography-style-heading-3-font-size-mobile);
+  --mde-component-newsletter-registration-title-font-size-desktop: var(--mde-typography-style-heading-3-font-size-desktop);
+  --mde-component-newsletter-registration-title-line-height-mobile: var(--mde-typography-style-heading-3-line-height-mobile);
+  --mde-component-newsletter-registration-title-line-height-desktop: var(--mde-typography-style-heading-3-line-height-desktop);
+  --mde-component-newsletter-registration-title-letter-spacing-mobile: var(--mde-typography-style-heading-3-letter-spacing-mobile);
+  --mde-component-newsletter-registration-title-letter-spacing-desktop: var(--mde-typography-style-heading-3-letter-spacing-desktop);
+  --mde-component-newsletter-registration-description-font-size-mobile: var(--mde-typography-style-paragraph-small-font-size-mobile);
+  --mde-component-newsletter-registration-description-font-size-desktop: var(--mde-typography-style-paragraph-small-font-size-desktop);
+  --mde-component-newsletter-registration-description-line-height-mobile: var(--mde-typography-style-paragraph-small-line-height-mobile);
+  --mde-component-newsletter-registration-description-line-height-desktop: var(--mde-typography-style-paragraph-small-line-height-desktop);
+  --mde-component-newsletter-registration-description-letter-spacing-mobile: var(--mde-typography-style-paragraph-small-letter-spacing-mobile);
+  --mde-component-newsletter-registration-description-letter-spacing-desktop: var(--mde-typography-style-paragraph-small-letter-spacing-desktop);
+  --mde-component-select-option-hover-color: var(--mde-color-white);
+  --mde-component-service-area-card-radius: var(--mde-border-radius-sm);
+  --mde-component-service-area-title-font-size-mobile: var(--mde-typography-style-heading-3-font-size-desktop);
+  --mde-component-service-area-title-font-size-desktop: var(--mde-typography-style-heading-3-font-size-desktop);
+  --mde-component-service-area-title-line-height-mobile: var(--mde-typography-style-heading-3-line-height-desktop);
+  --mde-component-service-area-title-line-height-desktop: var(--mde-typography-style-heading-3-line-height-desktop);
+  --mde-component-service-area-title-letter-spacing-mobile: var(--mde-typography-style-heading-3-letter-spacing-desktop);
+  --mde-component-service-area-title-letter-spacing-desktop: var(--mde-typography-style-heading-3-letter-spacing-desktop);
+  --mde-component-service-search-radius: var(--mde-border-radius-sm);
+  --mde-component-site-footer-heading-font-size-desktop: var(--mde-typography-style-heading-4-font-size-desktop);
+  --mde-component-site-footer-heading-line-height-desktop: var(--mde-typography-style-heading-4-line-height-desktop);
+  --mde-component-site-footer-heading-letter-spacing-desktop: var(--mde-typography-style-heading-4-letter-spacing-desktop);
+  --mde-component-site-header-meta-color: var(--mde-color-white);
+  --mde-component-site-header-main-color: var(--mde-color-white);
+  --mde-component-site-header-pill-active-color: var(--mde-color-white);
+  --mde-component-social-media-channel-title-font-size-mobile: var(--mde-typography-style-newsletter-box-title-font-size-mobile);
+  --mde-component-social-media-channel-title-font-size-desktop: var(--mde-typography-style-newsletter-box-title-font-size-desktop);
+  --mde-component-social-media-channel-title-line-height-mobile: var(--mde-typography-style-newsletter-box-title-line-height-mobile);
+  --mde-component-social-media-channel-title-line-height-desktop: var(--mde-typography-style-newsletter-box-title-line-height-desktop);
+  --mde-component-social-media-channel-title-letter-spacing-mobile: var(--mde-typography-style-newsletter-box-title-letter-spacing-mobile);
+  --mde-component-social-media-channel-title-letter-spacing-desktop: var(--mde-typography-style-newsletter-box-title-letter-spacing-desktop);
+  --mde-component-social-media-channel-card-radius: var(--mde-border-radius-sm);
+  --mde-component-social-media-channel-name-font-weight: var(--mde-typography-font-weight-medium);
+  --mde-component-social-media-channel-name-font-size-mobile: var(--mde-typography-style-paragraph-font-size-mobile);
+  --mde-component-social-media-channel-name-font-size-desktop: var(--mde-typography-style-paragraph-font-size-desktop);
+  --mde-component-social-media-channel-name-line-height-mobile: var(--mde-typography-style-paragraph-line-height-mobile);
+  --mde-component-social-media-channel-name-line-height-desktop: var(--mde-typography-style-paragraph-line-height-desktop);
+  --mde-component-social-media-channel-name-letter-spacing-mobile: var(--mde-typography-style-paragraph-letter-spacing-mobile);
+  --mde-component-social-media-channel-name-letter-spacing-desktop: var(--mde-typography-style-paragraph-letter-spacing-desktop);
+  --mde-component-social-media-channel-handle-font-size-mobile: var(--mde-typography-style-paragraph-small-font-size-mobile);
+  --mde-component-social-media-channel-handle-font-size-desktop: var(--mde-typography-style-paragraph-small-font-size-desktop);
+  --mde-component-social-media-channel-handle-line-height-mobile: var(--mde-typography-style-paragraph-small-line-height-mobile);
+  --mde-component-social-media-channel-handle-line-height-desktop: var(--mde-typography-style-paragraph-small-line-height-desktop);
+  --mde-component-social-media-channel-handle-letter-spacing-mobile: var(--mde-typography-style-paragraph-small-letter-spacing-mobile);
+  --mde-component-social-media-channel-handle-letter-spacing-desktop: var(--mde-typography-style-paragraph-small-letter-spacing-desktop);
+  --mde-component-stage-box-radius: var(--mde-border-radius-sm);
+  --mde-component-stage-title-font-size-mobile: var(--mde-typography-style-newsletter-box-title-font-size-mobile);
+  --mde-component-stage-title-font-size-desktop: var(--mde-typography-style-newsletter-box-title-font-size-desktop);
+  --mde-component-stage-title-line-height-mobile: var(--mde-typography-style-newsletter-box-title-line-height-mobile);
+  --mde-component-stage-title-line-height-desktop: var(--mde-typography-style-newsletter-box-title-line-height-desktop);
+  --mde-component-stage-title-letter-spacing-mobile: var(--mde-typography-style-newsletter-box-title-letter-spacing-mobile);
+  --mde-component-stage-title-letter-spacing-desktop: var(--mde-typography-style-newsletter-box-title-letter-spacing-desktop);
+  --mde-component-stage-text-font-size-mobile: var(--mde-typography-style-paragraph-small-font-size-mobile);
+  --mde-component-stage-text-font-size-desktop: var(--mde-typography-style-paragraph-small-font-size-desktop);
+  --mde-component-stage-text-line-height-mobile: var(--mde-typography-style-paragraph-small-line-height-mobile);
+  --mde-component-stage-text-line-height-desktop: var(--mde-typography-style-paragraph-small-line-height-desktop);
+  --mde-component-stage-text-letter-spacing-mobile: var(--mde-typography-style-paragraph-small-letter-spacing-mobile);
+  --mde-component-stage-text-letter-spacing-desktop: var(--mde-typography-style-paragraph-small-letter-spacing-desktop);
+  --mde-component-teaser-horizontal-headline-font-size-mobile: var(--mde-typography-style-heading-4-font-size-mobile);
+  --mde-component-teaser-horizontal-headline-font-size-desktop: var(--mde-typography-style-heading-4-font-size-desktop);
+  --mde-component-teaser-horizontal-headline-line-height-mobile: var(--mde-typography-style-heading-4-line-height-mobile);
+  --mde-component-teaser-horizontal-headline-line-height-desktop: var(--mde-typography-style-heading-4-line-height-desktop);
+  --mde-component-teaser-horizontal-headline-letter-spacing-mobile: var(--mde-typography-style-heading-4-letter-spacing-mobile);
+  --mde-component-teaser-horizontal-headline-letter-spacing-desktop: var(--mde-typography-style-heading-4-letter-spacing-desktop);
+  --mde-component-teaser-horizontal-border-color: var(--mde-color-beau-blue);
+  --mde-component-teaser-contained-article-headline-xl-font-size-mobile: var(--mde-typography-style-heading-3-font-size-mobile);
+  --mde-component-teaser-contained-article-headline-xl-font-size-desktop: var(--mde-typography-style-heading-3-font-size-desktop);
+  --mde-component-teaser-contained-article-headline-xl-line-height-mobile: var(--mde-typography-style-heading-3-line-height-mobile);
+  --mde-component-teaser-contained-article-headline-xl-line-height-desktop: var(--mde-typography-style-heading-3-line-height-desktop);
+  --mde-component-teaser-contained-article-headline-xl-letter-spacing-mobile: var(--mde-typography-style-heading-3-letter-spacing-mobile);
+  --mde-component-teaser-contained-article-headline-xl-letter-spacing-desktop: var(--mde-typography-style-heading-3-letter-spacing-desktop);
+  --mde-component-teaser-contained-text-border-width: var(--mde-border-width-default);
+  --mde-component-teaser-contained-text-border-bottom-width: var(--mde-border-width-default);
+  --mde-component-teaser-contained-text-radius: var(--mde-border-radius-sm);
+  --mde-component-teaser-contained-text-summary-font-size-mobile: var(--mde-typography-style-paragraph-small-font-size-mobile);
+  --mde-component-teaser-contained-text-summary-font-size-desktop: var(--mde-typography-style-paragraph-small-font-size-desktop);
+  --mde-component-teaser-contained-text-summary-line-height-mobile: var(--mde-typography-style-paragraph-small-line-height-mobile);
+  --mde-component-teaser-contained-text-summary-line-height-desktop: var(--mde-typography-style-paragraph-small-line-height-desktop);
+  --mde-component-teaser-contained-text-summary-letter-spacing-mobile: var(--mde-typography-style-paragraph-small-letter-spacing-mobile);
+  --mde-component-teaser-contained-text-summary-letter-spacing-desktop: var(--mde-typography-style-paragraph-small-letter-spacing-desktop);
+  --mde-component-weather-header-color: var(--mde-color-white);
+  --mde-grid-gutter-width: var(--mde-spacing-300);
+  --mde-color-background-surface: var(--mde-color-accent-brand-subtle);
+  --mde-color-state-danger: var(--mde-color-error);
+  --mde-color-state-success: var(--mde-color-success);
+  --mde-color-state-warning: var(--mde-color-warning);
+  --mde-color-state-bg-subtle-danger: var(--mde-color-error-xlight);
+  --mde-color-state-bg-subtle-success: var(--mde-color-success-xlight);
+  --mde-color-state-bg-subtle-warning: var(--mde-color-warning-xlight);
+  --mde-color-state-text-emphasis-info: var(--mde-color-body);
+  --mde-color-state-text-emphasis-danger: var(--mde-color-body);
+  --mde-color-state-text-emphasis-success: var(--mde-color-body);
+  --mde-color-state-text-emphasis-warning: var(--mde-color-body);
+  --mde-color-state-border-subtle-danger: var(--mde-color-error-light);
+  --mde-color-state-border-subtle-success: var(--mde-color-success-light);
+  --mde-color-state-border-subtle-warning: var(--mde-color-warning-light);
+  --mde-component-a11y-actions-link-color: var(--mde-color-link-default);
+  --mde-component-a11y-actions-separator-color: var(--mde-color-border-strong); /** Line between the actions (same as the header quick-link divider) */
+  --mde-component-a11y-actions-player-background: var(--mde-color-background-body);
+  --mde-component-a11y-actions-player-header-background: var(--mde-color-background-subtle);
+  --mde-component-a11y-actions-player-header-color: var(--mde-color-body);
+  --mde-component-accordion-border-color: var(--mde-color-border);
+  --mde-component-ad-card-background: var(--mde-color-background-ad);
+  --mde-component-ad-card-border-color: var(--mde-color-border-ad);
+  --mde-component-ad-card-tagline-font-family: var(--mde-typography-style-tagline-font-family);
+  --mde-component-ad-card-tagline-font-weight: var(--mde-typography-style-tagline-font-weight);
+  --mde-component-ad-card-tagline-color: var(--mde-color-text-muted);
+  --mde-component-ad-card-title-font-family: var(--mde-typography-style-heading-3-font-family);
+  --mde-component-ad-card-title-font-weight: var(--mde-typography-style-heading-3-font-weight);
+  --mde-component-ad-card-title-color: var(--mde-color-heading);
+  --mde-component-ad-card-label-color: var(--mde-color-text-muted);
+  --mde-component-ad-card-label-background: var(--mde-color-background-body);
+  --mde-component-ad-flag-color: var(--mde-color-text-muted);
+  --mde-component-ad-flag-background: var(--mde-color-background-body);
+  --mde-component-ad-container-background: var(--mde-color-background-ad);
+  --mde-component-ad-container-border-color: var(--mde-color-border-ad);
+  --mde-component-ad-container-label-color: var(--mde-color-text-muted);
+  --mde-component-ad-container-label-background: var(--mde-color-background-body);
+  --mde-component-ad-horizontal-heading-font-family: var(--mde-typography-style-heading-4-font-family);
+  --mde-component-ad-horizontal-heading-font-weight: var(--mde-typography-style-heading-4-font-weight);
+  --mde-component-ad-horizontal-heading-color: var(--mde-color-heading);
+  --mde-component-autocomplete-row-color: var(--mde-color-body);
+  --mde-component-autocomplete-row-hover-background: var(--mde-color-background-subtle);
+  --mde-component-autocomplete-row-hover-color: var(--mde-color-body);
+  --mde-component-autocomplete-icon-color: var(--mde-color-text-muted);
+  --mde-component-bb-banner-background: var(--mde-color-action-default) 0%, var(--mde-color-action-default) 100%;
+  --mde-component-bb-banner-color: var(--mde-color-text-inverse);
+  --mde-component-bb-banner-focus-color: var(--mde-color-focus-outline);
+  --mde-component-breadcrumb-background: var(--mde-color-accent-brand-subtle);
+  --mde-component-breadcrumb-link-color: var(--mde-color-link-default);
+  --mde-component-breadcrumb-current-color: var(--mde-color-body);
+  --mde-component-breadcrumb-separator-color: var(--mde-color-body);
+  --mde-component-button-primary-border-color: var(--mde-color-action-default);
+  --mde-component-button-primary-hover-border-color: var(--mde-color-action-hover);
+  --mde-component-button-secondary-hover-border-color: var(--mde-color-accent-hover);
+  --mde-component-button-secondary-hover-color: var(--mde-color-accent-hover);
+  --mde-component-callout-border-color: var(--mde-color-border);
+  --mde-component-dropdown-item-color: var(--mde-color-control);
+  --mde-component-dropdown-item-hover-background: var(--mde-color-background-subtle);
+  --mde-component-dropdown-divider-color: var(--mde-color-border);
+  --mde-component-dropdown-menu-background: var(--mde-color-background-body);
+  --mde-component-dropdown-menu-border-color: var(--mde-color-border);
+  --mde-component-footer-top-background: var(--mde-color-accent-brand-subtle);
+  --mde-component-footer-top-heading-color: var(--mde-color-heading);
+  --mde-component-footer-social-icon-color: var(--mde-color-action-text);
+  --mde-component-header-border-color: var(--mde-color-accent-brand);
+  --mde-component-header-mobile-trigger-background: var(--mde-color-accent-default);
+  --mde-component-header-mobile-trigger-border-color: var(--mde-color-accent-default);
+  --mde-component-header-mobile-trigger-active-color: var(--mde-color-control);
+  --mde-component-header-navtabs-color: var(--mde-color-body);
+  --mde-component-header-navtabs-hover-color: var(--mde-color-accent-default);
+  --mde-component-header-navtabs-active-color: var(--mde-color-accent-default);
+  --mde-component-infobox-warning-icon-color: var(--mde-color-body);
+  --mde-component-infobox-title-font-family: var(--mde-typography-style-heading-3-font-family);
+  --mde-component-infobox-title-font-weight: var(--mde-typography-style-heading-3-font-weight);
+  --mde-component-input-color: var(--mde-color-body);
+  --mde-component-input-border-color: var(--mde-component-field-border-color);
+  --mde-component-linklist-element-color: var(--mde-color-link-default);
+  --mde-component-linklist-element-background: var(--mde-color-background-body);
+  --mde-component-linklist-element-border-color: var(--mde-color-border);
+  --mde-component-linklist-element-hover-color: var(--mde-color-link-hover);
+  --mde-component-linklist-element-hover-background: var(--mde-color-background-subtle);
+  --mde-component-linklist-element-hover-border-color: var(--mde-color-action-default);
+  --mde-component-list-marker-color: var(--mde-color-background-inverse); /** Chevron and circle list markers in surface/inverse (not the action blue) */
+  --mde-component-mainmenu-mobile-link-color: var(--mde-color-control);
+  --mde-component-menu-list-item-color: var(--mde-color-link-default);
+  --mde-component-menu-list-item-hover-color: var(--mde-color-action-selected);
+  --mde-component-nav-drawer-background: var(--mde-color-background-subtle);
+  --mde-component-nav-drawer-list-background: var(--mde-color-background-body);
+  --mde-component-nav-drawer-bar-border-color: var(--mde-color-border);
+  --mde-component-nav-drawer-item-color: var(--mde-color-body);
+  --mde-component-nav-drawer-separator-color: var(--mde-color-border);
+  --mde-component-nav-drawer-close-background: var(--mde-color-background-sunken);
+  --mde-component-nav-drawer-close-color: var(--mde-color-background-brand-strong);
+  --mde-component-nav-drawer-close-border-color: var(--mde-color-background-sunken);
+  --mde-component-newsletter-registration-band-background: var(--mde-color-action-default); /** Band below the card, same colour as the footer */
+  --mde-component-newsletter-registration-card-background: var(--mde-color-background-body);
+  --mde-component-newsletter-registration-title-font-family: var(--mde-typography-style-heading-3-font-family);
+  --mde-component-newsletter-registration-title-font-weight: var(--mde-typography-style-heading-3-font-weight);
+  --mde-component-newsletter-registration-title-color: var(--mde-color-heading);
+  --mde-component-newsletter-registration-description-font-family: var(--mde-typography-style-paragraph-small-font-family);
+  --mde-component-newsletter-registration-description-font-weight: var(--mde-typography-style-paragraph-small-font-weight);
+  --mde-component-newsletter-registration-description-color: var(--mde-color-text-muted);
+  --mde-component-select-option-hover-background: var(--mde-color-accent-default);
+  --mde-component-service-area-heading-color: var(--mde-color-heading);
+  --mde-component-service-area-card-background: var(--mde-color-background-body);
+  --mde-component-service-area-card-border-color: var(--mde-color-border);
+  --mde-component-service-area-card-hover-border-color: var(--mde-color-action-default); /** Hover: border in the action colour plus the underlined title */
+  --mde-component-service-area-title-font-family: var(--mde-typography-style-heading-3-font-family);
+  --mde-component-service-area-title-font-weight: var(--mde-typography-style-heading-3-font-weight);
+  --mde-component-service-area-title-color: var(--mde-color-link-default);
+  --mde-component-service-area-text-color: var(--mde-color-text-muted);
+  --mde-component-service-area-highlight-background: var(--mde-color-action-default); /** The highlighted card (e.g. „Ich suche einen Bürgerservice“) */
+  --mde-component-service-area-highlight-color: var(--mde-color-text-inverse);
+  --mde-component-service-area-highlight-text-color: var(--mde-color-text-on-accent-muted);
+  --mde-component-service-area-indicator-track-color: var(--mde-color-background-subtle);
+  --mde-component-service-area-indicator-thumb-color: var(--mde-color-action-default);
+  --mde-component-service-area-nav-border-color: var(--mde-color-background-subtle);
+  --mde-component-service-area-nav-background: var(--mde-color-background-brand-strong);
+  --mde-component-service-area-nav-color: var(--mde-color-text-inverse);
+  --mde-component-service-search-background: var(--mde-color-action-default);
+  --mde-component-service-search-color: var(--mde-color-text-inverse);
+  --mde-component-service-search-focus-color: var(--mde-color-focus-outline-inverse); /** Focus ring on the blue panel (links, chips, the closed field) */
+  --mde-component-service-search-field-background: var(--mde-color-background-body);
+  --mde-component-service-search-field-color: var(--mde-color-body);
+  --mde-component-service-search-field-placeholder-color: var(--mde-color-text-muted);
+  --mde-component-service-search-submit-background: var(--mde-color-action-selected);
+  --mde-component-service-search-submit-color: var(--mde-color-text-inverse);
+  --mde-component-service-search-popular-label-color: var(--mde-color-text-on-accent-muted);
+  --mde-component-service-search-chip-border-color: var(--mde-color-text-inverse);
+  --mde-component-service-search-chip-hover-background: var(--mde-color-text-inverse); /** Hover: the chip turns white, its text blue */
+  --mde-component-service-search-chip-hover-color: var(--mde-color-action-default);
+  --mde-component-site-footer-background: var(--mde-color-action-default);
+  --mde-component-site-footer-color: var(--mde-color-text-inverse);
+  --mde-component-site-footer-focus-color: var(--mde-color-focus-outline-inverse); /** Focus ring on the blue footer */
+  --mde-component-site-footer-social-background: var(--mde-color-background-brand-strong);
+  --mde-component-site-footer-social-color: var(--mde-color-text-inverse);
+  --mde-component-site-footer-social-hover-background: var(--mde-color-text-inverse); /** Hover: the circle turns white, the icon blue */
+  --mde-component-site-footer-social-hover-color: var(--mde-color-action-default);
+  --mde-component-site-footer-heading-font-family: var(--mde-typography-style-heading-4-font-family);
+  --mde-component-site-footer-heading-font-weight: var(--mde-typography-style-heading-4-font-weight);
+  --mde-component-site-header-meta-background: var(--mde-color-action-default);
+  --mde-component-site-header-main-background: var(--mde-color-action-default);
+  --mde-component-site-header-accent-color: var(--mde-color-accent-brand);
+  --mde-component-site-header-nav-background: var(--mde-color-accent-brand-subtle);
+  --mde-component-site-header-nav-divider-color: var(--mde-color-border-strong);
+  --mde-component-site-header-pill-color: var(--mde-color-link-default);
+  --mde-component-site-header-pill-border-color: var(--mde-color-action-default);
+  --mde-component-site-header-pill-hover-background: var(--mde-color-background-body);
+  --mde-component-site-header-pill-active-background: var(--mde-color-action-selected);
+  --mde-component-site-header-menu-background: var(--mde-color-background-body);
+  --mde-component-site-header-menu-color: var(--mde-color-link-default);
+  --mde-component-site-header-focus-color: var(--mde-color-focus-outline-inverse); /** Focus ring on the blue bars */
+  --mde-component-site-header-search-dialog-background: var(--mde-color-action-default);
+  --mde-component-site-header-search-dialog-color: var(--mde-color-text-inverse);
+  --mde-component-site-header-search-dialog-focus-color: var(--mde-color-focus-outline-inverse);
+  --mde-component-site-header-search-dialog-close-background: var(--mde-color-background-body);
+  --mde-component-site-header-search-dialog-field-border-color: var(--mde-color-background-body);
+  --mde-component-social-media-channel-title-font-family: var(--mde-typography-style-newsletter-box-title-font-family);
+  --mde-component-social-media-channel-title-font-weight: var(--mde-typography-style-newsletter-box-title-font-weight);
+  --mde-component-social-media-channel-title-color: var(--mde-color-heading);
+  --mde-component-social-media-channel-card-background: var(--mde-color-background-body);
+  --mde-component-social-media-channel-card-hover-border-color: var(--mde-color-action-default); /** Hover/focus ring of the card (second cue next to the underlined name) */
+  --mde-component-social-media-channel-name-font-family: var(--mde-typography-style-paragraph-font-family);
+  --mde-component-social-media-channel-name-color: var(--mde-color-body);
+  --mde-component-social-media-channel-handle-font-family: var(--mde-typography-style-paragraph-small-font-family);
+  --mde-component-social-media-channel-handle-font-weight: var(--mde-typography-style-paragraph-small-font-weight);
+  --mde-component-social-media-channel-handle-color: var(--mde-color-text-muted);
+  --mde-component-stage-background: var(--mde-color-accent-brand-subtle);
+  --mde-component-stage-heading-color: var(--mde-color-heading);
+  --mde-component-stage-box-color: var(--mde-color-body);
+  --mde-component-stage-panel-background: var(--mde-color-action-default); /** Text panel below the image below lg */
+  --mde-component-stage-panel-color: var(--mde-color-text-inverse);
+  --mde-component-stage-panel-text-color: var(--mde-color-text-on-accent-muted);
+  --mde-component-stage-tagline-font-family: var(--mde-typography-style-heading-5-font-family);
+  --mde-component-stage-tagline-font-weight: var(--mde-typography-style-heading-5-font-weight);
+  --mde-component-stage-title-font-family: var(--mde-typography-style-newsletter-box-title-font-family);
+  --mde-component-stage-title-font-weight: var(--mde-typography-style-newsletter-box-title-font-weight);
+  --mde-component-stage-text-font-family: var(--mde-typography-style-paragraph-small-font-family);
+  --mde-component-stage-text-font-weight: var(--mde-typography-style-paragraph-small-font-weight);
+  --mde-component-stage-indicator-color: var(--mde-color-action-default);
+  --mde-component-stage-nav-border-color: var(--mde-color-background-subtle);
+  --mde-component-stage-nav-background: var(--mde-color-action-default);
+  --mde-component-stage-nav-color: var(--mde-color-text-inverse);
+  --mde-component-teaser-border-color: var(--mde-color-border);
+  --mde-component-teaser-list-background: var(--mde-color-background-body);
+  --mde-component-teaser-horizontal-headline-font-family: var(--mde-typography-style-heading-4-font-family);
+  --mde-component-teaser-horizontal-headline-font-weight: var(--mde-typography-style-heading-4-font-weight);
+  --mde-component-teaser-horizontal-headline-color: var(--mde-color-heading);
+  --mde-component-teaser-horizontal-tagline-color: var(--mde-color-link-default);
+  --mde-component-teaser-horizontal-color: var(--mde-color-body);
+  --mde-component-teaser-contained-article-headline-xl-font-family: var(--mde-typography-style-heading-3-font-family);
+  --mde-component-teaser-contained-article-headline-xl-font-weight: var(--mde-typography-style-heading-3-font-weight);
+  --mde-component-teaser-contained-article-headline-color: var(--mde-color-heading);
+  --mde-component-teaser-contained-article-tagline-color: var(--mde-color-link-default);
+  --mde-component-teaser-contained-text-border-color: var(--mde-color-border);
+  --mde-component-teaser-contained-text-accent-color: var(--mde-color-action-default);
+  --mde-component-teaser-contained-text-headline-color: var(--mde-color-link-default);
+  --mde-component-teaser-contained-text-contact-headline-color: var(--mde-color-heading);
+  --mde-component-teaser-contained-text-summary-font-family: var(--mde-typography-style-paragraph-small-font-family);
+  --mde-component-teaser-contained-text-summary-font-weight: var(--mde-typography-style-paragraph-small-font-weight);
+  --mde-component-teaser-contained-text-summary-color: var(--mde-color-text-muted);
+  --mde-component-teaser-contained-text-hover-border-color: var(--mde-color-action-default);
+  --mde-component-teaser-contained-text-hover-background: var(--mde-color-background-subtle);
+  --mde-component-header-mobile-trigger-active-background: var(--mde-color-background-surface);
+  --mde-component-header-mobile-trigger-active-border-color: var(--mde-color-background-surface);
+  --mde-component-header-mobile-collapse-background: var(--mde-color-background-surface);
+  --mde-component-newsletter-registration-background: var(--mde-color-background-surface); /** Area above the band (as the footer's top area) */
+}
+
+@media (min-width: 992px) {
+  :host {
+    --mde-typography-size-heading-1: 2.5rem;
+    --mde-typography-size-heading-2: 2rem;
+    --mde-typography-size-heading-3: 1.5rem;
+    --mde-grid-columns: 12;
+    --mde-grid-frame-width: 1440px;
+    --mde-grid-column-width: 72px;
+    --mde-grid-margin: 112px;
+    --mde-layout-section-gap: 4rem;
+    --mde-layout-row-gap: 3rem;
+    --mde-layout-heading-gap: 1.5rem;
+    --mde-component-button-padding-x: var(--mde-spacing-200);
+    --mde-component-button-padding-y: var(--mde-spacing-150);
+    --mde-grid-gutter-width: var(--mde-spacing-400);
+  }
+}

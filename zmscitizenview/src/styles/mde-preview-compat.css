@@ -1,0 +1,33 @@
+:host,
+:root {
+  --color-brand-main-blue: var(--mde-color-action-default);
+  --color-neutrals-blue: var(--mde-color-border);
+  --color-neutrals-blue-xlight: var(--mde-color-background-subtle);
+  --color-neutrals-grey: var(--mde-color-body);
+
+  --mde-color-brand-mde-blue: var(--mde-color-blue);
+  --mde-color-brand-mde-blue-light: var(--mde-color-blue-light);
+  --mde-color-brand-mde-blue-dark: var(--mde-color-blue-dark);
+  --mde-color-brand-mde-blue-x-dark: var(--mde-color-blue-xdark);
+  --mde-color-brand-mde-cyan: var(--mde-color-cyan);
+  --mde-color-brand-mde-yellow: var(--mde-color-yellow);
+
+  --mde-color-neutral-grey: var(--mde-color-grey);
+  --mde-color-neutral-grey-disabled: var(--mde-color-disabled-text);
+  --mde-color-neutral-grey-light: var(--mde-color-grey-light);
+  --mde-color-neutral-grey-x-light: var(--mde-color-grey-xlight);
+  --mde-color-neutral-grey-x-x-light: var(--mde-color-palette-neutral-200);
+  --mde-color-neutral-beau-blue: var(--mde-color-beau-blue);
+  --mde-color-neutral-beau-blue-light: var(--mde-color-beau-blue-light);
+  --mde-color-neutral-beau-blue-x-light: var(--mde-color-beau-blue-xlight);
+
+  --mde-color-status-success: var(--mde-color-success);
+  --mde-color-status-success-light: var(--mde-color-success-light);
+  --mde-color-status-success-x-light: var(--mde-color-success-xlight);
+  --mde-color-status-warning: var(--mde-color-warning);
+  --mde-color-status-warning-light: var(--mde-color-warning-light);
+  --mde-color-status-warning-x-light: var(--mde-color-warning-xlight);
+  --mde-color-status-error: var(--mde-color-error);
+  --mde-color-status-error-light: var(--mde-color-error-light);
+  --mde-color-status-error-x-light: var(--mde-color-error-xlight);
+}

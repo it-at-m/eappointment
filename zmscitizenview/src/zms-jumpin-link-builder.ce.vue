@@ -1,10 +1,4 @@
 <template>
-  <link
-    href="https://assets.muenchen.de/mde/1.1.27/css/style.css"
-    rel="stylesheet"
-    @load="stylesLoaded = true"
-    @error="stylesLoaded = true"
-  />
   <main :class="{ 'styles-loading': !stylesLoaded }">
     <div v-html="sanitizeHtml(mucIconsSprite)"></div>
     <jumpin-link-builder-view :available="available" />
@@ -16,32 +10,26 @@
 
 <script lang="ts" setup>
 import mucIconsSprite from "@muenchen/muc-patternlab-vue/assets/icons/muc-icons.svg?raw";
-import { onMounted, ref } from "vue";
+import { ref } from "vue";
+
+import "@/utils/installMdePreviewFonts";
 
 import BuildInfoBadge from "@/components/Common/BuildInfoBadge.vue";
 import JumpinLinkBuilderView from "@/components/JumpinLinkBuilder/JumpinLinkBuilderView.vue";
 import { isInternalZmsHost } from "@/utils/internalHost";
 import { sanitizeHtml } from "@/utils/sanitizeHtml";
 
-const stylesLoaded = ref(false);
+const stylesLoaded = ref(true);
 const available = ref(isInternalZmsHost(window.location.hostname));
-
-onMounted(() => {
-  window.setTimeout(() => {
-    stylesLoaded.value = true;
-  }, 3000);
-});
 </script>
 
 <style>
-@import "@muenchen/muc-patternlab-vue/assets/css/custom-style.css";
+@import "@/styles/mde-preview.css";
 @import "@muenchen/muc-patternlab-vue/style.css";
 
 :host {
   display: block;
-  font-family:
-    Open Sans,
-    sans-serif;
+  font-family: var(--mde-typography-font-family-base);
 }
 
 main {

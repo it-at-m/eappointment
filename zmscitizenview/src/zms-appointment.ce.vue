@@ -1,10 +1,4 @@
 <template>
-  <link
-    href="https://assets.muenchen.de/mde/1.1.27/css/style.css"
-    rel="stylesheet"
-    @load="onStylesheetLoaded"
-    @error="onStylesheetLoaded"
-  />
   <main :class="{ 'styles-loading': !stylesLoaded }">
     <div>
       <div v-html="sanitizeHtml(mucIconsSprite)"></div>
@@ -30,6 +24,8 @@ import customIconsSprit from "@muenchen/muc-patternlab-vue/assets/icons/custom-i
 import mucIconsSprite from "@muenchen/muc-patternlab-vue/assets/icons/muc-icons.svg?raw";
 import { onMounted, onUnmounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
+
+import "@/utils/installMdePreviewFonts";
 
 import AppointmentView from "@/components/Appointment/AppointmentView.vue";
 import BuildInfoBadge from "@/components/Common/BuildInfoBadge.vue";
@@ -162,30 +158,18 @@ const globalState = useGlobalState(props);
 
 // Prevent flickering: hide content until external stylesheet is loaded
 // This prevents icons from appearing large/unstyled before CSS applies
-const stylesLoaded = ref(false);
-const onStylesheetLoaded = () => {
-  stylesLoaded.value = true;
-};
-
-// Fallback: reveal content after 3s even if stylesheet fails or never loads
-onMounted(() => {
-  setTimeout(() => {
-    stylesLoaded.value = true;
-  }, 3000);
-});
+const stylesLoaded = ref(true);
 </script>
 
 <style>
-@import "@muenchen/muc-patternlab-vue/assets/css/custom-style.css";
+@import "@/styles/mde-preview.css";
 @import "@muenchen/muc-patternlab-vue/style.css";
 @import "altcha/altcha.css";
 
 :host {
   display: block;
   position: relative;
-  font-family:
-    Open Sans,
-    sans-serif;
+  font-family: var(--mde-typography-font-family-base);
 }
 
 main {

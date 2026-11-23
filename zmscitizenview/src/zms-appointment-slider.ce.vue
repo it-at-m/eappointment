@@ -1,10 +1,4 @@
 <template>
-  <link
-    href="https://assets.muenchen.de/mde/1.1.27/css/style.css"
-    rel="stylesheet"
-    @load="onStylesheetLoaded"
-    @error="onStylesheetLoaded"
-  />
   <main
     :class="{
       'details-background': displayOptionDetailScreen,
@@ -33,6 +27,8 @@ import customIconsSprit from "@muenchen/muc-patternlab-vue/assets/icons/custom-i
 import mucIconsSprite from "@muenchen/muc-patternlab-vue/assets/icons/muc-icons.svg?raw";
 import { onMounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
+
+import "@/utils/installMdePreviewFonts";
 
 import AppointmentSliderView from "@/components/AppointmentOverview/AppointmentSliderView.vue";
 import BuildInfoBadge from "@/components/Common/BuildInfoBadge.vue";
@@ -71,30 +67,22 @@ const { t } = useI18n();
 const globalState = useGlobalState(props);
 
 // Prevent flickering: hide content until external stylesheet is loaded
-const stylesLoaded = ref(false);
-const onStylesheetLoaded = () => {
-  stylesLoaded.value = true;
-};
+const stylesLoaded = ref(true);
 
 // Fallback: reveal content after 3s even if stylesheet fails or never loads
 onMounted(() => {
   trackWidgetView("appointment_slider");
-  setTimeout(() => {
-    stylesLoaded.value = true;
-  }, 3000);
 });
 </script>
 
 <style>
-@import "@muenchen/muc-patternlab-vue/assets/css/custom-style.css";
+@import "@/styles/mde-preview.css";
 @import "@muenchen/muc-patternlab-vue/style.css";
 
 :host {
   display: block;
   position: relative;
-  font-family:
-    Open Sans,
-    sans-serif;
+  font-family: var(--mde-typography-font-family-base);
 }
 
 /* Background color on details page */

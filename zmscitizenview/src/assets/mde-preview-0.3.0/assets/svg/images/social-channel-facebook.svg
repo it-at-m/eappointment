@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="52" height="52" viewBox="0 0 52 52">
+  <g id="icon-facebook" transform="translate(-265 -3709)">
+    <circle id="BG" cx="26" cy="26" r="26" transform="translate(265 3709)" fill="#34589c"/>
+    <g id="mde_icon-facebook" transform="translate(279 3723)">
+      <rect id="Frame" width="24" height="24" fill="none"/>
+      <path id="raw-icon" d="M-30.452,22V12.877h3.063l.458-3.555h-3.521V7.052c0-1.03.286-1.731,1.762-1.731h1.883V2.14A25.27,25.27,0,0,0-29.55,2c-2.715,0-4.573,1.657-4.573,4.7V9.322h-3.07v3.555h3.07V22Z" transform="translate(44.193)" fill="#fff"/>
+    </g>
+  </g>
+</svg>

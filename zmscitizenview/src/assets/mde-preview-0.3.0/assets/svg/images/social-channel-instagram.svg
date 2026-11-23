@@ -1,0 +1,31 @@
+<svg id="Ebene_1" data-name="Ebene 1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="52" height="52" viewBox="0 0 52 52">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: url(#Unbenannter_Verlauf_3);
+      }
+
+      .cls-2 {
+        fill: url(#Unbenannter_Verlauf_2);
+      }
+
+      .cls-3 {
+        fill: #fff;
+      }
+    </style>
+    <radialGradient id="Unbenannter_Verlauf_3" data-name="Unbenannter Verlauf 3" cx="-270.42" cy="-267.82" r="26" gradientTransform="matrix(0, -1.98, -1.84, 0, -480.02, -480.12)" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#fd5"/>
+      <stop offset="0.1" stop-color="#fd5"/>
+      <stop offset="0.5" stop-color="#ff543e"/>
+      <stop offset="1" stop-color="#c837ab"/>
+    </radialGradient>
+    <radialGradient id="Unbenannter_Verlauf_2" data-name="Unbenannter Verlauf 2" cx="369.47" cy="27.88" r="26" gradientTransform="matrix(0.17, 0.87, 3.58, -0.72, -172.82, -297.31)" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#3771c8"/>
+      <stop offset="0.13" stop-color="#3771c8"/>
+      <stop offset="1" stop-color="#60f" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <circle class="cls-1" cx="26" cy="26" r="26"/>
+  <path class="cls-2" d="M26,0h0A26,26,0,0,0,0,25.93v.14A26,26,0,0,0,26,52h0A26,26,0,0,0,52,26h0A26,26,0,0,0,26,0Z"/>
+  <path class="cls-3" d="M26,20.87a5.12,5.12,0,1,0,3.62,1.5A5.13,5.13,0,0,0,26,20.87Zm0,8.46A3.33,3.33,0,1,1,29.34,26h0A3.33,3.33,0,0,1,26,29.33Zm6.52-8.67a1.19,1.19,0,1,1-1.18-1.2,1.22,1.22,0,0,1,.84.35A1.18,1.18,0,0,1,32.53,20.66Zm3.4,1.22a5.87,5.87,0,0,0-1.61-4.19,5.93,5.93,0,0,0-4.19-1.62c-1.65-.09-6.6-.09-8.25,0a6,6,0,0,0-4.19,1.61,5.93,5.93,0,0,0-1.62,4.19c-.09,1.65-.09,6.6,0,8.25a5.92,5.92,0,0,0,1.62,4.19,5.92,5.92,0,0,0,4.19,1.62c1.65.09,6.6.09,8.25,0a5.54,5.54,0,0,0,5.8-5.81c.09-1.65.09-6.6,0-8.24Zm-2.13,10a3.44,3.44,0,0,1-1.9,1.9c-1.32.52-4.44.4-5.9.4s-4.58.11-5.89-.4a3.41,3.41,0,0,1-1.9-1.9c-.52-1.32-.4-4.44-.4-5.9s-.12-4.59.4-5.9a3.35,3.35,0,0,1,1.9-1.9c1.32-.53,4.44-.4,5.89-.4s4.59-.12,5.9.4a3.38,3.38,0,0,1,1.9,1.9c.52,1.31.4,4.44.4,5.9S34.32,30.58,33.8,31.9Z"/>
+</svg>

@@ -1,0 +1,5 @@
+/* Cascade layer order (workspace ADR-0001). Load this file first, before any
+   other stylesheet of the package: the first declaration of a layer fixes its
+   position. PatternLab is the lowest layer, so the new components win over it
+   regardless of specificity; unlayered page CSS and the tokens win over both. */
+@layer patternlab, mde.base, mde.components, mde.utilities;

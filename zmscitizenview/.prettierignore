@@ -2,3 +2,4 @@ dist
 target
 node_modules
 processes/post-build.js
+src/assets/mde-preview-0.3.0/

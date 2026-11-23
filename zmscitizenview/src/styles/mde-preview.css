@@ -1,0 +1,15 @@
+@import "../assets/mde-preview-0.3.0/css/layers.css";
+@import "../assets/mde-preview-0.3.0/css/tokens-shadow.css";
+@import "../assets/mde-preview-0.3.0/css/patternlab-shadow.css";
+@import "../assets/mde-preview-0.3.0/css/components.css";
+@import "./mde-preview-compat.css";
+
+:host {
+  color: var(--mde-color-body);
+  background-color: var(--mde-color-background-body);
+  font-family: var(--mde-typography-font-family-base);
+  font-size: 1rem;
+  font-weight: var(--mde-typography-font-weight-normal);
+  line-height: 1.5;
+  word-break: break-word;
+}
