@@ -66,11 +66,11 @@ class Status extends \BO\Zmsbackend\Base
     }
 
     /**
-     * Slots from today onward whose bookings exceed the opening's current Arbeitsplätze.
-     * Overlapping openings at the same time add up, as on the availability day view.
-     * slot.intern is not used: it can still show the old number after the opening changed.
-     * slot.public, the smaller internet share, is not used either.
-     * Grouped like active sessions. A consistent read on the reader: no FOR UPDATE, so it does not take row locks.
+     * Slots from today through the next 180 days where appointments exceed the opening's
+     * current Arbeitsplätze. The time grid and the repeat rules are the opening's, as on
+     * the availability day view, so a cancelled slot row still counts. Overlapping openings
+     * at the same time add up. Grouped like active sessions.
+     * A consistent read on the reader: no FOR UPDATE, so it does not take row locks.
      * Skipped while calculateSlots --delete is running, same as the other slot scans.
      *
      * @return array{total: int, departments: array<int|string, array{name: string, overbookedSlots: int, scopes: array<int|string, array{name: string, overbookedSlots: int}>}>}
@@ -84,38 +84,109 @@ class Status extends \BO\Zmsbackend\Base
                     st.Bezeichnung AS scopeName,
                     COUNT(*) AS overbookedSlots
              FROM (
-                 SELECT perAvailability.scopeID
+                 SELECT occ.scope_id
                  FROM (
-                     SELECT s.scopeID, s.year, s.month, s.day, s.time,
-                            s.availabilityID,
-                            o.appointment_workstation_count AS capacity,
-                            COUNT(DISTINCT sp.processID) AS occupied
-                     FROM slot s
-                     INNER JOIN oeffnungszeit o ON o.OeffnungszeitID = s.availabilityID
-                     LEFT JOIN slot_process sp ON sp.slotID = s.slotID
-                     WHERE s.status IN ("free", "full")
-                       AND (
-                         s.year > :yearA
-                         OR (s.year = :yearB AND s.month > :monthA)
-                         OR (s.year = :yearC AND s.month = :monthB AND s.day >= :day)
-                       )
-                     GROUP BY s.scopeID, s.year, s.month, s.day, s.time,
-                              s.availabilityID, o.appointment_workstation_count
-                 ) perAvailability
-                 GROUP BY perAvailability.scopeID, perAvailability.year, perAvailability.month,
-                          perAvailability.day, perAvailability.time
-                 HAVING SUM(perAvailability.occupied) > SUM(perAvailability.capacity)
+                     SELECT covered.scope_id, covered.d, covered.t,
+                            COUNT(DISTINCT covered.BuergerID) AS occupied
+                     FROM (
+                         SELECT b.StandortID AS scope_id, b.Datum AS d, b.BuergerID,
+                                ADDTIME(b.Uhrzeit, SEC_TO_TIME(steps.n * sized.slot_seconds)) AS t
+                         FROM buerger b
+                         JOIN (
+                             SELECT b2.BuergerID, MIN(TIME_TO_SEC(o.time_slot)) AS slot_seconds
+                             FROM buerger b2
+                             JOIN standort st2 ON st2.StandortID = b2.StandortID
+                             JOIN oeffnungszeit o ON o.scope_id = b2.StandortID
+                              AND b2.Datum BETWEEN o.start_date AND o.end_date
+                              AND b2.Uhrzeit >= o.appointment_start_time
+                              AND b2.Uhrzeit < o.appointment_end_time
+                              AND o.time_slot > "00:00:00"
+                              AND (o.weekday & (1 << (DAYOFWEEK(b2.Datum) - 1))) <> 0
+                              AND (
+                                   (o.every_x_weeks > 0 AND (
+                                       o.every_x_weeks = 1
+                                       OR MOD(DATEDIFF(
+                                           DATE_SUB(b2.Datum, INTERVAL WEEKDAY(b2.Datum) DAY),
+                                           DATE_SUB(o.start_date, INTERVAL WEEKDAY(o.start_date) DAY)
+                                       ), o.every_x_weeks * 7) = 0
+                                   ))
+                                   OR (o.every_other_week > 0 AND (
+                                       (o.every_other_week < 5 AND CEIL(DAY(b2.Datum) / 7) = o.every_other_week)
+                                       OR (o.every_other_week >= 5 AND DAY(b2.Datum) > DAY(LAST_DAY(b2.Datum)) - 7)
+                                   ))
+                                   OR (o.every_x_weeks = 0 AND o.every_other_week = 0)
+                              )
+                              AND NOT (
+                                   DATEDIFF(o.end_date, o.start_date) > 1
+                                   AND EXISTS (
+                                       SELECT 1 FROM feiertage f
+                                       WHERE f.Datum = b2.Datum
+                                         AND (f.BehoerdenID = st2.BehoerdenID OR f.BehoerdenID = 0)
+                                   )
+                              )
+                             WHERE b2.Datum >= :fromDay
+                               AND b2.Datum < :untilDay
+                               AND b2.status <> "fake"
+                               AND (b2.istFolgeterminvon IS NULL OR b2.istFolgeterminvon = 0)
+                             GROUP BY b2.BuergerID
+                         ) sized ON sized.BuergerID = b.BuergerID
+                         JOIN (
+                             SELECT ones.n + tens.n * 10 + hundreds.n * 100 AS n
+                             FROM (
+                                 SELECT 0 n UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3
+                                 UNION ALL SELECT 4 UNION ALL SELECT 5 UNION ALL SELECT 6
+                                 UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9
+                             ) ones
+                             JOIN (
+                                 SELECT 0 n UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3
+                                 UNION ALL SELECT 4 UNION ALL SELECT 5 UNION ALL SELECT 6
+                                 UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9
+                             ) tens
+                             JOIN (SELECT 0 n UNION ALL SELECT 1 UNION ALL SELECT 2) hundreds
+                         ) steps ON steps.n < IFNULL(b.hatFolgetermine, 0) + 1
+                         WHERE b.status <> "fake"
+                           AND (b.istFolgeterminvon IS NULL OR b.istFolgeterminvon = 0)
+                     ) covered
+                     GROUP BY covered.scope_id, covered.d, covered.t
+                 ) occ
+                 JOIN oeffnungszeit op ON op.scope_id = occ.scope_id
+                    AND occ.d BETWEEN op.start_date AND op.end_date
+                    AND occ.t >= op.appointment_start_time
+                    AND occ.t < op.appointment_end_time
+                    AND op.appointment_start_time > "00:00:00"
+                    AND (op.weekday & (1 << (DAYOFWEEK(occ.d) - 1))) <> 0
+                    AND (
+                         (op.every_x_weeks > 0 AND (
+                             op.every_x_weeks = 1
+                             OR MOD(DATEDIFF(
+                                 DATE_SUB(occ.d, INTERVAL WEEKDAY(occ.d) DAY),
+                                 DATE_SUB(op.start_date, INTERVAL WEEKDAY(op.start_date) DAY)
+                             ), op.every_x_weeks * 7) = 0
+                         ))
+                         OR (op.every_other_week > 0 AND (
+                             (op.every_other_week < 5 AND CEIL(DAY(occ.d) / 7) = op.every_other_week)
+                             OR (op.every_other_week >= 5 AND DAY(occ.d) > DAY(LAST_DAY(occ.d)) - 7)
+                         ))
+                         OR (op.every_x_weeks = 0 AND op.every_other_week = 0)
+                    )
+                 JOIN standort scope_row ON scope_row.StandortID = occ.scope_id
+                 WHERE NOT (
+                     DATEDIFF(op.end_date, op.start_date) > 1
+                     AND EXISTS (
+                         SELECT 1 FROM feiertage f
+                         WHERE f.Datum = occ.d
+                           AND (f.BehoerdenID = scope_row.BehoerdenID OR f.BehoerdenID = 0)
+                     )
+                 )
+                 GROUP BY occ.scope_id, occ.d, occ.t, occ.occupied
+                 HAVING occ.occupied > SUM(op.appointment_workstation_count)
              ) overbooked
-             INNER JOIN standort st ON st.StandortID = overbooked.scopeID
+             INNER JOIN standort st ON st.StandortID = overbooked.scope_id
              INNER JOIN behoerde beh ON beh.BehoerdenID = st.BehoerdenID
              GROUP BY beh.BehoerdenID, beh.Name, st.StandortID, st.Bezeichnung',
             [
-                'yearA' => (int) $now->format('Y'),
-                'yearB' => (int) $now->format('Y'),
-                'yearC' => (int) $now->format('Y'),
-                'monthA' => (int) $now->format('n'),
-                'monthB' => (int) $now->format('n'),
-                'day' => (int) $now->format('j'),
+                'fromDay' => $now->format('Y-m-d'),
+                'untilDay' => $now->modify('+180 days')->format('Y-m-d'),
             ]
         );
 
