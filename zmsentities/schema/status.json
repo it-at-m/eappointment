@@ -97,7 +97,7 @@
     },
     "overbooking": {
       "type": "object",
-      "description": "Slots from today onward where bookings exceed the opening's current Arbeitsplätze. Overlapping openings at the same time add up. The stored slot.intern copy is not used, because it can still show the old number. slot.public is not used. Absent while the daily slot rebuild is running and on the healthcheck.",
+      "description": "Slots from today through the next 180 days where appointments exceed the opening's current Arbeitsplätze, counted like the availability day view. Overlapping openings at the same time add up. Cancelled slot rows are not used. Absent while the daily slot rebuild is running and on the healthcheck.",
       "properties": {
         "total": {
           "type": "number",
