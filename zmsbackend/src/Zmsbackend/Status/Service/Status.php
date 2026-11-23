@@ -66,8 +66,9 @@ class Status extends \BO\Zmsbackend\Base
     }
 
     /**
-     * Slots from today onward whose bookings exceed intern capacity, grouped like active sessions.
-     * A consistent read on the reader: no FOR UPDATE, so it does not take row locks.
+     * Slots from today onward whose bookings exceed all Arbeitsplätze on the opening.
+     * slot.intern is that full count. slot.public is the smaller internet share and is not used here.
+     * Grouped like active sessions. A consistent read on the reader: no FOR UPDATE, so it does not take row locks.
      * Skipped while calculateSlots --delete is running, same as the other slot scans.
      *
      * @return array{total: int, departments: array<int|string, array{name: string, overbookedSlots: int, scopes: array<int|string, array{name: string, overbookedSlots: int}>}>}
