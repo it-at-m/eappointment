@@ -705,7 +705,7 @@ class ProcessTest extends EntityCommonTests
         $this->assertEquals('3', $conflictList->getFirst()->getId());
     }
 
-    protected static function getSplitTestAvailabilityList()
+    protected static function getSplitTestAvailabilityList(string $secondSlotTime = '15')
     {
         $availabilityData = [
             'weekday' => ['tuesday' => '4'],
@@ -725,6 +725,7 @@ class ProcessTest extends EntityCommonTests
                 'id' => '2',
                 'startTime' => '14:00:00',
                 'endTime' => '16:00:00',
+                'slotTimeInMinutes' => $secondSlotTime,
             ])),
         ]);
     }
@@ -748,6 +749,31 @@ class ProcessTest extends EntityCommonTests
         $conflictList = $processList->withOutAvailability(static::getSplitTestAvailabilityList());
         $this->assertEquals(1, $conflictList->count());
         $this->assertEquals('2', $conflictList->getFirst()->getId());
+    }
+
+    public function testWithOutAvailabilityDoesNotJoinOverlappingAvailabilities()
+    {
+        // availability 2 (12:00-12:30) lies inside availability 1 (12:00-16:00), they do not follow each other
+        $booked = static::getTestProcessAt('1', '12:15');
+        $booked->getFirstAppointment()->availability = ['id' => '1'];
+        $processList = new ProcessList([
+            $booked,
+            // 12:15 is free in availability 2, 12:30 is free in availability 1, but not in one row
+            static::getTestProcessAt('2', '12:15', 2),
+        ]);
+        $conflictList = $processList->withOutAvailability(static::getOverlappingTestAvailabilityList());
+        $this->assertEquals(1, $conflictList->count());
+        $this->assertEquals('2', $conflictList->getFirst()->getId());
+    }
+
+    public function testWithOutAvailabilityKeepsConflictOverSplitBorderWithDifferentSlotLength()
+    {
+        $processList = new ProcessList([
+            // 13:45 + 2 slots of 15 minutes ends at 14:15, availability 2 has 5 minute slots
+            static::getTestProcessAt('1', '13:45', 2),
+        ]);
+        $conflictList = $processList->withOutAvailability(static::getSplitTestAvailabilityList('5'));
+        $this->assertEquals(1, $conflictList->count());
     }
 
     public function testWithReference()

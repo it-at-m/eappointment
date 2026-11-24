@@ -353,8 +353,9 @@ class ProcessList extends Base
     }
 
     /**
-     * Take the slots of one appointment from several adjacent slot lists. Nothing is removed unless
-     * every slot of the appointment is free.
+     * Take the slots of one appointment from several adjacent slot lists. The next slot list is only
+     * used when it starts exactly where the previous one ends and has the same slot length, otherwise
+     * the appointment stays a conflict. Nothing is removed unless every slot of the appointment is free.
      *
      * @param array<int|string, SlotList> $slotLists
      * @param array<int|string, \BO\Zmsentities\Availability> $availabilities
@@ -366,38 +367,79 @@ class ProcessList extends Base
         \BO\Zmsentities\Appointment $appointment,
         array $availabilities
     ): int|string|null {
-        $slotCount = (int) $appointment->getSlotCount();
-        if ($slotCount < 2) {
+        if ((int) $appointment->getSlotCount() < 2) {
+            return null;
+        }
+        foreach (array_keys($slotLists) as $startKey) {
+            $slots = static::findSlotsAcrossSlotLists($slotLists, $appointment, $availabilities, $startKey);
+            if (null !== $slots) {
+                foreach ($slots as $slot) {
+                    $slot->removeAppointment();
+                }
+                return $startKey;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * @param array<int|string, SlotList> $slotLists
+     * @param array<int|string, \BO\Zmsentities\Availability> $availabilities
+     *
+     * @return array<int, \BO\Zmsentities\Slot>|null one free slot per step, null if one is missing
+     */
+    protected static function findSlotsAcrossSlotLists(
+        array $slotLists,
+        \BO\Zmsentities\Appointment $appointment,
+        array $availabilities,
+        int|string $key
+    ): ?array {
+        if (!isset($availabilities[$key])) {
+            return null;
+        }
+        $slotMinutes = (int) $availabilities[$key]->slotTimeInMinutes;
+        if ($slotMinutes < 1) {
             return null;
         }
         $time = $appointment->toDateTime();
         $slots = [];
-        $firstKey = null;
-        for ($step = 0; $step < $slotCount; $step++) {
-            $found = null;
-            foreach ($slotLists as $key => $slotList) {
-                foreach ($slotList as $slot) {
-                    if ($slot->hasTime() && $slot->time == $time->format('H:i') && $slot['intern'] > 0) {
-                        $found = [$key, $slot];
-                        break 2;
+        for ($step = 0; $step < (int) $appointment->getSlotCount(); $step++) {
+            $slot = static::findFreeSlot($slotLists[$key], $time);
+            if (null === $slot) {
+                // continue in a slot list that starts where this one ends
+                $endOfDay = $availabilities[$key]->getEndDateTime()->getSecondsOfDay();
+                foreach ($availabilities as $nextKey => $next) {
+                    if (
+                        $nextKey !== $key
+                        && isset($slotLists[$nextKey])
+                        && (int) $next->slotTimeInMinutes === $slotMinutes
+                        && $next->getStartDateTime()->getSecondsOfDay() === $endOfDay
+                    ) {
+                        $slot = static::findFreeSlot($slotLists[$nextKey], $time);
+                        if (null !== $slot) {
+                            $key = $nextKey;
+                            break;
+                        }
                     }
                 }
             }
-            if (null === $found || !isset($availabilities[$found[0]])) {
+            if (null === $slot) {
                 return null;
             }
-            $slots[] = $found[1];
-            $firstKey ??= $found[0];
-            $slotMinutes = (int) $availabilities[$found[0]]->slotTimeInMinutes;
-            if ($slotMinutes < 1) {
-                return null;
-            }
+            $slots[] = $slot;
             $time = $time->modify('+' . $slotMinutes . ' minutes');
         }
-        foreach ($slots as $slot) {
-            $slot->removeAppointment();
+        return $slots;
+    }
+
+    protected static function findFreeSlot(SlotList $slotList, \DateTimeInterface $time): ?\BO\Zmsentities\Slot
+    {
+        foreach ($slotList as $slot) {
+            if ($slot->hasTime() && $slot->time == $time->format('H:i') && $slot['intern'] > 0) {
+                return $slot;
+            }
         }
-        return $firstKey;
+        return null;
     }
 
     /**
