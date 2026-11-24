@@ -708,6 +708,7 @@ class ProcessSearchTest extends \BO\Zmsbackend\Tests\Api\Base
             [],
             [
                 'processId' => 990029,
+                'selectedScopeIds' => ['65991', '141'],
                 'page' => 1,
                 'limit' => 1,
             ],
@@ -760,6 +761,7 @@ class ProcessSearchTest extends \BO\Zmsbackend\Tests\Api\Base
             [],
             [
                 'processId' => 990029,
+                'selectedScopeIds' => ['65991', '141'],
                 'page' => 2,
                 'limit' => 1,
             ],
