@@ -913,9 +913,14 @@ public final class MyAppointmentsStep {
             reloadMyAppointments();
             return;
         }
-        long settle = System.currentTimeMillis() + 20_000L;
-        while (System.currentTimeMillis() < settle && !myAppointmentsFinishedLoading()) {
+        // The shell (Neuer Termin) appears before the cards. Reloading then drops the session
+        // that Keycloak just established and the next overview stays empty (ZMSKVR-1576).
+        long settle = System.currentTimeMillis() + 30_000L;
+        while (System.currentTimeMillis() < settle && !shadow.shadowDomContainsText("Terminnummer")) {
             requestMyAppointmentsAuthReplay();
+            if (shadow.shadowDomContainsText("Ihre Termine können zur Zeit nicht geladen werden.")) {
+                break;
+            }
             try {
                 Thread.sleep(250L);
             } catch (InterruptedException e) {
@@ -923,11 +928,9 @@ public final class MyAppointmentsStep {
                 return;
             }
         }
-        // Keycloak returns to appointment-overview.html without the cache-bust, and that
-        // page can keep the Neuer Termin shell without fetching the appointment cards.
-        if (!shadow.shadowDomContainsText("Terminnummer")) {
+        if (shadow.shadowDomContainsText("Ihre Termine können zur Zeit nicht geladen werden.")) {
             ScenarioLogManager.getLogger()
-                    .warn("zmscitizenview: re-login returned Meine Termine without a card; opening it again");
+                    .warn("zmscitizenview: re-login returned the appointment load error; opening Meine Termine again");
             reloadMyAppointments();
         }
     }
@@ -1352,6 +1355,11 @@ public final class MyAppointmentsStep {
                     loadError
                             || shadow.shadowDomContainsText("Neuer Termin")
                             || shadow.shadowDomContainsText("Kommende Termine");
+            // Neuer Termin paints from local storage before the appointment request. Replaying
+            // the auth event is what starts that request; a reload at this point drops the session.
+            if (shellUp && !last.contains(serviceName)) {
+                requestMyAppointmentsAuthReplay();
+            }
             long now = System.currentTimeMillis();
             // A reload can land on a blank overview. The shell check then never fires again,
             // and the rest of the wait polls an empty page.
@@ -1425,7 +1433,7 @@ public final class MyAppointmentsStep {
                         + "if(n.nodeType===3){buf+=' '+(n.nodeValue||'');continue;}"
                         + "var next=[];"
                         + "if(n.shadowRoot)next.push(n.shadowRoot);"
-                        + "if(n.assignedNodes){try{var a=n.assignedNodes({flatten:true});"
+                        + "if(n.assignedNodes){try{var a=n.assignedNodes();"
                         + "for(var j=0;j<a.length;j++)next.push(a[j]);}catch(e){}}"
                         + "var c=n.childNodes;if(c)for(var i=0;i<c.length;i++)next.push(c[i]);"
                         + "for(var k=next.length-1;k>=0;k--)st.push(next[k]);}"
@@ -1435,11 +1443,18 @@ public final class MyAppointmentsStep {
                         + "var isCard=n.classList&&n.classList.contains('card');"
                         + "if(isCard||(!cardOnly&&tag==='MUC-CARD'))texts.push(textOf(n));}"
                         + "if(n.shadowRoot)stack.push(n.shadowRoot);"
-                        + "if(n.assignedNodes){try{var a=n.assignedNodes({flatten:true});"
+                        + "if(n.assignedNodes){try{var a=n.assignedNodes();"
                         + "for(var j=0;j<a.length;j++)stack.push(a[j]);}catch(e){}}"
                         + "var c=n.childNodes;if(c)for(var i=0;i<c.length;i++)stack.push(c[i]);}"
                         + "return texts;";
-        Object raw = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script, cardClassOnly);
+        Object raw;
+        try {
+            raw = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script, cardClassOnly);
+        } catch (JavascriptException e) {
+            ScenarioLogManager.getLogger()
+                    .warn("zmscitizenview: appointment card text probe failed, treating as empty", e);
+            return java.util.List.of();
+        }
         if (!(raw instanceof java.util.List<?> rows)) {
             return java.util.List.of();
         }
@@ -1741,8 +1756,8 @@ public final class MyAppointmentsStep {
         String script =
                 "function textOf(n){var s='';if(!n)return s;if(n.nodeType===3)return n.nodeValue||'';"
                         + "if(n.shadowRoot)s+=' '+textOf(n.shadowRoot);"
-                        + "if(n.assignedNodes){var a=n.assignedNodes({flatten:true});"
-                        + "for(var j=0;j<a.length;j++)s+=' '+textOf(a[j]);}"
+                        + "if(n.assignedNodes){try{var a=n.assignedNodes();"
+                        + "for(var j=0;j<a.length;j++)s+=' '+textOf(a[j]);}catch(e){}}"
                         + "var c=n.childNodes;if(c)for(var i=0;i<c.length;i++)s+=' '+textOf(c[i]);"
                         + "return s;}"
                         + "function walk(n,fn){if(!n)return null;var r=fn(n);if(r)return r;"

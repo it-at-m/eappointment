@@ -28,7 +28,7 @@ class Auth
                     'timezone' => date_default_timezone_get()
                 ]);
             }
-            setcookie(self::getCookieName(), $authKey, $expires, '/', '', true, true);
+            setcookie(self::getCookieName(), self::singleLine($authKey), $expires, '/', '', true, true);
         }
     }
 
@@ -72,6 +72,18 @@ class Auth
     public static function getCookieName(): string
     {
         return self::$cookieName;
+    }
+
+    /**
+     * @psalm-taint-escape cookie
+     */
+    private static function singleLine(string $value): string
+    {
+        if (strpbrk($value, "\r\n\0") !== false) {
+            return '';
+        }
+
+        return $value;
     }
 
     protected static function getOidcName(): string

@@ -7,8 +7,6 @@ namespace BO\Zmsbackend\Helper;
  */
 class CalculateSlots
 {
-    private const string CALCULATION_LOCK = 'zms_calculate_slots';
-
     protected $verbose = false;
 
     protected $startTime;
@@ -142,15 +140,7 @@ class CalculateSlots
             $this->log("Skip calculation, last start on $startTimestamp is not yet finished, waiting 15 minutes.");
             return false;
         }
-        if (!$this->acquireCalculationLock()) {
-            $this->log("Skip calculation, another run is still working.");
-            return false;
-        }
-        try {
-            return $this->writeCalculationsLocked($now, $daily);
-        } finally {
-            $this->releaseCalculationLock();
-        }
+        return $this->writeCalculationsLocked($now, $daily);
     }
 
     private function writeCalculationsLocked(\DateTimeInterface $now, bool $daily): bool
@@ -186,15 +176,19 @@ class CalculateSlots
 
         $this->writeCanceledSlots($now);
 
-        $slotQuery = new \BO\Zmsbackend\Slot\Service\Slot();
-        if ($slotsProcessed = $slotQuery->deleteSlotProcessOnProcess()) {
-            $this->log("Finished to free $slotsProcessed slots for changed/deleted processes");
-        }
+        // The unscoped repair joins every free slot to every appointment. A changed
+        // scope is remapped above. This sweep runs with the daily --delete pass.
+        if ($daily) {
+            $slotQuery = new \BO\Zmsbackend\Slot\Service\Slot();
+            if ($slotsProcessed = $slotQuery->deleteSlotProcessOnProcess()) {
+                $this->log("Finished to free $slotsProcessed slots for changed/deleted processes");
+            }
 
-        $slotQuery->deleteSlotProcessOnSlot();
+            $slotQuery->deleteSlotProcessOnSlot();
 
-        if ($slotsProcessed = $slotQuery->updateSlotProcessMapping(null, $now)) {
-            $this->log("Updated Slot-Process-Mapping, mapped $slotsProcessed processes");
+            if ($slotsProcessed = $slotQuery->updateSlotProcessMapping(null, $now)) {
+                $this->log("Updated Slot-Process-Mapping, mapped $slotsProcessed processes");
+            }
         }
 
         (new \BO\Zmsbackend\Config\Service\Config())->replaceProperty('status__calculateSlotsLastRun', $now->format('Y-m-d H:i:s'));
@@ -218,24 +212,6 @@ class CalculateSlots
             return true;
         }
         return false;
-    }
-
-    private function acquireCalculationLock(): bool
-    {
-        $locked = \BO\Zmsbackend\Connection\Select::getWriteConnection()->fetchValue(
-            'SELECT GET_LOCK(:name, 0)',
-            ['name' => self::CALCULATION_LOCK]
-        );
-
-        return (int) $locked === 1;
-    }
-
-    private function releaseCalculationLock(): void
-    {
-        \BO\Zmsbackend\Connection\Select::getWriteConnection()->fetchValue(
-            'SELECT RELEASE_LOCK(:name)',
-            ['name' => self::CALCULATION_LOCK]
-        );
     }
 
     public function writePostProcessingByScope(\BO\Zmsentities\Scope $scope, \DateTimeInterface $now): void

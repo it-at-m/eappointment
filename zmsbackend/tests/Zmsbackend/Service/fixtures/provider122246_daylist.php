@@ -125,7 +125,7 @@ return array (
     'freeAppointments' => 
     array (
       'public' => 0,
-      'intern' => -35,
+      'intern' => -36,
       'type' => 'sum',
     ),
     'allAppointments' => 

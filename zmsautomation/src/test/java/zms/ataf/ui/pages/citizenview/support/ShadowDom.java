@@ -2,6 +2,7 @@ package zms.ataf.ui.pages.citizenview.support;
 
 import java.time.Duration;
 
+import org.openqa.selenium.JavascriptException;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
@@ -28,9 +29,11 @@ public final class ShadowDom {
      * Also walks slotted nodes and same-origin frames, and folds whitespace, so a painted
      * callout such as "Sie sind angemeldet." matches even when its text is split across nodes.
      * <p>
-     * Iterative + {@code seen}: Firefox hits {@code InternalError: too much recursion} when the
-     * old recursive walk re-enters the same light-DOM nodes via {@code assignedNodes} and
-     * {@code childNodes} (ZMSKVR-1088 reserve poll).
+     * Iterative + {@code seen}: Firefox hits {@code InternalError: too much recursion} when
+     * {@code assignedNodes({flatten:true})} walks nested slots inside the browser. That error
+     * aborts the whole script, including a {@code try/catch} around the call (ZMSKVR-112 cancel
+     * callout, ZMSKVR-1088 reserve poll). One level of {@code assignedNodes()} is enough: the
+     * stack visits those nodes next. A failed probe is "not found" so the waiter retries.
      */
     public boolean shadowDomContainsText(String substring) {
         context.set();
@@ -40,14 +43,16 @@ public final class ShadowDom {
                         + "var seen=new Set();"
                         + "var stack=[document.documentElement];"
                         + "var buf='';"
-                        + "while(stack.length){"
+                        + "var steps=0;"
+                        + "while(stack.length&&steps<20000){"
+                        + " steps++;"
                         + " var n=stack.pop();"
                         + " if(!n||seen.has(n))continue;"
                         + " seen.add(n);"
                         + " if(n.nodeType===3){buf+=' '+(n.nodeValue||'');continue;}"
                         + " if(n.shadowRoot)stack.push(n.shadowRoot);"
                         + " if(n.assignedNodes){"
-                        + "  try{var a=n.assignedNodes({flatten:true});"
+                        + "  try{var a=n.assignedNodes();"
                         + "  for(var j=0;j<a.length;j++)stack.push(a[j]);}catch(e){}"
                         + " }"
                         + " var c=n.childNodes;if(c)for(var i=0;i<c.length;i++)stack.push(c[i]);"
@@ -64,8 +69,14 @@ public final class ShadowDom {
                         + " }"
                         + "}"
                         + "return buf.replace(/\\s+/g,' ').indexOf(sub)>=0;";
-        Object o = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script, substring);
-        return Boolean.TRUE.equals(o);
+        try {
+            Object o = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script, substring);
+            return Boolean.TRUE.equals(o);
+        } catch (JavascriptException e) {
+            ScenarioLogManager.getLogger()
+                    .warn("zmscitizenview: shadow text probe failed, treating as absent: {}", e.getRawMessage());
+            return false;
+        }
     }
 
     /**
@@ -87,7 +98,9 @@ public final class ShadowDom {
                         + "var seen=new Set();"
                         + "var stack=[document.documentElement];"
                         + "var buf='';"
-                        + "while(stack.length){"
+                        + "var steps=0;"
+                        + "while(stack.length&&steps<20000){"
+                        + " steps++;"
                         + " var n=stack.pop();"
                         + " if(!n||seen.has(n))continue;"
                         + " seen.add(n);"
@@ -98,7 +111,7 @@ public final class ShadowDom {
                         + " }"
                         + " if(n.shadowRoot)stack.push(n.shadowRoot);"
                         + " if(n.assignedNodes){"
-                        + "  try{var a=n.assignedNodes({flatten:true});"
+                        + "  try{var a=n.assignedNodes();"
                         + "  for(var j=0;j<a.length;j++)stack.push(a[j]);}catch(e){}"
                         + " }"
                         + " var c=n.childNodes;if(c)for(var i=0;i<c.length;i++)stack.push(c[i]);"
@@ -108,8 +121,14 @@ public final class ShadowDom {
                         + " }"
                         + "}"
                         + "return buf.replace(/\\s+/g,' ').indexOf(sub)>=0;";
-        Object o = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script, substring);
-        return Boolean.TRUE.equals(o);
+        try {
+            Object o = ((JavascriptExecutor) DriverUtil.getDriver()).executeScript(script, substring);
+            return Boolean.TRUE.equals(o);
+        } catch (JavascriptException e) {
+            ScenarioLogManager.getLogger()
+                    .warn("zmscitizenview: visible text probe failed, treating as absent: {}", e.getRawMessage());
+            return false;
+        }
     }
 
     /** True when an {@code h1}–{@code h6} in the shadow tree has this exact text. Level 2 is an {@code h2}. */
@@ -200,7 +219,7 @@ public final class ShadowDom {
                                         + "var t=((n.innerText||n.textContent||'')+'').replace(/\\s+/g,' ').trim();"
                                         + "if(t.indexOf(needle)>=0&&t.length<bestLen){bestLen=t.length;best=n;}}"
                                         + "if(n.shadowRoot)visit(n.shadowRoot);"
-                                        + "if(n.assignedNodes){try{var a=n.assignedNodes({flatten:true});"
+                                        + "if(n.assignedNodes){try{var a=n.assignedNodes();"
                                         + "for(var j=0;j<a.length;j++)visit(a[j]);}catch(e){}}"
                                         + "var c=n.childNodes;if(c)for(var i=0;i<c.length;i++)visit(c[i]);}"
                                         + "visit(document.documentElement);"

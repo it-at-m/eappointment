@@ -775,20 +775,19 @@ class Process extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfaces\R
         $statement = $this->fetchStatement($selectQuery);
         return $this->readList($statement, $resolveReferences);
     }
+    /**
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
     public function readUnconfirmedProcessList(\DateTimeInterface $expirationDate, int $scopeId = 0, int $limit = 500, ?int $offset = null, int $resolveReferences = 0)
     {
-
-        $selectQuery = new \BO\Zmsbackend\Process\Repository\Process(\BO\Zmsbackend\Query\Base::SELECT);
+        $selectQuery = $this->newDeleteListQuery();
         $selectQuery
-            ->addEntityMapping()
-            ->addResolvedReferences($resolveReferences)
             ->addConditionScopeId($scopeId)
             ->addConditionProcessExpiredIPTimeStamp($expirationDate)
             ->addConditionStatus('preconfirmed')
             ->addConditionIgnoreSlots()
             ->addLimit($limit, $offset);
-        $statement = $this->fetchStatement($selectQuery);
-        return $this->readList($statement, $resolveReferences);
+        return $this->readDeleteList($selectQuery);
     }
 
     public function readExpiredProcessListByStatus(\DateTimeInterface $expirationDate, string $status, int $limit = 500, ?int $offset = null, int $resolveReferences = 0)
@@ -805,19 +804,47 @@ class Process extends \BO\Zmsbackend\Base implements \BO\Zmsbackend\Interfaces\R
         return $this->readList($statement, $resolveReferences);
     }
 
+    /**
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
     public function readExpiredReservationsList(\DateTimeInterface $expirationDate, string|int $scopeId, int $limit = 500, ?int $offset = null, int $resolveReferences = 0)
     {
-        $selectQuery = new \BO\Zmsbackend\Process\Repository\Process(\BO\Zmsbackend\Query\Base::SELECT);
+        $selectQuery = $this->newDeleteListQuery();
         $selectQuery
-            ->addEntityMapping()
-            ->addResolvedReferences($resolveReferences)
             ->addConditionScopeId($scopeId)
             ->addConditionIsReserved()
             ->addConditionProcessExpiredIPTimeStamp($expirationDate)
             ->addConditionIgnoreSlots()
             ->addLimit($limit, $offset);
+        return $this->readDeleteList($selectQuery);
+    }
+
+    protected function newDeleteListQuery(): \BO\Zmsbackend\Process\Repository\Process
+    {
+        $selectQuery = new \BO\Zmsbackend\Process\Repository\Process(
+            \BO\Zmsbackend\Query\Base::SELECT,
+            '',
+            false,
+            null,
+            ['delete-list']
+        );
+        $selectQuery->addDeleteListColumns();
+        return $selectQuery;
+    }
+
+    protected function readDeleteList(\BO\Zmsbackend\Process\Repository\Process $selectQuery): Collection
+    {
         $statement = $this->fetchStatement($selectQuery);
-        return $this->readList($statement, $resolveReferences);
+        $processList = new Collection();
+        while ($row = $statement->fetch(\PDO::FETCH_ASSOC)) {
+            $processList->addEntity(new Entity([
+                'id' => $row['id'],
+                'status' => $row['status'],
+                'createTimestamp' => $row['createTimestamp'],
+            ]));
+        }
+        $statement->closeCursor();
+        return $processList;
     }
 
     public function readEmailReminderProcessListByInterval(\DateTimeInterface $now, \DateTimeInterface $lastRun, int $defaultReminderInMinutes, int $limit = 500, ?int $offset = null, int $resolveReferences = 0)
