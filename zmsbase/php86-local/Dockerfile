@@ -10,7 +10,7 @@ FROM composer:2@sha256:50ea4d33fdcde1adb0f045547295faa1548b33872e5f789dae5b02ce2
 FROM node:22-trixie@sha256:c103d7b5aa3bf627c8b98db941d52556f04e0b5d9352b3d7b6391245d26620f8 AS node-tools
 
 # PIE replaces pecl, which the official PHP 8.6 images no longer ship.
-FROM ghcr.io/php/pie:bin@sha256:3fca03c16df842d02b654dc382db3756058d9c128064f57cace14f8728779ce9 AS pie
+FROM ghcr.io/php/pie:bin@sha256:f49c15dbb88a7aec373fdb15ab9004bf08958772db3b476c42364e10a8ea416f AS pie
 
 # PHP 8.6.0 (19 November 2026). 8.6-apache-trixie tracks the latest 8.6 patch.
 FROM php:8.6-apache-trixie@sha256:0b06b358a7d59cca80e0528aad0e49b43208c3a74754ffcd8a12d7727058511e
