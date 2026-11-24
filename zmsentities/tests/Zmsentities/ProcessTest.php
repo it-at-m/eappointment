@@ -705,6 +705,51 @@ class ProcessTest extends EntityCommonTests
         $this->assertEquals('3', $conflictList->getFirst()->getId());
     }
 
+    protected static function getSplitTestAvailabilityList()
+    {
+        $availabilityData = [
+            'weekday' => ['tuesday' => '4'],
+            'repeat' => ['afterWeeks' => '1'],
+            'workstationCount' => ['public' => '1', 'intern' => '1'],
+            'slotTimeInMinutes' => '15',
+            'startDate' => strtotime('2016-04-19'),
+            'endDate' => strtotime('2016-04-19'),
+        ];
+        return new AvailabilityList([
+            new Availability(array_merge($availabilityData, [
+                'id' => '1',
+                'startTime' => '12:00:00',
+                'endTime' => '14:00:00',
+            ])),
+            new Availability(array_merge($availabilityData, [
+                'id' => '2',
+                'startTime' => '14:00:00',
+                'endTime' => '16:00:00',
+            ])),
+        ]);
+    }
+
+    public function testWithOutAvailabilityAllowsAppointmentOverSplitBorder()
+    {
+        $processList = new ProcessList([
+            // 13:45 + 2 slots reaches from availability 1 into availability 2
+            static::getTestProcessAt('1', '13:45', 2),
+        ]);
+        $conflictList = $processList->withOutAvailability(static::getSplitTestAvailabilityList());
+        $this->assertEquals(0, $conflictList->count());
+    }
+
+    public function testWithOutAvailabilityKeepsConflictOverSplitBorderIfSlotIsFull()
+    {
+        $processList = new ProcessList([
+            static::getTestProcessAt('1', '14:00'),
+            static::getTestProcessAt('2', '13:45', 2),
+        ]);
+        $conflictList = $processList->withOutAvailability(static::getSplitTestAvailabilityList());
+        $this->assertEquals(1, $conflictList->count());
+        $this->assertEquals('2', $conflictList->getFirst()->getId());
+    }
+
     public function testWithReference()
     {
         $entity = $this->getExample();

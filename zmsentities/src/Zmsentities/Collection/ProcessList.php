@@ -261,13 +261,20 @@ class ProcessList extends Base
         $processList = new static();
         foreach ($this->toProcessListByTime('Y-m-d') as $processListByDate) {
             $dateTime = $processListByDate[0]->getFirstAppointment()->toDateTime();
-            $slotLists = $availabilityList->withType('appointment')->withDateTime($dateTime)
-                ->getSlotListByAvailability();
+            $availabilityListByDate = $availabilityList->withType('appointment')->withDateTime($dateTime);
+            $slotLists = $availabilityListByDate->getSlotListByAvailability();
+            $availabilities = $availabilityListByDate->getSortedByDuration();
             foreach ($processListByDate as $process) {
                 if (!$process instanceof Process) {
                     continue;
                 }
-                if (null === static::removeAppointmentFromOneSlotList($slotLists, $process->getFirstAppointment())) {
+                if (
+                    null === static::removeAppointmentFromOneSlotList(
+                        $slotLists,
+                        $process->getFirstAppointment(),
+                        $availabilities
+                    )
+                ) {
                     $process->amendment = "";
                     $processList[] = clone $process;
                 }
@@ -291,12 +298,13 @@ class ProcessList extends Base
             $dateTime = $processListByDate[0]->getFirstAppointment()->toDateTime();
             $availabilityListByDate = $availabilityList->withType('appointment')->withDateTime($dateTime);
             $slotLists = $availabilityListByDate->getSlotListByAvailability();
+            $availabilities = $availabilityListByDate->getSortedByDuration();
             foreach ($processListByDate as $process) {
                 if (!$process instanceof Process) {
                     continue;
                 }
                 $appointment = $process->getFirstAppointment();
-                $key = static::removeAppointmentFromOneSlotList($slotLists, $appointment);
+                $key = static::removeAppointmentFromOneSlotList($slotLists, $appointment, $availabilities);
                 if (null === $key) {
                     foreach ($availabilityListByDate->getSortedByDuration() as $availabilityKey => $availability) {
                         if ($availability->hasAppointment($appointment)) {
@@ -318,13 +326,18 @@ class ProcessList extends Base
      * The availability the appointment is booked on (slot_process mapping) is used first,
      * otherwise the shortest availability with free slots.
      *
+     * A multi-slot appointment that reaches over the border of adjacent availabilities (e.g. after a
+     * series was split) is not overbooked as long as every slot is free in one of the availabilities.
+     *
      * @param array<int|string, SlotList> $slotLists
+     * @param array<int|string, \BO\Zmsentities\Availability> $availabilities same keys as $slotLists
      *
      * @return int|string|null key of the slot list used for the appointment
      */
     protected static function removeAppointmentFromOneSlotList(
         array &$slotLists,
-        \BO\Zmsentities\Appointment $appointment
+        \BO\Zmsentities\Appointment $appointment,
+        array $availabilities = []
     ): int|string|null {
         $availability = $appointment->getAvailability();
         $bookedKey = $availability->id ?: ($availability->tempId ?? null);
@@ -336,7 +349,55 @@ class ProcessList extends Base
                 return $index;
             }
         }
-        return null;
+        return static::removeAppointmentAcrossSlotLists($slotLists, $appointment, $availabilities);
+    }
+
+    /**
+     * Take the slots of one appointment from several adjacent slot lists. Nothing is removed unless
+     * every slot of the appointment is free.
+     *
+     * @param array<int|string, SlotList> $slotLists
+     * @param array<int|string, \BO\Zmsentities\Availability> $availabilities
+     *
+     * @return int|string|null key of the slot list of the first slot
+     */
+    protected static function removeAppointmentAcrossSlotLists(
+        array $slotLists,
+        \BO\Zmsentities\Appointment $appointment,
+        array $availabilities
+    ): int|string|null {
+        $slotCount = (int) $appointment->getSlotCount();
+        if ($slotCount < 2) {
+            return null;
+        }
+        $time = $appointment->toDateTime();
+        $slots = [];
+        $firstKey = null;
+        for ($step = 0; $step < $slotCount; $step++) {
+            $found = null;
+            foreach ($slotLists as $key => $slotList) {
+                foreach ($slotList as $slot) {
+                    if ($slot->hasTime() && $slot->time == $time->format('H:i') && $slot['intern'] > 0) {
+                        $found = [$key, $slot];
+                        break 2;
+                    }
+                }
+            }
+            if (null === $found || !isset($availabilities[$found[0]])) {
+                return null;
+            }
+            $slots[] = $found[1];
+            $firstKey ??= $found[0];
+            $slotMinutes = (int) $availabilities[$found[0]]->slotTimeInMinutes;
+            if ($slotMinutes < 1) {
+                return null;
+            }
+            $time = $time->modify('+' . $slotMinutes . ' minutes');
+        }
+        foreach ($slots as $slot) {
+            $slot->removeAppointment();
+        }
+        return $firstKey;
     }
 
     /**
