@@ -24,17 +24,15 @@ permissions:
   pages: write
   id-token: write
   contents: read
+  actions: read
 
 concurrency:
   group: "pages"
   cancel-in-progress: false
 
 jobs:
-  deploy:
+  upload:
     runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -91,6 +89,35 @@ jobs:
         uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5
         with:
           path: public
+
+  deploy:
+    needs: upload
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      # upload-pages-artifact can finalize before the Actions API lists the
+      # artifact. deploy-pages looks the artifact up by name and fails closed
+      # when that list is still empty (actions/deploy-pages#451).
+      - name: Wait until the Pages artifact is listed
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          for delay in 0 2 5 10 20 40 40; do
+            if [ "$delay" != "0" ]; then
+              echo "github-pages artifact not listed yet; waiting ${delay}s"
+              sleep "$delay"
+            fi
+            count="$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}/artifacts?per_page=100" --jq '[.artifacts[] | select(.name=="github-pages" and .expired==false)] | length')"
+            echo "visible github-pages artifacts: ${count}"
+            if [ "$count" = "1" ]; then
+              exit 0
+            fi
+          done
+          echo "::error::github-pages artifact was not visible to the Actions API in time"
+          exit 1
 
       - name: Deploy to GitHub Pages
         id: deployment
