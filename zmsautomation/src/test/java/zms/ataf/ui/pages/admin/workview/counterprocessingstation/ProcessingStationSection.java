@@ -7,8 +7,10 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.ElementClickInterceptedException;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.TimeoutException;
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.ExpectedCondition;
@@ -49,14 +51,20 @@ public class ProcessingStationSection extends CounterProcessingStationPage {
         final String called = "//button[contains(@class,'client-called_button-success')]";
         for (int i = 0; i < 8; i++) {
             callNextCustomer();
-            if (isWebElementVisible(5, emptyMessage, LocatorType.XPATH, false, CONTEXT)) {
+            boolean queueEmpty = isWebElementVisible(5, emptyMessage, LocatorType.XPATH, false, CONTEXT);
+            boolean precallVisible = isWebElementVisible(2, precall, LocatorType.XPATH, false, CONTEXT);
+            boolean calledVisible = isWebElementVisible(2, called, LocatorType.XPATH, false, CONTEXT);
+            // The empty-queue heading also shows after the last customer was called.
+            // Leaving that called panel open makes the next queue click a confirm dialog
+            // instead of the ProcessNotCallable page.
+            if (queueEmpty && !precallVisible && !calledVisible && !processingPanelOpen()) {
                 ScenarioLogManager.getLogger().info("No further customers were waiting.");
                 return;
             }
-            if (isWebElementVisible(5, precall, LocatorType.XPATH, false, CONTEXT)) {
+            if (precallVisible) {
                 clickOnWebElement(DEFAULT_EXPLICIT_WAIT_TIME, precall, LocatorType.XPATH, false, CONTEXT);
             }
-            if (!isWebElementVisible(15, called, LocatorType.XPATH, false, CONTEXT)) {
+            if (!calledVisible && !isWebElementVisible(15, called, LocatorType.XPATH, false, CONTEXT)) {
                 ScenarioLogManager.getLogger().info("Next call did not open a customer; leaving the queue as it is.");
                 return;
             }
@@ -68,6 +76,11 @@ public class ProcessingStationSection extends CounterProcessingStationPage {
                 stillWaiting,
                 0,
                 "Customers were still waiting after dismissing eight of them.");
+    }
+
+    private boolean processingPanelOpen() {
+        return DRIVER.findElements(By.cssSelector(".client-info[data-process-id]")).stream()
+                .anyMatch(WebElement::isDisplayed);
     }
 
     public void callNextCustomer() {
@@ -177,33 +190,79 @@ public class ProcessingStationSection extends CounterProcessingStationPage {
 
     /** After the no-show lockout ends, the bold lockout text is replaced by the call link. */
     public void waitUntilCustomerCallLinkVisible(String name) {
-        long[] lastReload = {0L};
-        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
-        wait.ignoring(StaleElementReferenceException.class, ElementClickInterceptedException.class);
+        long[] lastReload = {System.currentTimeMillis()};
+        int[] reloads = {0};
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(90));
+        wait.ignoring(StaleElementReferenceException.class);
         wait.withMessage("Call link for \"" + name + "\" did not return after ending the no-show lockout.");
         wait.until(driver -> {
-            if (driver.findElements(queueCallLinkByName(name)).stream().anyMatch(WebElement::isDisplayed)) {
+            if (queueCallLinkDisplayed(name)) {
                 return true;
             }
             long now = System.currentTimeMillis();
-            if (now - lastReload[0] < 2000L) {
+            boolean due = reloads[0] < 3 && now - lastReload[0] >= 12_000L;
+            // A short loader is the queue partial still arriving. A loader that never
+            // finishes, or the no-show sentence with no link, is the Edge page that kept
+            // the pre-update document. The ajax .reload link aborts that request on
+            // Firefox, so this is a full navigation (ZMSKVR-1633).
+            if (queueLoaderVisible(driver) && !due) {
                 return false;
             }
-            lastReload[0] = now;
-            for (WebElement reload : driver.findElements(By.cssSelector(".queue-table a.reload"))) {
-                try {
-                    if (!reload.isDisplayed()) {
-                        continue;
-                    }
-                    scrollToCenterByVisibleElement(reload);
-                    reload.click();
-                    break;
-                } catch (StaleElementReferenceException | ElementClickInterceptedException ignored) {
-                    // Queue reload is still painting.
-                }
+            if (due && (queueLoaderVisible(driver) || noShowSentenceShown(driver, name))) {
+                reloads[0]++;
+                lastReload[0] = now;
+                ScenarioLogManager.getLogger()
+                        .warn(
+                                "Call link for \"{}\" still missing after the no-show lockout; loading the workstation again ({}/3)",
+                                name,
+                                reloads[0]);
+                reloadWorkstationPage();
             }
-            return false;
+            return queueCallLinkDisplayed(name);
         });
+    }
+
+    private boolean queueCallLinkDisplayed(String name) {
+        for (WebElement link : DRIVER.findElements(queueCallLinkByName(name))) {
+            try {
+                ((JavascriptExecutor) DRIVER)
+                        .executeScript(
+                                "arguments[0].scrollIntoView({block:'center',inline:'nearest'});", link);
+                if (link.isDisplayed()) {
+                    return true;
+                }
+            } catch (StaleElementReferenceException ignored) {
+                // The reload replaced the row.
+            }
+        }
+        return false;
+    }
+
+    private static boolean queueLoaderVisible(WebDriver driver) {
+        for (WebElement loader : driver.findElements(By.cssSelector("div.loader"))) {
+            try {
+                if (loader.isDisplayed()) {
+                    return true;
+                }
+            } catch (StaleElementReferenceException ignored) {
+                // The queue partial replaced the loader.
+            }
+        }
+        return false;
+    }
+
+    private static boolean noShowSentenceShown(WebDriver driver, String name) {
+        for (WebElement table : driver.findElements(By.id("table-queued-appointments"))) {
+            try {
+                String text = table.getText();
+                if (text.contains(name) && text.contains("nicht anwesend")) {
+                    return true;
+                }
+            } catch (StaleElementReferenceException ignored) {
+                // The queue partial replaced the table.
+            }
+        }
+        return false;
     }
 
     private static By queueCallLinkByName(String name) {
@@ -684,11 +743,25 @@ public class ProcessingStationSection extends CounterProcessingStationPage {
                 links.get(0).click();
                 return true;
             });
-            return;
         } catch (TimeoutException | ElementClickInterceptedException ignored) {
             // Fall through to direct navigation when the queue row never becomes clickable.
+            openWorkstationUrlWithProcessParam("calledprocess", processId);
+            return;
         }
-        openWorkstationUrlWithProcessParam("calledprocess", processId);
+        // Edge can report the click and then stay on the queue. The error page is the
+        // calledprocess request itself.
+        WebDriverWait leftQueue = new WebDriverWait(DRIVER, Duration.ofSeconds(8));
+        leftQueue.ignoring(StaleElementReferenceException.class);
+        try {
+            leftQueue.until(driver ->
+                    !driver.findElements(By.cssSelector(".exceptionData-headline")).isEmpty()
+                            || driver.getCurrentUrl().contains("calledprocess=" + processId));
+        } catch (TimeoutException ignored) {
+            ScenarioLogManager.getLogger().warn(
+                    "Queue call click for process {} did not open the process; opening calledprocess",
+                    processId);
+            openWorkstationUrlWithProcessParam("calledprocess", processId);
+        }
     }
 
     /** ZMSKVR-405 / ZMSKVR-375: open workstation with ?calledprocess= or ?selectedprocess=. */

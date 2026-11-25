@@ -31,6 +31,17 @@ class Session extends \BO\Zmsbackend\Query\Base
             sessionname=?
     ';
 
+    const string QUERY_DELETE_BY_AGE = '
+        DELETE FROM `sessiondata`
+        WHERE UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(`ts`) >= ?
+    ';
+
+    const string QUERY_DELETE_BY_AGE_AND_NAME = '
+        DELETE FROM `sessiondata`
+        WHERE UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(`ts`) >= ?
+        AND `sessionname` = ?
+    ';
+
     /**
      * @psalm-api
      *

@@ -666,7 +666,7 @@ return array (
     'freeAppointments' => 
     array (
       'public' => 0,
-      'intern' => 691,
+      'intern' => 733,
       'type' => 'sum',
     ),
     'allAppointments' => 
@@ -745,7 +745,7 @@ return array (
     'freeAppointments' => 
     array (
       'public' => 0,
-      'intern' => 838,
+      'intern' => 876,
       'type' => 'sum',
     ),
     'allAppointments' => 
@@ -861,8 +861,8 @@ return array (
     'status' => 'bookable',
     'freeAppointments' => 
     array (
-      'public' => 233,
-      'intern' => 341,
+      'public' => 272,
+      'intern' => 422,
       'type' => 'sum',
     ),
     'allAppointments' => 

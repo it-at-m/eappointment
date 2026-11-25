@@ -1188,8 +1188,9 @@ public void saveLocationChanges() {
                 .info("Asserting Quelle der Standortdaten / Standortdaten selects are editable");
         WebElement source =
                 findElementByLocatorType("//select[@id='scopeProviderSource']", LocatorType.XPATH, true);
+        // Standortdaten is a button with this id. The native select is gone.
         WebElement provider =
-                findElementByLocatorType("//select[@id='scopeProviderId']", LocatorType.XPATH, true);
+                findElementByLocatorType("//*[@id='scopeProviderId']", LocatorType.XPATH, true);
         Assert.assertTrue(source.isDisplayed(), "Expected Quelle der Standortdaten select.");
         Assert.assertTrue(provider.isDisplayed(), "Expected Standortdaten provider select.");
         Assert.assertTrue(source.isEnabled(), "Quelle der Standortdaten must be enabled.");
@@ -1417,6 +1418,7 @@ public void saveLocationChanges() {
     }
 
     public void typeIntoStandortIntegerField(String label, String text) {
+        dismissNotrufOverlayIfCovering();
         WebElement field = integerInput(standortIntegerName(label));
         moveToElementAction(field);
         field.click();
@@ -1424,6 +1426,7 @@ public void saveLocationChanges() {
     }
 
     public void setStandortIntegerField(String label, String value) {
+        dismissNotrufOverlayIfCovering();
         WebElement field = integerInput(standortIntegerName(label));
         moveToElementAction(field);
         Keys selectAllMod = selectAllModifierKey();
@@ -1457,6 +1460,22 @@ public void saveLocationChanges() {
         String name = STANDORT_INTEGER_FIELDS.get(label);
         Assert.assertNotNull(name, "Unknown Standort integer field label: " + label);
         return name;
+    }
+
+    /**
+     * A parallel scenario can raise Notruf on this Standort. The overlay is fixed over the
+     * whole page, so a click on a number field lands on the message instead of the input.
+     */
+    private void dismissNotrufOverlayIfCovering() {
+        List<WebElement> hideButtons = DRIVER.findElements(By.cssSelector("button.emergency__button-hide"));
+        WebElement hide = hideButtons.stream().filter(WebElement::isDisplayed).findFirst().orElse(null);
+        if (hide == null) {
+            return;
+        }
+        ScenarioLogManager.getLogger().info("Notruf overlay is covering the form, minimizing it");
+        hide.click();
+        new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".emergency[data-minimized]")));
     }
 
     private WebElement integerInput(String name) {

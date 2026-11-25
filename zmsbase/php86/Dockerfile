@@ -1,12 +1,15 @@
 ARG COMPOSER_VERSION="2"
 ARG NODE_MAJOR="22"
-ARG PHP_VERSION="8.3-fpm-trixie"
+ARG PHP_VERSION="8.6-fpm-trixie"
 
 # composer version to make available in built image
-FROM composer:2@sha256:4d71c3c2109c61d5415544264b59ad4087e4c5b7244481723664138fd36d5040 AS composer-image
+FROM composer:2@sha256:50ea4d33fdcde1adb0f045547295faa1548b33872e5f789dae5b02ce2fb5de93 AS composer-image
 
-# php version to actually build
-FROM php:8.3-fpm-trixie@sha256:401353d70d4376b746ab505a789379a97c8afdff3a147de81ea1e8ca035a5fe3 AS base
+# PIE replaces pecl, which the official PHP 8.6 images no longer ship.
+FROM ghcr.io/php/pie:bin@sha256:f49c15dbb88a7aec373fdb15ab9004bf08958772db3b476c42364e10a8ea416f AS pie
+
+# PHP 8.6.0 (19 November 2026). 8.6-fpm-trixie tracks the latest 8.6 patch.
+FROM php:8.6-fpm-trixie@sha256:cf1219d285d49cc07f37b94babecd02db21947dbd14c1d60d13860e051209790 AS base
 
 # bash as default shell should exit on non-zero exit-codes in piped commands
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
@@ -34,6 +37,7 @@ RUN docker-apt-clean-install \
         #libgif-dev \
         #libgmp-dev \
         libicu-dev \
+        libonig-dev \
         libjpeg-dev \
         libpng-dev \
         #libpq-dev \
@@ -58,6 +62,12 @@ RUN docker-apt-clean-install \
 ENV TZ=Europe/Berlin
 
 # configure and install PHP extensions
+# Official 8.6 images omit mbstring. libonig-dev lets the installer build it
+# with its default oniguruma backend. Install one extension at a time: these
+# images are ZTS, and one parallel docker-php-ext-install races at
+# install-modules (cp: cannot stat 'modules/*').
+# Opcache is already compiled into the official 8.6 binary. Installing it again
+# builds no modules/*.so, so make install fails.
 RUN docker-php-ext-configure calendar \
     && docker-php-ext-configure gd \
         --with-freetype \
@@ -65,36 +75,24 @@ RUN docker-php-ext-configure calendar \
         --with-webp \
     && docker-php-ext-configure intl \
         --enable-intl \
-    && docker-php-ext-install -j"$(nproc)" \
-        bcmath \
-        bz2 \
-        calendar \
-        #exif \
-        gd \
-        #gmp \
-        gettext \
-        intl \
-        #mysqli \
-        opcache \
-        #pcntl \
-        pdo_mysql \
-        #pdo_pgsql \
-        #pspell \
-        soap \
-        #sockets \
-        #tidy \
-        #xsl \
-        zip \
+    && set -e \
+    && for ext in bcmath bz2 calendar gd gettext intl mbstring pdo_mysql soap zip; do \
+        docker-php-ext-install -j"$(nproc)" "$ext" || exit 1; \
+    done \
     && rm -rf /usr/src/
 
 FROM base AS dev
 
 COPY scripts/ /usr/local/sbin/
 
-# install xdebug – it is not enabled by default though, you need to add the following line to your php.ini file:
-# zend_extension="/usr/local/php/modules/xdebug.so"
-ARG XDEBUG_VERSION="xdebug"
-RUN pecl install ${XDEBUG_VERSION}
+# Xdebug 3.5 does not support PHP 8.6. 3.6.0alpha1 is the release that does.
+# Install it, then drop the ini PIE writes so xdebug stays disabled by default.
+# Enable it with: zend_extension=xdebug
+ARG XDEBUG_VERSION="3.6.0alpha1"
+COPY --from=pie /pie /usr/bin/pie
+RUN docker-apt-clean-install libtool \
+    && pie install "xdebug/xdebug:${XDEBUG_VERSION}" \
+    && find /usr/local/etc/php/conf.d -name '*xdebug*' -delete
 
 # put composer into image
 COPY --from=composer-image /usr/bin/composer /usr/bin/composer

@@ -14,6 +14,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import ataf.core.logging.ScenarioLogManager;
 import ataf.web.utils.DriverUtil;
 import zms.ataf.helpers.ViewportSizes;
+import zms.ataf.rest.dto.zmscitizenapi.ThinnedProcess;
+import zms.ataf.rest.steps.CitizenApiSteps;
 import zms.ataf.ui.pages.citizenview.CitizenViewPage;
 import zms.ataf.ui.pages.citizenview.CitizenViewPageContext;
 import zms.ataf.ui.pages.citizenview.support.CitizenViewJson;
@@ -63,6 +65,8 @@ public final class TimeSlotStep {
         RATE_LIMITED,
         /** Mail-limit callout on Termin. Leave it on screen for the scenario assertion. */
         MAIL_LIMIT,
+        /** Captcha callout stayed up and the reserve never stored this slot. */
+        CAPTCHA_EXPIRED,
         UNFINISHED
     }
 
@@ -74,6 +78,8 @@ public final class TimeSlotStep {
     private final SlotBookingState slotState;
     private final CitizenViewPage page;
     private final int defaultWaitSeconds;
+    /** First time "Ihre Sitzung ist abgelaufen." was seen during the current reserve poll. */
+    private long captchaExpirySeenAt;
 
     public TimeSlotStep(
             CitizenViewPageContext context,
@@ -2208,6 +2214,37 @@ public final class TimeSlotStep {
      */
     public void assertCalloutAndReserveAfterSlotSelection(int officeId) {
         context.set();
+        // The captcha banner means the slot is already chosen and the JWT has under a minute
+        // left. Re-checking the callout here spends that minute and the reserve then dies
+        // with "Ihre Sitzung ist abgelaufen."
+        if (shadow.deepElementExists("[data-test='timeout-warning-banner']")) {
+            long timestamp = readStoredSlotTimestamp();
+            ScenarioLogManager.getLogger()
+                    .info(
+                            "zmscitizenview: timeout warning is showing; reserving timestamp={} before the captcha TTL ends",
+                            timestamp);
+            clickWeiterForReserve();
+            ReserveOutcome outcome = waitForReserveOutcome();
+            // Under shard load the first Weiter often does not start the reserve. A second
+            // wait without another click sits until the captcha minute runs out.
+            if (outcome == ReserveOutcome.UNFINISHED || outcome == ReserveOutcome.CAPTCHA_EXPIRED) {
+                ScenarioLogManager.getLogger()
+                        .info(
+                                "zmscitizenview: timeout-warning Weiter did not reach Kontakt ({}); clicking again",
+                                outcome);
+                clickWeiterForReserve();
+                outcome = waitForReserveOutcome(20);
+            }
+            if (outcome == ReserveOutcome.CONTACT || outcome == ReserveOutcome.REBOOKING_OVERVIEW) {
+                keepReservedSlot(timestamp);
+                finishReserveOnContactStep();
+                return;
+            }
+            Assert.fail(
+                    "zmscitizenview: Weiter during the timeout warning did not reach Kontakt (outcome="
+                            + outcome
+                            + ")");
+        }
         Set<Long> skipped = new HashSet<>();
         Long pendingReserveTimestamp = null;
         int unfinishedReserves = 0;
@@ -2298,7 +2335,7 @@ public final class TimeSlotStep {
                                     timestamp);
                     CitizenViewWaits.sleepQuiet(65_000L);
                 }
-                case UNFINISHED -> {
+                case CAPTCHA_EXPIRED, UNFINISHED -> {
                     if (!shadow.visibleButtonContaining("Weiter")) {
                         Assert.fail(
                                 "zmscitizenview: Weiter stayed disabled and reserve did not reach Kontakt or Übersicht for office "
@@ -3705,6 +3742,7 @@ public final class TimeSlotStep {
         // A missed click settles in 25s. A rebook reserve stays on a disabled Weiter until
         // reserve-appointment copies the email and returns 406, which took ~30s on a full shard.
         // Clicking again at 25s clears that callout the moment it paints.
+        captchaExpirySeenAt = 0L;
         long start = System.currentTimeMillis();
         long idleDeadline = start + 25_000L;
         long hardDeadline = start + 75_000L;
@@ -3729,6 +3767,7 @@ public final class TimeSlotStep {
      * Keep under captcha JWT TTL (CAPTCHA_TOKEN_TTL=300) when retries stack.
      */
     public ReserveOutcome waitForReserveOutcome(int timeoutSeconds) {
+        captchaExpirySeenAt = 0L;
         long deadline = System.currentTimeMillis() + timeoutSeconds * 1000L;
         while (System.currentTimeMillis() < deadline) {
             ReserveOutcome outcome = currentReserveOutcome();
@@ -3752,6 +3791,20 @@ public final class TimeSlotStep {
     }
 
     /**
+     * True when reserve-appointment already stored this slot's process. The expiry callout can
+     * paint in the same second, before Kontaktdaten is in the DOM.
+     */
+    private boolean reserveForCurrentSlotLanded() {
+        page.trySetBookingProcessFromPage();
+        ThinnedProcess booked = CitizenApiSteps.getBookingProcess();
+        if (booked == null || booked.getTimestamp() == null) {
+            return false;
+        }
+        long slot = readStoredSlotTimestamp();
+        return slot > 0 && booked.getTimestamp().longValue() == slot;
+    }
+
+    /**
      * @return the painted reserve result, or null while Weiter is still in flight or the page has not settled
      */
     private ReserveOutcome currentReserveOutcome() {
@@ -3766,10 +3819,21 @@ public final class TimeSlotStep {
             return ReserveOutcome.RATE_LIMITED;
         }
         if (shadow.shadowDomContainsText("Ihre Sitzung ist abgelaufen.")) {
-            Assert.fail(
-                    "zmscitizenview: captcha session expired during reserve (Ihre Sitzung ist abgelaufen.)"
-                            + " — finish Leistung→Kontakt within CAPTCHA_TOKEN_TTL");
+            // The reserve response and the captcha-expiry callout can land together.
+            // The appointment is already stored for this slot; Kontakt paints just after.
+            if (reserveForCurrentSlotLanded()) {
+                captchaExpirySeenAt = 0L;
+                return null;
+            }
+            if (captchaExpirySeenAt == 0L) {
+                captchaExpirySeenAt = System.currentTimeMillis();
+            }
+            if (System.currentTimeMillis() - captchaExpirySeenAt < 12_000L) {
+                return null;
+            }
+            return ReserveOutcome.CAPTCHA_EXPIRED;
         }
+        captchaExpirySeenAt = 0L;
         if (shadow.shadowDomContainsText(CitizenViewPage.DE_TOO_MANY_APPOINTMENTS_HEADER)) {
             return ReserveOutcome.MAIL_LIMIT;
         }

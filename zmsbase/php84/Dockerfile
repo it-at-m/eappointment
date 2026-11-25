@@ -3,10 +3,10 @@ ARG NODE_MAJOR="22"
 ARG PHP_VERSION="8.4-fpm-trixie"
 
 # composer version to make available in built image
-FROM composer:2@sha256:4d71c3c2109c61d5415544264b59ad4087e4c5b7244481723664138fd36d5040 AS composer-image
+FROM composer:2@sha256:50ea4d33fdcde1adb0f045547295faa1548b33872e5f789dae5b02ce2fb5de93 AS composer-image
 
 # php version to actually build
-FROM php:8.4-fpm-trixie@sha256:73e0fe5a155d3d35f3a5d464e17c23021772bae65452a3d26f7725fd829f3ba4 AS base
+FROM php:8.4-fpm-trixie@sha256:495ab94788034640ddd6fb313476e75570261622c42704e5ae02047b8d934ea0 AS base
 
 # bash as default shell should exit on non-zero exit-codes in piped commands
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]

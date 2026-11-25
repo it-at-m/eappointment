@@ -216,9 +216,13 @@ class IndexTest extends Base
                 ]
             ]
         );
+        \App::$templatedefaults['urlAppointments'] = 'https://service.berlin.de/terminvereinbarung/';
         $response = $this->render($this->arguments, $this->parameters, [], 'POST');
+        unset(\App::$templatedefaults['urlAppointments']);
         $this->assertEquals(403, $response->getStatusCode());
         $this->assertStringContainsString('Statistiken/Auswertungen', (string) $response->getBody());
+        $this->assertStringContainsString('Bürgeransicht', (string) $response->getBody());
+        $this->assertStringContainsString('https://service.berlin.de/terminvereinbarung/', (string) $response->getBody());
         $this->assertStringContainsString('Weiterführende Links', (string) $response->getBody());
         $this->assertNull(\BO\Zmsclient\Auth::getKey());
     }
@@ -376,5 +380,62 @@ class IndexTest extends Base
         $location = $response->getHeaderLine('Location');
         $this->assertStringContainsString('/users/', $location);
         $this->assertStringNotContainsString('hideNavigation=1', $location);
+    }
+
+    public function testAppointmentUrlMiddlewareReadsConfig(): void
+    {
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/config/',
+                    'parameters' => [],
+                    'xtoken' => 'secure-token',
+                    'response' => $this->readFixture('GET_config.json'),
+                ]
+            ]
+        );
+        unset(\App::$templatedefaults['urlAppointments']);
+
+        $middleware = new \BO\Zmsclient\AppointmentUrlMiddleware();
+        $middleware->process($this->getRequest(), new class implements \Psr\Http\Server\RequestHandlerInterface {
+            public function handle(\Psr\Http\Message\ServerRequestInterface $request): \Psr\Http\Message\ResponseInterface
+            {
+                return new \Slim\Psr7\Response();
+            }
+        });
+
+        $this->assertSame(
+            'https://service.berlin.de/terminvereinbarung/',
+            \App::$templatedefaults['urlAppointments']
+        );
+        unset(\App::$templatedefaults['urlAppointments']);
+    }
+
+    public function testAppointmentUrlMiddlewareHidesLinkWhenConfigFails(): void
+    {
+        $this->setApiCalls(
+            [
+                [
+                    'function' => 'readGetResult',
+                    'url' => '/config/',
+                    'parameters' => [],
+                    'xtoken' => 'secure-token',
+                    'exception' => new \RuntimeException('config unavailable'),
+                ]
+            ]
+        );
+        \App::$templatedefaults['urlAppointments'] = 'https://service.berlin.de/terminvereinbarung/';
+
+        $middleware = new \BO\Zmsclient\AppointmentUrlMiddleware();
+        $middleware->process($this->getRequest(), new class implements \Psr\Http\Server\RequestHandlerInterface {
+            public function handle(\Psr\Http\Message\ServerRequestInterface $request): \Psr\Http\Message\ResponseInterface
+            {
+                return new \Slim\Psr7\Response();
+            }
+        });
+
+        $this->assertSame('', \App::$templatedefaults['urlAppointments']);
+        unset(\App::$templatedefaults['urlAppointments']);
     }
 }

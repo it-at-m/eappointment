@@ -83,6 +83,7 @@ jobs:
         run: |
           set +e
           vendor/bin/psalm \
+            --taint-analysis \
             --no-progress \
             --report=../results-${{ matrix.project }}.sarif
           psalm_exit=$?
@@ -137,7 +138,7 @@ jobs:
 
       - name: Upload SARIF results
         if: always() && steps.sarif.outputs.exists == 'true'
-        uses: github/codeql-action/upload-sarif@33d7b85da1a04171e211befe2c739303b9a4c066 # v4.39.3
+        uses: github/codeql-action/upload-sarif@1bd86f2fdb4b86187fa4059f16f31a3202acc9ea # v4.39.4
         with:
           sarif_file: results-${{ matrix.project }}.sarif
           checkout_path: ${{ matrix.project }}
@@ -201,6 +202,7 @@ jobs:
           set +e
           zmsbackend/vendor/bin/psalm \
             -c psalm.monorepo.xml \
+            --taint-analysis \
             --no-progress \
             --no-cache \
             --report=results-monorepo.sarif
@@ -257,7 +259,7 @@ jobs:
 
       - name: Upload monorepo SARIF results
         if: always() && steps.sarif_monorepo.outputs.exists == 'true'
-        uses: github/codeql-action/upload-sarif@33d7b85da1a04171e211befe2c739303b9a4c066 # v4.39.3
+        uses: github/codeql-action/upload-sarif@1bd86f2fdb4b86187fa4059f16f31a3202acc9ea # v4.39.4
         with:
           sarif_file: results-monorepo.sarif
           category: .github/workflows/psalm.yml:psalm-dead-code

@@ -7,3 +7,9 @@ CVE-2025-65849
 ## Dev-only, via @parcel/watcher and fast-glob. Those globs are not fed untrusted brace patterns.
 ## Drop this once a fixed braces version is in the lockfiles.
 CVE-2026-93687
+
+## picomatch through 4.0.7 and 2.3.2 (CVE-2026-112366) has no patched release.
+## Dev-only, via parcel, vite, vitest, micromatch, tinyglobby, and @parcel/watcher.
+## Those globs are project file patterns, not untrusted extglobs such as +(*).
+## Drop this once a fixed picomatch version is in the lockfiles.
+CVE-2026-112366

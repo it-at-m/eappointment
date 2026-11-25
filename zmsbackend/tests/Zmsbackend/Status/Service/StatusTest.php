@@ -16,6 +16,71 @@ class StatusTest extends \BO\Zmsbackend\Tests\Service\Base
         $this->assertArrayHasKey('withExternalUserId', $status['processes']);
         $this->assertArrayHasKey('confirmedWithExternalUserId', $status['processes']);
         $this->assertArrayHasKey('confirmedWithMultipleServices', $status['processes']);
+        $this->assertArrayHasKey('overbooking', $status);
+        $this->assertIsInt($status['overbooking']['total']);
+        $this->assertIsArray($status['overbooking']['departments']);
         //var_dump(\BO\Zmsbackend\Connection\Select::getReadConnection()->getProfiler()->getProfiles());
+    }
+
+    public function testSkipsSlotScansWhileCalculationIsRunning()
+    {
+        $now = new \DateTimeImmutable('2016-04-01 11:55:00');
+        $config = new \BO\Zmsbackend\Config\Service\Config();
+        $config->replaceProperty('status__calculateSlotsWithDeleteStart', $now->format('Y-m-d H:i:s'));
+        $config->replaceProperty(
+            'status__calculateSlotsLastRun',
+            $now->modify('-1 hour')->format('Y-m-d H:i:s')
+        );
+
+        $status = (new Query())->readEntity($now);
+
+        $this->assertArrayHasKey('called', $status['processes']);
+        $this->assertArrayNotHasKey('outdated', $status['processes']);
+        $this->assertArrayNotHasKey('outdatedOldest', $status['processes']);
+        $this->assertArrayNotHasKey('freeSlots', $status['processes']);
+        $this->assertArrayNotHasKey('overbooking', $status);
+    }
+
+    public function testReadsSlotScansWhenCalculationStartIsOlderThanFifteenMinutes()
+    {
+        $now = new \DateTimeImmutable('2016-04-01 11:55:00');
+        $config = new \BO\Zmsbackend\Config\Service\Config();
+        $config->replaceProperty(
+            'status__calculateSlotsWithDeleteStart',
+            $now->modify('-20 minutes')->format('Y-m-d H:i:s')
+        );
+        $config->replaceProperty(
+            'status__calculateSlotsLastRun',
+            $now->modify('-1 hour')->format('Y-m-d H:i:s')
+        );
+
+        $status = (new Query())->readEntity($now);
+
+        $this->assertArrayHasKey('outdated', $status['processes']);
+        $this->assertArrayHasKey('freeSlots', $status['processes']);
+        $this->assertArrayHasKey('overbooking', $status);
+        $this->assertIsInt($status['overbooking']['total']);
+    }
+
+    public function testReadsSlotScansDuringMinutelyCalculation()
+    {
+        $now = new \DateTimeImmutable('2016-04-01 11:55:00');
+        $config = new \BO\Zmsbackend\Config\Service\Config();
+        $config->replaceProperty('status__calculateSlotsLastStart', $now->format('Y-m-d H:i:s'));
+        $config->replaceProperty(
+            'status__calculateSlotsWithDeleteStart',
+            $now->modify('-1 day')->format('Y-m-d H:i:s')
+        );
+        $config->replaceProperty(
+            'status__calculateSlotsLastRun',
+            $now->modify('-1 hour')->format('Y-m-d H:i:s')
+        );
+
+        $status = (new Query())->readEntity($now);
+
+        $this->assertArrayHasKey('outdated', $status['processes']);
+        $this->assertArrayHasKey('freeSlots', $status['processes']);
+        $this->assertArrayHasKey('overbooking', $status);
+        $this->assertIsInt($status['overbooking']['total']);
     }
 }

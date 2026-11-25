@@ -178,6 +178,38 @@ updates:
     target-branch: "next"
 
   ##################################################
+  # Docker base images
+  ##################################################
+
+  - package-ecosystem: "docker"
+    directories:
+      - "/zmsbase/php84"
+      - "/zmsbase/php84-local"
+      - "/zmsbase/php86"
+      - "/zmsbase/php86-local"
+    schedule:
+      interval: "daily"
+      time: "04:00"
+      timezone: "Europe/Berlin"
+    target-branch: "next"
+    ignore:
+      - dependency-name: "php"
+        update-types:
+          - "version-update:semver-major"
+          - "version-update:semver-minor"
+          - "version-update:semver-patch"
+      - dependency-name: "node"
+        update-types:
+          - "version-update:semver-major"
+          - "version-update:semver-minor"
+          - "version-update:semver-patch"
+      - dependency-name: "composer"
+        update-types:
+          - "version-update:semver-major"
+          - "version-update:semver-minor"
+          - "version-update:semver-patch"
+
+  ##################################################
   # Maven (planned)
   ##################################################
 

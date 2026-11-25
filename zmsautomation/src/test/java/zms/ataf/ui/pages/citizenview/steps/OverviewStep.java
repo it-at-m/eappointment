@@ -489,7 +489,7 @@ public final class OverviewStep {
                                         + "if(n.nodeType===1){var t=((n.innerText||n.textContent||'')+'').replace(/\\s+/g,' ').trim();"
                                         + "if(t.indexOf(needle)>=0&&t.length<bestLen){bestLen=t.length;bestEl=n;}}"
                                         + "if(n.shadowRoot)visit(n.shadowRoot);"
-                                        + "if(n.assignedNodes){try{var a=n.assignedNodes({flatten:true});"
+                                        + "if(n.assignedNodes){try{var a=n.assignedNodes();"
                                         + "for(var j=0;j<a.length;j++)visit(a[j]);}catch(e){}}"
                                         + "var c=n.childNodes;if(c)for(var i=0;i<c.length;i++)visit(c[i]);}"
                                         + "visit(document.documentElement);"
@@ -554,8 +554,8 @@ public final class OverviewStep {
                         .executeScript(
                                 "function walk(n){var s='';if(!n)return s;if(n.nodeType===3)return n.nodeValue||'';"
                                         + "if(n.shadowRoot)s+=' '+walk(n.shadowRoot);"
-                                        + "if(n.assignedNodes){var a=n.assignedNodes({flatten:true});"
-                                        + "for(var j=0;j<a.length;j++)s+=' '+walk(a[j]);}"
+                                        + "if(n.assignedNodes){try{var a=n.assignedNodes();"
+                                        + "for(var j=0;j<a.length;j++)s+=' '+walk(a[j]);}catch(e){}}"
                                         + "var c=n.childNodes;if(c)for(var i=0;i<c.length;i++)s+=' '+walk(c[i]);"
                                         + "return s;}"
                                         + "return walk(document.documentElement).replace(/\\s+/g,' ').trim();");

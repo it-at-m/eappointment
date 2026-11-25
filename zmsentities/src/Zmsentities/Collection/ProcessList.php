@@ -261,24 +261,107 @@ class ProcessList extends Base
         $processList = new static();
         foreach ($this->toProcessListByTime('Y-m-d') as $processListByDate) {
             $dateTime = $processListByDate[0]->getFirstAppointment()->toDateTime();
-            $slotList = $availabilityList->withType('appointment')->withDateTime($dateTime)->getSlotList();
+            $slotLists = $availabilityList->withType('appointment')->withDateTime($dateTime)
+                ->getSlotListByAvailability();
             foreach ($processListByDate as $process) {
                 if (!$process instanceof Process) {
                     continue;
                 }
-                try {
-                    $slotList->withSlotsForAppointment($process->getFirstAppointment());
-                    if (!$slotList->removeAppointment($process->getFirstAppointment())) {
-                        $process->amendment = "";
-                        $processList[] = clone $process;
-                    }
-                } catch (\BO\Zmsentities\Exception\AppointmentNotFitInSlotList $exception) {
+                if (null === static::removeAppointmentFromOneSlotList($slotLists, $process->getFirstAppointment())) {
                     $process->amendment = "";
                     $processList[] = clone $process;
                 }
             }
         }
         return $processList;
+    }
+
+    /**
+     * Booked slots per availability (keyed by id or tempId). Every process counts for exactly one
+     * availability, like in withOutAvailability(). Overbooked processes count for the first
+     * availability they are opened in.
+     *
+     * @return array<int|string, int>
+     */
+    public function getCalculatedSlotCountByAvailability(
+        \BO\Zmsentities\Collection\AvailabilityList $availabilityList
+    ): array {
+        $slotCounts = array_fill_keys(array_keys($availabilityList->getSortedByDuration()), 0);
+        foreach ($this->toProcessListByTime('Y-m-d') as $processListByDate) {
+            $dateTime = $processListByDate[0]->getFirstAppointment()->toDateTime();
+            $availabilityListByDate = $availabilityList->withType('appointment')->withDateTime($dateTime);
+            $slotLists = $availabilityListByDate->getSlotListByAvailability();
+            foreach ($processListByDate as $process) {
+                if (!$process instanceof Process) {
+                    continue;
+                }
+                $appointment = $process->getFirstAppointment();
+                $key = static::removeAppointmentFromOneSlotList($slotLists, $appointment);
+                if (null === $key) {
+                    foreach ($availabilityListByDate->getSortedByDuration() as $availabilityKey => $availability) {
+                        if ($availability->hasAppointment($appointment)) {
+                            $key = $availabilityKey;
+                            break;
+                        }
+                    }
+                }
+                if (null !== $key) {
+                    $slotCounts[$key] = ($slotCounts[$key] ?? 0) + (int) $appointment->getSlotCount();
+                }
+            }
+        }
+        return $slotCounts;
+    }
+
+    /**
+     * An appointment uses the slots of exactly one availability, even if availabilities overlap.
+     * The availability the appointment is booked on (slot_process mapping) is used first,
+     * otherwise the shortest availability with free slots.
+     *
+     * @param array<int|string, SlotList> $slotLists
+     *
+     * @return int|string|null key of the slot list used for the appointment
+     */
+    protected static function removeAppointmentFromOneSlotList(
+        array &$slotLists,
+        \BO\Zmsentities\Appointment $appointment
+    ): int|string|null {
+        $availability = $appointment->getAvailability();
+        $bookedKey = $availability->id ?: ($availability->tempId ?? null);
+        if (null !== $bookedKey && static::removeAppointmentFromSlotList($slotLists, $bookedKey, $appointment)) {
+            return $bookedKey;
+        }
+        foreach (array_keys($slotLists) as $index) {
+            if (static::removeAppointmentFromSlotList($slotLists, $index, $appointment)) {
+                return $index;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * @param array<int|string, SlotList> $slotLists
+     */
+    protected static function removeAppointmentFromSlotList(
+        array &$slotLists,
+        int|string $index,
+        \BO\Zmsentities\Appointment $appointment
+    ): bool {
+        if (!array_key_exists($index, $slotLists)) {
+            return false;
+        }
+        try {
+            $slotLists[$index]->withSlotsForAppointment($appointment);
+        } catch (\BO\Zmsentities\Exception\AppointmentNotFitInSlotList) {
+            return false;
+        }
+        // Work on a copy, a failed removal must not reduce slots of this availability
+        $reducedSlotList = clone $slotLists[$index];
+        if (!$reducedSlotList->removeAppointment($appointment)) {
+            return false;
+        }
+        $slotLists[$index] = $reducedSlotList;
+        return true;
     }
 
     public function withUniqueScope(bool $oncePerHour = false): static

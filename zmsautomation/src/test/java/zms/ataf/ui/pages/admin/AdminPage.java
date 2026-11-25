@@ -14,7 +14,6 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 
@@ -134,12 +133,12 @@ public class AdminPage extends BasePage {
         ensureScopeSelectionForm();
         ScenarioLogManager.getLogger().info("Trying to select location \"" + location + "\"");
         AccountCheckout.checkout("scope:" + location);
-        // Firefox can rebuild the scope <select> while option text is read → StaleElementReference.
+        // The combobox clips the native <select>. Firefox will not click that option, so
+        // select-by-visible-text waits out. Set the option value once its label is present.
         StaleElementReferenceException lastStale = null;
         for (int attempt = 1; attempt <= 3; attempt++) {
             try {
-                selectDropDownListValueByVisibleText(
-                        DEFAULT_EXPLICIT_WAIT_TIME, WORKSTATION_SCOPE_SELECT, LocatorType.CSSSELECTOR, location);
+                setScopeValue(waitForScopeValueByLabel(location));
                 TestDataHelper.setTestData("location", location);
                 return;
             } catch (StaleElementReferenceException stale) {
@@ -163,11 +162,10 @@ public class AdminPage extends BasePage {
         String scopeValue = Integer.toString(scopeId);
         WebElement selectEl = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
                 .until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(WORKSTATION_SCOPE_SELECT)));
-        Select select = new Select(selectEl);
         String visible = null;
-        for (WebElement option : select.getOptions()) {
+        for (WebElement option : selectEl.findElements(By.tagName("option"))) {
             if (scopeValue.equals(option.getAttribute("value"))) {
-                visible = option.getText();
+                visible = optionLabel(option);
                 break;
             }
         }
@@ -176,8 +174,55 @@ public class AdminPage extends BasePage {
         }
         ScenarioLogManager.getLogger().info("Trying to select location \"" + visible + "\" for scope " + scopeId);
         AccountCheckout.checkout("scope:" + visible);
-        select.selectByValue(scopeValue);
+        setScopeValue(scopeValue);
         TestDataHelper.setTestData("location", visible);
+    }
+
+    /** textContent stays readable after the combobox clips the native options. */
+    private static String optionLabel(WebElement option) {
+        String text = option.getAttribute("textContent");
+        if (text == null || text.isBlank()) {
+            text = option.getText();
+        }
+        return text == null ? "" : text.trim().replaceAll("\\s+", " ");
+    }
+
+    private String waitForScopeValueByLabel(String location) {
+        String wanted = location.trim().replaceAll("\\s+", " ");
+        WebDriverWait wait = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME));
+        wait.ignoring(StaleElementReferenceException.class);
+        return wait.until(driver -> {
+            WebElement selectEl = driver.findElement(By.cssSelector(WORKSTATION_SCOPE_SELECT));
+            for (WebElement option : selectEl.findElements(By.tagName("option"))) {
+                if (!wanted.equals(optionLabel(option))) {
+                    continue;
+                }
+                String value = option.getAttribute("value");
+                if (value != null && !value.isBlank()) {
+                    return value;
+                }
+            }
+            return null;
+        });
+    }
+
+    /** Same assignment as the combobox choose(): the clipped option is not clickable in Firefox. */
+    private void setScopeValue(String scopeValue) {
+        WebElement selectEl = new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .ignoring(StaleElementReferenceException.class)
+                .until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(WORKSTATION_SCOPE_SELECT)));
+        ((JavascriptExecutor) DRIVER).executeScript(
+                "const select = arguments[0];"
+                        + "const value = String(arguments[1]);"
+                        + "select.value = value;"
+                        + "select.dispatchEvent(new Event('change', { bubbles: true }));"
+                        + "const toggle = select.closest('.scope-combobox')?.querySelector('.scope-combobox__toggle');"
+                        + "const option = [...select.options].find((item) => item.value === value);"
+                        + "if (toggle && option) {"
+                        + "  toggle.textContent = '(Id: ' + value + ') ' + option.textContent.trim();"
+                        + "}",
+                selectEl,
+                scopeValue);
     }
 
     public void enterWorkstation(String workstation) {

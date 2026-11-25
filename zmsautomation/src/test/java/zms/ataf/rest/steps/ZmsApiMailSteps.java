@@ -844,12 +844,29 @@ public class ZmsApiMailSteps {
         String password = TestPropertiesHelper.getPropertyAsString("zmsapiMailUserPassword", true, "vorschau");
         username = AccountCheckout.assignMessengerLogin(username);
 
-        Response loginResponse = given()
-            .baseUri(TestConfig.getBaseUri())
-            .contentType("application/json")
-            .body(Map.of("id", username, "password", password))
-        .when()
-            .post("/workstation/login/");
+        Response loginResponse = null;
+        for (int attempt = 1; attempt <= 3; attempt++) {
+            loginResponse = given()
+                .baseUri(TestConfig.getBaseUri())
+                .contentType("application/json")
+                .body(Map.of("id", username, "password", password))
+            .when()
+                .post("/workstation/login/");
+            int status = loginResponse.getStatusCode();
+            if (status < 500 || attempt == 3) {
+                break;
+            }
+            ScenarioLogManager.getLogger().warn(
+                    "ZMS API /workstation/login/ returned HTTP {} (attempt {}/3); retrying",
+                    status,
+                    attempt);
+            try {
+                Thread.sleep(2000L * attempt);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                break;
+            }
+        }
 
         CommonApiSteps.setResponse(loginResponse);
 

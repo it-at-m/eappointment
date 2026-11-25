@@ -17,7 +17,7 @@ class MaintenanceMiddleware implements MiddlewareInterface
     #[\Override]
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        if (\App::MAINTENANCE_MODE_ENABLED) {
+        if ($this->isMaintenanceEnabled() && !$this->isSourceCacheWarmup($request)) {
             $error = ErrorMessages::get(self::ERROR_UNAVAILABLE);
 
             $response = \App::$slim->getResponseFactory()->createResponse();
@@ -32,5 +32,25 @@ class MaintenanceMiddleware implements MiddlewareInterface
         }
 
         return $handler->handle($request);
+    }
+
+    /**
+     * The class constant is fixed when config.php loads. Tests and a later
+     * Application::initialize() update the static property from the same env.
+     */
+    private function isMaintenanceEnabled(): bool
+    {
+        return \App::MAINTENANCE_MODE_ENABLED || \App::$MAINTENANCE_MODE_ENABLED;
+    }
+
+    /**
+     * Helm upgrades warm this route while maintenance mode is on.
+     * Match the route with or without the public path prefix.
+     */
+    private function isSourceCacheWarmup(ServerRequestInterface $request): bool
+    {
+        $path = rtrim($request->getUri()->getPath(), '/');
+
+        return str_ends_with($path, '/source-cache/warmup');
     }
 }

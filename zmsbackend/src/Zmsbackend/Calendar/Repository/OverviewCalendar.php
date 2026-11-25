@@ -21,9 +21,13 @@ class OverviewCalendar extends \BO\Zmsbackend\Query\Base
            AND status    <> 'cancelled'
 ";
 
+    // Keep the stored scope when the submitted id is not a standort row.
     const string UPDATE_BY_PROCESS = "
         UPDATE overview_calendar
-           SET scope_id   = :scope_id,
+           SET scope_id   = IFNULL(
+                   (SELECT StandortID FROM standort WHERE StandortID = :scope_id),
+                   scope_id
+               ),
                starts_at  = :starts_at,
                ends_at    = :ends_at,
                updated_at = CURRENT_TIMESTAMP

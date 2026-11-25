@@ -294,3 +294,10 @@ VALUES
     (9999997,'unittest',990110);
 
 UNLOCK TABLES;
+
+-- Opening hours moved to 5-minute steps and their version increased. Match the
+-- slot version so the test import does not cancel the fixture slots.
+UPDATE `slot` `s`
+INNER JOIN `oeffnungszeit` `o` ON `o`.`OeffnungszeitID` = `s`.`availabilityID`
+SET `s`.`version` = `o`.`version`
+WHERE `s`.`version` <> `o`.`version`;

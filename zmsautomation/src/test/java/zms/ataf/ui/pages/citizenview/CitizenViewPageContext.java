@@ -268,8 +268,10 @@ public class CitizenViewPageContext extends Context {
 
     private void waitForCitizenViewTitle() {
         try {
+            // Appointment detail keeps its own title ("Termin: …"). Waiting out the shell
+            // title there costs 15s on every shadow probe and can push a near slot into the past.
             new WebDriverWait(DRIVER, Duration.ofSeconds(TITLE_SETTLE_SECONDS))
-                    .until(d -> TITLE.equals(d.getTitle()));
+                    .until(d -> citizenViewTitleSettled(d.getTitle()));
         } catch (TimeoutException e) {
             ScenarioLogManager.getLogger().warn(
                     "zmscitizenview: document title is \"{}\" (expected \"{}\")",
@@ -310,6 +312,10 @@ public class CitizenViewPageContext extends Context {
             base = base.substring(0, query);
         }
         return base;
+    }
+
+    private static boolean citizenViewTitleSettled(String title) {
+        return TITLE.equals(title) || (title != null && title.startsWith("Termin:"));
     }
 
     private String currentDocumentTitle() {

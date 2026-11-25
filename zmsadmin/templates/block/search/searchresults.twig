@@ -59,7 +59,7 @@
             </p>
         {% endif %}
 
-        <div tabindex="1" class="table-responsive-wrapper">
+        <div tabindex="1" class="table-responsive-wrapper" id="search-results">
             <table class="table--base" data-processList-count="{{ processList.count() }}">
                 <thead>
                 <tr>
@@ -178,45 +178,61 @@
                 >
             </form>
 
-            <div class="pagination">
-                {% set prevParams = (queryParams ?? {})|merge({
-                    'query': searchProcessQuery,
-                    'page': currentPage - 1,
-                    'perPage': currentPerPage,
-                    'service': service,
-                    'provider': provider,
-                    'user': userAction,
-                    'date': date,
-                    'hideNavigation': hideNavigation ? 1 : null
-                }) %}
+            {% set pageParams = (queryParams ?? {})|merge({
+                'query': searchProcessQuery,
+                'perPage': currentPerPage,
+                'service': service,
+                'provider': provider,
+                'user': userAction,
+                'date': date,
+                'hideNavigation': hideNavigation ? 1 : null
+            }) %}
 
-                {% set nextParams = (queryParams ?? {})|merge({
-                    'query': searchProcessQuery,
-                    'page': currentPage + 1,
-                    'perPage': currentPerPage,
-                    'service': service,
-                    'provider': provider,
-                    'user': userAction,
-                    'date': date,
-                    'hideNavigation': hideNavigation ? 1 : null
-                }) %}
+            {% set processPages = processSearchTotal is defined ? (processSearchTotal / currentPerPage)|round(0, 'ceil') : 1 %}
+            {% set logPages = logSearchTotal is defined ? (logSearchTotal / currentPerPage)|round(0, 'ceil') : 1 %}
+            {# The current page is always part of the range, so an out-of-range page number still shows as current. #}
+            {% set totalPages = max(processPages, logPages, currentPage) %}
 
-                {% if currentPage > 1 %}
-                    <a href="?{{ prevParams|url_encode }}">&lt; Vorherige Seite</a>
-                {% endif %}
-
-                Seite: {{ currentPage }}
-
-                {% set hasMoreProcesses = processSearchTotal is defined and (currentPage * currentPerPage) < processSearchTotal %}
-                {% set hasMoreLogs = logList is defined and logList|length >= currentPerPage %}
-                {% if hasMoreProcesses or hasMoreLogs %}
-                    <a href="?{{ nextParams|url_encode }}">Nächste Seite &gt;</a>
-                {% endif %}
-            </div>
-
-
-
-
+            {% if totalPages > 1 %}
+                <div class="pagination">
+                    <ul>
+                        <li>
+                            {% if currentPage > 1 %}
+                                <a href="?{{ pageParams|merge({'page': currentPage - 1})|url_encode }}#search-results" aria-label="Vorherige Seite"><i class="fas fa-chevron-left" aria-hidden="true"></i></a>
+                            {% else %}
+                                <span class="disabled"><i class="fas fa-chevron-left" aria-hidden="true"></i></span>
+                            {% endif %}
+                        </li>
+                        {# First, last, current page and its neighbours; "..." only when it hides more than one page.
+                           Only these candidates are checked, so a huge page number does not build a huge range. #}
+                        {% set pageCandidates = [1, 2, currentPage - 1, currentPage, currentPage + 1, totalPages - 1, totalPages]
+                            |filter(p => p >= 1 and p <= totalPages)
+                            |sort
+                            |reduce((pages, p) => p in pages ? pages : pages|merge([p]), []) %}
+                        {% for p in pageCandidates %}
+                            {% if p == 1 or p == totalPages or (p - currentPage)|abs <= 1
+                                or (p == 2 and currentPage == 4) or (p == totalPages - 1 and currentPage == totalPages - 3) %}
+                                <li>
+                                    {% if p == currentPage %}
+                                        <span class="active" aria-current="page">{{ p }}</span>
+                                    {% else %}
+                                        <a href="?{{ pageParams|merge({'page': p})|url_encode }}#search-results">{{ p }}</a>
+                                    {% endif %}
+                                </li>
+                            {% elseif p == 2 or p == totalPages - 1 %}
+                                <li><span class="disabled">&hellip;</span></li>
+                            {% endif %}
+                        {% endfor %}
+                        <li>
+                            {% if currentPage < totalPages %}
+                                <a href="?{{ pageParams|merge({'page': currentPage + 1})|url_encode }}#search-results" aria-label="Nächste Seite"><i class="fas fa-chevron-right" aria-hidden="true"></i></a>
+                            {% else %}
+                                <span class="disabled"><i class="fas fa-chevron-right" aria-hidden="true"></i></span>
+                            {% endif %}
+                        </li>
+                    </ul>
+                </div>
+            {% endif %}
         </div>
     {% endblock %}
 

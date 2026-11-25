@@ -535,6 +535,35 @@ public class CounterProcessingStationPage extends AdminPage {
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.id(APPOINTMENT_QUEUE_TABLE_LOCATOR_ID)));
     }
 
+    /**
+     * Load the workstation again. An ajax queue reload that started before the lockout
+     * was ended can still replace the table, so this step does not use that reload.
+     * Edge can restore the previous document on a plain refresh, which keeps the
+     * no-show sentence, so the address is opened with a new query.
+     */
+    public void reloadWorkstationPage() {
+        String current = DRIVER.getCurrentUrl();
+        if (current == null || current.isBlank()) {
+            DRIVER.navigate().refresh();
+        } else {
+            String fragment = "";
+            int hash = current.indexOf('#');
+            if (hash >= 0) {
+                fragment = current.substring(hash);
+                current = current.substring(0, hash);
+            }
+            current = current.replaceAll("([?&])atafReload=\\d+", "");
+            if (current.endsWith("?") || current.endsWith("&")) {
+                current = current.substring(0, current.length() - 1);
+            }
+            String separator = current.contains("?") ? "&" : "?";
+            DRIVER.navigate().to(current + separator + "atafReload=" + System.currentTimeMillis() + fragment);
+        }
+        CONTEXT.waitForSpinners();
+        new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
+                .until(ExpectedConditions.visibilityOfElementLocated(By.id(APPOINTMENT_QUEUE_TABLE_LOCATOR_ID)));
+    }
+
     /** The queue replaces this link while a row comes back, and a loader can cover it, so the click is retried. */
     public void reloadQueueLists() {
         By reloadLink = By.cssSelector(".queue-table a.reload");
@@ -1709,38 +1738,40 @@ public class CounterProcessingStationPage extends AdminPage {
     
         WebDriverWait wait = new WebDriverWait(DRIVER, java.time.Duration.ofSeconds(20));
     
-        // Ensure the header control is visible and on screen
-        org.openqa.selenium.WebElement header =
-                wait.until(org.openqa.selenium.support.ui.ExpectedConditions.visibilityOfElementLocated(headerToggle));
-        scrollToCenterByVisibleElement(header);
-    
+        wait.ignoring(StaleElementReferenceException.class, ElementClickInterceptedException.class);
+        wait.until(ExpectedConditions.visibilityOfElementLocated(headerToggle));
+
         // If table is already visible, nothing to do
         if (isElementVisible(finishedTable, 2)) {
             return;
         }
-    
-        // Toggle open and wait; retry once if needed (accounts for animation/rerenders)
-        for (int attempt = 0; attempt < 2; attempt++) {
-            header.click();
-            try {
-                // brief settle for animation
-                Thread.sleep(200);
-            } catch (InterruptedException ie) {
-                Thread.currentThread().interrupt();
-            }
-            CONTEXT.waitForSpinners();
-            try {
-                wait.until(org.openqa.selenium.support.ui.ExpectedConditions
-                        .visibilityOfElementLocated(finishedTable));
-                return; // opened successfully
-            } catch (org.openqa.selenium.TimeoutException e) {
-                if (attempt == 0) {
-                    // re-fetch header and try once more
-                    header = DRIVER.findElement(headerToggle);
-                } else {
-                    org.testng.Assert.fail("Finished appointments table did not become visible after toggling.");
+
+        // The queue refresh replaces this header between find and click. The click
+        // toggles, so it runs only while the section is collapsed. Stale and
+        // intercepted clicks stay inside this wait and retry until it times out.
+        final By finishedSection = By.id("finished-appointments-content");
+        try {
+            wait.until(driver -> {
+                List<WebElement> tables = driver.findElements(finishedTable);
+                if (!tables.isEmpty() && tables.get(0).isDisplayed()) {
+                    return true;
                 }
-            }
+                List<WebElement> sections = driver.findElements(finishedSection);
+                boolean collapsed = sections.isEmpty()
+                        || String.valueOf(sections.get(0).getAttribute("class")).contains("hidden");
+                if (!collapsed) {
+                    return false;
+                }
+                List<WebElement> headers = driver.findElements(headerToggle);
+                if (headers.isEmpty() || !headers.get(0).isDisplayed()) {
+                    return false;
+                }
+                scrollToCenterByVisibleElement(headers.get(0));
+                driver.findElement(headerToggle).click();
+                return false;
+            });
+        } catch (TimeoutException e) {
+            Assert.fail("Finished appointments table did not become visible after toggling.");
         }
     }
 

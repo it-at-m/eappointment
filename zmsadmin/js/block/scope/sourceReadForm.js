@@ -2,6 +2,11 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import * as Inputs from '../../lib/inputs'
 
+export const isSuperuser = (permissions) => {
+    const value = permissions ? permissions.superuser : false
+    return value === true || value === 1 || value === '1'
+}
+
 class SourceReadView extends Component {
     render() {
         const hasProvider = () => {

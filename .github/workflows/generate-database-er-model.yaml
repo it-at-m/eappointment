@@ -15,10 +15,10 @@ jobs:
   generate:
     runs-on: ubuntu-latest
     container:
-      image: "ghcr.io/it-at-m/eappointment/zmsbase:8.4-dev@sha256:fd3257b885e7273b5b9d33fad9f5094e3f8d7b3ce82b2868c9a2e7b507eea0f2"
+      image: "ghcr.io/it-at-m/eappointment/zmsbase:8.4-dev@sha256:09ecca92248f9521714fe94bb00c2dbd87464e01c00ce984ac218e7dc1e509c3"
     services:
       mariadb:
-        image: mariadb:10.11@sha256:d769e37960821dfdcf096954f6e7ac89f747e116c1bba98e48edd265dfc7deae
+        image: mariadb:10.11@sha256:e5fe75b2b9de0eb9f6f9a4d9c97272fb3a7480e389ccd487a786bab2a12cc0d7
         env:
           MYSQL_ROOT_PASSWORD: zmsbackend
           MYSQL_DATABASE: zmsbo

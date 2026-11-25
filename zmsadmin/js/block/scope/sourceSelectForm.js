@@ -3,11 +3,14 @@ import PropTypes from 'prop-types'
 import * as Inputs from '../../lib/inputs'
 import { loopWithCallback } from '../../lib/utils'
 import { sortByName } from '../../lib/sort'
+import { isSuperuser } from './sourceReadForm'
+import ProviderIdSelect from './providerIdSelect'
 
 class SourceSelectView extends Component {
     render() {
         const providerList = Object.values(this.props.scopestate.providerList)
         const sourceList = Object.values(this.props.scopestate.sourcelist)
+        const showProviderId = isSuperuser(this.props.permissions)
 
         const sourceOptions = [{
             "value": 0,
@@ -90,16 +93,26 @@ class SourceSelectView extends Component {
                             attributes={{ "htmlFor": "scopeProviderId" }}
                         />
                         <Inputs.Controls>
-                            <Inputs.Select
-                                attributes={{
-                                    "id": "scopeProviderId",
-                                    "disabled": !this.props.permissions.scope || !hasSource()
-                                }}
-                                value={(hasProvider()) ? this.props.scopestate.provider.id : 0}
-                                name="provider[id]"
-                                groups={providerGroups}
-                                onChange={onChangeProvider}
-                            />
+                            {showProviderId ? (
+                                <ProviderIdSelect
+                                    groups={providerGroups}
+                                    value={(hasProvider()) ? this.props.scopestate.provider.id : 0}
+                                    name="provider[id]"
+                                    disabled={!this.props.permissions.scope || !hasSource()}
+                                    onChange={onChangeProvider}
+                                />
+                            ) : (
+                                <Inputs.Select
+                                    attributes={{
+                                        "id": "scopeProviderId",
+                                        "disabled": !this.props.permissions.scope || !hasSource()
+                                    }}
+                                    value={(hasProvider()) ? this.props.scopestate.provider.id : 0}
+                                    name="provider[id]"
+                                    groups={providerGroups}
+                                    onChange={onChangeProvider}
+                                />
+                            )}
                             {!this.props.permissions.scope && (
                                 <Inputs.Hidden
                                     name="provider[id]"

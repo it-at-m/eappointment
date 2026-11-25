@@ -1,4 +1,69 @@
-## Release Muc-50 Updated (23.10.2026)
+## Release Muc-52 (20.11.2026)
+
+<h2>        Bug
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1626'>ZMSKVR-1626</a>] -         Wegezeit&gt; Kundenaufrufe vor Terminzeitpunkt erscheinen nicht in der Wartestatistik
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1697'>ZMSKVR-1697</a>] -         Innenrevision KVR – Suchergebnisse der letzten 90 Tage und Pagination fehlerhaft
+</li>
+</ul>
+                                                                                                                                                                                                                                    
+<h2>        Story
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1627'>ZMSKVR-1627</a>] -         Änderung der Dienstleistungsdauer ohne Auswirkungen auf bestehende Termine
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1696'>ZMSKVR-1696</a>] -         Anpassungen globale E-Mail-Templates (Leerraum verkleinern nach Logo-Entfernung; Kundenhinweis in neue Zeile)
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-834'>ZMSKVR-834</a>] -         Überlappende Terminserien &quot;Nase&quot; 👃
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1554'>ZMSKVR-1554</a>] -       Überbuchungen je Behörde im Status-Ping monitoren
+</li>
+</ul>
+
+
+## Release Muc-51 Updated (19.11.2026)
+
+<h2>        Security
+</h2>
+<ul>
+<li>19.11.2026 - CVE-2026-115560, CVE-2026-126714 and CVE-2026-129496: remote code execution in PHP. Module images built from this tag run PHP 8.4.28.
+</li>
+</ul>
+
+
+## Release Muc-51 (13.11.2026)
+
+<h2>        Bug
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1391'>ZMSKVR-1391</a>] -         Fehler bei wiederholtem Verschieben nach  Button &quot;Termin verschieben abbrechen&quot; auf der Verschiebe-/Absageseite
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1688'>ZMSKVR-1688</a>] -         Terminabsage-Mail bei interner Terminverschiebung gibt neuen statt alten Termin an.
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1702'>ZMSKVR-1702</a>] -         Fehlende Callout-Meldung bei Erreichen des Terminlimits pro E-Mail-Adresse
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1713'>ZMSKVR-1713</a>] -         Standortübergreifende Wartestatistik: Anzahl der Wartenden stimmt nicht überein
+</li>
+</ul>
+                                                                                                                                                                                                                                            
+<h2>        Story
+</h2>
+<ul>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1142'>ZMSKVR-1142</a>] -         Standortkonfiguration: &quot;Maximale Anzahl an Terminen pro E-Mail-Adresse&quot; validieren
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1706'>ZMSKVR-1706</a>] -         Erklärtext zu &quot;Umbuchung deaktiviert&quot; in der Standortkonfiguration
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-273'>ZMSKVR-273</a>] -         zmsticketprinter Access Control
+</li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-908'>ZMSKVR-908</a>] -         Pfennigparade #8: Fehlerhafte Verwendung von aria-haspopup
+</li>
+</ul>
+
+
+
+## Release Muc-50 (23.10.2026)
 
 <h2>        Bug
 </h2>

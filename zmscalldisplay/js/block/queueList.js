@@ -25,6 +25,9 @@ class View extends BaseView {
         };
         $.ajax(ajaxopt)
             .done(data => {
+                if (!data || !String(data).trim()) {
+                    return;
+                }
                 this.hideMessages(0);
                 $('#queueImport').html(data);
                 var audioCheck = new RingAudio();
@@ -40,7 +43,10 @@ class View extends BaseView {
                 audioCheck.initSoundCheck();
                 this.getDestinationToNumber();
             })
-            .fail(function () {
+            .fail(function (jqXHR, textStatus) {
+                if (textStatus === 'timeout') {
+                    return;
+                }
                 $('.fatal').show();
             });
         this.setInterval();
