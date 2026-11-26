@@ -286,7 +286,7 @@ class ProcessList extends Base
     /**
      * Booked slots per availability (keyed by id or tempId). Every process counts for exactly one
      * availability, like in withOutAvailability(). Overbooked processes count for the first
-     * availability they are opened in.
+     * availability they are opened in, or the one they start in if they fit in none as a whole.
      *
      * @return array<int|string, int>
      */
@@ -308,6 +308,14 @@ class ProcessList extends Base
                 if (null === $key) {
                     foreach ($availabilityListByDate->getSortedByDuration() as $availabilityKey => $availability) {
                         if ($availability->hasAppointment($appointment)) {
+                            $key = $availabilityKey;
+                            break;
+                        }
+                    }
+                }
+                if (null === $key) {
+                    foreach ($availabilities as $availabilityKey => $availability) {
+                        if ($availability->isOpened($appointment->toDateTime())) {
                             $key = $availabilityKey;
                             break;
                         }
@@ -370,8 +378,15 @@ class ProcessList extends Base
         if ((int) $appointment->getSlotCount() < 2) {
             return null;
         }
+        $deadEnds = [];
         foreach (array_keys($slotLists) as $startKey) {
-            $slots = static::findSlotsAcrossSlotLists($slotLists, $appointment, $availabilities, $startKey);
+            $slots = static::findSlotsAcrossSlotLists(
+                $slotLists,
+                $appointment,
+                $availabilities,
+                $startKey,
+                $deadEnds
+            );
             if (null !== $slots) {
                 foreach ($slots as $slot) {
                     $slot->removeAppointment();
@@ -388,6 +403,8 @@ class ProcessList extends Base
      *
      * @param array<int|string, SlotList> $slotLists
      * @param array<int|string, \BO\Zmsentities\Availability> $availabilities
+     * @param array<int, array<int|string, true>> $deadEnds steps and keys already known not to fit,
+     *        only valid until slots are removed
      *
      * @return array<int, \BO\Zmsentities\Slot>|null one free slot per remaining step, null if one is missing
      */
@@ -396,9 +413,10 @@ class ProcessList extends Base
         \BO\Zmsentities\Appointment $appointment,
         array $availabilities,
         int|string $key,
+        array &$deadEnds,
         int $step = 0
     ): ?array {
-        if (!isset($availabilities[$key])) {
+        if (!isset($availabilities[$key]) || isset($deadEnds[$step][$key])) {
             return null;
         }
         $slotMinutes = (int) $availabilities[$key]->slotTimeInMinutes;
@@ -431,12 +449,14 @@ class ProcessList extends Base
                 $appointment,
                 $availabilities,
                 $nextKey,
+                $deadEnds,
                 $step + 1
             );
             if (null !== $following) {
                 return [$slot, ...$following];
             }
         }
+        $deadEnds[$step][$key] = true;
         return null;
     }
 
