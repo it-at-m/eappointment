@@ -378,15 +378,8 @@ class ProcessList extends Base
         if ((int) $appointment->getSlotCount() < 2) {
             return null;
         }
-        $deadEnds = [];
         foreach (array_keys($slotLists) as $startKey) {
-            $slots = static::findSlotsAcrossSlotLists(
-                $slotLists,
-                $appointment,
-                $availabilities,
-                $startKey,
-                $deadEnds
-            );
+            $slots = static::findSlotsAcrossSlotLists($slotLists, $appointment, $availabilities, $startKey);
             if (null !== $slots) {
                 foreach ($slots as $slot) {
                     $slot->removeAppointment();
@@ -398,65 +391,50 @@ class ProcessList extends Base
     }
 
     /**
-     * Find the free slots of an appointment from the given step on. The slot of this step has to be in the
-     * slot list of $key. Every slot list that can take over is tried until the rest of the appointment fits.
+     * Find one free slot per step of an appointment. The first slot has to be in the slot list of $key.
+     * Every following slot is taken from the same slot list as the one before, if it is free there,
+     * otherwise from any other slot list with the same slot length.
      *
      * @param array<int|string, SlotList> $slotLists
      * @param array<int|string, \BO\Zmsentities\Availability> $availabilities
-     * @param array<int, array<int|string, true>> $deadEnds steps and keys already known not to fit,
-     *        only valid until slots are removed
      *
-     * @return array<int, \BO\Zmsentities\Slot>|null one free slot per remaining step, null if one is missing
+     * @return array<int, \BO\Zmsentities\Slot>|null one free slot per step, null if one is missing
      */
     protected static function findSlotsAcrossSlotLists(
         array $slotLists,
         \BO\Zmsentities\Appointment $appointment,
         array $availabilities,
-        int|string $key,
-        array &$deadEnds,
-        int $step = 0
+        int|string $key
     ): ?array {
-        if (!isset($availabilities[$key]) || isset($deadEnds[$step][$key])) {
+        if (!isset($availabilities[$key])) {
             return null;
         }
         $slotMinutes = (int) $availabilities[$key]->slotTimeInMinutes;
         if ($slotMinutes < 1) {
             return null;
         }
-        $time = $appointment->toDateTime()->modify('+' . ($step * $slotMinutes) . ' minutes');
-        $slot = $slotLists[$key]->findFreeSlot($time);
-        if (null === $slot) {
-            return null;
-        }
-        if ($step + 1 >= (int) $appointment->getSlotCount()) {
-            return [$slot];
-        }
-        // stay in this slot list or continue in another one with the same slot length
-        $nextKeys = [$key];
-        foreach ($availabilities as $nextKey => $next) {
-            if (
-                $nextKey !== $key
-                && isset($slotLists[$nextKey])
-                && (int) $next->slotTimeInMinutes === $slotMinutes
-            ) {
-                $nextKeys[] = $nextKey;
+        $time = $appointment->toDateTime();
+        $slots = [];
+        for ($step = 0; $step < (int) $appointment->getSlotCount(); $step++) {
+            $slot = $slotLists[$key]->findFreeSlot($time);
+            if (null === $slot && $step > 0) {
+                foreach ($availabilities as $nextKey => $next) {
+                    if (isset($slotLists[$nextKey]) && (int) $next->slotTimeInMinutes === $slotMinutes) {
+                        $slot = $slotLists[$nextKey]->findFreeSlot($time);
+                        if (null !== $slot) {
+                            $key = $nextKey;
+                            break;
+                        }
+                    }
+                }
             }
-        }
-        foreach ($nextKeys as $nextKey) {
-            $following = static::findSlotsAcrossSlotLists(
-                $slotLists,
-                $appointment,
-                $availabilities,
-                $nextKey,
-                $deadEnds,
-                $step + 1
-            );
-            if (null !== $following) {
-                return [$slot, ...$following];
+            if (null === $slot) {
+                return null;
             }
+            $slots[] = $slot;
+            $time = $time->modify('+' . $slotMinutes . ' minutes');
         }
-        $deadEnds[$step][$key] = true;
-        return null;
+        return $slots;
     }
 
     /**
