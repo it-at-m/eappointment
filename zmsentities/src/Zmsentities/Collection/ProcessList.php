@@ -404,7 +404,7 @@ class ProcessList extends Base
         $time = $appointment->toDateTime();
         $slots = [];
         for ($step = 0; $step < (int) $appointment->getSlotCount(); $step++) {
-            $slot = static::findFreeSlot($slotLists[$key], $time);
+            $slot = $slotLists[$key]->findFreeSlot($time);
             if (null === $slot) {
                 // continue in a slot list that starts where this one ends
                 $endOfDay = $availabilities[$key]->getEndDateTime()->getSecondsOfDay();
@@ -415,7 +415,7 @@ class ProcessList extends Base
                         && (int) $next->slotTimeInMinutes === $slotMinutes
                         && $next->getStartDateTime()->getSecondsOfDay() === $endOfDay
                     ) {
-                        $slot = static::findFreeSlot($slotLists[$nextKey], $time);
+                        $slot = $slotLists[$nextKey]->findFreeSlot($time);
                         if (null !== $slot) {
                             $key = $nextKey;
                             break;
@@ -430,16 +430,6 @@ class ProcessList extends Base
             $time = $time->modify('+' . $slotMinutes . ' minutes');
         }
         return $slots;
-    }
-
-    protected static function findFreeSlot(SlotList $slotList, \DateTimeInterface $time): ?\BO\Zmsentities\Slot
-    {
-        foreach ($slotList as $slot) {
-            if ($slot->hasTime() && $slot->time == $time->format('H:i') && $slot['intern'] > 0) {
-                return $slot;
-            }
-        }
-        return null;
     }
 
     /**
