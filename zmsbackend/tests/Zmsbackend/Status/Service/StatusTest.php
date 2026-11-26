@@ -16,6 +16,9 @@ class StatusTest extends \BO\Zmsbackend\Tests\Service\Base
         $this->assertArrayHasKey('withExternalUserId', $status['processes']);
         $this->assertArrayHasKey('confirmedWithExternalUserId', $status['processes']);
         $this->assertArrayHasKey('confirmedWithMultipleServices', $status['processes']);
+        $this->assertArrayHasKey('overbooking', $status);
+        $this->assertIsInt($status['overbooking']['total']);
+        $this->assertIsArray($status['overbooking']['departments']);
         //var_dump(\BO\Zmsbackend\Connection\Select::getReadConnection()->getProfiler()->getProfiles());
     }
 
@@ -35,6 +38,7 @@ class StatusTest extends \BO\Zmsbackend\Tests\Service\Base
         $this->assertArrayNotHasKey('outdated', $status['processes']);
         $this->assertArrayNotHasKey('outdatedOldest', $status['processes']);
         $this->assertArrayNotHasKey('freeSlots', $status['processes']);
+        $this->assertArrayNotHasKey('overbooking', $status);
     }
 
     public function testReadsSlotScansWhenCalculationStartIsOlderThanFifteenMinutes()
@@ -54,6 +58,8 @@ class StatusTest extends \BO\Zmsbackend\Tests\Service\Base
 
         $this->assertArrayHasKey('outdated', $status['processes']);
         $this->assertArrayHasKey('freeSlots', $status['processes']);
+        $this->assertArrayHasKey('overbooking', $status);
+        $this->assertIsInt($status['overbooking']['total']);
     }
 
     public function testReadsSlotScansDuringMinutelyCalculation()
@@ -74,5 +80,7 @@ class StatusTest extends \BO\Zmsbackend\Tests\Service\Base
 
         $this->assertArrayHasKey('outdated', $status['processes']);
         $this->assertArrayHasKey('freeSlots', $status['processes']);
+        $this->assertArrayHasKey('overbooking', $status);
+        $this->assertIsInt($status['overbooking']['total']);
     }
 }

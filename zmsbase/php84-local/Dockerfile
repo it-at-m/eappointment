@@ -4,7 +4,7 @@ ARG NODE_MAJOR=22
 ARG PHP_VERSION=8.4-apache-trixie
 
 # Composer stage
-FROM composer:2@sha256:50ea4d33fdcde1adb0f045547295faa1548b33872e5f789dae5b02ce2fb5de93 AS composer-image
+FROM composer:2@sha256:30621647c7caf81d0a173f42b5e46ab7fed94d5a0e19e7259429517bb9f9d342 AS composer-image
 
 # Node/npm/npx (official multi-arch image; NodeSource apt can miss npm on some Debian/arch combos)
 FROM node:22-trixie@sha256:c103d7b5aa3bf627c8b98db941d52556f04e0b5d9352b3d7b6391245d26620f8 AS node-tools
@@ -44,12 +44,16 @@ RUN ln -snf "/usr/share/zoneinfo/${TZ}" /etc/localtime \
 # System dependencies + PHP extensions
 # --------------------------------------------------
 # ATAF 0.3.4 ships Selenium 4.46, which speaks Chrome DevTools protocol 148-150.
-# Debian security ships a newer Chromium (153). That mismatch makes ChromeDriver
-# time out with "Timed out receiving message from renderer" on the first navigation.
-# Hold this pin until ATAF moves to a Selenium release that speaks a newer protocol.
-# Same version as .github/workflows/zmsautomation-workflow.yaml.
+# Debian security no longer publishes Chromium 150. A newer Chromium makes
+# ChromeDriver time out with "Timed out receiving message from renderer" on the
+# first navigation. Install this build from the snapshot that still has it on
+# amd64 and arm64. Hold the pin until ATAF moves to a newer Selenium.
+# Same version and snapshot as .github/workflows/zmsautomation-workflow.yaml.
 ARG CHROMIUM_VERSION=150.0.7871.181-1~deb13u1
-RUN apt-get update \
+ARG CHROMIUM_SNAPSHOT=20260724T213825Z
+RUN echo "deb [check-valid-until=no signed-by=/usr/share/keyrings/debian-archive-keyring.gpg] https://snapshot.debian.org/archive/debian-security/${CHROMIUM_SNAPSHOT} trixie-security main" \
+      > /etc/apt/sources.list.d/chromium-snapshot.list \
+ && apt-get update \
  && apt-get install -y --no-install-recommends --allow-downgrades \
       ca-certificates \
       curl \
@@ -77,6 +81,7 @@ RUN apt-get update \
       "chromium-driver=${CHROMIUM_VERSION}" \
       "chromium-common=${CHROMIUM_VERSION}" \
  && apt-mark hold chromium chromium-driver chromium-common \
+ && rm -f /etc/apt/sources.list.d/chromium-snapshot.list \
  && docker-php-ext-configure gd --with-freetype --with-jpeg \
  && docker-php-ext-install -j"$(nproc)" \
       intl \

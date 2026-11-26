@@ -615,13 +615,15 @@ jobs:
               return 1
             }
 
-            apt-get update
-
             # ATAF 0.3.4 ships Selenium 4.46, which speaks Chrome DevTools protocol
             # 148-150. Do not fall back to the newer Debian security Chromium.
             # ChromeDriver then times out with "Timed out receiving message from renderer".
-            # Same pin as zmsbase/php84-local.
+            # Debian dropped this build. Same pin and snapshot as zmsbase/php84-local.
             CHROMIUM_APT_VERSION="150.0.7871.181-1~deb13u1"
+            CHROMIUM_SNAPSHOT="20260724T213825Z"
+            echo "deb [check-valid-until=no signed-by=/usr/share/keyrings/debian-archive-keyring.gpg] https://snapshot.debian.org/archive/debian-security/${CHROMIUM_SNAPSHOT} trixie-security main" \
+              > /etc/apt/sources.list.d/chromium-snapshot.list
+            apt-get update
             if ! apt-get install -s -y --allow-downgrades \
               "chromium-common=${CHROMIUM_APT_VERSION}" \
               "chromium=${CHROMIUM_APT_VERSION}" \
@@ -642,6 +644,7 @@ jobs:
               "chromium-driver=${CHROMIUM_APT_VERSION}" \
               ;
             apt-mark hold chromium chromium-driver chromium-common
+            rm -f /etc/apt/sources.list.d/chromium-snapshot.list
             dpkg-query -W -f="chromium=%Version\n" chromium chromium-driver
             chromedriver --version
 

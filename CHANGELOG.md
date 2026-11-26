@@ -18,7 +18,10 @@
 </li>
 <li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-834'>ZMSKVR-834</a>] -         Überlappende Terminserien &quot;Nase&quot; 👃
 </li>
+<li>[<a href='https://jira.muenchen.de/browse/ZMSKVR-1554'>ZMSKVR-1554</a>] -       Überbuchungen je Behörde im Status-Ping monitoren
+</li>
 </ul>
+
 
 ## Release Muc-51 Updated (19.11.2026)
 

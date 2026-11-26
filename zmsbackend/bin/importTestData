@@ -15,7 +15,7 @@ if (preg_grep('/--commit/', $argv)) {
     \BO\Zmsbackend\Cli\Db::startExecuteSqlFile($fixtures . '/mysql_mandantory_unittests_data.sql');
     if (! preg_grep('#^--withoutcalculation$#', $argv)) {
         $calculator = new \BO\Zmsbackend\Helper\CalculateSlots(true);
-        $calculator->writeCalculations(new \DateTimeImmutable("2016-04-01"), 3600);
+        $calculator->writeCalculations(new \DateTimeImmutable("2016-04-01"), false);
     }
 } else {
     $dbname = \BO\Zmsbackend\Connection\Select::$writeSourceName;

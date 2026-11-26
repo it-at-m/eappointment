@@ -35,6 +35,7 @@ class Status extends \BO\Zmsbackend\Base
             $entity['processes']['outdatedOldest'] = $outdated['oldest'];
             $freeSlots = $this->readFreeSlots();
             $entity['processes']['freeSlots'] = $freeSlots['cnt'];
+            $entity['overbooking'] = $this->readOverbookedSlotsByDepartment($now);
         }
 
         $entity['mail'] = $this->readMailStats();
@@ -62,6 +63,365 @@ class Status extends \BO\Zmsbackend\Base
         }
 
         return $started > $finished && ($startedAt + (15 * 60)) > $now->getTimestamp();
+    }
+
+    /**
+     * Slots from today through the next 180 days where appointments exceed the opening's
+     * current Arbeitsplätze. The database only reads that date range plus the openings.
+     * The time grid is compared here, as on the availability day view, so a cancelled
+     * slot row still counts. Overlapping openings at the same time add up.
+     * Grouped like active sessions. A consistent read: no FOR UPDATE, so it does not take row locks.
+     * Skipped while calculateSlots --delete is running, same as the other slot scans.
+     *
+     * @return array{total: int, departments: array<int|string, array{name: string, overbookedSlots: int, scopes: array<int|string, array{name: string, overbookedSlots: int}>}>}
+     */
+    protected function readOverbookedSlotsByDepartment(\DateTimeImmutable $now): array
+    {
+        $fromDay = $now->format('Y-m-d');
+        $untilDay = $now->modify('+180 days')->format('Y-m-d');
+        $counts = $this->countOverbookedSlots(
+            $this->readOverbookingAppointments($fromDay, $untilDay),
+            $this->readOverbookingOpenings($fromDay, $untilDay),
+            $this->readOverbookingHolidays($fromDay, $untilDay)
+        );
+
+        $departments = [];
+        $total = 0;
+        foreach ($counts as $row) {
+            $departmentId = $row['departmentId'];
+            $scopeId = $row['scopeId'];
+            $overbookedSlots = $row['overbookedSlots'];
+            if (!isset($departments[$departmentId])) {
+                $departments[$departmentId] = [
+                    'name' => $row['departmentName'],
+                    'overbookedSlots' => 0,
+                    'scopes' => [],
+                ];
+            }
+            $departments[$departmentId]['scopes'][$scopeId] = [
+                'name' => $row['scopeName'],
+                'overbookedSlots' => $overbookedSlots,
+            ];
+            $departments[$departmentId]['overbookedSlots'] += $overbookedSlots;
+            $total += $overbookedSlots;
+        }
+
+        return [
+            'total' => $total,
+            'departments' => $departments,
+        ];
+    }
+
+    /**
+     * @return array<int, array{id: int|string, scopeId: int|string, date: string, startSeconds: int, slots: int}>
+     */
+    protected function readOverbookingAppointments(string $fromDay, string $untilDay): array
+    {
+        return $this->getReader()->fetchAll(
+            'SELECT b.BuergerID AS id,
+                    b.StandortID AS scopeId,
+                    b.Datum AS date,
+                    TIME_TO_SEC(b.Uhrzeit) AS startSeconds,
+                    IFNULL(b.hatFolgetermine, 0) + 1 AS slots
+             FROM buerger b
+             WHERE b.Datum >= :fromDay
+               AND b.Datum < :untilDay
+               AND b.status <> "fake"
+               AND (b.istFolgeterminvon IS NULL OR b.istFolgeterminvon = 0)',
+            [
+                'fromDay' => $fromDay,
+                'untilDay' => $untilDay,
+            ]
+        );
+    }
+
+    /**
+     * @return array<int|string, array<int, array<string, mixed>>>
+     */
+    protected function readOverbookingOpenings(string $fromDay, string $untilDay): array
+    {
+        $rows = $this->getReader()->fetchAll(
+            'SELECT o.scope_id AS scopeId,
+                    st.Bezeichnung AS scopeName,
+                    st.BehoerdenID AS departmentId,
+                    beh.Name AS departmentName,
+                    o.start_date AS startDate,
+                    o.end_date AS endDate,
+                    TIME_TO_SEC(o.appointment_start_time) AS startSeconds,
+                    TIME_TO_SEC(o.appointment_end_time) AS endSeconds,
+                    TIME_TO_SEC(o.time_slot) AS slotSeconds,
+                    o.weekday AS weekday,
+                    o.every_x_weeks AS everyWeeks,
+                    o.every_other_week AS weekOfMonth,
+                    o.appointment_workstation_count AS capacity
+             FROM oeffnungszeit o
+             INNER JOIN standort st ON st.StandortID = o.scope_id
+             INNER JOIN behoerde beh ON beh.BehoerdenID = st.BehoerdenID
+             WHERE o.appointment_start_time > "00:00:00"
+               AND o.time_slot > "00:00:00"
+               AND o.end_date >= :fromDay
+               AND o.start_date < :untilDay',
+            [
+                'fromDay' => $fromDay,
+                'untilDay' => $untilDay,
+            ]
+        );
+        $openings = [];
+        foreach ($rows as $row) {
+            $start = new \DateTimeImmutable($row['startDate']);
+            $row['spanDays'] = (int) $start->diff(new \DateTimeImmutable($row['endDate']))->days;
+            $row['startMondayTs'] = $start->modify('monday this week')->getTimestamp();
+            $openings[$row['scopeId']][] = $row;
+        }
+
+        return $openings;
+    }
+
+    /**
+     * @return array<string, true>
+     */
+    protected function readOverbookingHolidays(string $fromDay, string $untilDay): array
+    {
+        $rows = $this->getReader()->fetchAll(
+            'SELECT Datum AS date, BehoerdenID AS departmentId
+             FROM feiertage
+             WHERE Datum >= :fromDay AND Datum < :untilDay',
+            [
+                'fromDay' => $fromDay,
+                'untilDay' => $untilDay,
+            ]
+        );
+        $holidays = [];
+        foreach ($rows as $row) {
+            $holidays[$row['date'] . '|' . $row['departmentId']] = true;
+        }
+
+        return $holidays;
+    }
+
+    /**
+     * @param array<int, array<string, mixed>> $appointments
+     * @param array<int|string, array<int, array<string, mixed>>> $openingsByScope
+     * @param array<string, true> $holidays
+     * @return array<int, array{departmentId: int|string, departmentName: string, scopeId: int|string, scopeName: string, overbookedSlots: int}>
+     */
+    protected function countOverbookedSlots(array $appointments, array $openingsByScope, array $holidays): array
+    {
+        $occupied = [];
+        $capacity = [];
+        $scopeInfo = [];
+        $days = [];
+        $openingsOnDate = [];
+        foreach ($appointments as $appointment) {
+            $key = $appointment['scopeId'] . '|' . $appointment['date'];
+            if (!isset($openingsOnDate[$key])) {
+                $openingsOnDate[$key] = $this->openingsCoveringDate(
+                    $openingsByScope[$appointment['scopeId']] ?? [],
+                    $this->overbookingDay((string) $appointment['date'], $days),
+                    $holidays
+                );
+            }
+            $this->markAppointmentSlots($appointment, $openingsOnDate[$key], $occupied, $capacity, $scopeInfo);
+        }
+
+        return $this->overbookedSlotRows($occupied, $capacity, $scopeInfo);
+    }
+
+    /**
+     * @param array<int, array<string, mixed>> $openings
+     * @param array{bit: int, mondayTs: int, day: int, lastDay: int, date: string} $day
+     * @param array<string, true> $holidays
+     * @return array<int, array<string, mixed>>
+     */
+    protected function openingsCoveringDate(array $openings, array $day, array $holidays): array
+    {
+        $covering = [];
+        foreach ($openings as $opening) {
+            if ($this->openingCoversDate($opening, $day, $holidays)) {
+                $covering[] = $opening;
+            }
+        }
+
+        return $covering;
+    }
+
+    /**
+     * @param array<string, mixed> $appointment
+     * @param array<int, array<string, mixed>> $openings
+     * @param array<string, int> $occupied
+     * @param array<string, int> $capacity
+     * @param array<int|string, array<string, mixed>> $scopeInfo
+     */
+    protected function markAppointmentSlots(
+        array $appointment,
+        array $openings,
+        array &$occupied,
+        array &$capacity,
+        array &$scopeInfo
+    ): void {
+        $placed = $this->openingsAtStart($openings, (int) $appointment['startSeconds']);
+        if ($placed === null) {
+            return;
+        }
+        $start = (int) $appointment['startSeconds'];
+        $steps = min(300, (int) $appointment['slots']);
+        for ($step = 0; $step < $steps; $step++) {
+            $time = $start + $step * $placed['slotSeconds'];
+            if ($time >= 86400) {
+                break;
+            }
+            $match = $this->capacityAtTime($placed['openings'], $time);
+            if ($match === null) {
+                continue;
+            }
+            $key = $appointment['scopeId'] . '|' . $appointment['date'] . '|' . $time;
+            $occupied[$key] = ($occupied[$key] ?? 0) + 1;
+            $capacity[$key] = $match['capacity'];
+            $scopeInfo[$appointment['scopeId']] = $match['opening'];
+        }
+    }
+
+    /**
+     * @param array<int, array<string, mixed>> $openings
+     * @return array{slotSeconds: int, openings: array<int, array<string, mixed>>}|null
+     */
+    protected function openingsAtStart(array $openings, int $start): ?array
+    {
+        $active = [];
+        $slotSeconds = null;
+        foreach ($openings as $opening) {
+            if ($start < (int) $opening['startSeconds'] || $start >= (int) $opening['endSeconds']) {
+                continue;
+            }
+            $active[] = $opening;
+            $seconds = (int) $opening['slotSeconds'];
+            if ($slotSeconds === null || $seconds < $slotSeconds) {
+                $slotSeconds = $seconds;
+            }
+        }
+        if ($slotSeconds === null || $slotSeconds <= 0) {
+            return null;
+        }
+
+        return ['slotSeconds' => $slotSeconds, 'openings' => $active];
+    }
+
+    /**
+     * @param array<int, array<string, mixed>> $openings
+     * @return array{capacity: int, opening: array<string, mixed>}|null
+     */
+    protected function capacityAtTime(array $openings, int $time): ?array
+    {
+        $sum = 0;
+        $matched = null;
+        foreach ($openings as $opening) {
+            if ($time < (int) $opening['startSeconds'] || $time >= (int) $opening['endSeconds']) {
+                continue;
+            }
+            $sum += (int) $opening['capacity'];
+            $matched = $opening;
+        }
+        if ($matched === null) {
+            return null;
+        }
+
+        return ['capacity' => $sum, 'opening' => $matched];
+    }
+
+    /**
+     * @param array<string, int> $occupied
+     * @param array<string, int> $capacity
+     * @param array<int|string, array<string, mixed>> $scopeInfo
+     * @return array<int, array{departmentId: int|string, departmentName: string, scopeId: int|string, scopeName: string, overbookedSlots: int}>
+     */
+    protected function overbookedSlotRows(array $occupied, array $capacity, array $scopeInfo): array
+    {
+        $counts = [];
+        foreach ($occupied as $key => $count) {
+            if ($count <= $capacity[$key]) {
+                continue;
+            }
+            $scopeId = explode('|', (string) $key, 2)[0];
+            $counts[$scopeId] = ($counts[$scopeId] ?? 0) + 1;
+        }
+        $rows = [];
+        foreach ($counts as $scopeId => $overbookedSlots) {
+            $info = $scopeInfo[$scopeId];
+            $rows[] = [
+                'departmentId' => $info['departmentId'],
+                'departmentName' => $info['departmentName'],
+                'scopeId' => $scopeId,
+                'scopeName' => $info['scopeName'],
+                'overbookedSlots' => $overbookedSlots,
+            ];
+        }
+
+        return $rows;
+    }
+
+    /**
+     * @param array<string, array{bit: int, mondayTs: int, day: int, lastDay: int, date: string}> $days
+     * @return array{bit: int, mondayTs: int, day: int, lastDay: int, date: string}
+     */
+    protected function overbookingDay(string $date, array &$days): array
+    {
+        if (!isset($days[$date])) {
+            $day = new \DateTimeImmutable($date);
+            $days[$date] = [
+                'date' => $date,
+                'bit' => 1 << (int) $day->format('w'),
+                'mondayTs' => $day->modify('monday this week')->getTimestamp(),
+                'day' => (int) $day->format('j'),
+                'lastDay' => (int) $day->format('t'),
+            ];
+        }
+
+        return $days[$date];
+    }
+
+    /**
+     * @param array<string, mixed> $opening
+     * @param array{bit: int, mondayTs: int, day: int, lastDay: int, date: string} $day
+     * @param array<string, true> $holidays
+     */
+    protected function openingCoversDate(array $opening, array $day, array $holidays): bool
+    {
+        if ($day['date'] < $opening['startDate'] || $day['date'] > $opening['endDate']) {
+            return false;
+        }
+        if (((int) $opening['weekday'] & $day['bit']) === 0) {
+            return false;
+        }
+        if (
+            (int) $opening['spanDays'] > 1
+            && (isset($holidays[$day['date'] . '|0']) || isset($holidays[$day['date'] . '|' . $opening['departmentId']]))
+        ) {
+            return false;
+        }
+
+        return $this->openingRepeatsOn($opening, $day);
+    }
+
+    /**
+     * @param array<string, mixed> $opening
+     * @param array{bit: int, mondayTs: int, day: int, lastDay: int, date: string} $day
+     */
+    protected function openingRepeatsOn(array $opening, array $day): bool
+    {
+        $everyWeeks = (int) $opening['everyWeeks'];
+        $weekOfMonth = (int) $opening['weekOfMonth'];
+        $mondayDistance = (int) round(($day['mondayTs'] - (int) $opening['startMondayTs']) / 86400);
+        if ($everyWeeks > 0 && ($everyWeeks === 1 || $mondayDistance % ($everyWeeks * 7) === 0)) {
+            return true;
+        }
+        if ($weekOfMonth > 0 && $weekOfMonth < 5 && (int) ceil($day['day'] / 7) === $weekOfMonth) {
+            return true;
+        }
+        if ($weekOfMonth >= 5 && $day['day'] > $day['lastDay'] - 7) {
+            return true;
+        }
+
+        return $everyWeeks === 0 && $weekOfMonth === 0;
     }
 
     /**

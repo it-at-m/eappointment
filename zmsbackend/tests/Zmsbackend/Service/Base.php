@@ -19,7 +19,6 @@ abstract class Base extends TestCase
     {
         static::$now = new \DateTimeImmutable('2016-04-01 11:55:00');
         \BO\Zmsbackend\Connection\Select::setTransaction();
-        \BO\Zmsbackend\Connection\Select::setProfiling();
         \BO\Zmsbackend\Connection\Select::setQueryCache(false);
         \BO\Zmsbackend\Connection\Select::getWriteConnection();
         \BO\Zmsbackend\Connection\Select::setTransaction(false);
