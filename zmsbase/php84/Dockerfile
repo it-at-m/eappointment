@@ -3,7 +3,7 @@ ARG NODE_MAJOR="22"
 ARG PHP_VERSION="8.4-fpm-trixie"
 
 # composer version to make available in built image
-FROM composer:2@sha256:50ea4d33fdcde1adb0f045547295faa1548b33872e5f789dae5b02ce2fb5de93 AS composer-image
+FROM composer:2@sha256:30621647c7caf81d0a173f42b5e46ab7fed94d5a0e19e7259429517bb9f9d342 AS composer-image
 
 # php version to actually build
 FROM php:8.4-fpm-trixie@sha256:495ab94788034640ddd6fb313476e75570261622c42704e5ae02047b8d934ea0 AS base
