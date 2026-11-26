@@ -776,6 +776,54 @@ class ProcessTest extends EntityCommonTests
         $this->assertEquals(1, $conflictList->count());
     }
 
+    /**
+     * @param array<int, array{string, string}> $times start and end time by availability id
+     */
+    protected static function getTestAvailabilityListByTimes(array $times)
+    {
+        $availabilityList = new AvailabilityList();
+        foreach ($times as $id => [$startTime, $endTime]) {
+            $availabilityList->addEntity(new Availability([
+                'id' => (string) $id,
+                'weekday' => ['tuesday' => '4'],
+                'repeat' => ['afterWeeks' => '1'],
+                'workstationCount' => ['public' => '1', 'intern' => '1'],
+                'slotTimeInMinutes' => '15',
+                'startDate' => strtotime('2016-04-19'),
+                'endDate' => strtotime('2016-04-19'),
+                'startTime' => $startTime,
+                'endTime' => $endTime,
+            ]));
+        }
+        return $availabilityList;
+    }
+
+    public function testCalculatedSlotCountOverSplitBorderUsesAvailabilityOfFirstSlot()
+    {
+        $availabilityList = static::getTestAvailabilityListByTimes([
+            1 => ['12:00:00', '13:00:00'],
+            2 => ['13:00:00', '14:00:00'],
+            3 => ['14:00:00', '15:00:00'],
+        ]);
+        // 13:45 + 2 slots uses availability 2 and 3, nothing of availability 1
+        $processList = new ProcessList([static::getTestProcessAt('1', '13:45', 2)]);
+        $slotCounts = $availabilityList->getCalculatedSlotCount($processList);
+        $this->assertEquals([1 => 0, 2 => 2, 3 => 0], $slotCounts);
+    }
+
+    public function testWithOutAvailabilityTriesEveryFollowingAvailability()
+    {
+        $availabilityList = static::getTestAvailabilityListByTimes([
+            1 => ['12:00:00', '14:00:00'],
+            // starts together with availability 3, but is too short for the rest of the appointment
+            2 => ['14:00:00', '14:15:00'],
+            3 => ['14:00:00', '16:00:00'],
+        ]);
+        $processList = new ProcessList([static::getTestProcessAt('1', '13:45', 3)]);
+        $conflictList = $processList->withOutAvailability($availabilityList);
+        $this->assertEquals(0, $conflictList->count());
+    }
+
     public function testWithReference()
     {
         $entity = $this->getExample();
