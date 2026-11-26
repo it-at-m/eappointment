@@ -827,11 +827,11 @@ class ProcessTest extends EntityCommonTests
         $this->assertEquals([1 => 4, 2 => 0], $slotCounts);
     }
 
-    public function testWithOutAvailabilityTriesEveryFollowingAvailability()
+    public function testWithOutAvailabilityChangesAvailabilityMoreThanOnce()
     {
         $availabilityList = static::getTestAvailabilityListByTimes([
             1 => ['12:00:00', '14:00:00'],
-            // starts together with availability 3, but is too short for the rest of the appointment
+            // used at 14:00 as the shortest one, the appointment has to change again at 14:15
             2 => ['14:00:00', '14:15:00'],
             3 => ['14:00:00', '16:00:00'],
         ]);
