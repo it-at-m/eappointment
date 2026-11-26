@@ -383,16 +383,20 @@ class ProcessList extends Base
     }
 
     /**
+     * Find the free slots of an appointment from the given step on. The slot of this step has to be in the
+     * slot list of $key. Every slot list that can take over is tried until the rest of the appointment fits.
+     *
      * @param array<int|string, SlotList> $slotLists
      * @param array<int|string, \BO\Zmsentities\Availability> $availabilities
      *
-     * @return array<int, \BO\Zmsentities\Slot>|null one free slot per step, null if one is missing
+     * @return array<int, \BO\Zmsentities\Slot>|null one free slot per remaining step, null if one is missing
      */
     protected static function findSlotsAcrossSlotLists(
         array $slotLists,
         \BO\Zmsentities\Appointment $appointment,
         array $availabilities,
-        int|string $key
+        int|string $key,
+        int $step = 0
     ): ?array {
         if (!isset($availabilities[$key])) {
             return null;
@@ -401,35 +405,39 @@ class ProcessList extends Base
         if ($slotMinutes < 1) {
             return null;
         }
-        $time = $appointment->toDateTime();
-        $slots = [];
-        for ($step = 0; $step < (int) $appointment->getSlotCount(); $step++) {
-            $slot = $slotLists[$key]->findFreeSlot($time);
-            if (null === $slot) {
-                // continue in a slot list that starts where this one ends
-                $endOfDay = $availabilities[$key]->getEndDateTime()->getSecondsOfDay();
-                foreach ($availabilities as $nextKey => $next) {
-                    if (
-                        $nextKey !== $key
-                        && isset($slotLists[$nextKey])
-                        && (int) $next->slotTimeInMinutes === $slotMinutes
-                        && $next->getStartDateTime()->getSecondsOfDay() === $endOfDay
-                    ) {
-                        $slot = $slotLists[$nextKey]->findFreeSlot($time);
-                        if (null !== $slot) {
-                            $key = $nextKey;
-                            break;
-                        }
-                    }
-                }
-            }
-            if (null === $slot) {
-                return null;
-            }
-            $slots[] = $slot;
-            $time = $time->modify('+' . $slotMinutes . ' minutes');
+        $time = $appointment->toDateTime()->modify('+' . ($step * $slotMinutes) . ' minutes');
+        $slot = $slotLists[$key]->findFreeSlot($time);
+        if (null === $slot) {
+            return null;
         }
-        return $slots;
+        if ($step + 1 >= (int) $appointment->getSlotCount()) {
+            return [$slot];
+        }
+        // stay in this slot list or continue in one that starts where this one ends
+        $endOfDay = $availabilities[$key]->getEndDateTime()->getSecondsOfDay();
+        $nextKeys = [$key];
+        foreach ($availabilities as $nextKey => $next) {
+            if (
+                isset($slotLists[$nextKey])
+                && (int) $next->slotTimeInMinutes === $slotMinutes
+                && $next->getStartDateTime()->getSecondsOfDay() === $endOfDay
+            ) {
+                $nextKeys[] = $nextKey;
+            }
+        }
+        foreach ($nextKeys as $nextKey) {
+            $following = static::findSlotsAcrossSlotLists(
+                $slotLists,
+                $appointment,
+                $availabilities,
+                $nextKey,
+                $step + 1
+            );
+            if (null !== $following) {
+                return [$slot, ...$following];
+            }
+        }
+        return null;
     }
 
     /**
