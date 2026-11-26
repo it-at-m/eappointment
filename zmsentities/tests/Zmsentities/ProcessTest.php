@@ -811,6 +811,17 @@ class ProcessTest extends EntityCommonTests
         $this->assertEquals([1 => 0, 2 => 2, 3 => 0], $slotCounts);
     }
 
+    public function testCalculatedSlotCountCountsOverbookingOverSplitBorder()
+    {
+        $processList = new ProcessList([
+            static::getTestProcessAt('1', '13:45', 2),
+            // overbooked and fits in no availability as a whole, counts for the one it starts in
+            static::getTestProcessAt('2', '13:45', 2),
+        ]);
+        $slotCounts = static::getSplitTestAvailabilityList()->getCalculatedSlotCount($processList);
+        $this->assertEquals([1 => 4, 2 => 0], $slotCounts);
+    }
+
     public function testWithOutAvailabilityTriesEveryFollowingAvailability()
     {
         $availabilityList = static::getTestAvailabilityListByTimes([
