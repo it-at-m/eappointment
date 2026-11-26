@@ -348,7 +348,7 @@ Damit gilt:
 | `emailPflichtfeld`                 | `email_required`               | Namensstandardisierung |
 | `anmerkungPflichtfeld`             | `comment_required`             | Namensstandardisierung |
 | `anmerkungLabel`                   | `comment_label`                | Namensstandardisierung |
-| `telefonPflichtfeld`               | `phone_required`               | Namensstandardisierung |
+| `telefonPflichtfeld`               | `telephone_required`           | Namensstandardisierung |
 | `standortinfozeile`                | `location_info_line`           | Namensstandardisierung |
 | `standortkuerzel`                  | `short_name`                   | Namensstandardisierung |
 | `aufrufanzeigetext`                | `display_text`                 | Namensstandardisierung |
@@ -1188,7 +1188,7 @@ Scope Query Class
 | 'preferences**client**emailRequired'                        | 'preferencesClientEmailRequired'                        | scope.email_required               |
 | 'preferences**client**emailConfirmationActivated'           | 'preferencesClientEmailConfirmationActivated'           | scope.email_confirmation_activated |
 | 'preferences**client**telephoneActivated'                   | 'preferencesClientTelephoneActivated'                   | scope.phone_enabled                |
-| 'preferences**client**telephoneRequired'                    | 'preferencesClientTelephoneRequired'                    | scope.phone_required               |
+| 'preferences**client**telephoneRequired'                    | 'preferencesClientTelephoneRequired'                    | scope.telephone_required           |
 | 'preferences**client**appointmentsPerMail'                  | 'preferencesClientAppointmentsPerMail'                  | scope.appointments_per_mail        |
 | 'preferences**client**slotsPerAppointment'                  | 'preferencesClientSlotsPerAppointment'                  | scope.slots_per_appointment        |
 | 'preferences**client**whitelistedMails'                     | 'preferencesClientWhitelistedMails'                     | scope.whitelisted_mails            |
