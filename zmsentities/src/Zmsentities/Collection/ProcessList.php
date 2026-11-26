@@ -330,12 +330,12 @@ class ProcessList extends Base
     }
 
     /**
-     * An appointment uses the slots of exactly one availability, even if availabilities overlap.
+     * An appointment uses the slots of one availability, if one can take all of them.
      * The availability the appointment is booked on (slot_process mapping) is used first,
      * otherwise the shortest availability with free slots.
      *
-     * A multi-slot appointment that reaches over the border of adjacent availabilities (e.g. after a
-     * series was split) is not overbooked as long as every slot is free in one of the availabilities.
+     * A multi-slot appointment that fits in no single availability (e.g. after a series was split) is not
+     * overbooked as long as every slot is free in one of the availabilities with the same slot length.
      *
      * @param array<int|string, SlotList> $slotLists
      * @param array<int|string, \BO\Zmsentities\Availability> $availabilities same keys as $slotLists
@@ -361,9 +361,9 @@ class ProcessList extends Base
     }
 
     /**
-     * Take the slots of one appointment from several adjacent slot lists. The next slot list is only
-     * used when it starts exactly where the previous one ends and has the same slot length, otherwise
-     * the appointment stays a conflict. Nothing is removed unless every slot of the appointment is free.
+     * Take the slots of one appointment from several slot lists with the same slot length, adjacent or
+     * overlapping. Nothing is removed unless every slot of the appointment is free, otherwise the
+     * appointment stays a conflict.
      *
      * @param array<int|string, SlotList> $slotLists
      * @param array<int|string, \BO\Zmsentities\Availability> $availabilities
@@ -431,14 +431,13 @@ class ProcessList extends Base
         if ($step + 1 >= (int) $appointment->getSlotCount()) {
             return [$slot];
         }
-        // stay in this slot list or continue in one that starts where this one ends
-        $endOfDay = $availabilities[$key]->getEndDateTime()->getSecondsOfDay();
+        // stay in this slot list or continue in another one with the same slot length
         $nextKeys = [$key];
         foreach ($availabilities as $nextKey => $next) {
             if (
-                isset($slotLists[$nextKey])
+                $nextKey !== $key
+                && isset($slotLists[$nextKey])
                 && (int) $next->slotTimeInMinutes === $slotMinutes
-                && $next->getStartDateTime()->getSecondsOfDay() === $endOfDay
             ) {
                 $nextKeys[] = $nextKey;
             }

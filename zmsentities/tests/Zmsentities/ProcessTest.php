@@ -751,19 +751,24 @@ class ProcessTest extends EntityCommonTests
         $this->assertEquals('2', $conflictList->getFirst()->getId());
     }
 
-    public function testWithOutAvailabilityDoesNotJoinOverlappingAvailabilities()
+    public function testWithOutAvailabilityContinuesInOverlappingAvailability()
     {
-        // availability 2 (12:00-12:30) lies inside availability 1 (12:00-16:00), they do not follow each other
+        // availability 2 (12:00-12:30) lies inside availability 1 (12:00-16:00)
         $booked = static::getTestProcessAt('1', '12:15');
         $booked->getFirstAppointment()->availability = ['id' => '1'];
         $processList = new ProcessList([
             $booked,
-            // 12:15 is free in availability 2, 12:30 is free in availability 1, but not in one row
+            // 12:15 is free in availability 2, 12:30 is free in availability 1
             static::getTestProcessAt('2', '12:15', 2),
         ]);
         $conflictList = $processList->withOutAvailability(static::getOverlappingTestAvailabilityList());
+        $this->assertEquals(0, $conflictList->count());
+
+        // the only workstation at 12:30 is taken by process 2
+        $processList->addEntity(static::getTestProcessAt('3', '12:30'));
+        $conflictList = $processList->withOutAvailability(static::getOverlappingTestAvailabilityList());
         $this->assertEquals(1, $conflictList->count());
-        $this->assertEquals('2', $conflictList->getFirst()->getId());
+        $this->assertEquals('3', $conflictList->getFirst()->getId());
     }
 
     public function testWithOutAvailabilityKeepsConflictOverSplitBorderWithDifferentSlotLength()
