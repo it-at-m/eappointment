@@ -138,7 +138,7 @@ jobs:
 
       - name: Upload SARIF results
         if: always() && steps.sarif.outputs.exists == 'true'
-        uses: github/codeql-action/upload-sarif@1bd86f2fdb4b86187fa4059f16f31a3202acc9ea # v4.39.4
+        uses: github/codeql-action/upload-sarif@915412ff23e8b7659517e607487dbeae018f2934 # v4.39.5
         with:
           sarif_file: results-${{ matrix.project }}.sarif
           checkout_path: ${{ matrix.project }}
@@ -259,7 +259,7 @@ jobs:
 
       - name: Upload monorepo SARIF results
         if: always() && steps.sarif_monorepo.outputs.exists == 'true'
-        uses: github/codeql-action/upload-sarif@1bd86f2fdb4b86187fa4059f16f31a3202acc9ea # v4.39.4
+        uses: github/codeql-action/upload-sarif@915412ff23e8b7659517e607487dbeae018f2934 # v4.39.5
         with:
           sarif_file: results-monorepo.sarif
           category: .github/workflows/psalm.yml:psalm-dead-code
