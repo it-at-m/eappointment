@@ -489,6 +489,7 @@ const sidebarLabels = {
     branchingStrategy: "Branching Strategy",
     commitMessageConvention: "Commit Message Convention",
     monologLogging: "Monolog logging",
+    sharedCacheWarmup: "Shared cache warmup",
     statusMonitoring: "Monitoring and status",
     codeOfConduct: "Code of Conduct",
     contributing: "Contributing",
@@ -544,6 +545,7 @@ const sidebarLabels = {
     branchingStrategy: "Branching-Strategie",
     commitMessageConvention: "Commit-Message-Konvention",
     monologLogging: "Monolog-Logging",
+    sharedCacheWarmup: "Gemeinsamer Cache-Aufbau",
     statusMonitoring: "Monitoring und Status",
     codeOfConduct: "Verhaltenskodex",
     contributing: "Mitwirken",
@@ -759,6 +761,10 @@ const buildSidebar = (prefix, lang) => {
         {
           text: t.monologLogging,
           link: `${prefix}/operations/monolog-logging`,
+        },
+        {
+          text: t.sharedCacheWarmup,
+          link: `${prefix}/operations/shared-cache-warmup`,
         },
         {
           text: t.statusMonitoring,
