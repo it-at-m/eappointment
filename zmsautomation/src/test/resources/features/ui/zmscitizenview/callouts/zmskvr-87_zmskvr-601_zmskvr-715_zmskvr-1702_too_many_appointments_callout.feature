@@ -6,7 +6,7 @@ Feature: CitizenView: too many appointments per email callout on Übersicht
   So that I cancel another booking before reserving a new one
 
   # ZMSKVR-87 / ZMSKVR-601 / ZMSKVR-715. ZMSKVR-1142 raised the minimum to 2.
-  # V60 sets appointmentsPerMail=2. Reserved processes do not count, so the UI can
+  # V58 sets appointmentsPerMail=2. Reserved processes do not count, so the UI can
   # reach Übersicht while one sibling is still only reserved. After that sibling is
   # preconfirmed via API, two appointments are active and Termin reservieren hits
   # preconfirm and shows the red callout; the summary (and Termin reservieren) is hidden.
@@ -64,7 +64,7 @@ Feature: CitizenView: too many appointments per email callout on Übersicht
   # citizen can still reschedule. Two preconfirmed or confirmed appointments count.
   # The next booking fails on update-appointment and stays on Kontakt. Rebooking
   # copies that email during reserve-appointment, so the same error stays on Termin.
-  # V64 adds a Föhring-only day+14. Tomorrow and day+7 are one shared 09:30 and
+  # V62 adds a Föhring-only day+14. Tomorrow and day+7 are one shared 09:30 and
   # parallel bookings fill them; the rebook walk must open that later day.
 
   @ZMSKVR-1702

@@ -4,7 +4,7 @@ Feature: E-Kiosk ticketprinter walk-ins feed clientscope ticketprinter stats
   I want finished E-Kiosk spontaneous customers counted under ticketprinter
   So that Kundenstatistik can show davon E-Kiosk without waiting for the daily cron
 
-  # Scope 381: dedicated ATAF fixture (V62). Waiting number sets isTicketprinter;
+  # Scope 381: dedicated ATAF fixture (V60). Waiting number sets isTicketprinter;
   # POST /process/status/finished/ archives immediately into buergerarchiv.
 
   Background:

@@ -13,7 +13,7 @@ Feature: CitizenView: Wann gibt es neue Termine? availability info modal
   #   ui/.../callouts/zmskvr-1235_zmskvr-1244_…_no_appointment_callout.feature
   #   (opens the modal for Feuerwache 7 custom hint after this feature’s click steps landed).
   #
-  # Fixtures: V59 Föhring unique hint; Pasing + Neuperlach shared Gruppe hint.
+  # Fixtures: V57 Föhring unique hint; Pasing + Neuperlach shared Gruppe hint.
   # Bürgerbüros already share the V6 Hinweis zur Terminvergabe text.
 
   Background:

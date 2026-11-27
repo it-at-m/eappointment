@@ -7,7 +7,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * scenarios that call {@code reserve every available} on Riem 10575 / Neuperlach 10582.
  *
  * <p>Both share the same ATAF DB in one zmscitizenview JVM. Booked-out empties every
- * seat including Flyway V61 day+7; the order scenario needs that day bookable. A
+ * seat including Flyway V59 day+7; the order scenario needs that day bookable. A
  * process-wide lock plus order-day reseed keeps both green under parallel Cucumber.
  */
 public final class FeuerwacheCapacityLock {

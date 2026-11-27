@@ -1,4 +1,4 @@
--- Scope 380 (V60) points at BehoerdenID 91, which V4 never inserted.
+-- Scope 380 (V58) points at BehoerdenID 91, which V4 never inserted.
 -- Preconfirmation and cancellation mails then have a null department and fail
 -- mail schema validation (invalidSchema) before the message is queued.
 

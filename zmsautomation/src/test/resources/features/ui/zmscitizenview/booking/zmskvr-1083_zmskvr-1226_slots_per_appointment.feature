@@ -14,7 +14,7 @@ Feature: CitizenView: quantity follows slotsPerAppointment
   # services (Alle Leistungen anzeigen is absent).
   # Office 10308013: spa=2; Wechselkennzeichen 1080502 slots=2, maxQuantity=2
   # → UI max min(2, floor(2/2))=1 (1226 Wechselkennzeichen case).
-  # Feuerwache (V58): Föhring 10577 spa=8, Milbertshofen 10579 spa=2 → min spa 2
+  # Feuerwache (V56): Föhring 10577 spa=8, Milbertshofen 10579 spa=2 → min spa 2
   # for 1-slot Führungen 10389330 would allow qty 2, but SADB maxQuantity=1 is
   # smaller → plus stays at 1 (min of maxQuantity and floor(minSpa/slots)).
   # Hauptkalender 10489: slotsPerAppointment unset → fallback MAX_SLOTS=96

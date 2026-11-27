@@ -1,6 +1,6 @@
 -- ZMSKVR-1702: a later Föhring day for the mail-limit rebook.
 --
--- Tomorrow (V47/V49, 8 seats) and day+7 (V61, 3 seats) share one 09:30 timestamp.
+-- Tomorrow (V47/V49, 8 seats) and day+7 (V59, 3 seats) share one 09:30 timestamp.
 -- Parallel Führungen bookings fill both before the rebook reserve runs, so
 -- appointmentNotAvailable wins and the mail-limit callout never appears.
 -- Day+14 is only scope 274 / office 10577, with 8 internet seats, so the

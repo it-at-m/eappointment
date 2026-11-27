@@ -1390,22 +1390,6 @@ public class CitizenViewPage extends BasePage {
         timeSlot.selectTimeslotWithRuppertstrasseWartezone(officeId, code);
     }
 
-    public void selectTimeslotWithFuehrerscheinstelleSchalter(int officeId) {
-        timeSlot.selectTimeslotWithFuehrerscheinstelleSchalter(officeId);
-    }
-
-    public void assertSelectedAppointmentCalloutShowsFuehrerscheinstelleSchalterHint() {
-        timeSlot.assertSelectedAppointmentCalloutShowsFuehrerscheinstelleSchalterHint();
-    }
-
-    public String assertFuehrerscheinstelleSchalterAndKundenhinweis(int officeId) {
-        return overview.assertFuehrerscheinstelleSchalterAndKundenhinweis(officeId);
-    }
-
-    public void assertAppointmentDetailMatchingFuehrerscheinstelleSchalter() {
-        myAppointments.assertAppointmentDetailMatchingFuehrerscheinstelleSchalter();
-    }
-
     public void highlightRememberedTimeslotForOffice(int officeId) {
         timeSlot.highlightRememberedTimeslotForOffice(officeId);
     }

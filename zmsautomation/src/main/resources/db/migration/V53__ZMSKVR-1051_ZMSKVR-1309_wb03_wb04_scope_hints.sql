@@ -1,7 +1,6 @@
 -- ZMSKVR-1051 / ZMSKVR-1309 (+ ZMSKVR-1087 / ZMSKVR-1311, ZMSKVR-1530 / ZMSKVR-1541, ZMSKVR-843 / ZMSKVR-1014)
 -- Distinct Hinweismeldungen bei verfübaren Terminen for Ruppertstraße Hauptkalender
--- scopes so ATAF can tell WB03 (181) from WB04 (160). One internet seat each so a
--- second booking of the same Wohnsitzanmeldung time switches Wartebereich.
+-- scopes so ATAF can tell WB03 (181) from WB04 (160).
 -- HTML (no wrapping <p>) exercises sanitizeHtml + the product p-wrap on overview/detail.
 -- Citizen API / backend Scope reads standort.info_for_appointment (and preferences shadow).
 
@@ -33,9 +32,21 @@ WHERE `entity` = 'scope'
   AND `groupName` = 'appointment'
   AND `name` = 'infoForAppointment';
 
--- V19 openings 136201 (160 / WB04) and 136202 (181 / WB03): one seat so the second
--- identical Wohnsitzanmeldung booking lands on the other Wartebereich.
-UPDATE `oeffnungszeit`
-SET `Anzahlterminarbeitsplaetze` = 1,
-    `kommentar` = 'ZMSKVR-1051 ZMSKVR-1309 single internet seat for WB switch'
-WHERE `OeffnungszeitID` IN (136201, 136202);
+-- Give the switch test a dedicated day after V22's shared openings. One seat on
+-- each scope makes the second same-time booking switch to the other Wartebereich.
+SET @switch_day := (
+    SELECT DATE_ADD(MAX(`Endedatum`), INTERVAL 1 DAY)
+    FROM `oeffnungszeit`
+    WHERE `OeffnungszeitID` IN (136201, 136202)
+);
+
+INSERT IGNORE INTO `oeffnungszeit` (
+    `OeffnungszeitID`, `StandortID`, `Startdatum`, `Endedatum`, `allexWochen`, `jedexteWoche`,
+    `Wochentag`, `Anfangszeit`, `Terminanfangszeit`, `Endzeit`, `Terminendzeit`, `Timeslot`,
+    `Anzahlarbeitsplaetze`, `Anzahlterminarbeitsplaetze`, `kommentar`, `reduktionTermineImInternet`,
+    `erlaubemehrfachslots`, `Offen_ab`, `Offen_bis`, `updateTimestamp`
+) VALUES
+    (136511, 160, @switch_day, @switch_day, 1, 0, 127, '00:00:00', '08:00:00', '00:00:00', '18:00:00',
+     '00:05:00', 0, 1, 'ZMSKVR-1051 ZMSKVR-1309 WB04 scope-switch day after shared range', 0, 5, 0, 30, NOW()),
+    (136512, 181, @switch_day, @switch_day, 1, 0, 127, '00:00:00', '08:00:00', '00:00:00', '18:00:00',
+     '00:05:00', 0, 1, 'ZMSKVR-1051 ZMSKVR-1309 WB03 scope-switch day after shared range', 0, 5, 0, 30, NOW());
