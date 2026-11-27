@@ -45,6 +45,7 @@
     id="{{ selectId }}-scope-multiselect"
     class="scope-multiselect {{ additionalClass }}"
     data-scope-multiselect
+    {% if scopeSelectSearchable|default(false) %} data-scope-menu{% endif %}
 >
     <div class="header">
         <label for="{{ selectId }}">
