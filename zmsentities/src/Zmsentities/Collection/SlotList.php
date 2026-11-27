@@ -69,19 +69,6 @@ class SlotList extends Base
     }
 
     /**
-     * Get the first slot for a given time that is still free for intern bookings
-     */
-    public function findFreeSlot(\DateTimeInterface $dateTime): ?Slot
-    {
-        foreach ($this as $slot) {
-            if ($slot->hasTime() && $slot->time == $dateTime->format('H:i') && $slot['intern'] > 0) {
-                return $slot;
-            }
-        }
-        return null;
-    }
-
-    /**
      * Get all slots for an appointment
      *
      */
