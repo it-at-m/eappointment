@@ -9,7 +9,7 @@ FROM composer:2@sha256:30621647c7caf81d0a173f42b5e46ab7fed94d5a0e19e7259429517bb
 FROM ghcr.io/php/pie:bin@sha256:f49c15dbb88a7aec373fdb15ab9004bf08958772db3b476c42364e10a8ea416f AS pie
 
 # PHP 8.6.0 (19 November 2026). 8.6-fpm-trixie tracks the latest 8.6 patch.
-FROM php:8.6-fpm-trixie@sha256:cf1219d285d49cc07f37b94babecd02db21947dbd14c1d60d13860e051209790 AS base
+FROM php:8.6-fpm-trixie@sha256:df9ead21fc3a43c80587a5461db3b859b0f6e3effe5da33a22fc762d5d8a4364 AS base
 
 # bash as default shell should exit on non-zero exit-codes in piped commands
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
