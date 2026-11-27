@@ -3,7 +3,7 @@ ARG NODE_MAJOR="22"
 ARG PHP_VERSION="8.6-fpm-trixie"
 
 # composer version to make available in built image
-FROM composer:2@sha256:30621647c7caf81d0a173f42b5e46ab7fed94d5a0e19e7259429517bb9f9d342 AS composer-image
+FROM composer:2@sha256:5b2137f112f939a92788ceb5e55f54859d9dbf467a44037cf7760bdda949f365 AS composer-image
 
 # PIE replaces pecl, which the official PHP 8.6 images no longer ship.
 FROM ghcr.io/php/pie:bin@sha256:2ca18ec63249ff2d8b9936afeea88ab2e9225041980c16b7ad99ce0fccb014a6 AS pie

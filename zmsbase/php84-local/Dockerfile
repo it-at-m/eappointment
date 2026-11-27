@@ -4,7 +4,7 @@ ARG NODE_MAJOR=22
 ARG PHP_VERSION=8.4-apache-trixie
 
 # Composer stage
-FROM composer:2@sha256:30621647c7caf81d0a173f42b5e46ab7fed94d5a0e19e7259429517bb9f9d342 AS composer-image
+FROM composer:2@sha256:5b2137f112f939a92788ceb5e55f54859d9dbf467a44037cf7760bdda949f365 AS composer-image
 
 # Node/npm/npx (official multi-arch image; NodeSource apt can miss npm on some Debian/arch combos)
 FROM node:22-trixie@sha256:c103d7b5aa3bf627c8b98db941d52556f04e0b5d9352b3d7b6391245d26620f8 AS node-tools
