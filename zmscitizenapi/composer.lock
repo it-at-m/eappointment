@@ -201,7 +201,7 @@
             "dist": {
                 "type": "path",
                 "url": "../mellon",
-                "reference": "54b73811889550834d646c36ed3c60c0f2f695fd"
+                "reference": "850a20bc5e83cfc52fbbaaf2bcf34ef9aeb00543"
             },
             "require": {
                 "ext-json": ">=0",
@@ -311,7 +311,7 @@
             "dist": {
                 "type": "path",
                 "url": "../zmsentities",
-                "reference": "54b73811889550834d646c36ed3c60c0f2f695fd"
+                "reference": "d3b781dd4e0305ef9f483be2719a22c0ba9e903c"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -369,7 +369,7 @@
             "dist": {
                 "type": "path",
                 "url": "../zmsslim",
-                "reference": "54b73811889550834d646c36ed3c60c0f2f695fd"
+                "reference": "85ecc8428ce5a9d82b78c7a7795ff009bc7d6b8c"
             },
             "require": {
                 "eappointment/mellon": "@dev",
@@ -4305,16 +4305,16 @@
         },
         {
             "name": "symfony/cache",
-            "version": "v8.1.11",
+            "version": "v8.1.13",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/cache.git",
-                "reference": "60b6bfd51e671219b1ab9066b94c617d1760d7cf"
+                "reference": "2e75efef2d6219f77fb3424e566cb36c40eec83c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/cache/zipball/60b6bfd51e671219b1ab9066b94c617d1760d7cf",
-                "reference": "60b6bfd51e671219b1ab9066b94c617d1760d7cf",
+                "url": "https://api.github.com/repos/symfony/cache/zipball/2e75efef2d6219f77fb3424e566cb36c40eec83c",
+                "reference": "2e75efef2d6219f77fb3424e566cb36c40eec83c",
                 "shasum": ""
             },
             "require": {
@@ -4380,7 +4380,7 @@
                 "psr6"
             ],
             "support": {
-                "source": "https://github.com/symfony/cache/tree/v8.1.11"
+                "source": "https://github.com/symfony/cache/tree/v8.1.13"
             },
             "funding": [
                 {
@@ -4400,8 +4400,8 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-11-01T22:27:46+00:00",
-            "published-time": "2026-11-04T11:31:57+00:00"
+            "time": "2026-11-27T14:07:58+00:00",
+            "published-time": "2026-11-27T14:50:44+00:00"
         },
         {
             "name": "symfony/cache-contracts",
