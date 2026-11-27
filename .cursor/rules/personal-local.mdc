@@ -1,0 +1,8 @@
+---
+description: Load personal rules from .agents/local/rules when present
+alwaysApply: true
+---
+
+# Personal local rules
+
+If `.agents/local/rules/` contains any `*.md` files, read them after root `AGENTS.md`. They are personal and gitignored. They must not override the constitution or shared modes under `.agents/modes/`.
