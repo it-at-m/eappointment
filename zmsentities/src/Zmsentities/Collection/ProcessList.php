@@ -5,7 +5,6 @@ namespace BO\Zmsentities\Collection;
 use BO\Zmsentities\Helper\Sorter;
 use BO\Zmsentities\Helper\Property;
 use BO\Zmsentities\Helper\Messaging;
-use BO\Zmsentities\Appointment;
 use BO\Zmsentities\Process;
 use BO\Zmsentities\Slot;
 
@@ -272,8 +271,8 @@ class ProcessList extends Base
     }
 
     /**
-     * Count demand once per booked slot, including demand for slots that are already full.
-     * A booking is a conflict as soon as one of its slots is missing or full.
+     * Count demand by booked interval for the graph, including bookings that cannot be allocated.
+     * Count compatible slots per availability and report bookings with missing or full slots as conflicts.
      * The graph passes one day; occupiedByTime totals matching clock times if given multiple days.
      *
      * @return array{busySlots: array<int|string, int>, occupiedByTime: array<string, int>, conflicts: static}
@@ -285,6 +284,7 @@ class ProcessList extends Base
         $conflicts = new static();
         foreach ($this->toProcessListByTime('Y-m-d') as $processListByDate) {
             $dateTime = $processListByDate[0]->getFirstAppointment()->toDateTime();
+            $dayEnd = $dateTime->modify('tomorrow midnight');
             $availabilities = $availabilityList->withType('appointment')->withDateTime($dateTime)->getSortedByDuration();
             $slotsByTime = [];
             $slotLengths = [];
@@ -294,25 +294,41 @@ class ProcessList extends Base
                     $slotsByTime[$slot->getTimeString()][$key] = $slot;
                 }
             }
+            // Sweep booking starts and ends together with the graph's configured slot times.
+            $demandChanges = array_fill_keys(array_keys($slotsByTime), 0);
             foreach ($processListByDate as $process) {
                 $appointment = $process->getFirstAppointment();
                 $bookedAvailability = $appointment->getAvailability();
                 $bookedKey = $bookedAvailability->id ?: ($bookedAvailability->tempId ?? null);
+                $start = $appointment->getStartTime();
+                $startClock = $start->format('H:i');
+                $slotCount = max(1, (int) $appointment->getSlotCount());
+                $slotMinutes = (int) $bookedAvailability->getSlotTimeInMinutes();
+                if ($slotMinutes <= 0) {
+                    $startKey = array_key_first($slotsByTime[$startClock] ?? []);
+                    $referencedLength = $bookedKey !== null ? ($slotLengths[$bookedKey] ?? 0) : 0;
+                    $slotMinutes = $referencedLength ?: ($startKey !== null ? $slotLengths[$startKey] : 0);
+                }
+                if ($slotMinutes > 0) {
+                    $end = $start->add(new \DateInterval('PT' . ($slotCount * $slotMinutes) . 'M'));
+                    $endClock = $end < $dayEnd ? $end->format('H:i') : '24:00';
+                    $demandChanges[$startClock] = ($demandChanges[$startClock] ?? 0) + 1;
+                    $demandChanges[$endClock] = ($demandChanges[$endClock] ?? 0) - 1;
+                }
                 $options = static::getAppointmentSlotOptions(
-                    $appointment,
+                    $start,
+                    $slotCount,
+                    $slotMinutes,
                     $slotsByTime,
-                    $slotLengths,
-                    $bookedKey !== null ? (int) $bookedAvailability->slotTimeInMinutes : 0,
-                    $bookedKey
+                    $slotLengths
                 );
-                $hasConflict = count($options) !== max(1, (int) $appointment->getSlotCount());
+                $hasConflict = count($options) !== $slotCount;
                 foreach (static::selectAppointmentSlots($options, $bookedKey) as $time => $key) {
                     if ($key === null) {
                         $hasConflict = true;
                         continue;
                     }
                     $busySlots[$key] = ($busySlots[$key] ?? 0) + 1;
-                    $occupiedByTime[$time] = ($occupiedByTime[$time] ?? 0) + 1;
                     $slot = $options[$time][$key];
                     if ($slot->intern > 0) {
                         $slot->removeAppointment();
@@ -325,6 +341,14 @@ class ProcessList extends Base
                     $conflicts[] = $process;
                 }
             }
+            ksort($demandChanges);
+            $demand = 0;
+            foreach ($demandChanges as $time => $change) {
+                $demand += $change;
+                if ($demand > 0 && isset($slotsByTime[$time])) {
+                    $occupiedByTime[$time] = ($occupiedByTime[$time] ?? 0) + $demand;
+                }
+            }
         }
         return ['busySlots' => $busySlots, 'occupiedByTime' => $occupiedByTime, 'conflicts' => $conflicts];
     }
@@ -335,18 +359,12 @@ class ProcessList extends Base
      * @return array<string, array<int|string, Slot>> candidates for each required slot time
      */
     protected static function getAppointmentSlotOptions(
-        Appointment $appointment,
-        array $slotsByTime,
-        array $slotLengths,
+        \DateTimeImmutable $start,
+        int $slotCount,
         int $slotMinutes,
-        int|string|null $bookedKey
+        array $slotsByTime,
+        array $slotLengths
     ): array {
-        $start = $appointment->toDateTime();
-        if ($slotMinutes <= 0) {
-            // With no booked duration, infer the grid once from the mapped or first available start slot.
-            $key = static::preferredSlotKey($slotsByTime[$start->format('H:i')] ?? [], $bookedKey);
-            $slotMinutes = ($key !== null) ? $slotLengths[$key] : 0;
-        }
         if ($slotMinutes <= 0) {
             return [];
         }
@@ -354,7 +372,6 @@ class ProcessList extends Base
         $interval = new \DateInterval('PT' . $slotMinutes . 'M');
         $dayEnd = $start->modify('tomorrow midnight');
         $options = [];
-        $slotCount = max(1, (int) $appointment->getSlotCount());
         for ($step = 0, $time = $start; $step < $slotCount && $time < $dayEnd; $step++, $time = $time->add($interval)) {
             $clock = $time->format('H:i');
             $options[$clock] = array_intersect_key($slotsByTime[$clock] ?? [], $compatible);
@@ -364,7 +381,7 @@ class ProcessList extends Base
 
     /**
      * Prefer a single availability for the whole booking, then choose a compatible slot at each time.
-     * Keep full slots in the result so that overbooked demand remains visible in the graph.
+     * Keep full slots in the result so they still count toward the availability's booked total.
      *
      * @param array<string, array<int|string, Slot>> $options
      * @return array<string, int|string|null> availability by slot time, null for a missing slot
