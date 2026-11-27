@@ -158,6 +158,87 @@ class QueueListTest extends EntityCommonTests
         $this->assertEquals(2, $queueList->withoutStatus(['fake'])->getCountWithWaitingTime()->count());
     }
 
+    private function createQueueEntry(int $number, bool $withAppointment, int $arrivalTime, ?int $priority = null)
+    {
+        $entry = (new $this->entityclass())->getExample();
+        $entry->number = $number;
+        $entry->withAppointment = $withAppointment;
+        $entry->arrivalTime = $arrivalTime;
+        $entry->status = 'confirmed';
+        $entry->callTime = 0;
+        $entry->priority = $priority;
+        return $entry;
+    }
+
+    public function testSpontaneousClientIsSortedChronologicallyWithAppointmentClients()
+    {
+        $now = new \DateTimeImmutable(self::DEFAULT_TIME);
+        $collection = new $this->collectionclass();
+        // Spontaneous client arrived first, appointment clients arrived later
+        $collection->addEntity($this->createQueueEntry(1, false, $now->modify('-30 minutes')->getTimestamp()));
+        $collection->addEntity($this->createQueueEntry(2, true, $now->modify('-20 minutes')->getTimestamp()));
+        $collection->addEntity($this->createQueueEntry(3, true, $now->modify('-10 minutes')->getTimestamp()));
+
+        $result = $collection->withEstimatedWaitingTime(10, 1, $now, false)
+            ->withSortedWaitingTime();
+        $numbers = array_values(array_map(fn ($entry) => $entry->number, $result->getArrayCopy()));
+        $this->assertEquals([1, 2, 3], $numbers);
+    }
+
+    public function testSpontaneousClientArrivingLaterIsSortedBehindAppointmentClients()
+    {
+        $now = new \DateTimeImmutable(self::DEFAULT_TIME);
+        $collection = new $this->collectionclass();
+        $collection->addEntity($this->createQueueEntry(1, true, $now->modify('-30 minutes')->getTimestamp()));
+        $collection->addEntity($this->createQueueEntry(2, false, $now->modify('-20 minutes')->getTimestamp()));
+        $collection->addEntity($this->createQueueEntry(3, true, $now->modify('-10 minutes')->getTimestamp()));
+
+        $result = $collection->withEstimatedWaitingTime(10, 1, $now, false)
+            ->withSortedWaitingTime();
+        $numbers = array_values(array_map(fn ($entry) => $entry->number, $result->getArrayCopy()));
+        $this->assertEquals([1, 2, 3], $numbers);
+    }
+
+    public function testSpontaneousClientWithHighPriorityIsSortedFirst()
+    {
+        $now = new \DateTimeImmutable(self::DEFAULT_TIME);
+        $collection = new $this->collectionclass();
+        $collection->addEntity($this->createQueueEntry(1, true, $now->modify('-30 minutes')->getTimestamp()));
+        $collection->addEntity($this->createQueueEntry(2, false, $now->modify('-5 minutes')->getTimestamp(), 1));
+
+        $result = $collection->withEstimatedWaitingTime(10, 1, $now, false)
+            ->withSortedWaitingTime();
+        $numbers = array_values(array_map(fn ($entry) => $entry->number, $result->getArrayCopy()));
+        $this->assertEquals([2, 1], $numbers);
+    }
+
+    public function testSpontaneousClientIsSortedBeforeAppointmentPlannedInNearFuture()
+    {
+        $now = new \DateTimeImmutable(self::DEFAULT_TIME);
+        $collection = new $this->collectionclass();
+        $collection->addEntity($this->createQueueEntry(1, true, $now->modify('-2 minutes')->getTimestamp()));
+        $collection->addEntity($this->createQueueEntry(2, false, $now->modify('-1 minute')->getTimestamp()));
+        $collection->addEntity($this->createQueueEntry(3, true, $now->modify('+1 minute')->getTimestamp()));
+
+        $result = $collection->withEstimatedWaitingTime(10, 10, $now, false)
+            ->withSortedWaitingTime();
+        $numbers = array_values(array_map(fn ($entry) => $entry->number, $result->getArrayCopy()));
+        $this->assertEquals([1, 2, 3], $numbers);
+    }
+
+    public function testFakeWaitingnumberIsNotPlacedBeforeAppointmentPlannedInNearFuture()
+    {
+        $now = new \DateTimeImmutable(self::DEFAULT_TIME);
+        $collection = new $this->collectionclass();
+        $collection->addEntity($this->createQueueEntry(1, true, $now->modify('+1 minute')->getTimestamp()));
+
+        $result = $collection->withEstimatedWaitingTime(10, 10, $now);
+        $fake = $result->getQueueByNumber(\BO\Zmsentities\Collection\QueueList::FAKE_WAITINGNUMBER);
+        $this->assertEquals(1, $result->getFirst()->number);
+        $this->assertEquals($fake->number, $result->getLast()->number);
+        $this->assertGreaterThan($result->getFirst()->waitingTimeEstimate - 1, $fake->waitingTimeEstimate);
+    }
+
     public function testSetProcessFailed()
     {
         $entity = $this->getExample();
