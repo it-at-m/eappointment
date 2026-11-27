@@ -120,19 +120,29 @@ class SlotTest extends \BO\Zmsbackend\Tests\Service\Base
 
     public function testNoChangeByTime()
     {
-        $availability = $this->readTestAvailability();
-        $now = (new \BO\Zmsbackend\Slot\Service\Slot())->readLastChangedTimeByAvailability($availability);
-        $lastChange = $now;
-        $now = $now->modify('+1 hour -1 second');
-        $status = (new \BO\Zmsbackend\Slot\Service\Slot())->isAvailabilityOutdated(
-            $availability,
-            $now,
-            $lastChange,
-            (int) $availability->version
-        );
+        // Keep both checks within the same opening period, independent of when the fixtures were imported.
+        $lastChange = new \DateTimeImmutable('2016-04-01 09:00:00');
+        $now = $lastChange->modify('+1 hour -1 second');
+        $slotVersion = 2;
+        $availability = new \BO\Zmsentities\Availability([
+            'startDate' => $lastChange->modify('-1 week')->getTimestamp(),
+            'endDate' => $lastChange->modify('+2 weeks')->getTimestamp(),
+            'startTime' => '08:00:00',
+            'endTime' => '13:00:00',
+            'weekday' => ['friday' => 1],
+            'bookable' => ['startInDays' => 0, 'endInDays' => 7],
+            'lastChange' => $lastChange->modify('-1 minute')->getTimestamp(),
+            'version' => $slotVersion,
+        ]);
+        $availability->scope = new \BO\Zmsentities\Scope(['lastChange' => $availability->lastChange]);
+        $availability->scope->dayoff = new \BO\Zmsentities\Collection\DayoffList();
+
+        $slot = new Slot();
+        $status = $slot->isAvailabilityOutdated($availability, $now, $lastChange, $slotVersion);
         $this->assertFalse($status, "Should not rebuild slots without a change");
+
         $availability->lastChange = $now->getTimestamp();
-        $status = (new \BO\Zmsbackend\Slot\Service\Slot())->isAvailabilityOutdated($availability, $now, $lastChange);
+        $status = $slot->isAvailabilityOutdated($availability, $now, $lastChange, $slotVersion);
         $this->assertTrue($status, "If availability is changed, it should rebuild, even a rebuild happened before");
     }
 
