@@ -1,5 +1,5 @@
 {
-  "publishedAt": "2026-11-27T13:20:11.237Z",
+  "publishedAt": "2026-11-27T15:21:25.110Z",
   "branches": [
     {
       "name": "next",
@@ -384,6 +384,12 @@
       "slug": "fix-zmskvr-1713-hotfix-waitingstatistic-count",
       "runId": "41429530415",
       "runStartedAt": "2026-11-02T10:31:48Z"
+    },
+    {
+      "name": "fix-zmskvr-1764-allow-overlapping-avaiablities-for-overbooking-warning",
+      "slug": "fix-zmskvr-1764-allow-overlapping-avaiablities-for-overbooking-warning",
+      "runId": "46018418084",
+      "runStartedAt": "2026-11-27T14:43:07Z"
     },
     {
       "name": "fix-zmskvr-353-rebooking-no-activation",
