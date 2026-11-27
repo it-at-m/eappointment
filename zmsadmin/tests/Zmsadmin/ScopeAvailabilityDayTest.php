@@ -280,6 +280,33 @@ class ScopeAvailabilityDayTest extends Base
         $this->assertSame(1, $buckets['09:15']['occupiedCount']);
         $this->assertSame(0, $buckets['09:30']['occupiedCount']);
     }
+
+    public function testSlotBucketsShowBookingsEvenWhenTheSlotGridIsIncompatible()
+    {
+        $availabilityList = new \BO\Zmsentities\Collection\AvailabilityList([
+            new \BO\Zmsentities\Availability([
+                'id' => 1,
+                'weekday' => ['friday' => '32'],
+                'workstationCount' => ['intern' => 1],
+                'startDate' => strtotime('2016-04-01'),
+                'endDate' => strtotime('2016-04-01'),
+                'startTime' => '09:00:00',
+                'endTime' => '09:40:00',
+                'slotTimeInMinutes' => 5,
+            ]),
+        ]);
+        $processList = new \BO\Zmsentities\Collection\ProcessList([
+            new \BO\Zmsentities\Process(['appointments' => [[
+                'date' => strtotime('2016-04-01 09:02'),
+                'slotCount' => 2,
+                'availability' => ['id' => 1, 'slotTimeInMinutes' => 15],
+            ]]]),
+        ]);
+
+        $buckets = ScopeAvailabilityDaySlotBuckets::readSlotBuckets($availabilityList, $processList);
+        $this->assertSame([0, 1, 1, 1, 1, 1, 1, 0], array_values(array_column($buckets, 'occupiedCount')));
+        $this->assertCount(1, $processList->withOutAvailability($availabilityList));
+    }
 }
 
 class ScopeAvailabilityDaySlotBuckets extends \BO\Zmsadmin\ScopeAvailabilityDay
