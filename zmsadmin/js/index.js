@@ -37,6 +37,7 @@ import focusFirstErrorElement from './element/form/focusFirstErrorElement'
 import maxChars from './element/form/maxChars'
 import validateClusterScopes from './element/form/validateClusterScopes'
 import scopeMultiselect from './element/form/scopeMultiselect'
+import searchScopePicker from './element/form/searchScopePicker'
 import appointmentsPerMailLimit from './element/form/appointmentsPerMailLimit'
 import DialogHandler from './lib/dialogHandler'
 
@@ -125,6 +126,11 @@ $('.roles-list').each(function () {
 $('[data-scope-multiselect]').each(function () {
     scopeMultiselect(this);
 })
+
+const searchScope = document.getElementById('search-scope');
+if (searchScope) {
+    searchScopePicker(searchScope);
+}
 
 $('form').each(function () {
     if ($(this).find('#scope-validation-error').length > 0) {

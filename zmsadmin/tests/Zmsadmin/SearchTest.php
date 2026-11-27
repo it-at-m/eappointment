@@ -22,7 +22,7 @@ class SearchTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/workstation/',
-                    'parameters' => ['resolveReferences' => 2],
+                    'parameters' => ['resolveReferences' => 3],
                     'response' => $this->readFixture("GET_Workstation_audit_viewer.json")
                 ],
                 [
@@ -33,7 +33,6 @@ class SearchTest extends Base
                         'page' => 1,
                         'perPage' => 100,
                         'service' => null,
-                        'provider' => null,
                         'userAction' => 0,
                         'date' => null,
                         'scopeIds' => '380,1,141,140,142',
@@ -49,12 +48,14 @@ class SearchTest extends Base
 
     public function testRenderingWithProcessId()
     {
+        $logResult = json_decode($this->readFixture("GET_loglist.json"), true, 512, JSON_THROW_ON_ERROR);
+        $logResult['meta']['totalCount'] = 45;
         $this->setApiCalls(
             [
                 [
                     'function' => 'readGetResult',
                     'url' => '/workstation/',
-                    'parameters' => ['resolveReferences' => 2],
+                    'parameters' => ['resolveReferences' => 3],
                     'response' => $this->readFixture("GET_Workstation_audit_viewer.json")
                 ],
                 [
@@ -65,21 +66,25 @@ class SearchTest extends Base
                         'page' => 2,
                         'perPage' => 20,
                         'service' => null,
-                        'provider' => null,
                         'userAction' => 0,
                         'date' => null,
-                        'scopeIds' => '380,1,141,140,142',
+                        'scopeIds' => '380,141',
                     ],
-                    'response' => $this->readFixture("GET_loglist.json")
+                    'response' => json_encode($logResult, JSON_THROW_ON_ERROR)
                 ]
             ]
         );
         $response = $this->render($this->arguments, [
             'query' => '100005',
             'page' => 2,
-            'perPage' => 20
+            'perPage' => 20,
+            'selectedScopeIds' => ['380', '141']
         ], []);
-        $this->assertStringContainsString('Log-Ergebnisse', (string)$response->getBody());
+        $body = (string) $response->getBody();
+        $this->assertStringContainsString('Log-Ergebnisse', $body);
+        $this->assertStringContainsString('aria-current="page">2<', $body);
+        $this->assertStringContainsString('page=3#search-results', $body);
+        $this->assertStringContainsString('selectedScopeIds%5B0%5D=380', $body);
         $this->assertEquals(200, $response->getStatusCode());
     }
 
@@ -90,7 +95,7 @@ class SearchTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/workstation/',
-                    'parameters' => ['resolveReferences' => 2],
+                    'parameters' => ['resolveReferences' => 3],
                     'response' => $this->readFixture("GET_workstation_basic.json")
                 ],
                 [
@@ -119,7 +124,7 @@ class SearchTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/workstation/',
-                    'parameters' => ['resolveReferences' => 2],
+                    'parameters' => ['resolveReferences' => 3],
                     'response' => $this->readFixture("GET_Workstation_audit_viewer.json")
                 ]
             ]
@@ -128,6 +133,7 @@ class SearchTest extends Base
         $this->assertEquals(200, $response->getStatusCode());
 
         $this->assertStringNotContainsString('Log-Ergebnisse', (string)$response->getBody());
+        $this->assertStringContainsString('Standortübergreifend', (string) $response->getBody());
     }
 
     public function testRenderingWithHiddenNavigation()
@@ -137,7 +143,7 @@ class SearchTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/workstation/',
-                    'parameters' => ['resolveReferences' => 2],
+                    'parameters' => ['resolveReferences' => 3],
                     'response' => $this->readFixture("GET_Workstation_audit_viewer.json")
                 ]
             ]
@@ -156,7 +162,7 @@ class SearchTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/workstation/',
-                    'parameters' => ['resolveReferences' => 2],
+                    'parameters' => ['resolveReferences' => 3],
                     'response' => $this->readFixture("GET_Workstation_audit_viewer.json")
                 ],
                 [
@@ -167,7 +173,6 @@ class SearchTest extends Base
                         'page' => 1,
                         'perPage' => 100,
                         'service' => null,
-                        'provider' => null,
                         'userAction' => 0,
                         'date' => null,
                         'scopeIds' => '380,1,141,140,142',
@@ -192,7 +197,7 @@ class SearchTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/workstation/',
-                    'parameters' => ['resolveReferences' => 2],
+                    'parameters' => ['resolveReferences' => 3],
                     'response' => $this->readFixture("GET_Workstation_audit_viewer.json")
                 ],
                 [
@@ -203,7 +208,6 @@ class SearchTest extends Base
                         'page' => 1,
                         'perPage' => 100,
                         'service' => 'testservice',
-                        'provider' => null,
                         'userAction' => 0,
                         'date' => null,
                         'scopeIds' => '380,1,141,140,142',
@@ -221,14 +225,14 @@ class SearchTest extends Base
         $this->assertStringContainsString('data-processList-count="0"', (string)$response->getBody());
     }
 
-    public function testCustomerSearchByProviderWithoutTextQuery()
+    public function testCustomerSearchBySelectedScopesWithoutTextQuery()
     {
         $this->setApiCalls(
             [
                 [
                     'function' => 'readGetResult',
                     'url' => '/workstation/',
-                    'parameters' => ['resolveReferences' => 2],
+                    'parameters' => ['resolveReferences' => 3],
                     'response' => $this->readFixture("GET_workstation_basic.json")
                 ],
                 [
@@ -238,7 +242,7 @@ class SearchTest extends Base
                         'resolveReferences' => 1,
                         'page' => 1,
                         'limit' => 100,
-                        'provider' => 'Bürgerbüro',
+                        'selectedScopeIds' => [141, 380],
                         'scopeIds' => '380,1,141',
                     ],
                     'response' => $this->readFixture("GET_searchresult_others.json")
@@ -247,7 +251,7 @@ class SearchTest extends Base
         );
 
         $response = $this->render($this->arguments, [
-            'provider' => 'Bürgerbüro',
+            'selectedScopeIds' => ['141', '380'],
         ], []);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertStringContainsString('data-processList-count="5"', (string)$response->getBody());
@@ -260,7 +264,7 @@ class SearchTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/workstation/',
-                    'parameters' => ['resolveReferences' => 2],
+                    'parameters' => ['resolveReferences' => 3],
                     'response' => $this->readFixture("GET_workstation_basic.json")
                 ],
                 [
@@ -290,7 +294,7 @@ class SearchTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/workstation/',
-                    'parameters' => ['resolveReferences' => 2],
+                    'parameters' => ['resolveReferences' => 3],
                     'response' => $this->readFixture('GET_Workstation_Resolved2.json'),
                 ],
                 [
@@ -301,7 +305,6 @@ class SearchTest extends Base
                         'page' => 1,
                         'perPage' => 100,
                         'service' => null,
-                        'provider' => null,
                         'userAction' => 0,
                         'date' => null,
                     ],
@@ -323,7 +326,7 @@ class SearchTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/workstation/',
-                    'parameters' => ['resolveReferences' => 2],
+                    'parameters' => ['resolveReferences' => 3],
                     'response' => $this->readFixture("GET_workstation_basic.json")
                 ],
                 [
@@ -352,7 +355,7 @@ class SearchTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/workstation/',
-                    'parameters' => ['resolveReferences' => 2],
+                    'parameters' => ['resolveReferences' => 3],
                     'response' => $this->readFixture("GET_workstation_basic.json")
                 ],
                 [
@@ -383,7 +386,7 @@ class SearchTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/workstation/',
-                    'parameters' => ['resolveReferences' => 2],
+                    'parameters' => ['resolveReferences' => 3],
                     'response' => $this->readFixture("GET_workstation_basic.json")
                 ],
                 [
@@ -434,7 +437,7 @@ class SearchTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/workstation/',
-                    'parameters' => ['resolveReferences' => 2],
+                    'parameters' => ['resolveReferences' => 3],
                     'response' => $this->readFixture("GET_workstation_basic.json")
                 ],
                 [
@@ -486,7 +489,7 @@ class SearchTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/workstation/',
-                    'parameters' => ['resolveReferences' => 2],
+                    'parameters' => ['resolveReferences' => 3],
                     'response' => $this->readFixture("GET_Workstation_audit_viewer.json")
                 ]
             ]
@@ -510,7 +513,7 @@ class SearchTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/workstation/',
-                    'parameters' => ['resolveReferences' => 2],
+                    'parameters' => ['resolveReferences' => 3],
                     'response' => $this->readFixture("GET_workstation_basic.json")
                 ]
             ]
@@ -547,7 +550,7 @@ class SearchTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/workstation/',
-                    'parameters' => ['resolveReferences' => 2],
+                    'parameters' => ['resolveReferences' => 3],
                     'response' => $this->readFixture("GET_workstation_basic.json")
                 ],
                 [
@@ -558,13 +561,19 @@ class SearchTest extends Base
                         'query' => 'Muster',
                         'page' => $page,
                         'limit' => 10,
+                        'selectedScopeIds' => [141, 380],
                         'scopeIds' => '380,1,141',
                     ],
                     'response' => $this->readFixture("GET_searchresult_paged.json")
                 ],
             ]
         );
-        $response = $this->render($this->arguments, ['query' => 'Muster', 'page' => $page, 'perPage' => 10], []);
+        $response = $this->render($this->arguments, [
+            'query' => 'Muster',
+            'page' => $page,
+            'perPage' => 10,
+            'selectedScopeIds' => ['141', '380'],
+        ], []);
         $body = (string) $response->getBody();
 
         $pagination = substr($body, strpos($body, '<div class="pagination">'));
@@ -572,6 +581,13 @@ class SearchTest extends Base
         $this->assertEquals($expectedPages, array_map('intval', $matches[1]));
         $this->assertStringContainsString('aria-current="page">' . $page . '<', $pagination);
         $this->assertStringContainsString('&hellip;', $pagination);
+        $this->assertStringContainsString('name="selectedScopeIds[]" value="141"', $body);
+        preg_match_all('/href="\?([^"]+)#search-results"/', $pagination, $links);
+        $this->assertNotEmpty($links[1]);
+        foreach ($links[1] as $link) {
+            parse_str(html_entity_decode($link), $parameters);
+            $this->assertSame(['141', '380'], $parameters['selectedScopeIds']);
+        }
         $this->assertEquals($page > 1, str_contains($body, 'aria-label="Vorherige Seite"'));
         $this->assertEquals($page < 12, str_contains($body, 'aria-label="Nächste Seite"'));
     }
@@ -583,7 +599,7 @@ class SearchTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/workstation/',
-                    'parameters' => ['resolveReferences' => 2],
+                    'parameters' => ['resolveReferences' => 3],
                     'response' => $this->readFixture("GET_workstation_basic.json")
                 ],
                 [
@@ -611,7 +627,7 @@ class SearchTest extends Base
                 [
                     'function' => 'readGetResult',
                     'url' => '/workstation/',
-                    'parameters' => ['resolveReferences' => 2],
+                    'parameters' => ['resolveReferences' => 3],
                     'response' => $this->readFixture("GET_workstation_basic.json")
                 ],
                 [

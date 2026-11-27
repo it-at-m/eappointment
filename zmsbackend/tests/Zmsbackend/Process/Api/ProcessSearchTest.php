@@ -127,6 +127,98 @@ class ProcessSearchTest extends \BO\Zmsbackend\Tests\Api\Base
         $this->assertSame(0, (int) $payload['meta']['totalCount']);
     }
 
+    public function testSelectedScopesRestrictActiveAndHistoryWithinUserPermissions(): void
+    {
+        $processId = 990029;
+        $matchingScopeId = 65991;
+        $otherAllowedScopeId = 141;
+
+        $historyService = new HistoryService();
+        $processService = new ProcessService(
+            $historyService->getWriter(),
+            $historyService->getReader()
+        );
+
+        $process = $processService->readEntity(
+            $processId,
+            'history-test-auth',
+            2
+        );
+
+        $this->assertInstanceOf(\BO\Zmsentities\Process::class, $process);
+        $this->assertSame($matchingScopeId, (int) $process->scope->id);
+
+        $historyService->writeHistoryEntry(
+            $process,
+            HistoryService::STATUS_COMPLETED,
+            \DateTimeImmutable::createFromInterface(\App::$now)
+        );
+
+        $department = new \BO\Zmsentities\Department();
+        foreach ([$matchingScopeId, $otherAllowedScopeId] as $scopeId) {
+            $department->scopes[] = new \BO\Zmsentities\Scope([
+                'id' => $scopeId,
+            ]);
+        }
+
+        $useraccount = $this->setWorkstation()->getUseraccount();
+        $useraccount->roles = ['appointment_admin'];
+        $useraccount
+            ->setPermissions('customersearch')
+            ->addDepartment($department);
+
+        $response = $this->render(
+            [],
+            [
+                'processId' => $processId,
+                'selectedScopeIds' => [(string) $otherAllowedScopeId],
+            ],
+            []
+        );
+
+        $this->assertSame(200, $response->getStatusCode());
+
+        $payload = json_decode(
+            (string) $response->getBody(),
+            true,
+            512,
+            JSON_THROW_ON_ERROR
+        );
+
+        $this->assertSame([], $payload['data']);
+        $this->assertSame(0, (int) $payload['meta']['totalCount']);
+
+        $response = $this->render(
+            [],
+            [
+                'processId' => $processId,
+                'selectedScopeIds' => [(string) $matchingScopeId],
+            ],
+            []
+        );
+
+        $this->assertSame(200, $response->getStatusCode());
+
+        $payload = json_decode(
+            (string) $response->getBody(),
+            true,
+            512,
+            JSON_THROW_ON_ERROR
+        );
+
+        $this->assertCount(2, $payload['data']);
+        $this->assertSame(2, (int) $payload['meta']['totalCount']);
+
+        $sources = array_column($payload['data'], 'source');
+        sort($sources);
+        $this->assertSame(['active', 'history'], $sources);
+
+        foreach ($payload['data'] as $result) {
+            $this->assertSame($processId, (int) $result['id']);
+            $this->assertSame($matchingScopeId, (int) $result['scope']['id']);
+        }
+    }
+
     public function testUpcomingOnlyExcludesHistory(): void
     {
         $historyService = new HistoryService();
@@ -708,6 +800,7 @@ class ProcessSearchTest extends \BO\Zmsbackend\Tests\Api\Base
             [],
             [
                 'processId' => 990029,
+                'selectedScopeIds' => ['65991', '141'],
                 'page' => 1,
                 'limit' => 1,
             ],
@@ -760,6 +853,7 @@ class ProcessSearchTest extends \BO\Zmsbackend\Tests\Api\Base
             [],
             [
                 'processId' => 990029,
+                'selectedScopeIds' => ['65991', '141'],
                 'page' => 2,
                 'limit' => 1,
             ],
