@@ -247,12 +247,46 @@ class ScopeAvailabilityDayTest extends Base
         $this->assertEquals(4, $buckets['08:30']['intern']);
         $this->assertEquals(3, $buckets['08:45']['intern']);
     }
+
+    public function testSlotBucketsUseTheBookingGridAcrossAnAvailabilityBoundary()
+    {
+        $availabilityData = [
+            'weekday' => ['friday' => '32'],
+            'repeat' => ['afterWeeks' => '1'],
+            'workstationCount' => ['public' => '1', 'intern' => '1'],
+            'startDate' => strtotime('2016-04-01'),
+            'endDate' => strtotime('2016-04-01'),
+        ];
+        $availabilityList = new \BO\Zmsentities\Collection\AvailabilityList();
+        foreach ([['08:00:00', '08:10:00', 5], ['09:00:00', '09:15:00', 15], ['09:15:00', '09:45:00', 15]] as $id => $window) {
+            [$start, $end, $minutes] = $window;
+            $availabilityList->addEntity(new \BO\Zmsentities\Availability($availabilityData + [
+                'id' => $id + 1,
+                'startTime' => $start,
+                'endTime' => $end,
+                'slotTimeInMinutes' => $minutes,
+            ]));
+        }
+        $processList = new \BO\Zmsentities\Collection\ProcessList([
+            new \BO\Zmsentities\Process(['appointments' => [[
+                'date' => strtotime('2016-04-01 09:00'),
+                'slotCount' => 2,
+                'availability' => ['id' => 2, 'slotTimeInMinutes' => 15],
+            ]]]),
+        ]);
+
+        $buckets = ScopeAvailabilityDaySlotBuckets::readSlotBuckets($availabilityList, $processList);
+        $this->assertSame(1, $buckets['09:00']['occupiedCount']);
+        $this->assertSame(1, $buckets['09:15']['occupiedCount']);
+        $this->assertSame(0, $buckets['09:30']['occupiedCount']);
+    }
 }
 
 class ScopeAvailabilityDaySlotBuckets extends \BO\Zmsadmin\ScopeAvailabilityDay
 {
     public static function readSlotBuckets($availabilityList, $processList): array
     {
-        return static::getSlotBuckets($availabilityList, $processList);
+        $usage = $processList->getAvailabilitySlotUsage($availabilityList);
+        return static::getSlotBuckets($availabilityList, $usage['occupiedByTime']);
     }
 }
