@@ -16,3 +16,10 @@ Weitere Cronjobs:
 podman exec -it zms-web bash -lc "zmsbackend/cron/cronjob.minutly"
 podman exec -it zms-web bash -lc "zmsbackend/cron/cronjob.daily"
 ```
+
+Den Minuten-Cron auf denselben 5-Minuten-Marken wiederholen wie in der Umgebung (`:00`, `:05`, `:10`, …). Der erste Durchlauf startet sofort. `Ctrl-C` beendet die Schleife. `--once` macht einen Durchlauf und beendet sich. Die CLI schreibt eine Startzeile und eine Endezeile mit der Dauer; die JSON-Logs des Skripts erscheinen dazwischen.
+
+```bash
+podman exec -it zms-web bash -lc "./cli cron minutly"
+podman exec -it zms-web bash -lc "./cli cron minutly --once"
+```
