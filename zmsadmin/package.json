@@ -71,7 +71,7 @@
   "dependencies": {
     "bo-zms-layout-js": "file:../zmslayout/js",
     "bo-zms-layout-scss": "file:../zmslayout/scss",
-    "chart.js": "^4.4.2",
+    "chart.js": "^4.6.2",
     "react-chartjs-2": "^5.3.1"
   },
   "// overrides.dompurify": "monaco-editor depends on dompurify@3.4.8; override to ^3.4.15 (patched) until Monaco ships a newer dompurify.",
