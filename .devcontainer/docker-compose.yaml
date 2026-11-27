@@ -118,7 +118,7 @@ services:
     restart: unless-stopped
 
   captchaservice:
-    image: ghcr.io/it-at-m/captchaservice/backend:2.1.0@sha256:fcb1d20101aa7437ab90beb6c4d5c655a3a043a4ae59e6ff32224c2f2759964f
+    image: ghcr.io/it-at-m/captchaservice/backend:2.2.1@sha256:2d9dde09aab513e8fb9d13adc80d8985ebdeb43c01acc6d2677e1640b16e77f8
     platform: linux/amd64
     container_name: zms-captchaservice
     environment:
