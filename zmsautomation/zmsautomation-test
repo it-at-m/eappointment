@@ -801,8 +801,8 @@ clear_caches
 # provider.data. Second Flyway path wins over SADB here — after hourly, before
 # minutly / calculateSlots (not after both).
 section "7b. Flyway migration-after-hourly"
-if [[ ! -d "$FLYWAY_MIGRATION_AFTER_HOURLY_DIR" ]]; then
-  warn "Missing $FLYWAY_MIGRATION_AFTER_HOURLY_DIR — skipping migration-after-hourly"
+if ! compgen -G "$FLYWAY_MIGRATION_AFTER_HOURLY_DIR/V*.sql" > /dev/null; then
+  info "No after-hourly Flyway migrations to apply"
 else
   # baselineVersion=0 so V001+ are applied (default baseline 1 would skip V001).
   run_flyway_migrate_with_retries \

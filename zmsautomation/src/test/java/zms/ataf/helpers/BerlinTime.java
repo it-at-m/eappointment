@@ -19,7 +19,7 @@ public final class BerlinTime {
     /** V43 single-seat opening hours on Passkalender Standort 172 / office 10502. */
     private static final int SINGLE_SEAT_OPENING_HOURS_ID = 136510;
 
-    /** V52 WB04 one-seat day for same-timestamp Wartebereich switch (office 10489). */
+    /** V53 WB04 one-seat day for same-timestamp Wartebereich switch (office 10489). */
     private static final int SCOPE_SWITCH_OPENING_HOURS_ID = 136511;
 
     private BerlinTime() {
@@ -48,14 +48,12 @@ public final class BerlinTime {
     }
 
     /**
-     * Start date seeded by {@code V52__ZMSKVR-1051_ZMSKVR-1309_scope_switch_day.sql} (row
-     * {@value #SCOPE_SWITCH_OPENING_HOURS_ID}): one internet seat each on WB03/WB04 (and Schalter
-     * A/B) so a second same-timestamp reserve switches scope without fighting the shared V19
-     * calendar.
+     * Start date seeded by V53 (row {@value #SCOPE_SWITCH_OPENING_HOURS_ID}): one internet seat
+     * each on WB03/WB04 so a second same-timestamp reserve switches scope without using the shared calendar.
      */
-    public static LocalDate scopeSwitchDayAfterV19RuppertstrasseRange() {
+    public static LocalDate ruppertstrasseScopeSwitchDay() {
         return openingHoursStartDate(
-                SCOPE_SWITCH_OPENING_HOURS_ID, "V52 scope-switch opening hours");
+                SCOPE_SWITCH_OPENING_HOURS_ID, "V53 scope-switch opening hours");
     }
 
     private static LocalDate openingHoursStartDate(int openingHoursId, String label) {

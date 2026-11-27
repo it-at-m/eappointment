@@ -572,19 +572,6 @@ public class AdminSteps {
         AUTHORITIES_AND_LOCATIONS_PAGE.assertMonthLockedDayIconForDay(TestDataHelper.transformTestData(day));
     }
 
-    /** ZMSKVR-933 / ZMSKVR-934: Terminabstand (#AvDaySlottime) on Öffnungszeiten. */
-    @Then("the opening hours slot time should be {int} minutes.")
-    public void theOpeningHoursSlotTimeShouldBeMinutes(int expectedMinutes) {
-        int found = AUTHORITIES_AND_LOCATIONS_PAGE.getOpeningHoursSlotTimeInMinutes();
-        Assert.assertEquals(
-                found,
-                expectedMinutes,
-                "Expected Öffnungszeiten Terminabstand (AvDaySlottime) to be "
-                        + expectedMinutes
-                        + " minutes, was "
-                        + found);
-    }
-
     @When("I open the opening hour with the note {string} for editing.")
     public void iOpenTheOpeningHourWithTheNoteForEditing(String note) {
         AUTHORITIES_AND_LOCATIONS_PAGE.openOpeningHourForEditing(TestDataHelper.transformTestData(note));
