@@ -329,9 +329,15 @@
               </muc-callout>
             </div>
 
-            <template v-if="currentView === 4">
+            <div
+              ref="activationRequestRef"
+              tabindex="-1"
+              role="status"
+              aria-live="polite"
+              aria-atomic="true"
+            >
               <muc-callout
-                v-if="!cancelAppointmentSuccess"
+                v-if="currentView === 4 && !cancelAppointmentSuccess"
                 type="warning"
               >
                 <template #content>
@@ -341,7 +347,9 @@
                   {{ t("confirmAppointmentHeader") }}
                 </template>
               </muc-callout>
+            </div>
 
+            <template v-if="currentView === 4">
               <div
                 v-if="hasCancelAppointmentError"
                 role="alert"
@@ -604,6 +612,8 @@ const STEPPER_ITEMS: StepperItem[] = [
 ];
 
 const activeStep = ref<string>("0");
+
+const activationRequestRef = ref<HTMLElement | null>(null);
 
 const currentView = ref<number>(0);
 
@@ -1477,10 +1487,17 @@ const nextCancelReschedule = async () => {
 /**
  * Adjusts the active step in the stepper to the current view
  */
-watch(currentView, (newCurrentView) => {
+watch(currentView, async (newCurrentView) => {
   activeStep.value = newCurrentView.toString();
   goToTop();
-  focusActiveStepperItem();
+
+  if (newCurrentView === 4 && !cancelAppointmentSuccess.value) {
+    await nextTick();
+    activationRequestRef.value?.focus();
+  } else {
+    focusActiveStepperItem();
+  }
+
   trackAppointmentScreenFromView(newCurrentView);
 });
 
