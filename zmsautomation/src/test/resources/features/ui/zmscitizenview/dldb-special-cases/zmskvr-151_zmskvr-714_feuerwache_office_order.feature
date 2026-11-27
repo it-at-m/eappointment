@@ -18,7 +18,7 @@ Feature: CitizenView: LOCATION_PRIO_BY_DISPLAY_NAME order for Feuerwachen and B�
   # API twin: rest/.../zmskvr-151_zmskvr-714_location_prio_citizenapi.feature
   # Sibling UI for Bürgerbüro checkboxes alone: zmskvr-82_zmskvr-391_several_offices.feature
   # Fixtures: FW seats are on different days (Föhring tomorrow; Pasing/Neuperlach/Riem day+4).
-  # V61 adds a shared day+7 for Pasing/Föhring/Neuperlach/Riem so list order can assert
+  # V59 adds a shared day+7 for Pasing/Föhring/Neuperlach/Riem so list order can assert
   # Feuerwache 10 last without racing booked-out jobs that empty the single day+4 Riem seat.
   # @feuerwache-capacity-lock serializes this against ZMSKVR-1235/1244 reserve-every on
   # 10575/10582; the restore step reopens day+7 after booked-out emptied it.
