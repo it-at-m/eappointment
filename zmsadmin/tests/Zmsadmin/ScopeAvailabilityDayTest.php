@@ -17,6 +17,21 @@ class ScopeAvailabilityDayTest extends Base
     public function testRendering()
     {
         $startDate = new \DateTimeImmutable('2016-04-01');
+        // The shared fixtures predate the five-minute grid. Preserve the booked durations.
+        $availabilityResponse = json_decode($this->readFixture('GET_scope_141_availability.json'), true);
+        foreach ($availabilityResponse['data'] as &$availability) {
+            $availability['slotTimeInMinutes'] = 5;
+        }
+        unset($availability);
+        $processResponse = json_decode($this->readFixture('GET_processList_141_20160401.json'), true);
+        foreach ($processResponse['data'] as &$process) {
+            foreach ($process['appointments'] as &$appointment) {
+                $appointment['slotCount'] = (int) $appointment['slotCount'] * 2;
+                $appointment['availability']['slotTimeInMinutes'] = 5;
+            }
+            unset($appointment);
+        }
+        unset($process);
 
         $this->setApiCalls(
             [
@@ -42,7 +57,7 @@ class ScopeAvailabilityDayTest extends Base
                     'parameters' => [
                         'startDate' => $startDate->format('Y-m-d')
                     ],
-                    'response' => $this->readFixture("GET_scope_141_availability.json")
+                    'response' => json_encode($availabilityResponse)
                 ],
                 [
                     'function' => 'readGetResult',
@@ -51,18 +66,18 @@ class ScopeAvailabilityDayTest extends Base
                         'startDate' => $startDate->format('Y-m-d'),
                         'endDate' => $startDate->format('Y-m-d')
                     ],
-                    'response' => $this->readFixture("GET_processList_141_20160401.json")
+                    'response' => json_encode($processResponse)
                 ],
                 [
                     'function' => 'readGetResult',
                     'url' => '/scope/141/process/2016-04-01/',
-                    'response' => $this->readFixture("GET_processList_141_20160401.json")
+                    'response' => json_encode($processResponse)
                 ]
             ]
         );
         $response = $this->render($this->arguments, $this->parameters, []);
         $this->assertStringContainsString('Öffnungszeiten für den Standort Bürgeramt Heerstraße', (string)$response->getBody());
-        $this->assertStringContainsString('data-busyslots="{&quot;68997&quot;:105}"', (string)$response->getBody());
+        $this->assertStringContainsString('data-busyslots="{&quot;68997&quot;:210}"', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 
@@ -168,7 +183,7 @@ class ScopeAvailabilityDayTest extends Base
         );
         $response = $this->render($this->arguments, $this->parameters, []);
         $this->assertStringContainsString('Öffnungszeiten für den Standort Bürgeramt Heerstraße', (string)$response->getBody());
-        $this->assertStringNotContainsString('data-busyslots="{&quot;68997&quot;:105}"', (string)$response->getBody());
+        $this->assertStringContainsString('data-busyslots="{&quot;68997&quot;:0}"', (string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
     }
 
@@ -218,7 +233,7 @@ class ScopeAvailabilityDayTest extends Base
             'weekday' => ['friday' => '32'],
             'repeat' => ['afterWeeks' => '1'],
             'workstationCount' => ['public' => '2', 'intern' => '3'],
-            'slotTimeInMinutes' => '15',
+            'slotTimeInMinutes' => 5,
             'startDate' => strtotime('2016-04-01'),
             'endDate' => strtotime('2016-04-01'),
         ];
@@ -226,13 +241,13 @@ class ScopeAvailabilityDayTest extends Base
             new \BO\Zmsentities\Availability(array_merge($availabilityData, [
                 'id' => '1',
                 'startTime' => '08:00:00',
-                'endTime' => '09:00:00',
+                'endTime' => '08:20:00',
             ])),
             // additional workstation inside availability 1
             new \BO\Zmsentities\Availability(array_merge($availabilityData, [
                 'id' => '2',
-                'startTime' => '08:15:00',
-                'endTime' => '08:45:00',
+                'startTime' => '08:05:00',
+                'endTime' => '08:15:00',
                 'workstationCount' => ['public' => '1', 'intern' => '1'],
             ])),
         ]);
@@ -240,12 +255,12 @@ class ScopeAvailabilityDayTest extends Base
             $availabilityList,
             new \BO\Zmsentities\Collection\ProcessList()
         );
-        $this->assertSame(['08:00', '08:15', '08:30', '08:45'], array_keys($buckets));
+        $this->assertSame(['08:00', '08:05', '08:10', '08:15'], array_keys($buckets));
         $this->assertEquals(3, $buckets['08:00']['intern']);
-        $this->assertEquals(4, $buckets['08:15']['intern']);
-        $this->assertEquals(3, $buckets['08:15']['public']);
-        $this->assertEquals(4, $buckets['08:30']['intern']);
-        $this->assertEquals(3, $buckets['08:45']['intern']);
+        $this->assertEquals(4, $buckets['08:05']['intern']);
+        $this->assertEquals(3, $buckets['08:05']['public']);
+        $this->assertEquals(4, $buckets['08:10']['intern']);
+        $this->assertEquals(3, $buckets['08:15']['intern']);
     }
 
     public function testSlotBucketsUseTheBookingGridAcrossAnAvailabilityBoundary()
@@ -254,34 +269,33 @@ class ScopeAvailabilityDayTest extends Base
             'weekday' => ['friday' => '32'],
             'repeat' => ['afterWeeks' => '1'],
             'workstationCount' => ['public' => '1', 'intern' => '1'],
+            'slotTimeInMinutes' => 5,
             'startDate' => strtotime('2016-04-01'),
             'endDate' => strtotime('2016-04-01'),
         ];
         $availabilityList = new \BO\Zmsentities\Collection\AvailabilityList();
-        foreach ([['08:00:00', '08:10:00', 5], ['09:00:00', '09:15:00', 15], ['09:15:00', '09:45:00', 15]] as $id => $window) {
-            [$start, $end, $minutes] = $window;
+        foreach ([['09:00:00', '09:15:00'], ['09:15:00', '09:40:00']] as $id => [$start, $end]) {
             $availabilityList->addEntity(new \BO\Zmsentities\Availability($availabilityData + [
                 'id' => $id + 1,
                 'startTime' => $start,
                 'endTime' => $end,
-                'slotTimeInMinutes' => $minutes,
             ]));
         }
         $processList = new \BO\Zmsentities\Collection\ProcessList([
             new \BO\Zmsentities\Process(['appointments' => [[
                 'date' => strtotime('2016-04-01 09:00'),
-                'slotCount' => 2,
-                'availability' => ['id' => 2, 'slotTimeInMinutes' => 15],
+                'slotCount' => 7,
             ]]]),
         ]);
 
         $buckets = ScopeAvailabilityDaySlotBuckets::readSlotBuckets($availabilityList, $processList);
         $this->assertSame(1, $buckets['09:00']['occupiedCount']);
         $this->assertSame(1, $buckets['09:15']['occupiedCount']);
-        $this->assertSame(0, $buckets['09:30']['occupiedCount']);
+        $this->assertSame(1, $buckets['09:30']['occupiedCount']);
+        $this->assertSame(0, $buckets['09:35']['occupiedCount']);
     }
 
-    public function testSlotBucketsShowBookingsEvenWhenTheSlotGridIsIncompatible()
+    public function testSlotBucketsShowOffGridBookings()
     {
         $availabilityList = new \BO\Zmsentities\Collection\AvailabilityList([
             new \BO\Zmsentities\Availability([
@@ -291,7 +305,7 @@ class ScopeAvailabilityDayTest extends Base
                 'startDate' => strtotime('2016-04-01'),
                 'endDate' => strtotime('2016-04-01'),
                 'startTime' => '09:00:00',
-                'endTime' => '09:40:00',
+                'endTime' => '09:20:00',
                 'slotTimeInMinutes' => 5,
             ]),
         ]);
@@ -299,12 +313,11 @@ class ScopeAvailabilityDayTest extends Base
             new \BO\Zmsentities\Process(['appointments' => [[
                 'date' => strtotime('2016-04-01 09:02'),
                 'slotCount' => 2,
-                'availability' => ['id' => 1, 'slotTimeInMinutes' => 15],
             ]]]),
         ]);
 
         $buckets = ScopeAvailabilityDaySlotBuckets::readSlotBuckets($availabilityList, $processList);
-        $this->assertSame([0, 1, 1, 1, 1, 1, 1, 0], array_values(array_column($buckets, 'occupiedCount')));
+        $this->assertSame([0, 1, 1, 0], array_values(array_column($buckets, 'occupiedCount')));
         $this->assertCount(1, $processList->withOutAvailability($availabilityList));
     }
 }
