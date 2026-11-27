@@ -1,16 +1,19 @@
 # Global build args
 ARG COMPOSER_VERSION=2
 ARG NODE_MAJOR=22
-ARG PHP_VERSION=8.3-apache-trixie
+ARG PHP_VERSION=8.6-apache-trixie
 
 # Composer stage
-FROM composer:2@sha256:4d71c3c2109c61d5415544264b59ad4087e4c5b7244481723664138fd36d5040 AS composer-image
+FROM composer:2@sha256:30621647c7caf81d0a173f42b5e46ab7fed94d5a0e19e7259429517bb9f9d342 AS composer-image
 
 # Node/npm/npx (official multi-arch image; NodeSource apt can miss npm on some Debian/arch combos)
-FROM node:22-trixie@sha256:8433642fe11d391a7ff1f702352ac1b0ea3e378d3fb2c22de2b292036d79cd2c AS node-tools
+FROM node:22-trixie@sha256:c103d7b5aa3bf627c8b98db941d52556f04e0b5d9352b3d7b6391245d26620f8 AS node-tools
 
-# Main dev image
-FROM php:8.3-apache-trixie@sha256:218dea25137e693d164a9589e9c57303a67259932558d4a2f62fb98ff709b9ec
+# PIE replaces pecl, which the official PHP 8.6 images no longer ship.
+FROM ghcr.io/php/pie:bin@sha256:f49c15dbb88a7aec373fdb15ab9004bf08958772db3b476c42364e10a8ea416f AS pie
+
+# PHP 8.6.0 (19 November 2026). 8.6-apache-trixie tracks the latest 8.6 patch.
+FROM php:8.6-apache-trixie@sha256:0b06b358a7d59cca80e0528aad0e49b43208c3a74754ffcd8a12d7727058511e
 
 # Set by docker buildx --platform=... (linux/amd64 | linux/arm64)
 ARG TARGETARCH
@@ -22,7 +25,7 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 # --------------------------------------------------
 ARG TZ=Europe/Berlin
 
-ARG XDEBUG_VERSION=3.5.1
+ARG XDEBUG_VERSION=3.6.0alpha1
 ARG EDGE_DRIVER_VERSION=146.0.3856.62
 ARG MAVEN_VERSION=3.9.12
 ARG FLYWAY_VERSION=11.1.1
@@ -43,12 +46,10 @@ RUN ln -snf "/usr/share/zoneinfo/${TZ}" /etc/localtime \
 # --------------------------------------------------
 # System dependencies + PHP extensions
 # --------------------------------------------------
-# ATAF 0.3.4 ships Selenium 4.46, which speaks Chrome DevTools protocol 148-150.
-# Debian security ships a newer Chromium (153). That mismatch makes ChromeDriver
-# time out with "Timed out receiving message from renderer" on the first navigation.
-# Hold this pin until ATAF moves to a Selenium release that speaks a newer protocol.
-# Same version as .github/workflows/zmsautomation-workflow.yaml.
-ARG CHROMIUM_VERSION=150.0.7871.181-1~deb13u1
+# 8.4-local pins Chromium 150 so it matches Selenium 4.46. That package is no
+# longer in Trixie. 8.6-local is not the automation image, so pin the Chromium
+# Trixie publishes now.
+ARG CHROMIUM_VERSION=156.0.8078.79-1~deb13u1
 RUN apt-get update \
  && apt-get install -y --no-install-recommends --allow-downgrades \
       ca-certificates \
@@ -78,13 +79,10 @@ RUN apt-get update \
       "chromium-common=${CHROMIUM_VERSION}" \
  && apt-mark hold chromium chromium-driver chromium-common \
  && docker-php-ext-configure gd --with-freetype --with-jpeg \
- && docker-php-ext-install -j"$(nproc)" \
-      intl \
-      gd \
-      pdo \
-      pdo_mysql \
-      zip \
-      calendar \
+ && set -e \
+ && for ext in intl gd mbstring pdo pdo_mysql zip calendar; do \
+      docker-php-ext-install -j"$(nproc)" "$ext" || exit 1; \
+    done \
  && ln -sf /usr/bin/firefox-esr /usr/bin/firefox \
  && apt-get clean \
  && rm -rf /var/lib/apt/lists/*
@@ -94,9 +92,15 @@ RUN echo "de_DE.UTF-8 UTF-8" >> /etc/locale.gen && locale-gen
 
 # --------------------------------------------------
 # Xdebug
+# Official 8.6 images have no pecl. Xdebug 3.5 refuses PHP 8.6;
+# 3.6.0alpha1 is the release that supports it. PIE enables the extension.
 # --------------------------------------------------
-RUN pecl install xdebug-"${XDEBUG_VERSION}" \
- && docker-php-ext-enable xdebug
+COPY --from=pie /pie /usr/bin/pie
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends libtool \
+ && pie install "xdebug/xdebug:${XDEBUG_VERSION}" \
+ && apt-get clean \
+ && rm -rf /var/lib/apt/lists/*
 
 # --------------------------------------------------
 # Microsoft Edge + WebDriver (aligned with .devcontainer/Containerfile)
@@ -118,8 +122,8 @@ RUN set -euo pipefail; \
    && unzip -o /tmp/msedgedriver.zip -d /tmp \
    && mv /tmp/msedgedriver /usr/local/bin/msedgedriver \
    && chmod +x /usr/local/bin/msedgedriver \
-   && rm -f /tmp/msedgedriver.zip ; \
-      apt-get clean \
+   && rm -f /tmp/msedgedriver.zip \
+   && apt-get clean \
    && rm -rf /var/lib/apt/lists/* ; \
     elif [ "$ARCH" = "arm64" ]; then \
       mkdir -p /etc/apt/keyrings \
@@ -242,6 +246,6 @@ RUN set -eux; \
 # App setup
 # --------------------------------------------------
 WORKDIR /var/www/html
-COPY php83-local/php/uploads.ini /usr/local/etc/php/conf.d/uploads.ini
+COPY php86-local/php/uploads.ini /usr/local/etc/php/conf.d/uploads.ini
 
 EXPOSE 80

@@ -3,6 +3,7 @@
 -- row's slot links are copied onto the first row, the missing steps are filled,
 -- and the follow-up row is then removed. The process id stays in process_sequence
 -- and can be used again.
+-- ZMSKVR-1627
 
 DROP TEMPORARY TABLE IF EXISTS `tmp_contract_buerger`;
 DROP TEMPORARY TABLE IF EXISTS `tmp_lock`;

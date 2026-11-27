@@ -159,6 +159,7 @@ class Db
     private static function openSqlFileHandle(string $file): array
     {
         $isGzipCompressed = substr($file, -3) === '.gz';
+        $file = self::localReadablePath($file);
 
         if ($isGzipCompressed) {
             return [
@@ -286,11 +287,55 @@ class Db
     private static function resolveMigrationFileList(string|array $migrationList): array
     {
         if (!is_array($migrationList)) {
-            $migrationList = glob($migrationList . '/*.sql');
+            $migrationList = glob(self::literalGlob(self::localDirectory($migrationList)) . '/*.sql');
         }
 
         sort($migrationList);
 
         return $migrationList;
+    }
+
+    private static function literalGlob(string $path): string
+    {
+        return preg_replace('/([*?\[\]\\\\])/', '\\\\$1', $path) ?? $path;
+    }
+
+    /**
+     * @psalm-taint-escape file
+     * @psalm-taint-escape ssrf
+     */
+    private static function localReadablePath(string $path): string
+    {
+        $real = self::localPath($path);
+        if (!is_file($real)) {
+            throw new \InvalidArgumentException('SQL file is not a local file');
+        }
+
+        return $real;
+    }
+
+    /**
+     * @psalm-taint-escape file
+     * @psalm-taint-escape ssrf
+     */
+    private static function localDirectory(string $path): string
+    {
+        $real = self::localPath($path);
+        if (!is_dir($real)) {
+            throw new \InvalidArgumentException('Migration directory is not a local directory');
+        }
+
+        return $real;
+    }
+
+    private static function localPath(string $path): string
+    {
+        $hasStreamWrapper = preg_match('#^[a-z][a-z0-9+.-]*://#i', $path) === 1;
+        $real = (!$hasStreamWrapper && !str_contains($path, "\0")) ? realpath($path) : false;
+        if ($real === false) {
+            throw new \InvalidArgumentException('Path is not on the local filesystem');
+        }
+
+        return $real;
     }
 }

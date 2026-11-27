@@ -358,6 +358,31 @@ class Scope extends \BO\Zmsbackend\Base
         return $scopeList;
     }
 
+    /**
+     * Id and durations for the delete crons. readList() joins department, mail, and provider.
+     */
+    public function readDurationList(): Collection
+    {
+        $rows = $this->fetchAll(
+            'SELECT `StandortID` AS `id`, `aktivierungsdauer` AS `activationDuration`,'
+            . ' `reservierungsdauer` AS `reservationDuration`'
+            . ' FROM `' . \BO\Zmsbackend\Query\Scope::TABLE . '`'
+        );
+        $scopeList = new Collection();
+        foreach ($rows as $row) {
+            $scopeList->addEntity(new Entity([
+                'id' => $row['id'],
+                'preferences' => [
+                    'appointment' => [
+                        'activationDuration' => $row['activationDuration'],
+                        'reservationDuration' => $row['reservationDuration'],
+                    ],
+                ],
+            ]));
+        }
+        return $scopeList;
+    }
+
     public function readIsOpened(string|int $scopeId, \DateTimeInterface $now): bool
     {
         $isOpened = false;

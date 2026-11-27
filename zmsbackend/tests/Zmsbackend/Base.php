@@ -18,7 +18,6 @@ abstract class Base extends \BO\Slim\PhpUnit\Base
     public function setUp(): void
     {
         \BO\Zmsbackend\Connection\Select::setTransaction();
-        \BO\Zmsbackend\Connection\Select::setProfiling();
     }
 
     #[\Override]

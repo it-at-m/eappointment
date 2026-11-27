@@ -538,9 +538,27 @@ public class CounterProcessingStationPage extends AdminPage {
     /**
      * Load the workstation again. An ajax queue reload that started before the lockout
      * was ended can still replace the table, so this step does not use that reload.
+     * Edge can restore the previous document on a plain refresh, which keeps the
+     * no-show sentence, so the address is opened with a new query.
      */
     public void reloadWorkstationPage() {
-        DRIVER.navigate().refresh();
+        String current = DRIVER.getCurrentUrl();
+        if (current == null || current.isBlank()) {
+            DRIVER.navigate().refresh();
+        } else {
+            String fragment = "";
+            int hash = current.indexOf('#');
+            if (hash >= 0) {
+                fragment = current.substring(hash);
+                current = current.substring(0, hash);
+            }
+            current = current.replaceAll("([?&])atafReload=\\d+", "");
+            if (current.endsWith("?") || current.endsWith("&")) {
+                current = current.substring(0, current.length() - 1);
+            }
+            String separator = current.contains("?") ? "&" : "?";
+            DRIVER.navigate().to(current + separator + "atafReload=" + System.currentTimeMillis() + fragment);
+        }
         CONTEXT.waitForSpinners();
         new WebDriverWait(DRIVER, Duration.ofSeconds(DEFAULT_EXPLICIT_WAIT_TIME))
                 .until(ExpectedConditions.visibilityOfElementLocated(By.id(APPOINTMENT_QUEUE_TABLE_LOCATOR_ID)));
