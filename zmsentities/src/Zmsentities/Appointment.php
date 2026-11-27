@@ -2,6 +2,8 @@
 
 namespace BO\Zmsentities;
 
+use BO\Zmsentities\Helper\Property;
+
 /**
  * Schema-backed entity (ArrayObject::ARRAY_AS_PROPS); document dynamic keys for Psalm.
  *
@@ -23,8 +25,7 @@ class Appointment extends Schema\Entity
         return [
             'date' => 0,
             'scope' => new Scope(),
-            // A reference to an availability does not itself specify a booked slot length.
-            'availability' => new Availability(['slotTimeInMinutes' => null]),
+            'availability' => new Availability(),
             'slotCount' => 0,
         ];
     }
@@ -105,7 +106,11 @@ class Appointment extends Schema\Entity
 
     public function getAvailability(): Availability
     {
-        return new Availability((array) ($this['availability'] ?? []) + ['slotTimeInMinutes' => null]);
+        $data = array();
+        if (Property::__keyExists('availability', $this)) {
+            $data = $this['availability'];
+        }
+        return new Availability($data);
     }
 
     public function toDateTime(string $timezone = 'Europe/Berlin'): \DateTimeImmutable
