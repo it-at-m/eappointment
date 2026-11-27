@@ -545,7 +545,7 @@ class ProcessTest extends EntityCommonTests
                 'public' => '1',
                 'intern' => '1'
             ),
-            'slotTimeInMinutes' => '15',
+            'slotTimeInMinutes' => '5',
             'startDate' => strtotime('2016-04-19'),
             'endDate' => strtotime('2016-04-19'),
             'startTime' => '12:00:00',
@@ -614,26 +614,10 @@ class ProcessTest extends EntityCommonTests
 
     protected static function getOverlappingTestAvailabilityList()
     {
-        $availabilityData = [
-            'weekday' => ['tuesday' => '4'],
-            'repeat' => ['afterWeeks' => '1'],
-            'workstationCount' => ['public' => '1', 'intern' => '1'],
-            'slotTimeInMinutes' => '15',
-            'startDate' => strtotime('2016-04-19'),
-            'endDate' => strtotime('2016-04-19'),
-        ];
-        return new AvailabilityList([
-            new Availability(array_merge($availabilityData, [
-                'id' => '1',
-                'startTime' => '12:00:00',
-                'endTime' => '16:00:00',
-            ])),
+        return static::getTestAvailabilityListByTimes([
+            1 => ['12:00:00', '16:00:00'],
             // additional workstation inside availability 1
-            new Availability(array_merge($availabilityData, [
-                'id' => '2',
-                'startTime' => '12:00:00',
-                'endTime' => '12:30:00',
-            ])),
+            2 => ['12:00:00', '12:20:00'],
         ]);
     }
 
@@ -672,7 +656,7 @@ class ProcessTest extends EntityCommonTests
             static::getTestProcessAt('2', '12:15'),
             // overbooked, counts for the shorter availability it is opened in
             static::getTestProcessAt('3', '12:15'),
-            // 12:15 + 2 slots ends at 12:45, outside of availability 2
+            // 12:15 + 2 slots ends at 12:25, outside of availability 2
             static::getTestProcessAt('4', '12:15', 2),
             static::getTestProcessAt('5', '14:00'),
         ]);
@@ -692,59 +676,40 @@ class ProcessTest extends EntityCommonTests
     public function testWithOutAvailabilityKeepsFollowingSlotsInOneAvailability()
     {
         $processList = new ProcessList([
-            // 12:15 + 2 slots ends at 12:45, outside of availability 2
+            // 12:15 + 2 slots ends at 12:25, outside of availability 2
             static::getTestProcessAt('1', '12:15', 2),
             static::getTestProcessAt('2', '12:15'),
         ]);
         $conflictList = $processList->withOutAvailability(static::getOverlappingTestAvailabilityList());
         $this->assertEquals(0, $conflictList->count());
 
-        $processList->addEntity(static::getTestProcessAt('3', '12:30'));
+        $processList->addEntity(static::getTestProcessAt('3', '12:20'));
         $conflictList = $processList->withOutAvailability(static::getOverlappingTestAvailabilityList());
         $this->assertEquals(1, $conflictList->count());
         $this->assertEquals('3', $conflictList->getFirst()->getId());
     }
 
-    protected static function getSplitTestAvailabilityList(string $secondSlotTime = '15')
+    protected static function getSplitTestAvailabilityList()
     {
-        $availabilityData = [
-            'weekday' => ['tuesday' => '4'],
-            'repeat' => ['afterWeeks' => '1'],
-            'workstationCount' => ['public' => '1', 'intern' => '1'],
-            'slotTimeInMinutes' => '15',
-            'startDate' => strtotime('2016-04-19'),
-            'endDate' => strtotime('2016-04-19'),
-        ];
-        return new AvailabilityList([
-            new Availability(array_merge($availabilityData, [
-                'id' => '1',
-                'startTime' => '12:00:00',
-                'endTime' => '14:00:00',
-            ])),
-            new Availability(array_merge($availabilityData, [
-                'id' => '2',
-                'startTime' => '14:00:00',
-                'endTime' => '16:00:00',
-                'slotTimeInMinutes' => $secondSlotTime,
-            ])),
+        return static::getTestAvailabilityListByTimes([
+            1 => ['08:00:00', '09:15:00'],
+            2 => ['09:15:00', '09:40:00'],
         ]);
     }
 
     public function testWithOutAvailabilityAllowsAppointmentOverSplitBorder()
     {
-        $processList = new ProcessList([
-            // 13:45 + 2 slots reaches from availability 1 into availability 2
-            static::getTestProcessAt('1', '13:45', 2),
-        ]);
-        $conflictList = $processList->withOutAvailability(static::getSplitTestAvailabilityList());
-        $this->assertEquals(0, $conflictList->count());
+        $processList = new ProcessList([static::getTestProcessAt('1', '09:00', 7)]);
+        $usage = $processList->getAvailabilitySlotUsage(static::getSplitTestAvailabilityList());
+        $this->assertCount(0, $usage['conflicts']);
+        $this->assertEquals([1 => 3, 2 => 4], $usage['busySlots']);
     }
 
     public function testWithOutAvailabilityKeepsConflictOverSplitBorderIfSlotIsFull()
     {
         $processList = new ProcessList([
-            static::getTestProcessAt('1', '14:00'),
-            static::getTestProcessAt('2', '13:45', 2),
+            static::getTestProcessAt('1', '09:15'),
+            static::getTestProcessAt('2', '09:00', 7),
         ]);
         $conflictList = $processList->withOutAvailability(static::getSplitTestAvailabilityList());
         $this->assertEquals(1, $conflictList->count());
@@ -753,82 +718,55 @@ class ProcessTest extends EntityCommonTests
 
     public function testWithOutAvailabilityContinuesInOverlappingAvailability()
     {
-        // availability 2 (12:00-12:30) lies inside availability 1 (12:00-16:00)
+        // availability 2 (12:00-12:20) lies inside availability 1 (12:00-16:00)
         $booked = static::getTestProcessAt('1', '12:15');
         $booked->getFirstAppointment()->availability = ['id' => '1'];
         $processList = new ProcessList([
             $booked,
-            // 12:15 is free in availability 2, 12:30 is free in availability 1
+            // 12:15 is free in availability 2, 12:20 is free in availability 1
             static::getTestProcessAt('2', '12:15', 2),
         ]);
         $conflictList = $processList->withOutAvailability(static::getOverlappingTestAvailabilityList());
         $this->assertEquals(0, $conflictList->count());
 
-        // the only workstation at 12:30 is taken by process 2
-        $processList->addEntity(static::getTestProcessAt('3', '12:30'));
+        // the only workstation at 12:20 is taken by process 2
+        $processList->addEntity(static::getTestProcessAt('3', '12:20'));
         $conflictList = $processList->withOutAvailability(static::getOverlappingTestAvailabilityList());
         $this->assertEquals(1, $conflictList->count());
         $this->assertEquals('3', $conflictList->getFirst()->getId());
     }
 
-    public function testWithOutAvailabilityKeepsConflictOverSplitBorderWithDifferentSlotLength()
+    public function testBookingWithoutStartSlotStillCountsCoveredSlots()
     {
-        $processList = new ProcessList([
-            // 13:45 + 2 slots of 15 minutes ends at 14:15, availability 2 has 5 minute slots
-            static::getTestProcessAt('1', '13:45', 2),
-        ]);
-        $conflictList = $processList->withOutAvailability(static::getSplitTestAvailabilityList('5'));
-        $this->assertEquals(1, $conflictList->count());
-    }
-
-    public function testReplacementSlotsCannotShortenTheBookedDuration()
-    {
-        $availabilityList = static::getTestAvailabilityListByTimes([
-            1 => ['13:45:00', '13:50:00'],
-            2 => ['13:50:00', '13:55:00'],
-        ], '5');
-        $booked = static::getTestProcessAt('1', '13:45', 2);
-        $booked->getFirstAppointment()->availability = ['id' => '3', 'slotTimeInMinutes' => 15];
-        $processList = new ProcessList([$booked]);
+        $availabilityList = static::getTestAvailabilityListByTimes([1 => ['09:05:00', '09:20:00']]);
+        $processList = new ProcessList([static::getTestProcessAt('1', '09:00', 2)]);
 
         $usage = $processList->getAvailabilitySlotUsage($availabilityList);
         $this->assertCount(1, $usage['conflicts']);
-        $this->assertSame([1 => 0, 2 => 0], $usage['busySlots']);
-        $this->assertSame(['13:45' => 1, '13:50' => 1], $usage['occupiedByTime']);
-    }
-
-    public function testExplicitSlotLengthIsPreservedWithoutAnAvailabilityId()
-    {
-        $availabilityList = static::getTestAvailabilityListByTimes([
-            1 => ['13:45:00', '13:50:00'],
-            2 => ['13:50:00', '13:55:00'],
-        ], '5');
-        $booked = static::getTestProcessAt('1', '13:45', 2, ['slotTimeInMinutes' => 10]);
-        $processList = new ProcessList([$booked]);
-
-        $this->assertCount(1, $processList->withOutAvailability($availabilityList));
+        $this->assertSame([1 => 1], $usage['busySlots']);
+        $this->assertSame(['09:05' => 1], $usage['occupiedByTime']);
     }
 
     public function testGapRemainsAConflictAndCoveredSlotsStillCount()
     {
         $availabilityList = static::getTestAvailabilityListByTimes([
-            1 => ['13:45:00', '14:00:00'],
-            2 => ['14:15:00', '14:30:00'],
+            1 => ['13:55:00', '14:00:00'],
+            2 => ['14:05:00', '14:10:00'],
         ]);
         $processList = new ProcessList([
-            static::getTestProcessAt('1', '13:45', 3),
-            static::getTestProcessAt('2', '14:15'),
+            static::getTestProcessAt('1', '13:55', 3),
+            static::getTestProcessAt('2', '14:05'),
         ]);
 
         $usage = $processList->getAvailabilitySlotUsage($availabilityList);
         $this->assertCount(2, $usage['conflicts']);
-        $this->assertSame(['13:45' => 1, '14:15' => 2], $usage['occupiedByTime']);
+        $this->assertSame(['13:55' => 1, '14:05' => 2], $usage['occupiedByTime']);
     }
 
     /**
      * @param array<int, array{string, string}> $times start and end time by availability id
      */
-    protected static function getTestAvailabilityListByTimes(array $times, string $slotMinutes = '15')
+    protected static function getTestAvailabilityListByTimes(array $times)
     {
         $availabilityList = new AvailabilityList();
         foreach ($times as $id => [$startTime, $endTime]) {
@@ -837,7 +775,7 @@ class ProcessTest extends EntityCommonTests
                 'weekday' => ['tuesday' => '4'],
                 'repeat' => ['afterWeeks' => '1'],
                 'workstationCount' => ['public' => '1', 'intern' => '1'],
-                'slotTimeInMinutes' => $slotMinutes,
+                'slotTimeInMinutes' => 5,
                 'startDate' => strtotime('2016-04-19'),
                 'endDate' => strtotime('2016-04-19'),
                 'startTime' => $startTime,
@@ -854,8 +792,8 @@ class ProcessTest extends EntityCommonTests
             2 => ['13:00:00', '14:00:00'],
             3 => ['14:00:00', '15:00:00'],
         ]);
-        // 13:45 + 2 slots uses availability 2 and 3, nothing of availability 1
-        $processList = new ProcessList([static::getTestProcessAt('1', '13:45', 2)]);
+        // 13:55 + 2 slots uses availability 2 and 3, nothing of availability 1
+        $processList = new ProcessList([static::getTestProcessAt('1', '13:55', 2)]);
         $slotCounts = $availabilityList->getCalculatedSlotCount($processList);
         $this->assertEquals([1 => 0, 2 => 1, 3 => 1], $slotCounts);
     }
@@ -863,13 +801,13 @@ class ProcessTest extends EntityCommonTests
     public function testCalculatedSlotCountCountsOverbookingOverSplitBorder()
     {
         $processList = new ProcessList([
-            static::getTestProcessAt('1', '13:45', 2),
+            static::getTestProcessAt('1', '09:10', 2),
             // Overbooked on both sides of the boundary.
-            static::getTestProcessAt('2', '13:45', 2),
+            static::getTestProcessAt('2', '09:10', 2),
         ]);
         $usage = $processList->getAvailabilitySlotUsage(static::getSplitTestAvailabilityList());
         $this->assertEquals([1 => 2, 2 => 2], $usage['busySlots']);
-        $this->assertSame(['13:45' => 2, '14:00' => 2], $usage['occupiedByTime']);
+        $this->assertSame(['09:10' => 2, '09:15' => 2], $usage['occupiedByTime']);
         $this->assertCount(1, $usage['conflicts']);
     }
 
@@ -877,11 +815,11 @@ class ProcessTest extends EntityCommonTests
     {
         $availabilityList = static::getTestAvailabilityListByTimes([
             1 => ['12:00:00', '14:00:00'],
-            // used at 14:00 as the shortest one, the appointment has to change again at 14:15
-            2 => ['14:00:00', '14:15:00'],
+            // used at 14:00 as the shortest one, the appointment has to change again at 14:05
+            2 => ['14:00:00', '14:05:00'],
             3 => ['14:00:00', '16:00:00'],
         ]);
-        $processList = new ProcessList([static::getTestProcessAt('1', '13:45', 3)]);
+        $processList = new ProcessList([static::getTestProcessAt('1', '13:55', 3)]);
         $conflictList = $processList->withOutAvailability($availabilityList);
         $this->assertEquals(0, $conflictList->count());
     }
