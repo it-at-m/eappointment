@@ -48,7 +48,6 @@ import zms.ataf.rest.dto.zmscitizenapi.ReserveAppointmentRequest;
 import zms.ataf.rest.dto.zmscitizenapi.Service;
 import zms.ataf.rest.dto.zmscitizenapi.ThinnedProcess;
 import zms.ataf.rest.dto.zmscitizenapi.collections.OfficesAndServicesResponse;
-import zms.ataf.ui.pages.citizenview.support.FuehrerscheinstelleScopeHints;
 import zms.ataf.ui.pages.citizenview.support.RuppertstrasseWartezoneHints;
 
 public class CitizenApiSteps {
@@ -763,14 +762,14 @@ public class CitizenApiSteps {
     }
 
     /**
-     * ZMSKVR-1051 / ZMSKVR-1309: day after V19 range (V52) has one internet seat per Wartebereich /
-     * Schalter so a second same-timestamp reserve switches scope without the shared calendar.
+     * ZMSKVR-1051 / ZMSKVR-1309: V53 adds one internet seat per Wartebereich after the shared range,
+     * so a second same-timestamp reserve switches scope without using the shared calendar.
      */
     @When("I request available appointments for the scope-switch day for office {int} and service {int}")
     public void iRequestAvailableAppointmentsForTheScopeSwitchDay(int officeId, int serviceId) {
-        String date = BerlinTime.scopeSwitchDayAfterV19RuppertstrasseRange().format(DATE_FORMAT);
+        String date = BerlinTime.ruppertstrasseScopeSwitchDay().format(DATE_FORMAT);
         ScenarioLogManager.getLogger().info(String.format(
-            "Citizen API using scope-switch day %s (after V19 range) officeId=%d serviceId=%d",
+            "Citizen API using scope-switch day %s (after the shared range) officeId=%d serviceId=%d",
             date,
             officeId,
             serviceId
@@ -990,59 +989,6 @@ public class CitizenApiSteps {
                 .info("Citizen API appointment matched Ruppertstraße Wartezone {}", code);
     }
 
-    /**
-     * ZMSKVR-924 / ZMSKVR-1019: GET /appointment/ scope.hint + infoForAppointment belong to the
-     * same Führerscheinstelle Schalter (FS-A or FS-B).
-     */
-    @Then("the appointment scope hint and infoForAppointment should match a Führerscheinstelle Schalter")
-    public void theAppointmentScopeHintAndInfoForAppointmentShouldMatchAFuehrerscheinstelleSchalter() {
-        String hint = response.jsonPath().getString("scope.hint");
-        String info = response.jsonPath().getString("scope.infoForAppointment");
-        Assertions.assertThat(hint).as("scope.hint").isNotBlank();
-        Assertions.assertThat(info).as("scope.infoForAppointment").isNotBlank();
-        String code = FuehrerscheinstelleScopeHints.detectCode(hint + " " + info);
-        Assertions.assertThat(code)
-                .as("scope.hint=%s infoForAppointment=%s", hint, info)
-                .isNotNull();
-        Assertions.assertThat(hint).contains(FuehrerscheinstelleScopeHints.zoneFor(code));
-        Assertions.assertThat(info).contains(FuehrerscheinstelleScopeHints.hintFor(code));
-        Assertions.assertThat(FuehrerscheinstelleScopeHints.paintsOnly(hint + " " + info, code))
-                .as("scope.hint=%s infoForAppointment=%s must not mix Schalter markers", hint, info)
-                .isTrue();
-        FuehrerscheinstelleScopeHints.rememberApiSchalterCode(code);
-        ScenarioLogManager.getLogger()
-                .info("Citizen API appointment matched Führerscheinstelle Schalter {}", code);
-    }
-
-    /**
-     * ZMSKVR-924 / ZMSKVR-1019: second same-timestamp reserve on the V55 switch day lands on
-     * the A↔B partner. After-hourly V002 keeps Schalter C off that day.
-     */
-    @Then("the appointment scope should be the other Führerscheinstelle Schalter")
-    public void theAppointmentScopeShouldBeTheOtherFuehrerscheinstelleSchalter() {
-        String first = FuehrerscheinstelleScopeHints.rememberedApiSchalterCode();
-        Assertions.assertThat(first)
-                .as("first Schalter must be remembered before the second reserve")
-                .isNotBlank();
-        String expected = FuehrerscheinstelleScopeHints.otherCode(first);
-        String hint = response.jsonPath().getString("scope.hint");
-        String info = response.jsonPath().getString("scope.infoForAppointment");
-        String code = FuehrerscheinstelleScopeHints.detectCode(hint + " " + info);
-        Assertions.assertThat(code)
-                .as("second reserve scope.hint=%s infoForAppointment=%s", hint, info)
-                .isEqualTo(expected);
-        Assertions.assertThat(hint)
-                .as("second reserve scope.hint=%s", hint)
-                .contains(FuehrerscheinstelleScopeHints.zoneFor(code));
-        Assertions.assertThat(info).contains(FuehrerscheinstelleScopeHints.hintFor(code));
-        Assertions.assertThat(FuehrerscheinstelleScopeHints.paintsOnly(hint + " " + info, code))
-                .as("second reserve must not mix Schalter markers (hint=%s info=%s)", hint, info)
-                .isTrue();
-        FuehrerscheinstelleScopeHints.rememberApiSchalterCode(code);
-        ScenarioLogManager.getLogger()
-                .info("Citizen API second reserve switched Schalter {} → {}", first, code);
-    }
-
     /** ZMSKVR-1051 / ZMSKVR-1309: second same-timestamp reserve lands on the other Wartebereich. */
     @Then("the appointment scope should be the other Ruppertstraße Wartezone")
     public void theAppointmentScopeShouldBeTheOtherRuppertstrasseWartezone() {
@@ -1067,8 +1013,8 @@ public class CitizenApiSteps {
     }
 
     /**
-     * ZMSKVR-1051 / ZMSKVR-1309 (and Führerscheinstelle twin): with one internet seat per
-     * Wartebereich/Schalter on the V52 scope-switch day, a second reserve of the same timestamp
+     * ZMSKVR-1051 / ZMSKVR-1309: with one internet seat per Wartebereich on the V53 scope-switch day,
+     * a second reserve of the same timestamp
      * lands on the other scope. Cap pair retries on the current day only — walking the shared
      * calendar burns into rateLimitExceeded under parallel load.
      */
@@ -1092,7 +1038,7 @@ public class CitizenApiSteps {
         }
         if (rateLimitExceeded(response)) {
             Assertions.fail(
-                    "Citizen API rate-limited while reserving the other Wartebereich/Schalter (status=429)");
+                    "Citizen API rate-limited while reserving the other Wartebereich (status=429)");
         }
         if (!slotNoLongerAvailable(response)) {
             response.then().statusCode(200);
@@ -1124,7 +1070,7 @@ public class CitizenApiSteps {
             Response firstResponse = postReserveForOfficeService(timestamp, officeId, serviceId, serviceCount);
             if (rateLimitExceeded(firstResponse)) {
                 Assertions.fail(
-                        "Citizen API rate-limited while retrying Wartebereich/Schalter pair (status=429)");
+                        "Citizen API rate-limited while retrying Wartebereich pair (status=429)");
             }
             if (firstResponse.getStatusCode() != 200) {
                 continue;
@@ -1134,7 +1080,7 @@ public class CitizenApiSteps {
                 continue;
             }
             // Reserve the pair back-to-back. A GET in between lets another runner take the
-            // other Wartebereich/Schalter seat (ZMSKVR-1051 / ZMSKVR-1309 flake).
+            // other Wartebereich seat (ZMSKVR-1051 / ZMSKVR-1309 flake).
             Response secondResponse = postReserveForOfficeService(timestamp, officeId, serviceId, serviceCount);
             if (secondResponse.getStatusCode() == 200) {
                 replaceRememberedProcess(abandonedFirstId, newFirst);
@@ -1145,7 +1091,7 @@ public class CitizenApiSteps {
             if (rateLimitExceeded(secondResponse)) {
                 cancelProcessQuietly(newFirst.getProcessId(), newFirst.getAuthKey());
                 Assertions.fail(
-                        "Citizen API rate-limited on second Wartebereich/Schalter reserve (status=429)");
+                        "Citizen API rate-limited on second Wartebereich reserve (status=429)");
             }
             ScenarioLogManager.getLogger().info(String.format(
                     "Citizen API other Wartebereich still unavailable at timestamp=%d status=%d; trying next",
@@ -1155,7 +1101,7 @@ public class CitizenApiSteps {
         }
 
         Assertions.fail(
-                "Could not reserve the same timestamp on the other Wartebereich/Schalter after "
+                "Could not reserve the same timestamp on the other Wartebereich after "
                         + attempts
                         + " same-day pair attempt(s)");
     }
@@ -1237,8 +1183,8 @@ public class CitizenApiSteps {
     }
 
     /**
-     * After rebooking the first seat of a same-timestamp pair, refresh WB/Schalter memory so
-     * the following "other Wartebereich/Schalter" Then still matches.
+     * After rebooking the first seat of a same-timestamp pair, refresh the remembered Wartebereich
+     * so the assertion for the other Wartebereich still matches.
      */
     private void rememberScopeFamilyFromProcess(ThinnedProcess process) {
         if (process == null || process.getProcessId() == null || process.getAuthKey() == null) {
@@ -1259,10 +1205,6 @@ public class CitizenApiSteps {
         String wartezone = RuppertstrasseWartezoneHints.detectCode(combined);
         if (wartezone != null) {
             RuppertstrasseWartezoneHints.rememberApiWartezoneCode(wartezone);
-        }
-        String schalter = FuehrerscheinstelleScopeHints.detectCode(combined);
-        if (schalter != null) {
-            FuehrerscheinstelleScopeHints.rememberApiSchalterCode(schalter);
         }
     }
 

@@ -18,7 +18,7 @@ import java.util.concurrent.TimeUnit;
 import ataf.core.logging.ScenarioLogManager;
 
 /**
- * Restores Flyway V61 day+7 availability for Pasing/Föhring/Neuperlach/Riem after booked-out
+ * Restores Flyway V59 day+7 availability for Pasing/Föhring/Neuperlach/Riem after booked-out
  * scenarios reserved every seat.
  *
  * <p>Citizen availability comes from the precomputed {@code slot} / {@code slot_process} tables.
@@ -42,7 +42,7 @@ public final class FeuerwacheOrderDaySeats {
             recalculateSlots();
             ScenarioLogManager.getLogger()
                     .info(
-                            "Restored Feuerwache V61 order-day {} (seats={}, deletedBookings={}, clearedSlots={})",
+                            "Restored Feuerwache V59 order-day {} (seats={}, deletedBookings={}, clearedSlots={})",
                             orderDay,
                             SEATS,
                             removedBookings,
@@ -62,7 +62,7 @@ public final class FeuerwacheOrderDaySeats {
             try (ResultSet rows = statement.executeQuery()) {
                 if (!rows.next() || rows.getDate(1) == null) {
                     throw new SQLException(
-                            "V61 order-day opening 136560 missing; run Flyway migrate first");
+                            "V59 order-day opening 136560 missing; run Flyway migrate first");
                 }
                 return rows.getDate(1).toLocalDate();
             }
@@ -105,7 +105,7 @@ public final class FeuerwacheOrderDaySeats {
             }
             int updated = statement.executeUpdate();
             ScenarioLogManager.getLogger()
-                    .info("Updated {} V61 order-day opening row(s) to {} seats", updated, SEATS);
+                    .info("Updated {} V59 order-day opening row(s) to {} seats", updated, SEATS);
         }
     }
 

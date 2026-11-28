@@ -5,7 +5,7 @@ Feature: Citizen API: too many appointments with the same email
   So that appointmentsPerMail on the scope is enforced
 
   # ZMSKVR-87 / ZMSKVR-601 / ZMSKVR-715. ZMSKVR-1142 raised the minimum to 2.
-  # Scope 380 (V60): office 10521 Waffenbehörde, public service 10429902, appointmentsPerMail=2.
+  # Scope 380 (V58): office 10521 Waffenbehörde, public service 10429902, appointmentsPerMail=2.
   # Only preconfirmed/confirmed processes count; a reserved sibling does not.
   # Two active appointments are allowed. The third is rejected.
 

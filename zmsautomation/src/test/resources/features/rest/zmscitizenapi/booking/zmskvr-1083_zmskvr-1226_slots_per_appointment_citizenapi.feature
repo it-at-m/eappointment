@@ -29,7 +29,7 @@ Feature: ZMSKVR-1083 / ZMSKVR-1226 slotsPerAppointment — Citizen API
   # slotTime). Eleven services at qty 1 sum to 25 slots and still book.
   # Haushaltsbescheinigung relation maxQuantity is unset, so count 73 is
   # 24 other slots + 73 = 97 slots / 485 minutes → tooManySlotsPerAppointment.
-  # V56 opening hours for scope 70. Finish or cancel every reserved process.
+  # V54 opening hours for scope 70. Finish or cancel every reserved process.
 
   Background:
     Given the Citizen API is available

@@ -31,7 +31,6 @@ import zms.ataf.rest.dto.zmscitizenapi.ThinnedProcess;
 import zms.ataf.ui.pages.citizenview.CitizenViewPage;
 import zms.ataf.ui.pages.citizenview.CitizenViewPageContext;
 import zms.ataf.ui.pages.citizenview.support.CitizenViewWaits;
-import zms.ataf.ui.pages.citizenview.support.FuehrerscheinstelleScopeHints;
 import zms.ataf.ui.pages.citizenview.support.RuppertstrasseWartezoneHints;
 import zms.ataf.ui.pages.citizenview.support.ShadowDom;
 import zms.ataf.ui.pages.citizenview.support.SlotBookingState;
@@ -1814,46 +1813,6 @@ public final class MyAppointmentsStep {
                             + normalized);
             previous = idx;
         }
-    }
-
-    /**
-     * ZMSKVR-924 / ZMSKVR-1019: Termin-Detail Ort Kundenhinweis + Callout „Hinweis zu Ihrem Termin“
-     * for Führerscheinstelle Schalter A/B.
-     */
-    public void assertAppointmentDetailMatchingFuehrerscheinstelleSchalter() {
-        context.set();
-        String code = slotState.rememberedWartezoneCode;
-        Assert.assertNotNull(code, "Need a remembered Schalter from the booking overview.");
-        Assert.assertTrue(
-                FuehrerscheinstelleScopeHints.isConcrete(code),
-                "Expected FS-A/B/C from overview, was: " + code);
-        String zone = FuehrerscheinstelleScopeHints.zoneFor(code);
-        String hint = FuehrerscheinstelleScopeHints.hintFor(code);
-        CitizenViewWaits.waitWithThreeWindows(
-                () ->
-                        (shadow.shadowDomHasHeading(2, "Ort") || shadow.shadowDomContainsText("Termin absagen"))
-                                && shadow.shadowDomContainsText(zone)
-                                && shadow.shadowDomContainsText(FuehrerscheinstelleScopeHints.DETAIL_CALLOUT_HEADER)
-                                && shadow.shadowDomContainsText(hint),
-                "Appointment detail Schalter + Hinweis callout");
-        Assert.assertTrue(
-                shadow.shadowDomHasHeading(2, "Ort") || shadow.shadowDomContainsText("Termin absagen"),
-                "Detail missing Ort heading / Termin absagen (still on booking Übersicht?).");
-        shadow.scrollTextIntoView(zone);
-        Assert.assertTrue(shadow.shadowDomContainsText(zone), "Detail Ort missing " + zone);
-        shadow.scrollTextIntoView(FuehrerscheinstelleScopeHints.DETAIL_CALLOUT_HEADER);
-        Assert.assertTrue(
-                shadow.shadowDomContainsText(FuehrerscheinstelleScopeHints.DETAIL_CALLOUT_HEADER),
-                "Detail missing callout header Hinweis zu Ihrem Termin.");
-        shadow.scrollTextIntoView(hint);
-        Assert.assertTrue(shadow.shadowDomContainsText(hint), "Detail callout missing " + hint);
-        for (String other : FuehrerscheinstelleScopeHints.otherCodes(code)) {
-            Assert.assertFalse(
-                    shadow.shadowDomContainsText(FuehrerscheinstelleScopeHints.zoneFor(other)),
-                    "Detail must not show another Schalter (" + other + ").");
-        }
-        ScenarioLogManager.getLogger()
-                .info("zmscitizenview: detail matched Führerscheinstelle Schalter {} callout", code);
     }
 
     /**

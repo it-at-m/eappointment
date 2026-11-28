@@ -10,7 +10,6 @@ namespace BO\Zmsadmin;
 use BO\Slim\Render;
 use BO\Zmsentities\Helper\DateTime;
 use BO\Zmsentities\Collection\AvailabilityList;
-use BO\Zmsentities\Collection\ProcessList;
 use BO\Zmsentities\Exception\UserAccountMissingRights;
 
 class ScopeAvailabilityDay extends BaseController
@@ -51,21 +50,12 @@ class ScopeAvailabilityDay extends BaseController
     }
 
     /**
+     * @param array<string, int> $occupiedByTime
      * @return (int|mixed)[][]
-     *
      */
-    protected static function getSlotBuckets(\BO\Zmsentities\Collection\AvailabilityList $availabilityList, \BO\Zmsentities\Collection\ProcessList $processList): array
+    protected static function getSlotBuckets(AvailabilityList $availabilityList, array $occupiedByTime): array
     {
-        $availability = $availabilityList->getFirst();
-
-        if (!$availability) {
-            return [];
-        }
-
         $buckets = [];
-
-        $slotTimeInMinutes = $availability->getSlotTimeInMinutes();
-
         foreach ($availabilityList->getSlotListByType('appointment') as $slot) {
             $time = $slot->time;
             if (isset($buckets[$time])) {
@@ -79,29 +69,10 @@ class ScopeAvailabilityDay extends BaseController
                 'timeString' => $slot->getTimeString(),
                 'public' => $slot->public,
                 'intern' => $slot->intern,
-                'occupiedCount' => 0,
+                'occupiedCount' => $occupiedByTime[$time] ?? 0,
             ];
         }
-
-        foreach ($processList as $process) {
-            $startTime = $process->getAppointments()->getFirst()->getStartTime()->format('H:i');
-            $endTime = $process->getAppointments()->getFirst()->getEndTimeWithCustomSlotTime($slotTimeInMinutes)->format('H:i');
-
-            $startDateTime = new \DateTime($startTime);
-            $endDateTime = new \DateTime($endTime);
-
-            foreach (array_keys($buckets) as $time) {
-                $slotDateTime = new \DateTime($time);
-                if ($slotDateTime >= $startDateTime && $slotDateTime < $endDateTime) {
-                    $buckets[$time]['occupiedCount']++;
-                }
-            }
-        }
-
-        uksort($buckets, function ($time1, $time2) {
-            return strtotime($time1) <=> strtotime($time2);
-        });
-
+        ksort($buckets);
         return $buckets;
     }
 
@@ -115,23 +86,19 @@ class ScopeAvailabilityDay extends BaseController
         $dateTime = new DateTime($dateString);
         $dateWithTime = $dateTime->setTime(\App::$now->format('H'), \App::$now->format('i'));
         $availabilityList = static::readAvailabilityList($scopeId, $dateWithTime);
-        $processList = \App::$http
+        $queueList = \App::$http
             ->readGetResult('/scope/' . $scopeId . '/process/' . $dateWithTime->format('Y-m-d') . '/')
                 ->getCollection()
                 ->toQueueList($dateWithTime)
-                ->withoutStatus(['fake'])
-                ->toProcessList();
-        if (!$processList->count()) {
-            $processList = new ProcessList();
-        }
-
+                ->withoutStatus(['fake']);
+        $processList = $queueList->toProcessList();
 
         $conflictList = static::readConflictList($scopeId, $dateWithTime);
         $maxSlots = $availabilityList->getSummerizedSlotCount();
-        $busySlots = $availabilityList->getCalculatedSlotCount($processList);
+        $slotUsage = $queueList->withoutStatus(['queued'])->toProcessList()->getAvailabilitySlotUsage($availabilityList);
 
         return [
-            'slotBuckets' => static::getSlotBuckets($availabilityList, $processList),
+            'slotBuckets' => static::getSlotBuckets($availabilityList, $slotUsage['occupiedByTime']),
             'scope' => $scope,
             'availabilityList' => $availabilityList->getArrayCopy(),
             'conflicts' => ($conflictList) ? $conflictList
@@ -143,7 +110,7 @@ class ScopeAvailabilityDay extends BaseController
             'menuActive' => 'availability',
             'maxWorkstationCount' => $availabilityList->getMaxWorkstationCount(),
             'maxSlotsForAvailabilities' => $maxSlots,
-            'busySlotsForAvailabilities' => $busySlots,
+            'busySlotsForAvailabilities' => $slotUsage['busySlots'],
             'today' => \App::$now->getTimestamp()
         ];
     }
